@@ -1,0 +1,5 @@
+Metadata entity category	Property name in data file	Standard property name in metadata file
+Primary cell	Cell line	PC_Name
+Small molecule	Drug	SM_Center_Canonical_ID or SM_Center_Batch_ID
+Antibody	Drug	AR_Center_Batch_ID
+Protein	Drug	PR_Center_Canonical_ID

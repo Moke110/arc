@@ -1,0 +1,16 @@
+rNAseq_Assay_Date	11/8/2016
+rNAseq_Instrument	HiSeq 2500
+rNAseq_Software_Version	null
+RNAseq_Read_Length_2	null
+rNAseq_Strand_Specificity	Non-strand specific
+rNAseq_Library_Starting_Quantity	null
+rNAseq_RNA_Integrity_Number	null
+rNAseq_Lysis_Method	null
+rNAseq_Extraction_Method	null
+rNAseq_Fragmentation_Method	null
+rNAseq_Size_Selection_Method	null
+rNAseq_Spike_in_Controls	null
+rNAseq_Sequencing_Cycles	null
+RNAseq_reference_genome	NCBI's RefSeq human reference genome (version hg38)
+RNAseq_trim_metric	N/A
+rNAseq_Pellet_Merge_Method	null
