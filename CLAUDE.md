@@ -1,82 +1,77 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project Goal
 
-## Repository Overview
+利用人工智能与生物信息学方法，预测可用于治疗心肌缺血再灌注损伤（MIRI）的药物。核心工作流：从小分子化学结构出发，预测其在心肌细胞上的转录组扰动效应（978个landmark基因）。
 
-This is a multi-project machine learning pipeline for drug-induced transcriptional perturbation prediction:
+## Repository Structure
 
 ```
-dtoxs/    →  Raw cardiotoxicity transcriptomic data (DToxS LINCS dataset LDS-1593)
-kpgt/     →  Molecular graph transformer (KPGT) — extracts molecular features from SMILES
-hg/       →  Heterogeneous GNN — generates biological drug embeddings via contrastive learning
-xpert/    →  Main prediction model (XPert) — dual-branch transformer, consumes features from kpgt + hg
+arc/
+├── xpert/       → 药物转录组扰动预测模型（XPert），双分支Transformer，经L1000预训练+DTOXS微调
+├── dtoxs/       → 心肌细胞药物扰动组数据集（DToxS LINCS LDS-1593），用于XPert模型微调
+├── kpgt/        → 分子图Transformer（KPGT/LiGhT），将药物SMILES转化为分子图嵌入向量
+├── hg/          → 异质图神经网络（HeteroGNN），生成药物的生物学嵌入向量（对比学习）
+└── references/  → 虚拟细胞/药物预测相关参考文献（与当前工作流无关）
 ```
 
 **Pipeline flow**: Drug SMILES → KPGT (molecular feats) + HG (biological embeddings) + UniMol (3D feats) → XPert (predicts 978-landmark-gene perturbation)
-
-### Sub-project overviews
-
-- **xpert/** — The active development project with detailed [CLAUDE.md](xpert/CLAUDE.md). Dual-branch transformer (~25M params) predicting post-drug transcriptional profiles. Has full pretrain/finetune/evaluate workflow.
-- **kpgt/** — Molecular graph model (LiGhT architecture, DGL-based). Python 3.7, PyTorch 1.10, DGL-cu113. Conda env: `KPGT`. Workflow: pretrain on molecular graphs → extract features → downstream finetune.
-- **hg/** — HeteroGNN (PyTorch Geometric) trained with InfoNCE contrastive loss on drug-gene-disease heterogeneous graph (PPI + DTI + DDS edges). Output: `(8981, 256)` drug embeddings consumed by XPert.
-- **dtoxs/** — Pure data: 914 human cardiomyocyte 3'-DGE RNA-seq samples (956 well-level records), with metadata and read-count matrices. No executable code.
 
 ## Commands
 
 ### xpert/
 
 ```bash
-# CLI training (from xpert/)
+cd xpert/
+# CLI training
 python -m src.train --mode train --config pretrain/config/l1000 --dataset l1000_mdmt_full --device cuda:0
 
 # Shell scripts (env-var-driven)
-bash pretrain/run.sh [dataset] [nfold] [config]
-bash finetune/run.sh <pretrained_path> [dataset] [nfold] [config]
+bash pretrain/run.sh [dataset] [split_method] [config]
+bash finetune/run.sh <pretrained_path> [dataset] [split_method] [config]
 
-# Interactive pipeline
-jupyter notebook run.ipynb          # 3-step: pretrain → finetune → evaluate
-jupyter notebook metrics/evaluate.ipynb   # Evaluation only
-
-# Config system: all paths in YAML resolved relative to xpert/ project root
-# Outputs: pretrain/output/<dataset>/<timestamp>/  or  finetune/output/<dataset>-<fold>/<timestamp>/
+# FDA drug prediction pipeline
+cd vcms/fda/
+python query_fda_drugs.py           # Step 0: fetch FDA-approved drugs from ChEMBL
+python step2_kpgt_prepare.py        # Step 1: prepare SMILES for KPGT
+python step2_generate_embeddings.py # Step 2: generate UniMol + Morgan features
+python gen_hg.py                    # Step 2b: generate HG biological embeddings
+python step3_merge.py               # Step 3: merge new drug features into embedding arrays
+python step4_ensemble_predict.py    # Step 4: 7-fold ensemble prediction
+python postprocess_deg_rank.py      # Step 5: output deg + gene ranks per drug
 ```
 
 ### kpgt/
 
 ```bash
-# Activate conda environment first: conda activate KPGT
+conda activate KPGT                # Python 3.7, DGL-cu113
 cd kpgt/
-
-# SMILES → KPGT pickle (feature extraction pipeline)
-bash create_pickle.sh
-
-# Pretrain molecular graph model
-python scripts/train_kpgt.py --data_path <path> --save_path <path> --n_steps <N> --config base
-
-# Extract features from pretrained model
-python scripts/extract_features.py --config base --model_path <path> --data_path <path> --dataset <name>
-
-# Finetune on downstream task
-python scripts/finetune.py --config base --model_path <path> --data_path <path> --dataset <name> --dataset_type <classification|regression> --metric <name> --split <name>
+bash create_pickle.sh               # SMILES → KPGT features
+python scripts/train_kpgt.py --config base --data_path <path> --save_path <path>
+python scripts/extract_features.py --config base --model_path <path> --data_path <path>
 ```
 
 ### hg/
 
 ```bash
-# Train HeteroGNN (from hg/)
-bash run.sh                                    # default params
-bash run.sh --device cuda:0 --epochs 500       # with overrides
-
-# Or use the notebook: jupyter notebook run.ipynb
-
-# Output: embeddings/HG_drug_embeddings.npy (8981, 256) — consumed by XPert
+cd hg/
+bash run.sh                         # Train HeteroGNN
+bash run.sh --device cuda:0 --epochs 500
+# Output: model/<timestamp>/global_fold_early_stop.pth
 ```
+
+## Cross-Project Dependencies
+
+- kpgt → xpert: `xpert/drug_embeddings/all_drugs_idx2KPGT.npy` (molecular features)
+- hg → xpert: `xpert/drug_embeddings/all_drugs_idx2HG.npy` (biological embeddings)
+- kpgt uses conda env `KPGT` (Python 3.7); xpert and hg use conda env `xpert` (Python 3.13)
+- Features are exchanged as pre-computed `.npy` files — no shared runtime
 
 ## Key Architectural Notes
 
-- **XPert architecture**: See [xpert/CLAUDE.md](xpert/CLAUDE.md) for full details (model, config, data pipeline, key changes from history).
-- **KPGT model**: LiGhT (Light Graph Transformer) — 12-layer attention over molecular graphs with virtual nodes. Uses DGL `HeteroGraphConv`-style message passing. Pretrained with path-based encoding and molecular descriptor reconstruction.
-- **HG model**: HeteroGNN with 3 HeteroConv layers, neighbor sampling, InfoNCE contrastive loss over drug-gene edges. Uses `torch_geometric`.
-- **Cross-project dependency**: KPGT features (`all_drugs_idx2KPGT.npy`) and HG embeddings (`all_drugs_idx2HG.npy`) are consumed by XPert as static drug representations in `drug_embeddings/`.
-- **Environment isolation**: kpgt uses a dedicated conda env (`KPGT`, Python 3.7), while xpert and hg use system/modern Python (3.10+). They do not share a runtime — features are exchanged as pre-computed `.npy` files.
+- **XPert**: ~25M params, hidden=256, 8 attention heads. Dual-branch (pert + ctl) with cross-attention drug-cell fusion. See [xpert/CLAUDE.md](xpert/CLAUDE.md).
+- **KPGT**: LiGhT architecture, 12-layer attention over molecular graphs with virtual nodes, DGL-based.
+- **HG**: HeteroGNN, 3 HeteroConv layers, neighbor sampling, InfoNCE contrastive loss. PPI + DTI + DDS edges.
+- **DTOXS data**: 914 human cardiomyocyte 3'-DGE RNA-seq samples, 48h drug treatment, RMA-normalized log2 expression.
+- **L1000 data**: LINCS Phase I/II, Level 3 Q2NORM (quantile-normalized log2 expression), 978 landmark genes, non-negative.
+- Both pretrain and finetune data are in log2 expression space — no z-score conversion needed.

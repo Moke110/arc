@@ -56,12 +56,14 @@ xpert/
 | Evaluation metrics | `src/eval_metrics.py` (get_metrics_new), `src/metrics.py` (get_metrics_infer) |
 | Visualization | `src/vis_gene_attn.py`, `src/vis_molecule.py` |
 | Pipeline workflow | `run.ipynb`, `pretrain/run.sh`, `finetune/run.sh` |
+| FDA inference pipeline | `vcms/fda/` — query FDA drugs → embeddings → ensemble predict → postprocess deg/rank |
 
 ## Entry Points
 
 - **CLI**: `python -m src.train --mode train --config pretrain/config/l1000 --dataset l1000_mdmt_full ...`
 - **Notebook**: `run.ipynb` (3-step launcher), `metrics/evaluate.ipynb` (evaluation)
 - **Scripts**: `bash pretrain/run.sh [dataset] [nfold] [config]`, `bash finetune/run.sh <pretrained_path> [dataset] [nfold] [config]`
+- **FDA inference**: `vcms/fda/` — 5-step pipeline (query drugs → embeddings → merge → ensemble predict → postprocess deg/rank)
 
 ## Config System
 
