@@ -1,0 +1,19 @@
+{
+  "name": "GSE137293_scar_vs_border",
+  "species": "Sus scrofa",
+  "source_geo": "GSE137293",
+  "platform": "Illumina NovaSeq 6000 (RNA-seq)",
+  "comparison": "Scar (infarct core) vs Border zone (peri-infarct), 4wk post-I/R",
+  "description": "Pig I/R model: P30 pigs, 60min LAD occlusion + 4wk reperfusion. Scar vs Border zone comparison — CAVEAT: no sham control; comparison captures injury severity gradient, not disease vs healthy. DEG: scipy Welch t-test on log2(CPM+1), P<0.05, |log2FC|>0.3. Pig→human: direct gene symbol matching + homologene (inTax=9823). Dropped 23 ENSSCG genes without clear ortholog.",
+  "up_genes": [
+    "RAB31",
+    "TRAM2"
+  ],
+  "down_genes": [
+    "CCNE2"
+  ],
+  "n_up_l1000": 2,
+  "n_down_l1000": 1,
+  "n_ensscg_dropped": 23,
+  "_note": "Scar vs border — use with caution; not a MIRI-vs-sham comparison."
+}

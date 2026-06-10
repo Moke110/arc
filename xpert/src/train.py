@@ -13,7 +13,7 @@ import logging
 from tqdm import tqdm
 import pickle
 
-from src.config import load_config, get_output_dir
+from src.config import load_config, get_output_dir, PROJECT_ROOT
 from src.utils import EarlyStopping, save_loss_fig, set_random_seed, log_nested_dict
 from src.utils import load_dataloader, load_test_dataloader, load_infer_dataloader
 from src.utils import mse_loss_ls_sum, pcc_loss_sum, cos_loss_sum, set_requires_grad
@@ -171,7 +171,13 @@ def train(model, opt, dataloader, args, config, scaler=None, epoch=0, loss_func=
 
 
 def validate(model, dataloader, args, config, flag=False, scaler=None, expt_folder=None, fold=None):
-    model.eval()  
+    model.eval()
+    # Handle empty dataloader (e.g., dtoxs split with no validation/test samples)
+    if len(dataloader) == 0:
+        if flag:
+            return 0.0, -999.0, -999.0, -999.0, -999.0, None
+        else:
+            return 0.0, -999.0, -999.0, -999.0, -999.0, None
     total_loss = 0.0
     total_loss1 = 0.0
     total_loss2 = 0.0
@@ -246,6 +252,9 @@ def validate(model, dataloader, args, config, flag=False, scaler=None, expt_fold
             np.save(f'{expt_folder}/{fold}_predict_profile.npy', output_profile_dict)
     else:
         metrics = None
+
+    if num_batches == 0:
+        return 0.0, -999.0, -999.0, -999.0, -999.0, None
 
     avg_total_loss = total_loss / num_batches
     avg_loss1 = np.sqrt(total_loss1 / num_batches) if total_loss1 else -999
@@ -401,7 +410,7 @@ def main():
     else:
         dataset_id = args.dataset
 
-    expt_folder = str(get_output_dir(stage, timestamp, args.dataset, args.split_method))
+    expt_folder = str(PROJECT_ROOT / stage / 'output' / f'{args.dataset}_{args.split_method}')
     log_dir = os.path.join(expt_folder, 'logs')
 
     if not os.path.exists(log_dir):
@@ -571,28 +580,10 @@ def main():
             }, best_model_path)
             logger.info(f'Best model saved to {best_model_path}')
 
-            parent_dir = os.path.dirname(expt_folder)
-            parent_best_path = os.path.join(parent_dir, f'{model_name}_best.pth')
-            parent_best_json = os.path.join(parent_dir, f'{model_name}_best.json')
-            update_parent = False
-            if os.path.exists(parent_best_json):
-                with open(parent_best_json, 'r') as f:
-                    prev_best = json.load(f)
-                if stopper.best_score < prev_best.get('best_val_loss', float('inf')):
-                    update_parent = True
-            else:
-                update_parent = True
-            if update_parent:
-                torch.save({
-                    'epoch': best_epoch,
-                    'model_state_dict': best_model.state_dict(),
-                    'optimizer_state_dict': optimizer.state_dict(),
-                    'best_val_loss': stopper.best_score,
-                    'dataset': args.dataset,
-                }, parent_best_path)
-                with open(parent_best_json, 'w') as f:
-                    json.dump({'best_val_loss': stopper.best_score, 'timestamp': timestamp}, f)
-                logger.info(f'New global best model saved to {parent_best_path}')
+            # Save best-val-loss metadata alongside model
+            best_json_path = os.path.join(expt_folder, f'{model_name}_best.json')
+            with open(best_json_path, 'w') as f:
+                json.dump({'best_val_loss': stopper.best_score, 'timestamp': timestamp}, f)
 
             logger.info(f'{args.split_method}_fold-{fold_idx} training is done! Training_time:{int(time.time() - start_time)/60:.2f}min')
             logger.info('Start testing ... ')
@@ -600,22 +591,25 @@ def main():
             logger.info('Tesing on train dataset:')
             _,_,_,_,_, tr_metrics = validate(best_model, tr_dataloader, args, config, flag=True, scaler=gradscaler)
             logger.info('Training Metrics:')
-            log_nested_dict(tr_metrics, logger, indent=1)
+            if tr_metrics is not None:
+                log_nested_dict(tr_metrics, logger, indent=1)
 
             logger.info('Tesing on Valid dataset:')
             _,_,_,_,_, val_metrics = validate(best_model, val_dataloader, args, config, flag=True, scaler=gradscaler)
             logger.info('Validation Metrics:')
-            log_nested_dict(val_metrics, logger, indent=1)
-           
+            if val_metrics is not None:
+                log_nested_dict(val_metrics, logger, indent=1)
+
             logger.info('Tesing on test dataset:')
             _,_,_,_,_, test_metrics = validate(model, test_dataloader, args, config, flag=True, scaler=gradscaler)
             test_metrics = val_metrics
             logger.info('Test Metrics:')
-            log_nested_dict(test_metrics, logger, indent=1)          
+            if test_metrics is not None:
+                log_nested_dict(test_metrics, logger, indent=1)
 
             logger.info('Saving result……')
-            result_dict_list = [tr_metrics, val_metrics, test_metrics]
-            result_df = pd.DataFrame(result_dict_list)          
+            result_dict_list = [m for m in [tr_metrics, val_metrics, test_metrics] if m is not None]
+            result_df = pd.DataFrame(result_dict_list) if result_dict_list else pd.DataFrame()
 
             try:
                 result_df.to_csv(os.path.join(expt_folder, f'{model_name}_train_result.csv'), index=False)

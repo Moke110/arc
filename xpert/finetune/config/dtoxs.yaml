@@ -27,17 +27,41 @@ dataset:
   DTOX_data_root: finetune/data/dtoxs.h5ad
 drug_embeddings:
   unimol: drug_embeddings/all_drugs_unimol_arr.npy
-  KPGT: drug_embeddings/all_drugs_idx2KPGT.npy
-  morgan: drug_embeddings/all_drugs_idx2morgan.npy
-  smi: drug_embeddings/all_drugs_idx2smi_8981.npy
+  smi: drug_embeddings/all_drugs_idx2smi.npy
   HG: drug_embeddings/all_drugs_idx2HG.npy
 split_methods:
-  warm:
+  cold-drug:
     folds:
-    - warm_fold-1
-    - warm_fold-2
-    - warm_fold-3
-    - warm_fold-4
-    - warm_fold-5
-    - warm_fold-6
-    - warm_fold-7
+    - cold-drug_fold-1
+    - cold-drug_fold-2
+    - cold-drug_fold-3
+    - cold-drug_fold-4
+    - cold-drug_fold-5
+    - cold-drug_fold-6
+    - cold-drug_fold-7
+    - cold-drug_fold-8
+    - cold-drug_fold-9
+    - cold-drug_fold-10
+  cold-cate:
+    folds:
+    - cold-cate_fold-1
+    - cold-cate_fold-2
+    - cold-cate_fold-3
+    - cold-cate_fold-4
+    - cold-cate_fold-5
+    - cold-cate_fold-6
+  warm-start:
+    folds:
+    - warm-start_fold-1
+    - warm-start_fold-2
+    - warm-start_fold-3
+    - warm-start_fold-4
+    - warm-start_fold-5
+    - warm-start_fold-6
+    - warm-start_fold-7
+    - warm-start_fold-8
+    - warm-start_fold-9
+    - warm-start_fold-10
+  dtoxs:
+    folds:
+    - dtoxs_full

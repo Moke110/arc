@@ -1,103 +1,145 @@
 # CLAUDE.md
 
-XPert is a dual-branch transformer for predicting drug-induced transcriptional perturbation responses (978 landmark genes). It takes drug molecular features (UniMol + HG biological embeddings + dose/time tokens) and cell state (binned expression + PPI gene vectors), and outputs predicted perturbed expression, control expression, and expression change (x_deg).
+## Purpose
 
-> **历史项目文档**: 见 [.claude/xpert-history_summary.md](.claude/xpert-history_summary.md) — 原始代码仓库 file-by-file 详细总结
+XPert is a dual-branch transformer (~25M params) that predicts drug-induced transcriptional perturbation responses (978 L1000 landmark genes). It takes drug molecular features (UniMol + HG biological embeddings + dose/time tokens) and cell state (binned expression + PPI gene vectors), and outputs predicted perturbed expression (x_pert), control expression (x_ctl), and expression change (x_deg = x_pert - x_ctl).
 
-## Project Structure
+## Structure
 
 ```
 xpert/
-├── run.ipynb                  # 3-step pipeline launcher (pretrain → finetune → evaluate)
 ├── src/                       # All source code
-│   ├── train.py               # CLI entry point, arg parsing, train/validate/infer loops
-│   ├── model_xpert.py         # XPertNet + AttnEncoder (dual-branch transformer)
-│   ├── model_utils.py         # Attention, Embeddings, Encoder building blocks (uses F.scaled_dot_product_attention)
-│   ├── dataset.py             # MyDataset: AnnData → PyTorch tensors (lazy __getitem__ with pre-extracted numpy arrays)
-│   ├── utils.py               # Data loading, loss functions, EarlyStopping, UniMol feat gen
-│   ├── config.py              # YAML config loader, path resolver, output dir helper
-│   ├── metrics.py             # Core metrics (MSE, PCC, Precision@K) + get_metrics_infer
-│   ├── eval_metrics.py        # Extended metrics (R², MMD, Wasserstein) + get_metrics_new
+│   ├── train.py               # CLI entry point: arg parsing, train/validate/infer/test loops, main()
+│   ├── model_xpert.py         # XPertNet (main model) + AttnEncoder (dual-branch transformer stack)
+│   ├── model_utils.py         # Attention (SA, CA), Embeddings (cell, drug, unimol), Encoder/Decoder blocks, FFN
+│   ├── dataset.py             # MyDataset: AnnData -> PyTorch tensors (lazy __getitem__, pre-extracted numpy arrays)
+│   ├── utils.py               # Data loading (load_dataloader), loss functions (MSE, PCC, cosine), EarlyStopping, UniMol feat gen
+│   ├── config.py              # YAML config loader, relative path resolver, output directory helper
+│   ├── metrics.py             # Core metrics: MSE/PCC/Precision@K + get_metrics_new + get_metrics_infer (raw + deg variants)
+│   ├── eval_metrics.py        # Extended metrics: R2, MMD, Wasserstein
+│   ├── predict.py             # FDA drug perturbation prediction: ensemble inference, no DataLoader, direct 10-tuple batch
 │   ├── vis_gene_attn.py       # Gene attention heatmaps/boxplots/scatter
 │   ├── vis_molecule.py        # Molecule attention visualization with RDKit
-│   └── __init__.py            # Lazy imports
-├── pretrain/                  # Step 1: pretrain
-│   ├── config/l1000.yaml      # Pretrain config (batch 64, lr 0.004)
-│   ├── data/                  # Input data (h5ad)
+│   └── __init__.py            # Lazy imports for src package
+├── pretrain/                  # Step 1: L1000 pretraining
+│   ├── config/l1000.yaml      # Pretrain config: batch 64, lr 0.004, hidden 256, CA+SA+SA+CA / SA+SA+SA+SA
+│   ├── data/                  # Input h5ad files
 │   ├── output/                # Pretrained model weights
-│   └── run.sh                 # Launch script (env-var-driven)
-├── finetune/                  # Step 2: finetune
-│   ├── config/cdsdb.yaml      # Clinical CDSDB config (batch 32)
-│   ├── config/panacea.yaml    # PANACEA config (batch 32)
-│   ├── data/                  # Target dataset h5ad files
+│   └── run.sh                 # Launch script (env-var-driven: DATASET, SPLIT_METHOD, CONFIG, etc.)
+├── finetune/                  # Step 2: Target dataset finetuning
+│   ├── config/dtoxs.yaml      # DTOXS finetune: cold-drug (10-fold), cold-cate (6-fold), dtoxs (1-fold all-train)
+│   ├── config/cdsdb.yaml      # CDSDB clinical dataset config
+│   ├── config/panacea.yaml    # PANACEA dataset config
+│   ├── data/                  # Target h5ad files
 │   ├── output/                # Finetuned model weights
-│   └── run.sh                 # Launch script
-├── metrics/                   # Step 3: evaluate
+│   ├── create_dtoxs_splits.py # Generate dtoxs_full split column in dtoxs.h5ad
+│   └── run.sh                 # Launch script (takes pretrained_model_path as first arg)
+├── predict/                   # Step 3: FDA drug perturbation prediction
+│   ├── predict.sh             # CLI wrapper: prediction_root, ctl_csv, drug_csv, output_csv, model_path, dose/time idx
+│   ├── predict.ipynb          # Jupyter notebook documentation and worked example
+│   ├── build_baseline.py      # Build consensus cardiomyocyte baseline from DTOXS raw data (206 control wells)
+│   └── fda-cm/                # FDA drug prediction on cardiomyocytes
+│       ├── cm_ctl_landmark.csv    # Consensus baseline expression (978 genes)
+│       ├── fda_drugs.csv          # 3127 FDA-approved drugs from ChEMBL
+│       ├── xpert_cm-fda_deg.csv   # Ensemble DEG predictions (3127 drugs x 978 genes)
+│       └── process/               # Intermediate files (UniMol cache, skipped drugs log)
+├── metrics/                   # Step 4: Evaluation
 │   ├── evaluate.ipynb         # Interactive evaluation notebook
-│   └── output/                # Evaluation results (CSV, npy, pkl)
-├── drug_embeddings/           # Shared drug feature files
-│   ├── all_drugs_unimol_arr.npy       # UniMol 3D molecular features (8981×122×514)
-│   ├── all_drugs_idx2HG.npy           # Pre-trained HG drug embeddings (8981×256)
-│   ├── PPI_gene_vector_128d.npy       # PPI gene network positional embeddings (978×128)
-│   ├── all_drugs_idx2smi_8981.npy     # Drug index → SMILES mapping
-│   └── all_drugs_idx2KPGT.npy / all_drugs_idx2morgan.npy  # Alternative drug features
+│   ├── evaluate_dtoxs.py      # DTOXS evaluation: 4 model groups (L1000, warm-start, cold-drug, cold-cate), 14 deg-only metrics, --output-dir flag
+│   ├── old-hg/                # Evaluation results with previous HG embeddings (CSV + PNG)
+│   └── new-hg/                # Evaluation results with new HG embeddings, 4-epoch finetune (CSV + PNG)
+├── drug_embeddings/           # Shared drug feature files (11,104 drugs, indices 0-11103)
+│   ├── all_drugs_unimol_arr.npy       # UniMol 3D molecular features (11104 x 122 x 514)
+│   ├── all_drugs_idx2HG.npy           # HG biological embeddings (11104 x 256) — default for XPert
+│   ├── all_drugs_idx2smi.npy          # Drug index -> SMILES mapping (11104 entries)
+│   ├── all_drugs_unimol_arr.npy       # UniMol 3D molecular features (11104 x 122 x 514)
+│   └── PPI_gene_vector_128d.npy       # PPI gene network positional embeddings (978 x 128)
 └── metadata/                  # Gene/drug reference info
+    └── l1000_gene_info_978.csv # L1000 landmark gene symbols, entrez IDs, gene_idx
 ```
 
-## Key Files to Read for Context
+## Key Files
 
-| When asked about... | Read these files |
-|---|---|
-| Model architecture | `src/model_xpert.py`, `src/model_utils.py` |
-| Training loop / CLI args | `src/train.py` (arg_parse + main) |
-| Data pipeline / h5ad format | `src/dataset.py`, `src/utils.py` (_load_data_and_drug_feat) |
-| Config / hyperparameters | `pretrain/config/l1000.yaml`, `finetune/config/cdsdb.yaml`, `src/config.py` |
-| Loss functions | `src/train.py` (train function), `src/utils.py` (mse_loss_ls_sum, pcc_loss_sum) |
-| Evaluation metrics | `src/eval_metrics.py` (get_metrics_new), `src/metrics.py` (get_metrics_infer) |
-| Visualization | `src/vis_gene_attn.py`, `src/vis_molecule.py` |
-| Pipeline workflow | `run.ipynb`, `pretrain/run.sh`, `finetune/run.sh` |
-| FDA inference pipeline | `vcms/fda/` — query FDA drugs → embeddings → ensemble predict → postprocess deg/rank |
+- src/model_xpert.py -- XPertNet (forward: 10-tuple -> x_pert, x_ctl, x_deg), AttnEncoder (CA+SA layer stack). Drug branch: UniMol feat + HG embed + dose/time tokens. Cell branch: binned expr embed + PPI gene vector.
+- src/model_utils.py -- Building blocks: SelfAttention (F.scaled_dot_product_attention), CrossAttention, cell_Embeddings (expr bins + PPI pretrained), unimol_Embeddings (512-dim atom -> 256-dim), Encoder, crossEncoder, FeedForward, LayerNorm, SublayerConnection.
+- src/train.py -- arg_parse() for all CLI args, main() orchestration, train()/validate()/infer()/test() loops. Loss: 0.2*L_trt + 0.003*L_ctl + 0.2*L_deg + 1.0*L_pcc. Supports GradScaler, early stopping (PCC), lr_scheduler, resume/pretrained loading.
+- src/dataset.py -- MyDataset(Dataset): loads AnnData, digitizes expression into n_bins, pre-extracts all metadata columns as numpy arrays. __getitem__ returns 10-tuple (or 14-tuple for infer mode).
+- src/utils.py -- _load_data_and_drug_feat (AnnData h5ad + drug feat array/dict), load_dataloader/test/infer, loss functions (mse_loss_ls_sum, pcc_loss_sum, cos_loss_sum), EarlyStopping, UniMol feature generation from SMILES.
+- src/config.py -- load_config(name) loads YAML, resolve_paths() makes all relative paths absolute, get_output_dir() returns stage-specific output path.
+- src/predict.py -- Standalone FDA drug prediction: load_drug_smiles_mapping, generate_unimol_features, load_ensemble_models, predict_deg (batch inference, ensemble mean). No DataLoader dependency.
+- src/metrics.py -- MSE, RMSE, MAE, Pearson, Spearman, Precision@K (positive/negative). get_metrics_new (raw + deg), get_metrics_infer (raw + deg with per-sample values).
+- predict/predict.sh -- Bash wrapper for FDA prediction. Uses prediction_root pattern.
+- predict/build_baseline.py -- Reads DTOXS raw data, computes consensus baseline across 206 control wells.
+- finetune/create_dtoxs_splits.py -- Generates dtoxs_full obs column in dtoxs.h5ad.
+- metrics/evaluate_dtoxs.py -- DTOXS evaluation: 3 model groups (L1000, cold-drug, cold-cate) across 14 deg-only metrics, bar charts with error bars.
+
+## Dependencies
+
+- Pre-computed embeddings (loaded from drug_embeddings/):
+  - UniMol: all_drugs_unimol_arr.npy (11104 x 122 x 514) -- generated by unimol_tools UniMolRepr
+  - HG: all_drugs_idx2HG.npy (11104 x 256) -- final full-drug embeddings, training rows = author reference, FDA rows = HG fine-tuning + quantile norm mapping (see hg/)
+  - SMILES mapping: all_drugs_idx2smi.npy (11104 dict)
+  - PPI vectors: PPI_gene_vector_128d.npy (978 x 128)
+- Python packages: torch (2.0+), scanpy, numpy, scipy, pandas, scikit-learn, matplotlib, unimol_tools, pyyaml, tqdm
+- Conda env: xpert (Python 3.13)
+- First 8981 drugs (indices 0-8980) seen during L1000 pretraining. Indices 8981-11103 are FDA-extended drugs with embeddings but not seen in training.
 
 ## Entry Points
 
-- **CLI**: `python -m src.train --mode train --config pretrain/config/l1000 --dataset l1000_mdmt_full ...`
-- **Notebook**: `run.ipynb` (3-step launcher), `metrics/evaluate.ipynb` (evaluation)
-- **Scripts**: `bash pretrain/run.sh [dataset] [nfold] [config]`, `bash finetune/run.sh <pretrained_path> [dataset] [nfold] [config]`
-- **FDA inference**: `vcms/fda/` — 5-step pipeline (query drugs → embeddings → merge → ensemble predict → postprocess deg/rank)
+- Pretrain: bash pretrain/run.sh [dataset] [split_method] [config]
+  Defaults: l1000_mdmt_full, pretrain_split, pretrain/config/l1000
+  Env vars: TRAIN_LR, BATCH_SIZE, NUM_EPOCHS, LOSS_WEIGHT, DRUG_FEAT, DRUG_EMBEDS
 
-## Config System
+- Finetune: bash finetune/run.sh <pretrained_model_path> [dataset] [split_method] [config]
+  Defaults: cdsdb, random, finetune/config/cdsdb
+  Env vars: FINETUNE_LR, FINETUNE_PARAMS, EXCLUDE_KEYS, plus training vars
 
-`src/config.py:load_config(name)` loads `<name>.yaml` from the given path (relative to `PROJECT_ROOT`) and resolves all relative paths to absolute.
+- Direct CLI: python -m src.train --mode train --config pretrain/config/l1000 --dataset l1000_mdmt_full --device cuda:0
 
-**Path resolution** (`resolve_paths()`):
-- `dataset.*_data_root` keys → resolved relative to `PROJECT_ROOT` (xpert/)
-- `model.ATTN.ppi_gene_vector_path` → resolved relative to `PROJECT_ROOT`
-- `drug_embeddings.*` keys (unimol, KPGT, morgan, smi, HG) → resolved relative to `PROJECT_ROOT`
+- FDA prediction: bash predict/predict.sh --prediction_root predict/fda-cm --ctl_csv cm_ctl_landmark.csv --drug_csv fda_drugs.csv --output_csv deg-perturb.csv --model_path finetune/output/dtoxs_dtoxs/ --dose_idx 0 --time_idx 2
 
-**Output directory** (`get_output_dir()`):
-- `pretrain` → `pretrain/output/<dataset>/<timestamp>/`
-- `finetune` → `finetune/output/<pretrain_dataset>-<dataset>-<nfold>/<timestamp>/`
-- `infer` → `metrics/output/<timestamp>/`
+- Split creation: python finetune/create_dtoxs_splits.py
+- Evaluation: python metrics/evaluate_dtoxs.py or metrics/evaluate.ipynb
 
 ## Model Summary
 
-- **~25M parameters**, hidden_size=256, 8 attention heads
-- **Base encoder** (SA×4): encodes unperturbed cell state, gene-gene interactions
-- **Pert encoder** (CA+SA+SA+CA): cross-attention fuses drug with cell context
-- **Outputs**: x_pert, x_ctl, x_deg (= x_pert − x_ctl)
-- **Loss**: 0.2·L_pert + 0.003·L_ctl + 0.2·L_deg + 1.0·L_pcc
-- **Drug tokens**: UniMol molecular features (512-dim → linear proj to 256) + HG biological embedding + dose/time learnable embeddings
-- **Cell tokens**: binned expression embedding + PPI gene network positional embedding
-- **Attention**: Uses PyTorch 2.0+ `F.scaled_dot_product_attention` (no external flash-attn dependency)
+- ~25M parameters, hidden_size=256, 8 attention heads per layer
+- Drug embedding: UniMol atom features (512-dim) projected to 256-dim + HG biological embedding (256-dim) replacing first token + dose/time learnable embeddings (for mdmt datasets)
+- Cell embedding: binned expression embedding (n_bins=128 vocab) + PPI gene network positional embedding (128-dim or linear-projected)
+- Pert branch (trt_structure): CA + SA + SA + CA -- cross-attention fuses drug info into cell context
+- Ctl branch (ctl_structure): SA + SA + SA + SA -- self-attention over cell state only
+- Output heads: three separate MLPs (256 -> 64 -> 1) producing x_pert, x_ctl, x_deg = (x_pert - x_ctl)
+- Loss: weighted sum of MSE(x_pert), MSE(x_ctl), MSE(x_deg), and (1 - PCC(x_deg))
+  Default weights: [0.2, 0.003, 0.2, 1.0]
+- Attention: F.scaled_dot_product_attention (PyTorch 2.0+) with dropout; traditional softmax path for output_attention mode
+- Training: Adam, lr_scheduler (1.0 for first 40 epochs, 0.5 after), early stopping on val PCC loss (patience=50), warmup period (init_epoch=70) with batch-normalized loss before full weighted loss backprop
 
-## Key Changes from History
+## Config System
 
-1. **Removed HG model training/inference** (`pretrain_hg.py`, `utils_hg.py`, `HG_data/`) — loads pre-computed HG embeddings directly
-2. **Workflow-oriented directory structure** (`pretrain/`, `finetune/`, `metrics/`) replacing flat `models/`, `datasets/`, `scripts/` layout
-3. **Package-based source** (`src/` with `__init__.py` lazy imports) replacing root-level module imports
-4. **CLI-driven hyperparameters** — all training args overridable via CLI (`--train_lr`, `--batch_size`, etc.), not just YAML
-5. **Env-var-driven shell scripts** (`pretrain/run.sh`, `finetune/run.sh`) replacing per-scenario hardcoded scripts
-6. **`F.scaled_dot_product_attention`** replacing `flash_attn` library — removes external dependency
-7. **`torch.amp`** replacing `torch.cuda.amp` — PyTorch 2.0+ compatible
-8. **Unified `drug_embeddings/` directory** in config (`config['drug_embeddings']`) replacing scattered paths in `config['dataset']`
-9. **Optimized `src/dataset.py`** with pre-extracted numpy arrays for faster `__getitem__`
+- YAML files in pretrain/config/ and finetune/config/
+- load_config(name) loads {name}.yaml relative to PROJECT_ROOT (xpert/)
+- resolve_paths() makes all relative paths absolute: dataset data roots, ppi_gene_vector_path, drug_embeddings.*
+- Output dirs: pretrain/output/<dataset>_<split>/<timestamp>/, finetune/output/<dataset>_<split>/<timestamp>/
+- All training hyperparameters overridable via CLI args (--train_lr, --batch_size, etc.)
+- Split methods defined in config YAML: pretrain_split, cold-drug, cold-cate
+
+## DTOXS Splits
+
+- cold-drug: 10-fold leave-one-drug-out (one drug per category held out per fold)
+- cold-cate: 6-fold leave-one-category-out
+- warm-start: 10-fold drug-stratified random, no validation set, evaluation-only. Each sample in >=1 test fold.
+- dtoxs: 1-fold all-train (all samples used for training, no validation/test). For final prediction model.
+- Splits persisted in h5ad .obs columns (cold-drug_fold-1..10, cold-cate_fold-1..6, warm-start_fold-1..10, dtoxs_full)
+- No separate validation set in cold-drug/cold-cate/warm-start/dtoxs: val_data = test_data when val is empty
+- Only deg-variant metrics retained (MAE_deg, MSE_deg, Pearson_deg, Spearman_deg, R2_deg, Precision@K_deg)
+- Finetuning: 4 epochs default (NUM_EPOCHS=4 in run.sh), pretrained_model=pretrain_mdmt_full_50_epoch.pth. Output saved directly to finetune/output/dtoxs_{split}/ (no timestamp subdirectory).
+
+## Notes
+
+- Both pretrain (L1000) and finetune (DTOXS) data are in log2 expression space -- no z-score conversion.
+- trt_raw_data = ctl_raw_data in FDA prediction mode (actual treatment expression unknown, only baseline available).
+- FDA prediction uses ensemble averaging across all .pth files in model directory.
+- HG embeddings cover 11,104 drugs. Training rows (0-8980) = author reference. FDA rows (8981-11103) = HG fine-tuning + quantile norm mapping. FDA/Train std ratio = 1.000.
+- Drug embedding features: all arrays use same index scheme (idx->smi from all_drugs_idx2smi.npy).
+- predict.py constructs batches directly (no DataLoader) for standalone usage without h5ad dependency.
+- Model evaluation: evaluate_dtoxs.py runs inference on 4 model groups (L1000 pretrain, warm-start finetune, cold-drug finetune, cold-cate finetune) and reports 14 deg-only metrics (MSE, RMSE, MAE, Pearson, Spearman, R2, Precision@10/20/50/100 Positive/Negative). Results saved as CSV + PNG bar charts to metrics/dtoxs/.

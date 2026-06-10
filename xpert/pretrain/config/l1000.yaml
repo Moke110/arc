@@ -35,9 +35,7 @@ dataset:
 
 drug_embeddings:
   unimol: drug_embeddings/all_drugs_unimol_arr.npy
-  KPGT: drug_embeddings/all_drugs_idx2KPGT.npy
-  morgan: drug_embeddings/all_drugs_idx2morgan.npy
-  smi: drug_embeddings/all_drugs_idx2smi_8981.npy
+  smi: drug_embeddings/all_drugs_idx2smi.npy
   HG: drug_embeddings/all_drugs_idx2HG.npy
 
 split_methods:

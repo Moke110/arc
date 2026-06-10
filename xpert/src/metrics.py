@@ -211,6 +211,9 @@ def get_metrics_infer(y, f, ctl, precision_degree=[10, 20, 50, 100]):
     metrics['Spearman_deg'] = round(spearman_deg_value, 3)
     metrics_all_ls['Spearman_deg'] = spearman_deg_ls
 
+    # R2_deg
+    metrics['R2_deg'] = round(float(r2_score(y_deg, f_deg)), 3)
+
     for k in precision_degree:
         precision_deg_neg, precision_deg_pos, precision_deg_k_neg_ls, precision_deg_k_pos_ls = precision_k(y_deg, f_deg, k, flag=True)
         metrics[f'Precision@{k} Positive_deg'] = round(precision_deg_pos, 3)

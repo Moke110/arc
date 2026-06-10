@@ -1,77 +1,64 @@
 # CLAUDE.md
 
+This file is the **LLM context index** for the `arc` project. It is loaded at the start of every conversation. Its purpose is to route the agent to the correct subdirectory CLAUDE.md based on the task, minimizing unnecessary file reads.
+
+See [README.md](README.md) for the human-readable project documentation.
+
+## CLAUDE.md vs README.md Convention
+
+Every directory in this project maintains two documentation files:
+
+- **CLAUDE.md** — LLM context index. English only. No markdown tables. No diagrams. Concise, machine-parseable structure: Purpose, Structure (file tree), Dependencies, Key Files (file → one-line purpose), Entry Points, Notes. Optimized for minimal token consumption during agent routing.
+- **README.md** — Human project documentation. Chinese narrative with English technical terms. Uses tables, ASCII flowcharts, and diagrams for clarity. Explains goals, design rationale, methodology, and background.
+
+**Loading rule**: Root CLAUDE.md is always loaded. Subdirectory CLAUDE.md files are loaded on-demand — the agent reads only the ones relevant to the current task, following index pointers from parent CLAUDE.md files. README.md files are NEVER loaded automatically; they are updated at the end of each conversation session for any directories whose CLAUDE.md was touched.
+
+**Update rule**: At session end, update all CLAUDE.md files that were loaded during the session (to reflect any changes made), then update the corresponding README.md files.
+
 ## Project Goal
 
-利用人工智能与生物信息学方法，预测可用于治疗心肌缺血再灌注损伤（MIRI）的药物。核心工作流：从小分子化学结构出发，预测其在心肌细胞上的转录组扰动效应（978个landmark基因）。
+Predict drugs for myocardial ischemia-reperfusion injury (MIRI) treatment using AI and bioinformatics. Core workflow: predict transcriptional perturbation (978 landmark genes) on cardiomyocytes from small-molecule chemical structures, then rank drugs by MIRI efficacy and cardiotoxicity scores.
 
-## Repository Structure
+## Pipeline
 
-```
-arc/
-├── xpert/       → 药物转录组扰动预测模型（XPert），双分支Transformer，经L1000预训练+DTOXS微调
-├── dtoxs/       → 心肌细胞药物扰动组数据集（DToxS LINCS LDS-1593），用于XPert模型微调
-├── kpgt/        → 分子图Transformer（KPGT/LiGhT），将药物SMILES转化为分子图嵌入向量
-├── hg/          → 异质图神经网络（HeteroGNN），生成药物的生物学嵌入向量（对比学习）
-└── references/  → 虚拟细胞/药物预测相关参考文献（与当前工作流无关）
-```
+Drug SMILES → UniMol (3D molecular features) + HG (biological embeddings) → XPert (DEG prediction, 978 genes) → fda_miri_scores/ (drug efficacy scoring, 3 pipelines deployed)
 
-**Pipeline flow**: Drug SMILES → KPGT (molecular feats) + HG (biological embeddings) + UniMol (3D feats) → XPert (predicts 978-landmark-gene perturbation)
+## Subdirectories
 
-## Commands
-
-### xpert/
-
-```bash
-cd xpert/
-# CLI training
-python -m src.train --mode train --config pretrain/config/l1000 --dataset l1000_mdmt_full --device cuda:0
-
-# Shell scripts (env-var-driven)
-bash pretrain/run.sh [dataset] [split_method] [config]
-bash finetune/run.sh <pretrained_path> [dataset] [split_method] [config]
-
-# FDA drug prediction pipeline
-cd vcms/fda/
-python query_fda_drugs.py           # Step 0: fetch FDA-approved drugs from ChEMBL
-python step2_kpgt_prepare.py        # Step 1: prepare SMILES for KPGT
-python step2_generate_embeddings.py # Step 2: generate UniMol + Morgan features
-python gen_hg.py                    # Step 2b: generate HG biological embeddings
-python step3_merge.py               # Step 3: merge new drug features into embedding arrays
-python step4_ensemble_predict.py    # Step 4: 7-fold ensemble prediction
-python postprocess_deg_rank.py      # Step 5: output deg + gene ranks per drug
-```
-
-### kpgt/
-
-```bash
-conda activate KPGT                # Python 3.7, DGL-cu113
-cd kpgt/
-bash create_pickle.sh               # SMILES → KPGT features
-python scripts/train_kpgt.py --config base --data_path <path> --save_path <path>
-python scripts/extract_features.py --config base --model_path <path> --data_path <path>
-```
-
-### hg/
-
-```bash
-cd hg/
-bash run.sh                         # Train HeteroGNN
-bash run.sh --device cuda:0 --epochs 500
-# Output: model/<timestamp>/global_fold_early_stop.pth
-```
+- [xpert/](xpert/CLAUDE.md) — Drug perturbation prediction model (XPert). Dual-branch Transformer, ~25M params. Status: complete (pretrain + finetune + FDA prediction). Splits: cold-drug (10-fold), cold-cate (6-fold), warm-start (10-fold), dtoxs (all-train). Finetuning: 4 epochs with new HG embeddings.
+- [dtoxs/](dtoxs/CLAUDE.md) — Cardiomyocyte drug perturbation dataset (DToxS LDS-1593). 914 samples. Data/docs only, no code.
+- [hg/](hg/CLAUDE.md) — Heterogeneous GNN (HeteroGNN). Contrastive learning for drug biological embeddings. Status: pretrained + fine-tuned on extended graph. Full-drug HG embeddings (11,104×256) deployed to xpert/drug_embeddings/.
+- [fda_miri_scores/](fda_miri_scores/CLAUDE.md) — MIRI drug efficacy scoring. 3 methods deployed (WCS+RGES, Zhang/ssCMap, Pathway RGES) producing 4 rank components with z-score normalization. Reference gene sets from 3 species. Results: multi-target TKIs (Cabozantinib, Ponatinib) are top candidates. Status: scoring operational.
+- [references/](references/CLAUDE.md) — Reference PDF archive. Background reading, no code dependency.
 
 ## Cross-Project Dependencies
 
-- kpgt → xpert: `xpert/drug_embeddings/all_drugs_idx2KPGT.npy` (molecular features)
-- hg → xpert: `xpert/drug_embeddings/all_drugs_idx2HG.npy` (biological embeddings)
-- kpgt uses conda env `KPGT` (Python 3.7); xpert and hg use conda env `xpert` (Python 3.13)
-- Features are exchanged as pre-computed `.npy` files — no shared runtime
+- hg → xpert/drug_embeddings/all_drugs_idx2HG.npy (biological embeddings, 11104×256)
+- UniMol → xpert/drug_embeddings/all_drugs_unimol_arr.npy (3D features, 11104×122×514, generated via unimol_tools)
+- xpert → fda_miri_scores/ (3127 drugs × 978 genes DEG predictions)
+- GEO → fda_miri_scores/geo/ — GSE160516, GSE108940, GSE137293 raw/processed data
+- Features exchanged as pre-computed .npy files — no shared runtime.
+- All subprojects use conda env xpert (Python 3.13).
+- fda_miri_scores/ R ortholog mapping uses conda env xpert (R + homologene).
 
-## Key Architectural Notes
+## Key Conventions
 
-- **XPert**: ~25M params, hidden=256, 8 attention heads. Dual-branch (pert + ctl) with cross-attention drug-cell fusion. See [xpert/CLAUDE.md](xpert/CLAUDE.md).
-- **KPGT**: LiGhT architecture, 12-layer attention over molecular graphs with virtual nodes, DGL-based.
-- **HG**: HeteroGNN, 3 HeteroConv layers, neighbor sampling, InfoNCE contrastive loss. PPI + DTI + DDS edges.
-- **DTOXS data**: 914 human cardiomyocyte 3'-DGE RNA-seq samples, 48h drug treatment, RMA-normalized log2 expression.
-- **L1000 data**: LINCS Phase I/II, Level 3 Q2NORM (quantile-normalized log2 expression), 978 landmark genes, non-negative.
-- Both pretrain and finetune data are in log2 expression space — no z-score conversion needed.
+- Both L1000 and DTOXS data are in log2 expression space — no z-score conversion.
+- Drug embeddings cover 11,104 drugs (indices 0–11103). First 8,981 used in L1000 pretraining; 8,981–11,103 are FDA-extended.
+- HG embeddings: training rows (0-8980) = author reference; FDA rows = fine-tuned + quantile norm mapping (FDA/Train std=1.000).
+- FDA prediction: ensemble of finetuned models, predictions predominantly down-regulated (mean deg ≈ −0.38).
+
+## Current Progress (2026-06-10)
+
+All upstream stages complete; drug efficacy scoring operational:
+- HG pretraining + FDA fine-tuning + quantile norm mapping (11,104 drugs, FDA/Train std=1.000, DTI 2.48x)
+- XPert L1000 pretraining (8,981 drugs)
+- XPert DTOXS finetuning (cold-drug/cold-cate/warm-start/dtoxs splits, 4 epochs, new HG embeddings)
+- XPert FDA DEG prediction (3,127 drugs × 978 genes)
+- Model evaluation on DTOXS: 4 model groups across 14 deg-only metrics
+- GEO MIRI transcriptome data collected (3 species)
+- 3 reference gene set JSONs + cross-species consensus + 16 MIRI pathway gene sets
+- 3 scoring methods deployed producing 4 rank components with z-score normalization
+- Integrated ranking: top drugs are multi-target TKIs (Cabozantinib, Ponatinib, Ripretinib)
+- Known limitation: XPert predicts 97.2% down-regulated DEGs with very low inter-drug variance
+- Next: validate scoring results against literature/external databases, refine consensus methodology
