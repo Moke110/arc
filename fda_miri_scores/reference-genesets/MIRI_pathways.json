@@ -1,409 +1,1268 @@
 {
-  "name": "MIRI_KEGG_pathways",
-  "source": "KEGG PATHWAY + Reactome + MIRI literature curation",
-  "description": "Curated MIRI-relevant pathways with direction labels. UP = pathway activated in MIRI (drug should DOWN-regulate). DOWN = pathway suppressed in MIRI (drug should UP-regulate). Genes intersected with L1000 978 landmark genes.",
-  "n_pathways_total": 17,
-  "n_pathways_valid": 16,
+  "name": "MIRI_pathways",
+  "source": "Enrichr (KEGG_2021_Human + GO_Biological_Process_2023) + GEO GSEA + literature",
+  "description": "Programmatically rebuilt MIRI pathway gene sets. Sources: GEO DEG enrichment (GSE160516 mouse primary, GSE108940 rat, GSE137293 pig) + gpt-researcher literature survey. KEGG/GO gene sets from Enrichr, intersected with L1000 978 landmark genes. Filters: n_l1000 > 5 AND n_l1000/n_total >= 978/20000 (=0.0489). UP = pathway activated in MIRI (drug should DOWN-regulate). DOWN = pathway suppressed in MIRI (drug should UP-regulate). ",
+  "generated_at": "2026-06-11T17:02:25.138814",
+  "parameters": {
+    "total_human_genome_genes": 20000,
+    "n_landmark": 978,
+    "coverage_factor": 1.0,
+    "coverage_threshold": 0.0489,
+    "min_l1000_genes": 6
+  },
+  "n_pathways_total": 8619,
+  "n_pathways_before_selection": 1660,
+  "n_pathways_final": 40,
+  "n_up": 20,
+  "n_down": 20,
+  "kegg_gene_sets_available": 320,
+  "go_gene_sets_available": 5407,
   "pathways": [
     {
-      "name": "Apoptosis",
+      "name": "KEGG-Chemokine signaling pathway",
       "direction": "UP",
-      "description": "KEGG/Reactome pathway: Apoptosis. Activated in MIRI.",
+      "description": "KEGG pathway: KEGG-Chemokine signaling pathway. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.598 GEO_GSE108940: ES=0.265 Supported by MIRI literature.",
+      "genes": [
+        "AKT1",
+        "BAD",
+        "CCL2",
+        "CDC42",
+        "CRK",
+        "CRKL",
+        "CXCL2",
+        "CXCR4",
+        "FOXO3",
+        "GNAI1",
+        "GNAI2",
+        "GNB5",
+        "IKBKB",
+        "LYN",
+        "NFKBIA",
+        "NFKBIB",
+        "NRAS",
+        "PAK1",
+        "PIK3CA",
+        "PIK3R3",
+        "PLCB3",
+        "PRKACA",
+        "PRKCD",
+        "PTK2",
+        "PTK2B",
+        "PXN",
+        "RAC2",
+        "RHOA",
+        "SHC1",
+        "SRC",
+        "STAT1",
+        "STAT3",
+        "STAT5B",
+        "TIAM1",
+        "VAV3"
+      ],
+      "n_genes": 35,
+      "n_total_genes_before_l1000": 192,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Wound Healing",
+      "direction": "UP",
+      "description": "GO pathway: GO-Wound Healing. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.582 GEO_GSE108940: ES=0.382 Supported by MIRI literature. Merged from: GO-Wound healing",
+      "genes": [
+        "CFLAR",
+        "CHMP4A",
+        "CHMP6",
+        "ERBB2",
+        "ERBB3",
+        "FZD7",
+        "HMOX1",
+        "MACF1",
+        "PAK1",
+        "PDGFA",
+        "PRCP",
+        "SCARB1",
+        "SMAD3",
+        "TPM1",
+        "TSKU"
+      ],
+      "n_genes": 15,
+      "n_total_genes_before_l1000": 80,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Wound healing"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Inflammatory Response",
+      "direction": "UP",
+      "description": "GO pathway: GO-Inflammatory Response. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.636 GEO_GSE108940: ES=0.236 Supported by MIRI literature. Merged from: GO-Inflammatory response",
+      "genes": [
+        "ADGRE5",
+        "CCL2",
+        "CD40",
+        "CD44",
+        "CXCL2",
+        "CXCR4",
+        "FOS",
+        "GATA3",
+        "IKBKB",
+        "IL1B",
+        "KIT",
+        "MAPK9",
+        "MAPKAPK2",
+        "NFATC3",
+        "NFATC4",
+        "NFKB2",
+        "RELB",
+        "STAT3",
+        "TBXA2R",
+        "TLR4"
+      ],
+      "n_genes": 20,
+      "n_total_genes_before_l1000": 236,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Inflammatory response"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Regulation Of Inflammatory Response",
+      "direction": "UP",
+      "description": "GO pathway: GO-Regulation Of Inflammatory Response. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.548 GEO_GSE108940: ES=0.241 Supported by MIRI literature. Merged from: GO-Regulation of inflammatory response",
+      "genes": [
+        "APOE",
+        "APP",
+        "BIRC2",
+        "CEBPA",
+        "ETS1",
+        "GATA3",
+        "GPER1",
+        "GRN",
+        "IL1B",
+        "MAPK13",
+        "NFKBIA",
+        "PPARD",
+        "PPARG",
+        "PRKCD",
+        "PTGS2",
+        "RB1",
+        "SERPINE1",
+        "SNCA",
+        "SNX6",
+        "STAT3",
+        "TLR4",
+        "TNIP1"
+      ],
+      "n_genes": 22,
+      "n_total_genes_before_l1000": 240,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Regulation of inflammatory response"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Cellular Response To Tumor Necrosis Factor",
+      "direction": "UP",
+      "description": "GO pathway: GO-Cellular Response To Tumor Necrosis Factor. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.484 GEO_GSE108940: ES=0.312 Supported by MIRI literature. Merged from: GO-Cellular response to tumor necrosis factor",
+      "genes": [
+        "AKT1",
+        "ARHGEF2",
+        "ASAH1",
+        "BIRC2",
+        "BRCA1",
+        "CCL2",
+        "CD40",
+        "CD58",
+        "FOXO3",
+        "GATA3",
+        "GPER1",
+        "IKBKB",
+        "ILK",
+        "NFE2L2",
+        "NFKBIA",
+        "PTK2B",
+        "RRAGA",
+        "STAT1",
+        "TNFRSF21",
+        "TP53",
+        "ZFP36"
+      ],
+      "n_genes": 21,
+      "n_total_genes_before_l1000": 119,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Cellular response to tumor necrosis factor"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Cytokine-Mediated Signaling Pathway",
+      "direction": "UP",
+      "description": "GO pathway: GO-Cytokine-Mediated Signaling Pathway. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.583 Supported by MIRI literature. Merged from: GO-Cytokine‑mediated signaling pathway",
+      "genes": [
+        "AKT1",
+        "BIRC2",
+        "CCL2",
+        "CEBPA",
+        "CXCL2",
+        "EGR1",
+        "FOXO3",
+        "GHR",
+        "IKBKB",
+        "IL13RA1",
+        "IL1B",
+        "IL4R",
+        "ILK",
+        "KIT",
+        "LYN",
+        "NFKBIA",
+        "PLP2",
+        "PRKACA",
+        "PTK2B",
+        "PTPN6",
+        "RRAGA",
+        "SRC",
+        "STAT1",
+        "STAT3",
+        "STAT5B",
+        "SYK",
+        "TP53"
+      ],
+      "n_genes": 27,
+      "n_total_genes_before_l1000": 257,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Cytokine‑mediated signaling pathway"
+      ],
+      "critical": false
+    },
+    {
+      "name": "KEGG-TNF signaling pathway",
+      "direction": "UP",
+      "description": "KEGG pathway: KEGG-TNF signaling pathway. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.577 Supported by MIRI literature.",
+      "genes": [
+        "AKT1",
+        "BIRC2",
+        "CASP10",
+        "CASP3",
+        "CASP7",
+        "CCL2",
+        "CFLAR",
+        "CREB1",
+        "CXCL2",
+        "DNM1L",
+        "EDN1",
+        "FAS",
+        "FOS",
+        "ICAM1",
+        "IKBKB",
+        "IL1B",
+        "JUN",
+        "MAPK13",
+        "MAPK9",
+        "NFKBIA",
+        "PIK3CA",
+        "PIK3R3",
+        "PTGS2"
+      ],
+      "n_genes": 23,
+      "n_total_genes_before_l1000": 112,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Apoptosis",
+      "direction": "UP",
+      "description": "KEGG pathway: KEGG-Apoptosis. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.476 Supported by MIRI literature.",
       "genes": [
         "AKT1",
         "BAD",
         "BAX",
         "BCL2",
+        "BECN1",
         "BID",
         "BIRC2",
         "BIRC5",
+        "CAPN1",
+        "CASP10",
+        "CASP2",
         "CASP3",
+        "CASP7",
         "CFLAR",
+        "CTSD",
+        "CTSL",
         "CYCS",
+        "DAXX",
         "DFFA",
         "DFFB",
         "FAS",
         "FOS",
-        "JUN",
-        "MAPK9",
-        "PARP1",
-        "PIK3CA",
-        "TP53"
-      ],
-      "n_genes": 19
-    },
-    {
-      "name": "TNF_signaling",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: TNF_signaling. Activated in MIRI.",
-      "genes": [
-        "AKT1",
-        "BIRC2",
-        "CCL2",
-        "CREB1",
-        "CXCL2",
-        "EDN1",
-        "FOS",
-        "FOSL1",
-        "ICAM1",
-        "IKBKB",
-        "IL1B",
-        "JUN",
-        "PIK3CA",
-        "PTGS2"
-      ],
-      "n_genes": 14
-    },
-    {
-      "name": "HIF1_signaling",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: HIF1_signaling. Activated in MIRI.",
-      "genes": [
-        "AKT1",
-        "ALDOA",
-        "ALDOC",
-        "BNIP3",
-        "CDKN1A",
-        "EDN1",
-        "EGFR",
-        "EIF4EBP1",
-        "ERBB2",
-        "GAPDH",
-        "HIF1A",
-        "HK1",
-        "HMOX1",
-        "IGF1R",
-        "NOS3",
-        "PFKL",
-        "PGAM1",
-        "PIK3CA",
-        "RPS6",
-        "SERPINE1",
-        "STAT3"
-      ],
-      "n_genes": 21
-    },
-    {
-      "name": "NLRP3_inflammasome",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: NLRP3_inflammasome. Activated in MIRI.",
-      "genes": [
-        "BECN1",
-        "CCL2",
-        "FOS",
-        "HSPA1A",
-        "HSPD1",
-        "IL1B",
-        "JUN",
-        "SQSTM1",
-        "STAT1",
-        "TICAM1",
-        "TLR4"
-      ],
-      "n_genes": 11
-    },
-    {
-      "name": "Ferroptosis",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: Ferroptosis. Activated in MIRI.",
-      "genes": [
-        "AKT1",
-        "BAX",
-        "BCL2",
-        "CASP3",
-        "CAT",
-        "CDKN1A",
-        "HMOX1",
-        "HSPB1",
-        "KEAP1",
-        "NFE2L2",
-        "PARP1",
-        "PIK3CA",
-        "SLC11A2",
-        "TP53",
-        "TXNRD1",
-        "XBP1"
-      ],
-      "n_genes": 16
-    },
-    {
-      "name": "Autophagy",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: Autophagy. Activated in MIRI.",
-      "genes": [
-        "ATG3",
-        "BCL2",
-        "BECN1",
-        "BNIP3",
-        "BNIP3L",
-        "CTSD",
-        "CTSL",
-        "FOXO3",
-        "HIF1A",
-        "PIK3C3",
-        "PIK3R4",
-        "PLEKHM1",
-        "SQSTM1"
-      ],
-      "n_genes": 13
-    },
-    {
-      "name": "Calcium_signaling",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: Calcium_signaling. Activated in MIRI.",
-      "genes": [
-        "ADRB2",
-        "CALM3",
-        "EDN1",
-        "GNA11",
-        "GNAS",
-        "NFATC3",
-        "NFATC4",
-        "PLCB3"
-      ],
-      "n_genes": 8
-    },
-    {
-      "name": "ECM_receptor_interaction",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: ECM_receptor_interaction. Activated in MIRI.",
-      "genes": [
-        "CD44",
-        "COL1A1",
-        "COL4A1",
-        "DAG1",
-        "ITGB5",
-        "LAMA3",
-        "SPP1"
-      ],
-      "n_genes": 7
-    },
-    {
-      "name": "TGFbeta_signaling",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: TGFbeta_signaling. Activated in MIRI.",
-      "genes": [
-        "BMP4",
-        "CDKN1A",
-        "COL1A1",
-        "FOS",
         "GADD45A",
         "GADD45B",
-        "ID2",
-        "JUN",
-        "MMP2",
-        "MYC",
-        "SERPINE1",
-        "SMAD3",
-        "TGFB3",
-        "TGFBR2",
-        "TIMP2"
-      ],
-      "n_genes": 15
-    },
-    {
-      "name": "mTOR_signaling",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: mTOR_signaling. Activated in MIRI.",
-      "genes": [
-        "AKT1",
-        "BNIP3",
-        "CDKN1A",
-        "DDIT4",
-        "EIF4EBP1",
-        "EIF4G1",
-        "FOXO3",
-        "GADD45A",
-        "HIF1A",
-        "IGF1R",
         "IKBKB",
+        "JUN",
+        "MAPK9",
+        "NFKBIA",
+        "NRAS",
+        "PARP1",
+        "PARP2",
         "PIK3CA",
         "PIK3R3",
-        "PPARG",
-        "RHEB",
-        "RPS6",
-        "RRAGA"
+        "PMAIP1",
+        "SPTAN1",
+        "TP53"
       ],
-      "n_genes": 17
+      "n_genes": 36,
+      "n_total_genes_before_l1000": 142,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": true
     },
     {
-      "name": "p53_signaling",
+      "name": "GO-Cellular Response To Oxidative Stress",
       "direction": "UP",
-      "description": "KEGG/Reactome pathway: p53_signaling. Activated in MIRI.",
+      "description": "GO pathway: GO-Cellular Response To Oxidative Stress. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.484 Supported by MIRI literature. Merged from: GO-Response to oxidative stress",
       "genes": [
-        "BAD",
+        "ABL1",
+        "AKT1",
+        "EGFR",
+        "FOS",
+        "FOXO3",
+        "HIF1A",
+        "HMOX1",
+        "HSPA1A",
+        "JUN",
+        "KEAP1",
+        "MAPK9",
+        "MSRA",
+        "NFE2L2",
+        "PARP1",
+        "PRKCD",
+        "PTPRK",
+        "PXN",
+        "PYCR1",
+        "SNCA",
+        "SQSTM1",
+        "STX4",
+        "TP53",
+        "TPM1"
+      ],
+      "n_genes": 23,
+      "n_total_genes_before_l1000": 117,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Response to oxidative stress"
+      ],
+      "critical": true
+    },
+    {
+      "name": "KEGG-Necroptosis",
+      "direction": "UP",
+      "description": "KEGG pathway: KEGG-Necroptosis. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.458 Supported by MIRI literature.",
+      "genes": [
         "BAX",
         "BCL2",
         "BID",
-        "CASP3",
-        "CCNB1",
-        "CCNB2",
-        "CCND1",
-        "CDK1",
-        "CDK2",
-        "CDK4",
-        "CDKN1A",
-        "CDKN2A",
-        "CHEK1",
-        "CHEK2",
-        "CYCS",
-        "DDB2",
-        "E2F2",
+        "BIRC2",
+        "CAPN1",
+        "CFLAR",
+        "CHMP4A",
+        "CHMP6",
+        "DNM1L",
         "FAS",
-        "GADD45A",
-        "GADD45B",
-        "IGFBP3",
-        "PCNA",
-        "PMAIP1",
-        "RB1",
-        "SESN1",
-        "SFN",
-        "TP53"
-      ],
-      "n_genes": 28
-    },
-    {
-      "name": "JAK_STAT_signaling",
-      "direction": "UP",
-      "description": "KEGG/Reactome pathway: JAK_STAT_signaling. Activated in MIRI.",
-      "genes": [
-        "AKT1",
-        "BCL2",
-        "CCL2",
-        "CCND1",
-        "FOS",
-        "GHR",
-        "ICAM1",
         "IFNAR1",
-        "JUN",
-        "MYC",
-        "PIK3CA",
-        "PTPN1",
-        "PTPN6",
-        "SOCS2",
+        "IL1B",
+        "MAPK9",
+        "PARP1",
+        "PLA2G4A",
+        "PYGL",
+        "SLC25A4",
+        "SQSTM1",
         "STAT1",
         "STAT3",
-        "STAT5B"
+        "STAT5B",
+        "TICAM1",
+        "TLR4",
+        "VDAC1"
       ],
-      "n_genes": 17
+      "n_genes": 24,
+      "n_total_genes_before_l1000": 159,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": true
     },
     {
-      "name": "MAPK_signaling",
+      "name": "GO-Positive Regulation Of NF-kappaB Transcription Factor Activity",
       "direction": "UP",
-      "description": "KEGG/Reactome pathway: MAPK_signaling. Activated in MIRI.",
+      "description": "GO pathway: GO-Positive Regulation Of NF-kappaB Transcription Factor Activity. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.455 Supported by MIRI literature. Merged from: GO-Positive regulation of NF‑kappaB transcription factor activity",
+      "genes": [
+        "APP",
+        "ARHGEF2",
+        "BTK",
+        "CD40",
+        "CFLAR",
+        "HSPA1A",
+        "IKBKB",
+        "IL1B",
+        "MALT1",
+        "PRKCH",
+        "PRKCQ",
+        "STAT3",
+        "TERF2IP",
+        "TICAM1",
+        "TLR4",
+        "TRIM13",
+        "USP14"
+      ],
+      "n_genes": 17,
+      "n_total_genes_before_l1000": 152,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Positive regulation of NF‑kappaB transcription factor activity"
+      ],
+      "critical": false
+    },
+    {
+      "name": "KEGG-MAPK signaling pathway",
+      "direction": "UP",
+      "description": "KEGG pathway: KEGG-MAPK signaling pathway. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.373 Supported by MIRI literature.",
       "genes": [
         "AKT1",
-        "ATF1",
+        "CASP3",
+        "CDC25B",
         "CDC42",
-        "CREB1",
         "CRK",
         "CRKL",
+        "DAXX",
         "DUSP3",
         "DUSP4",
         "DUSP6",
         "EGF",
         "EGFR",
         "ERBB2",
+        "ERBB3",
+        "FAS",
         "FGFR2",
+        "FGFR4",
         "FOS",
+        "GADD45A",
+        "GADD45B",
         "HSPA1A",
         "HSPA8",
         "HSPB1",
         "IGF1R",
+        "IKBKB",
         "IL1B",
         "JUN",
+        "KIT",
         "MAP2K5",
         "MAP3K4",
+        "MAP4K4",
         "MAPK13",
         "MAPK9",
+        "MAPKAPK2",
+        "MAPKAPK3",
+        "MAPKAPK5",
         "MEF2C",
         "MKNK1",
         "MYC",
         "NFATC3",
         "NFKB2",
+        "NRAS",
         "PAK1",
         "PDGFA",
-        "PIK3CA",
+        "PLA2G4A",
+        "PRKACA",
         "RAC2",
         "RASA1",
         "RELB",
-        "RHOA",
         "RPS6KA1",
+        "STMN1",
+        "TGFB3",
+        "TGFBR2",
         "TP53"
       ],
-      "n_genes": 38
+      "n_genes": 54,
+      "n_total_genes_before_l1000": 294,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
     },
     {
-      "name": "PI3K_Akt_signaling",
+      "name": "GO-Regulation Of Cell Death",
       "direction": "UP",
-      "description": "KEGG/Reactome pathway: PI3K_Akt_signaling. Activated in MIRI.",
+      "description": "GO pathway: GO-Regulation Of Cell Death. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.305 Supported by MIRI literature. Merged from: GO-Regulation of cell death",
+      "genes": [
+        "BNIP3L",
+        "CHMP4A",
+        "CHMP6",
+        "EIF4G1",
+        "SNCA",
+        "TMEM109"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 59,
+      "sources": [
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Regulation of cell death"
+      ],
+      "critical": true
+    },
+    {
+      "name": "GO-Cellular Response To Lectin",
+      "direction": "UP",
+      "description": "GO pathway: GO-Cellular Response To Lectin. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.774 GEO_GSE108940: ES=0.403 GEO_GSE160516: ES=0.774 GEO_GSE108940: ES=0.403 GEO_GSE160516: ES=0.536 GEO_GSE108940: ES=0.437 Merged from: GO-Stimulatory C-type Lectin Receptor Signaling Pathway, GO-Innate Immune Response Activating Cell Surface Receptor Signaling Pathway",
+      "genes": [
+        "FYN",
+        "IKBKB",
+        "LYN",
+        "PAK1",
+        "SRC",
+        "SYK"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 19,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Stimulatory C-type Lectin Receptor Signaling Pathway",
+        "GO-Innate Immune Response Activating Cell Surface Receptor Signaling Pathway"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Fc Receptor Mediated Stimulatory Signaling Pathway",
+      "direction": "UP",
+      "description": "GO pathway: GO-Fc Receptor Mediated Stimulatory Signaling Pathway. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.727 GEO_GSE160516: ES=0.693 GEO_GSE160516: ES=0.692 GEO_GSE108940: ES=0.337 Merged from: GO-Fc-gamma Receptor Signaling Pathway Involved In Phagocytosis, GO-Fc-gamma Receptor Signaling Pathway",
+      "genes": [
+        "FYN",
+        "LYN",
+        "PAK1",
+        "PRKCD",
+        "PTK2",
+        "SRC",
+        "SYK",
+        "VAV3"
+      ],
+      "n_genes": 8,
+      "n_total_genes_before_l1000": 22,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Fc-gamma Receptor Signaling Pathway Involved In Phagocytosis",
+        "GO-Fc-gamma Receptor Signaling Pathway"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Positive Regulation Of Nitric Oxide Metabolic Process",
+      "direction": "UP",
+      "description": "GO pathway: GO-Positive Regulation Of Nitric Oxide Metabolic Process. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.757 GEO_GSE160516: ES=0.740 GEO_GSE160516: ES=0.689 Merged from: GO-Positive Regulation Of Nitric Oxide Biosynthetic Process, GO-Regulation Of Nitric Oxide Biosynthetic Process",
+      "genes": [
+        "AKT1",
+        "EDN1",
+        "IL1B",
+        "PTGS2",
+        "SMAD3",
+        "TLR4"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 28,
+      "sources": [
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Positive Regulation Of Nitric Oxide Biosynthetic Process",
+        "GO-Regulation Of Nitric Oxide Biosynthetic Process"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Negative Regulation Of Insulin Receptor Signaling Pathway",
+      "direction": "UP",
+      "description": "GO pathway: GO-Negative Regulation Of Insulin Receptor Signaling Pathway. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.501 GEO_GSE108940: ES=0.291 GEO_GSE160516: ES=0.497 GEO_GSE108940: ES=0.285 GEO_GSE160516: ES=0.328 Merged from: GO-Negative Regulation Of Cellular Response To Insulin Stimulus, GO-Regulation Of Insulin Receptor Signaling Pathway",
+      "genes": [
+        "GRB10",
+        "GRB7",
+        "IL1B",
+        "NCK1",
+        "PIP4K2B",
+        "PRKCD",
+        "PRKCQ",
+        "PTPN1"
+      ],
+      "n_genes": 8,
+      "n_total_genes_before_l1000": 26,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Negative Regulation Of Cellular Response To Insulin Stimulus",
+        "GO-Regulation Of Insulin Receptor Signaling Pathway"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Positive Regulation Of Interleukin-1 Beta Production",
+      "direction": "UP",
+      "description": "GO pathway: GO-Positive Regulation Of Interleukin-1 Beta Production. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.774 GEO_GSE108940: ES=0.248 GEO_GSE160516: ES=0.721 GEO_GSE108940: ES=0.259 Merged from: GO-Regulation Of Interleukin-1 Beta Production",
+      "genes": [
+        "APP",
+        "EGR1",
+        "HSPB1",
+        "MALT1",
+        "STAT3",
+        "TLR4"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 57,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Regulation Of Interleukin-1 Beta Production"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Positive Regulation Of Tumor Necrosis Factor Production",
+      "direction": "UP",
+      "description": "GO pathway: GO-Positive Regulation Of Tumor Necrosis Factor Production. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.682 GEO_GSE108940: ES=0.224 GEO_GSE160516: ES=0.669 GEO_GSE108940: ES=0.222 Merged from: GO-Positive Regulation Of Tumor Necrosis Factor Superfamily Cytokine Production",
+      "genes": [
+        "APP",
+        "ARHGEF2",
+        "EPHB2",
+        "HSPB1",
+        "PTPRC",
+        "STAT3",
+        "SYK",
+        "TLR4"
+      ],
+      "n_genes": 8,
+      "n_total_genes_before_l1000": 78,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Positive Regulation Of Tumor Necrosis Factor Superfamily Cytokine Production"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Extracellular Structure Organization",
+      "direction": "UP",
+      "description": "GO pathway: GO-Extracellular Structure Organization. UP-regulated (activated) in MIRI. Drug should DOWN-regulate these genes. GEO_GSE160516: ES=0.566 GEO_GSE108940: ES=0.314 GEO_GSE160516: ES=0.548 GEO_GSE108940: ES=0.311 Merged from: GO-External Encapsulating Structure Organization",
+      "genes": [
+        "APP",
+        "COL1A1",
+        "COL4A1",
+        "MMP1",
+        "MMP2",
+        "ST7"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 109,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-External Encapsulating Structure Organization"
+      ],
+      "critical": false
+    },
+    {
+      "name": "KEGG-Adrenergic signaling in cardiomyocytes",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Adrenergic signaling in cardiomyocytes. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.167 GEO_GSE108940: ES=-0.246 Supported by MIRI literature.",
+      "genes": [
+        "ADRB2",
+        "AKT1",
+        "ATP1B1",
+        "BCL2",
+        "CALM3",
+        "CREB1",
+        "GNAI1",
+        "GNAI2",
+        "GNAS",
+        "MAPK13",
+        "PLCB3",
+        "PPP2R3C",
+        "PPP2R5A",
+        "PPP2R5E",
+        "PRKACA",
+        "TPM1"
+      ],
+      "n_genes": 16,
+      "n_total_genes_before_l1000": 150,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516",
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Regulation Of Protein Kinase Activity",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Regulation Of Protein Kinase Activity. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE108940: ES=-0.278 Supported by MIRI literature. Merged from: GO-Regulation of protein kinase activity",
+      "genes": [
+        "AKT1",
+        "AXIN1",
+        "CCNA2",
+        "CDKN1A",
+        "CENPE",
+        "CHP1",
+        "DAXX",
+        "EPHB2",
+        "HSPB1",
+        "IQGAP1",
+        "ITGB1BP1",
+        "PRKAG2",
+        "PTK2",
+        "PTK2B",
+        "PTPRC",
+        "RB1",
+        "SFN",
+        "SNCA",
+        "TRIB1",
+        "TRIB3"
+      ],
+      "n_genes": 20,
+      "n_total_genes_before_l1000": 119,
+      "sources": [
+        "GEO_GSE108940",
+        "literature"
+      ],
+      "merged_from": [
+        "GO-Regulation of protein kinase activity"
+      ],
+      "critical": false
+    },
+    {
+      "name": "KEGG-Focal adhesion",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Focal adhesion. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. Supported by MIRI literature.",
       "genes": [
         "AKT1",
         "BAD",
         "BCL2",
-        "BTK",
+        "BIRC2",
         "CCND1",
-        "CDK2",
-        "CDK4",
-        "CDKN1A",
-        "CDKN1B",
+        "CCND3",
+        "CDC42",
         "COL1A1",
         "COL4A1",
-        "CREB1",
+        "CRK",
+        "CRKL",
         "EGF",
         "EGFR",
-        "EIF4EBP1",
+        "ERBB2",
+        "FYN",
+        "IGF1R",
+        "ILK",
+        "ITGB5",
+        "JUN",
+        "LAMA3",
+        "MAPK9",
+        "MYL9",
+        "MYLK",
+        "PAK1",
+        "PAK4",
+        "PAK6",
+        "PDGFA",
+        "PIK3CA",
+        "PIK3R3",
+        "PTK2",
+        "PXN",
+        "RAC2",
+        "RHOA",
+        "SHC1",
+        "SPP1",
+        "SRC",
+        "VAV3"
+      ],
+      "n_genes": 37,
+      "n_total_genes_before_l1000": 201,
+      "sources": [
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Regulation of actin cytoskeleton",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Regulation of actin cytoskeleton. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. Supported by MIRI literature.",
+      "genes": [
+        "ARHGEF12",
+        "CDC42",
+        "CRK",
+        "CRKL",
+        "CXCR4",
+        "EGF",
+        "EGFR",
+        "FGFR2",
+        "FGFR4",
+        "IQGAP1",
+        "ITGAE",
+        "ITGB5",
+        "LPAR2",
+        "MYL9",
+        "MYLK",
+        "NRAS",
+        "PAK1",
+        "PAK4",
+        "PAK6",
+        "PDGFA",
+        "PIK3CA",
+        "PIK3R3",
+        "PIP4K2B",
+        "PTK2",
+        "PXN",
+        "RAC2",
+        "RHOA",
+        "SRC",
+        "TIAM1",
+        "VAV3"
+      ],
+      "n_genes": 30,
+      "n_total_genes_before_l1000": 218,
+      "sources": [
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Calcium signaling pathway",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Calcium signaling pathway. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. Supported by MIRI literature.",
+      "genes": [
+        "ADRB2",
+        "CALM3",
+        "CXCR4",
+        "EGF",
+        "EGFR",
         "ERBB2",
         "ERBB3",
         "FGFR2",
-        "FOXO3",
-        "FOXO4",
-        "HK1",
-        "IGF1R",
+        "FGFR4",
+        "GNA11",
+        "GNA15",
+        "GNAS",
+        "MCOLN1",
+        "MYLK",
+        "NOS3",
+        "PDGFA",
+        "PHKA1",
+        "PHKB",
+        "PHKG2",
+        "PLCB3",
+        "PRKACA",
+        "PTK2B",
+        "SLC25A4",
+        "TBXA2R",
+        "VDAC1"
+      ],
+      "n_genes": 25,
+      "n_total_genes_before_l1000": 240,
+      "sources": [
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": true
+    },
+    {
+      "name": "GO-Extracellular matrix organization",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Extracellular matrix organization. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. Supported by MIRI literature.",
+      "genes": [
+        "ADAM10",
+        "APP",
+        "COL1A1",
+        "COL4A1",
+        "CRTAP",
+        "LOXL1",
+        "MMP1",
+        "MMP2",
+        "PLOD3",
+        "ST7"
+      ],
+      "n_genes": 10,
+      "n_total_genes_before_l1000": 176,
+      "sources": [
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Dilated cardiomyopathy",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Dilated cardiomyopathy. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. Supported by MIRI literature.",
+      "genes": [
+        "DAG1",
+        "GNAS",
         "ITGB5",
-        "KIT",
-        "LAMA3",
-        "LPAR2",
-        "MYC",
-        "PCK2",
-        "PFKL",
-        "PIK3CA",
-        "PIK3R3",
-        "PPP2R5A",
-        "RB1",
-        "RHEB",
-        "RPS6",
-        "SPP1",
-        "SYK",
-        "TP53"
-      ],
-      "n_genes": 38
-    },
-    {
-      "name": "Fatty_acid_oxidation",
-      "direction": "DOWN",
-      "description": "KEGG/Reactome pathway: Fatty_acid_oxidation. Suppressed in MIRI.",
-      "genes": [
-        "ACAA1",
-        "DECR1",
-        "ETFB",
-        "HADH",
-        "HSD17B10",
-        "PPARD",
-        "PPARG"
-      ],
-      "n_genes": 7
-    },
-    {
-      "name": "Cardiac_muscle_contraction",
-      "direction": "DOWN",
-      "description": "KEGG/Reactome pathway: Cardiac_muscle_contraction. Suppressed in MIRI.",
-      "genes": [
-        "DSG2",
-        "MYL9",
+        "PRKACA",
+        "SGCB",
+        "TGFB3",
         "TPM1"
       ],
-      "n_genes": 3
+      "n_genes": 7,
+      "n_total_genes_before_l1000": 96,
+      "sources": [
+        "literature"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Valine, leucine and isoleucine degradation",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Valine, leucine and isoleucine degradation. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.606 GEO_GSE108940: ES=-0.300",
+      "genes": [
+        "ACAA1",
+        "ACAT2",
+        "ALDH7A1",
+        "DLD",
+        "HADH",
+        "HMGCS1",
+        "HSD17B10",
+        "OXCT1",
+        "PCCB"
+      ],
+      "n_genes": 9,
+      "n_total_genes_before_l1000": 48,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Peptidyl-Threonine Phosphorylation",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Peptidyl-Threonine Phosphorylation. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.236 GEO_GSE108940: ES=-0.365 GEO_GSE160516: ES=-0.206 GEO_GSE108940: ES=-0.334 Merged from: GO-Peptidyl-Threonine Modification",
+      "genes": [
+        "AKT1",
+        "CDK1",
+        "CDK5R1",
+        "CHEK1",
+        "CSNK2A2",
+        "DYRK3",
+        "OXSR1",
+        "PRKCD",
+        "TGFBR2"
+      ],
+      "n_genes": 9,
+      "n_total_genes_before_l1000": 58,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Peptidyl-Threonine Modification"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Cellular Response To Retinoic Acid",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Cellular Response To Retinoic Acid. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.359 GEO_GSE160516: ES=-0.311 Merged from: GO-Response To Retinoic Acid",
+      "genes": [
+        "CREB1",
+        "EPHA3",
+        "FZD7",
+        "LYN",
+        "PTK2B",
+        "TWF2"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 41,
+      "sources": [
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Response To Retinoic Acid"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Fatty Acid Oxidation",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Fatty Acid Oxidation. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.515 GEO_GSE108940: ES=-0.283",
+      "genes": [
+        "ACAA1",
+        "ACAT2",
+        "ADH5",
+        "DECR1",
+        "HSD17B10",
+        "PPARD",
+        "SCP2"
+      ],
+      "n_genes": 7,
+      "n_total_genes_before_l1000": 52,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Mitochondrial Gene Expression",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Mitochondrial Gene Expression. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.473 GEO_GSE108940: ES=-0.309",
+      "genes": [
+        "FASTKD5",
+        "FOXO3",
+        "IARS2",
+        "MRPL12",
+        "MRPL19",
+        "MRPS16",
+        "MRPS2",
+        "MTERF3"
+      ],
+      "n_genes": 8,
+      "n_total_genes_before_l1000": 103,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": true
+    },
+    {
+      "name": "GO-Fatty Acid Catabolic Process",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Fatty Acid Catabolic Process. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.475 GEO_GSE108940: ES=-0.283",
+      "genes": [
+        "ACAA1",
+        "ACAT2",
+        "DECR1",
+        "HSD17B10",
+        "PCCB",
+        "PLA2G15",
+        "PPARD",
+        "SCP2"
+      ],
+      "n_genes": 8,
+      "n_total_genes_before_l1000": 61,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Positive Regulation Of Cyclin-Dependent Protein Kinase Activity",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Positive Regulation Of Cyclin-Dependent Protein Kinase Activity. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.331 GEO_GSE160516: ES=-0.284 Merged from: GO-Positive Regulation Of Cyclin-Dependent Protein Serine/Threonine Kinase Activity",
+      "genes": [
+        "AKT1",
+        "CCND1",
+        "CCND3",
+        "EGFR",
+        "PSMD10",
+        "PSRC1"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 18,
+      "sources": [
+        "GEO_GSE160516"
+      ],
+      "merged_from": [
+        "GO-Positive Regulation Of Cyclin-Dependent Protein Serine/Threonine Kinase Activity"
+      ],
+      "critical": false
+    },
+    {
+      "name": "GO-Regulation Of G0 To G1 Transition",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Regulation Of G0 To G1 Transition. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.405 GEO_GSE108940: ES=-0.346",
+      "genes": [
+        "BCL7B",
+        "CHEK1",
+        "FOXO4",
+        "SMARCA4",
+        "SMARCC1",
+        "SMARCD2"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 33,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Pyruvate metabolism",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Pyruvate metabolism. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.420 GEO_GSE108940: ES=-0.267",
+      "genes": [
+        "ACAT2",
+        "ADH5",
+        "ALDH7A1",
+        "DLD",
+        "ME2",
+        "PCK2"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 47,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "KEGG-Type II diabetes mellitus",
+      "direction": "DOWN",
+      "description": "KEGG pathway: KEGG-Type II diabetes mellitus. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.388 GEO_GSE108940: ES=-0.415",
+      "genes": [
+        "HK1",
+        "IKBKB",
+        "MAPK9",
+        "PIK3CA",
+        "PIK3R3",
+        "PRKCD",
+        "SOCS2"
+      ],
+      "n_genes": 7,
+      "n_total_genes_before_l1000": 46,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Fatty Acid Beta-Oxidation",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Fatty Acid Beta-Oxidation. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.536",
+      "genes": [
+        "ACAA1",
+        "ACAT2",
+        "DECR1",
+        "ETFB",
+        "HSD17B10",
+        "PPARD",
+        "SCP2"
+      ],
+      "n_genes": 7,
+      "n_total_genes_before_l1000": 49,
+      "sources": [
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Positive Regulation Of Stem Cell Population Maintenance",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Positive Regulation Of Stem Cell Population Maintenance. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.341 GEO_GSE108940: ES=-0.400",
+      "genes": [
+        "ARID4B",
+        "BCL7B",
+        "HDAC2",
+        "NCOA3",
+        "SMARCA4",
+        "SMARCC1"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 40,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
+    },
+    {
+      "name": "GO-Positive Regulation Of Lipid Biosynthetic Process",
+      "direction": "DOWN",
+      "description": "GO pathway: GO-Positive Regulation Of Lipid Biosynthetic Process. DOWN-regulated (suppressed) in MIRI. Drug should UP-regulate these genes. GEO_GSE160516: ES=-0.398 GEO_GSE108940: ES=-0.173",
+      "genes": [
+        "APOE",
+        "CHP1",
+        "CREB1",
+        "LPGAT1",
+        "NR1H2",
+        "SCARB1"
+      ],
+      "n_genes": 6,
+      "n_total_genes_before_l1000": 39,
+      "sources": [
+        "GEO_GSE108940",
+        "GEO_GSE160516"
+      ],
+      "merged_from": null,
+      "critical": false
     }
   ]
 }

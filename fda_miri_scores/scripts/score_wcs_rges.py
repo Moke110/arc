@@ -120,6 +120,9 @@ def score_all_wcs_rges(deg_csv_path, gene_set_path, weight=1.0,
     scores["rank_WCS"] = scores["WCS"].rank()
     scores["rank_RGES"] = scores["RGES"].rank()
     scores["avg_rank"] = (scores["rank_WCS"] + scores["rank_RGES"]) / 2.0
+    # Z-score normalization across drugs
+    scores["WCS_zs"] = (scores["WCS"] - scores["WCS"].mean()) / scores["WCS"].std()
+    scores["RGES_zs"] = (scores["RGES"] - scores["RGES"].mean()) / scores["RGES"].std()
     scores = scores.sort_values("avg_rank")
 
     if output_path:

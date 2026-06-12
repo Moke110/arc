@@ -131,6 +131,34 @@ Config keys are **lowercased** when accessed:
 
 Priority: Environment Variables → JSON Config File → Default Values
 
+### Local Embedding Model
+
+本项目使用本地预下载的嵌入模型，避免每次运行时从 HuggingFace 下载。
+
+**模型位置**: `models/all-MiniLM-L6-v2/`（87.4 MB，10 个文件）
+
+**.env 配置** (在项目根目录 `/home/chang/arc/.env`):
+```
+EMBEDDING=huggingface:/home/chang/arc/.agents/skills/gpt-researcher/models/all-MiniLM-L6-v2
+HF_ENDPOINT=https://hf-mirror.com
+FAST_LLM=deepseek:deepseek-v4-pro
+SMART_LLM=deepseek:deepseek-v4-pro
+STRATEGIC_LLM=deepseek:deepseek-v4-pro
+```
+
+`sentence_transformers.SentenceTransformer` 在 `model_name_or_path` 为本地存在的路径时，直接加载而不尝试下载。
+
+**重要**: `STRATEGIC_LLM` 必须配置，因为 deep research 模式使用它而非 `FAST_LLM`。
+
+**下载/更新模型**（当需要时）:
+```bash
+HF_ENDPOINT=https://hf-mirror.com python3 -c "
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+model.save('/home/chang/arc/.agents/skills/gpt-researcher/models/all-MiniLM-L6-v2')
+"
+```
+
 **For complete configuration reference**: See [references/config-reference.md](references/config-reference.md)
 
 ---

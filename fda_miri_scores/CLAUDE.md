@@ -9,7 +9,8 @@ MIRI drug efficacy scoring from XPert-predicted cardiomyocyte transcriptome. Ran
 ```
 fda_miri_scores/
 ├── xpert_fda-cm_deg.csv                         # XPert-predicted DEG: 3127 drugs × 978 landmark genes (logFC)
-├── scoring.ipynb                                 # Scoring notebook: execution + visualization
+├── fda_screen.ipynb                              # Drug screening notebook: scoring → filtering → ranking
+├── scores/fda_screened.csv                       # Final ranked MIRI drug candidates
 ├── CLAUDE.md                                     # This file
 ├── README.md                                     # Human-readable Chinese documentation
 ├── geo/                                          # MIRI experimental transcriptome data + preprocessing
@@ -30,21 +31,24 @@ fda_miri_scores/
 │   ├── GSE137293_scar_vs_border.json             # Pig scar vs border (2 UP + 1 DOWN, L1000)
 │   ├── MIRI_up-down.json                         # Union gene set (78 UP + 36 DOWN, all 3 species)
 │   ├── MIRI_rank.json                            # Ranked reference for Zhang Score (107 genes, GSE160516)
-│   └── MIRI_pathways.json                        # 16 MIRI-relevant KEGG pathways + direction + L1000 genes
+│   └── MIRI_pathways.json                        # 40 MIRI pathways (20 UP + 20 DOWN), programmatically built
 ├── scripts/                                      # Drug efficacy scoring pipeline
 │   ├── __init__.py                               # Module docstring
-│   ├── utils.py                                  # Shared: enrichment_score(), zscore_normalize(), data I/O
+│   ├── utils.py                                  # Shared: enrichment_score(), zscore_normalize(), data I/O, coverage filter
 │   ├── score_wcs_rges.py                         # Score 1: WCS + RGES (gene-set based)
 │   ├── score_zhang.py                            # Score 2: Zhang Score / ssCMap (rank-based)
 │   ├── score_pathway_rges.py                     # Score 3: Pathway-level RGES (mechanistic)
 │   ├── run_all.py                                # Main pipeline: all 3 methods → integrated ranking (4 ranks)
-│   ├── generate_reference_genesets.py             # Generate all reference gene set JSONs from GEO data
-│   └── build_union_and_rank.py                   # Build union gene set + ranked reference for Zhang
+│   ├── generate_reference_genesets.py             # Generate per-dataset gene set JSONs from GEO data
+│   ├── build_union_and_rank.py                   # Build union gene set + ranked reference for Zhang
+│   └── rebuild_pathways.py                       # Rebuild MIRI_pathways.json from GEO GSEA + literature
+├── .claude/                                      # Intermediate files (cache, enrichment results, logs)
 ├── scores/                                       # Scoring output CSVs
-│   ├── scores_wcs_rges.csv                       # WCS+RGES scores (all 3127 drugs)
-│   ├── scores_zhang.csv                          # Zhang scores (all 3127 drugs)
-│   ├── scores_pathway_rges.csv                   # Pathway-level scores (all 3127 drugs)
-│   └── fda_miri_scores_integrated.csv            # Integrated 4-rank mean ranking
+│   ├── scores_wcs_rges.csv                       # WCS+RGES scores + WCS_zs, RGES_zs (3127 drugs)
+│   ├── scores_zhang.csv                          # Zhang scores + Zhang_zs (3127 drugs)
+│   ├── scores_pathway_rges.csv                   # Pathway-level scores + pathway_reversal_zs (3127 drugs)
+│   ├── fda_miri_scores_integrated.csv            # Integrated 4-rank mean ranking
+│   └── fda_filtered_scores.csv                   # Drugs passing WCS<0 & all critical pathways>0
 └── plots/                                        # Scoring visualization PNGs
     ├── score_distributions.png                   # 5 score distributions + agreement histogram
     ├── top20_integrated.png                      # Top 20 drug ranking + 5-method heatmap
@@ -71,15 +75,18 @@ fda_miri_scores/
 - **Script**: `scripts/score_zhang.py`
 
 ### Pipeline 3: Pathway-Level RGES (mechanistic)
-- **Reference**: Type C (MIRI_pathways.json, 16 pathways with direction)
+- **Reference**: Type C (MIRI_pathways.json, 40 pathways: 20 UP + 20 DOWN)
 - **Method**: Per-pathway RGES → efficacy profile. Disease-UP pathways: efficacy = −ES. Disease-DOWN pathways: efficacy = ES. Aggregated via mean_efficacy.
 - **Key metric**: Higher mean_efficacy = better. n_effective = pathways with efficacy > 0.1.
 - **Script**: `scripts/score_pathway_rges.py`
+- **Rebuild script**: `scripts/rebuild_pathways.py` — programmatic pathway generation from GEO GSEA + literature
 
 ### Integration
-- **Integrated rank**: Mean of 4 individual ranks (rank_WCS, rank_RGES, rank_Zhang, rank_pathway).
-- **rank_pathway**: Descending (higher efficacy = better rank). All others: ascending.
-- **Script**: `scripts/run_all.py`
+- **Legacy integration**: Mean of 4 individual ranks (rank_WCS, rank_RGES, rank_Zhang, rank_pathway). Script: `scripts/run_all.py`.
+- **Current screening pipeline** (fda_screen.ipynb):
+  1. **Scoring**: 3 methods → 4 Z-score columns + 6 critical pathway efficacy Z-scores (e.g. `KEGG-Apoptosis_efficacy_zs`).
+  2. **Filtering**: WCS < 0 AND ≥4/6 critical pathway efficacies > 0 → 199 drugs pass → `scores/fda_filtered_scores.csv`.
+  3. **Ranking**: integrated_score = −0.3×RGES_zs − 0.1×Zhang_zs + 0.3×pathway_reversal_zs + 0.05×Σcritical_efficacy_zs → `scores/fda_screened.csv`.
 
 ## Key Files
 
@@ -87,13 +94,15 @@ fda_miri_scores/
 - xpert_fda-cm_deg.csv — 3128 lines (header + 3127 drugs). Columns: drug_name, smiles, drug_idx, then 978 L1000 landmark genes. Values are predicted logFC from XPert ensemble. **Critical limitation**: 97.2% of values are negative (predominantly down-regulated). Z-score normalization (`--zscore`) strongly recommended.
 - reference-genesets/MIRI_up-down.json — Union gene set (78 UP + 36 DOWN in L1000). Default gene set.
 - reference-genesets/MIRI_rank.json — Ranked reference (107 genes from GSE160516) with signed ranks by |disease logFC|.
-- reference-genesets/MIRI_pathways.json — 16 MIRI pathways (14 UP + 2 DOWN) with direction labels + L1000 genes.
+- reference-genesets/MIRI_pathways.json — 40 MIRI pathways (20 UP + 20 DOWN) with KEGG-/GO-/KEGG&GO- naming. Generated by `scripts/rebuild_pathways.py`.
 
 ### Output Scores
-- scores_wcs_rges.csv — WCS, ES_up, ES_down, RGES, rank_WCS, rank_RGES, avg_rank
-- scores_zhang.csv — Zhang_c, Zhang_C, Zhang_C_max, Zhang_p_approx, rank_Zhang
-- scores_pathway_rges.csv — Per-pathway ES + efficacy, mean_efficacy, n_effective, frac_effective, rank_pathway
+- scores_wcs_rges.csv — WCS, ES_up, ES_down, RGES, WCS_zs, RGES_zs, rank_WCS, rank_RGES, avg_rank
+- scores_zhang.csv — Zhang_c, Zhang_C, Zhang_C_max, Zhang_p_approx, Zhang_zs, rank_Zhang
+- scores_pathway_rges.csv — Per-pathway ES + efficacy, mean_efficacy, n_effective, pathway_reversal, pathway_reversal_zs, 6 critical pathway efficacy Z-scores, rank_pathway
 - fda_miri_scores_integrated.csv — Merged all-method scores + rank_integrated (mean of 4 ranks)
+- fda_filtered_scores.csv — Drugs passing WCS<0 AND ≥4/6 critical pathway efficacies > 0 (199 drugs); includes WCS_zs, RGES_zs, Zhang_zs, pathway_reversal_zs + per-pathway efficacy
+- scores/fda_screened.csv — Final ranked drug candidates with integrated_score = −0.3×RGES_zs − 0.1×Zhang_zs + 0.3×pathway_reversal_zs + 0.05×Σcritical_efficacy_zs
 
 ## Dependencies
 
@@ -109,6 +118,9 @@ fda_miri_scores/
 cd fda_miri_scores/
 python scripts/run_all.py --zscore
 
+# Drug screening notebook (score → filter → rank)
+jupyter notebook fda_screen.ipynb
+
 # Individual scoring
 python scripts/score_wcs_rges.py --deg-csv xpert_fda-cm_deg.csv --gene-set reference-genesets/MIRI_up-down.json --zscore
 python scripts/score_zhang.py --deg-csv xpert_fda-cm_deg.csv --rank-ref reference-genesets/MIRI_rank.json --zscore
@@ -117,31 +129,55 @@ python scripts/score_pathway_rges.py --deg-csv xpert_fda-cm_deg.csv --pathways r
 # Regenerate reference gene sets
 python scripts/generate_reference_genesets.py
 python scripts/build_union_and_rank.py
+
+# Rebuild pathway gene sets from GEO enrichment + literature
+python scripts/rebuild_pathways.py [--target-up 30] [--target-down 30] [--skip-literature]
 ```
 
-## Key Findings (2026-06-07)
+## Key Findings (2026-06-12)
 
 ### Reference Gene Sets
 - GSE160516 (mouse) is the primary reference: 75 UP + 32 DOWN L1000 genes
 - GSE108940 (rat): only 10 L1000 genes (array annotation limits mapping)
 - GSE137293 (pig): 3 L1000 genes (scar vs border, no sham control)
 - Union gene set (MIRI_up-down.json): 78 UP + 36 DOWN, majority-vote conflict resolution
-- 16 MIRI pathways curated (KEGG + literature), 14 UP + 2 DOWN
+- **MIRI_pathways.json rebuilt (2026-06-11)**: 40 pathways (20 UP + 20 DOWN), programmatically generated from GEO GSEA (GSE160516/GSE108940/GSE137293) against KEGG_2021_Human (320 pathways) and GO_Biological_Process_2023 (5,407 terms) via Enrichr. 8,619 candidate pathways evaluated, 1,660 passed dual filters (n_genes > 5 AND coverage ≥ 978/20000), 53 merged. Two-phase selection: literature-supported pathways prioritized, then GEO-filled to 20/direction. 20 literature-validated pathways (13 UP + 7 DOWN).
+
+### Pathway Building Pipeline
+- **Script**: `scripts/rebuild_pathways.py`
+- **Sources**: GEO DEG enrichment (preranked GSEA using historical enrichment_score) + gpt-researcher literature survey
+- **Ortholog mapping**: mygene + homologene (mouse/rat/pig → human Entrez → human symbol)
+- **Filters**: (1) n_l1000 > 5; (2) n_l1000/n_total ≥ 978/20000 = 0.0489
+- **Merging**: KEGG+GO pathways with identical L1000 gene content + same direction → KEGG&GO- prefix
+- **Naming**: All pathways prefixed with KEGG- or GO- (or KEGG&GO- for merged)
+- **Selection**: Two-phase prioritization. Phase 1: literature-supported pathways selected first (sorted by composite score). Phase 2: remaining slots filled by top-scored GEO-only pathways. Composite score = GEO ES magnitude × dataset weight + literature support + gene count bonus.
+- **Caching**: Enrichr gene sets cached 1 week, ortholog mappings permanent in `.claude/`
+- **utils.py additions**: `load_l1000_genes()`, `passes_coverage_filter()`; `load_pathway_gene_sets()` min_genes updated to 6
+
+### Biological Themes in New Pathways
+- **UP in MIRI** (20): Inflammatory/immune signaling (TNF, NF-κB, MAPK, chemokine, IL-1β production), apoptosis/necroptosis, hypoxia/oxidative stress response, wound healing, leukocyte adhesion/migration, T cell activation
+- **DOWN in MIRI** (20): Cardiac muscle contraction, calcium signaling, adrenergic signaling, focal adhesion/ECM organization, actin cytoskeleton regulation, dilated cardiomyopathy, fatty acid degradation, peroxisome, glycolysis, pyruvate metabolism, mitochondrial organization, insulin signaling, TORC1 signaling
 
 ### Scoring Performance (with z-score normalization)
-- **WCS**: 315/3127 drugs have WCS ≠ 0. Range [−0.41, +0.40]. 5 strong candidates (WCS < −0.2 AND RGES < −0.2).
+- **WCS**: 315/3127 drugs have WCS ≠ 0. Range [−0.41, +0.40].
 - **RGES**: Wider discrimination than WCS. Lower = better reversal.
 - **Zhang Score**: 696 drugs with c < −0.3. Best discrimination power among all methods.
-- **Pathway RGES**: Best interpretability. Top drugs: Cabozantinib (mean_efficacy=0.513, 16/16 pathways), Ponatinib (0.454, 14/16), Ripretinib (0.436, 15/16) — all multi-target TKIs.
+- **Pathway RGES**: Best interpretability. pathway_reversal = fraction of 40 pathways with efficacy > 0.1.
+- **Z-scores**: WCS_zs, RGES_zs, Zhang_zs, pathway_reversal_zs — standardized across drugs for cross-method comparison and integration.
 - **Cross-method agreement**: Generally low (ρ: 0.01–0.27), each method captures different aspects of drug response.
-- **Consensus**: 0 drugs in top-50 across all 4 rank components → complementary nature of different scoring approaches.
+
+### Screening Pipeline (fda_screen.ipynb)
+- **Filtering**: WCS < 0 AND ≥4/6 critical pathway efficacies > 0 → 199/3127 drugs pass.
+- **Ranking**: integrated_score = −0.3×RGES_zs − 0.1×Zhang_zs + 0.3×pathway_reversal_zs + 0.05×Σcritical_efficacy_zs. Sign convention: RGES_zs, Zhang_zs more negative = better → negated. pathway_reversal_zs more positive = better → positive weight.
+- **Top candidates**: 1. Metocurine Iodide (integrated=+0.008), 2. Penicillin G (−0.047), 3. Nalidixic Acid (−0.096), 4. Leucovorin Calcium (−0.106).
+- **Output**: `scores/fda_screened.csv` — 199 final ranked MIRI drug candidates.
 
 ### Recommendations
 1. Always use `--zscore` flag for drug discrimination
 2. MIRI_up-down.json is the default gene set (union, best coverage)
 3. MIRI_rank.json preferred for Zhang Score (preserves disease magnitude)
 4. Pathway scoring provides the most biological insight into mechanism
-5. Integrated ranking (mean of 4 ranks) combines complementary perspectives
+5. Screening pipeline (fda_screen.ipynb) combines 4 Z-score components with weighted integration
 6. Upstream improvement: increase XPert model's inter-drug DEG variance
 
 ## Notes
@@ -152,3 +188,4 @@ python scripts/build_union_and_rank.py
 - The 978 genes correspond to the L1000 landmark gene set.
 - Drug indices (drug_idx column) reference the shared 11,104-drug embedding index scheme.
 - All 3 scoring methods share utils.py functions (enrichment_score, data I/O, z-score normalization).
+- **gpt-researcher config**: Uses local embedding model at `.agents/skills/gpt-researcher/models/all-MiniLM-L6-v2/` (87.4 MB). LLM: DeepSeek (FAST_LLM/SMART_LLM/STRATEGIC_LLM in .env). HuggingFace mirror: HF_ENDPOINT=https://hf-mirror.com.

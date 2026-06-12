@@ -212,6 +212,8 @@ def score_all_zhang(deg_csv_path, gene_set_path=None, rank_ref_path=None,
 
     scores = pd.DataFrame(results)
     scores["rank_Zhang"] = scores["Zhang_c"].rank()
+    # Z-score normalization across drugs
+    scores["Zhang_zs"] = (scores["Zhang_c"] - scores["Zhang_c"].mean()) / scores["Zhang_c"].std()
     scores = scores.sort_values("Zhang_c")
 
     if output_path:

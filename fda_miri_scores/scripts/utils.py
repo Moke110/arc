@@ -290,7 +290,7 @@ def load_pathway_gene_sets(json_path, gene_order):
     for pw in data.get("pathways", []):
         genes = pw.get("genes", [])
         indices = np.array([gene_to_idx[g] for g in genes if g in gene_to_idx], dtype=int)
-        if len(indices) >= 3:  # minimum 3 genes per pathway for meaningful ES
+        if len(indices) >= 6:  # minimum 6 genes per pathway (>5, for meaningful ES)
             pathways.append({
                 "name": pw["name"],
                 "direction": pw.get("direction", "UP"),
@@ -306,6 +306,62 @@ def load_pathway_gene_sets(json_path, gene_order):
     }
 
     return pathways, metadata
+
+
+# ── L1000 gene set loader ────────────────────────────────────────────
+
+def load_l1000_genes(l1000_csv_path=None):
+    """
+    Load the full 978 L1000 landmark gene symbols as a set.
+
+    Parameters
+    ----------
+    l1000_csv_path : str or Path, optional
+        Path to l1000_gene_info_978.csv. Defaults to xpert/metadata/.
+
+    Returns
+    -------
+    set[str]
+    """
+    if l1000_csv_path is None:
+        l1000_csv_path = "/home/chang/arc/xpert/metadata/l1000_gene_info_978.csv"
+    df = pd.read_csv(l1000_csv_path)
+    return set(df["gene_symbol"].dropna().unique())
+
+
+# ── Coverage filter ──────────────────────────────────────────────────
+
+def passes_coverage_filter(n_l1000, n_total, total_human_genes=20000,
+                           n_landmark=978, factor=1.0):
+    """
+    Check if a pathway meets the landmark gene coverage criterion.
+
+    Condition: n_l1000 / n_total >= (n_landmark / total_human_genes) * factor
+
+    This ensures the pathway is not systematically under-sampled by the
+    L1000 panel relative to the genome-wide average.
+
+    Parameters
+    ----------
+    n_l1000 : int
+        Number of L1000 landmark genes in the pathway.
+    n_total : int
+        Total number of genes in the pathway (before L1000 intersection).
+    total_human_genes : int
+        Estimated total protein-coding genes in human genome.
+    n_landmark : int
+        Number of L1000 landmark genes.
+    factor : float
+        Relaxation factor. 1.0 = no relaxation (must meet genome average).
+
+    Returns
+    -------
+    bool
+    """
+    if n_total <= 0:
+        return False
+    threshold = (n_landmark / total_human_genes) * factor
+    return (n_l1000 / n_total) >= threshold
 
 
 # ── Standard L1000 978 gene list ────────────────────────────────────

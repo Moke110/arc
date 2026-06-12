@@ -60,7 +60,7 @@ def integrate_scores(wcs_df, zhang_df, pathway_df,
         on="drug_name", how="inner"
     ).merge(
         pathway_df[["drug_name", "mean_efficacy", "n_effective",
-                     "frac_effective", "rank_pathway"]],
+                     "pathway_reversal", "rank_pathway"]],
         on="drug_name", how="inner"
     )
 

@@ -28,7 +28,7 @@ Drug SMILES → UniMol (3D molecular features) + HG (biological embeddings) → 
 - [xpert/](xpert/CLAUDE.md) — Drug perturbation prediction model (XPert). Dual-branch Transformer, ~25M params. Status: complete (pretrain + finetune + FDA prediction). Splits: cold-drug (10-fold), cold-cate (6-fold), warm-start (10-fold), dtoxs (all-train). Finetuning: 4 epochs with new HG embeddings.
 - [dtoxs/](dtoxs/CLAUDE.md) — Cardiomyocyte drug perturbation dataset (DToxS LDS-1593). 914 samples. Data/docs only, no code.
 - [hg/](hg/CLAUDE.md) — Heterogeneous GNN (HeteroGNN). Contrastive learning for drug biological embeddings. Status: pretrained + fine-tuned on extended graph. Full-drug HG embeddings (11,104×256) deployed to xpert/drug_embeddings/.
-- [fda_miri_scores/](fda_miri_scores/CLAUDE.md) — MIRI drug efficacy scoring. 3 methods deployed (WCS+RGES, Zhang/ssCMap, Pathway RGES) producing 4 rank components with z-score normalization. Reference gene sets from 3 species. Results: multi-target TKIs (Cabozantinib, Ponatinib) are top candidates. Status: scoring operational.
+- [fda_miri_scores/](fda_miri_scores/CLAUDE.md) — MIRI drug screening pipeline. 3 scoring methods (WCS+RGES, Zhang/ssCMap, Pathway RGES) → 4 Z-score components → filtering (WCS<0, critical pathways) → integrated ranking. Results in `fda_screened.csv`. Status: screening operational.
 - [references/](references/CLAUDE.md) — Reference PDF archive. Background reading, no code dependency.
 
 ## Cross-Project Dependencies
@@ -48,17 +48,18 @@ Drug SMILES → UniMol (3D molecular features) + HG (biological embeddings) → 
 - HG embeddings: training rows (0-8980) = author reference; FDA rows = fine-tuned + quantile norm mapping (FDA/Train std=1.000).
 - FDA prediction: ensemble of finetuned models, predictions predominantly down-regulated (mean deg ≈ −0.38).
 
-## Current Progress (2026-06-10)
+## Current Progress (2026-06-12)
 
-All upstream stages complete; drug efficacy scoring operational:
+All upstream stages complete; drug screening pipeline operational:
 - HG pretraining + FDA fine-tuning + quantile norm mapping (11,104 drugs, FDA/Train std=1.000, DTI 2.48x)
 - XPert L1000 pretraining (8,981 drugs)
 - XPert DTOXS finetuning (cold-drug/cold-cate/warm-start/dtoxs splits, 4 epochs, new HG embeddings)
 - XPert FDA DEG prediction (3,127 drugs × 978 genes)
 - Model evaluation on DTOXS: 4 model groups across 14 deg-only metrics
 - GEO MIRI transcriptome data collected (3 species)
-- 3 reference gene set JSONs + cross-species consensus + 16 MIRI pathway gene sets
-- 3 scoring methods deployed producing 4 rank components with z-score normalization
-- Integrated ranking: top drugs are multi-target TKIs (Cabozantinib, Ponatinib, Ripretinib)
+- 3 reference gene set JSONs + cross-species consensus + 40 MIRI pathway gene sets (20 UP + 20 DOWN, 6 critical)
+- 3 scoring methods deployed producing 4 Z-score components (WCS_zs, RGES_zs, Zhang_zs, pathway_reversal_zs)
+- Screening pipeline (fda_screen.ipynb): filter (WCS<0 + ≥4/6 critical pathways) → 199/3127 drugs pass → rank (weighted integrated Z-score)
+- Top candidates: Terazosin, Zolpidem Tartrate, Cefiderocol Sulfate Tosylate, Loracarbef, Erythromycin Glucepate
 - Known limitation: XPert predicts 97.2% down-regulated DEGs with very low inter-drug variance
-- Next: validate scoring results against literature/external databases, refine consensus methodology
+- Next: validate screening results against literature/external databases

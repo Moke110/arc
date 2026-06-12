@@ -133,7 +133,7 @@ def score_all_pathways(deg_csv_path, pathways_json_path, weight=1.0,
             "mean_efficacy": total_efficacy / len(pathways) if pathways else 0.0,
             "n_pathways": len(pathways),
             "n_effective": n_effective,
-            "frac_effective": n_effective / len(pathways) if pathways else 0.0,
+            "pathway_reversal": n_effective / len(pathways) if pathways else 0.0,
         }
 
         # Add per-pathway efficacy and ES
@@ -147,6 +147,25 @@ def score_all_pathways(deg_csv_path, pathways_json_path, weight=1.0,
 
     # Rank by mean_efficacy (higher = more pathways reversed)
     scores["rank_pathway"] = scores["mean_efficacy"].rank(ascending=False)
+    # Z-score normalization across drugs (pathway_reversal = fraction of pathways reversed)
+    scores["pathway_reversal_zs"] = ((scores["pathway_reversal"] - scores["pathway_reversal"].mean())
+                                     / scores["pathway_reversal"].std())
+
+    # Compute Z-scores for critical pathway efficacies across drugs
+    import json
+    with open(pathways_json_path) as f:
+        _pw_meta = json.load(f)
+    _critical_names = [p["name"] for p in _pw_meta["pathways"] if p.get("critical")]
+    for _name in _critical_names:
+        _col = f"{_name}_efficacy"
+        if _col in scores.columns:
+            _mu = scores[_col].mean()
+            _sigma = scores[_col].std()
+            if _sigma > 1e-10:
+                scores[f"{_col}_zs"] = (scores[_col] - _mu) / _sigma
+            else:
+                scores[f"{_col}_zs"] = 0.0
+
     scores = scores.sort_values("mean_efficacy", ascending=False)
 
     if output_path:
@@ -154,7 +173,7 @@ def score_all_pathways(deg_csv_path, pathways_json_path, weight=1.0,
         print(f"Saved {len(scores)} drugs to {output_path}")
 
     print(f"\n  Top 10 by mean pathway efficacy:")
-    top_cols = ["drug_name", "mean_efficacy", "n_effective", "frac_effective"]
+    top_cols = ["drug_name", "mean_efficacy", "n_effective", "pathway_reversal"]
     print(scores.head(10)[top_cols].to_string(index=False))
 
     return scores
