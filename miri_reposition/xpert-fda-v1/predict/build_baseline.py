@@ -16,8 +16,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DTOXS_ROOT = PROJECT_ROOT.parent / "dtoxs"
+WORKFLOW_ROOT = Path(__file__).resolve().parent.parent
+WORKSPACE_ROOT = WORKFLOW_ROOT.parent.parent
+PROJECT_ROOT = WORKSPACE_ROOT / "pert_model" / "xpert"   # metadata/l1000_gene_info_978.csv
+DTOXS_ROOT = WORKSPACE_ROOT / "pert_data" / "dtoxs"
 
 # Control state labels in DTOXS experiment designs
 CONTROL_STATES = {"CTRL", "CTRL-EtOH", "CTRL-DMSO"}
@@ -141,7 +143,7 @@ def main():
         result['std_log2_cpm1'] = result['std_log2_cpm1'].fillna(0.0)
 
     # Save
-    output_dir = PROJECT_ROOT / "predict" / "fda-cm"
+    output_dir = WORKFLOW_ROOT / "predict" / "fda-cm"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "cm_ctl_landmark.csv"
     result.to_csv(output_path, index=False)
