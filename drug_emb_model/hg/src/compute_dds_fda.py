@@ -212,7 +212,7 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser(description="Compute DDS edges for FDA drugs")
     ap.add_argument("--morgan-path",
-                    default=str(HG_ROOT.parent / "xpert/drug_embeddings/all_drugs_idx2morgan.npy"))
+                    default=str(HG_ROOT / "embeddings/all_drugs_idx2morgan.npy"))
     ap.add_argument("--existing-dds",
                     default=str(HG_ROOT / "data/DDS_edge_index_all_287834_pairs_weighted.npy"))
     ap.add_argument("--output",

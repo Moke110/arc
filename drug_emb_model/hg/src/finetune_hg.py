@@ -508,7 +508,7 @@ def main():
     ap.add_argument("--dti-fda", default=str(HG_ROOT / "data/DTI_edge_index_fda_ext.npy"))
     ap.add_argument("--dds-fda", default=str(HG_ROOT / "data/DDS_edge_index_fda_drugs.npy"))
     ap.add_argument("--kpgt-path",
-                    default=str(HG_ROOT.parent / "xpert/drug_embeddings/all_drugs_idx2KPGT.npy"))
+                    default=str(HG_ROOT / "embeddings/all_drugs_idx2KPGT.npy"))
     ap.add_argument("--output-dir", default=str(HG_ROOT / "model/finetune"))
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--lr", type=float, default=5e-5)
@@ -522,7 +522,11 @@ def main():
     ap.add_argument("--include-edges", nargs="+", default=["PPI", "DTI", "DDS"])
     ap.add_argument("--seed", type=int, default=4242)
     ap.add_argument("--update-xpert-embeddings", action="store_true",
-                    help="Automatically update xpert/drug_embeddings/all_drugs_idx2HG.npy")
+                    help="Automatically update all_drugs_idx2HG.npy "
+                         "(default: hg/embeddings/, override with --embeddings-output)")
+    ap.add_argument("--embeddings-output",
+                    default=str(HG_ROOT / "embeddings/all_drugs_idx2HG.npy"),
+                    help="Where to write the fine-tuned all-drug HG embeddings")
 
     args = ap.parse_args()
 
@@ -564,13 +568,15 @@ def main():
         seed=args.seed,
     )
 
-    # Optionally update XPert embeddings
+    # Optionally update the deployed HG embeddings file
     if args.update_xpert_embeddings and result["train_cosim"] >= args.cosim_threshold:
-        xpert_hg_path = str(HG_ROOT.parent / "xpert/drug_embeddings/all_drugs_idx2HG.npy")
+        xpert_hg_path = args.embeddings_output
+        os.makedirs(os.path.dirname(xpert_hg_path), exist_ok=True)
         backup_path = xpert_hg_path.replace(".npy", "_backup_graph.npy")
         import shutil
-        shutil.copy2(xpert_hg_path, backup_path)
-        logger.info(f"Backed up current HG embeddings to {backup_path}")
+        if os.path.exists(xpert_hg_path):
+            shutil.copy2(xpert_hg_path, backup_path)
+            logger.info(f"Backed up current HG embeddings to {backup_path}")
 
         # Load and update: keep train rows from fine-tuned, or all rows
         finetuned_all = np.load(result["all_drug_path"])

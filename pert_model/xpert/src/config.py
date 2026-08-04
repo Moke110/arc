@@ -6,17 +6,53 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_ROOT = PROJECT_ROOT.parent
 
 
+def _resolve_config_path(config_name: str) -> Path:
+    """Resolve a config name to an existing YAML file path.
+
+    Order of resolution:
+      1. absolute path as given (with .yaml appended if missing)
+      2. path relative to the current working directory
+      3. path relative to the XPert project root (backward-compatible)
+    """
+    candidate = Path(config_name)
+    if candidate.suffix != ".yaml":
+        candidate = candidate.with_suffix(".yaml")
+
+    if candidate.is_absolute():
+        return candidate
+
+    cwd_candidate = Path.cwd() / candidate
+    if cwd_candidate.exists():
+        return cwd_candidate
+
+    return PROJECT_ROOT / candidate
+
+
+def get_config_root(config_name: str) -> Path:
+    """Return the project root that owns the given config file.
+
+    Configs live at <root>/<stage>/config/<name>.yaml, so the root is three
+    directories up from the config file (config -> <stage> -> <root>). This lets
+    a workflow own its configs (e.g. miri_reposition/xpert-fda-v1/finetune/)
+    while the model library resolves paths against the owning root.
+    """
+    config_path = _resolve_config_path(config_name)
+    if not config_path.exists():
+        raise FileNotFoundError(f"Config not found: {config_name}")
+    return config_path.resolve().parent.parent.parent
+
+
 def load_config(config_name: str) -> dict:
-    config_path = PROJECT_ROOT / f"{config_name}.yaml"
+    config_path = _resolve_config_path(config_name)
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
-    config = resolve_paths(config)
+    config_root = config_path.resolve().parent.parent.parent
+    config = resolve_paths(config, config_root)
     return config
 
 
-def resolve_paths(config: dict) -> dict:
-    xpert_root = str(PROJECT_ROOT)
-    workspace_root = str(WORKSPACE_ROOT)
+def resolve_paths(config: dict, config_root: Path = PROJECT_ROOT) -> dict:
+    xpert_root = str(config_root)
 
     dataset = config.get('dataset', {})
     for key in ['l1000_sdst_data_root', 'l1000_mdmt_data_root',

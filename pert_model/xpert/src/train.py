@@ -13,7 +13,7 @@ import logging
 from tqdm import tqdm
 import pickle
 
-from src.config import load_config, get_output_dir, PROJECT_ROOT
+from src.config import load_config, get_config_root, get_output_dir, PROJECT_ROOT
 from src.utils import EarlyStopping, save_loss_fig, set_random_seed, log_nested_dict
 from src.utils import load_dataloader, load_test_dataloader, load_infer_dataloader
 from src.utils import mse_loss_ls_sum, pcc_loss_sum, cos_loss_sum, set_requires_grad
@@ -410,7 +410,7 @@ def main():
     else:
         dataset_id = args.dataset
 
-    expt_folder = str(PROJECT_ROOT / stage / 'output' / f'{args.dataset}_{args.split_method}')
+    expt_folder = str(get_config_root(args.config) / stage / 'output' / f'{args.dataset}_{args.split_method}')
     log_dir = os.path.join(expt_folder, 'logs')
 
     if not os.path.exists(log_dir):

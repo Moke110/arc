@@ -483,7 +483,7 @@ def main():
 
     # Optional: analyze
     if args.test_embeddings:
-        old_hg_path = str(HG_ROOT.parent / "xpert/drug_embeddings/all_drugs_idx2HG.npy")
+        old_hg_path = str(HG_ROOT / "embeddings/all_drugs_idx2HG.npy")
         old_hg = np.load(old_hg_path, allow_pickle=True)
         fda_emb_old = old_hg[-n_fda:]
 
