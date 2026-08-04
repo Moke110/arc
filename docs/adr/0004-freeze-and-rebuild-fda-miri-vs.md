@@ -1,0 +1,3 @@
+# fda_miri_vs frozen as xpert-fda-v1_history and rebuilt
+
+The old `fda_miri_vs/` is renamed wholesale to `miri_reposition/xpert-fda-v1_history/` and kept as a frozen provenance snapshot (its `history/` subdirectory is deleted). The new `miri_reposition/xpert-fda-v1/` is built fresh against the new taxonomy, with scoring logic refactored into numbered, dependency-ordered scripts. We chose freeze-and-rebuild over in-place refactoring so the new pipeline is cleanly structured while the old one remains a runnable reference. `xpert-fda-v1_history/` is gitignored because it contains large artifacts that the repo never commits.

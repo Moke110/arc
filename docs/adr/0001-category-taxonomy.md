@@ -1,0 +1,3 @@
+# Category taxonomy for the repository root
+
+The root is split into three categories — dev-tool files, drug perturbation prediction components (`pert_data/`, `drug_emb_model/`, `pert_model/`), and drug repositioning workflows (`miri_reposition/`) — plus a fourth, `disease_data/`, for disease-specific shared inputs. Components and workflows are category containers holding named instances (e.g. `pert_model/xpert/`, `miri_reposition/xpert-fda-v1/`), not renames of the old flat directories. This gives the taxonomy room for future datasets, embedding models, and per-disease workflows without renaming existing ones.

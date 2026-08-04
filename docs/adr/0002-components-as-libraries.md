@@ -1,0 +1,3 @@
+# Components are libraries; workflows generate their own artifacts
+
+Components (HG, XPert) ship library code and trained weights. Workflows own the scripts that import those libraries and generate every artifact the workflow consumes — drug embeddings, perturbed transcriptomes, z-scores, scores, ranking. Components therefore do not write into a workflow's directory at runtime; a workflow regenerates artifacts by running its own scripts. We chose this over a shared exchange layer or frozen snapshots because it keeps each workflow self-documenting about how its artifacts were made and avoids a fourth exchange category.
