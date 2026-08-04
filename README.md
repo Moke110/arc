@@ -39,7 +39,7 @@
                               │
                               ▼
                     ┌──────────────────┐
-                    │   fda_miri_scores/ (药物排名)  │
+                    │   fda_miri_vs/ (药物排名)  │
                     │                  │
                     │  MIRI 疗效评分    │
                     │  ├─ 表型基因集    │
@@ -64,7 +64,7 @@
 | `xpert/` | 药物转录组扰动预测模型 | 双分支 Transformer (~25M params) | ✅ | [CLAUDE.md](xpert/CLAUDE.md) / [README.md](xpert/README.md) |
 | `dtoxs/` | 心肌细胞药物扰动组数据集 | DToxS LINCS LDS-1593 (914样本) | ✅ | [CLAUDE.md](dtoxs/CLAUDE.md) / [README.md](dtoxs/README.md) |
 | `hg/` | 异质图神经网络 | HeteroGNN + InfoNCE 对比学习 | ✅ | [CLAUDE.md](hg/CLAUDE.md) / [README.md](hg/README.md) |
-| `fda_miri_scores/` | 药物排名 + 临床验证 | GSEA/RGES + PRISMA 文献审查 | ✅ | [CLAUDE.md](fda_miri_scores/CLAUDE.md) / [README.md](fda_miri_scores/README.md) |
+| `fda_miri_vs/` | 药物排名 + 临床验证 | GSEA/RGES + PRISMA 文献审查 | ✅ | [CLAUDE.md](fda_miri_vs/CLAUDE.md) / [README.md](fda_miri_vs/README.md) |
 | `references/` | 参考文献存档 | PDF | — | [CLAUDE.md](references/CLAUDE.md) / [README.md](references/README.md) |
 
 ### 子项目间数据流
@@ -73,7 +73,7 @@
 |------|------|----------|------|
 | hg/ | xpert/ | `all_drugs_idx2HG.npy` | 生物嵌入 (11104×256) |
 | — | xpert/ | `all_drugs_unimol_arr.npy` | UniMol 3D 特征 (11104×122×514) |
-| xpert/ | fda_miri_scores/ | `xpert_cm-fda_deg.csv` | DEG 预测 (3127×978 genes) |
+| xpert/ | fda_miri_vs/ | `xpert_cm-fda_deg.csv` | DEG 预测 (3127×978 genes) |
 
 特征以预计算 `.npy` 文件交换，无共享运行时依赖。全部子项目使用 conda env `xpert` (Python 3.13)。
 
@@ -96,7 +96,7 @@
 
 模型在 L1000 数据集（8,981 种药物，978 个 landmark 基因）上预训练，在 DToxS 心肌细胞数据集（914 样本）上微调。
 
-### 3. 药物排名 (fda_miri_scores/)
+### 3. 药物排名 (fda_miri_vs/)
 
 采用 **GSEA (Gene Set Enrichment Analysis)** 方法学，分为四个评分模块：
 
@@ -180,7 +180,7 @@ bash predict/predict.sh \
 ### 运行药物排名
 
 ```bash
-cd fda_miri_scores/
+cd fda_miri_vs/
 python run_ranking.py                    # 主排名 pipeline
 python plots/aggregate_and_plot.py       # 评分聚合 + 可视化
 ```
@@ -208,3 +208,11 @@ cd hg/ && python -m src.finetune_hg --device cuda:0 --lr 5e-5 --epochs 50 --upda
 - **README.md** — 人类可读项目说明书（中文叙述，含表格和流程图）
 
 详见根目录 [CLAUDE.md](CLAUDE.md) 中的完整约定说明。
+
+### Agent Skills 约定
+
+仓库已接入工程技能套件（Matt Pocock's Skills）。约定如下：
+
+- **Issue tracker** — 本地 Markdown，issue/spec 存放于 `.scratch/<feature>/`。见 [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md)
+- **Triage labels** — 五个标准角色标签：`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`。见 [docs/agents/triage-labels.md](docs/agents/triage-labels.md)
+- **Domain docs** — 单上下文布局：根目录 `CONTEXT.md` + `docs/adr/`。见 [docs/agents/domain.md](docs/agents/domain.md)
