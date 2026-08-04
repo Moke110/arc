@@ -1,0 +1,977 @@
+{
+  "name": "MIRI_rank",
+  "type": "ranked_gene_list",
+  "species": "Mus musculus",
+  "source_geo": "GSE160516",
+  "platform": "Affymetrix Clariom S",
+  "comparison": "MIRI (pooled IR) vs Sham",
+  "description": "Full GSE160516 MIRI DEG results filtered to human L1000 978 landmark genes. Genes ranked by |disease logFC| (largest effect first). Each gene has a signed rank: UP genes get +m (largest |logFC|) to +1 (smallest), DOWN genes get -m (largest |logFC|) to -1 (smallest). Used as Type B reference for Zhang Score (ssCMap) computation, preserving disease effect magnitude information.",
+  "n_genes_total": 107,
+  "n_up": 75,
+  "n_down": 32,
+  "genes": [
+    {
+      "gene": "HMOX1",
+      "mouse_gene": "Hmox1",
+      "logFC": 2.840445707676,
+      "P_Value": 2.64711155066134e-07,
+      "adj_P_Val": 0.0001321481844166,
+      "signed_rank": 75,
+      "direction": "UP"
+    },
+    {
+      "gene": "CCL2",
+      "mouse_gene": "Ccl12",
+      "logFC": 2.11454727912483,
+      "P_Value": 2.09697791555495e-06,
+      "adj_P_Val": 0.0006293972845093,
+      "signed_rank": 74,
+      "direction": "UP"
+    },
+    {
+      "gene": "MYC",
+      "mouse_gene": "Myc",
+      "logFC": 1.98441080437996,
+      "P_Value": 0.000903063670037,
+      "adj_P_Val": 0.0285970162178404,
+      "signed_rank": 73,
+      "direction": "UP"
+    },
+    {
+      "gene": "IL4R",
+      "mouse_gene": "Il4ra",
+      "logFC": 1.74679187660137,
+      "P_Value": 7.6814706218486e-06,
+      "adj_P_Val": 0.0014462114234407,
+      "signed_rank": 72,
+      "direction": "UP"
+    },
+    {
+      "gene": "SERPINE1",
+      "mouse_gene": "Serpine1",
+      "logFC": 1.61085384714421,
+      "P_Value": 0.0038858348761735,
+      "adj_P_Val": 0.068178560901246,
+      "signed_rank": 71,
+      "direction": "UP"
+    },
+    {
+      "gene": "CD44",
+      "mouse_gene": "Cd44",
+      "logFC": 1.5497179962302,
+      "P_Value": 4.1234727949395705e-09,
+      "adj_P_Val": 8.53971215831985e-06,
+      "signed_rank": 70,
+      "direction": "UP"
+    },
+    {
+      "gene": "PTGS2",
+      "mouse_gene": "Ptgs2",
+      "logFC": 1.41480480917783,
+      "P_Value": 0.0053149929552084,
+      "adj_P_Val": 0.0810555994862795,
+      "signed_rank": 69,
+      "direction": "UP"
+    },
+    {
+      "gene": "TUBB6",
+      "mouse_gene": "Tubb6",
+      "logFC": 1.39420712724051,
+      "P_Value": 3.85963286242897e-06,
+      "adj_P_Val": 0.0008907638549191,
+      "signed_rank": 68,
+      "direction": "UP"
+    },
+    {
+      "gene": "CEBPD",
+      "mouse_gene": "Cebpd",
+      "logFC": 1.24681019290004,
+      "P_Value": 0.0033960665983055,
+      "adj_P_Val": 0.0628530288211871,
+      "signed_rank": 67,
+      "direction": "UP"
+    },
+    {
+      "gene": "S100A4",
+      "mouse_gene": "S100a4",
+      "logFC": 1.19967611275349,
+      "P_Value": 0.0023451060829471,
+      "adj_P_Val": 0.0497104882065875,
+      "signed_rank": 66,
+      "direction": "UP"
+    },
+    {
+      "gene": "UGDH",
+      "mouse_gene": "Ugdh",
+      "logFC": 1.18783908437693,
+      "P_Value": 1.78493338025265e-05,
+      "adj_P_Val": 0.0026217000216335,
+      "signed_rank": 65,
+      "direction": "UP"
+    },
+    {
+      "gene": "PLS1",
+      "mouse_gene": "Pls1",
+      "logFC": 1.09662916874152,
+      "P_Value": 0.001405306606316,
+      "adj_P_Val": 0.0369926763416422,
+      "signed_rank": 64,
+      "direction": "UP"
+    },
+    {
+      "gene": "RAI14",
+      "mouse_gene": "Rai14",
+      "logFC": 1.07136263046768,
+      "P_Value": 1.2265277513449e-06,
+      "adj_P_Val": 0.0004379549953509,
+      "signed_rank": 63,
+      "direction": "UP"
+    },
+    {
+      "gene": "PNP",
+      "mouse_gene": "Pnp",
+      "logFC": 0.989477331851582,
+      "P_Value": 2.88225025024973e-07,
+      "adj_P_Val": 0.000138817215541,
+      "signed_rank": 62,
+      "direction": "UP"
+    },
+    {
+      "gene": "CNDP2",
+      "mouse_gene": "Cndp2",
+      "logFC": 0.961744400162884,
+      "P_Value": 7.19740141224482e-05,
+      "adj_P_Val": 0.0065090909715104,
+      "signed_rank": 61,
+      "direction": "UP"
+    },
+    {
+      "gene": "TSPAN4",
+      "mouse_gene": "Tspan4",
+      "logFC": 0.889910863788537,
+      "P_Value": 1.14172067678354e-07,
+      "adj_P_Val": 7.3890735050585e-05,
+      "signed_rank": 60,
+      "direction": "UP"
+    },
+    {
+      "gene": "LOXL1",
+      "mouse_gene": "Loxl1",
+      "logFC": 0.885530844271772,
+      "P_Value": 0.0098333443392288,
+      "adj_P_Val": 0.115512513480108,
+      "signed_rank": 59,
+      "direction": "UP"
+    },
+    {
+      "gene": "EDEM1",
+      "mouse_gene": "Edem1",
+      "logFC": 0.874663598890536,
+      "P_Value": 0.0011935166903174,
+      "adj_P_Val": 0.0335838731745571,
+      "signed_rank": 58,
+      "direction": "UP"
+    },
+    {
+      "gene": "PTPRC",
+      "mouse_gene": "Ptprc",
+      "logFC": 0.859754950815927,
+      "P_Value": 0.001385392456479,
+      "adj_P_Val": 0.0367565403251819,
+      "signed_rank": 57,
+      "direction": "UP"
+    },
+    {
+      "gene": "VAT1",
+      "mouse_gene": "Vat1",
+      "logFC": 0.855228621107779,
+      "P_Value": 0.0005175245479369,
+      "adj_P_Val": 0.0205114863120241,
+      "signed_rank": 56,
+      "direction": "UP"
+    },
+    {
+      "gene": "PRSS23",
+      "mouse_gene": "Prss23",
+      "logFC": 0.853251676352203,
+      "P_Value": 6.71188948515095e-06,
+      "adj_P_Val": 0.001343634188091,
+      "signed_rank": 55,
+      "direction": "UP"
+    },
+    {
+      "gene": "RAB31",
+      "mouse_gene": "Rab31",
+      "logFC": 0.845618288454848,
+      "P_Value": 5.56004440018385e-07,
+      "adj_P_Val": 0.0002257814108388,
+      "signed_rank": 54,
+      "direction": "UP"
+    },
+    {
+      "gene": "PTPN1",
+      "mouse_gene": "Ptpn1",
+      "logFC": 0.831873593295784,
+      "P_Value": 3.87101626956654e-06,
+      "adj_P_Val": 0.0008907638549191,
+      "signed_rank": 53,
+      "direction": "UP"
+    },
+    {
+      "gene": "LGMN",
+      "mouse_gene": "Lgmn",
+      "logFC": 0.811785712564571,
+      "P_Value": 0.0008630518346346,
+      "adj_P_Val": 0.0278842488225966,
+      "signed_rank": 52,
+      "direction": "UP"
+    },
+    {
+      "gene": "RNH1",
+      "mouse_gene": "Rnh1",
+      "logFC": 0.776507482970903,
+      "P_Value": 9.03576501583801e-06,
+      "adj_P_Val": 0.0016250002889444,
+      "signed_rank": 51,
+      "direction": "UP"
+    },
+    {
+      "gene": "PRKCD",
+      "mouse_gene": "Prkcd",
+      "logFC": 0.769573232130686,
+      "P_Value": 0.0026343008294142,
+      "adj_P_Val": 0.0538031264074645,
+      "signed_rank": 50,
+      "direction": "UP"
+    },
+    {
+      "gene": "SYK",
+      "mouse_gene": "Syk",
+      "logFC": 0.753969693505933,
+      "P_Value": 2.25632256093993e-06,
+      "adj_P_Val": 0.000662249862155,
+      "signed_rank": 49,
+      "direction": "UP"
+    },
+    {
+      "gene": "IQGAP1",
+      "mouse_gene": "Iqgap1",
+      "logFC": 0.733138162266254,
+      "P_Value": 7.89503807182391e-06,
+      "adj_P_Val": 0.0014730291753826,
+      "signed_rank": 48,
+      "direction": "UP"
+    },
+    {
+      "gene": "KLHL21",
+      "mouse_gene": "Klhl21",
+      "logFC": -0.702619369757171,
+      "P_Value": 6.37121793835856e-06,
+      "adj_P_Val": 0.0013064150841921,
+      "signed_rank": -32,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "ID2",
+      "mouse_gene": "Id2",
+      "logFC": 0.67650008937582,
+      "P_Value": 0.0009308747803083,
+      "adj_P_Val": 0.0290383725193559,
+      "signed_rank": 47,
+      "direction": "UP"
+    },
+    {
+      "gene": "PLA2G4A",
+      "mouse_gene": "Pla2g4a",
+      "logFC": 0.657520760205913,
+      "P_Value": 0.0078301748527697,
+      "adj_P_Val": 0.10166954307264,
+      "signed_rank": 46,
+      "direction": "UP"
+    },
+    {
+      "gene": "NRAS",
+      "mouse_gene": "Nras",
+      "logFC": 0.622980149696751,
+      "P_Value": 0.0003841709189795,
+      "adj_P_Val": 0.0171100639399273,
+      "signed_rank": 45,
+      "direction": "UP"
+    },
+    {
+      "gene": "HEATR1",
+      "mouse_gene": "Heatr1",
+      "logFC": 0.622891096944558,
+      "P_Value": 0.0062295349176264,
+      "adj_P_Val": 0.0894685632066873,
+      "signed_rank": 44,
+      "direction": "UP"
+    },
+    {
+      "gene": "PGM1",
+      "mouse_gene": "Pgm2",
+      "logFC": 0.614948963552823,
+      "P_Value": 0.0008001373860591,
+      "adj_P_Val": 0.0268038031624608,
+      "signed_rank": 43,
+      "direction": "UP"
+    },
+    {
+      "gene": "ACOT9",
+      "mouse_gene": "Acot9",
+      "logFC": 0.607740531259239,
+      "P_Value": 0.0025523274123695,
+      "adj_P_Val": 0.0527531943215295,
+      "signed_rank": 42,
+      "direction": "UP"
+    },
+    {
+      "gene": "ABCF1",
+      "mouse_gene": "Abcf1",
+      "logFC": -0.599057698610942,
+      "P_Value": 0.0022417743614098,
+      "adj_P_Val": 0.0483112872266377,
+      "signed_rank": -31,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "DCK",
+      "mouse_gene": "Dck",
+      "logFC": 0.598574145851407,
+      "P_Value": 0.0003736528562639,
+      "adj_P_Val": 0.0170824517731289,
+      "signed_rank": 41,
+      "direction": "UP"
+    },
+    {
+      "gene": "LIPA",
+      "mouse_gene": "Lipa",
+      "logFC": 0.595040579512091,
+      "P_Value": 0.0075626151454547,
+      "adj_P_Val": 0.0994423870872181,
+      "signed_rank": 40,
+      "direction": "UP"
+    },
+    {
+      "gene": "BID",
+      "mouse_gene": "Bid",
+      "logFC": 0.593158411252241,
+      "P_Value": 0.001398562766297,
+      "adj_P_Val": 0.036933702678945,
+      "signed_rank": 39,
+      "direction": "UP"
+    },
+    {
+      "gene": "SPTLC2",
+      "mouse_gene": "Sptlc2",
+      "logFC": 0.587249054081475,
+      "P_Value": 2.05087333775096e-06,
+      "adj_P_Val": 0.0006246115709532,
+      "signed_rank": 38,
+      "direction": "UP"
+    },
+    {
+      "gene": "TGFBR2",
+      "mouse_gene": "Tgfbr2",
+      "logFC": 0.579807730061709,
+      "P_Value": 0.0002842107280634,
+      "adj_P_Val": 0.0149012764004906,
+      "signed_rank": 37,
+      "direction": "UP"
+    },
+    {
+      "gene": "HMGCR",
+      "mouse_gene": "Hmgcr",
+      "logFC": 0.575468610754388,
+      "P_Value": 0.0003329157763854,
+      "adj_P_Val": 0.0162227899504534,
+      "signed_rank": 36,
+      "direction": "UP"
+    },
+    {
+      "gene": "ARID5B",
+      "mouse_gene": "Arid5b",
+      "logFC": 0.566195852690193,
+      "P_Value": 0.0040297668150131,
+      "adj_P_Val": 0.0697213623549892,
+      "signed_rank": 35,
+      "direction": "UP"
+    },
+    {
+      "gene": "RBKS",
+      "mouse_gene": "Rbks",
+      "logFC": 0.561471655518542,
+      "P_Value": 0.0048280508323736,
+      "adj_P_Val": 0.0773799614093505,
+      "signed_rank": 34,
+      "direction": "UP"
+    },
+    {
+      "gene": "IER3",
+      "mouse_gene": "Ier3",
+      "logFC": 0.545909621056667,
+      "P_Value": 0.0087824777584345,
+      "adj_P_Val": 0.109174738521716,
+      "signed_rank": 33,
+      "direction": "UP"
+    },
+    {
+      "gene": "EGFR",
+      "mouse_gene": "Egfr",
+      "logFC": 0.541368879792262,
+      "P_Value": 0.0035511801980887,
+      "adj_P_Val": 0.0650840193826712,
+      "signed_rank": 32,
+      "direction": "UP"
+    },
+    {
+      "gene": "PROS1",
+      "mouse_gene": "Pros1",
+      "logFC": 0.536423694478538,
+      "P_Value": 0.000337769298267,
+      "adj_P_Val": 0.0162355881195912,
+      "signed_rank": 31,
+      "direction": "UP"
+    },
+    {
+      "gene": "MELK",
+      "mouse_gene": "Melk",
+      "logFC": 0.535017871957437,
+      "P_Value": 0.0073394930560136,
+      "adj_P_Val": 0.0975615540372539,
+      "signed_rank": 30,
+      "direction": "UP"
+    },
+    {
+      "gene": "PXMP2",
+      "mouse_gene": "Pxmp2",
+      "logFC": -0.527339696240031,
+      "P_Value": 0.0048436554510927,
+      "adj_P_Val": 0.0773894603805824,
+      "signed_rank": -30,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "PXN",
+      "mouse_gene": "Pxn",
+      "logFC": 0.51734500936172,
+      "P_Value": 0.0027142788754829,
+      "adj_P_Val": 0.0547348739155333,
+      "signed_rank": 29,
+      "direction": "UP"
+    },
+    {
+      "gene": "MTHFD2",
+      "mouse_gene": "Mthfd2",
+      "logFC": 0.51351063378543,
+      "P_Value": 0.0036358600093086,
+      "adj_P_Val": 0.0657530777612026,
+      "signed_rank": 28,
+      "direction": "UP"
+    },
+    {
+      "gene": "GDPD5",
+      "mouse_gene": "Gdpd5",
+      "logFC": -0.505360139554402,
+      "P_Value": 0.0028572110508709,
+      "adj_P_Val": 0.0564320804822596,
+      "signed_rank": -29,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "LYN",
+      "mouse_gene": "Lyn",
+      "logFC": 0.503010715408633,
+      "P_Value": 0.0031121388724261,
+      "adj_P_Val": 0.0598999963270871,
+      "signed_rank": 27,
+      "direction": "UP"
+    },
+    {
+      "gene": "PCNA",
+      "mouse_gene": "Pcna",
+      "logFC": 0.502486700730289,
+      "P_Value": 0.0048278591824382,
+      "adj_P_Val": 0.0773799614093505,
+      "signed_rank": 26,
+      "direction": "UP"
+    },
+    {
+      "gene": "HOMER2",
+      "mouse_gene": "Homer2",
+      "logFC": -0.493933090994316,
+      "P_Value": 0.0015136774872089,
+      "adj_P_Val": 0.0387015564939477,
+      "signed_rank": -28,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "ANXA7",
+      "mouse_gene": "Anxa7",
+      "logFC": 0.49197706224227,
+      "P_Value": 0.0007851654110611,
+      "adj_P_Val": 0.0265698948743085,
+      "signed_rank": 25,
+      "direction": "UP"
+    },
+    {
+      "gene": "FAM20B",
+      "mouse_gene": "Fam20b",
+      "logFC": -0.490564469412789,
+      "P_Value": 0.0003673714576262,
+      "adj_P_Val": 0.0168324400164573,
+      "signed_rank": -27,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "GMNN",
+      "mouse_gene": "Gmnn",
+      "logFC": -0.487959767685368,
+      "P_Value": 0.0011606247843097,
+      "adj_P_Val": 0.0331190213112508,
+      "signed_rank": -26,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "ALAS1",
+      "mouse_gene": "Alas1",
+      "logFC": -0.482583198836316,
+      "P_Value": 7.65098906175141e-05,
+      "adj_P_Val": 0.0067714522849945,
+      "signed_rank": -25,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "TSKU",
+      "mouse_gene": "Tsku",
+      "logFC": 0.478738031083224,
+      "P_Value": 0.0038122657216078,
+      "adj_P_Val": 0.0675051940357728,
+      "signed_rank": 24,
+      "direction": "UP"
+    },
+    {
+      "gene": "PLP2",
+      "mouse_gene": "Plp2",
+      "logFC": 0.472332798700709,
+      "P_Value": 0.0039129622839973,
+      "adj_P_Val": 0.0684437913020137,
+      "signed_rank": 23,
+      "direction": "UP"
+    },
+    {
+      "gene": "MCUR1",
+      "mouse_gene": "Mcur1",
+      "logFC": -0.468845267063907,
+      "P_Value": 0.0006522847566865,
+      "adj_P_Val": 0.0239094111698723,
+      "signed_rank": -24,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "TLR4",
+      "mouse_gene": "Tlr4",
+      "logFC": 0.465414334541332,
+      "P_Value": 0.0003764193831321,
+      "adj_P_Val": 0.0171052740625487,
+      "signed_rank": 22,
+      "direction": "UP"
+    },
+    {
+      "gene": "CORO1A",
+      "mouse_gene": "Coro1a",
+      "logFC": 0.460962499821324,
+      "P_Value": 0.0025893505390234,
+      "adj_P_Val": 0.0531578019402124,
+      "signed_rank": 21,
+      "direction": "UP"
+    },
+    {
+      "gene": "CTTN",
+      "mouse_gene": "Cttn",
+      "logFC": 0.460887723992464,
+      "P_Value": 0.0013125461052042,
+      "adj_P_Val": 0.035508087190228,
+      "signed_rank": 20,
+      "direction": "UP"
+    },
+    {
+      "gene": "NFKB2",
+      "mouse_gene": "Nfkb2",
+      "logFC": 0.458856278253247,
+      "P_Value": 0.0003104442061962,
+      "adj_P_Val": 0.0154550468998201,
+      "signed_rank": 19,
+      "direction": "UP"
+    },
+    {
+      "gene": "RUVBL1",
+      "mouse_gene": "Ruvbl1",
+      "logFC": 0.453306423870405,
+      "P_Value": 0.006425586536256,
+      "adj_P_Val": 0.0909596016171307,
+      "signed_rank": 18,
+      "direction": "UP"
+    },
+    {
+      "gene": "HERPUD1",
+      "mouse_gene": "Herpud1",
+      "logFC": -0.436480698777167,
+      "P_Value": 0.0005818692948745,
+      "adj_P_Val": 0.0224476229077403,
+      "signed_rank": -23,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "XBP1",
+      "mouse_gene": "Xbp1",
+      "logFC": 0.429959309501497,
+      "P_Value": 0.0041993225204212,
+      "adj_P_Val": 0.0717950423247817,
+      "signed_rank": 17,
+      "direction": "UP"
+    },
+    {
+      "gene": "PWP1",
+      "mouse_gene": "Pwp1",
+      "logFC": 0.416730818942154,
+      "P_Value": 0.0022345651657994,
+      "adj_P_Val": 0.0482307591224324,
+      "signed_rank": 16,
+      "direction": "UP"
+    },
+    {
+      "gene": "FBXO21",
+      "mouse_gene": "Fbxo21",
+      "logFC": -0.416045616001022,
+      "P_Value": 0.005923079778683,
+      "adj_P_Val": 0.086874633297823,
+      "signed_rank": -22,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "ABCC5",
+      "mouse_gene": "Abcc5",
+      "logFC": -0.414637740312072,
+      "P_Value": 0.0036346042660902,
+      "adj_P_Val": 0.0657530777612026,
+      "signed_rank": -21,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "ZMIZ1",
+      "mouse_gene": "Zmiz1",
+      "logFC": 0.41158679175444,
+      "P_Value": 0.0004540940824513,
+      "adj_P_Val": 0.0192316737169053,
+      "signed_rank": 15,
+      "direction": "UP"
+    },
+    {
+      "gene": "TXLNA",
+      "mouse_gene": "Txlna",
+      "logFC": 0.410292483073548,
+      "P_Value": 0.0050577341985677,
+      "adj_P_Val": 0.0790259943023778,
+      "signed_rank": 14,
+      "direction": "UP"
+    },
+    {
+      "gene": "GABPB1",
+      "mouse_gene": "Gabpb1",
+      "logFC": 0.409559707230928,
+      "P_Value": 0.0049277897739211,
+      "adj_P_Val": 0.0780062099657017,
+      "signed_rank": 13,
+      "direction": "UP"
+    },
+    {
+      "gene": "CDCA4",
+      "mouse_gene": "Cdca4",
+      "logFC": 0.407582504053604,
+      "P_Value": 0.0088382557683197,
+      "adj_P_Val": 0.109270167149612,
+      "signed_rank": 12,
+      "direction": "UP"
+    },
+    {
+      "gene": "PTPN12",
+      "mouse_gene": "Ptpn12",
+      "logFC": 0.403946337142315,
+      "P_Value": 0.0020330605610109,
+      "adj_P_Val": 0.0455993897008762,
+      "signed_rank": 11,
+      "direction": "UP"
+    },
+    {
+      "gene": "USP6NL",
+      "mouse_gene": "Usp6nl",
+      "logFC": 0.397594067458746,
+      "P_Value": 0.003171330648802,
+      "adj_P_Val": 0.0603106131650051,
+      "signed_rank": 10,
+      "direction": "UP"
+    },
+    {
+      "gene": "EIF4EBP1",
+      "mouse_gene": "Eif4ebp1",
+      "logFC": 0.396420535433494,
+      "P_Value": 0.0015674131465101,
+      "adj_P_Val": 0.0394424377451088,
+      "signed_rank": 9,
+      "direction": "UP"
+    },
+    {
+      "gene": "ABHD6",
+      "mouse_gene": "Abhd6",
+      "logFC": -0.369696766501544,
+      "P_Value": 0.0081898873878136,
+      "adj_P_Val": 0.103992990681557,
+      "signed_rank": -20,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "STAT5B",
+      "mouse_gene": "Stat5b",
+      "logFC": -0.365875713722696,
+      "P_Value": 0.0049493075758055,
+      "adj_P_Val": 0.0780062099657017,
+      "signed_rank": -19,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "CSNK2A2",
+      "mouse_gene": "Csnk2a2",
+      "logFC": 0.362483475123915,
+      "P_Value": 0.0051796202676956,
+      "adj_P_Val": 0.0800021448848237,
+      "signed_rank": 8,
+      "direction": "UP"
+    },
+    {
+      "gene": "HIF1A",
+      "mouse_gene": "Hif1a",
+      "logFC": 0.360057247157902,
+      "P_Value": 4.45763287860625e-05,
+      "adj_P_Val": 0.0048588198376808,
+      "signed_rank": 7,
+      "direction": "UP"
+    },
+    {
+      "gene": "DNAJA3",
+      "mouse_gene": "Dnaja3",
+      "logFC": -0.359297972533504,
+      "P_Value": 0.0059627229105763,
+      "adj_P_Val": 0.0872706653555018,
+      "signed_rank": -18,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "FZD1",
+      "mouse_gene": "Fzd1",
+      "logFC": 0.358607690029917,
+      "P_Value": 0.0093464620405895,
+      "adj_P_Val": 0.112486310296711,
+      "signed_rank": 6,
+      "direction": "UP"
+    },
+    {
+      "gene": "TEX10",
+      "mouse_gene": "Tex10",
+      "logFC": 0.35698784437208,
+      "P_Value": 0.0011286502988293,
+      "adj_P_Val": 0.0326913953688905,
+      "signed_rank": 5,
+      "direction": "UP"
+    },
+    {
+      "gene": "ABCB6",
+      "mouse_gene": "Abcb6",
+      "logFC": -0.353751835858171,
+      "P_Value": 0.0055570173344012,
+      "adj_P_Val": 0.0839429824912108,
+      "signed_rank": -17,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "MAP2K5",
+      "mouse_gene": "Map2k5",
+      "logFC": -0.347561037635804,
+      "P_Value": 0.0029859117688919,
+      "adj_P_Val": 0.0583130146119538,
+      "signed_rank": -16,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "PDHX",
+      "mouse_gene": "Pdhx",
+      "logFC": -0.345044323818069,
+      "P_Value": 0.002427133221233,
+      "adj_P_Val": 0.0509307609446301,
+      "signed_rank": -15,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "TJP1",
+      "mouse_gene": "Tjp1",
+      "logFC": -0.337089199982913,
+      "P_Value": 0.0032236602166411,
+      "adj_P_Val": 0.060803281499671,
+      "signed_rank": -14,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "GSTZ1",
+      "mouse_gene": "Gstz1",
+      "logFC": -0.322479738771481,
+      "P_Value": 0.0079626420901927,
+      "adj_P_Val": 0.102681393329945,
+      "signed_rank": -13,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "LPGAT1",
+      "mouse_gene": "Lpgat1",
+      "logFC": -0.316992482700073,
+      "P_Value": 0.0011707420561312,
+      "adj_P_Val": 0.0332137917568196,
+      "signed_rank": -12,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "EXT1",
+      "mouse_gene": "Ext1",
+      "logFC": 0.315185837147508,
+      "P_Value": 0.001010084552199,
+      "adj_P_Val": 0.0305831156082502,
+      "signed_rank": 4,
+      "direction": "UP"
+    },
+    {
+      "gene": "MPC2",
+      "mouse_gene": "Mpc2",
+      "logFC": -0.314211643185415,
+      "P_Value": 0.0058735776578985,
+      "adj_P_Val": 0.0865162114474242,
+      "signed_rank": -11,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "SLC5A6",
+      "mouse_gene": "Slc5a6",
+      "logFC": -0.31413200854159,
+      "P_Value": 0.0066341035535338,
+      "adj_P_Val": 0.0922095869756281,
+      "signed_rank": -10,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "MAP3K4",
+      "mouse_gene": "Map3k4",
+      "logFC": -0.304098623930035,
+      "P_Value": 0.0053681153210111,
+      "adj_P_Val": 0.081625307120515,
+      "signed_rank": -9,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "IL13RA1",
+      "mouse_gene": "Il13ra1",
+      "logFC": 0.303166626234587,
+      "P_Value": 0.0015626361031398,
+      "adj_P_Val": 0.039370065323632,
+      "signed_rank": 3,
+      "direction": "UP"
+    },
+    {
+      "gene": "CAST",
+      "mouse_gene": "Cast",
+      "logFC": 0.299964440332062,
+      "P_Value": 0.0041451488576193,
+      "adj_P_Val": 0.0711691350089283,
+      "signed_rank": 2,
+      "direction": "UP"
+    },
+    {
+      "gene": "NCK1",
+      "mouse_gene": "Nck1",
+      "logFC": -0.296851532494108,
+      "P_Value": 0.0086846376882728,
+      "adj_P_Val": 0.10834870272538,
+      "signed_rank": -8,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "FKBP4",
+      "mouse_gene": "Fkbp4",
+      "logFC": -0.295758677355092,
+      "P_Value": 0.0033049835114943,
+      "adj_P_Val": 0.0617788960299664,
+      "signed_rank": -7,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "UBE2J1",
+      "mouse_gene": "Ube2j1",
+      "logFC": 0.288751482021105,
+      "P_Value": 0.0019778627750564,
+      "adj_P_Val": 0.0449632690136318,
+      "signed_rank": 1,
+      "direction": "UP"
+    },
+    {
+      "gene": "AGL",
+      "mouse_gene": "Agl",
+      "logFC": -0.262961541495281,
+      "P_Value": 0.0053642236009388,
+      "adj_P_Val": 0.081625307120515,
+      "signed_rank": -6,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "TRAK2",
+      "mouse_gene": "Trak2",
+      "logFC": -0.247909948549367,
+      "P_Value": 0.0010946363820302,
+      "adj_P_Val": 0.0320649497480145,
+      "signed_rank": -5,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "DECR1",
+      "mouse_gene": "Decr1",
+      "logFC": -0.239005384064926,
+      "P_Value": 0.0070835140264748,
+      "adj_P_Val": 0.0961217572075935,
+      "signed_rank": -4,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "CHP1",
+      "mouse_gene": "Chp1",
+      "logFC": -0.225211053091058,
+      "P_Value": 0.0071980808945743,
+      "adj_P_Val": 0.0968001657965162,
+      "signed_rank": -3,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "FHL2",
+      "mouse_gene": "Fhl2",
+      "logFC": -0.224293107753127,
+      "P_Value": 0.0007494983491828,
+      "adj_P_Val": 0.0259133736420326,
+      "signed_rank": -2,
+      "direction": "DOWN"
+    },
+    {
+      "gene": "DLD",
+      "mouse_gene": "Dld",
+      "logFC": -0.217149362740335,
+      "P_Value": 0.0037416451585372,
+      "adj_P_Val": 0.0668589052918945,
+      "signed_rank": -1,
+      "direction": "DOWN"
+    }
+  ]
+}

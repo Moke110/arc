@@ -5,7 +5,8 @@ source "$HOME/miniconda3/etc/profile.d/conda.sh"
 conda activate arc
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+WORKFLOW_ROOT="$(dirname "$SCRIPT_DIR")"
+XPERT_ROOT="${XPERT_ROOT:-$(cd "$WORKFLOW_ROOT/../../pert_model/xpert" && pwd)}"
 
 PRETRAINED_MODEL="${1:?Usage: run.sh <pretrained_model_path> [dataset] [split_method] [config] [pretrain_dataset]}"
 DATASET="${2:-cdsdb}"
@@ -34,10 +35,14 @@ DRUG_EMBEDS="${DRUG_EMBEDS:-unimol,HG}"
 # primary molecular feature
 DRUG_FEAT="${DRUG_FEAT:-unimol}"
 
-python -m src.train \
+# Run from the XPert library so `python -m src.train` resolves; the workflow
+# config is passed as an absolute path (config resolution is root-aware in
+# src/config.py, so its relative paths resolve against the workflow root).
+cd "$XPERT_ROOT"
+PYTHONPATH="$XPERT_ROOT" python -m src.train \
     --mode train \
     --model XPert \
-    --config "${CONFIG}" \
+    --config "${WORKFLOW_ROOT}/${CONFIG}" \
     --drug_feat "${DRUG_FEAT}" \
     --drug_embeds "${DRUG_EMBEDS}" \
     --split_method "${SPLIT_METHOD}" \

@@ -11,7 +11,7 @@ model:
     hidden_size: 256
     trt_structure: CA+SA+SA+CA
     ctl_structure: SA+SA+SA+SA
-    ppi_gene_vector_path: drug_embeddings/PPI_gene_vector_128d.npy
+    ppi_gene_vector_path: ../../pert_model/xpert/metadata/PPI_gene_vector_128d.npy
 
 dataset:
   n_bins: 128

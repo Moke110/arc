@@ -23,7 +23,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+WORKFLOW_ROOT="$(dirname "$SCRIPT_DIR")"
+XPERT_ROOT="${XPERT_ROOT:-$(cd "$WORKFLOW_ROOT/../../pert_model/xpert" && pwd)}"
 
 # ---------------------------------------------------------------------------
 # Parse arguments
@@ -62,10 +63,28 @@ done
 # ---------------------------------------------------------------------------
 # Run
 # ---------------------------------------------------------------------------
-cd "$PROJECT_ROOT"
+# prediction_root / input CSVs are resolved relative to the workflow root.
+PREDICTION_ROOT_ABS="${PREDICTION_ROOT}"
+case "$PREDICTION_ROOT_ABS" in
+    /*) ;;
+    *) PREDICTION_ROOT_ABS="${WORKFLOW_ROOT}/${PREDICTION_ROOT_ABS}" ;;
+esac
+case "$CTL_CSV" in
+    /*) ;;
+    *) CTL_CSV="${PREDICTION_ROOT_ABS}/${CTL_CSV}" ;;
+esac
+case "$DRUG_CSV" in
+    /*) ;;
+    *) DRUG_CSV="${PREDICTION_ROOT_ABS}/${DRUG_CSV}" ;;
+esac
+case "$MODEL_PATH" in
+    /*) ;;
+    *) MODEL_PATH="${WORKFLOW_ROOT}/${MODEL_PATH}" ;;
+esac
 
-python -m src.predict \
-    --prediction_root "$PREDICTION_ROOT" \
+cd "$XPERT_ROOT"
+PYTHONPATH="$XPERT_ROOT" python -m src.predict \
+    --prediction_root "$PREDICTION_ROOT_ABS" \
     --ctl_csv "$CTL_CSV" \
     --drug_csv "$DRUG_CSV" \
     --output_csv "$OUTPUT_CSV" \
@@ -73,4 +92,5 @@ python -m src.predict \
     --time_idx "$TIME_IDX" \
     --model_path "$MODEL_PATH" \
     --device "$DEVICE" \
-    --batch_size "$BATCH_SIZE"
+    --batch_size "$BATCH_SIZE" \
+    --config "${WORKFLOW_ROOT}/finetune/config/dtoxs"

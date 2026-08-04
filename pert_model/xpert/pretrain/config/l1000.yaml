@@ -27,16 +27,16 @@ dataset:
     num_cell_id: 240
     num_tissue_id: 21
 
-  l1000_sdst_data_root: finetune/data/l1000_sdst_78453.h5ad
-  l1000_mdmt_data_root: finetune/data/l1000_mdmt_68830_subset.h5ad
+  l1000_sdst_data_root: ../../miri_reposition/xpert-fda-v1/finetune/data/l1000_sdst_78453.h5ad
+  l1000_mdmt_data_root: ../../miri_reposition/xpert-fda-v1/finetune/data/l1000_mdmt_68830_subset.h5ad
   l1000_mdmt_pretrain_data_root: pretrain/data/l1000_mdmt_268022_pretrain.h5ad
   l1000_mdmt_full_data_root: pretrain/data/l1000_mdmt_full_336852.h5ad
   l1000_mdmt_example_data_root: pretrain/data/l1000_mdmt_example.h5ad
 
 drug_embeddings:
-  unimol: drug_embeddings/all_drugs_unimol_arr.npy
-  smi: drug_embeddings/all_drugs_idx2smi.npy
-  HG: drug_embeddings/all_drugs_idx2HG.npy
+  unimol: ../../miri_reposition/xpert-fda-v1/data/embeddings/all_drugs_unimol_arr.npy
+  smi: ../../miri_reposition/xpert-fda-v1/data/embeddings/all_drugs_idx2smi.npy
+  HG: ../../miri_reposition/xpert-fda-v1/data/embeddings/all_drugs_idx2HG.npy
 
 split_methods:
   pretrain_split:

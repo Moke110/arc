@@ -225,23 +225,45 @@ def predict_deg(models, ctl_expr_1d, drug_items, pert_dose_idx, pert_time_idx,
     drug_smiles = [d[1] for d in drug_items]
     drug_indices = np.array([d[2] for d in drug_items], dtype=np.int64)
 
-    # Generate or load UniMol features
-    unimol_cache = None
     if process_dir:
         os.makedirs(process_dir, exist_ok=True)
-        unimol_cache = os.path.join(process_dir, "unimol_feats.npy")
 
-    unimol_feat_dict = _get_unimol_features(drug_smiles, unimol_cache)
+    # Index the precomputed UniMol array by drug index so finetune and predict
+    # consume identical drug features (see docs/adr/0002). Falls back to SMILES
+    # generation only for drugs without a precomputed index.
+    unimol_arr = _load_unimol_array(config)
 
-    # Build feature array, tracking which drugs succeeded
-    valid_mask = np.zeros(n_drugs, dtype=bool)
-    feat_list = []
-    for i, smi in enumerate(drug_smiles):
-        if smi in unimol_feat_dict:
-            valid_mask[i] = True
-            feat_list.append(unimol_feat_dict[smi])
+    valid_mask = (drug_indices >= 0) & (drug_indices < unimol_arr.shape[0])
+    missing_idx = np.where(~valid_mask)[0]
+    if len(missing_idx) > 0:
+        logger.warning(f"{len(missing_idx)}/{n_drugs} drugs have no precomputed UniMol index")
+        # Attempt SMILES-based fallback for those drugs
+        fallback = _get_unimol_features(
+            [drug_smiles[i] for i in missing_idx],
+            os.path.join(process_dir, "unimol_feats.npy") if process_dir else None,
+        )
+        for k, i in enumerate(missing_idx):
+            smi = drug_smiles[i]
+            if smi in fallback:
+                valid_mask[i] = True
+        # mark valid_mask False where fallback also failed
+        for i in missing_idx:
+            if drug_smiles[i] not in fallback:
+                valid_mask[i] = False
 
-    n_skipped = np.sum(~valid_mask)
+    valid_items = [drug_items[i] for i in np.where(valid_mask)[0]]
+    valid_indices = drug_indices[valid_mask]
+
+    # Build feature array in order: precomputed rows first, then fallback rows
+    feat_rows = []
+    for i in np.where(valid_mask)[0]:
+        if drug_indices[i] >= 0 and drug_indices[i] < unimol_arr.shape[0]:
+            feat_rows.append(unimol_arr[drug_indices[i]])
+        else:
+            feat_rows.append(fallback[drug_smiles[i]])
+    drug_feats = np.stack(feat_rows, axis=0).astype(np.float32)
+
+    n_skipped = n_drugs - len(valid_items)
     if n_skipped > 0:
         logger.warning(f"Skipping {n_skipped}/{n_drugs} drugs without UniMol features")
         skipped = [(drug_names[i], drug_smiles[i]) for i in np.where(~valid_mask)[0]]
@@ -249,9 +271,6 @@ def predict_deg(models, ctl_expr_1d, drug_items, pert_dose_idx, pert_time_idx,
             pd.DataFrame(skipped, columns=["drug_name", "smiles"]).to_csv(
                 os.path.join(process_dir, "skipped_drugs.csv"), index=False)
 
-    drug_feats = np.stack(feat_list, axis=0).astype(np.float32)
-    valid_items = [drug_items[i] for i in np.where(valid_mask)[0]]
-    valid_indices = drug_indices[valid_mask]
     valid_n = len(valid_items)
 
     if valid_n == 0:
@@ -313,6 +332,22 @@ def predict_deg(models, ctl_expr_1d, drug_items, pert_dose_idx, pert_time_idx,
     gene_names = l1000_meta.sort_values("gene_idx")["gene_symbol"].tolist()
 
     return deg_mean, valid_items, gene_names
+
+
+def _load_unimol_array(config):
+    """Load the precomputed all-drug UniMol feature array.
+
+    Returns np.ndarray of shape (n_drugs, max_atoms, 514). The array is indexed
+    by the shared drug index (see all_drugs_idx2smi.npy), so finetune and
+    predict consume byte-identical drug features.
+    """
+    path = config['drug_embeddings']['unimol']
+    if not os.path.isabs(path):
+        path = str(PROJECT_ROOT / path)
+    logger.info(f"Loading precomputed UniMol array from {path}")
+    arr = np.load(path, allow_pickle=True)
+    logger.info(f"UniMol array shape: {arr.shape}")
+    return arr
 
 
 def _get_unimol_features(smiles_list, cache_path=None):

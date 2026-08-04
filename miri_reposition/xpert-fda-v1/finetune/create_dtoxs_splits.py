@@ -19,7 +19,7 @@ Only small-molecule drugs with valid pert_idx (>= 0) are included in splits.
 Non-small-molecule perturbations (antibodies, proteins, unmatched) are excluded.
 
 Usage:
-    python finetune/create_dtoxs_splits.py [--data finetune/data/dtoxs.h5ad]
+    python finetune/create_dtoxs_splits.py --data finetune/data/dtoxs.h5ad
 """
 
 import argparse
@@ -144,7 +144,7 @@ def create_dtoxs_full_split(adata):
 def main():
     parser = argparse.ArgumentParser(description="Generate warm-start and dtoxs splits in dtoxs.h5ad")
     parser.add_argument("--data", default="finetune/data/dtoxs.h5ad",
-                        help="Path to dtoxs.h5ad relative to PROJECT_ROOT (xpert/)")
+                        help="Path to dtoxs.h5ad relative to PROJECT_ROOT (workflow root)")
     parser.add_argument("--seed", type=int, default=2024, help="Random seed")
     parser.add_argument("--n_folds", type=int, default=10, help="Number of warm-start folds")
     args = parser.parse_args()

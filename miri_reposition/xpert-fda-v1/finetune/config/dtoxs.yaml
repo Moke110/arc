@@ -11,7 +11,7 @@ model:
     hidden_size: 256
     trt_structure: CA+SA+SA+CA
     ctl_structure: SA+SA+SA+SA
-    ppi_gene_vector_path: drug_embeddings/PPI_gene_vector_128d.npy
+    ppi_gene_vector_path: ../../pert_model/xpert/metadata/PPI_gene_vector_128d.npy
 dataset:
   n_bins: 128
   gene_num: 978
@@ -26,9 +26,9 @@ dataset:
     num_tissue_id: 1
   DTOX_data_root: finetune/data/dtoxs.h5ad
 drug_embeddings:
-  unimol: drug_embeddings/all_drugs_unimol_arr.npy
-  smi: drug_embeddings/all_drugs_idx2smi.npy
-  HG: drug_embeddings/all_drugs_idx2HG.npy
+  unimol: data/embeddings/all_drugs_unimol_arr.npy
+  smi: data/embeddings/all_drugs_idx2smi.npy
+  HG: data/embeddings/all_drugs_idx2HG.npy
 split_methods:
   cold-drug:
     folds:
