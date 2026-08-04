@@ -10,8 +10,8 @@ AI-driven MIRI drug discovery research pipeline: drug SMILES → HG (biological)
 
 ## Environment
 
-- All subprojects assume a conda env named **`xpert`** (Python 3.13); every `run.sh` calls `conda activate xpert`. The env is NOT currently installed on this machine (only base/KPGT/biomni_e1/dargus_e1/hermes_test exist) — create it before running scripts.
-- `fda_miri_vs/` R ortholog mapping (homologene) also uses conda env `xpert` (R + homologene).
+- All subprojects assume a single conda env named **`arc`** (Python 3.13); every `run.sh` calls `conda activate arc`. It is created from the root `environment.yml` (see `docs/adr/0003-conda-env-arc.md`). The env is NOT currently installed on this machine (only base/KPGT/biomni_e1/dargus_e1/hermes_test exist) — create it before running scripts.
+- `disease_data/miri/` R ortholog mapping (homologene) also uses conda env `arc` (R + homologene).
 - Subprojects exchange data only via pre-computed files (`.npy`, `.csv`, `.h5ad`); there is no shared runtime between them.
 
 ## Entrypoints

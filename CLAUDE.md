@@ -52,8 +52,8 @@ Drug SMILES → UniMol (3D molecular features) + HG (biological embeddings) → 
 - xpert → fda_miri_vs/ (3127 drugs × 978 genes DEG predictions)
 - GEO → fda_miri_vs/geo/ — GSE160516, GSE108940, GSE137293 raw/processed data
 - Features exchanged as pre-computed .npy files — no shared runtime.
-- All subprojects use conda env xpert (Python 3.13).
-- fda_miri_vs/ R ortholog mapping uses conda env xpert (R + homologene).
+- All subprojects use conda env arc (Python 3.13), created from root environment.yml.
+- fda_miri_vs/ R ortholog mapping uses conda env arc (R + homologene).
 
 ## Key Conventions
 

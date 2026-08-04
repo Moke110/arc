@@ -1,0 +1,59 @@
+# Shared conda environment for the ARC drug discovery workspace.
+#
+# Create:  conda env create -f environment.yml
+# Activate: conda activate arc
+#
+# This environment is the single runtime for every component and workflow in
+# the repository (pert_model/xpert, drug_emb_model/hg, miri_reposition/xpert-fda-v1,
+# disease_data R ortholog mapping). It is the renamed successor of the old
+# `xpert` environment, and all run.sh / notebook / config references to
+# `conda activate xpert` point here.
+name: arc
+channels:
+  - pytorch
+  - pyg
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # Core scientific stack (Python 3.13)
+  - python=3.13
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - statsmodels
+  - pyyaml
+  - tqdm
+  - h5py
+  - anndata
+  - requests
+  - openpyxl
+  # Jupyter (screen.ipynb orchestrator, reproductions)
+  - jupyter
+  - notebook
+  - ipykernel
+  # Perturbation prediction (pert_model/xpert)
+  - pytorch::pytorch
+  - pyg::pyg
+  - scanpy
+  - rdkit
+  - pip
+  # R for disease-data ortholog mapping (disease_data/miri scripts)
+  - r-base>=4.4
+  - r-homologene
+  - r-annotate
+  - bioconductor-biobase
+  - bioconductor-limma
+  - bioconductor-org.hs.eg.db
+  - bioconductor-org.mm.eg.db
+  - bioconductor-org.rn.eg.db
+  - pip:
+      - unimol_tools
+      # gpt-researcher dependency set (miri_reposition/xpert-fda-v1 stage 09)
+      # - gpt-researcher
+      # - langchain
+      # - langchain-openai
+      # - langchain-community

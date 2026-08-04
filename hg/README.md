@@ -300,7 +300,7 @@ HG 的独特价值在于：它提供了**生物学视角**的药物表征。KPGT
 - **PyTorch Geometric**: 2.7（图神经网络库）
 
 ```bash
-conda activate xpert
+conda activate arc
 cd hg/
 ```
 
@@ -693,7 +693,7 @@ HG 使用三重早停策略，防止过拟合和无效训练：
 
 ```bash
 cd hg/
-conda activate xpert
+conda activate arc
 
 # 默认参数训练
 bash run.sh
@@ -951,7 +951,7 @@ hg/
 
 ```bash
 # 1. 激活环境
-conda activate xpert
+conda activate arc
 
 # 2. 进入目录
 cd hg/

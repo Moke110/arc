@@ -1,4 +1,4 @@
-# references/ — 参考文献存档
+# reference/ — 参考文献存档
 
 ## 目录用途
 

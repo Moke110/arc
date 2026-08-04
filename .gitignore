@@ -66,3 +66,11 @@ Thumbs.db
 
 # Claude
 .claude/
+
+# Local agent tooling & scratch (not committed)
+.serena/
+.uploads/
+.scratch/
+
+# Frozen pre-refactor MIRI pipeline snapshot (large regenerable artifacts)
+miri_reposition/xpert-fda-v1_history/

@@ -454,7 +454,7 @@ deg_zscore[g] = (deg[g] - mean(deg)) / std(deg)   # 对每个药物单独计算
 ### 环境准备
 
 ```bash
-conda activate xpert   # Python 3.13, PyTorch 2.0+
+conda activate arc   # Python 3.13, PyTorch 2.0+
 
 # 确保以下包已安装
 pip install torch scanpy numpy scipy pandas scikit-learn matplotlib unimol-tools pyyaml tqdm

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source "$HOME/miniconda3/etc/profile.d/conda.sh"
-conda activate xpert
+conda activate arc
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
