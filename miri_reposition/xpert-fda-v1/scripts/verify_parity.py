@@ -72,13 +72,16 @@ def verify_reference_genesets():
 def _run_frozen_script(script, args):
     """Run a frozen scoring script as a subprocess and load its output CSV."""
     import tempfile
-    out = Path(tempfile.mktemp(suffix=".csv"))
-    cmd = [sys.executable, str(HISTORY / "scripts" / script), *args,
-           "--output", str(out)]
-    subprocess.run(cmd, check=True, capture_output=True)
     import pandas as pd
-    df = pd.read_csv(out)
-    out.unlink()
+    with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as tmp:
+        out = Path(tmp.name)
+    try:
+        cmd = [sys.executable, str(HISTORY / "scripts" / script), *args,
+               "--output", str(out)]
+        subprocess.run(cmd, check=True, capture_output=True)
+        df = pd.read_csv(out)
+    finally:
+        out.unlink(missing_ok=True)
     return df
 
 
@@ -133,8 +136,7 @@ def verify_ranked_output():
     # zscore inside scoring), then apply stage 10's filter/rank logic.
     ref = scoring.run_scoring(str(DEG), str(GENE_SET), str(RANK_REF),
                               str(PATHWAYS), zscore=True)
-    with open(PATHWAYS) as f:
-        critical = [p["name"] for p in json.load(f)["pathways"] if p.get("critical")]
+    critical = scoring.load_critical_names(PATHWAYS)
 
     wcs_pass = ref[ref["WCS"] < 0].copy()
     n_positive = pd.Series(0, index=wcs_pass.index)

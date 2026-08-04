@@ -42,10 +42,20 @@ def enrichment_score(drug_sorted_deg, hit_mask, weight=1.0):
 
 # ── Data I/O ───────────────────────────────────────────────────────────
 
+def _gene_to_idx(gene_order):
+    """Map L1000 gene symbols to their column index (shared by all loaders)."""
+    return {g: i for i, g in enumerate(gene_order)}
+
+
+def _zscore(series):
+    """Standardize a pandas Series across rows."""
+    return (series - series.mean()) / series.std()
+
+
 def load_gene_set(json_path, gene_order):
     with open(json_path) as f:
         data = json.load(f)
-    gene_to_idx = {g: i for i, g in enumerate(gene_order)}
+    gene_to_idx = _gene_to_idx(gene_order)
     up_idx = np.array([gene_to_idx[g] for g in data.get("up_genes", []) if g in gene_to_idx], dtype=int)
     down_idx = np.array([gene_to_idx[g] for g in data.get("down_genes", []) if g in gene_to_idx], dtype=int)
     return up_idx, down_idx
@@ -54,7 +64,7 @@ def load_gene_set(json_path, gene_order):
 def load_rank_reference(json_path, gene_order):
     with open(json_path) as f:
         data = json.load(f)
-    gene_to_idx = {g: i for i, g in enumerate(gene_order)}
+    gene_to_idx = _gene_to_idx(gene_order)
     signed_ranks = np.zeros(len(gene_order), dtype=float)
     for entry in data.get("genes", []):
         if entry["gene"] in gene_to_idx:
@@ -65,7 +75,7 @@ def load_rank_reference(json_path, gene_order):
 def load_pathway_gene_sets(json_path, gene_order, min_genes=6):
     with open(json_path) as f:
         data = json.load(f)
-    gene_to_idx = {g: i for i, g in enumerate(gene_order)}
+    gene_to_idx = _gene_to_idx(gene_order)
     pathways = []
     for pw in data.get("pathways", []):
         genes = pw.get("genes", [])
@@ -77,6 +87,13 @@ def load_pathway_gene_sets(json_path, gene_order, min_genes=6):
                 "gene_indices": indices,
             })
     return pathways
+
+
+def load_critical_names(pathways_json):
+    """Names of the curated critical MIRI pathways (shared by scoring + filtering)."""
+    with open(pathways_json) as f:
+        data = json.load(f)
+    return [p["name"] for p in data["pathways"] if p.get("critical")]
 
 
 def signed_rank_by_abs_value(values):
@@ -117,8 +134,8 @@ def score_all_wcs_rges(deg_csv, gene_set, zscore=False):
             "RGES": abs(r["ES_up"]) - abs(r["ES_down"]),
         })
     s = pd.DataFrame(rows)
-    s["WCS_zs"] = (s["WCS"] - s["WCS"].mean()) / s["WCS"].std()
-    s["RGES_zs"] = (s["RGES"] - s["RGES"].mean()) / s["RGES"].std()
+    s["WCS_zs"] = _zscore(s["WCS"])
+    s["RGES_zs"] = _zscore(s["RGES"])
     return s
 
 
@@ -155,7 +172,7 @@ def score_all_zhang(deg_csv, rank_ref, zscore=False):
             "Zhang_c": r["c"], "Zhang_p_approx": r["p_approx"],
         })
     s = pd.DataFrame(rows)
-    s["Zhang_zs"] = (s["Zhang_c"] - s["Zhang_c"].mean()) / s["Zhang_c"].std()
+    s["Zhang_zs"] = _zscore(s["Zhang_c"])
     return s
 
 
@@ -196,8 +213,7 @@ def score_all_pathways(deg_csv, pathways_json, zscore=False):
         row["pathway_reversal"] = n_eff / len(pathways) if pathways else 0.0
         rows.append(row)
     s = pd.DataFrame(rows)
-    s["pathway_reversal_zs"] = ((s["pathway_reversal"] - s["pathway_reversal"].mean())
-                                / s["pathway_reversal"].std())
+    s["pathway_reversal_zs"] = _zscore(s["pathway_reversal"])
     for name in critical:
         col = f"{name}_efficacy"
         if col in s.columns:

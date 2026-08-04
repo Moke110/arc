@@ -30,17 +30,12 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from utils import WORKFLOW_ROOT  # noqa: E402
+from scoring import load_critical_names  # noqa: E402
 
 SCORES = WORKFLOW_ROOT / "data" / "scores" / "1-scores.csv"
 PATHWAYS = WORKFLOW_ROOT / "reference-genesets" / "MIRI_pathways.json"
 RANKED_OUT = WORKFLOW_ROOT / "data" / "ranked" / "ranked_drugs.csv"
 MIN_CRITICAL = 6
-
-
-def load_critical_names(pathways_json):
-    with open(pathways_json) as f:
-        data = json.load(f)
-    return [p["name"] for p in data["pathways"] if p.get("critical")]
 
 
 def main():
