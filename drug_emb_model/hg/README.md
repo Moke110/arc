@@ -770,7 +770,7 @@ with torch.no_grad():
 
 ### 7.3 下游集成：XPert
 
-HG 嵌入最终被 XPert 消费，路径为 `xpert/drug_embeddings/all_drugs_idx2HG.npy` (11104, 256)：
+HG 嵌入最终被 XPert 消费，路径为 `miri_reposition/xpert-fda-v1/data/embeddings/all_drugs_idx2HG.npy` (11104, 256)：
 
 - **索引 0–8980**：作者提供的参考嵌入（与 `embeddings/article/HG_drug_embeddings.npy` 完全一致）
 - **索引 8981–11103**：FDA 药物嵌入（HG 微调 + 分位数范数映射生成）
@@ -781,7 +781,7 @@ HG 嵌入与 KPGT 分子图特征 (2304-dim) 和 UniMol 3D 特征 (122×514) 一
 
 | 文件 | 形状 | 说明 |
 |------|------|------|
-| `xpert/drug_embeddings/all_drugs_idx2HG.npy` | (11104, 256) | 全药物 HG 嵌入（XPert 默认使用） |
+| `miri_reposition/xpert-fda-v1/data/embeddings/all_drugs_idx2HG.npy` | (11104, 256) | 全药物 HG 嵌入（XPert 默认使用） |
 | `embeddings/article/HG_drug_embeddings.npy` | (8981, 256) | 作者原始 L1000 参考嵌入 |
 
 ---
@@ -965,13 +965,15 @@ python -m src.query_dti_fda --start 0 --end 2123 --min-pchembl 6.0
 #   b. 计算 DDS 边
 python -m src.compute_dds_fda
 #   c. 微调 + 生成最终嵌入
+#      --embeddings-output 指定全药物 HG 表写入位置 (默认 hg/embeddings/)；
+#      工作流 stage 02 会以工作流 data/embeddings/ 路径调用本命令。
 python -m src.finetune_hg --device cuda:0 --lr 5e-5 --epochs 50 \
-    --update-xpert-embeddings
+    --update-xpert-embeddings --embeddings-output embeddings/all_drugs_idx2HG.npy
 
 # 5. 验证输出嵌入
 python -c "
 import numpy as np
-hg = np.load('../xpert/drug_embeddings/all_drugs_idx2HG.npy')
+hg = np.load('../miri_reposition/xpert-fda-v1/data/embeddings/all_drugs_idx2HG.npy')
 print(f'Shape: {hg.shape}')
 print(f'Train std: {hg[:8981].std():.1f}, FDA std: {hg[8981:].std():.1f}')
 print(f'FDA/Train ratio: {hg[8981:].std()/hg[:8981].std():.3f}')

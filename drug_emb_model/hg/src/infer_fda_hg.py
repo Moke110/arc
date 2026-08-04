@@ -412,7 +412,7 @@ def main():
     import argparse
     ap = argparse.ArgumentParser(description="HG inference for FDA drugs on extended graph")
     ap.add_argument("--data-dir", default=str(HG_ROOT / "data"))
-    ap.add_argument("--kpgt-path", default=str(HG_ROOT.parent / "xpert/drug_embeddings/all_drugs_idx2KPGT.npy"))
+    ap.add_argument("--kpgt-path", default=str(HG_ROOT / "embeddings/all_drugs_idx2KPGT.npy"))
     ap.add_argument("--model-path", default=str(HG_ROOT / "model/20260518_102121/global_fold_early_stop.pth"))
     ap.add_argument("--dti-fda", default=None, help="Path to FDA DTI edge .npy")
     ap.add_argument("--dds-fda", default=None, help="Path to FDA DDS edge .npy")

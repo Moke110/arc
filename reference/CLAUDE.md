@@ -12,4 +12,4 @@ Reference PDF archive. No code-level dependency on the main workflow (drug predi
 
 ## Relation to Main Workflow
 
-These are standalone PDF references, not imported or cited by any code in the repository. For the drug efficacy scoring pipeline, see [xpert_fda-miri_scores/CLAUDE.md](../xpert_fda-miri_scores/CLAUDE.md). For the main workflow, see the root [CLAUDE.md](../CLAUDE.md).
+These are standalone PDF references, not imported or cited by any code in the repository. For the drug efficacy scoring pipeline, see [miri_reposition/xpert-fda-v1/CLAUDE.md](../miri_reposition/xpert-fda-v1/CLAUDE.md). For the main workflow, see the root [CLAUDE.md](../CLAUDE.md).

@@ -54,17 +54,19 @@ Drug SMILES
 | `metrics/` | 评估脚本和结果 |
 | `metrics/evaluate_dtoxs.py` | 标准 DTOXS 评估脚本 |
 | `metrics/evaluate_dtoxs_zscore.py` | Z-score 后处理评估：4 组模型 (deg vs deg-zscore) 双栏比较 |
-| `drug_embeddings/` | 共享药物特征文件（11,104 种药物，索引 0-11103） |
-| `metadata/` | 基因/药物参考信息（L1000 基因符号、Entrez ID） |
+| `metadata/` | 基因/药物参考信息（L1000 基因符号、Entrez ID）+ PPI 基因向量 |
 
-### drug_embeddings/ 详细说明
+注：`finetune/`、`predict/` 和药物嵌入文件已按 ADR 0002 移至工作流
+`miri_reposition/xpert-fda-v1/`（组件即库，工作流生成产物）。PPI 基因向量保留在
+`metadata/PPI_gene_vector_128d.npy`。
+
+### 药物嵌入文件说明（现位于 miri_reposition/xpert-fda-v1/data/embeddings/）
 
 | 文件 | 形状 | 来源 | 说明 |
 |---|---|---|---|
-| `all_drugs_unimol_arr.npy` | 11104×122×514 | UniMol (unimol_tools) | 3D 分子构象特征，全部 11,104 药物标准 UniMolRepr 生成 |
-| `all_drugs_idx2HG.npy` | 11104×256 | hg/ | HG 生物嵌入。训练行 = 作者参考，FDA 行 = HG 微调 + 分位数范数映射 (FDA/Train std=1.000) |
+| `all_drugs_unimol_arr.npy` | 11104×122×514 | UniMol (unimol_tools) | 3D 分子构象特征，全部 11,104 药物标准 UniMolRepr 生成（冻结静态输入） |
+| `all_drugs_idx2HG.npy` | 11104×256 | drug_emb_model/hg | HG 生物嵌入。训练行 = 作者参考，FDA 行 = HG 微调 + 分位数范数映射 (FDA/Train std=1.000)，由工作流 stage 02 生成 |
 | `all_drugs_idx2smi.npy` | 11104 (dict) | ChEMBL | 药物索引到 SMILES 的映射 (索引 0–11103) |
-| `PPI_gene_vector_128d.npy` | 978×128 | STRING | PPI 网络的基因位置编码 |
 
 ## 模型架构
 
@@ -193,11 +195,11 @@ Pert branch (CA+SA+SA+CA) 中，drug-specific gene embedding 会在每个 CA 层
 
 ### 路径解析机制
 
-`src/config.py` 中的 `resolve_paths()` 会将以下相对路径转换为绝对路径：
+`src/config.py` 中的 `resolve_paths()` 会将以下相对路径转换为绝对路径。路径相对于**配置文件所属的工程根目录**解析：模型自有的 pretrain 配置相对于 `pert_model/xpert/`，工作流拥有的 finetune 配置（位于 `miri_reposition/xpert-fda-v1/finetune/config/`）相对于工作流根目录。
 
-- `dataset.*_data_root` → 相对于 `xpert/` 项目根目录
-- `model.ATTN.ppi_gene_vector_path` → 相对于 `xpert/` 项目根目录
-- `drug_embeddings.*` (unimol, smi, HG) → 相对于 `xpert/` 项目根目录
+- `dataset.*_data_root` → 相对于配置文件所属根目录
+- `model.ATTN.ppi_gene_vector_path` → 相对于配置文件所属根目录
+- `drug_embeddings.*` (unimol, smi, HG) → 相对于配置文件所属根目录
 
 ### 数据划分方案 (Split Methods)
 
@@ -340,14 +342,15 @@ bash finetune/run.sh \
 ### 使用方法
 
 ```bash
-cd xpert/
+# FDA 预测已移入工作流 (ADR 0002)。从工作流目录运行:
+cd miri_reposition/xpert-fda-v1/
 
 # 预测 FDA 药物在心肌细胞上的转录组扰动
 bash predict/predict.sh \
-    --prediction_root predict/fda-cm \
-    --ctl_csv cm_ctl_landmark.csv \
-    --drug_csv fda_drugs.csv \
-    --output_csv deg-perturb.csv \
+    --prediction_root data/deg \
+    --ctl_csv data/baseline/cm_ctl_landmark.csv \
+    --drug_csv data/drug_list.csv \
+    --output_csv xpert_fda-cm_deg.csv \
     --dose_idx 0 --time_idx 2 \
     --model_path finetune/output/dtoxs_dtoxs/ \
     --device cuda:0
