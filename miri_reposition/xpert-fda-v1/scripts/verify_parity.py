@@ -13,6 +13,9 @@ Checks:
      (WCS+RGES, Zhang, pathway RGES) exactly on the same DEG input.
   3. The z-scored DEG produced by stage 06 equals per-gene z-scoring of the raw
      predicted DEG (internal consistency).
+  4. The stage-10 filter+rank output matches the same filter applied to the
+     frozen scoring result on identical inputs (the final ranked drug list is
+     the parity seam).
 
 The frozen pipeline's CSVs under miri_reposition/xpert-fda-v1_history/CSVs are
 STALE artifacts (produced from an earlier DEG/reference state); they are not a
@@ -121,6 +124,32 @@ def verify_zscore_consistency():
     return check("z-scored DEG consistent", d < 1e-9, f"max diff {d:.2e}")
 
 
+def verify_ranked_output():
+    print("\n4. Stage 10 ranked output == frozen scoring filters on same inputs")
+    import json
+    import pandas as pd
+
+    # Rebuild the scores the way the frozen pipeline produced them (raw DEG +
+    # zscore inside scoring), then apply stage 10's filter/rank logic.
+    ref = scoring.run_scoring(str(DEG), str(GENE_SET), str(RANK_REF),
+                              str(PATHWAYS), zscore=True)
+    with open(PATHWAYS) as f:
+        critical = [p["name"] for p in json.load(f)["pathways"] if p.get("critical")]
+
+    wcs_pass = ref[ref["WCS"] < 0].copy()
+    n_positive = pd.Series(0, index=wcs_pass.index)
+    for name in critical:
+        n_positive += (wcs_pass[f"{name}_efficacy"] > 0).astype(int)
+    expected = wcs_pass[n_positive >= 6].sort_values(
+        "integrated", ascending=False)["drug_name"].tolist()
+
+    ranked = pd.read_csv(WF / "data/ranked/ranked_drugs.csv")
+    actual = ranked["drug_name"].tolist()
+    same = expected == actual
+    return check("ranked drug list identical to frozen-pipeline filters",
+                 same, f"{len(actual)} drugs")
+
+
 def main():
     print("=" * 60)
     print("Parity verification: refactored vs frozen pipeline")
@@ -129,6 +158,7 @@ def main():
         verify_reference_genesets(),
         verify_scoring_parity(),
         verify_zscore_consistency(),
+        verify_ranked_output(),
     ]
     print("\n" + "=" * 60)
     print(f"RESULT: {'ALL CHECKS PASSED' if all(results) else 'SOME CHECKS FAILED'}")

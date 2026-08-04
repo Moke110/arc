@@ -21,7 +21,6 @@ Usage:
 """
 
 import argparse
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -52,7 +51,13 @@ def intact_hg_table() -> bool:
 
 
 def run_hg_inference(device: str, force: bool) -> None:
-    """Run HG fine-tune + inference to regenerate all_drugs_idx2HG.npy."""
+    """Regenerate all_drugs_idx2HG.npy by fine-tuning HG on the extended graph.
+
+    Per ADR-0002 the workflow owns its artifacts: HG is invoked here with the
+    workflow's embeddings path as the explicit output target, and the resulting
+    table is a workflow artifact (the HG component itself never writes into a
+    workflow directory on its own).
+    """
     if not force and intact_hg_table():
         print(f"Cached HG embeddings intact: {EMBEDDINGS_DIR / HG_EMBEDDINGS} — skipping inference")
         return
@@ -79,14 +84,24 @@ def main():
     parser.add_argument("--device", default="cuda:0", help="Device for HG inference")
     args = parser.parse_args()
 
-    # 1. Freeze static inputs (must already exist — copied at workflow setup).
+    # 1. Arrange the static inputs (must already exist — large gitignored
+    #    artifacts, not committed). Verify presence and shape so a missing file
+    #    fails loudly at the right stage rather than mid-pipeline.
     for name in (UNIMOL_ARR, SMI_MAPPING):
         path = EMBEDDINGS_DIR / name
         if not path.exists():
             print(f"ERROR: missing static input {path}")
-            print("Re-run the workflow setup or copy from the frozen snapshot.")
+            print("The frozen UniMol array / SMILES mapping are large gitignored "
+                  "artifacts and cannot be committed. Provision them (e.g. copy "
+                  "from a prior checkout, or regenerate the UniMol array with "
+                  "unimol_tools) before running the workflow.")
             sys.exit(1)
-        print(f"Static input present: {path}")
+        arr = np.load(path, mmap_mode="r", allow_pickle=True)
+        n = arr.shape[0] if hasattr(arr, "shape") and arr.ndim else len(arr)
+        if n != N_DRUGS_EXPECTED:
+            print(f"ERROR: {name} has {n} drugs, expected {N_DRUGS_EXPECTED}")
+            sys.exit(1)
+        print(f"Static input present: {path} ({n} drugs)")
 
     # 2. HG embeddings (idempotent).
     if args.force or not intact_hg_table():

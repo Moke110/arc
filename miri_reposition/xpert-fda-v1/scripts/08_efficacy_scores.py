@@ -36,14 +36,13 @@ def main():
     parser.add_argument("--output", default=str(OUTPUT))
     parser.add_argument("--no-zscore", action="store_true",
                         help="Disable per-gene z-score normalization")
+    parser.add_argument("--deg-zs", action="store_true", default=True,
+                        help="Input DEG is already z-scored (stage 06 output); "
+                             "do not re-normalize. Pass --no-deg-zs to score the "
+                             "raw predicted DEG (z-scoring applied inside).")
     args = parser.parse_args()
 
-    # The default input (data/deg-zs/) is already z-scored by stage 06, so we
-    # do NOT re-normalize it (double normalization would distort results). The
-    # --deg-csv override lets callers pass the raw predicted DEG, in which case
-    # per-gene z-scoring is applied inside the scorers to match the archived
-    # notebook pipeline.
-    zscore = not args.no_zscore and "deg-zs" not in args.deg_csv
+    zscore = not args.no_zscore and not args.deg_zs
     scores = run_scoring(args.deg_csv, args.gene_set, args.rank_ref,
                          args.pathways, zscore=zscore)
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
