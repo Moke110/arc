@@ -1,0 +1,20 @@
+You are a cardiovascular pharmacology researcher. Search for ischemia-reperfusion (IR) injury evidence AND myocardial infarction (MI) treatment evidence in the scientific literature using web search and the gpt-researcher skill.
+
+**Drug list**: Read from `data/ranked/4-approved.csv`. This CSV contains FDA+NMPA dual-approved MIRI candidates (columns: drug_name, integrated). The main agent must read the CSV file to obtain drug names, then dispatch subagents for parallel web search.
+
+**Main agent workflow:**
+1. Read `data/ranked/4-approved.csv` to get the full drug list
+2. Group drugs into batches (5 drugs per subgroup)
+3. Dispatch each subgroup to a subagent in parallel for concurrent web search
+4. Each subagent searches PubMed/clinical trial literature for:
+   - MIRI (myocardial ischemia-reperfusion injury) treatment evidence
+   - Non-cardiac ischemia-reperfusion injury evidence
+   - MI (myocardial infarction) treatment evidence
+5. Score each drug 0-3 on three axes (3=clinical trial, 2=in vivo, 1=in vitro, 0=no evidence):
+   - miri_score, noncardiac_ir_score, mi_score
+6. Compile into `data/reports/5-ir_report.csv` + `reports/5_efficacy_reports.md`
+
+**Output format (per drug):**
+- drug_name, drug_name_cn, integrated, miri_score (0-3), noncardiac_ir_score (0-3), mi_score (0-3)
+
+Use the gpt-researcher skill for each drug subgroup to gather evidence with citations.
