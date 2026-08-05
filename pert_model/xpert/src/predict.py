@@ -345,7 +345,7 @@ def _load_unimol_array(config):
     if not os.path.isabs(path):
         path = str(PROJECT_ROOT / path)
     logger.info(f"Loading precomputed UniMol array from {path}")
-    arr = np.load(path, allow_pickle=True)
+    arr = np.load(path, allow_pickle=True, mmap_mode='r')
     logger.info(f"UniMol array shape: {arr.shape}")
     return arr
 
@@ -443,8 +443,9 @@ def run_prediction(args):
             raise ValueError(f"Drug CSV must have 'canonical_smiles' or 'smiles' column")
 
     drug_name_col = 'pref_name' if 'pref_name' in drug_df.columns else (
+        'drug_name' if 'drug_name' in drug_df.columns else (
         drug_df.columns[0] if drug_df.columns[0] != 'canonical_smiles' else drug_df.columns[1]
-        if len(drug_df.columns) > 1 else None
+        if len(drug_df.columns) > 1 else None)
     )
 
     # Resolve drug indices

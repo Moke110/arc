@@ -44,9 +44,6 @@ env/
 data/
 datasets/
 
-# Documents & PDFs
-*.pdf
-
 # Outputs
 output/
 outputs/
@@ -72,5 +69,10 @@ Thumbs.db
 .uploads/
 .scratch/
 
-# Frozen pre-refactor MIRI pipeline snapshot (large regenerable artifacts)
+# Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
 miri_reposition/xpert-fda-v1_history/
+miri_reposition/xpert-fda-v0/
+miri_reposition/xpert-fda-v1-frozen/
+
+# Literature reference PDF archive (large, background reading only)
+reference/

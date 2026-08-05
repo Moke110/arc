@@ -7,7 +7,7 @@ AI-driven drug repositioning for cardiac diseases. Predict the transcriptional p
 ### Categories
 
 **Dev-tool files**:
-Files that support the workspace itself rather than the science: `.gitignore`, `skills-lock.json`, `.agents/`, `docs/`, `reference/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `environment.yml`.
+Files that support the workspace itself rather than the science: `.gitignore`, `skills-lock.json`, `.agents/`, `docs/`, `reference/`, `AGENTS.md`, `environment.yml`.
 _Avoid_: tooling, meta
 
 **Perturbation component**:

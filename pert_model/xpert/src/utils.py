@@ -103,7 +103,9 @@ def _load_data_and_drug_feat(args, config, logger):
 
     if args.drug_feat == 'unimol':
         if config['drug_embeddings']['unimol'] is not None:
-            drug_feat = np.load(config['drug_embeddings']['unimol'], allow_pickle=True)
+            # mmap: the full float64 array is 5+ GiB; loading it resident
+            # per process OOMs WSL when finetunes run concurrently.
+            drug_feat = np.load(config['drug_embeddings']['unimol'], allow_pickle=True, mmap_mode='r')
             max_atom_size = config['dataset']['max_atom_size']
             if max_atom_size < 122:
                 drug_feat = drug_feat[:, :max_atom_size, :]
@@ -240,6 +242,8 @@ def set_random_seed(seed=10):
     torch.manual_seed(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
+    if os.environ.get("XPERT_DETERMINISTIC"):
+        torch.use_deterministic_algorithms(True)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
 
