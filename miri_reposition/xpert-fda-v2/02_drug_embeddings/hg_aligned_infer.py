@@ -191,7 +191,11 @@ def capture_pins(model, device):
 
 
 def pinned_forward(model, data_ext, pins):
-    """Frozen layer-by-layer forward over the extended graph with pinned states."""
+    """Frozen layer-by-layer forward over the extended graph with pinned states.
+
+    Returns (gene_states, fda_states) as float32 numpy arrays — the final gene
+    states (the pins) and the evolved FDA drug states.
+    """
     device = next(model.parameters()).device
     x_dict = {
         "gene": model.transforme_gene_node(data_ext["gene"].x),
@@ -207,13 +211,16 @@ def pinned_forward(model, data_ext, pins):
             x_dict["gene"] = pins[i + 1]["gene"].to(device)
             x_dict["drug"][:N_TRAIN] = pins[i + 1]["drug"].to(device)
 
-    return x_dict["drug"][N_TRAIN:].cpu().numpy()  # (2123, 256) FDA states
+    gene_states = x_dict["gene"].cpu().numpy()
+    fda_states = x_dict["drug"][N_TRAIN:].cpu().numpy()
+    return gene_states, fda_states
 
 
 def quantile_align(fda_rows, article_rows):
     """Quantile-interpolation map the FDA matrix onto the author-embedding
-    distribution (v1's documented norm-mapping method, applied to the *whole*
-    matrix including zeros).
+    distribution (the documented, principled replacement for v1's undocumented
+    norm-mapping hack — see docs/adr/0006), applied to the *whole* matrix
+    including zeros.
 
     Every FDA value is replaced by the author value at the same empirical
     quantile of the full matrix distribution. Because the author rows are ~98%
@@ -284,7 +291,7 @@ def run(device="cuda:0", save_pins=True):
 
     t0 = time.time()
     print("Running pinned forward (only FDA drug states evolve)...")
-    fda_states = pinned_forward(model, data_ext, pins)
+    _, fda_states = pinned_forward(model, data_ext, pins)
     print(f"  pinned forward done in {time.time() - t0:.1f}s; FDA states {fda_states.shape}")
 
     # --- Align FDA rows to the author-embedding scale ------------------------

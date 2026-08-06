@@ -1,5 +1,5 @@
 """
-Shared utilities for the xpert-fda-v1 MIRI repositioning workflow.
+Shared utilities for the xpert-fda-v2 HG-aligned MIRI repositioning workflow.
 
 The workflow owns every script that generates its artifacts; the model
 components (pert_model/xpert, drug_emb_model/hg) are imported as libraries.

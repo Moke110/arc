@@ -11,19 +11,22 @@ v1 produces the FDA-extension HG rows by finetuning the HG model on the extended
 - Same 11 step directories (`01_drug_list/`…`11_integrate/`) and `_lib/` helpers as v1; steps 01 and 03–11 run unchanged.
 - `input/` is a **symlink to v1's `input/`** — one source of truth for the frozen UniMol array, SMILES mapping, DToxS, and FDA drug list. Never store workflow-owned artifacts there.
 - `02_drug_embeddings/` — v2's HG step, workflow-owned:
-  - `02_drug_embeddings.py` — idempotent entry (reuses an intact table that passes gates; `--force` regenerates).
+  - `02_drug_embeddings.py` — idempotent entry (reuses an intact table that passes gates; `--force` regenerates; `--skip-gates` to override a reviewed C/D borderline).
   - `hg_aligned_infer.py` — author-pinned frozen inference + full-CDF quantile alignment (drives the model's layer modules; the library is untouched).
   - `compute_dds_fda_tanimoto.py` — v2-owned FDA DDS edges with the pretraining recipe (`Tanimoto > 0.5`).
   - `author_reproduction_gate.md` — ticket-03 evidence record (documented blocker).
-- `_lib/verify_gates.py` — the verification seam (gates A–D), mirroring `_lib/verify_parity.py` in v1.
+  - `node_feature_recipe_verdict.json` — ticket-02 verdict (fresh UniMol cls_repr does NOT reproduce the L1000 node features, cos 0.16; the frozen array's mol-token is cos 0.97 close).
+- `_lib/verify_gates.py` — the step-02 verification seam (gates A–D).
+- `_lib/verify_parity_v1.py` — toolchain-parity seam (gate E): steps 01/03/08 outputs + the DToxS benchmark reproduce v1.
+- `_lib/compare_v1.py` — regenerates `11_integrate/divergence_vs_v1.md` (gate F, observational).
 
 ## Key invariants (gates)
 
 - **A** — the frozen checkpoint is deterministic and re-usable for pinning (reproduces its own phase1 reference within float tolerance).
 - **B** — table rows 0–8980 are byte-identical to the author reference (`embeddings/article/HG_drug_embeddings.npy`).
 - **C** — FDA/train std ratio ≈ 1.0 (full-CDF quantile alignment; no v1-style norm-mapping of L1000 rows).
-- **D** — FDA DTI drug–gene cosine vs random ratio ≥ 2× (currently 2.85×).
-- A and B abort; C and D fail loudly but may be reviewed.
+- **D** — FDA DTI drug–gene cosine vs random ratio ≥ 2× on the aligned rows (currently 3.53×).
+- Any gate failure aborts (exit 1); a researcher may override a reviewed borderline manually via `--skip-gates`.
 
 ## Entry points
 
@@ -32,6 +35,9 @@ v1 produces the FDA-extension HG rows by finetuning the HG model on the extended
 python 02_drug_embeddings/02_drug_embeddings.py
 # Gate harness alone
 python _lib/verify_gates.py
+# Toolchain parity vs v1 (gate E) and divergence report (gate F)
+python _lib/verify_parity_v1.py
+python _lib/compare_v1.py
 ```
 
 ## Gotchas

@@ -13,13 +13,15 @@ correctness gates after ``02_drug_embeddings`` produces the all-drug table.
            the author HG model was never released, so reproducing the author
            reference itself is impossible — documented in docs/adr/0006.)
   Gate B — output rows 0-8980 are byte-identical to the author reference.
-  Gate C — FDA/train std ratio ~= 1.0 (after quantile alignment; no v1-style
-           ad-hoc norm-mapping of L1000 rows).
-  Gate D — FDA DTI drug-gene cosine-vs-random ratio >= 2.0.
+  Gate C — FDA/train std ratio ~= 1.0 (after the documented quantile
+           alignment; no v1-style ad-hoc norm-mapping of L1000 rows).
+  Gate D — FDA DTI drug-gene cosine-vs-random ratio >= 2.0, measured on the
+           aligned FDA rows written to the output table.
 
-Gates A and B abort on failure (exit 1). Gates C and D fail loudly but may be
-reviewed if borderline (a badly-off C triggers a revisit of the node-feature
-recipe, never silent acceptance).
+Any gate failure aborts (exit 1): gates A and B must abort, and C and D must
+fail loudly rather than be silently accepted (a badly-off C triggers a revisit
+of the node-feature recipe). A researcher may override manually via
+``02_drug_embeddings.py --skip-gates``.
 
 Usage:
     python _lib/verify_gates.py                    # run all gates
@@ -37,11 +39,9 @@ from utils import WORKFLOW_ROOT, HG_ROOT  # noqa: E402
 
 N_TRAIN = 8981
 N_TOTAL = 11104
-N_GENE = 19392
 
 AUTHOR_REF = HG_ROOT / "embeddings/article/HG_drug_embeddings.npy"
 PHASE1_REF = HG_ROOT / "model/20260518_102121/phase1_drug_embeddings.npy"
-CKPT = HG_ROOT / "model/20260518_102121/global_fold_early_stop.pth"
 DTI_FDA = HG_ROOT / "data" / "DTI_edge_index_fda_ext.npy"
 PINS = WORKFLOW_ROOT / "02_drug_embeddings" / "output" / "pins_layerwise.npz"
 TABLE = WORKFLOW_ROOT / "02_drug_embeddings" / "output" / "all_drugs_idx2HG.npy"
@@ -56,31 +56,31 @@ def check(name, cond, detail=""):
     return ok
 
 
+def _set_deterministic():
+    import torch
+    torch.manual_seed(0)
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+
 def gate_a():
     print("\nGate A — frozen forward deterministic and re-usable (checkpoint's own reference)")
     import torch
 
     sys.path.insert(0, str(HG_ROOT))
     sys.path.insert(0, str(WORKFLOW_ROOT / "02_drug_embeddings"))
-    from src.model_hg import HeteroGNN
-    from hg_aligned_infer import build_original_graph, layerwise_forward
+    from hg_aligned_infer import capture_pins, load_model
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = HeteroGNN(hidden_dim=256, out_dim=256, num_layers=3,
-                      include_edges=["PPI", "DTI", "DDS"]).to(device)
-    ckpt = torch.load(CKPT, map_location=device, weights_only=False)
-    model.load_state_dict(ckpt["model_state_dict"])
-    model.eval()
+    _set_deterministic()
+    model = load_model(device)
 
-    data = build_original_graph(device)
-    states1 = layerwise_forward(model, data)
-    states2 = layerwise_forward(model, data)
-    final = states1[-1]["drug"].detach().cpu().numpy()
+    pins1, final1, phase1, author = capture_pins(model, device)
+    _, final2, _, _ = capture_pins(model, device)
 
-    d_self = float(np.abs(states1[-1]["drug"].detach().cpu().numpy()
-                          - states2[-1]["drug"].detach().cpu().numpy()).max())
-    phase1 = np.load(PHASE1_REF)
-    d_phase1 = float(np.abs(final - phase1).max())
+    d_self = float(np.abs(final1 - final2).max())
+    d_phase1 = float(np.abs(final1 - phase1).max())
 
     ok = d_phase1 <= 1e-3 and d_self <= 1e-3
     check("frozen forward reproduces phase1 (maxdiff <= 1e-3)", ok,
@@ -111,41 +111,26 @@ def gate_c(table_path):
     return ok
 
 
-def gate_d():
-    print("\nGate D — FDA DTI drug-gene cosine vs random ratio >= 2.0")
+def gate_d(table_path):
+    print("\nGate D — FDA DTI drug-gene cosine vs random ratio >= 2.0 (aligned rows)")
     import torch
 
     sys.path.insert(0, str(HG_ROOT))
     sys.path.insert(0, str(WORKFLOW_ROOT / "02_drug_embeddings"))
-    from src.model_hg import HeteroGNN
-    from hg_aligned_infer import build_extended_graph
+    from hg_aligned_infer import build_extended_graph, load_model, pinned_forward
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = HeteroGNN(hidden_dim=256, out_dim=256, num_layers=3,
-                      include_edges=["PPI", "DTI", "DDS"]).to(device)
-    ckpt = torch.load(CKPT, map_location=device, weights_only=False)
-    model.load_state_dict(ckpt["model_state_dict"])
-    model.eval()
+    _set_deterministic()
+    model = load_model(device)
 
     pins = np.load(PINS)
+    pins_pt = [{"gene": torch.tensor(pins[f"layer{i}_gene"], device=device),
+                "drug": torch.tensor(pins[f"layer{i}_drug"], device=device)}
+               for i in range(4)]
     data_ext = build_extended_graph(device)
-    with torch.no_grad():
-        x = data_ext["gene"].x
-        x_dict = {
-            "gene": model.transforme_gene_node(data_ext["gene"].x),
-            "drug": model.transforme_drug_node(data_ext["drug"].x),
-        }
-        x_dict["drug"][:N_TRAIN] = torch.tensor(
-            pins["layer0_drug"], dtype=torch.float, device=device)
-        for i, conv in enumerate(model.convs):
-            out = conv(x_dict, data_ext.edge_index_dict)
-            x_dict = {key: val.relu() for key, val in out.items()}
-            x_dict["gene"] = torch.tensor(
-                pins[f"layer{i + 1}_gene"], dtype=torch.float, device=device)
-            x_dict["drug"][:N_TRAIN] = torch.tensor(
-                pins[f"layer{i + 1}_drug"], dtype=torch.float, device=device)
-        gene_emb = x_dict["gene"].cpu().numpy()
-        fda_emb = x_dict["drug"][N_TRAIN:].cpu().numpy()
+    gene_emb, _ = pinned_forward(model, data_ext, pins_pt)
+
+    fda_emb = np.asarray(np.load(table_path, mmap_mode="r")[N_TRAIN:])  # aligned rows
 
     fda_dti = np.load(DTI_FDA, allow_pickle=True).item()
     drug_local = fda_dti["edge_index"][0]
@@ -177,32 +162,23 @@ def main():
     args = ap.parse_args()
     table_path = Path(args.table)
 
-    import torch
-    torch.manual_seed(0)
-    torch.use_deterministic_algorithms(True)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    _set_deterministic()
 
     print("=" * 60)
     print("v2 HG-aligned gates (A-D)")
     print("=" * 60)
 
-    g_a = gate_a()
-    if not g_a:
-        print("\nRESULT: Gate A FAILED — aborting before any extension inference.")
-        sys.exit(1)
-    g_b = gate_b(table_path)
-    if not g_b:
-        print("\nRESULT: Gate B FAILED — L1000 rows not byte-identical. Aborting.")
-        sys.exit(1)
-    g_c = gate_c(table_path)
-    g_d = gate_d()
+    ok = True
+    ok &= gate_a()
+    ok &= gate_b(table_path)
+    ok &= gate_c(table_path)
+    ok &= gate_d(table_path)
 
     passed = all(results)
     print("\n" + "=" * 60)
-    print(f"RESULT: {'ALL GATES PASSED' if passed else 'A/B passed; C/D need review'}")
+    print(f"RESULT: {'ALL GATES PASSED' if passed else 'GATE(S) FAILED — do not use this table'}")
     print("=" * 60)
-    return 0 if g_a and g_b else 1
+    return 0 if passed else 1
 
 
 if __name__ == "__main__":

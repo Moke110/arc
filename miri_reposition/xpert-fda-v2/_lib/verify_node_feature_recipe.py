@@ -45,7 +45,7 @@ SMI_MAPPING = WORKFLOW_ROOT / "input" / "all_drugs_idx2smi.npy"
 UNIMOL_ARR = WORKFLOW_ROOT / "input" / "all_drugs_unimol_arr.npy"
 NODE_FEAT = HG_ROOT / "data" / "all_drug_node_feat_8981.npy"
 
-OUT = WORKFLOW_ROOT / "02_drug_embeddings" / "output" / "node_feature_recipe_verdict.json"
+OUT = WORKFLOW_ROOT / "02_drug_embeddings" / "node_feature_recipe_verdict.json"
 CLS_REPR_CACHE = WORKFLOW_ROOT / "02_drug_embeddings" / "output" / "l1000_cls_repr_fresh.npy"
 
 BATCH = 512
