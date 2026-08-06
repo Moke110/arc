@@ -74,5 +74,8 @@ miri_reposition/xpert-fda-v1_history/
 miri_reposition/xpert-fda-v0/
 miri_reposition/xpert-fda-v1-frozen/
 
+# Original-article figshare downloads (large zips, provenance only)
+drug_emb_model/hg/figshare/
+
 # Literature reference PDF archive (large, background reading only)
 reference/
