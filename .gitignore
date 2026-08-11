@@ -79,4 +79,4 @@ workflow/xpert-fda-miri-v1/11_report/cache/
 reference/hg-fda-extension-archive/
 
 # Literature reference PDF archive (large, background reading only)
-reference/
+/reference/

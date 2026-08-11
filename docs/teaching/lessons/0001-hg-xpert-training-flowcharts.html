@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0001 — HG &amp; XPert Training Flowcharts (v0 vs v1)</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<p class="meta">Lesson 0001 · Training pipeline · v0 vs v1</p>
+<h1>HG &amp; XPert Training: 4 Flowcharts</h1>
+
+<p>Two models, four training stages, two eras. This lesson gives you a map you can
+redraw from memory — what each stage eats, what it optimizes, what it spits out,
+and how <strong>v0</strong> (legacy, library-driven) and <strong>v1</strong>
+(step-wise workflow) orchestrate the same training.</p>
+
+<blockquote>Every flowchart uses the notation <code>[category]label</code> with
+<code>+</code> for parallel inputs and <code>-&gt;</code> for a transformation
+(training run, data collection, or inference). Everything below is verified
+against the codebase — file paths and line numbers are cited.</blockquote>
+
+<h2>0. The big picture</h2>
+
+<p>Drug embeddings come first, then the DEG predictor. The HG graph model makes
+biological drug embeddings; XPert turns those embeddings + chemistry + cell state
+into predicted gene-expression perturbations.</p>
+
+<pre><code>[model]HG_l1000 -&gt; [embs]all_drugs_idx2HG.npy (11,104×256)
+                                   |
+                                   v
+[model]XPert_l1000 + [data]DToxS -&gt; [model]XPert_dtoxs -&gt; [output]xpert_fda-cm_deg.csv</code></pre>
+
+<h2>1. HG pretrain (L1000, 8,981 drugs)</h2>
+
+<p>Source: <code>drug_emb_model/hg/src/pretrain_hg.py</code>; launcher
+<code>drug_emb_model/hg/run.sh</code>.</p>
+
+<pre class="flow">[drug nodes]all_drug_node_feat_8981.npy (512d)
++ [gene nodes]all_gene_node_feat_19392.npy (512d)
++ [edges]PPI 901,260 gene-gene (STRING&gt;700, weighted)
++ [edges]DTI 12,890 drug-gene
++ [edges]DDS 287,834 drug-drug (Tanimoto)
++ [model]HeteroGNN_untrained  (3×SAGEConv, 512→256, ReLU)
+-&gt; [train]InfoNCE contrastive · lr 5e-4 · NeighborLoader 10/5/3 ·
+          batch 1 · temp 0.5 · num_neg 3 · early-stop on loss
+-&gt; [model]HG_l1000  = model/20260518_102121/global_fold_early_stop.pth (epoch 23)
+-&gt; [embs]phase1_drug_embeddings.npy (8981×256)  ≡ author reference</code></pre>
+
+<p>The model is a <strong>heterogeneous graph neural network</strong> — drug nodes,
+gene nodes, and three edge types. Training is <strong>contrastive</strong>: for each
+real edge, sample non-edges as negatives and pull positives together, push negatives
+apart (InfoNCE, temperature 0.5). Only drug-centered subgraphs are loaded
+(NeighborLoader), so each batch sees a slice of the graph. A single <code>HeteroGNN</code>
+weights the whole graph; the trained drug rows are saved as
+<code>phase1_drug_embeddings.npy</code> and equal the author's reference table
+(verified per <code>hg/AGENTS.md</code>).</p>
+
+<div class="callout note"><strong>Key fact:</strong> this stage never touches FDA drugs.
+It defines the embedding space on L1000-only molecules (indices 0–8980).</div>
+
+<h2>2. HG FDA extension: data + finetune (11,104 drugs)</h2>
+
+<h3>2a. Collect FDA graph data</h3>
+
+<p>Sources: <code>src/query_dti_fda.py</code>, <code>src/compute_dds_fda.py</code>,
+<code>src/infer_fda_hg.py</code>.</p>
+
+<pre class="flow">[drugs]2,123 FDA SMILES
+-&gt; [query_dti_fda.py]ChEMBL API · pChEMBL≥6.0
+        -&gt; [edges]DTI_edge_index_fda_ext.npy (3,984 drug-gene)
++ [drugs]FDA Morgan fingerprints
+-&gt; [compute_dds_fda.py]Tanimoto&gt;0.5106 · density-matched to train DDS
+        -&gt; [edges]DDS_edge_index_fda_drugs.npy (7,659 drug-drug)
++ [drugs]FDA KPGT embeddings (embeddings/all_drugs_idx2KPGT.npy)
+-&gt; [infer_fda_hg.py]Ridge regression KPGT→512
+        -&gt; [nodes]FDA drug node features (2,123×512)</code></pre>
+
+<p>FDA drugs enter the graph through three engineered inputs: real drug–target
+edges pulled from the ChEMBL API, structural-similarity edges from Morgan
+fingerprints, and 512-d node features regressed from KPGT embeddings.</p>
+
+<h3>2b. Finetune on the extended graph</h3>
+
+<p>Source: <code>src/finetune_hg.py</code>.</p>
+
+<pre class="flow">[model]HG_l1000
++ [graph]extended · 8,981 train + 2,123 FDA drug nodes · 19,392 gene nodes
++ [edges]train PPI/DTI/DDS + FDA DTI/DDS
+-&gt; [train]full-graph forward · InfoNCE ·
+          DTI all edges + DDS 20K sampled + PPI 50K sampled ·
+          lr 5e-5 · 50 epochs · guard: train_cosim ≥ 0.95 (check every 5 ep)
+-&gt; [embs]all_drugs_idx2HG.npy (11,104×256) · FDA/Train std ratio 1.000</code></pre>
+
+<p>Two design choices matter:</p>
+<ul>
+<li><strong>Low learning rate (5e-5)</strong> — so the 8,981 training-drug
+embeddings barely move (cosine similarity to the pretrain embeddings is monitored
+and early-stops the run if it drops below 0.95).</li>
+<li><strong>Norm mapping</strong> — after training, FDA-row norms are quantile-interpolated
+to match training-row norms, which is why the final std ratio is 1.000.</li>
+</ul>
+
+<p>The workflow and the library differ only in <em>who presses the button</em>:</p>
+<div class="pair">
+  <div class="card v0">
+    <h4>v0 — run it in the model dir</h4>
+    <p>You ran <code>python -m src.query_dti_fda …</code>, <code>compute_dds_fda</code>,
+    then <code>python -m src.finetune_hg --update-xpert-embeddings --embeddings-output embeddings/all_drugs_idx2HG.npy</code>
+    inside <code>drug_emb_model/hg/</code>. The library wrote the table itself.</p>
+  </div>
+  <div class="card v1">
+    <h4>v1 — workflow step 02 owns it</h4>
+    <p>Step <code>02_drug_embeddings/02_drug_embeddings.py</code> calls the same
+    <code>finetune_hg</code> with the <em>workflow's</em> output path, then verifies
+    the 11,104-row table. HG never writes into the workflow on its own (ADR 0002).</p>
+  </div>
+</div>
+
+<h2>3. XPert pretrain (L1000)</h2>
+
+<p>Sources: <code>pert_model/xpert/pretrain/run.sh</code>,
+<code>pretrain/config/l1000.yaml</code>, <code>src/train.py</code>,
+<code>src/model_xpert.py</code>.</p>
+
+<pre class="flow">[drugs]UniMol 3D feats (11,104×122×514)
++ [drugs]HG bio embeddings (11,104×256)     ← built by HG (sections 1–2)
++ [drugs]dose / time / cell tokens
++ [cells]binned expression (n_bins=128) + PPI gene vectors (978×128)
++ [data]l1000_mdmt_full_336852.h5ad
++ [model]XPert_untrained · dual-branch Transformer ~25M ·
+          trt CA+SA+SA+CA · ctl SA+SA+SA+SA
+-&gt; [train]loss = 0.2·L_trt + 0.003·L_ctl + 0.2·L_deg + 1.0·L_pcc ·
+          lr 0.004 · batch 64 · GradScaler · early-stop on PCC (patience 50)
+-&gt; [model]XPert_l1000 = pretrain/output/pretrain_mdmt_full_50_epoch.pth</code></pre>
+
+<p>XPert is a <strong>dual-branch transformer</strong>: one branch predicts the
+perturbed state (<code>x_pert</code>), one the control state (<code>x_ctl</code>),
+and the DEG output is the difference <code>x_deg = x_pert − x_ctl</code>. Drug
+features (UniMol 3D + HG biological) fuse with cell-state features (binned
+expression + PPI gene vectors) via cross-attention layers.</p>
+
+<p>The loss is a weighted blend of four terms — perturbed-state MSE, control-state
+MSE, DEG MSE, and Pearson correlation on the DEG. The <strong>PCC term carries the
+full weight (1.0)</strong> and is also the early-stopping metric.</p>
+
+<h2>4. XPert finetune + FDA predict (DToxS) — v0 vs v1</h2>
+
+<p>The model training is identical; the orchestration is not. This is the
+central contrast of the lesson.</p>
+
+<div class="pair">
+  <div class="card v0">
+    <h4>v0 · library-driven</h4>
+    <pre class="flow" style="margin:0.4em 0">[model]XPert_l1000
++ [data]finetune/data/dtoxs.h5ad
++ [feats]drug_embeddings/ (UniMol+HG)
+-&gt; bash finetune/run.sh &lt;ckpt&gt; dtoxs dtoxs \
+        finetune/config/dtoxs
+-&gt; [train]4 ep · batch 32 · finetune_lr 0.002 ·
+          init_epoch 0 · warm-start split → final
+-&gt; [model]finetune/output/dtoxs_warm/*_best.pth
+-&gt; bash predict/predict.sh --model_path dtoxs_warm \
+        --ctl_csv cm_ctl_landmark.csv \
+        --drug_csv fda_drugs.csv
+-&gt; [output]xpert_fda-cm_deg.csv</pre>
+  </div>
+  <div class="card v1">
+    <h4>v1 · workflow step-wise</h4>
+    <pre class="flow" style="margin:0.4em 0">[model]XPert_l1000
++ [data]input/dtoxs.h5ad
++ [feats]input/* + 02_drug_embeddings/output/*  (via config)
+-&gt; 04_finetune_xpert.py   (dtoxs all-train,
+                            4 ep · batch 32 · lr 0.002)
+-&gt; [model]04/output/dtoxs_dtoxs/
+          dtoxs_dtoxs_fold-1_best.pth
+-&gt; 05_benchmark_xpert.py  (warm-start 10f ·
+          cold-drug 10f · cold-cate 6f)
+-&gt; [eval]benchmark.csv + benchmark.png
+-&gt; 06_perturbed_transcriptome.py
+-&gt; [output]06/output/xpert_fda-cm_deg.csv</pre>
+  </div>
+</div>
+
+<div class="callout note"><strong>The v0→v1 diff in one sentence:</strong> v0 ran
+training/prediction ad-hoc from inside <code>pert_model/xpert/</code> (scripts +
+notebooks), so the library owned the artifacts; v1 made XPert a <em>pure library</em>
+and moved finetune/benchmark/predict into numbered workflow steps that own their
+weights and CSVs (ADR 0002).</div>
+
+<p>Three concrete consequences of that shift:</p>
+<ul>
+<li><strong>Final model differs.</strong> v0's DEG table came from a warm-start
+finetune; v1 step 04 uses the all-train <code>dtoxs</code> split
+(<code>dtoxs_dtoxs_fold-1_best.pth</code>). Benchmark folds (warm-start, cold-drug,
+cold-cate) moved to step 05.</li>
+<li><strong>Config root moved.</strong> v0 configs resolved against
+<code>pert_model/xpert/</code>; v1 configs resolve against the workflow
+(<code>src/config.py</code> root-aware paths), pointing PPI vectors back to the
+library but embeddings into workflow dirs.</li>
+<li><strong>Idempotence + parity.</strong> v1 steps skip if cached artifacts exist;
+retraining/predicting is GPU-fp-nondeterministic across environments, so re-running
+can break parity with archived CSVs (<code>--force</code> is explicit).</li>
+</ul>
+
+<h2>5. Hyperparameter quick-reference</h2>
+
+<table>
+<thead><tr><th>Stage</th><th>Model</th><th>Loss / objective</th><th>Key hyperparams</th><th>Artifact</th></tr></thead>
+<tbody>
+<tr><td>HG pretrain</td><td>HeteroGNN 3×SAGEConv, 512→256</td><td>InfoNCE (temp 0.5)</td><td>lr 5e-4, epoch cap 300, pat 30, num_neg 3, Neighbor 10/5/3</td><td><code>global_fold_early_stop.pth</code> · 8981×256 embs</td></tr>
+<tr><td>HG finetune</td><td>same HeteroGNN</td><td>InfoNCE (DTI all + DDS/PPI sampled)</td><td>lr 5e-5, 50 ep, cosim≥0.95 guard</td><td><code>all_drugs_idx2HG.npy</code> 11,104×256</td></tr>
+<tr><td>XPert pretrain</td><td>dual-branch Transformer ~25M</td><td>0.2·L_trt + 0.003·L_ctl + 0.2·L_deg + 1.0·L_pcc</td><td>lr 0.004, batch 64, pat 50 on PCC</td><td><code>pretrain_mdmt_full_50_epoch.pth</code></td></tr>
+<tr><td>XPert finetune</td><td>XPert from pretrained</td><td>same 4-term loss</td><td>4 ep, batch 32, finetune_lr 0.002, init 0</td><td><code>dtoxs_dtoxs_fold-1_best.pth</code> (v1)</td></tr>
+</tbody>
+</table>
+
+<h2>6. Self-check</h2>
+
+<p>Cover the answers, answer out loud, then reveal.</p>
+
+<div class="quiz">
+  <details><summary>Which loss drives both HG pretrain and HG finetune?</summary>
+    <p class="ans">InfoNCE contrastive loss</p></details>
+  <details><summary>What guard keeps training-drug embeddings intact during HG finetune?</summary>
+    <p class="ans">Train cosine threshold</p></details>
+  <details><summary>Which of XPert's four loss terms carries full weight (1.0)?</summary>
+    <p class="ans">PCC loss term</p></details>
+  <details><summary>Who owns the finetuned XPert weights — v0 or v1?</summary>
+    <p class="ans">The v1 workflow</p></details>
+</div>
+
+<h2>7. Read next</h2>
+<ul>
+<li>Plain-text flowcharts for quick terminal reference:
+  <a href="../reference/training-flowcharts.md"><code>reference/training-flowcharts.md</code></a></li>
+<li>Primary source #1 — your own docs:
+  <a href="../../drug_emb_model/hg/AGENTS.md"><code>drug_emb_model/hg/AGENTS.md</code></a></li>
+<li>Primary source #2 — your own docs:
+  <a href="../../pert_model/xpert/AGENTS.md"><code>pert_model/xpert/AGENTS.md</code></a></li>
+<li>Literature grounding: <a href="../../reference/xpert_article.md"><code>reference/xpert_article.md</code></a></li>
+<li>Why v1 restructured: <a href="../../docs/adr/0002-components-as-libraries.md">ADR 0002</a></li>
+</ul>
+
+<footer>
+  <p><strong>Ask your teacher anything.</strong> This lesson is a starting map, not the
+  territory — the agent can walk you through any single stage line-by-line, diff v0
+  vs v1 deeper, or go into loss/architecture internals.</p>
+  <p>Lesson 0001 · workspace: <code>docs/teaching/</code></p>
+</footer>
+
+</body>
+</html>
