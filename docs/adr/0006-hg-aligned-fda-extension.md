@@ -1,10 +1,16 @@
 # HG-aligned FDA extension via author-pinned frozen inference
 
+> **Status: SUPERSEDED** by [ADR 0007](0007-finalize-xpert-fda-miri.md). The
+> FDA-extension workflow variants (v1 HG finetune, v2 author-pinned inference)
+> are removed; the canonical screen is the L1000-contained
+> `workflow/xpert-fda-miri-v1`. The FDA-extension machinery and its data/weights
+> are preserved for provenance in the gitignored `reference/hg-fda-extension-archive/`.
+
 The `xpert-fda-v2` workflow extends the HG drug table to the 2,123 FDA-extension drugs (rows 8981–11103) using **author-pinned frozen inference** instead of the v1 low-LR finetune, keeping rows 0–8980 byte-identical to the author reference by construction.
 
 ## Context
 
-The author-given HG *embeddings* (`drug_emb_model/hg/embeddings/article/HG_drug_embeddings.npy`, byte-identical to the article's figshare release) are the L1000 rows the author-given XPert was trained on. v1 produced its FDA rows by low-LR finetuning the HG model on the extended graph and patching scale with an undocumented quantile-interpolation norm-mapping plus a cosine-guard — a trust gap on every axis that defines an embedding.
+The author-given HG *embeddings* (now workflow-owned at `workflow/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`, byte-identical to the article's figshare release) are the L1000 rows the author-given XPert was trained on. v1 produced its FDA rows by low-LR finetuning the HG model on the extended graph and patching scale with an undocumented quantile-interpolation norm-mapping plus a cosine-guard — a trust gap on every axis that defines an embedding.
 
 The intent of the HG-aligned feature was: run the *same frozen model* that produced the L1000 embeddings over the extended graph, pinning the L1000/gene states per layer so only FDA drug states evolve. **That model does not exist.** The article's figshare release ships only XPert checkpoints, the HG embeddings, and the HG input data — no HG checkpoint. The available `model/20260518_102121/global_fold_early_stop.pth` is a local reproduction: a frozen forward over the original graph reproduces its own reference (`phase1_drug_embeddings.npy`, maxdiff 7.3e-4) but NOT the author reference (maxdiff 10844, mean/std 6.7/51 vs the author's 22.6/226).
 

@@ -28,7 +28,7 @@ def arg_parse():
     parser.add_argument('--drug_feat', default='unimol', help='primary molecular feature: unimol, KPGT, morgan, smi')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--model', default='XPert', help='XPert')
-    parser.add_argument('--config', default='pretrain/config/l1000', help='config path relative to project root (without .yaml)')
+    parser.add_argument('--config', default='../../workflow/xpert-fda-miri-v1/03_xpert_pretrain/config/l1000', help='config path relative to project root (without .yaml)')
     parser.add_argument('--seed', default=2024, type=int)
     parser.add_argument('--dataset', default='l1000_sdst', help='l1000_sdst, l1000_mdmt, l1000_mdmt_pretrain, l1000_mdmt_full, cdsdb, panacea, dtoxs')
     parser.add_argument('--pretrain_dataset', type=str, default='', help='pretrain dataset name for finetune output dir naming')

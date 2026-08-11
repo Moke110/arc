@@ -70,12 +70,13 @@ Thumbs.db
 .scratch/
 
 # Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
-miri_reposition/xpert-fda-v1_history/
-miri_reposition/xpert-fda-v0/
-miri_reposition/xpert-fda-v1-frozen/
+workflow/xpert-fda-miri-v0/
 
-# Original-article figshare downloads (large zips, provenance only)
-drug_emb_model/hg/figshare/
+# 11_report per-drug biomni agent JSONs (regenerable external-agent output)
+workflow/xpert-fda-miri-v1/11_report/cache/
+
+# Orphaned HG FDA-extension archive (large data/weights, provenance only)
+reference/hg-fda-extension-archive/
 
 # Literature reference PDF archive (large, background reading only)
 reference/
