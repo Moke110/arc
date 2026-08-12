@@ -44,6 +44,10 @@ env/
 data/
 datasets/
 
+# Data lake directories (large artifacts; AGENTS.md doc inside stays tracked)
+*_data/*
+!pert_data/AGENTS.md
+
 # Outputs
 output/
 outputs/

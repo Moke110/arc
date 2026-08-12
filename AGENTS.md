@@ -4,18 +4,18 @@ AI-driven MIRI drug discovery research pipeline: drug SMILES → HG (biological)
 
 ## Docs convention
 
-- `AGENTS.md` is the only agent doc, kept at this root (routing index) and in `pert_model/xpert/`, `drug_emb_model/hg/`, and `workflow/xpert-fda-miri-v1/`. Read the subdir `AGENTS.md` before touching code there.
+- `AGENTS.md` is the only agent doc, kept at this root (routing index) and in `pert_model/xpert/`, `drug_emb_model/hg/`, `workflow/xpert-fda-miri-v1/`, and `pert_data/`. Read the subdir `AGENTS.md` before touching code/data there.
 - Update any `AGENTS.md` you loaded at session end. No `CLAUDE.md`/`README.md` exist.
 
 ## Layout
 
-- `pert_data/dtoxs/` — DToxS dataset (data/docs only, no code). `pert_data/l1000/` — L1000 XPert pretrain dataset (dataset home). `pert_model/new-model/` — design docs, **not implemented**; don't build on it.
+- `pert_data/` — CM drug-perturbation data lake (see `pert_data/AGENTS.md`): `dtoxs/` + `dtoxs_ipsc/` (DToxS), `gse244740/`, `gse262419/`, `gse247541/`, and `l1000/` (XPert pretrain h5ads). GSE221595 removed 2026-08-12 (user decision). `pert_model/new-model/` — design docs, **not implemented**; don't build on it.
 - `drug_emb_model/hg/` — HeteroGNN drug embedding model (**pure code library**, ADR 0008): `src/` + `run.sh` + `run.ipynb` only. Its author HG reference now lives in the workflow `input/`; the orphaned FDA-extension data/weights are archived at `reference/hg-fda-extension-archive/` (gitignored).
 - `pert_model/xpert/` — XPert drug perturbation prediction model (pure library: `src/`, `metadata/`, `metrics/`, `reproducing/`, pretrain `run.sh`). The pretrain weight + YAML live in the workflow (`03_xpert_pretrain/`).
 - `workflow/xpert-fda-miri-v1/` — the **canonical finalized MIRI screening workflow** (docs/adr/0007): author-aligned, L1000-contained FDA screen (1,004 drugs, `drug_idx < 8981`), 11 steps `01_drug_embed`…`11_report`, workflow-owned `input/` (incl. author HG reference + precomputed UniMol array) and pretrain/finetune YAMLs, authoritative Entrez-verified DToxS→L1000 gene map (`_lib/gene_mapping.py`, `_lib/verify_genes.py`).
 - `workflow/xpert-fda-miri-v0/` — frozen legacy pipeline snapshot (gitignored; sole historical reference).
 - `disease_data/miri/{GSE}/` — shared per-GSE disease inputs (raw data + DEG lists).
-- `reference/` — literature PDFs + the gitignored `hg-fda-extension-archive/`; background reading.
+- `reference/` — literature PDFs + the gitignored `hg-fda-extension-archive/`; background reading. `reference/pert_data/` holds the CM dataset papers (PDF + extracted markdown + `publications.md`).
 - The removed v1/v2/v3 MIRI workflow variants exist only in git history.
 
 ## Domain glossary
