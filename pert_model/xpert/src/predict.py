@@ -470,9 +470,12 @@ def run_prediction(args):
         pd.DataFrame(skipped, columns=["drug_name", "smiles"]).to_csv(
             process_dir / "skipped_drugs.csv", index=False)
 
-    # Build model args
+    # Build model args. The dataset name selects the config's dataset block
+    # for embedding sizes: `cm` (union-CM finetune, xpert-fda-miri-v2) when the
+    # config carries a `cm` block, else the DToxS default `dtoxs`.
+    dataset = 'cm' if 'cm' in (config.get('dataset') or {}) else 'dtoxs'
     model_args = argparse.Namespace(
-        dataset='dtoxs',
+        dataset=dataset,
         drug_feat='unimol',
         drug_embeds='unimol,HG',
         mode='infer',

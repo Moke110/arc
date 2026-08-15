@@ -44,9 +44,9 @@ env/
 data/
 datasets/
 
-# Data lake directories (large artifacts; AGENTS.md doc inside stays tracked)
+# Data lake directories (large artifacts)
+pert_data/
 *_data/*
-!pert_data/AGENTS.md
 
 # Outputs
 output/
@@ -76,8 +76,9 @@ Thumbs.db
 # Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
 workflow/xpert-fda-miri-v0/
 
-# 11_report per-drug biomni agent JSONs (regenerable external-agent output)
+# Per-drug biomni agent JSONs (regenerable external-agent output)
 workflow/xpert-fda-miri-v1/11_report/cache/
+workflow/xpert-fda-miri-v2/12_report/cache/
 
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 reference/hg-fda-extension-archive/

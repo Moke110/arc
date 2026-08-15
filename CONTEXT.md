@@ -15,7 +15,7 @@ One of the three building blocks of prediction: a perturbation dataset (`pert_da
 _Avoid_: module, stage
 
 **Repositioning workflow**:
-A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen; `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
+A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen; `workflow/xpert-fda-miri-v2/` is its union-CM finetune sibling (the XPert finetune trains on the workflow-built union of all `pert_data/cm` datasets); `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
 _Avoid_: pipeline (when meaning a workflow), project
 
 **Disease data**:
@@ -32,18 +32,21 @@ _Avoid_: drug feature
 The predicted expression of 978 L1000 landmark genes for a drug-treated cell. Produced by XPert inference; z-scored and scored in the workflow.
 
 **Drug list**:
-The set of drugs a workflow screens — for `xpert-fda-miri-v1`, the 1,004 L1000-contained FDA drugs (exact canonical-SMILES match, `drug_idx < 8981`). Identity of each drug is its SMILES; the canonical mapping is `all_drugs_idx2smi.npy`.
+The set of drugs a workflow screens — for `xpert-fda-miri-v1`/`v2`, the 1,004 L1000-contained FDA drugs (exact canonical-SMILES match, `drug_idx < 8981`). Identity of each drug is its SMILES; the canonical mapping is `all_drugs_idx2smi.npy`.
 _Avoid_: drug set
 
 **Baseline transcriptome**:
-The consensus control expression (978 genes) of the cell type under study, derived from DTOXS control wells. Workflow-owned; the reference condition the perturbed transcriptome is measured against.
+The consensus control expression (978 genes) of the cell type under study, derived from the DToxS-primary control wells. Workflow-owned; the reference condition the perturbed transcriptome is measured against.
 
-### Workflow stages (finalized step layout)
+**Union finetune data**:
+The workflow-built finetune h5ad of all five `pert_data/cm` datasets (step `03_cm_finetune_data`), used by v2's finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Distinct from v1's frozen DToxS-only `input/dtoxs.h5ad`.
 
-The MIRI screen reads top-down: `01_drug_embed`, `02_cm_baseline`, `03_xpert_pretrain`, `04_xpert_finetune_bench`, `05_xpert_finetune`, `06_xpert_predict`, `07_miri_phenotype`, `08_miri_efficacy_scores`, `09_filter`, `10_integrate`, `11_report`.
+### Workflow stages (finalized step layouts)
+
+The v1 MIRI screen reads top-down: `01_drug_embed`, `02_cm_baseline`, `03_xpert_pretrain`, `04_xpert_finetune_bench`, `05_xpert_finetune`, `06_xpert_predict`, `07_miri_phenotype`, `08_miri_efficacy_scores`, `09_filter`, `10_integrate`, `11_report`. The v2 sibling inserts `03_cm_finetune_data` (union prep) and shifts the rest: `01_drug_embed`, `02_cm_baseline`, `03_cm_finetune_data`, `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`, `07_xpert_predict`, `08_miri_phenotype`, `09_miri_efficacy_scores`, `10_filter`, `11_integrate`, `12_report`.
 
 **Pretrain unit**:
-The workflow-owned author pretrained XPert weight + pretrain YAML (`03_xpert_pretrain/`); the L1000 pretrain h5ads live in `pert_data/l1000/` (dataset home). Both pretrain and finetune YAML recipes are owned by the workflow.
+The workflow-owned author pretrained XPert weight + pretrain YAML (`04_xpert_pretrain/` in v2, `03_xpert_pretrain/` in v1); the L1000 pretrain h5ads live in `pert_data/l1000-xpert/` (dataset home). Both pretrain and finetune YAML recipes are owned by the workflow.
 
 **MIRI efficacy score**:
 A score of how strongly a drug's predicted perturbation reverses the MIRI transcriptional disease signature. Computed by three methods (WCS+RGES, Zhang/ssCMap, pathway RGES) yielding four z-components.
@@ -60,7 +63,7 @@ The integrated, cross-dataset MIRI differential-expression reference (`MIRI_up-d
 The DEG list derived from a single GEO study, kept alongside its acquisition data in `disease_data/miri/{GSE}/deg/`. The raw material for the MIRI reference DEG list.
 
 **Final drug report**:
-The step-11 agentic bilingual (EN/CN) per-drug fact-sheet report over the `09_filter` survivors with integrated-score percentile > 0.5 (`11_report/`), driven by `prompt.md` and assembled from resumable per-drug agent JSONs.
+The step-11 (v1) / step-12 (v2) agentic bilingual (EN/CN) per-drug fact-sheet report over the `09_filter`/`10_filter` survivors with integrated-score percentile > 0.5, driven by `prompt.md` and assembled from resumable per-drug agent JSONs.
 _Avoid_: drug research report
 
 ### Boundary

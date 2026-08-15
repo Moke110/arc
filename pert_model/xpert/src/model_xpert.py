@@ -120,7 +120,7 @@ class XPertNet(torch.nn.Module):
         # logger.info('Using HG_embed_pretrained + unimol_molecule  + unimol_atom embedding')
         if 'sdst' in args.dataset:
             self.drug_emb = unimol_Embeddings(atom_num, hidden_size, max_atom_size, drug_input_hidden_dropout_prob, args)
-        elif 'mdmt' in args.dataset or 'example' in args.dataset or 'dtoxs' in args.dataset:
+        elif 'mdmt' in args.dataset or 'example' in args.dataset or 'dtoxs' in args.dataset or 'cm' in args.dataset:
             logger.info('Using dose and time embedding')
             # define dose and time embedding
             pert_dose_emb = nn.Embedding(config['dataset'][args.dataset.split('_')[0]]['num_pert_dose'], hidden_size)

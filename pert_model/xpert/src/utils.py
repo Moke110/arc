@@ -96,7 +96,7 @@ def _load_data_and_drug_feat(args, config, logger):
         data = sc.read_h5ad(config['dataset']['PANACEA_data_root'])
     elif args.dataset == 'cdsdb':
         data = sc.read_h5ad(config['dataset']['CDSDB_data_root'])
-    elif args.dataset == 'dtoxs':
+    elif args.dataset in ('dtoxs', 'cm'):
         data = sc.read_h5ad(config['dataset']['DTOX_data_root'])
     else:
         data = sc.read_h5ad(f'processed_data/{args.dataset}.h5ad')

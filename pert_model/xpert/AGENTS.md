@@ -22,7 +22,7 @@ XPert: dual-branch Transformer (~25M params) predicting drug-induced transcripti
 
 - Embeddings loaded from the workflow (`workflow/xpert-fda-miri-v1/input/` + `01_drug_embed/output/`): UniMol `all_drugs_unimol_arr.npy` (8981×122×514, L1000 rows), HG `all_drugs_idx2HG.npy` (8981×256, author reference byte-identical), SMILES `all_drugs_idx2smi.npy`.
 - PPI vectors: `metadata/PPI_gene_vector_128d.npy` (978×128), model-owned.
-- Pretrain weight + pretrain YAML: `workflow/xpert-fda-miri-v1/03_xpert_pretrain/`; L1000 pretrain h5ads: `pert_data/l1000/data/`.
+- Pretrain weight + pretrain YAML: `workflow/xpert-fda-miri-v1/03_xpert_pretrain/`; L1000 pretrain h5ads: `pert_data/l1000-xpert/data/`.
 - Env `arc` (torch 2+, scanpy, numpy, scipy, pandas, scikit-learn, matplotlib, unimol_tools, pyyaml, tqdm).
 
 ## Entry points
@@ -38,7 +38,8 @@ XPert: dual-branch Transformer (~25M params) predicting drug-induced transcripti
 - Reproducibility: `set_random_seed` + env `XPERT_DETERMINISTIC=1` + `CUBLAS_WORKSPACE_CONFIG=:4096:8` for bit-exact finetune weights/predictions.
 - Memory: UniMol array (float64, ~5.2 GiB) is memory-mapped at load (`mmap_mode='r'` in `utils.py` and `predict.py`) so parallel finetunes don't OOM WSL; finetune peak RSS ~2.1 GB. Row-wise float32 casting keeps values identical.
 
-## DTOXS splits
+## DTOXS / CM splits
 
 - cold-drug: 10-fold leave-one-drug-out; cold-cate: 6-fold leave-one-category-out; warm-start: 10-fold drug-stratified random (evaluation-only); dtoxs: 1-fold all-train (final model). Splits persisted in h5ad `.obs` columns; no separate validation set (val = test when empty).
-- Finetune defaults: 4 epochs, batch 32, init_epoch 0, finetune_lr 0.002, output to workflow `finetune/output/dtoxs_{split}/` (no timestamp subdir).
+- `cm` is an additive dataset name (union-CM finetune, `workflow/xpert-fda-miri-v2`): `_load_data_and_drug_feat` reads `DTOX_data_root` for `cm` exactly as for `dtoxs`, and the model treats `cm` like `dtoxs` for dose/time embeddings (additive branches; existing `dtoxs` behavior unchanged). Config dataset block and CLI dataset name are both `cm`; splits are `warm-start` + `cm_full`.
+- Finetune defaults: 4 epochs, batch 32, init_epoch 0, finetune_lr 0.002, output to workflow `finetune/output/{dataset}_{split}/` (no timestamp subdir). v2 runs 3 epochs per the workflow's archived runs.
