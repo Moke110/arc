@@ -49,11 +49,13 @@ room for the prep step.
 
 ## The union finetune data (step 03)
 
-- All five `pert_data/cm` datasets enter: `dtoxs_primary` (raw GEO DGE, 48 h),
-  `dtoxs_ipsc` (GSE217423 DGE, 48 h), `gse244740` (ScreenSeq, 24 h, 8-point
-  half-log dose series), `gse247541` (bulk RNA-seq, 144 h), `gse262419`
-  (TempO-Seq, 24 h, ~55% of union samples). gse244740's rows are
-  Ensembl-indexed, so it resolves landmarks by Ensembl ID (the spec's
+- All five `pert_data/cm` datasets are extracted for the manifest audit;
+  four enter the union under the author time semantics: `dtoxs_primary` (raw
+  GEO DGE, 48 h in reality → v1 24 h slot), `dtoxs_ipsc` (GSE217423 DGE,
+  48 h → 24 h slot), `gse244740` (ScreenSeq, 24 h, 8-point half-log dose
+  series), `gse262419` (TempO-Seq, 24 h, ~55% of union samples). `gse247541`
+  (bulk RNA-seq, 144 h) is excluded (no author time index). gse244740's rows
+  are Ensembl-indexed, so it resolves landmarks by Ensembl ID (the spec's
   "symbols" phrasing for gse244740 was a text error).
 - Only samples whose compound resolves to an HG drug (`drug_idx ∈ [0, 8981)`)
   enter; the manifest classifies every compound (in_hg / extension / unmatched)
@@ -66,13 +68,18 @@ room for the prep step.
 - Dose/time indices are precomputed in step 03 and follow the **author L1000
   semantics** (ADR 0010): time map `{3:0, 6:1, 24:2}` (the pretrain/v1 map),
   and dose via the author `assign_pert_dose_corrected` bins (0–9) from real µM
-  concentrations. The union is restricted to 24 h → `pert_time_idx 2`; the
-  48 h datasets (`dtoxs_primary`, `dtoxs_ipsc`) and 144 h (`gse247541`) are
-  fully excluded, so the union is `gse262419` (3,783) + `gse244740` (2,424) =
-  6,207 samples. The screen predicts at time_idx 2 (= 24 h, v1's exposure).
-- Treated samples with no positive real concentration (placeholder dose, e.g.
-  `gse262419` "Blank" wells) are excluded; the manifest records every
-  exclusion (`n_excl_time` / `n_excl_nodose` / `n_union`).
+  concentrations. The DToxS-family datasets (`dtoxs_primary`, `dtoxs_ipsc`,
+  48 h in reality) enter under **v1's slot-24 convention** (`pert_time 24.0`,
+  `time_idx 2`), exactly as v1's frozen dtoxs.h5ad encoded them; the 144 h
+  dataset (`gse247541`) is excluded. The union is `gse262419` (3,783) +
+  `gse244740` (2,424) + `dtoxs_primary` (400) + `dtoxs_ipsc` (296) = 6,903
+  samples, all 24 h → `pert_time_idx 2`. The screen predicts at time_idx 2
+  (= 24 h, v1's exposure).
+- Treated samples with no positive real concentration are excluded (e.g.
+  `gse262419` "Blank" wells); the one exception is `dtoxs_primary`, the v1
+  single-dose experiment, which trains at `pert_dose 0 → dose_idx 0` like v1.
+  The manifest records every exclusion (`n_excl_time` / `n_excl_nodose` /
+  `n_union`).
 - Per-group **quantile alignment** to the L1000 pretrain pooled distribution
   (one monotonic transform per matched-control group, before matched-control
   computation) removes the platform/batch offset; the finetune/benchmark
@@ -93,9 +100,10 @@ room for the prep step.
 - **Union schema gate** — `03_cm_finetune_data/schema_gate.py` asserts the
   union h5ad is structure-identical to v1's `input/dtoxs.h5ad` in the fields
   the XPert loader consumes, **and** the data-semantics invariants (author time
-  `{3,6,24}` / `time_idx 2`, no placeholder dose, X within the pretrain range
-  `[0, 15.002]`, union composition = `gse262419` + `gse244740`, manifest
-  `n_union` matches union rows).
+  `{3,6,24}` / `time_idx 2`, zero dose only in the `dtoxs_primary`
+  single-dose convention, X within the pretrain range `[0, 15.002]`, union
+  composition = the four 24 h-slot datasets, manifest `n_union` matches union
+  rows).
 - **Gene gates** — `_lib/verify_genes.py` per dataset: G1 all present landmarks
   resolve (gse262419 platform-missing = {WRB, FAM57A} only), G2 all legacy
   aliases author-metadata verified, G3 no confirmed union-column

@@ -54,6 +54,17 @@ SUMMARY = OUT_DIR / "dataset_summary.csv"
 QN_REFERENCE = OUT_DIR / "qn_reference.npy"
 CELL_NAME = "cardio"
 
+# v1 DToxS time convention (following the finalized v1 screen, ADR 0007): the
+# DToxS-family exposures are 48 h in reality, but v1's frozen dtoxs.h5ad
+# encoded them at the author 24 h slot (pert_time 24.0, time_idx 2), and the
+# screen predicts at 24 h. We re-add the DToxS datasets under that same
+# convention instead of dropping them for their 48 h time.
+DToxS_SLOT_24H = ("dtoxs_primary", "dtoxs_ipsc")
+# v1 also trained the DToxS single-dose experiment with pert_dose 0 ->
+# dose_idx 0 (author bin 0); only dtoxs_primary is single-dose with no real
+# concentration recorded.
+SINGLE_DOSE_DATASETS = ("dtoxs_primary",)
+
 
 def dose_idx_of(dose):
     """XPert assign_pert_dose_corrected bins (0-9) — mirrored from the library."""
@@ -230,11 +241,13 @@ def quantile_align(X, meta, group_col, ref_sorted):
 def align_and_select(ds, gene_map, drug_idx_of, meta, counts, gene_ids, qn_ref):
     """Apply QN + author time/dose semantics; return (obs, X, X_ctl).
 
-    Treated samples enter the union only when their time is in the author map
-    {3, 6, 24}, their real concentration is positive (no placeholder dose),
-    and their compound resolves to an HG drug (drug_idx < 8981). The remaining
-    samples are classified by the exclusion accounting in main() so the
-    manifest records every exclusion reason.
+    Treated samples enter the union when their (normalized) time is in the
+    author map {3, 6, 24}, their dose is a real positive concentration (or a
+    documented DToxS single-dose, which uses the v1 bin-0 convention), and
+    their compound resolves to an HG drug (drug_idx < 8981). The DToxS-family
+    datasets (48 h in reality) are encoded at the author 24 h slot like v1.
+    Excluded samples are classified by the exclusion accounting in main() so
+    the manifest records every exclusion reason.
     """
     space = gene_mapping.ID_SPACE[ds]
     X = build_landmark_matrix(counts, gene_ids, gene_map, space)
@@ -246,9 +259,12 @@ def align_and_select(ds, gene_map, drug_idx_of, meta, counts, gene_ids, qn_ref):
     X = quantile_align(X, meta, grp_col, qn_ref)
     X_ctl = matched_control_matrix(meta, X, meta["is_control"].values, grp_col)
 
+    eff_time = np.full(len(meta), 24.0) if ds in DToxS_SLOT_24H \
+        else meta["time"].values
     trt = ~meta["is_control"].values
-    time_ok = meta["time"].map(AUTHOR_TIME_MAP).notna().values
-    has_dose = (meta["dose"] > 0).values
+    time_ok = pd.Series(eff_time).map(AUTHOR_TIME_MAP).notna().values
+    single_dose = ds in SINGLE_DOSE_DATASETS
+    has_dose = (meta["dose"] > 0).values | single_dose
     drug_idx = np.array([drug_idx_of.get((ds, str(r.compound_code) if r.compound_code else r.compound_name), -1)
                          for r in meta.itertuples()])
     keep = (trt & time_ok & has_dose & (drug_idx >= 0)
@@ -258,8 +274,8 @@ def align_and_select(ds, gene_map, drug_idx_of, meta, counts, gene_ids, qn_ref):
     obs["pert_idx"] = drug_idx[keep]
     obs["pert_dose"] = obs["dose"]
     obs["pert_dose_idx"] = obs["dose"].map(dose_idx_of)
-    obs["pert_time"] = obs["time"]
-    obs["pert_time_idx"] = obs["time"].map(AUTHOR_TIME_MAP)
+    obs["pert_time"] = eff_time[keep]
+    obs["pert_time_idx"] = pd.Series(eff_time[keep]).map(AUTHOR_TIME_MAP)
     obs["cell_iname"] = CELL_NAME
     obs["cell_idx"] = 0
     obs["tissue_idx"] = 0
@@ -272,14 +288,17 @@ def compound_exclusions(ds, meta):
 
     Returns a DataFrame keyed by (dataset, compound_name, compound_code) with
     n_excl_time (treated, time outside {3,6,24}) and n_excl_nodose (treated,
-    time valid but no positive real concentration).
+    time valid but no positive real concentration and not a documented DToxS
+    single-dose).
     """
     m = meta.copy()
     m["compound_code"] = m["compound_code"].fillna("").astype(str)
+    m["_eff_time"] = 24.0 if ds in DToxS_SLOT_24H else m["time"]
     trt = ~m["is_control"].values
-    time_ok = m["time"].map(AUTHOR_TIME_MAP).notna().values
+    time_ok = m["_eff_time"].map(AUTHOR_TIME_MAP).notna().values
+    single_dose = ds in SINGLE_DOSE_DATASETS
     m["_excl_time"] = trt & ~time_ok
-    m["_excl_nodose"] = trt & time_ok & (m["dose"] <= 0).values
+    m["_excl_nodose"] = trt & time_ok & (m["dose"] <= 0).values & ~single_dose
     g = m.groupby(["compound_name", "compound_code"], dropna=False).agg(
         n_excl_time=("_excl_time", "sum"),
         n_excl_nodose=("_excl_nodose", "sum"),

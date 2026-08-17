@@ -30,35 +30,42 @@ a dominant platform offset:
 
 - **Author time map** — the union is restricted to `AUTHOR_TIME_MAP = {3:0,
   6:1, 24:2}` (`_lib/utils.py`; replaces the step-owned `{24:0, 48:1, 144:2}`).
-  Samples outside `{3, 6, 24}` are excluded at step 03. Consequence:
-  `dtoxs_primary` (48 h, 400 treated), `dtoxs_ipsc` (48 h, 328), and
-  `gse247541` (144 h, 12) exit the union entirely; the union is now
-  `gse262419` (3,783) + `gse244740` (2,424) = 6,207 samples, all 24 h →
-  `pert_time_idx 2`, identical to v1's DToxS encoding. The screen still
+  **v1 DToxS slot-24 convention** (follow-up decision): the DToxS-family
+  datasets are real 48 h experiments, but v1's frozen dtoxs.h5ad encoded them
+  at the author 24 h slot, so `dtoxs_primary` and `dtoxs_ipsc` are re-added
+  under that same convention (`pert_time 24.0`, `time_idx 2`) instead of being
+  dropped for their 48 h exposure. `gse247541` (144 h, 12 treated) exits the
+  union entirely. Union composition: `gse262419` (3,783) + `gse244740`
+  (2,424) + `dtoxs_primary` (400) + `dtoxs_ipsc` (296) = **6,903 samples**, all
+  24 h → `pert_time_idx 2`, identical to v1's DToxS encoding. The screen still
   predicts at 24 h; step 07's predict `--time-idx` default is updated to 2
   (the library `predict.py` already used the author map).
-- **No placeholder dose** — treated samples with `dose <= 0` (no real
-  concentration) are excluded: `gse262419`'s 32 "Blank" wells. Every union
-  sample's `pert_dose_idx` is derived from its real µM concentration via the
-  author `assign_pert_dose_corrected` bins (0–9).
+- **No placeholder dose, with the v1 single-dose exemption** — treated samples
+  with `dose <= 0` and no real concentration are excluded (`gse262419`'s 32
+  "Blank" wells). Exception: `dtoxs_primary` is the v1 single-dose experiment
+  (no recorded concentration) and enters at `pert_dose 0 → dose_idx 0`,
+  exactly as v1's dtoxs.h5ad did. Every other union sample's `pert_dose_idx`
+  is derived from its real µM concentration via the author
+  `assign_pert_dose_corrected` bins (0–9).
 - **Per-group quantile alignment (QN)** — within each matched-control group
-  (plate for `gse262419`/`gse244740`), the group's pooled `log2(CPM+1)`
-  distribution is rank-mapped onto the pooled empirical quantiles of the L1000
-  pretrain h5ad, using one monotonic transform for every sample of the group so
-  the trt/ctl contrast is preserved. Applied after CPM/log2 and **before**
-  matched-control computation, so `obsm["X_ctl"]` is the control mean of
-  aligned values. The reference (a row-subsample of the pretrain matrix) is
-  cached to `03_cm_finetune_data/output/qn_reference.npy`.
+  (plate for `gse262419`/`gse244740`, dataset-wide for the DToxS datasets),
+  the group's pooled `log2(CPM+1)` distribution is rank-mapped onto the pooled
+  empirical quantiles of the L1000 pretrain h5ad, using one monotonic transform
+  for every sample of the group so the trt/ctl contrast is preserved. Applied
+  after CPM/log2 and **before** matched-control computation, so `obsm["X_ctl"]`
+  is the control mean of aligned values. The reference (a row-subsample of the
+  pretrain matrix) is cached to `03_cm_finetune_data/output/qn_reference.npy`.
 - **Config reset** — the finetune/benchmark config `max_value`/`min_value` are
   reset to the pretrain values `[0, 15.002]`; after QN the union X lies in that
   range, so bin width (~0.119) and bin semantics match the pretrained bin
   embeddings.
 - **Auditability** — the step-03 manifest gains `n_union`, `n_excl_time`,
-  `n_excl_nodose` (740 time-out + 32 no-dose classified samples) and the
+  `n_excl_nodose` (12 time-out + 32 no-dose classified samples) and the
   per-dataset summary records the dropped datasets; the schema gate is extended
-  into the **data-semantics gate** (author time/dose validity, no zero dose,
-  X within the pretrain range, union composition = `gse262419` + `gse244740`,
-  manifest `n_union` matches union rows) and aborts on failure.
+  into the **data-semantics gate** (author time/dose validity, zero dose only
+  in the `dtoxs_primary` single-dose convention, X within the pretrain range,
+  union composition = the four 24 h-slot datasets, manifest `n_union` matches
+  union rows) and aborts on failure.
 - **Apples-to-apples benchmark** — the retrained union warm-start fold models
   are evaluated with `mode=test` on v1's frozen `input/dtoxs.h5ad` using its own
   `warm-start_fold-1..10` test masks (test-only config
@@ -69,23 +76,23 @@ a dominant platform offset:
 
 ## Consequences
 
-- **In-distribution (union) warm-start benchmark** — MSE_deg 7.24 → 1.14,
-  RMSE_deg 2.69 → 1.07, MAE_deg 1.83 → 0.78, Pearson_deg 0.225 → 0.287,
-  Spearman_deg 0.219 → 0.269, R2_deg 0.057 → 0.060, with fold std collapsing
-  from ~0.10 to ~0.02. The platform-offset distortion is gone; the union model
+- **In-distribution (union) warm-start benchmark** — MSE_deg 7.24 → 1.07,
+  RMSE_deg 2.69 → 1.03, MAE_deg 1.83 → 0.75, Pearson_deg 0.225 → 0.277,
+  Spearman_deg 0.219 → 0.260, R2_deg 0.057 → 0.059, with fold std collapsing
+  from ~0.10 to ~0.01. The platform-offset distortion is gone; the union model
   now performs at v1's error scale on its own data.
 - **Apples-to-apples (v1 DToxS folds)** — on the identical test set the union
-  model does **not** match v1: MSE_deg 1.33 vs 1.12, Pearson_deg 0.056 vs
-  0.321, Spearman_deg 0.032 vs 0.181, R2_deg −0.43 vs −0.009. The alignment
-  removed the artifact, but the union finetune (no DToxS-family exposure
-  anymore) generalizes worse to DToxS folds than the DToxS-only v1 model. This
-  is the honest reading the benchmark was designed to surface, and it is the
-  open question for whether the union finetune is preferable to v1's.
-- The union lost the DToxS family entirely; the finetune data is now TempO-Seq
-  + ScreenSeq only. Recovering the DToxS family under author semantics (real
-  concentrations) is a possible future step.
-- The 48 h/144 h datasets remain in `pert_data/cm` (read-only) and are still
-  extracted for the manifest audit; they just do not train.
+  model does **not** match v1: MSE_deg 1.28 vs 1.12, Pearson_deg 0.086 vs
+  0.321, Spearman_deg 0.075 vs 0.181, R2_deg −0.22 vs −0.009. Re-adding the
+  DToxS family at the 24 h slot narrowed the gap (from Pearson 0.056 without
+  DToxS data), but the union model — in which the DToxS family is only ~10% of
+  samples — still generalizes worse to DToxS folds than the DToxS-only v1
+  model. This is the honest reading the benchmark was designed to surface, and
+  it is the open question for whether the union finetune is preferable to v1's.
+- The DToxS family is back in the union under v1's slot-24 convention; only the
+  144 h dataset (`gse247541`) is excluded from training. The 48 h/144 h source
+  times remain the real values in `pert_data/cm` (read-only) and the raw
+  extractors; the slot-24 normalization is a step-03 semantic decision.
 - Steps 05/06/07 were re-run (GPU-fp-nondeterministic across environments, as
   before); the archived predictions from the pre-alignment model are stale and
   must be regenerated before re-running 08–12.
