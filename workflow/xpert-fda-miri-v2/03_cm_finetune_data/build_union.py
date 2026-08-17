@@ -42,8 +42,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import _datasets  # noqa: E402
 import gene_mapping  # noqa: E402
 from drug_resolution import build_drug_manifest  # noqa: E402
-from utils import (WORKFLOW_ROOT, CM_DATASETS, UNION_TIME_MAP,  # noqa: E402
-                   N_L1000_DRUGS)
+from utils import (WORKFLOW_ROOT, CM_DATASETS, AUTHOR_TIME_MAP,  # noqa: E402
+                   AUTHOR_TIMES, L1000_PRETRAIN_H5AD, N_L1000_DRUGS)
 
 STEP_DIR = WORKFLOW_ROOT / "03_cm_finetune_data"
 OUT_DIR = STEP_DIR / "output"
@@ -51,6 +51,7 @@ GENE_MAP_DIR = OUT_DIR / "gene_maps"
 UNION_H5AD = OUT_DIR / "cm_union.h5ad"
 MANIFEST = OUT_DIR / "drug_manifest.csv"
 SUMMARY = OUT_DIR / "dataset_summary.csv"
+QN_REFERENCE = OUT_DIR / "qn_reference.npy"
 CELL_NAME = "cardio"
 
 
@@ -164,35 +165,127 @@ def matched_control_matrix(meta, X_landmark, controls_mask, group_col):
     return ctl.astype(np.float32)
 
 
-def process_dataset(ds, gene_map, drug_idx_of):
-    meta, counts, gene_ids = _datasets.extract_samples(ds)
+def load_qn_reference(force=False, max_rows=5000, seed=0):
+    """Pooled empirical quantiles of the L1000 pretrain log2(CPM+1) X.
+
+    The reference is the sorted pooled distribution of a row-subsample of the
+    pretrain h5ad (covers all 978 landmarks; a pooled empirical CDF is what
+    per-group quantile alignment needs). Cached to output/qn_reference.npy so
+    rebuilds do not re-read the ~1 GB pretrain matrix.
+    """
+    if QN_REFERENCE.exists() and not force:
+        return np.load(QN_REFERENCE)
+
+    import scanpy as sc
+
+    a = sc.read_h5ad(L1000_PRETRAIN_H5AD, backed="r")
+    n = a.n_obs
+    step = max(1, n // max_rows)
+    rng = np.random.default_rng(seed)
+    row_idx = np.arange(0, n, step)
+    if len(row_idx) > max_rows:
+        row_idx = np.sort(rng.choice(row_idx, size=max_rows, replace=False))
+
+    chunks = []
+    bs = 400
+    for i in range(0, len(row_idx), bs):
+        idx = row_idx[i:i + bs]
+        block = a.X[idx]
+        if hasattr(block, "toarray"):
+            block = block.toarray()
+        chunks.append(np.asarray(block).ravel())
+    vals = np.concatenate(chunks)
+    ref = np.sort(vals)
+    QN_REFERENCE.parent.mkdir(parents=True, exist_ok=True)
+    np.save(QN_REFERENCE, ref)
+    print(f"QN reference: {ref.size} pooled values, "
+          f"range [{ref.min():.4f}, {ref.max():.4f}] -> {QN_REFERENCE}")
+    return ref
+
+
+def quantile_align(X, meta, group_col, ref_sorted):
+    """Per-group pooled quantile alignment onto the L1000 pretrain reference.
+
+    One monotonic transform per matched-control group, shared by every sample
+    of the group, so the trt/ctl contrast is preserved. Applied BEFORE
+    matched-control computation, so obsm['X_ctl'] is the control mean of
+    aligned values. Mapped values lie within the reference range (<= the
+    pretrain max 15.002), matching the finetune config bin range.
+    """
+    import scipy.stats as st
+
+    ref = np.sort(ref_sorted)
+    xp = np.linspace(0, 1, len(ref))
+    out = X.copy()
+    for g in pd.unique(meta[group_col]):
+        sel = meta[group_col].values == g
+        vals = np.asarray(X[sel]).ravel()
+        ranks = st.rankdata(vals, method="average")
+        frac = (ranks - 0.5) / len(vals)
+        mapped = np.interp(frac, xp, ref)
+        out[sel] = mapped.reshape(X[sel].shape)
+    return out
+
+
+def align_and_select(ds, gene_map, drug_idx_of, meta, counts, gene_ids, qn_ref):
+    """Apply QN + author time/dose semantics; return (obs, X, X_ctl).
+
+    Treated samples enter the union only when their time is in the author map
+    {3, 6, 24}, their real concentration is positive (no placeholder dose),
+    and their compound resolves to an HG drug (drug_idx < 8981). The remaining
+    samples are classified by the exclusion accounting in main() so the
+    manifest records every exclusion reason.
+    """
     space = gene_mapping.ID_SPACE[ds]
     X = build_landmark_matrix(counts, gene_ids, gene_map, space)
 
-    # matched controls
     if ds in ("gse262419", "gse244740"):
         grp_col = "plate"
     else:
         grp_col = "dataset_id"
+    X = quantile_align(X, meta, grp_col, qn_ref)
     X_ctl = matched_control_matrix(meta, X, meta["is_control"].values, grp_col)
 
-    # restrict to HG-resolved treated samples
     trt = ~meta["is_control"].values
+    time_ok = meta["time"].map(AUTHOR_TIME_MAP).notna().values
+    has_dose = (meta["dose"] > 0).values
     drug_idx = np.array([drug_idx_of.get((ds, str(r.compound_code) if r.compound_code else r.compound_name), -1)
                          for r in meta.itertuples()])
-    keep = trt & (drug_idx >= 0) & (drug_idx < N_L1000_DRUGS)
+    keep = (trt & time_ok & has_dose & (drug_idx >= 0)
+            & (drug_idx < N_L1000_DRUGS))
 
     obs = meta[keep].reset_index(drop=True).copy()
     obs["pert_idx"] = drug_idx[keep]
     obs["pert_dose"] = obs["dose"]
     obs["pert_dose_idx"] = obs["dose"].map(dose_idx_of)
     obs["pert_time"] = obs["time"]
-    obs["pert_time_idx"] = obs["time"].map(UNION_TIME_MAP)
+    obs["pert_time_idx"] = obs["time"].map(AUTHOR_TIME_MAP)
     obs["cell_iname"] = CELL_NAME
     obs["cell_idx"] = 0
     obs["tissue_idx"] = 0
     obs["pert_id"] = obs["well"]
     return obs, X[keep], X_ctl[keep]
+
+
+def compound_exclusions(ds, meta):
+    """Per-compound exclusion counts from the author-time/dose semantics.
+
+    Returns a DataFrame keyed by (dataset, compound_name, compound_code) with
+    n_excl_time (treated, time outside {3,6,24}) and n_excl_nodose (treated,
+    time valid but no positive real concentration).
+    """
+    m = meta.copy()
+    m["compound_code"] = m["compound_code"].fillna("").astype(str)
+    trt = ~m["is_control"].values
+    time_ok = m["time"].map(AUTHOR_TIME_MAP).notna().values
+    m["_excl_time"] = trt & ~time_ok
+    m["_excl_nodose"] = trt & time_ok & (m["dose"] <= 0).values
+    g = m.groupby(["compound_name", "compound_code"], dropna=False).agg(
+        n_excl_time=("_excl_time", "sum"),
+        n_excl_nodose=("_excl_nodose", "sum"),
+    ).reset_index()
+    g.insert(0, "dataset", ds)
+    return g
 
 
 def main():
@@ -215,8 +308,12 @@ def main():
     print("\n[1/4] per-dataset gene maps")
     maps = build_gene_maps()
 
+    print("\n[1.5/4] L1000 pretrain QN reference")
+    qn_ref = load_qn_reference(force=args.force)
+
     print("\n[2/4] per-dataset sample extraction + drug resolution")
     compounds = []
+    excl_frames = []
     for ds in CM_DATASETS:
         meta, counts, gene_ids = _datasets.extract_samples(ds)
         agg = meta.groupby(["compound_name", "compound_code"],
@@ -228,6 +325,7 @@ def main():
             smi = smi.iloc[0] if len(smi) else None
             compounds.append((ds, r["compound_name"], r["compound_code"],
                               smi, int(r["n_samples"])))
+        excl_frames.append(compound_exclusions(ds, meta))
         print(f"  {ds}: {meta.shape[0]} samples, {len(agg)} compounds")
     manifest = build_drug_manifest(compounds)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
@@ -240,9 +338,11 @@ def main():
     print("\n[3/4] assemble union h5ad")
     parts = []
     for ds in CM_DATASETS:
-        obs, X, X_ctl = process_dataset(ds, maps[ds], drug_idx_of)
+        meta, counts, gene_ids = _datasets.extract_samples(ds)
+        obs, X, X_ctl = align_and_select(ds, maps[ds], drug_idx_of,
+                                         meta, counts, gene_ids, qn_ref)
         parts.append((ds, obs, X, X_ctl))
-        print(f"  {ds}: {len(obs)} treated samples (HG-resolved)")
+        print(f"  {ds}: {len(obs)} treated samples (author-time + HG-resolved)")
 
     # schema: var = 978 landmarks in L1000 gene_idx order
     meta_genes = gene_mapping.load_l1000_meta()
@@ -252,15 +352,21 @@ def main():
     }, index=meta_genes["gene_id"].values.astype(str))
 
     obs_all = pd.concat([p[1] for p in parts], ignore_index=True)
+    obs_all["smiles"] = obs_all["smiles"].fillna("").astype(str)
     X_all = np.concatenate([p[2] for p in parts], axis=0)
     X_ctl_all = np.concatenate([p[3] for p in parts], axis=0)
 
     adata = ad.AnnData(X_all.astype(np.float32), obs=obs_all, var=var)
     adata.obsm["X_ctl"] = X_ctl_all.astype(np.float32)
 
-    # provenance / summary
+    # provenance / summary (all datasets, incl. fully-excluded ones)
     summary = obs_all.groupby("dataset_id").agg(n_samples=("well", "size"),
                                                 n_drugs=("pert_idx", "nunique"))
+    summary = summary.reindex(CM_DATASETS).fillna(0).astype(int)
+    excl_all = pd.concat(excl_frames, ignore_index=True)
+    excl_sum = excl_all.groupby("dataset").agg(n_excl_time=("n_excl_time", "sum"),
+                                               n_excl_nodose=("n_excl_nodose", "sum"))
+    summary = summary.join(excl_sum, how="left").fillna(0).astype(int)
     summary.to_csv(SUMMARY)
     print("\nDataset summary -> " + str(SUMMARY))
     print(summary)
@@ -268,6 +374,29 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(UNION_H5AD)
     print(f"\nUnion h5ad: {UNION_H5AD} ({adata.n_obs} samples x {adata.n_vars} genes)")
+
+    # merge the per-compound union/exclusion counts back into the manifest so
+    # every sample is classified (time-out / no-dose / unresolved) and the
+    # drug-inclusion gate can compare union rows exactly.
+    union_rows = []
+    for _, r in obs_all.iterrows():
+        union_rows.append((str(r["dataset_id"]), str(r["compound_name"]),
+                           str(r["compound_code"]) if r["compound_code"] else ""))
+    union_counts = (pd.DataFrame(union_rows,
+                                 columns=["dataset", "compound_name",
+                                          "compound_code"])
+                    .value_counts().rename("n_union").reset_index())
+    manifest = manifest.merge(
+        union_counts, on=["dataset", "compound_name", "compound_code"],
+        how="left").fillna({"n_union": 0})
+    manifest["n_union"] = manifest["n_union"].astype(int)
+    manifest = manifest.merge(
+        excl_all, on=["dataset", "compound_name", "compound_code"],
+        how="left").fillna({"n_excl_time": 0, "n_excl_nodose": 0})
+    manifest[["n_excl_time", "n_excl_nodose"]] = \
+        manifest[["n_excl_time", "n_excl_nodose"]].astype(int)
+    manifest.to_csv(MANIFEST, index=False)
+    print(f"\nManifest updated with n_union / exclusion counts -> {MANIFEST}")
 
     print("\n[4/4] schema gate")
     if not args.skip_schema_gate:

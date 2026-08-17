@@ -42,7 +42,7 @@ room for the prep step.
 - `11_integrate/` — integrated score over all drugs, ranked candidates, deterministic report.
 - `12_report/` — agentic bilingual final drug report (external biomni backend).
 - `input/` — frozen assets (author HG reference, UniMol array, idx→SMILES, FDA drug list, curated `MIRI_pathways.json`), carried over from v1.
-- `_lib/utils.py` — workflow-root-aware paths; `CM_DATA_ROOT`, `N_L1000_DRUGS = 8981`, `UNION_TIME_MAP = {24:0, 48:1, 144:2}`, `AUTHOR_HG_REFERENCE`.
+- `_lib/utils.py` — workflow-root-aware paths; `CM_DATA_ROOT`, `N_L1000_DRUGS = 8981`, `AUTHOR_TIME_MAP = {3:0, 6:1, 24:2}`, `L1000_PRETRAIN_H5AD`, `AUTHOR_HG_REFERENCE`.
 - `_lib/gene_mapping.py` — **per-dataset** CM→L1000 landmark maps (symbols / Ensembl / SYMBOL_entrezid), legacy-symbol aware, `corrected_gene_name` never a match key.
 - `_lib/drug_resolution.py` — compound→L1000 drug index (canonical-SMILES match, else author `cmap_name` name match) + the auditable manifest.
 - `_lib/verify_genes.py` — the extended per-dataset gene gates (G1 completeness, G2 alias verification, G3 drug-level audit), writes `_lib/gene_mapping_report.md`.
@@ -63,12 +63,25 @@ room for the prep step.
   pert_time[_idx], cell_iname, cell_idx, tissue_idx` + additive `dataset_id`;
   var = 978 landmarks in L1000 `gene_idx` order with `gene_id`/`gene_symbol`;
   `obsm["X_ctl"]` per-sample matched control; X float32 log2(CPM+1)).
-- Dose/time indices are precomputed in step 03 (not left to the library's
-  fixed {3,6,24} h map): the union time map is `{24:0, 48:1, 144:2}` and the
-  screen predicts at time_idx 0 (= 24 h, v1's exposure).
+- Dose/time indices are precomputed in step 03 and follow the **author L1000
+  semantics** (ADR 0010): time map `{3:0, 6:1, 24:2}` (the pretrain/v1 map),
+  and dose via the author `assign_pert_dose_corrected` bins (0–9) from real µM
+  concentrations. The union is restricted to 24 h → `pert_time_idx 2`; the
+  48 h datasets (`dtoxs_primary`, `dtoxs_ipsc`) and 144 h (`gse247541`) are
+  fully excluded, so the union is `gse262419` (3,783) + `gse244740` (2,424) =
+  6,207 samples. The screen predicts at time_idx 2 (= 24 h, v1's exposure).
+- Treated samples with no positive real concentration (placeholder dose, e.g.
+  `gse262419` "Blank" wells) are excluded; the manifest records every
+  exclusion (`n_excl_time` / `n_excl_nodose` / `n_union`).
+- Per-group **quantile alignment** to the L1000 pretrain pooled distribution
+  (one monotonic transform per matched-control group, before matched-control
+  computation) removes the platform/batch offset; the finetune/benchmark
+  config bin range is `[0, 15.002]` (the pretrain range). The QN reference is
+  cached at `output/qn_reference.npy`.
 - `gse262419`'s TempO-Seq panel provably lacks WRB and FAM57A (their probe rows
   point at different Entrez genes); those two landmarks are zeroed for that
-  dataset and documented, not silently mismatched.
+  dataset and documented (after QN they map into the low tail), not silently
+  mismatched.
 
 ## Key invariants (gates)
 
@@ -79,7 +92,10 @@ room for the prep step.
   v1's DToxS-primary control consensus.
 - **Union schema gate** — `03_cm_finetune_data/schema_gate.py` asserts the
   union h5ad is structure-identical to v1's `input/dtoxs.h5ad` in the fields
-  the XPert loader consumes.
+  the XPert loader consumes, **and** the data-semantics invariants (author time
+  `{3,6,24}` / `time_idx 2`, no placeholder dose, X within the pretrain range
+  `[0, 15.002]`, union composition = `gse262419` + `gse244740`, manifest
+  `n_union` matches union rows).
 - **Gene gates** — `_lib/verify_genes.py` per dataset: G1 all present landmarks
   resolve (gse262419 platform-missing = {WRB, FAM57A} only), G2 all legacy
   aliases author-metadata verified, G3 no confirmed union-column
@@ -97,7 +113,8 @@ python 01_drug_embed/drug_list.py                # 1,004 L1000-contained FDA dru
 python 01_drug_embed/drug_embeddings.py          # author-reference HG (no HG training)
 python _lib/verify_genes.py                      # per-dataset gene gates (G1/G2 anytime; G3 needs step-03 union h5ad)
 python 02_cm_baseline/cm_baseline.py             # DToxS-primary consensus baseline
-python 03_cm_finetune_data/build_union.py        # union h5ad + manifest + schema gate
+python 03_cm_finetune_data/build_union.py        # union h5ad + manifest + data-semantics gate
+python 05_xpert_finetune_bench/eval_dtoxs_folds.py  # apples-to-apples: union warm-start on v1 DToxS folds
 # GPU steps (05 benchmark / 06 finetune / 07 predict) then 08–12
 python 11_integrate/integrate.py
 # agentic report (external biomni backend) — resumable
@@ -119,6 +136,13 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
   `predict.py`). Existing `dtoxs` behavior is unchanged.
 - `create_cm_splits.py` normalizes the union obs index to a RangeIndex before
   writing split columns (anndata stores a string index on disk).
+- Step 07 predicts at `--time-idx 2` (24 h under the author time map; the
+  library `predict.py` defaults to 2). After any step-05/06 retrain, steps
+  08–12 must be re-run on the regenerated step-07 DEG table.
+- The apples-to-apples eval (`eval_dtoxs_folds.py`) runs the union warm-start
+  weights on v1's DToxS test folds via `config/cm_eval_dtoxs.yaml`; its output
+  (`benchmark_dtoxs_folds_vs_v1.csv`) is the honest v1-vs-v2 comparison the
+  in-distribution union benchmark cannot give.
 - Large artifacts (`.npy`, `.pth`, `.csv`, `.h5ad`), `12_report/cache/` JSONs,
   and `.env` are gitignored — never commit them.
 - Steps 05/06 re-run the XPert finetune on the union — GPU-fp-nondeterministic

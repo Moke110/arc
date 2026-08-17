@@ -53,9 +53,17 @@ N_L1000_DRUGS = 8981
 # component so the workflow is self-contained on drug assets).
 AUTHOR_HG_REFERENCE = WORKFLOW_ROOT / "input" / "HG_drug_embeddings.npy"
 
-# Union exposure-time map (step-owned; the XPert library fallback only covers
-# {3,6,24} h, so the 24/48/144 h union times are mapped explicitly here).
-UNION_TIME_MAP = {24: 0, 48: 1, 144: 2}
+# Author exposure-time map (the XPert-author L1000 convention; identical to
+# the pretrain and to v1's frozen dtoxs.h5ad, which is all 24 h -> index 2).
+# The union finetune data is restricted to these times (step 03), so the
+# 48 h / 144 h datasets (dtoxs_primary, dtoxs_ipsc, gse247541) are excluded.
+AUTHOR_TIME_MAP = {3: 0, 6: 1, 24: 2}
+AUTHOR_TIMES = (3, 6, 24)
+
+# L1000 XPert pretrain h5ad — the pooled log2(CPM+1) distribution used as the
+# quantile-alignment reference for the union finetune data (step 03).
+L1000_PRETRAIN_H5AD = (CM_DATA_ROOT.parent / "l1000-xpert" / "data"
+                       / "l1000_mdmt_268022_pretrain.h5ad")
 
 # Insert the XPert model library so `python -m src.*` and `from src.*`
 # resolve (HG is a pure library and is never imported by this workflow).

@@ -37,9 +37,9 @@ def main():
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--dose-idx", type=int, default=0)
-    # 24 h (the union time map is {24:0, 48:1, 144:2}; index 0 = 24 h, the
+    # 24 h under the author time map {3:0, 6:1, 24:2} (index 2 = 24 h, the
     # L1000-standard exposure v1's screen also conditioned on).
-    parser.add_argument("--time-idx", type=int, default=0)
+    parser.add_argument("--time-idx", type=int, default=2)
     parser.add_argument("--force", action="store_true",
                         help="Re-predict even if the output DEG table already exists")
     args = parser.parse_args()
