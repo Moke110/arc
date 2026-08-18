@@ -87,8 +87,10 @@ cells = [
        "Creates the unified fold columns (warm-start + cold-drug, 10 folds "
        "each, ADR 0014) + `dtoxs_full` (all-train) on the rebuilt h5ad and "
        "finetunes each fold from the pretrain weight, evaluating on the "
-       "held-out test set. Per-fold values are overlaid as black dots on the "
-       "mean ± std bars. Outputs: "
+       "held-out test set. The L1000 pretrain weight is also evaluated "
+       "zero-shot (no finetuning) on all 20 fold test sets and plotted as the "
+       "FIRST column (`pretrain`, amber). Per-fold values are overlaid as "
+       "black dots on the mean ± std bars. Outputs: "
        "`05_xpert_finetune_bench/output/benchmark.csv` + "
        "`benchmark.png`."),
     code("!python 05_xpert_finetune_bench/create_dtoxs_splits.py\n"

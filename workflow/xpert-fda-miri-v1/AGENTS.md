@@ -14,7 +14,7 @@ The **finalized MIRI screening workflow** (`workflow/xpert-fda-miri-v1/`, former
 - `01_drug_embed/` — merged drug list (`drug_list.py`) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate).
 - `02_cm_baseline/` — consensus cardiomyocyte baseline (`cm_baseline.py`), authoritative gene mapping.
 - `03_xpert_pretrain/` — the workflow-owned pretrain unit: used pretrain weight + `config/l1000.yaml` (data roots point at `pert_data/l1000-xpert/data/` and `input/`).
-- `04_xpert_finetune_bench/` — XPert DTOXS-split benchmark on the **unified folds** (ADR 0014): `create_dtoxs_splits.py` regenerates `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `dtoxs_full` on the frozen `input/dtoxs.h5ad` in place (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds and overlays per-fold dots on the mean ± std bars.
+- `04_xpert_finetune_bench/` — XPert DTOXS-split benchmark on the **unified folds** (ADR 0014): `create_dtoxs_splits.py` regenerates `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `dtoxs_full` on the frozen `input/dtoxs.h5ad` in place (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds and overlays per-fold dots on the mean ± std bars, and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-03 L1000 pretrain weight on all 20 fold test sets (no DToxS finetune) under the workflow-owned `config/dtoxs_pretrain_eval.yaml` (pretrain architecture/bin `[0, 15.002]`; the drifted aux `class_fc` head is dropped by the library's tolerant test-mode load).
 - `05_xpert_finetune/` — all-train DTOXS finetune (`xpert_finetune.py`) + step-owned `config/dtoxs.yaml`.
 - `06_xpert_predict/` — merged perturbed-transcriptome prediction (`perturb_transcriptome.py`) + z-score (`zscore.py`).
 - `07_miri_phenotype/` — integrated MIRI reference gene sets + rank reference (`miri_phenotype.py`).
@@ -64,5 +64,5 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
 - The HG table is 8981×256 (author reference only); do not point the config at an 11104-row extension table.
 - Pretrain weight + both YAMLs (pretrain + finetune) are workflow-owned; the model library resolves configs against the workflow root.
 - Large artifacts (`.npy`, `.pth`, `.csv`, `.h5ad`), `11_report/cache/` JSONs, and `.env` are gitignored — never commit them.
-- Steps 04/05 re-run the XPert DToxS finetune/benchmark on the author-reference HG — GPU-fp-nondeterministic across environments.
+- Steps 04/05 re-run the XPert DToxS finetune/benchmark on the author-reference HG — GPU-fp-nondeterministic across environments. The `pretrain` benchmark column re-evaluates the step-03 L1000 weight (no finetune) and is deterministic per GPU; the DToxS-specific embedding tables (dose/time/position) it drops are untrained in that column, exactly as they are at finetune epoch 0.
 - The 11_report biomni agent backend (`/home/chang/cc-research`, overridable via `BIOMNI_CC_DIR`) is an external dependency; it is not vendored.

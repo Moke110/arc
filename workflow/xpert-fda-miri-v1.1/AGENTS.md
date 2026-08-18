@@ -53,7 +53,7 @@ replacing v1.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the raw GEO deposit (`pert_data/dtoxs_primary`, GSE146096); byte-identical to v1's baseline.
 - `03_cm_finetune_data/` — **the v1.1 change**: rebuilds the DToxS finetune h5ad `output/dtoxs_lincs.h5ad` from the LINCS LDS-1593 well-level package (read-only) + the compound→drug-index manifest (`output/drug_manifest.csv`), the gene map (`output/gene_maps/`), the QN reference, the parity delta vs v1's frozen `input/dtoxs.h5ad` (`output/parity_delta.md`), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched from v1.
-- `05_xpert_finetune_bench/` — DToxS benchmark on the **unified folds** (ADR 0014): `create_dtoxs_splits.py` writes `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `dtoxs_full` on the rebuilt h5ad (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds and overlays per-fold dots.
+- `05_xpert_finetune_bench/` — DToxS benchmark on the **unified folds** (ADR 0014): `create_dtoxs_splits.py` writes `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `dtoxs_full` on the rebuilt h5ad (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds and overlays per-fold dots, and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/dtoxs_pretrain_eval.yaml` (pretrain architecture/bin `[0, 15.002]`; the drifted aux `class_fc` head is dropped by the library's tolerant test-mode load).
 - `06_xpert_finetune/` — all-train DToxS-LINCS finetune (`xpert_finetune.py`, `config/dtoxs.yaml`) -> the final prediction model `output/dtoxs_dtoxs/`.
 - `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`).
 - `08_miri_phenotype/` — integrated MIRI reference gene sets + rank reference.
@@ -164,7 +164,10 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
 - Large artifacts (`.npy`, `.pth`, `.csv`, `.h5ad`), `12_report/cache/` JSONs,
   and `.env` are gitignored — never commit them.
 - Steps 05/06 re-run the XPert finetune on the DToxS-LINCS data —
-  GPU-fp-nondeterministic across environments.
+  GPU-fp-nondeterministic across environments. The `pretrain` benchmark column
+  re-evaluates the step-04 L1000 weight (no finetuning) and is deterministic
+  per GPU; the DToxS-specific embedding tables (dose/time/position) it drops
+  are untrained in that column, exactly as they are at finetune epoch 0.
 - The 12_report biomni agent backend (`/home/chang/cc-research`, overridable
   via `BIOMNI_CC_DIR`) is an external dependency; it is not vendored.
 - v1 stays frozen: nothing in this workflow writes into v1 or modifies v1's

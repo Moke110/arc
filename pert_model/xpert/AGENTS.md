@@ -12,7 +12,7 @@ XPert: dual-branch Transformer (~25M params) predicting drug-induced transcripti
 
 ## Key files
 
-- `src/train.py` — arg parsing, train/validate/infer/test loops; loss 0.2·L_trt + 0.003·L_ctl + 0.2·L_deg + 1.0·L_pcc; GradScaler, early stopping on PCC (patience 50), lr scheduler.
+- `src/train.py` — arg parsing, train/validate/infer/test loops; loss 0.2·L_trt + 0.003·L_ctl + 0.2·L_deg + 1.0·L_pcc; GradScaler, early stopping on PCC (patience 50), lr scheduler. Test-mode weight load is **tolerant** (mirrors the train-mode finetune load): keys with mismatched name/shape are skipped and logged, so a pretrain checkpoint whose aux `class_fc` head drifted across library versions can still be zero-shot-evaluated (used by the workflows' `pretrain` benchmark column).
 - `src/dataset.py` — AnnData → torch tensors; binned expression (n_bins=128), pre-extracted metadata numpy arrays.
 - `src/utils.py` — `_load_data_and_drug_feat` (h5ad + drug feat array), `load_dataloader/test/infer`, UniMol feature gen.
 - `src/config.py` — configs resolve against the owning project root (workflow-owned finetune configs resolve vs the workflow).

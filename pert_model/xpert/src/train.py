@@ -645,7 +645,25 @@ def main():
             else:
                 logger.info('No trained parameters are provided!')
             checkpoint = torch.load(saved_model)
-            model.load_state_dict(checkpoint['model_state_dict'])
+            # Tolerant load, mirroring the train-mode finetune load: transfer
+            # every checkpoint key whose name+shape matches the model and skip
+            # the rest (e.g. evaluating the L1000 pretrain weight whose aux
+            # cell-classification head drifted across library versions). In the
+            # regular finetune fold case every key matches, so this is a no-op.
+            model_dict = model.state_dict()
+            exclude_keys = [k.strip() for k in args.exclude_keys.split(',') if k.strip()]
+            pretrained_dict = {
+                k: v for k, v in checkpoint['model_state_dict'].items()
+                if k in model_dict
+                and v.shape == model_dict[k].shape
+                and not any(exclude_key in k for exclude_key in exclude_keys)
+            }
+            skipped = sorted(set(checkpoint['model_state_dict']) - set(pretrained_dict))
+            if skipped:
+                logger.info(f'Skipped {len(skipped)} checkpoint keys not '
+                            f'transferable (missing/shape-mismatched): {skipped}')
+            model_dict.update(pretrained_dict)
+            model.load_state_dict(model_dict)
 
             if args.use_gradscaler:
                 gradscaler = GradScaler(device='cuda')
