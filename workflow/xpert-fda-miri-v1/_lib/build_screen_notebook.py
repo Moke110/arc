@@ -65,12 +65,15 @@ cells = [
     code("!ls 03_xpert_pretrain/"),
 
     md("## Step 04 — Benchmark XPert on DTOXS splits\n\n"
-       "Finetunes on the warm-start / cold-drug / cold-cate splits (weights "
-       "kept) and evaluates each fold on its held-out test set. Side branch: "
+       "Regenerates the unified fold columns (warm-start + cold-drug, 10 folds "
+       "each, ADR 0014) on the frozen `input/dtoxs.h5ad`, then finetunes and "
+       "benchmarks each fold on its held-out test set (weights kept). Per-fold "
+       "values are overlaid as black dots on the mean ± std bars. Side branch: "
        "downstream steps use the step-05 model. "
        "Outputs: `04_xpert_finetune_bench/output/benchmark.csv` + "
        "`benchmark.png`."),
-    code("!python 04_xpert_finetune_bench/xpert_finetune_bench.py"),
+    code("!python 04_xpert_finetune_bench/create_dtoxs_splits.py\n"
+         "!python 04_xpert_finetune_bench/xpert_finetune_bench.py"),
 
     md("## Step 05 — Finetune XPert on DTOXS\n\n"
        "Full-DToxS finetune -> the final prediction model (base weight from "

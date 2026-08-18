@@ -30,6 +30,18 @@ drug_embeddings:
   smi: input/all_drugs_idx2smi.npy
   HG: 01_drug_embed/output/all_drugs_idx2HG.npy
 split_methods:
+  cold-drug:
+    folds:
+    - cold-drug_fold-1
+    - cold-drug_fold-2
+    - cold-drug_fold-3
+    - cold-drug_fold-4
+    - cold-drug_fold-5
+    - cold-drug_fold-6
+    - cold-drug_fold-7
+    - cold-drug_fold-8
+    - cold-drug_fold-9
+    - cold-drug_fold-10
   warm-start:
     folds:
     - warm-start_fold-1

@@ -49,7 +49,7 @@ def main():
     parser.add_argument("--config", default=str(STEP_DIR / "config/cm"),
                         help="Finetune config path (without .yaml)")
     parser.add_argument("--device", default="cuda:0")
-    parser.add_argument("--epochs", type=int, default=3)
+    parser.add_argument("--epochs", type=int, default=4)
     parser.add_argument("--force", action="store_true",
                         help="Retrain even if finetuned weights already exist")
     args = parser.parse_args()

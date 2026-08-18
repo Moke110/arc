@@ -86,12 +86,12 @@ cells = [
        "steps 05/06 consume the weight from here."),
     code("!ls 04_xpert_pretrain/"),
 
-    md("## Step 05 — Benchmark XPert on the union warm-start split\n\n"
-       "Creates the warm-start (10 drug-stratified folds) + `cm_full` "
-       "(all-train) splits on the union h5ad, finetunes each warm-start fold "
-       "from the pretrain weight and evaluates on the held-out test set. "
-       "`cold-drug`/`cold-cate` are dropped (no meaningful union drug "
-       "categories). Outputs: "
+    md("## Step 05 — Benchmark XPert on the union CM splits\n\n"
+       "Creates the unified fold columns (warm-start + cold-drug, 10 folds "
+       "each, ADR 0014) + `cm_full` (all-train) on the union h5ad, finetunes "
+       "each fold from the pretrain weight and evaluates on the held-out test "
+       "set (4 epochs). Per-fold values are overlaid as black dots on the "
+       "mean ± std bars. Outputs: "
        "`05_xpert_finetune_bench/output/benchmark.csv` + `benchmark.png`."),
     code("!python 05_xpert_finetune_bench/create_cm_splits.py\n"
          "!python 05_xpert_finetune_bench/xpert_finetune_bench.py"),

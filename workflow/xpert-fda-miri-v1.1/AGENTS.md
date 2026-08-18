@@ -53,7 +53,7 @@ replacing v1.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the raw GEO deposit (`pert_data/dtoxs_primary`, GSE146096); byte-identical to v1's baseline.
 - `03_cm_finetune_data/` — **the v1.1 change**: rebuilds the DToxS finetune h5ad `output/dtoxs_lincs.h5ad` from the LINCS LDS-1593 well-level package (read-only) + the compound→drug-index manifest (`output/drug_manifest.csv`), the gene map (`output/gene_maps/`), the QN reference, the parity delta vs v1's frozen `input/dtoxs.h5ad` (`output/parity_delta.md`), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched from v1.
-- `05_xpert_finetune_bench/` — DToxS warm-start benchmark (`create_dtoxs_splits.py`, `xpert_finetune_bench.py`); `cold-drug`/`cold-cate` dropped (not regenerable on the rebuilt data).
+- `05_xpert_finetune_bench/` — DToxS benchmark on the **unified folds** (ADR 0014): `create_dtoxs_splits.py` writes `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `dtoxs_full` on the rebuilt h5ad (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds and overlays per-fold dots.
 - `06_xpert_finetune/` — all-train DToxS-LINCS finetune (`xpert_finetune.py`, `config/dtoxs.yaml`) -> the final prediction model `output/dtoxs_dtoxs/`.
 - `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`).
 - `08_miri_phenotype/` — integrated MIRI reference gene sets + rank reference.
@@ -156,9 +156,10 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
 - The finetune/bench config (`06_xpert_finetune/config/dtoxs.yaml`) uses
   dataset name `dtoxs` (the library's `dtoxs` branch) with
   `DTOX_data_root` pointing at `03_cm_finetune_data/output/dtoxs_lincs.h5ad`.
-- `create_dtoxs_splits.py` writes warm-start (10 folds) + `dtoxs_full` splits
-  on the rebuilt h5ad; the `cold-drug`/`cold-cate` splits of v1's frozen data
-  are not regenerated.
+- `create_dtoxs_splits.py` writes the unified fold columns — `warm-start`
+  (10, drug-overlap) + `cold-drug` (10, drug-disjoint) + `dtoxs_full`
+  (all-train) — on the rebuilt h5ad, with a built-in invariant gate (drug
+  overlap 1.0/0.0, test-fraction band, coverage, no stale columns; ADR 0014).
 - Step 07 predicts at `--time-idx 2` (24 h under the author time map).
 - Large artifacts (`.npy`, `.pth`, `.csv`, `.h5ad`), `12_report/cache/` JSONs,
   and `.env` are gitignored — never commit them.

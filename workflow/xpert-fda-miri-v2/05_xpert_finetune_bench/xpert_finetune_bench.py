@@ -2,13 +2,12 @@
 """
 Step 05 — Benchmark XPert on the union CM splits.
 
-Finetunes XPert on the evaluation warm-start split (10 drug-stratified folds;
-split columns created by create_cm_splits.py in the union h5ad) and benchmarks
-each fold on its held-out test set. The benchmark trains on the workflow-built
+Finetunes XPert on the evaluation splits — warm-start (drug-overlap) and
+cold-drug (drug-disjoint), 10 folds each under the unified fold scheme
+(ADR 0014; split columns created by create_cm_splits.py in the union h5ad).
+The benchmark trains on the workflow-built
 union h5ad (03_cm_finetune_data/output/cm_union.h5ad), not the DToxS-only
-frozen h5ad. `cold-drug` / `cold-cate` are dropped for v2: drug categories
-exist only for the DToxS KI panel, and the union's compounds are
-heterogeneous. Idempotent: folds with existing weights are not retrained, and
+frozen h5ad. Idempotent: folds with existing weights are not retrained, and
 folds with existing per-fold result CSVs are not re-evaluated (pass --force to
 redo both).
 
@@ -19,7 +18,7 @@ into 05_xpert_finetune_bench/output/ when each run finishes.
 Outputs:
   05_xpert_finetune_bench/output/cm_warm-start/      — fold weights + per-fold metrics
   05_xpert_finetune_bench/output/benchmark.csv       — per-fold test metrics
-  05_xpert_finetune_bench/benchmark.png              — mean +/- std (deg metrics)
+  05_xpert_finetune_bench/benchmark.png              — mean +/- std per split with per-fold dots
 
 Usage:
     python 05_xpert_finetune_bench/xpert_finetune_bench.py            # idempotent
@@ -48,10 +47,10 @@ STAGING_ROOT = WORKFLOW_ROOT / "finetune" / "output"
 DEFAULT_PRETRAINED = (
     WORKFLOW_ROOT / "04_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
 )
-SPLITS = ["warm-start"]
+SPLITS = ["warm-start", "cold-drug"]
 PLOT_METRICS = ["MSE_deg", "RMSE_deg", "MAE_deg",
                 "Pearson_deg", "Spearman_deg", "R2_deg"]
-NUM_EPOCHS = 3
+NUM_EPOCHS = 4
 
 
 def run_xpert(mode, split, device, extra=()):
@@ -162,11 +161,16 @@ def plot_benchmark(bench):
         return
     fig, axes = plt.subplots(2, 3, figsize=(16, 9))
     x = np.arange(len(SPLITS))
+    rng = np.random.default_rng(2024)
     for ax, metric in zip(axes.flatten(), metrics):
         means = [bench.loc[bench["split"] == s, metric].mean() for s in SPLITS]
         stds = [bench.loc[bench["split"] == s, metric].std() for s in SPLITS]
         ax.bar(x, means, yerr=stds, capsize=4, color="steelblue", alpha=0.85,
                edgecolor="white")
+        for s_idx, split in enumerate(SPLITS):
+            vals = bench.loc[bench["split"] == split, metric].astype(float).values
+            ax.scatter(x[s_idx] + rng.uniform(-0.12, 0.12, size=len(vals)),
+                       vals, color="black", s=14, zorder=3, alpha=0.85)
         ax.set_xticks(x)
         ax.set_xticklabels(SPLITS, fontsize=10)
         ax.set_title(metric, fontsize=12, fontweight="bold")

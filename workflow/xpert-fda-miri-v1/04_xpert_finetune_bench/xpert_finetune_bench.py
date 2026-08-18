@@ -2,9 +2,10 @@
 """
 Step 04 — Benchmark XPert on DTOXS splits.
 
-Finetunes XPert on the evaluation DToxS splits (warm-start, cold-drug,
-cold-cate; split columns created by create_dtoxs_splits.py in input/dtoxs.h5ad)
-and benchmarks each fold on its held-out test set. Idempotent: splits with
+Finetunes XPert on the evaluation DToxS splits (warm-start and cold-drug;
+split columns created by create_dtoxs_splits.py in input/dtoxs.h5ad under the
+unified fold scheme, ADR 0014) and benchmarks each fold on its held-out test
+set. Idempotent: splits with
 existing fold weights are not retrained, and splits with existing per-fold
 result CSVs are not re-evaluated (pass --force to redo both).
 
@@ -15,7 +16,7 @@ into 04_xpert_finetune_bench/output/ when each run finishes.
 Outputs:
   04_xpert_finetune_bench/output/dtoxs_<split>/   — fold weights + per-fold metrics
   04_xpert_finetune_bench/output/benchmark.csv    — per-fold test metrics, all splits
-  04_xpert_finetune_bench/benchmark.png           — mean +/- std per split (deg metrics)
+  04_xpert_finetune_bench/benchmark.png           — mean +/- std per split with per-fold dots
 
 Usage:
     python 04_xpert_finetune_bench/xpert_finetune_bench.py            # idempotent
@@ -44,7 +45,7 @@ STAGING_ROOT = WORKFLOW_ROOT / "finetune" / "output"
 DEFAULT_PRETRAINED = (
     WORKFLOW_ROOT / "03_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
 )
-SPLITS = ["warm-start", "cold-drug", "cold-cate"]
+SPLITS = ["warm-start", "cold-drug"]
 PLOT_METRICS = ["MSE_deg", "RMSE_deg", "MAE_deg",
                 "Pearson_deg", "Spearman_deg", "R2_deg"]
 
@@ -156,11 +157,16 @@ def plot_benchmark(bench):
         return
     fig, axes = plt.subplots(2, 3, figsize=(16, 9))
     x = np.arange(len(SPLITS))
+    rng = np.random.default_rng(2024)
     for ax, metric in zip(axes.flatten(), metrics):
         means = [bench.loc[bench["split"] == s, metric].mean() for s in SPLITS]
         stds = [bench.loc[bench["split"] == s, metric].std() for s in SPLITS]
         ax.bar(x, means, yerr=stds, capsize=4, color="steelblue", alpha=0.85,
                edgecolor="white")
+        for s_idx, split in enumerate(SPLITS):
+            vals = bench.loc[bench["split"] == split, metric].astype(float).values
+            ax.scatter(x[s_idx] + rng.uniform(-0.12, 0.12, size=len(vals)),
+                       vals, color="black", s=14, zorder=3, alpha=0.85)
         ax.set_xticks(x)
         ax.set_xticklabels(SPLITS, fontsize=10)
         ax.set_title(metric, fontsize=12, fontweight="bold")

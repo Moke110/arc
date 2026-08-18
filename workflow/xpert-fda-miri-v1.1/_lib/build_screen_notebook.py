@@ -83,12 +83,13 @@ cells = [
        "screening; steps 05/06 consume the weight from here."),
     code("!ls 04_xpert_pretrain/"),
 
-    md("## Step 05 — Benchmark XPert on the DToxS warm-start split\n\n"
-       "Creates the warm-start (10 drug-stratified folds) + `dtoxs_full` "
-       "(all-train) splits on the rebuilt h5ad and finetunes each warm-start "
-       "fold from the pretrain weight, evaluating on the held-out test set. "
-       "`cold-drug`/`cold-cate` are dropped (not regenerable on the rebuilt "
-       "data). Outputs: `05_xpert_finetune_bench/output/benchmark.csv` + "
+    md("## Step 05 — Benchmark XPert on the DToxS-LINCS splits\n\n"
+       "Creates the unified fold columns (warm-start + cold-drug, 10 folds "
+       "each, ADR 0014) + `dtoxs_full` (all-train) on the rebuilt h5ad and "
+       "finetunes each fold from the pretrain weight, evaluating on the "
+       "held-out test set. Per-fold values are overlaid as black dots on the "
+       "mean ± std bars. Outputs: "
+       "`05_xpert_finetune_bench/output/benchmark.csv` + "
        "`benchmark.png`."),
     code("!python 05_xpert_finetune_bench/create_dtoxs_splits.py\n"
          "!python 05_xpert_finetune_bench/xpert_finetune_bench.py"),

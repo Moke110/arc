@@ -36,7 +36,7 @@ room for the prep step.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the released LINCS LDS-1593 package (`pert_data/dtoxs_primary/Data/Level3`); byte-identical to v1's baseline.
 - `03_cm_finetune_data/` — **the v2 change**: builds the union finetune h5ad `output/cm_union.h5ad` from the `pert_data` datasets (read-only), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), a schema gate vs v1's `input/dtoxs.h5ad`, and the composition report `output/finetune_report.html`. The DToxS-primary arm reads the LINCS LDS-1593 well-level package (`pert_data/dtoxs_primary/Data/Level3`), so the union includes the non-KI DToxS perturbations.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched.
-- `05_xpert_finetune_bench/` — union warm-start benchmark (`create_cm_splits.py`, `xpert_finetune_bench.py`); `cold-drug`/`cold-cate` dropped (no meaningful union drug categories).
+- `05_xpert_finetune_bench/` — union benchmark on the **unified folds** (ADR 0014): `create_cm_splits.py` writes `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `cm_full` on the union h5ad (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** (matching v1/v1.1) and overlays per-fold dots. Self-contained: no cross-workflow comparison tooling.
 - `06_xpert_finetune/` — all-train union finetune (`xpert_finetune.py`, `config/cm.yaml`) -> the final prediction model `output/cm_cm_full/`.
 - `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`).
 - `08_miri_phenotype/` — integrated MIRI reference gene sets + rank reference.
@@ -142,7 +142,7 @@ python 01_drug_embed/drug_embeddings.py          # author-reference HG (no HG tr
 python _lib/verify_genes.py                      # per-dataset gene gates (G1/G2 anytime; G3 needs step-03 union h5ad)
 python 02_cm_baseline/cm_baseline.py             # DToxS-primary consensus baseline
 python 03_cm_finetune_data/build_union.py        # union h5ad + manifest + data-semantics gate
-python 05_xpert_finetune_bench/eval_dtoxs_folds.py  # apples-to-apples: union warm-start on v1 DToxS folds
+python 05_xpert_finetune_bench/create_cm_splits.py  # unified folds + invariant gate
 # GPU steps (05 benchmark / 06 finetune / 07 predict) then 08–12
 python 11_integrate/integrate.py
 # agentic report (external biomni backend) — resumable
@@ -162,15 +162,16 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
   `cm` dataset block and CLI dataset name `cm`; the XPert library treats `cm`
   like `dtoxs` (additive branches in `utils.py`, `model_xpert.py`,
   `predict.py`). Existing `dtoxs` behavior is unchanged.
-- `create_cm_splits.py` normalizes the union obs index to a RangeIndex before
-  writing split columns (anndata stores a string index on disk).
+- `create_cm_splits.py` writes the unified fold columns — `warm-start`
+  (10, drug-overlap) + `cold-drug` (10, drug-disjoint) + `cm_full`
+  (all-train) — on the union h5ad, with a built-in invariant gate (drug
+  overlap 1.0/0.0, test-fraction band, coverage, no stale columns; ADR 0014).
 - Step 07 predicts at `--time-idx 2` (24 h under the author time map; the
   library `predict.py` defaults to 2). After any step-05/06 retrain, steps
   08–12 must be re-run on the regenerated step-07 DEG table.
-- The apples-to-apples eval (`eval_dtoxs_folds.py`) runs the union warm-start
-  weights on v1's DToxS test folds via `config/cm_eval_dtoxs.yaml`; its output
-  (`benchmark_dtoxs_folds_vs_v1.csv`) is the honest v1-vs-v2 comparison the
-  in-distribution union benchmark cannot give.
+- The step-03 schema gate (data integrity vs v1's h5ad) is the only
+  cross-workflow check that remains; there is no benchmark comparison against
+  v1's folds.
 - Large artifacts (`.npy`, `.pth`, `.csv`, `.h5ad`), `12_report/cache/` JSONs,
   and `.env` are gitignored — never commit them.
 - Steps 05/06 re-run the XPert finetune on the union — GPU-fp-nondeterministic

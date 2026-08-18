@@ -40,6 +40,13 @@ XPert: dual-branch Transformer (~25M params) predicting drug-induced transcripti
 
 ## DTOXS / CM splits
 
-- cold-drug: 10-fold leave-one-drug-out; cold-cate: 6-fold leave-one-category-out; warm-start: 10-fold drug-stratified random (evaluation-only); dtoxs: 1-fold all-train (final model). Splits persisted in h5ad `.obs` columns; no separate validation set (val = test when empty).
-- `cm` is an additive dataset name (union-CM finetune, `workflow/xpert-fda-miri-v2`): `_load_data_and_drug_feat` reads `DTOX_data_root` for `cm` exactly as for `dtoxs`, and the model treats `cm` like `dtoxs` for dose/time embeddings (additive branches; existing `dtoxs` behavior unchanged). Config dataset block and CLI dataset name are both `cm`; splits are `warm-start` + `cm_full`.
-- Finetune defaults: 4 epochs, batch 32, init_epoch 0, finetune_lr 0.002, output to workflow `finetune/output/{dataset}_{split}/` (no timestamp subdir). v2 runs 3 epochs per the workflow's archived runs.
+- The three MIRI workflows generate the fold columns under the **unified fold
+  scheme** (ADR 0014): `warm-start` (10, drug-overlap — every test drug also
+  in train; per-drug ~20% sample split), `cold-drug` (10, drug-disjoint — no
+  test drug in train; sample-weighted ~20% of drugs, coverage-rescued),
+  and the all-train full column (`dtoxs_full` / `cm_full`). `cold-cate` is
+  dropped (no category/data-source splits). Values are `train`/`test`/`''`;
+  per-fold test fraction in [0.10, 0.30]; no separate validation set
+  (val = test when empty). Splits persisted in h5ad `.obs` columns.
+- `cm` is an additive dataset name (union-CM finetune, `workflow/xpert-fda-miri-v2`): `_load_data_and_drug_feat` reads `DTOX_data_root` for `cm` exactly as for `dtoxs`, and the model treats `cm` like `dtoxs` for dose/time embeddings (additive branches; existing `dtoxs` behavior unchanged). Config dataset block and CLI dataset name are both `cm`; splits are `warm-start` + `cold-drug` + `cm_full`.
+- Finetune defaults: 4 epochs, batch 32, init_epoch 0, finetune_lr 0.002, output to workflow `finetune/output/{dataset}_{split}/` (no timestamp subdir). All three workflows run 4 epochs (v2 aligned to 4 in ADR 0014).
