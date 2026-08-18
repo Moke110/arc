@@ -3,16 +3,18 @@
 Step 02 — Baseline transcriptome (authoritative gene mapping).
 
 Builds the consensus cardiomyocyte baseline transcriptome from the DToxS-primary
-control wells (CTRL, CTRL-DMSO, CTRL-EtOH) of the raw GEO deposit
-(pert_data/cm/dtoxs_primary, GSE146096): computes log2(CPM+1) and averages
-across all control wells into a single consensus baseline. Gene matching uses
-the workflow-authoritative DToxS-primary -> L1000 mapping
-(03_cm_finetune_data/output/gene_maps/dtoxs_primary_to_l1000_gene_map.csv),
+control wells (CTRL, CTRL-DMSO, CTRL-EtOH) of the released LINCS LDS-1593
+well-level package (pert_data/dtoxs_primary/Data/Level3): computes
+log2(CPM+1) and averages across all control wells into a single consensus
+baseline. Gene matching uses the workflow-authoritative DToxS-primary -> L1000
+mapping (03_cm_finetune_data/output/gene_maps/dtoxs_primary_to_l1000_gene_map.csv),
 which resolves the 18 legacy-symbol landmarks (e.g. WASHC5 <- KIAA0196,
 ELP1 <- IKBKAP, JPT2 <- HN1L) so their real control expression is not lost.
 The baseline is the DToxS-primary control consensus — identical to v1's
-baseline, which used the same underlying control wells from the (now renamed)
-dtoxs-xpert deposit. Idempotent (pass --force to rebuild).
+baseline, which used the same underlying control wells. (The GSE146095/
+GSE146096 raw GEO deposit was deleted 2026-08-18; the LINCS package is its
+strict superset and carries the same control wells.) Idempotent (pass --force
+to rebuild).
 
 Output: 02_cm_baseline/output/cm_ctl_landmark.csv
   Columns: gene_symbol, entrez_id, mean_log2_cpm1, std_log2_cpm1, n_controls
@@ -30,7 +32,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
-from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
+from utils import WORKFLOW_ROOT, XPERT_ROOT, DTOXS_LINCS_LEVEL3  # noqa: E402
 import gene_mapping  # noqa: E402
 
 STEP_DIR = WORKFLOW_ROOT / "02_cm_baseline"
@@ -56,7 +58,6 @@ def load_authoritative_gene_map():
 
 
 def build_baseline():
-    raw, ctrl_wells = gene_mapping.load_dtoxs_primary_raw()
     dtoxs2l1000 = load_authoritative_gene_map()
 
     # L1000 gene info for ordering
@@ -64,28 +65,58 @@ def build_baseline():
     l1000_order = l1000.sort_values("gene_idx")
     landmark_set = set(l1000_order['gene_symbol'])
 
-    available = [w for w in ctrl_wells if w in raw.columns]
-    if not available:
-        print("ERROR: no DToxS-primary control wells found in the raw counts")
+    # Per-experiment control wells over the released LINCS LDS-1593 package,
+    # exactly like v1 (per-experiment well positions — the Cor/Spec batches
+    # share control wells and each physical well is counted once per batch).
+    import glob
+
+    level3_root = DTOXS_LINCS_LEVEL3
+    all_parts = []
+    total_ctrl = 0
+    for counts_rel in sorted(glob.glob(
+            str(level3_root / "**" / "PromoCell-DGE-Read-Counts-*.tsv"),
+            recursive=True)):
+        design_rel = counts_rel.replace("PromoCell-DGE-Read-Counts",
+                                        "PromoCell-DGE-Experiment-Design")
+        if not Path(design_rel).exists():
+            continue
+        design = pd.read_csv(design_rel, sep='\t')
+        ctrl_wells = sorted(design[design['State'].isin(CONTROL_STATES)]
+                            ['Well'].tolist())
+        if not ctrl_wells:
+            continue
+        data = pd.read_csv(counts_rel, sep='\t', index_col=0)
+        available = [w for w in ctrl_wells if w in data.columns]
+        if not available:
+            continue
+        ctrl = data[available].astype(float)
+        totals = ctrl.sum(axis=0)
+        valid = totals > 0
+        ctrl = ctrl.loc[:, valid]
+        totals = totals[valid]
+        cpm = ctrl.div(totals, axis=1) * 1e6
+        all_parts.append(cpm)
+        total_ctrl += cpm.shape[1]
+        print(f"  {Path(counts_rel).parent.name}: "
+              f"{len(available)} control wells "
+              f"({ctrl.shape[1]} with non-zero counts)")
+
+    if not all_parts:
+        print("ERROR: no DToxS-primary control data found under "
+              f"{level3_root}")
         sys.exit(1)
-    ctrl = raw[available].astype(float)
-    totals = ctrl.sum(axis=0)
-    valid = totals > 0
-    ctrl = ctrl.loc[:, valid]
-    totals = totals[valid]
-    cpm = ctrl.div(totals, axis=1) * 1e6
-    total_ctrl = cpm.shape[1]
-    print(f"Control wells (non-zero): {total_ctrl}")
+    all_cpm = pd.concat(all_parts, axis=1)
+    print(f"\nTotal control samples: {all_cpm.shape[1]}")
 
     # Map DToxS gene symbols to L1000 landmark genes (authoritative)
-    dtoxs_genes = cpm.index.tolist()
+    dtoxs_genes = all_cpm.index.tolist()
     l1000_mapped_genes = []
     for g in dtoxs_genes:
         mapped = dtoxs2l1000.get(g, g)
         l1000_mapped_genes.append(mapped if mapped in landmark_set else None)
 
     mask = [g is not None for g in l1000_mapped_genes]
-    l1000_cpm = cpm.loc[mask].copy()
+    l1000_cpm = all_cpm.loc[mask].copy()
     l1000_cpm.index = [l1000_mapped_genes[i] for i in range(len(l1000_mapped_genes))
                        if l1000_mapped_genes[i] is not None]
 

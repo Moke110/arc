@@ -60,7 +60,7 @@ cells = [
     md("## Step 03 — XPert pretrain (reference, workflow-owned)\n\n"
        "Holds the author pretrained XPert base weight (`pretrain_mdmt_full_50_"
        "epoch.pth`) and the L1000 pretrain YAML that produced it — the pretrain "
-       "dataset lives under `pert_data/l1000/`. Not re-run during screening; "
+        "dataset lives under `pert_data/l1000-xpert/`. Not re-run during screening; "
        "steps 04/05 consume the weight from here."),
     code("!ls 03_xpert_pretrain/"),
 

@@ -15,7 +15,7 @@ One of the three building blocks of prediction: a perturbation dataset (`pert_da
 _Avoid_: module, stage
 
 **Repositioning workflow**:
-A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen; `workflow/xpert-fda-miri-v2/` is its union-CM finetune sibling (the XPert finetune trains on the workflow-built union of all `pert_data/cm` datasets); `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
+A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data); `workflow/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (12 steps, finetune data rebuilt from the LINCS LDS-1593 wells, v1 untouched); `workflow/xpert-fda-miri-v2/` is its union-CM finetune sibling (the XPert finetune trains on the workflow-built union of the `pert_data` datasets); `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
 _Avoid_: pipeline (when meaning a workflow), project
 
 **Disease data**:
@@ -39,11 +39,17 @@ _Avoid_: drug set
 The consensus control expression (978 genes) of the cell type under study, derived from the DToxS-primary control wells. Workflow-owned; the reference condition the perturbed transcriptome is measured against.
 
 **Union finetune data**:
-The workflow-built finetune h5ad of all five `pert_data/cm` datasets (step `03_cm_finetune_data`), used by v2's finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Distinct from v1's frozen DToxS-only `input/dtoxs.h5ad`.
+The workflow-built finetune h5ad of the CM datasets (step `03_cm_finetune_data`), used by v2's finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Its DToxS-primary arm reads the LINCS LDS-1593 well-level package (union = gse262419 + gse244740 + dtoxs_primary (LINCS) + dtoxs_ipsc = 7,165 samples). Distinct from v1's frozen DToxS-only `input/dtoxs.h5ad` and from v1.1's DToxS-LINCS finetune data.
+
+**DToxS-LINCS finetune data**:
+The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/dtoxs_primary/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `input/dtoxs.h5ad` with an auditable delta report.
+
+**LINCS LDS-1593**:
+The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at `pert_data/dtoxs_primary/` on 2026-08-18 (the former `lincs-lds-1593/` wrapper removed; the GSE146095/GSE146096 raw GEO deposit was deleted the same day as a strict subset). Carries the full 956-well campaign (23 KIs + non-KI drugs + anthracyclines + antibody/protein wells) and the LINCS metadata suite (SMILES, batch codes). The v1-era package is frozen byte-identically at `pert_data/dtoxs_primary/v1-frozen/` (incl. v1's frozen `dtoxs.h5ad`).
 
 ### Workflow stages (finalized step layouts)
 
-The v1 MIRI screen reads top-down: `01_drug_embed`, `02_cm_baseline`, `03_xpert_pretrain`, `04_xpert_finetune_bench`, `05_xpert_finetune`, `06_xpert_predict`, `07_miri_phenotype`, `08_miri_efficacy_scores`, `09_filter`, `10_integrate`, `11_report`. The v2 sibling inserts `03_cm_finetune_data` (union prep) and shifts the rest: `01_drug_embed`, `02_cm_baseline`, `03_cm_finetune_data`, `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`, `07_xpert_predict`, `08_miri_phenotype`, `09_miri_efficacy_scores`, `10_filter`, `11_integrate`, `12_report`.
+The v1 MIRI screen reads top-down: `01_drug_embed`, `02_cm_baseline`, `03_xpert_pretrain`, `04_xpert_finetune_bench`, `05_xpert_finetune`, `06_xpert_predict`, `07_miri_phenotype`, `08_miri_efficacy_scores`, `09_filter`, `10_integrate`, `11_report`. The v1.1 and v2 siblings insert `03_cm_finetune_data` (finetune-data prep) and shift the rest to 12 steps: `01_drug_embed`, `02_cm_baseline`, `03_cm_finetune_data`, `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`, `07_xpert_predict`, `08_miri_phenotype`, `09_miri_efficacy_scores`, `10_filter`, `11_integrate`, `12_report`. v1.1 and v2 share this layout and differ only in the finetune-data composition (DToxS-LINCS only vs union).
 
 **Pretrain unit**:
 The workflow-owned author pretrained XPert weight + pretrain YAML (`04_xpert_pretrain/` in v2, `03_xpert_pretrain/` in v1); the L1000 pretrain h5ads live in `pert_data/l1000-xpert/` (dataset home). Both pretrain and finetune YAML recipes are owned by the workflow.

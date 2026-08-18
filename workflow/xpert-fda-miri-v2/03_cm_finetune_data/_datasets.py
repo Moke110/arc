@@ -1,7 +1,7 @@
 """
 Per-dataset sample extraction for the CM finetune-data union (step 03).
 
-Each loader reads the raw files of one union dataset under pert_data/cm
+Each loader reads the raw files of one union dataset under pert_data
 (read-only) and normalizes it into (sample metadata, raw counts matrix, gene
 index). Gene identity is resolved separately by _lib/gene_mapping.py; drug
 identity by _lib/drug_resolution.py. No pert_data file is ever written.
@@ -19,7 +19,9 @@ Output contract of `extract_samples(dataset)`:
     gene_ids: list of str (length n_genes) in the dataset's identifier space
 
 Dose conventions (all in uM, log2(CPM+1) space is applied in build_union):
-  dtoxs_primary                 single dose -> pert_dose 0 (bin 0), time 48 h
+  dtoxs_primary                 single dose -> pert_dose 0 (bin 0), time 48 h;
+                                transcriptomes from the released LINCS LDS-1593
+                                well-level package (dtoxs_primary/Data/Level3)
   dtoxs_ipsc                    per-drug concentration from the GSE217423
                                 series matrix (uM), time 48 h
   gse244740                    8-point half-log series from the paper Table-1
@@ -42,9 +44,9 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
-from gene_mapping import load_dtoxs_primary_raw  # noqa: E402
+from gene_mapping import load_dtoxs_lincs_raw  # noqa: E402
 from drug_resolution import dtoxs_code_meta  # noqa: E402
-from utils import CM_DATA_ROOT  # noqa: E402
+from utils import CM_DATA_ROOT, DTOXS_LINCS_LEVEL3  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # gse244740 paper Table 1 "tested dose range" tops (uM) — curated from the
@@ -80,10 +82,10 @@ def _read_csv(path, **kw):
 
 
 # ---------------------------------------------------------------------------
-# dtoxs_primary — raw GEO DGE deposit (GSE146096)
+# dtoxs_primary — LINCS LDS-1593 well-level package (Level 3)
 # ---------------------------------------------------------------------------
 def extract_dtoxs_primary():
-    raw, _ = load_dtoxs_primary_raw()
+    raw, _ = load_dtoxs_lincs_raw()
     # The Experiment-5 Cor / Spec-Fixed / Spec-Var designs share control wells;
     # dedupe the raw columns so each physical well appears once.
     raw = raw.loc[:, ~raw.columns.duplicated()]
@@ -110,10 +112,10 @@ def extract_dtoxs_primary():
 def _read_dtoxs_primary_design():
     import glob
 
-    dtoxs_primary = CM_DATA_ROOT / "dtoxs_primary"
     out = {}
     for design_rel in sorted(glob.glob(
-            str(dtoxs_primary / "GSE146096_DGE-RNAseq-Experiment-Design*.tsv.gz"))):
+            str(DTOXS_LINCS_LEVEL3 / "**" / "PromoCell-DGE-Experiment-Design-*.tsv"),
+            recursive=True)):
         d = _read_csv(design_rel, sep="\t")
         key = (d["State"].astype(str) + "." + d["Cell"].astype(str) + "."
                + d["Experiment"].astype(str) + "." + d["Dish"].astype(str)

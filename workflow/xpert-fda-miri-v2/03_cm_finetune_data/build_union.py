@@ -2,7 +2,7 @@
 """
 Step 03 — CM finetune-data union (the substantive v2 change).
 
-Reads all five CM datasets under pert_data/cm **read-only** and assembles the
+Reads all five CM datasets under pert_data **read-only** and assembles the
 workflow-owned union finetune h5ad that steps 05/06/07 train on:
 
   03_cm_finetune_data/output/cm_union.h5ad

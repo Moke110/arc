@@ -17,8 +17,12 @@ Data sources (XPert-author + dataset data ONLY)
      gene_name / gene_name_match (the 2015-era L1000 feature symbol, i.e. the
      legacy name a dataset may use), and ensembl_id.
   2. Each union dataset's own gene index, read directly from its raw files
-     under pert_data/cm (symbols for the DToxS arms; Ensembl IDs for
-     gse244740 / gse247541; SYMBOL_entrezid for gse262419).
+     under pert_data (symbols for the DToxS arms; Ensembl IDs for
+     gse244740 / gse247541; SYMBOL_entrezid for gse262419). The DToxS-primary
+     transcriptomes come from the released LINCS LDS-1593 well-level package
+     (pert_data/dtoxs_primary/Data/Level3; the GSE146095/GSE146096 raw GEO
+     deposit was deleted 2026-08-18, its data being a subset of this package).
+     The v1-era package is frozen at pert_data/dtoxs_primary/v1-frozen/.
 
 `corrected_gene_name` is deliberately NOT used as a match key: for JPT2 the
 author metadata records it as CRAMP1, a *different* gene (Entrez 57585), while
@@ -43,7 +47,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import WORKFLOW_ROOT, XPERT_ROOT, CM_DATA_ROOT  # noqa: E402
+from utils import WORKFLOW_ROOT, XPERT_ROOT, CM_DATA_ROOT, DTOXS_LINCS_LEVEL3  # noqa: E402
 
 L1000_META = XPERT_ROOT / "metadata" / "l1000_gene_info_978.csv"
 GENE_MAP_DIR = (WORKFLOW_ROOT / "03_cm_finetune_data" / "output"
@@ -105,11 +109,18 @@ def dataset_gene_index(dataset):
     import glob
 
     if dataset in ("dtoxs_primary", "dtoxs_ipsc"):
-        files = sorted(glob.glob(str(CM_DATA_ROOT / dataset
-                                     / "*DGE-RNAseq-Read-Counts*.tsv.gz")))
+        if dataset == "dtoxs_primary":
+            files = sorted(glob.glob(str(DTOXS_LINCS_LEVEL3 / "**"
+                                         / "PromoCell-DGE-Read-Counts-*.tsv"),
+                                     recursive=True))
+            sep, compression = "\t", None
+        else:
+            files = sorted(glob.glob(str(CM_DATA_ROOT / dataset
+                                         / "*DGE-RNAseq-Read-Counts*.tsv.gz")))
+            sep, compression = "\t", "gzip"
         ids = set()
         for f in files:
-            df = pd.read_csv(f, sep="\t", usecols=[0], compression="gzip")
+            df = pd.read_csv(f, sep=sep, usecols=[0], compression=compression)
             ids |= set(df.index.astype(str))
         return ids, "symbol"
     if dataset == "gse244740":
@@ -239,46 +250,53 @@ def write_dataset_map(dataset, mapping=None, out_dir=None):
     return out
 
 
-def load_dtoxs_primary_raw():
-    """Union all raw GEO DGE read-count tables -> (symbol x well) raw counts.
+def load_dtoxs_lincs_raw():
+    """Union all LINCS LDS-1593 well-level read-count tables -> (symbol x well).
 
-    The raw GEO deposit (pert_data/cm/dtoxs_primary) uses compound well columns
-    of the form <State>.<Cell>.<Experiment>.<Dish>.<Plate>.<Well>; design rows
-    are joined by re-building that compound key from the design columns. The
-    columns are left as the compound keys (well ids repeat across experiments,
-    the compound key is unique).
+    The LINCS LDS-1593 package (released at pert_data/dtoxs_primary/Data/Level3,
+    the former lincs-lds-1593/ contents moved up on 2026-08-18; the raw GEO
+    deposit was deleted the same day) is the DToxS center's well-level Level-3
+    deposit: per-batch `PromoCell-DGE-Read-Counts-<batch>.tsv` matrices (rows =
+    gene symbols, columns = well ids) plus a matching
+    `PromoCell-DGE-Experiment-Design-<batch>.tsv`. Design rows are joined to the
+    read-count wells by well id and re-keyed to the compound key
+    <State>.<Cell>.<Experiment>.<Dish>.<Plate>.<Well> — the same identifier the
+    raw GEO deposit uses, so downstream code is identical. Unlike the raw GEO
+    deposit, the LINCS package also carries the non-KI perturbations
+    (estradiol, amiodarone, cyclosporin-A, ...), the CTRL-DMSO / CTRL-EtOH
+    vehicle wells, and the anthracycline / antibody / protein wells.
 
     Returns (raw DataFrame indexed by gene symbol, ctrl_well_keys list).
     """
     import glob
 
-    import numpy as np
-
-    dtoxs_primary = CM_DATA_ROOT / "dtoxs_primary"
+    level3 = DTOXS_LINCS_LEVEL3
     ctrl_wells = []
     parts = []
     for counts_rel in sorted(glob.glob(
-            str(dtoxs_primary / "GSE146096_DGE-RNAseq-Read-Counts*.tsv.gz"))):
-        counts = pd.read_csv(counts_rel, sep="\t", index_col=0,
-                             compression="gzip")
-        design_rel = counts_rel.replace("GSE146096_DGE-RNAseq-Read-Counts",
-                                        "GSE146096_DGE-RNAseq-Experiment-Design")
-        design = pd.read_csv(design_rel, sep="\t", compression="gzip")
+            str(level3 / "**" / "PromoCell-DGE-Read-Counts-*.tsv"),
+            recursive=True)):
+        counts = pd.read_csv(counts_rel, sep="\t", index_col=0)
+        design_rel = counts_rel.replace("Read-Counts", "Experiment-Design")
+        design = pd.read_csv(design_rel, sep="\t")
         key = (design["State"].astype(str) + "." + design["Cell"].astype(str)
                + "." + design["Experiment"].astype(str) + "."
                + design["Dish"].astype(str) + "." + design["Plate"].astype(str)
                + "." + design["Well"].astype(str))
-        valid = key.isin(counts.columns)
-        design = design[valid].copy()
-        key = key[valid]
-        ctrl = key[design["State"].isin(CONTROL_STATES)].tolist()
-        ctrl_wells += ctrl
-        counts = counts.loc[:, key.values]
+        well_to_key = dict(zip(design["Well"].astype(str), key))
+        state_of_well = dict(zip(design["Well"].astype(str),
+                                 design["State"].astype(str)))
+        keep = [w for w in counts.columns if str(w) in well_to_key]
+        counts = counts.loc[:, keep]
+        counts.columns = [well_to_key[str(w)] for w in keep]
+        ctrl_wells += [well_to_key[str(w)] for w in keep
+                       if state_of_well[str(w)] in CONTROL_STATES]
         parts.append(counts)
     if not parts:
-        raise FileNotFoundError("No GSE146096 read-count tables found under "
-                                f"{dtoxs_primary}")
+        raise FileNotFoundError("No LINCS LDS-1593 read-count tables found "
+                                f"under {level3}")
     raw = pd.concat(parts, axis=1)
-    raw = raw.groupby(raw.index).sum()          # dedupe repeated gene rows
+    raw = raw.loc[:, ~raw.columns.duplicated()]  # shared control wells, dedupe
+    raw = raw.groupby(raw.index).sum()           # dedupe repeated gene rows
     raw.columns = raw.columns.astype(str)
     return raw, sorted(set(ctrl_wells))

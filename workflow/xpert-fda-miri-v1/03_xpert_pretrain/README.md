@@ -8,7 +8,7 @@ for the DToxS finetune (step 05) and the DTOXS-split benchmark (step 04):
   default.
 - `config/l1000.yaml` — the pretrain recipe that produced the weight. Data
   roots are repointed after the workspace refactor (ADR 0008): the three L1000
-  pretrain h5ads now live in the dataset home `pert_data/l1000/data/`, and the
+  pretrain h5ads now live in the dataset home `pert_data/l1000-xpert/data/`, and the
   drug embeddings (UniMol array, SMILES mapping, author HG reference) are
   workflow-owned in `input/`.
 

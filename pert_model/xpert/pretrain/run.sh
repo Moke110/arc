@@ -10,7 +10,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 DATASET="${1:-l1000_mdmt_full}"
 SPLIT_METHOD="${2:-pretrain_split}"
 # Pretrain config + base weight live in the consuming workflow (ADR 0008);
-# the L1000 pretrain h5ads live in pert_data/l1000/ (dataset home).
+# the L1000 pretrain h5ads live in pert_data/l1000-xpert/ (dataset home).
 CONFIG="${3:-../../workflow/xpert-fda-miri-v1/03_xpert_pretrain/config/l1000}"
 
 # training hyperparameters

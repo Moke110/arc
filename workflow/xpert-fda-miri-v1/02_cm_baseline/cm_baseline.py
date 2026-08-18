@@ -32,7 +32,7 @@ import gene_mapping  # noqa: E402
 STEP_DIR = WORKFLOW_ROOT / "02_cm_baseline"
 OUTPUT = STEP_DIR / "output" / "cm_ctl_landmark.csv"
 GENE_MAP = STEP_DIR / "output" / "dtoxs_to_l1000_gene_map.csv"
-DTOXS_ROOT = WORKSPACE_ROOT / "pert_data" / "dtoxs"
+DTOXS_ROOT = WORKSPACE_ROOT / "pert_data" / "dtoxs_primary" / "v1-frozen"
 
 # Control state labels in DTOXS experiment designs
 CONTROL_STATES = {"CTRL", "CTRL-EtOH", "CTRL-DMSO"}

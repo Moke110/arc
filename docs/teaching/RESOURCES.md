@@ -26,7 +26,7 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 - [`pretrain/run.sh`](../../pert_model/xpert/pretrain/run.sh)
   Pretrain launcher with defaults (lr 0.004, batch 64, 2500 epochs cap, loss 0.2,0.003,0.2,1, patience 50, drug embeds `unimol,HG`).
 - [`workflow/xpert-fda-miri-v1/03_xpert_pretrain/config/l1000.yaml`](../../workflow/xpert-fda-miri-v1/03_xpert_pretrain/config/l1000.yaml)
-  Pretrain recipe (workflow-owned); data roots point into `pert_data/l1000/data/` + the workflow `input/`.
+  Pretrain recipe (workflow-owned); data roots point into `pert_data/l1000-xpert/data/` + the workflow `input/`.
 - [`src/train.py`](../../pert_model/xpert/src/train.py)
   Train/finetune/test/infer loops. Use for: exact loss composition, GradScaler, early stopping on PCC, finetune param handling.
 - [`src/model_xpert.py`](../../pert_model/xpert/src/model_xpert.py)

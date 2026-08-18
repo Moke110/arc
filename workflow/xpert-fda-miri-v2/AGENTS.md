@@ -4,8 +4,8 @@ The **union-CM finetune MIRI screening workflow** (`workflow/xpert-fda-miri-v2/`
 see docs/adr/0009): the 12-step sibling of the finalized
 `workflow/xpert-fda-miri-v1/` (ADR 0007) whose **only substantive change is the
 XPert finetune data**. Instead of v1's frozen DToxS-only `input/dtoxs.h5ad`,
-steps 05/06/07 train on the workflow-built **union h5ad** of all five
-`pert_data/cm` datasets (step 03). Everything else — the screened drug scope,
+steps 05/06/07 train on the workflow-built **union h5ad** of the CM datasets
+(step 03). Everything else — the screened drug scope,
 step-02 baseline, MIRI phenotype/scoring, filters, integration, and the
 agentic report — is v1-identical, preserved by renumbering the v1 steps to make
 room for the prep step.
@@ -24,14 +24,17 @@ room for the prep step.
 - **Gene info** comes only from the XPert-author
   `pert_model/xpert/metadata/l1000_gene_info_978.csv` and each dataset's own
   gene index. No external gene databases.
-- `pert_data/cm/` is **read-only**: step 03 never modifies a source file; the
-  union h5ad + maps + manifest are regenerated workflow artifacts.
+- `pert_data/` is **read-only**: step 03 never modifies a source file; the
+  union h5ad + maps + manifest are regenerated workflow artifacts. (The DToxS
+  primary finetune transcriptomes come from the released LINCS LDS-1593
+  well-level package `pert_data/dtoxs_primary/Data/Level3`, not the raw GEO
+  deposit which was deleted 2026-08-18.)
 
 ## Structure (12-step layout)
 
 - `01_drug_embed/` — merged drug list (`drug_list.py`, 1,004 drugs) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate). Identical to v1.
-- `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the raw GEO deposit (`pert_data/cm/dtoxs_primary`); byte-identical to v1's baseline.
-- `03_cm_finetune_data/` — **the v2 change**: builds the union finetune h5ad `output/cm_union.h5ad` from all five `pert_data/cm` datasets (read-only), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), and a schema gate vs v1's `input/dtoxs.h5ad`.
+- `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the released LINCS LDS-1593 package (`pert_data/dtoxs_primary/Data/Level3`); byte-identical to v1's baseline.
+- `03_cm_finetune_data/` — **the v2 change**: builds the union finetune h5ad `output/cm_union.h5ad` from the `pert_data` datasets (read-only), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), a schema gate vs v1's `input/dtoxs.h5ad`, and the composition report `output/finetune_report.html`. The DToxS-primary arm reads the LINCS LDS-1593 well-level package (`pert_data/dtoxs_primary/Data/Level3`), so the union includes the non-KI DToxS perturbations.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched.
 - `05_xpert_finetune_bench/` — union warm-start benchmark (`create_cm_splits.py`, `xpert_finetune_bench.py`); `cold-drug`/`cold-cate` dropped (no meaningful union drug categories).
 - `06_xpert_finetune/` — all-train union finetune (`xpert_finetune.py`, `config/cm.yaml`) -> the final prediction model `output/cm_cm_full/`.
@@ -49,14 +52,19 @@ room for the prep step.
 
 ## The union finetune data (step 03)
 
-- All five `pert_data/cm` datasets are extracted for the manifest audit;
-  four enter the union under the author time semantics: `dtoxs_primary` (raw
-  GEO DGE, 48 h in reality → v1 24 h slot), `dtoxs_ipsc` (GSE217423 DGE,
-  48 h → 24 h slot), `gse244740` (ScreenSeq, 24 h, 8-point half-log dose
-  series), `gse262419` (TempO-Seq, 24 h, ~55% of union samples). `gse247541`
-  (bulk RNA-seq, 144 h) is excluded (no author time index). gse244740's rows
-  are Ensembl-indexed, so it resolves landmarks by Ensembl ID (the spec's
-  "symbols" phrasing for gse244740 was a text error).
+- All five `pert_data` datasets are extracted for the manifest audit;
+  four enter the union under the author time semantics: `dtoxs_primary` (LINCS
+  LDS-1593 well-level package, 48 h in reality → v1 24 h slot), `dtoxs_ipsc`
+  (GSE217423 DGE, 48 h → 24 h slot), `gse244740` (ScreenSeq, 24 h, 8-point
+  half-log dose series), `gse262419` (TempO-Seq, 24 h, ~53% of union samples).
+  `gse247541` (bulk RNA-seq, 144 h) is excluded (no author time index).
+  gse244740's rows are Ensembl-indexed, so it resolves landmarks by Ensembl ID
+  (the spec's "symbols" phrasing for gse244740 was a text error). Since
+  2026-08-17 the DToxS-primary arm reads the LINCS well-level package (a
+  superset of the raw GEO deposit — it carries the non-KI perturbations such
+  as estradiol, amiodarone, cyclosporin-A, milrinone and the anthracyclines),
+  so `dtoxs_primary` contributes 662 samples / 45 drugs (was 400 / 23 from the
+  GEO-only read).
 - Only samples whose compound resolves to an HG drug (`drug_idx ∈ [0, 8981)`)
   enter; the manifest classifies every compound (in_hg / extension / unmatched)
   so exclusions are auditable.
@@ -72,7 +80,7 @@ room for the prep step.
   48 h in reality) enter under **v1's slot-24 convention** (`pert_time 24.0`,
   `time_idx 2`), exactly as v1's frozen dtoxs.h5ad encoded them; the 144 h
   dataset (`gse247541`) is excluded. The union is `gse262419` (3,783) +
-  `gse244740` (2,424) + `dtoxs_primary` (400) + `dtoxs_ipsc` (296) = 6,903
+  `gse244740` (2,424) + `dtoxs_primary` (662) + `dtoxs_ipsc` (296) = 7,165
   samples, all 24 h → `pert_time_idx 2`. The screen predicts at time_idx 2
   (= 24 h, v1's exposure).
 - Treated samples with no positive real concentration are excluded (e.g.
@@ -89,6 +97,18 @@ room for the prep step.
   point at different Entrez genes); those two landmarks are zeroed for that
   dataset and documented (after QN they map into the low tail), not silently
   mismatched.
+
+## Finetune-data composition report (step 03)
+
+`03_cm_finetune_data/finetune_report.py` emits a self-contained HTML report
+(`output/finetune_report.html`): a **collapsible drug list** grouped by the
+author L1000 `moa` (from `pert_model/xpert/metadata/l1000_sdst_drugs_info_8432.csv`,
+`Unclassified` for compounds without a recorded moa) and 2D **PCA + UMAP of
+cell embeddings** — L1000 pretrain aggregated per cell line (mean embedding) +
+every union sample, colored by cell type with the CM samples split by
+`dataset_id`. The embedding is the pretrained XPert `cell_Embeddings` output:
+binned expression (128 bins over [0, 15.002]) + per-gene PPI vectors,
+LayerNorm, mean-pooled over the 978 landmarks.
 
 ## Key invariants (gates)
 

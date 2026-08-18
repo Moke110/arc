@@ -4,28 +4,55 @@ Data home for the new-arc cardiomyocyte (CM) perturbation pipeline. Holds raw/
 processed **transcriptomic** perturbation data + the LINCS L1000 pretrain corpus.
 Papers for each dataset live in `reference/pert_data/` (PDF + extracted `.md`).
 
-**Status 2026-08-12:** GSE221595 removed per user decision; 5 CM datasets remain.
-All accessions verified against GEO on 2026-08-12. See `reference/pert_data/publications.md`.
+**Status 2026-08-18:** the GSE146095/GSE146096 raw GEO deposit was **deleted**
+from `dtoxs_primary/` (its data is a strict subset of the LINCS LDS-1593
+package); the LINCS LDS-1593 well-level package was **released flat into
+`dtoxs_primary/`** (the `lincs-lds-1593/` wrapper removed — `Data/`,
+`Metadata/`, `ProcessingPipeline/`, `ReadMe.txt`, `LDS-1593.tar.gz`,
+`DToxS_summary.md` now live directly under `dtoxs_primary/`); and the
+**v1-era package + v1's frozen finetune data were frozen byte-identically at
+`dtoxs_primary/v1-frozen/`** (what xpert-fda-miri-v1 used). Earlier: 2026-08-17
+`dtoxs-xpert/` deleted / re-homed, `cm/` grouping removed (ADR 0011);
+GSE221595 removed 2026-08-12 (user decision). All accessions verified against
+GEO on 2026-08-12. See `reference/pert_data/publications.md`.
 
 ## Dataset overview
 
 | Dataset dir | GEO accession(s) | Cell type | Platform | Drugs/chemicals | Samples | Exposure | Citation |
 |---|---|---|---|---|---|---|---|
-| `dtoxs/` | GSE146096 (DGE) + GSE146095 (Conv), SuperSeries GSE146097 | primary human CM-like (PromoCell, 4 donors) | 3′-DGE RNA-seq | 26 FDA KIs (+ non-KI perturbations) | 914 FASTQ / 956 well-level records | 48 h, single dose | van Hasselt *Nat Commun* 2020;11:4809 |
+| `dtoxs_primary/` | LINCS LDS-1593 well-level package (Level 3 of LDG-1452; formerly also GSE146096/GSE146095, deleted 2026-08-18 as a strict subset) | primary human CM-like (PromoCell, 4 donors) | 3′-DGE RNA-seq | 47 small molecules + TRS antibody + IGF-1/TNF-α proteins (+ non-KI perturbations) | 956 well records | 48 h, single dose | van Hasselt *Nat Commun* 2020;11:4809 |
 | `dtoxs_ipsc/` | GSE217421 (Conv, 1171) + GSE217423 (DGE, 344), SuperSeries GSE217424 | iPSC-CM (6 donors) | bulk RNA-seq | 54 FDA drugs (23 KIs, 4 mAbs, 4 anthracyclines, 7 cardiac-acting, 16 non-cardiac-acting) | 1515 | 48 h, single dose | Hansen *Nat Commun* 2024;15:7968 |
 | `gse244740/` | GSE244740 | hiPSC-CM | ScreenSeq (GPL24676) | 42 (33 cardiotoxicants + 9 non-cardiotoxicants) | 3072 | 24 h, 8 concentrations × 3 reps | Rosell-Hidalgo *Expert Opin Drug Metab Toxicol* 2024;20(7):685–707 |
 | `gse262419/` | GSE262419 (SuperSeries; GSE244109 is a contained SubSeries — do not download separately) | iPSC-CM | TempO-Seq (GPL16791, ~20k targeted genes) | 464 chemicals, 12 classes | 4558 | 24 h transcriptomic; 90 min functional | Tsai *Chem Res Toxicol* 2024;37(8):1428–1444 |
 | `gse247541/` | GSE247541 | hiPSC-CM (hCM) | bulk RNA-seq | 4 antivirals (apilimod, remdesivir, ritonavir, lopinavir) | 15 (3 DMSO + 4×3) | 6 d, multi-dose | Xu *Adv Sci* 2022;9(30):e2203388 |
-| `l1000/` | GSE92742 / GSE70138 (datalake) | ~70 cancer cell lines (no CM) | L1000 | ~20k compounds | 3 h5ad (pretrain) | — | pretrain-only, never for CM eval |
+| `l1000-xpert/` | GSE92742 / GSE70138 (datalake) | ~70 cancer cell lines (no CM) | L1000 | ~20k compounds | 3 h5ad (pretrain) | — | XPert pretrain-only, never for CM eval or new-model dev |
 
 ## Per-dataset contents
 
-### `dtoxs/` — DToxS primary CM (van Hasselt 2020)
-- `Data/Level3/` — per-plate read-count matrices (`PromoCell-DGE-Read-Counts*.tsv`) + experiment design (`PromoCell-DGE-Experiment-Design*.tsv`), well-level.
-- `Metadata/` — LINCS-style metadata: `Small_Molecule_Metadata.txt` (SMILES in `sm_smiles_parent`/`sm_smiles_batch`), `Antibody_Metadata.txt`, `Protein_Metadata.txt`, `Primary_Cell_Metadata.txt` (donors A/B/D/E).
-- `DToxS_summary.md` — well-level field-coverage summary (956 wells; 206 control; 750 treated; 672 wells SMILES-resolvable).
-- Source: dtoxs.org portal (LINCS LDS-1593) + GEO raw. Transcriptomics only in the deposit.
-- Note: `State` codes like `END`/`SUN+`/`DIC` have inconsistent metadata aliases — match to canonical IDs carefully.
+### `dtoxs_primary/` — DToxS primary CM (van Hasselt 2020): released LINCS LDS-1593 + v1-frozen
+- **`Data/` `Metadata/` `ProcessingPipeline/` `ReadMe.txt` `LDS-1593.tar.gz`** —
+  the **LINCS LDS-1593 well-level package** (Level 3 of LINCS deposit
+  LDG-1452, DToxS center), released flat into `dtoxs_primary/` on 2026-08-18
+  (the former `lincs-lds-1593/` wrapper was removed): per-batch well-level
+  read-counts (`Data/Level3/Sequencing Experiment Number {1,2,4,5}/...`, 956
+  well records, uncompressed), the LINCS metadata suite (`Metadata/` incl.
+  `Small_Molecule_Metadata.txt` with SMILES + batch codes), the DCIC design
+  xlsx, processing specs, and `LDS-1593.tar.gz` (the raw portal tarball).
+  Byte-identical to the former `pert_data/dtoxs-xpert/` deposit (deleted
+  2026-08-17). It carries the **non-KI perturbations** (estradiol, amiodarone,
+  cyclosporin-A, milrinone, anthracyclines, ...), antibodies (TRS), proteins
+  (IGF/TNF), and the CTRL-DMSO / CTRL-EtOH vehicle wells.
+- **`v1-frozen/`** — the **v1-era data**, frozen byte-identically on 2026-08-18
+  so `workflow/xpert-fda-miri-v1` stays reproducible after the GSE deletion +
+  release: `dtoxs.h5ad` (a copy of v1's frozen `input/dtoxs.h5ad`, 521 samples
+  / 36 drugs) + a byte-identical copy of the well-level package
+  (`Data/` `Metadata/` `ProcessingPipeline/` `ReadMe.txt`). v1's step-02
+  baseline reads from here (`pert_data/dtoxs_primary/v1-frozen/Data/Level3`).
+- **Deleted 2026-08-18:** the **raw GEO deposit** (GSE146096 DGE + GSE146095
+  Conv files) was removed — its content (23 KIs + CTRL, and the CER/IBR/LEN/NIN
+  Conv wells) is a strict subset of the LINCS package. SuperSeries
+  **GSE146097** was never downloaded (sub-series convention, same as
+  `dtoxs_ipsc/`).
 
 ### `dtoxs_ipsc/` — DToxS iPSC-CM (Hansen 2024)
 - `GSE217421_*` (Conv arm) and `GSE217423_*` (DGE arm): RNA-seq read counts, experiment design, configs, series matrices, source code, README. `GSE217421_Reference-Library.tar.gz` is ~1 GB (reference genome/lib — do not unpack casually).
@@ -45,9 +72,9 @@ All accessions verified against GEO on 2026-08-12. See `reference/pert_data/publ
 - `GSE247541_raw_counts.csv.gz` + series matrix. Small (15 samples).
 - 4 cardiotoxic antivirals; paper also screened 21 repurposed drugs and validated rescue compounds. Functional/imaging data in the paper only.
 
-### `l1000/`
+### `l1000-xpert/`
 - `data/l1000_mdmt_full_336852.h5ad`, `l1000_mdmt_268022_pretrain.h5ad`, `l1000_mdmt_example.h5ad`; `L1000_summary.md`.
-- Pretrain corpus for the drug-response latent space / drug encoder; never enters CM evaluation.
+- Pretrain corpus for the XPert drug-response latent space / drug encoder; never enters CM evaluation, and **not used in new perturbation-model development** (kept only as the XPert pretrain unit).
 
 ## Removed datasets (provenance only)
 
@@ -74,4 +101,6 @@ readouts are in 3/5 (GSE244740, GSE262419, GSE247541), absent from both DToxS ar
 - All CM datasets are log2/read-count expression space — z-score the predicted DEG in the ranking pipeline (workflow step 06); do not z-score at training.
 - TempO-Seq (GSE262419) is probe-based; probe→gene mapping needed in step_04; platform imbalance risk (~70% of training samples).
 - Concentration-response datasets (GSE244740, GSE262419) need per-plate matched controls for Δ computation.
-- Only `Small_Molecule_Metadata.txt` (dtoxs) and resolved SMILES carry structures; antibodies/proteins have none. Chemicals without SMILES are excluded from training (user decision).
+- Only `Small_Molecule_Metadata.txt` (dtoxs_primary/Metadata) and resolved SMILES carry structures; antibodies/proteins have none. Chemicals without SMILES are excluded from training (user decision).
+- `dtoxs_primary/DToxS_summary.md` is the well-level field-coverage summary (956 wells; 206 control; 750 treated; 672 wells SMILES-resolvable); `State` codes like `END`/`SUN+`/`DIC` have inconsistent metadata aliases — match to canonical IDs carefully.
+- `dtoxs_primary/v1-frozen/` is a byte-identical frozen copy of the v1-era well-level package + v1's frozen `dtoxs.h5ad` — do not modify; the live package lives at the `dtoxs_primary/` root.

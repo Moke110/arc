@@ -13,7 +13,7 @@ The **finalized MIRI screening workflow** (`workflow/xpert-fda-miri-v1/`, former
 
 - `01_drug_embed/` — merged drug list (`drug_list.py`) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate).
 - `02_cm_baseline/` — consensus cardiomyocyte baseline (`cm_baseline.py`), authoritative gene mapping.
-- `03_xpert_pretrain/` — the workflow-owned pretrain unit: used pretrain weight + `config/l1000.yaml` (data roots point at `pert_data/l1000/data/` and `input/`).
+- `03_xpert_pretrain/` — the workflow-owned pretrain unit: used pretrain weight + `config/l1000.yaml` (data roots point at `pert_data/l1000-xpert/data/` and `input/`).
 - `04_xpert_finetune_bench/` — XPert DTOXS-split benchmark (`xpert_finetune_bench.py`, `create_dtoxs_splits.py`).
 - `05_xpert_finetune/` — all-train DTOXS finetune (`xpert_finetune.py`) + step-owned `config/dtoxs.yaml`.
 - `06_xpert_predict/` — merged perturbed-transcriptome prediction (`perturb_transcriptome.py`) + z-score (`zscore.py`).

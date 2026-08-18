@@ -24,13 +24,15 @@ the Z-isomer row 9037). Name matching normalizes to lowercase alphanumerics
 (e.g. `Acetylsalicylic_acid` -> `acetylsalicylicacid`).
 
 Data sources
-------------
+-----------
   1. author idx->SMILES mapping   workflow input/all_drugs_idx2smi.npy
   2. author L1000 drug names      cmap_name + pert_idx in the L1000 pretrain
      h5ad (pert_data/l1000-xpert/data/l1000_mdmt_full_336852.h5ad)
-  3. DToxS small-molecule metadata pert_data/dtoxs-xpert/Metadata/
+  3. DToxS small-molecule metadata pert_data/dtoxs_primary/Metadata/
      Small_Molecule_Metadata.txt (sm_center_batch_id code, sm_name,
-     sm_smiles_parent) — read-only.
+     sm_smiles_parent) — read-only. This is the released LINCS LDS-1593
+     package (the GSE raw GEO deposit was deleted 2026-08-18; the v1-era
+     package is frozen at dtoxs_primary/v1-frozen/).
 
 Output
 ------
@@ -49,13 +51,11 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import WORKFLOW_ROOT, CM_DATA_ROOT, N_L1000_DRUGS  # noqa: E402
+from utils import WORKFLOW_ROOT, CM_DATA_ROOT, DTOXS_SMALL_MOL, N_L1000_DRUGS  # noqa: E402
 
 SMI_MAPPING = WORKFLOW_ROOT / "input" / "all_drugs_idx2smi.npy"
-L1000_FULL_H5AD = (CM_DATA_ROOT.parent / "l1000-xpert" / "data"
+L1000_FULL_H5AD = (CM_DATA_ROOT / "l1000-xpert" / "data"
                    / "l1000_mdmt_full_336852.h5ad")
-DTOXS_SMALL_MOL = (CM_DATA_ROOT.parent / "dtoxs-xpert" / "Metadata"
-                   / "Small_Molecule_Metadata.txt")
 MANIFEST = (WORKFLOW_ROOT / "03_cm_finetune_data" / "output"
             / "drug_manifest.csv")
 

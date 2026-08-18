@@ -7,19 +7,25 @@ same 1,004 FDA drugs already present in the L1000 embedding table (exact
 canonical-SMILES match, drug_idx < 8981) with the same baseline, MIRI scoring,
 filters, integration and report — the ONLY substantive change is the XPert
 finetune data: instead of the frozen DToxS-only input/dtoxs.h5ad, steps
-05/06/07 train on the workflow-built **union h5ad** of all five CM datasets
-under pert_data/cm (built by 03_cm_finetune_data). The HG biological
+05/06/07 train on the workflow-built **union h5ad** of the CM datasets
+under pert_data (built by 03_cm_finetune_data). The HG biological
 embeddings are the author reference table, workflow-owned in
 input/HG_drug_embeddings.npy.
 
 All paths in this module are resolved from the workflow root so each numbered
 stage can be run independently from any working directory.
 
-Note on the v1 stale constant: v1's utils resolved DTOXS_ROOT =
-pert_data/dtoxs, a path that no longer exists after the 2026-08-12 rename
-(dtoxs -> dtoxs-xpert + dtoxs_primary). v2 has no DTOXS_ROOT; the union prep
-step reads per-dataset paths directly under pert_data/cm, and the step-02
-baseline reads the raw GEO deposit under pert_data/cm/dtoxs_primary.
+Data-lake layout (flattened 2026-08-17): the CM datasets live directly under
+pert_data/ (the `cm/` grouping was removed), i.e. pert_data/dtoxs_primary,
+pert_data/dtoxs_ipsc, pert_data/gse244740, pert_data/gse247541,
+pert_data/gse262419, plus pert_data/l1000-xpert (pretrain corpus). The DToxS
+primary study has one deposit under pert_data/dtoxs_primary: the released
+LINCS LDS-1593 well-level package (Data/, Metadata/, ...; the GSE146096/146095
+raw GEO deposit was deleted 2026-08-18 as a strict subset), which carries the
+non-KI perturbations and the DToxS small-molecule metadata. The v1-era
+well-level package is frozen byte-identically at
+pert_data/dtoxs_primary/v1-frozen/. The finetune-data prep reads the LINCS
+wells; it never modifies a source file.
 """
 
 import sys
@@ -35,9 +41,20 @@ XPERT_ROOT = WORKSPACE_ROOT / "pert_model" / "xpert"
 DISEASE_DATA_ROOT = WORKSPACE_ROOT / "disease_data" / "miri"
 
 # CM finetune-data union sources (read-only; never modified by the workflow).
-CM_DATA_ROOT = WORKSPACE_ROOT / "pert_data" / "cm"
+CM_DATA_ROOT = WORKSPACE_ROOT / "pert_data"
 CM_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse247541",
                "gse262419"]
+
+# The released LINCS LDS-1593 well-level package (DToxS primary, Level 3),
+# now living flat at pert_data/dtoxs_primary/: per-batch well-level
+# read-counts + experiment designs + the LINCS metadata suite
+# (Small_Molecule_Metadata.txt etc.). Released 2026-08-18 (the GSE146095/
+# GSE146096 raw GEO deposit was deleted; the package is its strict superset).
+# The v1-era well-level package is frozen byte-identically at
+# pert_data/dtoxs_primary/v1-frozen/ (the data xpert-fda-miri-v1 used).
+DTOXS_LINCS_ROOT = CM_DATA_ROOT / "dtoxs_primary"
+DTOXS_LINCS_LEVEL3 = DTOXS_LINCS_ROOT / "Data" / "Level3"
+DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 
 # The finalized v1 workflow (read-only schema reference for the union gate and
 # the DToxS baseline comparison). Only ever read, never written.
@@ -62,7 +79,7 @@ AUTHOR_TIMES = (3, 6, 24)
 
 # L1000 XPert pretrain h5ad — the pooled log2(CPM+1) distribution used as the
 # quantile-alignment reference for the union finetune data (step 03).
-L1000_PRETRAIN_H5AD = (CM_DATA_ROOT.parent / "l1000-xpert" / "data"
+L1000_PRETRAIN_H5AD = (CM_DATA_ROOT / "l1000-xpert" / "data"
                        / "l1000_mdmt_268022_pretrain.h5ad")
 
 # Insert the XPert model library so `python -m src.*` and `from src.*`
