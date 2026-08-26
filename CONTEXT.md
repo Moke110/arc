@@ -15,7 +15,7 @@ One of the three building blocks of prediction: a perturbation dataset (`pert_da
 _Avoid_: module, stage
 
 **Repositioning workflow**:
-A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data); `workflow/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (12 steps, finetune data rebuilt from the LINCS LDS-1593 wells, v1 untouched); `workflow/xpert-fda-miri-v2/` is its union-CM finetune sibling (the XPert finetune trains on the workflow-built union of the `pert_data` datasets); `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
+A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data); `workflow/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (12 steps, finetune data rebuilt from the LINCS LDS-1593 wells, v1 untouched); `workflow/xpert-fda-miri-v2/` is its DToxS-primary + DToxS-iPSC-CM finetune sibling (ADR 0015), aligned to v1.1's benchmark test sets with a single-cell encoding; `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
 _Avoid_: pipeline (when meaning a workflow), project
 
 **Disease data**:
@@ -39,13 +39,25 @@ _Avoid_: drug set
 The consensus control expression (978 genes) of the cell type under study, derived from the DToxS-primary control wells. Workflow-owned; the reference condition the perturbed transcriptome is measured against.
 
 **Union finetune data**:
-The workflow-built finetune h5ad of the CM datasets (step `03_cm_finetune_data`), used by v2's finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Its DToxS-primary arm reads the LINCS LDS-1593 well-level package (union = gse262419 + gse244740 + dtoxs_primary (LINCS) + dtoxs_ipsc = 7,165 samples). Distinct from v1's frozen DToxS-only `input/dtoxs.h5ad` and from v1.1's DToxS-LINCS finetune data.
+The workflow-built finetune h5ad of the CM datasets (step `03_cm_finetune_data`), used by v2's finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Built by concatenating the per-dataset h5ads (`dtoxs_primary.h5ad` + `dtoxs_ipsc.h5ad` = 958 samples / 46 unique drugs); the DToxS-primary arm reads the LINCS LDS-1593 well-level package and both arms carry real-concentration dose bins. The benchmark test sets are byte-identical to v1.1's fold test sets (v1.1 fold columns imported for the primary arm). Distinct from v1's frozen DToxS-only `input/dtoxs.h5ad` and from v1.1's DToxS-LINCS finetune data.
 
 **DToxS-LINCS finetune data**:
 The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/dtoxs_primary/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `input/dtoxs.h5ad` with an auditable delta report.
 
 **LINCS LDS-1593**:
 The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at `pert_data/dtoxs_primary/` on 2026-08-18 (the former `lincs-lds-1593/` wrapper removed; the GSE146095/GSE146096 raw GEO deposit was deleted the same day as a strict subset). Carries the full 956-well campaign (23 KIs + non-KI drugs + anthracyclines + antibody/protein wells) and the LINCS metadata suite (SMILES, batch codes). The v1-era package is frozen byte-identically at `pert_data/dtoxs_primary/v1-frozen/` (incl. v1's frozen `dtoxs.h5ad`).
+
+**Author drug embedding table**:
+The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `workflow/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
+_Avoid_: HG-resolved, drug-set member
+
+**Single-cell CM encoding**:
+The convention that every CM finetune sample carries one shared cell identity — `cell_iname="cardiomyocyte"`, `cell_idx=0`, `tissue_idx=0` (`num_cell_id 1`) — so the model never distinguishes donors or cell lines. Biological (donor, drug) identity is not model-visible; the benchmark fold gates assert well-identity (no identical well in train and test) and drug identity (cold-drug test drugs excluded from both datasets' train).
+_Avoid_: cardio cell, per-donor encoding
+
+**Finetune concentration**:
+The per-drug real µM concentration used to bin each finetune sample's dose via the author `assign_pert_dose_corrected` scheme. Sources: the DToxS-primary paper Table S1 (23 KIs), the iPSC-CM series matrix (shared non-KIs, verified 22/23 match), and literature-curated clinical Cmax with citations for the remaining 8 primary-only drugs (SB-431542 uses its standard in-vitro assay concentration — it has no clinical Cmax). This amends the "no external database" provenance rule for the dose field only: concentrations must be cited.
+_Avoid_: single-dose convention, dose 0
 
 ### Workflow stages (finalized step layouts)
 
