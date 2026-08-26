@@ -2,9 +2,12 @@
 xpert-fda-miri-v2 gene-mapping verification gates (per union dataset).
 
 Extends v1's _lib/verify_genes.py G1/G2/G3 to every dataset in the CM
-finetune-data union (dtoxs_primary, dtoxs_ipsc, gse244740, gse247541,
-gse262419), each resolved in its own identifier space (symbols / Ensembl /
-SYMBOL_entrezid) with legacy-symbol awareness:
+finetune-data union. G1/G2 run on the per-dataset maps of all five CM
+datasets (dtoxs_primary, dtoxs_ipsc, gse244740, gse247541, gse262419), each
+resolved in its own identifier space (symbols / Ensembl / SYMBOL_entrezid)
+with legacy-symbol awareness; G3 (union-column audit) runs only for the
+datasets that enter the finetune union (dtoxs_primary + dtoxs_ipsc since
+ADR 0015):
 
 G1 — mapping completeness: every landmark that the dataset's gene panel
      actually contains resolves (direct | legacy_alias | entrez | ensembl).
@@ -209,7 +212,10 @@ def main():
             sys.exit(1)
 
         # G3 — drug-level audit against the union h5ad (skipped until step 03
-        # has built the union h5ad; G1/G2 above run on the maps alone)
+        # has built the union h5ad; G1/G2 above run on the maps alone). Only
+        # datasets present in the union are audited (ADR 0015 scope: primary +
+        # iPSC; the other CM datasets are extracted for the drug-overlap audit
+        # but do not enter the finetune).
         manifest = pd.read_csv(WORKFLOW_ROOT / "03_cm_finetune_data" / "output"
                                / "drug_manifest.csv")
         man = manifest[manifest["dataset"] == ds]
@@ -222,6 +228,10 @@ def main():
             continue
         import scanpy as sc
         adata = sc.read_h5ad(UNION_H5AD)
+        if ds not in set(adata.obs["dataset_id"].astype(str)):
+            print(f"[{ds}] G3 drug-level audit — skipped, dataset not in the "
+                  f"union (finetune scope is {sorted(set(adata.obs['dataset_id'].astype(str)))})")
+            continue
         union_var_ids = [str(v) for v in adata.var_names]
         print(f"[{ds}] G3 drug-level audit (union h5ad)")
         findings = drug_level_audit(ds, mapping, meta_df, counts, gene_ids,

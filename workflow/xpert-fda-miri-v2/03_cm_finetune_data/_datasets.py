@@ -19,16 +19,22 @@ Output contract of `extract_samples(dataset)`:
     gene_ids: list of str (length n_genes) in the dataset's identifier space
 
 Dose conventions (all in uM, log2(CPM+1) space is applied in build_union):
-  dtoxs_primary                 single dose -> pert_dose 0 (bin 0), time 48 h;
-                                transcriptomes from the released LINCS LDS-1593
-                                well-level package (dtoxs_primary/Data/Level3)
+  dtoxs_primary                 real per-drug concentrations from the
+                                primary_concentrations map (paper Table 1 KIs,
+                                iPSC series matrix shared non-KIs, literature
+                                Cmax primary-only drugs; ADR 0015) — the LINCS
+                                LDS-1593 package records no dose; transcriptomes
+                                from pert_data/dtoxs_primary/Data/Level3
   dtoxs_ipsc                    per-drug concentration from the GSE217423
                                 series matrix (uM), time 48 h
   gse244740                    8-point half-log series from the paper Table-1
                                top dose (Con_i = top * 10^(-0.5*(8-i))), 24 h
+                               (extracted for the drug-overlap audit only)
   gse262419                    hash.csv Chemical_Concentration_uM, 24 h
+                               (extracted for the drug-overlap audit only)
   gse247541                    single dose 1 uM (paper, clinically relevant),
-                               144 h (6 d)
+                               144 h (6 d; extracted for the drug-overlap
+                               audit only)
 Controls:
   dtoxs arms: CTRL / CTRL-DMSO / CTRL-EtOH (dataset-wide set)
   gse244740:  DMSO (Con0) + NoTreatment (per Optimization-plate)

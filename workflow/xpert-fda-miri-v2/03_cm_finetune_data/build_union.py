@@ -1,27 +1,38 @@
 #!/usr/bin/env python3
 """
-Step 03 — CM finetune-data union (the substantive v2 change).
+Step 03 — CM finetune-data union (the substantive v2 change; ADR 0015).
 
-Reads all five CM datasets under pert_data **read-only** and assembles the
-workflow-owned union finetune h5ad that steps 05/06/07 train on:
+Reads the two finetune datasets under pert_data **read-only** (`dtoxs_primary`
+from the released LINCS LDS-1593 well-level package, `dtoxs_ipsc` from
+GSE217423) and assembles the workflow-owned union finetune h5ad that steps
+05/06/07 train on:
 
-  03_cm_finetune_data/output/cm_union.h5ad
+  03_cm_finetune_data/output/cm_union.h5ad          (958 rows = 662 + 296)
+  03_cm_finetune_data/output/dtoxs_primary.h5ad     (662 rows, per-dataset)
+  03_cm_finetune_data/output/dtoxs_ipsc.h5ad        (296 rows, per-dataset)
 
-The union h5ad is schema-identical to v1's frozen input/dtoxs.h5ad in the
-fields the XPert library consumes (obs pert_id/pert_idx/pert_dose[_idx]/
-pert_time[_idx]/cell_iname/cell_idx/tissue_idx + the additive dataset_id
-provenance column; var = the 978 L1000 landmarks in gene_idx order with
-gene_id/gene_symbol; obsm["X_ctl"] per-sample matched control; X float32 in
-log2(CPM+1) space). Only samples whose compound resolves to an HG drug
-(drug_idx in [0, 8981)) enter the union.
+Each dataset is preprocessed independently: 978 landmarks, CPM, log2(CPM+1),
+quantile-aligned to the L1000 pretrain pooled distribution, per-sample matched
+control, author dose bins (0-9) from **real uM concentrations**, 48 h -> the
+24 h slot (time_idx 2), and a single-cell encoding (`cell_iname="cardio
+myocyte"`, `cell_idx=0`, `tissue_idx=0`). The primary arm's concentrations
+come from the primary_concentrations map (paper Table 1 for the 23 KIs, the
+iPSC series matrix for the 15 shared non-KIs, literature clinical Cmax for the
+8 primary-only drugs); the iPSC arm keeps its series-matrix concentrations
+(SOR divergence: primary 0.5 uM vs iPSC 1.0 uM is intended). The union h5ad is
+schema-identical to v1's frozen input/dtoxs.h5ad in the fields the XPert
+loader consumes.
 
 Also emits:
   03_cm_finetune_data/output/gene_maps/<dataset>_to_l1000_gene_map.csv
       per-dataset landmark resolution (direct | legacy_alias | entrez | ensembl)
   03_cm_finetune_data/output/drug_manifest.csv
-      per-compound drug resolution (in_hg | extension | unmatched)
+      per-compound drug resolution (in_hg | extension | unmatched), two datasets
   03_cm_finetune_data/output/dataset_summary.csv
       per-dataset sample / resolution / control counts
+  03_cm_finetune_data/output/qn_reference.npy        L1000 pretrain QN reference
+  03_cm_finetune_data/output/finetune_delta.md      auditable delta vs v1.1
+      (primary arm's dose_idx / cell_iname differences vs dtoxs_lincs.h5ad)
 
 Usage:
     python 03_cm_finetune_data/build_union.py            # idempotent
@@ -41,9 +52,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import _datasets  # noqa: E402
 import gene_mapping  # noqa: E402
+import primary_concentrations as prim_conc  # noqa: E402
 from drug_resolution import build_drug_manifest  # noqa: E402
-from utils import (WORKFLOW_ROOT, CM_DATASETS, AUTHOR_TIME_MAP,  # noqa: E402
-                   AUTHOR_TIMES, L1000_PRETRAIN_H5AD, N_L1000_DRUGS)
+from utils import (WORKFLOW_ROOT, FINETUNE_DATASETS, AUTHOR_TIME_MAP,  # noqa: E402
+                   AUTHOR_TIMES, L1000_PRETRAIN_H5AD, N_L1000_DRUGS,
+                   V11_DTOXS_LINCS_H5AD)
 
 STEP_DIR = WORKFLOW_ROOT / "03_cm_finetune_data"
 OUT_DIR = STEP_DIR / "output"
@@ -52,18 +65,19 @@ UNION_H5AD = OUT_DIR / "cm_union.h5ad"
 MANIFEST = OUT_DIR / "drug_manifest.csv"
 SUMMARY = OUT_DIR / "dataset_summary.csv"
 QN_REFERENCE = OUT_DIR / "qn_reference.npy"
-CELL_NAME = "cardio"
+DELTA_REPORT = OUT_DIR / "finetune_delta.md"
+CELL_NAME = "cardiomyocyte"
 
-# v1 DToxS time convention (following the finalized v1 screen, ADR 0007): the
-# DToxS-family exposures are 48 h in reality, but v1's frozen dtoxs.h5ad
-# encoded them at the author 24 h slot (pert_time 24.0, time_idx 2), and the
-# screen predicts at 24 h. We re-add the DToxS datasets under that same
-# convention instead of dropping them for their 48 h time.
+# Both DToxS-family datasets are 48 h in reality but enter under v1's slot-24
+# convention (pert_time 24.0, time_idx 2), exactly as v1's frozen dtoxs.h5ad
+# encoded them (ADR 0007/0010). No dataset is single-dose any more: every
+# treated sample carries a real positive uM concentration (ADR 0015).
 DToxS_SLOT_24H = ("dtoxs_primary", "dtoxs_ipsc")
-# v1 also trained the DToxS single-dose experiment with pert_dose 0 ->
-# dose_idx 0 (author bin 0); only dtoxs_primary is single-dose with no real
-# concentration recorded.
-SINGLE_DOSE_DATASETS = ("dtoxs_primary",)
+
+# Loader obs fields the schema gate and the delta report consume.
+LOADER_OBS_COLS = ["pert_id", "pert_idx", "pert_dose", "pert_dose_idx",
+                   "pert_time", "pert_time_idx", "cell_iname", "cell_idx",
+                   "tissue_idx"]
 
 
 def dose_idx_of(dose):
@@ -91,7 +105,7 @@ def dose_idx_of(dose):
 
 def build_gene_maps():
     maps = {}
-    for ds in CM_DATASETS:
+    for ds in FINETUNE_DATASETS:
         mp = gene_mapping.build_dataset_map(ds)
         gene_mapping.write_dataset_map(ds, mp, GENE_MAP_DIR)
         maps[ds] = mp
@@ -102,12 +116,7 @@ def build_gene_maps():
 
 
 def source_to_landmark_col(gene_map):
-    """Row-source identifier -> landmark column index (0..977).
-
-    For 'symbol' / 'ensembl' spaces the source is the row identifier itself;
-    for 'symbol_entrez' the source is either the numeric part (entrez matches)
-    or the symbol part (direct / legacy_alias matches).
-    """
+    """Row-source identifier -> landmark column index (0..977)."""
     meta = gene_mapping.load_l1000_meta()
     idx_by_gid = {str(g): i for i, g in zip(meta["gene_idx"], meta["gene_id"])}
     out = {}
@@ -134,7 +143,6 @@ def build_landmark_matrix(counts, gene_ids, gene_map, space):
                        if mt_by_src.get(src) == "entrez"}
         row2col_sym = {src: c for src, c in row2col.items()
                        if mt_by_src.get(src) != "entrez"}
-    # map each gene row
     row_col = np.full(len(gene_ids), -1, dtype=int)
     for i, gid in enumerate(gene_ids):
         if space == "symbol_entrez":
@@ -148,11 +156,9 @@ def build_landmark_matrix(counts, gene_ids, gene_map, space):
             key = str(gid).split(".")[0] if space == "ensembl" else str(gid)
             row_col[i] = row2col.get(key, -1)
 
-    # sum duplicate rows per landmark column
     mat = np.zeros((counts.shape[0], 978), dtype=np.float64)
     valid = row_col >= 0
     np.add.at(mat.T, row_col[valid], counts[:, valid].astype(np.float64).T)
-    # CPM + log2(CPM+1) per sample
     totals = mat.sum(axis=1)
     cpm = np.divide(mat, totals[:, None], out=np.zeros_like(mat),
                     where=totals[:, None] > 0) * 1e6
@@ -177,13 +183,7 @@ def matched_control_matrix(meta, X_landmark, controls_mask, group_col):
 
 
 def load_qn_reference(force=False, max_rows=5000, seed=0):
-    """Pooled empirical quantiles of the L1000 pretrain log2(CPM+1) X.
-
-    The reference is the sorted pooled distribution of a row-subsample of the
-    pretrain h5ad (covers all 978 landmarks; a pooled empirical CDF is what
-    per-group quantile alignment needs). Cached to output/qn_reference.npy so
-    rebuilds do not re-read the ~1 GB pretrain matrix.
-    """
+    """Pooled empirical quantiles of the L1000 pretrain log2(CPM+1) X (cached)."""
     if QN_REFERENCE.exists() and not force:
         return np.load(QN_REFERENCE)
 
@@ -215,14 +215,7 @@ def load_qn_reference(force=False, max_rows=5000, seed=0):
 
 
 def quantile_align(X, meta, group_col, ref_sorted):
-    """Per-group pooled quantile alignment onto the L1000 pretrain reference.
-
-    One monotonic transform per matched-control group, shared by every sample
-    of the group, so the trt/ctl contrast is preserved. Applied BEFORE
-    matched-control computation, so obsm['X_ctl'] is the control mean of
-    aligned values. Mapped values lie within the reference range (<= the
-    pretrain max 15.002), matching the finetune config bin range.
-    """
+    """Per-group pooled quantile alignment onto the L1000 pretrain reference."""
     import scipy.stats as st
 
     ref = np.sort(ref_sorted)
@@ -238,24 +231,38 @@ def quantile_align(X, meta, group_col, ref_sorted):
     return out
 
 
+def apply_real_doses(ds, meta):
+    """Overlay real uM concentrations on the dataset's treated-sample doses.
+
+    dtoxs_primary: concentrations from the primary_concentrations map (ADR
+    0015) — the platform recorded no dose. dtoxs_ipsc: keeps its series-matrix
+    concentrations (already in meta['dose']). Non-mapped compounds (antibodies,
+    unmatched codes) keep dose 0 and are excluded by the nodose gate.
+    """
+    if ds == "dtoxs_primary":
+        meta = meta.copy()
+        meta["dose"] = meta["compound_code"].map(
+            prim_conc.CODE_ALIASES).fillna(meta["compound_code"]).map(
+                lambda c: prim_conc.primary_dose(c) or 0.0).astype(float)
+    return meta
+
+
 def align_and_select(ds, gene_map, drug_idx_of, meta, counts, gene_ids, qn_ref):
     """Apply QN + author time/dose semantics; return (obs, X, X_ctl).
 
     Treated samples enter the union when their (normalized) time is in the
-    author map {3, 6, 24}, their dose is a real positive concentration (or a
-    documented DToxS single-dose, which uses the v1 bin-0 convention), and
-    their compound resolves to an HG drug (drug_idx < 8981). The DToxS-family
-    datasets (48 h in reality) are encoded at the author 24 h slot like v1.
-    Excluded samples are classified by the exclusion accounting in main() so
-    the manifest records every exclusion reason.
+    author map {3, 6, 24}, their dose is a real positive concentration (the
+    DToxS-family datasets carry real uM doses since ADR 0015 — no single-dose
+    fallback), and their compound resolves to an HG drug (drug_idx < 8981).
+    The DToxS-family datasets (48 h in reality) are encoded at the author 24 h
+    slot like v1. Excluded samples are classified by the exclusion accounting
+    in main() so the manifest records every exclusion reason.
     """
+    meta = apply_real_doses(ds, meta)
     space = gene_mapping.ID_SPACE[ds]
     X = build_landmark_matrix(counts, gene_ids, gene_map, space)
 
-    if ds in ("gse262419", "gse244740"):
-        grp_col = "plate"
-    else:
-        grp_col = "dataset_id"
+    grp_col = "dataset_id"
     X = quantile_align(X, meta, grp_col, qn_ref)
     X_ctl = matched_control_matrix(meta, X, meta["is_control"].values, grp_col)
 
@@ -263,8 +270,7 @@ def align_and_select(ds, gene_map, drug_idx_of, meta, counts, gene_ids, qn_ref):
         else meta["time"].values
     trt = ~meta["is_control"].values
     time_ok = pd.Series(eff_time).map(AUTHOR_TIME_MAP).notna().values
-    single_dose = ds in SINGLE_DOSE_DATASETS
-    has_dose = (meta["dose"] > 0).values | single_dose
+    has_dose = (meta["dose"] > 0).values
     drug_idx = np.array([drug_idx_of.get((ds, str(r.compound_code) if r.compound_code else r.compound_name), -1)
                          for r in meta.itertuples()])
     keep = (trt & time_ok & has_dose & (drug_idx >= 0)
@@ -288,23 +294,105 @@ def compound_exclusions(ds, meta):
 
     Returns a DataFrame keyed by (dataset, compound_name, compound_code) with
     n_excl_time (treated, time outside {3,6,24}) and n_excl_nodose (treated,
-    time valid but no positive real concentration and not a documented DToxS
-    single-dose).
+    time valid but no positive real concentration — the DToxS arms have no
+    single-dose fallback since ADR 0015).
     """
+    meta = apply_real_doses(ds, meta)
     m = meta.copy()
     m["compound_code"] = m["compound_code"].fillna("").astype(str)
     m["_eff_time"] = 24.0 if ds in DToxS_SLOT_24H else m["time"]
     trt = ~m["is_control"].values
     time_ok = m["_eff_time"].map(AUTHOR_TIME_MAP).notna().values
-    single_dose = ds in SINGLE_DOSE_DATASETS
     m["_excl_time"] = trt & ~time_ok
-    m["_excl_nodose"] = trt & time_ok & (m["dose"] <= 0).values & ~single_dose
+    m["_excl_nodose"] = trt & time_ok & (m["dose"] <= 0).values
     g = m.groupby(["compound_name", "compound_code"], dropna=False).agg(
         n_excl_time=("_excl_time", "sum"),
         n_excl_nodose=("_excl_nodose", "sum"),
     ).reset_index()
     g.insert(0, "dataset", ds)
     return g
+
+
+def build_dataset_h5ad(ds, maps, drug_idx_of, meta, counts, gene_ids, qn_ref,
+                       var):
+    """Build one per-dataset finetune h5ad (loader schema, X_ctl)."""
+    import anndata as ad
+
+    obs, X, X_ctl = align_and_select(ds, maps[ds], drug_idx_of,
+                                     meta, counts, gene_ids, qn_ref)
+    obs["smiles"] = obs["smiles"].fillna("").astype(str)
+    a = ad.AnnData(X.astype(np.float32), obs=obs, var=var)
+    a.obsm["X_ctl"] = X_ctl.astype(np.float32)
+    return a, obs, X, X_ctl
+
+
+def write_delta_report(obs_all, var_ids):
+    """Auditable delta vs v1.1's DToxS-LINCS h5ad (ADR 0015).
+
+    Documents the primary arm's dose_idx and cell_iname changes; the iPSC arm
+    is new in v2 (v1.1 is primary-only). Matches rows by the loader well id
+    (pert_id) so the sample set is directly comparable.
+    """
+    import scanpy as sc
+
+    v11 = sc.read_h5ad(V11_DTOXS_LINCS_H5AD)
+    prim = obs_all[obs_all["dataset_id"] == "dtoxs_primary"]
+    prim_ids = set(prim["pert_id"].astype(str))
+    v11_ids = set(v11.obs["pert_id"].astype(str))
+
+    lines = [
+        "# Finetune-data delta — v2 union vs v1.1 DToxS-LINCS (ADR 0015)",
+        "",
+        "Generated by `03_cm_finetune_data/build_union.py`.",
+        "",
+        "## Scope",
+        f"- v1.1 `dtoxs_lincs.h5ad`: primary only — **{v11.n_obs}** rows / "
+        f"**{v11.obs['pert_idx'].nunique()}** unique drug_idx.",
+        f"- v2 union `cm_union.h5ad`: primary + iPSC — **{len(obs_all)}** rows / "
+        f"**{obs_all['pert_idx'].nunique()}** unique drug_idx "
+        f"(primary **{len(prim)}**, iPSC "
+        f"**{len(obs_all) - len(prim)}**).",
+        "",
+        "## Primary arm — sample identity",
+        f"- v2 primary wells present in v1.1: "
+        f"**{len(prim_ids & v11_ids)}** / {len(prim_ids)}",
+        f"- v1.1 wells not in v2 primary: **{len(v11_ids - prim_ids)}**",
+        f"- v2 primary wells not in v1.1: **{len(prim_ids - v11_ids)}**",
+        "",
+        "## Primary arm — dose change (the ADR 0015 deviation)",
+        "- v1.1: every treated sample at the single-dose convention "
+        "`pert_dose 0.0 -> dose_idx 0` (v1 frozen behavior).",
+        "- v2: real uM concentrations from the primary_concentrations map, "
+        "binned by the author `assign_pert_dose_corrected` (0-9).",
+    ]
+    v11_dist = v11.obs["pert_dose_idx"].value_counts().sort_index()
+    v2_dist = prim["pert_dose_idx"].value_counts().sort_index()
+    lines += ["", "| dose_idx | v1.1 primary n | v2 primary n |",
+              "|---|---|---|"]
+    for b in sorted(set(v11_dist.index) | set(v2_dist.index)):
+        lines.append(f"| {b} | {int(v11_dist.get(b, 0))} | "
+                     f"{int(v2_dist.get(b, 0))} |")
+    lines += [
+        "",
+        "## Cell encoding",
+        f"- v1.1: `cell_iname='cardio'`, `cell_idx=0`, `tissue_idx=0`.",
+        f"- v2 (both arms): `cell_iname='{CELL_NAME}'`, `cell_idx=0`, "
+        f"`tissue_idx=0` (single-cell encoding, num_cell_id 1).",
+        "",
+        "## iPSC arm (new in v2)",
+        f"- {len(obs_all) - len(prim)} rows from GSE217423 with its "
+        "series-matrix concentrations (SOR divergence from primary is "
+        "intended: primary SOR 0.5 uM vs iPSC SOR 1.0 uM).",
+        "",
+        "## Conclusion",
+        "The union keeps the same primary sample set as v1.1 (well-identity "
+        "matched) but re-bins primary doses from the real concentration map "
+        "and re-encodes the cell as `cardiomyocyte`. The screen still predicts "
+        "at dose_idx 0 / time_idx 2 (v1 convention).",
+        "",
+    ]
+    DELTA_REPORT.write_text("\n".join(lines))
+    print(f"Delta report -> {DELTA_REPORT}")
 
 
 def main():
@@ -321,19 +409,19 @@ def main():
         return
 
     import anndata as ad
-    import scanpy as sc
 
-    print("Step 03 — building CM finetune-data union")
-    print("\n[1/4] per-dataset gene maps")
+    print("Step 03 — building CM finetune-data union "
+          f"(scope: {FINETUNE_DATASETS})")
+    print("\n[1/5] per-dataset gene maps")
     maps = build_gene_maps()
 
-    print("\n[1.5/4] L1000 pretrain QN reference")
+    print("\n[1.5/5] L1000 pretrain QN reference")
     qn_ref = load_qn_reference(force=args.force)
 
-    print("\n[2/4] per-dataset sample extraction + drug resolution")
+    print("\n[2/5] per-dataset sample extraction + drug resolution")
     compounds = []
     excl_frames = []
-    for ds in CM_DATASETS:
+    for ds in FINETUNE_DATASETS:
         meta, counts, gene_ids = _datasets.extract_samples(ds)
         agg = meta.groupby(["compound_name", "compound_code"],
                            dropna=False).size().reset_index(name="n_samples")
@@ -347,28 +435,32 @@ def main():
         excl_frames.append(compound_exclusions(ds, meta))
         print(f"  {ds}: {meta.shape[0]} samples, {len(agg)} compounds")
     manifest = build_drug_manifest(compounds)
-    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     manifest.to_csv(MANIFEST, index=False)
     drug_idx_of = {}
     for _, r in manifest.iterrows():
         drug_idx_of[(r["dataset"], str(r["compound_code"]) or r["compound_name"])] \
             = int(r["drug_idx"])
 
-    print("\n[3/4] assemble union h5ad")
-    parts = []
-    for ds in CM_DATASETS:
-        meta, counts, gene_ids = _datasets.extract_samples(ds)
-        obs, X, X_ctl = align_and_select(ds, maps[ds], drug_idx_of,
-                                         meta, counts, gene_ids, qn_ref)
-        parts.append((ds, obs, X, X_ctl))
-        print(f"  {ds}: {len(obs)} treated samples (author-time + HG-resolved)")
-
-    # schema: var = 978 landmarks in L1000 gene_idx order
+    # var = 978 landmarks in L1000 gene_idx order
     meta_genes = gene_mapping.load_l1000_meta()
     var = pd.DataFrame({
         "gene_id": meta_genes["gene_id"].values.astype(str),
         "gene_symbol": meta_genes["gene_symbol"].values,
     }, index=meta_genes["gene_id"].values.astype(str))
+    var_ids = [str(v) for v in var.index]
+
+    print("\n[3/5] per-dataset finetune h5ads + union assembly")
+    parts = []
+    for ds in FINETUNE_DATASETS:
+        meta, counts, gene_ids = _datasets.extract_samples(ds)
+        a, obs, X, X_ctl = build_dataset_h5ad(ds, maps, drug_idx_of,
+                                              meta, counts, gene_ids,
+                                              qn_ref, var)
+        out = OUT_DIR / f"{ds}.h5ad"
+        a.write_h5ad(out)
+        print(f"  {ds}: {a.n_obs} treated samples -> {out}")
+        parts.append((ds, obs, X, X_ctl))
 
     obs_all = pd.concat([p[1] for p in parts], ignore_index=True)
     obs_all["smiles"] = obs_all["smiles"].fillna("").astype(str)
@@ -377,11 +469,14 @@ def main():
 
     adata = ad.AnnData(X_all.astype(np.float32), obs=obs_all, var=var)
     adata.obsm["X_ctl"] = X_ctl_all.astype(np.float32)
+    adata.write_h5ad(UNION_H5AD)
+    print(f"\nUnion h5ad: {UNION_H5AD} "
+          f"({adata.n_obs} samples x {adata.n_vars} genes)")
 
-    # provenance / summary (all datasets, incl. fully-excluded ones)
+    # provenance / summary
     summary = obs_all.groupby("dataset_id").agg(n_samples=("well", "size"),
                                                 n_drugs=("pert_idx", "nunique"))
-    summary = summary.reindex(CM_DATASETS).fillna(0).astype(int)
+    summary = summary.reindex(FINETUNE_DATASETS).fillna(0).astype(int)
     excl_all = pd.concat(excl_frames, ignore_index=True)
     excl_sum = excl_all.groupby("dataset").agg(n_excl_time=("n_excl_time", "sum"),
                                                n_excl_nodose=("n_excl_nodose", "sum"))
@@ -390,17 +485,10 @@ def main():
     print("\nDataset summary -> " + str(SUMMARY))
     print(summary)
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    adata.write_h5ad(UNION_H5AD)
-    print(f"\nUnion h5ad: {UNION_H5AD} ({adata.n_obs} samples x {adata.n_vars} genes)")
-
-    # merge the per-compound union/exclusion counts back into the manifest so
-    # every sample is classified (time-out / no-dose / unresolved) and the
-    # drug-inclusion gate can compare union rows exactly.
-    union_rows = []
-    for _, r in obs_all.iterrows():
-        union_rows.append((str(r["dataset_id"]), str(r["compound_name"]),
-                           str(r["compound_code"]) if r["compound_code"] else ""))
+    # merge per-compound union/exclusion counts into the manifest
+    union_rows = [(str(r["dataset_id"]), str(r["compound_name"]),
+                   str(r["compound_code"]) if r["compound_code"] else "")
+                  for _, r in obs_all.iterrows()]
     union_counts = (pd.DataFrame(union_rows,
                                  columns=["dataset", "compound_name",
                                           "compound_code"])
@@ -417,7 +505,10 @@ def main():
     manifest.to_csv(MANIFEST, index=False)
     print(f"\nManifest updated with n_union / exclusion counts -> {MANIFEST}")
 
-    print("\n[4/4] schema gate")
+    print("\n[4/5] delta report vs v1.1 DToxS-LINCS")
+    write_delta_report(obs_all, var_ids)
+
+    print("\n[5/5] schema gate")
     if not args.skip_schema_gate:
         import schema_gate
         schema_gate.run(UNION_H5AD)

@@ -33,12 +33,12 @@ REQUIRED_OBS = ["pert_id", "pert_idx", "pert_dose", "pert_dose_idx",
                 "pert_time", "pert_time_idx", "cell_iname", "cell_idx",
                 "tissue_idx"]
 
-# Union composition: all four CM datasets with an author-time exposure enter;
-# the 144 h dataset (gse247541) exits. dtoxs_primary/dtoxs_ipsc (48 h in
-# reality) enter under v1's slot-24 convention (ADR 0007/0010).
-UNION_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse262419", "gse244740"]
-# v1 trained the DToxS single-dose experiment at pert_dose 0 -> dose_idx 0.
-SINGLE_DOSE_DATASETS = ["dtoxs_primary"]
+# Union composition (ADR 0015): the two DToxS-family datasets enter under v1's
+# slot-24 convention (48 h in reality -> author 24 h slot, time_idx 2). The
+# other CM datasets (gse244740/gse262419/gse247541) are no longer extracted.
+# Since ADR 0015 both arms carry real uM concentrations — no dataset is
+# single-dose; every treated sample must have a positive dose.
+UNION_DATASETS = ["dtoxs_primary", "dtoxs_ipsc"]
 QN_MAX = 15.002  # pretrain config max_value (l1000.yaml) / cm.yaml reset
 
 
@@ -110,13 +110,14 @@ def run(union_h5ad, v1_h5ad=None, verbose=True):
     if len(bad_idx):
         errors.append(f"{len(bad_idx)} samples whose pert_time_idx != "
                       f"AUTHOR_TIME_MAP[pert_time]")
-    # Zero dose allowed only for the documented DToxS single-dose convention.
-    bad_dose = a.obs[(a.obs["pert_dose"] <= 0)
-                     & (~a.obs["dataset_id"].isin(SINGLE_DOSE_DATASETS))]
+    # Zero dose is not allowed anywhere: every treated sample carries a real
+    # positive uM concentration (ADR 0015; no single-dose fallback remains).
+    bad_dose = a.obs[a.obs["pert_dose"] <= 0]
     if len(bad_dose):
         err_ds = sorted(bad_dose["dataset_id"].unique().tolist())
-        errors.append(f"placeholder/zero dose in {err_ds} (only "
-                      f"{SINGLE_DOSE_DATASETS} single-dose may have dose 0)")
+        errors.append(f"placeholder/zero dose in {err_ds} "
+                      f"({len(bad_dose)} samples — every treated sample must "
+                      f"carry a positive real concentration)")
     if not a.obs["dataset_id"].isin(UNION_DATASETS).all():
         err_ds = sorted(a.obs["dataset_id"].unique().tolist())
         errors.append(f"union composition {err_ds} not within {UNION_DATASETS}")
@@ -163,7 +164,7 @@ def run(union_h5ad, v1_h5ad=None, verbose=True):
     print(f"  data-alignment: union {sorted(a.obs['dataset_id'].unique().tolist())}, "
           f"all time {sorted(a.obs['pert_time'].unique().tolist())} h "
           f"(time_idx {sorted(a.obs['pert_time_idx'].unique().tolist())}), "
-          f"zero dose only in {SINGLE_DOSE_DATASETS}")
+          f"no zero-dose treated samples (real concentrations)")
     print(f"  drug-inclusion: pert_idx in [0, 8981) "
           f"({int(a.obs['pert_idx'].min())}-{int(a.obs['pert_idx'].max())}); "
           f"per-dataset union rows match manifest in_hg n_union counts")

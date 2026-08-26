@@ -1,54 +1,49 @@
 #!/usr/bin/env python
-"""Generate the unified benchmark fold columns in cm_union.h5ad.
+"""Generate the benchmark fold columns in cm_union.h5ad (ADR 0015).
 
-One fold principle, applied identically to every MIRI workflow (ADR 0014).
-Writes exactly these .obs columns on the finetune h5ad:
+The v2 union benchmark's test sets are **byte-identical to v1.1's**:
+for every fold column, the primary rows carry v1.1's fold value verbatim
+(matched by the loader well id, pert_id — the same LINCS LDS-1593 wells), and
+the iPSC rows are assigned under the isolation rules:
 
-  warm-start (10 folds, evaluation-only) — drug-overlap: every drug in the
-    test set also appears in the train set. Per drug, samples are randomly
-    assigned ~20% (test_frac) to test and the rest to train; any sample never
-    in test across the 10 folds is rescued into a random fold (keeping its
-    drug >= 1 train sample there). Values: 'train' / 'test' / '' (excluded).
+  warm-start (10 folds, evaluation-only) — primary rows verbatim from v1.1;
+    iPSC rows are all-train ('train'): the iPSC arm never contributes test
+    samples, so the primary test sets stay byte-identical to v1.1's.
 
-  cold-drug (10 folds, evaluation-only) — drug-disjoint: no drug in the test
-    set appears in the train set. Per fold, drugs are selected sample-weighted
-    (so the sample ratio lands near 1:4) until ~20% of all valid samples are
-    test; every other drug is train. Any drug never in test is rescued into a
-    random fold (capped so the fold's test fraction stays in the ratio band).
-    Values: 'train' / 'test' / '' (excluded).
+  cold-drug (10 folds, evaluation-only) — primary rows verbatim from v1.1;
+    iPSC rows are 'train' except for the fold's test drugs, which are excluded
+    ('') from both datasets' train (a cold-drug test drug must not leak into
+    train through the added iPSC arm).
 
-  cm_full (1 fold, prediction-only) — every valid sample 'train'. Values:
-    'train' / ''.
+  cm_full (1 fold, prediction-only) — every valid sample 'train'.
 
-Ratio band: per fold, N(test) : N(train) in 1:9 - 3:7 (test_frac ~0.2).
-No validation set: fold columns carry only train/test; the XPert loader's
-valid -> test fallback covers the empty validation set. No category or
-data-source stratification.
+The primary arm's test-set identity is the ADR 0015 contract: re-running the
+splitter on the union would drift the test sets, so the fold columns are
+imported from v1.1, never regenerated.
 
-Only samples with a valid HG-resolved pert_idx (0 <= pert_idx < N_L1000_DRUGS)
-are included in splits; non-small-molecule / excluded perturbations are left
-empty (''). All prior fold/full columns are dropped first, so the h5ad ends
-with exactly the 21 columns above.
-
-After writing, a built-in invariant gate asserts and logs for every fold
-column: value set subset of {train, test, ''}; warm-start drug overlap = 1.0;
-cold-drug drug overlap = 0.0; per-fold test fraction in [0.10, 0.30]; every
-valid drug (and every warm-start sample) in test >= 1 fold; no stale fold
-columns remain. Any check failing aborts with exit 1.
-
-Deterministic under seed=2024. Values are full strings ('train'/'test') —
-never a fixed-width numpy dtype that truncates them.
+After writing, three isolation gates assert:
+  1. test-set identity — for all 20 fold columns, the primary rows carry
+     v1.1's fold values byte-for-byte (well-matched column equality, not just
+     the same well set);
+  2. no shared well across train/test per fold (well identity, over both arms);
+  3. cold-drug exclusion — for each cold-drug fold, the test drugs are absent
+     from both datasets' train.
+plus the ADR 0014 invariant checks (value set subset of {train,test,''};
+warm-start drug overlap 1.0; cold-drug drug overlap 0.0; per-fold test
+fraction in [0.10, 0.30]; every primary sample in test >= 1 fold; no stale
+fold columns). Any check failing aborts with exit 1.
 
 Usage:
     python 05_xpert_finetune_bench/create_cm_splits.py \
         --data 03_cm_finetune_data/output/cm_union.h5ad
+    python 05_xpert_finetune_bench/create_cm_splits.py \
+        --v11 ../../xpert-fda-miri-v1.1/03_cm_finetune_data/output/dtoxs_lincs.h5ad
 """
 
 import argparse
 import logging
 import re
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -57,7 +52,7 @@ import scanpy as sc
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "_lib"))
-from utils import N_L1000_DRUGS  # noqa: E402
+from utils import N_L1000_DRUGS, V11_DTOXS_LINCS_H5AD  # noqa: E402
 
 logger = logging.getLogger("create_cm_splits")
 logger.setLevel(logging.INFO)
@@ -67,129 +62,14 @@ if not logger.handlers:
     logger.addHandler(ch)
 
 FULL_COL = "cm_full"
+FOLD_COLS = [f"warm-start_fold-{i}" for i in range(1, 11)] + \
+            [f"cold-drug_fold-{i}" for i in range(1, 11)]
 SPLIT_COL_RE = re.compile(r"(fold|_full)", re.IGNORECASE)
 
 
 def valid_mask(adata):
     pert_idx = adata.obs["pert_idx"].values.astype(int)
     return (pert_idx >= 0) & (pert_idx < N_L1000_DRUGS)
-
-
-def _group_samples(adata):
-    pert_idx = adata.obs["pert_idx"].values.astype(int)
-    valid = valid_mask(adata)
-    valid_idx = np.where(valid)[0]
-    drug_to_samples = defaultdict(list)
-    for i in valid_idx:
-        drug_to_samples[int(pert_idx[i])].append(int(i))
-    drug_ids = sorted(drug_to_samples.keys())
-    counts = {d: len(drug_to_samples[d]) for d in drug_ids}
-    return pert_idx, valid, valid_idx, drug_to_samples, drug_ids, counts
-
-
-def create_warm_start_splits(adata, n_folds=10, test_frac=0.2, seed=2024):
-    """Create warm-start (drug-overlap) folds: ~test_frac of each drug's
-    samples to test per fold, the rest train; sample coverage rescued."""
-    rng = np.random.default_rng(seed)
-    pert_idx, _, valid_idx, drug_to_samples, drug_ids, _ = _group_samples(adata)
-    sample_test_count = np.zeros(adata.n_obs, dtype=int)
-    fold_cols = {}
-    for fold_i in range(1, n_folds + 1):
-        col = np.full(adata.n_obs, "", dtype=object)
-        for did in drug_ids:
-            samples = drug_to_samples[did]
-            n_test = max(1, int(np.round(len(samples) * test_frac)))
-            shuffled = rng.permutation(samples)
-            test_idx = shuffled[:n_test]
-            train_idx = shuffled[n_test:]
-            col[test_idx] = "test"
-            col[train_idx] = "train"
-            sample_test_count[test_idx] += 1
-        fold_cols[f"warm-start_fold-{fold_i}"] = col
-    uncovered = valid_idx[sample_test_count[valid_idx] == 0]
-    for i in uncovered:
-        did = int(pert_idx[i])
-        samples = drug_to_samples[did]
-        for _ in range(n_folds):
-            rescue_fold = int(rng.integers(1, n_folds + 1))
-            col = fold_cols[f"warm-start_fold-{rescue_fold}"]
-            # Flipping this sample to test must leave its drug >= 1 train
-            # sample here, else the fold's drug-overlap invariant breaks.
-            # Only n < 3-sample drugs (which the ratio band cannot represent)
-            # can violate it; they fall through and the gate reports them.
-            if int(np.sum(col[samples] == "train")) >= 2:
-                col[i] = "test"
-                break
-    for name, col in fold_cols.items():
-        adata.obs[name] = col
-    return adata
-
-
-def create_cold_drug_splits(adata, n_folds=10, test_frac=0.2, seed=2024):
-    """Create cold-drug (drug-disjoint) folds: sample-weighted drug selection
-    to ~test_frac of all valid samples as test per fold; drug coverage
-    rescued."""
-    rng = np.random.default_rng(seed)
-    _, _, _, drug_to_samples, drug_ids, counts = _group_samples(adata)
-    total = float(sum(counts.values()))
-    target = test_frac * total
-
-    test_drugs_per_fold = []
-    for _ in range(n_folds):
-        remaining = list(drug_ids)
-        remaining_counts = [counts[d] for d in remaining]
-        test_drugs = set()
-        test_count = 0.0
-        while test_count < target and remaining:
-            w = np.asarray(remaining_counts, dtype=float)
-            w /= w.sum()
-            choice = int(rng.choice(len(remaining), p=w))
-            d = remaining.pop(choice)
-            remaining_counts.pop(choice)
-            test_drugs.add(d)
-            test_count += counts[d]
-        test_drugs_per_fold.append(test_drugs)
-
-    def fold_frac(fold_set):
-        return sum(counts[x] for x in fold_set) / total
-
-    covered = defaultdict(int)
-    for s in test_drugs_per_fold:
-        for d in s:
-            covered[d] += 1
-    uncovered_drugs = [d for d in drug_ids if covered[d] == 0]
-    rng.shuffle(uncovered_drugs)
-    for d in uncovered_drugs:
-        candidates = list(range(n_folds))
-        rng.shuffle(candidates)
-        chosen = None
-        for f in candidates:
-            if fold_frac(test_drugs_per_fold[f] | {d}) <= 0.30:
-                chosen = f
-                break
-        if chosen is None:
-            chosen = min(range(n_folds), key=lambda f: fold_frac(test_drugs_per_fold[f]))
-        test_drugs_per_fold[chosen].add(d)
-        covered[d] += 1
-
-    for fold_i, test_drugs in enumerate(test_drugs_per_fold, start=1):
-        col = np.full(adata.n_obs, "", dtype=object)
-        for d in test_drugs:
-            col[drug_to_samples[d]] = "test"
-        for d in drug_ids:
-            if d not in test_drugs:
-                col[drug_to_samples[d]] = "train"
-        adata.obs[f"cold-drug_fold-{fold_i}"] = col
-    return adata
-
-
-def create_full_split(adata):
-    """Create the all-train (prediction-only) column: every valid sample 'train'."""
-    pert_idx = adata.obs["pert_idx"].values.astype(int)
-    col = np.full(adata.n_obs, "", dtype=object)
-    col[pert_idx >= 0] = "train"
-    adata.obs[FULL_COL] = col
-    return adata
 
 
 def is_split_column(name):
@@ -204,16 +84,114 @@ def drop_stale_split_columns(adata):
     return adata
 
 
-def verify_split_gate(adata, n_folds=10):
-    """Invariant gate on the written fold columns. Any failure exits 1."""
-    pert_idx, _, valid_idx, _, _, _ = _group_samples(adata)
-    valid_drugs = sorted(set(int(p) for p in pert_idx[valid_idx]))
+def import_v11_folds(adata, v11_path):
+    """Primary rows carry v1.1's fold values verbatim (matched by well id)."""
+    if not Path(v11_path).exists():
+        logger.error(f"v1.1 h5ad (fold source) not found: {v11_path}")
+        sys.exit(1)
+    v11 = sc.read_h5ad(v11_path)
+    missing_cols = [c for c in FOLD_COLS if c not in v11.obs.columns]
+    if missing_cols:
+        logger.error(f"v1.1 h5ad missing fold columns: {missing_cols}")
+        sys.exit(1)
+
+    v11_well = v11.obs["pert_id"].astype(str)
+    v11_map = {w: i for i, w in enumerate(v11_well)}
+    prim = adata.obs["dataset_id"].astype(str) == "dtoxs_primary"
+    wells = adata.obs["pert_id"].astype(str).values
+    prim_rows = np.where(prim)[0]
+    src_idx = np.array([v11_map.get(w, -1) for w in wells])
+    if int((src_idx[prim_rows] < 0).sum()):
+        n_miss = int((src_idx[prim_rows] < 0).sum())
+        logger.error(f"{n_miss} primary wells not found in the v1.1 h5ad — "
+                     f"cannot import fold columns")
+        sys.exit(1)
+
+    for col in FOLD_COLS:
+        col_vals = np.full(adata.n_obs, "", dtype=object)
+        col_vals[prim_rows] = v11.obs[col].astype(str).values[src_idx[prim_rows]]
+        adata.obs[col] = col_vals
+    logger.info(f"Imported {len(FOLD_COLS)} fold columns from v1.1 for "
+                f"{len(prim_rows)} primary rows (matched by pert_id).")
+    return adata, v11
+
+
+def assign_ipsc_isolation(adata):
+    """iPSC rows per the isolation rules (no test contribution).
+
+    warm-start: all-train. cold-drug: 'train' except the fold's test drugs,
+    which are excluded ('') from both datasets' train.
+    """
+    ipsc = adata.obs["dataset_id"].astype(str) == "dtoxs_ipsc"
+    ipsc_rows = np.where(ipsc)[0]
+    pert_idx = adata.obs["pert_idx"].values.astype(int)
+
+    for col in FOLD_COLS:
+        family = "warm-start" if col.startswith("warm-start") else "cold-drug"
+        col_vals = adata.obs[col].astype(str).values
+        if family == "warm-start":
+            col_vals[ipsc_rows] = "train"
+        else:
+            test_drugs = set(int(p) for p in pert_idx[col_vals == "test"])
+            for i in ipsc_rows:
+                col_vals[i] = "" if int(pert_idx[i]) in test_drugs else "train"
+        adata.obs[col] = col_vals
+
+
+def create_full_split(adata):
+    pert_idx = adata.obs["pert_idx"].values.astype(int)
+    col = np.full(adata.n_obs, "", dtype=object)
+    col[valid_mask(adata)] = "train"
+    adata.obs[FULL_COL] = col
+    return adata
+
+
+def verify_gates(adata, v11, n_folds=10):
+    """The three isolation gates + the ADR 0014 invariant checks."""
+    pert_idx = adata.obs["pert_idx"].values.astype(int)
+    valid = valid_mask(adata)
+    prim = adata.obs["dataset_id"].astype(str) == "dtoxs_primary"
     problems = []
 
-    target_cols = {f"warm-start_fold-{i}" for i in range(1, n_folds + 1)} \
-        | {f"cold-drug_fold-{i}" for i in range(1, n_folds + 1)} \
-        | {FULL_COL}
-    stale = [c for c in adata.obs.columns if is_split_column(c) and c not in target_cols]
+    # Gate 1 — test-set identity vs v1.1 (byte-level: verbatim column values
+    # on the well-matched rows, not just the same well set)
+    prim_wells = adata.obs.loc[prim, "pert_id"].astype(str)
+    v11_wells = v11.obs["pert_id"].astype(str)
+    v11_row_of = {w: i for i, w in enumerate(v11_wells)}
+    prim_v11_idx = np.array([v11_row_of[w] for w in prim_wells])
+    for col in FOLD_COLS:
+        v2_vals = adata.obs.loc[prim, col].astype(str).values
+        v11_vals = v11.obs[col].astype(str).values[prim_v11_idx]
+        if not np.array_equal(v2_vals, v11_vals):
+            problems.append(f"{col}: primary fold values not byte-identical "
+                            f"to v1.1 (well-matched columns differ)")
+
+    # Gate 2 — no identical well across train+test per fold (both arms)
+    for col in FOLD_COLS:
+        v = adata.obs[col].astype(str).values
+        train_wells = set(adata.obs["pert_id"].astype(str).values[v == "train"])
+        test_wells = set(adata.obs["pert_id"].astype(str).values[v == "test"])
+        shared = train_wells & test_wells
+        if shared:
+            problems.append(f"{col}: {len(shared)} wells in both train and test")
+
+    # Gate 3 — cold-drug test drugs absent from both datasets' train
+    for col in FOLD_COLS:
+        if not col.startswith("cold-drug"):
+            continue
+        v = adata.obs[col].astype(str).values
+        test_drugs = set(int(p) for p in pert_idx[v == "test"])
+        train_drugs = set(int(p) for p in pert_idx[v == "train"])
+        leak = test_drugs & train_drugs
+        if leak:
+            problems.append(f"{col}: cold-drug overlap > 0.0 — "
+                            f"{len(leak)} test drugs in train (incl. iPSC)")
+
+    # ADR 0014 invariant checks on the imported folds
+    valid_drugs = sorted(set(int(p) for p in pert_idx[valid]))
+    target_cols = set(FOLD_COLS) | {FULL_COL}
+    stale = [c for c in adata.obs.columns if is_split_column(c)
+             and c not in target_cols]
     if stale:
         problems.append(f"stale split columns remain: {sorted(stale)}")
 
@@ -230,7 +208,7 @@ def verify_split_gate(adata, n_folds=10):
             frac = n_test / (n_test + n_train) if (n_test + n_train) else 0.0
             if not 0.10 <= frac <= 0.30:
                 problems.append(f"{col}: test fraction {frac:.3f} outside "
-                                f"[0.10, 0.30] (n_test={n_test}, n_train={n_train})")
+                                f"[0.10, 0.30]")
             logger.info(f"  {col}: test={n_test}, train={n_train}, "
                         f"test_frac={frac:.3f}")
             test_drugs = set(int(p) for p in pert_idx[test_mask])
@@ -238,35 +216,28 @@ def verify_split_gate(adata, n_folds=10):
             if col.startswith("warm-start"):
                 missing = test_drugs - train_drugs
                 if missing:
-                    problems.append(f"{col}: warm-start drug overlap < 1.0 — "
+                    problems.append(f"{col}: warm-start overlap < 1.0 — "
                                     f"{len(missing)} test drugs never in train")
-            else:
-                inter = test_drugs & train_drugs
-                if inter:
-                    problems.append(f"{col}: cold-drug overlap > 0.0 — "
-                                    f"{len(inter)} drugs in both test and train")
 
-    drug_test_count = defaultdict(int)
-    for i in range(1, n_folds + 1):
-        for family in ("warm-start", "cold-drug"):
-            v = adata.obs[f"{family}_fold-{i}"].astype(str).values
-            for d in set(int(p) for p in pert_idx[v == "test"]):
-                drug_test_count[(family, d)] += 1
-    for family in ("warm-start", "cold-drug"):
-        missing = [d for d in valid_drugs if drug_test_count[(family, d)] == 0]
-        if missing:
-            problems.append(f"{family}: {len(missing)} drugs never in test: "
-                            f"{sorted(missing)[:10]}")
-
+    # every drug in test >= 1 fold; every PRIMARY sample in test >= 1 fold
+    drug_test_count = {}
     sample_test_count = np.zeros(adata.n_obs, dtype=int)
-    for i in range(1, n_folds + 1):
-        sample_test_count += adata.obs[f"warm-start_fold-{i}"].astype(str).values == "test"
-    n_uncovered = int((sample_test_count[valid_idx] == 0).sum())
-    if n_uncovered:
-        problems.append(f"warm-start: {n_uncovered} valid samples never in test")
+    for col in FOLD_COLS:
+        v = adata.obs[col].astype(str).values
+        sample_test_count += (v == "test")
+        for d in set(int(p) for p in pert_idx[v == "test"]):
+            drug_test_count[d] = drug_test_count.get(d, 0) + 1
+    missing_drugs = [d for d in valid_drugs if drug_test_count.get(d, 0) == 0]
+    if missing_drugs:
+        problems.append(f"{len(missing_drugs)} drugs never in test: "
+                        f"{sorted(missing_drugs)[:10]}")
+    n_uncovered_prim = int((sample_test_count[prim.values] == 0).sum())
+    if n_uncovered_prim:
+        problems.append(f"warm-start: {n_uncovered_prim} primary samples "
+                        f"never in test")
 
     v = adata.obs[FULL_COL].astype(str).values
-    if int((v[valid_idx] == "train").sum()) != len(valid_idx):
+    if int((v[valid] == "train").sum()) != int(valid.sum()):
         problems.append(f"{FULL_COL}: not all valid samples are 'train'")
 
     if problems:
@@ -274,21 +245,21 @@ def verify_split_gate(adata, n_folds=10):
         for p in problems:
             logger.error(f"  - {p}")
         sys.exit(1)
-    logger.info("Split gate passed: values in {train, test, ''}; warm-start "
-                "drug overlap 1.0; cold-drug drug overlap 0.0; per-fold test "
-                "fraction in [0.10, 0.30]; every drug/sample covered; no stale "
-                "fold columns.")
+    logger.info("Split gates passed: primary test sets byte-identical to "
+                "v1.1; no shared well across train/test; cold-drug test drugs "
+                "excluded from both datasets' train; warm-start overlap 1.0; "
+                "per-fold test fraction in [0.10, 0.30]; every primary "
+                "sample/drug covered; no stale fold columns.")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate the unified warm-start + cold-drug + full split "
-                    "columns in dtoxs.h5ad")
+        description="Import v1.1 fold columns into the union h5ad and assign "
+                    "iPSC rows under the isolation rules")
     parser.add_argument("--data", default="03_cm_finetune_data/output/cm_union.h5ad",
-                        help="Path to the union h5ad relative to the workflow root")
-    parser.add_argument("--seed", type=int, default=2024, help="Random seed")
-    parser.add_argument("--n_folds", type=int, default=10,
-                        help="Number of warm-start / cold-drug folds")
+                        help="Union h5ad relative to the workflow root")
+    parser.add_argument("--v11", default=str(V11_DTOXS_LINCS_H5AD),
+                        help="v1.1 DToxS-LINCS h5ad (fold source)")
     args = parser.parse_args()
 
     data_path = PROJECT_ROOT / args.data
@@ -299,35 +270,22 @@ def main():
     logger.info(f"Loading {data_path}...")
     adata = sc.read_h5ad(data_path)
     logger.info(f"Loaded: {adata.n_obs} obs, {adata.n_vars} vars")
-
     if "pert_idx" not in adata.obs.columns:
-        logger.error("'pert_idx' column not found in adata.obs — cannot "
-                     "create splits")
+        logger.error("'pert_idx' column not found in adata.obs")
         sys.exit(1)
 
     drop_stale_split_columns(adata)
-
-    logger.info("\n=== Creating warm-start splits "
-                f"({args.n_folds} folds, drug-overlap, no validation) ===")
-    adata = create_warm_start_splits(adata, n_folds=args.n_folds,
-                                     test_frac=0.2, seed=args.seed)
-
-    logger.info("\n=== Creating cold-drug splits "
-                f"({args.n_folds} folds, drug-disjoint, no validation) ===")
-    adata = create_cold_drug_splits(adata, n_folds=args.n_folds,
-                                    test_frac=0.2, seed=args.seed)
-
-    logger.info("\n=== Creating full split (all-train, prediction only) ===")
-    adata = create_full_split(adata)
+    adata, v11 = import_v11_folds(adata, args.v11)
+    assign_ipsc_isolation(adata)
+    create_full_split(adata)
 
     logger.info(f"\nSaving to {data_path}...")
     adata.write_h5ad(data_path)
-    logger.info("Re-reading written h5ad for the invariant gate...")
+    logger.info("Re-reading written h5ad for the isolation gates...")
     written = sc.read_h5ad(data_path)
-    verify_split_gate(written, n_folds=args.n_folds)
-    logger.info("Done. Columns written: "
-                f"warm-start_fold-1..{args.n_folds}, "
-                f"cold-drug_fold-1..{args.n_folds}, {FULL_COL}")
+    verify_gates(written, v11, n_folds=10)
+    logger.info("Done. Columns written: warm-start_fold-1..10, "
+                "cold-drug_fold-1..10, cm_full")
 
 
 if __name__ == "__main__":

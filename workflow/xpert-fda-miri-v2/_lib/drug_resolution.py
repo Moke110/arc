@@ -51,11 +51,10 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import WORKFLOW_ROOT, CM_DATA_ROOT, DTOXS_SMALL_MOL, N_L1000_DRUGS  # noqa: E402
+from utils import (WORKFLOW_ROOT, CM_DATA_ROOT, DTOXS_SMALL_MOL,  # noqa: E402
+                   N_L1000_DRUGS, L1000_FULL_H5AD)
 
 SMI_MAPPING = WORKFLOW_ROOT / "input" / "all_drugs_idx2smi.npy"
-L1000_FULL_H5AD = (CM_DATA_ROOT / "l1000-xpert" / "data"
-                   / "l1000_mdmt_full_336852.h5ad")
 MANIFEST = (WORKFLOW_ROOT / "03_cm_finetune_data" / "output"
             / "drug_manifest.csv")
 

@@ -1,14 +1,18 @@
 # AGENTS.md
 
 The **union-CM finetune MIRI screening workflow** (`workflow/xpert-fda-miri-v2/`;
-see docs/adr/0009): the 12-step sibling of the finalized
+see docs/adr/0009 + docs/adr/0015): the 12-step sibling of the finalized
 `workflow/xpert-fda-miri-v1/` (ADR 0007) whose **only substantive change is the
 XPert finetune data**. Instead of v1's frozen DToxS-only `input/dtoxs.h5ad`,
-steps 05/06/07 train on the workflow-built **union h5ad** of the CM datasets
-(step 03). Everything else — the screened drug scope,
-step-02 baseline, MIRI phenotype/scoring, filters, integration, and the
-agentic report — is v1-identical, preserved by renumbering the v1 steps to make
-room for the prep step.
+steps 05/06/07 train on the workflow-built **union h5ad** of the primary + iPSC
+CM datasets (`dtoxs_primary` from the LINCS LDS-1593 well-level package +
+`dtoxs_ipsc` from GSE217423, step 03). Since ADR 0015 the finetune carries
+**real-concentration dose bins** (not v1's single-dose convention) with a
+single-cell encoding, and the benchmark test sets are **byte-identical to
+v1.1's** (fold columns imported verbatim for the primary arm). Everything else —
+the screened drug scope, step-02 baseline, MIRI phenotype/scoring, filters,
+integration, and the agentic report — is v1-identical, preserved by renumbering
+the v1 steps to make room for the prep step.
 
 ## Scope and provenance (author + CM-dataset data only)
 
@@ -29,74 +33,71 @@ room for the prep step.
   primary finetune transcriptomes come from the released LINCS LDS-1593
   well-level package `pert_data/dtoxs_primary/Data/Level3`, not the raw GEO
   deposit which was deleted 2026-08-18.)
+- The **"no external database" provenance rule is amended for the dose field
+  only** (ADR 0015): the primary arm's finetune concentrations are cited
+  (paper Table 1 KIs / GSE217423 series-matrix shared non-KIs / literature
+  clinical Cmax for the 8 primary-only drugs) in
+  `03_cm_finetune_data/primary_concentrations.py`.
 
 ## Structure (12-step layout)
 
 - `01_drug_embed/` — merged drug list (`drug_list.py`, 1,004 drugs) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate). Identical to v1.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the released LINCS LDS-1593 package (`pert_data/dtoxs_primary/Data/Level3`); byte-identical to v1's baseline.
-- `03_cm_finetune_data/` — **the v2 change**: builds the union finetune h5ad `output/cm_union.h5ad` from the `pert_data` datasets (read-only), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), a schema gate vs v1's `input/dtoxs.h5ad`, and the composition report `output/finetune_report.html`. The DToxS-primary arm reads the LINCS LDS-1593 well-level package (`pert_data/dtoxs_primary/Data/Level3`), so the union includes the non-KI DToxS perturbations.
+- `03_cm_finetune_data/` — **the v2 change**: builds one finetune h5ad per dataset (`output/dtoxs_primary.h5ad` 662 rows, `output/dtoxs_ipsc.h5ad` 296 rows) and concatenates them into the union `output/cm_union.h5ad` (958 rows), from the two finetune datasets (read-only), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), the primary-concentration map (`primary_concentrations.py`, cited), a schema gate vs v1's `input/dtoxs.h5ad`, the delta report vs v1.1's DToxS-LINCS h5ad (`output/finetune_delta.md`), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched.
-- `05_xpert_finetune_bench/` — union benchmark on the **unified folds** (ADR 0014): `create_cm_splits.py` writes `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `cm_full` on the union h5ad (invariant gate, seed 2024); `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** (matching v1/v1.1) and overlays per-fold dots. Self-contained: no cross-workflow comparison tooling.
+- `05_xpert_finetune_bench/` — union benchmark on the **imported v1.1 folds** (ADR 0014/0015): `create_cm_splits.py` imports v1.1's `warm-start_fold-1..10` + `cold-drug_fold-1..10` verbatim for primary rows (matched by well id, byte-identical test sets) and assigns iPSC rows under the isolation rules (warm-start all-train; cold-drug test drugs excluded from both datasets' train) + `cm_full` (all-train), with three isolation gates; `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/cm_pretrain_eval.yaml`. Comparable column-by-column with v1.1 (identical test sets).
 - `06_xpert_finetune/` — all-train union finetune (`xpert_finetune.py`, `config/cm.yaml`) -> the final prediction model `output/cm_cm_full/`.
-- `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`).
+- `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`); predicts at dose_idx 0 / time_idx 2 (the v1 exposure, unchanged by the real-dose finetune).
 - `08_miri_phenotype/` — integrated MIRI reference gene sets + rank reference.
 - `09_miri_efficacy_scores/` — the three efficacy scorers + z-components + plots.
 - `10_filter/` — WCS<0 + >=6/8 critical-pathway filters.
 - `11_integrate/` — integrated score over all drugs, ranked candidates, deterministic report.
-- `12_report/` — agentic bilingual final drug report (external biomni backend).
+- `12_report/` — agentic bilingual final drug report (external biomni A1 backend, resumable per-drug JSON cache).
 - `input/` — frozen assets (author HG reference, UniMol array, idx→SMILES, FDA drug list, curated `MIRI_pathways.json`), carried over from v1.
-- `_lib/utils.py` — workflow-root-aware paths; `CM_DATA_ROOT`, `N_L1000_DRUGS = 8981`, `AUTHOR_TIME_MAP = {3:0, 6:1, 24:2}`, `L1000_PRETRAIN_H5AD`, `AUTHOR_HG_REFERENCE`.
+- `_lib/utils.py` — workflow-root-aware paths; `CM_DATA_ROOT`, `CM_DATASETS` (all five, for the data-lake audit), `FINETUNE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc"]`, `N_L1000_DRUGS = 8981`, `AUTHOR_TIME_MAP = {3:0, 6:1, 24:2}`, `L1000_PRETRAIN_H5AD`, `AUTHOR_HG_REFERENCE`, `V11_DTOXS_LINCS_H5AD` (v1.1 fold/delta source).
 - `_lib/gene_mapping.py` — **per-dataset** CM→L1000 landmark maps (symbols / Ensembl / SYMBOL_entrezid), legacy-symbol aware, `corrected_gene_name` never a match key.
 - `_lib/drug_resolution.py` — compound→L1000 drug index (canonical-SMILES match, else author `cmap_name` name match) + the auditable manifest.
-- `_lib/verify_genes.py` — the extended per-dataset gene gates (G1 completeness, G2 alias verification, G3 drug-level audit), writes `_lib/gene_mapping_report.md`.
+- `_lib/verify_genes.py` — the extended per-dataset gene gates (G1 completeness, G2 alias verification; G3 union-column audit for the finetune datasets only), writes `_lib/gene_mapping_report.md`.
 
-## The union finetune data (step 03)
+## The union finetune data (step 03, ADR 0015)
 
-- All five `pert_data` datasets are extracted for the manifest audit;
-  four enter the union under the author time semantics: `dtoxs_primary` (LINCS
-  LDS-1593 well-level package, 48 h in reality → v1 24 h slot), `dtoxs_ipsc`
-  (GSE217423 DGE, 48 h → 24 h slot), `gse244740` (ScreenSeq, 24 h, 8-point
-  half-log dose series), `gse262419` (TempO-Seq, 24 h, ~53% of union samples).
-  `gse247541` (bulk RNA-seq, 144 h) is excluded (no author time index).
-  gse244740's rows are Ensembl-indexed, so it resolves landmarks by Ensembl ID
-  (the spec's "symbols" phrasing for gse244740 was a text error). Since
-  2026-08-17 the DToxS-primary arm reads the LINCS well-level package (a
-  superset of the raw GEO deposit — it carries the non-KI perturbations such
-  as estradiol, amiodarone, cyclosporin-A, milrinone and the anthracyclines),
-  so `dtoxs_primary` contributes 662 samples / 45 drugs (was 400 / 23 from the
-  GEO-only read).
-- Only samples whose compound resolves to an HG drug (`drug_idx ∈ [0, 8981)`)
-  enter; the manifest classifies every compound (in_hg / extension / unmatched)
-  so exclusions are auditable.
+- The finetune scope is **primary + iPSC only** (`dtoxs_primary` from the LINCS
+  LDS-1593 well-level package, `dtoxs_ipsc` from GSE217423); gse244740 /
+  gse262419 / gse247541 are **no longer extracted in the build** — the
+  standalone drug-overlap report (`03_cm_finetune_data/drug_overlap_report.py`)
+  still audits all five for the data lake.
+- Each dataset is preprocessed independently: 978 landmarks → CPM → log2(CPM+1)
+  → per-group quantile alignment to the L1000 pretrain pooled distribution
+  (one monotonic transform per matched-control group, before matched-control
+  computation; QN reference cached at `output/qn_reference.npy`) → per-sample
+  matched control → author dose bins (0–9, `assign_pert_dose_corrected`) → the
+  48 h exposure encoded at v1's 24 h slot (`pert_time 24.0`, `time_idx 2`).
+  The single-cell encoding is `cell_iname="cardiomyocyte"`, `cell_idx=0`,
+  `tissue_idx=0` (num_cell_id 1; the model never distinguishes donors/lines).
+- **Real concentrations** (ADR 0015): the primary arm's dose comes from
+  `primary_concentrations.py` — paper Table 1 clinical concentrations for the
+  23 KIs (SOR 0.5 uM), the GSE217423 series matrix for the 15 shared non-KIs,
+  and literature-curated clinical Cmax with citations for the 8 primary-only
+  drugs (SB-431542 = in-vitro 10 uM). The iPSC arm keeps its series-matrix
+  concentrations (SOR 1.0 uM — the primary 0.5 vs iPSC 1.0 SOR divergence is
+  intended and documented). **No dataset is single-dose any more**: every
+  treated sample carries a positive real concentration, so the old
+  "zero dose only in dtoxs_primary" schema assertion is gone.
 - The union h5ad is schema-identical to v1's `input/dtoxs.h5ad` in every field
   the XPert loader consumes (obs `pert_id, pert_idx, pert_dose[_idx],
   pert_time[_idx], cell_iname, cell_idx, tissue_idx` + additive `dataset_id`;
   var = 978 landmarks in L1000 `gene_idx` order with `gene_id`/`gene_symbol`;
-  `obsm["X_ctl"]` per-sample matched control; X float32 log2(CPM+1)).
-- Dose/time indices are precomputed in step 03 and follow the **author L1000
-  semantics** (ADR 0010): time map `{3:0, 6:1, 24:2}` (the pretrain/v1 map),
-  and dose via the author `assign_pert_dose_corrected` bins (0–9) from real µM
-  concentrations. The DToxS-family datasets (`dtoxs_primary`, `dtoxs_ipsc`,
-  48 h in reality) enter under **v1's slot-24 convention** (`pert_time 24.0`,
-  `time_idx 2`), exactly as v1's frozen dtoxs.h5ad encoded them; the 144 h
-  dataset (`gse247541`) is excluded. The union is `gse262419` (3,783) +
-  `gse244740` (2,424) + `dtoxs_primary` (662) + `dtoxs_ipsc` (296) = 7,165
-  samples, all 24 h → `pert_time_idx 2`. The screen predicts at time_idx 2
-  (= 24 h, v1's exposure).
-- Treated samples with no positive real concentration are excluded (e.g.
-  `gse262419` "Blank" wells); the one exception is `dtoxs_primary`, the v1
-  single-dose experiment, which trains at `pert_dose 0 → dose_idx 0` like v1.
-  The manifest records every exclusion (`n_excl_time` / `n_excl_nodose` /
-  `n_union`).
-- Per-group **quantile alignment** to the L1000 pretrain pooled distribution
-  (one monotonic transform per matched-control group, before matched-control
-  computation) removes the platform/batch offset; the finetune/benchmark
-  config bin range is `[0, 15.002]` (the pretrain range). The QN reference is
-  cached at `output/qn_reference.npy`.
-- `gse262419`'s TempO-Seq panel provably lacks WRB and FAM57A (their probe rows
-  point at different Entrez genes); those two landmarks are zeroed for that
-  dataset and documented (after QN they map into the low tail), not silently
-  mismatched.
+  `obsm["X_ctl"]` per-sample matched control; X float32 log2(CPM+1) within the
+  pretrain bin range `[0, 15.002]`). Union = 662 + 296 = **958 rows**,
+  45 unique drug_idx (46 primary compounds; doxorubicin/epirubicin share 4556).
+- **Delta report** (`output/finetune_delta.md`) audits the primary arm against
+  v1.1's `dtoxs_lincs.h5ad` (well-identity matched, 662/662): the dose_idx
+  re-binning (all bin 0 → the real-concentration distribution) and the
+  `cell_iname` change (`cardio` → `cardiomyocyte`). The iPSC arm is new in v2.
+- Only samples whose compound resolves to an HG drug (`drug_idx ∈ [0, 8981)`)
+  enter; the manifest classifies every compound (in_hg / extension / unmatched)
+  so exclusions are auditable (primary non-mapped treated codes such as TRS /
+  DIC / END / SUN+ / TNF / IGF are counted as `n_excl_nodose`).
 
 ## Finetune-data composition report (step 03)
 
@@ -120,18 +121,24 @@ LayerNorm, mean-pooled over the 978 landmarks.
 - **Union schema gate** — `03_cm_finetune_data/schema_gate.py` asserts the
   union h5ad is structure-identical to v1's `input/dtoxs.h5ad` in the fields
   the XPert loader consumes, **and** the data-semantics invariants (author time
-  `{3,6,24}` / `time_idx 2`, zero dose only in the `dtoxs_primary`
-  single-dose convention, X within the pretrain range `[0, 15.002]`, union
-  composition = the four 24 h-slot datasets, manifest `n_union` matches union
-  rows).
+  `{3,6,24}` / `time_idx 2`, **no zero-dose treated samples** (real
+  concentrations), X within the pretrain range `[0, 15.002]`, union composition
+  = the two finetune datasets, manifest `n_union` matches union rows).
+- **Fold isolation gates** — `05_xpert_finetune_bench/create_cm_splits.py`:
+  1) primary test sets **byte-identical to v1.1's** for all 20 fold columns
+  (matched by well id), 2) no identical well across train+test per fold,
+  3) cold-drug test drugs absent from both datasets' train. Plus the ADR 0014
+  invariant checks (value set, warm-start overlap 1.0, per-fold test fraction
+  in [0.10, 0.30], every primary sample/drug covered, no stale columns).
 - **Gene gates** — `_lib/verify_genes.py` per dataset: G1 all present landmarks
   resolve (gse262419 platform-missing = {WRB, FAM57A} only), G2 all legacy
-  aliases author-metadata verified, G3 no confirmed union-column
-  misassignment. Any G1/G2 failure aborts (exit 1).
+  aliases author-metadata verified, G3 union-column audit (finetune datasets
+  only). Any G1/G2 failure aborts (exit 1).
 - **Drug-inclusion gate** — every union obs `pert_idx` lies in `[0, 8981)`;
   the manifest is complete and exclusions match the h5ad row counts.
 - Steps 05/06/07 train on the union h5ad only; the frozen v1 `input/dtoxs.h5ad`
-  is used solely as the schema reference.
+  is used solely as the schema reference; v1.1's `dtoxs_lincs.h5ad` is the
+  fold/delta reference (read-only).
 
 ## Entry points
 
@@ -141,11 +148,12 @@ python 01_drug_embed/drug_list.py                # 1,004 L1000-contained FDA dru
 python 01_drug_embed/drug_embeddings.py          # author-reference HG (no HG training)
 python _lib/verify_genes.py                      # per-dataset gene gates (G1/G2 anytime; G3 needs step-03 union h5ad)
 python 02_cm_baseline/cm_baseline.py             # DToxS-primary consensus baseline
-python 03_cm_finetune_data/build_union.py        # union h5ad + manifest + data-semantics gate
-python 05_xpert_finetune_bench/create_cm_splits.py  # unified folds + invariant gate
+python 03_cm_finetune_data/build_union.py        # per-dataset h5ads + union + manifest + delta + schema gate
+python 03_cm_finetune_data/finetune_report.py    # composition report (HTML)
+python 05_xpert_finetune_bench/create_cm_splits.py  # import v1.1 folds + iPSC isolation + gates
 # GPU steps (05 benchmark / 06 finetune / 07 predict) then 08–12
 python 11_integrate/integrate.py
-# agentic report (external biomni backend) — resumable
+# agentic report (external biomni A1 backend) — resumable
 python 12_report/run_drug_agents.py
 python 12_report/assemble_report.py
 python 12_report/assemble_cn_report.py
@@ -161,21 +169,23 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
 - The finetune/benchmark config (`06_xpert_finetune/config/cm.yaml`) uses the
   `cm` dataset block and CLI dataset name `cm`; the XPert library treats `cm`
   like `dtoxs` (additive branches in `utils.py`, `model_xpert.py`,
-  `predict.py`). Existing `dtoxs` behavior is unchanged.
-- `create_cm_splits.py` writes the unified fold columns — `warm-start`
-  (10, drug-overlap) + `cold-drug` (10, drug-disjoint) + `cm_full`
-  (all-train) — on the union h5ad, with a built-in invariant gate (drug
-  overlap 1.0/0.0, test-fraction band, coverage, no stale columns; ADR 0014).
-- Step 07 predicts at `--time-idx 2` (24 h under the author time map; the
-  library `predict.py` defaults to 2). After any step-05/06 retrain, steps
-  08–12 must be re-run on the regenerated step-07 DEG table.
-- The step-03 schema gate (data integrity vs v1's h5ad) is the only
-  cross-workflow check that remains; there is no benchmark comparison against
-  v1's folds.
+  `predict.py`). Existing `dtoxs` behavior is unchanged. The pretrain eval
+  config (`05_xpert_finetune_bench/config/cm_pretrain_eval.yaml`) mirrors the
+  pretrain dims under the `cm` block (num_pert_dose 10, num_cell_id 240,
+  num_tissue_id 21) so the pretrain checkpoint loads tolerantly.
+- `create_cm_splits.py` **imports** v1.1's fold columns for primary rows and
+  never regenerates them — re-running the splitter on the union would drift the
+  test sets. It requires the v1.1 DToxS-LINCS h5ad (`V11_DTOXS_LINCS_H5AD`,
+  override with `--v11`) to carry the fold columns.
+- Step 07 predicts at `--dose-idx 0 --time-idx 2` (the v1 exposure; the
+  library `predict.py` defaults to time 2). After any step-05/06 retrain,
+  steps 08–12 must be re-run on the regenerated step-07 DEG table.
 - Large artifacts (`.npy`, `.pth`, `.csv`, `.h5ad`), `12_report/cache/` JSONs,
   and `.env` are gitignored — never commit them.
 - Steps 05/06 re-run the XPert finetune on the union — GPU-fp-nondeterministic
   across environments; v2's archived predictions are environment-specific,
   exactly as in v1.
-- The 12_report biomni agent backend (`/home/chang/cc-research`, overridable
-  via `BIOMNI_CC_DIR`) is an external dependency; it is not vendored.
+- The 12_report biomni A1 backend is the read-only clone at
+  `~/.local/share/biomni` with API keys in
+  `~/.config/opencode/skills/biomni/biomni.env` (override with `BIOMNI_CC_DIR`);
+  it is an external dependency and is not vendored.

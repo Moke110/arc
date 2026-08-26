@@ -39,16 +39,17 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
-from utils import WORKFLOW_ROOT, XPERT_ROOT, CM_DATA_ROOT, L1000_PRETRAIN_H5AD  # noqa: E402
+from utils import (WORKFLOW_ROOT, XPERT_ROOT, CM_DATA_ROOT, L1000_PRETRAIN_H5AD,  # noqa: E402
+                   L1000_FULL_H5AD)
 
 STEP_DIR = WORKFLOW_ROOT / "03_cm_finetune_data"
 OUT_DIR = STEP_DIR / "output"
 HTML_OUT = OUT_DIR / "finetune_report.html"
-DEFAULT_DATA = OUT_DIR / "dtoxs_lincs.h5ad"
+DEFAULT_DATA = OUT_DIR / "cm_union.h5ad"
 PRETRAIN_PTH = WORKFLOW_ROOT / "04_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
 PPI_PATH = XPERT_ROOT / "metadata" / "PPI_gene_vector_128d.npy"
 MOA_TABLE = XPERT_ROOT / "metadata" / "l1000_sdst_drugs_info_8432.csv"
-L1000_FULL_H5AD = CM_DATA_ROOT / "l1000-xpert" / "data" / "l1000_mdmt_full_336852.h5ad"
+SMI_MAPPING = WORKFLOW_ROOT / "input" / "all_drugs_idx2smi.npy"
 SMI_MAPPING = WORKFLOW_ROOT / "input" / "all_drugs_idx2smi.npy"
 
 N_BINS = 128

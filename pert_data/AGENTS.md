@@ -42,6 +42,13 @@ GEO on 2026-08-12. See `reference/pert_data/publications.md`.
   2026-08-17). It carries the **non-KI perturbations** (estradiol, amiodarone,
   cyclosporin-A, milrinone, anthracyclines, ...), antibodies (TRS), proteins
   (IGF/TNF), and the CTRL-DMSO / CTRL-EtOH vehicle wells.
+- **Finetune consumption (since ADR 0015, 2026-08-26):** the v2 union finetune
+  (`workflow/xpert-fda-miri-v2`) reads this package + `dtoxs_ipsc/` and maps
+  every primary in-HG drug to a **real uM concentration** (paper Table 1 for
+  the 23 KIs, the GSE217423 series matrix for the 15 shared non-KIs, and
+  literature clinical Cmax with citations for the 8 primary-only drugs —
+  `workflow/xpert-fda-miri-v2/03_cm_finetune_data/primary_concentrations.py`).
+  The platform records no dose; the map is the auditable source.
 - **`v1-frozen/`** — the **v1-era data**, frozen byte-identically on 2026-08-18
   so `workflow/xpert-fda-miri-v1` stays reproducible after the GSE deletion +
   release: `dtoxs.h5ad` (a copy of v1's frozen `input/dtoxs.h5ad`, 521 samples

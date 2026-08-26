@@ -33,10 +33,19 @@ REPORT_DIR = WORKFLOW_ROOT / "12_report"
 CACHE_DIR = REPORT_DIR / "cache"
 PROMPT_PATH = REPORT_DIR / "prompt.md"
 
-# External biomni agent backend (not vendored); override with $BIOMNI_CC_DIR.
-CC = os.environ.get("BIOMNI_CC_DIR", "/home/chang/cc-research")
-load_dotenv(os.path.join(CC, ".env"))
-sys.path.insert(0, os.path.join(CC, "biomni"))
+# External biomni A1 backend (not vendored); override with $BIOMNI_CC_DIR.
+# The biomni source is the read-only clone at ~/.local/share/biomni (its
+# `biomni` package root), with API keys in the biomni skill env file
+# (~/.config/opencode/skills/biomni/biomni.env) and the data lake under
+# $BIOMNI_PATH (default ~/.local/share/biomni/data).
+CC = os.environ.get("BIOMNI_CC_DIR", os.path.expanduser("~/.local/share/biomni"))
+SKILL_DIR = os.path.expanduser("~/.config/opencode/skills/biomni")
+_skill_env = os.path.join(SKILL_DIR, "biomni.env")
+if os.path.exists(_skill_env):
+    load_dotenv(_skill_env)
+else:
+    load_dotenv(os.path.join(CC, ".env"))
+sys.path.insert(0, CC)
 
 INTEGRATED = WORKFLOW_ROOT / "11_integrate" / "output" / "integrated_scores.csv"
 PATH_FILTERED = WORKFLOW_ROOT / "10_filter" / "output" / "path_filtered.csv"
@@ -83,7 +92,7 @@ def run_one(drug, smi, out_path):
               "solution": None, "error": None}
     try:
         from biomni.agent import A1
-        data_path = os.environ.get("BIOMNI_PATH", os.path.join(CC, "biomni", "data"))
+        data_path = os.environ.get("BIOMNI_PATH", os.path.join(CC, "data"))
         agent = A1(path=data_path, expected_data_lake_files=[])
         log, content = agent.go(make_query(drug, smi))
         content = content or ""

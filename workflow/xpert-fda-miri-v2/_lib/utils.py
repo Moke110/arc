@@ -44,6 +44,11 @@ DISEASE_DATA_ROOT = WORKSPACE_ROOT / "disease_data" / "miri"
 CM_DATA_ROOT = WORKSPACE_ROOT / "pert_data"
 CM_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse247541",
                "gse262419"]
+# The step-03 finetune scope since ADR 0015: primary + iPSC only. The other
+# three CM datasets (gse244740/gse262419/gse247541) are no longer extracted in
+# the build; the standalone drug-overlap report still audits all five for the
+# data lake (03_cm_finetune_data/drug_overlap_report.py).
+FINETUNE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc"]
 
 # The released LINCS LDS-1593 well-level package (DToxS primary, Level 3),
 # now living flat at pert_data/dtoxs_primary/: per-batch well-level
@@ -60,6 +65,14 @@ DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 # the DToxS baseline comparison). Only ever read, never written.
 V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1"
 V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "input" / "dtoxs.h5ad"
+
+# The DToxS-LINCS testbed (v1.1): its rebuilt finetune h5ad is the benchmark
+# reference the v2 primary arm realigns to (ADR 0015). v2 imports v1.1's fold
+# columns verbatim for primary rows (byte-identical test sets) and audits its
+# own primary arm against v1.1's in the step-03 delta report. Only ever read.
+V11_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1.1"
+V11_DTOXS_LINCS_H5AD = (V11_WORKFLOW_ROOT / "03_cm_finetune_data" / "output"
+                        / "dtoxs_lincs.h5ad")
 
 # L1000 embedding-table boundary: rows [0, N_L1000_DRUGS) are the author
 # L1000 reference; rows >= N_L1000_DRUGS are the FDA-extension rows and are
@@ -78,9 +91,23 @@ AUTHOR_TIME_MAP = {3: 0, 6: 1, 24: 2}
 AUTHOR_TIMES = (3, 6, 24)
 
 # L1000 XPert pretrain h5ad — the pooled log2(CPM+1) distribution used as the
-# quantile-alignment reference for the union finetune data (step 03).
-L1000_PRETRAIN_H5AD = (CM_DATA_ROOT / "l1000-xpert" / "data"
-                       / "l1000_mdmt_268022_pretrain.h5ad")
+# quantile-alignment reference for the union finetune data (step 03). The data
+# lake currently lays the pretrain corpus out under pert_data/xpert-l1000/ (the
+# older l1000-xpert/ name is kept as a fallback).
+
+
+def l1000_data_h5ad(filename):
+    """Resolve one L1000 corpus h5ad under pert_data (xpert-l1000 first, then
+    the older l1000-xpert/ name) so the whole workflow shares one resolver."""
+    for rel in ("xpert-l1000", "l1000-xpert"):
+        p = CM_DATA_ROOT / rel / "data" / filename
+        if p.exists():
+            return p
+    return CM_DATA_ROOT / "l1000-xpert" / "data" / filename
+
+
+L1000_PRETRAIN_H5AD = l1000_data_h5ad("l1000_mdmt_268022_pretrain.h5ad")
+L1000_FULL_H5AD = l1000_data_h5ad("l1000_mdmt_full_336852.h5ad")
 
 # Insert the XPert model library so `python -m src.*` and `from src.*`
 # resolve (HG is a pure library and is never imported by this workflow).
