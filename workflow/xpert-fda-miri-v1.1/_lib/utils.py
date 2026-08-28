@@ -79,9 +79,23 @@ AUTHOR_TIME_MAP = {3: 0, 6: 1, 24: 2}
 AUTHOR_TIMES = (3, 6, 24)
 
 # L1000 XPert pretrain h5ad — the pooled log2(CPM+1) distribution used as the
-# quantile-alignment reference for the union finetune data (step 03).
-L1000_PRETRAIN_H5AD = (CM_DATA_ROOT / "l1000-xpert" / "data"
-                       / "l1000_mdmt_268022_pretrain.h5ad")
+# quantile-alignment reference for the DToxS-LINCS finetune data (step 03).
+# The data lake currently lays the pretrain corpus out under
+# pert_data/xpert-l1000/ (the older l1000-xpert/ name is kept as a fallback).
+
+
+def l1000_data_h5ad(filename):
+    """Resolve one L1000 corpus h5ad under pert_data (xpert-l1000 first, then
+    the older l1000-xpert/ name) so the whole workflow shares one resolver."""
+    for rel in ("xpert-l1000", "l1000-xpert"):
+        p = CM_DATA_ROOT / rel / "data" / filename
+        if p.exists():
+            return p
+    return CM_DATA_ROOT / "l1000-xpert" / "data" / filename
+
+
+L1000_PRETRAIN_H5AD = l1000_data_h5ad("l1000_mdmt_268022_pretrain.h5ad")
+L1000_FULL_H5AD = l1000_data_h5ad("l1000_mdmt_full_336852.h5ad")
 
 # Insert the XPert model library so `python -m src.*` and `from src.*`
 # resolve (HG is a pure library and is never imported by this workflow).

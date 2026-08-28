@@ -5,8 +5,11 @@ Counts, per dataset under pert_data (excluding the L1000 pretrain corpus),
 how many unique treated compounds are present in the author-provided drug
 embedding table (the author HG reference, drug_idx in [0, N_L1000_DRUGS)),
 and how those drug sets overlap with each other. Emits a self-contained
-HTML report (Venn diagrams + pairwise intersection heatmap + per-drug
-membership table).
+HTML report (a per-dataset 化合物总数 / 有 SMILES / in-HG 覆盖对比 table with a
+5-dataset union row, Venn diagrams + pairwise intersection heatmap, and a
+per-drug membership table). The gse262419 well-join is plate-aware
+((Plate_ID, well) keyed against GSE262419_hash.csv); the old well-only join
+collapsed the 464 chemicals to 33 names.
 
 Writes: <pert_data>/cm_drugs.html (gitignored data-lake artifact).
 """
@@ -57,9 +60,9 @@ def build_author_index():
     return smi2idx, name2idx, meta_smi
 
 
-def collect_inhg_sets(smi2idx, name2idx, meta_smi):
-    """dataset -> {drug_idx: (compound_name, resolution_method)} for in_hg."""
-    idx2name = {}
+def collect_treated_compounds():
+    """dataset -> {(compound_name, compound_code): (name, smiles)} treated only."""
+    out = {}
     for ds in DATASETS:
         meta, _, _ = _datasets.extract_samples(ds)
         seen = {}
@@ -68,6 +71,19 @@ def collect_inhg_sets(smi2idx, name2idx, meta_smi):
                 continue
             seen.setdefault((r.compound_name, r.compound_code),
                             (r.compound_name, r.smiles))
+        out[ds] = seen
+    return out
+
+
+def _has_smiles(smi):
+    return bool(smi) and str(smi) not in ("nan", "")
+
+
+def collect_inhg_sets(compounds, smi2idx, name2idx, meta_smi):
+    """dataset -> {drug_idx: (compound_name, resolution_method)} for in_hg."""
+    idx2name = {}
+    for ds in DATASETS:
+        seen = compounds[ds]
         out = {}
         for (name, _code), (_n, smi) in seen.items():
             idx, method, _ = dr.resolve_compound(name, smi, smi2idx, name2idx,
@@ -120,12 +136,12 @@ def venn_png(subset_sizes, labels, title):
 
 def main():
     smi2idx, name2idx, meta_smi = build_author_index()
-    by_ds = collect_inhg_sets(smi2idx, name2idx, meta_smi)
+    compounds = collect_treated_compounds()
+    by_ds = collect_inhg_sets(compounds, smi2idx, name2idx, meta_smi)
     names, moa = drug_name_table()
 
     sets = {ds: set(v) for ds, v in by_ds.items()}
     union = sorted(set().union(*sets.values()))
-    total_in_hg = len(union)
 
     rows = []
     for ds in DATASETS:
@@ -144,10 +160,36 @@ def main():
     for ds in DATASETS:
         meta, _, _ = _datasets.extract_samples(ds)
         n_treated = int((~meta["is_control"]).sum())
-        n_unique = len(by_ds[ds])
-        summary.append((ds, n_treated, n_unique))
-    summary_df = pd.DataFrame(
-        summary, columns=["dataset", "n_treated_samples", "n_in_hg_drugs"])
+        n_comp = len(compounds[ds])
+        n_smi = sum(1 for (_n, smi) in compounds[ds].values()
+                    if _has_smiles(smi))
+        n_in_hg = len(by_ds[ds])
+        summary.append((ds, n_comp, n_smi, n_in_hg, n_treated))
+    summary_df = pd.DataFrame(summary, columns=[
+        "dataset", "n_compounds", "n_with_smiles", "n_in_hg_drugs",
+        "n_treated_samples"])
+
+    # union across the 5 datasets (treated compounds, deduped by drug_idx for
+    # in-HG hits, else canonical SMILES, else normalized name)
+    union_comp = {}
+    union_smi = set()
+    for ds in DATASETS:
+        for (name, _code), (_n, smi) in compounds[ds].items():
+            idx, _, _ = dr.resolve_compound(name, smi, smi2idx, name2idx,
+                                            meta_smi)
+            if dr.classify(idx) == "in_hg":
+                union_comp[("idx", int(idx))] = ds
+            else:
+                c = dr._canon(smi) if _has_smiles(smi) else None
+                union_comp[("smi", c) if c is not None
+                           else ("name", dr._norm_name(name))] = ds
+            if _has_smiles(smi):
+                c = dr._canon(smi)
+                if c is not None:
+                    union_smi.add(c)
+    total_compounds = len(union_comp)
+    total_with_smiles = len(union_smi)
+    total_in_hg = len(union)
 
     # --- Venn diagrams -------------------------------------------------------
     venn_main = venn_png(
@@ -200,15 +242,26 @@ def main():
              "解析规则与 step-03 manifest 一致：SMILES 精确匹配，否则作者 cmap_name 名称匹配。"
              "排除对照（vehicle/CTRL）与 l1000 预训练语料。</p>" % N_L1000_DRUGS)
 
-    h.append("<h2>各数据集 in-HG 药物数量</h2>")
-    h.append("<table><tr><th>dataset</th><th class='num'>treated 样本数</th>"
-             "<th class='num'>in-HG 药物数</th></tr>")
+    h.append("<h2>各数据集 药物/化合物 · SMILES · in-HG 覆盖对比</h2>")
+    h.append("<p class='note'>药物/化合物总数 = 去重后的 treated 化合物数"
+             "（排除 vehicle/CTRL 对照）；有 SMILES 数 = 数据集自身交付带结构的化合物数"
+             "（gse244740/gse262419/gse247541 的 GEO 交付不附带 SMILES，其 in-HG 命中依赖"
+             "作者名称匹配）；in-HG 药物数 = 解析到作者嵌入表 "
+             "<code>drug_idx ∈ [0, %d)</code> 的去重药物数。</p>" % N_L1000_DRUGS)
+    h.append("<table><tr><th>dataset</th><th class='num'>药物/化合物总数</th>"
+             "<th class='num'>有 SMILES 数</th><th class='num'>in-HG 药物数</th>"
+             "<th class='num'>treated 样本数</th></tr>")
     for _, r in summary_df.iterrows():
         h.append(f"<tr><td>{r['dataset']}</td><td class='num'>"
-                 f"{r['n_treated_samples']}</td><td class='num'>"
-                 f"{r['n_in_hg_drugs']}</td></tr>")
+                 f"{r['n_compounds']}</td><td class='num'>"
+                 f"{r['n_with_smiles']}</td><td class='num'>"
+                 f"{r['n_in_hg_drugs']}</td><td class='num'>"
+                 f"{r['n_treated_samples']}</td></tr>")
     h.append(f"<tr><td><b>union（5 数据集并集）</b></td>"
-             f"<td class='num' colspan='2'><b>{total_in_hg}</b></td></tr>")
+             f"<td class='num'><b>{total_compounds}</b></td>"
+             f"<td class='num'><b>{total_with_smiles}</b></td>"
+             f"<td class='num'><b>{total_in_hg}</b></td>"
+             f"<td class='num'>—</td></tr>")
     h.append("</table>")
 
     h.append("<div class='venn-row'>")

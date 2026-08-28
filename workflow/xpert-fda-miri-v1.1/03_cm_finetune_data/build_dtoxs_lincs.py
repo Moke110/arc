@@ -9,15 +9,25 @@ input/dtoxs.h5ad. xpert-fda-miri-v1 stays untouched and frozen.
 
   03_cm_finetune_data/output/dtoxs_lincs.h5ad
 
-The rebuilt h5ad is schema-identical to v1's frozen input/dtoxs.h5ad in the
-fields the XPert library consumes (obs pert_id/pert_idx/pert_dose[_idx]/
-pert_time[_idx]/cell_iname/cell_idx/tissue_idx + the additive dataset_id
-provenance column; var = the 978 L1000 landmarks in gene_idx order with
-gene_id/gene_symbol; obsm["X_ctl"] per-sample matched control; X float32 in
-log2(CPM+1) space, quantile-aligned to the L1000 pretrain range [0, 15.002]).
-Only samples whose compound resolves to an HG drug (drug_idx in [0, 8981))
-enter. The DToxS-family single-dose experiment follows v1's slot-24 convention
-(pert_time 24.0, time_idx 2, pert_dose 0 -> dose_idx 0).
+   The rebuilt h5ad is schema-identical to v1's frozen input/dtoxs.h5ad in the
+   fields the XPert library consumes (obs pert_id/pert_idx/pert_dose[_idx]/
+   pert_time[_idx]/cell_iname/cell_idx/tissue_idx + the additive dataset_id
+   provenance column; var = the 978 L1000 landmarks in gene_idx order with
+   gene_id/gene_symbol; obsm["X_ctl"] per-sample matched control; X float32 in
+   log2(CPM+1) space, quantile-aligned to the L1000 pretrain range [0, 15.002]).
+   Only samples whose compound resolves to an HG drug (drug_idx in [0, 8981))
+   enter. The DToxS-family single-dose experiment follows v1's slot-24 convention
+   (pert_time 24.0, time_idx 2, pert_dose 0 -> dose_idx 0).
+
+   **Per-plate normalization (ADR 0016):** both the quantile alignment and the
+   matched-control computation are grouped per `(dataset_id, plate)`, not per
+   dataset. Each sample's matched control is the mean of the control wells on
+   its own plate (dtoxs_primary CTRL/CTRL-DMSO/CTRL-EtOH on plates 1/2/4/5) and
+   each plate's 978-landmark distribution is aligned to the L1000 pretrain
+   independently. v1's frozen input/dtoxs.h5ad stays dataset-wide (the
+   historical anchor); the deviation is recorded as an auditable delta in the
+   parity report. Sample identity/order is unchanged, so the fold columns
+   survive (X-independent splitter, ADR 0014).
 
 Also emits:
   03_cm_finetune_data/output/gene_maps/dtoxs_primary_to_l1000_gene_map.csv
@@ -150,6 +160,12 @@ def build_landmark_matrix(counts, gene_ids, gene_map):
     return np.log2(cpm + 1).astype(np.float32)
 
 
+def group_key(meta):
+    """Composite per-plate group key: '<dataset_id>::<plate>' (ADR 0016)."""
+    return (meta["dataset_id"].astype(str) + "::"
+            + meta["plate"].astype(str))
+
+
 def quantile_align(X, group, ref_sorted):
     """Per-group pooled quantile alignment onto the L1000 pretrain reference."""
     import scipy.stats as st
@@ -167,12 +183,19 @@ def quantile_align(X, group, ref_sorted):
     return out
 
 
-def matched_control_matrix(meta, X_landmark, controls_mask, group_col):
+def matched_control_matrix(meta, X_landmark, controls_mask, group):
+    """Per-sample matched control = group mean of control log2(CPM+1).
+
+    The group is the composite `(dataset_id, plate)` key (ADR 0016): each
+    treated sample's control baseline is the mean of the control wells on its
+    own plate, removing plate batch effects from the control baseline.
+    """
     ctl = np.zeros_like(X_landmark, dtype=np.float64)
     if controls_mask.sum() == 0:
         return ctl.astype(np.float32)
-    for g in meta.loc[controls_mask, group_col].unique():
-        sel = meta[group_col].values == g
+    gvals = group.values
+    for g in pd.unique(group):
+        sel = gvals == g
         if controls_mask[sel].sum() == 0:
             continue
         ctl_rows = X_landmark[controls_mask & sel]
@@ -180,6 +203,70 @@ def matched_control_matrix(meta, X_landmark, controls_mask, group_col):
         for i in np.where(~controls_mask & sel)[0]:
             ctl[i] = grp_mean
     return ctl.astype(np.float32)
+
+
+def per_plate_gates(meta, X, X_ctl, group, out_lines):
+    """Plate-coverage + per-plate-proof gates (ADR 0016).
+
+    Plate-coverage: every treated plate carries >= 1 control well on it (0
+    samples excluded for lack of a same-plate control). Per-plate proof: each
+    treated sample's X_ctl equals the mean of the control rows of its own
+    `(dataset_id, plate)` group. Any failure exits 1.
+    """
+    meta = meta.reset_index(drop=True)
+    controls_mask = meta["is_control"].values
+    treated = ~controls_mask
+    missing_plates = sorted(set(meta.loc[treated, "plate"])
+                            - set(meta.loc[controls_mask, "plate"]))
+    if missing_plates:
+        print(f"ERROR: {len(missing_plates)} treated plates without a "
+              f"same-plate control well: {missing_plates}")
+        sys.exit(1)
+    n_excluded = 0
+    gvals = group.values
+    for g in pd.unique(group):
+        sel = gvals == g
+        if controls_mask[sel].sum() == 0 and treated[sel].sum():
+            n_excluded += int(treated[sel].sum())
+    if n_excluded:
+        print(f"ERROR: {n_excluded} treated samples excluded for lack of a "
+              f"same-plate control")
+        sys.exit(1)
+    # per-plate proof: spot-check every treated sample's X_ctl == its own
+    # plate's control mean (guaranteed by construction; assert the code path)
+    for g in pd.unique(group):
+        sel = gvals == g
+        ctl_rows = X[controls_mask & sel]
+        if len(ctl_rows) == 0:
+            continue
+        expect = ctl_rows.mean(axis=0)
+        got = X_ctl[treated & sel]
+        if not np.allclose(got, expect, atol=1e-6):
+            print(f"ERROR: per-plate X_ctl mismatch for group {g}")
+            sys.exit(1)
+    # differs-from-dataset-wide proof (spec testing decision): the per-plate
+    # control must differ from the pooled dataset-wide control mean on >= 1
+    # treated sample whenever the dataset has >= 2 plates with controls
+    # (single-plate datasets trivially have per-plate == dataset-wide).
+    if controls_mask.sum() > 0 and len(pd.unique(group)) >= 2:
+        dw_mean = X[controls_mask].mean(axis=0)
+        n_diff = int((np.abs(X_ctl[treated] - dw_mean).max(axis=1) > 1e-6).sum())
+        if n_diff == 0:
+            print(f"ERROR: per-plate X_ctl identical to the dataset-wide "
+                  f"control mean on every treated sample — per-plate grouping "
+                  f"has no effect")
+            sys.exit(1)
+    else:
+        n_diff = 0
+    out_lines.append(
+        f"- **Per-plate normalization (ADR 0016):** QN alignment and matched "
+        f"control grouped per `(dataset_id, plate)`; {len(pd.unique(group))} "
+        f"plates, 0 treated samples excluded for lack of a same-plate control, "
+        f"per-plate X_ctl proof passed, differs from the dataset-wide control "
+        f"mean on {n_diff} treated samples.")
+    print(f"  per-plate gates: {len(pd.unique(group))} plates, "
+          f"0 samples excluded, X_ctl proof passed "
+          f"(differs from dataset-wide on {n_diff} treated samples)")
 
 
 def main():
@@ -232,9 +319,9 @@ def main():
     print("\n[3/4] assemble DToxS-LINCS h5ad")
     space = gene_mapping.ID_SPACE[DATASET]
     X = build_landmark_matrix(counts, gene_ids, mp)
-    grp_col = "dataset_id"
-    X = quantile_align(X, meta[grp_col], qn_ref)
-    X_ctl = matched_control_matrix(meta, X, meta["is_control"].values, grp_col)
+    grp = group_key(meta)
+    X = quantile_align(X, grp, qn_ref)
+    X_ctl = matched_control_matrix(meta, X, meta["is_control"].values, grp)
     trt = ~meta["is_control"].values
     drug_idx = np.array([drug_idx_of.get(
         (DATASET, str(r.compound_code) if r.compound_code
@@ -259,6 +346,10 @@ def main():
     }, index=meta_genes["gene_id"].values.astype(str))
     obs["smiles"] = obs["smiles"].fillna("").astype(str)
 
+    # per-plate gates (ADR 0016): coverage + per-plate X_ctl proof
+    delta_lines = []
+    per_plate_gates(meta, X, X_ctl, grp, delta_lines)
+
     adata = ad.AnnData(X[keep].astype(np.float32), obs=obs, var=var)
     adata.obsm["X_ctl"] = X_ctl[keep].astype(np.float32)
     adata.write_h5ad(H5AD)
@@ -266,7 +357,7 @@ def main():
           f"{adata.n_vars} genes, {adata.obs['pert_idx'].nunique()} drugs)")
 
     print("\n[4/4] parity gate (schema parity + auditable delta vs v1 frozen)")
-    run_parity_gate(H5AD)
+    run_parity_gate(H5AD, delta_lines)
     print("Step 03 complete.")
 
 
@@ -278,7 +369,7 @@ LOADER_OBS_COLS = ["pert_id", "pert_idx", "pert_dose", "pert_dose_idx",
                    "tissue_idx"]
 
 
-def run_parity_gate(new_h5ad):
+def run_parity_gate(new_h5ad, extra_lines=None):
     """Assert schema parity and write the auditable delta report (ADR 0012)."""
     import anndata as ad
 
@@ -289,6 +380,18 @@ def run_parity_gate(new_h5ad):
 
     add("# DToxS-LINCS finetune-data parity delta (v1.1 step 03 vs v1 frozen)\n")
     add("Generated by `03_cm_finetune_data/build_dtoxs_lincs.py`.\n")
+
+    # --- per-plate deviation vs v1's dataset-wide build (ADR 0016) ---
+    if extra_lines:
+        add("## Per-plate normalization vs v1 frozen (dataset-wide)\n")
+        add("v1's frozen `input/dtoxs.h5ad` normalizes each dataset as one "
+            "dataset-wide group (a single QN transform and a pooled control "
+            "mean). The rebuilt DToxS-LINCS h5ad groups both the QN alignment "
+            "and the matched control per `(dataset_id, plate)` — v1 is the "
+            "documented historical anchor and stays untouched (ADR 0016).\n")
+        for l in extra_lines:
+            add(l)
+        add("")
 
     # --- schema parity (gate) ---
     add("## Schema parity\n")

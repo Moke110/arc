@@ -311,11 +311,13 @@ def extract_gse262419():
         for c in df.columns[1:]:
             plate_of_well[c] = plate_id
     counts = np.concatenate(sample_rows, axis=1)
-    well2info = {_norm_well(r["Well_ID"]): r for _, r in hashdf.iterrows()}
+    well2info = {(int(r["Plate_ID"]), _norm_well(r["Well_ID"])): r
+                 for _, r in hashdf.iterrows()}
     rows = []
     for wellid in sample_cols:
-        short = _norm_well(wellid.split("-", 1)[1] if "-" in wellid else wellid)
-        info = well2info.get(short)
+        plate_name, _, well_part = wellid.partition("-")
+        short = _norm_well(well_part)
+        info = well2info.get((int(plate_name.replace("Plate", "")), short))
         if info is None:
             continue
         name = str(info["Chemical_name"])
