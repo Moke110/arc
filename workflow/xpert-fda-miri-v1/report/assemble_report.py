@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Assemble 11_report/output/report.md from the per-drug A1 fact sheets.
+"""Assemble report/output/report.md from the per-drug A1 fact sheets.
 
-Covers the 11_report final-drug set (09_filter survivors with integrated-score
+Covers the report final-drug set (10_filter survivors with integrated-score
 percentile > 0.5; 41 drugs in the current data). Reads the cached per-drug JSONs
-(11_report/cache/) written by run_drug_agents.py.
+(report/cache/) written by run_drug_agents.py.
 """
 import json
 import re
@@ -15,7 +15,7 @@ import pandas as pd
 from run_drug_agents import load_final_drugs
 
 WORKFLOW_ROOT = Path(__file__).resolve().parent.parent
-REPORT_DIR = WORKFLOW_ROOT / "11_report"
+REPORT_DIR = WORKFLOW_ROOT / "report"
 CACHE_DIR = REPORT_DIR / "cache"
 OUT = REPORT_DIR / "output" / "report.md"
 
@@ -94,7 +94,7 @@ def main():
 
     parts = []
     parts.append(f"# xpert-fda-miri-v1 MIRI 药物重定位 — {n_drugs} 候选药调研报告\n")
-    parts.append("> 数据来源：`10_integrate/output/ranked_drugs.csv`（step 10 整合评分，"
+    parts.append("> 数据来源：`11_integrate/output/ranked_drugs.csv`（step 11 整合评分，"
                  "integrated percentile > 0.5），每种药物由 biomni A1 agent 独立调研"
                  "（KEGG/ChEMBL/openFDA/OpenTargets/PubMed/TxGNN），"
                  f"{date.today().isoformat()} 生成。\n")

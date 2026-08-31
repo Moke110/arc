@@ -4,8 +4,8 @@ Step 05 — Finetune XPert on DTOXS.
 
 Runs the dtoxs finetune of the XPert model (all-train split) using the
 step-owned config (06_xpert_finetune/config/dtoxs.yaml). Consumes the
-embedding inputs from input/ + 01_drug_embed/output/ and the DToxS
-dataset at input/dtoxs.h5ad. The HG table is the author reference
+embedding inputs from input/ + 01_drug_embed/output/ and the rebuilt
+DToxS-LINCS dataset at 03_cm_finetune_data/output/dtoxs_lincs.h5ad. The HG table is the author reference
 (step 01 copies it byte-identical — no HG training), and the DToxS finetune
 uses the same 978-gene set verified by _lib/verify_genes.py. The base model
 and training library are imported from the model component

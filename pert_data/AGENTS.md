@@ -4,17 +4,20 @@ Data home for the new-arc cardiomyocyte (CM) perturbation pipeline. Holds raw/
 processed **transcriptomic** perturbation data + the LINCS L1000 pretrain corpus.
 Papers for each dataset live in `reference/pert_data/` (PDF + extracted `.md`).
 
-**Status 2026-08-18:** the GSE146095/GSE146096 raw GEO deposit was **deleted**
-from `dtoxs_primary/` (its data is a strict subset of the LINCS LDS-1593
-package); the LINCS LDS-1593 well-level package was **released flat into
-`dtoxs_primary/`** (the `lincs-lds-1593/` wrapper removed — `Data/`,
-`Metadata/`, `ProcessingPipeline/`, `ReadMe.txt`, `LDS-1593.tar.gz`,
-`DToxS_summary.md` now live directly under `dtoxs_primary/`); and the
-**v1-era package + v1's frozen finetune data were frozen byte-identically at
-`dtoxs_primary/v1-frozen/`** (what xpert-fda-miri-v1 used). Earlier: 2026-08-17
-`dtoxs-xpert/` deleted / re-homed, `cm/` grouping removed (ADR 0011);
-GSE221595 removed 2026-08-12 (user decision). All accessions verified against
-GEO on 2026-08-12. See `reference/pert_data/publications.md`.
+**Status 2026-08-28:** v1's frozen finetune `dtoxs.h5ad` moved out of
+`dtoxs_primary/v1-frozen/` into the v1 workflow's step 03
+(`workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`); the
+well-level package stays frozen in `v1-frozen/`. Earlier: 2026-08-18 the
+GSE146095/GSE146096 raw GEO deposit was **deleted** from `dtoxs_primary/` (its
+data is a strict subset of the LINCS LDS-1593 package); the LINCS LDS-1593
+well-level package was **released flat into `dtoxs_primary/`** (the
+`lincs-lds-1593/` wrapper removed — `Data/`, `Metadata/`, `ProcessingPipeline/`,
+`ReadMe.txt`, `LDS-1593.tar.gz`, `DToxS_summary.md` now live directly under
+`dtoxs_primary/`); and the **v1-era package + v1's frozen finetune data were
+frozen byte-identically at `dtoxs_primary/v1-frozen/`** (what xpert-fda-miri-v1
+used). 2026-08-17 `dtoxs-xpert/` deleted / re-homed, `cm/` grouping removed
+(ADR 0011); GSE221595 removed 2026-08-12 (user decision). All accessions
+verified against GEO on 2026-08-12. See `reference/pert_data/publications.md`.
 
 ## Dataset overview
 
@@ -49,12 +52,14 @@ GEO on 2026-08-12. See `reference/pert_data/publications.md`.
   literature clinical Cmax with citations for the 8 primary-only drugs —
   `workflow/xpert-fda-miri-v2/03_cm_finetune_data/primary_concentrations.py`).
   The platform records no dose; the map is the auditable source.
-- **`v1-frozen/`** — the **v1-era data**, frozen byte-identically on 2026-08-18
-  so `workflow/xpert-fda-miri-v1` stays reproducible after the GSE deletion +
-  release: `dtoxs.h5ad` (a copy of v1's frozen `input/dtoxs.h5ad`, 521 samples
-  / 36 drugs) + a byte-identical copy of the well-level package
-  (`Data/` `Metadata/` `ProcessingPipeline/` `ReadMe.txt`). v1's step-02
-  baseline reads from here (`pert_data/dtoxs_primary/v1-frozen/Data/Level3`).
+- **`v1-frozen/`** — the **v1-era well-level package**, frozen byte-identically
+  on 2026-08-18 so `workflow/xpert-fda-miri-v1` stays reproducible after the
+  GSE deletion + release: `Data/` `Metadata/` `ProcessingPipeline/`
+  `ReadMe.txt`. v1's step-02 baseline reads from here
+  (`pert_data/dtoxs_primary/v1-frozen/Data/Level3`). **v1's frozen finetune
+  `dtoxs.h5ad` (521 samples / 36 drugs) moved out of pert_data on 2026-08-28**
+  into the v1 workflow (`workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/
+  dtoxs.h5ad`) so v1 is self-contained on its finetune data like v1.1/v2/v3.
 - **Deleted 2026-08-18:** the **raw GEO deposit** (GSE146096 DGE + GSE146095
   Conv files) was removed — its content (23 KIs + CTRL, and the CER/IBR/LEN/NIN
   Conv wells) is a strict subset of the LINCS package. SuperSeries

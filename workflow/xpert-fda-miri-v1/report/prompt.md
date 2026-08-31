@@ -1,4 +1,4 @@
-# Per-drug fact-sheet agent query (11_report)
+# Per-drug fact-sheet agent query (report)
 
 This template is loaded by `run_drug_agents.py`, which substitutes `{DRUG}` and
 `{SMILES}` and sends the result to one biomni A1 agent per drug. The agent must

@@ -3,7 +3,7 @@
 The **DToxS-LINCS testbed MIRI screening workflow** (`workflow/xpert-fda-miri-v1.1/`;
 see docs/adr/0012): an 11-step mirror of the finalized
 `workflow/xpert-fda-miri-v1/` (ADR 0007) whose only substantive change is the
-XPert finetune data. Instead of v1's frozen `input/dtoxs.h5ad` (521 samples /
+XPert finetune data. Instead of v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` (521 samples /
 36 drugs, built outside the repo from the former `pert_data/dtoxs-xpert`
 well-level deposit), steps 05/06/07 train on the **workflow-rebuilt
 DToxS-LINCS h5ad** (`03_cm_finetune_data/output/dtoxs_lincs.h5ad`, 662 samples
@@ -17,8 +17,7 @@ Everything else — the screened drug scope (1,004 L1000-contained FDA drugs,
 `drug_idx < 8981`), step-02 baseline, MIRI phenotype/scoring, filters, and
 integration — is v1-identical, preserved by the 11-step renumbering (same
 layout as xpert-fda-miri-v2). There is **no agentic report stage** (the former
-`12_report` was removed per spec 1; v1 keeps its frozen `11_report`). **v1 is
-untouched and frozen.**
+`12_report` was removed per spec 1; v1 archives its report as a non-numbered `report/` stage). v1 now shares the identical 11-step layout.
 
 ## Why v1.1 exists (testbed)
 
@@ -54,7 +53,7 @@ replacing v1.
 
 - `01_drug_embed/` — merged drug list (`drug_list.py`, 1,004 drugs) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate). Identical to v1.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the raw GEO deposit (`pert_data/dtoxs_primary`, GSE146096); byte-identical to v1's baseline.
-- `03_cm_finetune_data/` — **the v1.1 change**: rebuilds the DToxS finetune h5ad `output/dtoxs_lincs.h5ad` from the LINCS LDS-1593 well-level package (read-only), **per-plate normalized** since ADR 0016 (QN + matched control per `(dataset, plate)`), + the compound→drug-index manifest (`output/drug_manifest.csv`), the gene map (`output/gene_maps/`), the QN reference, the parity delta vs v1's frozen `input/dtoxs.h5ad` (`output/parity_delta.md`, incl. the per-plate deviation), and the composition report `output/finetune_report.html`.
+- `03_cm_finetune_data/` — **the v1.1 change**: rebuilds the DToxS finetune h5ad `output/dtoxs_lincs.h5ad` from the LINCS LDS-1593 well-level package (read-only), **per-plate normalized** since ADR 0016 (QN + matched control per `(dataset, plate)`), + the compound→drug-index manifest (`output/drug_manifest.csv`), the gene map (`output/gene_maps/`), the QN reference, the parity delta vs v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` (`output/parity_delta.md`, incl. the per-plate deviation), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched from v1.
 - `05_xpert_finetune_bench/` — DToxS benchmark on the **unified folds** (ADR 0014): `create_dtoxs_splits.py` writes `warm-start_fold-1..10` (drug-overlap) + `cold-drug_fold-1..10` (drug-disjoint) + `dtoxs_full` on the rebuilt h5ad (invariant gate, seed 2024; X-independent, so the fold columns survive the per-plate rebuild byte-identically); `xpert_finetune_bench.py` benches the 20 folds and overlays per-fold dots, and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/dtoxs_pretrain_eval.yaml` (pretrain architecture/bin `[0, 15.002]`; the drifted aux `class_fc` head is dropped by the library's tolerant test-mode load).
 - `06_xpert_finetune/` — all-train DToxS-LINCS finetune (`xpert_finetune.py`, `config/dtoxs.yaml`) -> the final prediction model `output/dtoxs_dtoxs/`.
@@ -90,9 +89,9 @@ replacing v1.
   control are grouped per `(dataset_id, plate)`: each sample's control baseline
   is the mean of the control wells on its own plate (dtoxs_primary CTRL /
   CTRL-DMSO / CTRL-EtOH on plates 1/2/4/5; every treated plate has ≥1 control
-  well, 0 samples excluded). v1's frozen `input/dtoxs.h5ad` stays dataset-wide
+  well, 0 samples excluded). v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` stays dataset-wide
   (the historical anchor); the deviation is recorded in the parity delta.
-- The h5ad is schema-identical to v1's `input/dtoxs.h5ad` in every field the
+- The h5ad is schema-identical to v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` in every field the
   XPert loader consumes (obs `pert_id, pert_idx, pert_dose[_idx], pert_time[_idx],
   cell_iname, cell_idx, tissue_idx` + additive `dataset_id`; var = 978 landmarks
   in L1000 `gene_idx` order; `obsm["X_ctl"]` per-sample matched control; X float32
@@ -102,7 +101,7 @@ replacing v1.
   distribution (before matched-control computation); the finetune config bin
   range is `[0, 15.002]` (the pretrain range, ADR 0010).
 - **Parity gate (ADR 0012)** — `03_cm_finetune_data/build_dtoxs_lincs.py` step
-  4: requires **schema parity** (structure-identical to v1's `input/dtoxs.h5ad`
+  4: requires **schema parity** (structure-identical to v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`
   in the loader fields) and writes an **auditable delta** report
   (`output/parity_delta.md`) of the sample/drug differences. Sample-for-sample
   identity with v1's frozen data is neither required nor enforced.
@@ -131,7 +130,7 @@ replacing v1.
   control well on it (0 samples excluded); each treated sample's `X_ctl`
   equals the mean of its own `(dataset, plate)` control rows.
 - **Schema parity** — step 03: the rebuilt h5ad is structure-identical to
-  v1's `input/dtoxs.h5ad` in the loader fields (asserted by the parity gate).
+  v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` in the loader fields (asserted by the parity gate).
 - **Gene gates** — `_lib/verify_genes.py`: G1 all 978 landmarks resolve, G2 all
   18 legacy aliases author-metadata verified, G3 drug-level audit. Any
   G1/G2 failure aborts (exit 1).
@@ -178,6 +177,6 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
   per GPU; the DToxS-specific embedding tables (dose/time/position) it drops
   are untrained in that column, exactly as they are at finetune epoch 0.
 - v1.1 has **no agentic report stage** (the former `12_report` was removed per
-  spec 1; v1 keeps its frozen `11_report`).
+  spec 1; v1 archives its report as a non-numbered `report/` stage).
 - v1 stays frozen: nothing in this workflow writes into v1 or modifies v1's
   inputs. The `input/` assets are hard-linked from v1 (read-only).

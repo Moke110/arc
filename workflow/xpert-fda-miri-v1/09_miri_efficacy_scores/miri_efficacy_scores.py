@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
 """
-Step 08 — Efficacy scores.
+Step 09 — Efficacy scores.
 
 Runs the three MIRI efficacy scorers (WCS+RGES, Zhang/ssCMap, pathway RGES)
-against the integrated MIRI reference (07_miri_phenotype/output/) and the
+against the integrated MIRI reference (08_miri_phenotype/output/) and the
 curated pathway gene sets (input/MIRI_pathways.json), producing the per-drug
 z-component table for all screened drugs (the L1000-contained FDA drug set,
 see 01_drug_embed/output/drug_list.csv). The integrated score is NOT computed
-here — step 10 integrates after filtering.
+here — step 11 integrates after filtering.
 
 Inputs:
-  06_xpert_predict/output/xpert_fda-cm_deg-zs.csv   (z-scored predicted DEG)
-  07_miri_phenotype/output/MIRI_up-down.json
-  07_miri_phenotype/output/MIRI_rank.json
+  07_xpert_predict/output/xpert_fda-cm_deg-zs.csv   (z-scored predicted DEG)
+  08_miri_phenotype/output/MIRI_up-down.json
+  08_miri_phenotype/output/MIRI_rank.json
   input/MIRI_pathways.json
 
 Outputs:
-  08_miri_efficacy_scores/output/scores.csv          — raw scores + z-components
-  08_miri_efficacy_scores/hist_scores.png            — raw score distributions (2x3)
-  08_miri_efficacy_scores/hist_critical-path-efficacy.png — per-critical-pathway efficacies
-  08_miri_efficacy_scores/heatmap_scores-spearman.png — cross-method Spearman rho
-  08_miri_efficacy_scores/hist_stratified.png        — WCS + 8 critical pathways x 3 methods
+  09_miri_efficacy_scores/output/scores.csv          — raw scores + z-components
+  09_miri_efficacy_scores/hist_scores.png            — raw score distributions (2x3)
+  09_miri_efficacy_scores/hist_critical-path-efficacy.png — per-critical-pathway efficacies
+  09_miri_efficacy_scores/heatmap_scores-spearman.png — cross-method Spearman rho
+  09_miri_efficacy_scores/hist_stratified.png        — WCS + 8 critical pathways x 3 methods
 
 Usage:
-    python 08_miri_efficacy_scores/miri_efficacy_scores.py
-    python 08_miri_efficacy_scores/miri_efficacy_scores.py --skip-scores   # replot only
+    python 09_miri_efficacy_scores/miri_efficacy_scores.py
+    python 09_miri_efficacy_scores/miri_efficacy_scores.py --skip-scores   # replot only
 """
 
 import argparse
@@ -51,10 +51,10 @@ from scoring import (  # noqa: E402
     score_all_zhang,
 )
 
-STEP_DIR = WORKFLOW_ROOT / "08_miri_efficacy_scores"
-DEG = WORKFLOW_ROOT / "06_xpert_predict" / "output" / "xpert_fda-cm_deg-zs.csv"
-GENE_SET = WORKFLOW_ROOT / "07_miri_phenotype" / "output" / "MIRI_up-down.json"
-RANK_REF = WORKFLOW_ROOT / "07_miri_phenotype" / "output" / "MIRI_rank.json"
+STEP_DIR = WORKFLOW_ROOT / "09_miri_efficacy_scores"
+DEG = WORKFLOW_ROOT / "07_xpert_predict" / "output" / "xpert_fda-cm_deg-zs.csv"
+GENE_SET = WORKFLOW_ROOT / "08_miri_phenotype" / "output" / "MIRI_up-down.json"
+RANK_REF = WORKFLOW_ROOT / "08_miri_phenotype" / "output" / "MIRI_rank.json"
 PATHWAYS = WORKFLOW_ROOT / "input" / "MIRI_pathways.json"
 OUTPUT = STEP_DIR / "output" / "scores.csv"
 
@@ -328,7 +328,7 @@ def main():
         scores = pd.read_csv(args.output)
         print(f"Loaded cached scores: {len(scores)} drugs")
     else:
-        # Input DEG is already z-scored (step 06 output) — do not re-normalize.
+        # Input DEG is already z-scored (step 07 output) — do not re-normalize.
         wcs = score_all_wcs_rges(args.deg_csv, args.gene_set, zscore=False)
         zhang = score_all_zhang(args.deg_csv, args.rank_ref, zscore=False)
         pw, critical = score_all_pathways(args.deg_csv, args.pathways, zscore=False)
@@ -343,7 +343,7 @@ def main():
     plot_scores_spearman(scores, critical)
     plot_hist_stratified(scores, pw_meta, critical)
 
-    print(f"\nStep 08 complete — {STEP_DIR.relative_to(WORKFLOW_ROOT)}/")
+    print(f"\nStep 09 complete — {STEP_DIR.relative_to(WORKFLOW_ROOT)}/")
 
 
 if __name__ == "__main__":

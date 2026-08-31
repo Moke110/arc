@@ -1,5 +1,5 @@
 # Zero-shot benchmark config: evaluate the workflow-owned L1000 pretrain
-# weight (03_xpert_pretrain/pretrain_mdmt_full_50_epoch.pth) on the DToxS
+# weight (04_xpert_pretrain/pretrain_mdmt_full_50_epoch.pth) on the DToxS
 # fold test sets WITHOUT any DToxS finetuning (first column in benchmark.png).
 #
 # Mirrors the pretrain architecture and binning so the pretrain checkpoint
@@ -36,7 +36,7 @@ dataset:
     num_pert_time: 3
     num_cell_id: 240
     num_tissue_id: 21
-  DTOX_data_root: input/dtoxs.h5ad
+  DTOX_data_root: 03_cm_finetune_data/output/dtoxs.h5ad
 drug_embeddings:
   unimol: input/all_drugs_unimol_arr.npy
   smi: input/all_drugs_idx2smi.npy

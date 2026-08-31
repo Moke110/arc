@@ -40,7 +40,7 @@ Deterministic under seed=2024. Values are full strings ('train'/'test') —
 never a fixed-width numpy dtype that truncates them.
 
 Usage:
-    python 04_xpert_finetune_bench/create_dtoxs_splits.py --data input/dtoxs.h5ad
+    python 05_xpert_finetune_bench/create_dtoxs_splits.py --data 03_cm_finetune_data/output/dtoxs.h5ad
 """
 
 import argparse
@@ -283,7 +283,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate the unified warm-start + cold-drug + full split "
                     "columns in dtoxs.h5ad")
-    parser.add_argument("--data", default="input/dtoxs.h5ad",
+    parser.add_argument("--data", default="03_cm_finetune_data/output/dtoxs.h5ad",
                         help="Path to dtoxs.h5ad relative to the workflow root")
     parser.add_argument("--seed", type=int, default=2024, help="Random seed")
     parser.add_argument("--n_folds", type=int, default=10,

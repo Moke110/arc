@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Step 09 — Filter.
+Step 10 — Filter.
 
 Applies the screening filters to the efficacy components:
 
@@ -9,16 +9,16 @@ Applies the screening filters to the efficacy components:
                       efficacy > 0
 
 The cardiotoxicity stage is deferred (see docs/adr/0004); no cardiotoxicity
-filter is applied. Ranking and integration happen in step 10.
+filter is applied. Ranking and integration happen in step 11.
 
-Input:  08_miri_efficacy_scores/output/scores.csv, input/MIRI_pathways.json
+Input:  09_miri_efficacy_scores/output/scores.csv, input/MIRI_pathways.json
 Output:
-  09_filter/output/wcs_filtered.csv     — WCS < 0 drugs
-  09_filter/output/path_filtered.csv    — pathway-filtered drugs
-  09_filter/pyramid-filters.png         — filter progression funnel (3 stages)
+  10_filter/output/wcs_filtered.csv     — WCS < 0 drugs
+  10_filter/output/path_filtered.csv    — pathway-filtered drugs
+  10_filter/pyramid-filters.png         — filter progression funnel (3 stages)
 
 Usage:
-    python 09_filter/filter.py
+    python 10_filter/filter.py
 """
 
 import argparse
@@ -35,8 +35,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT  # noqa: E402
 from scoring import load_critical_names  # noqa: E402
 
-STEP_DIR = WORKFLOW_ROOT / "09_filter"
-SCORES = WORKFLOW_ROOT / "08_miri_efficacy_scores" / "output" / "scores.csv"
+STEP_DIR = WORKFLOW_ROOT / "10_filter"
+SCORES = WORKFLOW_ROOT / "09_miri_efficacy_scores" / "output" / "scores.csv"
 PATHWAYS = WORKFLOW_ROOT / "input" / "MIRI_pathways.json"
 MIN_CRITICAL = 6
 
@@ -112,7 +112,7 @@ def main():
 
     plot_pyramid(len(scores), len(wcs_pass), len(path_pass))
 
-    print(f"\nStep 09 complete — {len(path_pass)} drugs pass both filters")
+    print(f"\nStep 10 complete — {len(path_pass)} drugs pass both filters")
 
 
 if __name__ == "__main__":

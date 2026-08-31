@@ -1,7 +1,7 @@
-# Step 03 — XPert pretrain (reference)
+# Step 04 — XPert pretrain (reference)
 
 This step owns the **author-given XPert pretrain unit** used as the base weight
-for the DToxS finetune (step 05) and the DTOXS-split benchmark (step 04):
+for the DToxS finetune (step 06) and the DTOXS-split benchmark (step 05):
 
 - `pretrain_mdmt_full_50_epoch.pth` — the used pretrained XPert checkpoint
   (L1000, 50 epochs). This is the exact weight the workflow's finetune loads by
@@ -18,7 +18,7 @@ is preserved.
 
 `pert_model/xpert/pretrain/run.sh` remains in the model library as the
 pretrain recipe; its default config now resolves here
-(`../workflow/xpert-fda-miri-v1/03_xpert_pretrain/config/l1000`).
+(`../workflow/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000`).
 
-Note: pretraining is not re-run during screening — steps 04/05 consume the
+Note: pretraining is not re-run during screening — steps 05/06 consume the
 weight from this step directory.

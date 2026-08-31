@@ -3,7 +3,7 @@ xpert-fda-miri-v1 gene-mapping verification gate.
 
 Checks that all 978 L1000 landmark genes participate in the DToxS finetune
 with the *correct* DToxS source gene (Entrez-verified), and audits the frozen
-finetune h5ad (input/dtoxs.h5ad) for gene-identity inconsistencies.
+finetune h5ad (03_cm_finetune_data/output/dtoxs.h5ad) for gene-identity inconsistencies.
 
 Gates
 -----
@@ -41,7 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gene_mapping as gm  # noqa: E402
 from utils import WORKFLOW_ROOT  # noqa: E402
 
-H5AD = WORKFLOW_ROOT / "input" / "dtoxs.h5ad"
+H5AD = WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "dtoxs.h5ad"
 MAP_CSV = WORKFLOW_ROOT / "02_cm_baseline" / "output" \
     / "dtoxs_to_l1000_gene_map.csv"
 REPORT = WORKFLOW_ROOT / "_lib" / "gene_mapping_report.md"

@@ -24,7 +24,7 @@ dataset:
     num_pert_time: 3
     num_cell_id: 1
     num_tissue_id: 1
-  DTOX_data_root: input/dtoxs.h5ad
+  DTOX_data_root: 03_cm_finetune_data/output/dtoxs.h5ad
 drug_embeddings:
   unimol: input/all_drugs_unimol_arr.npy
   smi: input/all_drugs_idx2smi.npy

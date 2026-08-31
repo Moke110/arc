@@ -3,7 +3,7 @@
 The **union-CM finetune MIRI screening workflow** (`workflow/xpert-fda-miri-v2/`;
 see docs/adr/0009 + docs/adr/0015): the 11-step sibling of the finalized
 `workflow/xpert-fda-miri-v1/` (ADR 0007) whose **only substantive change is the
-XPert finetune data**. Instead of v1's frozen DToxS-only `input/dtoxs.h5ad`,
+XPert finetune data**. Instead of v1's frozen DToxS-only `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`,
 steps 05/06/07 train on the workflow-built **union h5ad** of the primary + iPSC
 CM datasets (`dtoxs_primary` from the LINCS LDS-1593 well-level package +
 `dtoxs_ipsc` from GSE217423, step 03), **per-plate normalized** since ADR 0016
@@ -14,7 +14,8 @@ v1.1's** (fold columns imported verbatim for the primary arm). Everything else �
 the screened drug scope, step-02 baseline, MIRI phenotype/scoring, filters, and
 integration — is v1-identical, preserved by renumbering the v1 steps to make
 room for the prep step. There is **no agentic report stage** (the former
-`12_report` was removed per spec 1; v1 keeps its frozen `11_report`).
+`12_report` was removed per spec 1; v1 archives its report as a non-numbered
+`report/` stage).
 
 ## Scope and provenance (author + CM-dataset data only)
 
@@ -45,7 +46,7 @@ room for the prep step. There is **no agentic report stage** (the former
 
 - `01_drug_embed/` — merged drug list (`drug_list.py`, 1,004 drugs) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate). Identical to v1.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the released LINCS LDS-1593 package (`pert_data/dtoxs_primary/Data/Level3`); byte-identical to v1's baseline.
-- `03_cm_finetune_data/` — **the v2 change**: builds one finetune h5ad per dataset (`output/dtoxs_primary.h5ad` 662 rows, `output/dtoxs_ipsc.h5ad` 296 rows) and concatenates them into the union `output/cm_union.h5ad` (958 rows), from the two finetune datasets (read-only), **per-plate normalized** since ADR 0016 (QN + matched control per `(dataset, plate)`), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), the primary-concentration map (`primary_concentrations.py`, cited), a schema gate vs v1's `input/dtoxs.h5ad`, the delta report vs v1.1's DToxS-LINCS h5ad (`output/finetune_delta.md`, incl. the per-plate deviation), and the composition report `output/finetune_report.html`.
+- `03_cm_finetune_data/` — **the v2 change**: builds one finetune h5ad per dataset (`output/dtoxs_primary.h5ad` 662 rows, `output/dtoxs_ipsc.h5ad` 296 rows) and concatenates them into the union `output/cm_union.h5ad` (958 rows), from the two finetune datasets (read-only), **per-plate normalized** since ADR 0016 (QN + matched control per `(dataset, plate)`), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), the primary-concentration map (`primary_concentrations.py`, cited), a schema gate vs v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`, the delta report vs v1.1's DToxS-LINCS h5ad (`output/finetune_delta.md`, incl. the per-plate deviation), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched.
 - `05_xpert_finetune_bench/` — union benchmark on the **imported v1.1 folds** (ADR 0014/0015): `create_cm_splits.py` imports v1.1's `warm-start_fold-1..10` + `cold-drug_fold-1..10` verbatim for primary rows (matched by well id, byte-identical test sets) and assigns iPSC rows under the isolation rules (warm-start all-train; cold-drug test drugs excluded from both datasets' train) + `cm_full` (all-train), with three isolation gates; `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/cm_pretrain_eval.yaml`. Comparable column-by-column with v1.1 (identical test sets).
 - `06_xpert_finetune/` — all-train union finetune (`xpert_finetune.py`, `config/cm.yaml`) -> the final prediction model `output/cm_cm_full/`.
@@ -78,7 +79,7 @@ room for the prep step. There is **no agentic report stage** (the former
   the mean of the control wells on its own plate (dtoxs_primary CTRL /
   CTRL-DMSO / CTRL-EtOH on plates 1/2/4/5; dtoxs_ipsc CTRL on plate 6). Every
   treated plate has ≥1 control well (0 samples excluded), asserted in step 03.
-  v1's frozen `input/dtoxs.h5ad` stays dataset-wide (the historical anchor);
+  v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` stays dataset-wide (the historical anchor);
   the deviation is recorded in the delta report.
 - Each dataset is preprocessed independently: 978 landmarks → CPM → log2(CPM+1)
   → per-`(dataset_id, plate)` quantile alignment to the L1000 pretrain pooled
@@ -96,7 +97,7 @@ room for the prep step. There is **no agentic report stage** (the former
   intended and documented). **No dataset is single-dose any more**: every
   treated sample carries a positive real concentration, so the old
   "zero dose only in dtoxs_primary" schema assertion is gone.
-- The union h5ad is schema-identical to v1's `input/dtoxs.h5ad` in every field
+- The union h5ad is schema-identical to v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` in every field
   the XPert loader consumes (obs `pert_id, pert_idx, pert_dose[_idx],
   pert_time[_idx], cell_iname, cell_idx, tissue_idx` + additive `dataset_id`;
   var = 978 landmarks in L1000 `gene_idx` order with `gene_id`/`gene_symbol`;
@@ -132,7 +133,7 @@ LayerNorm, mean-pooled over the 978 landmarks.
 - **Step 02 parity** — `02_cm_baseline/output/cm_ctl_landmark.csv` reproduces
   v1's DToxS-primary control consensus.
 - **Union schema gate** — `03_cm_finetune_data/schema_gate.py` asserts the
-  union h5ad is structure-identical to v1's `input/dtoxs.h5ad` in the fields
+  union h5ad is structure-identical to v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` in the fields
   the XPert loader consumes, **and** the data-semantics invariants (author time
   `{3,6,24}` / `time_idx 2`, **no zero-dose treated samples** (real
   concentrations), X within the pretrain range `[0, 15.002]`, union composition
@@ -152,7 +153,7 @@ LayerNorm, mean-pooled over the 978 landmarks.
   only). Any G1/G2 failure aborts (exit 1).
 - **Drug-inclusion gate** — every union obs `pert_idx` lies in `[0, 8981)`;
   the manifest is complete and exclusions match the h5ad row counts.
-- Steps 05/06/07 train on the union h5ad only; the frozen v1 `input/dtoxs.h5ad`
+- Steps 05/06/07 train on the union h5ad only; the frozen v1 `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`
   is used solely as the schema reference; v1.1's `dtoxs_lincs.h5ad` is the
   fold/delta reference (read-only).
 
@@ -198,4 +199,4 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
   across environments; v2's archived predictions are environment-specific,
   exactly as in v1.
 - v2 has **no agentic report stage** (the former `12_report` was removed per
-  spec 1; v1 keeps its frozen `11_report`).
+  spec 1; v1 archives its report as a non-numbered `report/` stage).

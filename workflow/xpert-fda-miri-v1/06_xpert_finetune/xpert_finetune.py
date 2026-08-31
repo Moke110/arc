@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-Step 05 — Finetune XPert on DTOXS.
+Step 06 — Finetune XPert on DTOXS.
 
 Runs the dtoxs finetune of the XPert model (all-train split) using the
-step-owned config (05_xpert_finetune/config/dtoxs.yaml). Consumes the
+step-owned config (06_xpert_finetune/config/dtoxs.yaml). Consumes the
 embedding inputs from input/ + 01_drug_embed/output/ and the DToxS
-dataset at input/dtoxs.h5ad. The HG table is the author reference
+dataset at 03_cm_finetune_data/output/dtoxs.h5ad. The HG table is the author reference
 (step 01 copies it byte-identical — no HG training), and the DToxS finetune
 uses the same 978-gene set verified by _lib/verify_genes.py. The base model
 and training library are imported from the model component
 (pert_model/xpert), which stays a pure library — the workflow owns the
-pretrained base weight (03_xpert_pretrain/) and the finetuned weights.
+pretrained base weight (04_xpert_pretrain/) and the finetuned weights.
 
 XPert writes training artifacts to <workflow>/finetune/output/dtoxs_dtoxs/
 (the library derives this from the config root); this step moves them into
-05_xpert_finetune/output/dtoxs_dtoxs/ when training finishes.
+06_xpert_finetune/output/dtoxs_dtoxs/ when training finishes.
 
-Output: 05_xpert_finetune/output/dtoxs_dtoxs/ (the all-train final prediction model).
+Output: 06_xpert_finetune/output/dtoxs_dtoxs/ (the all-train final prediction model).
 
 Usage:
-    python 05_xpert_finetune/xpert_finetune.py
+    python 06_xpert_finetune/xpert_finetune.py
 """
 
 import argparse
@@ -31,11 +31,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
 
-STEP_DIR = WORKFLOW_ROOT / "05_xpert_finetune"
+STEP_DIR = WORKFLOW_ROOT / "06_xpert_finetune"
 OUT_DIR = STEP_DIR / "output" / "dtoxs_dtoxs"
 STAGING_DIR = WORKFLOW_ROOT / "finetune" / "output" / "dtoxs_dtoxs"
 DEFAULT_PRETRAINED = (
-    WORKFLOW_ROOT / "03_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
+    WORKFLOW_ROOT / "04_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
 )
 
 
@@ -95,7 +95,7 @@ def main():
     shutil.move(str(STAGING_DIR), str(OUT_DIR))
     shutil.rmtree(WORKFLOW_ROOT / "finetune", ignore_errors=True)
 
-    print(f"Step 05 complete — finetuned weights in {OUT_DIR}")
+    print(f"Step 06 complete — finetuned weights in {OUT_DIR}")
 
 
 if __name__ == "__main__":

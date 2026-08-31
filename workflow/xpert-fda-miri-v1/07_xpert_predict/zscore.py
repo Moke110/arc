@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Step 06 — Z-score of perturbed transcriptome.
+Step 07 — Z-score of perturbed transcriptome.
 
 Z-score normalizes the predicted DEG matrix per gene across drugs, removing the
 dominant gene-level baseline so inter-drug differences drive downstream
 scoring. The scoring step consumes the pre-z-scored input without
 re-normalizing.
 
-Input:  06_xpert_predict/output/xpert_fda-cm_deg.csv
-Output: 06_xpert_predict/output/xpert_fda-cm_deg-zs.csv
+Input:  07_xpert_predict/output/xpert_fda-cm_deg.csv
+Output: 07_xpert_predict/output/xpert_fda-cm_deg-zs.csv
 
 Usage:
-    python 06_xpert_predict/zscore.py
+    python 07_xpert_predict/zscore.py
 """
 
 import argparse
@@ -23,8 +23,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT, zscore_normalize  # noqa: E402
 
-INPUT = WORKFLOW_ROOT / "06_xpert_predict" / "output" / "xpert_fda-cm_deg.csv"
-OUTPUT = WORKFLOW_ROOT / "06_xpert_predict" / "output" / "xpert_fda-cm_deg-zs.csv"
+INPUT = WORKFLOW_ROOT / "07_xpert_predict" / "output" / "xpert_fda-cm_deg.csv"
+OUTPUT = WORKFLOW_ROOT / "07_xpert_predict" / "output" / "xpert_fda-cm_deg-zs.csv"
 
 
 def main():
@@ -42,7 +42,7 @@ def main():
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(args.output, index=False)
 
-    print(f"Step 06 complete — {len(out)} drugs x {len(gene_cols)} genes z-scored")
+    print(f"Step 07 complete — {len(out)} drugs x {len(gene_cols)} genes z-scored")
     print(f"  Saved to {args.output}")
 
 

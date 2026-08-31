@@ -77,7 +77,7 @@ Thumbs.db
 workflow/xpert-fda-miri-v0/
 
 # Per-drug biomni agent JSONs (regenerable external-agent output)
-workflow/xpert-fda-miri-v1/11_report/cache/
+workflow/xpert-fda-miri-v1/report/cache/
 workflow/xpert-fda-miri-v2/12_report/cache/
 
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)

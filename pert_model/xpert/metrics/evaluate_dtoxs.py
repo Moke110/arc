@@ -41,7 +41,7 @@ from src.metrics import get_metrics_infer
 # Paths
 # ---------------------------------------------------------------------------
 # Pretrain weight is workflow-owned since ADR 0008
-PRETRAIN_CKPT = PROJECT_ROOT / "../../workflow/xpert-fda-miri-v1/03_xpert_pretrain/pretrain_mdmt_full_50_epoch.pth"
+PRETRAIN_CKPT = PROJECT_ROOT / "../../workflow/xpert-fda-miri-v1/04_xpert_pretrain/pretrain_mdmt_full_50_epoch.pth"
 FINETUNE_WARM_START_DIR = PROJECT_ROOT / "finetune/output/dtoxs_warm-start"
 FINETUNE_COLD_DRUG_DIR = PROJECT_ROOT / "finetune/output/dtoxs_cold-drug"
 FINETUNE_COLD_CATE_DIR = PROJECT_ROOT / "finetune/output/dtoxs_cold-cate"

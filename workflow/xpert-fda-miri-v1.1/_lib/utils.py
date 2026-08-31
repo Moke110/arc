@@ -8,11 +8,11 @@ baseline, MIRI scoring, filters, integration and report — but the DToxS
 finetune data is **rebuilt from the LINCS LDS-1593 well-level package**
 (pert_data/dtoxs_primary/Data/Level3, released flat into dtoxs_primary on
 2026-08-18 after the GSE146095/GSE146096 raw GEO deposit was deleted and the
-former lincs-lds-1593/ wrapper removed) instead of v1's frozen
-input/dtoxs.h5ad. The step layout is the 12-step one (03_cm_finetune_data
-inserted, like xpert-fda-miri-v2); v1 itself stays untouched and frozen. v1's
-frozen input/dtoxs.h5ad is read-only as the schema/parity reference for the
-rebuilt finetune data.
+former lincs-lds-1593/ wrapper removed) instead of v1's frozen DToxS finetune
+h5ad (`workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`). The
+step layout is the 11-step one shared with v1/v2 (03_cm_finetune_data inserted);
+v1's step-03 h5ad is read-only as the schema/parity reference for the rebuilt
+finetune data.
 
 All paths in this module are resolved from the workflow root so each numbered
 stage can be run independently from any working directory.
@@ -60,7 +60,7 @@ DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 # The finalized v1 workflow (read-only schema reference for the union gate and
 # the DToxS baseline comparison). Only ever read, never written.
 V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1"
-V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "input" / "dtoxs.h5ad"
+V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "dtoxs.h5ad"
 
 # L1000 embedding-table boundary: rows [0, N_L1000_DRUGS) are the author
 # L1000 reference; rows >= N_L1000_DRUGS are the FDA-extension rows and are

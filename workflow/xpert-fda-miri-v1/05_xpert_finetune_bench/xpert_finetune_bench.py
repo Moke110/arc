@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Step 04 — Benchmark XPert on DTOXS splits.
+Step 05 — Benchmark XPert on DTOXS splits.
 
 Finetunes XPert on the evaluation DToxS splits (warm-start and cold-drug;
-split columns created by create_dtoxs_splits.py in input/dtoxs.h5ad under the
+split columns created by create_dtoxs_splits.py in 03_cm_finetune_data/output/dtoxs.h5ad under the
 unified fold scheme, ADR 0014) and benchmarks each fold on its held-out test
 set. In addition it evaluates the workflow-owned L1000 pretrain weight
 (zero-shot, no DToxS finetuning) on every fold test set under
@@ -14,17 +14,17 @@ result CSVs are not re-evaluated (pass --force to redo both).
 
 XPert writes training/test artifacts under <workflow>/finetune/output/ (the
 library derives this staging path from the config root); this step moves them
-into 04_xpert_finetune_bench/output/ when each run finishes.
+into 05_xpert_finetune_bench/output/ when each run finishes.
 
 Outputs:
-  04_xpert_finetune_bench/output/dtoxs_<split>/   — fold weights + per-fold metrics
-  04_xpert_finetune_bench/output/pretrain_<split>/ — L1000-pretrain zero-shot fold metrics
-  04_xpert_finetune_bench/output/benchmark.csv    — per-fold test metrics, all splits
-  04_xpert_finetune_bench/benchmark.png           — pretrain first, then mean +/- std per split with per-fold dots
+  05_xpert_finetune_bench/output/dtoxs_<split>/   — fold weights + per-fold metrics
+  05_xpert_finetune_bench/output/pretrain_<split>/ — L1000-pretrain zero-shot fold metrics
+  05_xpert_finetune_bench/output/benchmark.csv    — per-fold test metrics, all splits
+  05_xpert_finetune_bench/benchmark.png           — pretrain first, then mean +/- std per split with per-fold dots
 
 Usage:
-    python 04_xpert_finetune_bench/xpert_finetune_bench.py            # idempotent
-    python 04_xpert_finetune_bench/xpert_finetune_bench.py --force    # retrain + re-evaluate
+    python 05_xpert_finetune_bench/xpert_finetune_bench.py            # idempotent
+    python 05_xpert_finetune_bench/xpert_finetune_bench.py --force    # retrain + re-evaluate
 """
 
 import argparse
@@ -42,13 +42,13 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
 
-STEP_DIR = WORKFLOW_ROOT / "04_xpert_finetune_bench"
+STEP_DIR = WORKFLOW_ROOT / "05_xpert_finetune_bench"
 OUTPUT_DIR = STEP_DIR / "output"
-CONFIG = WORKFLOW_ROOT / "05_xpert_finetune" / "config" / "dtoxs"
+CONFIG = WORKFLOW_ROOT / "06_xpert_finetune" / "config" / "dtoxs"
 PRETRAIN_EVAL_CONFIG = STEP_DIR / "config" / "dtoxs_pretrain_eval"
 STAGING_ROOT = WORKFLOW_ROOT / "finetune" / "output"
 DEFAULT_PRETRAINED = (
-    WORKFLOW_ROOT / "03_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
+    WORKFLOW_ROOT / "04_xpert_pretrain" / "pretrain_mdmt_full_50_epoch.pth"
 )
 SPLITS = ["warm-start", "cold-drug"]
 PRETRAIN_SPLIT = "pretrain"
@@ -274,7 +274,7 @@ def main():
 
     bench = aggregate()
     plot_benchmark(bench)
-    print(f"Step 04 complete — benchmark in {OUTPUT_DIR}")
+    print(f"Step 05 complete — benchmark in {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

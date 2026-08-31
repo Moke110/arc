@@ -23,7 +23,7 @@ gse244740 8-point half-log series from the paper Table-1 tops (already in
 `_datasets.py`); gse262419 real uM from `GSE262419_hash.csv`. gse247541 is
 excluded (6-day exposure outside the author time map, 2 in-HG drugs, 12
 treated samples). The union h5ad is schema-identical to v1's frozen
-input/dtoxs.h5ad in the fields the XPert loader consumes.
+`workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` in the fields the XPert loader consumes.
 
 Also emits:
   03_cm_finetune_data/output/gene_maps/<dataset>_to_l1000_gene_map.csv
@@ -478,7 +478,7 @@ def write_delta_report(obs_all, var_ids, per_plate_lines=None):
             "## Per-plate normalization (ADR 0016)",
             "Both v2 and v3 group the QN alignment and the matched control per "
             "`(dataset_id, plate)`. The per-plate gates below cover every v3 "
-            "dataset; v1's frozen `input/dtoxs.h5ad` stays the dataset-wide "
+            "dataset; v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` stays the dataset-wide "
             "historical anchor and is untouched.",
         ]
         lines += per_plate_lines

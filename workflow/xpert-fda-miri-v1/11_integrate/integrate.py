@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
 """
-Step 10 — Integrate.
+Step 11 — Integrate.
 
 Computes the integrated score over ALL drugs (z-components are population
 statistics, so integration needs the full screened-drug table), then ranks the
-filtered candidates from step 09 and writes the final report.
+filtered candidates from step 10 and writes the final report.
 
   integrated = -0.3*RGES_zs - 0.2*Zhang_zs + 0.3*pathway_reversal_zs
                + 0.025*sum(critical efficacy zs)
 
 Inputs:
-  08_miri_efficacy_scores/output/scores.csv
-  09_filter/output/path_filtered.csv
+  09_miri_efficacy_scores/output/scores.csv
+  10_filter/output/path_filtered.csv
   input/MIRI_pathways.json
 
 Outputs:
-  10_integrate/output/integrated_scores.csv — all drugs + integrated score, sorted
-  10_integrate/output/ranked_drugs.csv      — filtered drugs ranked by integrated
-  10_integrate/output/report.md             — deterministic final report
-  10_integrate/heatmap_rank.png             — score-percentile heatmap (all filtered)
-  10_integrate/heatmap_rank@50.png          — same, integrated pct >= 0.5
+  11_integrate/output/integrated_scores.csv — all drugs + integrated score, sorted
+  11_integrate/output/ranked_drugs.csv      — filtered drugs ranked by integrated
+  11_integrate/output/report.md             — deterministic final report
+  11_integrate/heatmap_rank.png             — score-percentile heatmap (all filtered)
+  11_integrate/heatmap_rank@50.png          — same, integrated pct >= 0.5
 
 Usage:
-    python 10_integrate/integrate.py
+    python 11_integrate/integrate.py
 """
 
 import argparse
@@ -44,9 +44,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT  # noqa: E402
 from scoring import add_integrated, load_critical_names  # noqa: E402
 
-STEP_DIR = WORKFLOW_ROOT / "10_integrate"
-SCORES = WORKFLOW_ROOT / "08_miri_efficacy_scores" / "output" / "scores.csv"
-PATH_FILTERED = WORKFLOW_ROOT / "09_filter" / "output" / "path_filtered.csv"
+STEP_DIR = WORKFLOW_ROOT / "11_integrate"
+SCORES = WORKFLOW_ROOT / "09_miri_efficacy_scores" / "output" / "scores.csv"
+PATH_FILTERED = WORKFLOW_ROOT / "10_filter" / "output" / "path_filtered.csv"
 PATHWAYS = WORKFLOW_ROOT / "input" / "MIRI_pathways.json"
 
 CRITICAL_SHORT = {
@@ -134,7 +134,7 @@ def write_report(ranked, n_all, n_wcs, integrated_full):
     lines = [
         "# MIRI Drug Repositioning — Final Report",
         "",
-        f"Generated: {date.today().isoformat()} (deterministic, step 10)",
+        f"Generated: {date.today().isoformat()} (deterministic, step 11)",
         "",
         "## Screening funnel",
         "",
@@ -189,7 +189,7 @@ def main():
     ranked.to_csv(out_dir / "ranked_drugs.csv", index=False)
     print(f"Ranked candidates: {len(ranked)} drugs -> {out_dir / 'ranked_drugs.csv'}")
 
-    n_wcs = len(pd.read_csv(WORKFLOW_ROOT / "09_filter" / "output" / "wcs_filtered.csv"))
+    n_wcs = len(pd.read_csv(WORKFLOW_ROOT / "10_filter" / "output" / "wcs_filtered.csv"))
     write_report(ranked, len(integrated), n_wcs, integrated["integrated"].values)
 
     merge_cols = (["drug_name", "WCS", "RGES", "Zhang_c", "pathway_reversal", "integrated"]
@@ -207,7 +207,7 @@ def main():
         f"MIRI Drug Ranking — Integrated pct >= 0.5 ({len(top)}/{len(merged)} filtered drugs)",
         "heatmap_rank@50.png")
 
-    print(f"\nStep 10 complete — top candidates:")
+    print(f"\nStep 11 complete — top candidates:")
     for i, (_, row) in enumerate(ranked.head(10).iterrows()):
         print(f"    {i+1:2d}. {row['drug_name']:40s} integrated={row['integrated']:+.4f}")
 

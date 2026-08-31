@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-"""Run one biomni A1 agent per drug from the 11_report final-drug set.
+"""Run one biomni A1 agent per drug from the report final-drug set.
 
-Final-drug set (step 11): the `09_filter` survivors whose integrated-score
-percentile (computed over all screened drugs in `10_integrate`) exceeds 0.5.
+Final-drug set (archived report step): the `10_filter` survivors whose
+integrated-score percentile (computed over all screened drugs in
+`11_integrate`) exceeds 0.5.
 Each drug runs in an isolated subprocess with a wall-clock timeout. Results are
 written per-drug to cache/ as JSON, so the batch is resumable (already-done
 drugs are skipped). Assembled at the end into cache/results_all.json.
@@ -12,7 +13,7 @@ substituted. The biomni agent backend (/home/chang/cc-research) is an external
 dependency and is not vendored.
 
 Usage:
-  python 11_report/run_drug_agents.py --per-drug-timeout 1500
+  python report/run_drug_agents.py --per-drug-timeout 1500
 """
 import argparse
 import json
@@ -29,7 +30,7 @@ import pandas as pd
 from scipy.stats import percentileofscore
 
 WORKFLOW_ROOT = Path(__file__).resolve().parent.parent
-REPORT_DIR = WORKFLOW_ROOT / "11_report"
+REPORT_DIR = WORKFLOW_ROOT / "report"
 CACHE_DIR = REPORT_DIR / "cache"
 PROMPT_PATH = REPORT_DIR / "prompt.md"
 
@@ -38,8 +39,8 @@ CC = os.environ.get("BIOMNI_CC_DIR", "/home/chang/cc-research")
 load_dotenv(os.path.join(CC, ".env"))
 sys.path.insert(0, os.path.join(CC, "biomni"))
 
-INTEGRATED = WORKFLOW_ROOT / "10_integrate" / "output" / "integrated_scores.csv"
-PATH_FILTERED = WORKFLOW_ROOT / "09_filter" / "output" / "path_filtered.csv"
+INTEGRATED = WORKFLOW_ROOT / "11_integrate" / "output" / "integrated_scores.csv"
+PATH_FILTERED = WORKFLOW_ROOT / "10_filter" / "output" / "path_filtered.csv"
 
 FIELDS = [
     ("ENGLISH_NAME", "English name (with common brand names)"),
@@ -54,11 +55,11 @@ FIELDS = [
 
 
 def load_final_drugs():
-    """Final-report drugs: 09_filter survivors with integrated pct > 0.5.
+    """Final-report drugs: 10_filter survivors with integrated pct > 0.5.
 
     Percentile of each survivor's integrated score vs ALL screened drugs
-    (10_integrate integrated_scores.csv), kind='rank' — the same statistic the
-    step-10 'integrated pct >= 0.5' top set uses.
+    (11_integrate integrated_scores.csv), kind='rank' — the same statistic the
+    step-11 'integrated pct >= 0.5' top set uses.
     """
     integrated = pd.read_csv(INTEGRATED)
     path_filtered = pd.read_csv(PATH_FILTERED)

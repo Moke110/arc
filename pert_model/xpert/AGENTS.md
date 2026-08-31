@@ -22,13 +22,13 @@ XPert: dual-branch Transformer (~25M params) predicting drug-induced transcripti
 
 - Embeddings loaded from the workflow (`workflow/xpert-fda-miri-v1/input/` + `01_drug_embed/output/`): UniMol `all_drugs_unimol_arr.npy` (8981×122×514, L1000 rows), HG `all_drugs_idx2HG.npy` (8981×256, author reference byte-identical), SMILES `all_drugs_idx2smi.npy`.
 - PPI vectors: `metadata/PPI_gene_vector_128d.npy` (978×128), model-owned.
-- Pretrain weight + pretrain YAML: `workflow/xpert-fda-miri-v1/03_xpert_pretrain/`; L1000 pretrain h5ads: `pert_data/l1000-xpert/data/`.
+- Pretrain weight + pretrain YAML: `workflow/xpert-fda-miri-v1/04_xpert_pretrain/`; L1000 pretrain h5ads: `pert_data/l1000-xpert/data/`.
 - Env `arc` (torch 2+, scanpy, numpy, scipy, pandas, scikit-learn, matplotlib, unimol_tools, pyyaml, tqdm).
 
 ## Entry points
 
-- Pretrain: `bash pretrain/run.sh` (env vars: TRAIN_LR, BATCH_SIZE, NUM_EPOCHS, LOSS_WEIGHT, DRUG_FEAT, DRUG_EMBEDS). Direct: `python -m src.train --mode train --config ../../workflow/xpert-fda-miri-v1/03_xpert_pretrain/config/l1000 --dataset l1000_mdmt_full --device cuda:0`.
-- Finetune / benchmark / predict: run via the workflow steps (`workflow/xpert-fda-miri-v1/04_xpert_finetune_bench/`, `05_xpert_finetune/`, `06_xpert_predict/`) — see its AGENTS.md.
+- Pretrain: `bash pretrain/run.sh` (env vars: TRAIN_LR, BATCH_SIZE, NUM_EPOCHS, LOSS_WEIGHT, DRUG_FEAT, DRUG_EMBEDS). Direct: `python -m src.train --mode train --config ../../workflow/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000 --dataset l1000_mdmt_full --device cuda:0`.
+- Finetune / benchmark / predict: run via the workflow steps (`workflow/xpert-fda-miri-v1/05_xpert_finetune_bench/`, `06_xpert_finetune/`, `07_xpert_predict/`) — see its AGENTS.md.
 
 ## Notes
 

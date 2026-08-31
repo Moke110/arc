@@ -6,7 +6,8 @@ author-aligned L1000-contained FDA screen (xpert-fda-miri-v1, ADR 0007). It
 screens the same 1,004 FDA drugs already present in the L1000 embedding table
 (exact canonical-SMILES match, drug_idx < 8981) with the same baseline, MIRI
 scoring, filters and integration — the ONLY substantive change is the XPert
-finetune data: instead of v1's frozen DToxS-only input/dtoxs.h5ad, steps
+finetune data: instead of v1's frozen DToxS-only finetune h5ad
+(`workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`), steps
 05/06/07 train on the workflow-built **union h5ad of all four usable CM
 datasets** (dtoxs_primary + dtoxs_ipsc + gse244740 + gse262419; ADR 0017),
 per-plate normalized (ADR 0016). gse247541 is excluded (6-day exposure outside
@@ -64,7 +65,7 @@ DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 # The finalized v1 workflow (read-only schema reference for the union gate and
 # the DToxS baseline comparison). Only ever read, never written.
 V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1"
-V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "input" / "dtoxs.h5ad"
+V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "dtoxs.h5ad"
 
 # The DToxS-LINCS testbed (v1.1): its rebuilt finetune h5ad is the benchmark
 # reference the v3 primary arm realigns to (ADR 0015). v3 imports v1.1's fold

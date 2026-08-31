@@ -3,7 +3,7 @@
 Union-vs-v1 schema gate (step 03, primary seam).
 
 Asserts that 03_cm_finetune_data/output/cm_union.h5ad is structure-identical
-to v1's frozen finetune h5ad (workflow/xpert-fda-miri-v1/input/dtoxs.h5ad) in
+to v1's frozen finetune h5ad (workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad) in
 every field the XPert library consumes, so the union trains through the
 carried-over step scripts and the library without code changes:
 

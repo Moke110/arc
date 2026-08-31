@@ -17,7 +17,7 @@ Data sources (XPert-author + DToxS ONLY)
      the DToxS table uses (e.g. JPT2's gene_name = HN1L), so alias resolution
      needs no external database.
   2. DToxS raw Level3 read-count tables (symbol-indexed) and the frozen
-     finetune h5ad (input/dtoxs.h5ad, var gene_symbol -> gene_id).
+     finetune h5ad (03_cm_finetune_data/output/dtoxs.h5ad, var gene_symbol -> gene_id).
 
 `corrected_gene_name` is deliberately NOT used as a match key: for JPT2 the
 author metadata records it as CRAMP1, a *different* gene (Entrez 57585), while
@@ -47,7 +47,7 @@ from utils import WORKFLOW_ROOT, XPERT_ROOT, DTOXS_ROOT  # noqa: E402
 L1000_META = XPERT_ROOT / "metadata" / "l1000_gene_info_978.csv"
 OUTPUT = (WORKFLOW_ROOT / "02_cm_baseline" / "output"
           / "dtoxs_to_l1000_gene_map.csv")
-H5AD = WORKFLOW_ROOT / "input" / "dtoxs.h5ad"
+H5AD = WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "dtoxs.h5ad"
 
 CONTROL_STATES = {"CTRL", "CTRL-EtOH", "CTRL-DMSO"}
 

@@ -4,12 +4,12 @@ Step 03 — DToxS-LINCS finetune data (the v1.1 change vs v1).
 
 Rebuilds the DToxS finetune h5ad that steps 05/06/07 (v1.1) train on from the
 released LINCS LDS-1593 well-level package
-(pert_data/dtoxs_primary/Data/Level3) instead of v1's frozen
-input/dtoxs.h5ad. xpert-fda-miri-v1 stays untouched and frozen.
+(pert_data/dtoxs_primary/Data/Level3) instead of v1's frozen finetune h5ad
+(workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad).
 
   03_cm_finetune_data/output/dtoxs_lincs.h5ad
 
-   The rebuilt h5ad is schema-identical to v1's frozen input/dtoxs.h5ad in the
+   The rebuilt h5ad is schema-identical to v1's frozen workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad in the
    fields the XPert library consumes (obs pert_id/pert_idx/pert_dose[_idx]/
    pert_time[_idx]/cell_iname/cell_idx/tissue_idx + the additive dataset_id
    provenance column; var = the 978 L1000 landmarks in gene_idx order with
@@ -24,7 +24,7 @@ input/dtoxs.h5ad. xpert-fda-miri-v1 stays untouched and frozen.
    dataset. Each sample's matched control is the mean of the control wells on
    its own plate (dtoxs_primary CTRL/CTRL-DMSO/CTRL-EtOH on plates 1/2/4/5) and
    each plate's 978-landmark distribution is aligned to the L1000 pretrain
-   independently. v1's frozen input/dtoxs.h5ad stays dataset-wide (the
+   independently. v1's frozen workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad stays dataset-wide (the
    historical anchor); the deviation is recorded as an auditable delta in the
    parity report. Sample identity/order is unchanged, so the fold columns
    survive (X-independent splitter, ADR 0014).
@@ -36,7 +36,7 @@ Also emits:
   03_cm_finetune_data/output/parity_delta.md     auditable delta vs v1 frozen
 
 Parity gate semantics (ADR 0012): the gate requires SCHEMA parity (the rebuilt
-h5ad is structure-identical to v1's input/dtoxs.h5ad in the fields the XPert
+h5ad is structure-identical to v1's workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad in the fields the XPert
 loader consumes) and emits an AUDITABLE DELTA report of the sample/drug
 differences — the fresh LINCS build is a legitimate superset (the raw GEO
 deposit lacks the non-KI perturbations), so sample-for-sample identity with
@@ -362,7 +362,7 @@ def main():
 
 
 # ---------------------------------------------------------------------------
-# Parity gate: schema parity + auditable delta vs v1's frozen input/dtoxs.h5ad
+# Parity gate: schema parity + auditable delta vs v1's frozen workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad
 # ---------------------------------------------------------------------------
 LOADER_OBS_COLS = ["pert_id", "pert_idx", "pert_dose", "pert_dose_idx",
                    "pert_time", "pert_time_idx", "cell_iname", "cell_idx",
@@ -384,7 +384,7 @@ def run_parity_gate(new_h5ad, extra_lines=None):
     # --- per-plate deviation vs v1's dataset-wide build (ADR 0016) ---
     if extra_lines:
         add("## Per-plate normalization vs v1 frozen (dataset-wide)\n")
-        add("v1's frozen `input/dtoxs.h5ad` normalizes each dataset as one "
+        add("v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` normalizes each dataset as one "
             "dataset-wide group (a single QN transform and a pooled control "
             "mean). The rebuilt DToxS-LINCS h5ad groups both the QN alignment "
             "and the matched control per `(dataset_id, plate)` — v1 is the "

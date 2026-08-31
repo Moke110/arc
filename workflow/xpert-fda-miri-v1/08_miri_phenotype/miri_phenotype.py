@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Step 07 — MIRI reference gene sets + pathways.
+Step 08 — MIRI reference gene sets + pathways.
 
 Consumes the per-GSE DEG lists in disease_data/miri/{GSE}/deg/ and produces the
 integrated MIRI reference DEG list used by the efficacy scoring step:
 
-  07_miri_phenotype/output/MIRI_up-down.json — union UP/DOWN gene set (majority vote)
-  07_miri_phenotype/output/MIRI_rank.json    — ranked reference for Zhang scoring
+  08_miri_phenotype/output/MIRI_up-down.json — union UP/DOWN gene set (majority vote)
+  08_miri_phenotype/output/MIRI_rank.json    — ranked reference for Zhang scoring
 
 input/MIRI_pathways.json is static (curated) and is not rewritten by this step.
 This is the regenerable, cross-dataset reference; the per-GSE lists under
 disease_data/ are shared inputs reused by future workflows.
 
 Usage:
-    python 07_miri_phenotype/miri_phenotype.py
+    python 08_miri_phenotype/miri_phenotype.py
 """
 
 import argparse
@@ -29,7 +29,7 @@ from scipy.stats import rankdata
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT, DISEASE_DATA_ROOT, WORKSPACE_ROOT  # noqa: E402
 
-REF_DIR = WORKFLOW_ROOT / "07_miri_phenotype" / "output"
+REF_DIR = WORKFLOW_ROOT / "08_miri_phenotype" / "output"
 PRIMARY_GSE = "GSE160516"          # mouse MIRI (largest L1000 overlap)
 
 # Display order + labels for the union metadata (matches the frozen reference).

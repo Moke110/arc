@@ -22,7 +22,7 @@ come from the primary_concentrations map (paper Table 1 for the 23 KIs, the
 iPSC series matrix for the 15 shared non-KIs, literature clinical Cmax for the
 8 primary-only drugs); the iPSC arm keeps its series-matrix concentrations
 (SOR divergence: primary 0.5 uM vs iPSC 1.0 uM is intended). The union h5ad is
-schema-identical to v1's frozen input/dtoxs.h5ad in the fields the XPert
+schema-identical to v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` in the fields the XPert
 loader consumes.
 
 Also emits:
@@ -481,7 +481,7 @@ def write_delta_report(obs_all, var_ids, per_plate_lines=None):
     if per_plate_lines:
         lines += [
             "## Per-plate normalization (ADR 0016)",
-            "v1.1's `dtoxs_lincs.h5ad` and v1's frozen `input/dtoxs.h5ad` "
+            "v1.1's `dtoxs_lincs.h5ad` and v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` "
             "normalize each dataset as one dataset-wide group. Both v2 arms "
             "group the QN alignment and the matched control per "
             "`(dataset_id, plate)` — v1 stays the dataset-wide historical "

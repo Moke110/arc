@@ -33,7 +33,7 @@ def get_config_root(config_name: str) -> Path:
 
     Configs live at <root>/<stage>/config/<name>.yaml, so the root is three
     directories up from the config file (config -> <stage> -> <root>). This lets
-    a workflow own its configs (e.g. workflow/xpert-fda-miri-v1/05_xpert_finetune/)
+    a workflow own its configs (e.g. workflow/xpert-fda-miri-v1/06_xpert_finetune/)
     while the model library resolves paths against the owning root.
     """
     config_path = _resolve_config_path(config_name)

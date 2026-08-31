@@ -7,7 +7,7 @@ step-owned config (06_xpert_finetune/config/cm.yaml). Consumes the embedding
 inputs from input/ + 01_drug_embed/output/ and the union finetune dataset at
 03_cm_finetune_data/output/cm_union.h5ad (built by step 03 from all five
 pert_data datasets — the substantive v2 change vs v1's frozen DToxS
-input/dtoxs.h5ad). The HG table is the author reference (step 01 copies it
+`workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`). The HG table is the author reference (step 01 copies it
 byte-identical — no HG training), and the finetune uses the same 978-gene set
 verified by _lib/verify_genes.py. The base model and training library are
 imported from the model component (pert_model/xpert), which stays a pure
