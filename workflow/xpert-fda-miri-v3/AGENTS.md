@@ -46,7 +46,9 @@ non-numbered `report/` stage).
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the released LINCS LDS-1593 package (`pert_data/dtoxs_primary/Data/Level3`); byte-identical to v1's baseline.
 - `03_cm_finetune_data/` — **the v3 change**: builds one finetune h5ad per dataset (`output/dtoxs_primary.h5ad` 662 rows, `output/dtoxs_ipsc.h5ad` 296 rows, `output/gse244740.h5ad` ~2,424 rows, `output/gse262419.h5ad` ~936 rows) and concatenates them into the union `output/cm_union.h5ad` (~4,318 rows), per-plate normalized (ADR 0016), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), a schema gate vs v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`, the delta report vs v2's union (`output/finetune_delta.md`), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched.
-- `05_xpert_finetune_bench/` — union benchmark on the **imported v1.1 folds** (ADR 0014/0015/0017): `create_cm_splits.py` imports v1.1's `warm-start_fold-1..10` + `cold-drug_fold-1..10` verbatim for primary rows (matched by well id, byte-identical test sets), assigns iPSC rows under the ADR 0015 isolation rules, and assigns **gse244740/gse262419 rows train-only** (never test; cold-drug fold test drugs excluded from all four datasets' train) + `cm_full` (all-train), with four isolation gates; `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/cm_pretrain_eval.yaml`. Comparable column-by-column with v2 (identical test sets).
+- `05_xpert_finetune_bench/` — **two independent benchmark methods** (ADR 0018):
+  - **dtoxs-primary bench** (the official fold benchmark, outputs under `dtoxs-primary/`): on the **imported v1.1 folds** (ADR 0014/0015/0017) — `create_cm_splits.py` imports v1.1's `warm-start_fold-1..10` + `cold-drug_fold-1..10` verbatim for primary rows (matched by well id, byte-identical test sets), assigns iPSC rows under the ADR 0015 isolation rules, and assigns **gse244740/gse262419 rows train-only** (never test; cold-drug fold test drugs excluded from all four datasets' train) + `cm_full` (all-train), with four isolation gates; `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/cm_pretrain_eval.yaml`. Comparable column-by-column with v2 (identical test sets). Its test sets all come from the dtoxs_primary arm, hence the name and the renamed plot `dtoxs-primary/dtoxs-primary-bench.png`.
+  - **Data-ablation bench** (decoupled from the official folds, outputs under `data-ablation/`): `xpert_data_ablation.py` measures how the **finetune-corpus scale** affects XPert test performance in warm-start and cold-drug modes — **3 seeds × 2 modes × 5 train-size fractions {1/16, 1/8, 1/4, 1/2, 1.0}**, each seed holding one **unified test set** (~15% of the union, uniform random) shared by every fraction of both modes; train = a dataset-stratified f-subsample of the seed's train pool (warm-start: union minus test; cold-drug: union minus test minus all test-drug samples). Recipe identical to the official bench; the L1000-pretrain weight anchors the curve at 0 rows. 1.0 is re-run on this scheme (never reuses the dtoxs-primary bench). Per-run masks are persisted (`ablation_masks.csv`); temporary h5ads drive `src.train` without polluting `cm_union.h5ad`.
 - `06_xpert_finetune/` — all-train union finetune (`xpert_finetune.py`, `config/cm.yaml`) -> the final prediction model `output/cm_cm_full/`.
 - `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`); predicts at dose_idx 0 / time_idx 2 (the v1 exposure, unchanged by the real-dose finetune).
 - `08_miri_phenotype/` — integrated MIRI reference gene sets + rank reference.
@@ -159,6 +161,10 @@ python 02_cm_baseline/cm_baseline.py             # DToxS-primary consensus basel
 python 03_cm_finetune_data/build_union.py        # per-dataset h5ads + union + manifest + delta + schema gate
 python 03_cm_finetune_data/finetune_report.py    # composition report (HTML)
 python 05_xpert_finetune_bench/create_cm_splits.py  # import v1.1 folds + iPSC/gse244740/gse262419 isolation + gates
+python 05_xpert_finetune_bench/xpert_finetune_bench.py  # official fold bench -> dtoxs-primary/ (GPU)
+python 05_xpert_finetune_bench/xpert_data_ablation.py --dry-run  # build masks + run isolation gates (no GPU)
+python 05_xpert_finetune_bench/xpert_data_ablation.py   # data-ablation bench -> data-ablation/ (GPU, 30 runs)
+python 03_cm_finetune_data/drug_overlap_report.py    # pert_data/cm_drugs.html (incl. in-HG 样本数 column)
 # GPU steps (05 benchmark / 06 finetune / 07 predict) then 08–11
 python 11_integrate/integrate.py
 python _lib/build_screen_notebook.py             # regenerate screen.ipynb
@@ -181,6 +187,18 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
   never regenerates them — re-running the splitter on the union would drift the
   test sets. It requires the v1.1 DToxS-LINCS h5ad (`V11_DTOXS_LINCS_H5AD`,
   override with `--v11`) to carry the fold columns.
+- **Two benchmarks, different test sets** (ADR 0018): the official
+  `dtoxs-primary/` bench uses the ADR 0014/0015/0017 folds (test sets
+  primary-only, byte-identical to v1.1/v2); the `data-ablation/` bench uses its
+  own per-seed **unified test sets** (~15% of the union, incl. gse244740/
+  gse262419 samples) and is deliberately decoupled. Never mix the two — the
+  ablation's 1.0 point re-runs on its own split scheme and is NOT the official
+  dtoxs-primary bench. The ablation drives `src.train` via temporary h5ads and
+  never writes to `cm_union.h5ad` (the 21 official fold columns stay intact);
+  reruns are idempotent per (seed, mode, fraction) via `data-ablation/`
+  caches, resumable after interruption.
+- `xpert_data_ablation.py` is a **diagnostic analysis** only: it does not change
+  the final screen model (step 06 `cm_full`) or any downstream step.
 - Step 07 predicts at `--dose-idx 0 --time-idx 2` (the v1 exposure; the
   library `predict.py` defaults to time 2). After any step-05/06 retrain,
   steps 08–11 must be re-run on the regenerated step-07 DEG table.

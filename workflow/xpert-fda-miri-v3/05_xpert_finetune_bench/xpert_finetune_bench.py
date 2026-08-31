@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Step 05 — Benchmark XPert on the union CM splits (ADR 0015).
+Step 05 — Benchmark XPert on the union CM splits (ADR 0015) — dtoxs-primary.
 
 Finetunes XPert on the evaluation splits — warm-start (drug-overlap) and
 cold-drug (drug-disjoint), 10 folds each under the unified fold scheme
@@ -10,19 +10,26 @@ the workflow-built union h5ad (03_cm_finetune_data/output/cm_union.h5ad),
 not the DToxS-only frozen h5ad. In addition it evaluates the workflow-owned
 L1000 pretrain weight (zero-shot, no finetuning) on every fold test set under
 config/cm_pretrain_eval.yaml, and plots that as the FIRST column in
-benchmark.png. Idempotent: folds with existing weights are not retrained, and
-folds with existing per-fold result CSVs are not re-evaluated (pass --force to
-redo both).
+dtoxs-primary-bench.png. Idempotent: folds with existing weights are not
+retrained, and folds with existing per-fold result CSVs are not re-evaluated
+(pass --force to redo both).
+
+Because every fold's test set comes from the dtoxs_primary arm (the
+gse244740/gse262419 rows are train-only, ADR 0017), the benchmark's outputs
+live under 05_xpert_finetune_bench/dtoxs-primary/ and its plot is named
+dtoxs-primary-bench.png (ADR 0018). The data-ablation experiment
+(xpert_data_ablation.py) measures the finetune-corpus scale with its own
+decoupled per-seed unified test sets and must never be mixed with these folds.
 
 XPert writes training/test artifacts under <workflow>/finetune/output/ (the
 library derives this staging path from the config root); this step moves them
-into 05_xpert_finetune_bench/output/ when each run finishes.
+into 05_xpert_finetune_bench/dtoxs-primary/ when each run finishes.
 
 Outputs:
-  05_xpert_finetune_bench/output/cm_warm-start/    — fold weights + per-fold metrics
-  05_xpert_finetune_bench/output/pretrain_warm-start/ — L1000-pretrain zero-shot fold metrics
-  05_xpert_finetune_bench/output/benchmark.csv     — per-fold test metrics, all splits
-  05_xpert_finetune_bench/benchmark.png            — pretrain first, then mean +/- std per split
+  05_xpert_finetune_bench/dtoxs-primary/cm_warm-start/    — fold weights + per-fold metrics
+  05_xpert_finetune_bench/dtoxs-primary/pretrain_warm-start/ — L1000-pretrain zero-shot fold metrics
+  05_xpert_finetune_bench/dtoxs-primary/benchmark.csv     — per-fold test metrics, all splits
+  05_xpert_finetune_bench/dtoxs-primary/dtoxs-primary-bench.png — pretrain first, then mean +/- std per split
 
 Usage:
     python 05_xpert_finetune_bench/xpert_finetune_bench.py            # idempotent
@@ -45,7 +52,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
 
 STEP_DIR = WORKFLOW_ROOT / "05_xpert_finetune_bench"
-OUTPUT_DIR = STEP_DIR / "output"
+# The official fold benchmark: its fold test sets all come from the
+# dtoxs_primary arm, so everything lives under dtoxs-primary/ and the plot is
+# dtoxs-primary-bench.png (ADR 0018).
+OUTPUT_DIR = STEP_DIR / "dtoxs-primary"
 CONFIG = WORKFLOW_ROOT / "06_xpert_finetune" / "config" / "cm"
 PRETRAIN_EVAL_CONFIG = STEP_DIR / "config" / "cm_pretrain_eval"
 STAGING_ROOT = WORKFLOW_ROOT / "finetune" / "output"
@@ -248,7 +258,7 @@ def plot_benchmark(bench):
                  "(mean ± std across folds; pretrain = L1000 weight, "
                  "no finetune)", fontsize=14, fontweight="bold")
     fig.tight_layout()
-    out_png = STEP_DIR / "benchmark.png"
+    out_png = OUTPUT_DIR / "dtoxs-primary-bench.png"
     fig.savefig(out_png, dpi=120, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved: {out_png}")

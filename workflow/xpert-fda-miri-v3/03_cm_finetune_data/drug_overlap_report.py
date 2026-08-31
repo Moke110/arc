@@ -6,10 +6,11 @@ how many unique treated compounds are present in the author-provided drug
 embedding table (the author HG reference, drug_idx in [0, N_L1000_DRUGS)),
 and how those drug sets overlap with each other. Emits a self-contained
 HTML report (a per-dataset 化合物总数 / 有 SMILES / in-HG 覆盖对比 table with a
-5-dataset union row, Venn diagrams + pairwise intersection heatmap, and a
-per-drug membership table). The gse262419 well-join is plate-aware
-((Plate_ID, well) keyed against GSE262419_hash.csv); the old well-only join
-collapsed the 464 chemicals to 33 names.
+5-dataset union row and a trailing in-HG 样本数 column, Venn diagrams +
+pairwise intersection heatmap, and a per-drug membership table). The
+gse262419 well-join is plate-aware ((Plate_ID, well) keyed against
+GSE262419_hash.csv); the old well-only join collapsed the 464 chemicals to
+33 names.
 
 Writes: <pert_data>/cm_drugs.html (gitignored data-lake artifact).
 """
@@ -164,10 +165,24 @@ def main():
         n_smi = sum(1 for (_n, smi) in compounds[ds].values()
                     if _has_smiles(smi))
         n_in_hg = len(by_ds[ds])
-        summary.append((ds, n_comp, n_smi, n_in_hg, n_treated))
+        # in-HG 样本数: treated samples whose compound resolves to an in-HG
+        # drug (distinct from n_in_hg, the deduped drug count).
+        compound_in_hg = {}
+        for (name, _code), (_n, smi) in compounds[ds].items():
+            idx, _, _ = dr.resolve_compound(name, smi, smi2idx, name2idx,
+                                            meta_smi)
+            compound_in_hg[(name, _code)] = dr.classify(idx) == "in_hg"
+        n_in_hg_samples = 0
+        for r in meta.itertuples():
+            if getattr(r, "is_control"):
+                continue
+            if compound_in_hg.get((r.compound_name, r.compound_code), False):
+                n_in_hg_samples += 1
+        summary.append((ds, n_comp, n_smi, n_in_hg, n_treated,
+                        n_in_hg_samples))
     summary_df = pd.DataFrame(summary, columns=[
         "dataset", "n_compounds", "n_with_smiles", "n_in_hg_drugs",
-        "n_treated_samples"])
+        "n_treated_samples", "n_in_hg_samples"])
 
     # union across the 5 datasets (treated compounds, deduped by drug_idx for
     # in-HG hits, else canonical SMILES, else normalized name)
@@ -190,6 +205,14 @@ def main():
     total_compounds = len(union_comp)
     total_with_smiles = len(union_smi)
     total_in_hg = len(union)
+
+    # in-HG 样本数 union = the v3 finetune union (the four finetune datasets,
+    # ADR 0017); gse247541's 6 in-HG treated samples are reported per-dataset
+    # but are outside the finetune scope (6-day exposure).
+    FINETUNE_SUBSET = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse262419"]
+    union_in_hg_samples = int(sum(
+        summary_df.loc[summary_df["dataset"].isin(FINETUNE_SUBSET),
+                       "n_in_hg_samples"]))
 
     # --- Venn diagrams -------------------------------------------------------
     venn_main = venn_png(
@@ -247,21 +270,28 @@ def main():
              "（排除 vehicle/CTRL 对照）；有 SMILES 数 = 数据集自身交付带结构的化合物数"
              "（gse244740/gse262419/gse247541 的 GEO 交付不附带 SMILES，其 in-HG 命中依赖"
              "作者名称匹配）；in-HG 药物数 = 解析到作者嵌入表 "
-             "<code>drug_idx ∈ [0, %d)</code> 的去重药物数。</p>" % N_L1000_DRUGS)
+             "<code>drug_idx ∈ [0, %d)</code> 的去重药物数。"
+             "in-HG 样本数 = treated 样本中化合物解析到作者嵌入表（in-HG）的样本数，"
+             "与 treated 样本数（全部 treated 样本）和 in-HG 药物数（去重药物）含义不同；"
+             "union 行的 in-HG 样本数 = v3 finetune 并集（四个 finetune 数据集，ADR 0017，"
+             "gse247541 因 6 天暴露不在 finetune 范围，其 6 个 in-HG treated 样本仅按数据集"
+             "单独报告）。</p>" % N_L1000_DRUGS)
     h.append("<table><tr><th>dataset</th><th class='num'>药物/化合物总数</th>"
              "<th class='num'>有 SMILES 数</th><th class='num'>in-HG 药物数</th>"
-             "<th class='num'>treated 样本数</th></tr>")
+             "<th class='num'>treated 样本数</th><th class='num'>in-HG 样本数</th></tr>")
     for _, r in summary_df.iterrows():
         h.append(f"<tr><td>{r['dataset']}</td><td class='num'>"
                  f"{r['n_compounds']}</td><td class='num'>"
                  f"{r['n_with_smiles']}</td><td class='num'>"
                  f"{r['n_in_hg_drugs']}</td><td class='num'>"
-                 f"{r['n_treated_samples']}</td></tr>")
+                 f"{r['n_treated_samples']}</td><td class='num'>"
+                 f"{r['n_in_hg_samples']}</td></tr>")
     h.append(f"<tr><td><b>union（5 数据集并集）</b></td>"
              f"<td class='num'><b>{total_compounds}</b></td>"
              f"<td class='num'><b>{total_with_smiles}</b></td>"
              f"<td class='num'><b>{total_in_hg}</b></td>"
-             f"<td class='num'>—</td></tr>")
+             f"<td class='num'>—</td>"
+             f"<td class='num'><b>{union_in_hg_samples}</b></td></tr>")
     h.append("</table>")
 
     h.append("<div class='venn-row'>")

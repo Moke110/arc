@@ -88,6 +88,19 @@ The DEG list derived from a single GEO study, kept alongside its acquisition dat
 The agentic bilingual (EN/CN) per-drug fact-sheet report, driven by `prompt.md` and assembled from resumable per-drug agent JSONs. Exists only in v1 as an **archived, non-numbered `report/` stage**; the rebuilt workflows (v1.1/v2/v3) have **no report stage** — they end at integrate.
 _Avoid_: drug research report
 
+### Benchmarking
+
+**dtoxs-primary benchmark**:
+The official step-05 fold benchmark of a MIRI screen's finetune (ADR 0014/0015/0017): 10 warm-start + 10 cold-drug folds whose **test sets all come from the dtoxs_primary arm** (byte-identical to v1.1/v2 for the rebuilt workflows; the gse244740/gse262419 rows are train-only), plus the L1000-pretrain zero-shot column. Since the restructure its outputs live under `05_xpert_finetune_bench/dtoxs-primary/` (`dtoxs-primary-bench.png`), so named because it measures primary-arm test performance.
+_Avoid_: full bench, union bench
+
+**Data-ablation benchmark**:
+The step-05 experiment (decoupled from the official folds) measuring how the finetune-corpus **scale** affects XPert test performance in both warm-start and cold-drug modes: 3 seeds × 2 modes × 5 train-size fractions {1/16, 1/8, 1/4, 1/2, 1.0}. Each seed holds one **unified test set** (~15% of the 4-dataset union, uniform random), shared by every fraction of both modes; train = a dataset-stratified f-subsample of the seed's train pool (warm-start: union minus test; cold-drug: union minus test minus all test-drug samples). Recipe identical to the official fold bench; the L1000-pretrain weight anchors the curve at 0 rows. Outputs under `05_xpert_finetune_bench/data-ablation/`.
+_Avoid_: scale sweep, ablation study (the term is the experiment itself)
+
+**Unified test set**:
+A single held-out test set per seed (~15% of the union, uniform random, composition mirroring the union) shared by every fraction and both modes of the Data-ablation benchmark — distinct from the official fold test sets, which are per-fold and primary-only. The ablation's test sets include gse244740/gse262419 samples and therefore must never be confused with the ADR 0017 contract test sets.
+
 ### Boundary
 
 **Producer-as-library**:
