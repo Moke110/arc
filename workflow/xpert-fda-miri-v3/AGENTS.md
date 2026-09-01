@@ -160,10 +160,10 @@ python _lib/verify_genes.py                      # per-dataset gene gates (G1/G2
 python 02_cm_baseline/cm_baseline.py             # DToxS-primary consensus baseline
 python 03_cm_finetune_data/build_union.py        # per-dataset h5ads + union + manifest + delta + schema gate
 python 03_cm_finetune_data/finetune_report.py    # composition report (HTML)
-python 05_xpert_finetune_bench/create_cm_splits.py  # import v1.1 folds + iPSC/gse244740/gse262419 isolation + gates
-python 05_xpert_finetune_bench/xpert_finetune_bench.py  # official fold bench -> dtoxs-primary/ (GPU)
-python 05_xpert_finetune_bench/xpert_data_ablation.py --dry-run  # build masks + run isolation gates (no GPU)
-python 05_xpert_finetune_bench/xpert_data_ablation.py   # data-ablation bench -> data-ablation/ (GPU, 30 runs)
+python 05_xpert_finetune_bench/dtoxs-primary/create_cm_splits.py  # import v1.1 folds + iPSC/gse244740/gse262419 isolation + gates
+python 05_xpert_finetune_bench/dtoxs-primary/xpert_finetune_bench.py  # official fold bench -> dtoxs-primary/ (GPU)
+python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py --dry-run  # build masks + run isolation gates (no GPU)
+python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py   # data-ablation bench -> data-ablation/ (GPU, 30 runs)
 python 03_cm_finetune_data/drug_overlap_report.py    # pert_data/cm_drugs.html (incl. in-HG 样本数 column)
 # GPU steps (05 benchmark / 06 finetune / 07 predict) then 08–11
 python 11_integrate/integrate.py

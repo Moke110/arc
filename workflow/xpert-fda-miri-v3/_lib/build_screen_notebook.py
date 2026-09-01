@@ -124,9 +124,9 @@ cells = [
        "3 L1000-pretrain anchors, one process at a time). Outputs under "
        "`05_xpert_finetune_bench/data-ablation/` (`ablation_masks.csv`, "
        "`ablation.csv`, `ablation.png`, `ablation_report.md`)."),
-    code("!python 05_xpert_finetune_bench/create_cm_splits.py\n"
-         "!python 05_xpert_finetune_bench/xpert_finetune_bench.py\n"
-         "!python 05_xpert_finetune_bench/xpert_data_ablation.py --dry-run"),
+    code("!python 05_xpert_finetune_bench/dtoxs-primary/create_cm_splits.py\n"
+         "!python 05_xpert_finetune_bench/dtoxs-primary/xpert_finetune_bench.py\n"
+         "!python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py --dry-run"),
 
     md("## Step 06 — Finetune XPert on the union (cm_full)\n\n"
        "Full-union all-train finetune -> the final prediction model (base "

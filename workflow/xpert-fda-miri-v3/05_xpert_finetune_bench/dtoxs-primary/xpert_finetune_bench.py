@@ -32,8 +32,8 @@ Outputs:
   05_xpert_finetune_bench/dtoxs-primary/dtoxs-primary-bench.png — pretrain first, then mean +/- std per split
 
 Usage:
-    python 05_xpert_finetune_bench/xpert_finetune_bench.py            # idempotent
-    python 05_xpert_finetune_bench/xpert_finetune_bench.py --force    # retrain + re-evaluate
+    python 05_xpert_finetune_bench/dtoxs-primary/xpert_finetune_bench.py            # idempotent
+    python 05_xpert_finetune_bench/dtoxs-primary/xpert_finetune_bench.py --force    # retrain + re-evaluate
 """
 
 import argparse
@@ -48,7 +48,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_lib"))
 from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
 
 STEP_DIR = WORKFLOW_ROOT / "05_xpert_finetune_bench"

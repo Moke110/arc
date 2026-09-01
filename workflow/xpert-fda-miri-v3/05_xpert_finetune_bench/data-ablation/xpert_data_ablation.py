@@ -38,18 +38,20 @@ Outputs under 05_xpert_finetune_bench/data-ablation/:
   work/                temporary h5ads (union copy + ablation fold columns);
                        cm_union.h5ad and its 21 official fold columns are
                        never written.
-  weights/             per-run best weights
-  results/             per-run test result CSVs
-  ablation.csv         33 rows (30 runs + 3 pretrain anchors)
-  ablation.png         2 rows x 4 cols (rows warm-start | cold-drug;
-                       columns RMSE | PCC | Spearman | R2; x = fraction on a
-                       log scale; 3 seed points + mean +/- std; pretrain
-                       anchor at fraction -> 0)
-  ablation_report.md   scale-curve + per-fraction drug-coverage summary
+   weights/             per-run best weights
+   results/             per-run test result CSVs
+   profiles/            per-run per-cell prediction profiles (*_predict_profile.npy)
+   ablation.csv         33 rows (30 runs + 3 pretrain anchors) + VCC columns
+   ablation.png         4 rows x 4 cols (rows 0/2 = warm-start|cold-drug deg
+                        metrics RMSE|PCC|Spearman|R2; rows 1/3 = the same
+                        modes' VCC metrics PDS|JAC|FID|REACH; x = fraction on a
+                        log scale; 3 seed points + mean +/- std; pretrain
+                        anchor at fraction -> 0)
+   ablation_report.md   scale-curve + per-fraction drug-coverage summary
 
 Usage:
-    python 05_xpert_finetune_bench/xpert_data_ablation.py --dry-run
-    python 05_xpert_finetune_bench/xpert_data_ablation.py
+    python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py --dry-run
+    python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py
 """
 
 import argparse
@@ -68,8 +70,8 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "_lib"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_lib"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dtoxs-primary"))
 from utils import WORKFLOW_ROOT  # noqa: E402
 from xpert_finetune_bench import (  # noqa: E402
     is_test_csv,
@@ -77,12 +79,14 @@ from xpert_finetune_bench import (  # noqa: E402
     STAGING_ROOT,
     DEFAULT_PRETRAINED,
 )
+from vcc_metrics import compute_vcc_metrics  # noqa: E402
 
 STEP_DIR = WORKFLOW_ROOT / "05_xpert_finetune_bench"
 OUTPUT_DIR = STEP_DIR / "data-ablation"
 WORK_DIR = OUTPUT_DIR / "work"
 WEIGHTS_DIR = OUTPUT_DIR / "weights"
 RESULTS_DIR = OUTPUT_DIR / "results"
+PROFILES_DIR = OUTPUT_DIR / "profiles"
 CONFIG_DIR = STEP_DIR / "config"
 UNION_H5AD = WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "cm_union.h5ad"
 FINETUNE_CONFIG = WORKFLOW_ROOT / "06_xpert_finetune" / "config" / "cm.yaml"
@@ -101,7 +105,9 @@ METRICS = ["MSE_deg", "RMSE_deg", "MAE_deg", "Pearson_deg", "Spearman_deg",
 # (panel label, metric column) — the four headline panels per mode.
 PLOT_METRICS = [("RMSE", "RMSE_deg"), ("PCC", "Pearson_deg"),
                 ("Spearman", "Spearman_deg"), ("R2", "R2_deg")]
-ANCHOR_LABEL = "anchor"
+# VCC 2026 metrics (raw, higher-is-better): PDS / JAC / FID / REACH.
+VCC_METRICS = ["PDS", "JAC", "FID", "REACH"]
+PLOT_VCC = [(m, m) for m in VCC_METRICS]
 # Canonical column order of the mask manifest (ablation_masks.csv).
 MASK_COLUMNS = ["seed", "mode", "fraction", "fraction_tag", "n_test",
                 "n_train", "n_test_drugs", "n_absent_drugs", "test_wells",
@@ -442,18 +448,28 @@ def _model_name(split_key):
 
 def _eval_and_collect(key, staging, device, config, extra):
     """Run src.train --mode test, then move the per-fold result CSV to
-    RESULTS_DIR. Shared by the finetune runs and the pretrain anchors."""
+    RESULTS_DIR and the per-cell prediction profile to PROFILES_DIR. Shared by
+    the finetune runs and the pretrain anchors."""
     shutil.rmtree(staging, ignore_errors=True)
     staging.mkdir(parents=True, exist_ok=True)
     run_xpert("test", key, device, config=config, extra=extra)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    moved = False
-    for csv in staging.glob("*_train_result.csv"):
-        shutil.move(str(csv), str(RESULTS_DIR / csv.name))
-        moved = True
-    shutil.rmtree(staging, ignore_errors=True)
-    if not moved:
+    PROFILES_DIR.mkdir(parents=True, exist_ok=True)
+    produced = list(staging.glob("*_train_result.csv"))
+    if not produced:
         die(f"{key}: test mode produced no result CSV in {staging}")
+    for csv in produced:
+        dest = RESULTS_DIR / csv.name
+        if dest.exists():
+            csv.unlink()
+        else:
+            shutil.move(str(csv), str(dest))
+    for npy in staging.glob("*_predict_profile.npy"):
+        dest = PROFILES_DIR / f"{key}_predict_profile.npy"
+        if dest.exists():
+            dest.unlink()
+        shutil.move(str(npy), str(dest))
+    shutil.rmtree(staging, ignore_errors=True)
 
 
 # ---------------------------------------------------------------------------
@@ -464,14 +480,16 @@ def run_one(seed, mode, tag, device, pretrained, force):
     model_name = _model_name(key)
     weight = WEIGHTS_DIR / f"{model_name}_best.pth"
     result = RESULTS_DIR / f"{model_name}_train_result.csv"
+    profile = PROFILES_DIR / f"{key}_predict_profile.npy"
     cfg = CONFIG_DIR / key  # without .yaml; load_config appends it
     staging = STAGING_ROOT / f"cm_{key}"
 
-    if not force and weight.exists() and result.exists() and is_test_csv(result):
+    if (not force and weight.exists() and result.exists()
+            and is_test_csv(result) and profile.exists()):
         log(f"Cached {key} — skipping")
         return
     if not force and weight.exists():
-        log(f"{key}: weight cached, result missing — evaluating only")
+        log(f"{key}: weight cached, result/profile missing — evaluating only")
 
     # --- training (skipped if the weight is cached) ---------------------
     if force or not weight.exists():
@@ -493,12 +511,15 @@ def run_one(seed, mode, tag, device, pretrained, force):
         shutil.rmtree(staging, ignore_errors=True)
         log(f"{key}: trained -> {weight}")
 
-    # --- test evaluation (skipped if a test-mode result CSV is cached) --
-    if force or not (result.exists() and is_test_csv(result)):
+    # --- test evaluation (skipped if result CSV + prediction profile are
+    # both cached) --------------------------------------------------------
+    if force or not (result.exists() and is_test_csv(result)) or \
+            not profile.exists():
         _eval_and_collect(
             key, staging, device, cfg,
             extra=["--saved_model_path", str(WEIGHTS_DIR),
-                   "--pretrained_model", str(weight)])
+                   "--pretrained_model", str(weight),
+                   "--output_profile", "True"])
         log(f"{key}: evaluated -> {result}")
 
 
@@ -506,10 +527,12 @@ def run_pretrain_anchor(seed, device, pretrained, force):
     key = f"ablation_pretrain_seed{seed}"
     model_name = _model_name(key)
     result = RESULTS_DIR / f"{model_name}_train_result.csv"
+    profile = PROFILES_DIR / f"{key}_predict_profile.npy"
     cfg = CONFIG_DIR / key
     staging = STAGING_ROOT / f"cm_{key}"
 
-    if not force and result.exists() and is_test_csv(result):
+    if (not force and result.exists() and is_test_csv(result)
+            and profile.exists()):
         log(f"Cached {key} (pretrain zero-shot) — skipping")
         return
     # --saved_model + --pretrained_model both = the step-04 L1000 pretrain
@@ -518,13 +541,15 @@ def run_pretrain_anchor(seed, device, pretrained, force):
     _eval_and_collect(
         key, staging, device, cfg,
         extra=["--saved_model", pretrained,
-               "--pretrained_model", pretrained])
+               "--pretrained_model", pretrained,
+               "--output_profile", "True"])
     log(f"{key}: pretrain zero-shot evaluated -> {result}")
 
 
 def run_training(masks_df, device, pretrained, force):
     WEIGHTS_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    PROFILES_DIR.mkdir(parents=True, exist_ok=True)
     total = len(masks_df)
     for i, (_, row) in enumerate(masks_df.iterrows(), start=1):
         log(f"[{i}/{total}] {row['seed']} {row['mode']} "
@@ -540,6 +565,34 @@ def run_training(masks_df, device, pretrained, force):
 # ---------------------------------------------------------------------------
 # Analysis half (issue 05): aggregate -> plot -> report
 # ---------------------------------------------------------------------------
+def _vcc_for_run(seed, mode, tag):
+    """Compute the four raw VCC metrics for one (seed, mode, fraction) run or
+    pretrain anchor from its cached per-cell prediction profile, grouped by
+    drug (pert_idx)."""
+    if mode == "pretrain":
+        key = f"ablation_pretrain_seed{seed}"
+        temp = WORK_DIR / f"seed{seed}_pretrain.h5ad"
+        fold = "ablation_test"
+    else:
+        key = _split_key(seed, mode, tag)
+        temp = WORK_DIR / f"seed{seed}_{mode}.h5ad"
+        fold = f"ablation_{tag}"
+    profile = PROFILES_DIR / f"{key}_predict_profile.npy"
+    if not profile.exists():
+        die(f"aggregate: missing prediction profile {profile} — run "
+            f"inference first")
+    prof = np.load(profile, allow_pickle=True).item()
+    deg_true = np.asarray(prof["deg_true"], dtype=np.float64)
+    deg_pred = np.asarray(prof["deg_pred"], dtype=np.float64)
+    adata = sc.read_h5ad(temp, backed="r")
+    drugs = adata.obs.loc[adata.obs[fold] == "test", "pert_idx"].astype(
+        int).values
+    if len(drugs) != deg_true.shape[0]:
+        die(f"aggregate: profile/cell mismatch for {key}: "
+            f"{deg_true.shape[0]} predictions vs {len(drugs)} test cells")
+    return compute_vcc_metrics(deg_true, deg_pred, drugs)
+
+
 def aggregate(masks_df):
     rows = []
     for _, mrow in masks_df.iterrows():
@@ -553,6 +606,8 @@ def aggregate(masks_df):
             die(f"aggregate: {csv} is not a test-mode result CSV — "
                 f"re-run that (seed, mode, fraction)")
         met = df.iloc[0].to_dict()
+        vcc = _vcc_for_run(int(mrow["seed"]), mrow["mode"],
+                           mrow["fraction_tag"])
         rows.append({
             "seed": int(mrow["seed"]),
             "mode": mrow["mode"],
@@ -561,6 +616,7 @@ def aggregate(masks_df):
             "n_test": int(mrow["n_test"]),
             "n_absent_drugs": int(mrow["n_absent_drugs"]),
             **{m: met.get(m, np.nan) for m in METRICS},
+            **{m: vcc.get(m, np.nan) for m in VCC_METRICS},
         })
     # pretrain anchors (fraction -> 0)
     for seed in SEEDS:
@@ -573,6 +629,7 @@ def aggregate(masks_df):
             die(f"aggregate: {csv} is not a test-mode result CSV")
         met = df.iloc[0].to_dict()
         seed_test = masks_df[masks_df["seed"] == seed].iloc[0]
+        vcc = _vcc_for_run(seed, "pretrain", None)
         rows.append({
             "seed": seed,
             "mode": "pretrain",
@@ -581,10 +638,11 @@ def aggregate(masks_df):
             "n_test": int(seed_test["n_test"]),
             "n_absent_drugs": int(seed_test["n_test_drugs"]),
             **{m: met.get(m, np.nan) for m in METRICS},
+            **{m: vcc.get(m, np.nan) for m in VCC_METRICS},
         })
     out = pd.DataFrame(rows, columns=[
         "seed", "mode", "fraction", "n_train", "n_test", "n_absent_drugs"] +
-        METRICS)
+        METRICS + VCC_METRICS)
     out = out.sort_values(["seed", "mode", "fraction"]).reset_index(drop=True)
     out.to_csv(OUTPUT_DIR / "ablation.csv", index=False)
     log(f"Aggregated {len(out)} rows -> {OUTPUT_DIR / 'ablation.csv'}")
@@ -592,18 +650,32 @@ def aggregate(masks_df):
 
 
 def plot_ablation(ablation):
-    anchor_x = min(FRACTIONS) / 2  # fraction -> 0 (below 1/16)
+    # The L1000-pretrain anchor is plotted as a regular sixth column at
+    # fraction -> 0 (x = min(FRACTIONS)/2, since 0 sits off a log axis),
+    # tick-labelled "0" and styled exactly like the other columns: black
+    # per-seed scatter + blue mean +/- std curve, no separate legend entry.
+    # Four rows: warm-start (rows 1-2) then cold-drug (rows 3-4); within each
+    # mode, the original deg metrics row is followed by the VCC metrics row.
+    anchor_x = min(FRACTIONS) / 2
     x = np.array(FRACTIONS)
-    fig, axes = plt.subplots(2, len(PLOT_METRICS), figsize=(19, 8))
-    for r, mode in enumerate(MODES):
+    x_plot = np.concatenate(([anchor_x], x))
+    x_labels = ["0", "1/16", "1/8", "1/4", "1/2", "1.0"]
+    rows = [(m, metric_list)
+            for m in MODES
+            for metric_list in (PLOT_METRICS, PLOT_VCC)]
+    fig, axes = plt.subplots(len(rows), len(PLOT_METRICS), figsize=(19, 16))
+    for r, (mode, metric_list) in enumerate(rows):
         sub = ablation[ablation["mode"] == mode]
         anchors = ablation[ablation["mode"] == "pretrain"]
-        for c, (label, metric) in enumerate(PLOT_METRICS):
+        for c, (label, metric) in enumerate(metric_list):
             ax = axes[r, c]
             means, stds = [], []
-            for f in FRACTIONS:
-                vals = sub.loc[sub["fraction"] == f, metric].astype(
-                    float).values
+            for j, f in enumerate(x_plot):
+                if j == 0:
+                    vals = anchors[metric].astype(float).values
+                else:
+                    vals = sub.loc[sub["fraction"] == x[j - 1], metric].astype(
+                        float).values
                 if len(vals) != len(SEEDS):
                     die(f"plot: expected {len(SEEDS)} seed points at "
                         f"{mode} {f} for {metric}, got {len(vals)}")
@@ -612,30 +684,22 @@ def plot_ablation(ablation):
                 ax.scatter([f] * len(vals), vals, s=18, color="black",
                            zorder=3, alpha=0.75)
             means, stds = np.array(means), np.array(stds)
-            ax.plot(x, means, "-o", color="steelblue", lw=1.8, zorder=2)
-            ax.fill_between(x, means - stds, means + stds, alpha=0.22,
+            ax.plot(x_plot, means, "-o", color="steelblue", lw=1.8, zorder=2)
+            ax.fill_between(x_plot, means - stds, means + stds, alpha=0.22,
                             color="steelblue")
-            a_vals = anchors[metric].astype(float).values
-            ax.scatter([anchor_x] * len(a_vals), a_vals, marker="D", s=42,
-                       color="#e8a13c", zorder=4,
-                       label=f"{ANCHOR_LABEL} (L1000, no finetune)")
-            ax.axvline(anchor_x, color="#e8a13c", lw=0.8, ls=":", alpha=0.6)
             ax.set_xscale("log")
-            ax.set_xticks(list(x) + [anchor_x])
-            ax.set_xticklabels(
-                ["1/16", "1/8", "1/4", "1/2", "1.0", ANCHOR_LABEL], fontsize=8)
+            ax.set_xticks(list(x_plot))
+            ax.set_xticklabels(x_labels, fontsize=8)
             ax.set_title(f"{label} ({metric})", fontsize=11, fontweight="bold")
             ax.spines["top"].set_visible(False)
             ax.spines["right"].set_visible(False)
         axes[r, 0].set_ylabel(mode, fontsize=12, fontweight="bold")
         axes[r, 0].yaxis.set_label_position("left")
-    handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=1, fontsize=11,
-               frameon=False, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle("XPert finetune-corpus data-ablation — test metrics vs "
-                 f"train-size fraction (3 seeds; x = fraction log scale; "
-                 f"{ANCHOR_LABEL} = L1000 pretrain weight, no finetune, at "
-                 f"fraction->0)", fontsize=13, fontweight="bold")
+                 "train-size fraction (3 seeds; x = fraction log scale; "
+                 "column 0 = L1000 pretrain weight, no finetune; VCC rows = "
+                 "PDS/JAC/FID/REACH, raw, higher-is-better)",
+                 fontsize=13, fontweight="bold")
     fig.tight_layout()
     out_png = OUTPUT_DIR / "ablation.png"
     fig.savefig(out_png, dpi=120, bbox_inches="tight")
@@ -670,7 +734,23 @@ def write_report(ablation):
             lines.append(f"| {mode} | {label} | " +
                          " | ".join(f"{v:.3f}" for v in vals) +
                          f" | {anc:.3f} |")
+        for label, metric in PLOT_VCC:
+            vals = [sub.loc[sub["fraction"] == f, metric].mean()
+                    for f in FRACTIONS]
+            anc = ablation[ablation["mode"] == "pretrain"][metric].mean()
+            lines.append(f"| {mode} | {label} | " +
+                         " | ".join(f"{v:.3f}" for v in vals) +
+                         f" | {anc:.3f} |")
     lines += [
+        "",
+        "PDS / JAC / FID / REACH are the four raw (unscaled) higher-is-better "
+        "Virtual Cell Challenge 2026 metrics (cell_eval2 vcc2026 profile), "
+        "computed per drug from the per-cell predicted DEGs and averaged over "
+        "the test drugs. Because the test set holds ~5 cells per drug, the DE "
+        "gene set for JAC/FID/REACH uses the top-50 genes by |log2FC| (not a "
+        "Wilcoxon p_adj<0.05 set, which is underpowered at n=5); PDS is a "
+        "cosine-retrieval rank and needs no significance test. No target-gene "
+        "exclusion applies (drug perturbations).",
         "",
         "## Warm-start drug-coverage diagnostic (n_absent_drugs)",
         "",

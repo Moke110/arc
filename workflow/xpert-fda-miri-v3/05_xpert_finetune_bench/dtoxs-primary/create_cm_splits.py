@@ -41,9 +41,9 @@ sample in test >= 1 fold; `cm_full` = every valid sample 'train'; no stale
 fold columns. Any check failing aborts with exit 1.
 
 Usage:
-    python 05_xpert_finetune_bench/create_cm_splits.py \
+    python 05_xpert_finetune_bench/dtoxs-primary/create_cm_splits.py \
         --data 03_cm_finetune_data/output/cm_union.h5ad
-    python 05_xpert_finetune_bench/create_cm_splits.py \
+    python 05_xpert_finetune_bench/dtoxs-primary/create_cm_splits.py \
         --v11 ../../xpert-fda-miri-v1.1/03_cm_finetune_data/output/dtoxs_lincs.h5ad
 """
 
@@ -56,7 +56,7 @@ from pathlib import Path
 import numpy as np
 import scanpy as sc
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "_lib"))
 from utils import N_L1000_DRUGS, V11_DTOXS_LINCS_H5AD  # noqa: E402
