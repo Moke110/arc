@@ -1,7 +1,7 @@
 # AGENTS.md
 
 The **union-CM finetune MIRI screening workflow** (`workflow/xpert-fda-miri-v2/`;
-see docs/adr/0009 + docs/adr/0015): the 11-step sibling of the finalized
+see docs/adr/0009 + docs/adr/0015): steps 01–11 form the 11-step sibling of the finalized
 `workflow/xpert-fda-miri-v1/` (ADR 0007) whose **only substantive change is the
 XPert finetune data**. Instead of v1's frozen DToxS-only `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`,
 steps 05/06/07 train on the workflow-built **union h5ad** of the primary + iPSC
@@ -13,9 +13,11 @@ a single-cell encoding, and the benchmark test sets are **byte-identical to
 v1.1's** (fold columns imported verbatim for the primary arm). Everything else —
 the screened drug scope, step-02 baseline, MIRI phenotype/scoring, filters, and
 integration — is v1-identical, preserved by renumbering the v1 steps to make
-room for the prep step. There is **no agentic report stage** (the former
-`12_report` was removed per spec 1; v1 archives its report as a non-numbered
-`report/` stage).
+room for the prep step. Step 12 (`12_drug_survey/`) is an **agentic evidence
+survey of the step-11 top-20 candidates** (one biomni agent per drug) that
+writes per-drug bilingual dossiers (`drugs/{drug}.md`) and the aggregate
+`reports@20.html` — it is read-only on steps 01–11 and does not change any
+screen output.
 
 ## Scope and provenance (author + CM-dataset data only)
 
@@ -42,19 +44,22 @@ room for the prep step. There is **no agentic report stage** (the former
   clinical Cmax for the 8 primary-only drugs) in
   `03_cm_finetune_data/primary_concentrations.py`.
 
-## Structure (11-step layout)
+## Structure (12-step layout)
 
 - `01_drug_embed/` — merged drug list (`drug_list.py`, 1,004 drugs) + author-reference HG embeddings (`drug_embeddings.py`, byte-parity gate). Identical to v1.
 - `02_cm_baseline/` — consensus baseline from the DToxS-primary control wells of the released LINCS LDS-1593 package (`pert_data/dtoxs_primary/Data/Level3`); byte-identical to v1's baseline.
 - `03_cm_finetune_data/` — **the v2 change**: builds one finetune h5ad per dataset (`output/dtoxs_primary.h5ad` 662 rows, `output/dtoxs_ipsc.h5ad` 296 rows) and concatenates them into the union `output/cm_union.h5ad` (958 rows), from the two finetune datasets (read-only), **per-plate normalized** since ADR 0016 (QN + matched control per `(dataset, plate)`), plus per-dataset gene maps (`output/gene_maps/`), the compound→drug-index manifest (`output/drug_manifest.csv`), the primary-concentration map (`primary_concentrations.py`, cited), a schema gate vs v1's `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`, the delta report vs v1.1's DToxS-LINCS h5ad (`output/finetune_delta.md`, incl. the per-plate deviation), and the composition report `output/finetune_report.html`.
 - `04_xpert_pretrain/` — the workflow-owned pretrain unit (weight + `config/l1000.yaml`), carried over untouched.
-- `05_xpert_finetune_bench/` — union benchmark on the **imported v1.1 folds** (ADR 0014/0015): `create_cm_splits.py` imports v1.1's `warm-start_fold-1..10` + `cold-drug_fold-1..10` verbatim for primary rows (matched by well id, byte-identical test sets) and assigns iPSC rows under the isolation rules (warm-start all-train; cold-drug test drugs excluded from both datasets' train) + `cm_full` (all-train), with three isolation gates; `xpert_finetune_bench.py` benches the 20 folds at **4 epochs** and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/cm_pretrain_eval.yaml`. Comparable column-by-column with v1.1 (identical test sets).
+- `05_xpert_finetune_bench/` — **two independent benchmark methods** (ADR 0018/0019):
+  - **full/** (the official fold benchmark, the ADR 0018 *dtoxs-primary bench* — relocated verbatim under `full/` by ADR 0019, plot kept `full/benchmark.png`): `full/create_cm_splits.py` imports v1.1's `warm-start_fold-1..10` + `cold-drug_fold-1..10` verbatim for primary rows (matched by well id, byte-identical test sets) and assigns iPSC rows under the isolation rules (warm-start all-train; cold-drug test drugs excluded from both datasets' train) + `cm_full` (all-train), with three isolation gates; `full/xpert_finetune_bench.py` benches the 20 folds at **4 epochs** and — as the **first column** (`pretrain`, amber) — zero-shot-evaluates the step-04 L1000 pretrain weight on all 20 fold test sets (no finetuning) under the workflow-owned `config/cm_pretrain_eval.yaml` (step-top-level, shared). Comparable column-by-column with v1.1 (identical test sets). Cached fold weights/results under `full/output/`.
+  - **data-ablation/** (ADR 0019, decoupled from the official folds): `xpert_data_ablation.py` measures how the **finetune-corpus scale** affects XPert test performance on v2's own union (958 rows / 45 drugs). Because a row-uniform test would draw ~40 of 45 drugs into test, the per-seed test sets are **drug-partitioned**: a disjoint tripartition of the 45 union drugs into 3×15 test drugs — each seed tests one third, so every union drug is tested exactly once — with a ~15%-of-union unified test set drawn only from that third. 3 seeds × 2 modes (warm-start | cold-drug) × 5 train-size fractions **{20%, 40%, 60%, 80%, 100%}** (warm pool ~814 rows all 45 drugs; cold pool the 30 hold-out drugs, ~610–655 rows) = 30 runs + 3 L1000-pretrain zero-shot anchors; recipe identical to the official bench. Outputs under `data-ablation/` (masks, `ablation.csv`, 4×4 `ablation.png`, `ablation_report.md`, per-run weights/profiles/results); drives `src.train` via temp h5ads — `cm_union.h5ad`'s 21 official fold columns stay intact.
 - `06_xpert_finetune/` — all-train union finetune (`xpert_finetune.py`, `config/cm.yaml`) -> the final prediction model `output/cm_cm_full/`.
 - `07_xpert_predict/` — perturbed-transcriptome prediction + z-score (`perturb_transcriptome.py`, `zscore.py`); predicts at dose_idx 0 / time_idx 2 (the v1 exposure, unchanged by the real-dose finetune).
 - `08_miri_phenotype/` — integrated MIRI reference gene sets + rank reference.
 - `09_miri_efficacy_scores/` — the three efficacy scorers + z-components + plots.
 - `10_filter/` — WCS<0 + >=6/8 critical-pathway filters.
 - `11_integrate/` — integrated score over all drugs, ranked candidates, deterministic report.
+- `12_drug_survey/` — **agentic top-20 evidence survey** (read-only on steps 01–11): `prompt.md` (the per-drug bilingual agent brief + two-score rubric), `assemble_reports.py` (deterministic dossier → `reports@20.html` builder). Generated outputs: `drugs/{drug}.md` (one bilingual dossier per top-20 drug, each beginning with a parseable key-value header block) + `reports@20.html` (bilingual summary table + embedded dossiers). gitignored (regenerable external-agent output).
 - `input/` — frozen assets (author HG reference, UniMol array, idx→SMILES, FDA drug list, curated `MIRI_pathways.json`), carried over from v1.
 - `_lib/utils.py` — workflow-root-aware paths; `CM_DATA_ROOT`, `CM_DATASETS` (all five, for the data-lake audit), `FINETUNE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc"]`, `N_L1000_DRUGS = 8981`, `AUTHOR_TIME_MAP = {3:0, 6:1, 24:2}`, `L1000_PRETRAIN_H5AD`, `AUTHOR_HG_REFERENCE`, `V11_DTOXS_LINCS_H5AD` (v1.1 fold/delta source).
 - `_lib/gene_mapping.py` — **per-dataset** CM→L1000 landmark maps (symbols / Ensembl / SYMBOL_entrezid), legacy-symbol aware, `corrected_gene_name` never a match key.
@@ -141,7 +146,7 @@ LayerNorm, mean-pooled over the 978 landmarks.
 - **Per-plate gates (ADR 0016)** — step 03: every treated plate carries ≥1
   control well on it (0 samples excluded); each treated sample's `X_ctl`
   equals the mean of its own `(dataset, plate)` control rows.
-- **Fold isolation gates** — `05_xpert_finetune_bench/create_cm_splits.py`:
+- **Fold isolation gates** — `05_xpert_finetune_bench/full/create_cm_splits.py`:
   1) primary test sets **byte-identical to v1.1's** for all 20 fold columns
   (matched by well id), 2) no identical well across train+test per fold,
   3) cold-drug test drugs absent from both datasets' train. Plus the ADR 0014
@@ -167,9 +172,15 @@ python _lib/verify_genes.py                      # per-dataset gene gates (G1/G2
 python 02_cm_baseline/cm_baseline.py             # DToxS-primary consensus baseline
 python 03_cm_finetune_data/build_union.py        # per-dataset h5ads + union + manifest + delta + schema gate (per-plate, ADR 0016)
 python 03_cm_finetune_data/finetune_report.py    # composition report (HTML)
-python 05_xpert_finetune_bench/create_cm_splits.py  # import v1.1 folds + iPSC isolation + gates
+python 05_xpert_finetune_bench/full/create_cm_splits.py  # import v1.1 folds + iPSC isolation + gates
+python 05_xpert_finetune_bench/full/xpert_finetune_bench.py  # official fold bench -> full/ (GPU)
+python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py --dry-run  # drug-partitioned masks + isolation gates (no GPU)
+python 05_xpert_finetune_bench/data-ablation/xpert_data_ablation.py  # data-ablation bench -> data-ablation/ (GPU, 30 runs)
 # GPU steps (05 benchmark / 06 finetune / 07 predict) then 08–11
 python 11_integrate/integrate.py
+# Step 12 (agentic, external biomni; read-only on steps 01–11):
+#   1) run one @biomni subagent per top-20 drug per prompt.md  -> drugs/{drug}.md
+#   2) python 12_drug_survey/assemble_reports.py              -> reports@20.html
 python _lib/build_screen_notebook.py             # regenerate screen.ipynb
 ```
 
@@ -183,13 +194,27 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
   `cm` dataset block and CLI dataset name `cm`; the XPert library treats `cm`
   like `dtoxs` (additive branches in `utils.py`, `model_xpert.py`,
   `predict.py`). Existing `dtoxs` behavior is unchanged. The pretrain eval
-  config (`05_xpert_finetune_bench/config/cm_pretrain_eval.yaml`) mirrors the
-  pretrain dims under the `cm` block (num_pert_dose 10, num_cell_id 240,
-  num_tissue_id 21) so the pretrain checkpoint loads tolerantly.
-- `create_cm_splits.py` **imports** v1.1's fold columns for primary rows and
-  never regenerates them — re-running the splitter on the union would drift the
-  test sets. It requires the v1.1 DToxS-LINCS h5ad (`V11_DTOXS_LINCS_H5AD`,
-  override with `--v11`) to carry the fold columns.
+  config (`05_xpert_finetune_bench/config/cm_pretrain_eval.yaml`) mirrors
+  the pretrain dims under the `cm` block (num_pert_dose 10, num_cell_id 240,
+  num_tissue_id 21) so the pretrain checkpoint loads tolerantly. The
+  data-ablation bench shares it (no copy) and generates its own per-run YAMLs
+  under `05_xpert_finetune_bench/config/` (the same nesting as the fold bench's).
+- `full/create_cm_splits.py` **imports** v1.1's fold columns for primary rows
+  and never regenerates them — re-running the splitter on the union would
+  drift the test sets. It requires the v1.1 DToxS-LINCS h5ad
+  (`V11_DTOXS_LINCS_H5AD`, override with `--v11`) to carry the fold columns.
+- **Two benchmarks, different test sets** (ADR 0019): the official `full/`
+  bench uses the ADR 0014/0015 folds (test sets primary-only, byte-identical
+  to v1.1); the `data-ablation/` bench uses its own per-seed **drug-partitioned
+  unified test sets** (a disjoint tripartition of the 45 union drugs — every
+  drug tested exactly once across the 3 seeds) and is deliberately decoupled.
+  Never mix the two — the ablation's 100% point re-runs on its own split
+  scheme and is NOT the official full/ bench. The ablation drives `src.train`
+  via temporary h5ads and never writes to `cm_union.h5ad` (the 21 official
+  fold columns stay intact); reruns are idempotent per (seed, mode, fraction)
+  via `data-ablation/` caches, resumable after interruption.
+- `xpert_data_ablation.py` is a **diagnostic analysis** only: it does not
+  change the final screen model (step 06 `cm_full`) or any downstream step.
 - Step 07 predicts at `--dose-idx 0 --time-idx 2` (the v1 exposure; the
   library `predict.py` defaults to time 2). After any step-05/06 retrain,
   steps 08–11 must be re-run on the regenerated step-07 DEG table.
@@ -198,5 +223,11 @@ python _lib/build_screen_notebook.py             # regenerate screen.ipynb
 - Steps 05/06 re-run the XPert finetune on the union — GPU-fp-nondeterministic
   across environments; v2's archived predictions are environment-specific,
   exactly as in v1.
-- v2 has **no agentic report stage** (the former `12_report` was removed per
-  spec 1; v1 archives its report as a non-numbered `report/` stage).
+- Step 12 (`12_drug_survey/`) is **agentic and external**: one biomni agent
+  per top-20 drug (prompt.md rubric; agent proposes `score_miri`/`score_iri`,
+  the step owner confirms against the cited evidence). Never fabricate a report
+  or citation — agents report "no evidence found" honestly. Generated dossiers
+  + `reports@20.html` are gitignored (regenerable external-agent output) and
+  resumable (an existing `drugs/{drug}.md` is not re-researched). Step 12 does
+  not alter any step-01–11 output; `assemble_reports.py` flags missing/invalid
+  dossier headers rather than silently dropping rows.

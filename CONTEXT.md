@@ -91,15 +91,16 @@ _Avoid_: drug research report
 ### Benchmarking
 
 **dtoxs-primary benchmark**:
-The official step-05 fold benchmark of a MIRI screen's finetune (ADR 0014/0015/0017): 10 warm-start + 10 cold-drug folds whose **test sets all come from the dtoxs_primary arm** (byte-identical to v1.1/v2 for the rebuilt workflows; the gse244740/gse262419 rows are train-only), plus the L1000-pretrain zero-shot column. Since the restructure its outputs live under `05_xpert_finetune_bench/dtoxs-primary/` (`dtoxs-primary-bench.png`), so named because it measures primary-arm test performance.
+The official step-05 fold benchmark of a MIRI screen's finetune (ADR 0014/0015/0017): 10 warm-start + 10 cold-drug folds whose **test sets all come from the dtoxs_primary arm** (byte-identical to v1.1/v2 for the rebuilt workflows; the gse244740/gse262419 rows are train-only), plus the L1000-pretrain zero-shot column. It measures primary-arm test performance, so named in ADR 0018; after each restructure its outputs live under a dedicated subdirectory of the workflow's `05_xpert_finetune_bench/` — v3 `dtoxs-primary/` (`dtoxs-primary-bench.png`), v2 `full/` (relocated verbatim under ADR 0019, plot kept `benchmark.png`).
 _Avoid_: full bench, union bench
 
 **Data-ablation benchmark**:
-The step-05 experiment (decoupled from the official folds) measuring how the finetune-corpus **scale** affects XPert test performance in both warm-start and cold-drug modes: 3 seeds × 2 modes × 5 train-size fractions {1/16, 1/8, 1/4, 1/2, 1.0}. Each seed holds one **unified test set** (~15% of the 4-dataset union, uniform random), shared by every fraction of both modes; train = a dataset-stratified f-subsample of the seed's train pool (warm-start: union minus test; cold-drug: union minus test minus all test-drug samples). Recipe identical to the official fold bench; the L1000-pretrain weight anchors the curve at 0 rows. Outputs under `05_xpert_finetune_bench/data-ablation/`.
+The step-05 experiment (decoupled from the official folds) measuring how the finetune-corpus **scale** affects XPert test performance in both warm-start and cold-drug modes. Each workflow holds its own unified test set per seed (see below) shared by every fraction of both modes; train = a dataset-stratified f-subsample of the seed's train pool. v3's (ADR 0018, ~180-drug 4-dataset union): 3 seeds × 2 modes × 5 row fractions {1/16, 1/8, 1/4, 1/2, 1.0}. v2's (ADR 0019, 45-drug 2-dataset union): a **drug-partitioned** variant — the union's drugs form a disjoint tripartition of 3×15 test drugs, each seed tests one third (every union drug tested exactly once), test ~15% of the union drawn only from that third, with 5 arithmetic fractions {20%, 40%, 60%, 80%, 100%}; the row-uniform recipe would collapse v2's cold-drug pool to a handful of rows. Recipe identical to the official fold bench; the L1000-pretrain weight anchors the curve at 0 rows. Outputs under each workflow's `05_xpert_finetune_bench/data-ablation/`.
 _Avoid_: scale sweep, ablation study (the term is the experiment itself)
 
 **Unified test set**:
-A single held-out test set per seed (~15% of the union, uniform random, composition mirroring the union) shared by every fraction and both modes of the Data-ablation benchmark — distinct from the official fold test sets, which are per-fold and primary-only. The ablation's test sets include gse244740/gse262419 samples and therefore must never be confused with the ADR 0017 contract test sets.
+A single held-out test set per seed of the Data-ablation benchmark — in v3 ~15% of the 4-dataset union by uniform random row sample; in v2 ~15% of the union drawn only from that seed's drug-third (drug-partitioned) — shared by every fraction and both modes. Distinct from the official fold test sets, which are per-fold and primary-only.
+
 
 ### Boundary
 

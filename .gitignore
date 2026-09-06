@@ -76,9 +76,13 @@ Thumbs.db
 # Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
 workflow/xpert-fda-miri-v0/
 
-# Per-drug biomni agent JSONs (regenerable external-agent output)
+# Per-drug biomni agent JSONs / dossiers (regenerable external-agent output)
 workflow/xpert-fda-miri-v1/report/cache/
-workflow/xpert-fda-miri-v2/12_report/cache/
+workflow/xpert-fda-miri-v2/12_drug_survey/drugs/
+workflow/xpert-fda-miri-v2/12_drug_survey/reports@20.html
+
+# Upstream third-party model clone (read-only reference; nested git, data/weights)
+pert_model/TranSiGen/
 
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 reference/hg-fda-extension-archive/

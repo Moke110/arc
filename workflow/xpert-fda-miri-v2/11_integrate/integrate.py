@@ -20,6 +20,7 @@ Outputs:
   11_integrate/output/report.md             — deterministic final report
   11_integrate/heatmap_rank.png             — score-percentile heatmap (all filtered)
   11_integrate/heatmap_rank@50.png          — same, integrated pct >= 0.5
+  11_integrate/heatmap_rank@20.jpg          — same, top 20 by integrated score
 
 Usage:
     python 11_integrate/integrate.py
@@ -206,6 +207,12 @@ def main():
         top, integrated, critical,
         f"MIRI Drug Ranking — Integrated pct >= 0.5 ({len(top)}/{len(merged)} filtered drugs)",
         "heatmap_rank@50.png")
+
+    top20 = merged.head(20)
+    render_rank_heatmap(
+        top20, integrated, critical,
+        f"MIRI Drug Ranking — Top 20 by integrated score ({len(top20)} drugs)",
+        "heatmap_rank@20.jpg")
 
     print(f"\nStep 11 complete — top candidates:")
     for i, (_, row) in enumerate(ranked.head(10).iterrows()):
