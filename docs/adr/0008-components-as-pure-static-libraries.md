@@ -9,7 +9,7 @@ ADR 0002 made workflows own the artifacts they consume, but the components still
 ## Decision
 
 - **XPert stays code + metadata**: `src/`, `metadata/` (gene info, PPI vectors), `metrics/`, `reproducing/`, and the pretrain `run.sh` recipe stay in the library. The used pretrain checkpoint and the pretrain YAML move into the workflow (`workflow/xpert-fda-miri-v1/03_xpert_pretrain/`); the two unused pretrain checkpoints are deleted; the three L1000 pretrain h5ads move to the dataset home `pert_data/l1000-xpert/`.
-- **HG stays code only**: `src/`, `run.sh`, `run.ipynb`, `AGENTS.md` remain. The author HG reference moves into the workflow `input/`; the orphaned FDA-extension data/weights (graph caches, KPGT embeddings, HG checkpoints, figshare zips) move to the gitignored archive `reference/hg-fda-extension-archive/` (paths mirror the origin component layout for provenance).
+- **HG stays code only**: `src/`, `run.sh`, `run.ipynb`, `AGENTS.md` remain. The author HG reference moves into the workflow `input/`; the orphaned FDA-extension data/weights (graph caches, KPGT embeddings, HG checkpoints, figshare zips) move to the gitignored archive `archived/hg-fda-extension-archive/` (paths mirror the origin component layout for provenance).
 - **The finalized workflow owns all its inputs**: `input/` is a real directory holding the frozen UniMol array, idx→SMILES mapping, DToxS h5ad, FDA drug list, curated MIRI pathways, and the author HG reference; the pretrain weight + both YAML recipes (pretrain + finetune) live in the workflow.
 - `pert_data/dtoxs-xpert/` (raw GEO deposit: `pert_data/dtoxs_primary/`) and `disease_data/miri/{GSE}/` remain shared static inputs.
 

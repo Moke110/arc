@@ -4,7 +4,7 @@
 > FDA-extension workflow variants (v1 HG finetune, v2 author-pinned inference)
 > are removed; the canonical screen is the L1000-contained
 > `workflow/xpert-fda-miri-v1`. The FDA-extension machinery and its data/weights
-> are preserved for provenance in the gitignored `reference/hg-fda-extension-archive/`.
+> are preserved for provenance in the gitignored `archived/hg-fda-extension-archive/`.
 
 The `xpert-fda-v2` workflow extends the HG drug table to the 2,123 FDA-extension drugs (rows 8981–11103) using **author-pinned frozen inference** instead of the v1 low-LR finetune, keeping rows 0–8980 byte-identical to the author reference by construction.
 

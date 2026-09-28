@@ -52,11 +52,11 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 ### Literature
 
-- [`reference/xpert_article.md`](../../reference/xpert_article.md)
+- [`reference/markdowns/2026_Yang_XPert.md`](../../reference/markdowns/2026_Yang_XPert.md) (PDF: [`reference/PDFs/2026_Yang_XPert.pdf`](../../reference/PDFs/2026_Yang_XPert.pdf))
   The XPert paper (transcript to md). Grounds the dual-branch design and L1000 prediction task.
 - [`reference/DToxS_article.md`](../../reference/DToxS_article.md)
   DToxS (cardiotoxicity hPSC-CM) dataset. Grounds what the finetune task measures.
-- `reference/Deep representation learning of chemical-induced transcriptional profile...pdf` — the HG/contrastive-graph lineage.
+- [`reference/PDFs/2024_Zheng_TranSiGen.pdf`](../../reference/PDFs/2024_Zheng_TranSiGen.pdf) — the HG/contrastive-graph lineage.
 - [ADR 0002: components-as-libraries](../../docs/adr/0002-components-as-libraries.md)
   Why v1 moved finetune/predict artifacts out of the libraries and into the workflow.
 

@@ -85,7 +85,7 @@ workflow/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 pert_model/TranSiGen/
 
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
-reference/hg-fda-extension-archive/
+/archived/
 
 # Literature reference PDF archive (large, background reading only)
 /reference/
