@@ -4,6 +4,22 @@ AI-driven drug repositioning for cardiac diseases. Predict the transcriptional p
 
 ## Language
 
+### Roadmap
+
+**Stage**:
+A program-level milestone of the AICM roadmap, with its own entry and exit conditions, spanning one or more workflows. A Stage is not a workflow *step* (one of the 11 numbered steps inside a workflow) and not a *component* (a reusable static library).
+_Avoid_: phase, milestone, step
+
+**Stage 1**:
+The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
+
+**Stage 2**:
+The AICM stage that benchmarks **whole-transcriptome** drug-perturbation models on cardiomyocytes to select the model that should feed future MIRI perturbome prediction. Versioned: **Stage 2 v1** (`workflow/cm_bench_v1/`, core models) and **Stage 2 v2** (core + extended models). Stage 2 uses no L1000-landmark subset; Stage 1's evaluation is method-reference only. Stage 2's v1/v2 are *benchmark versions*, distinct from Stage 1's screen versions (v1–v3).
+_Avoid_: phase
+
+**Benchmark workflow**:
+A workflow whose purpose is to train and/or evaluate perturbation models on CM data and rank them (Stage 2), as opposed to a drug-screening *repositioning workflow*. Lives under `workflow/` (e.g., `workflow/cm_bench_v1/`).
+
 ### Categories
 
 **Dev-tool files**:
@@ -12,7 +28,7 @@ _Avoid_: tooling, meta
 
 **Perturbation component**:
 One of the three building blocks of prediction: a perturbation dataset (`pert_data/`), a drug embedding model (`drug_emb_model/`), or a perturbation prediction model (`pert_model/`). Components are pure static libraries (ADR 0008): `src/` code + small metadata only; data/weights live in the consuming workflow or dataset home.
-_Avoid_: module, stage
+_Avoid_: module
 
 **Repositioning workflow**:
 A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data, untouched); `workflow/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (finetune data rebuilt from the LINCS LDS-1593 wells, per-plate normalized since ADR 0016, 11 steps — the agentic report step was removed); `workflow/xpert-fda-miri-v2/` is its DToxS-primary + DToxS-iPSC-CM finetune sibling (ADR 0015), aligned to v1.1's benchmark test sets with a single-cell encoding, per-plate normalized since ADR 0016, 11 steps; `workflow/xpert-fda-miri-v3/` is its all-CM finetune sibling (ADR 0017) training on all four usable CM datasets (primary + iPSC + gse244740 + gse262419) with train-only benchmark rows for the added datasets, 11 steps; `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
@@ -63,7 +79,7 @@ _Avoid_: cardio cell, per-donor encoding
 The per-drug real µM concentration used to bin each finetune sample's dose via the author `assign_pert_dose_corrected` scheme. Sources: the DToxS-primary paper Table S1 (23 KIs), the iPSC-CM series matrix (shared non-KIs, verified 22/23 match), and literature-curated clinical Cmax with citations for the remaining 8 primary-only drugs (SB-431542 uses its standard in-vitro assay concentration — it has no clinical Cmax). This amends the "no external database" provenance rule for the dose field only: concentrations must be cited.
 _Avoid_: single-dose convention, dose 0
 
-### Workflow stages (finalized step layouts)
+### Workflow step layouts
 
 All four MIRI screens (v1, v1.1, v2, v3) share the same 11-step layout: `01_drug_embed`, `02_cm_baseline`, `03_cm_finetune_data`, `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`, `07_xpert_predict`, `08_miri_phenotype`, `09_miri_efficacy_scores`, `10_filter`, `11_integrate`. They differ only in the finetune-data composition (v1's frozen DToxS / v1.1's DToxS-LINCS / v2's primary+iPSC union / v3's all-four-CM union). The agentic report step is **no longer a numbered step** in any workflow (removed per spec 1); v1 keeps its archived, non-numbered `report/` stage.
 
