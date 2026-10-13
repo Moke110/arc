@@ -5,6 +5,22 @@ Terminology lives in `CONTEXT.md`; decisions in `docs/adr/`; per-feature specs i
 `.scratch/<slug>/`. A *Stage* is a program-level milestone — distinct from a workflow
 *step* and from a *component* (see `CONTEXT.md` → Roadmap).
 
+## Thesis (开题)
+
+**利用虚拟细胞技术筛选缺血性心脏病治疗药物** — *Using virtual-cell technology to screen
+drugs for ischemic heart disease.* This proposal frames the AICM effort below; the
+Stage-1/2 screens target MIRI (myocardial ischemia-reperfusion injury) as the
+ischemic-heart-disease transcriptional signature to reverse. Proposal deck:
+`presentation/开题.pptx` (20 slides + speaker notes; the deck is now the single
+proposal content source — the earlier Markdown outline was retired). Background
+literature review: `presentation/my_review.md`.
+
+Proposal framing (decided 2026-10-11): 5 chapters (1 立题依据 / 2 研究目标与内容含创新 /
+3 现有研究结果 / 4 后续研究计划 / 5 参考文献); unified spine **模型→药效→闭环**; foregrounds
+the **v2** screen as the representative Stage-1 result — **v1/v1.1/v3 are treated as immature
+preliminary exploration and are not mentioned anywhere in the proposal**. Sample-scarcity
+argument cites Amrute (Nature 2024) + Xie (Science 2026).
+
 ## Stage 1 — XPert + DToxS MIRI drug repositioning (complete)
 
 **Method.** Finetune the author-pretrained XPert (L1000) on cardiomyocyte drug-perturbation
@@ -34,11 +50,20 @@ the union builds are ADR 0016/0017.
 > cold-drug. The data-ablation (v2/v3) shows test performance rising with finetune-corpus
 scale and saturating — CM data still pays off at the top of the current corpus.
 
+**Wet-lab validation (first experimental check).** Two candidates — trimethoprim (MP, 甲氧苄啶)
+and mirtazapine (MT, 米氮平) — were taken into wet-lab experiments: CCK8 cardiomyocyte viability
+(safety, and hypoxia/reoxygenation efficacy) and a mouse IR model (%EF/%FS/infarct, plus a non-IR
+safety arm). Both were non-toxic in vitro and in vivo; **MT significantly reduced infarct area**
+(IR+MT vs IR, p<0.01) while MP did not, and neither reached significance on echo. The first
+experimental readout for the screen thus **partially supports MT** and **does not support MP**.
+Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
+
 **Known limitations.**
 - XPert predicted perturbations are ~97.2% down-regulated DEGs with low inter-drug variance
   (documented in the v3 data-ablation spec) — a structural bias that limits drug discrimination.
 - The screen's target is transcriptional MIRI reversal, not an experimental cardioprotection
-  endpoint; there is no wet-lab ground truth yet.
+  endpoint. The first wet-lab validation (above) is small-n, single-dose, and covers only two
+  candidates, so the screen still lacks a systematic experimental ground truth.
 - Cardiotoxicity scoring is deferred (`CONTEXT.md` → Cardiotoxicity score).
 
 ## Stage 2 — CM benchmark of open-source drug-perturbation models (planned)

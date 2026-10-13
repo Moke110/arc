@@ -28,6 +28,7 @@ env/
 *.pt
 *.pth
 *.ckpt
+*.safetensors
 *.h5
 *.hdf5
 *.pkl
@@ -72,6 +73,7 @@ Thumbs.db
 .serena/
 .uploads/
 .scratch/
+tmp/
 
 # Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
 workflow/xpert-fda-miri-v0/

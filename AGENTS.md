@@ -7,8 +7,10 @@ Routing index for the ARC repo root: AI-driven MIRI drug-repositioning pipeline 
 - `pert_model/` — XPert drug-perturbation prediction library; plus non-implemented new-model design docs.
 - `workflow/` — MIRI workflows: frozen v0, finalized v1/v1.1/v2/v3 screens, plus bench HTML; and the Stage 2 whole-transcriptome benchmark `workflow/cm_bench_v1/`.
 - `disease_data/` — shared per-GSE MIRI disease inputs (raw data + DEG lists).
+- `wet_data/` — Stage-1 wet-lab validation raw data (result figures pptx + animal-experiment plan; gitignored); record in `docs/wetlab-validation-stage1.md`.
 - `reference/` — background literature library (PDFs, markdowns, index; gitignored).
-- `docs/` — ADRs, the AICM roadmap (`roadmap.md`), agent docs, and teaching material.
+- `presentation/` — thesis proposal deck (`开题.pptx`, 20 slides + notes) and its background literature review (`my_review.md`).
+- `docs/` — ADRs, the AICM roadmap (`roadmap.md`), the wet-lab record (`wetlab-validation-stage1.md`), agent docs, and teaching material.
 - `archived/` — gitignored provenance archive of orphaned HG FDA-extension data/weights.
 - `logs/` — runtime logs (e.g. unimol_tools).
 - `CONTEXT.md` — workspace overview and category taxonomy.

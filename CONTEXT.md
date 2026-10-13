@@ -23,7 +23,7 @@ A workflow whose purpose is to train and/or evaluate perturbation models on CM d
 ### Categories
 
 **Dev-tool files**:
-Files that support the workspace itself rather than the science: `.gitignore`, `skills-lock.json`, `.agents/`, `docs/`, `reference/`, `AGENTS.md`, `environment.yml`.
+Files that support the workspace itself rather than the science: `.gitignore`, `skills-lock.json`, `.agents/`, `docs/`, `reference/`, `presentation/`, `AGENTS.md`, `environment.yml`.
 _Avoid_: tooling, meta
 
 **Perturbation component**:
@@ -44,8 +44,12 @@ _Avoid_: input data, shared data
 A learned vector representation of a drug: HG biological embedding (256-dim) and UniMol 3D features (122×514). Produced by embedding-model inference; consumed by finetune and predict. The finalized MIRI screen uses only the author-reference HG table (byte-identical) plus the precomputed UniMol array.
 _Avoid_: drug feature
 
+**Perturbome (扰动组)**:
+The transcriptomic change Δ a drug induces in a cell relative to its matched control — scale-agnostic, the umbrella notion. Two scales in AICM: the **978 L1000-landmark** instance (Stage 1, see `Perturbed transcriptome`) and the **whole-transcriptome** instance (Stage 2 model output). The thesis spine is 模型→药效→闭环 over the perturbome.
+_Avoid_: perturbation profile, drug signature
+
 **Perturbed transcriptome**:
-The predicted expression of 978 L1000 landmark genes for a drug-treated cell. Produced by XPert inference; z-scored and scored in the workflow.
+The **978-landmark instance** of the perturbome: the predicted expression of 978 L1000 landmark genes for a drug-treated cell. Produced by XPert inference; z-scored and scored in the workflow. Distinct from Stage 2's whole-transcriptome instance.
 
 **Drug list**:
 The set of drugs a workflow screens — for `xpert-fda-miri-v1`/`v1.1`/`v2`/`v3`, the 1,004 L1000-contained FDA drugs (exact canonical-SMILES match, `drug_idx < 8981`). Identity of each drug is its SMILES; the canonical mapping is `all_drugs_idx2smi.npy`.
@@ -116,6 +120,17 @@ _Avoid_: scale sweep, ablation study (the term is the experiment itself)
 
 **Unified test set**:
 A single held-out test set per seed of the Data-ablation benchmark — in v3 ~15% of the 4-dataset union by uniform random row sample; in v2 ~15% of the union drawn only from that seed's drug-third (drug-partitioned) — shared by every fraction and both modes. Distinct from the official fold test sets, which are per-fold and primary-only.
+
+
+### Experimental validation
+
+**Wet-lab validation (Stage 1)**:
+The first experimental check of Stage-1 drug candidates, run outside the repository and recorded at `docs/wetlab-validation-stage1.md` (raw data in `wet_data/`, gitignored): cardiomyocyte CCK8 viability (safety; hypoxia/reoxygenation efficacy) and a mouse IR model (%EF/%FS/infarct, with a non-IR safety arm). The two candidates are trimethoprim (MP) and mirtazapine (MT).
+_Avoid_: in-vivo validation, experiment (unqualified)
+
+**MP / MT**:
+Two-letter shorthand for the Stage-1 wet-lab-validation candidates — **MP** = trimethoprim (甲氧苄啶), **MT** = mirtazapine (米氮平). Used only in the wet-lab-validation record and discussions of it; the screens themselves use full drug names.
+_Avoid_: reusing MP/MT for other compounds
 
 
 ### Boundary
