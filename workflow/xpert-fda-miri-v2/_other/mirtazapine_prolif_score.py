@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-13_other — proliferation-pathway effect of a v2-screened drug on the
+_other — proliferation-pathway effect of a v2-screened drug on the
 workflow's predicted cardiomyocyte (CM) perturbed transcriptome.
 
 Question asked for this directory: for a drug screened by the v2 workflow
@@ -49,8 +49,8 @@ Outputs
   output/<drug>_prolif_report.md            bilingual analysis summary
 
 Usage:
-    python 13_other/mirtazapine_prolif_score.py --drug MIRTAZAPINE
-    python 13_other/mirtazapine_prolif_score.py --drug MIRTAZAPINE --min-genes 5
+    python _other/mirtazapine_prolif_score.py --drug MIRTAZAPINE
+    python _other/mirtazapine_prolif_score.py --drug MIRTAZAPINE --min-genes 5
 """
 
 import argparse

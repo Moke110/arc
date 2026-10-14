@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-13_other — assemble the bilingual proliferation-pathway report for a drug.
+_other — assemble the bilingual proliferation-pathway report for a drug.
 
 Consumes the CSVs written by mirtazapine_prolif_score.py (per-term pathway
 scores, family aggregates) plus the v2 step-07 z-scored DEG table, and writes
@@ -8,7 +8,7 @@ scores, family aggregates) plus the v2 step-07 z-scored DEG table, and writes
   output/<drug>_prolif_detail.csv (per-go-term member genes with the drug's z)
 
 Usage:
-    python 13_other/prolif_go_report.py --drug MIRTAZAPINE
+    python _other/prolif_go_report.py --drug MIRTAZAPINE
 """
 
 import argparse
@@ -217,9 +217,9 @@ def main():
       "预测不代表体内心肌细胞实际表型。")
     A("")
     A("---")
-    A(f"生成 / generated: `13_other/mirtazapine_prolif_score.py` + `13_other/prolif_go_report.py`; "
-      f"数据 / data: `13_other/output/mirtazapine_prolif_pathway_scores.csv`, "
-      f"`..._family.csv`, `..._detail.csv`. GO 缓存: `13_other/output/cache/` (QuickGO, 2026-09-08).")
+    A(f"生成 / generated: `_other/mirtazapine_prolif_score.py` + `_other/prolif_go_report.py`; "
+      f"数据 / data: `_other/output/mirtazapine_prolif_pathway_scores.csv`, "
+      f"`..._family.csv`, `..._detail.csv`. GO 缓存: `_other/output/cache/` (QuickGO, 2026-09-08).")
     A("")
 
     md = "\n".join(L)

@@ -16,7 +16,7 @@ external structure lookup). Writes `top20_structure.html` (structures embedded a
 base64 PNG, portable) next to this script, plus the per-drug PNGs under
 `output/top20_structures/`.
 
-Run:  /home/chang/miniconda3/envs/arc/bin/python 13_other/top20_structures.py
+Run:  /home/chang/miniconda3/envs/arc/bin/python _other/top20_structures.py
 """
 from __future__ import annotations
 
@@ -414,7 +414,7 @@ footer {{ margin-top: 34px; font-size: 12px; color: #8a92a1;
 {"".join(scaffold_sections)}
 
 <footer>共 {len(seen)} 个药物 · 神经递质系统 {len(SYSTEMS)} 类 · 分子骨架 {len(SCAFFOLDS)} 组
-（含独特骨架组）· 图像由 RDKit 本地生成（<code>13_other/top20_structures.py</code>），
+（含独特骨架组）· 图像由 RDKit 本地生成（<code>_other/top20_structures.py</code>），
 未使用外部结构数据库。</footer>
 </body>
 </html>

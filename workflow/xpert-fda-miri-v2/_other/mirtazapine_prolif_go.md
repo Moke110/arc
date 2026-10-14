@@ -104,4 +104,4 @@
 - 细胞编码为单一心肌细胞模型（primary+iPSC 并集 finetune，ADR 0015/0016），预测不代表体内心肌细胞实际表型。
 
 ---
-生成 / generated: `13_other/mirtazapine_prolif_score.py` + `13_other/prolif_go_report.py`; 数据 / data: `13_other/output/mirtazapine_prolif_pathway_scores.csv`, `..._family.csv`, `..._detail.csv`. GO 缓存: `13_other/output/cache/` (QuickGO, 2026-09-08).
+生成 / generated: `_other/mirtazapine_prolif_score.py` + `_other/prolif_go_report.py`; 数据 / data: `_other/output/mirtazapine_prolif_pathway_scores.csv`, `..._family.csv`, `..._detail.csv`. GO 缓存: `_other/output/cache/` (QuickGO, 2026-09-08).

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-13_other — cache proliferation-related GO (biological process) data.
+_other — cache proliferation-related GO (biological process) data.
 
 Pulls two small, reproducible reference pieces from the Gene Ontology:
 
@@ -20,8 +20,8 @@ Outputs (all under output/cache/):
   go_prolif_annotations.csv  one row per (annotation id, go_id, symbol, ...)
 
 Usage:
-    python 13_other/go_prolif_fetch.py            # download + cache
-    python 13_other/go_prolif_fetch.py --offline  # reuse cache (must exist)
+    python _other/go_prolif_fetch.py            # download + cache
+    python _other/go_prolif_fetch.py --offline  # reuse cache (must exist)
 """
 
 import argparse

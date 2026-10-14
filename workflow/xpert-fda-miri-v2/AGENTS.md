@@ -15,7 +15,7 @@ Routing index for `workflow/xpert-fda-miri-v2/` — the union-CM finetune MIRI s
 - `10_filter/` — critical-pathway and WCS filters over drug candidates.
 - `11_integrate/` — integrated score, ranked candidates, deterministic report.
 - `12_drug_survey/` — agentic bilingual evidence survey of the top-20 candidates.
-- `13_other/` — ad-hoc analyses outside the numbered screen (GO study, structure gallery).
+- `_other/` — ad-hoc analyses outside the numbered screen (GO study, structure gallery).
 - `_lib/` — shared utils, gene mapping, drug resolution, scoring, verification helpers.
 - `input/` — frozen screen assets: HG reference, UniMol array, SMILES, drug list, pathways.
 - `AGENTS.md` — this routing index.
