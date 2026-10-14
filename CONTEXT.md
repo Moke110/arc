@@ -87,6 +87,14 @@ _Avoid_: single-dose convention, dose 0
 
 All four MIRI screens (v1, v1.1, v2, v3) share the same 11-step layout: `01_drug_embed`, `02_cm_baseline`, `03_cm_finetune_data`, `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`, `07_xpert_predict`, `08_miri_phenotype`, `09_miri_efficacy_scores`, `10_filter`, `11_integrate`. They differ only in the finetune-data composition (v1's frozen DToxS / v1.1's DToxS-LINCS / v2's primary+iPSC union / v3's all-four-CM union). The agentic report step is **no longer a numbered step** in any workflow (removed per spec 1); v1 keeps its archived, non-numbered `report/` stage.
 
+**Non-numbered stage**:
+A workflow subdirectory that is neither one of the numbered screen steps nor a *component*: leading-underscore material (`_lib/`, v2's `_other/`) or a workflow's archived stage (v1's `report/`). Signals "not part of the screen pipeline".
+_Avoid_: extra step, utility folder
+
+**Limitations analysis**:
+A read-only diagnostic step that quantifies a screen's structural bounds — landmark coverage, critical-pathway overlap, screened-drug embedding structure — without changing any screen artifact. v2's is `13_limits/`.
+_Avoid_: weakness report, ablation study
+
 **Pretrain unit**:
 The workflow-owned author pretrained XPert weight + pretrain YAML (`04_xpert_pretrain/` in all of v1/v1.1/v2/v3); the L1000 pretrain h5ads live in `pert_data/l1000-xpert/` (dataset home). Both pretrain and finetune YAML recipes are owned by the workflow.
 
