@@ -7,7 +7,7 @@ Routing index for `workflow/xpert-fda-miri-v2/` — the union-CM finetune MIRI s
 - `02_cm_baseline/` — control consensus baseline for the screen.
 - `03_cm_finetune_data/` — builds the union finetune h5ad, gene maps, manifest, reports, gates.
 - `04_xpert_pretrain/` — workflow-owned L1000 pretrain weight and config.
-- `05_xpert_finetune_bench/` — two finetune benchmarks: `full/` (official folds) and `data-ablation/`.
+- `05_xpert_finetune_bench/` — three finetune benchmarks: `full/` (official folds), `data-ablation/`, and `warmstart_pr/` (direction-aware PR curves + AUPRC on the official warm-start folds).
 - `06_xpert_finetune/` — all-train union finetune producing the final prediction model.
 - `07_xpert_predict/` — perturbed-transcriptome prediction and z-scoring.
 - `08_miri_phenotype/` — integrated MIRI reference gene sets and rank reference.

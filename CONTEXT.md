@@ -129,6 +129,14 @@ _Avoid_: scale sweep, ablation study (the term is the experiment itself)
 **Unified test set**:
 A single held-out test set per seed of the Data-ablation benchmark — in v3 ~15% of the 4-dataset union by uniform random row sample; in v2 ~15% of the union drawn only from that seed's drug-third (drug-partitioned) — shared by every fraction and both modes. Distinct from the official fold test sets, which are per-fold and primary-only.
 
+**Direction-aware AUPRC**:
+The single Stage 2 v1 metric. A perturbation group's true label vector over the common gene universe is split into a significant **up set** and a significant **down set** (everything else is negative in both); the metric is the equal-weight mean of the two one-vs-rest **average precisions**, the up set scored by the model's predicted Δ and the down set by the negated predicted Δ. Equal weighting is the point: neither direction can dominate by set size, a correctly-signed down prediction earns credit, and a sign-blind one does not. Threshold-free on the predicted side (only a ranking is used); a constant prediction yields the true-set prevalence, which is therefore the random baseline. It is an average precision, not the trapezoidal area under the PR curve. Scored per perturbation group, then aggregated per-dataset and equally across datasets (**macro**, the headline). Its true sets are *significant* sets; the XPert fixed top-k/bottom-k convention (**Top-k true set**) produces a non-comparable number.
+_Avoid_: AUPRC (unqualified), PR-AUC, average precision
+
+**Top-k true set**:
+The ground-truth label convention of the Stage 1 XPert benchmark — the step-05 official folds and the `warmstart_pr/` PR/AUPRC analysis: per sample, the true set is the top-k up genes and the bottom-k down genes of that sample's true Δ (k = 100 in the 978-landmark space), every other gene being a negative in both directions. A fixed-truncation (ranking) definition with no significance test, so each direction's prevalence is exactly k/978 and that prevalence is the random AUPRC baseline. Distinct from the **Direction-aware AUPRC** significant-set ground truth; the two are not comparable.
+_Avoid_: DEG set (unqualified), differential set
+
 
 ### Experimental validation
 
