@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path("/home/chang/arc")
-V2 = ROOT / "workflow/xpert-fda-miri-v2/05_xpert_finetune_bench"
+V2 = ROOT / "stage1/xpert-fda-miri-v2/05_xpert_finetune_bench"
 BENCH = V2 / "full/output/benchmark.csv"
 ABLATION = V2 / "data-ablation/ablation.csv"
 OUT = ROOT / "presentation/figures"

@@ -4,7 +4,7 @@
 # Activate: conda activate arc
 #
 # This environment is the single runtime for every component and workflow in
-# the repository (pert_model/xpert, drug_emb_model/hg, workflow/xpert-fda-miri-v1,
+# the repository (pert_model/xpert, drug_emb_model/hg, stage1/xpert-fda-miri-v1,
 # disease_data R ortholog mapping). It is the renamed successor of the old
 # `xpert` environment, and all run.sh / notebook / config references to
 # `conda activate xpert` point here.
@@ -52,7 +52,7 @@ dependencies:
   - bioconductor-org.rn.eg.db
   - pip:
       - unimol_tools
-      # gpt-researcher dependency set (workflow/xpert-fda-miri-v1 stage 08)
+      # gpt-researcher dependency set (stage1/xpert-fda-miri-v1 stage 08)
       # - gpt-researcher
       # - langchain
       # - langchain-openai

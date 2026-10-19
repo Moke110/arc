@@ -63,7 +63,7 @@ Decisions within the experiment:
 CONTEXT.md sense but keeps the name `full/` (a deliberate asymmetry with v3's
 `dtoxs-primary/` directory — v2 has no added train-only datasets, so the
 directory name says "the whole prior bench, moved intact"). Entry points and
-step-05 gotchas in `workflow/xpert-fda-miri-v2/AGENTS.md`, the screen notebook
+step-05 gotchas in `stage1/xpert-fda-miri-v2/AGENTS.md`, the screen notebook
 (`_lib/build_screen_notebook.py`), root `AGENTS.md`, and CONTEXT.md document
 both benchmark methods. The v3 ablation keeps its row-uniform recipe
 unchanged.

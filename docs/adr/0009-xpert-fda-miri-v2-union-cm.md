@@ -1,7 +1,7 @@
 # Union-CM finetune: xpert-fda-miri-v2
 
-The finalized MIRI screen (`workflow/xpert-fda-miri-v1`, ADR 0007) is cloned
-into a **union-CM finetune sibling** `workflow/xpert-fda-miri-v2` whose only
+The finalized MIRI screen (`stage1/xpert-fda-miri-v1`, ADR 0007) is cloned
+into a **union-CM finetune sibling** `stage1/xpert-fda-miri-v2` whose only
 substantive change is the XPert finetune data: instead of the frozen
 DToxS-only `input/dtoxs.h5ad`, the finetune/benchmark/predict steps train on a
 workflow-built **union h5ad** of all five `pert_data/cm` datasets, produced by
@@ -20,7 +20,7 @@ FDA screen trained on the full CM transcriptomic corpus, not just DToxS.
 
 ## Decision
 
-- **Workflow scaffold** — `workflow/xpert-fda-miri-v2` is a copy of v1 with a
+- **Workflow scaffold** — `stage1/xpert-fda-miri-v2` is a copy of v1 with a
   new prep step inserted, giving a 12-step layout:
   `01_drug_embed`, `02_cm_baseline`, **`03_cm_finetune_data`** (new),
   `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`,

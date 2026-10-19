@@ -66,105 +66,55 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
   candidates, so the screen still lacks a systematic experimental ground truth.
 - Cardiotoxicity scoring is deferred (`CONTEXT.md` → Cardiotoxicity score).
 
-## Stage 2 — CM benchmark of open-source drug-perturbation models (planned)
+## Stage 2 — model setup and selection (active)
 
-**Objective.** Model selection: decide which open-source whole-transcriptome model should
-produce the perturbomes that feed future MIRI drug scoring. Motivation: Stage 1's XPert is
-landmark-only and biased (~97.2% down-regulated DEGs, low inter-drug variance).
+**Objective.** Select the open-source whole-transcriptome drug-perturbation model that
+should produce the perturbomes feeding future MIRI drug scoring. The objective is
+unchanged; the plan is now staged so that model setup is not blocked by benchmark
+design.
 
-**Paradigm.** Stage 2 is **whole-transcriptome end-to-end**: entrants are models that
-predict the whole transcriptome; models that only predict the L1000 978 landmarks are
-excluded (this excludes XPert and TranSiGen, the two incumbents). No 978-landmark subset is
-used anywhere; Stage 1's evaluation is a *method reference only*. Stage 1's landmark line
-remains its historical deliverable, but Stage 2 opens a new full-transcriptome line. (ADR
-0020.)
+**Setup (current).** Prove that the nine deployed non-preprint models can run on
+their native assets on this machine. Per model: a pinned environment, a load/train
+run, one prediction artifact, a run log, and a one-page run card. No cross-model
+metrics, no folds, no CM adaptation, and no benchmark design yet.
 
-**Versions & workflow.** Stage 2 v1 = `workflow/cm_bench_v1/` (core entrants). Stage 2 v2
-extends v1 with the phase-2 model families. Repo conventions unchanged: model source lives
-in `pert_model/`, CM data in `pert_data/` — both populated by download (`.git` removed) and
-then untouched; all scripts and artifacts live in the workflow.
+| model | native asset | smoke target | caveat |
+|---|---|---|---|
+| PRnet | LINCS checkpoint + 978-gene demo | `test_demo.py` | **setup-only**; 978 is quarantined from Stage 2 evaluation |
+| CPA | Kang checkpoint + Kang h5ad | load and predict held-out Kang cells | IFN-β stimulation, not a chemical screen |
+| chemCPA | public `ComPert` checkpoints | load and forward | public weights are L1000 977 / 2,000 genes, 188 drugs — **not** 5,000/20,570; real-data inference needs retraining |
+| biolord | none published | train a small model on `GSM_new` | per-drug categories, not a cold-drug structural model |
+| PerturbNet | LINCS/sci-Plex cINN + ChemicalVAE | load and latent forward | full inference needs Python 3.7 / TF 1.15 |
+| scVIDR | none published | synthetic 2,000-gene train + dose predict | dose is log-linear latent interpolation |
+| Squidiff | none published | 2,000-gene drug-structure forward | dose is `rFCFP × log10(dose+1)` |
+| CMonge | bundled sciplex demo | official demo train + eval | 100-gene demo; categorical dose conditions |
+| DECANT | none published | 2,000-gene synthetic forward | no processed cell bags or checkpoint |
 
-**Environment.** Each model runs in its own pinned conda env (dependency conflicts across
-model families are near-certain), named `arc-stage2-<version>-<model>` (e.g.
-`arc-stage2-v1-chemcpa`); the workflow drives each model via `subprocess`. The shared `arc`
-env stays clean for Stage 1. This is a deliberate exception to the single-runtime convention
-(ADR 0021).
+Preprint models (X-Pert, DORA, BaiZe, PerturbLDM) are excluded and their code is
+not vendored. WAVE and ExPO are reference-only (no dose / 978-only).
 
-**Workflow layout** (`cm_bench_v1`): `01_bench_data` (raw → per-plate Δ → common gene
-universe → limma true sets → cold-drug/cold-dose split masks), `02_baselines`,
-`03_<model>` (adapter: train on fold train → predict held-out drug/dose), `04_evaluate`
-(direction-aware AUPRC, per-dataset/per-axis aggregation, leaderboard, report), plus
-`_lib/` and `input/`.
+**978 quarantine.** PRnet's native demo uses the 978-landmark LINCS matrix. It is
+allowed only under `stage2/01_setup/prnet/` and its outputs are labelled
+`setup-only`. No later Stage 2 evaluation reads a 978 artifact; the
+whole-transcriptome guard still applies to Stage 2 itself.
 
-**Entrants (v1 core).** chemCPA, biolord, CPA, scGen, State, plus mandatory baselines
-(`no-change`, `mean-effect`, `ridge-fp`, `nearest-drug`). All support unseen-drug
-(cold-drug) prediction and output the whole transcriptome. Stage 2 v2 adds generative/OT/KG
-families (TxPert, scPRAM, CellOT, MCDP/CFM-GP/LDM-Drug, PRnet) and, in a later tier,
-finetuned single-cell foundation models (scGPT, scFoundation).
+**Environment.** One dedicated environment per model; the shared `arc` env is not
+modified. Existing four keep `arc-stage2-bringup-<model>`; new models use the same
+prefix; biolord and CMonge keep their dedicated venv overlays. The exact commands
+and resolved package versions live in each run card.
 
-**Single metric.** Direction-aware **AUPRC recovering the true significant DEG set**
-(up- and down-regulated sets scored separately, then averaged). Rationale: the MIRI score
-is a pathway-enrichment statistic over the ranked DEG vector, so what matters is whether a
-model ranks a drug's *true* significant genes high (with the correct sign) — precision and
-recall are both captured. Explicitly not PCC. Threshold-free on the predicted side (the
-model only supplies a ranking). Random baseline = the true-set prevalence.
+**Layout.** `stage2/PLAN.md`, `stage2/01_setup/<model>/`, and
+`stage2/audit/`. The old `cm_bench_v1` benchmark is archived at
+`stage2/_archive/cm_bench_v1/` and is not a dependency.
 
-**Model I/O contract.** Input = (the dataset's baseline transcriptome for the cell context,
-the drug, the **dose**); output = the perturbation Δ (whole transcriptome). Time is merged.
-Because the baseline is part of the input and carries the dataset/context scale, each
-dataset uses its own baseline and there is **no cross-dataset harmonization**. Per-plate
-baseline = the mean of the control wells on the same plate (Stage 1's ADR 0016 method,
-referenced only); raw per-dataset normalization (log-CPM/quantile) is applied before Δ.
-Architectures whose native condition is a cell-line embedding rather than the
-control-expression vector (chemCPA, CPA) need an adapter — the main engineering work of
-`cm_bench_v1`.
+**Exit condition.** 9/9 run cards with a successful command and a saved artifact; any
+blocked model recorded with its exact error; no upstream model code edited; a short
+setup summary states which models are ready for the selection stage.
 
-**Evaluation axes.** Two generalization axes, both scored by the same metric: (1)
-**cold-drug** — hold out drugs across all their doses; (2) **cold-dose** — hold out dose
-levels. Cold-dose is feasible only on gse244740 (the only multi-dose dataset: 38 drugs × 8
-doses × 3 wells); DToxS-primary/iPSC are single-dose. Per-(drug, dose) true sets in
-gse244740 rest on 3 wells, so cold-dose true sets are statistically weaker than the
-DToxS cold-drug true sets (16 wells/drug). The **selection criterion is cold-drug AUPRC**
-(deployment predicts unseen FDA drugs); cold-dose is a mandatory robustness column, with
-N/A for architectures that cannot take dose.
+**Selection stage — deferred.** After setup, decide which model(s) deserve CM adaptation,
+which gene space (978 / 5,000 / 20,570) to evaluate, whether CPA/biolord need chemical
+retraining, and what metric/folds to use. No benchmark design is fixed now.
 
-**Ground truth.** Per (dataset, drug, **dose**), time merged: limma moderated one-sample t
-on the per-well deltas (treated − per-plate control) vs 0, BH-FDR < 0.05 (+ optional
-`|mean Δ|` gate), sign of `mean Δ` = direction; drugs/doses with too few replicate wells are
-marked unreliable and dropped from aggregation. Computed on the full-transcriptome gene
-space, from the datasets' raw matrices (the 978 `cm_union.h5ad` is not used). Cold-drug
-split = 5-fold CV over the drug union (each drug tested exactly once); eligible drugs have
-≥4 treated wells in at least one dataset. Cold-dose split = leave-dose-level-out on
-gse244740, holding out one interior (interpolation) and one extreme (extrapolation) level.
-
-**Gene universe.** A single common universe = the **intersection** of the participating
-datasets' gene sets (gene-symbol/Ensembl mapped). True DEG sets and AUPRC are computed only
-in this universe, so the AUPRC random baseline (true-set prevalence) is comparable across
-models. No 978-landmark subset anywhere.
-
-**Datasets & drug scope.** No in-HG restriction. The full-transcriptome CM datasets:
-dtoxs_primary (~12k expressed genes, 3′-DGE), dtoxs_ipsc (38k, RNA-seq), and gse244740
-(44k, ScreenSeq) — together ~**79 drug-like compounds with SMILES** (46 DToxS small
-molecules + 42 gse244740 − 9 overlapping). gse262419 (TempO-Seq panel, ~102 mostly
-environmental compounds) is excluded unless confirmed otherwise. gse244740 SMILES are empty
-in the union build and must be recovered from the raw series matrix.
-
-**Model preparation (compute-constrained).** No entrant is pretrained or trained from
-scratch: each starts from a **public pretrained checkpoint** and is adapted to CM data by
-**finetuning** on the fold's train drugs. A pre-flight checkpoint-availability audit records
-each entrant's public weights and CM-finetune recipe; entrants without a usable public
-checkpoint are dropped from v1 and documented, and zero-shot is used only where a checkpoint
-exists but no finetune recipe does. A model's benchmark score is its cold-drug AUPRC in that
-best-fit form.
-
-**Aggregation.** Primary metric = **macro** AUPRC (per-dataset, datasets equally weighted;
-within a dataset, averaged over its (drug, dose) points). Micro (pooled) and per-drug-equal
-views are reported alongside as robustness diagnostics.
-
-**Exit condition.** A model leaderboard + a recommended winner + a reproducible benchmark.
-Stage 2 does **not** produce a MIRI drug ranking; the full-transcriptome MIRI scorer
-(rebuilt 08/09 on the whole transcriptome) is deferred to a follow-on stage informed by the
-winner.
-
-**Status.** Spec published at `.scratch/cm_bench_v1/spec.md`; 12 execution tickets published
-at `.scratch/cm_bench_v1/issues/` (ready-for-agent).
+**Status.** Setup completed 2026-10-19; results and selection-stage implications at
+`stage2/01_setup/SUMMARY.md`. Plan at `stage2/PLAN.md`; audit at
+`stage2/audit/entrant_audit.md`. `cm_bench_v1` is archived, not deleted.

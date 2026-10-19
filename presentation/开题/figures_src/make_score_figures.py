@@ -3,7 +3,7 @@
 
 For the 开题 slides 15-17 【补】 tasks: each score distribution is redrawn on its
 own, with the background grid and the figure title removed and the fonts
-enlarged. Data: workflow/xpert-fda-miri-v3/09_miri_efficacy_scores/output/scores.csv
+enlarged. Data: stage1/xpert-fda-miri-v3/09_miri_efficacy_scores/output/scores.csv
 
 Outputs (PNG, 200 dpi) -> presentation/figures/
     wcs_distribution.png
@@ -24,7 +24,7 @@ import pandas as pd
 ROOT = Path("/home/chang/arc")
 # The 开题 deck's efficacy-score figures (hist_scores.png) were produced by the
 # v2 workflow; redraw from the same table so the numbers stay consistent.
-SCORES = ROOT / "workflow/xpert-fda-miri-v2/09_miri_efficacy_scores/output/scores.csv"
+SCORES = ROOT / "stage1/xpert-fda-miri-v2/09_miri_efficacy_scores/output/scores.csv"
 OUT = ROOT / "presentation/figures"
 OUT.mkdir(parents=True, exist_ok=True)
 

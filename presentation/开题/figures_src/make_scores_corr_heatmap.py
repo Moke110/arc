@@ -2,7 +2,7 @@
 """Slide-ready redraw of the cross-method Spearman rho heatmap (R11).
 
 Reproduces the SAME 12x12 matrix as ``plot_scores_spearman`` in
-``workflow/xpert-fda-miri-v2/09_miri_efficacy_scores/miri_efficacy_scores.py``
+``stage1/xpert-fda-miri-v2/09_miri_efficacy_scores/miri_efficacy_scores.py``
 from that step's ``output/scores.csv`` (N=1004 drugs), but with LARGER fonts and
 the long 3-line title removed.
 
@@ -22,7 +22,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from scipy.stats import spearmanr
 
 ROOT = Path("/home/chang/arc")
-SCORES = ROOT / "workflow/xpert-fda-miri-v2/09_miri_efficacy_scores/output/scores.csv"
+SCORES = ROOT / "stage1/xpert-fda-miri-v2/09_miri_efficacy_scores/output/scores.csv"
 OUT = ROOT / "presentation/figures/scores_corr_heatmap.png"
 
 CRITICAL = [

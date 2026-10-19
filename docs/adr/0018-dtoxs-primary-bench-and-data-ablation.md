@@ -49,7 +49,7 @@ column (662 / 296 / 2424 / 936 / 6, union 4,318) next to the existing
 treated-sample counts.
 
 **Consequences:** the cross-workflow bench page link
-(`workflow/xpert-bench-v1.html`) is updated to the renamed png; the official
+(`stage1/xpert-bench-v1.html`) is updated to the renamed png; the official
 bench stays authoritative for cross-workflow comparison; step-05 gotchas and
-entry points in `workflow/xpert-fda-miri-v3/AGENTS.md` document both benchmark
+entry points in `stage1/xpert-fda-miri-v3/AGENTS.md` document both benchmark
 methods.

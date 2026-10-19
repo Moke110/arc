@@ -20,7 +20,7 @@ The two notes
 2. slide 24 (【补】 v2 benchmark 中，warm-start 场景下的 PCC, Spearman,
    Pos P@20, Neg P@20 …)
    "v2 benchmark" = our own union-CM finetune benchmark, run by
-   workflow/xpert-fda-miri-v2/05_xpert_finetune_bench/full/ on the DToxS-CM
+   stage1/xpert-fda-miri-v2/05_xpert_finetune_bench/full/ on the DToxS-CM
    data. The 【补】 asks for its warm-start PCC / Spearman / Pos P@20 / Neg P@20,
    so a bar chart of *our* model's 10 warm-start test folds is added (generated
    by make_v2_warmstart_figure.py from full/output/benchmark.csv:

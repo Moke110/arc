@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 ROOT = Path("/home/chang/arc")
-SCORES = ROOT / "workflow/xpert-fda-miri-v2/09_miri_efficacy_scores/output/scores.csv"
-WCS = ROOT / "workflow/xpert-fda-miri-v2/10_filter/output/wcs_filtered.csv"
-PATHF = ROOT / "workflow/xpert-fda-miri-v2/10_filter/output/path_filtered.csv"
+SCORES = ROOT / "stage1/xpert-fda-miri-v2/09_miri_efficacy_scores/output/scores.csv"
+WCS = ROOT / "stage1/xpert-fda-miri-v2/10_filter/output/wcs_filtered.csv"
+PATHF = ROOT / "stage1/xpert-fda-miri-v2/10_filter/output/path_filtered.csv"
 OUT = ROOT / "presentation/figures/miri_filter_progression.png"
 
 plt.rcParams.update({

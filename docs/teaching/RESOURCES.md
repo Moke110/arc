@@ -25,7 +25,7 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
   Overview of XPert as a pure library. Use for: model structure, loss weights, DTOXS splits, entry points, reproducibility notes.
 - [`pretrain/run.sh`](../../pert_model/xpert/pretrain/run.sh)
   Pretrain launcher with defaults (lr 0.004, batch 64, 2500 epochs cap, loss 0.2,0.003,0.2,1, patience 50, drug embeds `unimol,HG`).
-- [`workflow/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml`](../../workflow/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml)
+- [`stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml`](../../stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml)
   Pretrain recipe (workflow-owned); data roots point into `pert_data/l1000-xpert/data/` + the workflow `input/`.
 - [`src/train.py`](../../pert_model/xpert/src/train.py)
   Train/finetune/test/infer loops. Use for: exact loss composition, GradScaler, early stopping on PCC, finetune param handling.
@@ -34,20 +34,20 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 ### Workflows (v0 vs v1)
 
-- [AGENTS.md: `workflow/xpert-fda-miri-v1/`](../../workflow/xpert-fda-miri-v1/AGENTS.md)
+- [AGENTS.md: `stage1/xpert-fda-miri-v1/`](../../stage1/xpert-fda-miri-v1/AGENTS.md)
   Use for: workflow layout, entrypoints, data facts/gotchas, ADR 0002/0008 (artifacts owned by workflow, components pure libraries).
-- [`workflow/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py`](../../workflow/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py)
+- [`stage1/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py`](../../stage1/xpert-fda-miri-v1/01_drug_embed/drug_embeddings.py)
   Step 01: copies the workflow-owned author HG reference (`input/HG_drug_embeddings.npy`) with a byte-parity gate.
-- [`workflow/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py`](../../workflow/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py) + [`config/dtoxs.yaml`](../../workflow/xpert-fda-miri-v1/06_xpert_finetune/config/dtoxs.yaml)
+- [`stage1/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py`](../../stage1/xpert-fda-miri-v1/06_xpert_finetune/xpert_finetune.py) + [`config/dtoxs.yaml`](../../stage1/xpert-fda-miri-v1/06_xpert_finetune/config/dtoxs.yaml)
   Step 06: all-train dtoxs finetune, artifacts moved into step output.
-- [`workflow/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py`](../../workflow/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py)
+- [`stage1/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py`](../../stage1/xpert-fda-miri-v1/05_xpert_finetune_bench/xpert_finetune_bench.py)
   Step 05: warm-start / cold-drug / cold-cate benchmark folds.
-- [`workflow/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py`](../../workflow/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py)
+- [`stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py`](../../stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py)
   Step 07: FDA prediction → `xpert_fda-cm_deg.csv`.
 - v0 finetune/predict (pre-refactor, viewable via git):
   `git show 47e1604^:pert_model/xpert/finetune/run.sh` and `git show 47e1604^:pert_model/xpert/predict/predict.sh`
   The old library-owned orchestration that v1 replaced.
-- [`workflow/xpert-fda-miri-v0/scripts/run_all.py`](../../workflow/xpert-fda-miri-v0/scripts/run_all.py)
+- [`stage1/xpert-fda-miri-v0/scripts/run_all.py`](../../stage1/xpert-fda-miri-v0/scripts/run_all.py)
   The scoring half that consumed the v0 DEG CSV (WCS+RGES / Zhang / pathway RGES).
 
 ### Literature

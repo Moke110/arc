@@ -82,7 +82,7 @@ v0 = ran directly inside `drug_emb_model/hg/`.
 -> [output]xpert_fda-cm_deg.csv
 ```
 
-### v1 · workflow step-wise (`workflow/xpert-fda-miri-v1/`)
+### v1 · workflow step-wise (`stage1/xpert-fda-miri-v1/`)
 ```
 [model]XPert_l1000
 + [data]input/dtoxs.h5ad

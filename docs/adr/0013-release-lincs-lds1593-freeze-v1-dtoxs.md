@@ -21,7 +21,7 @@ deposit:
    byte-identical copy of the well-level package (`Data/` `Metadata/`
    `ProcessingPipeline/` `ReadMe.txt`) plus a copy of v1's frozen finetune
    h5ad (`dtoxs.h5ad`, 521 samples / 36 drugs). This is the data
-   `workflow/xpert-fda-miri-v1` consumed; v1's step-02 baseline now reads
+   `stage1/xpert-fda-miri-v1` consumed; v1's step-02 baseline now reads
    `v1-frozen/Data/Level3` and reproduces its cached baseline byte-identically
    (`58c8610…`). v1's code/benchmarks stay untouched.
 

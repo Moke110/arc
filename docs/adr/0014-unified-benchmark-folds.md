@@ -1,6 +1,6 @@
 # Unified benchmark fold scheme across v1 / v1.1 / v2
 
-The three MIRI workflows (`workflow/xpert-fda-miri-v1`, `-v1.1`, `-v2`)
+The three MIRI workflows (`stage1/xpert-fda-miri-v1`, `-v1.1`, `-v2`)
 benchmarked XPert with inconsistent fold schemes, so their benchmark numbers
 were not comparable and the evaluation's meaning was underspecified. This ADR
 defines **one fold principle** and applies it identically (same logic, same

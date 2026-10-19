@@ -6,7 +6,7 @@ The finalized MIRI screen (v1, ADR 0007) froze a DToxS-only finetune; its
 siblings v1.1 (DToxS-LINCS testbed, ADR 0012) and v2 (primary+iPSC union, ADR
 0009/0015) progressively widened the finetune corpus. v3 is the **all-CM
 finetune sibling**: a full 11-step workflow under
-`workflow/xpert-fda-miri-v3/` built from v2 with the finetune-data scope
+`stage1/xpert-fda-miri-v3/` built from v2 with the finetune-data scope
 extended to **four CM datasets** — `dtoxs_primary`, `dtoxs_ipsc`, `gse244740`,
 `gse262419` — under the **per-plate normalization** of ADR 0016. `gse247541`
 is excluded (6-day exposure outside the author time map, 2 in-HG drugs, 12

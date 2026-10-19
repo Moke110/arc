@@ -1,6 +1,6 @@
 # ARC
 
-AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository is split into three categories: dev-tool files, drug perturbation prediction components, and drug repositioning workflows.
+AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository is split into four categories: dev-tool files, drug perturbation prediction components, Stage 1 drug-repositioning workflows (`stage1/`), and Stage 2 model setup/selection (`stage2/`).
 
 ## Language
 
@@ -14,11 +14,11 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that benchmarks **whole-transcriptome** drug-perturbation models on cardiomyocytes to select the model that should feed future MIRI perturbome prediction. Versioned: **Stage 2 v1** (`workflow/cm_bench_v1/`, core models) and **Stage 2 v2** (core + extended models). Stage 2 uses no L1000-landmark subset; Stage 1's evaluation is method-reference only. Stage 2's v1/v2 are *benchmark versions*, distinct from Stage 1's screen versions (v1–v3).
-_Avoid_: phase
+The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. It is currently in the **setup stage** (`stage2/01_setup/`): prove nine deployed non-preprint models load or train in their own environments. No benchmark design, folds, or metric are fixed yet. Stage 2 evaluation still excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
+_Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 
-**Benchmark workflow**:
-A workflow whose purpose is to train and/or evaluate perturbation models on CM data and rank them (Stage 2), as opposed to a drug-screening *repositioning workflow*. Lives under `workflow/` (e.g., `workflow/cm_bench_v1/`).
+**Stage 2 tree**:
+The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
 
 ### Categories
 
@@ -31,7 +31,7 @@ One of the three building blocks of prediction: a perturbation dataset (`pert_da
 _Avoid_: module
 
 **Repositioning workflow**:
-A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `workflow/`: `workflow/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data, untouched); `workflow/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (finetune data rebuilt from the LINCS LDS-1593 wells, per-plate normalized since ADR 0016, 11 steps — the agentic report step was removed); `workflow/xpert-fda-miri-v2/` is its DToxS-primary + DToxS-iPSC-CM finetune sibling (ADR 0015), aligned to v1.1's benchmark test sets with a single-cell encoding, per-plate normalized since ADR 0016, 11 steps; `workflow/xpert-fda-miri-v3/` is its all-CM finetune sibling (ADR 0017) training on all four usable CM datasets (primary + iPSC + gse244740 + gse262419) with train-only benchmark rows for the added datasets, 11 steps; `workflow/xpert-fda-miri-v0/` is the frozen legacy snapshot.
+A complete end-to-end drug-screening pipeline for one disease, bundling its scripts, prompts, data, and notebook. MIRI workflows live under `stage1/`: `stage1/xpert-fda-miri-v1/` is the canonical finalized MIRI screen (11 steps, frozen DToxS finetune data, untouched); `stage1/xpert-fda-miri-v1.1/` is its DToxS-LINCS testbed sibling (finetune data rebuilt from the LINCS LDS-1593 wells, per-plate normalized since ADR 0016, 11 steps — the agentic report step was removed); `stage1/xpert-fda-miri-v2/` is its DToxS-primary + DToxS-iPSC-CM finetune sibling (ADR 0015), aligned to v1.1's benchmark test sets with a single-cell encoding, per-plate normalized since ADR 0016, 11 steps; `stage1/xpert-fda-miri-v3/` is its all-CM finetune sibling (ADR 0017) training on all four usable CM datasets (primary + iPSC + gse244740 + gse262419) with train-only benchmark rows for the added datasets, 11 steps; `stage1/xpert-fda-miri-v0/` is the frozen legacy snapshot.
 _Avoid_: pipeline (when meaning a workflow), project
 
 **Disease data**:
@@ -59,20 +59,20 @@ _Avoid_: drug set
 The consensus control expression (978 genes) of the cell type under study, derived from the DToxS-primary control wells. Workflow-owned; the reference condition the perturbed transcriptome is measured against.
 
 **Union finetune data**:
-The workflow-built finetune h5ad of the CM datasets (step `03_cm_finetune_data`), used by the rebuilt workflows' finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Since ADR 0016 every sample is **per-plate normalized**: its matched control is the mean of the control wells on its own `(dataset, plate)` and the 978-landmark matrix is quantile-aligned to the L1000 pretrain per `(dataset, plate)` group. v2's union = `dtoxs_primary.h5ad` + `dtoxs_ipsc.h5ad` (958 samples / 45 unique drugs); v3's union (ADR 0017) adds `gse244740.h5ad` (~2,424) + `gse262419.h5ad` (~936) for ~4,318 samples — gse244740-dominated (~56%), not gse262419 (its TempO-Seq panel is mostly environmental/toxicology compounds absent from the author table). The DToxS-primary arm reads the LINCS LDS-1593 well-level package and both arms carry real-concentration dose bins. The benchmark test sets are byte-identical to v1.1's fold test sets (v1.1 fold columns imported for the primary arm). Distinct from v1's frozen DToxS-only `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` (dataset-wide normalized, the frozen historical anchor) and from v1.1's DToxS-LINCS finetune data.
+The workflow-built finetune h5ad of the CM datasets (step `03_cm_finetune_data`), used by the rebuilt workflows' finetune/benchmark/predict. HG-resolved compounds only, 978 landmarks, per-sample matched controls, precomputed dose/time indices. Since ADR 0016 every sample is **per-plate normalized**: its matched control is the mean of the control wells on its own `(dataset, plate)` and the 978-landmark matrix is quantile-aligned to the L1000 pretrain per `(dataset, plate)` group. v2's union = `dtoxs_primary.h5ad` + `dtoxs_ipsc.h5ad` (958 samples / 45 unique drugs); v3's union (ADR 0017) adds `gse244740.h5ad` (~2,424) + `gse262419.h5ad` (~936) for ~4,318 samples — gse244740-dominated (~56%), not gse262419 (its TempO-Seq panel is mostly environmental/toxicology compounds absent from the author table). The DToxS-primary arm reads the LINCS LDS-1593 well-level package and both arms carry real-concentration dose bins. The benchmark test sets are byte-identical to v1.1's fold test sets (v1.1 fold columns imported for the primary arm). Distinct from v1's frozen DToxS-only `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` (dataset-wide normalized, the frozen historical anchor) and from v1.1's DToxS-LINCS finetune data.
 
 **Per-plate normalization**:
-The step-03 method (ADR 0016) that groups both the quantile alignment and the matched-control computation by `(dataset, plate)`: each sample's control baseline is the mean of the control wells on the same plate, and each plate's 978-landmark distribution is aligned to the L1000 pretrain independently. Applies to every dataset in the rebuilt finetune builds (v1.1/v2/v3); v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` stays dataset-wide and is the documented historical anchor. Step 02's consensus baseline is *not* per-plate — it is a single dataset-wide scoring reference.
+The step-03 method (ADR 0016) that groups both the quantile alignment and the matched-control computation by `(dataset, plate)`: each sample's control baseline is the mean of the control wells on the same plate, and each plate's 978-landmark distribution is aligned to the L1000 pretrain independently. Applies to every dataset in the rebuilt finetune builds (v1.1/v2/v3); v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` stays dataset-wide and is the documented historical anchor. Step 02's consensus baseline is *not* per-plate — it is a single dataset-wide scoring reference.
 _Avoid_: per-batch normalization, plate-corrected
 
 **DToxS-LINCS finetune data**:
-The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/dtoxs_primary/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `workflow/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` with an auditable delta report.
+The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/dtoxs_primary/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` with an auditable delta report.
 
 **LINCS LDS-1593**:
 The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at `pert_data/dtoxs_primary/` on 2026-08-18 (the former `lincs-lds-1593/` wrapper removed; the GSE146095/GSE146096 raw GEO deposit was deleted the same day as a strict subset). Carries the full 956-well campaign (23 KIs + non-KI drugs + anthracyclines + antibody/protein wells) and the LINCS metadata suite (SMILES, batch codes). The v1-era package is frozen byte-identically at `pert_data/dtoxs_primary/v1-frozen/` (incl. v1's frozen `dtoxs.h5ad`).
 
 **Author drug embedding table**:
-The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `workflow/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
+The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `stage1/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
 _Avoid_: HG-resolved, drug-set member
 
 **Single-cell CM encoding**:
@@ -116,27 +116,32 @@ The DEG list derived from a single GEO study, kept alongside its acquisition dat
 The agentic bilingual (EN/CN) per-drug fact-sheet report, driven by `prompt.md` and assembled from resumable per-drug agent JSONs. Exists only in v1 as an **archived, non-numbered `report/` stage**; the rebuilt workflows (v1.1/v2/v3) have **no report stage** — they end at integrate.
 _Avoid_: drug research report
 
-### Benchmarking
+### Stage 2 setup
 
-**dtoxs-primary benchmark**:
-The official step-05 fold benchmark of a MIRI screen's finetune (ADR 0014/0015/0017): 10 warm-start + 10 cold-drug folds whose **test sets all come from the dtoxs_primary arm** (byte-identical to v1.1/v2 for the rebuilt workflows; the gse244740/gse262419 rows are train-only), plus the L1000-pretrain zero-shot column. It measures primary-arm test performance, so named in ADR 0018; after each restructure its outputs live under a dedicated subdirectory of the workflow's `05_xpert_finetune_bench/` — v3 `dtoxs-primary/` (`dtoxs-primary-bench.png`), v2 `full/` (relocated verbatim under ADR 0019, plot kept `benchmark.png`).
-_Avoid_: full bench, union bench
+**Setup stage**:
+The current Stage 2 stage: each deployed non-preprint model is loaded or trained on its native asset and produces one prediction artifact, a run log, and a run card. It answers "can this model run here?" and deliberately does not compare models or compute a benchmark metric.
+_Avoid_: Phase 0 (plan shorthand only), smoke test (when meaning the whole stage)
 
-**Data-ablation benchmark**:
-The step-05 experiment (decoupled from the official folds) measuring how the finetune-corpus **scale** affects XPert test performance in both warm-start and cold-drug modes. Each workflow holds its own unified test set per seed (see below) shared by every fraction of both modes; train = a dataset-stratified f-subsample of the seed's train pool. v3's (ADR 0018, ~180-drug 4-dataset union): 3 seeds × 2 modes × 5 row fractions {1/16, 1/8, 1/4, 1/2, 1.0}. v2's (ADR 0019, 45-drug 2-dataset union): a **drug-partitioned** variant — the union's drugs form a disjoint tripartition of 3×15 test drugs, each seed tests one third (every union drug tested exactly once), test ~15% of the union drawn only from that third, with 5 arithmetic fractions {20%, 40%, 60%, 80%, 100%}; the row-uniform recipe would collapse v2's cold-drug pool to a handful of rows. Recipe identical to the official fold bench; the L1000-pretrain weight anchors the curve at 0 rows. Outputs under each workflow's `05_xpert_finetune_bench/data-ablation/`.
-_Avoid_: scale sweep, ablation study (the term is the experiment itself)
+**Run card**:
+The one-page record for a model's setup: source commit, weights, data, pinned environment, command, expected artifact, and caveats. Lives at `stage2/01_setup/<model>/README.md`.
+_Avoid_: model README, config
 
-**Unified test set**:
-A single held-out test set per seed of the Data-ablation benchmark — in v3 ~15% of the 4-dataset union by uniform random row sample; in v2 ~15% of the union drawn only from that seed's drug-third (drug-partitioned) — shared by every fraction and both modes. Distinct from the official fold test sets, which are per-fold and primary-only.
+**Native asset**:
+The checkpoint and dataset a model's authors ship or document for that model. A native-asset run may use a non-chemical dataset (CPA/Kang) or a landmark subset (PRnet/LINCS); that limitation is recorded on the run card.
 
-**Direction-aware AUPRC**:
-The single Stage 2 v1 metric. A perturbation group's true label vector over the common gene universe is split into a significant **up set** and a significant **down set** (everything else is negative in both); the metric is the equal-weight mean of the two one-vs-rest **average precisions**, the up set scored by the model's predicted Δ and the down set by the negated predicted Δ. Equal weighting is the point: neither direction can dominate by set size, a correctly-signed down prediction earns credit, and a sign-blind one does not. Threshold-free on the predicted side (only a ranking is used); a constant prediction yields the true-set prevalence, which is therefore the random baseline. It is an average precision, not the trapezoidal area under the PR curve. Scored per perturbation group, then aggregated per-dataset and equally across datasets (**macro**, the headline). Its true sets are *significant* sets; the XPert fixed top-k/bottom-k convention (**Top-k true set**) produces a non-comparable number.
-_Avoid_: AUPRC (unqualified), PR-AUC, average precision
+**Setup-only artifact**:
+An output permitted only to prove that a model runs, not to support a Stage 2 claim. PRnet's 978-gene LINCS demo is the canonical example; it is quarantined under `stage2/01_setup/prnet/` and never read by Stage 2 evaluation.
+
+**Selection stage**:
+The deferred Stage 2 stage after setup: choose which model(s) to adapt to CM data and define the evaluation. Its metric, folds, and gene space are not fixed by the setup plan.
+
+### Stage 1 evaluation
 
 **Top-k true set**:
-The ground-truth label convention of the Stage 1 XPert benchmark — the step-05 official folds and the `warmstart_pr/` PR/AUPRC analysis: per sample, the true set is the top-k up genes and the bottom-k down genes of that sample's true Δ (k = 100 in the 978-landmark space), every other gene being a negative in both directions. A fixed-truncation (ranking) definition with no significance test, so each direction's prevalence is exactly k/978 and that prevalence is the random AUPRC baseline. Distinct from the **Direction-aware AUPRC** significant-set ground truth; the two are not comparable.
+The ground-truth label convention of the Stage 1 XPert benchmark — the step-05 official folds and the `warmstart_pr/` PR/AUPRC analysis: per sample, the true set is the top-k up genes and the bottom-k down genes of that sample's true Δ (k = 100 in the 978-landmark space), every other gene being a negative in both directions. A fixed-truncation (ranking) definition with no significance test, so each direction's prevalence is exactly k/978 and that prevalence is the random AUPRC baseline.
 _Avoid_: DEG set (unqualified), differential set
 
+Historical Stage 2 v1 benchmarking terms (direction-aware AUPRC, unified test set, data-ablation benchmark, dtoxs-primary benchmark) are archived with `stage2/_archive/cm_bench_v1/` and are not active vocabulary.
 
 ### Experimental validation
 

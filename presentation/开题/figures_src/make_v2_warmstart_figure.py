@@ -3,9 +3,9 @@
 
 The 【补】 note on 开题3r slide 24 asks for the warm-start PCC, Spearman,
 Pos P@20 and Neg P@20 of *our* benchmark — the union-CM finetune benchmark run
-by `workflow/xpert-fda-miri-v2/05_xpert_finetune_bench/full/`.
+by `stage1/xpert-fda-miri-v2/05_xpert_finetune_bench/full/`.
 
-Data: workflow/xpert-fda-miri-v2/05_xpert_finetune_bench/full/output/benchmark.csv
+Data: stage1/xpert-fda-miri-v2/05_xpert_finetune_bench/full/output/benchmark.csv
   split == "warm-start"                       (10 drug-stratified folds)
   Pearson_deg                   -> PCC
   Spearman_deg                  -> Spearman
@@ -34,7 +34,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path("/home/chang/arc")
-BENCH = (ROOT / "workflow/xpert-fda-miri-v2/05_xpert_finetune_bench"
+BENCH = (ROOT / "stage1/xpert-fda-miri-v2/05_xpert_finetune_bench"
          / "full/output/benchmark.csv")
 OUT = ROOT / "presentation/figures"
 OUT.mkdir(parents=True, exist_ok=True)

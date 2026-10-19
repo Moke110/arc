@@ -19,4 +19,6 @@ scorer (`08/09`) is 978-based, so producing a whole-transcriptome MIRI drug rank
 rebuilding the MIRI reference gene sets and scorer on the whole transcriptome — deferred to
 a follow-on stage informed by the Stage 2 winner. The benchmark's ground truth and metric
 are computed on the full-transcriptome common gene universe (intersection of the datasets).
-See `docs/roadmap.md` (Stage 2) and `.scratch/cm_bench_v1/spec.md`.
+See `docs/roadmap.md` (Stage 2) and the archived spec at
+`stage2/_archive/cm_bench_v1/`. The bring-up-stage 978 exception for PRnet is
+recorded in ADR 0024; it does not change this evaluation rule.

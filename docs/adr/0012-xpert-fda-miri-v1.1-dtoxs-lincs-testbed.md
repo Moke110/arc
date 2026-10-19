@@ -1,10 +1,10 @@
 # DToxS-LINCS testbed workflow (xpert-fda-miri-v1.1)
 
-`workflow/xpert-fda-miri-v1/` is the canonical finalized 11-step screen, and
+`stage1/xpert-fda-miri-v1/` is the canonical finalized 11-step screen, and
 its frozen DToxS finetune data (`input/dtoxs.h5ad`, 521 samples / 36 drugs) was
 built outside the repo from the now-deleted well-level deposit. Rather than
 changing v1 (whose benchmark/report numbers are the established baseline), we
-created a **testbed sibling** `workflow/xpert-fda-miri-v1.1/` that mirrors v1's
+created a **testbed sibling** `stage1/xpert-fda-miri-v1.1/` that mirrors v1's
 pipeline on the 12-step layout (same as v2) and rebuilds the DToxS finetune
 data from the re-homed LINCS LDS-1593 wells (step `03_cm_finetune_data`).
 

@@ -2,7 +2,7 @@
 
 **Status: accepted**
 
-Two linked changes to `workflow/xpert-fda-miri-v2/`, both about *what belongs at
+Two linked changes to `stage1/xpert-fda-miri-v2/`, both about *what belongs at
 the top level of a workflow*.
 
 **`13_other/` is renamed to `_other/`.** The directory holds ad-hoc analyses that
