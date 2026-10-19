@@ -1,6 +1,6 @@
 """
 Shared paths and constants for the Stage 2 v1 CM benchmark workflow
-(`workflow/cm_bench_v1/`).
+(`stage2/_archive/cm_bench_v1/`).
 
 Stage 2 benchmarks **whole-transcriptome** drug-perturbation models on
 cardiomyocytes (ADR 0020). All paths resolve from the workflow root so every

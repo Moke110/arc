@@ -1,0 +1,8 @@
+repo: https://github.com/AI4SCR/Conditional-Monge
+commit: 195f5cd1822e7c7de7c7ee842a7e4082992ccc04 (main, fetched 2026-10-19)
+vendored: 2026-10-19 (git removed; not edited)
+license: MIT
+paper: https://doi.org/10.1038/s42256-026-01242-8
+assets: data/dummy_data.h5ad and demo embeddings are shipped in the repo; no
+        pretrained weights are published by design.
+notes: per-dataset HVG output; RDKit structure + dose conditioning; ~23k params.

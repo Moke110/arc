@@ -8,15 +8,24 @@ in the repository. Stage 2 vendors several model families authored in different 
 with each other and with the `arc` stack (Python 3.13).
 
 **Decision.** Each Stage 2 model runs in its own pinned conda environment named
-`arc-stage2-<version>-<model>` (e.g. `arc-stage2-v1-chemcpa`); the benchmark workflow drives
-each model through `subprocess`, mirroring how Stage 1 drives `src.train`. Stage 2 v2 reuses
-a v1 environment for models shared between the two versions.
+`arc-stage2-bringup-<model>` (e.g. `arc-stage2-bringup-chemcpa`); the Stage 2 workflow
+drives each model through `subprocess`, mirroring how Stage 1 drives `src.train`.
 
 **Why.** Dependency conflicts across model families are near-certain; isolation keeps each
 model reproducible and leaves the shared `arc` environment clean for Stage 1's XPert
 runtime.
 
 **Consequences.** This is a deliberate exception to the single-runtime convention stated in
-`environment.yml`; the exception is scoped to Stage 2 benchmark workflows
-(`workflow/cm_bench_*`). Model source still lives in `pert_model/` (downloaded, `.git`
+`environment.yml`; the exception is scoped to the Stage 2 workflow (`stage2/`). Model source still lives in `pert_model/` (downloaded, `.git`
 removed, then untouched); only the environment is per-model.
+
+
+**Update (2026-10-18).** The old `cm_bench_v1` benchmark is archived at
+`stage2/_archive/cm_bench_v1/`; the active bring-up workflow is
+`stage2/`. A venv overlay is acceptable where a full conda env would
+duplicate a large torch install, as long as the run card records it.
+
+**Update (2026-10-19, ADR 0025).** The active directory is `stage2/01_setup/`
+(renamed from `01_bringup/`); biolord and CMonge keep their dedicated venv
+overlays, and the other seven models use the `arc-stage2-bringup-<model>`
+conda prefix.

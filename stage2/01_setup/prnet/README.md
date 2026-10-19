@@ -1,0 +1,29 @@
+# PRnet setup
+
+**Status:** setup-only (978-gene LINCS demo; not a Stage 2 evaluation result)
+
+- source: `pert_model/prnet/` (commit `f19174bd`), Apache-2.0
+- weights: `pert_model/prnet/checkpoint/lincs_best_epoch_all.pt` (0.55 M params, 978 genes)
+- data: `pert_model/prnet/dataset/demo.h5ad` (681 × 978, `demo_split`)
+- env: `arc-stage2-bringup-prnet` (Python 3.9, CPU torch)
+- command:
+
+```bash
+bash stage2/01_setup/prnet/run.sh
+```
+
+Expected output: `output/demo_split_y_pre_array.csv` (predictions), plus
+`demo_split_{x_true,y_true,cov_drug}_array.csv` and `output/run.log`.
+
+**Result (2026-10-19 re-run):** passed. The test split produced **661 × 978**
+predictions; the checkpoint was loaded on CPU via a small `torch.load`
+`map_location` wrapper (`run_prnet.py`) because upstream calls `torch.load`
+without it. No upstream code was edited.
+
+Caveat: the 978-landmark matrix is allowed **only** here. It must not be read by
+any Stage 2 evaluation or compared with whole-transcriptome models.
+
+**5,000-gene path (not exercised).** The clone also ships
+`checkpoint/sciplex_best_epoch_all.pt` and `test_sciplex.py`, but the latter reads
+`dataset/Sci_Plex.h5ad`, which upstream does not distribute. Running the 5,000
+path therefore needs that processed Sci-Plex matrix first.

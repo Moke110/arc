@@ -1,0 +1,18 @@
+repo: https://github.com/welch-lab/PerturbNet
+commit: e1375b2ca71c87d5b7277c45648ed06fe335a38d (main, fetched 2026-10-19)
+vendored: 2026-10-19 (git removed; not edited)
+license: GPL-3.0
+paper: https://doi.org/10.1038/s44320-025-00131-3
+assets: assets/ — selected files from the third-party reproduction mirror
+        https://huggingface.co/cyclopeta/PerturbNet_reproduce (not author-released)
+        - example_data_lincs_example.h5ad        30,568 x 978
+        - example_data_sciplex_example.h5ad      31,200 x 5,087
+        - LINCS cINN checkpoint                  664 MB
+        - sci-Plex cINN checkpoint               664 MB
+        - sci-Plex scVI cell-VAE                 13 MB
+        - LINCS cell-VAE (TF1 checkpoint)        17 MB
+        - ChemicalVAE (ZINC-pretrained)          16 MB
+notes: requires Python 3.7 + TensorFlow 1.15 for the stable branch, or the
+       0.0.3b1 Python 3.10 branch without TF. Checkpoint shapes were verified
+       against the in-repo flow architecture; see VALIDATION.md.
+       Per-file sizes and SHA256: ASSETS.md

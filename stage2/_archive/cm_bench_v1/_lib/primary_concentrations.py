@@ -4,7 +4,7 @@ Primary finetune concentration map (ADR 0015).
 
 Vendored (copied) into the Stage 2 v1 benchmark so cm_bench_v1 is self-contained
 and does not import a Stage 1 workflow. Source of truth remains
-workflow/xpert-fda-miri-v2/03_cm_finetune_data/primary_concentrations.py.
+stage1/xpert-fda-miri-v2/03_cm_finetune_data/primary_concentrations.py.
 
 Every `dtoxs_primary` finetune drug is mapped to the real uM concentration its
 transcriptomes were treated at, so the union finetune's dose bins reflect

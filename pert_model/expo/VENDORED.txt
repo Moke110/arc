@@ -1,0 +1,10 @@
+repo: https://github.com/MLBC-lab/ExPO
+commit: 7e88cbae17b44397ff7d75983475334b40488d65 (main, fetched 2026-10-19)
+vendored: 2026-10-19 (git removed; not edited)
+license: MIT
+paper: https://doi.org/10.1186/s13321-026-01226-1
+weights: none released
+notes: 978 L1000 landmark output; dose and time are continuous inputs; cold-drug
+       evaluation uses a Bemis-Murcko scaffold split. Upstream expo_model.py has
+       one cp1252 byte (0x96) at line 19 that makes `import expo` fail under
+       Python 3's UTF-8 default; tests pass after re-encoding that file.

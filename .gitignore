@@ -76,15 +76,46 @@ Thumbs.db
 tmp/
 
 # Frozen pre-refactor MIRI pipeline snapshots (large regenerable artifacts)
-workflow/xpert-fda-miri-v0/
+stage1/xpert-fda-miri-v0/
 
 # Per-drug biomni agent JSONs / dossiers (regenerable external-agent output)
-workflow/xpert-fda-miri-v1/report/cache/
-workflow/xpert-fda-miri-v2/12_drug_survey/drugs/
-workflow/xpert-fda-miri-v2/12_drug_survey/reports@20.html
+stage1/xpert-fda-miri-v1/report/cache/
+stage1/xpert-fda-miri-v2/12_drug_survey/drugs/
+stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 
-# Upstream third-party model clone (read-only reference; nested git, data/weights)
+# Upstream third-party model clones (read-only reference; nested git, data/weights)
+# Ignore the clone contents but keep each VENDORED.txt provenance record.
 pert_model/TranSiGen/
+pert_model/chemcpa/*
+pert_model/cpa/*
+pert_model/prnet/*
+pert_model/biolord/*
+pert_model/perturbnet/*
+pert_model/wave/*
+pert_model/cmonge/*
+pert_model/squidiff/*
+pert_model/expo/*
+pert_model/decant/*
+pert_model/scvidr/*
+
+!pert_model/chemcpa/VENDORED.txt
+!pert_model/cpa/VENDORED.txt
+!pert_model/prnet/VENDORED.txt
+!pert_model/biolord/VENDORED.txt
+!pert_model/perturbnet/VENDORED.txt
+!pert_model/wave/VENDORED.txt
+!pert_model/cmonge/VENDORED.txt
+!pert_model/squidiff/VENDORED.txt
+!pert_model/expo/VENDORED.txt
+!pert_model/decant/VENDORED.txt
+!pert_model/scvidr/VENDORED.txt
+
+# Downloaded weights/datasets used by Stage 2 setup (not repo artifacts)
+/download/
+
+# Stage 2 setup outputs and the biolord venv overlay
+stage2/01_setup/*/output/
+stage2/01_setup/biolord/.venv/
 
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 /archived/

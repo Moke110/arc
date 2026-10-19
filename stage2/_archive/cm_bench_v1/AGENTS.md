@@ -1,4 +1,4 @@
-# AGENTS.md — workflow/cm_bench_v1
+# AGENTS.md — stage2/_archive/cm_bench_v1
 
 Routing index for the Stage 2 v1 whole-transcriptome cardiomyocyte benchmark
 (`cm_bench_v1`). Stage 2 decides which open-source whole-transcriptome

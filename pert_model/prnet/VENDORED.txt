@@ -1,0 +1,5 @@
+repo: https://github.com/Perturbation-Response-Prediction/PRnet
+commit: f19174bde3ed2633f54c7831799cc38c4ffc7a0d
+vendored: 2026-10-18T19:17:57+08:00 (git removed; not edited)
+license: Apache-2.0
+weights: included in checkpoint/ — lincs_best_epoch_all.pt (2,210,427 B) and sciplex_best_epoch_all.pt (8,420,411 B), 978-landmark / 5,000-HVG
