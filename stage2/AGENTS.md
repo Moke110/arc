@@ -8,6 +8,9 @@ repository root in `stage1/` and is not a dependency here.
 - `01_setup/` — one run card per deployed model (`prnet`, `cpa`, `chemcpa`,
   `biolord`, `perturbnet`, `scvidr`, `squidiff`, `cmonge`, `decant`), each with
   its pinned environment, `run.sh`, and `output/`; `SUMMARY.md` records results.
+- `02_cm_data/` — Stage 2 CM perturbation corpus and dataset bundles: frozen
+  `corpus/v1/` (18,164 genes, 525 drug keys) and built `datasets-1/` (five
+  h5ad views). Build contract/results in `README.md`; decisions in ADR 0026.
 - `audit/` — the 14-model entrant audit moved from `cm_bench_v1` (selection
   record; not an active benchmark).
 - `_archive/cm_bench_v1/` — archived old benchmark; not a dependency.

@@ -14,7 +14,7 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. It is currently in the **setup stage** (`stage2/01_setup/`): prove nine deployed non-preprint models load or train in their own environments. No benchmark design, folds, or metric are fixed yet. Stage 2 evaluation still excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
+The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. It is currently in the **setup stage** (`stage2/01_setup/`): prove nine deployed non-preprint models load or train in their own environments. Since 2026-10-20 it also builds its CM perturbation corpus and first dataset bundle in `stage2/02_cm_data/` (ADR 0026), which still fixes no model, metric, or fold. Stage 2 evaluation still excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
 _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 
 **Stage 2 tree**:
@@ -134,6 +134,37 @@ An output permitted only to prove that a model runs, not to support a Stage 2 cl
 
 **Selection stage**:
 The deferred Stage 2 stage after setup: choose which model(s) to adapt to CM data and define the evaluation. Its metric, folds, and gene space are not fixed by the setup plan.
+
+### Stage 2 CM data
+
+**CM perturbation corpus**:
+The frozen gene set and drug set that every Stage 2 CM dataset bundle derives from (`stage2/02_cm_data/corpus/v1/`); it holds no expression matrices. The gene set is the four-source intersection named by latest HGNC symbol; the drug set is every structure-resolvable small molecule, unfiltered by pharmacology.
+_Avoid_: union finetune data, finetune corpus, training set
+
+**Dataset bundle**:
+One numbered build output under `stage2/02_cm_data/datasets-<n>/`: a set of h5ad views plus its manifest, gene crosswalk, compound table, and QA report.
+_Avoid_: dataset version, output, export
+
+**View**:
+A single h5ad inside a dataset bundle — the corpus filtered by exactly one rule (for example one pharmacology tier), value-identical to the other views on the rows it retains.
+_Avoid_: subset, variant, dataset
+
+**Pharmacology tier**:
+The named compound-inclusion rule of a view: `atc-moa` (ATC or ChEMBL mechanism), `atc-moa-mesh` (plus PubChem MeSH classes), or `all-smiles` (any resolvable small molecule).
+_Avoid_: definition 1/3, filter level, drug class
+
+**Drug key**:
+The desalted parent InChIKey (stereochemistry retained) that identifies a drug across names, salt forms, and datasets.
+_Avoid_: drug id, compound name, drug_idx
+
+**Matched control group**:
+The `dataset::plate` group of vehicle wells a perturbed sample is compared against.
+_Avoid_: baseline, control set, batch control
+
+**Manual pharmacology supplement**:
+A cited, per-compound completion of the pharmacology annotation, allowed only on the curated drug panels (`dtoxs`, `gse244740`) and never on the `gse262419` tiers.
+_Avoid_: manual override, curation fix
+
 
 ### Stage 1 evaluation
 
