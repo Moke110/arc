@@ -415,11 +415,11 @@ def load_screen_ctox() -> SourceData:
     rows = []
     for title, treatment in zip(titles, treatments):
         match = re.match(
-            r"(.+?), (Con\d+|NoTreatment), (?:Optimization|Screening) "
+            r"(.+?), (Con\d+|NoTreatment), (Optimization|Screening) "
             r"plate (\d+), Well (\w+) \[(S[^\]]+)\]", title)
         if not match:
             continue
-        drug, concentration, plate, _well, well_id = match.groups()
+        drug, concentration, assay, plate, _well, well_id = match.groups()
         if well_id not in well_to_index:
             continue
         drug = normalize_name(drug)
@@ -453,7 +453,9 @@ def load_screen_ctox() -> SourceData:
             "is_control": is_control,
             "is_blank": False,
             "vehicle": vehicle,
-            "plate": f"plate{plate}",
+            # Optimization and Screening plates are numbered independently in
+            # the GEO series, so the assay is part of the physical plate id.
+            "plate": f"{assay.lower()}_plate{plate}",
             "cell_type": "ipsc_cm",
             "donor": "NA",
             "entity_type": "control" if is_control else "small_molecule",

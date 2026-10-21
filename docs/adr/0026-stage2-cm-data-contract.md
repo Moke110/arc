@@ -63,6 +63,19 @@ Stage 1 baseline, is defined once in `cmdata/paths.py` (`SOURCE_ACCESSIONS`),
 and is repeated in `stage2/02_cm_data/README.md`, `corpus/v1/README.md` and the
 bundle `qa_report.md`.
 
+**Update (2026-10-21) — physical plate ids.** GSE244740 numbers its
+Optimization and Screening plates independently (`Optimization plate 1` and
+`Screening plate 1` both appear as `plate 1`), but the series matrix titles were
+being parsed without the assay token, so the loader collapsed each pair into one
+`plate<n>`. `control_group = dataset::plate` therefore mixed two physical plates
+for `screen_ctox::plate1..3`, and the per-group `control_mean` was a blend of the
+two batches: the Screening baseline shifted by RMS 0.05–0.07 and 42-panel
+contrasts were inflated (e.g. Amiodarone 470 → 361 significant genes with the
+correct same-plate controls). Plate ids now carry the assay
+(`optimization_plate1` … `screening_plate3`), so one `control_group` is one
+physical plate. This is a bundle rebuild only: the corpus gene/drug universes
+are unchanged, and no downstream training had consumed `datasets-1` yet.
+
 **Consequences.** `datasets-1/` ships five views: `dtoxs_cm.h5ad` (957 + 118
 rows, 46 drugs), `screen_ctox.h5ad` (2,520 + 552, 42), and three `temp_env` views
 (1,047/2,310/4,206 perturbed rows, 113/252/460 drugs, each + 272 controls). The

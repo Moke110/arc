@@ -137,7 +137,7 @@ control rows, so any downstream difference comes only from the compound filter.
 | `time_h` | 24 / 48 |
 | `is_control` | control well |
 | `vehicle` | DMSO / EtOH / VEH / Media / NoTreatment |
-| `plate`, `control_group` | plate id; `dataset::plate` |
+| `plate`, `control_group` | physical plate id; `dataset::plate`. `screen_ctox` qualifies the plate with the assay (`optimization_plate1` … `screening_plate3`) because the GEO series numbers the two plate types independently |
 | `cell_type` | `primary_cm` / `ipsc_cm` |
 | `donor` | recorded donor/line, else NA |
 | `replicate` | within-group replicate index |
@@ -151,6 +151,13 @@ control rows, so any downstream difference comes only from the compound filter.
 - No `pert_idx`, `cell_idx`, `dose_idx`, or any integer encoding: those belong
   to model adapters.
 
+**Physical plates.** `screen_ctox` (GSE244740) numbers Optimization and
+Screening plates independently, and the series matrix uses the same number for
+both. The loader therefore puts the assay in the plate id
+(`optimization_plate1` … `optimization_plate5`, `screening_plate1` …
+`screening_plate3`); `control_group = dataset::plate` is one physical plate, not
+a merge of two. This is why `screen_ctox.h5ad` has 8 control groups, not 5.
+
 ## Identity rules
 
 - **Gene**: latest HGNC symbol; alias- and previous-symbol-aware; Entrez-verified
@@ -161,8 +168,9 @@ control rows, so any downstream difference comes only from the compound filter.
   pairs stay separate rows (different wells and doses) but share one identity,
   so `Tamoxifen` / `Tamoxifen citrate`, `Diltiazem` / `Diltiazem hydrochloride`,
   `Estradiol` / `17beta-Estradiol` cannot leak across a cold-drug split.
-- **Control**: `control_group = dataset::plate` (the ADR 0016 per-plate scope),
-  with `vehicle` exposed so an adapter may use same-vehicle controls instead.
+- **Control**: `control_group = dataset::plate` (the ADR 0016 per-plate scope;
+  one physical plate — see *Physical plates*), with `vehicle` exposed so an
+  adapter may use same-vehicle controls instead.
 
 ## Pharmacology tiers
 

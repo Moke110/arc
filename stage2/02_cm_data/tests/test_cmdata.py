@@ -259,6 +259,25 @@ class BuiltBundleTests(unittest.TestCase):
             self.assertTrue(controls["control_group"].isin(
                 adata.obs["control_group"]).all())
 
+    def test_screen_ctox_plates_are_physical(self):
+        # Optimization and Screening plates are numbered independently in
+        # GSE244740; merging equal numbers would mix two physical plates into
+        # one control group and bias the contrast.
+        obs = self.views["screen_ctox.h5ad"].obs
+        expected = {f"screen_ctox::{assay}_plate{n}"
+                    for assay, last in (("optimization", 5), ("screening", 3))
+                    for n in range(1, last + 1)}
+        self.assertEqual(set(obs["control_group"].astype(str)), expected)
+        self.assertEqual(obs["plate"].nunique(), 8)
+        prefix = obs["well"].astype(str).str.extract(
+            r"^screen_ctox::(S\d+Nr\d+)_", expand=False)
+        self.assertFalse(prefix.isna().any())
+        pairs = pd.DataFrame({"plate": obs["plate"].astype(str),
+                              "prefix": prefix})
+        self.assertTrue((pairs.groupby("plate", observed=True)["prefix"]
+                         .nunique() == 1).all())
+        self.assertEqual(pairs["prefix"].nunique(), 8)
+
 
 if __name__ == "__main__":
     unittest.main()
