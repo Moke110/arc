@@ -1,0 +1,90 @@
+{
+  "model": "perturbnet",
+  "source": "pert_model/perturbnet (e1375b2c), GPL-3.0",
+  "author_entrypoint": "notebooks/Tutorial_PerturbNet_Chemicals.ipynb (scVI cells 20-24, covariate cINN cells 40-46, scVI inference cells 71-82)",
+  "n_genes": 18164,
+  "seed": 20261021,
+  "chemical_vae": {
+    "implementation": "perturbnet.chemicalvae.chemicalVAE.ChemicalVAE",
+    "n_char": 35,
+    "max_len": 120,
+    "z_dim": 196,
+    "padding": "right",
+    "alphabet": [
+      "7", "6", "o", "]", "3", "s", "(", "-", "S", "/",
+      "B", "4", "[", ")", "#", "I", "l", "O", "H", "c",
+      "1", "@", "=", "n", "P", "8", "C", "2", "F", "5",
+      "r", "N", "+", "\\", " "
+    ],
+    "epochs": 525,
+    "batch_size": 128,
+    "lr": 0.0001,
+    "optimizer": "adam",
+    "train_ratio": 0.8,
+    "train_data": "unique representative SMILES of the fold's training drugs (220/276 in the author 80% split)",
+    "standardize": "mu/std of the 196-d latent recomputed on all training-fold structures"
+  },
+  "cell_vae": {
+    "implementation": "scvi-tools 0.7.1 scvi.model.SCVI",
+    "gene_likelihood": "zinb",
+    "epochs": 700,
+    "frequency": 20,
+    "n_latent": 10,
+    "n_hidden": 128,
+    "n_layers": 2,
+    "n_batch": 1,
+    "batch_key": null,
+    "lr": 0.001,
+    "kl_warmup_epochs": 400,
+    "train_size": 0.9,
+    "train_data": "training-role treated wells, raw counts (scVI's internal 90/10 split)"
+  },
+  "cinn": {
+    "implementation": "perturbnet.cinn.flow.Net2NetFlow_scVIChemStdStatesFlow",
+    "flow": {
+      "conditioning_dim": 199,
+      "embedding_dim": 10,
+      "conditioning_depth": 2,
+      "n_flows": 20,
+      "in_channels": 10,
+      "hidden_dim": 1024,
+      "hidden_depth": 2,
+      "activation": "none",
+      "conditioner_use_bn": true
+    },
+    "epochs": 100,
+    "batch_size": 128,
+    "lr": 4.5e-06,
+    "optimizer": {
+      "name": "adam",
+      "betas": [0.5, 0.9],
+      "amsgrad": true
+    },
+    "dose_encoding": "3-bin one-hot over the fold's training doses",
+    "loss": "NLL of the flow (perturbnet.net2net.modules.flow.loss.NLL)",
+    "checkpoint_selection": "author NLL on the cold valid drugs (scVI posterior mean target)"
+  },
+  "prediction": {
+    "flow_draws": 8,
+    "decode": "scVI ZINB rate (px_rate) from the decoder, i.e. the per-draw predictive mean; no count sampling",
+    "library": "median training-fold library size (cp10k is library-size invariant for the rate)",
+    "target_space": "log1p_cp10k minus the matched plate DMSO mean"
+  },
+  "smoke": {
+    "chemical_vae_epochs": 1,
+    "chemical_vae_max_batches": 4,
+    "cell_vae_epochs": 1,
+    "cell_vae_frequency": 1,
+    "cinn_epochs": 1,
+    "cinn_max_batches": 4,
+    "valid_eval_max_rows": 192,
+    "flow_draws": 2
+  },
+  "notes": {
+    "ideal_fit": "partial: the authors' condition does not take a control transcriptome",
+    "dose": "0.2 / 1 / 10 uM -> 3-bin one-hot (ticket 09); the tutorial uses raw continuous dose",
+    "chemical_vae": "from scratch on the fold's training structures; released ZINC weights are not loaded",
+    "cell_vae": "scVI is fitted on training counts only; no valid/test expression enters any stage",
+    "checkpoint": "chemicalvae.pt + scvi_vae.pt + cinn.pt"
+  }
+}

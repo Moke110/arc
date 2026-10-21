@@ -1,0 +1,45 @@
+{
+  "model": "cpa",
+  "source": "pert_model/cpa (fbd7c025), BSD-3-Clause",
+  "author_entrypoint": "cpa.CPA Python API (combosciplex tutorial settings)",
+  "n_genes": 18164,
+  "n_latent": 128,
+  "recon_loss": "gauss",
+  "doser_type": "logsigm",
+  "n_hidden_encoder": 512,
+  "n_layers_encoder": 3,
+  "n_hidden_decoder": 512,
+  "n_layers_decoder": 3,
+  "dropout_rate_encoder": 0.1,
+  "dropout_rate_decoder": 0.1,
+  "use_rdkit_embeddings": true,
+  "rdkit_embedding_bits": 2048,
+  "rdkit_embedding_radius": 2,
+  "batch_size": 128,
+  "max_epochs": 2000,
+  "check_val_every_n_epoch": 10,
+  "early_stop_patience": 10,
+  "plan": {
+    "lr": 0.0005,
+    "wd": 1e-06,
+    "adv_lr": 0.0003,
+    "adv_wd": 4e-07,
+    "doser_lr": 0.0003,
+    "doser_wd": 4e-07,
+    "adv_steps": 3,
+    "reg_adv": 1.0,
+    "pen_adv": 1.0,
+    "step_size_lr": 45
+  },
+  "seed": 20261021,
+  "smoke": {
+    "max_epochs": 1,
+    "check_val_every_n_epoch": 1,
+    "batch_size": 128
+  },
+  "notes": {
+    "target_space": "log1p_cp10k (gauss reconstruction)",
+    "cold_drug": "frozen Morgan-2048 pert_encoder + shared Linear; unseen beta/bias at initial values",
+    "setup_data": "full fold AnnData (train+valid+test metadata rows + controls); training rows only"
+  }
+}
