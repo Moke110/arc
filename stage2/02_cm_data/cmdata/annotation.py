@@ -115,7 +115,8 @@ class HgncIndex:
 # Compounds
 # ---------------------------------------------------------------------------
 # The only manual pharmacology supplement in corpus v1.  It applies only to
-# the two curated panels (DToxS / gse244740); gse262419 stays automatic.
+# the two curated panels (DToxS / screen_ctox); temp_env (GSE262419) stays
+# automatic.
 MANUAL_SUPPLEMENT = {
     # SB-431542: a real ALK5/TGF-betaR1 inhibitor missing from ChEMBL's
     # mechanism table at snapshot time.

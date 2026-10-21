@@ -7,14 +7,15 @@ Stage 2 needs cardiomyocyte perturbation data for model adaptation, but Stage 1'
 alignment to the L1000 pretrain, HG/`drug_idx` filtering, and a single collapsed
 `cardiomyocyte` cell identity are all XPert-specific. `stage2/02_cm_data/` therefore
 builds a model-agnostic corpus from the same four sources (`dtoxs_primary`,
-`dtoxs_ipsc`, `gse244740`, `gse262419`) in **six decisions**:
+`dtoxs_ipsc`, `screen_ctox` = GSE244740, `temp_env` = GSE262419) in **six
+decisions**:
 
 1. **Gene space = four-source intersection, latest HGNC symbol.** The four
    sources use symbols (38,478), Ensembl IDs (44,154), and `SYMBOL_entrez` rows
    (22,537 → 19,703 symbols), so a shared space requires an identity rule.
    Genes are matched alias/previous-symbol-aware and Entrez-verified where
    available; unresolvable or ambiguous genes are dropped and reported. The
-   intersection is capped by the TempO-Seq panel (~18.7k), so `gse262419` gates
+   intersection is capped by the TempO-Seq panel (~18.7k), so `temp_env` gates
    the universe. Chosen over per-file native spaces because a frozen shared
    space is what makes cross-view and cross-dataset comparison reproducible
    without re-deciding gene identity at every adapter.
@@ -34,13 +35,13 @@ builds a model-agnostic corpus from the same four sources (`dtoxs_primary`,
    cold-drug split. Structure wins over name: the DToxS `AMI` arm carries a
    pentyl-benzofuran homolog (CID 16218975), not amiodarone, so it enters
    `all-smiles` but not `atc-moa`.
-5. **Three pharmacology tiers for `gse262419`**, built as filtered projections of
+5. **Three pharmacology tiers for `temp_env`**, built as filtered projections of
    one corpus: `atc-moa` (113 drug keys / 1,047 samples), `atc-moa-mesh`
    (252 / 2,310), `all-smiles` (460 / 4,206). MeSH is a separate tier because it
    admits herbicides, insecticides, carcinogens and disinfectants — chemical
    taxonomy, not pharmacology. The two curated drug panels use `atc-moa` with a
    cited **manual supplement** for real drugs missing from ChEMBL's mechanism
-   table (currently SB-431542); the `gse262419` tiers stay strictly automatic,
+   table (currently SB-431542); the `temp_env` tiers stay strictly automatic,
    because that boundary *is* the comparison.
 6. **The corpus is frozen without matrices.** `corpus/v1/` stores the gene
    set, the drug set, the per-source resolved gene sets (the drift baseline)
@@ -54,8 +55,16 @@ builds a model-agnostic corpus from the same four sources (`dtoxs_primary`,
    non-dependency and Stage 2 must diverge on naming, dose provenance, and gene
    identity.
 
+**Naming.** The two GEO sources use a short Stage 2 id: `screen_ctox` for
+GSE244740 (ScreenSeq hiPSC-CM drug cardiotoxicity panel) and `temp_env` for
+GSE262419 (TempO-Seq hiPSC-CM environmental chemical panel). The accession
+remains the provenance anchor: it stays on the raw folder and on the read-only
+Stage 1 baseline, is defined once in `cmdata/paths.py` (`SOURCE_ACCESSIONS`),
+and is repeated in `stage2/02_cm_data/README.md`, `corpus/v1/README.md` and the
+bundle `qa_report.md`.
+
 **Consequences.** `datasets-1/` ships five views: `dtoxs_cm.h5ad` (957 + 118
-rows, 46 drugs), `gse244740.h5ad` (2,520 + 552, 42), and three `gse262419` views
+rows, 46 drugs), `screen_ctox.h5ad` (2,520 + 552, 42), and three `temp_env` views
 (1,047/2,310/4,206 perturbed rows, 113/252/460 drugs, each + 272 controls). The
 intersection drops ~12k unmapped `dtoxs` identifiers and ~1.4k TempO-Seq genes
 that are not shared; a future model needing them must rebuild with a new corpus

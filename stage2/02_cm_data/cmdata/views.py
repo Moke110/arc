@@ -2,7 +2,7 @@
 
 The five views share one writer, one schema gate and one control layer.  A view
 is a filtered projection of the resolved source rows; the build never rewrites
-a count, so a row retained by two gse262419 views is value-identical by
+a count, so a row retained by two temp_env views is value-identical by
 construction (and asserted in ``qa.py``).
 """
 

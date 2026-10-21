@@ -21,10 +21,27 @@ filter, no per-sample `pert_idx`/`cell_idx` encoding.
 |---|---|---|---|---|
 | `dtoxs_primary` | 677 | 47 | 102 | 48 h, literature dose |
 | `dtoxs_ipsc` | 296 | 37 | 16 | 48 h, series-matrix dose |
-| `gse244740` | 2,520 | 42 | 552 | 24 h, 8-point half-log series from a curated top dose |
-| `gse262419` | 4,206 | 460 | 272 | 24 h, measured 3-point series |
+| `screen_ctox` | 2,520 | 42 | 552 | 24 h, 8-point half-log series from a curated top dose |
+| `temp_env` | 4,206 | 460 | 272 | 24 h, measured 3-point series |
 
 `gse247541` is out of scope (4 antivirals, 144 h, outside the author time map).
+
+### Dataset ids
+
+The two GEO sources carry a short Stage 2 id; the accession remains the
+provenance anchor and stays on the raw folder:
+
+| dataset_id | accession | assay | panel | raw folder |
+|---|---|---|---|---|
+| `screen_ctox` | GSE244740 | ScreenSeq | 33 cardiotoxicants + 9 non-cardiotoxicants | `pert_data/gse244740` |
+| `temp_env` | GSE262419 | TempO-Seq | 464 environmental chemicals | `pert_data/gse262419` |
+
+The mapping is defined once in `cmdata/paths.py` (`SOURCE_ACCESSIONS`) and is
+repeated in `corpus/v1/README.md` and `qa_report.md`. The build writes the
+dataset id into every view file name, `obs` value and QA gate; only the raw
+inputs and the read-only Stage 1 baseline keep the accession (QA translates the
+Stage 1 well ids before comparing). Historical Stage 1 artifacts and the
+`.scratch/cm-data-v1/` work orders still use the GSE accessions.
 
 ## Three layers
 
@@ -64,10 +81,10 @@ corpus/v1/
 ```
 datasets-1/
 ├── dtoxs_cm.h5ad                  # primary + iPSC merged; cell_type kept as a covariate
-├── gse244740.h5ad
-├── gse262419_atc-moa.h5ad         # pharmacology tier: ATC ∪ ChEMBL MoA
-├── gse262419_atc-moa-mesh.h5ad    # ATC ∪ MoA ∪ PubChem MeSH
-├── gse262419_all-smiles.h5ad      # every SMILES-resolvable small molecule
+├── screen_ctox.h5ad
+├── temp_env_atc-moa.h5ad         # pharmacology tier: ATC ∪ ChEMBL MoA
+├── temp_env_atc-moa-mesh.h5ad    # ATC ∪ MoA ∪ PubChem MeSH
+├── temp_env_all-smiles.h5ad      # every SMILES-resolvable small molecule
 ├── compounds.csv                  # bundle-local copy of the corpus drug table + view membership
 ├── gene_crosswalk.csv             # source gene id -> HGNC symbol for this bundle
 ├── manifest.csv                   # per-view counts, corpus version, source commit
@@ -77,10 +94,10 @@ datasets-1/
 | view | rule | rows (pert + control) | drugs |
 |---|---|---|---|
 | `dtoxs_cm.h5ad` | `atc-moa` + cited manual supplement | 957 + 118 = 1,075 | 46 |
-| `gse244740.h5ad` | `atc-moa` | 2,520 + 552 = 3,072 | 42 |
-| `gse262419_atc-moa.h5ad` | `atc-moa` | 1,047 + 272 = 1,319 | 113 |
-| `gse262419_atc-moa-mesh.h5ad` | `atc-moa-mesh` | 2,310 + 272 = 2,582 | 252 |
-| `gse262419_all-smiles.h5ad` | `all-smiles` | 4,206 + 272 = 4,478 | 460 |
+| `screen_ctox.h5ad` | `atc-moa` | 2,520 + 552 = 3,072 | 42 |
+| `temp_env_atc-moa.h5ad` | `atc-moa` | 1,047 + 272 = 1,319 | 113 |
+| `temp_env_atc-moa-mesh.h5ad` | `atc-moa-mesh` | 2,310 + 272 = 2,582 | 252 |
+| `temp_env_all-smiles.h5ad` | `all-smiles` | 4,206 + 272 = 4,478 | 460 |
 
 The `dtoxs` counts depend on three code-only DToxS states that resolve through the
 code table (`DIC` → diclofenac, `SUN+` → sunitinib, same key as `Sunitinib`)
@@ -93,7 +110,7 @@ while the `AMI` state carries a **pentyl-benzofuran homolog structure**
 and `qa_report.md` are committed as the build record; rerunning the build
 recreates every file.
 
-The three `gse262419` views are filtered projections of **one** corpus: the
+The three `temp_env` views are filtered projections of **one** corpus: the
 retained rows are value-identical across files, and they share the same 272
 control rows, so any downstream difference comes only from the compound filter.
 
@@ -110,7 +127,7 @@ control rows, so any downstream difference comes only from the compound filter.
 | column | meaning |
 |---|---|
 | `well` | globally unique well id (`dataset::raw well`), for leakage gating |
-| `dataset_id` | `dtoxs_primary` / `dtoxs_ipsc` / `gse244740` / `gse262419` |
+| `dataset_id` | `dtoxs_primary` / `dtoxs_ipsc` / `screen_ctox` / `temp_env` |
 | `compound_name` | normalized display name |
 | `drug_key` | desalted parent InChIKey, stereo retained |
 | `inchikey` | full InChIKey |
@@ -160,11 +177,11 @@ carcinogens and disinfectants, which is why it is a separate, explicitly looser
 tier rather than the default.
 
 **Manual supplement** applies only to the two curated drug panels
-(`dtoxs`, `gse244740`): a compound that demonstrably has a mechanism but is
+(`dtoxs`, `screen_ctox`): a compound that demonstrably has a mechanism but is
 missing from ChEMBL's mechanism table may be annotated with a citation
 (`annotation_source=manual:<ref>`). Current entry: **SB-431542** (TGF-βR1
 inhibitor, 16 wells; Inman et al. 2002, *Mol Pharmacol* 62:65-74). The three
-`gse262419` tiers stay strictly automatic — that boundary *is* the comparison.
+`temp_env` tiers stay strictly automatic — that boundary *is* the comparison.
 
 ## Pinned annotation assets
 
@@ -227,13 +244,13 @@ reference, never imported.
 - Underscore and trailing-space names normalize before any lookup
   (`Acetylsalicylic_acid`, `5_Fluorouracil`, `Mitomycin_C`, `Amphotericin_B`,
   `3_Azido_3_Deoxythymidine`, `Acetaminophen `, `Citric acid `).
-- `gse244740` top doses are looked up **after** normalization, so the four
+- `screen_ctox` top doses are looked up **after** normalization, so the four
   audited underscore drugs get their curated Table-1 top instead of silently
   falling back to the sunitinib top. The Stage 1 regression reports these 48
   corrected wells.
 - `DIC` → diclofenac, 5 µM (`dose_source=measured`, DToxS DCIC workbook);
   `SUN+` shares `SUN`'s structure; `AMI` keeps its own ZINC structure.
-- `gse262419` probes are keyed by **symbol**, not by the numeric suffix (a probe
+- `temp_env` probes are keyed by **symbol**, not by the numeric suffix (a probe
   id, not an Entrez id). Stage 1 preferred the suffix and zeroed or hijacked
   probes; Stage 2 recovers those genes. The regression compares on the
   unambiguous subset and reports the 290 entrez-mapped and 35 suffix-collision
@@ -258,8 +275,8 @@ a silent rebuild.
    counts are compared with
    `stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/*.h5ad` (read-only; no
    Stage 1 code imported). This catches loader drift after the copy. The gate
-   also reports the deliberate Stage 2 divergences: 48 `gse244740` dose
-   corrections for underscore names, and the `gse262419` landmarks whose suffix
+   also reports the deliberate Stage 2 divergences: 48 `screen_ctox` dose
+   corrections for underscore names, and the `temp_env` landmarks whose suffix
    is a probe id (290 Stage 1 entrez-mapped + 35 suffix-collision genes), where
    Stage 2's symbol-first mapping recovers the counts.
 
@@ -270,7 +287,7 @@ the intersection size, salt collapses, and the final per-view counts.
 ### Build results (2026-10-21)
 
 - All gates pass: five-view `var` identity, tier nesting and value identity,
-  272 shared `gse262419` controls, per-source well/dose/count regression.
+  272 shared `temp_env` controls, per-source well/dose/count regression.
 - `corpus/v1`: 18,164 genes; 525 drug keys; tiers 177 / 316 / 525.
 - `datasets-1`: 1,075 / 3,072 / 1,319 / 2,582 / 4,478 rows and 46 / 42 / 113 /
   252 / 460 drug keys. `manifest.csv` is authoritative for bytes and content
@@ -280,12 +297,12 @@ the intersection size, salt collapses, and the final per-view counts.
 
 - **Non-small-molecule perturbagens**: bevacizumab, cetuximab, rituximab,
   trastuzumab (antibodies); endothelin-1/ET-1, IGF-1, TNF-alpha (peptide/protein).
-- **Technical blanks**: 32 `gse262419` `Blank` wells (2 per plate), concentration
+- **Technical blanks**: 32 `temp_env` `Blank` wells (2 per plate), concentration
   0, distinct from `Media`/`VEH`; neither perturbation nor control.
-- **Dose provenance is not uniform**: `gse244740` doses are derived from a curated
+- **Dose provenance is not uniform**: `screen_ctox` doses are derived from a curated
   top concentration (paper Table 1), `dtoxs_primary` doses are literature/clinical
   Cmax values except `DIC` (5 µM, recorded in the DCIC design workbook),
-  `dtoxs_ipsc` comes from the series matrix, and `gse262419` is measured. Always
+  `dtoxs_ipsc` comes from the series matrix, and `temp_env` is measured. Always
   read `dose_source` before fitting a dose-response model.
 - **Cell type is a covariate**, not a collapsed constant: `dtoxs_cm.h5ad` mixes
   `primary_cm` and `ipsc_cm`.
@@ -295,4 +312,4 @@ the intersection size, salt collapses, and the final per-view counts.
 - **`drug_key` must keep stereochemistry.** Connectivity-only keys merge
   doxorubicin and epirubicin (4′-epimers); the build uses full parent InChIKeys.
 - **Dose ranges are wide** (nM to mM, e.g. digoxin 0.1 µM top vs acetaminophen
-  4,000 µM top in `gse244740`); no clipping is applied.
+  4,000 µM top in `screen_ctox`); no clipping is applied.

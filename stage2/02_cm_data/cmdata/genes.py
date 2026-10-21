@@ -7,11 +7,11 @@ Rules (ADR 0026 decision 1)
 * ``dtoxs_primary`` / ``dtoxs_ipsc`` are symbol spaces; the DToxS package's
   own ``UCSC-hg38-Gene-HGNC-Entrez-Map`` supplies an Entrez ID used to verify
   (or correct) a symbol that HGNC has since reassigned.
-* ``gse244740`` is an Ensembl space (version suffix stripped).
-* ``gse262419`` probes are ``SYMBOL_probeid`` rows.  The symbol is the identity
-  key (duplicate probes collapse by symbol); the numeric suffix is a probe id,
-  used only as an Entrez fallback when the symbol does not resolve.  It is not
-  treated as an Entrez ID (e.g. ``A1BG_25586``).
+* ``screen_ctox`` (GSE244740) is an Ensembl space (version suffix stripped).
+* ``temp_env`` (GSE262419) probes are ``SYMBOL_probeid`` rows.  The symbol is
+  the identity key (duplicate probes collapse by symbol); the numeric suffix is
+  a probe id, used only as an Entrez fallback when the symbol does not resolve.
+  It is not treated as an Entrez ID (e.g. ``A1BG_25586``).
 * Unresolvable or ambiguous identifiers are dropped and counted, never guessed.
 """
 

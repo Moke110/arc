@@ -7,5 +7,5 @@ dtoxs_primary,Endothelin-1,END,peptide,14,non-small-molecule perturbagen (peptid
 dtoxs_primary,IGF-1,IGF,protein,16,non-small-molecule perturbagen (protein)
 dtoxs_primary,TNF-alpha,TNF,protein,14,non-small-molecule perturbagen (protein)
 dtoxs_primary,Trastuzumab,TRS,antibody,19,non-small-molecule perturbagen (antibody)
-gse262419,Blank,,technical_blank,32,technical blank (concentration 0; neither control nor perturbation)
-gse262419,ET-1,ET-1,peptide,48,non-small-molecule perturbagen (peptide)
+temp_env,Blank,,technical_blank,32,technical blank (concentration 0; neither control nor perturbation)
+temp_env,ET-1,ET-1,peptide,48,non-small-molecule perturbagen (peptide)

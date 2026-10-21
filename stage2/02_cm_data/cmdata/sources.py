@@ -12,7 +12,7 @@ reference and is never imported.  The copy carries the Stage 2 fixes:
   ``SUN+`` -> sunitinib, ``AMI`` -> its own ZINC structure);
 * antibodies / proteins / peptides are labelled instead of silently dropped;
 * every row carries ``dose_um`` + ``dose_source``, ``vehicle`` and ``time_h``;
-* ``gse262419`` ``Blank`` wells are technical blanks, neither control nor
+* ``temp_env`` (GSE262419) ``Blank`` wells are technical blanks, neither control nor
   perturbation;
 * ``cell_type`` and ``donor`` are explicit covariates.
 
@@ -64,7 +64,9 @@ DIC_DOSE_UM = 5.0
 DIC_CITATION = ("DToxS PromoCell-DGE-RNAseq-Experiment-Design.DCIC.xlsx, "
                 "sheets SR1/SR2, Drug.Conc.1 = 5.0 uM (diclofenac)")
 
-GSE244740_TOP_DOSE = {
+# Curated top concentration per compound from the GSE244740 paper (Table 1);
+# `screen_ctox` derives its 8-point half-log series from this value.
+SCREEN_CTOX_TOP_DOSE = {
     normalize_name(name): dose for name, dose in {
         "Acetaminophen": 4000.0, "Acetylsalicylic_acid": 1000.0,
         "Acyclovir": 1000.0, "Amoxicillin": 300.0, "Buspirone": 10.0,
@@ -83,12 +85,12 @@ GSE244740_TOP_DOSE = {
         "3_Azido_3_Deoxythymidine": 2000.0,
     }.items()
 }
-GSE244740_SUNITINIB_TOP = 75.0
+SCREEN_CTOX_SUNITINIB_TOP = 75.0
 
 # Stage 1 looked up these names *before* underscore normalization, so they
 # silently fell back to the sunitinib top dose.  Stage 2 corrects them; the
 # Stage 1 dose regression reports the correction instead of failing on it.
-GSE244740_STAGE1_UNDERSCORE_FIXES = {
+SCREEN_CTOX_STAGE1_UNDERSCORE_FIXES = {
     "Acetylsalicylic acid", "5 Fluorouracil", "Mitomycin C",
     "Amphotericin B", "3 Azido 3 Deoxythymidine",
 }
@@ -394,10 +396,10 @@ def load_dtoxs_ipsc() -> SourceData:
 
 
 # ---------------------------------------------------------------------------
-# gse244740 — ScreenSeq hiPSC-CM
+# screen_ctox (GSE244740) — ScreenSeq hiPSC-CM
 # ---------------------------------------------------------------------------
-def load_gse244740() -> SourceData:
-    with gzip.open(paths.GSE244740 / "GSE244740_series_matrix.txt.gz", "rt") as fh:
+def load_screen_ctox() -> SourceData:
+    with gzip.open(paths.SCREEN_CTOX_DIR / "GSE244740_series_matrix.txt.gz", "rt") as fh:
         text = fh.read()
     title_line = [line for line in text.splitlines()
                   if line.startswith("!Sample_title")][0]
@@ -408,7 +410,7 @@ def load_gse244740() -> SourceData:
     treatments = re.findall(r'"treatment: ([^"]*)"', treatment_line)
 
     counts = pd.read_csv(
-        paths.GSE244740 / "GSE244740_processed_data_counts.txt.gz", sep="\t")
+        paths.SCREEN_CTOX_DIR / "GSE244740_processed_data_counts.txt.gz", sep="\t")
     well_to_index = {column: i for i, column in enumerate(counts.columns)}
     rows = []
     for title, treatment in zip(titles, treatments):
@@ -429,20 +431,20 @@ def load_gse244740() -> SourceData:
         else:
             is_control = False
             index = int(concentration[3:])
-            top = GSE244740_TOP_DOSE.get(drug)
+            top = SCREEN_CTOX_TOP_DOSE.get(drug)
             if top is None:
                 if drug == "Sunitinib":
-                    top = GSE244740_SUNITINIB_TOP
+                    top = SCREEN_CTOX_SUNITINIB_TOP
                 else:
                     raise SourceError(
-                        f"gse244740: no curated top dose for {drug!r}")
+                        f"screen_ctox: no curated top dose for {drug!r}")
             dose = top * 10 ** (-0.5 * (8 - index))
             dose_source = "derived_top_dose"
             name = drug
             vehicle = "DMSO"
         rows.append({
-            "well": f"gse244740::{well_id}",
-            "dataset_id": "gse244740",
+            "well": f"screen_ctox::{well_id}",
+            "dataset_id": "screen_ctox",
             "compound_name": name,
             "compound_code": "",
             "dose_um": float(dose),
@@ -462,22 +464,22 @@ def load_gse244740() -> SourceData:
     meta = _empty_frame(rows)
     ordered = [w.split("::", 1)[1] for w in meta["well"]]
     matrix = counts[ordered].values.T
-    return SourceData("gse244740", meta, _int_counts(matrix, "gse244740"),
+    return SourceData("screen_ctox", meta, _int_counts(matrix, "screen_ctox"),
                       list(counts["Ensembl"]), None)
 
 
 # ---------------------------------------------------------------------------
-# gse262419 — TempO-Seq hiPSC-CM
+# temp_env (GSE262419) — TempO-Seq hiPSC-CM
 # ---------------------------------------------------------------------------
 def _norm_well(value: str) -> str:
     return re.sub(r"^([A-Z]+)0*(\d+)$", r"\1\2", str(value))
 
 
-def load_gse262419() -> SourceData:
-    hash_path = paths.GSE262419 / "GSE262419_hash.csv.gz"
+def load_temp_env() -> SourceData:
+    hash_path = paths.TEMP_ENV_DIR / "GSE262419_hash.csv.gz"
     hash_table = pd.read_csv(hash_path)
     hash_table["Well_ID"] = hash_table["Well_ID"].astype(str)
-    plate_files = sorted(glob.glob(str(paths.GSE262419 / "GSE262419_Plate*.csv.gz")))
+    plate_files = sorted(glob.glob(str(paths.TEMP_ENV_DIR / "GSE262419_Plate*.csv.gz")))
     gene_rows: dict[str, int] = {}
     for path in plate_files:
         frame = pd.read_csv(path)
@@ -526,8 +528,8 @@ def load_gse262419() -> SourceData:
             entity = "peptide" if source_name.upper() == "ET-1" else "small_molecule"
             dose = concentration
         rows.append({
-            "well": f"gse262419::{well_id}",
-            "dataset_id": "gse262419",
+            "well": f"temp_env::{well_id}",
+            "dataset_id": "temp_env",
             "compound_name": name,
             "compound_code": str(info["Chemical_Index"]),
             "dose_um": dose,
@@ -547,7 +549,7 @@ def load_gse262419() -> SourceData:
     meta = _empty_frame(rows)
     ordered = [w.split("::", 1)[1] for w in meta["well"]]
     matrix = matrix[:, [sample_columns.index(w) for w in ordered]].T
-    return SourceData("gse262419", meta, _int_counts(matrix, "gse262419"),
+    return SourceData("temp_env", meta, _int_counts(matrix, "temp_env"),
                       gene_ids, None)
 
 
@@ -557,8 +559,8 @@ def load_gse262419() -> SourceData:
 LOADERS = {
     "dtoxs_primary": load_dtoxs_primary,
     "dtoxs_ipsc": load_dtoxs_ipsc,
-    "gse244740": load_gse244740,
-    "gse262419": load_gse262419,
+    "screen_ctox": load_screen_ctox,
+    "temp_env": load_temp_env,
 }
 
 
@@ -567,10 +569,10 @@ def attach_gene_map(source: SourceData, index: HgncIndex,
     if source.dataset_id in ("dtoxs_primary", "dtoxs_ipsc"):
         source.gene_map = map_symbol_space(
             source.dataset_id, source.gene_ids, index, entrez_map)
-    elif source.dataset_id == "gse244740":
+    elif source.dataset_id == "screen_ctox":
         source.gene_map = map_ensembl_space(
             source.dataset_id, source.gene_ids, index)
-    elif source.dataset_id == "gse262419":
+    elif source.dataset_id == "temp_env":
         source.gene_map = map_probe_space(
             source.dataset_id, source.gene_ids, index)
     else:

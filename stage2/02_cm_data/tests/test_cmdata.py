@@ -85,7 +85,7 @@ class GeneTests(unittest.TestCase):
         self.assertTrue(mapping.verified[0])
 
     def test_probe_space_collapses_by_symbol(self):
-        mapping = map_probe_space("gse262419",
+        mapping = map_probe_space("temp_env",
                                   ["A1BG_25586", "A1BG_1", "A2M_2", "NOPE_9"],
                                   self.index)
         self.assertEqual(list(mapping.hgnc_ids[:3]), ["HGNC:1", "HGNC:1", "HGNC:2"])
@@ -170,6 +170,39 @@ class SourceParsingTests(unittest.TestCase):
         self.assertEqual(by_well["b"], 1)
         self.assertEqual(by_well["c"], 2)
         self.assertEqual(by_well["d"], 0)
+
+
+class NamingTests(unittest.TestCase):
+    def test_dataset_ids_map_to_accessions(self):
+        self.assertEqual(set(paths.SOURCE_DATASETS),
+                         {"dtoxs_primary", "dtoxs_ipsc", "screen_ctox",
+                          "temp_env"})
+        self.assertEqual(paths.SOURCE_ACCESSIONS,
+                         {"screen_ctox": "GSE244740",
+                          "temp_env": "GSE262419"})
+        self.assertEqual(paths.source_accession("dtoxs_primary"), "")
+        self.assertEqual(paths.stage1_dataset_name("screen_ctox"), "gse244740")
+        self.assertEqual(paths.stage1_dataset_name("temp_env"), "gse262419")
+        self.assertEqual(paths.stage1_dataset_name("dtoxs_primary"),
+                         "dtoxs_primary")
+
+    def test_raw_folders_keep_accession(self):
+        self.assertEqual(paths.SCREEN_CTOX_DIR.name, "gse244740")
+        self.assertEqual(paths.TEMP_ENV_DIR.name, "gse262419")
+
+    def test_view_names_use_dataset_ids(self):
+        for name, datasets, _ in paths.VIEWS:
+            self.assertNotIn("gse", name)
+            stem = name.removesuffix(".h5ad")
+            if len(datasets) == 1:
+                self.assertTrue(stem == datasets[0]
+                                or stem.startswith(datasets[0] + "_"))
+            else:
+                self.assertIn("_cm", stem)
+
+    def test_expected_views_match_views(self):
+        self.assertEqual(set(paths.EXPECTED_VIEWS),
+                         {name for name, _, _ in paths.VIEWS})
 
 
 @unittest.skipUnless(paths.GENES_CSV.exists() and paths.BUNDLE_DIR.exists(),

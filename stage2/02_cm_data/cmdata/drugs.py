@@ -14,9 +14,9 @@ Identity rules (ADR 0026 decisions 4-5)
     ``atc-moa``       ATC code or ChEMBL mechanism
     ``atc-moa-mesh``  that, or a PubChem MeSH class
     ``all-smiles``    any resolvable small-molecule structure
-* The only manual supplement is SB-431542 on the curated DToxS / gse244740
-  panels (Inman et al. 2002, Mol Pharmacol 62:65-74).  gse262419 stays
-  automatic by construction.
+* The only manual supplement is SB-431542 on the curated DToxS / screen_ctox
+  panels (Inman et al. 2002, Mol Pharmacol 62:65-74).  temp_env (GSE262419)
+  stays automatic by construction.
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ def dataset_members(value: object) -> set[str]:
     """Parse the ``datasets`` column (``;``-joined source ids)."""
     return {part for part in str(value).split(";") if part}
 
-CURATED_PANELS = {"dtoxs_primary", "dtoxs_ipsc", "gse244740"}
+CURATED_PANELS = {"dtoxs_primary", "dtoxs_ipsc", "screen_ctox"}
 
 
 class CompoundError(RuntimeError):

@@ -35,10 +35,40 @@ DTOXS_ENTREZ_MAP = DTOXS_ROOT / "Metadata" / "UCSC-hg38-Gene-HGNC-Entrez-Map.tsv
 DTOXS_DCIC_XLSX = (DTOXS_ROOT / "Data"
                    / "PromoCell-DGE-RNAseq-Experiment-Design.DCIC.xlsx")
 DTOXS_IPSC = PERT_DATA / "dtoxs_ipsc"
-GSE244740 = PERT_DATA / "gse244740"
-GSE262419 = PERT_DATA / "gse262419"
 
-SOURCE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse262419"]
+# Raw GSE folders keep the GEO accession on disk; the Stage 2 dataset ids are
+# the short names used everywhere the build writes data.
+SCREEN_CTOX_DIR = PERT_DATA / "gse244740"       # GSE244740
+TEMP_ENV_DIR = PERT_DATA / "gse262419"          # GSE262419
+
+SOURCE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "screen_ctox", "temp_env"]
+
+# Stage 2 dataset id -> GEO accession.  This is the single place where the
+# memorable name and the accession meet; the raw folder, the read-only Stage 1
+# baseline and the papers keep the accession.  Documented in README.md,
+# corpus/v1/README.md and ADR 0026.
+SOURCE_ACCESSIONS = {
+    "screen_ctox": "GSE244740",   # ScreenSeq hiPSC-CM, drug cardiotoxicity panel
+    "temp_env": "GSE262419",      # TempO-Seq hiPSC-CM, environmental chemical panel
+}
+
+RAW_DIRS = {
+    "dtoxs_primary": DTOXS_ROOT,
+    "dtoxs_ipsc": DTOXS_IPSC,
+    "screen_ctox": SCREEN_CTOX_DIR,
+    "temp_env": TEMP_ENV_DIR,
+}
+
+
+def source_accession(dataset_id: str) -> str:
+    """GEO accession for a Stage 2 dataset id, or "" for a DToxS panel."""
+    return SOURCE_ACCESSIONS.get(dataset_id, "")
+
+
+def stage1_dataset_name(dataset_id: str) -> str:
+    """Name the read-only Stage 1 baseline uses for this Stage 2 dataset."""
+    accession = SOURCE_ACCESSIONS.get(dataset_id)
+    return accession.lower() if accession else dataset_id
 
 # Stage 1 regression baselines (read-only; outputs, never code).
 STAGE1_OUTPUT = (REPO_ROOT / "stage1" / "xpert-fda-miri-v3"
@@ -55,11 +85,11 @@ EXPECTED_SOURCE_COUNTS = {
         "wells": 344, "controls": 16, "perturbed": 328,
         "small_molecule_perturbed": 296, "distinct_compound_names": 42,
     },
-    "gse244740": {
+    "screen_ctox": {
         "wells": 3072, "controls": 552, "perturbed": 2520,
         "small_molecule_perturbed": 2520, "distinct_compound_names": 44,
     },
-    "gse262419": {
+    "temp_env": {
         "wells": 4558, "controls": 272, "perturbed": 4254,
         "small_molecule_perturbed": 4206, "distinct_compound_names": 466,
         "blanks": 32,
@@ -72,16 +102,16 @@ EXPECTED_VIEWS = {
     "dtoxs_cm.h5ad": {
         "perturbed": 957, "controls": 118, "drugs": 46,
     },
-    "gse244740.h5ad": {
+    "screen_ctox.h5ad": {
         "perturbed": 2520, "controls": 552, "drugs": 42,
     },
-    "gse262419_atc-moa.h5ad": {
+    "temp_env_atc-moa.h5ad": {
         "perturbed": 1047, "controls": 272, "drugs": 113,
     },
-    "gse262419_atc-moa-mesh.h5ad": {
+    "temp_env_atc-moa-mesh.h5ad": {
         "perturbed": 2310, "controls": 272, "drugs": 252,
     },
-    "gse262419_all-smiles.h5ad": {
+    "temp_env_all-smiles.h5ad": {
         "perturbed": 4206, "controls": 272, "drugs": 460,
     },
 }
@@ -90,22 +120,22 @@ EXPECTED_VIEWS = {
 # audited counts and gate a rerun against a silent identity/pharmacology drift.
 EXPECTED_TIER_COUNTS = {
     "dtoxs": {"atc-moa": 46, "atc-moa-mesh": 46, "all-smiles": 47},
-    "gse244740": {"atc-moa": 42, "atc-moa-mesh": 42, "all-smiles": 42},
-    "gse262419": {"atc-moa": 113, "atc-moa-mesh": 252, "all-smiles": 460},
+    "screen_ctox": {"atc-moa": 42, "atc-moa-mesh": 42, "all-smiles": 42},
+    "temp_env": {"atc-moa": 113, "atc-moa-mesh": 252, "all-smiles": 460},
 }
 TIER_DATASETS = {
     "dtoxs": ["dtoxs_primary", "dtoxs_ipsc"],
-    "gse244740": ["gse244740"],
-    "gse262419": ["gse262419"],
+    "screen_ctox": ["screen_ctox"],
+    "temp_env": ["temp_env"],
 }
 
 VIEWS = [
     ("dtoxs_cm.h5ad", ["dtoxs_primary", "dtoxs_ipsc"], "atc-moa"),
-    ("gse244740.h5ad", ["gse244740"], "atc-moa"),
-    ("gse262419_atc-moa.h5ad", ["gse262419"], "atc-moa"),
-    ("gse262419_atc-moa-mesh.h5ad", ["gse262419"], "atc-moa-mesh"),
-    ("gse262419_all-smiles.h5ad", ["gse262419"], "all-smiles"),
+    ("screen_ctox.h5ad", ["screen_ctox"], "atc-moa"),
+    ("temp_env_atc-moa.h5ad", ["temp_env"], "atc-moa"),
+    ("temp_env_atc-moa-mesh.h5ad", ["temp_env"], "atc-moa-mesh"),
+    ("temp_env_all-smiles.h5ad", ["temp_env"], "all-smiles"),
 ]
 
-# The three gse262419 views share one corpus projection; QA asserts it.
-GSE262419_VIEWS = [name for name, _, _ in VIEWS if name.startswith("gse262419_")]
+# The three temp_env views share one corpus projection; QA asserts it.
+TEMP_ENV_VIEWS = [name for name, _, _ in VIEWS if name.startswith("temp_env_")]

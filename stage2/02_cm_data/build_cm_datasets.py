@@ -15,7 +15,6 @@ Other modes:
     --check             print per-source well/control/compound counts
     --corpus-only       freeze or verify the corpus, build no bundle
     --rebuild-corpus    deliberately replace corpus/v1 (drift reset)
-    --skip-stage1       skip the read-only Stage 1 regression gate
 """
 
 from __future__ import annotations

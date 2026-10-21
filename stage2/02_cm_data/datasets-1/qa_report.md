@@ -6,43 +6,52 @@ Gene axis: **18,164** genes
 
 Compounds in corpus: **525** drug keys
 
+## Dataset ids
+
+| dataset_id | accession |
+|---|---|
+| `dtoxs_primary` | — |
+| `dtoxs_ipsc` | — |
+| `screen_ctox` | GSE244740 |
+| `temp_env` | GSE262419 |
+
 ## Per-view counts
 
 | view | perturbed | controls | drug keys | obs |
 |---|---|---|---|---|
 | `dtoxs_cm.h5ad` | 957 | 118 | 46 | 1,075 |
-| `gse244740.h5ad` | 2,520 | 552 | 42 | 3,072 |
-| `gse262419_atc-moa.h5ad` | 1,047 | 272 | 113 | 1,319 |
-| `gse262419_atc-moa-mesh.h5ad` | 2,310 | 272 | 252 | 2,582 |
-| `gse262419_all-smiles.h5ad` | 4,206 | 272 | 460 | 4,478 |
+| `screen_ctox.h5ad` | 2,520 | 552 | 42 | 3,072 |
+| `temp_env_atc-moa.h5ad` | 1,047 | 272 | 113 | 1,319 |
+| `temp_env_atc-moa-mesh.h5ad` | 2,310 | 272 | 252 | 2,582 |
+| `temp_env_all-smiles.h5ad` | 4,206 | 272 | 460 | 4,478 |
 
 ## Gates
 
 | gate | result | detail |
 |---|---|---|
 | var identical across all views | PASS | 18,164 genes |
-| tier nesting gse262419_atc-moa.h5ad ⊆ gse262419_atc-moa-mesh.h5ad | PASS | gse262419_atc-moa.h5ad rows absent from gse262419_atc-moa-mesh.h5ad: [] |
-| tier nesting gse262419_atc-moa-mesh.h5ad ⊆ gse262419_all-smiles.h5ad | PASS | gse262419_atc-moa-mesh.h5ad rows absent from gse262419_all-smiles.h5ad: [] |
-| gse262419 controls identical across views | PASS | 272 control rows |
+| tier nesting temp_env_atc-moa.h5ad ⊆ temp_env_atc-moa-mesh.h5ad | PASS | temp_env_atc-moa.h5ad rows absent from temp_env_atc-moa-mesh.h5ad: [] |
+| tier nesting temp_env_atc-moa-mesh.h5ad ⊆ temp_env_all-smiles.h5ad | PASS | temp_env_atc-moa-mesh.h5ad rows absent from temp_env_all-smiles.h5ad: [] |
+| temp_env controls identical across views | PASS | 272 control rows |
 | tier counts dtoxs | PASS | {'atc-moa': 46, 'atc-moa-mesh': 46, 'all-smiles': 47} |
-| tier counts gse244740 | PASS | {'atc-moa': 42, 'atc-moa-mesh': 42, 'all-smiles': 42} |
-| tier counts gse262419 | PASS | {'atc-moa': 113, 'atc-moa-mesh': 252, 'all-smiles': 460} |
+| tier counts screen_ctox | PASS | {'atc-moa': 42, 'atc-moa-mesh': 42, 'all-smiles': 42} |
+| tier counts temp_env | PASS | {'atc-moa': 113, 'atc-moa-mesh': 252, 'all-smiles': 460} |
 | source values dtoxs_primary | PASS | 2 sampled cells match the source file |
 | source values dtoxs_ipsc | PASS | 2 sampled cells match the source file |
-| source values gse244740 | PASS | 2 sampled cells match the source file |
-| source values gse262419 | PASS | 2 sampled cells match the source file |
+| source values screen_ctox | PASS | 2 sampled cells match the source file |
+| source values temp_env | PASS | 2 sampled cells match the source file |
 | stage1 dtoxs_primary: well set | PASS | 662 Stage 1 wells all present; 180 extra source rows (controls / HG-excluded) |
 | stage1 dtoxs_primary: doses | PASS | 662 shared wells |
 | stage1 dtoxs_primary: counts rank | PASS | 962 shared genes, 5 sampled wells, min Spearman 1.000000 |
 | stage1 dtoxs_ipsc: well set | PASS | 296 Stage 1 wells all present; 48 extra source rows (controls / HG-excluded) |
 | stage1 dtoxs_ipsc: doses | PASS | 296 shared wells |
 | stage1 dtoxs_ipsc: counts rank | PASS | 962 shared genes, 5 sampled wells, min Spearman 1.000000 |
-| stage1 gse244740: well set | PASS | 2,424 Stage 1 wells all present; 648 extra source rows (controls / HG-excluded) |
-| stage1 gse244740: doses | PASS | 2,424 shared wells; 48 wells corrected from the Stage 1 underscore-name fallback (['Amphotericin B', 'Mitomycin C']) |
-| stage1 gse244740: counts rank | PASS | 962 shared genes, 5 sampled wells, min Spearman 1.000000 |
-| stage1 gse262419: well set | PASS | 936 Stage 1 wells all present; 3,622 extra source rows (controls / HG-excluded) |
-| stage1 gse262419: doses | PASS | 936 shared wells |
-| stage1 gse262419: counts rank | PASS | 638 shared genes, 5 sampled wells, min Spearman 1.000000; 290 Stage 1 entrez-mapped landmarks excluded (probe-id suffix bug, recovered by symbol); 35 probe-suffix collision genes excluded (Stage 1 hijacks the probe by suffix) |
+| stage1 screen_ctox: well set | PASS | 2,424 Stage 1 wells all present; 648 extra source rows (controls / HG-excluded) |
+| stage1 screen_ctox: doses | PASS | 2,424 shared wells; 48 wells corrected from the Stage 1 underscore-name fallback (['Amphotericin B', 'Mitomycin C']) |
+| stage1 screen_ctox: counts rank | PASS | 962 shared genes, 5 sampled wells, min Spearman 1.000000 |
+| stage1 temp_env: well set | PASS | 936 Stage 1 wells all present; 3,622 extra source rows (controls / HG-excluded) |
+| stage1 temp_env: doses | PASS | 936 shared wells |
+| stage1 temp_env: counts rank | PASS | 638 shared genes, 5 sampled wells, min Spearman 1.000000; 290 Stage 1 entrez-mapped landmarks excluded (probe-id suffix bug, recovered by symbol); 35 probe-suffix collision genes excluded (Stage 1 hijacks the probe by suffix) |
 
 ## Gene-side losses
 
@@ -54,8 +63,8 @@ guessed.
 |---|---|---|---|---|---|---|---|---|---|---|
 | dtoxs_primary | 23,410 | 70 | 877 | 2,047 | 0 | 25,445 | 12,073 | 1 | 26,328 | 18,164 |
 | dtoxs_ipsc | 23,410 | 70 | 877 | 2,047 | 0 | 25,445 | 12,073 | 1 | 26,328 | 18,164 |
-| gse244740 | 0 | 0 | 0 | 0 | 31,880 | 0 | 12,274 | 0 | 31,880 | 18,164 |
-| gse262419 | 21,733 | 3 | 705 | 17 | 0 | 2 | 79 | 0 | 19,613 | 18,164 |
+| screen_ctox | 0 | 0 | 0 | 0 | 31,880 | 0 | 12,274 | 0 | 31,880 | 18,164 |
+| temp_env | 21,733 | 3 | 705 | 17 | 0 | 2 | 79 | 0 | 19,613 | 18,164 |
 
 ## Excluded compounds (not in the corpus)
 
@@ -69,8 +78,8 @@ guessed.
 | dtoxs_primary | IGF-1 | protein | 16 | non-small-molecule perturbagen (protein) |
 | dtoxs_primary | TNF-alpha | protein | 14 | non-small-molecule perturbagen (protein) |
 | dtoxs_primary | Trastuzumab | antibody | 19 | non-small-molecule perturbagen (antibody) |
-| gse262419 | Blank | technical_blank | 32 | technical blank (concentration 0; neither control nor perturbation) |
-| gse262419 | ET-1 | peptide | 48 | non-small-molecule perturbagen (peptide) |
+| temp_env | Blank | technical_blank | 32 | technical blank (concentration 0; neither control nor perturbation) |
+| temp_env | ET-1 | peptide | 48 | non-small-molecule perturbagen (peptide) |
 
 ## View-level exclusions (in the corpus, filtered by the view tier)
 
@@ -82,8 +91,8 @@ guessed.
 
 </details>
 
-- `gse244740.h5ad` (atc-moa): no view-level compound exclusions
-<details><summary><code>gse262419_atc-moa.h5ad</code> (atc-moa): 348 compound entries (347 drug keys) filtered by the tier</summary>
+- `screen_ctox.h5ad` (atc-moa): no view-level compound exclusions
+<details><summary><code>temp_env_atc-moa.h5ad</code> (atc-moa): 348 compound entries (347 drug keys) filtered by the tier</summary>
 
 | compound | drug_key | reason |
 |---|---|---|
@@ -438,7 +447,7 @@ guessed.
 
 </details>
 
-<details><summary><code>gse262419_atc-moa-mesh.h5ad</code> (atc-moa-mesh): 209 compound entries (208 drug keys) filtered by the tier</summary>
+<details><summary><code>temp_env_atc-moa-mesh.h5ad</code> (atc-moa-mesh): 209 compound entries (208 drug keys) filtered by the tier</summary>
 
 | compound | drug_key | reason |
 |---|---|---|
@@ -654,7 +663,7 @@ guessed.
 
 </details>
 
-- `gse262419_all-smiles.h5ad` (all-smiles): no view-level compound exclusions
+- `temp_env_all-smiles.h5ad` (all-smiles): no view-level compound exclusions
 
 ## Salt / free-base collapses
 
@@ -687,21 +696,21 @@ Rerun matched `corpus/v1/` exactly: no gene or drug drift in any source.
 | view | obs | perturbed | controls | drug keys | genes | content sha256 |
 |---|---|---|---|---|---|---|
 | `dtoxs_cm.h5ad` | 1,075 | 957 | 118 | 46 | 18,164 | `17198963e925c742` |
-| `gse244740.h5ad` | 3,072 | 2,520 | 552 | 42 | 18,164 | `bd88f4549170381e` |
-| `gse262419_atc-moa.h5ad` | 1,319 | 1,047 | 272 | 113 | 18,164 | `3a5b34744e23fcf5` |
-| `gse262419_atc-moa-mesh.h5ad` | 2,582 | 2,310 | 272 | 252 | 18,164 | `88324d3e635f1c6a` |
-| `gse262419_all-smiles.h5ad` | 4,478 | 4,206 | 272 | 460 | 18,164 | `968726c4a3cc7954` |
+| `screen_ctox.h5ad` | 3,072 | 2,520 | 552 | 42 | 18,164 | `2ba8efc27d92d0a7` |
+| `temp_env_atc-moa.h5ad` | 1,319 | 1,047 | 272 | 113 | 18,164 | `91591d58dd63aed0` |
+| `temp_env_atc-moa-mesh.h5ad` | 2,582 | 2,310 | 272 | 252 | 18,164 | `4633eaef47ea3860` |
+| `temp_env_all-smiles.h5ad` | 4,478 | 4,206 | 272 | 460 | 18,164 | `f84066c4dfd2c017` |
 
 ## Caveats
 
 - `dtoxs_primary` doses are literature/clinical Cmax values; `DIC`
   (diclofenac, 3 wells) uses the 5 uM recorded in the DToxS DCIC design
   workbook and is marked `dose_source=measured`.
-- `gse244740` doses are derived from the curated paper Table-1 top
+- `screen_ctox` doses are derived from the curated paper Table-1 top
   concentration (`dose_source=derived_top_dose`), not measured.
 - The DToxS `AMI` arm is a pentyl-benzofuran homolog (CID 16218975), not
   amiodarone; it is in `all-smiles` only.
 - `dtoxs_cm.h5ad` intentionally mixes `primary_cm` and `ipsc_cm`; cell
   type and donor are covariates, not collapsed constants.
-- The 32 `gse262419` `Blank` wells are technical blanks, neither
+- The 32 `temp_env` `Blank` wells are technical blanks, neither
   controls nor perturbations.

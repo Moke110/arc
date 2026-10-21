@@ -13,7 +13,7 @@ from scipy.stats import spearmanr
 from . import paths
 from .drugs import dataset_members
 from .genes import GeneUniverse
-from .sources import GSE244740_STAGE1_UNDERSCORE_FIXES, _dtoxs_key
+from .sources import SCREEN_CTOX_STAGE1_UNDERSCORE_FIXES, _dtoxs_key
 from .views import ViewData
 
 CONTRACT_OBS = [
@@ -73,9 +73,9 @@ def cross_view_gates(views: dict[str, ViewData],
     results.append(GateResult("var identical across all views", ok,
                               f"{len(base):,} genes"))
 
-    # 2. gse262419 tier nesting + value identity + shared controls
-    narrow_to_wide = [("gse262419_atc-moa.h5ad", "gse262419_atc-moa-mesh.h5ad"),
-                      ("gse262419_atc-moa-mesh.h5ad", "gse262419_all-smiles.h5ad")]
+    # 2. temp_env tier nesting + value identity + shared controls
+    narrow_to_wide = [("temp_env_atc-moa.h5ad", "temp_env_atc-moa-mesh.h5ad"),
+                      ("temp_env_atc-moa-mesh.h5ad", "temp_env_all-smiles.h5ad")]
     for narrow, wide in narrow_to_wide:
         if narrow not in views or wide not in views:
             continue
@@ -103,14 +103,14 @@ def cross_view_gates(views: dict[str, ViewData],
                     break
         results.append(GateResult(f"tier nesting {narrow} ⊆ {wide}", ok, detail))
 
-    # 3. the 272 gse262419 controls are identical across the three views
-    gse_views = [views[name] for name in paths.GSE262419_VIEWS if name in views]
-    if len(gse_views) >= 2:
-        reference = gse_views[0].adata
+    # 3. the 272 temp_env controls are identical across the three views
+    temp_views = [views[name] for name in paths.TEMP_ENV_VIEWS if name in views]
+    if len(temp_views) >= 2:
+        reference = temp_views[0].adata
         ref_ctrl = reference.obs["is_control"].to_numpy()
         ref_wells = reference.obs.loc[ref_ctrl, "well"].tolist()
         ok, detail = True, (f"{len(ref_wells)} control rows")
-        for view in gse_views[1:]:
+        for view in temp_views[1:]:
             adata = view.adata
             ctrl = adata.obs["is_control"].to_numpy()
             wells = adata.obs.loc[ctrl, "well"].tolist()
@@ -136,7 +136,7 @@ def cross_view_gates(views: dict[str, ViewData],
                     break
             if not ok:
                 break
-        results.append(GateResult("gse262419 controls identical across views", ok, detail))
+        results.append(GateResult("temp_env controls identical across views", ok, detail))
     return results
 
 
@@ -147,20 +147,20 @@ def _raw_counts_value(dataset_id: str, well: str, gene_id: str) -> float | None:
     """Re-read one raw source cell for the spot check.
 
     Returns the value as the loader should see it (duplicate DToxS gene rows
-    summed; duplicate gse262419 probe rows take the last occurrence, matching
+    summed; duplicate temp_env probe rows take the last occurrence, matching
     the loader).
     """
     raw_well = well.split("::", 1)[1]
-    if dataset_id == "gse244740":
+    if dataset_id == "screen_ctox":
         frame = pd.read_csv(
-            paths.GSE244740 / "GSE244740_processed_data_counts.txt.gz",
+            paths.SCREEN_CTOX_DIR / "GSE244740_processed_data_counts.txt.gz",
             sep="\t", usecols=["Ensembl", raw_well])
         values = frame.loc[frame["Ensembl"].astype(str) == gene_id, raw_well]
         return float(values.iloc[-1]) if len(values) else None
 
-    if dataset_id == "gse262419":
+    if dataset_id == "temp_env":
         plate = raw_well.split("-")[0].replace("Plate", "")
-        path = paths.GSE262419 / f"GSE262419_Plate{int(plate):02d}.csv.gz"
+        path = paths.TEMP_ENV_DIR / f"GSE262419_Plate{int(plate):02d}.csv.gz"
         frame = pd.read_csv(path)
         frame.columns = [str(column) for column in frame.columns]
         values = frame.loc[frame["Genes"].astype(str) == gene_id, raw_well]
@@ -233,14 +233,24 @@ def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
 
     results = []
     for dataset_id in paths.SOURCE_DATASETS:
-        path = paths.STAGE1_OUTPUT / f"{dataset_id}.h5ad"
+        stage1_name = paths.stage1_dataset_name(dataset_id)
+        path = paths.STAGE1_OUTPUT / f"{stage1_name}.h5ad"
         if not path.exists():
             results.append(GateResult(f"stage1 {dataset_id}", True,
                                       f"baseline missing: {path}", skipped=True))
             continue
         stage1 = ad.read_h5ad(path, backed="r")
         source = sources[dataset_id]
-        stage1_wells = set(stage1.obs["well"].astype(str))
+        # Stage 1 baselines keep the GEO accession as dataset id and well
+        # prefix; translate to the Stage 2 id so the sets compare directly.
+        stage1_prefix = f"{stage1_name}::"
+        stage1_to_ours = {
+            well: (f"{dataset_id}::" + well.split("::", 1)[1]
+                   if well.startswith(stage1_prefix) else well)
+            for well in stage1.obs["well"].astype(str)
+        }
+        ours_to_stage1 = {ours: raw for raw, ours in stage1_to_ours.items()}
+        stage1_wells = set(stage1_to_ours.values())
         our_wells = set(source.meta["well"].astype(str))
         missing = sorted(stage1_wells - our_wells)
         well_ok = not missing
@@ -259,11 +269,12 @@ def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
         for well in shared:
             if well not in ours.index:
                 continue
-            expected = float(stage1.obs.loc[stage1.obs["well"] == well, "dose"].iloc[0])
+            expected = float(stage1.obs.loc[
+                stage1.obs["well"] == ours_to_stage1[well], "dose"].iloc[0])
             actual = float(ours.loc[well, "dose_um"])
             if abs(expected - actual) > 1e-9:
                 name = str(ours.loc[well, "compound_name"])
-                if name in GSE244740_STAGE1_UNDERSCORE_FIXES:
+                if name in SCREEN_CTOX_STAGE1_UNDERSCORE_FIXES:
                     dose_fixed.append((well, expected, actual, name))
                 else:
                     dose_mismatch.append((well, expected, actual, name))
@@ -279,7 +290,7 @@ def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
 
         # Counts: Stage 1 X is a per-plate monotonic (quantile) transform of
         # raw log2 CPM; ranks must agree exactly on the shared gene axis.
-        # For gse262419, Stage 1's `entrez`-preferred landmark mapping selects
+        # For temp_env, Stage 1's `entrez`-preferred landmark mapping selects
         # probes by the numeric suffix, which is a probe id, not an Entrez id;
         # it zeroes those landmarks.  Stage 2 keys on the symbol and recovers
         # them, so the rank check uses the Stage 1-mappable subset and reports
@@ -287,7 +298,7 @@ def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
         symbols = stage1.var["gene_symbol"].astype(str).tolist()
         allowed, excluded_entrez = set(symbols), 0
         stage1_map = (paths.STAGE1_OUTPUT / "gene_maps"
-                      / f"{dataset_id}_to_l1000_gene_map.csv")
+                      / f"{stage1_name}_to_l1000_gene_map.csv")
         if stage1_map.exists():
             mapping = pd.read_csv(stage1_map)
             if "match_type" in mapping:
@@ -298,7 +309,7 @@ def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
                     "l1000_gene_symbol"].astype(str))
         universe_pos = {symbol: i for i, symbol in enumerate(universe.symbols)}
         affected = set()
-        if dataset_id == "gse262419" and stage1_map.exists():
+        if dataset_id == "temp_env" and stage1_map.exists():
             # A probe suffix that equals *any* landmark Entrez is hijacked by
             # Stage 1's entrez-first lookup; Stage 2 keys on the symbol, so
             # those genes cannot be compared landmark-by-landmark.
@@ -324,7 +335,8 @@ def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
         for well in sampled:
             source_row = int(np.flatnonzero(source.meta["well"].to_numpy() == well)[0])
             raw = source.mapped_counts[source_row, list(rows)]
-            stage1_row = int(np.flatnonzero(stage1.obs["well"].to_numpy() == well)[0])
+            stage1_row = int(np.flatnonzero(
+                stage1.obs["well"].to_numpy() == ours_to_stage1[well])[0])
             transformed = np.asarray(stage1.X[stage1_row]).ravel()[list(columns)]
             if np.all(raw == raw[0]):
                 continue
@@ -371,6 +383,16 @@ def write_report(path: Path, *, views: dict[str, ViewData],
         f"Gene axis: **{len(universe):,}** genes",
         "",
         f"Compounds in corpus: **{table.compounds['drug_key'].nunique():,}** drug keys",
+        "",
+        "## Dataset ids",
+        "",
+        "| dataset_id | accession |",
+        "|---|---|",
+    ]
+    for dataset_id in paths.SOURCE_DATASETS:
+        accession = paths.source_accession(dataset_id) or "—"
+        lines.append(f"| `{dataset_id}` | {accession} |")
+    lines += [
         "",
         "## Per-view counts",
         "",
@@ -509,13 +531,13 @@ def write_report(path: Path, *, views: dict[str, ViewData],
         "- `dtoxs_primary` doses are literature/clinical Cmax values; `DIC`",
         "  (diclofenac, 3 wells) uses the 5 uM recorded in the DToxS DCIC design",
         "  workbook and is marked `dose_source=measured`.",
-        "- `gse244740` doses are derived from the curated paper Table-1 top",
+        "- `screen_ctox` doses are derived from the curated paper Table-1 top",
         "  concentration (`dose_source=derived_top_dose`), not measured.",
         "- The DToxS `AMI` arm is a pentyl-benzofuran homolog (CID 16218975), not",
         "  amiodarone; it is in `all-smiles` only.",
         "- `dtoxs_cm.h5ad` intentionally mixes `primary_cm` and `ipsc_cm`; cell",
         "  type and donor are covariates, not collapsed constants.",
-        "- The 32 `gse262419` `Blank` wells are technical blanks, neither",
+        "- The 32 `temp_env` `Blank` wells are technical blanks, neither",
         "  controls nor perturbations.",
         "",
     ]
