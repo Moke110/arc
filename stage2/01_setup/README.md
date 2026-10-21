@@ -3,6 +3,9 @@
 Nine deployed models, one run card each. The goal is to prove the models run in
 their own environments, not to compare them.
 
+- **HTML report for non-computational readers:** [`model_architecture_weights_benchmarks.html`](model_architecture_weights_benchmarks.html) —
+  architecture (drug encoder vs. main predictor), weights, and published benchmark claims per model.
+
 | model | status | run | artifact |
 |---|---|---|---|
 | PRnet | ✅ passed (978 demo, setup-only) | `bash stage2/01_setup/prnet/run.sh` | `prnet/output/demo_split_y_pre_array.csv` (661 × 978) |

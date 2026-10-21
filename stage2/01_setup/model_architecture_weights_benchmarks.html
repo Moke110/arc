@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage 2 模型报告：架构、权重与论文基准成绩</title>
+<style>
+  :root {
+    --ink: #17252f;
+    --muted: #5b6b77;
+    --line: #dde4e8;
+    --paper: #ffffff;
+    --bg: #f4f7f8;
+    --teal: #0d6e6e;
+    --teal-soft: #e4f2f1;
+    --amber: #9a5b13;
+    --amber-soft: #fbf1df;
+    --red: #9b2c2c;
+    --red-soft: #fbe8e6;
+    --green: #2f6b3d;
+    --green-soft: #e7f3e9;
+    --blue: #2b577d;
+    --blue-soft: #e8f0f7;
+    --shadow: 0 10px 30px rgba(23, 37, 47, .07);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    line-height: 1.75;
+    font-size: 16px;
+  }
+  a { color: var(--teal); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1220px; margin: 0 auto; padding: 0 22px 80px; }
+  header.hero {
+    background:
+      radial-gradient(circle at 88% 12%, rgba(255,255,255,.18), transparent 34%),
+      radial-gradient(circle at 10% 90%, rgba(255,255,255,.12), transparent 38%),
+      linear-gradient(135deg, #0b4f52 0%, #0d6e6e 46%, #1b7f78 100%);
+    color: #fff;
+    padding: 54px 0 46px;
+    margin-bottom: 26px;
+  }
+  header.hero .wrap { padding-bottom: 0; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.24);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 44px); line-height: 1.25; letter-spacing: -.01em; }
+  .subtitle { margin: 0; max-width: 850px; color: rgba(255,255,255,.88); font-size: 17px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 22px; font-size: 14px; color: rgba(255,255,255,.8); }
+  .hero-meta strong { color: #fff; font-weight: 600; }
+
+  nav.toc {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(255,255,255,.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  nav.toc .wrap { padding-top: 10px; padding-bottom: 10px; display: flex; gap: 8px 18px; flex-wrap: wrap; }
+  nav.toc a { color: var(--muted); font-size: 14px; font-weight: 600; }
+  nav.toc a:hover { color: var(--teal); text-decoration: none; }
+
+  section { margin: 34px 0; }
+  h2 { font-size: 26px; margin: 0 0 8px; letter-spacing: -.01em; }
+  h3 { font-size: 20px; margin: 26px 0 10px; }
+  h4 { font-size: 16px; margin: 0 0 8px; color: var(--teal); }
+  .lede { color: var(--muted); margin: 0 0 20px; max-width: 900px; }
+  .small { font-size: 14px; }
+  .muted { color: var(--muted); }
+
+  .callout {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--teal);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    margin: 18px 0;
+  }
+  .callout.warn { border-left-color: var(--amber); background: var(--amber-soft); }
+  .callout.danger { border-left-color: var(--red); background: var(--red-soft); }
+  .callout.good { border-left-color: var(--green); background: var(--green-soft); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout strong { color: var(--ink); }
+
+  .key-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 18px 0 8px; }
+  .key {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 16px 14px; box-shadow: var(--shadow);
+  }
+  .key .num { font-size: 30px; line-height: 1.1; font-weight: 800; color: var(--teal); }
+  .key .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; font-size: 14px; }
+  th, td { padding: 11px 13px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  th { background: #eef4f4; color: #27484b; font-weight: 700; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fbfdfd; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  .tiny { font-size: 12.5px; color: var(--muted); }
+
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 700; line-height: 1.7; white-space: nowrap;
+  }
+  .b-green { background: var(--green-soft); color: var(--green); }
+  .b-amber { background: var(--amber-soft); color: var(--amber); }
+  .b-red { background: var(--red-soft); color: var(--red); }
+  .b-blue { background: var(--blue-soft); color: var(--blue); }
+  .b-gray { background: #edf1f3; color: #52636e; }
+
+  .model {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 26px 26px 22px;
+    margin: 26px 0;
+    scroll-margin-top: 70px;
+  }
+  .model-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 18px; }
+  .model-title { margin: 0; font-size: 25px; }
+  .model-title .idx { color: var(--teal); font-weight: 800; margin-right: 8px; }
+  .model-sub { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .arch { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 8px 0 18px; }
+  .arch .box { background: #f8fafb; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .arch .box.drug { background: var(--teal-soft); border-color: #c9e4e2; }
+  .arch .box.main { background: var(--blue-soft); border-color: #d3e1ee; }
+  .arch .box h4 { margin-bottom: 8px; }
+  .arch .box.drug h4 { color: var(--teal); }
+  .arch .box.main h4 { color: var(--blue); }
+  .arch ul { margin: 0; padding-left: 18px; }
+  .arch li { margin: 4px 0; }
+  .arch .note { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(23,37,47,.16); font-size: 13.5px; color: var(--muted); }
+
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .fact { background: #fbfcfc; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .fact h4 { margin-bottom: 6px; }
+  .fact p { margin: 0; font-size: 14.5px; }
+  .fact ul { margin: 0; padding-left: 18px; font-size: 14.5px; }
+
+  .bench { margin-top: 16px; }
+  .bench h4 { margin-bottom: 8px; }
+  .bench table { min-width: 680px; }
+  .bench th { background: #f2f6f7; }
+
+  .footer { color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); margin-top: 40px; padding-top: 20px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .glossary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 22px; }
+  .glossary dt { font-weight: 700; color: var(--teal); }
+  .glossary dd { margin: 0 0 10px; color: #33454f; font-size: 14.5px; }
+  pre.tree {
+    margin: 10px 0 12px;
+    padding: 14px 16px;
+    background: #f8fafb;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: #27484b;
+  }
+
+  @media (max-width: 900px) {
+    .key-grid { grid-template-columns: 1fr 1fr; }
+    .arch, .facts, .two-col, .glossary { grid-template-columns: 1fr; }
+    .model { padding: 20px 18px; }
+  }
+  @media (max-width: 560px) {
+    .key-grid { grid-template-columns: 1fr; }
+    body { font-size: 15px; }
+  }
+  @media print {
+    body { background: #fff; }
+    nav.toc { display: none; }
+    .model, .callout, .table-wrap, .key { box-shadow: none; }
+    .model { break-inside: avoid; }
+    .table-wrap { overflow: visible; }
+    table { min-width: 0; font-size: 9pt; }
+    th, td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Stage 2 · Model Setup Review</div>
+    <h1>已部署模型的架构、权重与论文基准成绩</h1>
+    <p class="subtitle">
+      面向非计算背景的生物医学研究者：用尽量少的术语，说明 9 个模型分别“怎么把药物变成数字”、
+      “怎么预测转录组”、现在手里有哪些权重，以及论文里到底报告了什么成绩。
+    </p>
+    <div class="hero-meta">
+      <span><strong>范围</strong> stage2/01_setup 的 9 个 run card</span>
+      <span><strong>数据截止</strong> 2026-10-19 的 setup 运行</span>
+      <span><strong>报告日期</strong> 2026-10-20</span>
+      <span><strong>目的</strong> 为 Stage 2 模型选择提供事实底稿</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#summary">30 秒结论</a>
+    <a href="#howto">怎样读这些数字</a>
+    <a href="#overview">总览表</a>
+    <a href="#genespace">基因数量是否固定</a>
+    <a href="#drug-encoder">药物编码器复用</a>
+    <a href="#encoder-training">编码器怎么训练</a>
+    <a href="#cm-training">能否直接在 CM 上训练</a>
+    <a href="#models">逐个模型</a>
+    <a href="#compare">横向对比</a>
+    <a href="#caveats">五个陷阱</a>
+    <a href="#glossary">术语表</a>
+    <a href="#sources">来源</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section id="summary">
+  <h2>30 秒结论</h2>
+  <p class="lede">
+    这 9 个模型都能在自己的环境里跑通，但“能跑通”不等于“现在就能用于本项目”。
+    真正决定能否进入 Stage 2 选择的，是三个条件：<strong>能输出全转录组</strong>、
+    <strong>能对没见过的药只凭结构做预测（冷药物）</strong>、<strong>有可用的权重或能在 16 小时内重训</strong>。
+  </p>
+
+  <div class="key-grid">
+    <div class="key">
+      <div class="num">9/9</div>
+      <div class="label">run card 完成；但 chemCPA 只是 load-only，scVIDR / Squidiff / DECANT 是随机权重或合成数据</div>
+    </div>
+    <div class="key">
+      <div class="num">0</div>
+      <div class="label">目前能在 CM 数据上直接产出全转录组预测的模型</div>
+    </div>
+    <div class="key">
+      <div class="num">1</div>
+      <div class="label">唯一已在本机就位、且权重严格超过 5,000 个基因（5,087）的模型：PerturbNet</div>
+    </div>
+    <div class="key">
+      <div class="num">20,570</div>
+      <div class="label">Stage 2 目标基因空间；没有任何公开权重直接覆盖它</div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <p><strong>最重要的结论：</strong>当前没有一个模型可以直接拿来做 CM 数据的全转录组冷药物预测。
+    PRnet、CPA、chemCPA 有公开权重，但基因空间或任务不匹配；biolord、scVIDR、Squidiff、CMonge、DECANT
+    没有可用的公开权重（或只有 demo/骨架）。因此下一步不是“排排行榜”，而是先决定
+    <strong>基因空间（978 / 5,000 HVG / 20,570）</strong>和<strong>重训策略</strong>。</p>
+  </div>
+
+  <div class="callout good">
+    <p><strong>最值得优先评估的三条路线：</strong></p>
+    <p>① <strong>PerturbNet</strong>：唯一同时具备“SMILES 化学编码器 + 严格超过 5,000 基因（5,087）的公开权重”的模型，但完整推理依赖 Python 3.7 / TensorFlow 1.15，工程风险最高。</p>
+    <p>② <strong>chemCPA</strong>：化学编码器与基因空间解耦，可复用；只需在 20,570 基因上重训 VAE 解码器，是“冷药物 + 剂量”最成熟的路线。</p>
+    <p>③ <strong>biolord / CMonge</strong>：参数少、单卡可训，适合在 16 h 预算内做 per-dataset 重训；CMonge 还能直接评估细胞群体异质性（分布级 OT）。</p>
+  </div>
+</section>
+
+<section id="howto">
+  <h2>怎样读这些数字</h2>
+  <p class="lede">
+    论文里的“R² = 0.9”并不等于“这个模型更好”。不同论文用的数据集、划分方式、基因数、指标定义都不同。
+    下面先统一几个概念，后面的表才不会误读。
+  </p>
+
+  <div class="two-col">
+    <div class="callout">
+      <h4>R²（决定系数）</h4>
+      <p>衡量预测值能解释真实值多少方差。1 是完美，0 相当于“只用平均值猜”，负数比平均值还差。
+      在扰动预测里，R² 很容易被“大多数基因没变化”抬高，所以论文通常同时报告 <strong>DEG（差异表达基因）上的 R²</strong>。</p>
+    </div>
+    <div class="callout">
+      <h4>Pearson / Spearman 相关</h4>
+      <p>Pearson 衡量线性相关，Spearman 衡量排序相关。它们只看“趋势像不像”，不看绝对数值是否接近；
+      因此一个模型可以相关性很高但 R² 很低。扰动论文常用 <strong>Δ 表达（log fold-change）的 Pearson</strong>。</p>
+    </div>
+    <div class="callout">
+      <h4>MSE / RMSE</h4>
+      <p>预测值与真实值的平均平方误差（RMSE 是其平方根）。越低越好，但单位依赖数据预处理，
+      <strong>不同论文的 MSE 基本不可比</strong>。</p>
+    </div>
+    <div class="callout">
+      <h4>冷药物（cold drug）</h4>
+      <p>训练时完全没见过这个化合物，预测时只给它的结构（SMILES）。这是本项目最关键的泛化场景。
+      “药物级 holdout”不一定是冷药物：如果预测时仍然用了该药处理过的细胞，那是<strong>转导式（transductive）</strong>，不是冷启动。</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>阅读原则：</strong>先看“数据集 + 划分 + 基因空间 + 指标”，再看数值。跨论文的单个数字不能直接排名；
+    本报告只在同一模型、同一论文内部做对照。</p>
+  </div>
+</section>
+
+<section id="overview">
+  <h2>总览表</h2>
+  <p class="lede">先给一张“谁有什么”的表。详细解释在后面的模型卡片。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>模型</th>
+          <th>药物编码模块</th>
+          <th>主预测模块</th>
+          <th>公开权重（本机）</th>
+          <th>论文代表性成绩（各自数据集）</th>
+          <th>Stage 2 就绪度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>PRnet</strong></td>
+          <td>rFCFP 指纹（SMILES，1024 bit，剂量缩放）→ MLP</td>
+          <td>扰动条件 VAE：表达 + 药物 → 潜变量 → 解码表达</td>
+          <td><span class="badge b-green">有</span> 978 基因 + 5,000 基因两个 checkpoint</td>
+          <td>L1000 冷药物 PCC ≈ 0.80；sci-Plex 冷药物 R² = 0.969</td>
+          <td><span class="badge b-amber">部分</span> 5,000 路径缺数据；20,570 需重训</td>
+        </tr>
+        <tr>
+          <td><strong>CPA</strong></td>
+          <td>每药可学习嵌入（Morgan 指纹初始化、冻结）+ 剂量网络</td>
+          <td>VAE：基础潜变量 + 药物潜变量 + 协变量潜变量 → 解码</td>
+          <td><span class="badge b-green">有</span> Kang（IFN-β）checkpoint，5,000 基因</td>
+          <td>留出组合 R² = 0.81；方差预测比 scGen 高 35.85%</td>
+          <td><span class="badge b-amber">部分</span> 需化学/剂量重训</td>
+        </tr>
+        <tr>
+          <td><strong>chemCPA</strong></td>
+          <td>RDKit 描述符 → MLP；可选 ChemicalVAE / JT-VAE / GROVER</td>
+          <td>ComPert VAE：加性药物潜变量 + 协变量；对抗解耦</td>
+          <td><span class="badge b-green">有</span> 12 个 L1000 checkpoint（977 / 2,000 基因）</td>
+          <td>冷药物 10 µM：E[r²] 全基因 0.68、DEG 0.54</td>
+          <td><span class="badge b-amber">部分</span> 化学编码器可复用，解码器需重训</td>
+        </tr>
+        <tr>
+          <td><strong>biolord</strong></td>
+          <td>默认药物类别嵌入；冷药物时用 RDKit 特征 → MLP</td>
+          <td>单 VAE：细胞状态潜变量 + 药物/剂量属性潜变量 → 解码</td>
+          <td><span class="badge b-red">无</span> 仅本次 3 epoch 本地模型</td>
+          <td>sci-Plex 9 个冷药物：mean r² = 0.76（chemCPA-pre 0.51）</td>
+          <td><span class="badge b-amber">需重训</span> per-dataset，无公开权重</td>
+        </tr>
+        <tr>
+          <td><strong>PerturbNet</strong></td>
+          <td>ChemicalVAE：SMILES → 卷积 + GRU → 196 维潜变量</td>
+          <td>cell VAE + 条件可逆网络（cINN）：化学潜变量 → 细胞潜变量</td>
+          <td><span class="badge b-green">有</span> LINCS 978 / sci-Plex 5,087，cINN 约 173.9 M 参数</td>
+          <td>LINCS 冷药物 median R² = 0.919；sci-Plex median R² = 0.984</td>
+          <td><span class="badge b-amber">较接近</span> 权重已就位，推理需 TF 1.15</td>
+        </tr>
+        <tr>
+          <td><strong>scVIDR</strong></td>
+          <td><span class="badge b-red">无化学编码</span> 药物/剂量 = 潜空间位移 Δz</td>
+          <td>VAE + 潜空间回归：对照潜变量 + Δz → 解码</td>
+          <td><span class="badge b-red">未就位</span> 仓库称有预训练模型，但未随仓库分发</td>
+          <td>小鼠肝脏 HVG R² = 0.92、DEG R² = 0.81；PBMC HVG R² = 0.97</td>
+          <td><span class="badge b-red">仅架构</span> 不能冷药物</td>
+        </tr>
+        <tr>
+          <td><strong>Squidiff</strong></td>
+          <td>rFCFP × log10(dose+1) → 与对照表达融合</td>
+          <td>语义编码器 + 条件 DDIM 扩散模型（本次配置 52.56 M 参数）</td>
+          <td><span class="badge b-red">无</span> 仓库不带权重；FigShare 需手动下载</td>
+          <td>sci-Plex3 冷药物：与 PRnet 相当或更好；分化轨迹优于 scGen</td>
+          <td><span class="badge b-red">仅架构</span> 无权重、需训练</td>
+        </tr>
+        <tr>
+          <td><strong>CMonge</strong></td>
+          <td>RDKit 描述符 + log 剂量（或 MoA 嵌入）→ 条件向量</td>
+          <td>自编码器 + 条件 Monge 映射（OT）在潜空间搬移细胞分布</td>
+          <td><span class="badge b-amber">部分</span> 仓库有 demo AE；无全量预训练映射</td>
+          <td>sci-Plex 最高剂量、留 9 药：R² = 0.900（RDKit 0.781；chemCPA 0.760）</td>
+          <td><span class="badge b-amber">仅小 demo</span> 参数少，适合重训</td>
+        </tr>
+        <tr>
+          <td><strong>DECANT</strong></td>
+          <td><span class="badge b-red">无化学编码</span> 机制潜变量来自“处理组−对照组”表达袋</td>
+          <td>细胞编码 + 注意力池化 + 机制/上下文解耦 + 基因解码</td>
+          <td><span class="badge b-red">无</span> 复现骨架，无 checkpoint / 无数据</td>
+          <td>药物级留出：gene Pearson 0.653、program Pearson 0.831</td>
+          <td><span class="badge b-red">仅架构</span> 转导式，非结构冷启动</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tiny">注：表中的“代表性成绩”来自各自论文的不同数据集与划分，<strong>不能横向比较</strong>。详见每个模型卡片和后面的“五个陷阱”。</p>
+</section>
+
+<section id="genespace">
+  <h2>基因数量是否已经固定？</h2>
+  <p class="lede">
+    要分两层看：<strong>代码层面</strong>，大多数模型把基因数作为可配置参数；<strong>权重层面</strong>，一旦加载现成
+    checkpoint，基因数就被第一层/最后一层的权重形状锁死。换句话说，代码可以改成 20,570，但现有权重不能。
+  </p>
+
+  <div class="callout">
+    <p><strong>结论：</strong>这些模型<strong>输入和输出使用同一套基因</strong>（自编码/重构式），没有“输入基因集 A、输出基因集 B”的设计。
+    当前公开权重分别锁在 <strong>978、977、2,000、5,000、5,087</strong> 个基因；<strong>没有任何现有权重覆盖 20,570</strong>。
+    换基因数 = 重新训练（至少重训基因相关的编码器/解码器），不是改一个配置就能推理。</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>模型</th>
+          <th>代码里的基因数</th>
+          <th>现有权重 / 本次实例锁定的基因数</th>
+          <th>输入 = 输出？</th>
+          <th>换到 20,570 需要做什么</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>PRnet</strong></td>
+          <td><code>x_dimension</code> 可配；输入层自动加 64 维药物向量</td>
+          <td><strong>978</strong>（LINCS）/ <strong>5,000</strong>（sci-Plex）</td>
+          <td>是，同一套基因</td>
+          <td>重训 VAE 编码器/解码器；rFCFP 药物编码器可复用</td>
+        </tr>
+        <tr>
+          <td><strong>CPA</strong></td>
+          <td><code>n_genes = adata.n_vars</code>，可配</td>
+          <td><strong>5,000</strong>（Kang checkpoint，含 5,000 个基因名）</td>
+          <td>是，同一套基因</td>
+          <td>重训整个 VAE；原生 CPA 的药物嵌入不是基因无关的</td>
+        </tr>
+        <tr>
+          <td><strong>chemCPA</strong></td>
+          <td><code>num_genes</code> 可配</td>
+          <td><strong>977</strong> 或 <strong>2,000</strong>（12 个公开 checkpoint）</td>
+          <td>是，同一套基因</td>
+          <td>化学编码器可复用；VAE 编码器/解码器必须重训</td>
+        </tr>
+        <tr>
+          <td><strong>biolord</strong></td>
+          <td><code>n_genes = adata.n_vars</code>，可配</td>
+          <td><strong>无公开权重</strong>；本次训练实例为 <strong>4,999</strong></td>
+          <td>是，同一套基因</td>
+          <td>在每个数据集上重训；没有可复用的基因空间权重</td>
+        </tr>
+        <tr>
+          <td><strong>PerturbNet</strong></td>
+          <td>cell VAE 的基因维可配；cINN 只在 <strong>10 维潜空间</strong>工作，与基因数无关</td>
+          <td><strong>978</strong>（LINCS）/ <strong>5,087</strong>（sci-Plex cell VAE；cINN 匹配）</td>
+          <td>是，由 cell VAE 决定同一套基因</td>
+          <td>重训 cell VAE 与 cINN；ChemicalVAE（SMILES → 196 维）可复用</td>
+        </tr>
+        <tr>
+          <td><strong>scVIDR</strong></td>
+          <td><code>input_dim</code> 可配</td>
+          <td><strong>无预训练权重就位</strong>；本次合成数据实例为 <strong>2,000</strong></td>
+          <td>是，同一套基因</td>
+          <td>重训；且它没有化学编码器，不能直接换基因集做冷药物</td>
+        </tr>
+        <tr>
+          <td><strong>Squidiff</strong></td>
+          <td><code>gene_size</code> / <code>output_dim</code> 可配</td>
+          <td><strong>无公开权重</strong>；本次实例为 <strong>2,000</strong></td>
+          <td>是，同一套基因</td>
+          <td>重训扩散模型；rFCFP 药物编码器可复用</td>
+        </tr>
+        <tr>
+          <td><strong>CMonge</strong></td>
+          <td><code>data_dim</code> 可配；OT 在 <strong>50 维潜空间</strong>进行</td>
+          <td><strong>仅 demo AE（100 基因）</strong>；无全量映射</td>
+          <td>是，由 AE 决定同一套基因</td>
+          <td>重训 AE 与条件 Monge 映射；RDKit 条件编码器可复用</td>
+        </tr>
+        <tr>
+          <td><strong>DECANT</strong></td>
+          <td><code>n_genes</code> 可配；另有 50 个 program 中间层</td>
+          <td><strong>无公开权重</strong>；本次实例为 <strong>2,000</strong></td>
+          <td>是，基因解码器输出同一套基因</td>
+          <td>重训；且它不是结构冷药物模型</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>四个容易混淆的点</h3>
+  <div class="two-col">
+    <div class="callout">
+      <h4>① “基因数量”不等于“基因身份”</h4>
+      <p>两个模型都写 5,000 个基因，并不代表它们用的是同一批 5,000 个基因。CPA checkpoint 里存了具体的
+      5,000 个 <code>var_names</code>；biolord 的 checkpoint 也存了 4,999 个基因名；PerturbNet 的 sci-Plex
+      资产带一份 5,087 行的 <code>var_names.csv</code>。<strong>数量相同但基因顺序不同，权重也不能直接套。</strong></p>
+    </div>
+    <div class="callout">
+      <h4>② 有些 checkpoint 不带“可移植的基因列表”</h4>
+      <p>PRnet 依赖 AnnData 的 <code>var</code> 顺序；chemCPA 的 checkpoint 配置只记录 <code>num_genes</code>，
+      不记录基因名。换数据时必须复现原来的预处理、基因筛选和列顺序，否则即使数量对上，预测也会错位。</p>
+    </div>
+    <div class="callout">
+      <h4>③ 潜空间模型只是“部分”与基因数无关</h4>
+      <p>PerturbNet 的 cINN 在 10 维潜空间工作，看起来与基因数无关；但它的输入/输出仍要经过 cell VAE，
+      而 cell VAE 的基因维是固定的（978 / 5,087）。CMonge 的条件 OT 在 50 维 AE 潜空间工作，同样受 AE 的
+      <code>data_dim</code> 约束。<strong>潜空间维度固定 ≠ 基因数可以随便换。</strong></p>
+    </div>
+    <div class="callout">
+      <h4>④ 输入和输出是同一套基因</h4>
+      <p>这 9 个模型都是“给基线表达，预测处理后表达（或 Δ 表达）”，输入基因集和输出基因集相同。
+      没有模型做“输入基因集 A → 输出基因集 B”的跨基因集映射；因此输出层大小永远等于输入基因数。</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>对 Stage 2 的直接含义：</strong>目标 20,570 基因意味着所有模型都要重训基因相关部分；
+    没有“加载现成权重、直接换 20,570 基因”的捷径。可复用的是与基因无关的药物编码器
+    （PRnet rFCFP、chemCPA RDKit、PerturbNet ChemicalVAE、Squidiff rFCFP、CMonge RDKit），
+    以及 PerturbNet 的 10 维 cINN / CMonge 的 OT 映射这类潜空间模块。</p>
+  </div>
+</section>
+
+<section id="drug-encoder">
+  <h2>两个容易混淆的“编码器”问题</h2>
+
+  <h3>PRnet 与 Squidiff 的 rFCFP 是同一套实现</h3>
+  <p class="lede">
+    不是“两个相似的方法”，而是同一段编码逻辑。Squidiff 的 <code>Drug_dose_encoder</code> 在代码注释里直接写了
+    “adopted from PRnet”，两边都调用同一个 RDKit 函数。
+  </p>
+
+  <div class="two-col">
+    <div class="callout">
+      <h4>相同点</h4>
+      <ul>
+        <li>RDKit <code>GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)</code>。</li>
+        <li>输出 1024 位 0/1 指纹；“FCFP”来自 <code>useFeatures=True</code>，不是另一种指纹。</li>
+        <li>剂量缩放相同：<code>fingerprint × log10(dose + 1)</code>。</li>
+        <li>组合药处理相同：多个化合物的指纹逐位相加。</li>
+        <li>指纹本身不学习、不随模型训练变化。</li>
+      </ul>
+    </div>
+    <div class="callout">
+      <h4>不同点（都在下游）</h4>
+      <ul>
+        <li><strong>PRnet</strong>：1024 维（组合时为 <code>comb_num × 1024</code>）→ <code>CombAdaptor</code> MLP（128→64）→ 64 维扰动向量 <code>c</code>，再进入 VAE 的编码器/解码器。</li>
+        <li><strong>Squidiff</strong>：1024 维药物-剂量向量直接与对照表达融合，经 drug adaptor 更新语义潜变量 <code>z_sem′</code>，再进入扩散模型。</li>
+        <li>因此“药物表示”相同，但“怎么用这个表示”不同。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>注意：</strong>“相同实现”不等于“任何情况下 bit 级完全相同”。RDKit 版本、SMILES 标准化/互变异构处理不同，都可能改变指纹位。
+    在同一 RDKit 环境和同一 SMILES 下，两者输出一致。</p>
+  </div>
+
+  <div class="callout">
+    <h4>一张图看懂：RDKit、2D、Morgan、FCFP、rFCFP 的关系</h4>
+    <pre class="tree">RDKit（化学信息学工具箱）
+└─ 2D 描述符（从二维分子图算出的数字）
+   ├─ 整体描述符：分子量、LogP、TPSA、环数……      → chemCPA / CMonge
+   └─ 指纹（fingerprint）
+      └─ Morgan 圆形指纹（逐原子看邻域）
+         ├─ ECFP：按原子类型（useFeatures=False）
+         └─ FCFP：按功能类别（useFeatures=True）    → PRnet / Squidiff
+            └─ rFCFP：FCFP × log10(dose + 1)       → PRnet / Squidiff</pre>
+    <p><strong>它们不是四个并列的东西，而是“工具箱 → 数据类别 → 算法 → 变体 → 项目叫法”的嵌套关系：</strong></p>
+    <ul>
+      <li><strong>RDKit</strong>：一个开源化学信息学工具包，负责读 SMILES、算描述符、画分子。</li>
+      <li><strong>2D 描述符</strong>：只看原子的连接关系（二维图），不需要三维构象；它是一个“类别”，不是某一种指纹。</li>
+      <li><strong>Morgan</strong>：一种“圆形指纹”算法。对每个原子，收集它 1 圈、2 圈……邻居的信息，再哈希成固定长度的位向量。<strong>它既可以做 ECFP，也可以做 FCFP。</strong></li>
+      <li><strong>ECFP</strong>：Morgan + 原子类型（元素、电荷、度数等），记录“这个邻域里具体是什么原子”。</li>
+      <li><strong>FCFP</strong>：Morgan + 功能类别（氢键供体/受体、芳香、卤素等），记录“这个邻域在化学上像什么”，不区分具体元素。RDKit 里就是 <code>useFeatures=True</code>。</li>
+      <li><strong>rFCFP</strong>：不是标准化学术语，是 PRnet 的叫法，意思是“把 FCFP 的每一位乘以 <code>log10(dose+1)</code>”。它把“结构指纹”变成了“结构 × 剂量”的条件向量。</li>
+    </ul>
+    <p class="small"><strong>类比：</strong>分子像一座城市。2D 描述符是“城市统计”（面积、人口、道路数）；Morgan 是“从每栋楼出发，看 1–2 个街区内的店铺”；ECFP 记录“具体是咖啡馆还是药店”，FCFP 只记录“餐饮还是医疗”；rFCFP 再给这些记录乘上一个“剂量音量旋钮”。</p>
+  </div>
+
+  <h3>chemCPA / CMonge 的“可复用”指哪一层？</h3>
+  <p class="lede">
+    这里的“可复用”是<strong>模块级复用</strong>：化学特征提取器和条件编码器的输入是分子结构，不含基因维权重，
+    所以换基因空间时不需要改它的输入/输出大小。它不是“加载原权重就能直接预测任意新药 + 20,570 基因”的意思。
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>项目</th>
+          <th>chemCPA</th>
+          <th>CMonge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>编码器输入</strong></td>
+          <td>RDKit 2D 描述符；公开 checkpoint 的 <code>drug_embeddings</code> 是 <strong>188 × 194</strong></td>
+          <td>RDKit 2D 描述符（demo 过滤后 194 维）+ <code>log(dose)</code></td>
+        </tr>
+        <tr>
+          <td><strong>编码器结构</strong></td>
+          <td>冻结的 188 行描述符表 + 可训练 MLP（194→128→…→32 维）</td>
+          <td>RDKit 特征 → MLP → 50 维条件向量；<strong>没有可学习的 per-drug 嵌入表</strong>（只有按药名索引 RDKit 特征）</td>
+        </tr>
+        <tr>
+          <td><strong>为什么与基因空间无关</strong></td>
+          <td>输入是分子描述符，输出是药物向量；没有基因维权重</td>
+          <td>输入是分子描述符 + 剂量，输出是条件向量；没有基因维权重</td>
+        </tr>
+        <tr>
+          <td><strong>公开权重已验证覆盖</strong></td>
+          <td><strong>188 个 L1000 药物</strong>（checkpoint 的 <code>num_drugs=188</code>）；论文冷药物实验另留出 <strong>9 个 sci-Plex 药物</strong></td>
+          <td>论文 <strong>187 个 SciPlex 药物 / 748 个条件</strong>；4i 数据 35 种治疗（分析用 <strong>27 个单药 + 6 个组合</strong>）；OOS 留 9 药或留 1 药</td>
+        </tr>
+        <tr>
+          <td><strong>新药怎么进入</strong></td>
+          <td>为新 SMILES 计算 RDKit 描述符，加入/替换 <code>drug_embeddings</code> 表（需重建表并调整 <code>num_drugs</code>，或自定义 adapter）；MLP 可以处理任意 194 维描述符。但 32 维潜空间需与新解码器重新对齐</td>
+          <td>为新 SMILES 计算 RDKit 特征，加入 embedding 字典；条件 MLP 可直接处理。AE 和 OT 映射需在新基因空间重训</td>
+        </tr>
+        <tr>
+          <td><strong>可复用的到底是什么</strong></td>
+          <td>RDKit 特征化 + 药物编码器架构/初始化；<strong>不是</strong> 188 行药物表本身</td>
+          <td>RDKit 特征化 + 条件编码器架构/初始化；<strong>不是</strong>已训练好的 AE/OT 映射</td>
+        </tr>
+        <tr>
+          <td><strong>不能直接做什么</strong></td>
+          <td>不能把 188 药 checkpoint 直接用于任意新药并假定准确；也不能直接输出 20,570 基因</td>
+          <td>不能把 demo 的 100 基因 AE 直接用于 20,570 基因；新药仍是外推</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="tiny">
+    注：chemCPA 与 CMonge 都用 RDKit 2D 描述符，但两者的描述符列表、常量列过滤和标准化方式不同
+    （公开 chemCPA checkpoint 为 194 维；CMonge demo 过滤后也是 194 维）。因此可复用的是“RDKit 特征化 + 编码器架构”，
+    不能假定两边的描述符向量逐位一致，也不能把一个模型的描述符直接喂给另一个模型的预训练 MLP。
+  </p>
+
+  <div class="callout danger">
+    <p><strong>“覆盖”要分两种：</strong>① <strong>结构上可编码</strong>——任何有合法 SMILES 的小分子都能算 RDKit 描述符；
+    ② <strong>实验上验证过</strong>——只有训练/基准里出现过的药物分布。chemCPA 的公开表是 188 个 L1000 药物，
+    CMonge 论文覆盖 187 个 SciPlex 药物 + 35 种 4i 治疗；对全新化学型，两者都是外推，准确率没有保证。</p>
+  </div>
+
+  <div class="callout">
+    <p><strong>一句话：</strong>PRnet 与 Squidiff 的 rFCFP 是同一套“RDKit Morgan 特征指纹 + 剂量缩放”实现；
+    chemCPA 与 CMonge 可复用的是“化学特征提取 + 编码器模块”，不是“任意药物的已验证预测能力”。
+    前者换基因空间要重训解码器，后者换基因空间要重训 AE/OT 映射。</p>
+  </div>
+</section>
+
+<section id="encoder-training">
+  <h2>chemCPA / CMonge 的分子表示 MLP 是怎么训练的？</h2>
+  <p class="lede">
+    先澄清一个常见误解：<strong>它们都不是先单独训练一个“分子 → 机制”的化学 MLP</strong>。
+    两者都是把一个小型 MLP 作为响应预测模型的一部分，<strong>端到端</strong>训练；MLP 的梯度来自“预测表达/分布是否准确”，
+    不是来自药物分类、靶点结合或通路标签。
+  </p>
+
+  <div class="callout warn">
+    <p><strong>下面讲的是公开 checkpoint 的 RDKit 分支：</strong>chemCPA 用的是 RDKit 2D 描述符（194 维）；
+    CMonge 用的是 RDKit 2D 描述符（demo 过滤后 194 维）+ log 剂量。两者都不使用 3D 构象、靶点结构或结合亲和力数据。</p>
+  </div>
+
+  <div class="two-col">
+    <div class="callout">
+      <h4>chemCPA：药物 MLP 是 VAE 的一部分</h4>
+      <p><strong>训练数据：</strong>L1000 药物扰动表达谱（公开 checkpoint 为 977 或 2,000 基因、188 个药物）；
+      每个样本是“基线表达 + 药物 + 剂量（+ 协变量）→ 处理后表达”。论文的冷药物实验在 sci-Plex 单细胞数据上做。</p>
+      <p><strong>输入表示：</strong>每个药物的 RDKit 2D 描述符先离线算好、删低方差列、z-score 标准化，存成
+      <code>188 × 194</code> 的<strong>冻结</strong>表；MLP 是 <code>194 → 128 → … → 32</code>，可训练。</p>
+      <p><strong>损失函数：</strong>主损失是表达重构的 <strong>Gaussian NLL</strong>（同时预测每个基因的均值和方差）；
+      另有药物/协变量的<strong>对抗分类损失</strong>（BCE / 交叉熵）。对抗器作用在<strong>基础潜变量</strong>上，
+      目的是让基础细胞状态不包含药物身份；药物 MLP 本身的梯度主要来自重构项。</p>
+      <p><strong>剂量：</strong>单独的 doser MLP 输入“原始 RDKit 描述符 + 剂量”，输出 0–1 的缩放系数，
+      乘到药物潜变量上；它和 AE 一起用重构损失训练。</p>
+    </div>
+    <div class="callout">
+      <h4>CMonge：条件 MLP 是 OT 映射的一部分</h4>
+      <p><strong>训练数据：</strong>SciPlex3 单细胞数据（187 个药物、4 个剂量、3 个细胞系；论文 748 个药物-剂量条件）；
+      4i 数据（35 种治疗，分析用 27 个单药 + 6 个组合）。每组训练样本是“对照细胞分布 + 条件 → 处理细胞分布”。</p>
+      <p><strong>输入表示：</strong>RDKit 2D 描述符在 SMILES 库上算好、删低方差列、按列 z-score 标准化；
+      药物描述符 → 一个 50 维条件向量，剂量（log）→ 1 维，两者拼接后进入条件 Monge 映射。</p>
+      <p><strong>损失函数：</strong><strong>Sinkhorn 拟合损失</strong>（把映射后的对照分布与真实处理分布对齐）
+      + <strong>Monge 正则项</strong>（约束映射是一个好的最优传输映射，Euclidean 代价）。
+      没有药物分类损失，也没有逐细胞配对误差；训练是分布级、无配对的。</p>
+      <p><strong>剂量：</strong>log 剂量作为条件向量的一部分；模型学习“剂量如何改变整个细胞分布的搬运方式”。</p>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>chemCPA</th>
+          <th>CMonge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>MLP 在模型中的角色</strong></td>
+          <td>把冻结的 RDKit 描述符映射成 32 维“药物效应向量”，加到 VAE 基础潜变量上</td>
+          <td>把 RDKit 描述符 + 剂量映射成 50 维“条件向量”，控制 OT 映射把对照分布搬到处理分布</td>
+        </tr>
+        <tr>
+          <td><strong>训练方式</strong></td>
+          <td>与 ComPert VAE 联合训练；AE 优化器包含 encoder、decoder、药物 MLP</td>
+          <td>与条件 Monge 映射联合训练；条件 MLP 是映射网络的一部分</td>
+        </tr>
+        <tr>
+          <td><strong>主损失</strong></td>
+          <td>Gaussian NLL（表达均值 + 方差）</td>
+          <td>Sinkhorn 散度（预测分布 vs 真实处理分布）</td>
+        </tr>
+        <tr>
+          <td><strong>辅助损失</strong></td>
+          <td>药物/协变量对抗分类（BCE / CE）+ 梯度惩罚</td>
+          <td>Monge 正则项（传输映射的最优性）</td>
+        </tr>
+        <tr>
+          <td><strong>是否需要药物标签/靶点</strong></td>
+          <td>只需要药物身份以查 RDKit 描述符；不需要靶点、通路或结合亲和力标签</td>
+          <td>只需要药物身份以查 RDKit 描述符；不需要靶点、通路或结合亲和力标签</td>
+        </tr>
+        <tr>
+          <td><strong>剂量如何进入</strong></td>
+          <td>doser MLP（原始描述符 + 剂量 → 缩放系数）</td>
+          <td>log 剂量作为条件向量的 1 维输入</td>
+        </tr>
+        <tr>
+          <td><strong>输出层面的含义</strong></td>
+          <td>32 维向量应使“基础潜变量 + 药物向量”解码出处理表达</td>
+          <td>50 维条件向量应使 OT 映射把对照分布搬到处理分布</td>
+        </tr>
+        <tr>
+          <td><strong>可解释性</strong></td>
+          <td>维度没有通路标签；是预测性嵌入，不是机制向量</td>
+          <td>维度没有通路标签；MoA 分支更偏生物，但需要处理细胞</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>对应的生物医学 / 化学含义</h3>
+  <div class="two-col">
+    <div class="callout">
+      <h4>chemCPA：学习“化学性质 → 转录效应”的映射</h4>
+      <p>RDKit 描述符概括了分子量、脂溶性、极性、氢键、环数、官能团等性质。MLP 学的是：
+      <strong>哪些理化性质组合，会把细胞从基线状态推到哪种转录状态</strong>。
+      剂量网络再学“同一药物在不同剂量下效应放大多少”。</p>
+      <p>对抗项的作用是让“基础细胞状态”尽量不包含药物身份，从而把药物效应逼到药物向量里。
+      但这不等于学会了机制：32 个维度没有对应的通路/靶点标签，不能直接解释成“HDAC 抑制”或“MEK 抑制”。</p>
+      <p><strong>冷药物：</strong>MLP 是描述符空间的平滑函数，所以任意药物都能得到一个向量；
+      但如果新药的化学描述符远离训练集（188 个 L1000 药物），这个向量就是外推，准确性没有保证。</p>
+    </div>
+    <div class="callout">
+      <h4>CMonge：学习“化学/剂量 → 群体分布搬移”的映射</h4>
+      <p>CMonge 不预测单个细胞的配对表达，而是学一个<strong>把对照细胞群体搬到处理细胞群体</strong>的映射。
+      50 维条件向量编码的是“需要怎样搬”：药物化学性质决定方向，剂量决定强度。</p>
+      <p>因为损失是分布级的，它能保留细胞异质性（不同细胞亚群可以有不同响应），而不只是预测一个平均表达谱。
+      这在生物医学上更接近“药物如何改变细胞群体构成/状态分布”的问题。</p>
+      <p><strong>冷药物：</strong>RDKit 描述符对任意 SMILES 都可计算，所以结构上可编码；
+      但条件 MLP 是在 187 个 SciPlex 药物（以及 4i 的 35 种治疗）上训练的，全新化学型仍是外推。
+      MoA 分支看起来更“生物学”，但它需要该药的处理细胞，不能用于纯结构冷启动。</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h4>与 PerturbNet 的关键区别</h4>
+    <p>PerturbNet 的 ChemicalVAE 是<strong>单独预训练</strong>的：在 ZINC 约 25 万个分子上做 SMILES 重构，
+    所以它的化学编码器先学了一套“分子长什么样”的通用表示，再接到扰动预测上。
+    chemCPA 和 CMonge 的 MLP <strong>没有这个化学预训练阶段</strong>：RDKit 描述符是固定的，
+    MLP 只由“表达/分布预测是否准确”来驱动。这也是为什么前者更像“通用化学表示 + 响应适配”，
+    后两者更像“为当前药物-响应数据集定制的化学投影”。</p>
+  </div>
+
+  <div class="callout danger">
+    <p><strong>一句话：</strong>chemCPA 的药物 MLP 是“RDKit 描述符 → 32 维转录效应向量”，
+    由 Gaussian NLL 重构损失（加对抗解耦）训练；CMonge 的条件 MLP 是“RDKit 描述符 + 剂量 → 50 维 OT 条件向量”，
+    由 Sinkhorn + Monge 损失训练。两者都没有靶点/通路监督，学习到的是<strong>预测性化学-响应映射</strong>，
+    不是可解释的机制模型。</p>
+  </div>
+</section>
+
+<section id="cm-training">
+  <h2>能否直接在 CM 数据集上训练，而不用单独训练药物编码器？</h2>
+  <p class="lede">
+    对 <strong>chemCPA 和 CMonge</strong>：可以。两者的药物编码器都不是“先单独训练好再冻结”的，
+    而是和响应模型一起端到端训练；RDKit 描述符只是固定的特征工程。但它们各自还有别的“单独训练”环节，
+    以及数据格式、剂量、单细胞/ bulk 的前提条件。
+  </p>
+
+  <div class="callout good">
+    <p><strong>直接回答：</strong>chemCPA 和 CMonge 都可以直接在 CM 数据上训练，<strong>不需要单独预训练一个“分子 → 向量”的神经网络</strong>。
+    chemCPA 的 194→32 MLP 跟 VAE 一起训练；CMonge 的条件 MLP 跟 OT 映射一起训练。RDKit 描述符是离线算好的固定特征，不是训练出来的。</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>模型</th>
+          <th>需要单独训练药物编码器吗？</th>
+          <th>可直接在 CM 上训练吗？</th>
+          <th>前提 / 限制</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>chemCPA</strong></td>
+          <td><span class="badge b-green">不需要</span> RDKit 固定，MLP 与 VAE 联合训练</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>需要每个药的 SMILES；20,570 基因需重训 VAE；公开 188 药表要按 CM 药物重建</td>
+        </tr>
+        <tr>
+          <td><strong>CMonge</strong></td>
+          <td><span class="badge b-green">不需要</span> RDKit 固定，条件 MLP 与 OT 联合训练</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>需要 SMILES + 剂量；需先训练 CM 基因空间的 AE（不是药物编码器）；需要每个条件多个细胞</td>
+        </tr>
+        <tr>
+          <td><strong>PRnet</strong></td>
+          <td><span class="badge b-green">不需要</span> rFCFP 固定，adaptor 联合训练</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>需要 SMILES + 剂量；20,570 需重训 VAE；5,000 路径缺处理数据</td>
+        </tr>
+        <tr>
+          <td><strong>CPA</strong></td>
+          <td><span class="badge b-green">不需要</span> 每药嵌入联合训练</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>需要药物 ID + 剂量；冷药物需外接化学编码器（那时才需要单独训练/复用）</td>
+        </tr>
+        <tr>
+          <td><strong>biolord</strong></td>
+          <td><span class="badge b-green">不需要</span> 药物属性 MLP 联合训练</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>需要药物标签/属性；冷药物走 RDKit 属性路径；无公开权重</td>
+        </tr>
+        <tr>
+          <td><strong>Squidiff</strong></td>
+          <td><span class="badge b-green">不需要</span> rFCFP 固定，adaptor 联合训练</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>需要 SMILES + 剂量；模型较大（52.56 M）；无公开权重</td>
+        </tr>
+        <tr>
+          <td><strong>PerturbNet</strong></td>
+          <td><span class="badge b-red">需要</span> ChemicalVAE 是单独预训练的</td>
+          <td><span class="badge b-amber">可以，但需配套</span></td>
+          <td>可复用 released ChemicalVAE（ZINC 预训练），但还要训 CM 的 cell VAE + cINN；完整推理需 TF 1.15</td>
+        </tr>
+        <tr>
+          <td><strong>scVIDR</strong></td>
+          <td><span class="badge b-green">不需要</span> 无化学编码器</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>只能已知药物/剂量；不能结构冷启动</td>
+        </tr>
+        <tr>
+          <td><strong>DECANT</strong></td>
+          <td><span class="badge b-green">不需要</span> 无化学编码器</td>
+          <td><span class="badge b-green">可以</span></td>
+          <td>转导式：预测时仍需该药处理细胞；不能从 SMILES 冷启动</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>chemCPA 在 CM 上的最小训练流程</h3>
+  <div class="callout">
+    <ol>
+      <li><strong>准备 AnnData</strong>：每个样本一行，包含表达矩阵、<code>drug</code>、<code>dose</code>、<code>cell_type</code>（如有）、<code>control</code> 标记。</li>
+      <li><strong>给每个药配 SMILES</strong>：用 RDKit 算 194 维 2D 描述符，删低方差列、z-score；按 CM 药物顺序建立 <code>drug_embeddings</code> 表。</li>
+      <li><strong>设置 <code>num_genes</code></strong> 为 CM 的基因数；编码器/解码器从头训练（或只在基因维一致时复用公开权重）。</li>
+      <li><strong>联合训练</strong> ComPert：Gaussian NLL + 对抗项；药物 MLP 与 VAE 一起更新。不需要单独的化学预训练。</li>
+      <li><strong>冷药物划分</strong>：按药物（最好按骨架/化学簇）留出测试药；确保训练中没有该药的处理样本。</li>
+    </ol>
+    <p class="small">如果要用公开 checkpoint 初始化：只能复用药物 MLP / doser 作为初始化；188 行药物表要替换成 CM 药物，32 维潜空间需在新 VAE 上微调对齐。</p>
+  </div>
+
+  <h3>CMonge 在 CM 上的最小训练流程</h3>
+  <div class="callout">
+    <ol>
+      <li><strong>准备 AnnData</strong>：对照细胞 + 处理细胞；每个条件有 <code>drug</code>、<code>dose</code>；每个条件要有足够多的细胞来估计分布。</li>
+      <li><strong>算 RDKit 特征</strong>：194 维 2D 描述符，删低方差列、z-score；剂量用 <code>log(dose)</code>。</li>
+      <li><strong>先训练 AE</strong>：把 CM 基因空间压到低维潜空间（这是基因空间自编码器，<strong>不是药物编码器</strong>），然后冻结。</li>
+      <li><strong>训练 CMonge</strong>：条件 MLP + 传输映射，损失 = Sinkhorn + Monge；不需要药物分类标签。</li>
+      <li><strong>冷药物划分</strong>：按药物留出；没有该药处理细胞的条件下，只能做结构外推。</li>
+    </ol>
+    <p class="small">CMonge 的 demo 是 100 基因、3 个药、类别剂量；换到 CM 需要改 dataloader/config。若 CM 是 bulk（每个条件只有一个表达向量），CMonge 的“分布搬运”没有足够细胞，不建议作为主模型。</p>
+  </div>
+
+  <div class="callout warn">
+    <h4>四个必须确认的前提</h4>
+    <ul>
+      <li><strong>SMILES 是否齐全：</strong>chemCPA / CMonge 的冷药物能力依赖 SMILES；没有结构就只能用药物 ID（CPA 类），不能做结构冷启动。</li>
+      <li><strong>CM 是单细胞还是 bulk：</strong>CMonge 需要多个细胞/条件来估计分布；bulk 数据不适合。chemCPA 可以把每个 well 当样本，但会丢失细胞异质性。</li>
+      <li><strong>剂量是否连续/多档：</strong>chemCPA 原生支持连续剂量；CMonge 的 RDKit 分支可把 log 剂量作为条件，但 demo 的 dataloader 是类别条件，需要改。</li>
+      <li><strong>冷药物划分是否干净：</strong>如果用 chemCPA 公开 checkpoint 初始化，而 CM 测试药与 L1000 188 药重叠，会引入泄漏；公平评估应只用 CM 训练数据，或排除重叠药物。</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <p><strong>一句话：</strong>chemCPA 和 CMonge 都可以“直接在 CM 上训练、无需单独训练药物编码器”；
+    chemCPA 是“VAE + 药物 MLP 端到端”，CMonge 是“AE + 条件 OT 映射端到端（AE 单独训练，但不是药物编码器）”。
+    唯一真正的例外是 <strong>PerturbNet</strong>：它的 ChemicalVAE 是单独预训练的化学编码器，不能从 CM 数据里顺便学出来。</p>
+  </div>
+</section>
+
+<section id="models">
+  <h2>逐个模型</h2>
+  <p class="lede">
+    每个卡片固定四块：<strong>药物编码模块</strong>、<strong>主预测模块</strong>、
+    <strong>已有权重与本次 smoke 结果</strong>、<strong>论文声明的基准成绩</strong>。
+    最后一行给出“对 Stage 2 的含义”。
+  </p>
+
+  <!-- ================= PRnet ================= -->
+  <article class="model" id="prnet">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">01</span>PRnet</h3>
+        <p class="model-sub">Zhao et al., <em>Nature Communications</em> 2024 · bulk L1000 + 单细胞 sci-Plex · 冷药物 / 冷细胞系</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-green">权重可用（978 / 5,000）</span>
+        <span class="badge b-amber">5,000 路径缺数据</span>
+        <span class="badge b-blue">化学结构冷启动</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>输入</strong>：化合物的 SMILES 结构 + 剂量。</li>
+          <li><strong>表示</strong>：rFCFP（rescaling functional-class fingerprint），每个化合物 1024 bit；剂量通过对指纹做尺度变换进入同一向量。</li>
+          <li><strong>网络</strong>：1–2 个化合物的指纹拼接 → MLP（128 维）→ <strong>64 维扰动向量 c</strong>。</li>
+          <li><strong>关键点</strong>：没有“每个药一个 ID 嵌入”，因此新化合物只要给 SMILES 就能编码。</li>
+        </ul>
+        <div class="note">注意：代码里的 10 维 <code>n</code> 是高斯噪声，不是剂量；剂量在 rFCFP 里。</div>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>结构</strong>：扰动条件生成模型（VAE 风格）。</li>
+          <li>编码器输入 <strong>[基线表达 x；药物向量 c]</strong> → 64 维潜变量 z。</li>
+          <li>解码器输入 <strong>[z；c；10 维噪声 n]</strong> → 每个基因的均值与方差。</li>
+          <li>损失：Gaussian NLL（代码中的 GUSS），不做对抗解耦。</li>
+          <li>输出是<strong>处理后表达谱</strong>，不是 Δ 表达。</li>
+        </ul>
+        <div class="note">模型很小（0.55 M 参数），x_dimension 可配置；论文用 978（bulk）/ 5,000（单细胞）。</div>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li><code>checkpoint/lincs_best_epoch_all.pt</code>：2.2 MB，<strong>551,461 参数</strong>，978 基因。</li>
+          <li><code>checkpoint/sciplex_best_epoch_all.pt</code>：8.1 MB，5,000 基因；但 <code>dataset/Sci_Plex.h5ad</code> 未随仓库分发。</li>
+          <li>Zenodo 10.5281/zenodo.13751384 也有权重。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>CPU 加载 978 checkpoint，运行 <code>test_demo.py</code>。</li>
+          <li>输出 <strong>661 × 978</strong> 预测矩阵。</li>
+          <li>978 结果被 <strong>quarantine</strong>：只允许留在 setup，不进入 Stage 2 评估。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 划分</th><th>指标</th><th class="num">PRnet</th><th>对照与说明</th></tr></thead>
+          <tbody>
+            <tr><td>L1000 bulk（978 基因），unseen compounds</td><td>mean log(FC) 的 Pearson</td><td class="num">≈ 0.80</td><td>论文称比替代方法高 0.16；跨 5 折</td></tr>
+            <tr><td>L1000 bulk，unseen cell lines</td><td>Pearson</td><td class="num">比对照高 &gt; 0.3</td><td>论文强调冷细胞系场景的优势</td></tr>
+            <tr><td>sci-Plex 单细胞，unseen compounds</td><td>R²（compound 平均表达）</td><td class="num">0.969</td><td>unseen pathways 场景 0.97；这是“平均表达”层面的 R²，容易被高基线抬高</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2024_Zhao_PRnet.md；论文 Fig. 2 与正文。R² = 0.969 不能理解为“单细胞层面 97% 准确”。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>对 Stage 2 的含义：</strong>PRnet 的化学编码器是真正的结构冷启动，模型也足够小；
+      但 20,570 基因需要把 <code>x_dimension</code> 调大并重训，且 5,000 基因路径目前缺处理好的数据。
+      978 路径不能用于 Stage 2 评估。</p>
+    </div>
+  </article>
+
+  <!-- ================= CPA ================= -->
+  <article class="model" id="cpa">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">02</span>CPA</h3>
+        <p class="model-sub">Lotfollahi et al., <em>Molecular Systems Biology</em> 2023 · 组合扰动 · 未见剂量 / 细胞类型 / 药物</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-green">Kang checkpoint 可加载</span>
+        <span class="badge b-amber">不是化学扰动</span>
+        <span class="badge b-blue">需外接化学编码器</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>基础 CPA</strong>：每个药一个 <strong>药物嵌入</strong>（维度 = 潜变量维度；Kang 为 64）。默认是可学习随机嵌入；可选地用 Morgan 指纹初始化后<strong>冻结</strong>。</li>
+          <li><strong>剂量</strong>：每药一个剂量网络（sigmoid / log-sigmoid / MLP），把剂量映射成 0–1 的缩放系数，乘到药物潜变量上。</li>
+          <li><strong>协变量</strong>：细胞类型等用可学习嵌入，与药物潜变量相加。</li>
+          <li><strong>冷药物</strong>：原生 CPA 需要该药的嵌入；论文的冷药物结果依赖把 chemCPA 的化学编码器接进来。</li>
+        </ul>
+        <div class="note">所以 CPA 本身更像“组合扰动 + 剂量”的加性模型，而不是从 SMILES 学化学的模型。</div>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>VAE</strong>：编码器把处理/对照表达压到低维基础潜变量 z_basal（默认 128 维；Kang checkpoint 实际为 <strong>64 维</strong>）。</li>
+          <li><strong>加性组合</strong>：<code>z = z_basal + z_drug(dose) + z_covariate</code>。</li>
+          <li>解码器把 z 还原成基因表达；似然可选 NB / ZINB / Gaussian。</li>
+          <li><strong>对抗器</strong>：额外分类器试图从 z 预测药物/协变量，训练时反向抑制，促使潜变量“去身份化”。</li>
+          <li>支持组合药（多个药物潜变量相加）。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li><code>weights/Pretrained_Models/Kang/model.pt</code>：34 MB，<strong>≈ 8.66 M 参数</strong>（含嵌入与对抗器）。</li>
+          <li>基因空间 <strong>5,000</strong>；数据是 Kang 的 IFN-β 刺激，8 种免疫细胞类型。</li>
+          <li>另有 Norman2019 数据，但没有对应的化学扰动 checkpoint。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>加载 Kang checkpoint，对 8 种细胞类型各取 250 个细胞，共 <strong>2,000 × 5,000</strong> 预测。</li>
+          <li>证明“加载 + 预测”路径可用；<strong>不证明冷药物能力</strong>，因为 Kang 不是药物 screen。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">CPA</th><th>对照与说明</th></tr></thead>
+          <tbody>
+            <tr><td>组合药，完全留出 Panobinostat + Alvespimycin</td><td>R²</td><td class="num">0.81</td><td>整个组合簇在训练中完全不可见</td></tr>
+            <tr><td>未见剂量（OOD dose），与 scGen 对比</td><td>mean R²</td><td class="num">+1.54%</td><td>相对 scGen 的提升</td></tr>
+            <tr><td>同上，方差预测</td><td>variance R²</td><td class="num">+35.85%</td><td>CPA 的强项：不仅均值，还能捕捉异质性</td></tr>
+            <tr><td>同上，整体分布</td><td>Wasserstein</td><td class="num">优于 scGen</td><td>论文未给单一汇总数</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2023_Theis_CPA.md；论文 Fig. 2–4。论文同时指出：在部分组合数据上，线性/随机基线也能接近 CPA，说明“平均效应”本身很强。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>对 Stage 2 的含义：</strong>CPA 的 Kang checkpoint 只能证明加载路径；要做化学扰动，必须在 CM 训练折上重训，
+      并外接 chemCPA 的化学编码器才能处理冷药物。它的剂量建模与组合能力是加分项。</p>
+    </div>
+  </article>
+
+  <!-- ================= chemCPA ================= -->
+  <article class="model" id="chemcpa">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">03</span>chemCPA</h3>
+        <p class="model-sub">Hetzel et al., <em>NeurIPS</em> 2022 · 冷药物 + 冷细胞系组合 · 单细胞</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-green">12 个公开 checkpoint</span>
+        <span class="badge b-amber">仅 977 / 2,000 基因</span>
+        <span class="badge b-blue">化学编码器可复用</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>默认</strong>：RDKit 2D 描述符 → MLP（<code>embedding_encoder</code>）→ 与潜变量同维的药物嵌入。</li>
+          <li><strong>可选预训练</strong>：ChemicalVAE、JT-VAE、GROVER 等分子表示，替换 RDKit 输入。</li>
+          <li><strong>剂量</strong>：每药一个 doser 网络，把剂量缩放后乘到药物嵌入上。</li>
+          <li><strong>对抗器</strong>：药物分类器迫使潜变量不保留药物身份，从而把“药物效应”和“身份”分开。</li>
+        </ul>
+        <div class="note">化学编码器是<strong>基因空间无关</strong>的；解码器不是。因此换到 20,570 基因时，编码器可复用，解码器必须重训。</div>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>ComPert VAE</strong>：编码器把表达压到低维潜变量；解码器还原表达。</li>
+          <li><strong>加性组合</strong>：<code>latent_treated = latent_basal + drug_embedding(+covariate embeddings)</code>。</li>
+          <li>损失：Gaussian NLL；另有药物/协变量对抗损失。</li>
+          <li>输出每个基因的均值与方差（不是单个点）。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li><code>weights/chemCPA_models/*.pt</code>：12 个文件，共 267 MB。</li>
+          <li>参数范围 <strong>1.33 M – 16.15 M</strong>；本次加载的 <code>27b401db…pt</code> 是 <strong>1,569,258 参数</strong>。</li>
+          <li>全部是 <strong>L1000 977 或 2,000 基因、188 个药</strong>的 ComPert state dict；config 声明 3 个协变量，但公开 state dict 实际没有协变量嵌入张量。</li>
+          <li><strong>没有</strong> 5,000 或 20,570 基因的公开 checkpoint。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>按 checkpoint 的 config 重建 ComPert，严格加载：<strong>0 missing / 0 unexpected</strong>。</li>
+          <li>在合成的 L1000 形状 batch 上做前向：<strong>8 × 977</strong>。</li>
+          <li>这是“架构/权重兼容性”验证，<strong>不是生物预测</strong>；下载的 5,000 基因 <code>combo_sciplex</code> 数据无法直接用这些权重推理。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>设定（sci-Plex 3）</th><th>指标</th><th class="num">chemCPA 预训练</th><th>对照</th></tr></thead>
+          <tbody>
+            <tr><td>未见“药物 × 细胞系”组合，1 µM</td><td>E[r²] 全基因</td><td class="num">0.77</td><td>CPA 0.72；scGen 0.73；baseline 0.69</td></tr>
+            <tr><td>未见组合，10 µM</td><td>E[r²] 全基因</td><td class="num">0.76</td><td>CPA 0.54；scGen 0.62；baseline 0.50</td></tr>
+            <tr><td>未见组合，10 µM</td><td>E[r²] DEGs</td><td class="num">0.68</td><td>CPA 0.34；scGen 0.47；baseline 0.29</td></tr>
+            <tr><td>未见药物，10 µM，共享 977 基因</td><td>median r² DEGs</td><td class="num">0.64</td><td>非预训练 0.24；baseline 0.12</td></tr>
+            <tr><td>未见药物，10 µM，扩展到 2,000 基因</td><td>E[r²] 全基因</td><td class="num">0.69</td><td>非预训练 0.46；baseline 0.37</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2022_Theis_chemCPA.md，Table 1–3。注意 Table 1 是“未见药物-细胞系组合”，Table 2/3 才是“完全未见药物”；两者难度不同。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>对 Stage 2 的含义：</strong>这是“冷药物 + 剂量”最成熟的公开路线，化学编码器可直接复用；
+      但 20,570 基因必须重训 VAE 解码器。公开 checkpoint 不能直接用于 CM 的 5,000 基因数据。</p>
+    </div>
+  </article>
+
+  <!-- ================= biolord ================= -->
+  <article class="model" id="biolord">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">04</span>biolord</h3>
+        <p class="model-sub">Nitzan et al., <em>Nature Biotechnology</em> 2024 · 单细胞扰动 · 属性解耦</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-red">无公开权重</span>
+        <span class="badge b-green">本次训练路径可用</span>
+        <span class="badge b-blue">冷药物依赖 RDKit 属性</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>默认</strong>：药物是<strong>类别属性</strong>，每个药一个可学习嵌入（4 维）。</li>
+          <li><strong>冷药物</strong>：论文用 RDKit 化学特征作为药物属性输入，经属性 MLP 映射到 4 维潜变量。</li>
+          <li><strong>剂量</strong>：作为 ordered attribute（有序属性），经另一个属性 MLP 映射到 16 维。</li>
+          <li>属性可以同时有多个（药、剂量、细胞类型等），各自有独立编码器。</li>
+        </ul>
+        <div class="note">本次 smoke 用的是“药物类别”，不是 RDKit 特征；因此本次运行<strong>没有</strong>验证冷药物。</div>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>单 VAE</strong>：细胞状态潜变量（默认 32 维）+ 各属性潜变量。</li>
+          <li>解码器把 <strong>[细胞潜变量；药物属性；剂量属性；…]</strong> 拼接后还原表达。</li>
+          <li>属性分类器 + 重构惩罚，促使属性信息进入指定潜变量、细胞状态与其解耦。</li>
+          <li>反事实预测：取对照细胞，改属性标签，解码得到“如果用了这个药”的表达。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li><strong>论文/仓库没有发布预训练权重</strong>；每个数据集单独训练。</li>
+          <li>本次本地 3 epoch smoke：<strong>2,884,500 参数</strong>，12 MB。</li>
+          <li>数据：<code>GSM_new.h5ad</code>，14,811 × 4,999，5 个药 × 7 个剂量，A549。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>训练 3 epoch；从 128 个对照细胞 × 5 个药物类别做反事实。</li>
+          <li>输出 <strong>640 × 4,999</strong> 预测。</li>
+          <li>API 只接受类别目标，剂量被固定在源细胞的值；这点在 run card 里已记录。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">biolord</th><th>对照</th></tr></thead>
+          <tbody>
+            <tr><td>sci-Plex 3，9 个未见药物，10 µM</td><td>mean r²</td><td class="num">0.76 ± 0.0005</td><td>chemCPA-pre 0.51 ± 0.0062；naive baseline 更低</td></tr>
+            <tr><td>同上，只用 10% 训练数据</td><td>mean r²</td><td class="num">0.63 ± 0.0003</td><td>论文强调对数据子采样稳健</td></tr>
+            <tr><td>Perturb-seq，未见单基因扰动</td><td>normalized MSE</td><td class="num">0.37</td><td>GEARS 0.47</td></tr>
+            <tr><td>Perturb-seq，未见双基因扰动</td><td>normalized MSE</td><td class="num">0.50</td><td>GEARS 0.53（两个基因都未见）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2024_Nitzan_biolord.md。0.76 的冷药物成绩依赖 RDKit 化学特征作为属性输入；默认类别嵌入不会自动获得这个能力。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>对 Stage 2 的含义：</strong>biolord 参数少、训练快，适合在 16 h 内做 per-dataset 重训；
+      但冷药物必须显式使用 RDKit 属性路径，而且没有公开权重可复用。</p>
+    </div>
+  </article>
+
+  <!-- ================= PerturbNet ================= -->
+  <article class="model" id="perturbnet">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">05</span>PerturbNet</h3>
+        <p class="model-sub">Yu et al., <em>Molecular Systems Biology</em> 2025 · 冷化学 / 冷基因扰动 · 分布预测</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-green">唯一 &gt;5,000 基因权重已就位</span>
+        <span class="badge b-amber">推理需 TF 1.15</span>
+        <span class="badge b-blue">真正的结构冷启动</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>ChemicalVAE</strong>：SMILES 字符 one-hot（最长 120）→ 3 层 1D 卷积 + 全连接 → <strong>196 维高斯潜变量</strong>（sci-Plex 的 cINN 条件为 200 维）。</li>
+          <li>在 ZINC 约 25 万个类药分子上预训练；<strong>不使用任何基因表达信息</strong>，因此编码器与基因空间无关。</li>
+          <li>能区分立体异构体（stereoisomer），这是它相对 RDKit 的一个优势。</li>
+          <li>遗传扰动另有 GenotypeVAE（GO 注释 → 潜变量）。</li>
+        </ul>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>cell VAE</strong>：单细胞表达 → <strong>10 维细胞状态潜变量</strong>；似然可用 ZINB（原始 counts）或 Gaussian。</li>
+          <li><strong>cINN（条件可逆神经网络）</strong>：20 个条件耦合块、隐藏 1024，学习“药物潜变量 → 细胞潜变量”的可逆映射。</li>
+          <li>预测时从药物潜变量采样，经 cINN 反推细胞潜变量，再由 cell VAE 解码成表达分布。</li>
+          <li>输出是<strong>细胞群体分布</strong>，不是单个平均细胞。</li>
+        </ul>
+        <div class="note">完整推理需要 Python 3.7 + TensorFlow 1.15 的 cell-VAE；本次只做到 cINN + ChemicalVAE 的潜变量前向。</div>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li>LINCS cINN：<code>models_lincs_PerturbNet_holdout1_cinn_iso_clean_100ep_100ep_model_params.pt</code>，664 MB，816 个张量。</li>
+          <li>sci-Plex cINN：<code>models_sciplex_PerturbNet_holdout_1_cinn_100ep_model_params.pt</code>，664 MB，816 个张量。</li>
+          <li>每个 checkpoint 合计 <strong>≈ 173.9 M 参数</strong>（cINN 169.8 M + ChemicalVAE 4.03 M）。</li>
+          <li>另有 TF 1.15 cell-VAE checkpoint 与 scVI 属性文件。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>两个 cINN 均为 816/816 张量匹配；ChemicalVAE 加载成功（4,030,982 参数）。</li>
+          <li>潜变量前向输出 <strong>(2, 10)</strong>；证明 checkpoint 与仓库架构兼容。</li>
+          <li><strong>没有</strong>跑到基因表达；需要 TF 1.15 环境。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">PerturbNet</th><th>对照</th></tr></thead>
+          <tbody>
+            <tr><td>LINCS-Drug，2,000 个未见化合物，去除立体异构体泄漏，5 个划分</td><td>median R²</td><td class="num">0.919</td><td>chemCPA 0.899；KNN 0.912；mean 0.901</td></tr>
+            <tr><td>同上</td><td>mean R²</td><td class="num">0.894</td><td>chemCPA 0.862；KNN 0.873</td></tr>
+            <tr><td>同上</td><td>mean Pearson（DEGs）</td><td class="num">0.958</td><td>chemCPA 0.931；KNN 0.940</td></tr>
+            <tr><td>sci-Plex，未见化学扰动，5 个划分</td><td>median R²</td><td class="num">0.984</td><td>biolord 0.587；linear 0.954</td></tr>
+            <tr><td>同上</td><td>mean R²</td><td class="num">0.968</td><td>biolord 0.554；linear 0.936</td></tr>
+            <tr><td>同上</td><td>mean R²（DEGs）</td><td class="num">0.865</td><td>biolord 0.658；linear 0.569</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2025_Welch_PerturbNet.md，Table 2–3。sci-Plex 的 linear baseline 也很强（median R² 0.954），说明该数据上“平均效应”占比很高；PerturbNet 的优势主要体现在 DEGs 与分布指标。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>对 Stage 2 的含义：</strong>它是唯一在本机同时具备“SMILES 化学编码器”和“&gt;5,000 基因公开权重”的模型，
+      但完整推理链依赖过时的 TF 1.15。若要在 20,570 基因上使用，仍需重训 cell-VAE / cINN；建议先做工程可行性评估。</p>
+    </div>
+  </article>
+
+  <!-- ================= scVIDR ================= -->
+  <article class="model" id="scvidr">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">06</span>scVIDR</h3>
+        <p class="model-sub">Kana et al., <em>Patterns</em> 2023 · 剂量-响应 · 潜空间算术</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-red">无化学编码</span>
+        <span class="badge b-red">预训练权重未就位</span>
+        <span class="badge b-amber">剂量插值</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>没有化学结构编码器</strong>，不读 SMILES。</li>
+          <li>药物/剂量的作用表示为<strong>潜空间位移 Δz</strong>：同一细胞类型下，“处理组平均潜变量 − 对照组平均潜变量”。</li>
+          <li>连续剂量用 <strong>log 线性插值</strong>：<code>Δz(d) = Δz_max · log1p(d) / log1p(d_max)</code>。</li>
+          <li>不同细胞类型有各自的响应差异，模型用回归项估计。</li>
+        </ul>
+        <div class="note">因此它只能预测“训练中出现过的药物在不同剂量下的响应”，不能对全新化合物做结构冷启动。</div>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>VAE</strong>：2,000 基因 → 隐藏 800 → <strong>10 维潜变量</strong>；解码器对称。</li>
+          <li>训练目标：重构 + KL；论文的 scVIDR 还加入潜空间回归，用于处理剂量与细胞类型差异。</li>
+          <li>预测：<code>z_target = z_control + Δz(drug, dose, cell type)</code>，再解码成表达。</li>
+          <li>本次默认配置 <strong>4,541,620 参数</strong>。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li>仓库 README 说“same names as listed above”的模型可提供预训练版本，但<strong>权重未随仓库分发，也未在本机就位</strong>。</li>
+          <li>本次 smoke 在合成数据上从零训练：3 种细胞类型 × 剂量 0/1/10/100 × 20 细胞 × 2,000 基因。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>训练 180 个合成细胞、2 epoch。</li>
+          <li>输出 3 个剂量（1/10/100 µM）的 <strong>15 × 2,000</strong> 预测。</li>
+          <li>剂量曲线是 log 线性插值，不是学出来的剂量响应函数；这一点已在 run card 标注。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">scVIDR</th><th>对照</th></tr></thead>
+          <tbody>
+            <tr><td>小鼠肝脏 TCDD，留出 portal hepatocytes</td><td>HVG R²</td><td class="num">0.92</td><td>论文称优于 scGen / scPreGAN / CellOT</td></tr>
+            <tr><td>同上</td><td>DEG R²</td><td class="num">0.81</td><td>同上</td></tr>
+            <tr><td>IFN-β 处理的 PBMC</td><td>HVG R²</td><td class="num">0.97</td><td>scGen 0.92；scPreGAN 0.77；CellOT 0.66</td></tr>
+            <tr><td>同上</td><td>DEG R²</td><td class="num">0.96</td><td>scGen 0.86；scPreGAN 0.80；CellOT 0.84</td></tr>
+            <tr><td>TCDD 剂量外推</td><td>mean R²</td><td class="num">剂量 &gt;0.3 mg/kg 显著优于 scGen</td><td>Mann-Whitney 单侧 p &lt; 0.001</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2023_Bhattacharya_scVIDR.md。R² 是“平均表达”层面的；论文的强项是剂量插值，不是冷化合物。</p>
+    </div>
+
+    <div class="callout danger">
+      <p><strong>对 Stage 2 的含义：</strong>没有化学编码器，不能作为冷药物主模型；剂量曲线是插值而非学习。
+      它更适合作为“剂量响应基线”，或作为已知药物在 CM 数据上的对照方法。</p>
+    </div>
+  </article>
+
+  <!-- ================= Squidiff ================= -->
+  <article class="model" id="squidiff">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">07</span>Squidiff</h3>
+        <p class="model-sub">Leong et al., <em>Nature Methods</em> 2026 · 扩散模型 · 分化与药物响应</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-red">无公开权重</span>
+        <span class="badge b-green">真实 SMILES / 剂量编码</span>
+        <span class="badge b-amber">模型较大（52.56 M）</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>rFCFP</strong>：从 SMILES 计算 1024 bit 的 Morgan 特征指纹。</li>
+          <li><strong>剂量</strong>：整个指纹乘以 <code>log10(dose + 1)</code>，不是独立的剂量网络。</li>
+          <li><strong>融合</strong>：药物-剂量向量与对照细胞表达一起送入 adaptor，更新语义潜变量 <code>z_sem′ = Enc(x0, rFCFP)</code>。</li>
+          <li>能对完全未见的药物使用结构信息，但剂量只是指纹的整体缩放。</li>
+        </ul>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>语义编码器</strong>：把表达压到语义潜变量 <code>z_sem</code>。</li>
+          <li><strong>条件 DDIM 扩散</strong>：以 <code>z_sem′</code>、时间步、对照表达为条件，从噪声逐步去噪生成表达谱。</li>
+          <li>本次配置 <strong>52,559,884 参数</strong>，2,000 基因、2 层 MLP 去噪器。</li>
+          <li>输出是生成的单细胞表达谱，不是简单平均。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li><strong>仓库不包含训练好的权重</strong>；论文的 FigShare checkpoint 需要手动下载，本机未就位。</li>
+          <li>本次 smoke 用随机初始化网络，但药物输入是真实的 dexamethasone SMILES + 1/100 µM。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>前向输出 <strong>(2, 2,000)</strong>，证明药物/剂量编码与扩散网络可跑。</li>
+          <li>权重随机，所以输出<strong>没有生物学意义</strong>；只验证架构与接口。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">Squidiff</th><th>对照与说明</th></tr></thead>
+          <tbody>
+            <tr><td>sci-Plex3，unseen drug split</td><td>Pearson / R²</td><td class="num">与 PRnet 相当或更好</td><td>论文 Fig. 3i；四个比较的 P 值为 3.58×10⁻²、1.67×10⁻²、9.96×10⁻⁴、7.46×10⁻²</td></tr>
+            <tr><td>sci-Plex3，random split</td><td>Pearson / R²</td><td class="num">与 PRnet 相当或更好</td><td>同上图</td></tr>
+            <tr><td>iPSC 分化轨迹（day 0→3）</td><td>Pearson / R²</td><td class="num">显著优于 scGen</td><td>Pearson 的四个 P 值为 1.97×10⁻³⁵、1.48×10⁻⁹、5.79×10⁻⁷、3.6×10⁻³³；R² 中三个显著、一个不显著（P = 1.55×10⁻¹）</td></tr>
+            <tr><td>胶质母细胞瘤 6 药响应</td><td>定性 / 相关性</td><td class="num">能预测 6 个药的效果</td><td>论文 Fig. 3d–g；panobinostat 效应最强，与已知一致</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2025_Leong_Squidiff.md。论文正文没有给出冷药物 split 的单一汇总数值，主要用 Fig. 3i 的柱状图与 P 值表达“不劣于/优于 PRnet”。</p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>对 Stage 2 的含义：</strong>药物编码是真正的结构冷启动，但模型大、没有权重、需要训练；
+      在 16 h / 单卡预算内是否可行需要实测。剂量编码较粗糙（整个指纹乘 log 剂量），可能限制剂量响应精度。</p>
+    </div>
+  </article>
+
+  <!-- ================= CMonge ================= -->
+  <article class="model" id="cmonge">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">08</span>CMonge</h3>
+        <p class="model-sub">Born et al., <em>Nature Machine Intelligence</em> 2026 · 条件最优传输 · 分布级预测</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-green">参数极省（约 23k）</span>
+        <span class="badge b-amber">仅 demo 权重</span>
+        <span class="badge b-blue">RDKit 结构冷启动</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>RDKit 2D 描述符</strong>（demo 中 194 维）→ 线性层 + GELU → <strong>50 维条件向量</strong>。</li>
+          <li><strong>剂量</strong>：<code>log(dose)</code> 追加到条件向量（demo 中 dim_cond = 195）。</li>
+          <li><strong>替代方案</strong>：MoA 嵌入（用扰动细胞分布算相似度再降维）；但它需要该药的处理细胞，不是纯结构冷启动。</li>
+          <li>没有端到端化学 GNN；化学信息来自固定的 RDKit 特征。</li>
+        </ul>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>自编码器</strong>：100 基因 → 512 → <strong>50 维潜空间</strong>（全量数据维度更高）。</li>
+          <li><strong>条件 Monge 映射</strong>：一个残差 MLP（demo 4×64）在潜空间把“对照细胞分布”整体搬到“处理细胞分布”。</li>
+          <li>训练：Sinkhorn 拟合损失 + Monge 正则项；不是逐细胞配对回归。</li>
+          <li>输出是<strong>处理组的细胞分布</strong>；可评估均值、方差、Wasserstein、MMD 等。</li>
+          <li>论文报告 RDKit 版本在 OOS 设定约 <strong>23,000 参数</strong>，远小于 chemCPA 的 1.37 M。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li>仓库带一个 <strong>demo 自编码器 checkpoint</strong>（<code>models/demo/cond-sciplex/...</code>，JAX/Orbax 格式）。</li>
+          <li><strong>没有随仓库分发</strong>训练好的全量 CMonge 映射；README 只提到旧 checkpoint 需要切到特定 tag。</li>
+          <li>本次 setup 自己训练了 demo AE（2 epoch）+ CMonge（10 iter），100 基因。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>官方 demo 数据：4,000 × 100，三个条件（abexinostat / belinostat / dacinostat，10 µM）。</li>
+          <li>验证集 R²：<strong>0.785 / 0.871 / 0.808</strong>（三个条件）。</li>
+          <li>这是 in-distribution、100 基因的 demo 成绩，<strong>不是</strong>论文的冷药物基准。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">CMonge</th><th>对照</th></tr></thead>
+          <tbody>
+            <tr><td>sci-Plex，最高剂量 10,000 nM，留 9 个药（712 个条件可见）</td><td>R²</td><td class="num">MoA 0.900 ± 0.059<br>RDKit 0.781 ± 0.187</td><td>chemCPA 0.760 ± 0.211</td></tr>
+            <tr><td>同上</td><td>Wasserstein 距离</td><td class="num">MoA 3.873 ± 0.643<br>RDKit 4.232 ± 0.896</td><td>chemCPA 4.767 ± 0.976（越低越好）</td></tr>
+            <tr><td>sci-Plex，全部 187 个药，in-distribution</td><td>平均 R²</td><td class="num">&gt; 0.8；每个药 &gt; 0.6（RDKit，放大模型后）</td><td>论文称与 MoA 版本相当</td></tr>
+            <tr><td>4i 数据，留一药（OOS）</td><td>R² / Wasserstein</td><td class="num">单药冷启动较弱；组合治疗明显优于无条件 Monge</td><td>分布指标优于 identity baseline</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2026_Born_CMG.md，Table 1–2 与正文。RDKit 版本才是“只给结构”的冷药物设定；MoA 版本需要该药的处理细胞，不能用于真正的冷启动。</p>
+    </div>
+
+    <div class="callout good">
+      <p><strong>对 Stage 2 的含义：</strong>参数极省、训练快，是最适合在 16 h 预算内重训的候选之一；
+      RDKit 版本支持结构冷启动，且输出分布，便于评估异质性。但当前只有 100 基因 demo，剂量在 demo 中是类别条件，
+      需要确认能否扩展到 20,570 基因和连续剂量。</p>
+    </div>
+  </article>
+
+  <!-- ================= DECANT ================= -->
+  <article class="model" id="decant">
+    <div class="model-head">
+      <div>
+        <h3 class="model-title"><span class="idx">09</span>DECANT</h3>
+        <p class="model-sub">Liu et al., <em>Bioinformatics</em> 2026 · 机制-上下文解耦 · 药物级留出</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-red">无化学编码</span>
+        <span class="badge b-red">无权重 / 无数据</span>
+        <span class="badge b-amber">转导式（需要处理细胞）</span>
+      </div>
+    </div>
+
+    <div class="arch">
+      <div class="box drug">
+        <h4>药物编码模块</h4>
+        <ul>
+          <li><strong>没有 SMILES / 化学结构编码器</strong>。</li>
+          <li>药物表示来自<strong>“处理组 − 对照组”的转录响应袋</strong>：细胞编码后做注意力池化，得到扰动摘要。</li>
+          <li>通过门控减去上下文投影，得到“机制潜变量”；再用<strong>药物原型记忆库</strong>（prototype bank）约束同一药的表示。</li>
+          <li>可选：用 LINCS/CMap 教师原型做蒸馏，改善机制空间的生物学对齐。</li>
+        </ul>
+        <div class="note">关键：预测一个“未见药物”时，模型仍然需要该药处理过的细胞袋；这不是只给结构的零样本预测，而是<strong>转导式</strong>评估。</div>
+      </div>
+      <div class="box main">
+        <h4>主预测模块</h4>
+        <ul>
+          <li><strong>细胞编码器</strong>：基因 + 程序（program）双通道 → 每个细胞一个 token。</li>
+          <li><strong>注意力池化</strong>：分别汇总处理组与对照组，得到群体表示。</li>
+          <li><strong>机制/上下文解耦</strong>：机制头 + 上下文门控 + 残差头；上下文包括细胞系、log 剂量、处理时间。</li>
+          <li><strong>解码器</strong>：先预测 program 响应，再预测 gene 响应（Δ 表达）。</li>
+          <li>本次配置 <strong>162,384 参数</strong>，2,000 基因、50 个 program。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact">
+        <h4>已有权重</h4>
+        <ul>
+          <li><strong>没有 checkpoint，也没有处理好的 cell bag 数据</strong>；仓库是复现骨架。</li>
+          <li>本次 smoke 随机初始化，只验证模型与剂量上下文可跑。</li>
+        </ul>
+      </div>
+      <div class="fact">
+        <h4>本次 setup 实际跑了什么</h4>
+        <ul>
+          <li>2,000 基因、4 个样本、两个剂量（1 / 100）前向。</li>
+          <li>输出 <code>(4, 2,000)</code>；剂量效应 L1 = <strong>0.00495</strong>。</li>
+          <li>没有机制恢复验证——那需要匹配的处理/对照细胞袋。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bench">
+      <h4>论文声明的基准成绩</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据集 / 设定</th><th>指标</th><th class="num">DECANT</th><th>对照</th></tr></thead>
+          <tbody>
+            <tr><td>药物级留出：148 训练药 / 20 验证 / 20 测试；1,915 / 256 / 267 个 bag</td><td>gene-level Pearson</td><td class="num">0.653 ± 0.002</td><td>专用扰动模型 0.094–0.321；最强简单基线 PB Δ+Ridge 0.614</td></tr>
+            <tr><td>同上</td><td>program-level Pearson</td><td class="num">0.831 ± 0.003</td><td>PB Δ+PLS 0.781</td></tr>
+            <tr><td>同上</td><td>gene RMSE</td><td class="num">0.076 ± 0.001</td><td>越低越好</td></tr>
+            <tr><td>同上</td><td>program RMSE</td><td class="num">0.138 ± 0.002</td><td>PB Δ+PLS 0.143</td></tr>
+            <tr><td>同上</td><td>R²_w（响应主导加权）</td><td class="num">0.849 ± 0.001</td><td>PB Δ+Ridge 0.820</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">来源：2026_Liu_DECANT.md。论文明确说这是“药物级留出”，但不是化学骨架或机制家族留出；而且评估单元是匹配的 treated-control bag。</p>
+    </div>
+
+    <div class="callout danger">
+      <p><strong>对 Stage 2 的含义：</strong>DECANT 是一个“机制表征 + 响应解码”框架，不是从结构预测冷药物的模型。
+      它的优势在可解释性和上下文解耦；若要进入冷药物主模型候选，必须新增化学编码器，并改变评估协议。</p>
+    </div>
+  </article>
+</section>
+
+<section id="compare">
+  <h2>横向对比：谁适合做什么</h2>
+  <p class="lede">
+    把“化学冷启动、剂量、输出类型、权重、训练成本”放在一起看，比单看论文 R² 更有用。
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>模型</th>
+          <th>结构冷启动</th>
+          <th>剂量输入</th>
+          <th>原生基因空间</th>
+          <th>输出类型</th>
+          <th>公开权重</th>
+          <th>重训成本（相对）</th>
+          <th>最适合的角色</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>PRnet</strong></td><td><span class="badge b-green">是</span> rFCFP</td><td><span class="badge b-green">是</span> 指纹缩放</td><td>978 / 5,000</td><td>平均表达谱</td><td>978 + 5,000</td><td>低（0.55 M）</td><td>冷药物基线；小模型重训</td></tr>
+        <tr><td><strong>CPA</strong></td><td><span class="badge b-amber">需外接</span></td><td><span class="badge b-green">是</span> 原生</td><td>5,000 / 20,570</td><td>单细胞分布</td><td>Kang（非药物）</td><td>中（8.66 M）</td><td>组合药 + 剂量；需化学扩展</td></tr>
+        <tr><td><strong>chemCPA</strong></td><td><span class="badge b-green">是</span> RDKit</td><td><span class="badge b-green">是</span> 原生</td><td>977 / 2,000</td><td>单细胞分布</td><td>12 个 L1000</td><td>中（1.3–16 M）</td><td>冷药物主路线；解码器重训</td></tr>
+        <tr><td><strong>biolord</strong></td><td><span class="badge b-green">是</span> RDKit 属性</td><td><span class="badge b-green">是</span> 有序属性</td><td>20,570（可配）</td><td>单细胞分布</td><td>无</td><td>低–中（2.88 M）</td><td>per-dataset 重训；属性解耦</td></tr>
+        <tr><td><strong>PerturbNet</strong></td><td><span class="badge b-green">是</span> ChemicalVAE</td><td><span class="badge b-amber">有限</span> 协变量</td><td>978 / 5,087</td><td>细胞分布</td><td>LINCS + sci-Plex</td><td>高（173.9 M + TF1.15）</td><td>分布预测；工程可行性待验证</td></tr>
+        <tr><td><strong>scVIDR</strong></td><td><span class="badge b-red">否</span></td><td><span class="badge b-green">是</span> 连续剂量</td><td>2,000 / 5,000</td><td>平均表达</td><td>未就位</td><td>低（4.54 M）</td><td>剂量响应基线；已知药物</td></tr>
+        <tr><td><strong>Squidiff</strong></td><td><span class="badge b-green">是</span> rFCFP</td><td><span class="badge b-amber">指纹缩放</span></td><td>可配（本次 2,000）</td><td>单细胞表达</td><td>无</td><td>高（52.56 M）</td><td>生成式冷药物；需预算评估</td></tr>
+        <tr><td><strong>CMonge</strong></td><td><span class="badge b-green">是</span> RDKit</td><td><span class="badge b-amber">demo 为类别</span></td><td>数据定义（demo 100）</td><td>细胞分布</td><td>仅 demo AE</td><td>极低（约 23k）</td><td>分布级冷药物；快速重训</td></tr>
+        <tr><td><strong>DECANT</strong></td><td><span class="badge b-red">否</span></td><td><span class="badge b-green">是</span> log 剂量</td><td>2,000（本次）</td><td>Δ 表达</td><td>无</td><td>低（162 k）</td><td>机制表征 / 解释；非冷药物</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>一句话选型：</strong>若目标是“只给 SMILES 预测全转录组”，优先在 <strong>chemCPA、PRnet、CMonge、PerturbNet</strong> 中选；
+    若目标是“剂量响应 + 已知药物”，<strong>scVIDR / CPA</strong> 更直接；若目标是“机制解释 + 表征”，<strong>DECANT</strong> 有价值，但不能当冷药物预测器。</p>
+  </div>
+</section>
+
+<section id="caveats">
+  <h2>五个必须警惕的陷阱</h2>
+
+  <div class="callout warn">
+    <h4>1. 论文数据 ≠ 本项目数据</h4>
+    <p>论文多在 L1000、sci-Plex、Kang、4i 等数据上评测；本项目的 CM 数据、基因空间（20,570）、药物集合、剂量范围都不同。
+    论文成绩只能说明“方法在那个数据上可行”，不能直接外推。</p>
+  </div>
+
+  <div class="callout warn">
+    <h4>2. “药物级留出”不等于“化学冷启动”</h4>
+    <p>DECANT 的测试药物在训练中没见过，但预测时仍使用该药的处理细胞袋；CPA 的原生模型需要每个药的嵌入；
+    biolord 的默认模式也是药物类别。真正只给结构的，是 PRnet（rFCFP）、chemCPA（RDKit）、PerturbNet（ChemicalVAE）、
+    Squidiff（rFCFP）和 CMonge（RDKit 版本）。</p>
+  </div>
+
+  <div class="callout warn">
+    <h4>3. R² 会被“平均效应”抬高</h4>
+    <p>扰动数据里大多数基因不变，所以“预测所有基因都等于对照”也能得到不低的 R²。论文因此常同时报告 DEG R²、
+    Δ 表达 Pearson、Wasserstein、MMD 等。PerturbNet 的 sci-Plex 结果里，linear baseline 的 median R² 也有 0.954，
+    就是典型例子。</p>
+  </div>
+
+  <div class="callout warn">
+    <h4>4. 基因空间决定“能不能比”</h4>
+    <p>PRnet 的 978、chemCPA 的 977/2,000、CPA 的 5,000、PerturbNet 的 5,087、本项目的 20,570 不是同一套基因。
+    不同基因空间上的 R² 不能直接排名；必须先统一基因集、预处理（log2(CPM+1) 还是 counts）和评估单元（bulk / pseudobulk / 单细胞）。</p>
+  </div>
+
+  <div class="callout warn">
+    <h4>5. “能加载”不等于“能预测”</h4>
+    <p>chemCPA 的 8 × 977 是合成 batch 前向；PerturbNet 的 (2, 10) 是潜变量前向；scVIDR / Squidiff / DECANT 是合成数据或随机权重。
+    这些 smoke 只证明代码路径与权重兼容，<strong>不证明生物学预测能力</strong>。</p>
+  </div>
+</section>
+
+<section id="glossary">
+  <h2>给非计算读者的术语表</h2>
+  <dl class="glossary">
+    <div>
+      <dt>SMILES</dt>
+      <dd>用一串字符表示分子结构，例如 <code>CC(=O)Oc1ccccc1C(=O)O</code>（阿司匹林）。模型用它作为药物输入。</dd>
+    </div>
+    <div>
+      <dt>指纹（fingerprint）</dt>
+      <dd>把分子结构压成一段固定长度的 0/1 或数值向量。rFCFP、Morgan、RDKit 描述符都是不同“翻译方式”。</dd>
+    </div>
+    <div>
+      <dt>潜变量（latent）</dt>
+      <dd>模型内部压缩后的低维坐标，不是直接可读的基因。可以理解为“细胞状态/药物效应”的抽象坐标。</dd>
+    </div>
+    <div>
+      <dt>VAE（变分自编码器）</dt>
+      <dd>一类“压缩再还原”的生成模型：编码器把表达压到潜变量，解码器再还原。常用于单细胞扰动预测。</dd>
+    </div>
+    <div>
+      <dt>cINN（条件可逆网络）</dt>
+      <dd>一种可逆的神经网络，能把“药物潜变量”映到“细胞潜变量”，也能反推。PerturbNet 用它做概率搬运。</dd>
+    </div>
+    <div>
+      <dt>最优传输（OT）</dt>
+      <dd>把一组细胞（对照分布）“整体搬运”成另一组细胞（处理分布）的数学框架。CMonge 用条件 OT。</dd>
+    </div>
+    <div>
+      <dt>扩散模型（diffusion）</dt>
+      <dd>先从噪声开始，逐步去噪生成表达谱。Squidiff 用条件 DDIM 做这件事。</dd>
+    </div>
+    <div>
+      <dt>DEG</dt>
+      <dd>差异表达基因（differentially expressed genes）。只看这些基因上的指标，比看全基因更严格。</dd>
+    </div>
+    <div>
+      <dt>冷药物 / 冷细胞</dt>
+      <dd>训练中完全没见过的药物 / 细胞类型。冷药物是药物发现中最有价值的泛化场景。</dd>
+    </div>
+    <div>
+      <dt>转导式（transductive）</dt>
+      <dd>预测时使用了目标样本本身的信息（例如该药处理过的细胞），而不是只给结构。泛化难度低于真正的零样本。</dd>
+    </div>
+  </dl>
+</section>
+
+<section id="sources">
+  <h2>来源与可复现性</h2>
+  <p class="lede">本报告的架构细节来自本仓库的 vendored 代码；权重与 smoke 结果来自 run card 与输出日志；论文成绩来自下列论文。</p>
+
+  <div class="two-col">
+    <div class="callout">
+      <h4>本仓库文件</h4>
+      <ul>
+        <li><code>stage2/PLAN.md</code> — setup 目标、环境、978 quarantine、16 h 预算。</li>
+        <li><code>stage2/01_setup/SUMMARY.md</code> — 9/9 完成情况与“完成 ≠ 可用”的判断。</li>
+        <li><code>stage2/01_setup/&lt;model&gt;/README.md</code> — 每个模型的命令、权重、数据、caveat。</li>
+        <li><code>stage2/01_setup/&lt;model&gt;/output/</code> — 本次 smoke 的日志与预测产物。</li>
+        <li><code>stage2/audit/entrant_audit.md</code> — 14 模型的能力门控与准入记录。</li>
+      </ul>
+    </div>
+    <div class="callout">
+      <h4>论文</h4>
+      <ul>
+        <li>PRnet — Zhao et al., <em>Nat Commun</em> 15:9256 (2024). DOI: 10.1038/s41467-024-53457-1</li>
+        <li>CPA — Lotfollahi et al., <em>Mol Syst Biol</em> 19:e11517 (2023). DOI: 10.15252/msb.202211517</li>
+        <li>chemCPA — Hetzel et al., <em>NeurIPS</em> 2022.</li>
+        <li>biolord — Nitzan et al., <em>Nat Biotechnol</em> 42:1678–1683 (2024). DOI: 10.1038/s41587-023-02079-x</li>
+        <li>PerturbNet — Yu et al., <em>Mol Syst Biol</em> 21:960–982 (2025). DOI: 10.1038/s44320-025-00131-3</li>
+        <li>scVIDR — Kana et al., <em>Patterns</em> 4:100817 (2023). DOI: 10.1016/j.patter.2023.100817</li>
+        <li>Squidiff — Leong et al., <em>Nat Methods</em> 23:65–77 (2026). DOI: 10.1038/s41592-025-02877-y</li>
+        <li>CMonge — Born et al., <em>Nat Mach Intell</em> 8:984–996 (2026). DOI: 10.1038/s42256-026-01242-8</li>
+        <li>DECANT — Liu et al., <em>Bioinformatics</em> 42(9) (2026). DOI: 10.1093/bioinformatics/btag662</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h4>可复现命令</h4>
+    <p>每个模型的 smoke 命令都是 <code>bash stage2/01_setup/&lt;model&gt;/run.sh</code>；日志在 <code>&lt;model&gt;/output/run.log</code>。
+    本报告没有重新训练任何模型，只读取现有 run card、日志、checkpoint 元数据与论文。</p>
+  </div>
+
+  <div class="footer">
+    <p>报告生成：2026-10-20 · 范围：stage2/01_setup 的 9 个已部署模型 · 目的：为 Stage 2 选择提供架构、权重与论文基准的事实底稿。</p>
+    <p>提醒：论文数字不可直接横向排名；任何进入 Stage 2 的模型都必须在同一基因空间、同一划分、同一指标下重新评估。</p>
+  </div>
+</section>
+
+</div>
+</body>
+</html>
