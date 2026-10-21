@@ -7,6 +7,9 @@
 # - Per-fit/predict timeout is the runner default (6 h); the global 16 h/model
 #   cap is not enforced here because every measured five-fold estimate is well
 #   below it (the largest is CPA at ~5-10 h).
+# - Do NOT export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True here: the
+#   PRnet/CPA (torch 2.0.1) and PerturbNet (torch 1.13.1) envs reject it at CUDA
+#   init. The 8 GB cgroup is the memory guard.
 # - Completed units are skipped on a restart; `--force` reruns them.
 #
 # Usage:
@@ -46,7 +49,6 @@ exec flock "$LOCK" systemd-run --user --scope \
   -p MemoryMax=8G -p MemorySwapMax=2G -- \
   env PYTHONDONTWRITEBYTECODE=1 \
       CUBLAS_WORKSPACE_CONFIG=:4096:8 \
-      PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
       OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
       OPENBLAS_NUM_THREADS=4 NUMEXPR_NUM_THREADS=4 \
   "$PY" "$HERE/runner.py" "${args[@]}" "$@"
