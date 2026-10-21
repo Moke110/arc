@@ -14,7 +14,7 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. It is currently in the **setup stage** (`stage2/01_setup/`): prove nine deployed non-preprint models load or train in their own environments. Since 2026-10-20 it also builds its CM perturbation corpus and first dataset bundle in `stage2/02_cm_data/` (ADR 0026), which still fixes no model, metric, or fold. Stage 2 evaluation still excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
+The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_bench_models/` (ADR 0027). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
 _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 
 **Stage 2 tree**:
@@ -164,6 +164,37 @@ _Avoid_: baseline, control set, batch control
 **Manual pharmacology supplement**:
 A cited, per-compound completion of the pharmacology annotation, allowed only on the curated drug panels (`dtoxs`, `gse244740`) and never on the `gse262419` tiers.
 _Avoid_: manual override, curation fix
+
+
+### Stage 2 benchmark
+
+**Cold-drug fold**:
+One of five Stage 2 benchmark splits in which a drug is never observed in the fold's train or validation set and is scored exactly once as test; every drug is test exactly once and valid exactly once across the five folds (6:2:2 = 276/92/92 drugs).
+_Avoid_: cold-start split, holdout (unqualified)
+
+**Δ space**:
+The benchmark's target: `log1p_cp10k(treated) − mean(log1p_cp10k(same-plate DMSO))`, in the 18,164-gene corpus order. The model emits per-well Δ; the runner averages within a group.
+_Avoid_: fold change, expression delta (unqualified)
+
+**Group**:
+One `(drug_key, dose)` pair in the benchmark — 1,380 groups, each the mean of its 3–6 wells. AUPRC is macro-averaged over groups.
+_Avoid_: condition (unqualified), sample
+
+**Cold-drug-capable model**:
+A model whose drug input is derived from chemical structure (fingerprint, RDKit descriptor, or a structure encoder), so it can score a drug it never saw in training. Stage 2's admission gate.
+_Avoid_: warm-drug model, structure model
+
+**Entrant set**:
+The seven cold-drug-capable models in the Stage 2 benchmark: PRnet, CPA, chemCPA, biolord, PerturbNet, Squidiff, CMonge. scVIDR and DECANT are documented exclusions, not rows.
+_Avoid_: candidate list, all models
+
+**Ideal-fit label**:
+The `ideal_fit` report column: `full` (author architecture is used as intended under the contract), `partial` (a declared omission or transductive control, e.g. chemCPA's skipped 978 pretrain, biolord's transductive prediction, PerturbNet's missing control transcriptome), or `none` (a CPU baseline). One leaderboard; the label is not a second table.
+_Avoid_: ideal model, tier
+
+**Benchmark run**:
+One `(model, fold)` unit in `stage2/03_bench_models/output/`: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
+_Avoid_: experiment, trial
 
 
 ### Stage 1 evaluation

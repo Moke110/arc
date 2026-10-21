@@ -76,6 +76,8 @@ stage2/
 │   ├── squidiff/
 │   ├── cmonge/
 │   └── decant/
+├── 02_cm_data/             # frozen CM corpus + datasets-1 (ADR 0026)
+├── 03_bench_models/        # executed cold-drug benchmark (ADR 0027)
 ├── audit/                  # the 14-model selection audit
 └── _archive/cm_bench_v1/   # archived old benchmark; not a dependency
 ```
@@ -90,13 +92,31 @@ Stage 1 lives at the repository root in `stage1/` and is not part of this plan.
   `VENDORED.txt`; adapters live in the run-card directory.
 - `01_setup/SUMMARY.md` states which models are usable and which are blocked.
 
-## Selection stage — deferred decisions
+## Selection stage — frozen benchmark contract (2026-10-21)
 
-Only after setup:
+The benchmark contract is fixed in
+[`docs/adr/0027-stage2-benchmark-contract.md`](../docs/adr/0027-stage2-benchmark-contract.md)
+and built in `stage2/03_bench_models/`. In brief:
 
-- which model(s) are worth adapting to CM data;
-- whether to use 978, 5,000 HVG, or a 20,570-gene universe for evaluation;
-- whether CPA/biolord should be retrained for chemical perturbation;
-- what the evaluation metric, folds, and cold-drug/cold-dose axes should be.
+- **Data:** `02_cm_data/datasets-1/temp_env_all-smiles.h5ad` — 4,478 wells,
+  460 drug keys, 18,164 genes, 16 plates, three doses, 24 h, `ipsc_cm`;
+  Δ = `log1p_cp10k(treated) − same-plate DMSO mean`; group = `(drug_key, dose)`.
+- **Split:** five cold-drug folds, 6:2:2 (276 train / 92 valid / 92 test drugs),
+  connectivity-block clusters, seed `20261021`; every drug is test exactly once.
+- **Entrants:** PRnet, CPA, chemCPA, biolord, PerturbNet, Squidiff, CMonge.
+  scVIDR and DECANT exit Stage 2 (no cold-drug structure path). One leaderboard;
+  `ideal_fit` is a `full`/`partial` column.
+- **Training:** random init, author defaults, no HPO; validation selects the
+  epoch/checkpoint by the author loss; 18,164-gene output for every model;
+  15.5 h soft / 16 h hard per model, 6 h/fold, one GPU, seed `20261021`.
+- **Metric:** direction-aware macro AUPRC at k=200 (top-200 up + bottom-200
+  down), group macro then fold mean; PCC/Spearman/R²/RMSE secondary; 92-drug
+  stratified bootstrap (2,000 reps, seed `20261022`).
+- **Execution:** `bash stage2/03_bench_models/run_queue.sh` runs the five CPU
+  baselines and the seven entrants over five folds; per-unit statuses, run cards,
+  fidelity ledgers, and the generated leaderboard live under
+  `stage2/03_bench_models/{output,results,models}/`.
 
-No benchmark design is fixed in this plan.
+The benchmark does not fix the eventual MIRI adaptation; it produces the
+selection evidence for it.
+
