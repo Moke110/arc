@@ -117,6 +117,10 @@ pert_model/scvidr/*
 stage2/01_setup/*/output/
 stage2/01_setup/biolord/.venv/
 
+# Stage 2 shared environments: venv trees are local-only (locks are tracked)
+stage2/_envs/biolord/
+stage2/_envs/cmonge/
+
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 /archived/
 

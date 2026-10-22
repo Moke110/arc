@@ -40,7 +40,7 @@ model can be compared.
 > **Update (2026-10-22):** superseded by `stage2/03_bench_models/`. All seven
 > cold-drug-capable models now produce 18,164-gene CM predictions and have been
 > scored over five cold-drug folds (60/60 units; 5 CPU baselines included).
-> See [`../03_bench_models/REPORT.md`](../03_bench_models/REPORT.md). The setup
+> See [`../03_bench_models/temp_env_all_18k/REPORT.md`](../03_bench_models/temp_env_all_18k/REPORT.md). The setup
 > conclusion above remains the correct statement for the setup stage itself.
 
 ## What is ready

@@ -193,7 +193,7 @@ The `ideal_fit` report column: `full` (author architecture is used as intended u
 _Avoid_: ideal model, tier
 
 **Benchmark run**:
-One `(model, fold)` unit in `stage2/03_bench_models/output/`: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
+One `(model, fold)` unit in `stage2/03_bench_models/temp_env_all_18k/output/`: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
 _Avoid_: experiment, trial
 
 

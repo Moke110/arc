@@ -76,8 +76,10 @@ stage2/
 │   ├── squidiff/
 │   ├── cmonge/
 │   └── decant/
+├── _envs/                  # shared per-model bench environments + locks
 ├── 02_cm_data/             # frozen CM corpus + datasets-1 (ADR 0026)
-├── 03_bench_models/        # executed cold-drug benchmark (ADR 0027)
+├── 03_bench_models/        # executed cold-drug benchmark (ADR 0027), archived
+│   └── temp_env_all_18k/   #   data + harness + results + summary
 ├── audit/                  # the 14-model selection audit
 └── _archive/cm_bench_v1/   # archived old benchmark; not a dependency
 ```
@@ -96,7 +98,7 @@ Stage 1 lives at the repository root in `stage1/` and is not part of this plan.
 
 The benchmark contract is fixed in
 [`docs/adr/0027-stage2-benchmark-contract.md`](../docs/adr/0027-stage2-benchmark-contract.md)
-and built in `stage2/03_bench_models/`. In brief:
+and built in `stage2/03_bench_models/temp_env_all_18k/`. In brief:
 
 - **Data:** `02_cm_data/datasets-1/temp_env_all-smiles.h5ad` — 4,478 wells,
   460 drug keys, 18,164 genes, 16 plates, three doses, 24 h, `ipsc_cm`;
@@ -112,10 +114,10 @@ and built in `stage2/03_bench_models/`. In brief:
 - **Metric:** direction-aware macro AUPRC at k=200 (top-200 up + bottom-200
   down), group macro then fold mean; PCC/Spearman/R²/RMSE secondary; 92-drug
   stratified bootstrap (2,000 reps, seed `20261022`).
-- **Execution:** `bash stage2/03_bench_models/run_queue.sh` runs the five CPU
+- **Execution:** `bash stage2/03_bench_models/temp_env_all_18k/scripts/run_queue.sh` runs the five CPU
   baselines and the seven entrants over five folds; per-unit statuses, run cards,
   fidelity ledgers, and the generated leaderboard live under
-  `stage2/03_bench_models/{output,results,models}/`.
+  `stage2/03_bench_models/temp_env_all_18k/{output,results,models}/`.
 
 The benchmark does not fix the eventual MIRI adaptation; it produces the
 selection evidence for it.
@@ -124,6 +126,6 @@ selection evidence for it.
 pre-registered primary metric (`delta_mean` 0.1989); the best entrant is
 PerturbNet (0.1861, `partial`), followed by PRnet (0.1643). No entrant beats the
 mean baseline, and Squidiff did not converge at 18,164 genes. See
-`03_bench_models/REPORT.md` for the leaderboard, per-drug/robustness view, and
+`03_bench_models/temp_env_all_18k/REPORT.md` for the leaderboard, per-drug/robustness view, and
 the recommendation not to name a model winner from this run.
 

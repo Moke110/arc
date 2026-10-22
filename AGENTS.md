@@ -6,7 +6,7 @@ Routing index for the ARC repo root: AI-driven MIRI drug-repositioning pipeline 
 - `drug_emb_model/` — HG HeteroGNN drug-embedding model library (pure code).
 - `pert_model/` — XPert drug-perturbation prediction library; vendored candidates: deployed `prnet`, `cpa`, `chemcpa`, `biolord`, `perturbnet`, `scvidr`, `squidiff`, `cmonge`, `decant`; reference-only `wave`, `expo`, `state`, `TranSiGen`, `xpert`.
 - `stage1/` — Stage 1 MIRI workflows: frozen v0, finalized v1/v1.1/v2/v3 screens.
-- `stage2/` — Stage 2 model setup and selection: `01_setup/` run cards for the nine deployed models, `02_cm_data/` (frozen CM corpus + `datasets-1/`, ADR 0026), `03_bench_models/` (executed 60-unit cold-drug benchmark, seven real adapters, report), `audit/`, and `_archive/cm_bench_v1/` (old benchmark).
+- `stage2/` — Stage 2 model setup and selection: `01_setup/` run cards for the nine deployed models, `02_cm_data/` (frozen CM corpus + `datasets-1/`, ADR 0026), `03_bench_models/` (executed 60-unit cold-drug benchmark, archived under `temp_env_all_18k/` with its summary figure), `_envs/` (shared per-model bench environments), `audit/`, and `_archive/cm_bench_v1/` (old benchmark).
 - `disease_data/` — shared per-GSE MIRI disease inputs (raw data + DEG lists).
 - `wet_data/` — Stage-1 wet-lab validation raw data (result figures pptx + animal-experiment plan; gitignored); record in `docs/wetlab-validation-stage1.md`.
 - `reference/` — background literature library (PDFs, markdowns, index; gitignored).
