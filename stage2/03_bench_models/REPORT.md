@@ -13,9 +13,9 @@
   **−0.0128 (95% CI −0.0248 to −0.0007)**; the benchmark therefore does not
   support selecting any entrant over the mean baseline.
 - **The entrant ranking is still informative.** PerturbNet is the best entrant
-  on the primary metric and on PCC/Spearman; PRnet is second and has the best
-  Spearman. CPA is the best entrant on R²/RMSE but only 7th on AUPRC — global
-  correlation and top/bottom direction ranking disagree.
+  on the primary metric; CPA has the best PCC/R²/RMSE; PRnet has the best
+  Spearman. Global correlation and top/bottom direction ranking disagree:
+  CPA is 7th on AUPRC but best on R²/RMSE.
 - **Squidiff failed to converge at 18,164 genes**: cold-valid ε-MSE stayed at
   0.976 (random = 1.0) for the whole 10^5-step budget, so its DDIM samples are
   out of distribution (test RMSE 80.45). Its row is retained as a documented
