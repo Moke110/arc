@@ -1,7 +1,6 @@
 # PRnet adapter — run card (ticket 13)
 
-**Status:** smoke-complete on fold 0 (1 epoch, 2026-10-21). The full five-fold
-run is ticket 16; the one-fold number is a wiring proof, not a ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.1643** (95% CI 0.1545–0.1750), rank 4/12, `ideal_fit: full`. This is the second-best entrant on the primary metric and the best entrant on Spearman (0.384); it is `full`. The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/prnet/` (vendored, commit `f19174bd`, Apache-2.0).
   No file under `pert_model/` is modified or generated (`__pycache__` is
@@ -56,3 +55,16 @@ the low AUPRC is expected and is **not** evidence about PRnet.
   loss on the cold valid drugs selects the checkpoint (patience 20).
 - Prediction uses the Gaussian mean head with zero noise and subtracts the
   same DMSO mean, i.e. Δ in the shared benchmark space.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 32 | 10.8 | 3.5 | 4.1 | 3456 | 33 | 12 |
+| 1 | completed | 35 | 13.7 | 4.2 | 3.2 | 3882 | 61 | 40 |
+| 2 | completed | 35 | 14.1 | 4.3 | 3.3 | 3882 | 67 | 46 |
+| 3 | completed | 32 | 11.1 | 4.2 | 3.3 | 3882 | 46 | 25 |
+| 4 | completed | 35 | 14.1 | 4.3 | 3.3 | 2811 | 67 | 46 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.

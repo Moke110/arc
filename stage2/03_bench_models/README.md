@@ -1,10 +1,11 @@
 # 03_bench_models — Stage 2 benchmark harness
 
-**Status:** harness, baselines, and all seven real adapters built (2026-10-21).
-`data/` is the frozen ticket-11 build; `runner.py` + `evaluate.py` run the full
-fit → predict → score path on CPU/GPU and write a leaderboard. All seven real
-models (PRnet, CPA, chemCPA, biolord, PerturbNet, Squidiff, CMonge) completed a
-one-fold smoke; ticket 16 runs the five cold-drug folds. This directory does not
+**Status:** executed 2026-10-21/22. 60/60 units completed (5 CPU baselines +
+7 real models, five cold-drug folds each). `data/` is the frozen ticket-11
+build; `runner.py` + `evaluate.py` run the full fit → predict → score path and
+write a leaderboard. The results and their limitations are in
+[`REPORT.md`](REPORT.md). Headline: no entrant beats the `delta_mean` baseline
+(0.1989); the best entrant is PerturbNet at 0.1861. This directory does not
 import model internals — every adapter is a subprocess in its own environment.
 
 ## Quick start
@@ -44,6 +45,11 @@ skipped unless `--force` is passed.
 | `cases.py` | per-fold case bundles: train/valid with expression and Δ, test metadata only |
 | `runner.py` | fold driver, subprocess bridge, checkpoint/resume, per-fold artifacts |
 | `run_queue.sh` | ticket-16 seven-model × five-fold queue (GPU flock + 8 GB RAM scope) |
+| `validate_run.py` | independent 60-unit acceptance checks |
+| `summarize_run.py` | `results/run_cards.csv` (wall, GPU, final/best epoch) |
+| `aggregate_fidelity.py` | `results/fidelity.csv` from the per-model ledgers |
+| `gpu_watch.sh` | 30 s device-memory sampler used by `summarize_run.py` |
+| `REPORT.md` | executed benchmark report, leaderboard tables, limitations |
 | `evaluate.py` | group/drug/fold/headline aggregation, bootstrap, `metrics.csv` / `per_drug.csv` / `leaderboard.csv` |
 | `metrics.py` | metric primitives shared with the build sanity cases |
 | `baselines.py` | train-mean, per-dose mean, ridge-on-fingerprint, nearest-drug baselines |
@@ -174,6 +180,8 @@ the final five-fold ranking.
 
 ## Next
 
-Tickets 14–15 are complete: all seven real adapters are registered, smoke-tested
-on fold 0, and carry a config, run card, and fidelity ledger. Ticket 16 runs the
-five-fold queue for the seven entrants plus the five CPU baselines.
+Tickets 14–16 are complete: all seven real adapters are registered, smoke-tested,
+and run over five cold-drug folds; the leaderboard, run cards, and report are
+generated from the artifacts. The benchmark does not name a model winner over
+the mean baseline; see `REPORT.md` for the recommendation and the open metric
+question.

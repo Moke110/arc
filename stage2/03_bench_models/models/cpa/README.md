@@ -1,7 +1,6 @@
 # CPA adapter — run card (ticket 13)
 
-**Status:** smoke-complete on fold 0 (1 epoch, 2026-10-21). The full five-fold
-run is ticket 16; the one-fold number is a wiring proof, not a ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0910** (95% CI 0.0863–0.0960), rank 7/12, `ideal_fit: full`. This is the best entrant on R² (0.038) and RMSE (0.140), but 7th on the primary AUPRC; it is `full`. The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/cpa/` (vendored, commit `fbd7c025`, BSD-3-Clause).
   No file under `pert_model/` is modified or generated.
@@ -55,3 +54,16 @@ trained and stays at its init (`β=1`, `bias=0`), as declared in the ledger.
 Prediction builds a metadata AnnData whose `X` is the matched plate DMSO mean
 and whose condition is the test well's drug/dose; `CPA.predict` returns the
 absolute expression and the adapter subtracts that same DMSO mean.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 1956 | 1932.0 | 8.1 | 4.7 | 3962 | 340 | 320 |
+| 1 | completed | 3175 | 3151.2 | 5.1 | 4.9 | 3962 | 550 | 450 |
+| 2 | completed | 1056 | 1032.3 | 5.1 | 6.4 | 3958 | 180 | 180 |
+| 3 | completed | 2901 | 2878.0 | 5.0 | 4.8 | 3958 | 500 | 480 |
+| 4 | completed | 2503 | 2478.9 | 7.7 | 4.7 | 3958 | 430 | 420 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.

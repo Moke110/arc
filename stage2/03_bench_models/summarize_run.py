@@ -128,11 +128,15 @@ def main() -> int:
         detail = _json(run_dir / "status.json")
         metrics = _json(run_dir / "metrics.json")
         final, best = _epochs(model, history)
-        gpu = history.get("peak_gpu_mb", np.nan)
+        # Prefer the external sampler: it is the same measurement (total device
+        # memory, including the ~2.5 GB desktop baseline) for every unit.  The
+        # adapters' own `peak_gpu_mb` is a process-allocation figure and is only
+        # a fallback for units shorter than the 30 s sampling interval.
+        gpu = _gpu_window(detail.get("started_at"), detail.get("finished_at"), samples)
+        if not np.isfinite(float(gpu)):
+            gpu = history.get("peak_gpu_mb", np.nan)
         if not np.isfinite(float(gpu)):
             gpu = _peak_from_log(run_dir / "run.log")
-        if not np.isfinite(float(gpu)):
-            gpu = _gpu_window(detail.get("started_at"), detail.get("finished_at"), samples)
         rows.append(
             {
                 "model": model,

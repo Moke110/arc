@@ -1,8 +1,6 @@
 # PerturbNet adapter — run card (ticket 14)
 
-**Status:** smoke-complete on fold 0 (1 epoch per stage, 2026-10-21). The full
-five-fold run is ticket 16; the one-fold number is a wiring proof, not a
-ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.1861** (95% CI 0.1699–0.2031), rank 3/12, `ideal_fit: partial`. This is the best entrant on the primary metric, but it remains below the `delta_mean` baseline; it is `partial` because it takes no control transcriptome. The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/perturbnet/` (vendored, commit `e1375b2c`,
   GPL-3.0). No file under `pert_model/` is modified or generated
@@ -115,3 +113,16 @@ only and is not a leaderboard entry.
 - Deterministic prediction: mean of the ZINB rate over 8 flow draws instead of
   sampled counts (`config_only`).
 - No control transcriptome enters the model; `ideal_fit: partial`.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 543 | 506.0 | 12.8 | 9.8 | 8955 | 100 | 54 |
+| 1 | completed | 515 | 479.1 | 12.2 | 10.3 | 9191 | 100 | 64 |
+| 2 | completed | 556 | 518.9 | 13.1 | 10.0 | 9457 | 100 | 43 |
+| 3 | completed | 546 | 508.8 | 13.1 | 10.4 | 9133 | 100 | 65 |
+| 4 | completed | 530 | 494.8 | 12.1 | 10.3 | 9149 | 100 | 55 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.

@@ -120,3 +120,10 @@ and built in `stage2/03_bench_models/`. In brief:
 The benchmark does not fix the eventual MIRI adaptation; it produces the
 selection evidence for it.
 
+**Outcome (2026-10-22).** All 60 units completed. The mean baseline wins the
+pre-registered primary metric (`delta_mean` 0.1989); the best entrant is
+PerturbNet (0.1861, `partial`), followed by PRnet (0.1643). No entrant beats the
+mean baseline, and Squidiff did not converge at 18,164 genes. See
+`03_bench_models/REPORT.md` for the leaderboard, per-drug/robustness view, and
+the recommendation not to name a model winner from this run.
+

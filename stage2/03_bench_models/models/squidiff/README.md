@@ -1,8 +1,6 @@
 # Squidiff adapter — run card (ticket 15)
 
-**Status:** smoke-complete on fold 0 (20 optimization steps, 2026-10-21). The
-full five-fold run is ticket 16; the one-fold number is a wiring proof, not a
-ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0212** (95% CI 0.0207–0.0218), rank 11/12, `ideal_fit: full`. **Convergence failure at 18,164 genes:** cold-valid ε-MSE stayed at 0.976 (random = 1.0), so the samples are out of distribution. The row is retained as a documented failure, not a meaningful ranking. The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/squidiff/` (vendored, commit `abdfc27d`, BSD-3). No
   file under `pert_model/` is modified or generated (`__pycache__` is
@@ -86,3 +84,16 @@ not a scoring bug; it is **not** evidence about Squidiff.
   `sample_squidiff.py` does), runs DDIM from seeded pure noise at the
   checkpoint's sampling budget, and returns `generated − matched plate DMSO
   mean` in the shared `log1p_cp10k` Δ space.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 3394 | 3294.9 | 44.5 | 42.4 | 7627 | 100000 | 80000 |
+| 1 | completed | 3390 | 3291.9 | 44.1 | 41.9 | 7627 | 100000 | 80000 |
+| 2 | completed | 3393 | 3294.6 | 42.5 | 43.6 | 7614 | 100000 | 80000 |
+| 3 | completed | 3398 | 3300.9 | 42.5 | 44.0 | 7613 | 100000 | 100000 |
+| 4 | completed | 3390 | 3292.2 | 42.5 | 44.0 | 7368 | 100000 | 70000 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.

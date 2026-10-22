@@ -1,8 +1,6 @@
 # CMonge adapter — run card (ticket 15)
 
-**Status:** smoke-complete on fold 0 (`BENCH_SMOKE=1`: 4 AE steps + 20 Monge
-iterations, 2026-10-21). The full five-fold run is ticket 16; the one-fold number
-is a wiring proof, not a ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0732** (95% CI 0.0698–0.0767), rank 9/12, `ideal_fit: full`. It is `full` in form; the 50-d OT bottleneck and the 10k-iteration substitute are recorded in `FIDELITY.md`. The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/cmonge/` (vendored, commit `195f5cd1`, MIT). No file
   under `pert_model/` is modified or generated (`PYTHONDONTWRITEBYTECODE=1` and
@@ -105,3 +103,16 @@ cap.
   two-stage recipe at this budget, not an adapter bug.
 - The 50-d OT bottleneck is the model: 18,164 genes are summarised through 50
   dimensions. This is the largest fidelity caveat, not an adapter bug.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 1936 | 1915.6 | 4.1 | 3.9 | 2738 | 10000 | 5000 |
+| 1 | completed | 1970 | 1947.8 | 4.1 | 3.9 | 2744 | 10000 | 2000 |
+| 2 | completed | 1935 | 1914.0 | 4.0 | 5.1 | 2717 | 10000 | 2000 |
+| 3 | completed | 2134 | 2114.6 | 3.8 | 3.7 | 2582 | 10000 | 2000 |
+| 4 | completed | 2090 | 2069.6 | 3.9 | 3.7 | 2534 | 10000 | 3000 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.

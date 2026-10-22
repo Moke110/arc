@@ -1,6 +1,6 @@
 PY ?= /home/chang/miniconda3/envs/arc/bin/python
 
-.PHONY: dry-run test build-data
+.PHONY: dry-run test build-data fidelity
 
 dry-run:
 	bash run.sh --dry-run
@@ -10,3 +10,6 @@ test:
 
 build-data:
 	$(PY) build_data.py
+
+fidelity:
+	$(PY) aggregate_fidelity.py

@@ -1,7 +1,6 @@
 # chemCPA adapter — run card (ticket 13)
 
-**Status:** smoke-complete on fold 0 (1 epoch, 2026-10-21). The full five-fold
-run is ticket 16; the one-fold number is a wiring proof, not a ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0608** (95% CI 0.0578–0.0640), rank 10/12, `ideal_fit: partial`. It is `partial` because the 978-gene L1000 pretrain was omitted. The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/chemcpa/` (vendored, MIT). No file under
   `pert_model/` is modified or generated.
@@ -61,3 +60,16 @@ weights, gradient penalty, and the `global_step % adversary_steps` alternation.
   = 1.0 hack is not copied — this corpus has no vehicle-treated rows).
 - Prediction: the matched plate DMSO mean is encoded as the basal state, the
   test drug/dose is added, and the DMSO mean is subtracted to give Δ.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 77 | 58.7 | 2.8 | 2.6 | 3847 | 201 | 199 |
+| 1 | completed | 77 | 58.9 | 2.9 | 2.6 | 3827 | 201 | 197 |
+| 2 | completed | 78 | 57.8 | 2.8 | 2.6 | 3847 | 201 | 201 |
+| 3 | completed | 75 | 56.8 | 2.8 | 2.6 | 3739 | 201 | 200 |
+| 4 | completed | 76 | 57.0 | 2.8 | 2.6 | 3706 | 201 | 199 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.

@@ -10,6 +10,9 @@ Produced by `stage2/03_bench_models/evaluate.py` (called by `run.sh`).
 | `per_drug.csv` | per model/fold/drug mean over doses; AUPRC is k=200 macro |
 | `leaderboard.csv` | one row per model; rank by headline k=200 macro AUPRC |
 | `bootstrap.npz` | stratified 92-drug bootstrap, seed 20261022, 2,000 replicates |
+| `run_cards.csv` | per model/fold wall-clock, peak GPU (total device memory), final epoch/step, best epoch/step |
+| `fidelity.csv` | one row per declared deviation from every `models/<model>/FIDELITY.md` |
+| `../REPORT.md` | the executed benchmark report, leaderboard tables, and limitations |
 
 ## Conventions
 
@@ -22,7 +25,4 @@ Produced by `stage2/03_bench_models/evaluate.py` (called by `run.sh`).
   and RMSE is in raw `log1p_cp10k` Δ units.
 - A constant prediction has NaN PCC/Spearman, counted in `nan_counts` and
   labelled `constant_prediction`; it is not imputed as 0.
-- `ideal_fit` is a string column: `full`, `partial` (chemCPA/biolord/
-  PerturbNet), or `none` (baselines). It is a report label, not a second
-  leaderboard.
 - `subset=atc-moa` is descriptive; it never creates a second leaderboard.

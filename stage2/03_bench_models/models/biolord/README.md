@@ -1,7 +1,6 @@
 # biolord adapter — run card (ticket 14)
 
-**Status:** smoke-complete on fold 0 (1 epoch, 2026-10-21). The full five-fold
-run is ticket 16; the one-fold number is a wiring proof, not a ranking.
+**Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0974** (95% CI 0.0914–0.1040), rank 5/12, `ideal_fit: partial`. It is `partial` because prediction is transductive (registered DMSO control rows). The fold-0 smoke below is a wiring proof, not a ranking.
 
 - **Source:** `pert_model/biolord/` (vendored, commit `b7688790`, BSD-3-Clause;
   no published weights). No file under `pert_model/` is modified or generated
@@ -108,3 +107,16 @@ with element 0 dropped (200 columns; 186 kept after dropping near-constant
 columns) — see the attribute-encoding row in `FIDELITY.md`. Descriptor
 standardisation is fitted on the unique **training** drugs only; the dose
 column is appended raw, as the authors do.
+
+<!-- ticket16-run -->
+## Full five-fold run (ticket 16)
+
+| fold | status | wall s | fit s | pred valid s | pred test s | peak GPU MB* | final epoch/step | best epoch/step |
+|---|---|---|---|---|---|---|---|---|
+| 0 | completed | 270 | 239.3 | 9.3 | 7.1 | 7446 | 500 | 250 |
+| 1 | completed | 265 | 236.0 | 9.1 | 6.8 | 7160 | 500 | 500 |
+| 2 | completed | 289 | 261.7 | 7.5 | 6.8 | 7091 | 500 | 500 |
+| 3 | completed | 265 | 234.7 | 9.6 | 6.9 | 7113 | 500 | 500 |
+| 4 | completed | 289 | 258.8 | 10.1 | 7.1 | 7094 | 500 | 500 |
+
+*Total device memory including the ~2.5 GB desktop baseline; the 30 s sampler is `output/gpu_watch.csv`. Machine-readable copy: `results/run_cards.csv`.
