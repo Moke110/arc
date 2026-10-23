@@ -22,6 +22,10 @@ repository root in `stage1/` and is not a dependency here.
   seven real adapters (`prnet`, `cpa`, `chemcpa`, `biolord`, `perturbnet`,
   `squidiff`, `cmonge`); 60/60 units completed. No entrant beats the
   `delta_mean` baseline; PerturbNet is the best entrant.
+  `03_bench_models/temp_env_all_5k/` is a paired sensitivity fork with the same
+  wells, splits, entrants and seeds on a 5,000-gene HVG axis (rank-sum over
+  `dtoxs_cm`, `screen_ctox`, `temp_env_all-smiles`); decision and leakage
+  declaration in ADR 0028. It is not a replacement leaderboard.
 - `audit/` — the 14-model entrant audit moved from `cm_bench_v1` (selection
   record; not an active benchmark).
 - `_archive/cm_bench_v1/` — archived old benchmark; not a dependency.
@@ -31,4 +35,8 @@ has the frozen data, harness, CPU baselines, and all seven real adapters,
 executed over five cold-drug folds (60/60 units).
 `temp_env_all_18k/REPORT.md` records that no entrant beats the `delta_mean`
 baseline on the primary metric; PerturbNet is the best entrant.
+`temp_env_all_5k/` repeats the run on a 5,000-gene HVG axis to test whether that
+ranking depends on the transcriptome width (ADR 0028): PRnet moves above the
+`delta_mean` baseline there, while the 18k best entrant PerturbNet falls behind,
+so the 18k "no entrant beats the baseline" conclusion is gene-space dependent.
 Preprint models are excluded and their code is not vendored.

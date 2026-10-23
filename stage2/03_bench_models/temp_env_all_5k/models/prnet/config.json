@@ -1,0 +1,52 @@
+{
+  "model": "prnet",
+  "source": "pert_model/prnet (f19174bd), Apache-2.0",
+  "author_entrypoint": "train_sciplex.py / test_demo.py",
+  "x_dimension": 5000,
+  "hidden_layer_sizes": [
+    128
+  ],
+  "z_dimension": 64,
+  "adaptor_layer_sizes": [
+    128
+  ],
+  "comb_dimension": 64,
+  "comb_num": 1,
+  "drug_dimension": 1024,
+  "dr_rate": 0.05,
+  "loss": [
+    "GUSS"
+  ],
+  "noise_dim": 10,
+  "fingerprint": {
+    "kind": "morgan_features",
+    "radius": 2,
+    "n_bits": 1024,
+    "dose_transform": "log10(dose_uM + 1)"
+  },
+  "optimizer": {
+    "name": "adam",
+    "lr": 0.001,
+    "weight_decay": 1e-08
+  },
+  "scheduler": {
+    "name": "reduce_on_plateau",
+    "mode": "min",
+    "factor": 0.5,
+    "patience": 10,
+    "min_lr": 1e-08
+  },
+  "batch_size": 512,
+  "max_epochs": 100,
+  "early_stop_patience": 20,
+  "seed": 20261021,
+  "smoke": {
+    "max_epochs": 1,
+    "max_batches": 20
+  },
+  "notes": {
+    "target_space": "log1p_cp10k (benchmark data contract)",
+    "control_policy": "matched plate DMSO mean; the author pools every dose-0 cell into every split",
+    "prediction": "Gaussian mean head, no sampling"
+  }
+}
