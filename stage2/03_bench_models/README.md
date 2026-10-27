@@ -6,6 +6,13 @@ environments were promoted to shared Stage 2 infrastructure at `stage2/_envs/`.
 `temp_env_all_5k/` is a paired sensitivity run on a 5,000-gene HVG axis; it
 does not replace the 18k result.
 
+**Follow-up selection (2026-10-26):** Squidiff is excluded from subsequent
+selection and further training/debugging investment: both executed gene-space
+recipes failed to converge, and the benefit of further remediation is uncertain.
+The six remaining candidates and preservation policy are recorded in
+[current selection decisions](../audit/model_selection_decisions.md). The
+seven-model results and runnable registries here remain historical archives.
+
 | path | content |
 |---|---|
 | `temp_env_all_18k/` | Complete 18,164-gene run archive: frozen `data/`, per-unit `output/`, evaluated `results/`, `configs/`, `models/` (configs + fidelity ledgers), `scripts/` (all benchmark code), the original `README.md`, `REPORT.md`, and `Makefile` |

@@ -7,6 +7,18 @@ produce the perturbomes feeding future MIRI drug scoring. Setup is deliberately
 separate from benchmark design: it answers “does the model run in its own
 environment?”, not “which model is best?”.
 
+## Current selection decision (2026-10-26)
+
+The delivery requirement is **15,000+ genes**. Squidiff is **excluded from
+further selection and training/debugging investment**, by user decision, after
+both the 18k and 5k recipes failed to converge and further remediation offered
+uncertain benefit. This is an opportunity-cost decision, not an architectural
+gene limit or demonstrated compute-budget failure.
+
+Remaining candidates: **PRnet, CPA, chemCPA, biolord, PerturbNet, CMonge**;
+retain the CPU baselines. The historical seven-model runs below remain intact.
+The governing record is [current selection decisions](audit/model_selection_decisions.md).
+
 ## Setup stage (2026-10-19)
 
 Nine non-preprint, gate-pass models are exercised. Preprint models (X-Pert, DORA,

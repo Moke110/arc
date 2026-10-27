@@ -27,7 +27,8 @@ repository root in `stage1/` and is not a dependency here.
   `dtoxs_cm`, `screen_ctox`, `temp_env_all-smiles`); decision and leakage
   declaration in ADR 0028. It is not a replacement leaderboard.
 - `audit/` — the 14-model entrant audit moved from `cm_bench_v1` (selection
-  record; not an active benchmark).
+  record; not an active benchmark), the 2026-10-26 fairness audit, and
+  `model_selection_decisions.md` (governs current follow-up candidates).
 - `_archive/cm_bench_v1/` — archived old benchmark; not a dependency.
 
 Current phase: **model selection evidence**. `03_bench_models/temp_env_all_18k/`
@@ -40,3 +41,11 @@ ranking depends on the transcriptome width (ADR 0028): PRnet moves above the
 `delta_mean` baseline there, while the 18k best entrant PerturbNet falls behind,
 so the 18k "no entrant beats the baseline" conclusion is gene-space dependent.
 Preprint models are excluded and their code is not vendored.
+
+**Current selection override (2026-10-26, user-approved):** Squidiff is excluded
+from future selection, tuning, and debugging investment after both the 18k and
+5k recipes failed to converge; further remediation has uncertain benefit.
+Remaining candidates are PRnet, CPA, chemCPA, biolord, PerturbNet, and CMonge,
+with a 15,000+ gene delivery requirement. Retain all historical seven-model
+artifacts and registries for reproduction. New queues exclude Squidiff unless
+the user reopens the decision; see `audit/model_selection_decisions.md`.
