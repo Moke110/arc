@@ -5,7 +5,7 @@
 v2's step `05_xpert_finetune_bench` gains the same two-benchmark structure v3
 adopted under ADR 0018. The official fold benchmark — whose fold test sets all
 come from the dtoxs_primary arm (byte-identical to v1.1, ADR 0014/0015), the
-CONTEXT.md *dtoxs-primary benchmark* — is relocated **verbatim** into
+GLOSSARY.md *dtoxs-primary benchmark* — is relocated **verbatim** into
 `05_xpert_finetune_bench/full/` (scripts, cached `output/`, `benchmark.png`;
 no re-run, the fold columns in `cm_union.h5ad` are untouched). The pretrain-eval
 config stays at the step-top-level `config/` (`cm_pretrain_eval.yaml`, shared
@@ -60,10 +60,10 @@ Decisions within the experiment:
   final screen model (step 06) or any downstream step.
 
 **Consequences:** `full/` is v2's official *dtoxs-primary benchmark* in the
-CONTEXT.md sense but keeps the name `full/` (a deliberate asymmetry with v3's
+GLOSSARY.md sense but keeps the name `full/` (a deliberate asymmetry with v3's
 `dtoxs-primary/` directory — v2 has no added train-only datasets, so the
 directory name says "the whole prior bench, moved intact"). Entry points and
 step-05 gotchas in `stage1/xpert-fda-miri-v2/AGENTS.md`, the screen notebook
-(`_lib/build_screen_notebook.py`), root `AGENTS.md`, and CONTEXT.md document
+(`_lib/build_screen_notebook.py`), root `AGENTS.md`, and GLOSSARY.md document
 both benchmark methods. The v3 ablation keeps its row-uniform recipe
 unchanged.

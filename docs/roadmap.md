@@ -1,9 +1,9 @@
 # AICM Roadmap
 
 Program-level milestone index for the AICM (AI cardiomyocyte) drug-repositioning effort.
-Terminology lives in `CONTEXT.md`; decisions in `docs/adr/`; per-feature specs in
+Terminology lives in `GLOSSARY.md`; decisions in `docs/adr/`; per-feature specs in
 `.scratch/<slug>/`. A *Stage* is a program-level milestone — distinct from a workflow
-*step* and from a *component* (see `CONTEXT.md` → Roadmap).
+*step* and from a *component* (see `GLOSSARY.md` → Roadmap).
 
 ## Thesis (开题)
 
@@ -64,7 +64,7 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
 - The screen's target is transcriptional MIRI reversal, not an experimental cardioprotection
   endpoint. The first wet-lab validation (above) is small-n, single-dose, and covers only two
   candidates, so the screen still lacks a systematic experimental ground truth.
-- Cardiotoxicity scoring is deferred (`CONTEXT.md` → Cardiotoxicity score).
+- Cardiotoxicity scoring is deferred (`GLOSSARY.md` → Cardiotoxicity score).
 
 ## Stage 2 — model setup and selection (active)
 

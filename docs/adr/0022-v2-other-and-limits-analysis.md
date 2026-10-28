@@ -63,7 +63,7 @@ result and its cause are both visible; `report.md` states it as a negative
 result rather than a cluster claim.
 
 **Consequences:** the workflow `AGENTS.md` gains a `13_limits/` entry and the
-`_other/` line; `CONTEXT.md` gains the *Limitations analysis* and
+`_other/` line; `GLOSSARY.md` gains the *Limitations analysis* and
 *Non-numbered stage* terms. `build_screen_notebook.py` is not touched (step 13
 is a diagnostic, not part of the screen walkthrough). The three figures and
 `report.md` are tracked; the step's CSVs are under the gitignored `output/`.

@@ -70,7 +70,7 @@ FDA screen trained on the full CM transcriptomic corpus, not just DToxS.
   carried over with only path/step-number updates. Step-02's baseline is
   rebuilt from the DToxS-primary raw GEO deposit (the old `pert_data/dtoxs`
   path no longer exists) and reproduces v1's cached baseline byte-for-byte.
-- **Docs** — a v2 `AGENTS.md`, updated root `AGENTS.md`/`CONTEXT.md`, and this
+- **Docs** — a v2 `AGENTS.md`, updated root `AGENTS.md`/`GLOSSARY.md`, and this
   ADR record the v1/v2 relationship.
 
 ## Consequences

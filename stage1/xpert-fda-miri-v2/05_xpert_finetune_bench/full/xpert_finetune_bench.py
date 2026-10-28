@@ -55,7 +55,7 @@ from utils import WORKFLOW_ROOT, XPERT_ROOT  # noqa: E402
 STEP_DIR = WORKFLOW_ROOT / "05_xpert_finetune_bench"
 # The official fold benchmark (ADR 0019): everything lives under full/ since
 # the step-05 restructure — its fold test sets all come from the dtoxs_primary
-# arm (the CONTEXT.md "dtoxs-primary benchmark" term), the plot stays
+# arm (the GLOSSARY.md "dtoxs-primary benchmark" term), the plot stays
 # benchmark.png inside full/. The pretrain-eval config stays at the step-top-
 # level config/ (05/config/cm_pretrain_eval.yaml) because the XPert loader
 # resolves a config's relative dataset paths against its third parent
