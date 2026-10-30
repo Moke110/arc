@@ -109,3 +109,21 @@ See `stage2/README.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`,
 `.scratch/data-provenance-restructure/spec.md`. These are final destinations:
 `stage2/README.md` does not exist until ticket 08, and `pert_data/AGENTS.md` /
 `pert_model/AGENTS.md` reach their final one-line-per-项 form in tickets 03 and 04.
+
+## Clarification recorded at acceptance (2026-10-30)
+
+Two readings needed spelling out once the tree was built; neither changes a decision.
+
+1. **§2 `script/` singular applies to our own directories.** A 项's `source/` tree is
+   byte-identical upstream content and keeps upstream's own layout, so
+   `drug_emb_model/KPGT/source/scripts/` stays plural — renaming it would break the
+   "diff against a fresh download" property `source/` exists for. `stage1/` is likewise
+   out of scope (§1 rule 5) and its frozen `xpert-fda-miri-v0/scripts/` is untouched.
+2. **§4's "paths do not encode depth" is a Stage 2 rule.** The finalized Stage 1
+   workflows keep their existing `Path.parents` arithmetic; they were not restructured.
+
+Everything else the ADR states is what the tree implements: 27 项 across the four
+categories, `AGENTS.md`/`README.md` at every category and every Stage 2 step (each
+`AGENTS.md` <= 30 lines), four Stage 2 steps with `03_models_cmbench` split into
+`03.1_cold_drug_18k` and `03.2_hvg_sensitivity_5k`, every `source/` verifiable offline
+with `sha256sum -c`, and no content outside the repository.
