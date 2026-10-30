@@ -135,11 +135,6 @@ stage2/01_setup/execution/biolord/.venv/
 stage2/_envs/biolord/
 stage2/_envs/cmonge/
 
-# Transitional (ticket 05): the archived 03 benchmark's staged `data/` trees were
-# hidden by the old global `data/` rule. Ticket 07 relocates them under output/
-# (already ignored) and deletes this line.
-/stage2/03_bench_models/*/data/
-
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 /archived/
 

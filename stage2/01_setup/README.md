@@ -3,7 +3,7 @@
 Nine deployed non-preprint models, one run card each. The goal is to prove each
 model runs in its own pinned environment — not to compare them. Results below
 are the 2026-10-19 bring-up record; every model was later exercised for real in
-the benchmark step (`03_bench_models/`, re-laid-out in ticket 07).
+the benchmark step (`03_models_cmbench/`, re-laid-out in ticket 07).
 
 - **HTML report for non-computational readers:**
   [`model_architecture_weights_benchmarks.html`](model_architecture_weights_benchmarks.html) —

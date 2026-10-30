@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Ticket-16 five-fold queue: seven real models + five CPU baselines.
+#
+# - One GPU unit at a time: the whole queue holds the shared flock.
+# - 10 GB cgroup RAM cap + 2 GB swap cap around the runner and all adapters
+#   (ticket 10 §6.1); the kernel OOM-kills only this scope on a runaway unit.
+# - Per-fit/predict timeout is the runner default (6 h); the global 16 h/model
+#   cap is not enforced here because every measured five-fold estimate is well
+#   below it (the largest is CPA at ~5-10 h).
+# - Do NOT export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True here: the
+#   PRnet/CPA (torch 2.0.1) and PerturbNet (torch 1.13.1) envs reject it at CUDA
+#   init. The 10 GB cgroup is the memory guard; PerturbNet peaks near 7.4 GB at
+#   18k, so an 8 GB cap left no headroom for the next unit.
+# - Completed units are skipped on a restart; `--force` reruns them.
+#
+# Usage:
+#   bash stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/execution/script/run_queue.sh
+#   bash stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/execution/script/run_queue.sh --force
+#   bash stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/execution/script/run_queue.sh --model prnet --model cpa
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Repository root: walk up until a directory containing `.git` is found (ADR 0030 §4).
+# Never count `../..` levels — a move must not silently change the root.
+find_repo_root() {
+  local dir="$1"
+  while [ -n "$dir" ] && [ "$dir" != "/" ]; do
+    if [ -e "$dir/.git" ]; then
+      printf '%s\n' "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  echo "ERROR: no .git directory at or above $1" >&2
+  return 1
+}
+ROOT="$(find_repo_root "$HERE")"
+PY="${PYTHON:-/home/chang/miniconda3/envs/arc/bin/python}"
+LOCK="${TMPDIR:-/tmp}/stage2_bench_gpu.lock"
+
+# Fast/author-faithful models first, the two long runs (CPA, Squidiff) last.
+# A caller-supplied `--model` list replaces the default queue.
+args=()
+has_model=0
+for arg in "$@"; do
+  if [ "$arg" = "--model" ]; then
+    has_model=1
+    break
+  fi
+done
+if [ "$has_model" -eq 0 ]; then
+  # Baselines first (cheap, always available), then fast models, then the two
+  # long runs.
+  MODELS=(no_change delta_mean delta_mean_dose ridge_fp nearest_drug \
+          prnet chemcpa biolord perturbnet cmonge cpa squidiff)
+  for model in "${MODELS[@]}"; do
+    args+=(--model "$model")
+  done
+fi
+
+mkdir -p "$(dirname "$LOCK")"
+cd "$ROOT"
+exec flock "$LOCK" systemd-run --user --scope \
+  -p MemoryMax=10G -p MemorySwapMax=2G -- \
+  env PYTHONDONTWRITEBYTECODE=1 \
+      CUBLAS_WORKSPACE_CONFIG=:4096:8 \
+      OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
+      OPENBLAS_NUM_THREADS=4 NUMEXPR_NUM_THREADS=4 \
+  "$PY" "$HERE/runner.py" "${args[@]}" "$@"

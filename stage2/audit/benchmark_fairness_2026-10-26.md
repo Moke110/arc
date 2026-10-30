@@ -19,7 +19,7 @@
 | 18,164 genes | 0.1643265 | 0.1860556 | 0.1988713 | 没有模型超过均值基线；PerturbNet 为最佳模型行 |
 | 5,000 genes | 0.2734561 | 0.1928778 | 0.2491443 | PRnet 在现有配方下领先；PerturbNet 行有尺度缺陷 |
 
-证据：`../03_bench_models/temp_env_all_{18k,5k}/scripts/{metrics,evaluate,cases,build_data}.py`、各自 `REPORT.md`、`results/leaderboard.csv`、原始 `output/`。
+证据：`../03_models_cmbench/03.{1_cold_drug_18k,2_hvg_sensitivity_5k}/execution/script/{metrics,evaluate,cases,build_data}.py`、各自 `README.md`、`output/results/leaderboard.csv`、原始 `output/units/`。
 
 ## 1. 已确认：5k PerturbNet 预测与评测真值不在同一归一化空间
 
@@ -54,7 +54,7 @@ PerturbNet `scripts/adapters/perturbnet/run.py:339` 用 5k counts 训练 scVI；
 | Squidiff | 作者 Sci-Plex 药物结构示例使用 200 genes，此处为该示例的 25 倍；100k steps 后预测 RMSE 约 74 | 未通过正常工作验收，不能当成完整能力的低排名；200 不是架构上限 |
 | CMonge | 1k→5k，50-d latent；all-drug 500k iteration 配方改为 10k；每条件约 3 wells | 是受资源/数据限制的适配结果，不能称充分训练的分布建模比较 |
 
-原始来源：各自 `temp_env_all_5k/models/<model>/FIDELITY.md` 与 `results/run_cards.csv`。
+原始来源：`03.2_hvg_sensitivity_5k/execution/models/<model>/FIDELITY.md` 与 `output/results/run_cards.csv`。
 
 Squidiff 补充核查：作者 [README](https://github.com/siyuh/Squidiff#training-squidiff) 同时提供 500-gene 通用训练示例与 200-gene 药物结构示例。本地 `pert_model/Squidiff/source/Squidiff/MLPModel.py:134-135` 按 `gene_size` / `output_dim` 动态构造输入输出层，没有 200-gene 硬限制。因此只能说本次 5k 偏离了该药物示例，不能说该模型设计上只能处理 200 genes；已有 ledger 中“never validated ... above 200”的绝对表述也未获本次核查支持。当前不收敛的根因尚未确定，不能归因于越过所谓 200-gene 上限。
 

@@ -1,0 +1,552 @@
+{
+  "algorithm": "458 connectivity-block clusters; n_wells desc then sha256(seed:cluster) asc; capacity-constrained greedy into fold minimizing (treated wells, drugs, fold); valid=(test+4)%5",
+  "artifacts": {
+    "controls.npz": {
+      "arrays": {
+        "cells": {
+          "dtype": "float32",
+          "shape": [
+            16,
+            12,
+            18164
+          ]
+        },
+        "control_groups": {
+          "dtype": "<U17",
+          "shape": [
+            16
+          ]
+        },
+        "mean": {
+          "dtype": "float32",
+          "shape": [
+            16,
+            18164
+          ]
+        },
+        "wells": {
+          "dtype": "<U21",
+          "shape": [
+            16,
+            12
+          ]
+        }
+      },
+      "bytes": 15130590,
+      "sha256": "869ac9433f5cf4765cb814ad78a1e761dd11dee3531afe28322f06b157e182aa",
+      "shape": "cells 16\u00d712\u00d718164 float32; control_groups 16 <U17; mean 16\u00d718164 float32; wells 16\u00d712 <U21"
+    },
+    "counts.npy": {
+      "bytes": 325353696,
+      "dtype": "int32",
+      "sha256": "e81e264a74644688795cb136fe0daf57cd84d0959e63f0329a743f4703e32b0a",
+      "shape": [
+        4478,
+        18164
+      ]
+    },
+    "delta_log1p_cp10k.npy": {
+      "bytes": 305591264,
+      "dtype": "float32",
+      "sha256": "9ef9ff1d58dae8336ee8bb22841ff84ddf981995160f631737c7ba7d01b37e06",
+      "shape": [
+        4206,
+        18164
+      ]
+    },
+    "group_delta.npy": {
+      "bytes": 100265408,
+      "dtype": "float32",
+      "sha256": "5148502a13e6018828de7b8c6d43813f40f96293e094bdbd531a651a6efd7ad1",
+      "shape": [
+        1380,
+        18164
+      ]
+    },
+    "groups.parquet": {
+      "bytes": 42153,
+      "rows": 1380,
+      "sha256": "03bb915edf056f0c3751b1b0e6fa08fa64c2c23c9d2a363b33fcfcfa44c868d8"
+    },
+    "log1p_cp10k.npy": {
+      "bytes": 325353696,
+      "dtype": "float32",
+      "sha256": "8d1389db70c2c70797a9c857e7bbeaa06611f34aeb36f6061c844fff080b99fb",
+      "shape": [
+        4478,
+        18164
+      ]
+    },
+    "splits.md": {
+      "bytes": 1214,
+      "sha256": "11c1f376abfee5af17e7e5e3a217c2bdb08a6b51f74a50306b72fe8633a7ebd3"
+    },
+    "splits.parquet": {
+      "bytes": 48312,
+      "rows": 21030,
+      "sha256": "d303d8d948a0766dcf974623c5899defec5f40e61316c82cd859fca18f12ad5a"
+    },
+    "true_sets_k100.npz": {
+      "arrays": {
+        "boundary_ties_down": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "boundary_ties_up": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "group_ids": {
+          "dtype": "<U31",
+          "shape": [
+            1380
+          ]
+        },
+        "k": {
+          "dtype": "int32",
+          "shape": [
+            1
+          ]
+        },
+        "labels": {
+          "dtype": "int8",
+          "shape": [
+            1380,
+            18164
+          ]
+        },
+        "n_down": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "n_up": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        }
+      },
+      "bytes": 25261150,
+      "sha256": "f0c3eb3af05acb7dca5b00cb0cd70d78b9015e8c81442599936cd3f069d94cb2",
+      "shape": "boundary_ties_down 1380 int32; boundary_ties_up 1380 int32; group_ids 1380 <U31; k 1 int32; labels 1380\u00d718164 int8; n_down 1380 int32; n_up 1380 int32"
+    },
+    "true_sets_k200.npz": {
+      "arrays": {
+        "boundary_ties_down": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "boundary_ties_up": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "group_ids": {
+          "dtype": "<U31",
+          "shape": [
+            1380
+          ]
+        },
+        "k": {
+          "dtype": "int32",
+          "shape": [
+            1
+          ]
+        },
+        "labels": {
+          "dtype": "int8",
+          "shape": [
+            1380,
+            18164
+          ]
+        },
+        "n_down": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "n_up": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        }
+      },
+      "bytes": 25261150,
+      "sha256": "197bdce26f3232923b0f0aea5764e8f4793bee74d09ac33f5514187e98b4b664",
+      "shape": "boundary_ties_down 1380 int32; boundary_ties_up 1380 int32; group_ids 1380 <U31; k 1 int32; labels 1380\u00d718164 int8; n_down 1380 int32; n_up 1380 int32"
+    },
+    "true_sets_k500.npz": {
+      "arrays": {
+        "boundary_ties_down": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "boundary_ties_up": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "group_ids": {
+          "dtype": "<U31",
+          "shape": [
+            1380
+          ]
+        },
+        "k": {
+          "dtype": "int32",
+          "shape": [
+            1
+          ]
+        },
+        "labels": {
+          "dtype": "int8",
+          "shape": [
+            1380,
+            18164
+          ]
+        },
+        "n_down": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        },
+        "n_up": {
+          "dtype": "int32",
+          "shape": [
+            1380
+          ]
+        }
+      },
+      "bytes": 25261150,
+      "sha256": "41c50268dbb6cfc9eb0525bd0d48f72f8b6c95c2aae113dfc15481eff3a01167",
+      "shape": "boundary_ties_down 1380 int32; boundary_ties_up 1380 int32; group_ids 1380 <U31; k 1 int32; labels 1380\u00d718164 int8; n_down 1380 int32; n_up 1380 int32"
+    },
+    "wells.parquet": {
+      "bytes": 76083,
+      "rows": 4478,
+      "sha256": "e5c1254315abdc64f11624cef8c04756163d8b61197744f725f59827e915b58b"
+    }
+  },
+  "build_command": "python stage2/03_bench_models/build_data.py",
+  "corpus_version": "v1",
+  "environment": {
+    "anndata": "0.12.16",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "pyarrow": "25.0.1",
+    "python": "3.13.13"
+  },
+  "gates": {
+    "01_coverage": true,
+    "02_partition": true,
+    "03_counts": true,
+    "04_cold_drug": true,
+    "05_identity": true,
+    "06_global_roles": true,
+    "07_controls": true,
+    "08_min_support": true,
+    "09_balance": true,
+    "10_determinism_inputs": true,
+    "11_matrix_integrity": true,
+    "12_true_sets": true
+  },
+  "gene_order_sha256": "a9bdf72ac03c714c8f017d19fc63f737a7bb10d7501864af75aefb611fa25826",
+  "groups_sha256": "03bb915edf056f0c3751b1b0e6fa08fa64c2c23c9d2a363b33fcfcfa44c868d8",
+  "n_genes": 18164,
+  "n_groups": 1380,
+  "n_treated": 4206,
+  "sanity": {
+    "100": {
+      "cases": {
+        "constant": {
+          "auprc": 0.005505395287381634,
+          "auprc_down": 0.005505395287381634,
+          "auprc_up": 0.005505395287381634,
+          "nrmse": 1.0107999127167548,
+          "pcc": NaN,
+          "r2": -0.021716463548199227,
+          "rmse": 0.13368794476851398,
+          "spearman": NaN
+        },
+        "perfect": {
+          "auprc": 1.0,
+          "auprc_down": 1.0,
+          "auprc_up": 1.0,
+          "nrmse": 0.0,
+          "pcc": 1.0,
+          "r2": 1.0,
+          "rmse": 0.0,
+          "spearman": 1.0
+        },
+        "random": {
+          "auprc": 0.006135186339465307,
+          "auprc_down": 0.006989048364348212,
+          "auprc_up": 0.005281324314582402,
+          "nrmse": 7.630540301428328,
+          "pcc": 0.007775193827847691,
+          "r2": -57.225145291721915,
+          "rmse": 1.0092118504734424,
+          "spearman": -0.00011522339597456941
+        },
+        "reverse": {
+          "auprc": 0.002785289627978986,
+          "auprc_down": 0.002785289627978986,
+          "auprc_up": 0.002785289627978986,
+          "nrmse": 2.0215998254335097,
+          "pcc": -1.0,
+          "r2": -3.086865854192797,
+          "rmse": 0.26737588953702796,
+          "spearman": -1.0
+        },
+        "top_bottom_only": {
+          "auprc": 1.0,
+          "auprc_down": 1.0,
+          "auprc_up": 1.0,
+          "nrmse": 0.9310501302464897,
+          "pcc": 0.3937867362008256,
+          "r2": 0.13314565496799458,
+          "rmse": 0.12314027417609141,
+          "spearman": 0.18074845751688426
+        }
+      },
+      "group_id": "ADIMAYPTOBDMTL-UHFFFAOYSA-N|0.2",
+      "prevalence": 0.005505395287381634
+    },
+    "200": {
+      "cases": {
+        "constant": {
+          "auprc": 0.011010790574763268,
+          "auprc_down": 0.011010790574763268,
+          "auprc_up": 0.011010790574763268,
+          "nrmse": 1.0107999127167548,
+          "pcc": NaN,
+          "r2": -0.021716463548199227,
+          "rmse": 0.13368794476851398,
+          "spearman": NaN
+        },
+        "perfect": {
+          "auprc": 1.0,
+          "auprc_down": 1.0,
+          "auprc_up": 1.0,
+          "nrmse": 0.0,
+          "pcc": 1.0,
+          "r2": 1.0,
+          "rmse": 0.0,
+          "spearman": 1.0
+        },
+        "random": {
+          "auprc": 0.011107855892133967,
+          "auprc_down": 0.01219061198086095,
+          "auprc_up": 0.010025099803406982,
+          "nrmse": 7.630540301428328,
+          "pcc": 0.007775193827847691,
+          "r2": -57.225145291721915,
+          "rmse": 1.0092118504734424,
+          "spearman": -0.00011522339597456941
+        },
+        "reverse": {
+          "auprc": 0.0055532399911298255,
+          "auprc_down": 0.0055532399911298255,
+          "auprc_up": 0.0055532399911298255,
+          "nrmse": 2.0215998254335097,
+          "pcc": -1.0,
+          "r2": -3.086865854192797,
+          "rmse": 0.26737588953702796,
+          "spearman": -1.0
+        },
+        "top_bottom_only": {
+          "auprc": 1.0,
+          "auprc_down": 1.0,
+          "auprc_up": 1.0,
+          "nrmse": 0.8837538091106423,
+          "pcc": 0.4906344209887784,
+          "r2": 0.2189792048824306,
+          "rmse": 0.11688488387756168,
+          "spearman": 0.2542058103621218
+        }
+      },
+      "group_id": "ADIMAYPTOBDMTL-UHFFFAOYSA-N|0.2",
+      "prevalence": 0.011010790574763268
+    },
+    "500": {
+      "cases": {
+        "constant": {
+          "auprc": 0.02752697643690817,
+          "auprc_down": 0.02752697643690817,
+          "auprc_up": 0.02752697643690817,
+          "nrmse": 1.0107999127167548,
+          "pcc": NaN,
+          "r2": -0.021716463548199227,
+          "rmse": 0.13368794476851398,
+          "spearman": NaN
+        },
+        "perfect": {
+          "auprc": 1.0,
+          "auprc_down": 1.0,
+          "auprc_up": 1.0,
+          "nrmse": 0.0,
+          "pcc": 1.0,
+          "r2": 1.0,
+          "rmse": 0.0,
+          "spearman": 1.0
+        },
+        "random": {
+          "auprc": 0.02893178824090663,
+          "auprc_down": 0.0298392649328046,
+          "auprc_up": 0.02802431154900866,
+          "nrmse": 7.630540301428328,
+          "pcc": 0.007775193827847691,
+          "r2": -57.225145291721915,
+          "rmse": 1.0092118504734424,
+          "spearman": -0.00011522339597456941
+        },
+        "reverse": {
+          "auprc": 0.013919071178180491,
+          "auprc_down": 0.013919071178180491,
+          "auprc_up": 0.013919071178180491,
+          "nrmse": 2.0215998254335097,
+          "pcc": -1.0,
+          "r2": -3.086865854192797,
+          "rmse": 0.26737588953702796,
+          "spearman": -1.0
+        },
+        "top_bottom_only": {
+          "auprc": 1.0,
+          "auprc_down": 1.0,
+          "auprc_up": 1.0,
+          "nrmse": 0.784050685024454,
+          "pcc": 0.6370059293815193,
+          "r2": 0.38526452331268457,
+          "rmse": 0.10369819323939411,
+          "spearman": 0.3952669503936267
+        }
+      },
+      "group_id": "ADIMAYPTOBDMTL-UHFFFAOYSA-N|0.2",
+      "prevalence": 0.02752697643690817
+    }
+  },
+  "seed": "20261021",
+  "source": {
+    "bytes": 289629094,
+    "content_sha256": "f84066c4dfd2c017785d85a3f6bd54cb2a8eb40bfba28e9e99d650e4b8a613fb",
+    "corpus_version": "v1",
+    "path": "stage2/02_cm_data/datasets-1/temp_env_all-smiles.h5ad",
+    "sha256": "a1e1646df1f031088bcbc766491530423aeeac85a30c4fdf2d64117be8aaeee3",
+    "shape": [
+      4478,
+      18164
+    ],
+    "source_commit": "c921f7d"
+  },
+  "split_counts": [
+    {
+      "fold": 0,
+      "test_atc_moa_drugs": 22,
+      "test_drugs": 92,
+      "test_groups": 276,
+      "test_plates": 16,
+      "test_wells": 837,
+      "train_drugs": 276,
+      "train_groups": 828,
+      "train_wells": 2523,
+      "valid_drugs": 92,
+      "valid_groups": 276,
+      "valid_wells": 846
+    },
+    {
+      "fold": 1,
+      "test_atc_moa_drugs": 25,
+      "test_drugs": 92,
+      "test_groups": 276,
+      "test_plates": 16,
+      "test_wells": 846,
+      "train_drugs": 276,
+      "train_groups": 828,
+      "train_wells": 2523,
+      "valid_drugs": 92,
+      "valid_groups": 276,
+      "valid_wells": 837
+    },
+    {
+      "fold": 2,
+      "test_atc_moa_drugs": 18,
+      "test_drugs": 92,
+      "test_groups": 276,
+      "test_plates": 16,
+      "test_wells": 837,
+      "train_drugs": 276,
+      "train_groups": 828,
+      "train_wells": 2523,
+      "valid_drugs": 92,
+      "valid_groups": 276,
+      "valid_wells": 846
+    },
+    {
+      "fold": 3,
+      "test_atc_moa_drugs": 25,
+      "test_drugs": 92,
+      "test_groups": 276,
+      "test_plates": 16,
+      "test_wells": 846,
+      "train_drugs": 276,
+      "train_groups": 828,
+      "train_wells": 2520,
+      "valid_drugs": 92,
+      "valid_groups": 276,
+      "valid_wells": 840
+    },
+    {
+      "fold": 4,
+      "test_atc_moa_drugs": 23,
+      "test_drugs": 92,
+      "test_groups": 276,
+      "test_plates": 16,
+      "test_wells": 840,
+      "train_drugs": 276,
+      "train_groups": 828,
+      "train_wells": 2529,
+      "valid_drugs": 92,
+      "valid_groups": 276,
+      "valid_wells": 837
+    }
+  ],
+  "splits_sha256": "d303d8d948a0766dcf974623c5899defec5f40e61316c82cd859fca18f12ad5a",
+  "true_sets": {
+    "100": {
+      "max_boundary_tie_down": 1,
+      "max_boundary_tie_up": 0,
+      "min_n_down": 100,
+      "min_n_up": 100,
+      "prevalence": 0.005505395287381634
+    },
+    "200": {
+      "max_boundary_tie_down": 0,
+      "max_boundary_tie_up": 1,
+      "min_n_down": 200,
+      "min_n_up": 200,
+      "prevalence": 0.011010790574763268
+    },
+    "500": {
+      "max_boundary_tie_down": 1,
+      "max_boundary_tie_up": 0,
+      "min_n_down": 500,
+      "min_n_up": 500,
+      "prevalence": 0.02752697643690817
+    }
+  }
+}

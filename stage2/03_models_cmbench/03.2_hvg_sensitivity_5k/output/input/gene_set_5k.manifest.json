@@ -1,0 +1,89 @@
+{
+  "corpus": {
+    "n_genes": 18164,
+    "path": "stage2/02_cm_data/corpus/v1/genes.csv",
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+  },
+  "inputs": [
+    {
+      "bytes": 101966077,
+      "n_cells_used": 1075,
+      "n_genes": 18164,
+      "name": "dtoxs_cm",
+      "path": "stage2/02_cm_data/datasets-1/dtoxs_cm.h5ad",
+      "sha256": "79b3a5fcdc1d8b6bf8b790cdf602a036f63ade907ba250033d1e374f436f975f",
+      "shape": [
+        1075,
+        18164
+      ]
+    },
+    {
+      "bytes": 180624560,
+      "n_cells_used": 3072,
+      "n_genes": 18164,
+      "name": "screen_ctox",
+      "path": "stage2/02_cm_data/datasets-1/screen_ctox.h5ad",
+      "sha256": "792e3005a7546f53de517c7ea38885f344f6f3dc315d98785f646b212fd9ccf3",
+      "shape": [
+        3072,
+        18164
+      ]
+    },
+    {
+      "bytes": 289629094,
+      "n_cells_used": 4478,
+      "n_genes": 18164,
+      "name": "temp_env_all-smiles",
+      "path": "stage2/02_cm_data/datasets-1/temp_env_all-smiles.h5ad",
+      "sha256": "a1e1646df1f031088bcbc766491530423aeeac85a30c4fdf2d64117be8aaeee3",
+      "shape": [
+        4478,
+        18164
+      ]
+    }
+  ],
+  "method": {
+    "anndata_version": "0.12.16",
+    "batch_key": null,
+    "cells": "all wells of each view (treated + controls)",
+    "flavor": "seurat",
+    "function": "scanpy.pp.highly_variable_genes",
+    "layer": "log1p_cp10k",
+    "max_mean": 3.0,
+    "min_mean": 0.0125,
+    "n_top_genes": null,
+    "numpy_version": "2.4.6",
+    "pandas_version": "2.3.3",
+    "scanpy_version": "1.12.1",
+    "statistic": "dispersions_norm"
+  },
+  "n_genes": 18164,
+  "rank_rule": "per source: genes with finite mean in [0.0125, 3] ranked 1..M by descending dispersions_norm, ties by corpus order; all other genes (including zero-mean/NaN) rank 18165; sum the three ranks; take the 5,000 smallest, ties by corpus order; output in corpus order",
+  "selection": {
+    "all_ranks": {
+      "bytes": 3071147,
+      "path": "stage2/03_bench_models/temp_env_all_5k/data/gene_set_5k_ranks.csv",
+      "rows": 18164,
+      "sha256": "f8c66c70c72267c6f27da220ec852fafe149f995cf26eb57ff16c469e65f86eb"
+    },
+    "bytes": 823377,
+    "n_eligible_genes": {
+      "dtoxs_cm": 11127,
+      "screen_ctox": 11976,
+      "temp_env_all-smiles": 17995
+    },
+    "n_genes": 5000,
+    "n_low_expression": {
+      "dtoxs_cm": 41,
+      "screen_ctox": 72,
+      "temp_env_all-smiles": 13
+    },
+    "path": "stage2/03_bench_models/temp_env_all_5k/data/gene_set_5k.csv",
+    "rank_sum_max": 21875,
+    "rank_sum_min": 64,
+    "sha256": "aff275047f036ac8fc1c589c4566da0f9654d0fd6acccf12f8db24bf0f8b853d"
+  },
+  "target_size": 5000,
+  "tool": "scripts/build_gene_set.py",
+  "worst_rank": 18165
+}

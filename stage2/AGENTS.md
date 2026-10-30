@@ -14,15 +14,15 @@ repository root in `stage1/` and is not a dependency here.
 - `_envs/` — shared Stage 2 per-model bench environments (four
   `arc-stage2-bench-*` conda envs by name, `biolord`/`cmonge` venvs) and their
   `pip freeze` locks; promoted from the benchmark so later stages can reuse them.
-- `03_bench_models/` — executed cold-drug benchmark, fully archived under
-  `temp_env_all_18k/`: frozen `data/`, harness `scripts/` (original structure),
+- `03_models_cmbench/` — executed cold-drug benchmark, fully archived under
+  `03.1_cold_drug_18k/`: frozen `data/`, harness `scripts/` (original structure),
   per-unit `output/`, `results/`, configs, run cards, fidelity ledgers,
-  `README.md`, `REPORT.md`, plus `summary.png` / `summary_table.csv` (the
+  `README.md` (the merged report), plus `summary.png` / `summary_table.csv` (the
   consolidated results table and per-metric bars). Five CPU baselines and all
   seven real adapters (`prnet`, `cpa`, `chemcpa`, `biolord`, `perturbnet`,
   `squidiff`, `cmonge`); 60/60 units completed. No entrant beats the
   `delta_mean` baseline; PerturbNet is the best entrant.
-  `03_bench_models/temp_env_all_5k/` is a paired sensitivity fork with the same
+  `03_models_cmbench/03.2_hvg_sensitivity_5k/` is a paired sensitivity fork with the same
   wells, splits, entrants and seeds on a 5,000-gene HVG axis (rank-sum over
   `dtoxs_cm`, `screen_ctox`, `temp_env_all-smiles`); decision and leakage
   declaration in ADR 0028. It is not a replacement leaderboard.
@@ -32,12 +32,12 @@ repository root in `stage1/` and is not a dependency here.
   `model_selection_decisions.md` (governs current follow-up candidates).
 - `_archive/cm_bench_v1/` — archived old benchmark; not a dependency.
 
-Current phase: **model selection evidence**. `03_bench_models/temp_env_all_18k/`
+Current phase: **model selection evidence**. `03_models_cmbench/03.1_cold_drug_18k/`
 has the frozen data, harness, CPU baselines, and all seven real adapters,
 executed over five cold-drug folds (60/60 units).
-`temp_env_all_18k/REPORT.md` records that no entrant beats the `delta_mean`
+`03.1_cold_drug_18k/README.md` records that no entrant beats the `delta_mean`
 baseline on the primary metric; PerturbNet is the best entrant.
-`temp_env_all_5k/` repeats the run on a 5,000-gene HVG axis to test whether that
+`03.2_hvg_sensitivity_5k/` repeats the run on a 5,000-gene HVG axis to test whether that
 ranking depends on the transcriptome width (ADR 0028): PRnet moves above the
 `delta_mean` baseline there, while the 18k best entrant PerturbNet falls behind,
 so the 18k "no entrant beats the baseline" conclusion is gene-space dependent.

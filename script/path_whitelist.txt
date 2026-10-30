@@ -48,3 +48,15 @@ stage2/_archive/cm_bench_v1/03_state/entry.py
 # ADR 0006 records the author-given HG library at `drug_emb_model/hg`, its
 # pre-ADR-0030 path; the library now lives at `drug_emb_model/HG/source/`.
 ^drug_emb_model[/]hg/?$
+# --- ticket 07: frozen benchmark evidence (A3) -----------------------------
+# The two substeps keep their frozen input manifests and their generated
+# run-card/metric tables byte-identical; their internal strings are the 2026-10
+# historical form. The literals they contain are all `stage2/...` paths, which
+# check_paths does not scan (it scans the four external-data categories), so
+# these entries are documentary: they make the A3 exemption explicit and keep it
+# intact if the scan is ever widened. Do not rewrite these files.
+stage2/03_models_cmbench/03.1_cold_drug_18k/output/input/manifest.json
+stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/manifest.json
+stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/gene_set_5k*.json
+stage2/03_models_cmbench/03.*/output/results/run_cards.csv
+stage2/03_models_cmbench/03.*/output/results/metrics.csv

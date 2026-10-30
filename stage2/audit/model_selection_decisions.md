@@ -35,6 +35,6 @@ reproduction. New comparison queues must use the six candidates above.
 Evidence:
 
 - [Fairness and resource audit](benchmark_fairness_2026-10-26.md)
-- [18k report](../03_bench_models/temp_env_all_18k/REPORT.md)
-- [5k report](../03_bench_models/temp_env_all_5k/REPORT.md)
-- [18k Squidiff run card](../03_bench_models/temp_env_all_18k/models/squidiff/README.md)
+- [18k report](../03_models_cmbench/03.1_cold_drug_18k/README.md)
+- [5k report](../03_models_cmbench/03.2_hvg_sensitivity_5k/README.md)
+- [18k Squidiff run card](../03_models_cmbench/03.1_cold_drug_18k/execution/models/squidiff/README.md)
