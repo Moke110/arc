@@ -14,11 +14,49 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_bench_models/` (ADR 0027). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
+The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_models_cmbench/` (ADR 0027). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
 _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 
 **Stage 2 tree**:
 The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
+
+### External data provenance
+
+**External item (项)**:
+One directory inside an external-source category that corresponds to exactly one download source — the unit at which provenance is recorded, named after the upstream product. Items are disjoint and each is self-contained.
+_Avoid_: dataset (when meaning the unit), download
+
+**Sub-item (项内成员)**:
+One of the fixed members that make up an external item: its download scripts, its source tree, its declared local additions, its author log, and its manifest. The membership is fixed by the layout contract, not a matter of taste or convenience.
+_Avoid_: subdirectory, component
+
+**Source tree**:
+The part of an external item that is byte-identical to what upstream shipped, kept in upstream's own layout and never edited in place — it is replaced only by re-downloading. Being untouched is what lets it be diffed against a fresh download.
+_Avoid_: raw data, cache
+
+**Local addition**:
+Content inside an external item that did not come from upstream — generated here or extended here. Every local addition is declared individually with its origin and kept apart from the source tree, so the latter stays comparable to upstream.
+_Avoid_: patch, modified download
+
+**Author log**:
+The machine-readable provenance record of one external item: what the item is, where each part came from, which version or commit, when it was retrieved, and whether it still verifies. It is the durable answer to "what is this, and is it intact?".
+_Avoid_: metadata (unqualified), provenance notes
+
+**Manifest**:
+The per-file hash list over one external item's source tree, with which the item can be verified offline — no network and no original archive required — by recomputing the hashes.
+_Avoid_: checksum list (when meaning the whole record), lockfile
+
+**Execution area**:
+The part of a Stage 2 step that holds the harness and the intermediates — code, configurations, run cards, tests, logs, checkpoints. Agents own it; it is not a result and no human reads it as a conclusion.
+_Avoid_: code folder, scripts
+
+**Output area**:
+The part of a Stage 2 step that holds artifacts a later step reads or a human must know exists — frozen inputs, predictions, expression matrices. The conclusions a human opens (figures and result tables) sit above it, at step level.
+_Avoid_: results (when meaning the whole area), artifacts
+
+**Substep**:
+An independently concluded part of a Stage 2 step, placed in its own `NN.N_<outcome>/` directory that carries the full step layout, including its own human-facing figure and table. The parent step then keeps only its own two documents and the substep directories.
+_Avoid_: phase, sub-stage, chapter
 
 ### Categories
 
@@ -27,7 +65,7 @@ Files that support the workspace itself rather than the science: `.gitignore`, `
 _Avoid_: tooling, meta
 
 **Perturbation component**:
-One of the three building blocks of prediction: a perturbation dataset (`pert_data/`), a drug embedding model (`drug_emb_model/`), or a perturbation prediction model (`pert_model/`). Components are pure static libraries (ADR 0008): `src/` code + small metadata only; data/weights live in the consuming workflow or dataset home.
+One of the three building blocks of prediction: a perturbation dataset (`pert_data/`), a drug embedding model (`drug_emb_model/`), or a perturbation prediction model (`pert_model/`). Components are pure static libraries (ADR 0008): `src/` code + small metadata only; downloaded data/weights live with the external item that provenance-tracks them (an item's `source/` tree, ADR 0030) or in the consuming workflow.
 _Avoid_: module
 
 **Repositioning workflow**:
@@ -35,7 +73,7 @@ A complete end-to-end drug-screening pipeline for one disease, bundling its scri
 _Avoid_: pipeline (when meaning a workflow), project
 
 **Disease data**:
-Shared disease-specific inputs, reusable across future workflows: raw GEO acquisitions and per-GSE DEG lists under `disease_data/`. Distinct from workflow artifacts because more than one workflow can consume it.
+Shared disease-specific inputs, reusable across future workflows: raw GEO acquisitions and per-GSE DEG lists under `disease_data/`, one external item per GEO series — upstream-derived files in the item's source tree, locally derived DEG lists in its declared local additions. Distinct from workflow artifacts because more than one workflow can consume it.
 _Avoid_: input data, shared data
 
 ### Components
@@ -66,10 +104,10 @@ The step-03 method (ADR 0016) that groups both the quantile alignment and the ma
 _Avoid_: per-batch normalization, plate-corrected
 
 **DToxS-LINCS finetune data**:
-The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/dtoxs_primary/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` with an auditable delta report.
+The workflow-rebuilt DToxS finetune h5ad (662 samples / 45 drugs) that v1.1 trains on, built by its step `03_cm_finetune_data` from the LINCS LDS-1593 well-level package under `pert_data/LINCS-LDS-1593/source/Data/Level3` (released flat 2026-08-18) — a legitimate superset of v1's frozen 521/36 data (the raw GEO deposit lacks the non-KI perturbations). Schema-parity-gated against v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad` with an auditable delta report.
 
 **LINCS LDS-1593**:
-The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at `pert_data/dtoxs_primary/` on 2026-08-18 (the former `lincs-lds-1593/` wrapper removed; the GSE146095/GSE146096 raw GEO deposit was deleted the same day as a strict subset). Carries the full 956-well campaign (23 KIs + non-KI drugs + anthracyclines + antibody/protein wells) and the LINCS metadata suite (SMILES, batch codes). The v1-era package is frozen byte-identically at `pert_data/dtoxs_primary/v1-frozen/` (incl. v1's frozen `dtoxs.h5ad`).
+The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at `pert_data/LINCS-LDS-1593/source/` on 2026-08-18 (the former `lincs-lds-1593/` wrapper removed; the GSE146095/GSE146096 raw GEO deposit was deleted the same day as a strict subset). Carries the full 956-well campaign (23 KIs + non-KI drugs + anthracyclines + antibody/protein wells) and the LINCS metadata suite (SMILES, batch codes). The v1-era package is frozen byte-identically at `pert_data/LINCS-LDS-1593/local/v1-frozen/` (incl. v1's frozen `dtoxs.h5ad`).
 
 **Author drug embedding table**:
 The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `stage1/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
@@ -110,7 +148,7 @@ A read-only diagnostic step that quantifies a screen's structural bounds — lan
 _Avoid_: weakness report, ablation study
 
 **Pretrain unit**:
-The workflow-owned author pretrained XPert weight + pretrain YAML (`04_xpert_pretrain/` in all of v1/v1.1/v2/v3); the L1000 pretrain h5ads live in `pert_data/l1000-xpert/` (dataset home). Both pretrain and finetune YAML recipes are owned by the workflow.
+The workflow-owned author pretrained XPert weight + pretrain YAML (`04_xpert_pretrain/` in all of v1/v1.1/v2/v3); the L1000 pretrain h5ads live in `pert_data/XPert-L1000/source/data/` (item source tree). Both pretrain and finetune YAML recipes are owned by the workflow.
 
 **MIRI efficacy score**:
 A score of how strongly a drug's predicted perturbation reverses the MIRI transcriptional disease signature. Computed by three methods (WCS+RGES, Zhang/ssCMap, pathway RGES) yielding four z-components.
@@ -124,7 +162,7 @@ _Avoid_: safety score
 The integrated, cross-dataset MIRI differential-expression reference (`MIRI_up-down.json`, `MIRI_rank.json`) built from the per-GSE DEG lists. Distinct from per-GSE DEG lists and from the curated `MIRI_pathways.json`.
 
 **Per-GSE DEG list**:
-The DEG list derived from a single GEO study, kept alongside its acquisition data in `disease_data/miri/{GSE}/deg/`. The raw material for the MIRI reference DEG list.
+The DEG list derived from a single GEO study, kept alongside its acquisition data in `disease_data/<GSE>/local/deg/`. The raw material for the MIRI reference DEG list.
 
 **Final drug report**:
 The agentic bilingual (EN/CN) per-drug fact-sheet report, driven by `prompt.md` and assembled from resumable per-drug agent JSONs. Exists only in v1 as an **archived, non-numbered `report/` stage**; the rebuilt workflows (v1.1/v2/v3) have **no report stage** — they end at integrate.
@@ -137,14 +175,14 @@ The current Stage 2 stage: each deployed non-preprint model is loaded or trained
 _Avoid_: Phase 0 (plan shorthand only), smoke test (when meaning the whole stage)
 
 **Run card**:
-The one-page record for a model's setup: source commit, weights, data, pinned environment, command, expected artifact, and caveats. Lives at `stage2/01_setup/<model>/README.md`.
+The one-page record for a model's setup: source commit, weights, data, pinned environment, command, expected artifact, and caveats. Lives at `stage2/01_setup/execution/<model>/README.md`.
 _Avoid_: model README, config
 
 **Native asset**:
 The checkpoint and dataset a model's authors ship or document for that model. A native-asset run may use a non-chemical dataset (CPA/Kang) or a landmark subset (PRnet/LINCS); that limitation is recorded on the run card.
 
 **Setup-only artifact**:
-An output permitted only to prove that a model runs, not to support a Stage 2 claim. PRnet's 978-gene LINCS demo is the canonical example; it is quarantined under `stage2/01_setup/prnet/` and never read by Stage 2 evaluation.
+An output permitted only to prove that a model runs, not to support a Stage 2 claim. PRnet's 978-gene LINCS demo is the canonical example; it is quarantined under `stage2/01_setup/execution/prnet/` and never read by Stage 2 evaluation.
 
 **Selection stage**:
 The deferred Stage 2 stage after setup: choose which model(s) to adapt to CM data and define the evaluation. Its metric, folds, and gene space are not fixed by the setup plan.
@@ -152,11 +190,11 @@ The deferred Stage 2 stage after setup: choose which model(s) to adapt to CM dat
 ### Stage 2 CM data
 
 **CM perturbation corpus**:
-The frozen gene set and drug set that every Stage 2 CM dataset bundle derives from (`stage2/02_cm_data/corpus/v1/`); it holds no expression matrices. The gene set is the four-source intersection named by latest HGNC symbol; the drug set is every structure-resolvable small molecule, unfiltered by pharmacology.
+The frozen gene set and drug set that every Stage 2 CM dataset bundle derives from (`stage2/02_cm_data/output/corpus/v1/`); it holds no expression matrices. The gene set is the four-source intersection named by latest HGNC symbol; the drug set is every structure-resolvable small molecule, unfiltered by pharmacology.
 _Avoid_: union finetune data, finetune corpus, training set
 
 **Dataset bundle**:
-One numbered build output under `stage2/02_cm_data/datasets-<n>/`: a set of h5ad views plus its manifest, gene crosswalk, compound table, and QA report.
+One numbered build output under `stage2/02_cm_data/output/datasets-<n>/`: a set of h5ad views plus its manifest, gene crosswalk, compound table, and QA report.
 _Avoid_: dataset version, output, export
 
 **View**:
@@ -207,7 +245,7 @@ The `ideal_fit` report column: `full` (author architecture is used as intended u
 _Avoid_: ideal model, tier
 
 **Benchmark run**:
-One `(model, fold)` unit in `stage2/03_bench_models/temp_env_all_18k/output/`: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
+One `(model, fold)` unit in `stage2/03_models_cmbench/03.1_cold_drug_18k/output/units/`: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
 _Avoid_: experiment, trial
 
 

@@ -1,0 +1,14 @@
+# path_whitelist.txt — frozen evidence that legitimately keeps historical path strings.
+#
+# Read by script/check_paths.sh. One entry per line, either a shell glob or an
+# extended regular expression (ERE); matched against the repo-relative source file
+# path and against the extracted path literal. Lines beginning with '#' and blank
+# lines are ignored.
+#
+# Deliberately empty at the start of the provenance restructure (ADR 0030): the
+# pre-restructure baseline is recorded in
+# .scratch/data-provenance-restructure/ops/path-baseline.txt. Add an entry only
+# when a file is frozen evidence whose historical strings must stay byte-identical
+# (e.g. a benchmark's frozen input manifest or result tables, ADR 0030 / ticket
+# 07). A live document that merely needs updating is a path to fix, not to
+# whitelist.
