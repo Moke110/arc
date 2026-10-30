@@ -23,15 +23,7 @@ entrants, seeds and budgets — only the gene axis differs.
 - `units/` — per-unit run dirs + shared `_cases/` (regenerable, gitignored).
 - `results/` — evaluated tables incl. `comparison_18k.csv`; see `results/README.md`.
 
-`summary.png` / `summary_table.csv` — human figure and table at substep root.
-
-Commands, from the repository root:
-
-```bash
-python -m unittest discover -s stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/execution/tests -v
-python stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/execution/script/make_summary.py
-python stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/execution/script/validate_run.py
-```
+`summary.png` / `summary_table.csv` — human figure and table at substep root; reproduce commands in `README.md`.
 
 `repo_root.py` finds the repository root by walking up to `.git`; never add
 `Path.parents` indexing or `../..` arithmetic. Absolute AUPRC is **not** comparable with

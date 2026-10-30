@@ -22,13 +22,7 @@ ADR 0027.
 
 `summary.png` / `summary_table.csv` — human figure and table at substep root.
 
-Commands, from the repository root:
-
-```bash
-python -m unittest discover -s stage2/03_models_cmbench/03.1_cold_drug_18k/execution/tests -v
-python stage2/03_models_cmbench/03.1_cold_drug_18k/execution/script/make_summary.py
-python stage2/03_models_cmbench/03.1_cold_drug_18k/execution/script/validate_run.py
-```
+Reproduce commands: `README.md` (test, rebuild, validate).
 
 `repo_root.py` finds the repository root by walking up to `.git`; never add
 `Path.parents` indexing or `../..` arithmetic. 18k is the primary leaderboard — 03.2 only
