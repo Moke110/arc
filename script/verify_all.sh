@@ -16,16 +16,16 @@
 #   1. Walks the four external categories: pert_data/, pert_model/,
 #      disease_data/, drug_emb_model/ — one directory per item, one level deep.
 #   2. An item participates when it has `script/verify.sh`.
-#   3. An item without `manifest.sha256` is skipped and counted; the manifests are
-#      produced by ticket 09, so this is expected until then.
+#   3. An item without `manifest.sha256` is a failure, not a skip: every item is
+#      expected to carry one (27/27 hashed 2026-10-30), so a deleted manifest
+#      must turn this check red. The message says how to regenerate it.
 #   4. For every participating item it runs its verifier from the item directory
 #      and collects the result. A verifier failure makes the whole check fail.
 #   5. Prints a PASS/FAIL summary and the exit code.
 #
 # Exit status
-#   0  every item that has a manifest verified, or there was nothing to verify
-#      yet (manifests pending); a clear message says which
-#   1  at least one item's verifier failed
+#   0  every item with a verifier passed
+#   1  at least one item's verifier failed, or an item is missing its manifest
 #   2  the script could not locate the repository root
 #
 # The repository root is found by walking up from this script until a directory
@@ -79,10 +79,8 @@ main() {
 
   local categories=(pert_data pert_model disease_data drug_emb_model)
   local category item verifier manifest
-  local total=0 passed=0 failed=0 pending=0
-  local pending_items="$tmpdir/pending.txt"
+  local total=0 passed=0 failed=0
   local failed_items="$tmpdir/failed.txt"
-  : >"$pending_items"
   : >"$failed_items"
 
   echo "== verify_all: offline manifests for every external item =="
@@ -99,8 +97,9 @@ main() {
       total=$((total + 1))
       manifest="$item/manifest.sha256"
       if [ ! -f "$manifest" ]; then
-        pending=$((pending + 1))
-        printf '%s\n' "$item" >>"$pending_items"
+        failed=$((failed + 1))
+        printf '%s\n' "$item" >>"$failed_items"
+        echo "  FAIL  $item  (manifest.sha256 missing)"
         continue
       fi
       local outfile="$tmpdir/verify.out"
@@ -119,31 +118,25 @@ main() {
   done
 
   echo "items with script/verify.sh: $total"
-  if [ "$pending" -gt 0 ]; then
-    echo "manifests pending: $pending 项 (skipped — manifest.sha256 is produced by ticket 09)"
-    sed 's/^/  pending  /' "$pending_items"
-  else
-    echo "manifests pending: 0 项"
-  fi
 
   if [ "$total" -eq 0 ]; then
-    echo "note: no item has script/verify.sh yet — the item layout lands in tickets 03–05,"
-    echo "      and the manifests in ticket 09."
+    echo "note: no item has script/verify.sh — the four external categories are"
+    echo "      missing or incomplete."
     echo
-    echo "RESULT: PASS — nothing to verify yet"
+    echo "RESULT: PASS — nothing to verify"
     echo "exit: 0"
     return 0
   fi
 
   if [ "$failed" -eq 0 ]; then
     echo
-    echo "RESULT: PASS — verified $passed/$total participating item(s), $pending pending"
+    echo "RESULT: PASS — verified $passed/$total item(s)"
     echo "exit: 0"
     return 0
   fi
 
   echo
-  echo "RESULT: FAIL — $failed of $total participating item(s) failed verification"
+  echo "RESULT: FAIL — $failed of $total item(s) failed verification"
   sed 's/^/  failed  /' "$failed_items"
   echo "exit: 1"
   return 1

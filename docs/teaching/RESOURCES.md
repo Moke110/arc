@@ -6,7 +6,7 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 ### HG (HeteroGNN)
 
-- [AGENTS.md: `drug_emb_model/HG/source/AGENTS.md`](../../drug_emb_model/HG/source/AGENTS.md)
+- [AGENTS.md: `drug_emb_model/HG/local/AGENTS.md`](../../drug_emb_model/HG/local/AGENTS.md)
   The fastest overview of the HG component. Use for: data graph facts (edge counts, node counts), preserved-embeddings table, key workflow commands, status.
 - [`src/pretrain_hg.py`](../../drug_emb_model/HG/source/src/pretrain_hg.py)
   Pretrain entrypoint. Use for: graph construction (edge types, HeteroData), NeighborLoader setup, InfoNCE contrastive training loop, early stopping.

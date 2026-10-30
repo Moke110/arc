@@ -19,8 +19,8 @@ the work.
 
 **1. External item layout (contract one).** Each external category contains one
 directory per download source (项), named after the upstream product
-(`Tahoe-100M`, `PRnet`, `GSE262419`, `LINCS-LDS-1593`). Each 项 contains exactly
-five members:
+(`Tahoe-100M`, `PRnet`, `GSE262419`, `LINCS-LDS-1593`). Each 项 contains at most
+five members; `local/` exists only where the item has local additions:
 
 ```
 <category>/                      # pert_data | pert_model | disease_data | drug_emb_model
@@ -112,7 +112,7 @@ See `stage2/README.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`,
 
 ## Clarification recorded at acceptance (2026-10-30)
 
-Two readings needed spelling out once the tree was built; neither changes a decision.
+Six readings needed spelling out once the tree was built; none changes a decision.
 
 1. **§2 `script/` singular applies to our own directories.** A 项's `source/` tree is
    byte-identical upstream content and keeps upstream's own layout, so
@@ -121,6 +121,21 @@ Two readings needed spelling out once the tree was built; neither changes a deci
    out of scope (§1 rule 5) and its frozen `xpert-fda-miri-v0/scripts/` is untouched.
 2. **§4's "paths do not encode depth" is a Stage 2 rule.** The finalized Stage 1
    workflows keep their existing `Path.parents` arithmetic; they were not restructured.
+3. **A step whose artefacts are all intermediates has no step-level `output/`.** Such a
+   step keeps those intermediates under `execution/`; `01_setup` is that case, per spec
+   §6, whose target tree puts its smoke evidence in `execution/<model>/output/`.
+4. **`run_cards/` was realised as two places, not as a directory.** The `run_cards/`
+   member of spec §6 is the per-model configs under `execution/models/<model>/` plus the
+   executed table at `output/results/run_cards.csv`; the pre-restructure tree had no
+   `run_cards/` directory either.
+5. **`tree_sha256` is sha256 over the manifest file bytes; the manifest is sorted by
+   source-relative path.** That equals `sha256(join("<hash>  <relpath>\n" for the sorted
+   lines))` under the "sorted by path" reading, not under a byte-wise lexicographic sort
+   of the strings.
+6. **`sources[].bytes` must not be summed to get an item total.** For the seven items
+   whose `sources[]` has a nested asset row, the parent `source/` row's `files`/`bytes`
+   include that asset; the item total is the manifest line count and `manifest.sha256`
+   itself.
 
 Everything else the ADR states is what the tree implements: 27 项 across the four
 categories, `AGENTS.md`/`README.md` at every category and every Stage 2 step (each

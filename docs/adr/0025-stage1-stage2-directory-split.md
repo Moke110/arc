@@ -2,6 +2,8 @@
 
 **Status: accepted (2026-10-19)**
 
+**Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
+
 The repository mixed the Stage 1 MIRI screening workflows and the Stage 2 model
 selection work under a single `workflow/` tree. Stage 2 also contained a
 subdirectory (`workflow/stage2/`) whose depth made every path relative to the

@@ -115,7 +115,13 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # weights are large external assets; src/ and scripts/ stay tracked.
 /drug_emb_model/*/source/feature_extract/
 /drug_emb_model/*/source/models/
-/drug_emb_model/*/local/
+# Exclude the *contents* of local/ (not the directory itself) so the two
+# negations below can re-include small notes; excluding the directory made them
+# inert (same pattern as pert_model above).
+/drug_emb_model/*/local/*
+# Exceptions: small notes in local/ stay tracked.
+!/drug_emb_model/*/local/*.md
+!/drug_emb_model/*/local/*.txt
 
 # Downloaded weights/datasets used by Stage 2 setup (not repo artifacts)
 /download/

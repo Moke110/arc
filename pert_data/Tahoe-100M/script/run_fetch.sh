@@ -16,7 +16,16 @@ mkdir -p logs
 # 1 stream ~5.4 MB/s, 2 streams ~7.0 MB/s in-service, 4 streams ~2-4 MB/s
 # (per-connection throttling). Override with TAHOE_WORKERS=1|4.
 WORKERS="${TAHOE_WORKERS:-2}"
-exec /home/chang/miniconda3/bin/python3 \
+# Prefer this host's interpreter; degrade to PATH, then fail with a clear message.
+PY="${PYTHON:-/home/chang/miniconda3/bin/python3}"
+if [ ! -x "$PY" ]; then
+  PY="$(command -v python3 || true)"
+fi
+if [ -z "$PY" ]; then
+  echo "$(basename "$0"): no usable python3 — set PYTHON=/path/to/python3 (see environment.yml)" >&2
+  exit 1
+fi
+exec "$PY" \
   pert_data/Tahoe-100M/script/fetch_tahoe.py \
   --scope full --workers "$WORKERS" \
   "$@" >> logs/tahoe_full.log 2>&1

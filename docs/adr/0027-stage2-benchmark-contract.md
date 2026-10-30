@@ -2,6 +2,8 @@
 
 **Status:** accepted (2026-10-21)
 
+**Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
+
 Stage 2 must choose one open-source model to supply whole-transcriptome
 perturbomes to future MIRI drug scoring. Setup (ADR 0021, `01_setup/README.md`)
 proved that nine models run in isolated environments, but it did not compare

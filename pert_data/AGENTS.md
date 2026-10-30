@@ -15,4 +15,5 @@ Index of the CM drug-perturbation data lake. Eight external 项 (ADR 0030): each
 
 Layout contract: ADR 0030. Category docs: `README.md`. Paths in tracked code point at
 `<Item>/source/…` (downloaded bytes) or `<Item>/local/…` (local additions); item names are
-final. `manifest.sha256` and the per-file hashes it feeds are ticket 09's job.
+final. Every item carries `manifest.sha256` (442 GB hashed, 27/27 verified);
+`script/verify.sh` checks it offline.

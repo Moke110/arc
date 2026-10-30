@@ -24,3 +24,6 @@ See `stage2/README.md` and `stage2/01_setup/execution/prnet/README.md`.
 **Update (2026-10-19, ADR 0025).** `01_bringup/` was renamed `01_setup/`; the
 active label is **setup-only**. “Bring-up” is retained above as the historical
 term for this decision.
+
+**Update (2026-10-30, ADR 0030).** Paths in this record were rewritten by the
+external-data / step-layout restructure; the decision itself is unchanged.

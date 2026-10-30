@@ -36,4 +36,4 @@ unzip source/source/Pretrained_Models-20261018T124453Z-1-001.zip -d source/weigh
 
 Deployed Stage 2 model; run card `stage2/01_setup/execution/cpa/` uses the Kang checkpoint
 (5,000 genes). SHA256s for both h5ads and the zip are recorded in
-`author_log.json`. `manifest.sha256` (ticket 09) covers `source/` only.
+`author_log.json`. `manifest.sha256` covers `source/` only.

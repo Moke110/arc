@@ -2,6 +2,8 @@
 
 **Status:** accepted (2026-10-22)
 
+**Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
+
 ADR 0027 froze the cold-drug benchmark at all 18,164 corpus genes and explicitly
 excluded HVG selection. That contract answered one question: how do the seven
 cold-drug-capable models rank on the whole transcriptome? It left a second

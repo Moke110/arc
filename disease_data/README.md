@@ -12,9 +12,10 @@ directory per **GEO series** (项) under the external-data provenance contract
 └── author_log.json  GEO accession, derivation chain, local additions, verification                 [tracked]
 ```
 
-`manifest.sha256` (per-file hashes over `source/` only) arrives in ticket 09; `script/verify.sh`
-already expects it and is a declared no-op until then. Run `script/verify_all.sh` from the
-repository root to check every item offline.
+`manifest.sha256` (per-file hashes over `source/` only) exists for every item — 442 GB hashed
+across the four categories, 27/27 verified. `script/verify.sh` checks it offline, and a
+missing manifest is a failure. Run `script/verify_all.sh` from the repository root to check
+every item.
 
 ## The three 项
 
@@ -45,7 +46,8 @@ metadata and in each `author_log.json`.
    `local/deg/` (the helpers resolve the repo root by walking up to `.git`).
 4. Write `author_log.json` (accession, organism, derivation chain, `local_additions[]`) and
    `script/verify.sh`; declare every generated `local/deg/` artefact in `local_additions[]`.
-5. Add one line to `AGENTS.md` and one row to the table above. Ticket 09 hashes `source/`.
+5. Add one line to `AGENTS.md` and one row to the table above; hash the new `source/` with
+   `python3 .scratch/data-provenance-restructure/ops/hash_items.py --only disease_data/<GSE>`.
 
 The downstream consumer is the Stage 1 MIRI step `08_miri_phenotype/miri_phenotype.py`,
 which reads `disease_data/<GSE>/local/deg/*.json` and `source/*_deg_results.csv`.

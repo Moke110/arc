@@ -34,7 +34,15 @@ find_repo_root() {
   return 1
 }
 ROOT="$(find_repo_root "$HERE")"
+# Prefer the `arc` interpreter; degrade to PATH, then fail with a clear message.
 PY="${PYTHON:-/home/chang/miniconda3/envs/arc/bin/python}"
+if [ ! -x "$PY" ]; then
+  PY="$(command -v python3 || true)"
+fi
+if [ -z "$PY" ]; then
+  echo "$(basename "$0"): no usable python3 — set PYTHON=/path/to/python3 (see environment.yml)" >&2
+  exit 1
+fi
 LOCK="${TMPDIR:-/tmp}/stage2_bench_gpu.lock"
 
 # Fast/author-faithful models first, the two long runs (CPA, Squidiff) last.

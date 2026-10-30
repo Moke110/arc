@@ -12,4 +12,5 @@ Each 项 carries its own copy of the shared `script/{map_to_human.R,map_ortholog
 (no cross-项 dependency) plus its series-specific `script/build_deg.R` and `script/verify.sh`.
 `local/deg/` keeps the tracked per-GSE DEG JSONs and the regenerable `*_l1000.csv` tables
 (declared in `local_additions[]`; the global `*.csv` rule keeps those out of git).
-`manifest.sha256` is ticket 09's job. Category overview: `README.md`. Layout contract: ADR 0030.
+Every item carries `manifest.sha256` (442 GB hashed, 27/27 verified); `script/verify.sh`
+checks it offline. Category overview: `README.md`. Layout contract: ADR 0030.

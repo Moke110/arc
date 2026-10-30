@@ -31,7 +31,7 @@ plus its LINCS metadata suite.
    ```
 
 4. `script/verify.sh` checks the resulting bytes against `../manifest.sha256`
-   once ticket 09 produces it (offline, `sha256sum -c` from `source/`).
+   offline (`sha256sum -c` from `source/`); a missing manifest is a failure.
 
 `local/` holds the hand-written `DToxS_summary.md` and the byte-identical
 `v1-frozen/` copy of the v1-era package (ADR 0013); neither is part of the

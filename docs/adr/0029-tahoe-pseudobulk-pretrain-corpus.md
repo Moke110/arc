@@ -2,6 +2,8 @@
 
 **Status:** accepted (2026-10-30)
 
+**Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
+
 Stage 2's CM corpus is bulk — one physical library per well — frozen at 18,164
 genes (ADR 0026). The candidate pretrain corpus is Tahoe-100M: 97,840,590
 QC-passed cells from 50 cancer cell lines, in which **every well pools most of

@@ -13,9 +13,10 @@ Each item is:
 └── author_log.json  source URL/commit/licence, asset origins, verification    [tracked]
 ```
 
-`manifest.sha256` (per-file hashes over `source/` only) arrives in ticket 09;
-`script/verify.sh` already expects it and is a declared no-op until then. Run
-`script/verify_all.sh` from the repository root to check every item offline.
+`manifest.sha256` (per-file hashes over `source/` only) exists for every item — 442 GB hashed
+across the four categories, 27/27 verified. `script/verify.sh` checks it offline, and a
+missing manifest is a failure. Run `script/verify_all.sh` from the repository root to check
+every item.
 
 ## The fourteen 项
 

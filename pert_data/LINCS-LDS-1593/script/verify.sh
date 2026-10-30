@@ -3,13 +3,14 @@
 #
 # The manifest lists `source/` only (ADR 0030), so `sha256sum -c` checks the
 # downloaded bytes without touching local material and without the network.
-# The manifest is produced by ticket 09; until then this is a declared no-op.
+# A missing manifest is a failure (exit 2), not a pass: regenerate it with
+# `.scratch/data-provenance-restructure/ops/hash_items.py`.
 set -uo pipefail
 ITEM_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 MANIFEST="$ITEM_DIR/manifest.sha256"
 if [ ! -f "$MANIFEST" ]; then
-  echo "LINCS-LDS-1593: manifest pending (ticket 09) — nothing to verify yet"
-  exit 0
+  echo "LINCS-LDS-1593: manifest missing — rerun .scratch/data-provenance-restructure/ops/hash_items.py" >&2
+  exit 2
 fi
 cd -- "$ITEM_DIR/source" || { echo "LINCS-LDS-1593: source/ is missing" >&2; exit 2; }
 echo "LINCS-LDS-1593: sha256sum -c ../manifest.sha256 (cwd: source/)"

@@ -32,6 +32,6 @@ are repository content and were not modified.
 
 ## Notes
 
-Deployed Stage 2 model; run card `stage2/01_setup/execution/prnet/`. The per-file hashes
-arrive with `manifest.sha256` in ticket 09; `script/verify.sh` is a declared
-no-op until then.
+Deployed Stage 2 model; run card `stage2/01_setup/execution/prnet/`. Per-file hashes live
+in `manifest.sha256`; `script/verify.sh` checks them offline, and a missing manifest is a
+failure.

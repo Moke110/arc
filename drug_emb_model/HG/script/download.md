@@ -8,8 +8,9 @@ and its upstream version is unknown (`author_log.json` records `version: "unknow
 
 `source/` holds the HeteroGNN drug biological-embedding library as provided:
 
-- `source/src/` — model + training/inference code; `source/AGENTS.md` is the
-  library's own file-content index
+- `source/src/` — model + training/inference code; `local/AGENTS.md` is the
+  library's own file-content index, declared under `local/` so `source/` stays
+  upstream-identical
 - `source/run.sh` — training launcher
 - `source/run.ipynb` — interactive notebook
 

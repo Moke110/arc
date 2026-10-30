@@ -10,13 +10,14 @@ assets are gitignored. Each item is:
 ├── script/          acquisition note (download.md) + offline verifier (verify.sh)        [tracked]
 ├── source/          the author-provided/vendored library as given                          [tracked]
 │   └── models|feature_extract/   downloaded assets only in KPGT                           [gitignored]
-├── local/           declared local additions (neither item has one today)                 [gitignored]
+├── local/           declared local additions (HG/AGENTS.md; KPGT has none)                 [gitignored]
 └── author_log.json  origin/version/licence, asset origins, verification                    [tracked]
 ```
 
-`manifest.sha256` (per-file hashes over `source/`) arrives in ticket 09; `script/verify.sh`
-already expects it and is a declared no-op until then. Run `script/verify_all.sh` from the
-repository root to check every item offline.
+`manifest.sha256` (per-file hashes over `source/`) exists for every item — 442 GB hashed
+across the four categories, 27/27 verified. `script/verify.sh` checks it offline, and a
+missing manifest is a failure. Run `script/verify_all.sh` from the repository root to check
+every item.
 
 ## The two 项
 
@@ -40,5 +41,5 @@ features for drugs outside the L1000 graph. Neither item is a Stage 2 model — 
 Only these trees are outside git (ADR 0030): `KPGT/source/models/` (2 weight files,
 894,215,942 B) and `KPGT/source/feature_extract/` (6 files, 34,997,345 B). All source code —
 including `KPGT/source/src/data/`, which the old global `data/` rule silently ignored — is
-tracked. `script/verify.sh` checks each `source/` tree against `manifest.sha256` once ticket 09
-produces it.
+tracked. `script/verify.sh` checks each `source/` tree against `manifest.sha256` offline; a
+missing manifest is a failure.
