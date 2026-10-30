@@ -8,7 +8,7 @@
 - **Environment:** conda `arc-stage2-bench-squidiff` (Python 3.13.16, torch
   `2.14.1+cu130`, numpy 2.5.4, RDKit 2026.09.1), cloned from
   `arc-stage2-bringup-squidiff` and given the CUDA wheel (ticket 10). Lock:
-  [`../../envs/squidiff.lock`](../../envs/squidiff.lock).
+  [`stage2/_envs/squidiff.lock`](../../../../../_envs/squidiff.lock).
 - **Config:** [`config.json`](config.json) records the author architecture,
   optimizer, schedule, step budget, and the 18,164-gene setting.
 - **Code:** `stage2/03_models_cmbench/03.1_cold_drug_18k/execution/script/adapters/squidiff/run.py`; shared plumbing

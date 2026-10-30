@@ -18,7 +18,7 @@
     importing the vendored package. No code under `pert_model/` is changed.
   - The ticket-10 py3.10 fallback was **not** used; no
     `reproducibility_break` is recorded.
-  - `pip freeze` lock: [`../../envs/perturbnet.lock`](../../envs/perturbnet.lock)
+  - `pip freeze` lock: [`stage2/_envs/perturbnet.lock`](../../../../../_envs/perturbnet.lock)
     (sha256 `b559d36a251dc9059012c4e5971c1c682245d64e73269dc9274fd157b0df0920`).
 - **Config:** [`config.json`](config.json) records every author default for the
   three stages and the 18,164-gene output setting.
