@@ -1,8 +1,0 @@
-repo: https://github.com/theislab/chemCPA
-commit: 43e830eb0958c54e4aa64442c17ec0fed19b3f15
-vendored: 2026-10-18T19:17:57+08:00 (git removed; not edited)
-license: MIT
-weights: weights/chemCPA_models/*.pt (12 raw ComPert state dicts; L1000 977/2,000 genes, 188 drugs)
-data: data/combo_sciplex_prep_hvg_filtered.h5ad (5,000 genes; stored for future retraining, not used by the load-only smoke)
-source: source/chemCPA_models.zip
-provenance: https://f003.backblazeb2.com/file/chemCPA-models/chemCPA_models.zip

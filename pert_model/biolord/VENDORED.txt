@@ -1,6 +1,0 @@
-repo: https://github.com/nitzanlab/biolord
-commit: b7688790e49728d7f8d0906b980a629de484b19b
-vendored: 2026-10-18T19:17:57+08:00 (git removed; not edited)
-license: BSD-3-Clause
-weights: none published (per-dataset training only)
-data: data/GSM_new.h5ad (14,811 x 4,999; 5 drugs x 7 doses, A549)

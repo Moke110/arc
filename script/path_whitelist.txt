@@ -33,3 +33,14 @@
 # ADR 0030: the pre-split paths it quotes as the gap being fixed.
 ^pert_data[/]tahoe/(Tahoe_summary\.md)$
 ^pert_data[/]annotation/(README\.md)$
+# --- ticket 04: immutable ADR records and the archived benchmark ------------
+# ADR 0001/0008 quote the pre-restructure component path `pert_model[/]xpert/`.
+docs/adr/0001-category-taxonomy.md
+docs/adr/0008-components-as-pure-static-libraries.md
+# ADR 0025 points at the pre-move survey document (now stage2/audit/model_survey_2026-10-19.md).
+docs/adr/0025-stage1-stage2-directory-split.md
+# ADR 0030 quotes the pre-restructure `STAGE2_DATA.md` provenance record it replaces.
+docs/adr/0030-external-data-provenance-and-step-layout.md
+# Archived benchmark (A3: `stage2/_archive/**` keeps historical path strings).
+stage2/_archive/cm_bench_v1/03_state/README.md
+stage2/_archive/cm_bench_v1/03_state/entry.py

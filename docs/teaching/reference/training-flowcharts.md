@@ -51,7 +51,7 @@ v1 = workflow step 02 invokes this with `--embeddings-output` into its own dir.
 v0 = ran directly inside `drug_emb_model/hg/`.
 
 ## 3. XPert pretrain (L1000)
-`pert_model/xpert/pretrain/run.sh` · `pretrain/config/l1000.yaml` · `src/train.py`
+`pert_model/XPert/source/pretrain/run.sh` · `pretrain/config/l1000.yaml` · `src/train.py`
 
 ```
 [drugs]UniMol 3D feats (11,104x122x514)
@@ -68,7 +68,7 @@ v0 = ran directly inside `drug_emb_model/hg/`.
 
 ## 4. XPert finetune + FDA predict (DToxS)
 
-### v0 · library-driven (`pert_model/xpert/`, pre-refactor git 47e1604^)
+### v0 · library-driven (`pert_model/XPert/`, pre-refactor git 47e1604^)
 ```
 [model]XPert_l1000
 + [data]finetune/data/dtoxs.h5ad
@@ -105,7 +105,7 @@ v0 = ran directly inside `drug_emb_model/hg/`.
 | XPert finetune | XPert (from pretrained) | same 4-term loss | 4 ep, batch 32, lr 0.002, init 0 | `dtoxs_dtoxs_fold-1_best.pth` (v1) |
 
 ## Key v0 vs v1 differences
-- v0: scripts/notebooks inside `pert_model/xpert/`; library owns artifacts; final
+- v0: scripts/notebooks inside `pert_model/XPert/`; library owns artifacts; final
   model from warm-start split.
 - v1: XPert is a pure library; workflow steps 02/04/05/06 own weights + CSVs;
   final model from all-train `dtoxs` split; benchmark folds in step 05.

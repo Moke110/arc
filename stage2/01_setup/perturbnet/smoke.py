@@ -2,7 +2,7 @@
 """PerturbNet setup smoke: load the released cINN + ChemicalVAE and run a forward.
 
 The released checkpoints are the third-party reproduction assets in
-`pert_model/perturbnet/assets/`. Full end-to-end inference needs the original
+`pert_model/PerturbNet/source/assets/`. Full end-to-end inference needs the original
 Python 3.7 / TensorFlow 1.15 cell-VAE; this smoke proves the checkpoint and the
 in-repo flow architecture are compatible on CPU.
 """
@@ -15,7 +15,7 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parents[3]
-MODEL = ROOT / "pert_model" / "perturbnet"
+MODEL = ROOT / "pert_model" / "PerturbNet" / "source"
 OUT = Path(__file__).resolve().parent / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 

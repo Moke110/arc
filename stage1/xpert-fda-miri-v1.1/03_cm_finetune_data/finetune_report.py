@@ -7,7 +7,7 @@ step, showing the cell types and drug types it contains:
 
   finetune_data report
     - collapsible drug list grouped by the author L1000 `moa` (mechanism of
-      action, from pert_model/xpert/metadata/l1000_sdst_drugs_info_8432.csv);
+      action, from pert_model/XPert/local/metadata/l1000_sdst_drugs_info_8432.csv);
       compounds without a recorded moa go under "Unclassified".
     - 2D PCA and UMAP of cell embeddings: the L1000 pretrain aggregated per
       cell line (mean embedding) + every finetune sample, colored by cell

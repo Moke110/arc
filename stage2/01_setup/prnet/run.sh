@@ -9,7 +9,7 @@ ENV_NAME="${MODEL_ENV:-arc-stage2-bringup-prnet}"
 mkdir -p "$OUT"
 rm -f "$OUT"/demo_split_*_array.csv
 
-cd "$ROOT/pert_model/prnet"
+cd "$ROOT/pert_model/PRnet/source"
 conda run --no-capture-output -n "$ENV_NAME" \
   python "$HERE/run_prnet.py" \
     --split_key demo_split \

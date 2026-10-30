@@ -21,15 +21,15 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 ### XPert
 
-- [AGENTS.md: `pert_model/xpert/AGENTS.md`](../../pert_model/xpert/AGENTS.md)
+- [AGENTS.md: `pert_model/XPert/local/AGENTS.md`](../../pert_model/XPert/local/AGENTS.md)
   Overview of XPert as a pure library. Use for: model structure, loss weights, DTOXS splits, entry points, reproducibility notes.
-- [`pretrain/run.sh`](../../pert_model/xpert/pretrain/run.sh)
+- [`pretrain/run.sh`](../../pert_model/XPert/source/pretrain/run.sh)
   Pretrain launcher with defaults (lr 0.004, batch 64, 2500 epochs cap, loss 0.2,0.003,0.2,1, patience 50, drug embeds `unimol,HG`).
 - [`stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml`](../../stage1/xpert-fda-miri-v1/04_xpert_pretrain/config/l1000.yaml)
   Pretrain recipe (workflow-owned); data roots point into `pert_data/XPert-L1000/source/data/` + the workflow `input/`.
-- [`src/train.py`](../../pert_model/xpert/src/train.py)
+- [`src/train.py`](../../pert_model/XPert/source/src/train.py)
   Train/finetune/test/infer loops. Use for: exact loss composition, GradScaler, early stopping on PCC, finetune param handling.
-- [`src/model_xpert.py`](../../pert_model/xpert/src/model_xpert.py)
+- [`src/model_xpert.py`](../../pert_model/XPert/source/src/model_xpert.py)
   Dual-branch Transformer (trt: CA+SA+SA+CA, ctl: SA+SA+SA+SA). Use for: how drug + cell inputs fuse.
 
 ### Workflows (v0 vs v1)
@@ -45,7 +45,8 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 - [`stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py`](../../stage1/xpert-fda-miri-v1/07_xpert_predict/perturb_transcriptome.py)
   Step 07: FDA prediction → `xpert_fda-cm_deg.csv`.
 - v0 finetune/predict (pre-refactor, viewable via git):
-  `git show 47e1604^:pert_model/xpert/` then the deleted `finetune/run.sh` and
+  `git show 47e1604^:` on the then-`pert_model/` `xpert/` directory, then the
+  deleted `finetune/run.sh` and
   `predict/predict.sh` files in that tree
   The old library-owned orchestration that v1 replaced.
 - [`stage1/xpert-fda-miri-v0/scripts/run_all.py`](../../stage1/xpert-fda-miri-v0/scripts/run_all.py)

@@ -2,7 +2,7 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0974** (95% CI 0.0914–0.1040), rank 5/12, `ideal_fit: partial`. It is `partial` because prediction is transductive (registered DMSO control rows). The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/biolord/` (vendored, commit `b7688790`, BSD-3-Clause;
+- **Source:** `pert_model/biolord/source/` (vendored, commit `b7688790`, BSD-3-Clause;
   no published weights). No file under `pert_model/` is modified or generated
   (`sys.dont_write_bytecode` is set before the model import).
 - **Environment:** `stage2/_envs/biolord` (venv on the `arc`
@@ -12,7 +12,7 @@
   `pandas_flavor==0.7.0` and `xarray==2024.3.0` for the author's RDKit2D
   features. torch is the `arc` wheel `2.12.0+cu130`; `torch.cuda.is_available()`
   is `True`. The model source is imported from
-  `pert_model/biolord/src` (the PyPI `biolord==0.0.3` install supplies only the
+  `pert_model/biolord/source/src` (the PyPI `biolord==0.0.3` install supplies only the
   distribution metadata the version lookup expects).
 - **Config:** [`config.json`](config.json) records the SI Table 4/5 author
   recipe (`rdkit2d_dose` ordered + `cell_type` categorical, τ=1e4, σ=20,

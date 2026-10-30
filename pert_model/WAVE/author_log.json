@@ -1,0 +1,26 @@
+{
+  "item": "WAVE",
+  "category": "pert_model",
+  "purpose": "Reference-only drug-perturbation model (kept for comparison): WAVE GeneDrugFusion",
+  "retrieved_at": "2026-10-19T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "ZJUFanLab/WAVE",
+      "url": "https://github.com/ZJUFanLab/WAVE",
+      "version": "e27e453beb48d0ff912585060b5a09cb04335262",
+      "license": "MIT",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 24,
+      "bytes": 1523907,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Reference-only: no dose input, fails the revised G2 gate, so not deployed. Absorbed from the deleted VALIDATION.md: a 1-epoch end-to-end train/test on a synthetic 978-gene h5ad passes (Pearson 0.0003, R2 -0.0142, dGene Pearson 0.7033) but the model class hardcodes 978 genes; upstream bug: train_model saves best_model.pth to the CWD while test_model looks under --outdir (running with --outdir . makes the smoke pass). Absorbed from download/manual.md section 1: pretrained model + preprocessed LINCS/sci-Plex h5ads are on FigShare 29650832 (DOI 10.1038/s41467-026-77645-3), browser-only."
+}

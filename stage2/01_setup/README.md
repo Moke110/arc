@@ -21,7 +21,7 @@ their own environments, not to compare them.
 Excluded from setup:
 
 - **preprints**: X-Pert, DORA, BaiZe, PerturbLDM — no Stage 2 vendor clone or
-  run card; `pert_model/xpert/` is the Stage 1 XPert library, not a Stage 2 entrant;
+  run card; `pert_model/XPert/` is the Stage 1 XPert library, not a Stage 2 entrant;
 - **gate-fail references**: WAVE (no dose), ExPO (978-only).
 
 Common conventions:

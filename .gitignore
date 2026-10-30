@@ -88,32 +88,15 @@ stage1/xpert-fda-miri-v1/report/cache/
 stage1/xpert-fda-miri-v2/12_drug_survey/drugs/
 stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 
-# Upstream third-party model clones (read-only reference; nested git, data/weights)
-# Ignore the clone contents but keep each VENDORED.txt provenance record.
-pert_model/TranSiGen/
-pert_model/chemcpa/*
-pert_model/cpa/*
-pert_model/prnet/*
-pert_model/biolord/*
-pert_model/perturbnet/*
-pert_model/wave/*
-pert_model/cmonge/*
-pert_model/squidiff/*
-pert_model/expo/*
-pert_model/decant/*
-pert_model/scvidr/*
-
-!pert_model/chemcpa/VENDORED.txt
-!pert_model/cpa/VENDORED.txt
-!pert_model/prnet/VENDORED.txt
-!pert_model/biolord/VENDORED.txt
-!pert_model/perturbnet/VENDORED.txt
-!pert_model/wave/VENDORED.txt
-!pert_model/cmonge/VENDORED.txt
-!pert_model/squidiff/VENDORED.txt
-!pert_model/expo/VENDORED.txt
-!pert_model/decant/VENDORED.txt
-!pert_model/scvidr/VENDORED.txt
+# External items (ADR 0030): source/ and local/ stay out of git; provenance
+# (script/, author_log.json, manifest.sha256) and item docs must stay tracked.
+# The vendored model clones live under each item's source/ (ticket 04).
+/pert_model/*/source/
+/pert_model/*/local/
+# Exceptions: small notes in local/ stay tracked (git cannot re-include a file
+# under an excluded directory; see the ticket-04 resolution).
+!pert_model/*/local/*.md
+!pert_model/*/local/*.txt
 
 # Downloaded weights/datasets used by Stage 2 setup (not repo artifacts)
 /download/

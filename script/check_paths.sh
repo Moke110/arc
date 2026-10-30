@@ -58,7 +58,7 @@ find_repo_root() {
 }
 
 # Strip prose punctuation that commonly follows a path in Markdown prose, e.g.
-# "`pert_data/Tahoe-100M/source/`," or "(see pert_model/cpa/)." — never part of a path.
+# "`pert_data/Tahoe-100M/source/`," or "(see pert_model/CPA/source/)." — never part of a path.
 trim_literal() {
   printf '%s' "$1" | sed -E 's/[].,:;(){}<>|!?"'"'"'`]+$//'
 }

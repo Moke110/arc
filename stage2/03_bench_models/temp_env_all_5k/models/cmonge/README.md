@@ -4,11 +4,11 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.1153** (95% CI 0.1108–0.1200), rank 10/12, `ideal_fit: full`. Paired gap vs `delta_mean`: **-0.1339** (paired CI -0.1538..-0.1150); small worsening of -0.0082 vs 18k. This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/cmonge/` (vendored, commit `195f5cd1`, MIT). No file
+- **Source:** `pert_model/CMonge/source/` (vendored, commit `195f5cd1`, MIT). No file
   under `pert_model/` is modified or generated (`PYTHONDONTWRITEBYTECODE=1` and
   `sys.dont_write_bytecode = True`).
-- **Environment:** `stage2/_envs/cmonge` — a `cp -a` copy of the
-  setup bringup venv `pert_model/cmonge/.venv` (Python 3.11.15, jax/jaxlib
+- **Environment:** `stage2/_envs/cmonge` — a `cp -a` copy of the setup
+  bringup venv (the model-local `.venv`, removed in ticket 04). Python 3.11.15, jax/jaxlib
   `0.4.38`, flax 0.10.4, optax 0.2.5, ott-jax 0.5.2, rdkit 2023.09.6,
   scanpy 1.11.5). JAX backend: **CPU** (`jax.default_backend() == "cpu"`); the
   CUDA 12 jaxlib install did not complete inside the 1 h environment budget, so
@@ -22,7 +22,7 @@
   Sinkhorn `epsilon_fitting=1` + Monge gap `epsilon_regularizer=1e-2`; AdamW
   1e-4 / wd 1e-5; batch 512; 200 RDKit props + log-dose.
 - **Code:** `stage2/03_bench_models/temp_env_all_5k/scripts/adapters/cmonge/run.py`; shared plumbing in
-  `adapters/common.py`; model code is imported from `pert_model/cmonge`.
+  `adapters/common.py`; model code is imported from `pert_model/CMonge/source`.
 - **Fidelity:** [`FIDELITY.md`](FIDELITY.md).
 
 ## Command

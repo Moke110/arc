@@ -120,7 +120,7 @@ to match training-row norms, which is why the final std ratio is 1.000.</li>
 
 <h2>3. XPert pretrain (L1000)</h2>
 
-<p>Sources: <code>pert_model/xpert/pretrain/run.sh</code>,
+<p>Sources: <code>pert_model/XPert/source/pretrain/run.sh</code>,
 <code>pretrain/config/l1000.yaml</code>, <code>src/train.py</code>,
 <code>src/model_xpert.py</code>.</p>
 
@@ -184,7 +184,7 @@ central contrast of the lesson.</p>
 </div>
 
 <div class="callout note"><strong>The v0→v1 diff in one sentence:</strong> v0 ran
-training/prediction ad-hoc from inside <code>pert_model/xpert/</code> (scripts +
+training/prediction ad-hoc from inside <code>pert_model/XPert/</code> (scripts +
 notebooks), so the library owned the artifacts; v1 made XPert a <em>pure library</em>
 and moved finetune/benchmark/predict into numbered workflow steps that own their
 weights and CSVs (ADR 0002).</div>
@@ -196,7 +196,7 @@ finetune; v1 step 04 uses the all-train <code>dtoxs</code> split
 (<code>dtoxs_dtoxs_fold-1_best.pth</code>). Benchmark folds (warm-start, cold-drug,
 cold-cate) moved to step 05.</li>
 <li><strong>Config root moved.</strong> v0 configs resolved against
-<code>pert_model/xpert/</code>; v1 configs resolve against the workflow
+<code>pert_model/XPert/</code>; v1 configs resolve against the workflow
 (<code>src/config.py</code> root-aware paths), pointing PPI vectors back to the
 library but embeddings into workflow dirs.</li>
 <li><strong>Idempotence + parity.</strong> v1 steps skip if cached artifacts exist;
@@ -238,7 +238,7 @@ can break parity with archived CSVs (<code>--force</code> is explicit).</li>
 <li>Primary source #1 — your own docs:
   <a href="../../drug_emb_model/hg/AGENTS.md"><code>drug_emb_model/hg/AGENTS.md</code></a></li>
 <li>Primary source #2 — your own docs:
-  <a href="../../pert_model/xpert/AGENTS.md"><code>pert_model/xpert/AGENTS.md</code></a></li>
+  <a href="../../pert_model/XPert/local/AGENTS.md"><code>pert_model/XPert/local/AGENTS.md</code></a></li>
 <li>Literature grounding: <a href="../../reference/xpert_article.md"><code>reference/xpert_article.md</code></a></li>
 <li>Why v1 restructured: <a href="../../docs/adr/0002-components-as-libraries.md">ADR 0002</a></li>
 </ul>

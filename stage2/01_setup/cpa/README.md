@@ -2,10 +2,10 @@
 
 **Status:** native checkpoint smoke (Kang IFN-β, not a chemical perturbation)
 
-- source: `pert_model/cpa/` (commit `fbd7c025`), BSD-3-Clause
-- weights: `pert_model/cpa/weights/Pretrained_Models/Kang/` (`model.pt`,
+- source: `pert_model/CPA/source/` (commit `fbd7c025`), BSD-3-Clause
+- weights: `pert_model/CPA/source/weights/Pretrained_Models/Kang/` (`model.pt`,
   `CPA_info.json`, `history.csv`)
-- data: `pert_model/cpa/data/kang_normalized_hvg.h5ad` (13,576 × 5,000; 8 cell
+- data: `pert_model/CPA/source/data/kang_normalized_hvg.h5ad` (13,576 × 5,000; 8 cell
   types, ctrl/stimulated); `Norman2019_normalized_hvg.h5ad` is stored alongside
 - env: `arc-stage2-bringup-cpa` (Python 3.9, torch 2.0.1, scvi-tools 0.20.3,
   pandas 1.5.3)

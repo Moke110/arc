@@ -1,6 +1,6 @@
 {
   "model": "perturbnet",
-  "source": "pert_model/perturbnet (e1375b2c), GPL-3.0",
+  "source": "pert_model/PerturbNet/source (e1375b2c), GPL-3.0",
   "author_entrypoint": "notebooks/Tutorial_PerturbNet_Chemicals.ipynb (scVI cells 20-24, covariate cINN cells 40-46, scVI inference cells 71-82)",
   "n_genes": 5000,
   "seed": 20261021,

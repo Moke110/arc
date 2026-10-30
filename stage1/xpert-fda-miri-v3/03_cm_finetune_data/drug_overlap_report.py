@@ -49,7 +49,7 @@ import drug_resolution as dr  # noqa: E402
 
 DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse262419", "gse247541"]
 OUT_PATH = CM_DATA_ROOT / "Annotation" / "local" / "cm_drugs.html"
-MOA_CSV = (PROJECT_ROOT.parents[1] / "pert_model" / "xpert" / "metadata"
+MOA_CSV = (PROJECT_ROOT.parents[1] / "pert_model" / "XPert" / "local" / "metadata"
            / "l1000_sdst_drugs_info_8432.csv")
 INVENTORY_CSV = (PROJECT_ROOT / "03_cm_finetune_data" / "output"
                  / "compound_inventory.csv")

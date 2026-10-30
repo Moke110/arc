@@ -1,0 +1,65 @@
+{
+  "item": "CPA",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): Compositional Perturbation Autoencoder",
+  "retrieved_at": "2026-10-18T19:17+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "theislab/CPA",
+      "url": "https://github.com/theislab/CPA",
+      "version": "fbd7c0250edc23eff003a10c99655579c53afd63",
+      "license": "BSD-3-Clause",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 41,
+      "bytes": 20464133,
+      "tree_sha256": null
+    },
+    {
+      "kind": "dataset",
+      "id": "CPA-Kang-normalized-hvg",
+      "path": "source/data/",
+      "url": "https://drive.google.com/drive/folders/1yFB0gBr72_KLLp1asojxTgTqgz6cwpju",
+      "version": "2026-10-18 snapshot",
+      "license": "BSD-3-Clause (mirrored by the CPA authors)",
+      "method": "manual browser download from the public \"Datasets and Pre-trained models\" Drive folder",
+      "note": "kang_normalized_hvg.h5ad 544,912,376 B sha256 f04d4d31cc5ff56588e34cb305cdf52b3eddaad273192857a95dd7f5bea1c437 (CPA smoke); Norman2019_normalized_hvg.h5ad 837,969,230 B sha256 70f9f81cff6621b06f98fe150fd8e7e639fbd252b8d4fe1ad98450d54a6bb917 (future Norman checkpoint)",
+      "files": 2,
+      "bytes": 1382881606,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "CPA-Pretrained_Models-zip",
+      "path": "source/source/",
+      "url": "https://drive.google.com/drive/folders/1yFB0gBr72_KLLp1asojxTgTqgz6cwpju",
+      "version": "Pretrained_Models-20261018T124453Z-1-001.zip",
+      "license": "BSD-3-Clause",
+      "method": "manual browser download of the Drive folder archive",
+      "note": "59,157,883 B sha256 ab0d6ef9cbd000aa1a150c0475671cc2eb1f1c3ab8b67aa1d9fb2145f896967d",
+      "files": 1,
+      "bytes": 59157883,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "CPA-Pretrained_Models",
+      "path": "source/weights/",
+      "url": "https://drive.google.com/drive/folders/1yFB0gBr72_KLLp1asojxTgTqgz6cwpju",
+      "version": "extracted 2026-10-18",
+      "license": "BSD-3-Clause",
+      "method": "unzip source/source/Pretrained_Models-20261018T124453Z-1-001.zip -d source/weights/",
+      "note": "weights/Pretrained_Models/{Kang,Norman2019}/{model.pt,CPA_info.json,history.csv}",
+      "files": 7,
+      "bytes": 71955585,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; Kang pretrained model used by the Stage 2 setup smoke (5,000 genes). Absorbed from the deleted STAGE2_DATA.md: the two h5ad datasets, the pretrained-model zip and its SHA256s are all recorded in sources[] above. 02_cm_data does not read this item."
+}

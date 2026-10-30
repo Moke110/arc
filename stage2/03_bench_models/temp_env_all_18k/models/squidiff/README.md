@@ -2,7 +2,7 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0212** (95% CI 0.0207–0.0218), rank 11/12, `ideal_fit: full`. **Convergence failure at 18,164 genes:** cold-valid ε-MSE stayed at 0.976 (random = 1.0), so the samples are out of distribution. The row is retained as a documented failure, not a meaningful ranking. The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/squidiff/` (vendored, commit `abdfc27d`, BSD-3). No
+- **Source:** `pert_model/Squidiff/source/` (vendored, commit `abdfc27d`, BSD-3). No
   file under `pert_model/` is modified or generated (`__pycache__` is
   disabled via `PYTHONDONTWRITEBYTECODE=1` and `sys.dont_write_bytecode`).
 - **Environment:** conda `arc-stage2-bench-squidiff` (Python 3.13.16, torch

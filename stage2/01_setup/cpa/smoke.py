@@ -15,13 +15,13 @@ import scanpy as sc
 ROOT = Path(__file__).resolve().parents[3]
 OUT = Path(__file__).resolve().parent / "output"
 OUT.mkdir(parents=True, exist_ok=True)
-CKPT = ROOT / "pert_model/cpa/weights/Pretrained_Models/Kang"
-DATA = ROOT / "pert_model/cpa/data/kang_normalized_hvg.h5ad"
+CKPT = ROOT / "pert_model/CPA/source/weights/Pretrained_Models/Kang"
+DATA = ROOT / "pert_model/CPA/source/data/kang_normalized_hvg.h5ad"
 
 # cpa/__init__.py reads its own package version; we run from a source checkout
 # rather than an installed wheel, so provide a tiny local dist-info.
 sys.path.insert(0, str(Path(__file__).resolve().parent / "pydist"))
-sys.path.insert(0, str(ROOT / "pert_model/cpa"))
+sys.path.insert(0, str(ROOT / "pert_model/CPA/source"))
 import cpa  # noqa: E402
 
 print("[cpa] loading", DATA)

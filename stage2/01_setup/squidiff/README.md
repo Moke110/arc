@@ -3,7 +3,7 @@
 **Status:** 2,000-gene drug-structure forward with random weights and a real
 rFCFP/dose encoding
 
-- source: `pert_model/squidiff/` (commit `abdfc27d`), BSD-3
+- source: `pert_model/Squidiff/source/` (commit `abdfc27d`), BSD-3
 - weights: none released; FigShare checkpoints are a manual download, so the
   network is randomly initialised in this smoke
 - data: synthetic 2,000-gene expression batch; the drug condition is computed

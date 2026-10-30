@@ -1,0 +1,39 @@
+{
+  "item": "TranSiGen",
+  "category": "pert_model",
+  "purpose": "Reference-only perturbation model (kept for Stage 1 provenance): TranSiGen transcriptome generative model",
+  "retrieved_at": "2026-09-01T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "myzhengSIMM/TranSiGen",
+      "url": "https://github.com/myzhengSIMM/TranSiGen",
+      "version": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+      "license": "MIT",
+      "method": "nested git clone (myzhengSIMM/TranSiGen, branch main); its .git directory was removed on 2026-10-30 after recording the commit",
+      "path": "source/",
+      "files": 37,
+      "bytes": 26200971,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "TranSiGen-results",
+      "path": "source/results/",
+      "url": null,
+      "version": "pretrain checkpoints + published prediction outputs",
+      "license": "MIT",
+      "method": "materialized 2026-10-30 from the external weight archive and recorded by ticket 02",
+      "note": "trained_model_shRNA_vae_x1/best_model.pt 9,191,951 B; trained_model_shRNA_vae_x2/best_model.pt 9,191,741 B; trained_models_164_cell_smiles_split/364039/feature_KPGT_init_pretrain_shRNA/best_model.pt 22,441,478 B; 5.Drug_response_prediction/ and 6.Phenotype_based_drug_repurposing/ result tables.",
+      "files": 8,
+      "bytes": 41441589,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Reference-only, kept for Stage 1 provenance; not a Stage 2 entrant. The nested .git (57,920,438 B) was the only nested git directory in pert_model and was removed in ticket 04 after its commit e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a (branch main, last commit 2025-01-21 \"Add files via upload\") was recorded here; the remote was https://github.com/myzhengSIMM/TranSiGen. source/data/ (LINCS2020 splits/embeddings + PRISM + TranSiGen.jpg) is repository content; source/results/ is the separately obtained checkpoint/result set."
+}

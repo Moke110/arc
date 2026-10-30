@@ -48,10 +48,11 @@ conda create -y -n arc-stage2-bench-perturbnet python=3.7
 conda run -n arc-stage2-bench-perturbnet pip install \
   "torch==1.13.1+cu117" --extra-index-url https://download.pytorch.org/whl/cu117
 conda run -n arc-stage2-bench-perturbnet pip install \
-  -r pert_model/perturbnet/requirements.txt   # TensorFlow 1.15 is not installed; see run card
+  -r pert_model/PerturbNet/source/requirements.txt   # TensorFlow 1.15 is not installed; see run card
 
 # CMonge: the bringup uv venv copied to the bench path
-cp -a pert_model/cmonge/.venv stage2/_envs/cmonge
+# (the model-local .venv was a duplicate of stage2/_envs/cmonge and was removed in ticket 04)
+# cp -a <old model .venv> stage2/_envs/cmonge
 ```
 
 Driver 610.88 supports cu117/cu118/cu128/cu130. PerturbNet runs the authors'

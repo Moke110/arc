@@ -32,7 +32,7 @@ BENCH = Path(__file__).resolve().parents[3]
 ROOT = BENCH.parents[2]
 sys.path.insert(0, str(BENCH / "scripts"))
 sys.path.insert(0, str(ROOT / "stage2/01_setup/cpa/pydist"))
-sys.path.insert(0, str(ROOT / "pert_model/cpa"))
+sys.path.insert(0, str(ROOT / "pert_model/CPA/source"))
 
 from adapter_api import Adapter, run_cli  # noqa: E402
 from adapters.common import (  # noqa: E402

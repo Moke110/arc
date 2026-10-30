@@ -48,7 +48,7 @@ os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
 BENCH = Path(__file__).resolve().parents[2]
 ROOT = BENCH.parents[1]
 sys.path.insert(0, str(BENCH))
-sys.path.insert(0, str(ROOT / "pert_model/cmonge"))
+sys.path.insert(0, str(ROOT / "pert_model/CMonge/source"))
 
 from adapter_api import Adapter, run_cli  # noqa: E402
 from adapters.common import (  # noqa: E402

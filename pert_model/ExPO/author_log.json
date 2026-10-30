@@ -1,0 +1,26 @@
+{
+  "item": "ExPO",
+  "category": "pert_model",
+  "purpose": "Reference-only drug-perturbation model (kept for comparison): ExPO exposure-aware model",
+  "retrieved_at": "2026-10-19T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "MLBC-lab/ExPO",
+      "url": "https://github.com/MLBC-lab/ExPO",
+      "version": "7e88cbae17b44397ff7d75983475334b40488d65",
+      "license": "MIT",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 83,
+      "bytes": 212744,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Reference-only: published scope is 978 landmark genes only, so it fails the revised G1 gate. Absorbed from the deleted VALIDATION.md: `import expo` fails on a clean Python 3 because expo/models/expo_model.py contains a cp1252 en-dash (byte 0x96) at line 19; after converting that file to UTF-8 in a scratch copy, `python -m pytest tests/test_expo.py -q` gives 5 passed (imports, config, synthetic data, model instantiation, dataset creation at 20/100 genes). No pretrained weights are released."
+}

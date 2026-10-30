@@ -10,7 +10,7 @@ JPT2 -> HN1L). Direct symbol matching therefore silently zeroes those genes.
 
 Data sources (XPert-author + DToxS ONLY)
 ----------------------------------------
-  1. L1000 landmark metadata  pert_model/xpert/metadata/l1000_gene_info_978.csv
+  1. L1000 landmark metadata  pert_model/XPert/local/metadata/l1000_gene_info_978.csv
      (author-shipped). Each landmark row carries gene_id (Entrez), the current
      gene_symbol/gene_name_match, AND the 2015-era L1000 feature symbol in
      `gene_name`. The author's own `gene_name` column lists every legacy symbol

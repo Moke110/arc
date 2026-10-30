@@ -35,7 +35,7 @@ import torch
 BENCH = Path(__file__).resolve().parents[2]
 ROOT = BENCH.parents[1]
 sys.path.insert(0, str(BENCH))
-sys.path.insert(0, str(ROOT / "pert_model/chemcpa"))
+sys.path.insert(0, str(ROOT / "pert_model/chemCPA/source"))
 
 from adapter_api import Adapter, run_cli  # noqa: E402
 from adapters.common import (  # noqa: E402

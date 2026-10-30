@@ -1,6 +1,6 @@
 {
   "model": "cmonge",
-  "source": "pert_model/cmonge (195f5cd1), MIT",
+  "source": "pert_model/CMonge/source (195f5cd1), MIT",
   "author_entrypoint": "scripts/demo_train.py with configs/autoencoder-sciplex.yml + configs/conditional-monge-sciplex.yml (demo context wiring)",
   "n_genes": 18164,
   "author_settings": {

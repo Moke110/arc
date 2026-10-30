@@ -2,7 +2,7 @@
 
 **Status:** synthetic 2,000-gene train + continuous-dose prediction
 
-- source: `pert_model/scvidr/` (commit `bcb6a96c`), MIT
+- source: `pert_model/scVIDR/source/` (commit `bcb6a96c`), MIT
 - weights: none published; the smoke trains a small model from scratch
 - data: synthetic AnnData (3 cell types × doses 0/1/10/100 × 20 cells × 2,000 genes)
 - env: `arc-stage2-bringup-scvidr` (Python 3.8, scvi-tools 0.13.0,

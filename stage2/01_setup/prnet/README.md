@@ -2,9 +2,9 @@
 
 **Status:** setup-only (978-gene LINCS demo; not a Stage 2 evaluation result)
 
-- source: `pert_model/prnet/` (commit `f19174bd`), Apache-2.0
-- weights: `pert_model/prnet/checkpoint/lincs_best_epoch_all.pt` (0.55 M params, 978 genes)
-- data: `pert_model/prnet/dataset/demo.h5ad` (681 × 978, `demo_split`)
+- source: `pert_model/PRnet/source/` (commit `f19174bd`), Apache-2.0
+- weights: `pert_model/PRnet/source/checkpoint/lincs_best_epoch_all.pt` (0.55 M params, 978 genes)
+- data: `pert_model/PRnet/source/dataset/demo.h5ad` (681 × 978, `demo_split`)
 - env: `arc-stage2-bringup-prnet` (Python 3.9, CPU torch)
 - command:
 

@@ -4,7 +4,7 @@
 # 2.14.1+cu130, scanpy, anndata). The overlay is created with
 #    python -m venv --system-site-packages stage2/01_setup/biolord/.venv
 # and these packages are installed into it. The repo source is used via
-# PYTHONPATH=pert_model/biolord/src; the PyPI biolord package supplies the
+# PYTHONPATH=pert_model/biolord/source/src; the PyPI biolord package supplies the
 # distribution metadata that biolord's version lookup expects.
 scvi-tools==1.1.6
 anndata==0.10.9

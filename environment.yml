@@ -4,7 +4,7 @@
 # Activate: conda activate arc
 #
 # This environment is the single runtime for every component and workflow in
-# the repository (pert_model/xpert, drug_emb_model/hg, stage1/xpert-fda-miri-v1,
+# the repository (pert_model/XPert, drug_emb_model/hg, stage1/xpert-fda-miri-v1,
 # disease_data R ortholog mapping). It is the renamed successor of the old
 # `xpert` environment, and all run.sh / notebook / config references to
 # `conda activate xpert` point here.
@@ -35,7 +35,7 @@ dependencies:
   - jupyter
   - notebook
   - ipykernel
-  # Perturbation prediction (pert_model/xpert)
+  # Perturbation prediction (pert_model/XPert)
   - pytorch::pytorch
   - pyg::pyg
   - scanpy

@@ -4,7 +4,7 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.1467** (95% CI 0.1398–0.1539), rank 6/12, `ideal_fit: partial`. Paired gap vs `delta_mean`: **-0.1025** (paired CI -0.1214..-0.0838); essentially unchanged from 18k (-0.1014). This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/biolord/` (vendored, commit `b7688790`, BSD-3-Clause;
+- **Source:** `pert_model/biolord/source/` (vendored, commit `b7688790`, BSD-3-Clause;
   no published weights). No file under `pert_model/` is modified or generated
   (`sys.dont_write_bytecode` is set before the model import).
 - **Environment:** `stage2/_envs/biolord` (venv on the `arc`
@@ -14,7 +14,7 @@
   `pandas_flavor==0.7.0` and `xarray==2024.3.0` for the author's RDKit2D
   features. torch is the `arc` wheel `2.12.0+cu130`; `torch.cuda.is_available()`
   is `True`. The model source is imported from
-  `pert_model/biolord/src` (the PyPI `biolord==0.0.3` install supplies only the
+  `pert_model/biolord/source/src` (the PyPI `biolord==0.0.3` install supplies only the
   distribution metadata the version lookup expects).
 - **Config:** [`config.json`](config.json) records the SI Table 4/5 author
   recipe (`rdkit2d_dose` ordered + `cell_type` categorical, τ=1e4, σ=20,

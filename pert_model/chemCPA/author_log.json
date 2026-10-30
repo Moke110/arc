@@ -1,0 +1,65 @@
+{
+  "item": "chemCPA",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): chemistry-aware CPA",
+  "retrieved_at": "2026-10-18T19:17+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "theislab/chemCPA",
+      "url": "https://github.com/theislab/chemCPA",
+      "version": "43e830eb0958c54e4aa64442c17ec0fed19b3f15",
+      "license": "MIT",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 256,
+      "bytes": 34719949,
+      "tree_sha256": null
+    },
+    {
+      "kind": "dataset",
+      "id": "chemCPA-ComPert-sciplex-hvg",
+      "path": "source/data/",
+      "url": "https://f003.backblazeb2.com/file/chemCPA-models/chemCPA_models.zip",
+      "version": "combo_sciplex_prep_hvg_filtered (5,000 HVG)",
+      "license": "MIT",
+      "method": "downloaded 2026-10-18 together with the public chemCPA model release",
+      "note": "combo_sciplex_prep_hvg_filtered.h5ad 490,412,774 B sha256 347f3a0dbfe73fa143adcf0eee54dc21a3a97129e0a77d946800cb8981b32141; stored for future retraining, not used by the load-only smoke",
+      "files": 1,
+      "bytes": 490412774,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "chemCPA-models-zip",
+      "path": "source/source/",
+      "url": "https://f003.backblazeb2.com/file/chemCPA-models/chemCPA_models.zip",
+      "version": "chemCPA_models.zip",
+      "license": "MIT",
+      "method": "wget https://f003.backblazeb2.com/file/chemCPA-models/chemCPA_models.zip -O source/source/chemCPA_models.zip",
+      "note": "254,487,527 B sha256 322606b8a209de44228cf51d9930e4173b21a79dfc780fab3c1a2f1e916bec8f",
+      "files": 1,
+      "bytes": 254487527,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "chemCPA-models",
+      "path": "source/weights/",
+      "url": "https://f003.backblazeb2.com/file/chemCPA-models/chemCPA_models.zip",
+      "version": "extracted 2026-10-18",
+      "license": "MIT",
+      "method": "unzip source/source/chemCPA_models.zip -d source/weights/",
+      "note": "weights/chemCPA_models/*.pt: 12 raw ComPert state dicts (L1000 977/2,000 genes, 188 drugs)",
+      "files": 14,
+      "bytes": 279479151,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; the public weights are 977/2,000-gene L1000 ComPert models; not retrained on CM data. Absorbed from the deleted STAGE2_DATA.md: data h5ad, weight zip and extract paths plus SHA256s are in sources[]. Non-downloaded clutter removed in ticket 04: weights/__MACOSX/ (2,970 B canonical macOS archive metadata) and the dangling project_folder symlink to /nfs/homedirs/hetzell/hdd/project_chemCPA."
+}

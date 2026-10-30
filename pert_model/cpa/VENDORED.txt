@@ -1,8 +1,0 @@
-repo: https://github.com/theislab/CPA
-commit: fbd7c0250edc23eff003a10c99655579c53afd63
-vendored: 2026-10-18T19:17:57+08:00 (git removed; not edited)
-license: BSD-3-Clause
-weights: weights/Pretrained_Models/{Kang,Norman2019}/ (model.pt + CPA_info.json + history.csv)
-data: data/kang_normalized_hvg.h5ad, data/Norman2019_normalized_hvg.h5ad
-source: source/Pretrained_Models-20261018T124453Z-1-001.zip
-provenance: public "Datasets and Pre-trained models" Drive folder https://drive.google.com/drive/folders/1yFB0gBr72_KLLp1asojxTgTqgz6cwpju

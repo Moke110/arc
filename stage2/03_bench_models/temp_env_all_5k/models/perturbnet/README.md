@@ -4,7 +4,7 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.1929** (95% CI 0.1790–0.2083), rank 4/12, `ideal_fit: partial`. Paired gap vs `delta_mean`: **-0.0563** (paired CI -0.0688..-0.0434); was the best entrant at 18k (-0.0128); the HVG axis moves it behind the baseline. This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/perturbnet/` (vendored, commit `e1375b2c`,
+- **Source:** `pert_model/PerturbNet/source/` (vendored, commit `e1375b2c`,
   GPL-3.0). No file under `pert_model/` is modified or generated
   (`PYTHONDONTWRITEBYTECODE=1` + `sys.dont_write_bytecode`).
 - **Environment:** conda `arc-stage2-bench-perturbnet`, the authors' faithful

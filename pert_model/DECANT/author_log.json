@@ -1,0 +1,26 @@
+{
+  "item": "DECANT",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): DECANT mechanism/context-decoupled representation",
+  "retrieved_at": "2026-10-19T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "bliulab/DECANT",
+      "url": "https://github.com/bliulab/DECANT",
+      "version": "e50642a980cbdf9fa73ec152dbe81a6047ab396b",
+      "license": "MIT",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 17,
+      "bytes": 556363,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; the repository is a reproduction skeleton that explicitly excludes processed cell bags, teacher prototypes and checkpoints, so there is no public data file to download. Absorbed from the deleted VALIDATION.md: an earlier import-only check was too shallow; the in-repo Phase1MechanismTopologyModel instantiated at 2,000 genes with n_programs=50 accepts dose_log1p and its output changes with dose (dose effect L1 = 1.60e-2 between log1p(1) and log1p(100)). Caveats: it needs matched treated/control cell bags, dose is treated as context to suppress rather than a target response axis, and no processed data/checkpoints exist."
+}

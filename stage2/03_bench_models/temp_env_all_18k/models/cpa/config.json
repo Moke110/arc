@@ -1,6 +1,6 @@
 {
   "model": "cpa",
-  "source": "pert_model/cpa (fbd7c025), BSD-3-Clause",
+  "source": "pert_model/CPA/source (fbd7c025), BSD-3-Clause",
   "author_entrypoint": "cpa.CPA Python API (combosciplex tutorial settings)",
   "n_genes": 18164,
   "n_latent": 128,

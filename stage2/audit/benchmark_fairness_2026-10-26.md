@@ -56,7 +56,7 @@ PerturbNet `scripts/adapters/perturbnet/run.py:339` 用 5k counts 训练 scVI；
 
 原始来源：各自 `temp_env_all_5k/models/<model>/FIDELITY.md` 与 `results/run_cards.csv`。
 
-Squidiff 补充核查：作者 [README](https://github.com/siyuh/Squidiff#training-squidiff) 同时提供 500-gene 通用训练示例与 200-gene 药物结构示例。本地 `pert_model/squidiff/Squidiff/MLPModel.py:134-135` 按 `gene_size` / `output_dim` 动态构造输入输出层，没有 200-gene 硬限制。因此只能说本次 5k 偏离了该药物示例，不能说该模型设计上只能处理 200 genes；已有 ledger 中“never validated ... above 200”的绝对表述也未获本次核查支持。当前不收敛的根因尚未确定，不能归因于越过所谓 200-gene 上限。
+Squidiff 补充核查：作者 [README](https://github.com/siyuh/Squidiff#training-squidiff) 同时提供 500-gene 通用训练示例与 200-gene 药物结构示例。本地 `pert_model/Squidiff/source/Squidiff/MLPModel.py:134-135` 按 `gene_size` / `output_dim` 动态构造输入输出层，没有 200-gene 硬限制。因此只能说本次 5k 偏离了该药物示例，不能说该模型设计上只能处理 200 genes；已有 ledger 中“never validated ... above 200”的绝对表述也未获本次核查支持。当前不收敛的根因尚未确定，不能归因于越过所谓 200-gene 上限。
 
 ### Squidiff 全转录组资源复核
 
@@ -98,7 +98,7 @@ Squidiff 补充核查：作者 [README](https://github.com/siyuh/Squidiff#traini
 - 5k 的正例比例为 4%，18k 为约 1.10%；绝对 AP 不直接横比。即使比较同轴相对 baseline 的 gap，也无法单独分离“训练维度改变”与“评价基因集/真值 top-k 改变”。
 - PRnet 在 5k 的 AP 优势不等于幅值最好：报告 R² −0.2305、RMSE 0.1731，delta_mean 为 0.0164、0.1657。下游若使用 Δ 幅度，必须单独验收。
 - 强 delta_mean 提示共性响应贡献较大；补充药物身份置换/消融、相对均值响应的残差指标、剂量分层、弱/强响应分层，检查模型是否学到足够的 drug-specific 信息。附加分析需标明 exploratory，不能事后更换主指标选赢家。
-- checkpoints 的验证目标并未统一为部署任务：PRnet 为 control→treated NLL；chemCPA 验证中输入 treated 并重建 treated；CPA 原生 `cpa_metric = r2_mean + 0.5*r2_var + exp(disnt_after-disnt_basal)`（`pert_model/cpa/cpa/_task.py:599-629`，`_model.py:545-565`）。这不属于 test leakage，但与 control→cold-drug Δ 的最终目标存在错位。应明确保留作者选择准则还是增加独立 valid counterfactual 选择分支。
+- checkpoints 的验证目标并未统一为部署任务：PRnet 为 control→treated NLL；chemCPA 验证中输入 treated 并重建 treated；CPA 原生 `cpa_metric = r2_mean + 0.5*r2_var + exp(disnt_after-disnt_basal)`（`pert_model/CPA/source/cpa/_task.py:599-629`，`_model.py:545-565`）。这不属于 test leakage，但与 control→cold-drug Δ 的最终目标存在错位。应明确保留作者选择准则还是增加独立 valid counterfactual 选择分支。
 - 只有单训练 seed；drug bootstrap CI 是对固定已训练模型的测试药物重采样，不包含训练 seed、split、面板选择与多模型择优的不确定性，也没有化学相似性聚类修正。
 - `ideal_fit=full` 是输入形式适配标签；`winner_eligible` 仅查五折 completed。它们均不检查收敛、配方完整、输出尺度正确；Squidiff 仍可被标 full/eligible。需要分开报告运行完成、语义正确、训练正常、任务适配。
 

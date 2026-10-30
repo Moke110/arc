@@ -8,7 +8,7 @@ the target is zero *undeclared* deviations.
 
 Author settings are cited to the vendored source in
 `.scratch/stage2-03-bench-models/research/03-squidiff-cmonge-decant.md` §1
-(`pert_model/squidiff` @ `abdfc27d`).
+(`pert_model/Squidiff/source` @ `abdfc27d`).
 
 | component | author setting | run setting | class | reason | expected effect | ticket |
 |---|---|---|---|---|---|---|

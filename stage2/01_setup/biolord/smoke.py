@@ -15,9 +15,9 @@ import torch
 ROOT = Path(__file__).resolve().parents[3]
 OUT = Path(__file__).resolve().parent / "output"
 OUT.mkdir(parents=True, exist_ok=True)
-DATA = ROOT / "pert_model/biolord/data/GSM_new.h5ad"
+DATA = ROOT / "pert_model/biolord/source/data/GSM_new.h5ad"
 
-sys.path.insert(0, str(ROOT / "pert_model/biolord/src"))
+sys.path.insert(0, str(ROOT / "pert_model/biolord/source/src"))
 import biolord  # noqa: E402
 
 print("[biolord] loading", DATA)

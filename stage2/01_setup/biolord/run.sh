@@ -12,7 +12,7 @@ fi
 
 mkdir -p "$OUT"
 cd "$ROOT"
-PYTHONPATH="$ROOT/pert_model/biolord/src${PYTHONPATH:+:$PYTHONPATH}" \
+PYTHONPATH="$ROOT/pert_model/biolord/source/src${PYTHONPATH:+:$PYTHONPATH}" \
   "$PY" "$HERE/smoke.py" 2>&1 | tee "$OUT/run.log"
 
 test -s "$OUT/pred_mean.npy"

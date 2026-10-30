@@ -2,7 +2,7 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0910** (95% CI 0.0863–0.0960), rank 7/12, `ideal_fit: full`. This is the best entrant on R² (0.038) and RMSE (0.140), but 7th on the primary AUPRC; it is `full`. The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/cpa/` (vendored, commit `fbd7c025`, BSD-3-Clause).
+- **Source:** `pert_model/CPA/source/` (vendored, commit `fbd7c025`, BSD-3-Clause).
   No file under `pert_model/` is modified or generated.
 - **Environment:** conda `arc-stage2-bench-cpa` (Python 3.9, torch
   `2.0.1+cu118`, scvi-tools 0.20.3, anndata 0.9.2), cloned from the setup

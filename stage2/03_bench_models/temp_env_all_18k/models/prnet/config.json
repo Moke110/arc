@@ -1,6 +1,6 @@
 {
   "model": "prnet",
-  "source": "pert_model/prnet (f19174bd), Apache-2.0",
+  "source": "pert_model/PRnet/source (f19174bd), Apache-2.0",
   "author_entrypoint": "train_sciplex.py / test_demo.py",
   "x_dimension": 18164,
   "hidden_layer_sizes": [128],

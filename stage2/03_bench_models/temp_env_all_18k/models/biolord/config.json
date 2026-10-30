@@ -1,7 +1,7 @@
 {
   "model": "biolord",
   "n_genes": 18164,
-  "source": "pert_model/biolord (b7688790e49728d7f8d0906b980a629de484b19b), BSD-3-Clause",
+  "source": "pert_model/biolord/source (b7688790e49728d7f8d0906b980a629de484b19b), BSD-3-Clause",
   "author_entrypoint": "python API: Biolord.setup_anndata -> Biolord(...) -> model.train(...)",
   "author_config": {
     "tables": "SI Table 4 (training) + SI Table 5 (tuned sci-Plex hyperparameters)",

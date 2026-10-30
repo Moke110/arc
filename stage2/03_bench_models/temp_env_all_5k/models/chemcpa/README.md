@@ -4,7 +4,7 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.1165** (95% CI 0.1129–0.1203), rank 9/12, `ideal_fit: partial`. Paired gap vs `delta_mean`: **-0.1327** (paired CI -0.1498..-0.1152); small improvement of +0.0054 vs 18k. This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/chemcpa/` (vendored, MIT). No file under
+- **Source:** `pert_model/chemCPA/source/` (vendored, MIT). No file under
   `pert_model/` is modified or generated.
 - **Environment:** conda `arc-stage2-bench-chemcpa` (Python 3.9, torch
   `2.8.0+cu128`, Lightning 2.2.5, RDKit 2025.09.2), cloned from the setup

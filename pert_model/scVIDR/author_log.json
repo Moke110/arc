@@ -1,0 +1,26 @@
+{
+  "item": "scVIDR",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): scVIDR variational inference of dose response",
+  "retrieved_at": "2026-10-19T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "BhattacharyaLab/scVIDR",
+      "url": "https://github.com/BhattacharyaLab/scVIDR",
+      "version": "bcb6a96c85cddc4eef052be739c122efb737fe0e",
+      "license": "MIT",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 273,
+      "bytes": 165168207,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; no pretrained checkpoints in the repository. Absorbed from the deleted VALIDATION.md: trained in a Python 3.8 environment with scvi-tools 0.13.0 / PyTorch 1.8 / scanpy 1.9.8; a 2,000-gene synthetic 2-epoch train + `predict(continuous=True, doses=[1,10,100])` works; the continuous path is a log-linear latent interpolation delta*log1p(d)/log1p(max(doses)), not a learned dose-response curve, and the shipped CLI refuses doses absent from obs. The Google Drive data.zip (manual browser download) is not present; it is only needed for the published liver dose-response results, not for the synthetic smoke."
+}

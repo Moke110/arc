@@ -1,0 +1,39 @@
+{
+  "item": "biolord",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): biolord disentangled representation model",
+  "retrieved_at": "2026-10-18T19:17+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "nitzanlab/biolord",
+      "url": "https://github.com/nitzanlab/biolord",
+      "version": "b7688790e49728d7f8d0906b980a629de484b19b",
+      "license": "BSD-3-Clause",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 42,
+      "bytes": 2182044,
+      "tree_sha256": null
+    },
+    {
+      "kind": "dataset",
+      "id": "biolord-GSM_new",
+      "path": "source/data/",
+      "url": null,
+      "version": "14,811 x 4,999 (5 drugs x 7 doses, A549)",
+      "license": "BSD-3-Clause",
+      "method": "downloaded 2026-10-18 for the Stage 2 setup smoke; upstream URL not recorded in the old provenance note",
+      "note": "GSM_new.h5ad 178,640,710 B sha256 11b4363d46c00bcb9109c232b4f18411d01889d7a218f459a7d3feaa9b8f23da",
+      "files": 1,
+      "bytes": 178640710,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; no public weights, per-dataset training only. Absorbed from the deleted STAGE2_DATA.md: GSM_new.h5ad role (A549, 5 drugs x 7 doses) and its SHA256. The old provenance record did not name the upstream download URL for the h5ad; recorded as such in sources[]."
+}

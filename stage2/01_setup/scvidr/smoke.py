@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
-MODEL = ROOT / "pert_model" / "scvidr"
+MODEL = ROOT / "pert_model" / "scVIDR" / "source"
 OUT = Path(__file__).resolve().parent / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(MODEL / "vidr"))

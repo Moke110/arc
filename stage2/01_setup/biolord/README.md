@@ -2,9 +2,9 @@
 
 **Status:** from-scratch smoke (no public checkpoint exists)
 
-- source: `pert_model/biolord/` (commit `b7688790`), BSD-3-Clause
+- source: `pert_model/biolord/source/` (commit `b7688790`), BSD-3-Clause
 - weights: none published
-- data: `pert_model/biolord/data/GSM_new.h5ad` (14,811 × 4,999; 5 drugs × 7
+- data: `pert_model/biolord/source/data/GSM_new.h5ad` (14,811 × 4,999; 5 drugs × 7
   doses, A549)
 - env: local `.venv` (Python 3.13 from `arc`, torch 2.14.1+cu130, scvi-tools
   1.1.6, anndata 0.10.9, zarr 2.18.7, biolord 0.0.3 metadata + repo source via

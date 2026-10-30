@@ -26,7 +26,7 @@ SCRIPT_DIR <- dirname(normalizePath(
 MIRI_DIR <- dirname(SCRIPT_DIR)   # disease_data/miri
 L1000_CSV <- Sys.getenv(
   "ARC_L1000_CSV",
-  unset = normalizePath(file.path(MIRI_DIR, "..", "..", "pert_model", "xpert", "metadata", "l1000_gene_info_978.csv"))
+  unset = normalizePath(file.path(MIRI_DIR, "..", "..", "pert_model", "XPert", "local", "metadata", "l1000_gene_info_978.csv"))
 )
 
 # `%||%` — null-coalescing operator (base R equivalent)

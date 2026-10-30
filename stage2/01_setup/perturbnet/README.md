@@ -2,9 +2,9 @@
 
 **Status:** checkpoint/architecture smoke (no TF1.15 cell-VAE inference)
 
-- source: `pert_model/perturbnet/` (commit `e1375b2c`), GPL-3.0
-- assets: `pert_model/perturbnet/assets/` — LINCS 978 and sci-Plex 5,087 cINN
-  checkpoints, ChemicalVAE, cell VAEs; see `pert_model/perturbnet/ASSETS.md`
+- source: `pert_model/PerturbNet/source/` (commit `e1375b2c`), GPL-3.0
+- assets: `pert_model/PerturbNet/source/assets/` — LINCS 978 and sci-Plex 5,087 cINN
+  checkpoints, ChemicalVAE, cell VAEs; see `pert_model/PerturbNet/source/ASSETS.md`
 - env: `arc-stage2-bringup-perturbnet` (Python 3.10, CPU torch, numpy/pandas/rdkit)
 - command:
 

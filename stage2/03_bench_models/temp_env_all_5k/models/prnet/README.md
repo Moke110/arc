@@ -4,7 +4,7 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.2735** (95% CI 0.2590–0.2891), rank 1/12, `ideal_fit: full`. Paired gap vs `delta_mean`: **+0.0243** (paired drug CI +0.0113..+0.0367); the only entrant above `delta_mean`; it was -0.0345 at 18k. This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/prnet/` (vendored, commit `f19174bd`, Apache-2.0).
+- **Source:** `pert_model/PRnet/source/` (vendored, commit `f19174bd`, Apache-2.0).
   No file under `pert_model/` is modified or generated (`__pycache__` is
   disabled).
 - **Environment:** conda `arc-stage2-bench-prnet` (Python 3.9, torch

@@ -2,7 +2,7 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.1643** (95% CI 0.1545–0.1750), rank 4/12, `ideal_fit: full`. This is the second-best entrant on the primary metric and the best entrant on Spearman (0.384); it is `full`. The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/prnet/` (vendored, commit `f19174bd`, Apache-2.0).
+- **Source:** `pert_model/PRnet/source/` (vendored, commit `f19174bd`, Apache-2.0).
   No file under `pert_model/` is modified or generated (`__pycache__` is
   disabled).
 - **Environment:** conda `arc-stage2-bench-prnet` (Python 3.9, torch

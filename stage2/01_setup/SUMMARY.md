@@ -13,7 +13,7 @@ edited; adapters live under `stage2/01_setup/<model>/`.
 | PerturbNet | `arc-stage2-bringup-perturbnet` | ✅ checkpoints + latent forward | `perturbnet/output/meta.json` |
 | scVIDR | `arc-stage2-bringup-scvidr` | ✅ 2,000-gene train + 3 doses | `scvidr/output/pred_doses.npz` |
 | Squidiff | `arc-stage2-bringup-squidiff` | ✅ 2,000-gene forward | `squidiff/output/pred.npy` |
-| CMonge | `pert_model/cmonge/.venv` | ✅ demo R² 0.785 / 0.871 / 0.808 | `cmonge/output/meta.json` |
+| CMonge | `stage2/_envs/cmonge` | ✅ demo R² 0.785 / 0.871 / 0.808 | `cmonge/output/meta.json` |
 | DECANT | `arc-stage2-bringup-decant` | ✅ 2,000-gene forward | `decant/output/pred_gene_dose{1,100}.npy` |
 
 ## What "9/9" means: completion, not usability
@@ -94,5 +94,5 @@ See `../PLAN.md` for the deferred selection-stage decision list.
 
 - **Preprints**: X-Pert, DORA, BaiZe, PerturbLDM — excluded from Stage 2 by
   policy; none has a Stage 2 vendor clone or run card. The Stage 1 XPert library
-  remains at `pert_model/xpert/` and is not a Stage 2 entrant.
+  remains at `pert_model/XPert/` and is not a Stage 2 entrant.
 - **Gate-fail references**: WAVE (no dose), ExPO (978-only).

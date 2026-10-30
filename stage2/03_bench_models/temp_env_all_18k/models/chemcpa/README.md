@@ -2,7 +2,7 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0608** (95% CI 0.0578–0.0640), rank 10/12, `ideal_fit: partial`. It is `partial` because the 978-gene L1000 pretrain was omitted. The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/chemcpa/` (vendored, MIT). No file under
+- **Source:** `pert_model/chemCPA/source/` (vendored, MIT). No file under
   `pert_model/` is modified or generated.
 - **Environment:** conda `arc-stage2-bench-chemcpa` (Python 3.9, torch
   `2.8.0+cu128`, Lightning 2.2.5, RDKit 2025.09.2), cloned from the setup

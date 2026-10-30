@@ -2,11 +2,11 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.0732** (95% CI 0.0698–0.0767), rank 9/12, `ideal_fit: full`. It is `full` in form; the 50-d OT bottleneck and the 10k-iteration substitute are recorded in `FIDELITY.md`. The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/cmonge/` (vendored, commit `195f5cd1`, MIT). No file
+- **Source:** `pert_model/CMonge/source/` (vendored, commit `195f5cd1`, MIT). No file
   under `pert_model/` is modified or generated (`PYTHONDONTWRITEBYTECODE=1` and
   `sys.dont_write_bytecode = True`).
-- **Environment:** `stage2/_envs/cmonge` — a `cp -a` copy of the
-  setup bringup venv `pert_model/cmonge/.venv` (Python 3.11.15, jax/jaxlib
+- **Environment:** `stage2/_envs/cmonge` — a `cp -a` copy of the setup
+  bringup venv (the model-local `.venv`, removed in ticket 04). Python 3.11.15, jax/jaxlib
   `0.4.38`, flax 0.10.4, optax 0.2.5, ott-jax 0.5.2, rdkit 2023.09.6,
   scanpy 1.11.5). JAX backend: **CPU** (`jax.default_backend() == "cpu"`); the
   CUDA 12 jaxlib install did not complete inside the 1 h environment budget, so
@@ -20,7 +20,7 @@
   Sinkhorn `epsilon_fitting=1` + Monge gap `epsilon_regularizer=1e-2`; AdamW
   1e-4 / wd 1e-5; batch 512; 200 RDKit props + log-dose.
 - **Code:** `stage2/03_bench_models/temp_env_all_18k/scripts/adapters/cmonge/run.py`; shared plumbing in
-  `adapters/common.py`; model code is imported from `pert_model/cmonge`.
+  `adapters/common.py`; model code is imported from `pert_model/CMonge/source`.
 - **Fidelity:** [`FIDELITY.md`](FIDELITY.md).
 
 ## Command

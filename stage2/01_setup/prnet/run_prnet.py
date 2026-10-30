@@ -22,7 +22,7 @@ def _cpu_load(*args, **kwargs):
 torch.load = _cpu_load
 
 HERE = Path(__file__).resolve().parent
-REPO = HERE.parents[2] / "pert_model/prnet"
+REPO = HERE.parents[2] / "pert_model/PRnet/source"
 sys.path.insert(0, str(REPO))
 sys.argv = [str(REPO / "test_demo.py"), *sys.argv[1:]]
 runpy.run_path(str(REPO / "test_demo.py"), run_name="__main__")

@@ -4,7 +4,7 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.0523** (95% CI 0.0517–0.0530), rank 11/12, `ideal_fit: full`. Paired gap vs `delta_mean`: **-0.1968** (paired CI -0.2150..-0.1790); convergence failure persists: R² -2.98e5 and RMSE 74.3. This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/squidiff/` (vendored, commit `abdfc27d`, BSD-3). No
+- **Source:** `pert_model/Squidiff/source/` (vendored, commit `abdfc27d`, BSD-3). No
   file under `pert_model/` is modified or generated (`__pycache__` is
   disabled via `PYTHONDONTWRITEBYTECODE=1` and `sys.dont_write_bytecode`).
 - **Environment:** conda `arc-stage2-bench-squidiff` (Python 3.13.16, torch

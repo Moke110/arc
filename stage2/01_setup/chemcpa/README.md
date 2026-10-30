@@ -2,8 +2,8 @@
 
 **Status:** load-only fallback (checkpoint + forward pass); real-data inference blocked
 
-- source: `pert_model/chemcpa/` (commit `43e830eb`), MIT
-- weights: `pert_model/chemcpa/weights/chemCPA_models/*.pt`
+- source: `pert_model/chemCPA/source/` (commit `43e830eb`), MIT
+- weights: `pert_model/chemCPA/source/weights/chemCPA_models/*.pt`
 - data: a synthetic L1000-shaped batch (8 cells × 977 genes); the downloaded
   `combo_sciplex` 5,000-gene data is **not** used because the public weights are
   977/2,000-gene models

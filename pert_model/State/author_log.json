@@ -1,0 +1,39 @@
+{
+  "item": "State",
+  "category": "pert_model",
+  "purpose": "Reference-only state-transition model (kept for provenance): Arc Institute State (SE-600M + ST-HVG-Tahoe)",
+  "retrieved_at": "2026-10-02T12:40+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "ArcInstitute/state",
+      "url": "https://github.com/ArcInstitute/state",
+      "version": "9bbfe78a434a55205e4de834e1ea99f85f7a3add",
+      "license": "CC BY-NC-SA 4.0 (code) / Arc State Model Non-Commercial License (weights)",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 150,
+      "bytes": 6105720,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "ArcInstitute-State-pretrained",
+      "path": "source/weights/",
+      "url": "https://github.com/ArcInstitute/state (released pretrained weights)",
+      "version": "SE-600M + ST-HVG-Tahoe",
+      "license": "Arc State Model Non-Commercial License",
+      "method": "materialized 2026-10-02 from the external weight archive and recorded by ticket 02",
+      "note": "SE-600M (model.safetensors 2,860,276,816 B + config.yaml + protein_embeddings.pt 410,886,729 B) and ST-HVG-Tahoe (checkpoints/final.ckpt 1,071,778,471 B, pert_onehot_map.pt, config.yaml, var_dims.pkl, hvg_gene_names_recovered.json, data_module.torch, one-hot maps). Total 4,350,135,450 B.",
+      "files": 12,
+      "bytes": 4350135450,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Reference-only: the Tahoe one-hot conditioning limits cold-drug generalisation, so State is not a deployed Stage 2 entrant (it did score in the archived cm_bench_v1). The weights are licensed by the Arc State Model Non-Commercial License, code by CC BY-NC-SA 4.0; internal evaluation only. The 0-byte .gitmodules debris was removed in ticket 04."
+}

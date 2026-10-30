@@ -4,7 +4,7 @@
 
 **Status:** 5k sensitivity run complete (2026-10-22/23): AUPRC k=200 **0.1559** (95% CI 0.1513–0.1605), rank 5/12, `ideal_fit: full`. Paired gap vs `delta_mean`: **-0.0932** (paired CI -0.1120..-0.0746); gap improved by +0.0147 vs 18k but remains below the baseline. This is a sensitivity result, not a replacement for the 18k leaderboard.
 
-- **Source:** `pert_model/cpa/` (vendored, commit `fbd7c025`, BSD-3-Clause).
+- **Source:** `pert_model/CPA/source/` (vendored, commit `fbd7c025`, BSD-3-Clause).
   No file under `pert_model/` is modified or generated.
 - **Environment:** conda `arc-stage2-bench-cpa` (Python 3.9, torch
   `2.0.1+cu118`, scvi-tools 0.20.3, anndata 0.9.2), cloned from the setup

@@ -43,7 +43,7 @@ from adapters.common import (  # noqa: E402
     write_json,
 )
 
-PRNET_SRC = ROOT / "pert_model/prnet"
+PRNET_SRC = ROOT / "pert_model/PRnet/source"
 sys.path.insert(0, str(PRNET_SRC))
 
 from models.PRnet import PRnet  # noqa: E402

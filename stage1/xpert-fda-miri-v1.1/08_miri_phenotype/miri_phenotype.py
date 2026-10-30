@@ -203,7 +203,7 @@ def build_rank_reference(per_gse: dict, l1000_meta: pd.DataFrame) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Build the integrated MIRI reference DEG list")
     parser.add_argument("--l1000-meta",
-                        default=str(WORKSPACE_ROOT / "pert_model/xpert/metadata/l1000_gene_info_978.csv"),
+                        default=str(WORKSPACE_ROOT / "pert_model/XPert/local/metadata/l1000_gene_info_978.csv"),
                         help="L1000 landmark gene metadata CSV")
     args = parser.parse_args()
 

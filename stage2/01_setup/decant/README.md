@@ -2,7 +2,7 @@
 
 **Status:** synthetic 2,000-gene forward with two dose values
 
-- source: `pert_model/decant/` (commit `e50642a9`), MIT
+- source: `pert_model/DECANT/source/` (commit `e50642a9`), MIT
 - weights/data: none — the repository is a reproduction skeleton
 - env: `arc-stage2-bringup-decant` (Python 3.13, CPU torch, numpy, pandas)
 - command:

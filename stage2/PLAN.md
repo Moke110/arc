@@ -63,7 +63,7 @@ One environment per model. Seven models use the conda prefix
 | PerturbNet | `arc-stage2-bringup-perturbnet` |
 | scVIDR | `arc-stage2-bringup-scvidr` |
 | Squidiff | `arc-stage2-bringup-squidiff` |
-| CMonge | `pert_model/cmonge/.venv` |
+| CMonge | `stage2/_envs/cmonge` (the model-local `.venv` was a duplicate; removed in ticket 04) |
 | DECANT | `arc-stage2-bringup-decant` |
 
 ## 978 quarantine

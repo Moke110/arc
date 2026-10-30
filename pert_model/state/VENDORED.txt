@@ -1,4 +1,0 @@
-repo: https://github.com/ArcInstitute/state
-commit: 9bbfe78a434a55205e4de834e1ea99f85f7a3add
-vendored: 2026-10-02T12:40:30+08:00 (git removed; not edited)
-license: CC BY-NC-SA 4.0 (code) / Arc State Model Non-Commercial License (weights)

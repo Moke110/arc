@@ -13,7 +13,7 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parents[3]
-MODEL = ROOT / "pert_model" / "decant"
+MODEL = ROOT / "pert_model" / "DECANT" / "source"
 OUT = Path(__file__).resolve().parent / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 SCRIPT = MODEL / "decant" / "scripts" / "train_decant_mechanism_model.py"

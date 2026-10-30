@@ -1,0 +1,26 @@
+{
+  "item": "Squidiff",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): Squidiff diffusion model",
+  "retrieved_at": "2026-10-19T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "siyuh/Squidiff",
+      "url": "https://github.com/siyuh/Squidiff",
+      "version": "abdfc27d84947dcccd745d1067c0840a41d32eb8",
+      "license": "BSD-3-Clause",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 43,
+      "bytes": 1342966,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; the repository ships code but no weights. Absorbed from the deleted VALIDATION.md: create_model(gene_size=500, num_layers=2, output_dim=500, use_encoder=True, use_drug_structure=True, drug_dimension=1024) -> 43,342,384 params; forward at (4,500) returns (4,500); the drug input is an rFCFP fingerprint multiplied by log10(dose+1) with no separate dose covariate; gene size is configurable. LICENSE still contains unresolved merge-conflict markers, both sides BSD-3 (azizilab 2022 / Siyu He 2024). Released checkpoints are FigShare doi:10.6084/m9.figshare.27948633 (manual, not downloaded)."
+}

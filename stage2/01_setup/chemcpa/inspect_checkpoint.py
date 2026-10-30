@@ -13,10 +13,10 @@ import sys
 import torch
 
 ROOT = Path(__file__).resolve().parents[3]
-WEIGHTS = ROOT / "pert_model/chemcpa/weights/chemCPA_models"
+WEIGHTS = ROOT / "pert_model/chemCPA/source/weights/chemCPA_models"
 OUT = Path(__file__).resolve().parent / "output"
 OUT.mkdir(parents=True, exist_ok=True)
-sys.path.insert(0, str(ROOT / "pert_model/chemcpa"))
+sys.path.insert(0, str(ROOT / "pert_model/chemCPA/source"))
 
 rows = []
 for p in sorted(WEIGHTS.glob("*.pt")):

@@ -2,9 +2,10 @@
 
 **Status:** official demo train + evaluate on bundled sciplex data
 
-- source: `pert_model/cmonge/` (commit `195f5cd1`), MIT
-- data: `pert_model/cmonge/data/dummy_data.h5ad` (4,000 × 100, three conditions)
-- env: dedicated `pert_model/cmonge/.venv` (Python 3.11, jax 0.4.38, ott-jax 0.5.2)
+- source: `pert_model/CMonge/source/` (commit `195f5cd1`), MIT
+- data: `pert_model/CMonge/source/data/dummy_data.h5ad` (4,000 × 100, three conditions)
+- env: shared bench venv `stage2/_envs/cmonge` (Python 3.11, jax 0.4.38, ott-jax 0.5.2); the
+  model-local `.venv` was a duplicate and was removed in ticket 04
 - command:
 
 ```bash

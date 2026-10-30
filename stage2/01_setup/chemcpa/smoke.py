@@ -24,10 +24,10 @@ ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "output"
 OUT.mkdir(parents=True, exist_ok=True)
-WEIGHTS = ROOT / "pert_model/chemcpa/weights/chemCPA_models"
+WEIGHTS = ROOT / "pert_model/chemCPA/source/weights/chemCPA_models"
 DEFAULT_CKPT = WEIGHTS / "27b401db1845eea26c102fb614df9c33.pt"
 
-sys.path.insert(0, str(ROOT / "pert_model/chemcpa"))
+sys.path.insert(0, str(ROOT / "pert_model/chemCPA/source"))
 from chemCPA.model import ComPert  # noqa: E402
 
 

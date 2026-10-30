@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """PerturbNet adapter (ticket 14).
 
-Author recipe (`pert_model/perturbnet`, commit e1375b2c), as executed by
+Author recipe (`pert_model/PerturbNet/source`, commit e1375b2c), as executed by
 `notebooks/Tutorial_PerturbNet_Chemicals.ipynb`:
 
 1. **ChemicalVAE** (`chemicalvae/chemicalVAE.py`): SMILES -> 120x35 one-hot ->
@@ -51,7 +51,7 @@ sys.dont_write_bytecode = True
 BENCH = Path(__file__).resolve().parents[3]
 ROOT = BENCH.parents[2]
 sys.path.insert(0, str(BENCH / "scripts"))
-sys.path.insert(0, str(ROOT / "pert_model/perturbnet"))
+sys.path.insert(0, str(ROOT / "pert_model/PerturbNet/source"))
 
 
 def _install_tensorflow_stub() -> None:

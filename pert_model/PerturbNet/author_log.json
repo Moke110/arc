@@ -1,0 +1,39 @@
+{
+  "item": "PerturbNet",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): PerturbNet conditional INN + ChemicalVAE",
+  "retrieved_at": "2026-10-19T00:00+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "welch-lab/PerturbNet",
+      "url": "https://github.com/welch-lab/PerturbNet",
+      "version": "e1375b2ca71c87d5b7277c45648ed06fe335a38d",
+      "license": "GPL-3.0",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 124,
+      "bytes": 15417599,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "cyclopeta/PerturbNet_reproduce",
+      "path": "source/assets/",
+      "url": "https://huggingface.co/cyclopeta/PerturbNet_reproduce",
+      "version": "selected files, 2026-10-19",
+      "license": "GPL-3.0 (third-party reproduction mirror, not author-released)",
+      "method": "HF download of selected files through the hf-mirror.com mirror (the assets are not author-released)",
+      "note": "7 files / 2,190,893,047 B: LINCS + sci-Plex cINN checkpoints (664 MB each), sci-Plex scVI cell-VAE (13 MB), LINCS TF1 cell-VAE (17 MB), ZINC ChemicalVAE (16 MB), example LINCS (30,568 x 978) and sci-Plex (31,200 x 5,087) h5ads. Per-file sizes/SHA256 were recorded in the deleted old `ASSETS.md` (still present under `source/ASSETS.md`).",
+      "files": 14,
+      "bytes": 2190893047,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Deployed model; the 5,087-gene sci-Plex checkpoint is the Stage 2-relevant one. Absorbed from the deleted VALIDATION.md: released LINCS + sci-Plex checkpoints load into the in-repo architecture with all flow/ChemicalVAE keys matched; sci-Plex cINN conditioning_dim=200 = 196 ChemicalVAE dims + 3 cell-type one-hots + 1 raw numeric dose, so arbitrary doses can be supplied at inference; full inference needs the authors' Python 3.7 + TensorFlow 1.15 pin (or the 0.0.3b1 py3.10 branch). The assets came through the hf-mirror, per the deleted download/manual.md intro."
+}

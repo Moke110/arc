@@ -9,7 +9,7 @@ DToxS-LINCS dataset at 03_cm_finetune_data/output/dtoxs_lincs.h5ad. The HG table
 (step 01 copies it byte-identical — no HG training), and the DToxS finetune
 uses the same 978-gene set verified by _lib/verify_genes.py. The base model
 and training library are imported from the model component
-(pert_model/xpert), which stays a pure library — the workflow owns the
+(pert_model/XPert), which stays a pure library — the workflow owns the
 pretrained base weight (04_xpert_pretrain/) and the finetuned weights.
 
 XPert writes training artifacts to <workflow>/finetune/output/dtoxs_dtoxs/

@@ -16,8 +16,9 @@
 #   1. Finds every *.py / *.sh / *.R in the worktree, pruning:
 #        - .git/ and __pycache__/
 #        - virtualenv trees (any directory named _envs, .venv, or venv)
-#        - external item source trees (any directory named source/) — downloaded
-#          content is not repository content (ADR 0030)
+#        - external item trees (any directory named source/ or local/) — the
+#          download and the declared local additions are not repository content
+#          (ADR 0030)
 #        - workspace/archive trees that are not repository content:
 #          .scratch/, tmp/, reference/, wet_data/, .uploads/
 #   2. Compares that list with `git ls-files`.
@@ -61,14 +62,6 @@ find_repo_root() {
 # check. Remove entries as the restructure retires the tree.
 is_expected_ignored() {
   case "$1" in
-    # Vendored upstream model clones, ignored as read-only references whose
-    # provenance is each VENDORED.txt (.gitignore). Ticket 04 moves every clone
-    # under its item's `source/`, which this scan prunes.
-    pert_model/TranSiGen/* | pert_model/chemcpa/* | pert_model/cpa/* | \
-    pert_model/prnet/* | pert_model/biolord/* | pert_model/perturbnet/* | \
-    pert_model/wave/* | pert_model/cmonge/* | pert_model/squidiff/* | \
-    pert_model/expo/* | pert_model/decant/* | pert_model/scvidr/*)
-      return 0 ;;
     # Frozen pre-refactor MIRI snapshot, deliberately kept out of git
     # (.gitignore: "Frozen pre-refactor MIRI pipeline snapshots ...").
     stage1/xpert-fda-miri-v0/*)
@@ -112,7 +105,7 @@ main() {
     \( -path './.git' -o -path './.scratch' -o -path './tmp' -o -path './reference' \
        -o -path './wet_data' -o -path './.uploads' \
        -o -name '_envs' -o -name '.venv' -o -name 'venv' -o -name 'source' \
-       -o -name '__pycache__' \) -prune \
+       -o -name 'local' -o -name '__pycache__' \) -prune \
     -o -type f \( -name '*.py' -o -name '*.sh' -o -name '*.R' \) -print0 \
     | sed -z 's|^\./||' | LC_ALL=C sort -z >"$disk_list"
 
@@ -188,9 +181,9 @@ main() {
     echo "EXPECTED-IGNORED TREES (documented; reported, not failed)"
     sed -E 's|^(pert_model/[^/]+)/.*|\1|; s|^(stage1/[^/]+)/.*|\1|' "$exp_rows" \
       | LC_ALL=C sort | uniq -c | awk '{ printf "  %6d  %s\n", $1, $2 }'
-    echo "  rationale: vendored upstream clones are read-only references (VENDORED.txt is the"
-    echo "  provenance record) and move under each item's source/ in ticket 04; the v0 snapshot"
-    echo "  is deliberately out of git. Remove an entry from EXPECTED_IGNORED when its tree retires."
+    echo "  rationale: the frozen v0 snapshot is deliberately out of git. External items"
+    echo "  (source/ and local/) are pruned by the scan itself, not listed here. Remove an"
+    echo "  entry from EXPECTED_IGNORED when its tree retires."
     echo
   fi
 

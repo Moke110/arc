@@ -57,7 +57,7 @@ from adapters.common import (  # noqa: E402
     write_json,
 )
 
-SQUIDIFF_SRC = ROOT / "pert_model/squidiff"
+SQUIDIFF_SRC = ROOT / "pert_model/Squidiff/source"
 sys.path.insert(0, str(SQUIDIFF_SRC))
 
 from Squidiff.nn import update_ema  # noqa: E402

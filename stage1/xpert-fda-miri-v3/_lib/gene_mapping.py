@@ -12,7 +12,7 @@ own identifier space with legacy-symbol awareness.
 
 Data sources (XPert-author + dataset data ONLY)
 -----------------------------------------------
-  1. L1000 landmark metadata  pert_model/xpert/metadata/l1000_gene_info_978.csv
+  1. L1000 landmark metadata  pert_model/XPert/local/metadata/l1000_gene_info_978.csv
      (author-shipped). Each landmark row carries gene_id (Entrez), gene_symbol,
      gene_name / gene_name_match (the 2015-era L1000 feature symbol, i.e. the
      legacy name a dataset may use), and ensembl_id.

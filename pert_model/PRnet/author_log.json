@@ -1,0 +1,26 @@
+{
+  "item": "PRnet",
+  "category": "pert_model",
+  "purpose": "Stage 2 drug-perturbation model candidate (deployed): PRnet reaction/response predictor",
+  "retrieved_at": "2026-10-18T19:17+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "Perturbation-Response-Prediction/PRnet",
+      "url": "https://github.com/Perturbation-Response-Prediction/PRnet",
+      "version": "f19174bde3ed2633f54c7831799cc38c4ffc7a0d",
+      "license": "Apache-2.0",
+      "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
+      "path": "source/",
+      "files": 28,
+      "bytes": 109148389,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
+  "notes": "Repository ships its own checkpoints at checkpoint/ (lincs_best_epoch_all.pt 2,210,427 B; sciplex_best_epoch_all.pt 8,420,411 B), so no separately downloaded asset: 978-landmark LINCS and 5,000-HVG Sci-Plex state dicts. Deployed model (ADR 0025/0032 family); run card stage2/01_setup/prnet/. Absorbed from the deleted STAGE2_DATA.md inventory: the two checkpoint files above, with no external archive."
+}

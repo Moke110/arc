@@ -10,7 +10,7 @@ no retraining) with `--output_profile True` and collects the per-cell
 `y_true / y_pred / ctl_true / deg_true / deg_pred` profiles.
 
 Metric contract (task decision (a), matching XPert's own `precision_k`
-convention in `pert_model/xpert/src/metrics.py`):
+convention in `pert_model/XPert/source/src/metrics.py`):
 
   * Per cell, the true set is the top-100 up genes (`deg_true` descending) and
     the bottom-100 down genes; every gene not in the top/bottom-100 is a

@@ -10,7 +10,7 @@ finetune datasets — the substantive v3 change vs v1's frozen DToxS
 `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`). The HG table is the author reference (step 01 copies it
 byte-identical — no HG training), and the finetune uses the same 978-gene set
 verified by _lib/verify_genes.py. The base model and training library are
-imported from the model component (pert_model/xpert), which stays a pure
+imported from the model component (pert_model/XPert), which stays a pure
 library — the workflow owns the pretrained base weight (04_xpert_pretrain/)
 and the finetuned weights.
 

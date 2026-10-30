@@ -1,6 +1,6 @@
 {
   "model": "squidiff",
-  "source": "pert_model/squidiff (abdfc27d), BSD-3",
+  "source": "pert_model/Squidiff/source (abdfc27d), BSD-3",
   "author_entrypoint": "train_squidiff.py / sample_squidiff.py",
   "gene_size": 18164,
   "output_dim": 18164,

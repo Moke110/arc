@@ -15,7 +15,7 @@ Data: stage1/xpert-fda-miri-v2/05_xpert_finetune_bench/full/output/benchmark.csv
 These `_deg` metrics compare the model's *directly predicted* Delta expression
 (`deg_output`; y_pred - ctl) against the true Delta, on the finetune data's own
 scale (log2(CPM+1), per-(dataset, plate) quantile-aligned to the L1000 pretrain
-reference) — no z-scoring anywhere (see pert_model/xpert/src/train.py
+reference) — no z-scoring anywhere (see pert_model/XPert/source/src/train.py
 validate(flag=True) and src/metrics.py get_metrics_new). Z-scoring happens only
 downstream, on the drug x gene DEG matrix, in 07_xpert_predict/zscore.py.
 

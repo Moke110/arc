@@ -2,7 +2,7 @@
 
 **Status:** five-fold benchmark complete (2026-10-21/22): AUPRC k=200 **0.1861** (95% CI 0.1699–0.2031), rank 3/12, `ideal_fit: partial`. This is the best entrant on the primary metric, but it remains below the `delta_mean` baseline; it is `partial` because it takes no control transcriptome. The fold-0 smoke below is a wiring proof, not a ranking.
 
-- **Source:** `pert_model/perturbnet/` (vendored, commit `e1375b2c`,
+- **Source:** `pert_model/PerturbNet/source/` (vendored, commit `e1375b2c`,
   GPL-3.0). No file under `pert_model/` is modified or generated
   (`PYTHONDONTWRITEBYTECODE=1` + `sys.dont_write_bytecode`).
 - **Environment:** conda `arc-stage2-bench-perturbnet`, the authors' faithful

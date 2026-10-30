@@ -16,7 +16,7 @@ The two unused pretrain checkpoints (`pretrain_mdmt_full_200_epoch.pth`,
 `pretrain_mdmt_new.pth`) were deleted during the refactor; only the used weight
 is preserved.
 
-`pert_model/xpert/pretrain/run.sh` remains in the model library as the
+`pert_model/XPert/source/pretrain/run.sh` remains in the model library as the
 pretrain recipe; its default config now resolves here
 (`stage1/xpert-fda-miri-v2/04_xpert_pretrain/config/l1000`).
 

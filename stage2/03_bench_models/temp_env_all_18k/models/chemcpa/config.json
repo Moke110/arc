@@ -1,6 +1,6 @@
 {
   "model": "chemcpa",
-  "source": "pert_model/chemcpa (vendored), MIT",
+  "source": "pert_model/chemCPA/source (vendored), MIT",
   "author_entrypoint": "ComPert + LightningModule (train_hydra.py cannot run this dataset as shipped)",
   "n_genes": 18164,
   "hparams": {

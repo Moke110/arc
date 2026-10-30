@@ -38,7 +38,7 @@ import pandas as pd
 # ── Workflow / component roots ────────────────────────────────────────
 WORKFLOW_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_ROOT = WORKFLOW_ROOT.parent.parent          # repository root
-XPERT_ROOT = WORKSPACE_ROOT / "pert_model" / "xpert"
+XPERT_ROOT = WORKSPACE_ROOT / "pert_model" / "XPert" / "source"
 DISEASE_DATA_ROOT = WORKSPACE_ROOT / "disease_data" / "miri"
 
 # CM finetune-data union sources (read-only; never modified by the workflow).

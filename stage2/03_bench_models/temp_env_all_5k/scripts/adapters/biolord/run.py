@@ -4,7 +4,7 @@
 Author recipe (research/02-biolord-perturbnet-scvidr.md §1, ticket 09):
 
 - single joint objective; no pretraining and no released weights
-  (`pert_model/biolord/VENDORED.txt`);
+  (`pert_model/biolord/author_log.json`);
 - ``ordered_attributes_keys=["rdkit2d_dose"]`` and
   ``categorical_attributes_keys=["cell_type"]`` (SI Table 4);
 - tuned sci-Plex config (SI Table 5): tau=1e4, sigma=20, decoder 4096x4,
@@ -61,7 +61,7 @@ from adapters.common import (  # noqa: E402
     write_json,
 )
 
-BIOLORD_SRC = ROOT / "pert_model/biolord/src"
+BIOLORD_SRC = ROOT / "pert_model/biolord/source/src"
 sys.path.insert(0, str(BIOLORD_SRC))
 
 import anndata as ad  # noqa: E402
