@@ -1,4 +1,4 @@
-"""Metric primitives for the Stage 2 `03_bench_models` contract (ticket 07).
+"""Metric primitives for the Stage 2 `03_models_cmbench` contract.
 
 All functions operate on float64 arrays unless stated otherwise.  The module is
 import-safe: it has no side effects and no GPU dependency, so the build's

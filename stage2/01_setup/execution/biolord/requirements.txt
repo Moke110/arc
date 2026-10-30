@@ -2,7 +2,7 @@
 #
 # Base environment: /home/chang/miniconda3/envs/arc (Python 3.13, torch
 # 2.14.1+cu130, scanpy, anndata). The overlay is created with
-#    python -m venv --system-site-packages stage2/01_setup/biolord/.venv
+#    python -m venv --system-site-packages stage2/01_setup/execution/biolord/.venv
 # and these packages are installed into it. The repo source is used via
 # PYTHONPATH=pert_model/biolord/source/src; the PyPI biolord package supplies the
 # distribution metadata that biolord's version lookup expects.

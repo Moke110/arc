@@ -9,7 +9,7 @@ weights work on this machine.
 
 **Decision.** Split Stage 2 into a **bring-up** stage and a later **selection**
 stage. The 978-gene PRnet demo is allowed **only** inside
-`stage2/01_setup/prnet/`, and its outputs are labelled
+`stage2/01_setup/execution/prnet/`, and its outputs are labelled
 `bring-up-only`. No Stage 2 evaluation, metric, fold, or model comparison may
 read a 978 artifact.
 
@@ -19,7 +19,7 @@ whole-transcriptome rule of ADR 0020 still governs the selection stage. The
 bring-up outputs are not comparable with the other models and must not be
 reported as a leaderboard.
 
-See `stage2/PLAN.md` and `stage2/01_setup/prnet/README.md`.
+See `stage2/README.md` and `stage2/01_setup/execution/prnet/README.md`.
 
 **Update (2026-10-19, ADR 0025).** `01_bringup/` was renamed `01_setup/`; the
 active label is **setup-only**. “Bring-up” is retained above as the historical

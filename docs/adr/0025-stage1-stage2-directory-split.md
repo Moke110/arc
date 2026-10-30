@@ -34,5 +34,4 @@ benchmark; no model comparison, fold, metric, or CM adapter is defined here.
 Preprint literature remains recorded in `pert_model/SURVEY_2026-10-19_v2.md`, but
 its code is no longer vendored.
 
-See `stage2/PLAN.md`, `stage2/01_setup/README.md`, and
-`stage2/01_setup/SUMMARY.md`.
+See `stage2/README.md` and `stage2/01_setup/README.md`.

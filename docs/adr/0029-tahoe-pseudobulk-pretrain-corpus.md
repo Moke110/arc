@@ -13,7 +13,7 @@ is model-agnostic by construction.
 
 ## Decision
 
-One corpus, built by `stage2/04_tahoe_pretrain/`:
+One corpus, built by `stage2/04_tahoe_data/`:
 
 1. **Unit = `(plate, well, cell_line)`.** Upstream `sample` *is* the well
    (14 plates × 96 wells = 1,344). `drug` and `dose` are well-level attributes,

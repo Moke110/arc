@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-10-30T18:24:32+0800",
+  "contrasts_compared": 3755,
+  "pearson_median_base800": 0.8118983594407349,
+  "pearson_p10_base800": 0.669236910678163,
+  "genes_per_contrast_median_base800": 328,
+  "pearson_median_base500": 0.7789919395370658,
+  "pearson_p10_base500": 0.61891128671931,
+  "spearman_median_base500": 0.7132062030997027,
+  "pearson_median_base300": 0.7405574491610908,
+  "genes_per_contrast_median_base500": 644,
+  "spearman_median_all_genes": 0.17264321813437566,
+  "gate_pearson_ge_0.60_base500": true,
+  "gate_pearson_ge_0.70_base500": true,
+  "detected_genes_median": 25290.0,
+  "gate_detected_ge_12000": true,
+  "profiles": 67018,
+  "profiles_ge_100_cells": 61767,
+  "control_missing": [],
+  "gate_controls_present": true
+}

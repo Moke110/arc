@@ -32,4 +32,4 @@ repository root to check every item offline.
 Each item's `author_log.json` carries its provenance; each `local/` file is declared in that
 log's `local_additions[]`. The downstream corpus built from these sources lives in
 `stage2/02_cm_data/` (ADR 0026), and the Tahoe pseudobulk corpus built from `Tahoe-100M/` lives
-in `stage2/04_tahoe_pretrain/` (ADR 0029).
+in `stage2/04_tahoe_data/` (ADR 0029).

@@ -14,9 +14,9 @@ amend, supersede or reinterpret ADR 0027.
 
 ### 1. A separate archive, not a change to the 18k contract
 
-- `stage2/03_bench_models/temp_env_all_5k/` is a fork of the executed
-  `temp_env_all_18k/` archive.
-- `temp_env_all_18k/` stays read-only. ADR 0027 is not edited. The 18k
+- `stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/` is a fork of the executed
+  `03_models_cmbench/03.1_cold_drug_18k/` archive.
+- `03.1_cold_drug_18k/` stays read-only. ADR 0027 is not edited. The 18k
   leaderboard remains the primary result; the 5k table is a sensitivity view.
 - Everything except the gene axis is held fixed: wells, Δ, controls, groups,
   five cold-drug folds, the 12 entrants, seeds, budgets, adapters and metrics.

@@ -1,16 +1,24 @@
-# Stage 2 environments (ticket 10/13/14/15)
+# stage2/_envs — shared per-model benchmark environments
 
-Shared Stage 2 infrastructure: the per-model bench environments live here so
-later stages can reuse them (originally under `03_bench_models/envs/`).  The
-`biolord` and `cmonge` venvs moved with the directory; their recorded paths were
-rewritten to `stage2/_envs/`, while the four `arc-stage2-bench-*` conda envs
-remain in the conda root and are referenced by name.
+Non-step directory: it holds the per-model environments the benchmark step
+(`stage2/03_models_cmbench/`) runs in, kept here so later stages can reuse them.
+They originally lived under the benchmark step's `envs/` directory, before that
+step was split into two substeps. The `biolord` and `cmonge` venvs moved with
+this directory; their recorded paths were rewritten to `stage2/_envs/`, while the
+four `arc-stage2-bench-*` conda envs remain in the conda root and are referenced
+by name.
 
 The seven bench environments are isolated per model (ADR 0021); the shared
 `arc` environment is not modified. `*.lock` is the final freeze (`pip freeze`
 for conda envs and venvs, `conda list --explicit` when noted); the sha256 is
-recorded here for provenance. The three ticket-13 envs were cloned from the
-untouched bringup envs and given the CUDA wheel required by ticket 10.
+recorded here for provenance. The three cloned bench envs were copied from the
+untouched bringup envs and given the CUDA wheel the runs required.
+
+Only the lock files are tracked. The two venv trees (`biolord/`, `cmonge/`) are
+**local-only**: multi-GB, interpreter-specific, and not byte-reproducible across
+machines, so they are gitignored and a fresh clone has neither. The locks plus
+the rebuild recipes below are the durable record; recreate a venv rather than
+copying one.
 
 | model | env | Python | framework | packages | lock sha256 |
 |---|---|---|---|---|---|

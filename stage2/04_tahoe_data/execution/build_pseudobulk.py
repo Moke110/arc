@@ -5,15 +5,20 @@ Unit = (plate, well, cell_line); well is upstream `sample`.
 Values = summed raw UMI counts, plus a derived log1p_cp10k layer.
 Gene space = Tahoe native 62,710 (token_id 3..62712 -> column 0..62709).
 
-Stages (each resumable, all state under output/pseudobulk/):
+Stages (each resumable; `_parts/` and `_state/` under output/pseudobulk/ are the
+resumable part-cache and bookkeeping state, not results):
 
-    python build_pseudobulk.py scan        # shard -> plate map (+ sanity)
-    python build_pseudobulk.py aggregate   # per-plate CSR parts, streamed
-    python build_pseudobulk.py assemble    # parts -> h5ad + manifest
-    python build_pseudobulk.py qa          # vs the authors' DESeq2 pseudobulk DE
+    python stage2/04_tahoe_data/execution/build_pseudobulk.py scan
+    python stage2/04_tahoe_data/execution/build_pseudobulk.py aggregate
+    python stage2/04_tahoe_data/execution/build_pseudobulk.py assemble
+    python stage2/04_tahoe_data/execution/build_pseudobulk.py qa
 
-`--plates plate1,plate2` limits any stage; `--shards N` limits the scan/aggregate
-to the first N shards (smoke tests on a partial atlas).
+`--check` prints the repository root, the Tahoe source it reads and the corpus
+output directory, then exits. `--plates plate1,plate2` limits any stage;
+`--shards N` limits the scan/aggregate to the first N shards (smoke tests on a
+partial atlas). No network: the atlas is already downloaded under
+`pert_data/Tahoe-100M/source/`; the importer lives in
+`pert_data/Tahoe-100M/script/`.
 """
 from __future__ import annotations
 
@@ -27,9 +32,23 @@ from pathlib import Path
 import numpy as np
 import pyarrow.parquet as pq
 
-ROOT = Path(__file__).resolve().parents[3]          # repo root
-DATA_HOME = ROOT / "pert_data" / "tahoe"
-OUT = ROOT / "stage2" / "04_tahoe_pretrain" / "output" / "pseudobulk"
+
+def find_repo_root(start: Path) -> Path:
+    """Walk up from *start* to the repository root (the directory holding `.git`).
+
+    Never counts directory levels: this step's layout has already changed once
+    (ADR 0030) and a hard-coded depth fails silently when it changes again.
+    """
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    raise SystemExit(f"cannot find the repository root: no .git at or above {start}")
+
+
+ROOT = find_repo_root(Path(__file__).resolve().parent)
+assert (ROOT / "stage2").is_dir(), f"resolved repo root has no stage2/: {ROOT}"
+DATA_HOME = ROOT / "pert_data" / "Tahoe-100M" / "source"
+OUT = ROOT / "stage2" / "04_tahoe_data" / "output" / "pseudobulk"
 PARTS = OUT / "_parts"
 STATE = OUT / "_state"
 
@@ -578,16 +597,45 @@ def stage_qa(args) -> int:
                  and summary["gate_controls_present"]) else 1
 
 
+def check_layout() -> dict:
+    """Report what the resolver found: repo root, Tahoe input, corpus output."""
+    return {
+        "repo_root": str(ROOT),
+        "tahoe_source": str(DATA_HOME),
+        "tahoe_source_present": DATA_HOME.is_dir(),
+        "expression_shards_on_disk": len(all_shards()),
+        "corpus_output": str(OUT),
+    }
+
+
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(description=__doc__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("stage", choices=["scan", "aggregate", "assemble", "qa"])
+    p = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f"resolved from {Path(__file__).resolve()}:\n"
+               f"  repo root   {ROOT}\n"
+               f"  tahoe input {DATA_HOME}\n"
+               f"  output      {OUT}")
+    p.add_argument("stage", nargs="?",
+                   choices=["scan", "aggregate", "assemble", "qa"],
+                   help="scan | aggregate | assemble | qa")
+    p.add_argument("--check", action="store_true",
+                   help="print the resolved repository root, Tahoe source and output dir, then exit")
     p.add_argument("--plates", default=None)
     p.add_argument("--shards", type=int, default=None)
     p.add_argument("--force", action="store_true")
     p.add_argument("--de-home", default=None, help="data home holding metadata/pseudobulk_differential_expression")
     p.add_argument("--de-shards", type=int, default=30)
     args = p.parse_args(argv)
+    if args.check:
+        print(json.dumps(check_layout(), indent=2))
+        return 0 if DATA_HOME.is_dir() else 1
+    if args.stage is None:
+        p.print_help(sys.stderr)
+        return 2
+    if not DATA_HOME.is_dir():
+        raise SystemExit(f"Tahoe source missing: {DATA_HOME} "
+                         f"(download/verify it with pert_data/Tahoe-100M/script/)")
     return {"scan": stage_scan, "aggregate": stage_aggregate,
             "assemble": stage_assemble, "qa": stage_qa}[args.stage](args)
 

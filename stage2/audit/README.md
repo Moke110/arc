@@ -1,5 +1,10 @@
 # Stage 2 entrant audit
 
+Non-step directory: these are the selection and fairness **records**, not a
+runnable step. The stage overview is [`../README.md`](../README.md); the
+benchmark that produced the evidence is
+[`../03_models_cmbench/`](../03_models_cmbench/README.md).
+
 ## Current follow-up selection
 
 - [Model-selection decisions](model_selection_decisions.md) govern subsequent

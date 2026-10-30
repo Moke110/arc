@@ -3,10 +3,10 @@
 **Status:** accepted (2026-10-21)
 
 Stage 2 must choose one open-source model to supply whole-transcriptome
-perturbomes to future MIRI drug scoring. Setup (ADR 0021, `01_setup/SUMMARY.md`)
+perturbomes to future MIRI drug scoring. Setup (ADR 0021, `01_setup/README.md`)
 proved that nine models run in isolated environments, but it did not compare
 them: the authors' benchmarks use different gene spaces, doses, cell contexts and
-splits, so cross-paper numbers are not evidence. `stage2/03_bench_models/`
+splits, so cross-paper numbers are not evidence. `stage2/03_models_cmbench/`
 therefore fixes a single cold-drug benchmark **before** any model is scored.
 The contract below is frozen; the executed leaderboard and report are derived
 from it.
@@ -15,7 +15,7 @@ from it.
 
 ### 1. Data view and target
 
-- **Dataset:** `stage2/02_cm_data/datasets-1/temp_env_all-smiles.h5ad`, the
+- **Dataset:** `stage2/02_cm_data/output/datasets-1/temp_env_all-smiles.h5ad`, the
   largest curated view in the ADR-0026 bundle: 4,478 wells (4,206 perturbed /
   272 control), 460 drug keys, 18,164 genes, 16 plates, three measured doses
   (0.2 / 1 / 10 µM), one 24 h timepoint, `ipsc_cm`. The `atc-moa` views are
@@ -45,7 +45,7 @@ from it.
   fail-closed on ten gates: 276/92/92 drugs, disjoint roles, no test drug in
   train or valid, test wells 837/846/837/846/840, and complete coverage.
 - Controls are never held out and never enter the test bundle: they are shared
-  once via `data/controls.npz` (16 groups × 12 cells) and the adapter receives
+  once via `output/input/controls.npz` (16 groups × 12 cells) and the adapter receives
   only the control inputs it needs.
 
 ### 3. Entrant set and fidelity labels

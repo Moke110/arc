@@ -3,7 +3,7 @@
 
 Reads ``results/leaderboard.csv`` and the model registry next to this script,
 then writes ``summary_table.csv`` and ``summary.png`` into the same
-``temp_env_all_18k/`` archive.  Ordering is identical in the table and every bar
+``03.1_cold_drug_18k/`` substep.  Ordering is identical in the table and every bar
 panel: baselines first (alphabetical), then the real models (alphabetical).
 """
 
