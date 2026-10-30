@@ -12,9 +12,9 @@
       "license": "MIT",
       "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
       "path": "source/",
-      "files": 256,
-      "bytes": 34719949,
-      "tree_sha256": null
+      "files": 271,
+      "bytes": 1059093253,
+      "tree_sha256": "66ce48a72a37fd03857497953b6761ac4c52a006a0bf47576693ffdd0d12f22a"
     },
     {
       "kind": "dataset",
@@ -27,7 +27,7 @@
       "note": "combo_sciplex_prep_hvg_filtered.h5ad 490,412,774 B sha256 347f3a0dbfe73fa143adcf0eee54dc21a3a97129e0a77d946800cb8981b32141; stored for future retraining, not used by the load-only smoke",
       "files": 1,
       "bytes": 490412774,
-      "tree_sha256": null
+      "tree_sha256": "6617bb6fafcccbef7b13453f20d3a679f97a702ccfaec7f5aa2ffed541ed3299"
     },
     {
       "kind": "asset",
@@ -40,7 +40,7 @@
       "note": "254,487,527 B sha256 322606b8a209de44228cf51d9930e4173b21a79dfc780fab3c1a2f1e916bec8f",
       "files": 1,
       "bytes": 254487527,
-      "tree_sha256": null
+      "tree_sha256": "5038cd00c8e544c1b23a33675c30ce5f020a771d8b0e578e3be8bd229f64344b"
     },
     {
       "kind": "asset",
@@ -51,15 +51,15 @@
       "license": "MIT",
       "method": "unzip source/source/chemCPA_models.zip -d source/weights/",
       "note": "weights/chemCPA_models/*.pt: 12 raw ComPert state dicts (L1000 977/2,000 genes, 188 drugs)",
-      "files": 14,
-      "bytes": 279479151,
-      "tree_sha256": null
+      "files": 13,
+      "bytes": 279473003,
+      "tree_sha256": "a88ea3a5dffd0cb8d704fe1470a7f4764f4895e79f238b1dc0d5ebf306aed7e8"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Deployed model; the public weights are 977/2,000-gene L1000 ComPert models; not retrained on CM data. Absorbed from the deleted STAGE2_DATA.md: data h5ad, weight zip and extract paths plus SHA256s are in sources[]. Non-downloaded clutter removed in ticket 04: weights/__MACOSX/ (2,970 B canonical macOS archive metadata) and the dangling project_folder symlink to /nfs/homedirs/hetzell/hdd/project_chemCPA."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Deployed model; the public weights are 977/2,000-gene L1000 ComPert models; not retrained on CM data. Absorbed from the deleted STAGE2_DATA.md: data h5ad, weight zip and extract paths plus SHA256s are in sources[]. Non-downloaded clutter removed in ticket 04: weights/__MACOSX/ (2,970 B canonical macOS archive metadata) and the dangling project_folder symlink to /nfs/homedirs/hetzell/hdd/project_chemCPA.",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

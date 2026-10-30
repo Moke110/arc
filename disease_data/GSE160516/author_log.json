@@ -15,7 +15,7 @@
       "path": "source/",
       "files": 1,
       "bytes": 2004508,
-      "tree_sha256": null
+      "tree_sha256": "9e3605a410b9ffd2e317e3613556904935a1be43085f58a1f5b3aed908998eef"
     }
   ],
   "local_additions": [
@@ -35,9 +35,9 @@
       "generated_by": "script/build_deg.R"
     }
   ],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09",
-  "notes": "GEO ACCESSION: GSE160516 (Mus musculus, Affymetrix Clariom S). This is the workflow's primary rank reference. The gene set is derived by mouse-to-human ortholog mapping (homologene via map_to_human.R:mouse2human) and filtered to the L1000 978 landmarks. Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4)."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE160516 (Mus musculus, Affymetrix Clariom S). This is the workflow's primary rank reference. The gene set is derived by mouse-to-human ortholog mapping (homologene via map_to_human.R:mouse2human) and filtered to the L1000 978 landmarks. Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4).",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

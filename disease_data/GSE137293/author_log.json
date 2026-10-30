@@ -15,7 +15,7 @@
       "path": "source/",
       "files": 2,
       "bytes": 2582175,
-      "tree_sha256": null
+      "tree_sha256": "04cbc953c179cbc2cf468208de325bb19db621adcd0a0e8f74b831e9d21039bc"
     }
   ],
   "local_additions": [
@@ -30,9 +30,9 @@
       "generated_by": "script/build_deg.R"
     }
   ],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09",
-  "notes": "GEO ACCESSION: GSE137293 (Sus scrofa, Illumina NovaSeq 6000). CAVEAT: the series has no sham control — the comparison is scar (infarct core) vs border zone (peri-infarct), which captures an injury-severity gradient rather than disease vs healthy. The gene set is derived by direct human-readable symbol matching plus homologene (inTax 9823) and filtered to the L1000 978 landmarks (map_to_human.R:species2human). Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4)."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE137293 (Sus scrofa, Illumina NovaSeq 6000). CAVEAT: the series has no sham control — the comparison is scar (infarct core) vs border zone (peri-infarct), which captures an injury-severity gradient rather than disease vs healthy. The gene set is derived by direct human-readable symbol matching plus homologene (inTax 9823) and filtered to the L1000 978 landmarks (map_to_human.R:species2human). Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4).",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

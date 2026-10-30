@@ -14,7 +14,7 @@
       "path": "source/",
       "files": 14,
       "bytes": 155247,
-      "tree_sha256": null
+      "tree_sha256": "d9d6dc3b3dfd4b1e7c89d1850bbd282834d55b82d3ae42b2e6c1445020dea39d"
     }
   ],
   "local_additions": [
@@ -47,9 +47,9 @@
       "origin": "local editor settings"
     }
   ],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Stage 1 XPert library, reference-only for Stage 2 (the preprint X-Pert model is excluded from Stage 2 deployment; this item is the Stage 1 implementation the workflows import). No public download record exists: the library is author-provided and its version is unknown. Split in ticket 04: `source/` keeps the upstream-shaped library (`src/`, `pretrain/`, `LICENSE`), `local/` keeps the locally-authored material (routing index, run logs, reference metadata, generated metrics, figure-reproduction notebooks, editor/agent settings) declared one path at a time in local_additions[]. Absorbed from the deleted VALIDATION.md \"X-Pert (Chen-Li-17, distinct from Stage 1 xpert/)\" section: it ran in a dedicated Python 3.13 venv with scperturb==0.1.0, einops_exts and local torchtext.vocab/scib shims; drug mode with dosage_mode_type=4 (DoseFiLM) at 2,000 genes forwards to (1,1,2000) and the DoseFiLM gradient norm 0.0259 proves the continuous log10(1+dose) path is connected; the package is alpha-quality (xpert/__init__.py exports only the data loader, analysis/analyzer.py references an unexported PerturbationModel)."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Stage 1 XPert library, reference-only for Stage 2 (the preprint X-Pert model is excluded from Stage 2 deployment; this item is the Stage 1 implementation the workflows import). No public download record exists: the library is author-provided and its version is unknown. Split in ticket 04: `source/` keeps the upstream-shaped library (`src/`, `pretrain/`, `LICENSE`), `local/` keeps the locally-authored material (routing index, run logs, reference metadata, generated metrics, figure-reproduction notebooks, editor/agent settings) declared one path at a time in local_additions[]. Absorbed from the deleted VALIDATION.md \"X-Pert (Chen-Li-17, distinct from Stage 1 xpert/)\" section: it ran in a dedicated Python 3.13 venv with scperturb==0.1.0, einops_exts and local torchtext.vocab/scib shims; drug mode with dosage_mode_type=4 (DoseFiLM) at 2,000 genes forwards to (1,1,2000) and the DoseFiLM gradient norm 0.0259 proves the continuous log10(1+dose) path is connected; the package is alpha-quality (xpert/__init__.py exports only the data loader, analysis/analyzer.py references an unexported PerturbationModel).",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

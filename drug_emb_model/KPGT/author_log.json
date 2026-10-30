@@ -12,9 +12,9 @@
       "license": "Apache-2.0 (source/LICENSE)",
       "method": "vendored copy; no upstream URL/commit is reproducible from this host, and no download command is recorded",
       "path": "source/",
-      "files": 50,
-      "bytes": 819302,
-      "tree_sha256": null
+      "files": 44,
+      "bytes": 929958685,
+      "tree_sha256": "82e055f6a4e350539f467344745fb729555f374a723f297833ceae0a50d5d49f"
     },
     {
       "kind": "asset",
@@ -26,7 +26,7 @@
       "path": "source/models/",
       "files": 2,
       "bytes": 894215942,
-      "tree_sha256": null
+      "tree_sha256": "10fcc7773a57434fa3a724eb9f0af4b41a724ea4e3139fe16de99ac7173e6f6b"
     },
     {
       "kind": "asset",
@@ -38,13 +38,13 @@
       "path": "source/feature_extract/",
       "files": 6,
       "bytes": 34997345,
-      "tree_sha256": null
+      "tree_sha256": "915be2d07b7dcc618a6bddc6e486099003edfcd04315922e44b19259d1b8a6c1"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on the repository entry",
-  "notes": "No upstream URL or commit is reproducible from this host, so version is explicitly \"unknown\" (ADR 0030 rule 1). Four files have later mtimes than the 2026-04-18 14:46 vendoring bulk and their divergence from upstream is unknown: source/src/utils.py (2026-04-25 00:27), source/scripts/extract_features.py (2026-04-25 00:28), source/src/smiles_to_kpgt_pickle.py (2026-04-25 00:28) and source/src/canonicalize_smiles.py (2026-04-25 00:44). The repository-entry count includes 14 regenerable `__pycache__/*.pyc` files (gitignored; ticket 10 removes all __pycache__). KPGT source code is repository content, not download content: only source/feature_extract/ and source/models/ are gitignored, so src/ and scripts/ stay tracked — this is the fix for the old global `data/` rule silently ignoring src/data/. Split from the old lowercase `kpgt/` directory in ticket 05 (spec §5)."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "No upstream URL or commit is reproducible from this host, so version is explicitly \"unknown\" (ADR 0030 rule 1). Four files have later mtimes than the 2026-04-18 14:46 vendoring bulk and their divergence from upstream is unknown: source/src/utils.py (2026-04-25 00:27), source/scripts/extract_features.py (2026-04-25 00:28), source/src/smiles_to_kpgt_pickle.py (2026-04-25 00:28) and source/src/canonicalize_smiles.py (2026-04-25 00:44). The repository-entry count includes 14 regenerable `__pycache__/*.pyc` files (gitignored; ticket 10 removes all __pycache__). KPGT source code is repository content, not download content: only source/feature_extract/ and source/models/ are gitignored, so src/ and scripts/ stay tracked — this is the fix for the old global `data/` rule silently ignoring src/data/. Split from the old lowercase `kpgt/` directory in ticket 05 (spec §5).",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

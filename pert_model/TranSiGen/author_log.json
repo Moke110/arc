@@ -12,9 +12,9 @@
       "license": "MIT",
       "method": "nested git clone (myzhengSIMM/TranSiGen, branch main); its .git directory was removed on 2026-10-30 after recording the commit",
       "path": "source/",
-      "files": 37,
-      "bytes": 26200971,
-      "tree_sha256": null
+      "files": 45,
+      "bytes": 67642560,
+      "tree_sha256": "31b6604a6ab6c3b1c9578ff65fb5517b8845af87228eabdb2dc2682bdb780f3d"
     },
     {
       "kind": "asset",
@@ -27,13 +27,13 @@
       "note": "trained_model_shRNA_vae_x1/best_model.pt 9,191,951 B; trained_model_shRNA_vae_x2/best_model.pt 9,191,741 B; trained_models_164_cell_smiles_split/364039/feature_KPGT_init_pretrain_shRNA/best_model.pt 22,441,478 B; 5.Drug_response_prediction/ and 6.Phenotype_based_drug_repurposing/ result tables.",
       "files": 8,
       "bytes": 41441589,
-      "tree_sha256": null
+      "tree_sha256": "a5d5f97f12cf7999b7248ae7c3cee532a69892053a24a1893e2030bec9fcf1b2"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Reference-only, kept for Stage 1 provenance; not a Stage 2 entrant. The nested .git (57,920,438 B) was the only nested git directory in pert_model and was removed in ticket 04 after its commit e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a (branch main, last commit 2025-01-21 \"Add files via upload\") was recorded here; the remote was https://github.com/myzhengSIMM/TranSiGen. source/data/ (LINCS2020 splits/embeddings + PRISM + TranSiGen.jpg) is repository content; source/results/ is the separately obtained checkpoint/result set."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Reference-only, kept for Stage 1 provenance; not a Stage 2 entrant. The nested .git (57,920,438 B) was the only nested git directory in pert_model and was removed in ticket 04 after its commit e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a (branch main, last commit 2025-01-21 \"Add files via upload\") was recorded here; the remote was https://github.com/myzhengSIMM/TranSiGen. source/data/ (LINCS2020 splits/embeddings + PRISM + TranSiGen.jpg) is repository content; source/results/ is the separately obtained checkpoint/result set.",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

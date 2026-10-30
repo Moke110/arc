@@ -14,7 +14,7 @@
       "path": "source/",
       "files": 3,
       "bytes": 9833358088,
-      "tree_sha256": null
+      "tree_sha256": "61f6ff15e5335b09a26690ee70d1e4f56bc6e46ee0242edaee8ab91e56246ba2"
     }
   ],
   "local_additions": [
@@ -23,8 +23,8 @@
       "origin": "hand-written dataset note (moved here from the XPert library, ADR 0008; the dataset home was formerly named l1000-xpert)"
     }
   ],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest and verification are filled by ticket 09"
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

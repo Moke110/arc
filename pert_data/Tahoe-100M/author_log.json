@@ -14,7 +14,7 @@
       "path": "source/",
       "files": 4430,
       "bytes": 428811080261,
-      "tree_sha256": null
+      "tree_sha256": "de9e3c36908cf5d15400b64f67ed55ecca0343157040b8e93cbb5a97b02fa353"
     }
   ],
   "local_additions": [
@@ -27,8 +27,8 @@
       "origin": "hand-written provenance note (supersedes the earlier vendored-subset note)"
     }
   ],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest and verification are filled by ticket 09"
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "hashed_at": "2026-10-30T22:06+08:00"
 }

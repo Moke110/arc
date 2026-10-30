@@ -12,9 +12,9 @@
       "license": "BSD-3-Clause",
       "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
       "path": "source/",
-      "files": 41,
-      "bytes": 20464133,
-      "tree_sha256": null
+      "files": 50,
+      "bytes": 1534453059,
+      "tree_sha256": "7f03ae76b7ae07bef58d9c116199a45a82967b2032f73e6d8dffe193bfe6e6c3"
     },
     {
       "kind": "dataset",
@@ -27,7 +27,7 @@
       "note": "kang_normalized_hvg.h5ad 544,912,376 B sha256 f04d4d31cc5ff56588e34cb305cdf52b3eddaad273192857a95dd7f5bea1c437 (CPA smoke); Norman2019_normalized_hvg.h5ad 837,969,230 B sha256 70f9f81cff6621b06f98fe150fd8e7e639fbd252b8d4fe1ad98450d54a6bb917 (future Norman checkpoint)",
       "files": 2,
       "bytes": 1382881606,
-      "tree_sha256": null
+      "tree_sha256": "e9b48518c94c6684e24292e3b436f15c5fd2b7e81070ac8da2391a9dc1711cb0"
     },
     {
       "kind": "asset",
@@ -40,7 +40,7 @@
       "note": "59,157,883 B sha256 ab0d6ef9cbd000aa1a150c0475671cc2eb1f1c3ab8b67aa1d9fb2145f896967d",
       "files": 1,
       "bytes": 59157883,
-      "tree_sha256": null
+      "tree_sha256": "7ce034def2017e0fd13f56622b205a44e2a28e59ff861223a8f6ac953b855c53"
     },
     {
       "kind": "asset",
@@ -51,15 +51,15 @@
       "license": "BSD-3-Clause",
       "method": "unzip source/source/Pretrained_Models-20261018T124453Z-1-001.zip -d source/weights/",
       "note": "weights/Pretrained_Models/{Kang,Norman2019}/{model.pt,CPA_info.json,history.csv}",
-      "files": 7,
-      "bytes": 71955585,
-      "tree_sha256": null
+      "files": 6,
+      "bytes": 71949437,
+      "tree_sha256": "9420a22e316bc61520c323b23a9eba928f4d1c1122cfa03a2d97f1c682358b38"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Deployed model; Kang pretrained model used by the Stage 2 setup smoke (5,000 genes). Absorbed from the deleted STAGE2_DATA.md: the two h5ad datasets, the pretrained-model zip and its SHA256s are all recorded in sources[] above. 02_cm_data does not read this item."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Deployed model; Kang pretrained model used by the Stage 2 setup smoke (5,000 genes). Absorbed from the deleted STAGE2_DATA.md: the two h5ad datasets, the pretrained-model zip and its SHA256s are all recorded in sources[] above. 02_cm_data does not read this item.",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

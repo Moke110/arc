@@ -12,9 +12,9 @@
       "license": "BSD-3-Clause",
       "method": "git clone <url> source/ && git -C source checkout <commit> && rm -rf source/.git",
       "path": "source/",
-      "files": 42,
-      "bytes": 2182044,
-      "tree_sha256": null
+      "files": 43,
+      "bytes": 180822754,
+      "tree_sha256": "d4b240fd631157453dc4680c67590e78bc371b107c6d06bbf2e07d67f0038046"
     },
     {
       "kind": "dataset",
@@ -27,13 +27,13 @@
       "note": "GSM_new.h5ad 178,640,710 B sha256 11b4363d46c00bcb9109c232b4f18411d01889d7a218f459a7d3feaa9b8f23da",
       "files": 1,
       "bytes": 178640710,
-      "tree_sha256": null
+      "tree_sha256": "99ec1089cee80ea74df7520a882f6d6714d666aa92e9cb56550fad0824ef88fd"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Deployed model; no public weights, per-dataset training only. Absorbed from the deleted STAGE2_DATA.md: GSM_new.h5ad role (A549, 5 drugs x 7 doses) and its SHA256. The old provenance record did not name the upstream download URL for the h5ad; recorded as such in sources[]."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Deployed model; no public weights, per-dataset training only. Absorbed from the deleted STAGE2_DATA.md: GSM_new.h5ad role (A549, 5 drugs x 7 doses) and its SHA256. The old provenance record did not name the upstream download URL for the h5ad; recorded as such in sources[].",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

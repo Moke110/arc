@@ -14,13 +14,13 @@
       "path": "source/",
       "files": 85,
       "bytes": 34029021,
-      "tree_sha256": null
+      "tree_sha256": "ac75d569c7cad04e0d534a8f8c94c46d07f680aa1ccc9e580b6784fc5f3033a6"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Deployed model; no pretrained weights by design (per-dataset HVG output; RDKit structure + dose conditioning; ~23k params). `source/{assets,data,models}` are the demo data and embeddings bundled in the upstream repository (download/manual.md: \"cmonge/data/ — bundled demo data\"). Absorbed from the deleted VALIDATION.md: the official scripts/demo_train.py fails immediately because configs/demo_config.yml contains the author macOS path /Users/alicedriesen/Projects/conditional-monge; after replacing that path in a copy the demo completed end-to-end on CPU (AE train -> CMonge 100 iters -> evaluate) with mean R2 0.8865 (abexinostat-10), 0.9199 (belinostat-10), 0.8919 (dacinostat-10). The 1.3 GB `.venv` in the old tree was a duplicate of stage2/_envs/cmonge and was deleted in ticket 04. Environment records: the tracked lock pair (`stage2/01_setup/cmonge/env.lock` and `stage2/_envs/cmonge.lock`) is a 2026-10 record — its editable pin was rewritten from the old model path to `pert_model/CMonge/source` (ruling B2); the environments are already built, so the lock is not re-resolved here."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Deployed model; no pretrained weights by design (per-dataset HVG output; RDKit structure + dose conditioning; ~23k params). `source/{assets,data,models}` are the demo data and embeddings bundled in the upstream repository (download/manual.md: \"cmonge/data/ — bundled demo data\"). Absorbed from the deleted VALIDATION.md: the official scripts/demo_train.py fails immediately because configs/demo_config.yml contains the author macOS path /Users/alicedriesen/Projects/conditional-monge; after replacing that path in a copy the demo completed end-to-end on CPU (AE train -> CMonge 100 iters -> evaluate) with mean R2 0.8865 (abexinostat-10), 0.9199 (belinostat-10), 0.8919 (dacinostat-10). The 1.3 GB `.venv` in the old tree was a duplicate of stage2/_envs/cmonge and was deleted in ticket 04. Environment records: the tracked lock pair (`stage2/01_setup/cmonge/env.lock` and `stage2/_envs/cmonge.lock`) is a 2026-10 record — its editable pin was rewritten from the old model path to `pert_model/CMonge/source` (ruling B2); the environments are already built, so the lock is not re-resolved here.",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

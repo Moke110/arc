@@ -14,13 +14,13 @@
       "path": "source/",
       "files": 273,
       "bytes": 165168207,
-      "tree_sha256": null
+      "tree_sha256": "2e9c97d33bceff0ddcda50b97290e5eece6cc79a394afce45794cc6ff530c5e8"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Deployed model; no pretrained checkpoints in the repository. Absorbed from the deleted VALIDATION.md: trained in a Python 3.8 environment with scvi-tools 0.13.0 / PyTorch 1.8 / scanpy 1.9.8; a 2,000-gene synthetic 2-epoch train + `predict(continuous=True, doses=[1,10,100])` works; the continuous path is a log-linear latent interpolation delta*log1p(d)/log1p(max(doses)), not a learned dose-response curve, and the shipped CLI refuses doses absent from obs. The Google Drive data.zip (manual browser download) is not present; it is only needed for the published liver dose-response results, not for the synthetic smoke."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:11+08:00",
+  "verify_result": "pass",
+  "notes": "Deployed model; no pretrained checkpoints in the repository. Absorbed from the deleted VALIDATION.md: trained in a Python 3.8 environment with scvi-tools 0.13.0 / PyTorch 1.8 / scanpy 1.9.8; a 2,000-gene synthetic 2-epoch train + `predict(continuous=True, doses=[1,10,100])` works; the continuous path is a log-linear latent interpolation delta*log1p(d)/log1p(max(doses)), not a learned dose-response curve, and the shipped CLI refuses doses absent from obs. The Google Drive data.zip (manual browser download) is not present; it is only needed for the published liver dose-response results, not for the synthetic smoke.",
+  "hashed_at": "2026-10-30T22:11+08:00"
 }

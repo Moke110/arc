@@ -14,12 +14,12 @@
       "path": "source/",
       "files": 17,
       "bytes": 2657111110,
-      "tree_sha256": null
+      "tree_sha256": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest and verification are filled by ticket 09"
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:05+08:00",
+  "verify_result": "pass",
+  "hashed_at": "2026-10-30T22:05+08:00"
 }

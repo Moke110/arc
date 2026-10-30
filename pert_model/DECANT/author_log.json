@@ -14,13 +14,13 @@
       "path": "source/",
       "files": 17,
       "bytes": 556363,
-      "tree_sha256": null
+      "tree_sha256": "e1df67ac84f3b23dfff80b06f3d095f3112508a89e58ccd95d001557e875e245"
     }
   ],
   "local_additions": [],
-  "manifest": null,
-  "verified_at": null,
-  "verify_result": null,
-  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on repository entries",
-  "notes": "Deployed model; the repository is a reproduction skeleton that explicitly excludes processed cell bags, teacher prototypes and checkpoints, so there is no public data file to download. Absorbed from the deleted VALIDATION.md: an earlier import-only check was too shallow; the in-repo Phase1MechanismTopologyModel instantiated at 2,000 genes with n_programs=50 accepts dose_log1p and its output changes with dose (dose effect L1 = 1.60e-2 between log1p(1) and log1p(100)). Caveats: it needs matched treated/control cell bags, dose is treated as context to suppress rather than a target response axis, and no processed data/checkpoints exist."
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-10-30T22:17+08:00",
+  "verify_result": "pass",
+  "notes": "Deployed model; the repository is a reproduction skeleton that explicitly excludes processed cell bags, teacher prototypes and checkpoints, so there is no public data file to download. Absorbed from the deleted VALIDATION.md: an earlier import-only check was too shallow; the in-repo Phase1MechanismTopologyModel instantiated at 2,000 genes with n_programs=50 accepts dose_log1p and its output changes with dose (dose effect L1 = 1.60e-2 between log1p(1) and log1p(100)). Caveats: it needs matched treated/control cell bags, dose is treated as context to suppress rather than a target response axis, and no processed data/checkpoints exist.",
+  "hashed_at": "2026-10-30T22:17+08:00"
 }
