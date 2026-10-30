@@ -120,9 +120,16 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Downloaded weights/datasets used by Stage 2 setup (not repo artifacts)
 /download/
 
-# Stage 2 setup outputs and the biolord venv overlay
-stage2/01_setup/*/output/
-stage2/01_setup/biolord/.venv/
+# Stage 2 setup outputs and the biolord venv overlay. Ticket 06 moved the run
+# cards one level down into `execution/`; the global `output/` rule excludes the
+# directory, so it is re-included first (a negative rule cannot re-include a file
+# whose parent directory is excluded), then only the textual evidence — run logs
+# and meta.json — stays trackable.
+!stage2/01_setup/execution/*/output/
+stage2/01_setup/execution/*/output/*
+!stage2/01_setup/execution/*/output/*.json
+!stage2/01_setup/execution/*/output/*.log
+stage2/01_setup/execution/biolord/.venv/
 
 # Stage 2 shared environments: venv trees are local-only (locks are tracked)
 stage2/_envs/biolord/

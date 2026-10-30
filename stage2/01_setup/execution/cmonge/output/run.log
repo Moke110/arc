@@ -1,0 +1,76 @@
+WARNING:absl:Tensorflow library not found, tensorflow.io.gfile operations will use native shim calls. GCS paths (i.e. 'gs://...') cannot be accessed.
+WARNING:2026-10-21 09:47:49,325:jax._src.xla_bridge:969: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:jax._src.xla_bridge:An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+2026-10-21 09:47:49.395 | INFO     | cmonge.datasets.conditional_loader:setup_single_loader:83 - Setting up datamodules for abexinostat-10
+2026-10-21 09:47:49.397 | INFO     | cmonge.datasets.single_loader:loader:269 - 50 marker genes are saved for evaluation.
+2026-10-21 09:47:49.397 | INFO     | cmonge.datasets.single_loader:splitter:80 - Splitting dataset started.
+2026-10-21 09:47:49.584 | INFO     | cmonge.datasets.single_loader:splitter:121 - Target dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:49.584 | INFO     | cmonge.datasets.single_loader:splitter:124 - Control dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:49.584 | INFO     | cmonge.datasets.single_loader:splitter:127 - Splitting finished.
+2026-10-21 09:47:49.584 | INFO     | cmonge.datasets.conditional_loader:setup_single_loader:83 - Setting up datamodules for belinostat-10
+2026-10-21 09:47:49.586 | INFO     | cmonge.datasets.single_loader:loader:269 - 50 marker genes are saved for evaluation.
+2026-10-21 09:47:49.586 | INFO     | cmonge.datasets.single_loader:splitter:80 - Splitting dataset started.
+2026-10-21 09:47:49.590 | INFO     | cmonge.datasets.single_loader:splitter:121 - Target dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:49.590 | INFO     | cmonge.datasets.single_loader:splitter:124 - Control dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:49.590 | INFO     | cmonge.datasets.single_loader:splitter:127 - Splitting finished.
+2026-10-21 09:47:49.590 | INFO     | cmonge.datasets.conditional_loader:setup_single_loader:83 - Setting up datamodules for dacinostat-10
+2026-10-21 09:47:49.591 | INFO     | cmonge.datasets.single_loader:loader:269 - 50 marker genes are saved for evaluation.
+2026-10-21 09:47:49.591 | INFO     | cmonge.datasets.single_loader:splitter:80 - Splitting dataset started.
+2026-10-21 09:47:49.594 | INFO     | cmonge.datasets.single_loader:splitter:121 - Target dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:49.594 | INFO     | cmonge.datasets.single_loader:splitter:124 - Control dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:49.594 | INFO     | cmonge.datasets.single_loader:splitter:127 - Splitting finished.
+2026-10-21 09:47:50.258 | INFO     | cmonge.trainers.ae_trainer:train:147 - Training started.
+2026-10-21 09:47:50.643 | INFO     | cmonge.trainers.ae_trainer:train:153 - train/loss - epoch 0: 36.536376953125
+2026-10-21 09:47:50.653 | INFO     | cmonge.trainers.ae_trainer:train:153 - train/loss - epoch 1: 34.91378402709961
+2026-10-21 09:47:50.653 | INFO     | cmonge.trainers.ae_trainer:save_model:189 - Saving model checkpoint to autoencoder_50_cond-sciplex_homogeneous_
+2026-10-21 09:47:50.753 | INFO     | cmonge.trainers.ae_trainer:save_model:198 - Model checkpoint saved.
+2026-10-21 09:47:50.753 | INFO     | cmonge.trainers.ae_trainer:train:181 - Training finished.
+2026-10-21 09:47:50.772 | INFO     | cmonge.trainers.ae_trainer:load_model:205 - Loading AE model checkpoint from /home/chang/arc/stage2/01_setup/cmonge/output/ae/cond-sciplex, autoencoder_50_cond-sciplex_homogeneous_
+WARNING:absl:The transformations API will eventually be replaced by an upgraded design. The current API will not be removed until this point, but it will no longer be actively worked on.
+2026-10-21 09:47:50.781 | INFO     | cmonge.trainers.ae_trainer:load_model:214 - AE Model checkpoint loaded.
+2026-10-21 09:47:50.781 | INFO     | cmonge.trainers.ae_trainer:load_model:215 - AE Model: autoencoder_50_cond-sciplex_homogeneous_
+2026-10-21 09:47:50.783 | INFO     | cmonge.datasets.conditional_loader:setup_single_loader:83 - Setting up datamodules for abexinostat-10
+2026-10-21 09:47:50.784 | INFO     | cmonge.datasets.single_loader:loader:269 - 50 marker genes are saved for evaluation.
+2026-10-21 09:47:50.784 | INFO     | cmonge.datasets.single_loader:splitter:80 - Splitting dataset started.
+2026-10-21 09:47:50.787 | INFO     | cmonge.datasets.single_loader:splitter:121 - Target dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:50.787 | INFO     | cmonge.datasets.single_loader:splitter:124 - Control dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:50.787 | INFO     | cmonge.datasets.single_loader:splitter:127 - Splitting finished.
+2026-10-21 09:47:50.787 | INFO     | cmonge.datasets.conditional_loader:setup_single_loader:83 - Setting up datamodules for belinostat-10
+2026-10-21 09:47:50.788 | INFO     | cmonge.datasets.single_loader:loader:269 - 50 marker genes are saved for evaluation.
+2026-10-21 09:47:50.789 | INFO     | cmonge.datasets.single_loader:splitter:80 - Splitting dataset started.
+2026-10-21 09:47:50.790 | INFO     | cmonge.datasets.single_loader:splitter:121 - Target dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:50.791 | INFO     | cmonge.datasets.single_loader:splitter:124 - Control dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:50.791 | INFO     | cmonge.datasets.single_loader:splitter:127 - Splitting finished.
+2026-10-21 09:47:50.791 | INFO     | cmonge.datasets.conditional_loader:setup_single_loader:83 - Setting up datamodules for dacinostat-10
+2026-10-21 09:47:50.792 | INFO     | cmonge.datasets.single_loader:loader:269 - 50 marker genes are saved for evaluation.
+2026-10-21 09:47:50.792 | INFO     | cmonge.datasets.single_loader:splitter:80 - Splitting dataset started.
+2026-10-21 09:47:50.794 | INFO     | cmonge.datasets.single_loader:splitter:121 - Target dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:50.794 | INFO     | cmonge.datasets.single_loader:splitter:124 - Control dataset number of cells - train: (800,), valid: (200,), test: (0,).
+2026-10-21 09:47:50.794 | INFO     | cmonge.datasets.single_loader:splitter:127 - Splitting finished.
+2026-10-21 09:47:50.794 | INFO     | cmonge.trainers.ot_trainer:__init__:42 - JAX uses cpu for trianing.
+2026-10-21 09:47:50.794 | INFO     | cmonge.models.embedding:__init__:67 - Calculating RDKit embedding vectors
+cond-sciplex homogeneous
+  0%|          | 0/17869 [00:00<?, ?it/s]  0%|          | 32/17869 [00:00<01:44, 170.49it/s]  0%|          | 64/17869 [00:00<01:27, 204.36it/s]  1%|▏         | 224/17869 [00:00<00:28, 616.58it/s]  3%|▎         | 480/17869 [00:00<00:14, 1203.91it/s]  4%|▍         | 736/17869 [00:00<00:10, 1610.22it/s]  6%|▌         | 992/17869 [00:00<00:09, 1871.43it/s]  8%|▊         | 1504/17869 [00:00<00:07, 2231.23it/s] 11%|█▏        | 2016/17869 [00:01<00:08, 1961.02it/s] 14%|█▍        | 2528/17869 [00:01<00:08, 1837.46it/s] 17%|█▋        | 3040/17869 [00:01<00:09, 1637.49it/s] 20%|█▉        | 3552/17869 [00:02<00:09, 1523.48it/s] 23%|██▎       | 4064/17869 [00:02<00:08, 1570.10it/s] 26%|██▌       | 4576/17869 [00:03<00:08, 1500.29it/s] 28%|██▊       | 5088/17869 [00:03<00:09, 1386.94it/s] 31%|███▏      | 5600/17869 [00:03<00:09, 1361.27it/s] 34%|███▍      | 6112/17869 [00:04<00:09, 1191.44it/s] 37%|███▋      | 6624/17869 [00:04<00:09, 1163.25it/s] 40%|███▉      | 7136/17869 [00:05<00:09, 1166.21it/s] 43%|████▎     | 7648/17869 [00:05<00:09, 1052.81it/s] 46%|████▌     | 8160/17869 [00:06<00:09, 1067.42it/s] 49%|████▊     | 8672/17869 [00:06<00:08, 1085.30it/s] 51%|█████▏    | 9184/17869 [00:07<00:07, 1097.38it/s] 54%|█████▍    | 9696/17869 [00:07<00:07, 1054.55it/s] 57%|█████▋    | 10208/17869 [00:08<00:07, 1080.87it/s] 60%|█████▉    | 10720/17869 [00:08<00:06, 1098.47it/s] 63%|██████▎   | 11232/17869 [00:09<00:06, 1044.98it/s] 66%|██████▌   | 11744/17869 [00:09<00:05, 1055.35it/s] 69%|██████▊   | 12256/17869 [00:10<00:05, 1033.04it/s] 71%|███████▏  | 12768/17869 [00:10<00:04, 1132.19it/s] 74%|███████▍  | 13280/17869 [00:11<00:04, 1064.30it/s] 77%|███████▋  | 13792/17869 [00:14<00:11, 361.31it/s]  80%|████████  | 14304/17869 [00:15<00:08, 440.68it/s] 81%|████████  | 14400/17869 [00:15<00:08, 410.07it/s] 81%|████████  | 14496/17869 [00:15<00:08, 416.53it/s] 82%|████████▏ | 14688/17869 [00:16<00:06, 488.50it/s] 84%|████████▍ | 15072/17869 [00:16<00:04, 694.14it/s] 86%|████████▋ | 15456/17869 [00:16<00:02, 902.76it/s] 89%|████████▊ | 15840/17869 [00:16<00:01, 1094.18it/s] 91%|█████████ | 16224/17869 [00:16<00:01, 1170.61it/s] 93%|█████████▎| 16608/17869 [00:17<00:01, 1131.39it/s] 95%|█████████▌| 16992/17869 [00:17<00:00, 1223.02it/s] 97%|█████████▋| 17376/17869 [00:17<00:00, 1311.25it/s] 99%|█████████▉| 17760/17869 [00:18<00:00, 1251.45it/s]100%|██████████| 17869/17869 [00:18<00:00, 986.76it/s] 
+Deleting columns with std<=0.01: ['latent_90', 'latent_103', 'latent_152', 'latent_164', 'latent_187', 'latent_196']
+  0%|          | 0/10 [00:00<?, ?it/s]  0%|          | 0/10 [00:02<?, ?it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 10%|█         | 1/10 [00:02<00:18,  2.03s/it, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 20%|██        | 2/10 [00:02<00:10,  1.30s/it, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 30%|███       | 3/10 [00:02<00:05,  1.31it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 40%|████      | 4/10 [00:03<00:03,  1.94it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 50%|█████     | 5/10 [00:03<00:01,  2.65it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 60%|██████    | 6/10 [00:03<00:01,  3.42it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 70%|███████   | 7/10 [00:03<00:00,  4.16it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 80%|████████  | 8/10 [00:03<00:00,  4.83it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181] 90%|█████████ | 9/10 [00:03<00:00,  5.43it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181]100%|██████████| 10/10 [00:03<00:00,  5.96it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181]100%|██████████| 10/10 [00:03<00:00,  2.58it/s, fitting_loss: 9.3444, regularizer: 0.0736,total: 9.4181]
+2026-10-21 09:48:14.596 | INFO     | cmonge.trainers.conditional_monge_trainer:evaluate:331 - Evaluating on validation set
+2026-10-21 09:48:14.596 | INFO     | cmonge.datasets.conditional_loader:valid_dataloaders:172 - Setting up valid dataloaders.
+2026-10-21 09:48:14.720 | INFO     | cmonge.trainers.conditional_monge_trainer:evaluate_split:305 - Evaluation started on abexinostat-10 valid-set.
+2026-10-21 09:48:23.502 | INFO     | cmonge.evaluate:log_mean_metrics:70 - {'mean_wasserstein': 5.931449890136719, 'mean_mmd': 0.35658084118285127, 'mean_sinkhorn div': 5.422873020172119, 'mean_monge_gap': 12.479984283447266, 'mean_drug_signature': 5.512748544866389, 'mean_r2': 0.7846732055935729}
+2026-10-21 09:48:23.502 | INFO     | cmonge.trainers.conditional_monge_trainer:evaluate_split:305 - Evaluation started on belinostat-10 valid-set.
+2026-10-21 09:48:30.456 | INFO     | cmonge.evaluate:log_mean_metrics:70 - {'mean_wasserstein': 4.696702480316162, 'mean_mmd': 0.2827513562805475, 'mean_sinkhorn div': 4.188914775848389, 'mean_monge_gap': 12.482781410217285, 'mean_drug_signature': 4.177661115472967, 'mean_r2': 0.8713154302203737}
+2026-10-21 09:48:30.456 | INFO     | cmonge.trainers.conditional_monge_trainer:evaluate_split:305 - Evaluation started on dacinostat-10 valid-set.
+2026-10-21 09:48:37.377 | INFO     | cmonge.evaluate:log_mean_metrics:70 - {'mean_wasserstein': 5.962186813354492, 'mean_mmd': 0.3654530736815971, 'mean_sinkhorn div': 5.454399108886719, 'mean_monge_gap': 12.480575561523438, 'mean_drug_signature': 5.56458854675293, 'mean_r2': 0.8081202532850372}
+{
+  "model": "CMonge",
+  "n_genes": 100,
+  "conditions": [
+    "abexinostat-10",
+    "belinostat-10",
+    "dacinostat-10"
+  ],
+  "num_train_iters": 10,
+  "ae_epochs": 2,
+  "status": "ok",
+  "note": "official demo data; dose is a categorical condition label"
+}

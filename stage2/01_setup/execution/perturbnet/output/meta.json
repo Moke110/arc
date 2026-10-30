@@ -1,0 +1,27 @@
+{
+  "model": "PerturbNet",
+  "lincs_tensors": 816,
+  "sciplex_tensors": 816,
+  "lincs_flow_output": [
+    2,
+    10,
+    1,
+    1
+  ],
+  "sciplex_flow_output": [
+    2,
+    10,
+    1,
+    1
+  ],
+  "chemicalvae_z": [
+    2,
+    196
+  ],
+  "chemicalvae_mu": [
+    2,
+    196
+  ],
+  "chemicalvae_params": 4030982,
+  "note": "checkpoint load + latent forward; full inference needs Python 3.7/TF1.15"
+}

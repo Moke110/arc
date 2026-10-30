@@ -1,0 +1,26 @@
+/home/chang/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+/home/chang/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+/home/chang/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+Global seed set to 0
+[cpa] loading /home/chang/arc/pert_model/cpa/data/kang_normalized_hvg.h5ad
+[cpa] raw (13576, 5000)
+[cpa] smoke (2000, 5000) {'B': 250, 'CD4 T': 250, 'CD8 T': 250, 'CD14 Mono': 250, 'CD16 Mono': 250, 'DC': 250, 'NK': 250, 'T': 250}
+  0%|          | 0/2000 [00:00<?, ?it/s]100%|██████████| 2000/2000 [00:00<00:00, 246970.74it/s]
+  0%|          | 0/2000 [00:00<?, ?it/s]100%|██████████| 2000/2000 [00:00<00:00, 2228049.93it/s]
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+[34mINFO    [0m Generating sequential column names                                     
+[34mINFO    [0m Generating sequential column names                                     
+[cpa] loading checkpoint /home/chang/arc/pert_model/cpa/weights/Pretrained_Models/Kang
+[34mINFO    [0m File                                                                   
+         [35m/home/chang/arc/pert_model/cpa/weights/Pretrained_Models/Kang/[0m[95mmodel.pt[0m 
+         already downloaded                                                     
+  0%|          | 0/2000 [00:00<?, ?it/s]100%|██████████| 2000/2000 [00:00<00:00, 253478.21it/s]
+  0%|          | 0/2000 [00:00<?, ?it/s]100%|██████████| 2000/2000 [00:00<00:00, 2578729.79it/s]
+  0%|          | 0/8 [00:00<?, ?it/s]100%|██████████| 8/8 [00:00<00:00, 12313.55it/s]
+Global seed set to 6977
+  0%|          | 0/8 [00:00<?, ?it/s] 88%|████████▊ | 7/8 [00:00<00:00, 67.99it/s]100%|██████████| 8/8 [00:00<00:00, 68.96it/s]
+[cpa] prediction (2000, 5000) range 8.073599080948846e-12 281.2525939941406
+[cpa] wrote /home/chang/arc/stage2/01_setup/cpa/output/cpa_pred.npy

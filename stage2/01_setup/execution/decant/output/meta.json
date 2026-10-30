@@ -1,0 +1,11 @@
+{
+  "model": "DECANT",
+  "n_genes": 2000,
+  "params": 162384,
+  "pred_shape": [
+    4,
+    2000
+  ],
+  "dose_effect_l1": 0.004954466130584478,
+  "note": "synthetic forward; no processed cell bags or checkpoint published"
+}

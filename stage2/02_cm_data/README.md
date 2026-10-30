@@ -1,15 +1,40 @@
 # 02_cm_data — Stage 2 CM perturbation corpus and dataset bundles
 
-**Status:** built (2026-10-21). `corpus/v1/` is frozen and `datasets-1/` holds
-the five h5ad views plus bundle metadata. The build is reproducible: a rerun
-produces an identical `manifest.csv` and identical content hashes. The design
-contract is recorded in ADR 0026; this file documents what was actually built.
+**Status:** built (2026-10-21). `output/corpus/v1/` is frozen and
+`output/datasets-1/` holds the five h5ad views plus bundle metadata. The build
+is reproducible: a rerun produces an identical `manifest.csv` and identical
+content hashes. The design contract is recorded in ADR 0026; this file documents
+what was actually built.
 
 ## Purpose
 
 Give Stage 2 a **model-agnostic** cardiomyocyte perturbation corpus: frozen gene
-and drug universes (`corpus/`) plus load-ready h5ad views derived from them
-(`datasets-<n>/`).
+and drug universes (`output/corpus/`) plus load-ready h5ad views derived from
+them (`output/datasets-<n>/`).
+
+The annotation fetcher that pins the two identity assets now lives with the
+annotation 项: fetch it **first** with
+`pert_data/Annotation/script/fetch_annotation.py` (see *Pinned annotation
+assets*). It is no longer a file of this step.
+
+## Layout
+
+```
+02_cm_data/
+├── AGENTS.md  README.md            # agent routing index + this human summary
+├── execution/                      # everything an agent runs
+│   ├── build_cm_datasets.py        # CLI: --check, --corpus-only, --rebuild-corpus
+│   ├── cmdata/                     # the library (sources, genes, drugs, views, QA)
+│   └── tests/test_cmdata.py        # 23 unit + built-bundle contract tests
+└── output/                         # the frozen products the benchmark step reads
+    ├── corpus/v1/                  # genes + compounds, no expression matrices
+    └── datasets-1/                 # the five h5ad views + bundle metadata
+```
+
+The split is the ADR 0030 step contract: `execution/` is code and intermediates,
+`output/` is what a later step reads or a human must know exists. Code resolves
+the repository root and its own `output/` by walking up to the directory that
+contains `.git`, never by counting parents.
 
 It is **not** Stage 1's `Union finetune data`: no 978-landmark subset, no
 per-plate quantile alignment to the L1000 pretrain, no `drug_idx < 8981` / HG
@@ -36,8 +61,9 @@ provenance anchor and stays on the raw folder:
 | `screen_ctox` | GSE244740 | ScreenSeq | 33 cardiotoxicants + 9 non-cardiotoxicants | `pert_data/GSE244740/source` |
 | `temp_env` | GSE262419 | TempO-Seq | 464 environmental chemicals | `pert_data/GSE262419/source` |
 
-The mapping is defined once in `cmdata/paths.py` (`SOURCE_ACCESSIONS`) and is
-repeated in `corpus/v1/README.md` and `qa_report.md`. The build writes the
+The mapping is defined once in `execution/cmdata/paths.py` (`SOURCE_ACCESSIONS`) and
+is repeated in `output/corpus/v1/README.md` and `output/datasets-1/qa_report.md`. The
+build writes the
 dataset id into every view file name, `obs` value and QA gate; only the raw
 inputs and the read-only Stage 1 baseline keep the accession (QA translates the
 Stage 1 well ids before comparing). Historical Stage 1 artifacts and the
@@ -48,17 +74,17 @@ Stage 1 well ids before comparing). Historical Stage 1 artifacts and the
 | layer | content | where |
 |---|---|---|
 | **source** | the four raw datasets | `pert_data/` (read-only) |
-| **CM perturbation corpus** | frozen gene set + drug set, **no expression matrices** | `corpus/v1/` |
-| **dataset bundle** | one build output: h5ad views + metadata | `datasets-1/` |
+| **CM perturbation corpus** | frozen gene set + drug set, **no expression matrices** | `output/corpus/v1/` |
+| **dataset bundle** | one build output: h5ad views + metadata | `output/datasets-1/` |
 
 A view = corpus + one filter rule. `datasets-2` and later bundles reuse the same
 corpus; the build hard-fails if a source introduces a gene or drug outside it
 (see *Drift*).
 
-## Corpus (`corpus/v1/`)
+## Corpus (`output/corpus/v1/`)
 
 ```
-corpus/v1/
+output/corpus/v1/
 ├── genes.csv               # fixed-order HGNC symbols + entrez/ensembl + match provenance
 ├── compounds.csv           # every SMILES-resolvable small molecule, all pharmacology tiers as boolean columns
 ├── excluded_compounds.csv  # perturbagens/technical blanks that never enter the corpus, with reasons
@@ -76,10 +102,10 @@ corpus/v1/
   pharmacology**; the tiers are boolean columns, not pre-applied filters:
   `atc-moa` 177, `atc-moa-mesh` 316, `all-smiles` 525.
 
-## Bundle `datasets-1/`
+## Bundle `output/datasets-1/`
 
 ```
-datasets-1/
+output/datasets-1/
 ├── dtoxs_cm.h5ad                  # primary + iPSC merged; cell_type kept as a covariate
 ├── screen_ctox.h5ad
 ├── temp_env_atc-moa.h5ad         # pharmacology tier: ATC ∪ ChEMBL MoA
@@ -105,10 +131,11 @@ while the `AMI` state carries a **pentyl-benzofuran homolog structure**
 (CID 16218975), not amiodarone. Structure-first identity keeps that arm in
 `all-smiles` but not in `atc-moa`. `manifest.csv` is authoritative.
 
-`datasets-1/` is a local data-lake output: the five `h5ad` files and
+`output/datasets-1/` is a local data-lake output: the five `h5ad` files and
 `gene_crosswalk.csv` are large and gitignored. `manifest.csv`, `compounds.csv`
-and `qa_report.md` are committed as the build record; rerunning the build
-recreates every file.
+and `qa_report.md` are committed as the build record — `git mv` kept them
+tracked when they moved under the ignored `output/` tree — and rerunning the
+build recreates every file.
 
 The three `temp_env` views are filtered projections of **one** corpus: the
 retained rows are value-identical across files, and they share the same 272
@@ -193,54 +220,80 @@ inhibitor, 16 wells; Inman et al. 2002, *Mol Pharmacol* 62:65-74). The three
 
 ## Pinned annotation assets
 
-The build makes **no network call**. Two read-only assets are pinned by
-`pert_data/Annotation/script/fetch_annotation.py` — the HGNC download under
-`pert_data/Annotation/source/`, the compound snapshot under `pert_data/Annotation/local/`:
+The build makes **no network call**. Two read-only assets are pinned by the
+annotation item's fetcher — **fetch the annotation first**:
+`pert_data/Annotation/script/fetch_annotation.py` (moved there from this step in
+the ticket-03 restructure). The HGNC download lands under
+`pert_data/Annotation/source/`, the compound snapshot under
+`pert_data/Annotation/local/`:
 
 | asset | content | provenance |
 |---|---|---|
 | `hgnc_complete_set.txt` | 45,277 HGNC rows: symbol, aliases, previous symbols, Entrez, Ensembl | HGNC complete set, URL/date/checksum in `pert_data/Annotation/local/README.md` |
 | `cm_compound_annotation.csv` | 547 `(name, source-structure)` rows: parent/exact InChIKey, SMILES, PubChem CID, ChEMBL id, ATC, MoA, MeSH | one-time public-registry snapshot derived from the Stage 1 external audit (PubChem/UniChem/ChEMBL/RxNav) |
 
-`fetch_annotation.py --hgnc` downloads and pins HGNC; `--compounds
---from-audit <csv>` snapshots the registry table; `--refresh` re-queries the
-registries when the upstream audit is unavailable. Gene and drug identity is
-resolved from these assets; the build never calls an API.
+```bash
+python pert_data/Annotation/script/fetch_annotation.py --hgnc            # HGNC
+python pert_data/Annotation/script/fetch_annotation.py --compounds \
+  --from-audit <stage1-audit.csv>                                        # registry
+```
+
+`--hgnc` downloads and pins HGNC; `--compounds --from-audit <csv>` snapshots the
+registry table; `--refresh` re-queries the registries when the upstream audit is
+unavailable. Gene and drug identity is resolved from these assets; the build
+never calls an API.
 
 ## Build
 
 ```bash
-python stage2/02_cm_data/build_cm_datasets.py --bundle datasets-1
+python stage2/02_cm_data/execution/build_cm_datasets.py --bundle datasets-1
 ```
 
 Single entry point: sources → in-memory corpus → filtered views. Deterministic
 (fixed var order, stable row order, frozen corpus). A rerun writes an identical
-`manifest.csv` (same content hashes and file sizes). The Stage 2 package:
+`manifest.csv` (same content hashes and file sizes) into `output/datasets-1/`.
+The library behind it (`execution/cmdata/`) is:
 
-```
-02_cm_data/
-├── build_cm_datasets.py     # CLI: --check, --corpus-only, --rebuild-corpus
-├── fetch_annotation.py      # pins HGNC + compound registry snapshot
-├── cmdata/
-│   ├── sources.py           # vendored Stage 1 loaders + Stage 2 fixes
-│   ├── genes.py             # HGNC identity, crosswalk, intersection, drift
-│   ├── drugs.py             # InChIKey identity, tiers, exclusions
-│   ├── views.py             # one writer + schema gate for all five views
-│   ├── corpus.py            # freeze/verify corpus/v1
-│   ├── qa.py                # cross-view gates, Stage 1 regression, report
-│   └── primary_doses.py     # DToxS literature concentrations (copied)
-├── tests/test_cmdata.py     # unit + built-bundle contract tests
-├── corpus/v1/               # frozen genes + compounds (no matrices)
-└── datasets-1/              # the five h5ad views + bundle metadata
-```
+| module | role |
+|---|---|
+| `sources.py` | vendored Stage 1 loaders + Stage 2 fixes |
+| `genes.py` | HGNC identity, crosswalk, intersection, drift |
+| `drugs.py` | InChIKey identity, tiers, exclusions |
+| `views.py` | one writer + schema gate for all five views |
+| `corpus.py` | freeze/verify `output/corpus/v1` |
+| `qa.py` | cross-view gates, Stage 1 regression, report |
+| `primary_doses.py` | DToxS literature concentrations (copied) |
+| `paths.py` | repo-root walk-up resolver + frozen expectations |
 
-Useful modes:
+## Reproduce
+
+Run from the repository root with the `arc` environment. Each command resolves
+paths from the repo root (`.git` walk-up), so it works from the new location
+without any `cd`.
 
 ```bash
-python stage2/02_cm_data/build_cm_datasets.py --check        # source counts
-python stage2/02_cm_data/build_cm_datasets.py --corpus-only  # freeze/verify
-python stage2/02_cm_data/build_cm_datasets.py --rebuild-corpus  # deliberate v2 edit
-python -m unittest discover -s stage2/02_cm_data/tests -v
+PY=/home/chang/miniconda3/envs/arc/bin/python
+
+# 1. check that the four raw sources still parse with the expected counts
+$PY stage2/02_cm_data/execution/build_cm_datasets.py --check
+
+# 2. validate the frozen corpus view (no build, no writes): re-derives the gene
+#    and drug universes from the sources and fails on any drift against
+#    output/corpus/v1/
+$PY stage2/02_cm_data/execution/build_cm_datasets.py --corpus-only
+
+# 3. rebuild the bundles from the validated corpus (5 h5ad views + metadata,
+#    gitignored; ~1 min, needs ~8 GB RAM); a rerun reproduces manifest.csv
+$PY stage2/02_cm_data/execution/build_cm_datasets.py --bundle datasets-1
+
+# 4. the contract suite: 23 unit + built-bundle tests against output/
+$PY -m unittest discover -s stage2/02_cm_data/execution/tests -v
+```
+
+Promoting a new corpus version is a deliberate edit, never a silent rebuild:
+
+```bash
+$PY stage2/02_cm_data/execution/build_cm_datasets.py --rebuild-corpus
 ```
 
 The loaders are a **copy** of
@@ -267,7 +320,7 @@ reference, never imported.
 
 ### Drift
 
-If a rerun finds a gene or drug outside `corpus/v1/`, the build **fails** and
+If a rerun finds a gene or drug outside `output/corpus/v1/`, the build **fails** and
 lists the diff. Promoting a new corpus version (`v2`) is a deliberate edit, not
 a silent rebuild.
 
@@ -297,8 +350,8 @@ the intersection size, salt collapses, and the final per-view counts.
 
 - All gates pass: five-view `var` identity, tier nesting and value identity,
   272 shared `temp_env` controls, per-source well/dose/count regression.
-- `corpus/v1`: 18,164 genes; 525 drug keys; tiers 177 / 316 / 525.
-- `datasets-1`: 1,075 / 3,072 / 1,319 / 2,582 / 4,478 rows and 46 / 42 / 113 /
+- `output/corpus/v1`: 18,164 genes; 525 drug keys; tiers 177 / 316 / 525.
+- `output/datasets-1`: 1,075 / 3,072 / 1,319 / 2,582 / 4,478 rows and 46 / 42 / 113 /
   252 / 460 drug keys. `manifest.csv` is authoritative for bytes and content
   hashes; a rerun reproduces it exactly.
 
