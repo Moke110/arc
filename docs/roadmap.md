@@ -68,53 +68,6 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
 
 ## Stage 2 — model setup and selection (active)
 
-**Objective.** Select the open-source whole-transcriptome drug-perturbation model that
-should produce the perturbomes feeding future MIRI drug scoring. The objective is
-unchanged; the plan is now staged so that model setup is not blocked by benchmark
-design.
-
-**Setup (current).** Prove that the nine deployed non-preprint models can run on
-their native assets on this machine. Per model: a pinned environment, a load/train
-run, one prediction artifact, a run log, and a one-page run card. No cross-model
-metrics, no folds, no CM adaptation, and no benchmark design yet.
-
-| model | native asset | smoke target | caveat |
-|---|---|---|---|
-| PRnet | LINCS checkpoint + 978-gene demo | `test_demo.py` | **setup-only**; 978 is quarantined from Stage 2 evaluation |
-| CPA | Kang checkpoint + Kang h5ad | load and predict held-out Kang cells | IFN-β stimulation, not a chemical screen |
-| chemCPA | public `ComPert` checkpoints | load and forward | public weights are L1000 977 / 2,000 genes, 188 drugs — **not** 5,000/20,570; real-data inference needs retraining |
-| biolord | none published | train a small model on `GSM_new` | per-drug categories, not a cold-drug structural model |
-| PerturbNet | LINCS/sci-Plex cINN + ChemicalVAE | load and latent forward | full inference needs Python 3.7 / TF 1.15 |
-| scVIDR | none published | synthetic 2,000-gene train + dose predict | dose is log-linear latent interpolation |
-| Squidiff | none published | 2,000-gene drug-structure forward | dose is `rFCFP × log10(dose+1)` |
-| CMonge | bundled sciplex demo | official demo train + eval | 100-gene demo; categorical dose conditions |
-| DECANT | none published | 2,000-gene synthetic forward | no processed cell bags or checkpoint |
-
-Preprint models (X-Pert, DORA, BaiZe, PerturbLDM) are excluded and their code is
-not vendored. WAVE and ExPO are reference-only (no dose / 978-only).
-
-**978 quarantine.** PRnet's native demo uses the 978-landmark LINCS matrix. It is
-allowed only under `stage2/01_setup/prnet/` and its outputs are labelled
-`setup-only`. No later Stage 2 evaluation reads a 978 artifact; the
-whole-transcriptome guard still applies to Stage 2 itself.
-
-**Environment.** One dedicated environment per model; the shared `arc` env is not
-modified. Existing four keep `arc-stage2-bringup-<model>`; new models use the same
-prefix; biolord and CMonge keep their dedicated venv overlays. The exact commands
-and resolved package versions live in each run card.
-
-**Layout.** `stage2/PLAN.md`, `stage2/01_setup/<model>/`, and
-`stage2/audit/`. The old `cm_bench_v1` benchmark is archived at
-`stage2/_archive/cm_bench_v1/` and is not a dependency.
-
-**Exit condition.** 9/9 run cards with a successful command and a saved artifact; any
-blocked model recorded with its exact error; no upstream model code edited; a short
-setup summary states which models are ready for the selection stage.
-
-**Selection stage — deferred.** After setup, decide which model(s) deserve CM adaptation,
-which gene space (978 / 5,000 / 20,570) to evaluate, whether CPA/biolord need chemical
-retraining, and what metric/folds to use. No benchmark design is fixed now.
-
-**Status.** Setup completed 2026-10-19; results and selection-stage implications at
-`stage2/01_setup/SUMMARY.md`. Plan at `stage2/PLAN.md`; audit at
-`stage2/audit/entrant_audit.md`. `cm_bench_v1` is archived, not deleted.
+Stage 2's current state, benchmark results, and selection constraints are written up in
+`stage2/README.md` (agent routing: `stage2/AGENTS.md`); its plan and the `cm_bench_v1`
+benchmark are archived under `stage2/_archive/`, so this roadmap no longer duplicates them.
