@@ -26,6 +26,7 @@ repository root in `stage1/` and is not a dependency here.
   wells, splits, entrants and seeds on a 5,000-gene HVG axis (rank-sum over
   `dtoxs_cm`, `screen_ctox`, `temp_env_all-smiles`); decision and leakage
   declaration in ADR 0028. It is not a replacement leaderboard.
+- `04_tahoe_pretrain/` — Tahoe-100M data home + the Stage 2 bulk pretrain corpus: the full atlas (3,388 shards, 95.6M cells, 428.8 GB) is imported under `pert_data/tahoe/`; `script/build_pseudobulk.py` builds the well-level `(plate, well, cell_line)` pseudobulk corpus (67,018 profiles × 62,710 genes, raw counts + `log1p_cp10k`, `DMSO_TF` as control rows) into `output/pseudobulk/`, with `qa_report.md` vs the authors' DESeq2 DE; contract + measurements in ADR 0029; `script/verify_import_offline.py` is the offline import check.
 - `audit/` — the 14-model entrant audit moved from `cm_bench_v1` (selection
   record; not an active benchmark), the 2026-10-26 fairness audit, and
   `model_selection_decisions.md` (governs current follow-up candidates).

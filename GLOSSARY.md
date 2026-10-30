@@ -75,13 +75,27 @@ The DToxS center's well-level Level-3 deposit (LINCS LDG-1452), released flat at
 The author-provided L1000 HG embedding table (rows 0–8980, `drug_idx < 8981`), workflow-owned at `stage1/xpert-fda-miri-v1/input/HG_drug_embeddings.npy`. A compound is an **in-HG drug** when it resolves to a row of this table (canonical-SMILES or author `cmap_name` match); compounds resolving only to the FDA-extension rows (≥ 8981) or not at all are excluded from finetune and recorded in the step-03 manifest.
 _Avoid_: HG-resolved, drug-set member
 
-**Single-cell CM encoding**:
-The convention that every CM finetune sample carries one shared cell identity — `cell_iname="cardiomyocyte"`, `cell_idx=0`, `tissue_idx=0` (`num_cell_id 1`) — so the model never distinguishes donors or cell lines. Biological (donor, drug) identity is not model-visible; the benchmark fold gates assert well-identity (no identical well in train and test) and drug identity (cold-drug test drugs excluded from every finetune dataset's train).
-_Avoid_: cardio cell, per-donor encoding
+**Collapsed CM cell identity**:
+The convention that every CM finetune sample carries one shared cell identity — `cell_iname="cardiomyocyte"`, `cell_idx=0`, `tissue_idx=0` (`num_cell_id 1`) — so the model never distinguishes donors or cell lines. Biological (donor, drug) identity is not model-visible; the benchmark fold gates assert well-identity (no identical well in train and test) and drug identity (cold-drug test drugs excluded from every finetune dataset's train). A model-schema convention, not a statement about data modality: every CM source is a **Bulk profile**.
+_Avoid_: single-cell CM encoding (reads as data modality), cardio cell, per-donor encoding
 
 **Finetune concentration**:
 The per-drug real µM concentration used to bin each finetune sample's dose via the author `assign_pert_dose_corrected` scheme. Sources: the DToxS-primary paper Table S1 (23 KIs), the iPSC-CM series matrix (shared non-KIs, verified 22/23 match), and literature-curated clinical Cmax with citations for the remaining 8 primary-only drugs (SB-431542 uses its standard in-vitro assay concentration — it has no clinical Cmax). This amends the "no external database" provenance rule for the dose field only: concentrations must be cited.
 _Avoid_: single-dose convention, dose 0
+
+### Transcriptome scale
+
+**Bulk profile**:
+The transcriptome of one physical sequencing library pooled from many cells — one library per culture well. All four CM sources are this kind (two whole-transcriptome RNA-seq, one ScreenSeq 3′ UMI plate RNA-seq, one TempO-Seq targeted panel).
+_Avoid_: bulk data, bulk expression, bulk (unqualified)
+
+**Pseudobulk profile**:
+Counts summed across the cells of one cell line inside one well (or one plate-matched group) of a single-cell atlas — an analysis-level aggregate, not a physical library. The bulk form of Tahoe-100M is this kind, never a Bulk profile.
+_Avoid_: bulk profile, pseudo bulk, pooled single cell
+
+**Well**:
+One culture well holding one perturbation condition: the row key of both the CM dataset bundles and the Tahoe pseudobulk corpus. Tahoe-100M calls it a `sample` (96 wells per plate, 1,344 wells in 14 plates), so the two vocabularies must be translated explicitly.
+_Avoid_: sample (when meaning well), culture
 
 ### Workflow step layouts
 
