@@ -1,6 +1,6 @@
 # ARC
 
-AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository is split into four categories: dev-tool files, drug perturbation prediction components, Stage 1 drug-repositioning workflows (`stage1/`), and Stage 2 model setup/selection (`stage2/`).
+AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository holds four external-source data/model categories (one directory per download source; see *External data provenance*), the Stage 1 drug-repositioning workflows (`stage1/`), Stage 2 model setup/selection (`stage2/`), and dev-tool files.
 
 ## Language
 
@@ -21,6 +21,11 @@ _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
 
 ### External data provenance
+
+The repository has four external-source categories — `pert_data/`, `pert_model/`,
+`disease_data/`, and `drug_emb_model/` — holding 27 项 in total (8 + 14 + 3 + 2), one per
+download source. Each 项 is verified offline from its tracked manifest by
+`script/verify_all.sh`; its machine-readable record is the author log.
 
 **External item (项)**:
 One directory inside an external-source category that corresponds to exactly one download source — the unit at which provenance is recorded, named after the upstream product. Items are disjoint and each is self-contained.

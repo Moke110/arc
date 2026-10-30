@@ -56,7 +56,7 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 - [`reference/markdowns/2026_Yang_XPert.md`](../../reference/markdowns/2026_Yang_XPert.md) (PDF: [`reference/PDFs/2026_Yang_XPert.pdf`](../../reference/PDFs/2026_Yang_XPert.pdf))
   The XPert paper (transcript to md). Grounds the dual-branch design and L1000 prediction task.
-- [`reference/DToxS_article.md`](../../reference/DToxS_article.md)
+- [`reference/markdowns/2020_GSE146097_DToxS.md`](../../reference/markdowns/2020_GSE146097_DToxS.md) (PDF: [`reference/PDFs/2020_GSE146097_DToxS.pdf`](../../reference/PDFs/2020_GSE146097_DToxS.pdf))
   DToxS (cardiotoxicity hPSC-CM) dataset. Grounds what the finetune task measures.
 - [`reference/PDFs/2024_Zheng_TranSiGen.pdf`](../../reference/PDFs/2024_Zheng_TranSiGen.pdf) — the HG/contrastive-graph lineage.
 - [ADR 0002: components-as-libraries](../../docs/adr/0002-components-as-libraries.md)

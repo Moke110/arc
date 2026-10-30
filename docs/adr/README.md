@@ -11,11 +11,19 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-This initial index covers the decisions made in the Stage 1/Stage 2 era, 0009–0030.
-Earlier records (0001–0008) are outside this ticket's scope; ticket 11 completes the page.
+The index covers every record in the directory, 0001–0030 (21 + 8 = 29 files; 0023 is the
+gap). Two early records are marked superseded in place.
 
 | # | Decision |
 |---|---|
+| [0001](0001-category-taxonomy.md) | Category taxonomy for the repository root |
+| [0002](0002-components-as-libraries.md) | Components are libraries; workflows generate their own artifacts |
+| [0003](0003-conda-env-arc.md) | Conda environment renamed from xpert to arc |
+| [0004](0004-freeze-and-rebuild-fda-miri-vs.md) | fda_miri_vs frozen as xpert-fda-v1_history and rebuilt — *superseded by 0007* |
+| [0005](0005-docs-version-controlled.md) | docs/ and domain docs are version-controlled |
+| [0006](0006-hg-aligned-fda-extension.md) | HG-aligned FDA extension via author-pinned frozen inference — *superseded by 0007* |
+| [0007](0007-finalize-xpert-fda-miri.md) | Finalize the MIRI screening workflow as xpert-fda-miri-v1 |
+| [0008](0008-components-as-pure-static-libraries.md) | Components as pure static libraries (extends ADR 0002) |
 | [0009](0009-xpert-fda-miri-v2-union-cm.md) | Union-CM finetune: xpert-fda-miri-v2 |
 | [0010](0010-align-union-finetune-to-author-semantics.md) | Align the union-CM finetune data to the author L1000 semantics (xpert-fda-miri-v2) |
 | [0011](0011-flatten-pert-data-rehome-lincs-lds1593.md) | Data-lake restructure: flatten pert_data, re-home LINCS LDS-1593, delete dtoxs-xpert |
