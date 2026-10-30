@@ -10,5 +10,5 @@ the downloaded feature tensors and pretrained weights are gitignored
 
 `source/` holds the author-provided/vendored library as given; `local/` holds declared local
 additions (HG's `AGENTS.md` routing note; KPGT has none). Every item carries `manifest.sha256`
-(442 GB hashed, 27/27 verified); `script/verify.sh` checks it offline. Category overview and
+(453.0 GB hashed, 27/27 verified); `script/verify.sh` checks it offline. Category overview and
 the Stage 1 HG-embedding role: `README.md`. Layout contract: ADR 0030.

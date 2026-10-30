@@ -12,7 +12,7 @@ per **download source** (项) under the external-data provenance contract
 └── author_log.json  source URL/version/retrieval time, local additions, verification  [tracked]
 ```
 
-`manifest.sha256` (per-file hashes over `source/` only) exists for every item — 442 GB hashed
+`manifest.sha256` (per-file hashes over `source/` only) exists for every item — 453.0 GB hashed
 across the four categories, 27/27 verified. `script/verify.sh` checks it offline, and a
 missing manifest is a failure. Run `script/verify_all.sh` from the repository root to check
 every item.

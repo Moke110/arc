@@ -25,5 +25,5 @@ Reference-only (not deployed):
 - `XPert/` — author-provided Stage 1 XPert library; no public download.
 
 Layout: ADR 0030. Category overview, exclusion table and the manual-download
-procedure: `README.md`. Every item carries `manifest.sha256` (442 GB hashed,
+procedure: `README.md`. Every item carries `manifest.sha256` (453.0 GB hashed,
 27/27 verified); `script/verify.sh` checks it offline.
