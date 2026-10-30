@@ -3,10 +3,13 @@
 #
 # Why this exists
 #   The repository's .gitignore once ignored whole directory trees, so a code file
-#   could be silently swallowed by a rule meant for data. The known example is the
-#   vendored KPGT library: `drug_emb_model/kpgt/src/data/` is untracked because the
-#   global `data/` rule matches any directory named `data`, not just `<repo>/data/`.
-#   A file that exists on disk but not in git cannot be reproduced from a clone.
+#   could be silently swallowed by a rule meant for data. The historical example is
+#   the vendored KPGT library: its `src/data/` tree was untracked because
+#   the global `data/` rule matched any directory named `data`, not just `<repo>/data/`.
+#   Ticket 05 narrowed that rule to `/data/` and the KPGT code (now tracked at
+#   `drug_emb_model/KPGT/source/src/data/`) is in git; the detection below remains as
+#   a regression guard. A file that exists on disk but not in git cannot be
+#   reproduced from a clone.
 #
 # Usage
 #   script/check_tracked.sh             run the check
@@ -22,9 +25,10 @@
 #        - workspace/archive trees that are not repository content:
 #          .scratch/, tmp/, reference/, wet_data/, .uploads/
 #   2. Compares that list with `git ls-files`.
-#   3. Groups every untracked file by the .gitignore rule that hides it, prints the
-#      known `data/` hole explicitly, and reports trees that are untracked *by
-#      documented design* (EXPECTED_IGNORED below) separately, so nothing is silent.
+#   3. Groups every untracked file by the .gitignore rule that hides it, flags any
+#      file hidden by an over-broad `data/` rule explicitly, and reports trees that
+#      are untracked *by documented design* (EXPECTED_IGNORED below) separately, so
+#      nothing is silent.
 #   4. Prints a PASS/FAIL summary and the exit code.
 #
 # Exit status
@@ -139,14 +143,14 @@ main() {
   echo "untracked: $((exp_count + fail_count))  (documented expected-ignored: $exp_count, holes: $fail_count)"
   echo
 
-  # 4a. The known hole: the global `data/` rule swallowing code.
+  # 4a. Regression guard: an over-broad `data/` rule swallowing code again.
   local data_rule_rows="$tmpdir/data_rule.tsv"
   awk -F'\t' '$1 ~ /:data\/$/ { print $2 }' "$fail_rows" | LC_ALL=C sort >"$data_rule_rows"
   local data_rule_count
   data_rule_count="$(grep -c '' "$data_rule_rows" 2>/dev/null || true)"
   if [ "${data_rule_count:-0}" -gt 0 ]; then
-    echo "KNOWN HOLE — the global \`data/\` ignore rule swallows code ($data_rule_count files)"
-    echo "  rule: \`data/\` from .gitignore matches ANY directory named data, not just <repo>/data/"
+    echo "HOLE — an over-broad \`data/\` ignore rule swallows code ($data_rule_count files)"
+    echo "  rule: a `data/` pattern matches ANY directory named data, not just <repo>/data/"
     awk -F/ '{
       for (i = 1; i < NF; i++) if ($i == "data") {
         d = "";
@@ -155,10 +159,7 @@ main() {
         next
       }
     }' "$data_rule_rows" | LC_ALL=C sort | uniq -c | awk '{ printf "  %6d  %s\n", $1, $2 }'
-    if grep -q '^drug_emb_model/kpgt/' "$data_rule_rows"; then
-      echo "  ^ the vendored KPGT library (drug_emb_model/kpgt/src/data/) is the known top-priority hole"
-    fi
-    echo "  fix: track those files, or narrow the rule to \`/data/\` (owned by ticket 05)"
+    echo "  fix: track those files, or narrow the rule to \`/data/\` (root-only)"
     echo
   fi
 

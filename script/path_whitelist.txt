@@ -44,3 +44,7 @@ docs/adr/0030-external-data-provenance-and-step-layout.md
 # Archived benchmark (A3: `stage2/_archive/**` keeps historical path strings).
 stage2/_archive/cm_bench_v1/03_state/README.md
 stage2/_archive/cm_bench_v1/03_state/entry.py
+# --- ticket 05: immutable ADR record quoting the pre-restructure path --------
+# ADR 0006 records the author-given HG library at `drug_emb_model/hg`, its
+# pre-ADR-0030 path; the library now lives at `drug_emb_model/HG/source/`.
+^drug_emb_model[/]hg/?$

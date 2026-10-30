@@ -21,7 +21,7 @@ import pandas as pd
 WORKFLOW_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_ROOT = WORKFLOW_ROOT.parent.parent          # repository root
 XPERT_ROOT = WORKSPACE_ROOT / "pert_model" / "XPert" / "source"
-DISEASE_DATA_ROOT = WORKSPACE_ROOT / "disease_data" / "miri"
+DISEASE_DATA_ROOT = WORKSPACE_ROOT / "disease_data"
 # The v1-era DToxS-primary well-level package, frozen byte-identically at
 # pert_data/LINCS-LDS-1593/local/v1-frozen/ (the data xpert-fda-miri-v1 used; the
 # live LINCS LDS-1593 package now lives flat at pert_data/LINCS-LDS-1593/source/).

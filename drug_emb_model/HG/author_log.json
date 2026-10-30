@@ -1,0 +1,26 @@
+{
+  "item": "HG",
+  "category": "drug_emb_model",
+  "purpose": "HeteroGNN drug biological-embedding library (author-provided; dormant, no canonical workflow consumes it directly)",
+  "retrieved_at": "unknown",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "author-provided HG library (ADR 0006)",
+      "url": null,
+      "version": "unknown",
+      "license": "unknown",
+      "method": "author-provided library; no public download command exists (ADR 0006)",
+      "path": "source/",
+      "files": 23,
+      "bytes": 293397,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09",
+  "notes": "Author-provided artefact (ADR 0006): the HeteroGNN library is dormant — no canonical workflow consumes it directly (the Stage 1 workflows consume the author HG drug-embedding table produced by it). There is no public download and no recorded upstream commit, so version is explicitly \"unknown\". `source/AGENTS.md` (the library's file-content index) was a tracked file before the restructure and moved with the library; it is included in the source/ count. The count includes 10 regenerable `__pycache__/*.pyc` files under source/src/__pycache__/ (gitignored; ticket 10 removes all __pycache__). Split from the old lowercase `hg/` directory in ticket 05 (spec §5); only the feature_extract/ and models/ asset trees of the sibling KPGT item are gitignored, so HG code stays tracked."
+}

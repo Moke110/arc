@@ -133,7 +133,7 @@ cells = [
          "!python 07_xpert_predict/zscore.py"),
 
     md("## Step 08 — MIRI reference gene sets + pathways\n\n"
-       "Consumes the per-GSE DEG lists in `disease_data/miri/{GSE}/deg/` and "
+       "Consumes the per-GSE DEG lists in `disease_data/{GSE}/local/deg/` and "
        "produces the integrated reference (`MIRI_up-down.json`, "
        "`MIRI_rank.json`). `input/MIRI_pathways.json` is static (curated)."),
     code("!python 08_miri_phenotype/miri_phenotype.py"),

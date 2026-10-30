@@ -42,11 +42,15 @@ env/
 *.parquet
 *.feather
 *.h5ad
-data/
+# Root-only: a bare `data/` matched ANY directory named data and silently ignored
+# vendored code such as drug_emb_model/KPGT/source/src/data/ (ticket 05).
+/data/
 datasets/
 
-# Data lake directories (large artifacts)
-*_data/*
+# Wet-lab validation raw data (result figures + animal-experiment plan) is ignored
+# on purpose. It used to be hidden by the broad `*_data/*` rule, which also made
+# the tracked `disease_data/` category fragile; that rule is retired (ticket 05).
+/wet_data/
 
 # External items (ADR 0030): source/ and local/ stay out of git; provenance
 # (script/, author_log.json, manifest.sha256) and item docs must stay tracked.
@@ -92,11 +96,26 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # (script/, author_log.json, manifest.sha256) and item docs must stay tracked.
 # The vendored model clones live under each item's source/ (ticket 04).
 /pert_model/*/source/
-/pert_model/*/local/
-# Exceptions: small notes in local/ stay tracked (git cannot re-include a file
-# under an excluded directory; see the ticket-04 resolution).
-!pert_model/*/local/*.md
-!pert_model/*/local/*.txt
+# Exclude the *contents* of local/ (not the directory itself) so the two
+# negations below can re-include small notes; excluding the directory made them
+# inert (ticket 05).
+/pert_model/*/local/*
+# Exceptions: small notes in local/ stay tracked.
+!/pert_model/*/local/*.md
+!/pert_model/*/local/*.txt
+
+# External items (ADR 0030) — disease_data / drug_emb_model (ticket 05).
+# `disease_data` ends in `_data`, which the old broad rule matched; the negation
+# keeps the category's item docs, scripts and author logs trackable.
+!/disease_data/*
+# Only the upstream GEO-derived acquisition tree is external. `local/deg/` is
+# small and its tracked DEG JSONs must stay in git (spec §4 omits a local rule).
+/disease_data/*/source/
+# drug_emb_model is code: only the downloaded feature tensors and pretrained
+# weights are large external assets; src/ and scripts/ stay tracked.
+/drug_emb_model/*/source/feature_extract/
+/drug_emb_model/*/source/models/
+/drug_emb_model/*/local/
 
 # Downloaded weights/datasets used by Stage 2 setup (not repo artifacts)
 /download/
@@ -108,6 +127,11 @@ stage2/01_setup/biolord/.venv/
 # Stage 2 shared environments: venv trees are local-only (locks are tracked)
 stage2/_envs/biolord/
 stage2/_envs/cmonge/
+
+# Transitional (ticket 05): the archived 03 benchmark's staged `data/` trees were
+# hidden by the old global `data/` rule. Ticket 07 relocates them under output/
+# (already ignored) and deletes this line.
+/stage2/03_bench_models/*/data/
 
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 /archived/

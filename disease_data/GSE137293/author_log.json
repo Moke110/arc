@@ -1,0 +1,38 @@
+{
+  "item": "GSE137293",
+  "category": "disease_data",
+  "purpose": "Pig infarct scar-vs-border-zone disease input for the Stage 1 MIRI reference DEG list",
+  "retrieved_at": "2026-08-04T17:27+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE137293",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE137293",
+      "version": "GSE137293",
+      "license": "unknown",
+      "species": "Sus scrofa (pig)",
+      "method": "GEO acquisition: source/GSE137293_COUNTS.txt.gz is the GEO download; source/GSE137293_deg_results.csv is the Welch t-test scar-vs-border output written by script/build_deg.R",
+      "path": "source/",
+      "files": 2,
+      "bytes": 2582175,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE137293_scar_vs_border.json",
+      "origin": "per-GSE reference DEG list (pig-to-human direct symbol + homologene mapping to the L1000 978 landmark genes); tracked before the restructure",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE137293_human_l1000.csv",
+      "origin": "full pig-to-human L1000 DEG table; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    }
+  ],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09",
+  "notes": "GEO ACCESSION: GSE137293 (Sus scrofa, Illumina NovaSeq 6000). CAVEAT: the series has no sham control — the comparison is scar (infarct core) vs border zone (peri-infarct), which captures an injury-severity gradient rather than disease vs healthy. The gene set is derived by direct human-readable symbol matching plus homologene (inTax 9823) and filtered to the L1000 978 landmarks (map_to_human.R:species2human). Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4)."
+}

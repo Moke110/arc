@@ -1,0 +1,43 @@
+{
+  "item": "GSE160516",
+  "category": "disease_data",
+  "purpose": "Mouse MIRI disease input for the Stage 1 MIRI reference DEG list (primary rank reference)",
+  "retrieved_at": "2026-08-04T17:27+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE160516",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160516",
+      "version": "GSE160516",
+      "license": "unknown",
+      "species": "Mus musculus (mouse)",
+      "method": "GEO acquisition (Affymetrix Clariom S CEL files) followed by the limma pooled IR vs Sham DEG analysis; source/GSE160516_deg_results.csv is the limma output written by script/build_deg.R (the raw CEL inputs are not redistributed)",
+      "path": "source/",
+      "files": 1,
+      "bytes": 2004508,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE160516_MIRI.json",
+      "origin": "per-GSE MIRI reference DEG list (mouse-to-human ortholog mapped to the L1000 978 landmark genes); tracked before the restructure",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE160516_up_l1000.csv",
+      "origin": "UP half of the full mouse-to-human L1000 DEG table; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE160516_down_l1000.csv",
+      "origin": "DOWN half of the full mouse-to-human L1000 DEG table; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    }
+  ],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09",
+  "notes": "GEO ACCESSION: GSE160516 (Mus musculus, Affymetrix Clariom S). This is the workflow's primary rank reference. The gene set is derived by mouse-to-human ortholog mapping (homologene via map_to_human.R:mouse2human) and filtered to the L1000 978 landmarks. Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4)."
+}

@@ -4,7 +4,7 @@
 # Activate: conda activate arc
 #
 # This environment is the single runtime for every component and workflow in
-# the repository (pert_model/XPert, drug_emb_model/hg, stage1/xpert-fda-miri-v1,
+# the repository (pert_model/XPert, drug_emb_model/HG/source, stage1/xpert-fda-miri-v1,
 # disease_data R ortholog mapping). It is the renamed successor of the old
 # `xpert` environment, and all run.sh / notebook / config references to
 # `conda activate xpert` point here.
@@ -41,7 +41,7 @@ dependencies:
   - scanpy
   - rdkit
   - pip
-  # R for disease-data ortholog mapping (disease_data/miri scripts)
+  # R for disease-data ortholog mapping (disease_data/<GSE>/script)
   - r-base>=4.4
   - r-homologene
   - r-annotate

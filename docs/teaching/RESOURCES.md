@@ -6,17 +6,17 @@ High-trust sources for the training pipeline. Primary sources are in-repo (this 
 
 ### HG (HeteroGNN)
 
-- [AGENTS.md: `drug_emb_model/hg/AGENTS.md`](../../drug_emb_model/hg/AGENTS.md)
+- [AGENTS.md: `drug_emb_model/HG/source/AGENTS.md`](../../drug_emb_model/HG/source/AGENTS.md)
   The fastest overview of the HG component. Use for: data graph facts (edge counts, node counts), preserved-embeddings table, key workflow commands, status.
-- [`src/pretrain_hg.py`](../../drug_emb_model/hg/src/pretrain_hg.py)
+- [`src/pretrain_hg.py`](../../drug_emb_model/HG/source/src/pretrain_hg.py)
   Pretrain entrypoint. Use for: graph construction (edge types, HeteroData), NeighborLoader setup, InfoNCE contrastive training loop, early stopping.
-- [`src/finetune_hg.py`](../../drug_emb_model/hg/src/finetune_hg.py)
+- [`src/finetune_hg.py`](../../drug_emb_model/HG/source/src/finetune_hg.py)
   FDA-extension finetune. Use for: full-graph forward, low-LR design, DTI/DDS/PPI per-edge loss, cosim≥0.95 guard, norm-mapping rationale, CLI (`--update-xpert-embeddings --embeddings-output`).
-- [`src/infer_fda_hg.py`](../../drug_emb_model/hg/src/infer_fda_hg.py)
+- [`src/infer_fda_hg.py`](../../drug_emb_model/HG/source/src/infer_fda_hg.py)
   FDA node feature generation (Ridge KPGT→512) and extended-graph build. Use for: how FDA drugs enter the graph.
-- [`src/query_dti_fda.py`](../../drug_emb_model/hg/src/query_dti_fda.py) + [`src/compute_dds_fda.py`](../../drug_emb_model/hg/src/compute_dds_fda.py)
+- [`src/query_dti_fda.py`](../../drug_emb_model/HG/source/src/query_dti_fda.py) + [`src/compute_dds_fda.py`](../../drug_emb_model/HG/source/src/compute_dds_fda.py)
   FDA edge collection: ChEMBL API DTI (pChEMBL≥6.0) and Morgan/Tanimoto DDS (density-calibrated).
-- [`run.sh`](../../drug_emb_model/hg/run.sh)
+- [`run.sh`](../../drug_emb_model/HG/source/run.sh)
   Canonical pretrain invocation with exact defaults (3 layers, 256 hidden, lr 5e-4, 300 epochs, patience 30, temp 0.5, num_neg 3).
 
 ### XPert

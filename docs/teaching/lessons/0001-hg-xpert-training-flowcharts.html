@@ -34,8 +34,8 @@ into predicted gene-expression perturbations.</p>
 
 <h2>1. HG pretrain (L1000, 8,981 drugs)</h2>
 
-<p>Source: <code>drug_emb_model/hg/src/pretrain_hg.py</code>; launcher
-<code>drug_emb_model/hg/run.sh</code>.</p>
+<p>Source: <code>drug_emb_model/HG/source/src/pretrain_hg.py</code>; launcher
+<code>drug_emb_model/HG/source/run.sh</code>.</p>
 
 <pre class="flow">[drug nodes]all_drug_node_feat_8981.npy (512d)
 + [gene nodes]all_gene_node_feat_19392.npy (512d)
@@ -108,7 +108,7 @@ to match training-row norms, which is why the final std ratio is 1.000.</li>
     <h4>v0 — run it in the model dir</h4>
     <p>You ran <code>python -m src.query_dti_fda …</code>, <code>compute_dds_fda</code>,
     then <code>python -m src.finetune_hg --update-xpert-embeddings --embeddings-output embeddings/all_drugs_idx2HG.npy</code>
-    inside <code>drug_emb_model/hg/</code>. The library wrote the table itself.</p>
+    inside <code>drug_emb_model/HG/source/</code>. The library wrote the table itself.</p>
   </div>
   <div class="card v1">
     <h4>v1 — workflow step 02 owns it</h4>
@@ -236,7 +236,7 @@ can break parity with archived CSVs (<code>--force</code> is explicit).</li>
 <li>Plain-text flowcharts for quick terminal reference:
   <a href="../reference/training-flowcharts.md"><code>reference/training-flowcharts.md</code></a></li>
 <li>Primary source #1 — your own docs:
-  <a href="../../drug_emb_model/hg/AGENTS.md"><code>drug_emb_model/hg/AGENTS.md</code></a></li>
+  <a href="../../drug_emb_model/HG/source/AGENTS.md"><code>drug_emb_model/HG/source/AGENTS.md</code></a></li>
 <li>Primary source #2 — your own docs:
   <a href="../../pert_model/XPert/local/AGENTS.md"><code>pert_model/XPert/local/AGENTS.md</code></a></li>
 <li>Literature grounding: <a href="../../reference/xpert_article.md"><code>reference/xpert_article.md</code></a></li>

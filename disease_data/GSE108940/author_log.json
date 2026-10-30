@@ -1,0 +1,38 @@
+{
+  "item": "GSE108940",
+  "category": "disease_data",
+  "purpose": "Rat MIRI (myocardial ischaemia-reperfusion) disease input for the Stage 1 MIRI reference DEG list",
+  "retrieved_at": "2026-08-04T17:27+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE108940",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108940",
+      "version": "GSE108940",
+      "license": "unknown",
+      "species": "Rattus norvegicus (rat)",
+      "method": "GEO acquisition (Agilent SurePrint G3 GE 8x60K FEATURES files) followed by the limma WT IR vs WT Sham DEG analysis; source/GSE108940_WT_deg_results.csv is the limma output written by script/build_deg.R (the raw Agilent inputs are not redistributed)",
+      "path": "source/",
+      "files": 1,
+      "bytes": 2766695,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE108940_MIRI.json",
+      "origin": "per-GSE MIRI reference DEG list (rat-to-human ortholog mapped to the L1000 978 landmark genes); tracked before the restructure",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE108940_human_l1000.csv",
+      "origin": "full rat-to-human L1000 DEG table (human_gene, direction, logFC, P.Value); regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    }
+  ],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09",
+  "notes": "RAT ORIGIN: GSE108940 is a rat (Rattus norvegicus) MIRI series, not a human cohort. The gene set consumed by the workflow is derived by rat-to-human ortholog mapping (homologene via org.Rn.eg.db Entrez IDs in script/map_to_human.R:rat2human), then filtered to the human L1000 978 landmarks; the rat symbol is kept only in the JSON description, the DEG list itself is human-symbol. Split from the old shared `miri/` level under `disease_data/` in ticket 05 (spec §4): source/ is the old data/, local/deg/ the old deg/ minus build_deg.R, and both shared R helpers are copied into script/."
+}

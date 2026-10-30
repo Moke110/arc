@@ -9,7 +9,7 @@ You work on the MIRI drug-repositioning pipeline. The two trained models — HG 
 - Draw from memory the 4 training flowcharts (HG pretrain, HG FDA finetune, XPert pretrain, XPert finetune) in `[input]+[model]->[output]` notation
 - State the key hyperparameters and loss for each stage without looking
 - Explain the v0→v1 orchestration diff: what moved, who owns artifacts, why parity matters
-- Point to the exact file for any stage (e.g. "HG finetune is `drug_emb_model/hg/src/finetune_hg.py`", "XPert finetune v1 is workflow step 04")
+- Point to the exact file for any stage (e.g. "HG finetune is `drug_emb_model/HG/source/src/finetune_hg.py`", "XPert finetune v1 is workflow step 04")
 
 ## Constraints
 

@@ -1,0 +1,50 @@
+{
+  "item": "KPGT",
+  "category": "drug_emb_model",
+  "purpose": "Vendored KPGT drug-embedding model (knowledge-guided pre-training) and its downloaded feature tensors/pretrained weights",
+  "retrieved_at": "unknown",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "KPGT upstream (no URL or commit recorded)",
+      "url": null,
+      "version": "unknown",
+      "license": "Apache-2.0 (source/LICENSE)",
+      "method": "vendored copy; no upstream URL/commit is reproducible from this host, and no download command is recorded",
+      "path": "source/",
+      "files": 50,
+      "bytes": 819302,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "KPGT pretrained base weights",
+      "url": null,
+      "version": "unknown",
+      "license": "Apache-2.0 (source/LICENSE)",
+      "method": "downloaded pretrained weights kept at their natural position under source/; materialized from the external weight archive by ticket 02",
+      "path": "source/models/",
+      "files": 2,
+      "bytes": 894215942,
+      "tree_sha256": null
+    },
+    {
+      "kind": "asset",
+      "id": "KPGT input feature tensors",
+      "url": null,
+      "version": "unknown",
+      "license": "unknown",
+      "method": "downloaded feature tensors/tables (LINCS2020, GSE92742, FDA_drugs) kept at their natural position under source/",
+      "path": "source/feature_extract/",
+      "files": 6,
+      "bytes": 34997345,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest, verified_at, verify_result and tree_sha256 are filled by ticket 09; asset files/bytes are subsets of the source/ tree recorded on the repository entry",
+  "notes": "No upstream URL or commit is reproducible from this host, so version is explicitly \"unknown\" (ADR 0030 rule 1). Four files have later mtimes than the 2026-04-18 14:46 vendoring bulk and their divergence from upstream is unknown: source/src/utils.py (2026-04-25 00:27), source/scripts/extract_features.py (2026-04-25 00:28), source/src/smiles_to_kpgt_pickle.py (2026-04-25 00:28) and source/src/canonicalize_smiles.py (2026-04-25 00:44). The repository-entry count includes 14 regenerable `__pycache__/*.pyc` files (gitignored; ticket 10 removes all __pycache__). KPGT source code is repository content, not download content: only source/feature_extract/ and source/models/ are gitignored, so src/ and scripts/ stay tracked — this is the fix for the old global `data/` rule silently ignoring src/data/. Split from the old lowercase `kpgt/` directory in ticket 05 (spec §5)."
+}

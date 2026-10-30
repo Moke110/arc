@@ -2,7 +2,7 @@
 """
 Step 08 — MIRI reference gene sets + pathways.
 
-Consumes the per-GSE DEG lists in disease_data/miri/{GSE}/deg/ and produces the
+Consumes the per-GSE DEG lists in disease_data/{GSE}/local/deg/ and produces the
 integrated MIRI reference DEG list used by the efficacy scoring step:
 
   08_miri_phenotype/output/MIRI_up-down.json — union UP/DOWN gene set (majority vote)
@@ -43,8 +43,8 @@ PRIMARY_PLATFORM = "Affymetrix Clariom S"
 
 
 def load_per_gse_deg_list(gse: str) -> dict:
-    """Load the per-GSE reference JSON from disease_data/miri/{GSE}/deg/."""
-    path = DISEASE_DATA_ROOT / gse / "deg"
+    """Load the per-GSE reference JSON from disease_data/{GSE}/local/deg/."""
+    path = DISEASE_DATA_ROOT / gse / "local" / "deg"
     candidates = sorted(path.glob("*.json"))
     if not candidates:
         raise FileNotFoundError(f"No per-GSE DEG JSON found in {path}")
@@ -134,11 +134,11 @@ def build_rank_reference(per_gse: dict, l1000_meta: pd.DataFrame) -> dict:
     Uses the full DEG results of the primary GSE, filtered to human L1000
     landmarks, with signed ranks by |disease logFC|.
     """
-    deg = pd.read_csv(DISEASE_DATA_ROOT / PRIMARY_GSE / "data"
+    deg = pd.read_csv(DISEASE_DATA_ROOT / PRIMARY_GSE / "source"
                       / f"{PRIMARY_GSE}_deg_results.csv")
-    up_l1000 = pd.read_csv(DISEASE_DATA_ROOT / PRIMARY_GSE / "deg"
+    up_l1000 = pd.read_csv(DISEASE_DATA_ROOT / PRIMARY_GSE / "local" / "deg"
                            / f"{PRIMARY_GSE}_up_l1000.csv")
-    down_l1000 = pd.read_csv(DISEASE_DATA_ROOT / PRIMARY_GSE / "deg"
+    down_l1000 = pd.read_csv(DISEASE_DATA_ROOT / PRIMARY_GSE / "local" / "deg"
                              / f"{PRIMARY_GSE}_down_l1000.csv")
 
     landmark = set(l1000_meta["gene_symbol"])

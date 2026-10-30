@@ -5,7 +5,7 @@ Notation: `[category]label` = node; `+` = parallel inputs; `->` = transformation
 `lessons/0001-hg-xpert-training-flowcharts.html`.
 
 ## 1. HG pretrain (L1000, 8,981 drugs)
-`drug_emb_model/hg/src/pretrain_hg.py` · launcher `run.sh`
+`drug_emb_model/HG/source/src/pretrain_hg.py` · launcher `run.sh`
 
 ```
 [drug nodes]all_drug_node_feat_8981.npy (512d)
@@ -48,7 +48,7 @@ Notation: `[category]label` = node; `+` = parallel inputs; `->` = transformation
 -> [embs]all_drugs_idx2HG.npy (11,104x256) · FDA/Train std ratio 1.000
 ```
 v1 = workflow step 02 invokes this with `--embeddings-output` into its own dir.
-v0 = ran directly inside `drug_emb_model/hg/`.
+v0 = ran directly inside `drug_emb_model/HG/source/`.
 
 ## 3. XPert pretrain (L1000)
 `pert_model/XPert/source/pretrain/run.sh` · `pretrain/config/l1000.yaml` · `src/train.py`
