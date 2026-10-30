@@ -26,7 +26,7 @@ single-/multi-dose models are in the author's Google Drive archive.
    `nault2021_multiDose.h5ad`, and the reported `.pt` model directories.
 4. Record the archive SHA256 in `author_log.json` sources[].
 
-The 2,000-gene synthetic smoke in `stage2/01_setup/scvidr/` does **not** need
+The 2,000-gene synthetic smoke in `stage2/01_setup/execution/scvidr/` does **not** need
 this archive; it is only required for the published liver dose-response results.
 The archive was not downloaded on this host, so `source/scvidr_data/` currently
 holds only the empty upstream placeholder notebook.

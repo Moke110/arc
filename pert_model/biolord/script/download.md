@@ -23,4 +23,4 @@ says so explicitly.
 ## Notes
 
 Deployed model; no published weights (per-dataset training). Run card
-`stage2/01_setup/biolord/`.
+`stage2/01_setup/execution/biolord/`.

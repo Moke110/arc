@@ -21,7 +21,7 @@ deleted `download/manual.md` said. No pretrained weights are published by design
 ## Notes
 
 Deployed model; per-dataset HVG output, RDKit structure + categorical
-`drug-dose` conditioning. Run card `stage2/01_setup/cmonge/`. That card's
+`drug-dose` conditioning. Run card `stage2/01_setup/execution/cmonge/`. That card's
 `run.sh` used the model-local `.venv`; ticket 04 deleted it as a duplicate of
 `stage2/_envs/cmonge` (see `stage2/_envs/README.md`) and repointed the card at
 the shared bench env. Upstream bug: `configs/demo_config.yml` embeds the author's

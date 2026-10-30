@@ -19,4 +19,4 @@ bags is a separate data-engineering task.
 
 Paper: <https://doi.org/10.1093/bioinformatics/btag662>. Deployed as a
 representation baseline (dose is context to suppress, not a generative response
-axis). Run card `stage2/01_setup/decant/`.
+axis). Run card `stage2/01_setup/execution/decant/`.

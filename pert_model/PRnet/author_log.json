@@ -21,6 +21,6 @@
   "manifest": "manifest.sha256",
   "verified_at": "2026-10-30T22:11+08:00",
   "verify_result": "pass",
-  "notes": "Repository ships its own checkpoints at checkpoint/ (lincs_best_epoch_all.pt 2,210,427 B; sciplex_best_epoch_all.pt 8,420,411 B), so no separately downloaded asset: 978-landmark LINCS and 5,000-HVG Sci-Plex state dicts. Deployed model (ADR 0025/0032 family); run card stage2/01_setup/prnet/. Absorbed from the deleted STAGE2_DATA.md inventory: the two checkpoint files above, with no external archive.",
+  "notes": "Repository ships its own checkpoints at checkpoint/ (lincs_best_epoch_all.pt 2,210,427 B; sciplex_best_epoch_all.pt 8,420,411 B), so no separately downloaded asset: 978-landmark LINCS and 5,000-HVG Sci-Plex state dicts. Deployed model (ADR 0025/0032 family); run card stage2/01_setup/execution/prnet/. Absorbed from the deleted STAGE2_DATA.md inventory: the two checkpoint files above, with no external archive.",
   "hashed_at": "2026-10-30T22:11+08:00"
 }

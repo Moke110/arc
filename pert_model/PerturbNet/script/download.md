@@ -33,4 +33,4 @@ assets are selected files from the reproduction mirror
 ## Notes
 
 Deployed model; requires Python 3.7 + TensorFlow 1.15 for the stable branch (or
-the 0.0.3b1 py3.10 branch without TF). Run card `stage2/01_setup/perturbnet/`.
+the 0.0.3b1 py3.10 branch without TF). Run card `stage2/01_setup/execution/perturbnet/`.
