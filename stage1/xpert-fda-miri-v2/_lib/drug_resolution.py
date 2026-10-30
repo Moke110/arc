@@ -27,8 +27,8 @@ Data sources
 -----------
   1. author idx->SMILES mapping   workflow input/all_drugs_idx2smi.npy
   2. author L1000 drug names      cmap_name + pert_idx in the L1000 pretrain
-     h5ad (pert_data/l1000-xpert/data/l1000_mdmt_full_336852.h5ad)
-  3. DToxS small-molecule metadata pert_data/dtoxs_primary/Metadata/
+     h5ad (pert_data/XPert-L1000/source/data/l1000_mdmt_full_336852.h5ad)
+  3. DToxS small-molecule metadata pert_data/LINCS-LDS-1593/source/Metadata/
      Small_Molecule_Metadata.txt (sm_center_batch_id code, sm_name,
      sm_smiles_parent) — read-only. This is the released LINCS LDS-1593
      package (the GSE raw GEO deposit was deleted 2026-08-18; the v1-era

@@ -46,8 +46,13 @@ data/
 datasets/
 
 # Data lake directories (large artifacts)
-pert_data/
 *_data/*
+
+# External items (ADR 0030): source/ and local/ stay out of git; provenance
+# (script/, author_log.json, manifest.sha256) and item docs must stay tracked.
+!/pert_data/*
+/pert_data/*/source/
+/pert_data/*/local/
 
 # Outputs
 output/

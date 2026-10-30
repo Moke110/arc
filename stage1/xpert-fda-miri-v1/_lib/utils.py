@@ -23,9 +23,9 @@ WORKSPACE_ROOT = WORKFLOW_ROOT.parent.parent          # repository root
 XPERT_ROOT = WORKSPACE_ROOT / "pert_model" / "xpert"
 DISEASE_DATA_ROOT = WORKSPACE_ROOT / "disease_data" / "miri"
 # The v1-era DToxS-primary well-level package, frozen byte-identically at
-# pert_data/dtoxs_primary/v1-frozen/ (the data xpert-fda-miri-v1 used; the
-# live LINCS LDS-1593 package now lives flat at pert_data/dtoxs_primary/).
-DTOXS_ROOT = WORKSPACE_ROOT / "pert_data" / "dtoxs_primary" / "v1-frozen"
+# pert_data/LINCS-LDS-1593/local/v1-frozen/ (the data xpert-fda-miri-v1 used; the
+# live LINCS LDS-1593 package now lives flat at pert_data/LINCS-LDS-1593/source/).
+DTOXS_ROOT = WORKSPACE_ROOT / "pert_data" / "LINCS-LDS-1593" / "local" / "v1-frozen"
 
 # L1000 embedding-table boundary: rows [0, N_L1000_DRUGS) are the author
 # L1000 reference; rows >= N_L1000_DRUGS are the FDA-extension rows and are

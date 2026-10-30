@@ -1,0 +1,25 @@
+{
+  "item": "GSE262419",
+  "category": "pert_data",
+  "purpose": "Tsai TempO-Seq hiPSC-CM environmental-chemical panel",
+  "retrieved_at": "2026-08-12T12:07+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE262419",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419",
+      "version": "GSE262419",
+      "license": "unknown",
+      "method": "script/download.sh (wget from the GEO FTP series directory)",
+      "path": "source/",
+      "files": 18,
+      "bytes": 83444654,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest and verification are filled by ticket 09"
+}

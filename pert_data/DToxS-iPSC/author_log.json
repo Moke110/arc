@@ -1,0 +1,25 @@
+{
+  "item": "DToxS-iPSC",
+  "category": "pert_data",
+  "purpose": "DToxS iPSC-cardomyocyte CM GEO deposit (GSE217424 SuperSeries)",
+  "retrieved_at": "2026-08-12T13:48+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE217424 (SuperSeries: GSE217421 + GSE217423)",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217424",
+      "version": "GSE217424",
+      "license": "unknown",
+      "method": "script/download.sh (wget from the GEO FTP series directories)",
+      "path": "source/",
+      "files": 17,
+      "bytes": 2657111110,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest and verification are filled by ticket 09"
+}

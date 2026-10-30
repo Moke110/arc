@@ -1,20 +1,20 @@
 # Tahoe-100M data home and the Stage 2 bulk pretrain corpus
 
-Two things live here: the **whole atlas** under `pert_data/tahoe/` and the
+Two things live here: the **whole atlas** under `pert_data/Tahoe-100M/source/` and the
 **well-level pseudobulk corpus** built from it, per ADR 0029.
 
-## The atlas (`pert_data/tahoe/`)
+## The atlas (`pert_data/Tahoe-100M/source/`)
 
 Imported on 2026-10-30 from a Windows-side HuggingFace snapshot
 (`E:\Desktop\tahoe\data\hf`) rather than re-downloaded: 3,388 expression shards
 (95,624,334 cells), the five metadata tables, and the authors'
 `pseudobulk_differential_expression` (1,026 shards, 4,089,820,780 rows) —
 428.8 GB total. Provenance and the verification record are in
-`pert_data/tahoe/Tahoe_summary.md`.
+`pert_data/Tahoe-100M/local/Tahoe_summary.md`.
 
 ```bash
 # offline verification (no network needed)
-python stage2/04_tahoe_pretrain/script/verify_import_offline.py
+python pert_data/Tahoe-100M/script/verify_import.py
 
 # authoritative sha256 against HF's published hashes (needs network)
 python stage2/04_tahoe_pretrain/script/fetch_tahoe.py --verify-only deep \
@@ -29,7 +29,7 @@ Final state (2026-10-30): the authoritative deep check **passed** — 4,425 file
 compared against HF's published `lfs.sha256`, `ok: true`, 0 problems
 (`logs/tahoe_verify_deep_1841.log`). `MANIFEST.jsonl` now holds those 4,425 HF
 hashes, so the offline check above is anchored to HF. Provenance and reading
-notes: `pert_data/tahoe/Tahoe_summary.md`.
+notes: `pert_data/Tahoe-100M/local/Tahoe_summary.md`.
 
 ## The corpus (`output/pseudobulk/`)
 

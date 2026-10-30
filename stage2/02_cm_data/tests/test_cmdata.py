@@ -187,8 +187,12 @@ class NamingTests(unittest.TestCase):
                          "dtoxs_primary")
 
     def test_raw_folders_keep_accession(self):
-        self.assertEqual(paths.SCREEN_CTOX_DIR.name, "gse244740")
-        self.assertEqual(paths.TEMP_ENV_DIR.name, "gse262419")
+        # ADR 0030: one directory per GEO source item, named for the accession;
+        # the untouched download lives under that item's source/ tree.
+        self.assertEqual(paths.SCREEN_CTOX_DIR.parent.name, "GSE244740")
+        self.assertEqual(paths.TEMP_ENV_DIR.parent.name, "GSE262419")
+        self.assertEqual(paths.SCREEN_CTOX_DIR.name, "source")
+        self.assertEqual(paths.TEMP_ENV_DIR.name, "source")
 
     def test_view_names_use_dataset_ids(self):
         for name, datasets, _ in paths.VIEWS:

@@ -4,7 +4,7 @@ Step 03 — DToxS-LINCS finetune data (the v1.1 change vs v1).
 
 Rebuilds the DToxS finetune h5ad that steps 05/06/07 (v1.1) train on from the
 released LINCS LDS-1593 well-level package
-(pert_data/dtoxs_primary/Data/Level3) instead of v1's frozen finetune h5ad
+(pert_data/LINCS-LDS-1593/source/Data/Level3) instead of v1's frozen finetune h5ad
 (stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad).
 
   03_cm_finetune_data/output/dtoxs_lincs.h5ad
@@ -485,7 +485,8 @@ def _cmap_name(idx):
 
 def _l1000_full_h5ad():
     from utils import CM_DATA_ROOT
-    return CM_DATA_ROOT / "l1000-xpert" / "data" / "l1000_mdmt_full_336852.h5ad"
+    return (CM_DATA_ROOT / "XPert-L1000" / "source" / "data"
+            / "l1000_mdmt_full_336852.h5ad")
 
 
 if __name__ == "__main__":

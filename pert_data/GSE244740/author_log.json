@@ -1,0 +1,25 @@
+{
+  "item": "GSE244740",
+  "category": "pert_data",
+  "purpose": "Rosell-Hidalgo ScreenSeq hiPSC-CM drug-cardiotoxicity panel",
+  "retrieved_at": "2026-08-12T12:13+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE244740",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE244740",
+      "version": "GSE244740",
+      "license": "unknown",
+      "method": "script/download.sh (wget from the GEO FTP series directory)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 37480421,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest and verification are filled by ticket 09"
+}

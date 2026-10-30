@@ -8,10 +8,11 @@ HERE = Path(__file__).resolve().parent          # stage2/02_cm_data/cmdata
 CM_DATA_DIR = HERE.parent                       # stage2/02_cm_data
 REPO_ROOT = CM_DATA_DIR.parents[1]
 PERT_DATA = REPO_ROOT / "pert_data"
-ANNOTATION_DIR = PERT_DATA / "annotation"
+ANNOTATION_DIR = PERT_DATA / "Annotation" / "source"   # the HGNC download
+ANNOTATION_LOCAL = PERT_DATA / "Annotation" / "local"   # local additions
 
 HGNC_PATH = ANNOTATION_DIR / "hgnc_complete_set.txt"
-COMPOUND_ANNOTATION_PATH = ANNOTATION_DIR / "cm_compound_annotation.csv"
+COMPOUND_ANNOTATION_PATH = ANNOTATION_LOCAL / "cm_compound_annotation.csv"
 
 CORPUS_VERSION = "v1"
 # Provenance of the vendored Stage 1 loaders (the data lake itself is not
@@ -28,18 +29,18 @@ DEFAULT_BUNDLE = "datasets-1"
 BUNDLE_DIR = CM_DATA_DIR / DEFAULT_BUNDLE
 
 # Raw sources (read-only).
-DTOXS_ROOT = PERT_DATA / "dtoxs_primary"
+DTOXS_ROOT = PERT_DATA / "LINCS-LDS-1593" / "source"
 DTOXS_LEVEL3 = DTOXS_ROOT / "Data" / "Level3"
 DTOXS_SMALL_MOL = DTOXS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 DTOXS_ENTREZ_MAP = DTOXS_ROOT / "Metadata" / "UCSC-hg38-Gene-HGNC-Entrez-Map.tsv"
 DTOXS_DCIC_XLSX = (DTOXS_ROOT / "Data"
                    / "PromoCell-DGE-RNAseq-Experiment-Design.DCIC.xlsx")
-DTOXS_IPSC = PERT_DATA / "dtoxs_ipsc"
+DTOXS_IPSC = PERT_DATA / "DToxS-iPSC" / "source"
 
 # Raw GSE folders keep the GEO accession on disk; the Stage 2 dataset ids are
 # the short names used everywhere the build writes data.
-SCREEN_CTOX_DIR = PERT_DATA / "gse244740"       # GSE244740
-TEMP_ENV_DIR = PERT_DATA / "gse262419"          # GSE262419
+SCREEN_CTOX_DIR = PERT_DATA / "GSE244740" / "source"       # GSE244740
+TEMP_ENV_DIR = PERT_DATA / "GSE262419" / "source"          # GSE262419
 
 SOURCE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "screen_ctox", "temp_env"]
 

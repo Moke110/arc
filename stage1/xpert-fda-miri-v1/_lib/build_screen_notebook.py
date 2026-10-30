@@ -62,7 +62,7 @@ cells = [
     md("## Step 03 — DToxS finetune data (workflow-owned, frozen)\n\n"
        "Owns the frozen DToxS finetune h5ad (`03_cm_finetune_data/output/"
        "dtoxs.h5ad`, 521 samples / 36 drugs), moved here from "
-       "`pert_data/dtoxs_primary/v1-frozen/` so the workflow is self-contained "
+       "`pert_data/LINCS-LDS-1593/local/v1-frozen/` so the workflow is self-contained "
        "on its finetune data (like the v1.1/v2/v3 step-03 data prep). Not "
        "rebuilt; its fold columns are regenerated in place by step 05."),
     code("!ls 03_cm_finetune_data/output/"),
@@ -70,7 +70,7 @@ cells = [
     md("## Step 04 — XPert pretrain (reference, workflow-owned)\n\n"
        "Holds the author pretrained XPert base weight (`pretrain_mdmt_full_50_"
        "epoch.pth`) and the L1000 pretrain YAML that produced it — the pretrain "
-       "dataset lives under `pert_data/l1000-xpert/`. Not re-run during "
+       "dataset lives under `pert_data/XPert-L1000/source/`. Not re-run during "
        "screening; steps 05/06 consume the weight from here."),
     code("!ls 04_xpert_pretrain/"),
 

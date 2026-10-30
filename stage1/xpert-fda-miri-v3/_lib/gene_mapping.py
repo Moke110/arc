@@ -20,9 +20,9 @@ Data sources (XPert-author + dataset data ONLY)
      under pert_data (symbols for the DToxS arms; Ensembl IDs for
      gse244740 / gse247541; SYMBOL_entrezid for gse262419). The DToxS-primary
      transcriptomes come from the released LINCS LDS-1593 well-level package
-     (pert_data/dtoxs_primary/Data/Level3; the GSE146095/GSE146096 raw GEO
+     (pert_data/LINCS-LDS-1593/source/Data/Level3; the GSE146095/GSE146096 raw GEO
      deposit was deleted 2026-08-18, its data being a subset of this package).
-     The v1-era package is frozen at pert_data/dtoxs_primary/v1-frozen/.
+     The v1-era package is frozen at pert_data/LINCS-LDS-1593/local/v1-frozen/.
 
 `corrected_gene_name` is deliberately NOT used as a match key: for JPT2 the
 author metadata records it as CRAMP1, a *different* gene (Entrez 57585), while
@@ -253,7 +253,7 @@ def write_dataset_map(dataset, mapping=None, out_dir=None):
 def load_dtoxs_lincs_raw():
     """Union all LINCS LDS-1593 well-level read-count tables -> (symbol x well).
 
-    The LINCS LDS-1593 package (released at pert_data/dtoxs_primary/Data/Level3,
+    The LINCS LDS-1593 package (released at pert_data/LINCS-LDS-1593/source/Data/Level3,
     the former lincs-lds-1593/ contents moved up on 2026-08-18; the raw GEO
     deposit was deleted the same day) is the DToxS center's well-level Level-3
     deposit: per-batch `PromoCell-DGE-Read-Counts-<batch>.tsv` matrices (rows =

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch ``tahoebio/Tahoe-100M`` into ``pert_data/tahoe/`` behind one scope switch.
+"""Fetch ``tahoebio/Tahoe-100M`` into ``pert_data/Tahoe-100M/source/`` behind one scope switch.
 
 Why this script exists
 ----------------------
@@ -31,14 +31,16 @@ Layout produced
 ---------------
 ::
 
-    pert_data/tahoe/
-      data/train-NNNNN-of-03388.parquet   expression shards (subset or full)
-      metadata/*.parquet                  the five metadata tables + vocabularies
-      README.md  LICENSE.md  tutorials/   upstream docs (provenance)
-      MANIFEST.jsonl                      path, bytes, sha256, source per file
-      AXES.json                           the scope-independent category axes
-      DATASET.json                        scope + counts + axis digests (the seam)
-      _state/                             ledger, status, plate probes, HF cache
+    pert_data/Tahoe-100M/
+      source/                             the download (upstream layout, bytes unchanged)
+        data/train-NNNNN-of-03388.parquet expression shards (subset or full)
+        metadata/*.parquet                the five metadata tables + vocabularies
+        README.md  LICENSE.md  tutorials/ upstream docs (provenance)
+        MANIFEST.jsonl                    path, bytes, sha256, source per file
+        AXES.json                         the scope-independent category axes
+        DATASET.json                      scope + counts + axis digests (the seam)
+      local/_state/                       ledger, status, plate probes, HF cache
+      local/Tahoe_summary.md              the local provenance note
 
 ``AXES.json``/``DATASET.json`` are what a training script should read: the axes
 are derived from the metadata tables, so they describe the *whole* dataset even
@@ -71,16 +73,16 @@ Usage
 ::
 
     # default: subset + full metadata, verify, write MANIFEST/AXES/DATASET
-    python stage2/04_tahoe_pretrain/script/fetch_tahoe.py
+    python pert_data/Tahoe-100M/script/fetch_tahoe.py
 
     # show the plan and the disk arithmetic, touch nothing
-    python stage2/04_tahoe_pretrain/script/fetch_tahoe.py --dry-run
+    python pert_data/Tahoe-100M/script/fetch_tahoe.py --dry-run
 
     # top up to the full expression atlas (needs 287+ GB free)
-    python stage2/04_tahoe_pretrain/script/fetch_tahoe.py --scope full
+    python pert_data/Tahoe-100M/script/fetch_tahoe.py --scope full
 
     # re-check an existing tree without touching the network for payload
-    python stage2/04_tahoe_pretrain/script/fetch_tahoe.py --verify-only deep
+    python pert_data/Tahoe-100M/script/fetch_tahoe.py --verify-only deep
 """
 
 from __future__ import annotations
@@ -101,8 +103,24 @@ from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+def find_repo_root(start: Path) -> Path:
+    """Walk up from ``start`` to the directory containing .git (ADR 0030)."""
+    for candidate in [start, *start.parents]:
+        if (candidate / ".git").exists():
+            return candidate
+    raise SystemExit(f"cannot find the repository root (.git) above {start}")
+
+
 HERE = Path(__file__).resolve().parent
-REPO_ROOT = HERE.parents[2]
+REPO_ROOT = find_repo_root(HERE)
+ITEM_DIR = REPO_ROOT / "pert_data" / "Tahoe-100M"
+SOURCE_DIR = ITEM_DIR / "source"      # the download: unmodified, upstream layout
+LOCAL_DIR = ITEM_DIR / "local"        # local additions, declared in author_log.json
+
+
+def state_dir(root: Path) -> Path:
+    """Downloader state (ledger/status/caches) lives under the item's local/."""
+    return LOCAL_DIR if root.resolve() == SOURCE_DIR.resolve() else root.parent / "local"
 
 REPO_ID = "tahoebio/Tahoe-100M"
 # Pinned so that a later `--scope full` fetches the exact revision the subset
@@ -160,14 +178,14 @@ N_GENES, N_PERT, N_PLATES = 62710, 1138, 14
 
 
 def root_dir(override: str | Path | None) -> Path:
-    return Path(override).resolve() if override else REPO_ROOT / "pert_data" / "tahoe"
+    return Path(override).resolve() if override else SOURCE_DIR
 
 
 # ---------------------------------------------------------------------------
 # HF env must be redirected before huggingface_hub is imported.
 # ---------------------------------------------------------------------------
 def configure_hf_env(root: Path) -> None:
-    hf_home = root / "_state" / "hf"
+    hf_home = state_dir(root) / "hf"
     hf_home.mkdir(parents=True, exist_ok=True)
     os.environ.setdefault("HF_HOME", str(hf_home))
     os.environ.setdefault("HF_HUB_CACHE", str(hf_home / "hub"))
@@ -460,7 +478,7 @@ def build_plan(api, revision: str, scope: str, n_shards: int,
                          files_metadata=True)
     sizes = {s.rfilename: s for s in info.siblings}
 
-    selection_path = root / "_state" / "selection.json"
+    selection_path = state_dir(root) / "selection.json"
     if scope == "full":
         shards = list(range(N_SHARDS))
         strategy = "all expression shards"
@@ -486,8 +504,8 @@ def build_plan(api, revision: str, scope: str, n_shards: int,
                         f"{reused.get('recorded_at')}); {reused.get('strategy')}")
         else:
             shards, rows, how = pick_shards(
-                n_shards, revision, root / "_state" / "plate_probe.json",
-                root / "_state" / "shard_probe.json", use_probe=probe)
+                n_shards, revision, state_dir(root) / "plate_probe.json",
+                state_dir(root) / "shard_probe.json", use_probe=probe)
             strategy = f"{how}; shards={shards}"
             write_json_atomic(selection_path, {
                 "schema": 2, "revision": revision, "shards": shards,
@@ -824,7 +842,7 @@ def write_artifacts(root: Path, plan: list[FilePlan], revision: str, scope: str,
     readme = [
         "# Tahoe-100M (vendored subset)",
         "",
-        f"Fetched by `stage2/04_tahoe_pretrain/script/fetch_tahoe.py`.",
+        f"Fetched by `pert_data/Tahoe-100M/script/fetch_tahoe.py`.",
         "",
         f"- source: <https://huggingface.co/datasets/{REPO_ID}>",
         f"- pinned revision: `{revision}`",
@@ -843,14 +861,14 @@ def write_artifacts(root: Path, plan: list[FilePlan], revision: str, scope: str,
         "## What is here",
         "",
         "```",
-        "data/train-NNNNN-of-03388.parquet   expression shards",
-        "metadata/                           sample/gene/drug/cell_line/obs tables",
-        "README.md LICENSE.md tutorials/     upstream documentation",
-        "MANIFEST.jsonl                      path, bytes, sha256 per file",
-        "Tahoe_summary.md                    this note (the upstream README.md is the dataset card)",
-        "AXES.json                           category axes (scope-independent)",
-        "DATASET.json                        scope + counts + axis digests",
-        "_state/                             ledger, status, fetch caches",
+        "source/data/train-NNNNN-of-03388.parquet  expression shards",
+        "source/metadata/                          sample/gene/drug/cell_line/obs tables",
+        "source/README.md LICENSE.md tutorials/    upstream documentation",
+        "source/MANIFEST.jsonl                     path, bytes, sha256 per file",
+        "local/Tahoe_summary.md                    this note (the upstream README.md is the dataset card)",
+        "source/AXES.json                          category axes (scope-independent)",
+        "source/DATASET.json                       scope + counts + axis digests",
+        "local/_state/                             ledger, status, fetch caches",
         "```",
         "",
         "## Reading it",
@@ -863,7 +881,7 @@ def write_artifacts(root: Path, plan: list[FilePlan], revision: str, scope: str,
         "## Switching to the full atlas",
         "",
         "```",
-        "python stage2/04_tahoe_pretrain/script/fetch_tahoe.py --scope full",
+        "python pert_data/Tahoe-100M/script/fetch_tahoe.py --scope full",
         "```",
         "",
         "The ledger and directory are shared, so this fetches only the shards that",
@@ -871,7 +889,8 @@ def write_artifacts(root: Path, plan: list[FilePlan], revision: str, scope: str,
         "preflight refuses to start if it cannot fit.",
         "",
     ]
-    (root / SUMMARY_NAME).write_text("\n".join(readme))
+    LOCAL_DIR.mkdir(parents=True, exist_ok=True)
+    (LOCAL_DIR / SUMMARY_NAME).write_text("\n".join(readme))
 
 
 # ---------------------------------------------------------------------------
@@ -879,7 +898,7 @@ def write_artifacts(root: Path, plan: list[FilePlan], revision: str, scope: str,
 # ---------------------------------------------------------------------------
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
-        description="Fetch Tahoe-100M into pert_data/tahoe/ (subset|full, resumable).")
+        description="Fetch Tahoe-100M into pert_data/Tahoe-100M/source/ (subset|full, resumable).")
     parser.add_argument("--scope", choices=["subset", "full"], default="subset",
                         help="file set to fetch (default: subset)")
     parser.add_argument("--shards", type=int, default=DEFAULT_SUBSET_SHARDS,
@@ -957,7 +976,7 @@ def main(argv=None) -> int:
     if not fits:
         return 4
 
-    state = root / "_state"
+    state = state_dir(root)
     state.mkdir(parents=True, exist_ok=True)
     lock_path = state / "lock"
     lock_fh = lock_path.open("w")
@@ -1021,7 +1040,7 @@ def main(argv=None) -> int:
 
     write_artifacts(root, plan, args.revision, args.scope, strategy, coverage, report)
     print(f"\nwrote {root/'MANIFEST.jsonl'}\nwrote {root/'AXES.json'}\n"
-          f"wrote {root/'DATASET.json'}\nwrote {root/SUMMARY_NAME}")
+          f"wrote {root/'DATASET.json'}\nwrote {LOCAL_DIR/SUMMARY_NAME}")
     return 0 if report.get("ok", True) else 1
 
 

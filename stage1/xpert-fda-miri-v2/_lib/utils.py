@@ -17,15 +17,15 @@ All paths in this module are resolved from the workflow root so each numbered
 stage can be run independently from any working directory.
 
 Data-lake layout (flattened 2026-08-17): the CM datasets live directly under
-pert_data/ (the `cm/` grouping was removed), i.e. pert_data/dtoxs_primary,
-pert_data/dtoxs_ipsc, pert_data/gse244740, pert_data/gse247541,
-pert_data/gse262419, plus pert_data/l1000-xpert (pretrain corpus). The DToxS
-primary study has one deposit under pert_data/dtoxs_primary: the released
+pert_data/ (the `cm/` grouping was removed), i.e. pert_data/LINCS-LDS-1593/source,
+pert_data/DToxS-iPSC/source, pert_data/GSE244740/source, pert_data/GSE247541/source,
+pert_data/GSE262419/source, plus pert_data/XPert-L1000/source (pretrain corpus). The DToxS
+primary study has one deposit under pert_data/LINCS-LDS-1593/source: the released
 LINCS LDS-1593 well-level package (Data/, Metadata/, ...; the GSE146096/146095
 raw GEO deposit was deleted 2026-08-18 as a strict subset), which carries the
 non-KI perturbations and the DToxS small-molecule metadata. The v1-era
 well-level package is frozen byte-identically at
-pert_data/dtoxs_primary/v1-frozen/. The finetune-data prep reads the LINCS
+pert_data/LINCS-LDS-1593/local/v1-frozen/. The finetune-data prep reads the LINCS
 wells; it never modifies a source file.
 """
 
@@ -52,13 +52,13 @@ CM_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse247541",
 FINETUNE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc"]
 
 # The released LINCS LDS-1593 well-level package (DToxS primary, Level 3),
-# now living flat at pert_data/dtoxs_primary/: per-batch well-level
+# now living flat at pert_data/LINCS-LDS-1593/source/: per-batch well-level
 # read-counts + experiment designs + the LINCS metadata suite
 # (Small_Molecule_Metadata.txt etc.). Released 2026-08-18 (the GSE146095/
 # GSE146096 raw GEO deposit was deleted; the package is its strict superset).
 # The v1-era well-level package is frozen byte-identically at
-# pert_data/dtoxs_primary/v1-frozen/ (the data xpert-fda-miri-v1 used).
-DTOXS_LINCS_ROOT = CM_DATA_ROOT / "dtoxs_primary"
+# pert_data/LINCS-LDS-1593/local/v1-frozen/ (the data xpert-fda-miri-v1 used).
+DTOXS_LINCS_ROOT = CM_DATA_ROOT / "LINCS-LDS-1593" / "source"
 DTOXS_LINCS_LEVEL3 = DTOXS_LINCS_ROOT / "Data" / "Level3"
 DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 
@@ -93,18 +93,12 @@ AUTHOR_TIMES = (3, 6, 24)
 
 # L1000 XPert pretrain h5ad — the pooled log2(CPM+1) distribution used as the
 # quantile-alignment reference for the union finetune data (step 03). The data
-# lake currently lays the pretrain corpus out under pert_data/xpert-l1000/ (the
-# older l1000-xpert/ name is kept as a fallback).
+# lake lays the pretrain corpus out under the XPert-L1000 item's source/ tree.
 
 
 def l1000_data_h5ad(filename):
-    """Resolve one L1000 corpus h5ad under pert_data (xpert-l1000 first, then
-    the older l1000-xpert/ name) so the whole workflow shares one resolver."""
-    for rel in ("xpert-l1000", "l1000-xpert"):
-        p = CM_DATA_ROOT / rel / "data" / filename
-        if p.exists():
-            return p
-    return CM_DATA_ROOT / "l1000-xpert" / "data" / filename
+    """Resolve one L1000 corpus h5ad under the XPert-L1000 item's source/ tree."""
+    return CM_DATA_ROOT / "XPert-L1000" / "source" / "data" / filename
 
 
 L1000_PRETRAIN_H5AD = l1000_data_h5ad("l1000_mdmt_268022_pretrain.h5ad")

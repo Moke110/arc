@@ -66,7 +66,7 @@ cells = [
     md("## Step 02 — CM baseline transcriptome\n\n"
        "Builds the consensus cardiomyocyte baseline from the DToxS-primary "
        "control wells of the released LINCS LDS-1593 package "
-       "(`pert_data/dtoxs_primary/Data/Level3`; the raw GEO deposit was "
+       "(`pert_data/LINCS-LDS-1593/source/Data/Level3`; the raw GEO deposit was "
        "deleted 2026-08-18) using the authoritative gene map (identical to "
        "v1's baseline). Output: "
        "`02_cm_baseline/output/cm_ctl_landmark.csv`."),
@@ -93,7 +93,7 @@ cells = [
     md("## Step 04 — XPert pretrain (reference, workflow-owned)\n\n"
        "Holds the author pretrained XPert base weight (`pretrain_mdmt_full_50_"
        "epoch.pth`) and the L1000 pretrain YAML that produced it — the pretrain "
-       "dataset lives under `pert_data/xpert-l1000/`. Not re-run during "
+       "dataset lives under `pert_data/XPert-L1000/source/`. Not re-run during "
        "screening; steps 05/06 consume the weight from here."),
     code("!ls 04_xpert_pretrain/"),
 

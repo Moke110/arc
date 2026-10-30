@@ -15,10 +15,10 @@ accession:
 
 | dataset_id | accession | raw source |
 |---|---|---|
-| `dtoxs_primary` | — | `pert_data/dtoxs_primary` |
-| `dtoxs_ipsc` | — | `pert_data/dtoxs_ipsc` |
-| `screen_ctox` | GSE244740 | `pert_data/gse244740` |
-| `temp_env` | GSE262419 | `pert_data/gse262419` |
+| `dtoxs_primary` | — | `pert_data/LINCS-LDS-1593/source` |
+| `dtoxs_ipsc` | — | `pert_data/DToxS-iPSC/source` |
+| `screen_ctox` | GSE244740 | `pert_data/GSE244740/source` |
+| `temp_env` | GSE262419 | `pert_data/GSE262419/source` |
 
 ## Gene axis
 
@@ -57,13 +57,13 @@ Tier sizes: atc-moa 177, atc-moa-mesh 316, all-smiles 525 drug keys.
 
 ## Inputs
 
-- HGNC complete set: `pert_data/annotation/hgnc_complete_set.txt`
+- HGNC complete set: `pert_data/Annotation/source/hgnc_complete_set.txt`
 - compound registry snapshot:
-  `pert_data/annotation/cm_compound_annotation.csv`
+  `pert_data/Annotation/local/cm_compound_annotation.csv`
 - source data: the raw folders in the table above
 
 Both annotation assets are pinned with URL, retrieval date and
-checksum in `pert_data/annotation/README.md`; the build makes no
+checksum in `pert_data/Annotation/local/README.md`; the build makes no
 network call.
 
 `source_gene_sets.csv` is the frozen per-source resolved gene set: a

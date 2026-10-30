@@ -131,7 +131,7 @@ def _read_dtoxs_primary_design():
 def extract_dtoxs_ipsc():
     import glob
 
-    root = CM_DATA_ROOT / "dtoxs_ipsc"
+    root = CM_DATA_ROOT / "DToxS-iPSC" / "source"
     design_path = sorted(glob.glob(str(root / "GSE217423*Design*.tsv.gz")))[0]
     counts_path = sorted(glob.glob(str(root / "GSE217423*Read-Counts*.tsv.gz")))[0]
     design = _read_csv(design_path, sep="\t")
@@ -168,7 +168,7 @@ def _ipsc_code_meta():
     """code -> (drug name, dose uM) from the GSE217423 series matrix."""
     import gzip
 
-    path = CM_DATA_ROOT / "dtoxs_ipsc" / "GSE217423_series_matrix.txt.gz"
+    path = CM_DATA_ROOT / "DToxS-iPSC" / "source" / "GSE217423_series_matrix.txt.gz"
     with gzip.open(path, "rt") as f:
         text = f.read()
     titles = re.findall(r'\"([A-Z0-9-]+) MSN[^\"]*\"', text)
@@ -201,7 +201,7 @@ def extract_gse244740():
 
     import scanpy as sc
 
-    path = CM_DATA_ROOT / "gse244740" / "GSE244740_series_matrix.txt.gz"
+    path = CM_DATA_ROOT / "GSE244740" / "source" / "GSE244740_series_matrix.txt.gz"
     with gzip.open(path, "rt") as f:
         text = f.read()
     title_line = [l for l in text.splitlines() if l.startswith("!Sample_title")][0]
@@ -210,7 +210,7 @@ def extract_gse244740():
              and "treatment" in l][0]
     treats = re.findall(r'\"treatment: ([^\"]*)\"', tline)
 
-    counts = _read_csv(CM_DATA_ROOT / "gse244740"
+    counts = _read_csv(CM_DATA_ROOT / "GSE244740" / "source"
                        / "GSE244740_processed_data_counts.txt.gz",
                        sep="\t")
     well_to_idx = {c: i for i, c in enumerate(counts.columns)}
@@ -250,7 +250,7 @@ def extract_gse244740():
 # gse247541 — bulk RNA-seq (4 antivirals)
 # ---------------------------------------------------------------------------
 def extract_gse247541():
-    counts = _read_csv(CM_DATA_ROOT / "gse247541" / "GSE247541_raw_counts.csv.gz",
+    counts = _read_csv(CM_DATA_ROOT / "GSE247541" / "source" / "GSE247541_raw_counts.csv.gz",
                        index_col=0)
     rows = []
     for col in counts.columns:
@@ -280,7 +280,7 @@ def _norm_well(s):
 def extract_gse262419():
     import glob
 
-    root = CM_DATA_ROOT / "gse262419"
+    root = CM_DATA_ROOT / "GSE262419" / "source"
     hashdf = _read_csv(root / "GSE262419_hash.csv.gz")
     hashdf["Well_ID"] = hashdf["Well_ID"].astype(str)
     plate_files = sorted(glob.glob(str(root / "GSE262419_Plate*.csv.gz")))

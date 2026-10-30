@@ -12,3 +12,24 @@
 # (e.g. a benchmark's frozen input manifest or result tables, ADR 0030 / ticket
 # 07). A live document that merely needs updating is a path to fix, not to
 # whitelist.
+# --- ticket 03: immutable ADR records (ADR 0030 §4; spec §8) -----------------
+# Their pre-restructure literals are historical facts and stay byte-identical.
+# ADR 0008: the pre-ADR-0011 `l1000-xpert/` dataset-home name.
+^pert_data[/]l1000-xpert/$
+# ADR 0008: the pre-ADR-0011 `dtoxs-xpert/` deposit, deleted in ADR 0011.
+^pert_data[/]dtoxs-xpert/$
+# ADR 0008/0013: `dtoxs_primary/` (and its frozen v1 copy) before the ADR 0030 split.
+^pert_data[/]dtoxs_primary/$
+^pert_data[/]dtoxs_primary$
+^pert_data[/]dtoxs_primary/v1-frozen/$
+# ADR 0009/0010: the pre-ADR-0011 `cm/` grouping, removed in ADR 0011.
+^pert_data[/]cm/?$
+# ADR 0009: the pre-ADR-0011 `dtoxs` deposit name.
+^pert_data[/]dtoxs$
+# ADR 0011: the transient `lincs-lds-1593/` wrapper, removed in ADR 0013.
+^pert_data[/]dtoxs_primary/lincs-lds-1593/$
+# ADR 0018: `cm_drugs.html` lived at the pert_data root before ADR 0030.
+^pert_data[/](cm_drugs\.html)$
+# ADR 0030: the pre-split paths it quotes as the gap being fixed.
+^pert_data[/]tahoe/(Tahoe_summary\.md)$
+^pert_data[/]annotation/(README\.md)$

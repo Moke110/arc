@@ -4,7 +4,7 @@ Step 02 — Baseline transcriptome (authoritative gene mapping).
 
 Builds the consensus cardiomyocyte baseline transcriptome from the DToxS-primary
 control wells (CTRL, CTRL-DMSO, CTRL-EtOH) of the released LINCS LDS-1593
-well-level package (pert_data/dtoxs_primary/Data/Level3): computes
+well-level package (pert_data/LINCS-LDS-1593/source/Data/Level3): computes
 log2(CPM+1) and averages across all control wells into a single consensus
 baseline. Gene matching uses the workflow-authoritative DToxS-primary -> L1000
 mapping (03_cm_finetune_data/output/gene_maps/dtoxs_primary_to_l1000_gene_map.csv),

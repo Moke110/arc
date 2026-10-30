@@ -48,7 +48,7 @@ import _datasets  # noqa: E402
 import drug_resolution as dr  # noqa: E402
 
 DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "gse244740", "gse262419", "gse247541"]
-OUT_PATH = CM_DATA_ROOT / "cm_drugs.html"
+OUT_PATH = CM_DATA_ROOT / "Annotation" / "local" / "cm_drugs.html"
 MOA_CSV = (PROJECT_ROOT.parents[1] / "pert_model" / "xpert" / "metadata"
            / "l1000_sdst_drugs_info_8432.csv")
 INVENTORY_CSV = (PROJECT_ROOT / "03_cm_finetune_data" / "output"
@@ -58,13 +58,11 @@ EXTERNAL_CSV = (PROJECT_ROOT / "03_cm_finetune_data" / "output"
 
 
 def l1000_full_h5ad():
-    for rel in ("l1000-xpert", "xpert-l1000"):
-        p = CM_DATA_ROOT / rel / "data" / "l1000_mdmt_full_336852.h5ad"
-        if p.exists():
-            return p
-    raise FileNotFoundError(
-        "L1000 full pretrain h5ad not found under pert_data/l1000-xpert "
-        "or pert_data/xpert-l1000")
+    p = (CM_DATA_ROOT / "XPert-L1000" / "source" / "data"
+         / "l1000_mdmt_full_336852.h5ad")
+    if p.exists():
+        return p
+    raise FileNotFoundError(f"L1000 full pretrain h5ad not found: {p}")
 
 
 def build_author_index():

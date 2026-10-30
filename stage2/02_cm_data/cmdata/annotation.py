@@ -1,8 +1,9 @@
 """Load the pinned annotation assets (HGNC + compound registry snapshot).
 
-Both files live under ``pert_data/annotation/`` and are produced by
-``fetch_annotation.py``.  The build only reads them; it never calls the
-network.
+The HGNC set is the download (``pert_data/Annotation/source/``); the compound
+registry snapshot and its manifest are local additions
+(``pert_data/Annotation/local/``), produced by ``fetch_annotation.py``.  The
+build only reads them; it never calls the network.
 """
 
 from __future__ import annotations

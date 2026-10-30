@@ -3,11 +3,11 @@
 
 The build (`build_cm_datasets.py`) never touches the network.  Everything it
 needs about gene and compound identity is frozen under
-``pert_data/annotation/`` by this script:
+``pert_data/Annotation/`` by this script:
 
-  hgnc_complete_set.txt        HGNC complete set (gene identity)
-  cm_compound_annotation.csv    public-registry structure + pharmacology
-  README.md                    source URL, retrieval date, checksum, counts
+  source/hgnc_complete_set.txt        HGNC complete set (gene identity; download)
+  local/cm_compound_annotation.csv    public-registry structure + pharmacology
+  local/README.md                     source URL, retrieval date, checksum, counts
 
 Two acquisition paths
 ---------------------
@@ -33,8 +33,8 @@ own structure for DToxS; that is what keeps the DToxS ``AMI`` pentyl-benzofuran
 homolog from being relabelled as amiodarone.
 
 Usage:
-    python stage2/02_cm_data/fetch_annotation.py --hgnc
-    python stage2/02_cm_data/fetch_annotation.py --compounds --from-audit \\
+    python pert_data/Annotation/script/fetch_annotation.py --hgnc
+    python pert_data/Annotation/script/fetch_annotation.py --compounds --from-audit \\
         stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/compound_external_audit.csv
 """
 
@@ -51,13 +51,23 @@ from pathlib import Path
 
 import pandas as pd
 
-HERE = Path(__file__).resolve().parent
-REPO_ROOT = HERE.parents[1]
-ANNOTATION_DIR = REPO_ROOT / "pert_data" / "annotation"
+def _find_repo_root(start: Path) -> Path:
+    """Walk up from ``start`` to the directory containing .git (ADR 0030)."""
+    for candidate in [start, *start.parents]:
+        if (candidate / ".git").exists():
+            return candidate
+    raise SystemExit(f"cannot find the repository root (.git) above {start}")
 
-HGNC_PATH = ANNOTATION_DIR / "hgnc_complete_set.txt"
-COMPOUND_PATH = ANNOTATION_DIR / "cm_compound_annotation.csv"
-MANIFEST_PATH = ANNOTATION_DIR / "README.md"
+
+HERE = Path(__file__).resolve().parent
+REPO_ROOT = _find_repo_root(HERE)
+ITEM_DIR = REPO_ROOT / "pert_data" / "Annotation"
+SOURCE_DIR = ITEM_DIR / "source"      # downloaded bytes only
+LOCAL_DIR = ITEM_DIR / "local"        # local additions, declared in author_log.json
+
+HGNC_PATH = SOURCE_DIR / "hgnc_complete_set.txt"
+COMPOUND_PATH = LOCAL_DIR / "cm_compound_annotation.csv"
+MANIFEST_PATH = LOCAL_DIR / "README.md"
 
 HGNC_URL = ("https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/"
             "hgnc_complete_set.txt")
@@ -121,6 +131,7 @@ def write_manifest(hgnc_extra: dict | None = None,
             "stage1/xpert-fda-miri-v3/03_cm_finetune_data/output/"
             "compound_external_audit.csv (PubChem/UniChem/ChEMBL/RxNav snapshot)",
             compound_extra))
+    LOCAL_DIR.mkdir(parents=True, exist_ok=True)
     MANIFEST_PATH.write_text("\n".join(header + body))
 
 
@@ -140,7 +151,7 @@ def hgnc_info(path: Path = HGNC_PATH) -> dict:
 def fetch_hgnc(force: bool = False) -> None:
     import requests
 
-    ANNOTATION_DIR.mkdir(parents=True, exist_ok=True)
+    SOURCE_DIR.mkdir(parents=True, exist_ok=True)
     if HGNC_PATH.exists() and not force:
         print(f"HGNC already pinned: {HGNC_PATH} "
               f"({HGNC_PATH.stat().st_size:,} bytes, sha256 {_sha256(HGNC_PATH)})")
@@ -211,7 +222,7 @@ def build_compounds_from_audit_file(audit_path: Path) -> None:
     if not audit_path.exists():
         raise SystemExit(f"audit table not found: {audit_path}")
     table = build_compounds_from_audit(audit_path)
-    ANNOTATION_DIR.mkdir(parents=True, exist_ok=True)
+    LOCAL_DIR.mkdir(parents=True, exist_ok=True)
     table.to_csv(COMPOUND_PATH, index=False)
     print(f"Wrote {COMPOUND_PATH} ({len(table):,} rows, "
           f"{table.lookup_name.nunique():,} names)")
@@ -360,8 +371,8 @@ def refresh_compounds(audit_path: Path) -> None:
              .fillna({"dataset_inchikey": ""})
              .drop_duplicates()
              .sort_values(["lookup_name", "dataset_inchikey"]))
-    ANNOTATION_DIR.mkdir(parents=True, exist_ok=True)
-    cache_path = ANNOTATION_DIR / "_compound_registry_cache.json"
+    LOCAL_DIR.mkdir(parents=True, exist_ok=True)
+    cache_path = LOCAL_DIR / "_compound_registry_cache.json"
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
     rows = []
     for index, row in enumerate(pairs.itertuples(index=False), 1):

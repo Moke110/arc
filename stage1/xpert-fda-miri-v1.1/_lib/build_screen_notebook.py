@@ -36,7 +36,7 @@ cells = [
        "the **author reference table** — no HG training / FDA-extension "
        "inference. The XPert finetune (steps 05/06) trains on the workflow-"
        "rebuilt **DToxS-LINCS h5ad** (step 03, from the released LINCS "
-       "LDS-1593 well-level package at `pert_data/dtoxs_primary/Data/Level3`), "
+       "LDS-1593 well-level package at `pert_data/LINCS-LDS-1593/source/Data/Level3`), "
        "not v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`. v1 stays untouched. Run cells in "
        "order. Environment: `conda activate arc`. Heavy steps (05 benchmark, "
        "06 finetune, 07 predict) require a GPU."),
@@ -61,7 +61,7 @@ cells = [
     md("## Step 02 — CM baseline transcriptome\n\n"
        "Builds the consensus cardiomyocyte baseline from the DToxS-primary "
        "control wells of the released LINCS LDS-1593 package "
-       "(`pert_data/dtoxs_primary/Data/Level3`; the raw GEO deposit was "
+       "(`pert_data/LINCS-LDS-1593/source/Data/Level3`; the raw GEO deposit was "
        "deleted 2026-08-18) using the authoritative gene map. Identical to "
        "v1's baseline. Output: "
        "`02_cm_baseline/output/cm_ctl_landmark.csv`."),
@@ -70,7 +70,7 @@ cells = [
     md("## Step 03 — DToxS-LINCS finetune data (the v1.1 change)\n\n"
        "Rebuilds the DToxS finetune h5ad `03_cm_finetune_data/output/"
        "dtoxs_lincs.h5ad` from the released LINCS LDS-1593 well-level package "
-       "(`pert_data/dtoxs_primary/Data/Level3`, read-only; the deleted raw GEO "
+       "(`pert_data/LINCS-LDS-1593/source/Data/Level3`, read-only; the deleted raw GEO "
        "deposit lacked the non-KI perturbations), **per-plate normalized** since "
        "ADR 0016 (QN + matched control per `(dataset, plate)`) + the drug "
        "manifest and the parity delta vs v1's frozen `stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad`. The "
@@ -83,7 +83,7 @@ cells = [
     md("## Step 04 — XPert pretrain (reference, workflow-owned)\n\n"
        "Holds the author pretrained XPert base weight (`pretrain_mdmt_full_50_"
        "epoch.pth`) and the L1000 pretrain YAML that produced it — the pretrain "
-       "dataset lives under `pert_data/l1000-xpert/`. Not re-run during "
+       "dataset lives under `pert_data/XPert-L1000/source/`. Not re-run during "
        "screening; steps 05/06 consume the weight from here."),
     code("!ls 04_xpert_pretrain/"),
 

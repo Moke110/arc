@@ -7,7 +7,7 @@ need network:
 
 1. **HF-anchored hashes** for every file listed in `MANIFEST.jsonl` — those were
    fetched from HF in an earlier session, so their sha256 came from HF's API.
-2. **Structural integrity** of all 4,430 files: parquet footer readable,
+2. **Structural integrity** of the 4,430 files under ``source/``: parquet footer readable,
    row-group sum == num_rows, and the frozen expectations (3,388 expression
    shards x 28,225 cells = 95,624,334; 1,026 DE shards totalling
    4,089,820,780 rows; metadata row counts; 62,710 genes).
@@ -25,8 +25,16 @@ from pathlib import Path
 
 import pyarrow.parquet as pq
 
-ROOT = Path(__file__).resolve().parents[3]
-DATA_HOME = ROOT / "pert_data" / "tahoe"
+def find_repo_root(start: Path) -> Path:
+    """Walk up from ``start`` to the directory containing .git (ADR 0030)."""
+    for candidate in [start, *start.parents]:
+        if (candidate / ".git").exists():
+            return candidate
+    raise SystemExit(f"cannot find the repository root (.git) above {start}")
+
+
+ROOT = find_repo_root(Path(__file__).resolve().parent)
+DATA_HOME = ROOT / "pert_data" / "Tahoe-100M" / "source"
 
 EXPECT = {
     "expression_shards": 3_388,

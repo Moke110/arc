@@ -494,10 +494,10 @@ def _prefix(key):
 # ---------------------------------------------------------------------------
 # Compound inventory
 # ---------------------------------------------------------------------------
-DTOXS_META = (CM_DATA_ROOT / "dtoxs_primary" / "Metadata"
+DTOXS_META = (CM_DATA_ROOT / "LINCS-LDS-1593" / "source" / "Metadata"
               / "Small_Molecule_Metadata.txt")
-DTOXS_ANTIBODY = CM_DATA_ROOT / "dtoxs_primary" / "Metadata" / "Antibody_Metadata.txt"
-DTOXS_PROTEIN = CM_DATA_ROOT / "dtoxs_primary" / "Metadata" / "Protein_Metadata.txt"
+DTOXS_ANTIBODY = CM_DATA_ROOT / "LINCS-LDS-1593" / "source" / "Metadata" / "Antibody_Metadata.txt"
+DTOXS_PROTEIN = CM_DATA_ROOT / "LINCS-LDS-1593" / "source" / "Metadata" / "Protein_Metadata.txt"
 
 DTOXS_BIOLOGIC_CODES = {
     # code: (entity type, display name, source)
@@ -510,7 +510,7 @@ DTOXS_BIOLOGIC_CODES = {
 
 def _dtoxs_primary_design_codes():
     codes = set()
-    for f in glob.glob(str(CM_DATA_ROOT / "dtoxs_primary" / "Data" / "Level3"
+    for f in glob.glob(str(CM_DATA_ROOT / "LINCS-LDS-1593" / "source" / "Data" / "Level3"
                           / "**" / "PromoCell-DGE-Experiment-Design-*.tsv"),
                        recursive=True):
         codes |= set(pd.read_csv(f, sep="\t")["State"].astype(str))
@@ -518,14 +518,14 @@ def _dtoxs_primary_design_codes():
 
 
 def _ipsc_design_codes():
-    f = sorted(glob.glob(str(CM_DATA_ROOT / "dtoxs_ipsc"
+    f = sorted(glob.glob(str(CM_DATA_ROOT / "DToxS-iPSC" / "source"
                             / "GSE217423*Design*.tsv.gz")))[0]
     codes = set(pd.read_csv(f, sep="\t")["State"].astype(str))
     return {c for c in codes if c != "CTRL"}
 
 
 def _ipsc_names():
-    t = gzip.open(CM_DATA_ROOT / "dtoxs_ipsc"
+    t = gzip.open(CM_DATA_ROOT / "DToxS-iPSC" / "source"
                   / "GSE217423_series_matrix.txt.gz", "rt").read()
     codes = re.findall(r'"([A-Z0-9-]+) MSN[^"]*"', t)
     names = re.findall(r'"drug name: ([^"]*)"', t)
@@ -536,7 +536,7 @@ def _ipsc_names():
 
 
 def _gse244740_names():
-    t = gzip.open(CM_DATA_ROOT / "gse244740"
+    t = gzip.open(CM_DATA_ROOT / "GSE244740" / "source"
                   / "GSE244740_series_matrix.txt.gz", "rt").read()
     line = [l for l in t.splitlines() if l.startswith("!Sample_title")][0]
     titles = re.findall(r'"([^"]*)"', line)
@@ -549,14 +549,14 @@ def _gse244740_names():
 
 
 def _gse247541_names():
-    c = pd.read_csv(CM_DATA_ROOT / "gse247541" / "GSE247541_raw_counts.csv.gz",
+    c = pd.read_csv(CM_DATA_ROOT / "GSE247541" / "source" / "GSE247541_raw_counts.csv.gz",
                     index_col=0, nrows=0)
     return sorted({col.rsplit("_", 1)[0] for col in c.columns
                    if not col.startswith("DMSO")})
 
 
 def _gse262419_names():
-    h = pd.read_csv(CM_DATA_ROOT / "gse262419" / "GSE262419_hash.csv.gz")
+    h = pd.read_csv(CM_DATA_ROOT / "GSE262419" / "source" / "GSE262419_hash.csv.gz")
     names = {str(x).strip() for x in h["Chemical_name"]}
     return sorted(names - {"VEH", "Media", "Blank"})
 

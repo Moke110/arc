@@ -1,0 +1,30 @@
+{
+  "item": "XPert-L1000",
+  "category": "pert_data",
+  "purpose": "XPert L1000 landmark-gene pretraining corpus (pretrain h5ads)",
+  "retrieved_at": "2026-05-24T00:22+08:00",
+  "sources": [
+    {
+      "kind": "asset",
+      "id": "L1000 pretrain h5ads (XPert library home, ADR 0008)",
+      "url": "",
+      "version": "unknown",
+      "license": "unknown",
+      "method": "unknown (no upstream download record; moved from the XPert model library, ADR 0008)",
+      "path": "source/",
+      "files": 3,
+      "bytes": 9833358088,
+      "tree_sha256": null
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/L1000_summary.md",
+      "origin": "hand-written dataset note (moved here from the XPert library, ADR 0008; the dataset home was formerly named l1000-xpert)"
+    }
+  ],
+  "manifest": null,
+  "verified_at": null,
+  "verify_result": null,
+  "note": "manifest and verification are filled by ticket 09"
+}

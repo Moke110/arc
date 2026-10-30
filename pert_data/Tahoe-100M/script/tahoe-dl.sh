@@ -10,10 +10,14 @@
 # The unit is transient (no unit file on disk) and survives this shell / DSH session.
 # After a WSL restart, just run `start` again — the ledger makes it a no-op for done files.
 set -euo pipefail
-ROOT=/home/chang/arc
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+ROOT="$SCRIPT_DIR"
+while [ ! -e "$ROOT/.git" ]; do
+  [ "$ROOT" = "/" ] && { echo "tahoe-dl: cannot find the repository root above $SCRIPT_DIR" >&2; exit 2; }
+  ROOT="$(dirname -- "$ROOT")"
+done
 UNIT=tahoe-dl
-SCRIPT_DIR="$ROOT/stage2/04_tahoe_pretrain/script"
-STATUS="$ROOT/pert_data/tahoe/_state/status.json"
+STATUS="$ROOT/pert_data/Tahoe-100M/local/_state/status.json"
 
 is_active() { systemctl --user is-active --quiet "$UNIT" 2>/dev/null; }
 

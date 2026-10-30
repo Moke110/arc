@@ -3,7 +3,13 @@
 # Runs the resumable full-scope Tahoe-100M fetch; stdout/stderr go to logs/tahoe_full.log.
 # Safe to kill/restart at any time: fetch_tahoe.py has its own ledger + .incomplete resume.
 set -euo pipefail
-cd /home/chang/arc
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+ROOT="$SCRIPT_DIR"
+while [ ! -e "$ROOT/.git" ]; do
+  [ "$ROOT" = "/" ] && { echo "run_fetch: cannot find the repository root above $SCRIPT_DIR" >&2; exit 2; }
+  ROOT="$(dirname -- "$ROOT")"
+done
+cd "$ROOT"
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 mkdir -p logs
 # Worker count default 2 (operator choice, 2026-10-29). Measured on hf-mirror:
@@ -11,6 +17,6 @@ mkdir -p logs
 # (per-connection throttling). Override with TAHOE_WORKERS=1|4.
 WORKERS="${TAHOE_WORKERS:-2}"
 exec /home/chang/miniconda3/bin/python3 \
-  stage2/04_tahoe_pretrain/script/fetch_tahoe.py \
+  pert_data/Tahoe-100M/script/fetch_tahoe.py \
   --scope full --workers "$WORKERS" \
   "$@" >> logs/tahoe_full.log 2>&1

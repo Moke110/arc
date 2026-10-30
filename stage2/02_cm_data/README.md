@@ -33,8 +33,8 @@ provenance anchor and stays on the raw folder:
 
 | dataset_id | accession | assay | panel | raw folder |
 |---|---|---|---|---|
-| `screen_ctox` | GSE244740 | ScreenSeq | 33 cardiotoxicants + 9 non-cardiotoxicants | `pert_data/gse244740` |
-| `temp_env` | GSE262419 | TempO-Seq | 464 environmental chemicals | `pert_data/gse262419` |
+| `screen_ctox` | GSE244740 | ScreenSeq | 33 cardiotoxicants + 9 non-cardiotoxicants | `pert_data/GSE244740/source` |
+| `temp_env` | GSE262419 | TempO-Seq | 464 environmental chemicals | `pert_data/GSE262419/source` |
 
 The mapping is defined once in `cmdata/paths.py` (`SOURCE_ACCESSIONS`) and is
 repeated in `corpus/v1/README.md` and `qa_report.md`. The build writes the
@@ -193,12 +193,13 @@ inhibitor, 16 wells; Inman et al. 2002, *Mol Pharmacol* 62:65-74). The three
 
 ## Pinned annotation assets
 
-The build makes **no network call**. Two read-only assets are pinned under
-`pert_data/annotation/` by `fetch_annotation.py`:
+The build makes **no network call**. Two read-only assets are pinned by
+`pert_data/Annotation/script/fetch_annotation.py` — the HGNC download under
+`pert_data/Annotation/source/`, the compound snapshot under `pert_data/Annotation/local/`:
 
 | asset | content | provenance |
 |---|---|---|
-| `hgnc_complete_set.txt` | 45,277 HGNC rows: symbol, aliases, previous symbols, Entrez, Ensembl | HGNC complete set, URL/date/checksum in `annotation/README.md` |
+| `hgnc_complete_set.txt` | 45,277 HGNC rows: symbol, aliases, previous symbols, Entrez, Ensembl | HGNC complete set, URL/date/checksum in `pert_data/Annotation/local/README.md` |
 | `cm_compound_annotation.csv` | 547 `(name, source-structure)` rows: parent/exact InChIKey, SMILES, PubChem CID, ChEMBL id, ATC, MoA, MeSH | one-time public-registry snapshot derived from the Stage 1 external audit (PubChem/UniChem/ChEMBL/RxNav) |
 
 `fetch_annotation.py --hgnc` downloads and pins HGNC; `--compounds
