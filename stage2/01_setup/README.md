@@ -19,7 +19,7 @@ the benchmark step (`03_models_cmbench/`, re-laid-out in ticket 07).
 ├── model_architecture_weights_benchmarks.html    human report, stays at step level
 └── execution/<model>/
     ├── README.md       run card: source commit, weights, data, env, command, result
-    ├── run.sh          entry point (repo root found by walking up to .git)
+    ├── run.sh          shell entry point
     ├── smoke.py        the actual smoke; prnet uses run_prnet.py instead
     ├── env.lock        recorded environment (conda `@EXPLICIT`/pip freeze, 2026-10)
     └── output/         run.log + meta.json (the textual evidence, tracked)
@@ -48,9 +48,10 @@ out of git. The pre-trim output tree was 116.6 MB, the surviving evidence 78 KB.
 
 ## Reproduce
 
-Run from anywhere; each `run.sh` resolves the repository root by walking up to
-the directory containing `.git` (ADR 0030 §4), so no `cd` and no
-depth-dependent `../..` is involved. From the repository root:
+Run from anywhere; each run entrypoint chain resolves the repository root by
+walking up to the directory containing `.git` (in `run.sh` or `smoke.py`, ADR
+0030 §4), so no caller `cd` and no depth-dependent `../..` is involved. From
+the repository root:
 
 ```bash
 # cheapest full smoke: CPU torch, no downloaded weights (~seconds)

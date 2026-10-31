@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Regression: cross-workflow references must follow the stage1/ layout.
+
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+if rg -n 'WORKSPACE_ROOT\s*/\s*"workflow"' \
+  "$repo_root/stage1/xpert-fda-miri-v1.1/_lib/utils.py" \
+  "$repo_root/stage1/xpert-fda-miri-v2/_lib/utils.py" \
+  "$repo_root/stage1/xpert-fda-miri-v3/_lib/utils.py"; then
+  echo "legacy workflow/ path remains in a live Stage 1 utility" >&2
+  exit 1
+fi
+
+for path in \
+  stage1/xpert-fda-miri-v1/03_cm_finetune_data/output/dtoxs.h5ad \
+  stage1/xpert-fda-miri-v1.1/03_cm_finetune_data/output/dtoxs_lincs.h5ad \
+  stage1/xpert-fda-miri-v2/03_cm_finetune_data/output/cm_union.h5ad
+do
+  if [ ! -f "$repo_root/$path" ]; then
+    echo "expected cross-workflow reference is missing: $path" >&2
+    exit 1
+  fi
+done
+
+echo "PASS: Stage 1 cross-workflow references use the stage1/ layout"

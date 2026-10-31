@@ -59,7 +59,7 @@ DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 
 # The finalized v1 workflow (read-only schema reference for the union gate and
 # the DToxS baseline comparison). Only ever read, never written.
-V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1"
+V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "stage1" / "xpert-fda-miri-v1"
 V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "dtoxs.h5ad"
 
 # L1000 embedding-table boundary: rows [0, N_L1000_DRUGS) are the author

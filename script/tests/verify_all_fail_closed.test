@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Regression: verify_all must fail closed when the external inventory vanishes.
+
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+fixture="$(mktemp -d)"
+trap 'rm -rf -- "$fixture"' EXIT
+
+mkdir -p "$fixture/.git" "$fixture/script"
+cp "$repo_root/script/verify_all.sh" "$fixture/script/verify_all.sh"
+
+set +e
+output="$(cd -- "$fixture" && bash script/verify_all.sh 2>&1)"
+rc=$?
+set -e
+
+if [ "$rc" -ne 1 ]; then
+  printf 'expected exit 1 for missing inventory, got %s\n%s\n' "$rc" "$output" >&2
+  exit 1
+fi
+if ! grep -Fq 'category missing' <<<"$output"; then
+  printf 'missing category diagnostic not found:\n%s\n' "$output" >&2
+  exit 1
+fi
+if grep -Fq 'RESULT: PASS' <<<"$output"; then
+  printf 'missing inventory was reported as PASS:\n%s\n' "$output" >&2
+  exit 1
+fi
+
+echo "PASS: verify_all fails closed when the external inventory is missing"

@@ -64,14 +64,14 @@ DTOXS_SMALL_MOL = DTOXS_LINCS_ROOT / "Metadata" / "Small_Molecule_Metadata.txt"
 
 # The finalized v1 workflow (read-only schema reference for the union gate and
 # the DToxS baseline comparison). Only ever read, never written.
-V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1"
+V1_WORKFLOW_ROOT = WORKSPACE_ROOT / "stage1" / "xpert-fda-miri-v1"
 V1_DTOXS_H5AD = V1_WORKFLOW_ROOT / "03_cm_finetune_data" / "output" / "dtoxs.h5ad"
 
 # The DToxS-LINCS testbed (v1.1): its rebuilt finetune h5ad is the benchmark
 # reference the v2 primary arm realigns to (ADR 0015). v2 imports v1.1's fold
 # columns verbatim for primary rows (byte-identical test sets) and audits its
 # own primary arm against v1.1's in the step-03 delta report. Only ever read.
-V11_WORKFLOW_ROOT = WORKSPACE_ROOT / "workflow" / "xpert-fda-miri-v1.1"
+V11_WORKFLOW_ROOT = WORKSPACE_ROOT / "stage1" / "xpert-fda-miri-v1.1"
 V11_DTOXS_LINCS_H5AD = (V11_WORKFLOW_ROOT / "03_cm_finetune_data" / "output"
                         / "dtoxs_lincs.h5ad")
 
