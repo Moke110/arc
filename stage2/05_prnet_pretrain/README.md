@@ -24,7 +24,8 @@ recorded there (D0–D3, mirrored into `output/model_card.md`).
 The plan of record is
 [`.scratch/stage2-05-prnet-pretrain/`](../../.scratch/stage2-05-prnet-pretrain/)
 (`spec.md` contract, `map.md` decisions, `issues/` tickets, `adr-0031-draft.md`).
-Tickets: **01** build/QA 04's view, **03** the full run, **04** the doc/ADR flip.
+Tickets: **01** build 04's view, **02** validate it, **03** flip 04's docs,
+**04** this step's bring-up (resolved), **05** the full run, **06** promote the ADR.
 
 Smoke result (`--smoke`, synthetic 300 × 18,164 fixture, RTX 4070 Ti SUPER):
 epoch 1 `train 0.038362 / valid 0.048439`, epoch 2 `train 0.019514 / valid

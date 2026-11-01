@@ -61,12 +61,13 @@ read it. Plan:
 §1; proposed decision record:
 [`adr-0031-draft.md`](../../.scratch/stage2-05-prnet-pretrain/adr-0031-draft.md).
 
-**Status: NOT ACCEPTED.** On 2026-11-01 the build was halted after assembly: the
-h5ad (16.3 GB) and `manifest.csv`/`compounds.csv` exist, but the **QA stage never
-ran** — there is no `qa.json`/`qa_report.md`, so none of its numbers are verified.
-Execution resumes only on a fresh go-ahead; the first action is to QA the
-artifact that already exists (it looks complete — `X` is CSR
-`(67018, 18164)` and the manifest carries a `content_sha256`).
+**Status: planned — nothing built.** The 2026-11-01 build was halted and its output
+deleted the same day: it had reached assembly but **never ran QA**, so the artifact
+(16.3 GB) was unverified and regenerable from the corpus's per-plate parts. There is
+currently no `output/pretrain_view/` at all. The work is a ticket chain —
+build → validate → flip these docs — in
+[`.scratch/stage2-05-prnet-pretrain/issues/`](../../.scratch/stage2-05-prnet-pretrain/issues/01-build-pretrain-view.md);
+nothing runs without a fresh go-ahead.
 
 Four contract deviations matter to any consumer (full table in the spec and the
 ADR draft):

@@ -17,11 +17,11 @@ only**: it downloads nothing and imports nothing.
 - `output/pseudobulk/_state/` — `shard_plate.json` scan bookkeeping (machine
   state, gitignored; safe to delete, `scan` rebuilds it).
 - `--plates plate4,plate5` limits any stage; `--force` rebuilds existing parts.
-- `execution/build_pretrain_view.py` — **planned, NOT ACCEPTED**: builds
+- `execution/build_pretrain_view.py` — **planned, nothing built**: builds
   `output/pretrain_view/tahoe_cm_schema.h5ad` (67,018 x 18,164 CM-schema view)
   from `output/pseudobulk/_parts/`. Contract + deviations D0–D3:
-  `.scratch/stage2-05-prnet-pretrain/spec.md` §1. The 2026-11-01 build reached
-  assembly but **never ran QA** — no `qa.json`/`qa_report.md`, so the artifact is
-  unverified. Do not rebuild the corpus; do not delete `_view_parts/`.
+  `.scratch/stage2-05-prnet-pretrain/spec.md`. The 2026-11-01 build reached
+  assembly but never ran QA, and its unverified output was deleted the same day;
+  `output/pretrain_view/` does not currently exist. Do not rebuild the corpus.
 
 Reproduce commands: `README.md` (`--check`, `qa`, and the full rebuild).
