@@ -6,9 +6,11 @@ pipeline bring-up for that question: train PRnet's author model (`PGM`) on the
 model-facing Tahoe view until a loss-epoch curve exists on real GPU hardware.
 
 It is deliberately narrow — **no CM finetune, no warm start, no cold-drug
-evaluation, no comparison against `03_models_cmbench`**. The contract is
+evaluation, no comparison against `03_models_cmbench`**. The decision is
+[ADR 0031](../../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md) §2
+(contract as planned in
 [`.scratch/stage2-05-prnet-pretrain/spec.md`](../../.scratch/stage2-05-prnet-pretrain/spec.md)
-§2; the view it consumes is built by
+§2); the view it consumes is built by
 [`stage2/04_tahoe_data/`](../04_tahoe_data/README.md) and its deviations are
 recorded there (D0–D3, mirrored into `output/model_card.md`).
 
@@ -26,9 +28,9 @@ recorded there (D0–D3, mirrored into `output/model_card.md`).
 
 The plan of record is
 [`.scratch/stage2-05-prnet-pretrain/`](../../.scratch/stage2-05-prnet-pretrain/)
-(`spec.md` contract, `map.md` decisions, `issues/` tickets, `adr-0031-draft.md`).
-Tickets: **01** build 04's view, **02** validate it, **03** flip 04's docs,
-**04** this step's bring-up (resolved), **05** the full run (resolved), **06** promote the ADR.
+(`spec.md` contract, `map.md` decisions, `issues/` tickets — all six resolved).
+The accepted decision record is
+[`docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md`](../../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md).
 
 Real run (2026-11-01). `execution/run.sh` on 04's view: 68 epochs in 883 s, with early
 stopping firing at epoch 68 after 21 stale epochs; the valid Gaussian NLL fell from
@@ -151,8 +153,8 @@ model card are the evidence a later reader needs, and the weights are regenerabl
 
 Inherited from the 04 view and recorded in `model_card.md`:
 
-- **D0 layout** — CSR instead of CM's dense `int32` (dense 18,164 × 67,018 = 4.87 TB);
-  schema-identical.
+- **D0 layout** — CSR instead of CM's dense `int32`; the builder never materialises a
+  dense 18,164 × 67,018 buffer, so what differs is storage layout, not schema.
 - **D1 control keying** — `control_group` = `tahoe::<plate>::<cell_line_id>` (700 groups)
   so the control mean never mixes cell lines.
 - **D2 gene axis** — 18,164 slots, `FAM153B` all-zero (no Tahoe measurement).
@@ -191,7 +193,8 @@ figure). Targets are gathered per batch.
 
 ## Out of scope this round
 
-CM finetune / warm start, cold-drug re-benchmark, the 5k HVG fork, a full
-pretraining-protocol ADR (write it once the real curve exists), any edit inside
+CM finetune / warm start, cold-drug re-benchmark, the 5k HVG fork, any
+pretraining *protocol* beyond ADR 0031's bring-up (transfer, warm-start or
+finetune experiments), any edit inside
 `pert_model/`, any regeneration of `03_models_cmbench`, and rebuilding the 04
 corpus or its view.

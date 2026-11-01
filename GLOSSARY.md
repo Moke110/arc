@@ -140,10 +140,6 @@ _Avoid_: bulk profile, pseudo bulk, pooled single cell
 One culture well holding one perturbation condition: the row key of both the CM dataset bundles and the Tahoe pseudobulk corpus. Tahoe-100M calls it a `sample` (96 wells per plate, 1,344 wells in 14 plates), so the two vocabularies must be translated explicitly.
 _Avoid_: sample (when meaning well), culture
 
-**Pretrain view**:
-A projection of the Tahoe pseudobulk corpus onto another corpus's gene and schema axes so a model can be trained on it, distinguished from the corpus itself (which freezes identity, not projections) and from a `datasets-<n>` bundle (which is built from the CM corpus). A view is derived, reproducible and disposable; the corpus is not.
-_Avoid_: dataset (for a view), corpus (for a view), dataset bundle
-
 ### Workflow step layouts
 
 All four MIRI screens (v1, v1.1, v2, v3) share the same 11-step layout: `01_drug_embed`, `02_cm_baseline`, `03_cm_finetune_data`, `04_xpert_pretrain`, `05_xpert_finetune_bench`, `06_xpert_finetune`, `07_xpert_predict`, `08_miri_phenotype`, `09_miri_efficacy_scores`, `10_filter`, `11_integrate`. They differ only in the finetune-data composition (v1's frozen DToxS / v1.1's DToxS-LINCS / v2's primary+iPSC union / v3's all-four-CM union). The agentic report step is **no longer a numbered step** in any workflow (removed per spec 1); v1 keeps its archived, non-numbered `report/` stage.
@@ -209,6 +205,10 @@ _Avoid_: dataset version, output, export
 **View**:
 A single h5ad inside a dataset bundle — the corpus filtered by exactly one rule (for example one pharmacology tier), value-identical to the other views on the rows it retains.
 _Avoid_: subset, variant, dataset
+
+**Pretrain view**:
+A projection of a frozen corpus onto another corpus's gene axis and column conventions, so that a model pretrained on the source can be adapted to the target without a gene-space remap. It is distinguished from the corpus itself — which freezes identity, not projections — and from a `datasets-<n>` bundle, which is built from the CM corpus and carries a per-view membership: a pretrain view belongs to no numbered bundle build, carries no membership, and comes from a corpus other than the CM corpus. A view is derived, reproducible and disposable; the corpus is not. It is schema-isomorphic, not layout-isomorphic: what a consumer asserts about shape, genes, columns and value conventions matches; how the values are stored need not.
+_Avoid_: pretrain corpus, pretrain dataset, projection (unqualified)
 
 **Pharmacology tier**:
 The named compound-inclusion rule of a view: `atc-moa` (ATC or ChEMBL mechanism), `atc-moa-mesh` (plus PubChem MeSH classes), or `all-smiles` (any resolvable small molecule).

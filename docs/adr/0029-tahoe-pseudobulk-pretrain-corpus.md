@@ -8,18 +8,22 @@
 
 1. *Drug overlap.* The "24/525" figure quoted in Consequences is the **raw
    (non-desalted) InChIKey** route. Under the corpus's own rule — desalted parent
-   InChIKey — the overlap is **31**; by PubChem CID 36, by normalised name 34
+   InChIKey — the overlap is **31**; by PubChem CID 36, by alphanumerically
+   normalised name (lowercase, every non-`[a-z0-9]` character removed) 34
    (measured against `02_cm_data/output/datasets-1/compounds.csv`'s 525 keys;
    377 of 379 Tahoe drugs parse to a structure). Consequences now states 31.
 2. *Timepoint.* "24 h" has **no data source**: no table in the atlas carries a
    time column, so it remains prose and must not be materialised as an obs field
-   (see the view plan's D3).
+   (see ADR 0031's D3).
 
 Projections of this corpus are still views, not amendments to it. The first
-projection — a CM-schema 18,164-gene view — is planned (not built) and carries
-four declared deviations (D0 CSR layout, D1 700-group `(plate, cell_line)`
-control keying, D2 `FAM153B` all-zero slot, D3 NaN/empty provenance fields):
-`.scratch/stage2-05-prnet-pretrain/spec.md` §1, `adr-0031-draft.md`.
+projection — a CM-schema 18,164-gene view — was **built and verified 2026-11-01**
+(67,018 × 18,164; nine gates 9/9 PASS) and is decided by **ADR 0031**, which
+records its four declared deviations (D0 CSR layout, D1 700-group
+`(plate, cell_line)` control keying, D2 `FAM153B` all-zero slot, D3 NaN/empty
+provenance fields) with the rejected alternative for each:
+`docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md`, measured contract in
+`stage2/04_tahoe_data/README.md`.
 
 Stage 2's CM corpus is bulk — one physical library per well — frozen at 18,164
 genes (ADR 0026). The candidate pretrain corpus is Tahoe-100M: 97,840,590
@@ -94,7 +98,10 @@ aggregation, not an invention.
   a single timepoint with **31/525** drug-key overlap against the CM corpus (24
   by raw InChIKey — the figure originally recorded here; see the 2026-11-01
   update). Those remain pretrain→finetune domain gaps and must be stated wherever
-  the corpus is used, not engineered away.
+  the corpus is used, not engineered away. The first consumer of the corpus is
+  **ADR 0031**: its CM-schema view carries four deviations (D0–D3) and a
+  bring-up pretrain run; those are the view's and the run's, and they do not amend
+  this corpus.
 - **Provenance is an import, not a fetch.** The atlas arrives from a Windows-side
   HF snapshot (`E:\Desktop\tahoe\data\hf`) and is verified against HF's
   `lfs.sha256` before the source copy is deleted. `fetch_tahoe.py` stays as the

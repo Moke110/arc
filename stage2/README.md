@@ -6,20 +6,21 @@ model run in its own environment?") is deliberately separate from selection
 ("which model is best?"): `01_setup/` answers the first, `03_models_cmbench/`
 the second.
 
-## Current state (2026-10-30)
+## Current state (2026-11-01)
 
 | step | question | what it produced | record |
 |---|---|---|---|
 | [`01_setup/`](01_setup/README.md) | does each model run? | 9/9 run cards, one pinned environment per model; **no model emitted a whole-transcriptome CM perturbome** | ADR 0021, ADR 0024 |
 | [`02_cm_data/`](02_cm_data/README.md) | what do we evaluate on? | frozen corpus: **18,164 genes × 525 drug keys**; five `datasets-1` h5ad views | ADR 0026 |
 | [`03_models_cmbench/`](03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork | ADR 0027, ADR 0028 |
-| [`04_tahoe_data/`](04_tahoe_data/README.md) | what do we pretrain on? | **Tahoe-100M pseudobulk corpus**: 67,018 profiles × 62,710 genes, 25.8 GB, QA gates pass | ADR 0029 |
-| [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **planned, not executed**: PRnet GPU pipeline smoke-verified (7,185,000 params, synthetic fixture); the 100-epoch run on a CM-schema Tahoe view is an open ticket | ADR 0031 (draft) |
+| [`04_tahoe_data/`](04_tahoe_data/README.md) | what do we pretrain on? | **Tahoe-100M pseudobulk corpus** (67,018 profiles × 62,710 genes, 25.8 GB, QA gates pass) **and its CM-schema pretrain view** — 67,018 × 18,164, 16.32 GB, **nine gates 9/9 PASS** | ADR 0029, ADR 0031 |
+| [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **executed 2026-11-01**: PRnet pretrained on the 04 view — **68 epochs**, early stop at 68, best valid Gaussian NLL **−2.628080** at epoch 47, **883.2 s** on an RTX 4070 Ti SUPER; pipeline claim only | ADR 0031 |
 
-The stage is now in **selection follow-up**: the benchmark evidence exists, the
-pretrain corpus exists, and no model has yet been trained on it inside Stage 2.
-The 04 CM-schema view and the 05 pretrain run are **planned and halted** — see
-[`.scratch/stage2-05-prnet-pretrain/`](../../.scratch/stage2-05-prnet-pretrain/map.md).
+The stage is now in **selection follow-up**: the benchmark evidence exists, the pretrain
+corpus exists, and PRnet has been pretrained on its CM-schema view — but no model has
+been finetuned on that checkpoint or evaluated against the benchmark, so the
+pretrain→finetune question is still open (see
+[`05_prnet_pretrain/`](05_prnet_pretrain/README.md)).
 
 ## Selection constraints in force
 
@@ -73,7 +74,15 @@ The 04 CM-schema view and the 05 pretrain run are **planned and halted** — see
   materialized. QA: median 25,290 detected genes/profile; 3,755 contrasts vs
   the authors' DESeq2 DE give Pearson 0.779 at `baseMean > 500` (gate ≥ 0.60)
   and 0.812 at `baseMean > 800`; all 700 `(plate, cell_line)` pairs carry a
-  vehicle.
+  vehicle. Its CM-schema pretrain view (`output/pretrain_view/`) projects that
+  corpus to 18,164 genes: 67,018 × 18,164, 16.32 GB, nine consumer-side gates
+  9/9 PASS.
+- **`05_prnet_pretrain/`** — the first model trained on the Tahoe corpus inside
+  Stage 2: PRnet's `PGM` from random init on the 04 view (7,185,000 parameters;
+  68 epochs, early stop at epoch 68, best valid Gaussian NLL −2.628080 at epoch
+  47; 883.2 s and 15,150 MiB peak RSS on an RTX 4070 Ti SUPER). A pipeline
+  bring-up — no finetune, no cold-drug evaluation, no comparison with the
+  benchmark.
 
 ## Deployed vs reference-only models
 
@@ -104,6 +113,7 @@ gitignored (multi-GB, interpreter-specific); rebuild recipes are in
 - ADR [0027](../docs/adr/0027-stage2-benchmark-contract.md) — the 18,164-gene cold-drug benchmark contract.
 - ADR [0028](../docs/adr/0028-stage2-5k-hvg-benchmark.md) — the 5,000-gene HVG sensitivity fork.
 - ADR [0029](../docs/adr/0029-tahoe-pseudobulk-pretrain-corpus.md) — the Tahoe-100M pseudobulk pretrain corpus.
+- ADR [0031](../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md) — the CM-schema Tahoe pretrain view and the PRnet pretrain bring-up.
 - [`audit/model_selection_decisions.md`](audit/model_selection_decisions.md) — the live selection override and what follows from it.
 - [`_archive/PLAN.md`](_archive/PLAN.md) — the superseded plan, archived as-is; this page carries its live content.
 

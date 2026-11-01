@@ -11,7 +11,7 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-The index covers every record in the directory, 0001–0030 (21 + 8 = 29 files; 0023 is the
+The index covers every record in the directory, 0001–0031 (21 + 9 = 30 files; 0023 is the
 gap). Two early records are marked superseded in place.
 
 | # | Decision |
@@ -45,3 +45,4 @@ gap). Two early records are marked superseded in place.
 | [0028](0028-stage2-5k-hvg-benchmark.md) | Stage 2 5,000-gene HVG sensitivity benchmark |
 | [0029](0029-tahoe-pseudobulk-pretrain-corpus.md) | Tahoe-100M enters Stage 2 as a pseudobulk pretrain corpus |
 | [0030](0030-external-data-provenance-and-step-layout.md) | External data provenance and the Stage 2 step layout |
+| [0031](0031-tahoe-cm-schema-view-and-prnet-pretrain.md) | A CM-schema Tahoe pretrain view and the PRnet pretrain bring-up |

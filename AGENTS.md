@@ -29,13 +29,13 @@ Every download source is one **项** under ADR 0030: `script/` (downloader + off
 - `01_setup/` — nine deployed non-preprint models load/train on their native assets; run cards under `execution/<model>/`.
 - `02_cm_data/` — frozen model-agnostic CM corpus (`output/corpus/v1/`, ADR 0026) and the five `datasets-1` h5ad views.
 - `03_models_cmbench/` — the executed 60-unit cold-drug benchmark, split into independently concluded substeps: `03.1_cold_drug_18k/` (primary) and `03.2_hvg_sensitivity_5k/` (HVG sensitivity fork). Each substep carries its own `execution/`, `output/` (`input/`, `units/`, `results/`), `summary.png`, `summary_table.csv`.
-- `04_tahoe_data/` — Tahoe-100M pseudobulk pretrain corpus build from the already-downloaded atlas (ADR 0029); its CM-schema pretrain view is planned and unverified.
-- `05_prnet_pretrain/` — planned, **not executed**: PRnet pretraining on 04's view (GPU pipeline smoke-verified only). Plan of record: `.scratch/stage2-05-prnet-pretrain/` (spec, map, tickets, `adr-0031-draft.md`).
+- `04_tahoe_data/` — Tahoe-100M pseudobulk pretrain corpus from the already-downloaded atlas (ADR 0029) plus its built, verified CM-schema pretrain view (67,018 × 18,164, nine gates 9/9).
+- `05_prnet_pretrain/` — PRnet pretrained on 04's view, executed 2026-11-01 (68 epochs, best valid Gaussian NLL −2.628080); pipeline claim only, artifacts under `output/` (ADR 0031).
 - Non-step directories: `_envs/` (shared per-model benchmark environments), `audit/` (non-computational records), `_archive/` (superseded `cm_bench_v1` benchmark + archived plan).
 
 ## Docs, reference, other trees
 
-- `docs/` — decision records ([`docs/adr/README.md`](docs/adr/README.md), 0009–0030 indexed; 0023 is a numbering gap), the AICM roadmap (`roadmap.md`), the ignored-asset inventory (`data-inventory.md`), the wet-lab record (`wetlab-validation-stage1.md`), agent docs, teaching material.
+- `docs/` — decision records ([`docs/adr/README.md`](docs/adr/README.md), 0009–0031 indexed; 0023 is a numbering gap), the AICM roadmap (`roadmap.md`), the ignored-asset inventory (`data-inventory.md`), the wet-lab record (`wetlab-validation-stage1.md`), agent docs, teaching material.
 - `GLOSSARY.md` — domain vocabulary, including the external-item / step-layout terms.
 - `tableA_cardiomyocyte_hypoxia_compound_datasets.csv` — orphan dataset table, tracked; the same table is in `docs/data-inventory.md`.
 - `archived/` — gitignored provenance archive of orphaned HG FDA-extension data/weights.
