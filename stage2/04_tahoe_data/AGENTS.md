@@ -21,11 +21,9 @@ corpus contract is ADR 0029, the view's is
 - `output/pretrain_view/tahoe_cm_schema.h5ad` — 67,018 x 18,164 CSR int32 +
   `log1p_cp10k`, 16.32 GB, local-only, gitignored.
 - `output/pretrain_view/{manifest.csv,compounds.csv,qa.json,qa_report.md}` — the
-  tracked view record (counts + digest, 379 compounds, gates, report). No model
-  has been trained on the view: PRnet pretraining is ticket 05, still open.
+  tracked view record (counts + digest, 379 compounds, gates, report). PRnet was
+  pretrained on the view 2026-11-01 (68 epochs, best valid NLL −2.628080; ADR 0031).
 - `output/pretrain_view/_view_parts/` — per-plate gather cache (gitignored
   intermediate; a missing part is rebuilt, `--force` re-gathers all).
 - The corpus builder is **not** a dependency of the view build: never imported
   or run, no shard re-aggregated — the view reads the frozen obs + `_parts/`.
-
-Reproduce commands: `README.md` (corpus and view, separately).

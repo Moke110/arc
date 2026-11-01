@@ -9,9 +9,14 @@ the corpus and never touches `output/pseudobulk/`. It projects the frozen
 schema is identical to the CM views (`stage2/02_cm_data/output/datasets-1/`),
 plus the side files a downstream trainer needs.
 
-Layout differs from CM on purpose (deviation D0): CM views are dense int32; a
-dense 18,164 x 67,018 matrix is 4.87 TB, so this view is CSR.  Schema (obs, var,
-layers, uns) is identical; only the container is sparse.
+Layout differs from CM on purpose (deviation D0): CM views are dense int32; this
+view is CSR.  Schema (obs, var, layers, uns) is identical; only the container
+differs.  The plan's original size argument ("dense = 4.87 TB") was a units
+error: a dense 67,018 x 18,164 int32 X is 4.87 GB (9.74 GB with the float32
+layer), and at 83% density (1,010,892,356 of 1,217,314,952 cells) the CSR
+artifact is in fact the larger container (16.32 GB).  CSR is kept because it
+mirrors the corpus's per-plate CSR parts and lets the builder assemble with
+slice writes — a recorded deviation, not a size win.
 
 Usage (run from the repository root; any cwd works, the root is found by
 walking up to `.git`):
@@ -695,7 +700,8 @@ def assemble(parts: list[Path], var: pd.DataFrame, obs, control_mean: pd.DataFra
 def content_sha256(path: Path, chunk: int = 32_000_000) -> str:
     """Hash the CSR `data`/`indices`/`indptr` arrays separately, chunked.
 
-    Never `np.ascontiguousarray(X)`: that densifies 67,018 x 18,164 to 4.87 TB.
+    Never densify: `np.ascontiguousarray(X)` would allocate ~9.7 GB
+    (67,018 x 18,164 float64) and defeat the streaming assembly.
     """
     import h5py
 
@@ -1118,7 +1124,10 @@ def run_qa(colmap: np.ndarray) -> dict:
 DEVIATIONS = [
     ("D0", "matrix layout",
      "CM views are dense int32; this view is CSR int32 (+ CSR float32 layer)",
-     "a dense 67,018 x 18,164 matrix is 4.87 TB"),
+     "mirrors the corpus's per-plate CSR parts and the slice-write assembly; the "
+     "plan's 'dense = 4.87 TB' was a units error — dense is 4.87 GB (9.74 GB with "
+     "the layer) and the matrix is 83% dense, so this 16.32 GB CSR artifact is "
+     "larger than a dense one"),
     ("D1", "control keying",
      "`control_group` = `tahoe::<plate>::<cell_line_id>` (700 groups), "
      "`uns['control_mean']` has 700 rows",

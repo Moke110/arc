@@ -2,8 +2,8 @@
 
 **Status:** built and verified (2026-11-01). The corpus below is frozen at its
 2026-10-30 build; the pretrain view was built on 2026-11-01 and passed all nine
-consumer-side gates (9/9). No model has been trained on the view — that is
-ticket 05, still open.
+consumer-side gates (9/9), and PRnet was pretrained on it the same day (68
+epochs, best valid Gaussian NLL −2.628080; ADR 0031).
 
 The **whole-transcriptome pretraining input** for Stage 2: a bulk, well-level
 corpus derived from Tahoe-100M and built once, then read by the pretrain /
@@ -63,9 +63,9 @@ ADR 0029 left to a view: the frozen corpus restricted to the CM corpus's
 18,164-gene axis and shaped so that a CM-shaped loader reads it with no special
 cases. Contract:
 [`spec.md`](../../.scratch/stage2-05-prnet-pretrain/spec.md) §Implementation
-Decisions ("the view's contract"); the decision record is
-[`adr-0031-draft.md`](../../.scratch/stage2-05-prnet-pretrain/adr-0031-draft.md),
-still a draft (promotion is ticket 06).
+Decisions ("the view's contract"); the accepted decision record is
+[ADR 0031](../../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md)
+(accepted 2026-11-01).
 
 **Built and verified 2026-11-01** — 16,319,543,984 bytes (**16.32 GB**), nine
 consumer-side gates **9/9 PASS** (`qa.json` `all_pass: true`, QA run at
@@ -73,9 +73,19 @@ consumer-side gates **9/9 PASS** (`qa.json` `all_pass: true`, QA run at
 34 s, QA ~50 s); a warm-cache rebuild is **80 s** (pass 1 skipped, `_view_parts/`
 is the resumable gather cache). The build streams the corpus's 14 per-plate
 parts — gather the retained columns, then fill the preallocated CSR arrays with
-slice writes — so it never densifies (a dense 67,018 × 18,164 matrix would be
-4.87 TB). No model has been trained on this view: PRnet pretraining is ticket
-05, still open.
+slice writes — so it never materialises a dense buffer (peak RSS ~2 GiB).
+
+The layout is **not** a size win, and the plan's figure was a units error: a
+dense `int32` `X` is **4.87 GB** (**9.74 GB** with the `float32` layer) — not
+terabytes — and at **83% density** (1,010,892,356 of 1,217,314,952 cells) this
+16.32 GB CSR artifact is the *larger* container. D0 keeps CSR because it mirrors
+the corpus's per-plate CSR parts and lets the builder assemble with slice
+writes — a recorded container deviation, not a size claim.
+
+PRnet was pretrained on the view on 2026-11-01 — **68 epochs** (early stop fired
+at 68), best valid Gaussian NLL **−2.628080 at epoch 47**, **883.2 s** on an
+RTX 4070 Ti SUPER; artifacts in `stage2/05_prnet_pretrain/output/` (ADR 0031).
+That run claims only that the pipeline runs.
 
 ### Contract
 
@@ -117,7 +127,7 @@ The three shims exist for the PRnet author code, not as contract columns:
 
 | id | deviation | why |
 |---|---|---|
-| D0 | layout is **CSR**, not CM's dense `int32` — CSR `int32` counts + a CSR `float32` layer | a dense 67,018 × 18,164 matrix is 4.87 TB |
+| D0 | layout is **CSR**, not CM's dense `int32` — CSR `int32` counts + a CSR `float32` layer | mirrors the corpus's per-plate CSR parts and the slice-write assembly. **Not** a size claim: dense `int32` `X` is 4.87 GB (9.74 GB with the layer), and at 83% density this 16.32 GB CSR artifact is larger than dense; the plan's figure was a units error (terabytes for gigabytes) |
 | D1 | `control_group` = `tahoe::<plate>::<cell_line_id>` (**700** groups), not the corpus's `tahoe::<plate>` (14) | a plate pools ~50 cell lines, so a plate-level mean is the Simpson's-paradox mixture ADR 0029 rejected; Δ stays inside one cell line, and all 700 groups carry a vehicle |
 | D2 | 18,164 CM slots with `FAM153B` all-zero | the gene has no Tahoe measurement; dropping it would break axis identity |
 | D3 | `time_h` NaN; `cell_type`/`donor` NaN; `atc`/`moa`/`mesh_classes`/`annotation_source` `""`; `pharm_atc_moa`/`pharm_mesh` False | the atlas has no time column and no CM annotation vocabulary — recorded here rather than invented |
@@ -180,8 +190,9 @@ corpus's rule. The other 377 resolve to a structure.
 - **Not a `datasets-1` bundle.** Bundles are built from the CM corpus and carry
   per-view membership booleans; this view ships its own `compounds.csv` with
   `overlap_cm` instead of extending the frozen bundle.
-- **Not trained on.** No model has consumed it; pretraining on it is a separate
-  ticket (05), still open.
+- **Not evidence of transfer.** The view has been consumed once — the PRnet
+  pretrain bring-up (ADR 0031) — which claims only that the pipeline runs: no
+  finetune, no warm start, no cold-drug comparison.
 
 ### Interpreter pinning (a fact of the artifact)
 

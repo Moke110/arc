@@ -69,8 +69,10 @@ Artifacts (all in `output/`, overwritten on every rerun): `run.log`,
 
 ## Deviations inherited from the 04 view (D0–D3)
 
-- **D0 layout**: `X`/`log1p_cp10k` are CSR (dense 67,018 x 18,164 would be 4.87 TB);
-  schema-identical to the CM views, layout differs.
+- **D0 layout**: `X`/`log1p_cp10k` are CSR instead of the CM views' dense `int32`.
+  Dense would be 4.87 GB (9.74 GB with the layer), not 4.87 TB — the plan's units error —
+  and at 83% density this 16.32 GB CSR artifact is the larger container; CSR mirrors the
+  corpus's CSR parts and the slice-write assembly.
 - **D1 control keying**: `control_group` = `tahoe::<plate>::<cell_line_id>` (700 groups)
   instead of the corpus's 14 plate-level groups, so the control mean never mixes cell lines.
 - **D2 gene axis**: 18,164 slots, `FAM153B` all-zero (no Tahoe measurement).
