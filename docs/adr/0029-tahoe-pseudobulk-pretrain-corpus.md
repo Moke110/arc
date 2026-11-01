@@ -4,6 +4,23 @@
 
 **Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
 
+**Update (2026-11-01, measurements):** two corrections, no decision changed.
+
+1. *Drug overlap.* The "24/525" figure quoted in Consequences is the **raw
+   (non-desalted) InChIKey** route. Under the corpus's own rule — desalted parent
+   InChIKey — the overlap is **31**; by PubChem CID 36, by normalised name 34
+   (measured against `02_cm_data/output/datasets-1/compounds.csv`'s 525 keys;
+   377 of 379 Tahoe drugs parse to a structure). Consequences now states 31.
+2. *Timepoint.* "24 h" has **no data source**: no table in the atlas carries a
+   time column, so it remains prose and must not be materialised as an obs field
+   (see the view plan's D3).
+
+Projections of this corpus are still views, not amendments to it. The first
+projection — a CM-schema 18,164-gene view — is planned (not built) and carries
+four declared deviations (D0 CSR layout, D1 700-group `(plate, cell_line)`
+control keying, D2 `FAM153B` all-zero slot, D3 NaN/empty provenance fields):
+`.scratch/stage2-05-prnet-pretrain/spec.md` §1, `adr-0031-draft.md`.
+
 Stage 2's CM corpus is bulk — one physical library per well — frozen at 18,164
 genes (ADR 0026). The candidate pretrain corpus is Tahoe-100M: 97,840,590
 QC-passed cells from 50 cancer cell lines, in which **every well pools most of
@@ -74,9 +91,10 @@ aggregation, not an invention.
 ## Consequences
 
 - **Pseudobulk fixes sparsity, not biology.** The corpus is cancer cell lines at
-  a single 24 h timepoint with 24/525 drug-key overlap against the CM corpus.
-  Those remain pretrain→finetune domain gaps and must be stated wherever the
-  corpus is used, not engineered away.
+  a single timepoint with **31/525** drug-key overlap against the CM corpus (24
+  by raw InChIKey — the figure originally recorded here; see the 2026-11-01
+  update). Those remain pretrain→finetune domain gaps and must be stated wherever
+  the corpus is used, not engineered away.
 - **Provenance is an import, not a fetch.** The atlas arrives from a Windows-side
   HF snapshot (`E:\Desktop\tahoe\data\hf`) and is verified against HF's
   `lfs.sha256` before the source copy is deleted. `fetch_tahoe.py` stays as the

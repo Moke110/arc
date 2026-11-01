@@ -20,14 +20,19 @@ step only aggregates bytes that are already on disk.
 ```
 04_tahoe_data/
 ├── AGENTS.md  README.md
-├── execution/build_pseudobulk.py      the four resumable stages
-└── output/pseudobulk/
-    ├── tahoe_pseudobulk.h5ad          25.8 GB corpus (local-only)
-    ├── manifest.csv                   67,018 profiles x plate/well/line/drug/dose/n_cells
-    ├── qa.json  qa_report.md          the gates and their measured values
-    ├── qa_contrasts.csv               3,755 per-contrast agreement rows
-    ├── _parts/                        14 per-plate CSR parts (resumable intermediate)
-    └── _state/shard_plate.json        scan bookkeeping (machine state)
+├── execution/build_pseudobulk.py      the four resumable stages (corpus, below)
+├── execution/build_pretrain_view.py   the model-facing view (planned, below)
+├── output/pseudobulk/
+│   ├── tahoe_pseudobulk.h5ad          25.8 GB corpus (local-only)
+│   ├── manifest.csv                   67,018 profiles x plate/well/line/drug/dose/n_cells
+│   ├── qa.json  qa_report.md          the gates and their measured values
+│   ├── qa_contrasts.csv               3,755 per-contrast agreement rows
+│   ├── _parts/                        14 per-plate CSR parts (resumable intermediate)
+│   └── _state/shard_plate.json        scan bookkeeping (machine state)
+└── output/pretrain_view/              PLANNED, NOT ACCEPTED — see below
+    ├── tahoe_cm_schema.h5ad           67,018 x 18,164 CM-schema view (local-only)
+    ├── manifest.csv  compounds.csv  qa.json  qa_report.md   (tracked build record)
+    └── _view_parts/                   per-plate gather cache (local-only)
 ```
 
 ## Corpus
@@ -45,6 +50,37 @@ step only aggregates bytes that are already on disk.
 Δ is deliberately **not** materialized: it is
 `log1p_cp10k(treated) − mean(same-plate, same-cell-line DMSO_TF)`, one groupby
 away, and freezing it would freeze a pairing rule that belongs to the model.
+
+## Pretrain view (planned — contract frozen, build not accepted)
+
+`output/pretrain_view/tahoe_cm_schema.h5ad` is the **model-facing** projection
+ADR 0029 left to a view: the corpus restricted to the CM corpus's 18,164-gene
+axis and shaped like a `datasets-1` h5ad, so the same loaders and validators
+read it. Plan:
+[`.scratch/stage2-05-prnet-pretrain/spec.md`](../../.scratch/stage2-05-prnet-pretrain/spec.md)
+§1; proposed decision record:
+[`adr-0031-draft.md`](../../.scratch/stage2-05-prnet-pretrain/adr-0031-draft.md).
+
+**Status: NOT ACCEPTED.** On 2026-11-01 the build was halted after assembly: the
+h5ad (16.3 GB) and `manifest.csv`/`compounds.csv` exist, but the **QA stage never
+ran** — there is no `qa.json`/`qa_report.md`, so none of its numbers are verified.
+Execution resumes only on a fresh go-ahead; the first action is to QA the
+artifact that already exists (it looks complete — `X` is CSR
+`(67018, 18164)` and the manifest carries a `content_sha256`).
+
+Four contract deviations matter to any consumer (full table in the spec and the
+ADR draft):
+
+| id | deviation |
+|---|---|
+| D0 | layout is **CSR**, not CM's dense `int32` — dense at 67,018 x 18,164 would be 4.87 TB |
+| D1 | `control_group` = `tahoe::<plate>::<cell_line_id>` (**700** groups), not the corpus's `tahoe::<plate>` (14): the control must stay inside one cell line |
+| D2 | 18,164 slots, `FAM153B` all-zero (no Tahoe measurement); Ensembl join 18,163/18,164 |
+| D3 | `time_h`/`cell_type`/`donor` NaN, `atc`/`moa`/`mesh_classes`/`annotation_source` `""`, `pharm_*` False — the atlas has no source for them (it has **no time column at all**) |
+
+Measured drug overlap against the CM corpus's 525 `drug_key`s: **31** by the
+corpus's own desalting rule, 24 by raw InChIKey, 36 by PubChem CID, 34 by
+normalised name. The "24/525" quoted in ADR 0029 is the raw-key route.
 
 ## Reproduce
 

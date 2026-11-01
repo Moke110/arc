@@ -14,7 +14,7 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_models_cmbench/` (ADR 0027). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
+The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_models_cmbench/` (ADR 0027); the Tahoe pseudobulk corpus is `stage2/04_tahoe_data/` (ADR 0029) and the first pretrain run on it is `stage2/05_prnet_pretrain/` (planned). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
 _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 
 **Stage 2 tree**:
@@ -139,6 +139,10 @@ _Avoid_: bulk profile, pseudo bulk, pooled single cell
 **Well**:
 One culture well holding one perturbation condition: the row key of both the CM dataset bundles and the Tahoe pseudobulk corpus. Tahoe-100M calls it a `sample` (96 wells per plate, 1,344 wells in 14 plates), so the two vocabularies must be translated explicitly.
 _Avoid_: sample (when meaning well), culture
+
+**Pretrain view**:
+A projection of the Tahoe pseudobulk corpus onto another corpus's gene and schema axes so a model can be trained on it, distinguished from the corpus itself (which freezes identity, not projections) and from a `datasets-<n>` bundle (which is built from the CM corpus). A view is derived, reproducible and disposable; the corpus is not.
+_Avoid_: dataset (for a view), corpus (for a view), dataset bundle
 
 ### Workflow step layouts
 

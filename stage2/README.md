@@ -14,9 +14,12 @@ the second.
 | [`02_cm_data/`](02_cm_data/README.md) | what do we evaluate on? | frozen corpus: **18,164 genes × 525 drug keys**; five `datasets-1` h5ad views | ADR 0026 |
 | [`03_models_cmbench/`](03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork | ADR 0027, ADR 0028 |
 | [`04_tahoe_data/`](04_tahoe_data/README.md) | what do we pretrain on? | **Tahoe-100M pseudobulk corpus**: 67,018 profiles × 62,710 genes, 25.8 GB, QA gates pass | ADR 0029 |
+| [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **planned, not executed**: PRnet GPU pipeline smoke-verified (7,185,000 params, synthetic fixture); the 100-epoch run on a CM-schema Tahoe view is an open ticket | ADR 0031 (draft) |
 
 The stage is now in **selection follow-up**: the benchmark evidence exists, the
 pretrain corpus exists, and no model has yet been trained on it inside Stage 2.
+The 04 CM-schema view and the 05 pretrain run are **planned and halted** — see
+[`.scratch/stage2-05-prnet-pretrain/`](../../.scratch/stage2-05-prnet-pretrain/map.md).
 
 ## Selection constraints in force
 
