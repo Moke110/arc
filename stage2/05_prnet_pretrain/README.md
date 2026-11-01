@@ -21,7 +21,7 @@ recorded there (D0–D3, mirrored into `output/model_card.md`).
 | execution | **EXECUTED 2026-11-01** (fresh user go-ahead) — after 04's view passed QA 9/9 |
 | pretrain run | **68 epochs**, early stop fired at epoch 68 (patience 21 > 20 once the 20-epoch floor was met); best valid **−2.628080** at epoch 47; `NVIDIA GeForce RTX 4070 Ti SUPER` (torch 2.0.1+cu118) |
 | data | `stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad` — 67,018 × 18,164; 65,318 samples (**55,922 train / 9,396 valid**, split by plate: `plate13` + `plate14` valid); **300** treated rows dropped (no resolvable structure); 700 control groups; 375 unique SMILES; 1,400 controls / 65,618 treated |
-| cost | **883.2 s** wall end to end (14.7 min; 870.9 s in the loop, 12.8 s/epoch); peak host RSS **15,150 MiB** on a 31 GiB host |
+| cost | **956 s (15.9 min)** wall between the run's own start/finish stamps (`17:01:45`→`17:17:41`), over 68 epochs; the in-process monotonic timer reads 883.2 s for the same span — it runs low against the wall clock on this host (see `model_card.md`); peak host RSS **15,150 MiB** on a 31 GiB host |
 | loss | Gaussian NLL is **negative throughout** (train −0.714 → −2.814; best valid −2.628). It is a log-likelihood, so its sign carries no meaning; it is never clamped. It says nothing about transfer, and it is **not comparable** to any `03_models_cmbench` figure |
 | pipeline | **smoke-verified on CUDA** (2 epochs on a synthetic fixture, ticket 04) — retained as the pipeline proof |
 | fixture encoding | carries 04's production `dataframe/0.2.0` `uns['control_mean']` (generated with the `arc` env) |
@@ -32,12 +32,14 @@ The plan of record is
 The accepted decision record is
 [`docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md`](../../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md).
 
-Real run (2026-11-01). `execution/run.sh` on 04's view: 68 epochs in 883 s, with early
+Real run (2026-11-01). `execution/run.sh` on 04's view: 68 epochs in 956 s (15.9 min
+between the start and finish stamps), with early
 stopping firing at epoch 68 after 21 stale epochs; the valid Gaussian NLL fell from
 −1.359030 at epoch 1 to a best **−2.628080** at epoch 47 and was still the best when the
 run stopped, and the plateau scheduler halved the learning rate to 5e-4 at epoch 58. The
 curve (`output/summary.png`) is drawn by the run itself: integer epoch axis, train +
-valid series, best-epoch star at 47, early-stop line at 68. `output/model_card.md`
+valid series, best-epoch star at 47, early-stop dotted line at 68 (drawn inside the
+panel). `output/model_card.md`
 records the recipe, the four deviations, the row counts, the device, the wall time and
 the peak memory. This is a pretraining **pipeline** result: no finetune, no cold-drug
 evaluation, no claim that pretraining helps, and no comparison with `03_models_cmbench`.
@@ -71,6 +73,9 @@ stage2/05_prnet_pretrain/execution/run.sh
 $ARC stage2/05_prnet_pretrain/execution/_smoke/make_fixture.py
 $PY stage2/05_prnet_pretrain/execution/train_prnet.py --smoke \
     --view stage2/05_prnet_pretrain/execution/_smoke/tahoe_cm_schema_smoke.h5ad
+
+# 3. redraw the curve from the recorded history (no training, no view read)
+$PY stage2/05_prnet_pretrain/execution/train_prnet.py --replot
 ```
 
 `--view` / `--output` / `--device` / `--seed` are overridable; defaults are the 04
@@ -163,8 +168,11 @@ Inherited from the 04 view and recorded in `model_card.md`:
 
 Two further notes for this step:
 
-- The control input is the group **mean of raw counts**, not `log1p_cp10k`; this
-  mirrors the author's dataset, where control and target rows share a space.
+- **The control input and the target are not in the same space** — the control is
+  the group **mean of raw counts** while the target is `log1p_cp10k`. The author's
+  dataset draws both from one matrix, so this is a recorded deviation from parity,
+  not a match with it. It does not affect the pipeline claim, but it must be
+  resolved before any finetune or transfer claim.
 - `uns['control_mean']` is 04's production DataFrame encoding (`dataframe/0.2.0`,
   written by anndata 0.12.16 in the `arc` env). The pinned 0.10.8 reader here
   handles it and materialises a `(700, 18164)` `DataFrame`; `config.json` records

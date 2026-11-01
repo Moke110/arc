@@ -922,13 +922,11 @@ def write_summary_png(
     axis.set_title(title)
     axis.grid(True, color="#e3e3e3", lw=0.6)
     axis.legend(frameon=False, fontsize=8)
-    # Epoch is a discrete count: integer ticks only, and the axis spans exactly
-    # [1, epochs_run] so the curve fills the panel instead of floating inside it.
-    # A single-epoch history cannot use [1, 1] as a limit, so pad that one case.
-    if max(epochs) > 1:
-        axis.set_xlim(1, max(epochs))
-    else:
-        axis.set_xlim(0.5, 1.5)
+    # Epoch is a discrete count: integer ticks only. The axis is padded half an
+    # epoch past the last point so the early-stop line — which sits exactly on the
+    # final epoch whenever it fires — stays visible inside the panel instead of
+    # collapsing onto the right spine. A single-epoch history pads the same way.
+    axis.set_xlim(0.5, max(epochs) + 0.5)
     axis.xaxis.set_major_locator(MaxNLocator(integer=True))
     fig.tight_layout()
     fig.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
@@ -960,8 +958,11 @@ def write_model_card(
         f"- **Mode:** {'SMOKE (synthetic fixture, 2 epochs)' if args.smoke else 'full pretrain run'}",
         f"- **Started:** {config['started']}",
         f"- **Finished:** {timing['finished']}",
-        f"- **Wall time:** {timing['wall_time_s']:.1f} s end to end "
-        f"({timing['train_loop_s']:.1f} s inside the {result['epochs_run']} training epochs)",
+        f"- **Wall time:** {timing['wall_time_s']:.1f} s ({timing['wall_time_s'] / 60:.1f} min) "
+        f"between the start and finish stamps. The in-process monotonic timer reads "
+        f"{timing['wall_monotonic_s']:.1f} s for the same span — it runs low against the "
+        f"wall clock on this host — and {timing['train_loop_s']:.1f} s (monotonic) is inside "
+        f"the {result['epochs_run']} training epochs.",
         f"- **Peak memory:** {timing['peak_rss_mb']:.0f} MiB host RSS "
         f"(the view is read as CSR, never densified)",
         f"- **Command:** `{' '.join(config['command'])}`",
@@ -1052,8 +1053,11 @@ def write_model_card(
         "",
         "- Pipeline bring-up only: no CM finetune, no cold-drug evaluation, no comparison",
         "  against `03_models_cmbench`. A negative Gaussian NLL is expected and correct.",
-        "- The control input is the group mean of raw counts, **not** log1p_cp10k; this",
-        "  mirrors the author's dataset (control row and target row share the same space).",
+        "- **The control input and the target are not in the same space**: the control is",
+        "  the group mean of raw counts while the target is `log1p_cp10k`. The author's",
+        "  dataset draws both from one matrix, so this is a recorded deviation, not parity.",
+        "  It does not affect the pipeline claim, but it must be resolved before any",
+        "  finetune or transfer claim.",
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
@@ -1082,6 +1086,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                              f"{SMOKE_TRAIN_ROWS}/{SMOKE_VALID_ROWS} sampled rows")
     parser.add_argument("--check", action="store_true",
                         help="print the resolved paths, view shape and split counts, then exit")
+    parser.add_argument("--replot", action="store_true",
+                        help="redraw summary.png/summary_table.csv from the recorded "
+                             "fit_history.json (no training, no model read)")
     return parser.parse_args(argv)
 
 
@@ -1112,9 +1119,31 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     output.mkdir(parents=True, exist_ok=True)
-    setup_logging(None if args.check else output / "run.log")
+    setup_logging(None if (args.check or args.replot) else output / "run.log")
+    if args.replot:
+        # Redraw the figure from the recorded history; the data is the run's, only
+        # the rendering is repeated (used after a plotting fix, never to alter data).
+        history_path = output / "fit_history.json"
+        if not history_path.exists():
+            raise SystemExit(f"no recorded history to replot: {history_path}")
+        payload = json.loads(history_path.read_text(encoding="utf-8"))
+        run, history = payload["run"], payload["history"]
+        write_summary_table(output / "summary_table.csv", history)
+        write_summary_png(
+            output / "summary.png",
+            history,
+            int(run["best_epoch"]),
+            float(run["best_valid_loss"]),
+            bool(run["stopped_early"]),
+            int(run["stop_epoch"]),
+            bool(run["smoke"]),
+        )
+        log.info("redrew summary.png + summary_table.csv from %s (%d epochs)",
+                 history_path, len(history))
+        return 0
     started = time.strftime("%Y-%m-%dT%H:%M:%S%z")
     run_t0 = time.perf_counter()
+    run_t0_wall = time.time()
     command = [sys.executable, *sys.argv] if argv is None else ["train_prnet.py", *argv]
     log.info("PRnet pretrain bring-up — spec §2 (stage2/05_prnet_pretrain)")
     log.info("repo root %s", root)
@@ -1291,12 +1320,14 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     finished = time.strftime("%Y-%m-%dT%H:%M:%S%z")
-    wall_time_s = time.perf_counter() - run_t0
+    wall_time_s = time.time() - run_t0_wall
+    wall_monotonic_s = time.perf_counter() - run_t0
     train_loop_s = sum(float(h["seconds"]) for h in result["history"])
     peak_rss = peak_rss_mb()
     timing = {
         "finished": finished,
         "wall_time_s": round(wall_time_s, 1),
+        "wall_monotonic_s": round(wall_monotonic_s, 1),
         "train_loop_s": round(train_loop_s, 1),
         "peak_rss_mb": round(peak_rss, 1),
     }
@@ -1315,8 +1346,12 @@ def main(argv: list[str] | None = None) -> int:
             "started": config["started"],
             "finished": finished,
             "wall_time_s": timing["wall_time_s"],
+            "wall_monotonic_s": timing["wall_monotonic_s"],
             "train_loop_s": timing["train_loop_s"],
             "peak_rss_mb": timing["peak_rss_mb"],
+            "wall_clock_note": "wall_time_s is derived from the run's own start/finish "
+                               "stamps; wall_monotonic_s is the in-process timer, which "
+                               "reads low against the wall clock on this host",
         },
         "history": result["history"],
     }

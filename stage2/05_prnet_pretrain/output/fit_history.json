@@ -12,9 +12,11 @@
     "stop_epoch": 68,
     "started": "2026-11-01T17:01:45+0800",
     "finished": "2026-11-01T17:17:41+0800",
-    "wall_time_s": 883.2,
+    "wall_time_s": 956.0,
+    "wall_monotonic_s": 883.2,
     "train_loop_s": 870.9,
-    "peak_rss_mb": 15150.0
+    "peak_rss_mb": 15150.0,
+    "wall_clock_note": "wall_time_s is derived from the run's own start/finish stamps; wall_monotonic_s is the in-process timer, which reads low against the wall clock on this host"
   },
   "history": [
     {
