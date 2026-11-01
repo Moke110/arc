@@ -1,6 +1,6 @@
 # Pretrain view — QA report
 
-QA run at 2026-11-01T17:29:48+0800 by `stage2/04_tahoe_data/execution/build_pretrain_view.py`.
+QA run at 2026-11-01T17:40:14+0800 by `stage2/04_tahoe_data/execution/build_pretrain_view.py`.
 Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §Implementation Decisions
 ("the view's contract"). Source corpus:
 `stage2/04_tahoe_data/output/pseudobulk/tahoe_pseudobulk.h5ad` (never rebuilt; the view only projects the frozen rows onto the frozen
@@ -17,7 +17,7 @@ Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §Implementation Decisions
 | 5 | X non-negative int32 counts (subset spot-checked separately) | PASS |
 | 5.1 | X is a pure subset of the corpus counts (3 random rows) | PASS |
 | 6 | control_mean covers 700 groups, matches recomputed means, round-trips | PASS |
-| 7 | no forbidden obs columns; structure columns empty iff control/no-structure | PASS |
+| 7 | no forbidden obs columns; structure + D3 emptiness policy exact | PASS |
 | 8 | paired_control_index resolves; shim dose is 0.0 exactly on controls | PASS |
 
 Nine gates: **9/9 PASS** (`all_pass=True`).
@@ -31,7 +31,7 @@ The machine-readable measurements are in [`qa.json`](qa.json).
 | D0 | matrix layout | CM views are dense int32; this view is CSR int32 (+ CSR float32 layer) | mirrors the corpus's per-plate CSR parts and the slice-write assembly; the plan's 'dense = 4.87 TB' was a units error — dense is 4.87 GB (9.74 GB with the layer) and the matrix is 83% dense, so this 16.32 GB CSR artifact is larger than a dense one |
 | D1 | control keying | `control_group` = `tahoe::<plate>::<cell_line_id>` (700 groups), `uns['control_mean']` has 700 rows | a plate pools ~50 cell lines; a plate-level mean is the Simpson's-paradox mixture ADR 0029's "Rejected (a)" rejects, so Δ stays inside one cell line |
 | D2 | gene axis | 18,164 CM slots; `FAM153B` / ENSG00000182230 is an all-zero row | the gene has no Tahoe measurement; dropping it would break axis identity |
-| D3 | provenance gaps | `time_h` NaN; `cell_type`/`donor` NaN; `atc`/`moa`/`mesh_classes`/`annotation_source` ""; `pharm_atc_moa`/`pharm_mesh` False | the atlas carries no time column and no CM annotation vocabulary; recorded rather than invented |
+| D3 | provenance gaps | `time_h` NaN; `cell_type`/`donor` NaN; `atc`/`moa`/`mesh_classes`/`annotation_source` ""; `pharm_atc_moa`/`pharm_mesh` False; and the derived or constant columns `dataset_id` "tahoe", `dose_source` "nominal_atlas", `vehicle` `DMSO_TF` on controls / "" on treated, `inchikey` derived from the SMILES rather than looked up | the atlas carries no time column and no CM annotation vocabulary, and it has no InChIKey; recorded rather than invented |
 
 ## Gene mapping (verbatim CM axis, joined on `ensembl_id`)
 

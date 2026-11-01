@@ -39,8 +39,8 @@ Two passes keep peak RSS small (~2 GiB) on a 31 GiB host: pass 1 gathers the
 retained columns of each `_parts/plate<N>.npz` into `_view_parts/`; pass 2 fills
 the preallocated h5ad CSR arrays with slice writes, one part in memory at a time.
 
-Contract deviations, recorded in the step README and ADR 0029:
-    D0  layout: CSR instead of CM's dense int32 (size).
+Contract deviations, recorded in the step README and ADR 0031:
+    D0  layout: CSR instead of CM's dense int32 (container, not size — see above).
     D1  control keying: `control_group = tahoe::<plate>::<cell_line_id>` (700
         groups) instead of the corpus's `tahoe::<plate>` (14), because a plate
         pools ~50 cell lines and a plate-level control mean is the mixture
@@ -1068,19 +1068,48 @@ def run_qa(colmap: np.ndarray) -> dict:
         # recorded interop (not one of the nine gates): can a consumer on anndata 0.10.8 read it?
         qa_interop = interop
 
-        # 7. no forbidden encodings; every structure column empty iff control/no structure
+        # 7. no forbidden encodings; the D3 empty-value policy and the structure columns
         forbidden = sorted(FORBIDDEN_OBS_COLUMNS & set(obs.columns))
         expected_empty = is_control | (~obs["has_structure"].to_numpy())
         structure_columns = ["drug_key", "inchikey", "smiles", "SMILES", "pubchem_cid"]
         structure_mismatches = {
             column: int(((obs[column].astype(str) == "").to_numpy() != expected_empty).sum())
             for column in structure_columns}
-        gate(7, "no forbidden obs columns; structure columns empty iff control/no-structure", {
+        # D3: every column the atlas cannot supply stays empty — NaN, "" or False as the
+        # deviation declares — and the three derived/constant columns carry only their
+        # declared value.  A drift to an invented constant fails here, not silently.
+        nan_columns = ["time_h", "cell_type", "donor"]
+        empty_columns = ["atc", "moa", "mesh_classes", "annotation_source"]
+        false_columns = ["pharm_atc_moa", "pharm_mesh"]
+        constant_columns = {"dataset_id": "tahoe", "dose_source": "nominal_atlas"}
+        d3 = {
+            "nan_columns": nan_columns,
+            "nan_all_missing": {c: int(obs[c].isna().sum()) for c in nan_columns},
+            "empty_columns": empty_columns,
+            "non_empty_counts": {c: int((obs[c].astype(str) != "").sum())
+                                 for c in empty_columns},
+            "false_columns": false_columns,
+            "true_counts": {c: int(obs[c].to_numpy(dtype=bool).sum()) for c in false_columns},
+            "constant_columns": constant_columns,
+            "constant_mismatches": {c: int((obs[c].astype(str) != v).sum())
+                                    for c, v in constant_columns.items()},
+            # vehicle: DMSO_TF exactly on control rows, "" on every treated row
+            "vehicle_mismatches": int(((obs["vehicle"].astype(str) == CONTROL_DRUG)
+                                       .to_numpy() != is_control).sum()),
+        }
+        d3_ok = (all(v == n_obs for v in d3["nan_all_missing"].values())
+                 and all(v == 0 for v in d3["non_empty_counts"].values())
+                 and all(v == 0 for v in d3["true_counts"].values())
+                 and all(v == 0 for v in d3["constant_mismatches"].values())
+                 and d3["vehicle_mismatches"] == 0)
+        gate(7, "no forbidden obs columns; structure + D3 emptiness policy exact", {
             "forbidden": forbidden,
             "structure_columns": structure_columns,
             "mismatches_by_column": structure_mismatches,
-            "rows_expected_empty": int(expected_empty.sum())},
-            not forbidden and all(value == 0 for value in structure_mismatches.values()))
+            "rows_expected_empty": int(expected_empty.sum()),
+            **d3},
+            not forbidden and all(value == 0 for value in structure_mismatches.values())
+            and d3_ok)
 
         # 8. paired_control_index resolves inside the obs index; shim dose marks controls
         paired = obs["paired_control_index"].astype(str).to_numpy()
@@ -1112,7 +1141,7 @@ def run_qa(colmap: np.ndarray) -> dict:
         "root_attrs": root_attrs,
         "gate_count": len(gates),
         "gates_passed": int(sum(1 for g in gates if g["pass"])),
-        "gates": gates,
+        "gates": sorted(gates, key=lambda g: float(g["gate"])),
         "all_pass": all_pass,
         "interop_anndata_0_10_8": qa_interop,
     }
@@ -1138,9 +1167,12 @@ DEVIATIONS = [
      "the gene has no Tahoe measurement; dropping it would break axis identity"),
     ("D3", "provenance gaps",
      "`time_h` NaN; `cell_type`/`donor` NaN; `atc`/`moa`/`mesh_classes`/"
-     "`annotation_source` \"\"; `pharm_atc_moa`/`pharm_mesh` False",
-     "the atlas carries no time column and no CM annotation vocabulary; "
-     "recorded rather than invented"),
+     "`annotation_source` \"\"; `pharm_atc_moa`/`pharm_mesh` False; and the derived or "
+     "constant columns `dataset_id` \"tahoe\", `dose_source` \"nominal_atlas\", `vehicle` "
+     "`DMSO_TF` on controls / \"\" on treated, `inchikey` derived from the SMILES rather "
+     "than looked up",
+     "the atlas carries no time column and no CM annotation vocabulary, and it has no "
+     "InChIKey; recorded rather than invented"),
 ]
 
 

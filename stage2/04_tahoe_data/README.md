@@ -68,12 +68,14 @@ Decisions ("the view's contract"); the accepted decision record is
 (accepted 2026-11-01).
 
 **Built and verified 2026-11-01** — 16,319,543,984 bytes (**16.32 GB**), nine
-consumer-side gates **9/9 PASS** (`qa.json` `all_pass: true`, QA run at
-2026-11-01T16:59:42+0800). Full build + QA took **175 s** (gather 90 s, assemble
+consumer-side gates **9/9 PASS** (`qa.json` `all_pass: true`; its `checked_at`
+is the authoritative QA timestamp — a later `--qa` moves it, so it is not
+quoted here). Full build + QA took **175 s** (gather 90 s, assemble
 34 s, QA ~50 s); a warm-cache rebuild is **80 s** (pass 1 skipped, `_view_parts/`
 is the resumable gather cache). The build streams the corpus's 14 per-plate
 parts — gather the retained columns, then fill the preallocated CSR arrays with
-slice writes — so it never materialises a dense buffer (peak RSS ~2 GiB).
+slice writes — so it never materialises a dense buffer (the builder's own design
+target is ~2 GiB; its wall/RSS are not recorded in a gate).
 
 The layout is **not** a size win, and the plan's figure was a units error: a
 dense `int32` `X` is **4.87 GB** (**9.74 GB** with the `float32` layer) — not
@@ -83,7 +85,7 @@ the corpus's per-plate CSR parts and lets the builder assemble with slice
 writes — a recorded container deviation, not a size claim.
 
 PRnet was pretrained on the view on 2026-11-01 — **68 epochs** (early stop fired
-at 68), best valid Gaussian NLL **−2.628080 at epoch 47**, **883.2 s** on an
+at 68), best valid Gaussian NLL **−2.628080 at epoch 47**, **956 s (15.9 min)** on an
 RTX 4070 Ti SUPER; artifacts in `stage2/05_prnet_pretrain/output/` (ADR 0031).
 That run claims only that the pipeline runs.
 
@@ -130,7 +132,7 @@ The three shims exist for the PRnet author code, not as contract columns:
 | D0 | layout is **CSR**, not CM's dense `int32` — CSR `int32` counts + a CSR `float32` layer | mirrors the corpus's per-plate CSR parts and the slice-write assembly. **Not** a size claim: dense `int32` `X` is 4.87 GB (9.74 GB with the layer), and at 83% density this 16.32 GB CSR artifact is larger than dense; the plan's figure was a units error (terabytes for gigabytes) |
 | D1 | `control_group` = `tahoe::<plate>::<cell_line_id>` (**700** groups), not the corpus's `tahoe::<plate>` (14) | a plate pools ~50 cell lines, so a plate-level mean is the Simpson's-paradox mixture ADR 0029 rejected; Δ stays inside one cell line, and all 700 groups carry a vehicle |
 | D2 | 18,164 CM slots with `FAM153B` all-zero | the gene has no Tahoe measurement; dropping it would break axis identity |
-| D3 | `time_h` NaN; `cell_type`/`donor` NaN; `atc`/`moa`/`mesh_classes`/`annotation_source` `""`; `pharm_atc_moa`/`pharm_mesh` False | the atlas has no time column and no CM annotation vocabulary — recorded here rather than invented |
+| D3 | `time_h` NaN; `cell_type`/`donor` NaN; `atc`/`moa`/`mesh_classes`/`annotation_source` `""`; `pharm_atc_moa`/`pharm_mesh` False; and the derived/constant columns `dataset_id` `tahoe`, `dose_source` `nominal_atlas`, `vehicle` `DMSO_TF`/`""`, `inchikey` derived from the SMILES | the atlas has no time column, no CM annotation vocabulary and no InChIKey — recorded rather than invented |
 
 ### Gene mapping (the join is on `ensembl_id` only)
 
@@ -151,7 +153,7 @@ The three shims exist for the PRnet author code, not as contract columns:
 | 5 | `X` non-negative `int32` counts | PASS | dtype `int32`, min 1, max 1,658,817, nnz 1,010,892,356 |
 | 5.1 | `X` is a pure subset of the corpus counts (3 random rows) | PASS | 3 rows compared against the corpus `_parts`, **0 mismatches** |
 | 6 | control mean covers 700 groups, matches recomputed means, round-trips | PASS | 700 × 18,164 `float64`, index `control_group`; 0 treated groups without a control; sampled group `tahoe::plate12::CVCL_1055` diff **0.0**; plain `anndata.read_h5ad` round-trip returns the declared frame |
-| 7 | no forbidden obs columns; structure columns empty iff control or no-structure | PASS | 0 mismatches on `drug_key`/`inchikey`/`smiles`/`SMILES`/`pubchem_cid`; 1,700 rows expected empty; no forbidden column |
+| 7 | no forbidden obs columns; structure columns empty iff control/no-structure **and the D3 empty-value policy exact** | PASS | 0 mismatches on `drug_key`/`inchikey`/`smiles`/`SMILES`/`pubchem_cid`; 1,700 rows expected empty; no forbidden column; D3: `time_h`/`cell_type`/`donor` all NaN, `atc`/`moa`/`mesh_classes`/`annotation_source` all empty, both `pharm_*` all False, `dataset_id`/`dose_source` constant, `vehicle` exact |
 | 8 | `paired_control_index` resolves; shim `dose` is 0.0 exactly on controls | PASS | 0 unresolved; all 1,400 control rows point to themselves; `dose` 0.0 on all controls and > 0 on all treated |
 
 `qa.json` records `gate_count: 9` / `gates_passed: 9`; `qa_report.md` carries the
@@ -321,8 +323,9 @@ clone rebuilds the artifact from the corpus parts rather than checking it out.
 ## Scope
 
 Pseudobulk fixes sparsity, not biology: this is a cancer-cell-line corpus at a
-single 24 h timepoint with a 24/525 drug-key overlap against the CM corpus
-(ADR 0029 §Consequences). It is a pretraining substrate, not a Stage 2
+single 24 h timepoint with a 31/525 drug-key overlap against the CM corpus (24
+by raw InChIKey; ADR 0029 §Consequences and its 2026-11-01 update). It is a
+pretraining substrate, not a Stage 2
 evaluation dataset. Atlas provenance, the HF revision and the verification
 record are in
 [`pert_data/Tahoe-100M/local/Tahoe_summary.md`](../../pert_data/Tahoe-100M/local/Tahoe_summary.md).

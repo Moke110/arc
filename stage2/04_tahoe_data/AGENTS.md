@@ -1,8 +1,8 @@
 # AGENTS.md — stage2/04_tahoe_data
 
 Routing index. Purpose, numbers and reproduce commands live in `README.md`; the
-corpus contract is ADR 0029, the view's is
-`.scratch/stage2-05-prnet-pretrain/spec.md`. Post-download processing only.
+corpus contract is ADR 0029, the view's is ADR 0031 (planned in
+`.scratch/stage2-05-prnet-pretrain/spec.md`). Post-download processing only.
 
 - `execution/build_pseudobulk.py` — corpus: scan → aggregate → assemble → qa;
   `--check` resolved paths; `--plates` limits a stage, `--force` rebuilds parts.

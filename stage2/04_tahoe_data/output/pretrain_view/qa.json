@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-01T17:29:48+0800",
+  "checked_at": "2026-11-01T17:40:14+0800",
   "view": "tahoe_cm_schema",
   "file": "tahoe_cm_schema.h5ad",
   "bytes": 16319543984,
@@ -68,6 +68,16 @@
       }
     },
     {
+      "gate": 4,
+      "name": "log1p_cp10k recomputes from X (atol=1e-5, 200 rows)",
+      "pass": true,
+      "measured": {
+        "rows_sampled": 200,
+        "max_abs_diff": 2.3698634699087506e-07,
+        "atol": 1e-05
+      }
+    },
+    {
       "gate": 5,
       "name": "X non-negative int32 counts (subset spot-checked separately)",
       "pass": true,
@@ -78,16 +88,6 @@
         "x_min": 1,
         "x_max": 1658817,
         "nnz": 1010892356
-      }
-    },
-    {
-      "gate": 4,
-      "name": "log1p_cp10k recomputes from X (atol=1e-5, 200 rows)",
-      "pass": true,
-      "measured": {
-        "rows_sampled": 200,
-        "max_abs_diff": 2.3698634699087506e-07,
-        "atol": 1e-05
       }
     },
     {
@@ -146,7 +146,7 @@
     },
     {
       "gate": 7,
-      "name": "no forbidden obs columns; structure columns empty iff control/no-structure",
+      "name": "no forbidden obs columns; structure + D3 emptiness policy exact",
       "pass": true,
       "measured": {
         "forbidden": [],
@@ -164,7 +164,46 @@
           "SMILES": 0,
           "pubchem_cid": 0
         },
-        "rows_expected_empty": 1700
+        "rows_expected_empty": 1700,
+        "nan_columns": [
+          "time_h",
+          "cell_type",
+          "donor"
+        ],
+        "nan_all_missing": {
+          "time_h": 67018,
+          "cell_type": 67018,
+          "donor": 67018
+        },
+        "empty_columns": [
+          "atc",
+          "moa",
+          "mesh_classes",
+          "annotation_source"
+        ],
+        "non_empty_counts": {
+          "atc": 0,
+          "moa": 0,
+          "mesh_classes": 0,
+          "annotation_source": 0
+        },
+        "false_columns": [
+          "pharm_atc_moa",
+          "pharm_mesh"
+        ],
+        "true_counts": {
+          "pharm_atc_moa": 0,
+          "pharm_mesh": 0
+        },
+        "constant_columns": {
+          "dataset_id": "tahoe",
+          "dose_source": "nominal_atlas"
+        },
+        "constant_mismatches": {
+          "dataset_id": 0,
+          "dose_source": 0
+        },
+        "vehicle_mismatches": 0
       }
     },
     {
