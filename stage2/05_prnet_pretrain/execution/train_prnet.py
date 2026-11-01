@@ -945,6 +945,7 @@ def write_model_card(
     result: dict,
     device: torch.device,
     device_name: str,
+    timing: dict,
 ) -> None:
     history = result["history"]
     first, last = history[0], history[-1]
@@ -958,6 +959,11 @@ def write_model_card(
         "",
         f"- **Mode:** {'SMOKE (synthetic fixture, 2 epochs)' if args.smoke else 'full pretrain run'}",
         f"- **Started:** {config['started']}",
+        f"- **Finished:** {timing['finished']}",
+        f"- **Wall time:** {timing['wall_time_s']:.1f} s end to end "
+        f"({timing['train_loop_s']:.1f} s inside the {result['epochs_run']} training epochs)",
+        f"- **Peak memory:** {timing['peak_rss_mb']:.0f} MiB host RSS "
+        f"(the view is read as CSR, never densified)",
         f"- **Command:** `{' '.join(config['command'])}`",
         f"- **Device:** `{device}` — {device_name}",
         f"- **Env:** torch {torch.__version__}, CUDA available "
@@ -1013,10 +1019,17 @@ def write_model_card(
         "",
         "## Result",
         "",
-        f"- epochs run: {result['epochs_run']}"
-        f"{' (early stop)' if result['stopped_early'] else ''}",
+        f"- epochs run: {result['epochs_run']}",
+        (
+            f"- early stop: **fired at epoch {result['stop_epoch']}** — the valid loss had not "
+            f"improved for more than {EARLY_STOP_PATIENCE} epochs and the {MIN_EPOCHS}-epoch "
+            "floor was met"
+            if result["stopped_early"]
+            else f"- early stop: not fired — the run used its full {result['epochs_run']}-epoch "
+            f"allocation (patience {EARLY_STOP_PATIENCE}, min_epochs {MIN_EPOCHS})"
+        ),
         f"- first epoch: train {first['train_loss']:.6f} / valid {first['valid_loss']:.6f}",
-        f"- best epoch {best_epoch}: valid {best_valid:.6f}",
+        f"- best epoch {best_epoch}: valid {best_valid:.6f} (best validation loss)",
         f"- last epoch: train {last['train_loss']:.6f} / valid {last['valid_loss']:.6f}",
         "",
         "Artifacts (all in `output/`, overwritten on every rerun): `run.log`,",
@@ -1099,6 +1112,7 @@ def main(argv: list[str] | None = None) -> int:
     output.mkdir(parents=True, exist_ok=True)
     setup_logging(None if args.check else output / "run.log")
     started = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    run_t0 = time.perf_counter()
     command = [sys.executable, *sys.argv] if argv is None else ["train_prnet.py", *argv]
     log.info("PRnet pretrain bring-up — spec §2 (stage2/05_prnet_pretrain)")
     log.info("repo root %s", root)
@@ -1274,6 +1288,16 @@ def main(argv: list[str] | None = None) -> int:
         smoke=args.smoke,
     )
 
+    finished = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    wall_time_s = time.perf_counter() - run_t0
+    train_loop_s = sum(float(h["seconds"]) for h in result["history"])
+    peak_rss = peak_rss_mb()
+    timing = {
+        "finished": finished,
+        "wall_time_s": round(wall_time_s, 1),
+        "train_loop_s": round(train_loop_s, 1),
+        "peak_rss_mb": round(peak_rss, 1),
+    }
     fit_history = {
         "run": {
             "smoke": bool(args.smoke),
@@ -1285,6 +1309,12 @@ def main(argv: list[str] | None = None) -> int:
             "best_valid_loss": result["best_valid_loss"],
             "epochs_run": result["epochs_run"],
             "stopped_early": result["stopped_early"],
+            "stop_epoch": result["stop_epoch"],
+            "started": config["started"],
+            "finished": finished,
+            "wall_time_s": timing["wall_time_s"],
+            "train_loop_s": timing["train_loop_s"],
+            "peak_rss_mb": timing["peak_rss_mb"],
         },
         "history": result["history"],
     }
@@ -1309,15 +1339,17 @@ def main(argv: list[str] | None = None) -> int:
         result,
         device,
         device_name,
+        timing,
     )
 
     log.info(
-        "done: %d epochs, best valid %.6f at epoch %d%s (peak rss %.0f MiB)",
+        "done: %d epochs, best valid %.6f at epoch %d%s | wall %.1f s | peak rss %.0f MiB",
         result["epochs_run"],
         result["best_valid_loss"],
         result["best_epoch"],
         " (early stop)" if result["stopped_early"] else "",
-        peak_rss_mb(),
+        timing["wall_time_s"],
+        peak_rss,
     )
     for name in ("run.log", "config.json", "fit_history.json", "summary_table.csv",
                  "summary.png", "checkpoint/model.pt", "model_card.md"):

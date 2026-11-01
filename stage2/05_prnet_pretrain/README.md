@@ -16,16 +16,29 @@ recorded there (D0–D3, mirrored into `output/model_card.md`).
 
 | | |
 |---|---|
-| execution | **HALTED by user decision 2026-11-01** — plan first, do not run |
-| pipeline | **smoke-verified on CUDA**, 2 epochs on a synthetic fixture |
+| execution | **EXECUTED 2026-11-01** (fresh user go-ahead) — after 04's view passed QA 9/9 |
+| pretrain run | **68 epochs**, early stop fired at epoch 68 (patience 21 > 20 once the 20-epoch floor was met); best valid **−2.628080** at epoch 47; `NVIDIA GeForce RTX 4070 Ti SUPER` (torch 2.0.1+cu118) |
+| data | `stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad` — 67,018 × 18,164; 65,318 samples (**55,922 train / 9,396 valid**, split by plate: `plate13` + `plate14` valid); **300** treated rows dropped (no resolvable structure); 700 control groups; 375 unique SMILES; 1,400 controls / 65,618 treated |
+| cost | **883.2 s** wall end to end (14.7 min; 870.9 s in the loop, 12.8 s/epoch); peak host RSS **15,150 MiB** on a 31 GiB host |
+| loss | Gaussian NLL is **negative throughout** (train −0.714 → −2.814; best valid −2.628). It is a log-likelihood, so its sign carries no meaning; it is never clamped. It says nothing about transfer, and it is **not comparable** to any `03_models_cmbench` figure |
+| pipeline | **smoke-verified on CUDA** (2 epochs on a synthetic fixture, ticket 04) — retained as the pipeline proof |
 | fixture encoding | carries 04's production `dataframe/0.2.0` `uns['control_mean']` (generated with the `arc` env) |
-| full 100-epoch run | **NOT EXECUTED** — needs a fresh go-ahead, and 04's view must pass QA first |
 
 The plan of record is
 [`.scratch/stage2-05-prnet-pretrain/`](../../.scratch/stage2-05-prnet-pretrain/)
 (`spec.md` contract, `map.md` decisions, `issues/` tickets, `adr-0031-draft.md`).
 Tickets: **01** build 04's view, **02** validate it, **03** flip 04's docs,
-**04** this step's bring-up (resolved), **05** the full run, **06** promote the ADR.
+**04** this step's bring-up (resolved), **05** the full run (resolved), **06** promote the ADR.
+
+Real run (2026-11-01). `execution/run.sh` on 04's view: 68 epochs in 883 s, with early
+stopping firing at epoch 68 after 21 stale epochs; the valid Gaussian NLL fell from
+−1.359030 at epoch 1 to a best **−2.628080** at epoch 47 and was still the best when the
+run stopped, and the plateau scheduler halved the learning rate to 5e-4 at epoch 58. The
+curve (`output/summary.png`) is drawn by the run itself: integer epoch axis, train +
+valid series, best-epoch star at 47, early-stop line at 68. `output/model_card.md`
+records the recipe, the four deviations, the row counts, the device, the wall time and
+the peak memory. This is a pretraining **pipeline** result: no finetune, no cold-drug
+evaluation, no claim that pretraining helps, and no comparison with `03_models_cmbench`.
 
 Smoke result (`--smoke`, synthetic 300 × 18,164 fixture, RTX 4070 Ti SUPER):
 epoch 1 `train 0.038362 / valid 0.048439`, epoch 2 `train 0.019514 / valid
@@ -46,7 +59,8 @@ ARC=/home/chang/miniconda3/envs/arc/bin/python
 # 0. contract check: resolved root/view, shape, split, dropped rows, device
 $PY stage2/05_prnet_pretrain/execution/train_prnet.py --check
 
-# 1. the real bring-up (100 epochs, early stop after 20 stale epochs, min 20)
+# 1. the real bring-up (100-epoch cap, early stop after 20 stale epochs, min 20)
+#    2026-11-01 run: early stop at epoch 68, best valid -2.628080 (see Status)
 stage2/05_prnet_pretrain/execution/run.sh
 
 # 2. pipeline check without the real view: build the synthetic fixture, then smoke
@@ -77,9 +91,10 @@ Per training sample (a non-control, structure-bearing row):
 
 Rows with `is_control` are **not** samples (they are control inputs). Rows with
 `has_structure == False` and not control are dropped, with the count logged.
-SMILES fingerprints are cached once per unique SMILES (≈377) and dose-scaled per
-row. Split is **by plate**: `plate13` + `plate14` are validation; validation loss
-drives the scheduler but never early-stops before epoch 20.
+SMILES fingerprints are cached once per unique SMILES (375 in the real view: 379 drugs,
+two of them structure-less) and dose-scaled per row. Split is **by plate**:
+`plate13` + `plate14` are validation; validation loss drives the scheduler but never
+early-stops before epoch 20.
 
 ## Model and training recipe — same-source copy, do not diverge
 
@@ -98,7 +113,8 @@ in-file** as exact equivalents (no import from `pert_model/` or from
 | loop | `stage2/03_models_cmbench/03.1_cold_drug_18k/execution/script/adapters/prnet/run.py:188-258` | batch 512, max 100 epochs, early stop 20, min epochs 20, seed 20261021, dropout 0.05, `noise_dim=10` |
 
 The hyperparameters, the early-stop rule and the seed are copied from the frozen
-03.1 adapter so the pretrain run and the benchmark run stay comparable. `--check`
+03.1 adapter so the **recipe** is identical; the reported losses are still not
+commensurable with the benchmark's (different corpus, rows and split). `--check`
 asserts the six audited layer shapes before any GPU time is spent.
 
 Per-epoch losses are **batch-size-weighted** (`Σ NLL·n / Σn`), so the final
@@ -118,15 +134,18 @@ unbounded below and its sign carries no meaning; the program never clamps,
 | file | content |
 |---|---|
 | `run.log` | full log, overwrite mode (never appends) |
-| `fit_history.json` | per-epoch train/valid loss, lr, seconds + best/stop metadata |
+| `fit_history.json` | per-epoch train/valid loss, lr, seconds + best/stop metadata, plus the run's start/finish, wall time and peak RSS |
 | `summary.png` | loss-epoch curve: train blue, valid orange, best-epoch star, early-stop marker |
 | `summary_table.csv` | one row per epoch |
 | `config.json` | every hyperparameter, the view, the split, row counts, device |
 | `checkpoint/model.pt` | `{model, state_dict, config, seed, n_genes, best_valid_loss, epoch}` |
-| `model_card.md` | what was trained, on what, with which deviations |
+| `model_card.md` | what was trained, on what, with which deviations, plus wall time and peak memory |
 
-The whole directory is gitignored by the repo-wide `output/` rule; like
-`output/pseudobulk/` in 04, these are local artifacts, not tracked evidence.
+The five human-facing artifacts — `config.json`, `fit_history.json`,
+`summary_table.csv`, `summary.png`, `model_card.md` — are force-added to version
+control (the repo-wide `output/` rule needs `git add -f`). `run.log` and the 28.7 MB
+`checkpoint/model.pt` stay local, per ticket 05: the curve, history, table, config and
+model card are the evidence a later reader needs, and the weights are regenerable.
 
 ## Deviations
 
@@ -165,8 +184,10 @@ Two pinned environments, split by role:
   overflows — but it *reads* it, which is all this step needs.)
 
 GPU: NVIDIA GeForce RTX 4070 Ti SUPER, 16 GiB, driver 617.42. Host RAM 31 GiB: the
-view is loaded as CSR (~3–4 GB for the real layer) and targets are gathered per
-batch — never densified.
+view is loaded as CSR and never densified, but it is **not** small — reading the real
+`layers['log1p_cp10k']` (1,010,892,356 nonzeros) leaves **14,562 MiB** host RSS (14.2 GiB),
+and the measured run peak is **15,150 MiB** (`output/model_card.md` is the authoritative
+figure). Targets are gathered per batch.
 
 ## Out of scope this round
 

@@ -1,0 +1,91 @@
+{
+  "program": "stage2/05_prnet_pretrain/execution/train_prnet.py",
+  "spec": ".scratch/stage2-05-prnet-pretrain/spec.md \u00a72",
+  "same_source_copy": [
+    "pert_model/PRnet/source/models/PRnet.py",
+    "pert_model/PRnet/source/trainer/PRnetTrainer.py",
+    "pert_model/PRnet/source/data/_utils.py",
+    "stage2/03_models_cmbench/03.1_cold_drug_18k/execution/script/adapters/prnet/run.py"
+  ],
+  "started": "2026-11-01T17:01:45+0800",
+  "command": [
+    "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "stage2/05_prnet_pretrain/execution/train_prnet.py"
+  ],
+  "smoke": false,
+  "seed": 20261021,
+  "device": "cuda",
+  "device_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "torch": "2.0.1+cu118",
+  "cuda_available": true,
+  "view": "stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad",
+  "view_shape": [
+    67018,
+    18164
+  ],
+  "n_control_groups": 700,
+  "control_mean": {
+    "n_groups": 700,
+    "n_genes": 18164,
+    "encoding": "dataframe"
+  },
+  "split": {
+    "valid_plates": [
+      "plate13",
+      "plate14"
+    ],
+    "n_train": 55922,
+    "n_valid": 9396
+  },
+  "rows": {
+    "n_obs": 67018,
+    "n_controls": 1400,
+    "n_perturbed": 65618,
+    "dropped_no_structure": 300,
+    "dropped_empty_smiles": 0,
+    "dropped_bad_dose": 0,
+    "n_samples": 65318,
+    "n_train": 55922,
+    "n_valid": 9396,
+    "n_unique_smiles": 375,
+    "n_fingerprints_all_zero": 0
+  },
+  "model": {
+    "class": "PGM",
+    "x_dimension": 18164,
+    "drug_dimension": 1024,
+    "comb_dimension": 64,
+    "noise_dim": 10,
+    "hidden_layer_sizes": [
+      128
+    ],
+    "adaptor_layer_sizes": [
+      128
+    ],
+    "z_dimension": 64,
+    "dr_rate": 0.05,
+    "n_parameters": 7185000
+  },
+  "loss": "F.gaussian_nll_loss(mean, target, var, reduction='mean')",
+  "loss_reduction": {
+    "per_epoch": "sum(NLL_batch * n_batch) / sum(n_batch) \u2014 batch-size weighted",
+    "trailing_singleton_batch": "folded into the previous batch (BatchNorm1d needs >1 sample)"
+  },
+  "optimizer": {
+    "name": "adam",
+    "lr": 0.001,
+    "weight_decay": 1e-08
+  },
+  "scheduler": {
+    "name": "reduce_on_plateau",
+    "mode": "min",
+    "factor": 0.5,
+    "patience": 10,
+    "min_lr": 1e-08
+  },
+  "batch_size": 512,
+  "max_epochs": 100,
+  "early_stop_patience": 20,
+  "min_epochs": 20,
+  "peak_rss_mb_after_load": 14842.8
+}

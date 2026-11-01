@@ -16,14 +16,17 @@ consumes 04's view and rebuilds no data. Never import `pert_model/` or
   a deliverable (`*.h5ad` is gitignored).
 - `output/` — `run.log`, `fit_history.json`, `summary.png`, `summary_table.csv`,
   `config.json`, `model_card.md`, `checkpoint/model.pt`; reruns overwrite. The
-  whole directory is gitignored by the repo-wide `output/` rule.
+  human-facing five (`config.json`, `fit_history.json`, `summary_table.csv`,
+  `summary.png`, `model_card.md`) are force-added to version control; `run.log` and
+  `checkpoint/model.pt` stay local (ticket 05).
 - Input: `stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad` —
   67,018 x 18,164, CSR `X` int32 + CSR `layers['log1p_cp10k']`, obs per §1.3,
   `uns['control_mean']` per §1.4; batch = (control mean, rFCFP4 x log10 dose,
   log1p_cp10k row).
 - Recipe is a **same-source copy** of `pert_model/PRnet/source/{models/PRnet.py,
   trainer/PRnetTrainer.py,data/_utils.py}` and the 03.1 adapter loop — do not
-  diverge; keep the runs comparable. Loss is Gaussian NLL and **may be negative**;
+  diverge; the recipe stays identical, but the reported losses are not commensurable
+  with 03.1's. Loss is Gaussian NLL and **may be negative**;
   never clamp, `abs()` or "fix" it.
 
 Reproduce commands: `README.md` (`--check`, `--smoke`, full run).
