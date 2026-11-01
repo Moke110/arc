@@ -93,11 +93,21 @@ Measured 2026-11-01 (RTX 4070 Ti SUPER, torch 2.0.1+cu118): **65,318 samples = 5
 train / 9,396 valid**, **300** rows dropped for having no resolvable structure;
 **68 epochs**, early stop fired at epoch 68 after 21 stale epochs with the 20-epoch
 floor met; best valid **Gaussian NLL −2.628080 at epoch 47**; lr halved to **5e-4 at
-epoch 58**; **883.2 s** wall end to end; **15,150 MiB** peak host RSS.
+epoch 58**; **956 s (15.9 min)** wall between the run's start and finish stamps; **15,150
+MiB** peak host RSS. (The in-process monotonic timer reads 883.2 s for the same span — it
+runs low against the wall clock on this host, so the stamps are the wall-time record; see
+`stage2/05_prnet_pretrain/output/model_card.md`.)
 
 Its only claims are: **the pipeline runs on GPU and the loss-epoch curve exists.** A
 negative Gaussian NLL is the correct value of a log-likelihood and is never clamped; the run
 makes no transfer, finetune, warm-start, usefulness or benchmark-comparison claim.
+
+**Recorded deviation in the first run.** The control input is the group mean of **raw
+counts** while the target is `log1p_cp10k`, so they are not in the same space. The author's
+dataset draws control and target from one matrix, so this departs from parity rather than
+matching it (the view's `uns['control_mean']` is the contract; the trainer's use of it is
+this run's). It does not affect the pipeline claim, but it must be resolved before any
+finetune or transfer claim, and it is carried in `model_card.md` and the step README.
 
 **Rejected for this record:** a warm-start / finetune claim (it needs a random-init vs
 Tahoe-init comparison on the cold-drug benchmark — a separate effort, out of scope);

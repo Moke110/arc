@@ -4,7 +4,7 @@
 
 **Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
 
-**Update (2026-11-01, measurements):** two corrections, no decision changed.
+**Update (2026-11-01, measurements):** three corrections, no decision changed.
 
 1. *Drug overlap.* The "24/525" figure quoted in Consequences is the **raw
    (non-desalted) InChIKey** route. Under the corpus's own rule — desalted parent
@@ -15,6 +15,9 @@
 2. *Timepoint.* "24 h" has **no data source**: no table in the atlas carries a
    time column, so it remains prose and must not be materialised as an obs field
    (see ADR 0031's D3).
+3. *First consumer.* Consequences gained one sentence pointing at **ADR 0031**,
+   whose view carries four declared deviations (D0–D3) and whose pretrain run
+   claims only that the pipeline works; neither amends this corpus.
 
 Projections of this corpus are still views, not amendments to it. The first
 projection — a CM-schema 18,164-gene view — was **built and verified 2026-11-01**

@@ -19,7 +19,7 @@ results, selection constraints and reproduce commands live in each step's
   gates 9/9 PASS (ADR 0031).
 - [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) — the executed PRnet
   pretrain on 04's view (2026-11-01): 68 epochs, early stop at epoch 68, best
-  valid Gaussian NLL −2.628080 at epoch 47, 883.2 s on GPU; artifacts under
+  valid Gaussian NLL −2.628080 at epoch 47, 956 s (15.9 min) on GPU; artifacts under
   `output/` (ADR 0031). Pipeline claim only.
 - [`_envs/`](_envs/README.md) — non-step: shared per-model benchmark
   environments and their `pip freeze` locks (ADR 0021).

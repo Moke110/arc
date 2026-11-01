@@ -14,7 +14,7 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_models_cmbench/` (ADR 0027); the Tahoe pseudobulk corpus is `stage2/04_tahoe_data/` (ADR 0029) and the first pretrain run on it is `stage2/05_prnet_pretrain/` (planned). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
+The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; the CM corpus and `datasets-1` bundle live in `stage2/02_cm_data/` (ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_models_cmbench/` (ADR 0027); the Tahoe pseudobulk corpus is `stage2/04_tahoe_data/` (ADR 0029) and the pretrain run on its CM-schema view is `stage2/05_prnet_pretrain/` (executed 2026-11-01; ADR 0031). Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
 _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 
 **Stage 2 tree**:
@@ -208,7 +208,7 @@ _Avoid_: subset, variant, dataset
 
 **Pretrain view**:
 A projection of a frozen corpus onto another corpus's gene axis and column conventions, so that a model pretrained on the source can be adapted to the target without a gene-space remap. It is distinguished from the corpus itself — which freezes identity, not projections — and from a `datasets-<n>` bundle, which is built from the CM corpus and carries a per-view membership: a pretrain view belongs to no numbered bundle build, carries no membership, and comes from a corpus other than the CM corpus. A view is derived, reproducible and disposable; the corpus is not. It is schema-isomorphic, not layout-isomorphic: what a consumer asserts about shape, genes, columns and value conventions matches; how the values are stored need not.
-_Avoid_: pretrain corpus, pretrain dataset, projection (unqualified)
+_Avoid_: pretrain corpus (for a view — the corpus is the source, never the projection), pretrain dataset, dataset bundle (for a view), projection (unqualified)
 
 **Pharmacology tier**:
 The named compound-inclusion rule of a view: `atc-moa` (ATC or ChEMBL mechanism), `atc-moa-mesh` (plus PubChem MeSH classes), or `all-smiles` (any resolvable small molecule).
