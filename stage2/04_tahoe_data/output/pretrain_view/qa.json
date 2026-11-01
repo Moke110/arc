@@ -1,0 +1,280 @@
+{
+  "checked_at": "2026-11-01T16:59:42+0800",
+  "view": "tahoe_cm_schema",
+  "file": "tahoe_cm_schema.h5ad",
+  "bytes": 16319543984,
+  "shape": [
+    67018,
+    18164
+  ],
+  "root_attrs": {
+    "built_from": "stage2/04_tahoe_data/output/pseudobulk/tahoe_pseudobulk.h5ad",
+    "encoding-type": "anndata",
+    "encoding-version": "0.1.0",
+    "pseudobulk_unit": "(plate, well, cell_line)",
+    "view": "tahoe_cm_schema"
+  },
+  "gate_count": 9,
+  "gates_passed": 9,
+  "gates": [
+    {
+      "gate": 1,
+      "name": "shape, controls, perturbed, control groups, row identity",
+      "pass": true,
+      "measured": {
+        "n_obs": 67018,
+        "n_controls": 1400,
+        "n_perturbed": 65618,
+        "n_drugs": 379,
+        "n_genes": 18164,
+        "n_control_groups": 700,
+        "index_name": "well",
+        "well_equals_index": true,
+        "index_unique": true
+      }
+    },
+    {
+      "gate": 2,
+      "name": "var identical to corpus/v1/genes.csv (values, order, dtypes)",
+      "pass": true,
+      "measured": {
+        "rows": 18164,
+        "index_name": "symbol",
+        "columns": [
+          "entrez_id",
+          "ensembl_id",
+          "match_type"
+        ],
+        "columns_ok": true,
+        "dtypes": {
+          "entrez_id": "object",
+          "ensembl_id": "object",
+          "match_type": "category"
+        },
+        "identical": true
+      }
+    },
+    {
+      "gate": 3,
+      "name": "lib_size == X.sum(1); n_genes_detected == (X>0).sum(1)",
+      "pass": true,
+      "measured": {
+        "lib_size_max_abs_diff": 0,
+        "n_genes_detected_max_abs_diff": 0,
+        "x_dtype": "int32",
+        "x_min": 1,
+        "x_max": 1658817,
+        "nnz": 1010892356
+      }
+    },
+    {
+      "gate": 5,
+      "name": "X non-negative int32 counts (subset spot-checked separately)",
+      "pass": true,
+      "measured": {
+        "lib_size_max_abs_diff": 0,
+        "n_genes_detected_max_abs_diff": 0,
+        "x_dtype": "int32",
+        "x_min": 1,
+        "x_max": 1658817,
+        "nnz": 1010892356
+      }
+    },
+    {
+      "gate": 4,
+      "name": "log1p_cp10k recomputes from X (atol=1e-5, 200 rows)",
+      "pass": true,
+      "measured": {
+        "rows_sampled": 200,
+        "max_abs_diff": 2.3698634699087506e-07,
+        "atol": 1e-05
+      }
+    },
+    {
+      "gate": 5.1,
+      "name": "X is a pure subset of the corpus counts (3 random rows)",
+      "pass": true,
+      "measured": {
+        "rows": [
+          25052,
+          27615,
+          41829
+        ],
+        "compared": 3,
+        "mismatches": []
+      }
+    },
+    {
+      "gate": 6,
+      "name": "control_mean covers 700 groups, matches recomputed means, round-trips",
+      "pass": true,
+      "measured": {
+        "control_mean_shape": [
+          700,
+          18164
+        ],
+        "index_name": "control_group",
+        "dtype": "float64",
+        "axis_ok": true,
+        "encoding": {
+          "encoding_type": "dataframe",
+          "encoding_version": "0.2.0",
+          "_index": "control_group"
+        },
+        "roundtrip_through_anndata": {
+          "anndata": "0.12.16",
+          "type": "DataFrame",
+          "shape": [
+            700,
+            18164
+          ],
+          "index_name": "control_group",
+          "n_columns": 18164,
+          "first_columns": [
+            "A1BG",
+            "A1CF"
+          ],
+          "last_column": "ZZZ3",
+          "ok": true
+        },
+        "roundtrip_ok": true,
+        "treated_groups_without_control": 0,
+        "sampled_group": "tahoe::plate12::CVCL_1055",
+        "sampled_group_rows": 2,
+        "max_abs_diff": 0.0
+      }
+    },
+    {
+      "gate": 7,
+      "name": "no forbidden obs columns; structure columns empty iff control/no-structure",
+      "pass": true,
+      "measured": {
+        "forbidden": [],
+        "structure_columns": [
+          "drug_key",
+          "inchikey",
+          "smiles",
+          "SMILES",
+          "pubchem_cid"
+        ],
+        "mismatches_by_column": {
+          "drug_key": 0,
+          "inchikey": 0,
+          "smiles": 0,
+          "SMILES": 0,
+          "pubchem_cid": 0
+        },
+        "rows_expected_empty": 1700
+      }
+    },
+    {
+      "gate": 8,
+      "name": "paired_control_index resolves; shim dose is 0.0 exactly on controls",
+      "pass": true,
+      "measured": {
+        "unresolved": 0,
+        "control_rows_point_to_themselves": true,
+        "dose_zero_on_controls": true,
+        "dose_nonzero_on_treated": true
+      }
+    }
+  ],
+  "all_pass": true,
+  "interop_anndata_0_10_8": {
+    "anndata": "0.10.8",
+    "type": "DataFrame",
+    "shape": [
+      700,
+      18164
+    ],
+    "index_name": "control_group",
+    "interpreter": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "ok": true
+  },
+  "contract_expectations": {
+    "desalted_parent_keys_matched": {
+      "expected": 31,
+      "measured": 31,
+      "match": true
+    },
+    "raw_nondesalted_keys_matched": {
+      "expected": 24,
+      "measured": 24,
+      "match": true
+    },
+    "cid_keys_matched": {
+      "expected": 36,
+      "measured": 36,
+      "match": true
+    },
+    "normalised_name_keys_matched": {
+      "expected": 34,
+      "measured": 34,
+      "match": true
+    }
+  },
+  "derived_overlap": {
+    "union_parent_cid_name_keys_matched": {
+      "measured": 42,
+      "note": "union of the three identity routes (parent | CID | name); a derived number, not stated in the spec or ticket (which give only 31 desalted / 24 raw / 36 CID / 34 name)"
+    }
+  },
+  "gene_mapping": {
+    "cm_axis_rows": 18164,
+    "measured_by_ensembl": 18163,
+    "measured_by_symbol": 17935,
+    "unmeasured_ensembl": [
+      "ENSG00000182230"
+    ],
+    "join": "Tahoe -> CM on ensembl_id only; the symbol route matches 17935 (loses 229 of the 18164 CM genes; 228 relative to the 18163 that map by Ensembl)"
+  },
+  "null_structure_drugs": [
+    "Sacubitril/Valsartan",
+    "Verteporfin"
+  ],
+  "overlap": {
+    "cm_drug_keys": 525,
+    "desalted_parent_keys_matched": 31,
+    "raw_nondesalted_keys_matched": 24,
+    "cid_keys_matched": 36,
+    "normalised_name_keys_matched": 34,
+    "union_keys_matched": 42,
+    "rows_with_overlap_cm": 33,
+    "drug_rows_sharing_one_parent_key": 2,
+    "cm_compounds": 379
+  },
+  "shims": {
+    "SMILES": "= smiles (author Dataset.py reads 'SMILES')",
+    "dose": "= dose_um (0.0 marks controls; pert_model/PRnet/source/data/Dataset.py:39)",
+    "paired_control_index": "obs label of the first control row of the row's control_group (own label on control rows)"
+  },
+  "control_mean": {
+    "shape": [
+      700,
+      18164
+    ],
+    "dtype": "float64",
+    "groups": 700,
+    "encoding": {
+      "encoding_type": "dataframe",
+      "encoding_version": "0.2.0",
+      "_index": "control_group"
+    },
+    "roundtrip_through_anndata": {
+      "anndata": "0.12.16",
+      "type": "DataFrame",
+      "shape": [
+        700,
+        18164
+      ],
+      "index_name": "control_group",
+      "n_columns": 18164,
+      "first_columns": [
+        "A1BG",
+        "A1CF"
+      ],
+      "last_column": "ZZZ3",
+      "ok": true
+    }
+  }
+}

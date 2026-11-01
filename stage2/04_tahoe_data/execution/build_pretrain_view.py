@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """Build the model-facing pretrain view of the Tahoe pseudobulk corpus.
 
-Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §1 (agreed 2026-11-01).
+Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §Implementation Decisions
+(agreed 2026-11-01).
 This is a *separate* entry point from `build_pseudobulk.py`: it never rebuilds
 the corpus and never touches `output/pseudobulk/`. It projects the frozen
 62,710-gene corpus onto the frozen 18,164-gene CM axis and writes one h5ad whose
@@ -38,7 +39,7 @@ Contract deviations, recorded in the step README and ADR 0029:
     D1  control keying: `control_group = tahoe::<plate>::<cell_line_id>` (700
         groups) instead of the corpus's `tahoe::<plate>` (14), because a plate
         pools ~50 cell lines and a plate-level control mean is the mixture
-        ADR 0029 §1 rejects.
+        ADR 0029's "Rejected (a)" rejects.
     D2  gene axis: 18,164 slots; `FAM153B` / ENSG00000182230 has no Tahoe row,
         kept as an all-zero row so the axis stays byte-identical to CM.
     D3  provenance gaps: `time_h` NaN (the atlas has no time column),
@@ -51,6 +52,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import time
@@ -97,7 +99,7 @@ N_DRUGS = 379
 N_CONTROL_GROUPS = 700
 CONTROL_DRUG = "DMSO_TF"
 
-# CM's 24 obs columns, in spec §1.3 order (the `well` column duplicates the index)
+# CM's 24 obs columns, in the CM contract's order (the `well` column duplicates the index)
 CM_OBS_COLUMNS = [
     "well", "dataset_id", "compound_name", "drug_key", "inchikey", "smiles",
     "dose_um", "dose_source", "time_h", "is_control", "vehicle", "plate",
@@ -112,10 +114,15 @@ TAHOE_OBS_COLUMNS = [
 SHIM_COLUMNS = ["SMILES", "dose", "paired_control_index"]
 FORBIDDEN_OBS_COLUMNS = {"pert_idx", "cell_idx", "dose_idx", "pert_dose_idx"}
 
-# contract expectations (spec §1.5); asserted so a drift is loud, not silent
+# recorded overlap routes (ticket 02 / the ADR 0029 amendment), asserted so a drift is
+# loud, not silent.  The spec/ticket state only 31 desalted / 24 raw / 36 CID / 34 name;
+# the union 42 is a *derived* number (the three identity routes agree on 42 distinct CM
+# keys) and is labeled as derived wherever it is written.
 EXPECTED_DESALTED_KEY_OVERLAP = 31
-EXPECTED_UNION_KEY_OVERLAP = 42
 EXPECTED_RAW_KEY_OVERLAP = 24
+EXPECTED_CID_KEY_OVERLAP = 36
+EXPECTED_NORMALISED_NAME_KEY_OVERLAP = 34
+EXPECTED_UNION_KEY_OVERLAP = 42  # derived: distinct CM keys in parent | CID | name
 CM_N_DRUG_KEYS = 525
 
 
@@ -549,6 +556,9 @@ def build_obs(obs: pd.DataFrame, var: pd.DataFrame, drugs: pd.DataFrame,
     for position in control_positions[control_order]:
         first_control.setdefault(control_group.iloc[position], index[position])
     paired[:] = [first_control[group] for group in control_group.to_numpy()]
+    # Documented shim semantics (and the pretrain fixture encoding): a control row points
+    # to its own label; only treated rows point at their group's first control row.
+    paired[is_control] = np.asarray(index)[is_control]
 
     lib_size = np.concatenate(part_meta["row_sum"]).astype(np.int64)
     n_detected = np.concatenate(part_meta["row_ndetected"]).astype(np.int32)
@@ -714,20 +724,27 @@ def build_compounds(drugs: pd.DataFrame) -> pd.DataFrame:
 
 
 def overlap_numbers(drugs: pd.DataFrame) -> dict:
-    """Reproduce the spec's 31 / 42 and ADR 0029's 24 on distinct CM drug keys.
+    """Reproduce the recorded overlap routes on distinct CM drug keys.
 
-    A per-row `overlap_cm` boolean has 33 True rows (two pairs of Tahoe names share
-    one desalted parent), so the spec's "31" is the distinct-key count, not the row
-    count; both are recorded.
+    Ticket 02 / the ADR 0029 amendment record 31 desalted, 24 raw (non-desalted),
+    36 by PubChem CID and 34 by alphanumerically normalised name, against the CM
+    corpus's 525 keys.  The union of the three identity routes (42) is a *derived*
+    number, recorded but not attributed to the spec.  A per-row `overlap_cm`
+    boolean has 33 True rows (two pairs of Tahoe drug names share one desalted
+    parent), so "31" is the distinct-key count, not the row count; both are
+    recorded.
     """
     cm = pd.read_csv(CM_COMPOUNDS)
     cm_keys = set(cm["drug_key"].dropna().astype(str))
     cm_cids = {int(x) for x in cm["pubchem_cid"].dropna()}
 
     def normalise(name: str) -> str:
-        return str(name).strip().lower()
+        # Alphanumeric-only rule: lowercase, every non-`[a-z0-9]` character removed.
+        # This is the route that reproduces the recorded 34 name matches (it folds
+        # salt/parenthesis/hyphen spellings such as `5-Fluorouracil` vs
+        # `5 Fluorouracil`); lower/trim alone finds only 31.
+        return re.sub(r"[^a-z0-9]", "", str(name).lower())
 
-    cm_names = {normalise(x) for x in cm["compound_name"]}
     parent_keys = set(drugs["parent_inchikey"]) - {""}
     raw_keys = set(drugs["raw_inchikey"]) - {""}
     drug_cids = {int(x) for x in drugs["pubchem_cid"] if x}
@@ -756,15 +773,21 @@ def check_contract_numbers(overlap: dict) -> None:
     checks = [
         ("desalted parent-key overlap", overlap["desalted_parent_keys_matched"],
          EXPECTED_DESALTED_KEY_OVERLAP),
-        ("union (parent/CID/name) overlap", overlap["union_keys_matched"],
-         EXPECTED_UNION_KEY_OVERLAP),
         ("raw non-desalted overlap", overlap["raw_nondesalted_keys_matched"],
          EXPECTED_RAW_KEY_OVERLAP),
+        ("PubChem CID overlap", overlap["cid_keys_matched"],
+         EXPECTED_CID_KEY_OVERLAP),
+        ("normalised-name overlap", overlap["normalised_name_keys_matched"],
+         EXPECTED_NORMALISED_NAME_KEY_OVERLAP),
+        # The union is a derived number, not a spec figure; asserted so a route drift
+        # cannot silently move it (the report labels it derived).
+        ("derived union (parent/CID/name) overlap", overlap["union_keys_matched"],
+         EXPECTED_UNION_KEY_OVERLAP),
     ]
     bad = [(n, got, want) for n, got, want in checks if got != want]
     if bad:
-        detail = "; ".join(f"{n}: measured {got}, spec says {want}" for n, got, want in bad)
-        raise SystemExit("contract overlap numbers drifted from spec §1.5: " + detail)
+        detail = "; ".join(f"{n}: measured {got}, recorded {want}" for n, got, want in bad)
+        raise SystemExit("overlap numbers drifted from the recorded routes: " + detail)
 
 
 def build_manifest(obs, var: pd.DataFrame, control_mean: pd.DataFrame,
@@ -789,7 +812,7 @@ def build_manifest(obs, var: pd.DataFrame, control_mean: pd.DataFrame,
 
 
 # ---------------------------------------------------------------------------
-# QA: the eight hard gates, run against the written file
+# QA: the nine hard gates, run against the written file
 # ---------------------------------------------------------------------------
 class XReader:
     """Row-block reader over an h5ad CSR matrix, without densifying the whole thing."""
@@ -917,7 +940,9 @@ def run_qa(colmap: np.ndarray) -> dict:
          and measured["index_unique"])
 
     # 2. var is byte-identical to CM's frozen gene axis
-    var_ok = (list(var.index) == list(genes["symbol"])
+    var_columns_ok = list(var.columns) == ["entrez_id", "ensembl_id", "match_type"]
+    var_ok = (var_columns_ok
+              and list(var.index) == list(genes["symbol"])
               and list(var["entrez_id"].astype(str)) == list(genes["entrez_id"])
               and list(var["ensembl_id"].astype(str)) == list(genes["ensembl_id"])
               and list(var["match_type"].astype(str)) == list(genes["match_type"])
@@ -925,7 +950,7 @@ def run_qa(colmap: np.ndarray) -> dict:
               and var.index.name == "symbol")
     gate(2, "var identical to corpus/v1/genes.csv (values, order, dtypes)", {
         "rows": n_genes, "index_name": var.index.name,
-        "columns": list(var.columns),
+        "columns": list(var.columns), "columns_ok": var_columns_ok,
         "dtypes": {c: str(t) for c, t in var.dtypes.items()},
         "identical": var_ok}, var_ok)
 
@@ -934,15 +959,17 @@ def run_qa(colmap: np.ndarray) -> dict:
     try:
         sums, detected = x_read.row_sums_and_detected()
         low, high = x_read.min_max()
+        x_dtype = str(x_read.group["data"].dtype)
         measured = {"lib_size_max_abs_diff": int(np.abs(sums - obs["lib_size"].to_numpy()).max()),
                     "n_genes_detected_max_abs_diff":
                         int(np.abs(detected - obs["n_genes_detected"].to_numpy()).max()),
+                    "x_dtype": x_dtype,
                     "x_min": low, "x_max": high, "nnz": int(x_read.indptr[-1])}
         gate(3, "lib_size == X.sum(1); n_genes_detected == (X>0).sum(1)", measured,
              measured["lib_size_max_abs_diff"] == 0
              and measured["n_genes_detected_max_abs_diff"] == 0)
-        gate(5, "X non-negative integers (subset spot-checked separately)", measured,
-             low >= 0 and high < 2**31)
+        gate(5, "X non-negative int32 counts (subset spot-checked separately)", measured,
+             low >= 0 and x_dtype == "int32" and high < 2**31)
 
         # 4. log1p_cp10k recomputes from X on a random row sample
         rng = np.random.default_rng(20261021)
@@ -965,6 +992,7 @@ def run_qa(colmap: np.ndarray) -> dict:
         part_rows = np.concatenate([[0], np.cumsum([
             len(np.load(p, allow_pickle=False)["indptr"]) - 1 for p in parts])])
         mismatches = []
+        compared = 0
         for row in spot_rows:
             part_index = int(np.searchsorted(part_rows, row, side="right") - 1)
             local = int(row - part_rows[part_index])
@@ -979,14 +1007,16 @@ def run_qa(colmap: np.ndarray) -> dict:
                                 x_read.group["data"][start:stop].tolist()))
             if not corpus_row:
                 continue
+            compared += 1
             if corpus_row != view_row:
                 common = set(corpus_row) | set(view_row)
                 diff = [(k, corpus_row.get(k), view_row.get(k)) for k in common
                         if corpus_row.get(k) != view_row.get(k)]
                 mismatches.append({"row": int(row), "n_diff": len(diff), "example": diff[:3]})
         gate(5.1, "X is a pure subset of the corpus counts (3 random rows)", {
-            "rows": [int(r) for r in spot_rows], "mismatches": mismatches},
-            not mismatches)
+            "rows": [int(r) for r in spot_rows], "compared": compared,
+            "mismatches": mismatches},
+            compared > 0 and not mismatches)
 
         # 6. control_group coverage, control_mean exactness, matched controls
         groups_sorted = sorted(groups.unique())
@@ -1010,43 +1040,60 @@ def run_qa(colmap: np.ndarray) -> dict:
                 "_index": str(encoding.get("_index", "")),
             }
         interop = old_anndata_roundtrip(VIEW_H5AD)
-        gate(6, "control_mean covers 700 groups and equals recomputed group means", {
+        # The declared round-trip contract (§Testing Decisions): a plain consumer read
+        # must return the declared 700 x 18,164 frame with the declared index name.
+        roundtrip_ok = bool(
+            anndata_roundtrip.get("ok")
+            and anndata_roundtrip.get("type") == "DataFrame"
+            and anndata_roundtrip.get("shape") == [N_CONTROL_GROUPS, N_VIEW_GENES]
+            and anndata_roundtrip.get("index_name") == "control_group")
+        gate(6, "control_mean covers 700 groups, matches recomputed means, round-trips", {
             "control_mean_shape": list(means.shape) if means is not None else None,
             "index_name": getattr(getattr(means, "index", None), "name", None),
             "dtype": str(means.to_numpy().dtype) if means is not None else None,
             "axis_ok": bool(mean_axis_ok),
             "encoding": mean_encoding,
             "roundtrip_through_anndata": anndata_roundtrip,
+            "roundtrip_ok": roundtrip_ok,
             "treated_groups_without_control": len(treated_groups - control_groups),
             "sampled_group": sample_group, "sampled_group_rows": int(len(rows)),
             "max_abs_diff": mean_diff},
-            bool(mean_axis_ok and matched and mean_diff <= 1e-9))
-        # recorded interop (not one of the eight gates): can a consumer on anndata 0.10.8 read it?
+            bool(mean_axis_ok and matched and mean_diff <= 1e-9 and roundtrip_ok))
+        # recorded interop (not one of the nine gates): can a consumer on anndata 0.10.8 read it?
         qa_interop = interop
 
-        # 7. no forbidden encodings; empty drug_key/smiles iff control or no structure
+        # 7. no forbidden encodings; every structure column empty iff control/no structure
         forbidden = sorted(FORBIDDEN_OBS_COLUMNS & set(obs.columns))
-        empty = (obs["drug_key"].astype(str) == "") | (obs["smiles"].astype(str) == "")
         expected_empty = is_control | (~obs["has_structure"].to_numpy())
-        gate(7, "no forbidden obs columns; drug_key/smiles empty iff control/null-structure", {
+        structure_columns = ["drug_key", "inchikey", "smiles", "SMILES", "pubchem_cid"]
+        structure_mismatches = {
+            column: int(((obs[column].astype(str) == "").to_numpy() != expected_empty).sum())
+            for column in structure_columns}
+        gate(7, "no forbidden obs columns; structure columns empty iff control/no-structure", {
             "forbidden": forbidden,
-            "rows_empty": int(empty.sum()),
-            "rows_expected_empty": int(expected_empty.sum()),
-            "mismatches": int((empty.to_numpy() != expected_empty).sum())},
-            not forbidden and bool((empty.to_numpy() == expected_empty).all()))
+            "structure_columns": structure_columns,
+            "mismatches_by_column": structure_mismatches,
+            "rows_expected_empty": int(expected_empty.sum())},
+            not forbidden and all(value == 0 for value in structure_mismatches.values()))
 
-        # 8. paired_control_index resolves inside the obs index
+        # 8. paired_control_index resolves inside the obs index; shim dose marks controls
         paired = obs["paired_control_index"].astype(str).to_numpy()
         known = set(obs.index.astype(str))
         unresolved = int(sum(1 for value in paired if value not in known))
         own = bool((paired[is_control] == obs.index.astype(str).to_numpy()[is_control]).all())
-        gate(8, "paired_control_index resolves inside obs.index", {
-            "unresolved": unresolved, "control_rows_point_to_themselves": own},
-            unresolved == 0 and own)
+        dose = obs["dose"].to_numpy().astype(float)
+        dose_zero_controls = bool((dose[is_control] == 0.0).all())
+        dose_nonzero_treated = bool((dose[~is_control] > 0.0).all())
+        gate(8, "paired_control_index resolves; shim dose is 0.0 exactly on controls", {
+            "unresolved": unresolved,
+            "control_rows_point_to_themselves": own,
+            "dose_zero_on_controls": dose_zero_controls,
+            "dose_nonzero_on_treated": dose_nonzero_treated},
+            unresolved == 0 and own and dose_zero_controls and dose_nonzero_treated)
     finally:
         x_read.close()
 
-    # 2b. root attributes (recorded, not one of the eight gates)
+    # 2b. root attributes (recorded, not one of the nine gates)
     with h5py.File(VIEW_H5AD, "r") as handle:
         root_attrs = {key: str(handle.attrs[key]) for key in handle.attrs}
     all_pass = all(g["pass"] for g in gates)
@@ -1057,6 +1104,8 @@ def run_qa(colmap: np.ndarray) -> dict:
         "bytes": VIEW_H5AD.stat().st_size,
         "shape": [int(n_obs), int(n_genes)],
         "root_attrs": root_attrs,
+        "gate_count": len(gates),
+        "gates_passed": int(sum(1 for g in gates if g["pass"])),
         "gates": gates,
         "all_pass": all_pass,
         "interop_anndata_0_10_8": qa_interop,
@@ -1074,7 +1123,7 @@ DEVIATIONS = [
      "`control_group` = `tahoe::<plate>::<cell_line_id>` (700 groups), "
      "`uns['control_mean']` has 700 rows",
      "a plate pools ~50 cell lines; a plate-level mean is the Simpson's-paradox "
-     "mixture ADR 0029 §1 rejects, so Δ stays inside one cell line"),
+     "mixture ADR 0029's \"Rejected (a)\" rejects, so Δ stays inside one cell line"),
     ("D2", "gene axis",
      "18,164 CM slots; `FAM153B` / ENSG00000182230 is an all-zero row",
      "the gene has no Tahoe measurement; dropping it would break axis identity"),
@@ -1102,22 +1151,36 @@ def write_qa_files(qa: dict, var: pd.DataFrame, drugs: pd.DataFrame,
                 "expected": EXPECTED_DESALTED_KEY_OVERLAP,
                 "measured": overlap["desalted_parent_keys_matched"],
                 "match": overlap["desalted_parent_keys_matched"] == EXPECTED_DESALTED_KEY_OVERLAP},
-            "union_parent_cid_name_keys_matched": {
-                "expected": EXPECTED_UNION_KEY_OVERLAP,
-                "measured": overlap["union_keys_matched"],
-                "match": overlap["union_keys_matched"] == EXPECTED_UNION_KEY_OVERLAP},
             "raw_nondesalted_keys_matched": {
                 "expected": EXPECTED_RAW_KEY_OVERLAP,
                 "measured": overlap["raw_nondesalted_keys_matched"],
                 "match": overlap["raw_nondesalted_keys_matched"] == EXPECTED_RAW_KEY_OVERLAP},
+            "cid_keys_matched": {
+                "expected": EXPECTED_CID_KEY_OVERLAP,
+                "measured": overlap["cid_keys_matched"],
+                "match": overlap["cid_keys_matched"] == EXPECTED_CID_KEY_OVERLAP},
+            "normalised_name_keys_matched": {
+                "expected": EXPECTED_NORMALISED_NAME_KEY_OVERLAP,
+                "measured": overlap["normalised_name_keys_matched"],
+                "match": overlap["normalised_name_keys_matched"]
+                == EXPECTED_NORMALISED_NAME_KEY_OVERLAP},
+        },
+        "derived_overlap": {
+            "union_parent_cid_name_keys_matched": {
+                "measured": overlap["union_keys_matched"],
+                "note": "union of the three identity routes (parent | CID | name); a "
+                        "derived number, not stated in the spec or ticket (which give "
+                        "only 31 desalted / 24 raw / 36 CID / 34 name)"},
         },
         "gene_mapping": {
             "cm_axis_rows": len(var),
             "measured_by_ensembl": measured_by_ensembl,
             "measured_by_symbol": measured_by_symbol,
             "unmeasured_ensembl": unmeasured,
-            "join": "Tahoe -> CM on ensembl_id only (symbol join would lose "
-                    f"{measured_by_ensembl - measured_by_symbol} alias-drifted genes)",
+            "join": "Tahoe -> CM on ensembl_id only; the symbol route matches "
+                    f"{measured_by_symbol} (loses {len(var) - measured_by_symbol} of the "
+                    f"{len(var)} CM genes; {measured_by_ensembl - measured_by_symbol} "
+                    f"relative to the {measured_by_ensembl} that map by Ensembl)",
         },
         "null_structure_drugs": null_drugs,
         "overlap": dict(overlap, cm_compounds=len(compounds)),
@@ -1139,7 +1202,8 @@ def write_qa_files(qa: dict, var: pd.DataFrame, drugs: pd.DataFrame,
     (OUT_DIR / "qa.json").write_text(json.dumps(qa_out, indent=2) + "\n")
 
     rows = []
-    for gate in qa["gates"]:
+    # report in gate-number order (qa.json keeps the evaluation order)
+    for gate in sorted(qa["gates"], key=lambda g: float(g["gate"])):
         rows.append(f"| {gate['gate']} | {gate['name']} | "
                     f"{'PASS' if gate['pass'] else 'FAIL'} |")
     checks = qa_out["contract_expectations"]
@@ -1160,18 +1224,20 @@ def write_qa_files(qa: dict, var: pd.DataFrame, drugs: pd.DataFrame,
 
     report = f"""# Pretrain view — QA report
 
-Built at {qa['checked_at']} by `stage2/04_tahoe_data/execution/build_pretrain_view.py`.
-Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §1. Source corpus:
-`{BUILT_FROM}` (no rebuild; the view only projects the frozen rows onto the frozen
+QA run at {qa['checked_at']} by `stage2/04_tahoe_data/execution/build_pretrain_view.py`.
+Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §Implementation Decisions
+("the view's contract"). Source corpus:
+`{BUILT_FROM}` (never rebuilt; the view only projects the frozen rows onto the frozen
 18,164-gene CM axis).
 
-## Gates (§1.6)
+## Gates (nine)
 
 | # | gate | result |
 |---|---|---|
 {chr(10).join(rows)}
 
-All eight gates: **{'PASS' if qa['all_pass'] else 'FAIL'}**. `--qa` exits non-zero when any gate fails.
+Nine gates: **{qa['gates_passed']}/{qa['gate_count']} PASS** (`all_pass={qa['all_pass']}`).
+`--qa` exits non-zero when any gate fails.
 The machine-readable measurements are in [`qa.json`](qa.json).
 
 ## Deviations from the CM contract (D0–D3)
@@ -1184,17 +1250,20 @@ The machine-readable measurements are in [`qa.json`](qa.json).
 
 - CM axis: **{len(var)}** slots, order and values copied from `corpus/v1/genes.csv`.
 - Measured by Ensembl: **{measured_by_ensembl}/{len(var)}**; by symbol:
-  **{measured_by_symbol}/{len(var)}** — symbol joining would lose
-  {measured_by_ensembl - measured_by_symbol} alias-drifted genes, so the join is on
-  Ensembl only.
+  **{measured_by_symbol}/{len(var)}** — the symbol route loses
+  {len(var) - measured_by_symbol} of the {len(var)} CM genes
+  ({measured_by_ensembl - measured_by_symbol} relative to the {measured_by_ensembl} that map
+  by Ensembl), so the join is on Ensembl only.
 - Unmeasured: {', '.join(f'`{e}`' for e in unmeasured)} (`FAM153B`) — kept as an
   all-zero row so the axis stays byte-identical to every CM view (D2).
 
 ## Null-structure drugs
 
-{len(null_drugs)} of {len(drugs)} Tahoe drugs have no `canonical_smiles`:
+{len(null_drugs)} of {len(drugs)} Tahoe drugs have no `canonical_smiles` (the other
+{len(drugs) - len(null_drugs)} resolve to a structure):
 {', '.join(f'`{d}`' for d in null_drugs)}. Their `has_structure` is False and
-`drug_key`/`inchikey`/`smiles` are `""`; the matching says nothing about biology.
+`drug_key`/`inchikey`/`smiles`/`SMILES`/`pubchem_cid` are `""`; the matching says
+nothing about biology.
 
 ## Drug overlap with the CM corpus
 
@@ -1202,23 +1271,25 @@ The machine-readable measurements are in [`qa.json`](qa.json).
 InChIKey is one of the {overlap['cm_drug_keys']} CM `drug_key`s*.
 Raw and desalted keys are both stored (`raw_inchikey`, `parent_inchikey`).
 
-| route | distinct CM drug keys | note |
+| route | distinct CM drug keys (of {overlap['cm_drug_keys']}) | definition |
 |---|---|---|
-| desalted parent key (`LargestFragmentChooser` + `MolToInchiKey`) | **{overlap['desalted_parent_keys_matched']}** | the spec's "31" |
-| PubChem CID | {overlap['cid_keys_matched']} | joined on `pubchem_cid` |
-| normalised name (lower/trim) | {overlap['normalised_name_keys_matched']} | joined on `compound_name` |
-| **union of the three** | **{overlap['union_keys_matched']}** | the spec's "42" |
-| raw, non-desalted key | **{overlap['raw_nondesalted_keys_matched']}** | ADR 0029's "24/525" — the same route *before* desalting |
+| desalted parent InChIKey | **{overlap['desalted_parent_keys_matched']}** | `LargestFragmentChooser` + `MolToInchiKey` on `canonical_smiles`; the corpus's own identity rule (ticket/spec: 31) |
+| raw, non-desalted InChIKey | **{overlap['raw_nondesalted_keys_matched']}** | `MolToInchiKey` without desalting (ADR 0029's "24/525") |
+| PubChem CID | **{overlap['cid_keys_matched']}** | joined on `pubchem_cid` (ticket/spec: 36) |
+| alphanumerically normalised name | **{overlap['normalised_name_keys_matched']}** | lowercase, every non-`[a-z0-9]` character removed; joined on `compound_name` (ticket/spec: 34) |
+| **union of the three identity routes** | **{overlap['union_keys_matched']}** | derived: parent ∪ CID ∪ name — **not** stated in the spec or ticket |
 
 Counting is on **distinct CM drug keys**, not on Tahoe rows: `{overlap['rows_with_overlap_cm']}`
 Tahoe drug rows match by desalted parent key but
 {overlap['drug_rows_sharing_one_parent_key']} of them share a key with another row
 (e.g. `Trametinib` / `Trametinib (DMSO_TF solvate)`), which is why `overlap_cm`
 has {overlap['rows_with_overlap_cm']} True rows and {overlap['desalted_parent_keys_matched']}
-distinct keys. The contract numbers are reproduced exactly
-(expected/measured {checks['desalted_parent_keys_matched']['expected']}/{checks['desalted_parent_keys_matched']['measured']},
-{checks['union_parent_cid_name_keys_matched']['expected']}/{checks['union_parent_cid_name_keys_matched']['measured']},
-raw {checks['raw_nondesalted_keys_matched']['expected']}/{checks['raw_nondesalted_keys_matched']['measured']}).
+distinct keys. The recorded routes are reproduced exactly (expected/measured:
+desalted {checks['desalted_parent_keys_matched']['expected']}/{checks['desalted_parent_keys_matched']['measured']},
+raw {checks['raw_nondesalted_keys_matched']['expected']}/{checks['raw_nondesalted_keys_matched']['measured']},
+CID {checks['cid_keys_matched']['expected']}/{checks['cid_keys_matched']['measured']},
+name {checks['normalised_name_keys_matched']['expected']}/{checks['normalised_name_keys_matched']['measured']}).
+The union 42 is a *derived* number recorded from those routes; it is not a spec figure.
 
 ## Author-compatibility shims (not contract columns)
 
@@ -1233,11 +1304,12 @@ raw {checks['raw_nondesalted_keys_matched']['expected']}/{checks['raw_nondesalte
 `uns['control_mean']` is an anndata **{mean_encoding['encoding_type']}/{mean_encoding['encoding_version']}**
 DataFrame (column-wise storage, `_index = {mean_encoding['_index']}`):
 {control_mean.shape[0]} control groups × {control_mean.shape[1]} genes, float64, index named
-`control_group`, columns = the 18,164 var symbols in var order. Gate 6 re-reads it through
-`anndata.read_h5ad` and compares it with a group mean recomputed from `X`; the writer here is
-anndata {_anndata.__version__}. The PRnet benchmark environment pins anndata 0.10.8, which cannot
-*write* an 18k-column DataFrame but reads this one: {interop_text} (recorded, not one of the
-eight gates).
+`control_group`, columns = the 18,164 var symbols in var order. Gate 6 re-reads it through a
+plain `anndata.read_h5ad` consumer read, requires the declared 700 x 18,164 shape and
+`control_group` index name, and compares it with a group mean recomputed from `X`; the writer
+here is anndata {_anndata.__version__}. The PRnet benchmark environment pins anndata 0.10.8,
+which cannot *write* an 18k-column DataFrame but reads this one: {interop_text} (recorded,
+not one of the nine gates).
 
 ## Shape
 
@@ -1320,7 +1392,7 @@ def _read_control_mean_for_report() -> pd.DataFrame:
 
 def _print_gate_table(qa: dict) -> None:
     log("QA gates:")
-    for gate in qa["gates"]:
+    for gate in sorted(qa["gates"], key=lambda g: float(g["gate"])):
         log(f"  [{ 'PASS' if gate['pass'] else 'FAIL' }] {gate['gate']}: {gate['name']}")
     log(f"  all_pass={qa['all_pass']}")
 
