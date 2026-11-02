@@ -1,0 +1,347 @@
+{
+  "artifact": "stage2/06_prnet_transfer/06.2_qc/output/qc_rules.json",
+  "rules_version": "qc-rules-v1.0.0",
+  "locked_at": "2026-11-02T12:09:32+08:00",
+  "rules_sha256": "94b11c95791e0ccf21d63a4a26d948c988401712422ade5dca8a09ef92165686",
+  "hash_scope": "sha256 over the canonical JSON of {rules_version, forbidden_bases, sources, instantiated_thresholds, time_sources, derived_reference_info}",
+  "model_results_seen": false,
+  "model_results_note": "no model has been trained or evaluated for stage2/06 at lock time; no DEG table, effect size, response statistic or model metric was read by the locking code",
+  "forbidden_bases": [
+    "DEG counts / number of differentially expressed genes",
+    "response strength / effect size / E-distance",
+    "model performance (loss, AUPRC, correlation with truth)"
+  ],
+  "data_root": "/home/chang/arc",
+  "git_head": "530eeb41da10d89694ecd8a1cc087aaf2b8316b9",
+  "environment": {
+    "python": "3.13.13",
+    "pandas": "2.3.3",
+    "numpy": "2.4.6",
+    "anndata": "0.12.16",
+    "pyarrow": "25.0.1"
+  },
+  "input_sha256": {
+    "pert_data/GSE262419/source/GSE262419_hash.csv.gz": "dbdaadfc357fabfadb291d2818d5ce242bba52486b3d8ec86460b61457d57f3c",
+    "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz": "73cf40abd48722e6db57803450bf967540bebd429a1b6904bfe81fb75f2aed63",
+    "pert_data/Tahoe-100M/source/metadata/sample_metadata.parquet": "33167f0ce28cff8357c503cda67d1c7fea200bff6918ee1de3c4f3549175b9d3",
+    "pert_data/Tahoe-100M/source/metadata/gene_metadata.parquet": "d6104d1ca570d94832be0d27ffe8b7e4e54cfd366c9080239219f9c406eb751c",
+    "stage2/04_tahoe_data/output/pretrain_view/manifest.csv": "9db69f4e1fd5d259ecfa7a1698adb3a97e911c4850990487c8d9258344b47f95",
+    "stage2/04_tahoe_data/output/pseudobulk/manifest.csv": "d3cdb7efc9faf477e0abe2d1b031dff2040f8f8736e61de2e0ae4e729e693371",
+    "stage2/02_cm_data/output/corpus/v1/genes.csv": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+  },
+  "time_sources": {
+    "tempenv_paper_24h": {
+      "source": "temp_env",
+      "time_h": 24.0,
+      "materialised_from": "frozen view obs.time_h, which is a hardcoded loader constant (stage2/02_cm_data/execution/cmdata/sources.py), not a GEO field",
+      "basis": {
+        "kind": "source_study",
+        "citation": "Tsai et al., Chem Res Toxicol 2024, doi:10.1021/acs.chemrestox.4c00193 (PMC11691792)",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11691792/",
+        "quote": "Gene Expression Assays: Following chemical exposure for 24 hrs, the wells were completely aspirated and 10 uL/well of 2x lysis buffer ... was added",
+        "note": "the same study's functional/cytotoxicity phenotypes used a separate 90-minute exposure, so a 24 h transcriptomic well has no same-well viability readout",
+        "retrieved": "2026-11-02"
+      }
+    },
+    "tahoe_preprint_24h": {
+      "source": "tahoe",
+      "time_h": null,
+      "materialised_from": "NOT materialised: the atlas has no time column, so obs.time_h stays NaN",
+      "basis": {
+        "kind": "source_study",
+        "citation": "Zhang J, Ubas AA, de Borja R, Svensson V, ... Goodarzi H, Yu J. Tahoe-100M ... bioRxiv 2025.02.20.639398v2; formal record Cell 2026, doi:10.1016/j.cell.2026.08.035",
+        "url": "https://www.biorxiv.org/content/10.1101/2025.02.20.639398v2.full",
+        "quote": "we cultured spheroids consisting of a mixture of cell lines in suspension and subjected each spheroid to individual treatments, including DMSO vehicle controls. After 24 hours of drug treatment, spheroids were dissociated, fixed, and profiled using the Parse GigaLab kit",
+        "figure_quote": "Figure 1A legend: Each well receives a drug perturbation, and after 24h, tumors are dissociated into single cells",
+        "retrieval_attempts": {
+          "biorxiv_v2_full_text": "HTTP 200, retrieved 2026-11-02",
+          "cell_fulltext_S0092-8674(26)01008-1": "HTTP 403 (Cloudflare) on 2026-11-02",
+          "cell_pdf": "HTTP 403 (Cloudflare) on 2026-11-02"
+        },
+        "note": "the quoted sentences are the authors' own text in the v2 preprint of the same study; the Cell version is the formal record and is cited for the record. The atlas itself carries no time field, so no obs column is written.",
+        "retrieved": "2026-11-02"
+      }
+    }
+  },
+  "instantiated_thresholds": {
+    "tempenv_gene_filter_min_mean": 10.0,
+    "tempenv_n_genes_retained": 11497.0,
+    "tempenv_sample_expression_floor": 15.0,
+    "tempenv_vehicle_corr_floor": 0.85,
+    "tempenv_blank_ngenes_median": 7067.5,
+    "tempenv_blank_ngenes_mad": 489.0,
+    "tempenv_blank_ngenes_threshold": 9242.4742,
+    "tahoe_n_cells_min": 100,
+    "tahoe_source_n_cells_floor": 50,
+    "tahoe_excluded_cell_lines": [
+      "NCI-H2122",
+      "NCI-H596",
+      "NCI-H661"
+    ],
+    "tahoe_mito_max_pcnt": 20.0,
+    "tahoe_min_mean_gene_count": 250.0,
+    "tahoe_well_z_abs_max": 3.0
+  },
+  "derived_reference_info": {
+    "temp_env": {
+      "n_panel_genes": 22537,
+      "n_genes_retained": 11497,
+      "blank_ref": {
+        "n": 32,
+        "median": 7067.5,
+        "mad": 489.0,
+        "threshold": 9242.4742
+      },
+      "fam153b": {
+        "panel_probe": [
+          "FAM153B_22242"
+        ],
+        "total_counts": 54881.0,
+        "n_wells_nonzero": 2755,
+        "n_wells_total": 4558,
+        "measured": true
+      }
+    },
+    "tahoe": {
+      "n_obs": 67018,
+      "n_physical_wells": 1344,
+      "n_control_groups": 700,
+      "n_cell_lines": 50,
+      "fam153b": {
+        "cm_ensembl": "ENSG00000182230",
+        "atlas_rows_for_symbol": [
+          {
+            "gene_symbol": "FAM153B",
+            "ensembl_id": "ENSG00000289731"
+          }
+        ],
+        "measured": false,
+        "evidence": "atlas gene_metadata maps the symbol FAM153B to ['ENSG00000289731']; ENSG00000182230 is absent, so the CM slot is an unmeasured gene, not a measured zero"
+      }
+    }
+  },
+  "sources": {
+    "tempenv": {
+      "dataset_id": "temp_env",
+      "observation_unit": "physical well (one TempO-Seq library); 4,558 raw wells",
+      "rules": {
+        "gene_filter": {
+          "scope": "preprocessing step, not an exclusion rule",
+          "statistic": "mean raw count per panel gene across all 4,558 wells",
+          "threshold": 10.0,
+          "op": "keep gene if mean >= 10",
+          "evidence": {
+            "kind": "source_study",
+            "citation": "Tsai H-H, Ford LC, Burnett SD, Dickey AN, Wright FA, Chiu WA, Rusyn I. Informing Hazard Identification and Risk Characterization of Environmental Chemicals ... Chem Res Toxicol 2024. doi:10.1021/acs.chemrestox.4c00193 (PMID 39046974; GSE262419)",
+            "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419 (series matrix field !Sample_data_processing)",
+            "retrieved": "2026-11-02",
+            "source_file": "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz",
+            "quote": "Genes with fewer than 10 mean counts across all samples (n = 4558) were excluded",
+            "reported_by_authors": "11,039 genes remained after both QC steps"
+          },
+          "reason_code": null
+        },
+        "sample_expression_floor": {
+          "id": "T1",
+          "statistic": "mean raw count per gene, computed after the gene filter (lib_size_panel / n_genes_retained)",
+          "threshold": 15.0,
+          "op": "exclude well if mean < 15",
+          "evidence": {
+            "kind": "source_study",
+            "citation": "Tsai H-H, Ford LC, Burnett SD, Dickey AN, Wright FA, Chiu WA, Rusyn I. Informing Hazard Identification and Risk Characterization of Environmental Chemicals ... Chem Res Toxicol 2024. doi:10.1021/acs.chemrestox.4c00193 (PMID 39046974; GSE262419)",
+            "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419 (series matrix field !Sample_data_processing)",
+            "retrieved": "2026-11-02",
+            "source_file": "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz",
+            "quote": "Samples with an average expression across all genes lower than 15 were also removed.",
+            "reading": "the two steps are listed in order, so the sample mean is taken over the genes retained by the author gene filter",
+            "alternative_reading": {
+              "statistic": "mean raw count over all 22,537 panel probes",
+              "threshold": 15.0,
+              "consequence": "stricter; the concrete well count is reported in qc_summary.json as sensitivity_T1_all_panel_genes"
+            }
+          },
+          "reason_code": "src_sample_expression_floor"
+        },
+        "vehicle_reproducibility": {
+          "id": "T2",
+          "statistic": "mean Pearson r of the well's raw-count vector (author-filtered genes) against every other DMSO vehicle control well, all 16 plates pooled",
+          "threshold": 0.85,
+          "op": "exclude DMSO vehicle-control well if mean r < 0.85",
+          "evidence": {
+            "kind": "source_study",
+            "citation": "Tsai H-H, Ford LC, Burnett SD, Dickey AN, Wright FA, Chiu WA, Rusyn I. Informing Hazard Identification and Risk Characterization of Environmental Chemicals ... Chem Res Toxicol 2024. doi:10.1021/acs.chemrestox.4c00193 (PMID 39046974; GSE262419)",
+            "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419 (series matrix field !Sample_data_processing)",
+            "retrieved": "2026-11-02",
+            "source_file": "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz",
+            "quote": "Outliers in vehicle control samples were identified and excluded using a mean correlation threshold of <0.85",
+            "paper_quote": "chemical effects were evaluated by comparing them to the plate-specific DMSO controls ... Outliers in vehicle control samples were identified and excluded using a mean correlation threshold of <0.85 ... a total of 4,379 samples (96% of 4,558 samples) and 11,039 genes remained",
+            "extension_policy": "the study applies this floor to vehicle controls only; applying it to treated wells would be a response-correlated filter (a strong responder genuinely sits further from vehicle), so treated wells are flagged, never excluded, and the count is reported"
+          },
+          "reason_code": "src_vehicle_reproducibility"
+        },
+        "blank_separation_floor": {
+          "id": "T3",
+          "statistic": "n_genes_detected over the 22,537-probe panel",
+          "derivation": "threshold = median + 3 · 1.4826 · MAD over the 32 technical Blank wells (no cells, same plates and same sequencing run); a real cell library must detect materially more genes than a no-cell well",
+          "threshold": null,
+          "op": "exclude well if n_genes_detected <= threshold",
+          "evidence": {
+            "kind": "project_derived",
+            "citation": "technical-blank control distribution of GSE262419, derived in this audit; 3-MAD band from Iglewicz B, Hoaglin DC. How to Detect and Handle Outliers. ASQC Quality Press, 1993: modified z-score M = 0.6745·(x − median)/MAD with |M| > 3.5 as the flag (equivalently |x − median| > 3·1.4826·MAD)",
+            "url": "pert_data/GSE262419/source/ (the GSE262419_Plate01..16.csv.gz matrices, rows Chemical_name == 'Blank')",
+            "retrieved": "2026-11-02",
+            "why_not_the_paper": "the study names no detection floor per well; the blank wells are the only same-run no-cell reference"
+          },
+          "reason_code": "derived_blank_separation_floor"
+        }
+      },
+      "thresholds": {
+        "gene_filter_min_mean": 10.0,
+        "sample_expression_floor": 15.0,
+        "vehicle_corr_floor": 0.85,
+        "blank_ngenes_threshold": null,
+        "blank_ngenes_median": null,
+        "blank_ngenes_mad": null,
+        "blank_mad_k": 3.0,
+        "n_genes_retained": null
+      },
+      "roles": {
+        "treated_compound": "Solvent == DMSO and Chemical_name not in {VEH, ET-1}",
+        "vehicle_control_dmso": "Chemical_name == VEH (Solvent DMSO)",
+        "control_media": "Chemical_name == Media (is not a vehicle control)",
+        "technical_blank": "Chemical_name == Blank (no cells; never a control)",
+        "positive_control_et1": "Chemical_name == ET-1 at 0.01 uM (peptide positive control, not a small-molecule treatment)"
+      },
+      "control_rule": {
+        "matched_control_key": "(plate, vehicle)",
+        "text": "a treated temp_env well is matched only to DMSO vehicle wells on the same physical plate; Media is not a vehicle control, Blank is not a control",
+        "evidence": {
+          "kind": "source_study",
+          "citation": "Tsai et al., Chem Res Toxicol 2024, doi:10.1021/acs.chemrestox.4c00193, PMC11691792 (full text via NCBI E-utilities efetch, db=pmc)",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11691792/",
+          "retrieved": "2026-11-02",
+          "quote": "the chemical effects were evaluated by comparing them to the plate-specific DMSO controls"
+        }
+      }
+    },
+    "tahoe": {
+      "dataset_id": "tahoe",
+      "observation_unit": "(plate, physical well, cell_line) pseudobulk profile; 1,344 physical wells -> 67,018 observations",
+      "rules": {
+        "min_cells_per_profile": {
+          "id": "H1",
+          "statistic": "n_cells of the (plate, well, cell_line) profile",
+          "threshold": 100,
+          "op": "exclude observation if n_cells < 100",
+          "evidence": {
+            "kind": "project_derived",
+            "citation": "ADR 0029 §Why pseudobulk, measured: the 100-cell view threshold is set from measured pseudobulk density against CM wells",
+            "url": "docs/adr/0029-tahoe-pseudobulk-pretrain-corpus.md",
+            "retrieved": "2026-11-02",
+            "quote": "Tahoe pseudobulk, < 100 cells (9.5 %): ~50 cells, 11,485 / 17,935 genes detected, 0.36 zero fraction, 0.04 M counts — 10–20× shallower than a CM well (temp_env 0.35–0.61 M counts)",
+            "source_floor": {
+              "kind": "source_study",
+              "citation": "Zhang J, Ubas AA, de Borja R, Svensson V, ... Goodarzi H, Yu J. Tahoe-100M: A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling. bioRxiv 2025.02.20.639398v2 (author version of the formal record: Cell 2026, doi:10.1016/j.cell.2026.08.035)",
+              "url": "https://www.biorxiv.org/content/10.1101/2025.02.20.639398v2.full",
+              "retrieved": "2026-11-02",
+              "note": "The Cell version returned HTTP 403 to every fetch attempt from this host on 2026-11-02; the quoted sentences are verified in the authors' own v2 text of the same study, and the formal publication is cited for the record.",
+              "quote": "each cell line-drug treatment condition was required to have a minimum of 50 cells for inclusion in downstream analyses"
+            }
+          },
+          "reason_code": "project_min_cells_per_profile"
+        },
+        "cell_line_excluded_by_source": {
+          "id": "H2",
+          "statistic": "cell line of the observation",
+          "threshold": [
+            "NCI-H2122",
+            "NCI-H596",
+            "NCI-H661"
+          ],
+          "op": "exclude every observation of a cell line the source study removed",
+          "evidence": {
+            "kind": "source_study",
+            "citation": "Zhang J, Ubas AA, de Borja R, Svensson V, ... Goodarzi H, Yu J. Tahoe-100M: A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling. bioRxiv 2025.02.20.639398v2 (author version of the formal record: Cell 2026, doi:10.1016/j.cell.2026.08.035)",
+            "url": "https://www.biorxiv.org/content/10.1101/2025.02.20.639398v2.full",
+            "retrieved": "2026-11-02",
+            "note": "The Cell version returned HTTP 403 to every fetch attempt from this host on 2026-11-02; the quoted sentences are verified in the authors' own v2 text of the same study, and the formal publication is cited for the record.",
+            "quote": "three cell lines (NCI-H661, NCI-H596, NCI-H2122) that consistently exhibited low counts across conditions were excluded from subsequent analyses"
+          },
+          "reason_code": "src_cell_line_excluded"
+        },
+        "mito_fraction_ceiling": {
+          "id": "H3a",
+          "statistic": "per-well mean mitochondrial read fraction",
+          "threshold": 20.0,
+          "op": "exclude well if mean_pcnt_mito > 20 (%)",
+          "evidence": {
+            "kind": "source_study",
+            "citation": "Zhang J, Ubas AA, de Borja R, Svensson V, ... Goodarzi H, Yu J. Tahoe-100M: A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling. bioRxiv 2025.02.20.639398v2 (author version of the formal record: Cell 2026, doi:10.1016/j.cell.2026.08.035)",
+            "url": "https://www.biorxiv.org/content/10.1101/2025.02.20.639398v2.full",
+            "retrieved": "2026-11-02",
+            "note": "The Cell version returned HTTP 403 to every fetch attempt from this host on 2026-11-02; the quoted sentences are verified in the authors' own v2 text of the same study, and the formal publication is cited for the record.",
+            "quote": "The full filters required cells to have at least 700 unique molecular identifiers (UMIs), less than 20% mitochondrial reads, a UMI z-score within ±3 ..., a mitochondrial percentage z-score within ±3 ..., and at least 250 genes detected.",
+            "role": "verification gate: the atlas's own per-cell filters are already applied upstream, so the per-well mean must sit inside them"
+          },
+          "reason_code": "src_mito_fraction_ceiling"
+        },
+        "min_genes_per_cell": {
+          "id": "H3b",
+          "statistic": "per-well mean detected genes per cell",
+          "threshold": 250.0,
+          "op": "exclude well if mean_gene_count < 250",
+          "evidence": {
+            "kind": "source_study",
+            "citation": "Zhang J, Ubas AA, de Borja R, Svensson V, ... Goodarzi H, Yu J. Tahoe-100M: A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling. bioRxiv 2025.02.20.639398v2 (author version of the formal record: Cell 2026, doi:10.1016/j.cell.2026.08.035)",
+            "url": "https://www.biorxiv.org/content/10.1101/2025.02.20.639398v2.full",
+            "retrieved": "2026-11-02",
+            "note": "The Cell version returned HTTP 403 to every fetch attempt from this host on 2026-11-02; the quoted sentences are verified in the authors' own v2 text of the same study, and the formal publication is cited for the record.",
+            "quote": "and at least 250 genes detected.",
+            "role": "verification gate, as H3a"
+          },
+          "reason_code": "src_min_genes_per_cell"
+        },
+        "plate_depth_outlier": {
+          "id": "H4",
+          "statistic": "per-plate modified z-score of log10(mean_tscp_count) over the plate's 96 wells",
+          "threshold": 3.0,
+          "op": "exclude well if |z| > 3",
+          "evidence": {
+            "kind": "source_convention",
+            "citation": "Iglewicz B, Hoaglin DC. How to Detect and Handle Outliers. ASQC Quality Press, 1993: modified z-score M = 0.6745·(x − median)/MAD with |M| > 3.5 as the flag (equivalently |x − median| > 3·1.4826·MAD)",
+            "url": "https://doi.org/10.1080/00401706.1994.10485840 (review of the ASQC volume)",
+            "retrieved": "2026-11-02",
+            "author_convention": "the source study removes cells with a UMI z-score outside ±3 (quoted under H3a); this rule applies the same ±3 convention at well level with a MAD-based scale so the outlier cannot inflate its own reference"
+          },
+          "reason_code": "derived_plate_depth_outlier"
+        }
+      },
+      "thresholds": {
+        "n_cells_min": 100,
+        "source_n_cells_floor": 50,
+        "excluded_cell_lines": [
+          "NCI-H2122",
+          "NCI-H596",
+          "NCI-H661"
+        ],
+        "mito_max_pcnt": 20.0,
+        "min_mean_gene_count": 250.0,
+        "well_z_abs_max": 3.0
+      },
+      "roles": {
+        "treated_compound": "drug != 'DMSO_TF' (exact equality; 'Trametinib (DMSO_TF solvate)' is a treated drug)",
+        "vehicle_control_dmso_tf": "drug == 'DMSO_TF'"
+      },
+      "control_rule": {
+        "matched_control_key": "(plate, cell_line_id)",
+        "text": "a treated Tahoe observation is matched only to DMSO_TF profiles of the same plate and the same cell line; a plate pools ~50 lines, so a cross-line mean is the Simpson's-paradox mixture ADR 0029 rejects; the two control profiles of one (plate, line) group are two wells, not two donors",
+        "evidence": {
+          "kind": "project_derived",
+          "citation": "ADR 0031 D1 (control keying) and ADR 0029 decision 4 (Delta stays inside one cell line)",
+          "url": "docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md",
+          "retrieved": "2026-11-02"
+        }
+      }
+    }
+  }
+}

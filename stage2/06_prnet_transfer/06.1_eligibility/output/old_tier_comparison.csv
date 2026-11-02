@@ -1,0 +1,461 @@
+drug_key,compound_name,old_tier_atc_moa,old_tier_atc_moa_mesh,new_decision,new_decision_class,comparison_atc_moa,rationale
+ADIMAYPTOBDMTL-UHFFFAOYSA-N,Oxazepam,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+AEMFNILZOJDQLW-QAGGRKNESA-N,"4-Androstene-3,17-dione",False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+AGOYDEPGAOXOCK-KCBOHYOISA-N,Clarithromycin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+AHJKRLASYNVKDZ-UHFFFAOYSA-N,"p,p'-DDD",False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+AIGRXSNSLVJMEA-UHFFFAOYSA-N,EPN,False,False,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+AIMMSOZBPYFASU-UHFFFAOYSA-M,Trifloxysulfuron-sodium,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+AKTXOQVMWSFEBQ-LCYFTJDESA-N,Darbufelone mesylate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ALOBUEHUHMBRLE-UHFFFAOYSA-N,Ibutilide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ALYNCZNDIQEVRV-UHFFFAOYSA-N,4-Aminobenzoic acid,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+APTZNLHMIGJTEW-UHFFFAOYSA-N,Pyraflufen-ethyl,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+ASLWPAWFJZFCKF-UHFFFAOYSA-N,"Tris(1,3-dichloro-2-propyl) phosphate",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plastics -> Flame retardants' (term 'flame retardant') and no human-use marker
+ATGUVEKSASEFFO-UHFFFAOYSA-N,"N-Phenyl-1,4-benzenediamine",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Hair dyeing' (term 'dye') and no human-use marker
+BACHBFVBHLGWSL-UHFFFAOYSA-N,"Methyl (RS)-2-[4-(2,4-dichlorophenoxy)phenoxy]propionate",False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+BAZVSMNPJJMILC-UHFFFAOYSA-N,Triadimenol,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+BBEAQIROQSPTKN-UHFFFAOYSA-N,Pyrene,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Preservative' (term 'preservative') and no human-use marker
+BFPYWIDHMRZLRN-SLHNCBLASA-N,17alpha-Ethinylestradiol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+BGNXCDMCOKJUMV-UHFFFAOYSA-N,tert-Butylhydro-quinone (TBHQ),False,True,exclude,other_use,agrees_exclude,other use: documented use 'Food additives' (term 'food additive') and no human-use marker
+BGRJTUBHPOOWDU-UHFFFAOYSA-N,Sulpiride,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+BIXZHMJUSMUDOQ-UHFFFAOYSA-N,Dicloran,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+BJIOGJUNALELMI-ONEGZZNKSA-N,Isoeugenol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+BJQHLKABXJIVAM-UHFFFAOYSA-N,Di(2-ethylhexyl) phthalate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plastics -> Plasticisers' (term 'plasticiser') and no human-use marker
+BMLIZLVNXIYGCK-UHFFFAOYSA-N,Monuron,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+BMQGVNUXMIRLCK-OAGWZNDDSA-N,Cabazitaxel,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+BMTAFVWTTFSTOG-UHFFFAOYSA-N,Butylate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+BPRYUXCVCCNUFE-UHFFFAOYSA-N,"2,4,6-Trimethylphenol",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+BQYJATMQXGBDHF-UHFFFAOYSA-N,Difenoconazole,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Fungicides' (term 'fungicide') and no human-use marker
+BRPSWMCDEYMRPE-UHFFFAOYSA-N,"4,4',4''-Ethane-1,1,1-triyltriphenol",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+BSYNRYMUTXBXSQ-UHFFFAOYSA-N,Acetylsalicylic acid,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+BTJIUGUIPKRLHP-UHFFFAOYSA-N,4-Nitrophenol,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+BULVZWIRKLYCBC-UHFFFAOYSA-N,Phorate,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+BXNANOICGRISHX-UHFFFAOYSA-N,Coumaphos,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+BZNDWPRGXNILMS-VQHVLOKHSA-N,Propetamphos,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+CCEKAJIANROZEO-UHFFFAOYSA-N,N-Ethylperfluorooctanesulfonamide,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+CCPPLLJZDQAOHD-FLIBITNWSA-M,Vernolate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+CDXFIRXEAJABAZ-UHFFFAOYSA-N,6:2 Fluorotelomer methacrylate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+CGIGDMFJXJATDK-UHFFFAOYSA-N,Indomethacin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+CHIFOSRWCNZCFN-UHFFFAOYSA-N,Pendimethalin,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+CHNUNORXWHYHNE-UHFFFAOYSA-N,Oxadiazon,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+CJJOSEISRRTUQB-UHFFFAOYSA-N,Azinphos-methyl,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+CLQMBPJKHLGMQK-UHFFFAOYSA-N,Imazapyr,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+CMWTZPSULFXXJA-VIFPVBQESA-N,Naproxen,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+CONWAEURSVPLRM-UHFFFAOYSA-N,Lactofen,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+COVZYZSDYWQREU-UHFFFAOYSA-N,Busulfan,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+CSPPKDPQLUUTND-NBVRZTHBSA-N,Sethoxydim,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+CTSLUCNDVMMDHG-UHFFFAOYSA-N,Bromacil,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+CVXBEEMKQHEXEN-UHFFFAOYSA-N,Carbaryl,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+CWRYPZZKDGJXCA-UHFFFAOYSA-N,Acenaphthene,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+CXBMCYHAMVGWJQ-UHFFFAOYSA-N,Tetramethrin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+CXOFVDLJLONNDW-UHFFFAOYSA-N,"5,5-Diphenylhydantoin",True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+CXVGEDCSTKKODG-UHFFFAOYSA-N,Sulisobenzone,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Uv absorber; Uv filter' (term 'cosmetic') and no human-use marker
+CZMRCDWAGMRECN-UGDNZRGBSA-N,Sucrose,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Humectant; Skin conditioning; Soothing' (term 'cosmetic') and no human-use marker
+DCSUBABJRXZOMT-IRLDBZIGSA-N,Cisapride,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+DCUJJWWUNKIJPH-UHFFFAOYSA-N,Nitrapyrin,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+DECIPOUIJURFOJ-UHFFFAOYSA-N,Ethoxyquin,False,False,include,mechanism_tool,false_negative,mechanism_tool: mechanism from Broad moa/target antioxidant; use evidence from Broad Hub research-library membership
+DEDOPGXGGQYYMW-UHFFFAOYSA-N,Molinate,False,True,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+DFBKLUNHFCTMDC-GKRDHZSOSA-N,Endrin,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Chemical Classes -> Pesticides (chemicals used for killing pests, such as rodents, insects, or plants)' (term 'pesticide') and no human-use marker"
+DFBKLUNHFCTMDC-PICURKEMSA-N,Dieldrin,False,False,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+DFCAFRGABIXSDS-UHFFFAOYSA-N,Cycloate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+DKCPKDPYUFEZCP-UHFFFAOYSA-N,"2,6-Di-tert-butylphenol",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+DMBHHRLKUKUOEG-UHFFFAOYSA-N,Diphenylamine,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+DMSMPAJRVJJAGA-UHFFFAOYSA-N,"1,2-Benzisothiazolin-3-one",False,True,exclude,other_use,agrees_exclude,other use: documented use 'EPA Safer Chemical Functional Use Classes -> Preservatives and Antioxidants' (term 'preservative') and no human-use marker
+DOIRQSBPFJWKBE-UHFFFAOYSA-N,Dibutyl phthalate,True,True,include,mechanism_tool,agrees_include,mechanism_tool: mechanism from Broad moa/target TRPA1; use evidence from Broad Hub research-library membership
+DQFPEYARZIQXRM-LTGZKZEYSA-N,Tralkoxydim,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+DUFVKSUJRWYZQP-UHFFFAOYSA-N,Fosthiazate,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+DZKIUEHLEXLYKM-UHFFFAOYSA-N,9-Phenanthrol,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+FABPRXSRWADJSP-MEDUHNTESA-N,Moxifloxacin hydrochloride,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+FBOUIAKEJMZPQG-AWNIVKPZSA-N,Diniconazole,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+FELGMEQIXOGIFQ-UHFFFAOYSA-N,Ondansetron,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+FEWJPZIEWOKRBE-JCYAYHJZSA-N,L-Tartaric acid,True,True,exclude,other_use,false_positive,other use: documented use 'Food additives' (term 'food additive') and no human-use marker
+FFFPYJTVNSSLBQ-UHFFFAOYSA-N,Phenolphthalin,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+FGXWKSZFVQUSTL-UHFFFAOYSA-N,Domperidone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+FIPWRIJSWJWJAI-UHFFFAOYSA-N,Piperonyl butoxide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+FLKPEMZONWLCSK-UHFFFAOYSA-N,Diethyl phthalate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+FNJSWIPFHMKRAT-UHFFFAOYSA-N,Monomethyl phthalate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+FOUWCSDKDDHKQP-UHFFFAOYSA-N,Flumioxazin,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+FOYHNROGBXVLLX-UHFFFAOYSA-N,"2,6-Diethylaniline",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+FQKUGOMFVDPBIZ-UHFFFAOYSA-N,Flusilazole,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+FRCCEHPWNOQAEU-UHFFFAOYSA-N,Heptachlor,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+FRQDZJMEHSJOPU-UHFFFAOYSA-N,Triethylene glycol bis(2-ethylhexanoate),False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plastics -> Polymer Type -> PVC (soft)' (term 'polymer') and no human-use marker
+GCKMFJBGXUYNAG-HLXURNFRSA-N,17-Methyltestosterone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+GEPDYQSQVLXLEU-UHFFFAOYSA-N,Mevinphos,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+GFNANZIMVAIWHM-OBYCQNJPSA-N,Triamcinolone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+GGSUCNLOZRCGPQ-UHFFFAOYSA-N,"N,N-Diethylaniline",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+GHMLBKRAJCXXBS-UHFFFAOYSA-N,Resorcinol,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+GHXZTYHSJHQHIJ-UHFFFAOYSA-N,Chlorhexidine diacetate,True,True,uncertain,unknown,old_include_now_uncertain,"unknown: no documented status, mechanism or use"
+GLWWLNJJJCTFMZ-UHFFFAOYSA-N,Cyclanilide,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+GUGOEEXESWIERI-UHFFFAOYSA-N,Terfenadine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+GUYMMHOQXYZMJQ-UHFFFAOYSA-N,N-Ethyl-3-methylaniline,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+GVEPBJHOBDJJJI-UHFFFAOYSA-N,Fluoranthene,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Preservative' (term 'preservative') and no human-use marker
+GXDALQBWZGODGZ-UHFFFAOYSA-N,Astemizole,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+GXEKYRXVRROBEV-FBXFSONDSA-N,Endothal,False,False,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+GXPHKUHSUJUWKP-UHFFFAOYSA-N,Troglitazone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+GYSSRZJIHXQEHQ-UHFFFAOYSA-N,Carboxin,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+GYVGXEWAOAAJEU-UHFFFAOYSA-N,"N,N,4-Trimethylaniline",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+GZUITABIAKMVPG-UHFFFAOYSA-N,Raloxifene hydrochloride,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+HAORKNGNJCEJBX-UHFFFAOYSA-N,Cyprodinil,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+HBOMLICNUCNMMY-XLPZGREQSA-N,3 Azido 3 Deoxythymidine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+HBPDKDSFLXWOAE-UHFFFAOYSA-N,Tebuthiuron,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+HEFNNWSXXWATRW-UHFFFAOYSA-N,Ibuprofen,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+HFACYLZERDEVSX-UHFFFAOYSA-N,Benzidine,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+HFCYZXMHUIHAQI-UHFFFAOYSA-N,Thidiazuron,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+HIGQPQRQIQDZMP-DHZHZOJOSA-N,Geranyl acetate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+HJUFTIJOISQSKQ-UHFFFAOYSA-N,Fenoxycarb,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+HLBLWEWZXPIGSM-UHFFFAOYSA-N,"4,4'-Oxydianiline",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+HOKKPVIRMVDYPB-UHFFFAOYSA-N,Thiacloprid,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Insecticides, Molluscicides' (term 'insecticide') and no human-use marker"
+HQUQLFOMPYWACS-UHFFFAOYSA-N,Tris(2-chloroethyl) phosphate,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+HRBKVYFZANMGRE-UHFFFAOYSA-N,Chlorpyrifos-methyl,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+HSMVPDGQOIQYSR-UHFFFAOYSA-N,Triflumizole,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+HSUGRBWQSSZJOP-RTWAWAEBSA-N,Diltiazem,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+HTVITOHKHWFJKO-UHFFFAOYSA-N,Bisphenol B,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+HXGDTGSAIMULJN-UHFFFAOYSA-N,Acenaphthylene,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+HXTGXYRHXAGCFP-OAQYLSRUSA-N,Volinanserin,True,True,include,clinical,agrees_include,clinical: documented phase Phase 3
+HYIMSNHJOBLJNT-UHFFFAOYSA-N,Nifedipine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+HZJKXKUJVSEEFU-UHFFFAOYSA-N,Myclobutanil,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+IAIWVQXQOWNYOU-FPYGCLRLSA-N,Nitrofurazone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+IANUJLZYFUDJIH-UHFFFAOYSA-N,Flufenacet,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Herbicides -> Amide herbicides -> Anilide herbicides' (term 'herbicide') and no human-use marker
+IISBACLAFKSPIT-UHFFFAOYSA-N,Bisphenol A,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Hydraulic fluids' (term 'hydraulic fluid') and no human-use marker
+IITCWRFYJWUUPC-UHFFFAOYSA-N,"Dipropyl 2,5-pyridinedicarboxylate",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+IMHBYKMAHXWHRP-UHFFFAOYSA-N,Anilazine,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+IOUNQDKNJZEDEP-UHFFFAOYSA-N,Phosalone,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Acaricides, Insecticides' (term 'insecticide') and no human-use marker"
+IOYNQIMAUDJVEI-BMVIKAAMSA-N,Tepraloxydim,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+IQVNEKKDSLOHHK-UHFFFAOYSA-N,Hydramethylnon,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+IRCMYGHHKLLGHV-UHFFFAOYSA-N,Ethofumesate,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+IRIAEXORFWYRCZ-UHFFFAOYSA-N,Benzyl butyl phthalate,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Plasticizer' (term 'plasticizer') and no human-use marker
+ISAVYTVYFVQUDY-UHFFFAOYSA-N,"4-(1,1,3,3-Tetramethylbutyl)phenol",False,True,exclude,other_use,agrees_exclude,other use: documented use 'Surfactant (surface active agent)' (term 'surfactant') and no human-use marker
+ISEUFVQQFVOBCY-UHFFFAOYSA-N,Prometon,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+ISWSIDIOOBJBQZ-UHFFFAOYSA-N,Phenol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+IUBSYMUCCVWXPE-UHFFFAOYSA-N,Metoprolol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+IWDCLRJOBJJRNH-UHFFFAOYSA-N,p-Cresol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+IWEDIXLBFLAXBO-UHFFFAOYSA-N,Dicamba,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+IWWWBRIIGAXLCJ-BGABXYSRSA-N,Rhodamine 6G,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+IXTMWRCNAAVVAI-UHFFFAOYSA-N,Dofetilide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+IYAZLDLPUNDVAG-UHFFFAOYSA-N,Octrizole,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+IZUKQUVSCNEFMJ-UHFFFAOYSA-N,"1,2-Dinitrobenzene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+IZUPBVBPLAPZRR-UHFFFAOYSA-N,Pentachlorophenol,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+JBDHZKLJNAIJNC-LLVKDONJSA-N,Clodinafop-propargyl,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+JBIJLHTVPXGSAM-UHFFFAOYSA-N,2-Naphthylamine,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+JCCNYMKQOSZNPW-UHFFFAOYSA-N,Loratadine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+JGTNAGYHADQMCM-UHFFFAOYSA-M,Potassium perfluorobutanesulfonate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+JHBKHLUZVFWLAG-UHFFFAOYSA-N,"1,2,4,5-Tetrachlorobenzene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+JLQUFIHWVLZVTJ-UHFFFAOYSA-N,Carbosulfan,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Insecticides, Nematicides' (term 'insecticide') and no human-use marker"
+JLYFCTQDENRSOL-UHFFFAOYSA-N,Dimethenamid,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Herbicides -> Amide herbicides' (term 'herbicide') and no human-use marker
+JLYXXMFPNIAWKQ-UHFFFAOYSA-N,Lindane,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+JNRLEMMIVRBKJE-UHFFFAOYSA-N,"4,4'-Methylenebis(N,N-dimethylaniline)",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+JQXXHWHPUNPDRT-WLSIYKJHSA-N,Rifampicin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+JRJBVWJSTHECJK-PKNBQFBNSA-N,alpha-Isomethylionone,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+JTHMVYBOQLDDIY-UHFFFAOYSA-M,Propoxycarbazone-sodium,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+JZODKRWQWUWGCD-UHFFFAOYSA-N,"2,5-Di-tert-butylbenzene-1,4-diol",False,True,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Antioxidant' (term 'cosmetic') and no human-use marker
+JZUFKLXOESDKRF-UHFFFAOYSA-N,Hydrochlorothiazide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+KEECCEWTUVWFCV-UHFFFAOYSA-N,N-acetyl-procainamide,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+KGRVJHAUYBGFFP-UHFFFAOYSA-N,"2,2'-Methylenebis(4-methyl-6-tert-butylphenol)",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+KHYPYQZQJSBPIX-UHFFFAOYSA-N,Sematilide,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+KIEDNEWSYUYDSN-UHFFFAOYSA-N,Clomazone,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+KJFMBFZCATUALV-UHFFFAOYSA-N,Phenolphthalein,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+KNAHARQHSZJURB-UHFFFAOYSA-N,6-Propyl-2-thiouracil,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+KQTVWCSONPJJPE-UHFFFAOYSA-N,Etridiazole,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+KRKNYBCHXYNGOX-UHFFFAOYSA-N,Citric acid,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+KUAZQDVKQLNFPE-UHFFFAOYSA-N,Thiram,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+KWOLFJPFCHCOCG-UHFFFAOYSA-N,Acetophenone,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+KZAUOCCYDRDERY-UHFFFAOYSA-N,Oxamyl,False,False,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+LAKWINYVWJPHQW-UHFFFAOYSA-N,5HPP-33,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+LBGPXIPGGRQBJW-UHFFFAOYSA-N,Difenzoquat metilsulfate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+LCCNCVORNKJIRZ-UHFFFAOYSA-N,Parathion,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Acaricides, Insecticides' (term 'insecticide') and no human-use marker"
+LFULEKSKNZEWOE-UHFFFAOYSA-N,Propanil,False,True,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+LHJGJYXLEPZJPM-UHFFFAOYSA-N,"2,4,5-Trichlorophenol",False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+LKPLKUMXSAEKID-UHFFFAOYSA-N,Pentachloronitrobenzene,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+LLEMOWNGBBNAJR-UHFFFAOYSA-N,2-Phenylphenol,False,True,include,mechanism_tool,false_negative,mechanism_tool: mechanism from PubChem Mechanism of Action text; use evidence from human drug indication
+LNEPOXFFQSENCJ-UHFFFAOYSA-N,Haloperidol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+LOUPRKONTZGTKE-LHHVKLHASA-N,Quinidine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+LQNUZADURLCDLV-UHFFFAOYSA-N,Nitrobenzene,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+LRQFRDLKOBFOSG-UHFFFAOYSA-N,Glycidyl trimethylammonium chloride,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+LUVXHMJTVXZFPD-ZDUSSCGKSA-N,PHA-00568487,False,False,include,mechanism_tool,false_negative,mechanism_tool: mechanism from Broad moa/target nicotinic receptor agonist/CHRNA7; use evidence from Broad Hub research-library membership
+LVLNPXCISNPHLE-UHFFFAOYSA-N,2-[(4-Hydroxyphenyl)methyl]phenol,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+LVQDKIWDGQRHTE-UHFFFAOYSA-N,Cyromazine,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+LXCFILQKKLGQFO-UHFFFAOYSA-N,Methylparaben,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Food additives' (term 'food additive') and no human-use marker
+MCJGNVYPOGVAJF-UHFFFAOYSA-N,8-Hydroxyquinoline,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+MCWXGJITAZMZEV-UHFFFAOYSA-N,Dimethoate,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+MEBQXILRKZHVCX-UHFFFAOYSA-N,Methidathion,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Acaricides, Insecticides' (term 'insecticide') and no human-use marker"
+METKIMKYRPQLGS-UHFFFAOYSA-N,Atenolol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+MGUKYHHAGPFJMC-UHFFFAOYSA-N,p-Xylenol blue,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+MGWAVDBGNNKXQV-UHFFFAOYSA-N,Diisobutyl phthalate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plasticizer' (term 'plasticizer') and no human-use marker
+MHWLWQUZZRMNGJ-UHFFFAOYSA-N,Nalidixic acid,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+MIQPIUSUKVNLNT-UHFFFAOYSA-N,Tolcapone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+MKXKFYHWDHIYRV-UHFFFAOYSA-N,Flutamide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+MMOXZBCLCQITDF-UHFFFAOYSA-N,DEET,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+MQCPOLNSJCWPGT-UHFFFAOYSA-N,"2,2'-Bisphenol F",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+MQIUGAXCHLFZKX-UHFFFAOYSA-N,Di-n-octyl phthalate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+MQJKPEGWNLWLTK-UHFFFAOYSA-N,Dapsone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+MRBKEAMVRSLQPH-UHFFFAOYSA-N,2-tert-Butyl-4-methoxyphenol,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Food additives' (term 'food additive') and no human-use marker
+MREBEPTUUMTTIA-PCLIKHOPSA-N,Azimilide,False,True,include,clinical,false_negative,clinical: documented phase Phase 3
+MUJOIMFVNIBMKC-UHFFFAOYSA-N,Fludioxonil,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+MUXOBHXGJLMRAB-UHFFFAOYSA-N,Dimethyl succinate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'EPA Safer Chemical Functional Use Classes -> Solvents' (term 'solvent') and no human-use marker
+MWBPRDONLNQCFV-UHFFFAOYSA-N,Tri-allate,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+MWLSOWXNZPKENC-UHFFFAOYSA-N,Zileuton,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+MWOOGOJBHIARFG-UHFFFAOYSA-N,4-Hydroxy-3-methoxybenzaldehyde,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+MWPLVEDNUUSJAV-UHFFFAOYSA-N,Anthracene,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Preservative' (term 'preservative') and no human-use marker
+MXWJVTOOROXGIU-UHFFFAOYSA-N,Atrazine,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Chemical Classes -> Benzidines/Aromatic amines, Pesticides (chemicals used for killing pests, such as rodents, insects, or plants)' (term 'pesticide') and no human-use marker"
+MZZBPDKVEFVLFF-UHFFFAOYSA-N,Cyanazine,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+NBQCNZYJJMBDKY-UHFFFAOYSA-N,Terbacil,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NCEXYHBECQHGNR-QZQOTICOSA-N,Sulfasalazine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+NCKMMSIFQUPKCK-UHFFFAOYSA-N,Clorophene,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Preservative' (term 'preservative') and no human-use marker
+NEKOXWSIMFDGMA-UHFFFAOYSA-N,Isopropalin,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NFACJZMKEDPNKN-UHFFFAOYSA-N,Trichlorfon,True,True,include,clinical,agrees_include,clinical: documented phase Phase 2
+NHDHVHZZCFYRSB-UHFFFAOYSA-N,Pyriproxyfen,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+NHOWDZOIZKMVAI-UHFFFAOYSA-N,Fenarimol,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+NIHNNTQXNPWCJQ-UHFFFAOYSA-N,Fluorene,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NIPDVSLAMPAWTP-UHFFFAOYSA-N,2-Methoxy-5-nitroaniline,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NIQCNGHVCWTJSM-UHFFFAOYSA-N,Dimethyl phthalate,True,True,uncertain,unknown,old_include_now_uncertain,"unknown: no documented status, mechanism or use"
+NJPPVKZQTLUDBO-UHFFFAOYSA-N,Novaluron,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+NKANXQFJJICGDU-QPLCGJKRSA-N,Tamoxifen,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+NNKVPIKMPCQWCG-UHFFFAOYSA-N,Methamidophos,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticide transformation products (metabolite, successor)' (term 'pesticide') and no human-use marker"
+NOQGZXFMHARMLW-UHFFFAOYSA-N,Daminozide,False,True,include,mechanism_tool,false_negative,mechanism_tool: mechanism from Broad moa/target KDM2A inhibitor/KDM2A|KDM7A|PHF8; use evidence from Broad Hub research-library membership
+NPOJQCVWMSKXDN-UHFFFAOYSA-N,Chlorthal-dimethyl,False,False,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+NQQVFXUMIDALNH-UHFFFAOYSA-N,Picloram,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+NRZWYNLTFLDQQX-UHFFFAOYSA-N,4-(2-Methylbutan-2-yl)phenol,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NTBYINQTYWZXLH-UHFFFAOYSA-N,"3,4-Dichloronitrobenzene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NTDQQZYCCIDJRK-UHFFFAOYSA-N,4-Octylphenol,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+NUIURNJTPRWVAP-UHFFFAOYSA-N,"3,3'-Dimethylbenzidine",False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+NUVBSKCKDOMJSU-UHFFFAOYSA-N,Ethylparaben,True,True,uncertain,unknown,old_include_now_uncertain,"unknown: no documented status, mechanism or use"
+NWWZPOKUUAIXIW-DHZHZOJOSA-N,Thiamethoxam,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+NXFQHRVNIOXGAQ-YCRREMRBSA-N,Nitrofurantoin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+NXXYKOUNUYWIHA-UHFFFAOYSA-N,"2,6-Dimethylphenol",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+NYPJDWWKZLNGGM-UHFFFAOYSA-N,Fenvalerate,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+ODCWYMIRDDJXKW-UHFFFAOYSA-N,Simazine,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+OIJHFHYPXWSVPF-UHFFFAOYSA-N,4-Nitrosodiphenylamine,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+OKJFKPFBSPZTAH-UHFFFAOYSA-N,"2,4,4'-Trihydroxybenzophenone",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+OLBCVFGFOZPWHH-UHFFFAOYSA-N,Propofol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+OMFRMAHOUUJSGP-IRHGGOMRSA-N,Bifenthrin,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Acaricides, Insecticides' (term 'insecticide') and no human-use marker"
+ONCZDRURRATYFI-TVJDWZFNSA-N,Trifloxystrobin,False,True,include,mechanism_tool,false_negative,mechanism_tool: mechanism from Broad moa/target mitochondrial electron transport inhibitor; use evidence from Broad Hub research-library membership
+ONUFESLQCSAYKA-UHFFFAOYSA-N,Iprodione,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+OQMBBFQZGJFLBU-UHFFFAOYSA-N,Oxyfluorfen,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+OROGSEYTTFOCAN-DNJOTXNNSA-N,Codeine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+OSWPMRLSEDHDFF-UHFFFAOYSA-N,Methyl salicylate,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+OUPZKGBUJRBPGC-UHFFFAOYSA-N,Triglycidyl isocyanurate,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+OVBPIULPVIDEAO-LBPRGKRZSA-N,Folic acid,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+OVSKIKFHRZPJSS-UHFFFAOYSA-N,"2,4-Dichlorophenoxyacetic acid",False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Chemical Classes -> Pesticides (chemicals used for killing pests, such as rodents, insects, or plants)' (term 'pesticide') and no human-use marker"
+OWFJMIVZYSDULZ-PXOLEDIWSA-N,Oxytetracycline hydrochloride,False,False,include,approved,false_negative,approved: documented status PubChem Max Phase=Approved
+OWRCNXZUPFZXOS-UHFFFAOYSA-N,"1,3-Diphenylguanidine",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Polymerization promoter' (term 'polymer') and no human-use marker
+OYIKARCXOQLFHF-UHFFFAOYSA-N,Isoxaflutole,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+PCCSBWNGDMYFCW-UHFFFAOYSA-N,Famoxadone,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+PCIUEQPBYFRTEM-UHFFFAOYSA-N,Perfluorodecanoic acid,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PCZOHLXUXFIOCF-BXMDZJJMSA-N,Lovastatin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+PDMMFKSKQVNJMI-BLQWBTBKSA-N,Testosterone propionate,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+PFIADAMVCJPXSF-UHFFFAOYSA-N,Chloroneb,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+PGOOBECODWQEAB-UHFFFAOYSA-N,Clothianidin,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PHNUZKMIPFFYSO-UHFFFAOYSA-N,Propyzamide,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+PHXATPHONSXBIL-UHFFFAOYSA-N,5-Heptyldihydro-2(3H)-furanone,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+PIJVFDBKTWXHHD-HIFRSBDPSA-N,Physostigmine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+PMHURSZHKKJGBM-UHFFFAOYSA-N,Isoxaben,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+PNVJTZOFSHSLTO-UHFFFAOYSA-N,Fenthion,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+PPDBOQMNKNNODG-NTEUORMPSA-N,Triticonazole,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PQKBPHSEKWERTG-UHFFFAOYSA-N,Fenoxaprop-ethyl,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+PRLVTUNWOQKEAI-UHFFFAOYSA-N,Buprofezin,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Acaricides, Insecticides' (term 'insecticide') and no human-use marker"
+PTOAARAWEBMLNO-KVQBGUIXSA-N,Cladribine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+PUYXTUJWRLOUCW-UHFFFAOYSA-N,Spiroxamine,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PVHUJELLJLJGLN-UHFFFAOYSA-N,Nitrendipine,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+PVNIIMVLHYAWGP-UHFFFAOYSA-N,Nicotinic acid,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+PVSGXWMWNRGTKE-UHFFFAOYSA-N,Imazapic,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+PVUBSZGNXLNTLX-UHFFFAOYSA-N,3-Hydroxyfluorene,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PWNAWOCHVWERAR-UHFFFAOYSA-N,Flumetralin,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PXMNMQRDXWABCY-UHFFFAOYSA-N,Tebuconazole,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+PXUULQAPEKKVAH-UHFFFAOYSA-N,Perfluorohexanoic acid,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+PYGXAGIECVVIOZ-UHFFFAOYSA-N,Dibutyl decanedioate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'EPA Safer Chemical Functional Use Classes -> Emollients;Skin Conditioning Agents;Solvents' (term 'solvent') and no human-use marker
+PYZRQGJRPPTADH-UHFFFAOYSA-N,Lamotrigine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+PZBPKYOVPCNPJY-UHFFFAOYSA-N,Imazalil,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+QASFUMOKHFSJGL-LAFRSMQTSA-N,Cyclopamine,False,False,include,mechanism_tool,false_negative,mechanism_tool: mechanism from Broad moa/target hedgehog pathway inhibitor; use evidence from Broad Hub research-library membership
+QAYICIQNSGETAS-UHFFFAOYSA-N,Dazomet,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+QBDSZLJBMIMQRS-UHFFFAOYSA-N,4-Cumylphenol,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+QBYJBZPUGVGKQQ-SJJAEHHWSA-N,Aldrin,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+QCAWEPFNJXQPAN-UHFFFAOYSA-N,Methoxyfenozide,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+QCDWFXQBSFUVSP-UHFFFAOYSA-N,2-Phenoxyethanol,False,True,exclude,other_use,agrees_exclude,other use: documented use 'EPA Safer Chemical Functional Use Classes -> Preservatives and Antioxidants;Solvents' (term 'solvent') and no human-use marker
+QELSKZZBTMNZEB-UHFFFAOYSA-N,Propylparaben,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Food Additives -> PRESERVATIVE -> JECFA Functional Classes' (term 'preservative') and no human-use marker
+QEVHRUUCFGRFIF-MDEJGZGSSA-N,Reserpine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+QFOHBWFCKVYLES-UHFFFAOYSA-N,Butylparaben,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+QGHREAKMXXNCOA-UHFFFAOYSA-N,Thiophanate-methyl,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+QHMTXANCGGJZRX-WUXMJOGZSA-N,Pymetrozine,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+QHPQWRBYOIRBIT-UHFFFAOYSA-N,4-tert-Butylphenol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Flavouring Agent -> FLAVOURING_AGENT -> JECFA Functional Classes' (term 'flavour') and no human-use marker
+QHTQREMOGMZHJV-UHFFFAOYSA-N,Thiobencarb,False,True,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+QLHULAHOXSSASE-UHFFFAOYSA-N,Icaridin,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+QNXAVFXEJCPCJO-UHFFFAOYSA-N,Diclosulam,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+QQODLKZGRKWIFG-UHFFFAOYSA-N,Cyfluthrin,True,True,include,mechanism_tool,agrees_include,mechanism_tool: mechanism from PubChem Mechanism of Action text; use evidence from human drug indication
+QQQYTWIFVNKMRW-UHFFFAOYSA-N,Diflubenzuron,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Veterinary Drug -> INSECTICIDE; Veterinary Drug -> -> JECFA Functional Classes' (term 'insecticide') and no human-use marker
+QRUDEWIWKLJBPS-UHFFFAOYSA-N,"1,2,3-Benzotriazole",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Corrosion inhibitors' (term 'corrosion inhibitor') and no human-use marker
+QRXWMOHMRWLFEY-UHFFFAOYSA-N,Isoniazid,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+QSNSCYSYFYORTR-UHFFFAOYSA-N,4-Chloroaniline,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Pigment' (term 'pigment') and no human-use marker
+QUAMTGJKVDWJEQ-UHFFFAOYSA-N,Octabenzone,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+QUDWYFHPNIMBFC-UHFFFAOYSA-N,Diallyl phthalate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plastics -> Plasticisers' (term 'plasticiser') and no human-use marker
+QWVGKYWNOKOFNN-UHFFFAOYSA-N,o-Cresol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+QZCLKYGREBVARF-UHFFFAOYSA-N,Acetyl tributyl citrate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+QZHDEAJFRJCDMF-UHFFFAOYSA-M,Potassium perfluorohexanesulfonate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+QZUDBNBUXVUHMW-UHFFFAOYSA-N,Clozapine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+QZYHIOPPLUPUJF-UHFFFAOYSA-N,3-Nitrotoluene,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+RAPZEAPATHNIPO-UHFFFAOYSA-N,Risperidone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RAVIZVQZGXBOQO-UHFFFAOYSA-N,PK 11195,False,True,include,clinical,false_negative,clinical: documented phase Phase 1
+REEQLXCGVXDJSQ-UHFFFAOYSA-N,Triclopyr,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+REFJWTPEDVJJIY-UHFFFAOYSA-N,Quercetin,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Food Additives -> COLOUR -> JECFA Functional Classes' (term 'food additive') and no human-use marker
+RELMFMZEBKVZJC-UHFFFAOYSA-N,"1,2,3-Trichlorobenzene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+RFHAOTPXVQNOHP-UHFFFAOYSA-N,Fluconazole,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RGLYKWWBQGJZGM-ISLYRVAYSA-N,Diethylstilbestrol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RIOXQFHNBCKOKP-UHFFFAOYSA-N,Benomyl,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+RJKFOVLPORLFTN-LEKSSAKUSA-N,Progesterone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RLBIQVVOMOPOHC-UHFFFAOYSA-N,Methyl parathion,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+RMBFBMJGBANMMK-UHFFFAOYSA-N,"2,4-Dinitrotoluene",False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Energy Releasers (explosives, motive propellant)' (term 'explosive') and no human-use marker"
+RMEDXOLNCUSCGS-UHFFFAOYSA-N,Droperidol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RMFNNCGOSPBBAD-UHFFFAOYSA-N,Formetanate hydrochloride,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+RMOGWMIKYWRTKW-UONOGXRCSA-N,Paclobutrazol,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ROBVIMPUHSLWNV-UHFFFAOYSA-N,Aminoglutethimide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RQDJADAKIFFEKQ-UHFFFAOYSA-N,Fenbuconazole,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+RQVYBGPQFYCBGX-UHFFFAOYSA-N,Ametryn,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Herbicides' (term 'herbicide') and no human-use marker
+RRAFCDWBNXTKKO-UHFFFAOYSA-N,Eugenol,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+RSVPPPHXAASNOL-UHFFFAOYSA-N,Prodiamine,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+RVKCCVTVZORVGD-UHFFFAOYSA-N,Trinexapac-ethyl,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Plant growth regulators' (term 'pesticide') and no human-use marker
+RWCCWEUUXYIKHB-UHFFFAOYSA-N,Benzophenone,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+RXCPQSJAVKGONC-UHFFFAOYSA-N,Flumetsulam,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+RYYVLZVUVIJVGH-UHFFFAOYSA-N,Caffeine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+RZVAJINKPMORJF-UHFFFAOYSA-N,Acetaminophen,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+SAOKZLXYCUGLFA-UHFFFAOYSA-N,Bis(2-ethylhexyl)hexanedioate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+SBPBAQFWLVIOKP-UHFFFAOYSA-N,Chlorpyrifos,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+SGTNSNPWRIOYBX-UHFFFAOYSA-N,Verapamil,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+SIQZJFKTROUNPI-UHFFFAOYSA-N,"1-(Hydroxymethyl)-5,5-dimethylhydantoin",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Antimicrobial' (term 'cosmetic') and no human-use marker
+SKCNNQDRNPQEFU-UHFFFAOYSA-N,"2,6,10-Trimethyl-2,6,10-triazaundecane",False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Propellants, non-motive (blowing agents)' (term 'propellant') and no human-use marker"
+SMDHCQAYESWHAE-UHFFFAOYSA-N,Benfluralin,False,False,exclude,other_use,agrees_exclude,other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker
+SMWDFEZZVXVKRB-UHFFFAOYSA-N,Quinoline,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Corrosion inhibitor' (term 'corrosion inhibitor') and no human-use marker
+SNGREZUHAYWORS-UHFFFAOYSA-N,Ammonium perfluorooctanoate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+SNICXCGAKADSCV-JTQLQIEISA-N,Nicotine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+SQFXATUXPUCFFO-UHFFFAOYSA-N,Tetrabromophenolphthalein ethyl ester,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+STCOOQWBFONSKY-UHFFFAOYSA-N,Tributyl phosphate,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Hydraulic fluids' (term 'hydraulic fluid') and no human-use marker
+STJLVHWMYQXCPB-UHFFFAOYSA-N,Propiconazole,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+STMIIPIFODONDC-UHFFFAOYSA-N,Hexaconazole,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+SYJGKVOENHZYMQ-UHFFFAOYSA-N,Penoxsulam,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+SZRPDCCEHVWOJX-UHFFFAOYSA-N,Pirinixic acid,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+TVLSRXXIMLFWEO-UHFFFAOYSA-N,Prochloraz,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+TWFZGCMQGLPBSX-UHFFFAOYSA-N,Carbendazim,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+TXCDCPKCNAJMEE-UHFFFAOYSA-N,Dibenzofuran,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+TZBJGXHYKVUXJN-UHFFFAOYSA-N,Genistein,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+UBUCNCOMADRQHX-UHFFFAOYSA-N,N-Nitrosodiphenylamine,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+UELITFHSCLAHKR-UHFFFAOYSA-N,Acibenzolar-S-methyl,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Plant activators, Fungicides, Insecticides' (term 'insecticide') and no human-use marker"
+UFBJCMHMOXMLKC-UHFFFAOYSA-N,"2,4-Dinitrophenol",False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+UFEODZBUAFNAEU-NLRVBDNBSA-N,Fluoxastrobin,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+UFFBMTHBGFGIHF-UHFFFAOYSA-N,"2,6-Dimethylaniline",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+UFNOUKDBUJZYDE-UHFFFAOYSA-N,Cyproconazole,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+UFWIBTONFRDIAS-UHFFFAOYSA-N,Naphthalene,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fuel agents' (term 'fuel') and no human-use marker
+UHTHHESEBZOYNR-UHFFFAOYSA-N,Vandetanib,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+UIEATEWHFDRYRU-UHFFFAOYSA-N,Bepridil,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ULGZDMOVFRHVEP-RWJQBGPGSA-N,Erythromycin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+UNAHYJYOSSSJHH-UHFFFAOYSA-N,Oryzalin,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+UNEATYXSUBPPKP-UHFFFAOYSA-N,"1,3-Diisopropylbenzene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+UQDUPQYQJKYHQI-UHFFFAOYSA-N,Methyl dodecanoate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'EPA Safer Chemical Functional Use Classes -> Emollients;Skin Conditioning Agents;Solvents' (term 'solvent') and no human-use marker
+UQWIHFJXDRNUDP-UHFFFAOYSA-L,Allura Red C.I.16035,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+UVTNFZQICZKOEM-UHFFFAOYSA-N,Disopyramide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+UWFYSQMTEOIJJG-FDTZYFLXSA-N,Cyproterone acetate,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+UXADOQPNKNTIHB-UHFFFAOYSA-N,Clofentezine,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+UZCGKGPEKUCDTF-UHFFFAOYSA-N,Fluazinam,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Acaricides, Fungicides' (term 'fungicide') and no human-use marker"
+UZUFPBIDKMEQEQ-UHFFFAOYSA-N,Perfluorononanoic acid,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+VAIZTNZGPYBOGF-UHFFFAOYSA-N,Fluazifop-butyl,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+VAMXMNNIEUEQDV-UHFFFAOYSA-N,Methyl 2-aminobenzoate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+VBCVPMMZEGZULK-NRFANRHFSA-N,Indoxacarb,True,True,exclude,other_use,false_positive,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+VBHQKCBVWWUUKN-KZNAEPCWSA-N,Vernakalant,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+VDLGAVXLJYLFDH-UHFFFAOYSA-N,Fenhexamid,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+VEENJGZXVHKXNB-VOTSOKGWSA-N,Dicrotophos,False,False,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+VEMKTZHHVJILDY-UHFFFAOYSA-N,Resmethrin,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+VEORPZCZECFIRK-UHFFFAOYSA-N,"3,3',5,5'-Tetrabromobisphenol A",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plastics -> Flame retardants' (term 'flame retardant') and no human-use marker
+VEQOALNAAJBPNY-UHFFFAOYSA-N,Phenazone,True,True,include,approved,agrees_include,approved: documented status Broad clinical_phase=Launched
+VGPYEHKOIGNJKV-UHFFFAOYSA-N,Asulam,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+VHLKTXFWDRXILV-UHFFFAOYSA-N,Bifenazate,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+VHRSUDSXCMQTMA-PJHHCJLFSA-N,Methylprednisolone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+VICYBMUVWHJEFT-UHFFFAOYSA-N,Dodecyltrimethylammonium chloride,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Antistatic; Preservative; Emulsifying' (term 'preservative') and no human-use marker
+VIKNJXKGJWUCNN-XGXHKTLJSA-N,Norethindrone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+VJYFKVYYMZPMAB-UHFFFAOYSA-N,Ethoprop,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+VKHAHZOOUSRJNA-GCNJZUOMSA-N,Mifepristone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+VKOUCJUTMGHNOR-UHFFFAOYSA-N,Diphenolic acid,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Cosmetics -> Viscosity controlling' (term 'cosmetic') and no human-use marker
+VLPIATFUUWWMKC-UHFFFAOYSA-N,Mexiletine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+VMPITZXILSNTON-UHFFFAOYSA-N,2-Anisidine,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+VNKBTWQZTQIWDV-UHFFFAOYSA-N,Azamethiphos,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+VOXZDWNPVJITMN-ZBRFXRBCSA-N,17beta-Estradiol,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+VPTONMHDLLMOOV-UHFFFAOYSA-N,CJ-013610,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+VPWNQTHUCYMVMZ-UHFFFAOYSA-N,"4,4'-Sulfonyldiphenol",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Surfactant (surface active agent)' (term 'surfactant') and no human-use marker
+VTNQPKFIQCLBDU-UHFFFAOYSA-N,Acetochlor,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+VUNCWTMEJYMOOR-UHFFFAOYSA-N,Hexachlorocyclopentadiene,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+VVJKKKDJADMKNM-UHFFFAOYSA-L,FD&C Green No. 3,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+VWGAYSCWLXQJBQ-UHFFFAOYSA-M,Iodosulfuron-methyl-sodium,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+WCXDHFDTOYPNIE-UHFFFAOYSA-N,Acetamiprid,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+WDCYWAQPCXBPJA-UHFFFAOYSA-N,"1,3-Dinitrobenzene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+WFDXOXNFNRHQEC-GHRIWEEISA-N,Azoxystrobin,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+WFSMVVDJSNMRAR-UHFFFAOYSA-N,2-[2-(2-Ethoxyethoxy)ethoxy]ethanol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Hydraulic fluids' (term 'hydraulic fluid') and no human-use marker
+WJCNZQLZVWNLKY-UHFFFAOYSA-N,Thiabendazole,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+WJFKNYWRSNBZNX-UHFFFAOYSA-N,Phenothiazine,False,True,include,clinical,false_negative,clinical: documented phase Phase 2
+WKSAUQYGYAYLPV-UHFFFAOYSA-N,Pyrimethamine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+WLLGXSLBOPFWQV-UHFFFAOYSA-N,Octylbicycloheptenedicarboximide,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+WNLRTRBMVRJNCN-UHFFFAOYSA-N,Adipic acid,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Food additives' (term 'food additive') and no human-use marker
+WOAFDHWYKSOANX-UHFFFAOYSA-N,Diisopropyl methylphosphonate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+WRPIRSINYZBGPK-UHFFFAOYSA-N,Quinoxyfen,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+WSEQXVZVJXJVFP-UHFFFAOYSA-N,Citalopram hydrobromide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+WSORODGWGUUOBO-UHFFFAOYSA-N,Malaoxon,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+WURBVZBTWMNKQT-UHFFFAOYSA-N,Triadimefon,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticide transformation products (metabolite, successor)' (term 'pesticide') and no human-use marker"
+WVQBLGZPHOPPFO-UHFFFAOYSA-N,Metolachlor,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+WXNRYSGJLQFHBR-UHFFFAOYSA-N,"2,2',4,4'-Tetrahydroxybenzophenone",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+WXWCDTXEKCVRRO-UHFFFAOYSA-N,2-Methoxy-5-methylaniline,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Dye' (term 'dye') and no human-use marker
+WXZVAROIGSFCFJ-UHFFFAOYSA-N,Napropamide,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Herbicides' (term 'herbicide') and no human-use marker
+WYEMLYFITZORAB-UHFFFAOYSA-N,Boscalid,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+WYKYKTKDBLFHCY-UHFFFAOYSA-N,Chloridazon,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+WYMSBXTXOHUIGT-UHFFFAOYSA-N,Paraoxon,True,True,include,mechanism_tool,agrees_include,mechanism_tool: mechanism from PubChem Mechanism of Action text; use evidence from human drug indication
+WZZLDXDUQPOXNW-UHFFFAOYSA-N,Propamocarb hydrochloride,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+XGWIJUOSCAQSSV-XHDPSFHLSA-N,Hexythiazox,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Acaricides' (term 'acaricide') and no human-use marker
+XIKIUQUXDNHBFR-UHFFFAOYSA-N,Monobenzyl phthalate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+XKLMZUWKNUAPSZ-UHFFFAOYSA-N,Ranolazine,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+XMAYWYJOQHXEEK-ZEQKJWHPSA-N,Ketoconazole,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+XMTQQYYKAHVGBJ-UHFFFAOYSA-N,Diuron,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Herbicides -> Urea herbicides -> Phenylurea herbicides' (term 'herbicide') and no human-use marker
+XOFYZVNMUHMLCC-ZPOLXVRWSA-N,Prednisone,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+XOUQAVYLRNOXDO-UHFFFAOYSA-N,2-Tert-Butyl-5-methylphenol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+XPCTZQVDEJYUGT-UHFFFAOYSA-N,Maltol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+XTJFFFGAUHQWII-UHFFFAOYSA-N,Dibutyl adipate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'EPA Safer Chemical Functional Use Classes -> Solvents' (term 'solvent') and no human-use marker
+XTRDKALNCIHHNI-UHFFFAOYSA-N,"2,6-Dinitrotoluene",False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+XVOKUMIPKHGGTN-UHFFFAOYSA-N,Imazethapyr,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+XZZNDPSIHUTMOC-UHFFFAOYSA-N,Triphenyl phosphate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Plastics -> Polymer Type -> ABS' (term 'polymer') and no human-use marker
+YASYVMFAVPKPKE-UHFFFAOYSA-N,Acephate,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+YBRVSVVVWCFQMG-UHFFFAOYSA-N,"4,4'-Diaminobiphenyl methane",False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+YCIMNLLNPGFGHC-UHFFFAOYSA-N,Catechol,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+YFGYUFNIOHWBOB-UHFFFAOYSA-N,Pirimicarb,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker
+YFSUTJLHUFNCNZ-UHFFFAOYSA-M,Potassium perfluorooctanesulfonate,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+YFSUTJLHUFNCNZ-UHFFFAOYSA-N,Perfluorooctanesulfonic acid,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+YIJZJEYQBAAWRJ-UHFFFAOYSA-N,Thiazopyr,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+YNTJKQDWYXUTLZ-UHFFFAOYSA-N,Cloprop,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+YOYAIZYFCNQIRF-UHFFFAOYSA-N,Dichlobenil,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+YUBJPYNSGLJZPQ-UHFFFAOYSA-N,Dithiopyr,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+YVUQSNJEYSNKRX-UHFFFAOYSA-N,Pimozide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+YWFPGFJLYRKYJZ-UHFFFAOYSA-N,"4,4'-(9H-Fluorene-9,9-diyl)diphenol",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+YWTYJOPNNQFBPC-UHFFFAOYSA-N,Imidacloprid,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Insecticides -> Nicotinoid insecticides -> Nitroguanidine insecticides' (term 'insecticide') and no human-use marker
+YXKMMRDKEKCERS-UHFFFAOYSA-N,Cyazofamid,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+ZBMZVLHSJCTVON-UHFFFAOYSA-N,"D,1 Sotalol",True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ZCJPOPBZHLUFHF-UHFFFAOYSA-N,Fenamiphos,False,True,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ZCVAOQKBXKSDMS-PVAVHDDUSA-N,S-Bioallethrin,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+ZCVAOQKBXKSDMS-UHFFFAOYSA-N,Allethrin,False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+ZDWGXBPVPXVXMQ-UHFFFAOYSA-N,Bis(2-ethylhexyl) nonanedioate,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Solvent' (term 'solvent') and no human-use marker
+ZFHGXWPMULPQSE-SZGBIDFHSA-N,Tefluthrin,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+ZFQMTVNLDNXRNQ-UHFFFAOYSA-O,Denatonium saccharide,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ZFXYFBGIUFBOJW-UHFFFAOYSA-N,Theophylline,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ZIUHHBKFKCYYJD-UHFFFAOYSA-N,"N,N'-Methylenebisacrylamide",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ZIWFCOIGUNPHPM-HKUYNNGSSA-N,CP-122721,False,False,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+ZLIBICFPKPWGIZ-UHFFFAOYSA-N,Pyrimethanil,False,False,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+ZMQAAUBTXCXRIC-UHFFFAOYSA-N,Safrole,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Flavoring Agents -> JECFA Flavorings Index' (term 'flavor') and no human-use marker
+ZNNLBTZKUZBEKO-UHFFFAOYSA-N,Glybenclamide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ZNOLGFHPUIJIMJ-UHFFFAOYSA-N,Fenitrothion,False,True,exclude,other_use,agrees_exclude,"other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
+ZOCSXAVNDGMNBV-UHFFFAOYSA-N,Fipronil,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Pesticides -> Insecticides -> Pyrazole insecticides -> Phenylpyrazole insecticides' (term 'insecticide') and no human-use marker
+ZOKXUAHZSKEQSS-UHFFFAOYSA-N,Tribufos,False,True,exclude,other_use,agrees_exclude,other use: documented use 'DEFOLIANTS' (term 'defoliant') and no human-use marker
+ZOLLIQAKMYWTBR-UHFFFAOYSA-N,"1,5,9-Cyclododecatriene",False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ZOMSMJKLGFBRBS-UHFFFAOYSA-N,Bentazone,False,True,uncertain,unknown,old_exclude_now_uncertain,unknown: mechanism evidence present but no research-tool or human pharmacological use evidence
+ZPEIMTDSQAKGNT-UHFFFAOYSA-N,Chlorpromazine hydrochloride,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ZPTVNYMJQHSSEA-UHFFFAOYSA-N,4-Nitrotoluene,False,False,uncertain,unknown,old_exclude_now_uncertain,"unknown: no documented status, mechanism or use"
+ZQEIXNIJLIKNTD-UHFFFAOYSA-N,Metalaxyl,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fungicides' (term 'fungicide') and no human-use marker
+ZTHYODDOHIVTJV-UHFFFAOYSA-N,Propyl gallate,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Food additives' (term 'food additive') and no human-use marker
+ZTWZVMIYIIVABD-OEMFJLHTSA-N,Candoxatril,False,False,include,clinical,false_negative,clinical: documented phase Phase 2
+ZUOUZKKEUPVFJK-UHFFFAOYSA-N,Biphenyl,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+ZUTYZAFDFLLILI-UHFFFAOYSA-N,4-(Butan-2-yl)phenol,False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+ZXDDPOHVAMWLBH-UHFFFAOYSA-N,"2,4-Dihydroxybenzophenone",False,False,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+ZXVONLUNISGICL-UHFFFAOYSA-N,"2-Methyl-4,6-dinitrophenol",False,True,exclude,other_use,agrees_exclude,other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker
+ZYEMGPIYFIJGTP-UHFFFAOYSA-N,Methyleugenol,False,True,exclude,other_use,agrees_exclude,other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker
+ZYGHJZDHTFUPRJ-UHFFFAOYSA-N,Coumarin,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ZZUFCTLCJUWOSV-UHFFFAOYSA-N,Furosemide,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
+ZZVUWRFHKOJYTH-UHFFFAOYSA-N,Diphenhydramine hydrochloride,True,True,include,approved,agrees_include,approved: documented status PubChem Max Phase=Approved
