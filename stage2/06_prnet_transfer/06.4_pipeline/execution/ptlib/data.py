@@ -1032,15 +1032,58 @@ class TahoeDataset:
                     smiles[i] = s
                     has_smiles[i] = True
 
-        okay = (
-            (~is_control)
-            & qc_pass
-            & has_structure
-            & np.isfinite(dose)
+        # Frozen usability mask when the artifact carries it: ticket #3's
+        # ``tahoe_usable`` = ~is_control AND has_structure AND qc_pass AND
+        # matched_control_ok.  Re-deriving it here silently re-includes the 4,757
+        # treated rows that have no QC-pass matched control (they have no baseline,
+        # and the contract says those are reported, never imputed).  The synthetic
+        # fixture has no such column, so the derived mask is its fallback; every
+        # fixture row carries a matched control, so both paths agree there.
+        frozen_usable = "tahoe_usable" in obs.columns
+        usable = (
+            _bool_column(obs["tahoe_usable"])
+            if frozen_usable
+            else (~is_control) & qc_pass & has_structure
+        )
+        encodable = (
+            np.isfinite(dose)
             & (dose >= 0)
             & has_smiles
             & np.isin(split, ("train", "valid"))
         )
+        if frozen_usable and (usable & ~encodable).any():
+            raise DataError(
+                f"tahoe_transfer.h5ad marks {int((usable & ~encodable).sum())} tahoe_usable "
+                "row(s) without a finite dose, a resolvable SMILES or a train/valid split; "
+                "the frozen usability contract and the loader disagree"
+            )
+        okay = usable & encodable
+
+        # matched controls: group rows per (plate, cell_line_id); a selected row
+        # without a control group has no baseline.  The frozen usable mask already
+        # excludes those, so a drop below means the side files disagree.
+        groups, index_map = self._control_groups(obs)
+        keys = np.asarray(
+            [
+                f"{plate}|{line}"
+                for plate, line in zip(
+                    obs["plate"].astype(str).to_numpy(),
+                    obs["cell_line_id"].astype(str).to_numpy(),
+                )
+            ],
+            dtype=object,
+        )
+        has_group = np.isin(keys, list(index_map))
+        if frozen_usable and (okay & ~has_group).any():
+            # The frozen mask says these rows are usable, yet no QC-pass matched
+            # control group exists for their (plate, cell_line).  Never impute a
+            # baseline — the two side files disagree, so fail closed.
+            raise DataError(
+                f"tahoe_transfer.h5ad marks {int((okay & ~has_group).sum())} row(s) "
+                "tahoe_usable whose (plate, cell_line_id) has no matched-control group in "
+                "tahoe_control_groups.parquet; the frozen artifacts disagree"
+            )
+        okay = okay & has_group
         counts = {
             "n_obs": int(n),
             "n_controls": int(is_control.sum()),
@@ -1050,6 +1093,10 @@ class TahoeDataset:
             "dropped_no_smiles": int((~is_control & has_structure & ~has_smiles).sum()),
             "dropped_bad_dose": int((~is_control & ~np.isfinite(dose)).sum()),
             "dropped_bad_split": int((~is_control & ~np.isin(split, ("train", "valid"))).sum()),
+            "usable_mask_source": (
+                "obs.tahoe_usable" if frozen_usable else "derived(qc_pass&has_structure)"
+            ),
+            "dropped_no_matched_control": int((usable & encodable & ~has_group).sum()),
         }
         rng = np.random.default_rng(int(self.seed))
         rows_train = np.flatnonzero(okay & (split == "train")).astype(np.int64)
@@ -1074,17 +1121,17 @@ class TahoeDataset:
         self.rows = np.unique(np.concatenate([rows_train, rows_valid]))
         self._row_pos = {int(row): i for i, row in enumerate(self.rows)}
 
-        # matched controls: group rows per (plate, cell_line_id)
-        groups, index_map = self._control_groups(obs)
-        self.group_index = np.array(
-            [index_map[self._group_key(obs, row)] for row in self.rows], dtype=np.int64
-        )
+        self.group_index = np.array([index_map[keys[row]] for row in self.rows], dtype=np.int64)
         self.control_values = self._control_means(groups, index_map)
 
         self._dose_scale = dose_scale(dose[self.rows])
+        # Hoist the per-row column conversion out of the comprehension: calling
+        # ``obs[...].astype(str).to_numpy()`` inside it is O(n_rows x n_obs) and
+        # took 134 s on the real 67k-row view (the synthetic fixture hid it).
+        cell_line = obs["cell_line_id"].astype(str).to_numpy()
         self._condition = np.asarray(
             [
-                f"{drug_key[row]}|{dose[row]:g}|{obs['cell_line_id'].astype(str).to_numpy()[row]}"
+                f"{drug_key[row]}|{dose[row]:g}|{cell_line[row]}"
                 for row in self.rows
             ],
             dtype=object,
@@ -1101,10 +1148,6 @@ class TahoeDataset:
         return self
 
     # -- controls ----------------------------------------------------------
-    @staticmethod
-    def _group_key(obs: pd.DataFrame, row: int) -> str:
-        return f"{obs['plate'].astype(str).to_numpy()[row]}|{obs['cell_line_id'].astype(str).to_numpy()[row]}"
-
     def _read_control_groups(self, obs: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         """Return ``(member_rows, group_ids)`` for the matched-control groups."""
         path = self.frozen.data_dir / _TAHOE_GROUPS

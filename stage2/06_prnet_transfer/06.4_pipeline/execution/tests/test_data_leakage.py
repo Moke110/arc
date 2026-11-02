@@ -13,7 +13,9 @@ These tests attack the boundary rather than trusting the column set:
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
+import anndata as ad
 import numpy as np
 import pandas as pd
 import torch
@@ -251,6 +253,112 @@ class TahoeControlBoundaryTests(unittest.TestCase):
 
     def test_train_and_valid_rows_are_disjoint(self):
         self.assertFalse(np.intersect1d(self.dataset.rows_train, self.dataset.rows_valid).size)
+
+
+class TahoeUsabilityMaskTests(unittest.TestCase):
+    """The frozen ``tahoe_usable`` mask is authoritative; no baseline is imputed.
+
+    Real-data regression: re-deriving Tahoe usability inside the loader
+    re-included the 4,757 treated rows that have no QC-pass matched control, and
+    the control-group lookup then crashed with a ``KeyError`` on the frozen input
+    (``plate3|CVCL_1715``).  The frozen artifact carries ``tahoe_usable``; the
+    loader must use it, and must fail closed when the side files disagree.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.src = _support.small_fixture_dir()
+
+    def _variant(self, name, obs_mutator=None, groups_mutator=None, pairs_mutator=None) -> Path:
+        data_dir = _support.copy_fixture_to(self.src, Path(_support.tmp_root()) / f"tahoe-mask-{name}")
+        h5ad = data_dir / "tahoe_transfer.h5ad"
+        adata = ad.read_h5ad(h5ad)
+        obs = adata.obs.copy()
+        if obs_mutator is not None:
+            obs_mutator(obs)
+        adata.obs = obs
+        adata.write_h5ad(h5ad)
+        if groups_mutator is not None:
+            path = data_dir / "tahoe_control_groups.parquet"
+            groups_mutator(pd.read_parquet(path)).to_parquet(path, index=False)
+        if pairs_mutator is not None:
+            path = data_dir / "tahoe_pairs.npz"
+            payload = dict(np.load(path))
+            pairs_mutator(payload)
+            np.savez(path, **payload)
+        _support.rewrite_manifest(data_dir)
+        return data_dir
+
+    def _dataset(self, data_dir: Path, **kwargs) -> data_mod.TahoeDataset:
+        frozen = data_mod.open_frozen_input(data_dir)
+        return data_mod.TahoeDataset(
+            frozen=frozen, structures=frozen.structures(), load_targets=False, **kwargs
+        ).prepare()
+
+    def test_frozen_usable_column_drives_selection(self):
+        def mutate(obs):
+            split = obs["tahoe_split"].astype(str)
+            obs["tahoe_usable"] = (
+                (~obs["is_control"].astype(bool))
+                & (((split == "train") & (obs["plate"].astype(str) == "plate1"))
+                   | (split == "valid"))
+            )
+        data_dir = self._variant("column", mutate)
+        dataset = self._dataset(data_dir)
+        self.assertEqual(dataset.counts["usable_mask_source"], "obs.tahoe_usable")
+        obs = _support.tahoe_obs(data_dir).reset_index(drop=True)
+        mask = obs["tahoe_usable"].astype(bool).to_numpy()
+        split = obs["tahoe_split"].astype(str).to_numpy()
+        self.assertEqual(dataset.counts["n_train"], int((mask & (split == "train")).sum()))
+        self.assertEqual(dataset.counts["n_valid"], int((mask & (split == "valid")).sum()))
+        self.assertTrue(np.all(mask[dataset.rows_train]))
+        self.assertTrue(np.all(mask[dataset.rows_valid]))
+        derived = (
+            (~obs["is_control"].astype(bool))
+            & obs["qc_pass"].astype(bool)
+            & obs["has_structure"].astype(bool)
+        )
+        self.assertLess(dataset.counts["n_train"], int((derived & (split == "train")).sum()))
+
+    def test_usable_row_without_a_matched_control_fails_closed(self):
+        def mutate(obs):
+            obs["tahoe_usable"] = (
+                (~obs["is_control"].astype(bool))
+                & obs["qc_pass"].astype(bool)
+                & obs["has_structure"].astype(bool)
+            )
+            treated = np.flatnonzero(
+                (~obs["is_control"].astype(bool)).to_numpy()
+                & (obs["tahoe_split"].astype(str).to_numpy() == "train")
+            )
+            obs["cell_line_id"] = obs["cell_line_id"].astype(object)
+            obs.iloc[int(treated[0]), obs.columns.get_loc("cell_line_id")] = "cellZ"
+        with self.assertRaises(data_mod.DataError):
+            self._dataset(self._variant("no-group", mutate))
+
+    def test_derived_fallback_drops_and_reports_unmatched_rows(self):
+        original = pd.read_parquet(self.src / "tahoe_control_groups.parquet")
+        removed = int(original.loc[original["group_key"] == "plate1|cellA", "group_index"].iloc[0])
+
+        def mutate_groups(groups):
+            return groups[groups["group_key"].astype(str) != "plate1|cellA"].reset_index(drop=True)
+
+        def mutate_pairs(payload):
+            keep = payload["group_index"] != removed
+            for key, value in list(payload.items()):
+                array = np.asarray(value)
+                if array.ndim >= 1 and array.shape[0] == keep.size:
+                    payload[key] = array[keep]
+
+        data_dir = self._variant("drop-group", groups_mutator=mutate_groups,
+                                 pairs_mutator=mutate_pairs)
+        dataset = self._dataset(data_dir)
+        self.assertEqual(dataset.counts["usable_mask_source"], "derived(qc_pass&has_structure)")
+        self.assertGreater(dataset.counts["dropped_no_matched_control"], 0)
+        obs = _support.tahoe_obs(data_dir).reset_index(drop=True)
+        keys = (obs["plate"].astype(str) + "|" + obs["cell_line_id"].astype(str)).to_numpy()
+        self.assertNotIn("plate1|cellA", set(keys[dataset.rows_train]))
+        self.assertNotIn("plate1|cellA", set(keys[dataset.rows_valid]))
 
 
 if __name__ == "__main__":
