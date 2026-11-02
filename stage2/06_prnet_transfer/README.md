@@ -35,15 +35,17 @@ this scope.
 
 ## Layout
 
-Per ADR 0030 §3 this container splits into eleven independently-concluded
-substeps, one per published ticket, each carrying `AGENTS.md`, `README.md`,
-`execution/` and `output/`: `06.1_eligibility/`, `06.2_qc/`, `06.3_input/`,
+Per ADR 0030 §3 this container splits into substeps, one per published ticket.
+**Nine are built** — `06.1_eligibility/`, `06.2_qc/`, `06.3_input/`,
 `06.4_pipeline/`, `06.5_tahoe_pretrain/`, `06.6_cm_random/`, `06.7_cm_tahoe/`,
-`06.8_baselines/`, `06.9_evaluation/`, `06.10_capacity_ablation/`,
-`06.11_env_compound_ablation/`. See [`AGENTS.md`](AGENTS.md) for what each owns
-and [`docs/adr/`](../../docs/adr/) for the contracts. There is exactly one
-eligibility audit, one QC audit, one frozen input build, and one evaluator;
-every experiment consumes them rather than re-deriving a split.
+`06.8_baselines/`, `06.9_evaluation/` — each carrying `AGENTS.md`, `README.md`,
+`execution/` and `output/`. **Two are deferred ablations and have no directory**
+(the post-first-round work was not needed once the round concluded negative):
+`06.10_capacity_ablation/` (#10) and `06.11_env_compound_ablation/` (#11). See
+[`AGENTS.md`](AGENTS.md) for what each owns and [`docs/adr/`](../../docs/adr/)
+for the contracts. There is exactly one eligibility audit, one QC audit, one
+frozen input build, and one evaluator; every experiment consumes them rather than
+re-deriving a split.
 
 ## Status table
 

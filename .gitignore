@@ -149,9 +149,14 @@ stage2/_envs/cmonge/
 
 # Stage 2 · 06.8 baselines: only the five top-level record files are evidence;
 # the per-fold prediction/eval trees and fit params must stay local.  The global
-# `output/` rule hides the directory, so re-include it and then re-ignore its
-# contents except the record.  Other steps keep force-adding instead.
+# `output/` rule hides the directory, so re-include it, re-ignore its contents,
+# then re-include the five record files by exact name — a `*.csv`/`*.json` glob
+# would silently start tracking every future csv/json in this directory.
+# Other steps keep force-adding instead.
 !stage2/06_prnet_transfer/06.8_baselines/output/
 stage2/06_prnet_transfer/06.8_baselines/output/*
-!stage2/06_prnet_transfer/06.8_baselines/output/*.csv
-!stage2/06_prnet_transfer/06.8_baselines/output/*.json
+!stage2/06_prnet_transfer/06.8_baselines/output/summary_table.csv
+!stage2/06_prnet_transfer/06.8_baselines/output/metrics.csv
+!stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv
+!stage2/06_prnet_transfer/06.8_baselines/output/fold_coverage.csv
+!stage2/06_prnet_transfer/06.8_baselines/output/manifest.json
