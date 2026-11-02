@@ -242,8 +242,15 @@ def check_architecture(model: PGM, struct: Mapping[str, Any]) -> None:
         )
     if tuple(mean.shape) != (2, n_genes) or tuple(var.shape) != (2, n_genes):
         raise SystemExit(f"forward shape mismatch: mean {tuple(mean.shape)} var {tuple(var.shape)}")
-    if not bool(torch.all(var > 0)):
-        raise SystemExit("decoder variance head is not strictly positive")
+    # Softplus is mathematically strictly positive, but float32 underflows to exactly 0
+    # for a very negative logit. The all-zero probe is off-distribution, so an exact 0
+    # here is a representational limit, not a broken model (ticket #9: four Tahoe-init
+    # checkpoints hit it while their real-input variance stayed > 0 and the evaluated
+    # metric uses the predicted mean only). Reject only non-finite or negative variance.
+    if not bool(torch.isfinite(var).all()):
+        raise SystemExit("decoder variance head produced a non-finite variance")
+    if not bool((var >= 0).all()):
+        raise SystemExit("decoder variance head produced a negative variance")
     model.train()
 
 
