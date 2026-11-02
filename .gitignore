@@ -146,3 +146,12 @@ stage2/_envs/cmonge/
 
 # Literature reference PDF archive (large, background reading only)
 /reference/
+
+# Stage 2 · 06.8 baselines: only the five top-level record files are evidence;
+# the per-fold prediction/eval trees and fit params must stay local.  The global
+# `output/` rule hides the directory, so re-include it and then re-ignore its
+# contents except the record.  Other steps keep force-adding instead.
+!stage2/06_prnet_transfer/06.8_baselines/output/
+stage2/06_prnet_transfer/06.8_baselines/output/*
+!stage2/06_prnet_transfer/06.8_baselines/output/*.csv
+!stage2/06_prnet_transfer/06.8_baselines/output/*.json
