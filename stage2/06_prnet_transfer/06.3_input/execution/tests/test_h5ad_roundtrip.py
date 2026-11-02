@@ -266,18 +266,78 @@ class TahoeAssemblyTest(unittest.TestCase):
         with self.assertRaises(contract.ContractError):
             writers.assemble_tahoe_obs(raw, qc)
 
+    def test_matched_control_carried_from_handoff(self):
+        raw = tahoe_inherited_obs()
+        qc = pd.DataFrame({"well": raw.index.astype(str), "qc_pass": True,
+                           "qc_reason": "ok",
+                           "matched_control_ok": [True] * len(raw),
+                           "matched_control_key": ["tahoe::plate1::CVCL_0001"] * len(raw)})
+        # one treated row of a control-less group: drop that group's control
+        qc["matched_control_ok"] = qc["matched_control_ok"].astype(object)
+        treated = raw.index[(~raw["is_control"].astype(bool))][0]
+        qc.loc[qc["well"] == treated, "matched_control_ok"] = False
+        obs = writers.assemble_tahoe_obs(raw, qc)
+        self.assertFalse(bool(obs.loc[treated, "tahoe_usable"]))
+        self.assertFalse(bool(obs.loc[treated, "matched_control_ok"]))
+        # a control row is its own matched control
+        controls = obs.loc[obs["is_control"].astype(bool)]
+        self.assertTrue(controls["matched_control_ok"].astype(bool).all())
+        self.assertTrue((controls["matched_control_key"].astype(str) == "").all())
+
+    def test_handoff_claiming_a_missing_matched_control_fails(self):
+        raw = tahoe_inherited_obs()
+        qc = pd.DataFrame({"well": raw.index.astype(str), "qc_pass": True,
+                           "qc_reason": "ok",
+                           "matched_control_ok": [True] * len(raw),
+                           "matched_control_key": [""] * len(raw)})
+        qc["matched_control_ok"] = qc["matched_control_ok"].astype(object)
+        # remove every control of one (plate, line) group
+        group = "tahoe::plate1::CVCL_0001"
+        control_ids = raw.index[(raw["control_group"] == group)
+                                & raw["is_control"].astype(bool)]
+        qc.loc[qc["well"].isin(control_ids), "qc_pass"] = False
+        with self.assertRaises(contract.ContractError):
+            writers.assemble_tahoe_obs(raw, qc)
+
     def test_control_groups_and_pairs(self):
         obs = tahoe_assembled_obs()
         groups = writers.tahoe_control_groups(obs)
-        self.assertEqual(len(groups), 4)      # 2 plates x 2 lines
+        # long form: one row per (group, QC-pass member observation)
+        self.assertEqual(len(groups), 4)      # 2 plates x 2 lines, 1 control each
+        self.assertEqual(list(groups.columns),
+                         ["group_index", "group_key", "plate", "cell_line_id",
+                          "row", "n_controls", "n_qc_pass", "qc_pass"])
+        self.assertEqual(sorted(groups["group_index"].unique()), [0, 1, 2, 3])
         self.assertTrue((groups["n_controls"] == 1).all())
         self.assertTrue((groups["n_qc_pass"] == 1).all())
-        self.assertEqual([len(rows) for rows in groups["control_rows"]], [1, 1, 1, 1])
-        pairs = writers.tahoe_pairs(obs)
+        self.assertTrue(groups["qc_pass"].all())
+        self.assertTrue(groups["group_key"].str.contains(r"plate\d+\|CVCL_").all())
+        pairs = writers.tahoe_pairs(obs, groups)
         treated = int((~obs["is_control"].astype(bool)).sum())
-        self.assertEqual(len(pairs["treated_row"]), treated)
-        self.assertTrue(set(pairs["control_group"].astype(str))
-                        <= set(groups["control_group"].astype(str)))
+        self.assertEqual(len(pairs["row"]), treated)
+        self.assertEqual(set(pairs["group_index"].astype(int)),
+                         set(groups["group_index"].astype(int)))
+        # every pair's group key matches the row's (plate, cell_line)
+        key_of = dict(zip(groups["group_index"].astype(int),
+                          groups["group_key"].astype(str)))
+        for row, gid in zip(pairs["row"], pairs["group_index"]):
+            expected = (f"{obs['plate'].iloc[row]}|"
+                        f"{obs['cell_line_id'].iloc[row]}")
+            self.assertEqual(key_of[int(gid)], expected)
+
+    def test_pairs_skip_treated_rows_without_a_control(self):
+        obs = tahoe_assembled_obs()
+        groups = writers.tahoe_control_groups(obs)
+        pairs = writers.tahoe_pairs(obs, groups)
+        self.assertEqual(pairs["skipped_no_control"], 0)
+        # a group with no QC-pass control is absent from the long table
+        broken = obs.copy()
+        dropped_group = broken.loc[broken["is_control"].astype(bool),
+                                   "control_group"].iloc[0]
+        broken.loc[broken["control_group"] == dropped_group,
+                   "tahoe_usable"] = False
+        groups2 = writers.tahoe_control_groups(broken)
+        self.assertNotIn(dropped_group, set(groups2["group_key"].astype(str)))
 
 
 class TahoeWriterTest(unittest.TestCase):
@@ -365,13 +425,14 @@ class PinnedReaderTest(unittest.TestCase):
             code = (
                 "import anndata as ad, sys;"
                 f"a=ad.read_h5ad({str(path)!r});"
-                "print(a.shape, a.obs.columns.tolist()[-1], sorted(a.layers))"
+                "print(a.shape, 'main_set' in a.obs.columns, sorted(a.layers))"
             )
             result = subprocess.run([str(PINNED_READER), "-c", code],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("(8,", result.stdout)
-            self.assertIn("main_set", result.stdout)
+            self.assertIn("True", result.stdout)
+            self.assertIn("log1p_cp10k", result.stdout)
             self.assertIn("log1p_cp10k", result.stdout)
 
 

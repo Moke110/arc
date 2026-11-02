@@ -41,6 +41,52 @@ _WELL_RE = re.compile(r"^([A-Z]+)0*(\d+)$")
 # Shared helpers
 # --------------------------------------------------------------------------- #
 
+
+def _matched_control_columns(obs: pd.DataFrame, qc_map: pd.DataFrame,
+                             is_control: pd.Series, group_key: pd.Series,
+                             group_has: pd.Series) -> tuple[pd.Series, pd.Series, str]:
+    """Carry #2's matched-control decision (or derive it when absent).
+
+    `matched_control_ok` answers "does this observation have an available
+    matched control?" (#2's own decision, keyed by plate/vehicle for CM and by
+    plate/cell line for Tahoe).  When the handoff does not carry it, the rule in
+    the README is applied and the manifest records `derived`.  A control row is
+    its own matched control, so its flags are `True` / empty key by
+    construction.  A treated row flagged `True` by #2 must actually have a
+    QC-pass control in its group — a contradiction fails the build.
+    """
+    controls = is_control.to_numpy(dtype=bool)
+    source = "derived"
+    if "matched_control_ok" in qc_map.columns:
+        source = "handoff"
+        ok = obs.index.to_series().map(qc_map["matched_control_ok"]).to_numpy(dtype=object)
+        key = (obs.index.to_series().map(qc_map["matched_control_key"]).to_numpy(dtype=object)
+               if "matched_control_key" in qc_map.columns else None)
+    else:
+        ok = group_has.to_numpy(dtype=object)
+        key = None
+    has = group_has.to_numpy(dtype=bool)
+    ok_filled = np.where(controls, True,
+                         np.where(pd.isna(ok), False, np.asarray(ok, dtype=object)))
+    ok_filled = np.asarray(ok_filled, dtype=bool)
+    if source == "handoff":
+        contradicted = (~controls) & ok_filled & (~has)
+        if contradicted.any():
+            bad = obs.index[contradicted][:5].tolist()
+            raise ContractError(
+                "the QC handoff says these treated rows have a matched control, "
+                f"but their group has no QC-pass control: {bad}")
+    if key is None:
+        key_values = group_key.astype(str).to_numpy()
+    else:
+        key_values = np.where(pd.isna(key), group_key.astype(str).to_numpy(),
+                              np.asarray(key, dtype=object))
+    key_values = np.where(controls, "", np.asarray(key_values, dtype=object)).astype(str)
+    return (pd.Series(ok_filled, index=obs.index, name="matched_control_ok"),
+            pd.Series(key_values, index=obs.index, name="matched_control_key"),
+            source)
+
+
 def var_frame(axis: pd.DataFrame, gene_measured: pd.Series,
               n_nonzero: np.ndarray) -> pd.DataFrame:
     """`var` with the corpus identity columns, measurement mask and nnz audit."""
@@ -167,6 +213,15 @@ def assemble_cm_obs(obs: pd.DataFrame, hash_table: pd.DataFrame,
     out["qc_reason"] = _as_categorical(qc_reason.fillna("").astype(str))
 
     is_control = out["is_control"].astype(bool)
+    pass_dmso = (out["is_control"].astype(bool)
+                 & (out["vehicle"].astype(str) == "DMSO")
+                 & out["qc_pass"].astype(bool))
+    group_has = out["plate"].astype(str).map(
+        out.loc[pass_dmso].groupby("plate", observed=True).size()).fillna(0) > 0
+    matched_ok, matched_key, matched_source = _matched_control_columns(
+        out, qc_map, is_control, out["plate"].astype(str), group_has)
+    out["matched_control_ok"] = matched_ok.to_numpy(dtype=bool)
+    out["matched_control_key"] = _as_categorical(matched_key.astype(str))
     is_treated = ~is_control
     resolvable = is_treated & (drug_key != "")
     if (is_treated & ~resolvable).any():
@@ -180,8 +235,14 @@ def assemble_cm_obs(obs: pd.DataFrame, hash_table: pd.DataFrame,
             f"table: {keys}; #1 must cover every resolvable key")
     out["eligibility_decision"] = out["eligibility_decision"].cat.set_categories(
         ["include", "exclude", "uncertain"])
-    main_set = (out["eligibility_decision"].astype(str) == "include") & out["qc_pass"]
-    out["main_set"] = (main_set & is_treated).astype(bool)
+    decision_text = out["eligibility_decision"].astype(str)
+    out["main_set"] = ((decision_text == "include") & out["qc_pass"]
+                       & is_treated).astype(bool)
+    # Ticket #11's expansion arm adds the QC-pass non-pharmacological compounds
+    # (decision == exclude) to training; they are never scored.  `uncertain`
+    # drugs are in neither set.
+    out["expansion_set"] = ((decision_text == "exclude") & out["qc_pass"]
+                            & is_treated).astype(bool)
 
     return out[CM_OBS]
 
@@ -268,7 +329,14 @@ def assemble_tahoe_obs(obs: pd.DataFrame, qc: pd.DataFrame) -> pd.DataFrame:
     group_pass = (out.loc[out["is_control"].astype(bool)]
                   .groupby("control_group", observed=True)["qc_pass"].sum())
     has_control = out["control_group"].astype(str).map(group_pass).fillna(0) > 0
-    usable = (~is_control) & out["has_structure"].astype(bool) & out["qc_pass"] & has_control
+    matched_ok, matched_key, matched_source = _matched_control_columns(
+        out, qc_map, is_control, out["control_group"].astype(str), has_control)
+    out["matched_control_ok"] = matched_ok.to_numpy(dtype=bool)
+    out["matched_control_key"] = _as_categorical(matched_key.astype(str))
+    # #2's matched-control decision is authoritative; `has_structure` still
+    # excludes the two structure-less drugs from any use.
+    usable = (~is_control) & out["has_structure"].astype(bool) & out["qc_pass"] \
+        & out["matched_control_ok"].astype(bool)
     out["tahoe_usable"] = usable.astype(bool)
 
     # time_h stays NaN: no atlas table carries a time column (ADR 0031 D3).  The
@@ -280,51 +348,106 @@ def assemble_tahoe_obs(obs: pd.DataFrame, qc: pd.DataFrame) -> pd.DataFrame:
 
 
 def tahoe_control_groups(obs: pd.DataFrame) -> pd.DataFrame:
-    """`control_group` -> the control row positions the matched mean is taken over.
+    """Matched-control membership in the contracted **long** form.
 
-    One row per `(plate, cell_line)` group; `control_rows` holds the row
-    positions (as a list, parquet-friendly) so the pipeline can compute the mean
-    of that group's `log1p_cp10k` rows directly.  Never materialise 67k x 18k
-    control vectors: 700 groups x 2 rows is all the membership needed.
+    One row per ``(group, member observation)``: ``group_index``, ``group_key``
+    (``plate|cell_line_id``), ``plate``, ``cell_line_id``, ``row`` (position in
+    the artifact).  Only **QC-pass control** rows are members, so the mean of a
+    group's ``log1p_cp10k`` rows is exactly the matched control.  A group that
+    lost both controls to QC keeps its treated rows in the artifact but is not a
+    group here (they are ``tahoe_usable=False`` and have no pair); controls are
+    never averaged across cell lines and 67k x 18k control vectors are never
+    materialised.
     """
     needed = {"control_group", "is_control", "plate", "cell_line_id", "qc_pass"}
     missing = needed - set(obs.columns)
     if missing:
         raise ContractError(f"tahoe_control_groups: obs missing {sorted(missing)}")
     control = obs["is_control"].astype(bool).to_numpy()
+    qc_pass = obs["qc_pass"].astype(bool).to_numpy()
     positions = np.flatnonzero(control)
     group = obs["control_group"].astype(str).to_numpy()
-    qc_pass = obs["qc_pass"].astype(bool).to_numpy()
+    plate = obs["plate"].astype(str).to_numpy()
+    line = obs["cell_line_id"].astype(str).to_numpy()
+
     rows = []
+    group_index = 0
     for label in sorted(set(group[positions])):
-        idx = positions[group[positions] == label]
-        first = int(idx[0])
-        rows.append({
-            "control_group": label,
-            "plate": str(obs["plate"].iloc[first]),
-            "cell_line_id": str(obs["cell_line_id"].iloc[first]),
-            "control_rows": [int(i) for i in idx],
-            "n_controls": int(len(idx)),
-            "n_qc_pass": int(qc_pass[idx].sum()),
-        })
+        members = positions[group[positions] == label]
+        passed = members[qc_pass[members]]
+        key = f"{plate[members[0]]}|{line[members[0]]}"
+        if len({(plate[m], line[m]) for m in members}) != 1:
+            raise ContractError(
+                f"control group {label!r} spans more than one (plate, cell_line)")
+        for member in passed:
+            rows.append({
+                "group_index": group_index,
+                "group_key": key,
+                "plate": plate[member],
+                "cell_line_id": line[member],
+                "row": int(member),
+                "n_controls": int(len(members)),
+                "n_qc_pass": int(len(passed)),
+                "qc_pass": True,
+            })
+        if passed.size:
+            group_index += 1
     table = pd.DataFrame(rows)
     if len(table) == 0:
-        raise ContractError("tahoe_control_groups: no control groups")
-    if (table["n_qc_pass"] == 0).any():
-        empty = table.loc[table["n_qc_pass"] == 0, "control_group"].tolist()[:5]
-        raise ContractError(f"control group(s) lost every control to QC: {empty}")
+        raise ContractError("tahoe_control_groups: no QC-pass control group")
+    for column, dtype in (("group_index", np.int32), ("row", np.int32),
+                          ("n_controls", np.int16), ("n_qc_pass", np.int16)):
+        table[column] = table[column].astype(dtype)
+    # Every usable treated row must point at a group that has a member.
+    usable = obs["tahoe_usable"].astype(bool).to_numpy()
+    present = set(table["group_key"].astype(str))
+    key_of_row = np.array([f"{p}|{l}" for p, l in zip(plate, line)], dtype=object)
+    orphan = usable & ~np.isin(key_of_row, list(present))
+    if orphan.any():
+        bad = obs.index[orphan][:5].tolist()
+        raise ContractError(
+            "usable Tahoe rows reference a control group with no QC-pass control: "
+            f"{bad}")
     return table
 
 
-def tahoe_pairs(obs: pd.DataFrame) -> dict:
-    """Treated row -> its control group, plus the split/role arrays."""
+def tahoe_pairs(obs: pd.DataFrame, groups: pd.DataFrame) -> dict:
+    """Treated row -> control ``group_index`` (ticket #4 reads `row`/`group_index`).
+
+    Only treated rows whose ``(plate, cell_line)`` group has ≥ 1 QC-pass control
+    are listed: the 204 kept observations without a matched control are reported
+    in the manifest and never re-paired across cell lines.  `usable` and `split`
+    are carried for audit; they do not change the mapping.
+    """
     treated = ~obs["is_control"].astype(bool).to_numpy()
-    groups = obs["control_group"].astype(str).to_numpy()
+    plate = obs["plate"].astype(str).to_numpy()
+    line = obs["cell_line_id"].astype(str).to_numpy()
+    key_of_row = np.array([f"{p}|{l}" for p, l in zip(plate, line)], dtype=object)
+    index_of_key = dict(zip(groups["group_key"].astype(str),
+                            groups["group_index"].astype(np.int64)))
+    treated_rows = np.flatnonzero(treated)
+    rows = []
+    group_index = []
+    usable = []
+    split = []
+    skipped_no_control = 0
+    for row in treated_rows:
+        gid = index_of_key.get(key_of_row[row])
+        if gid is None:
+            skipped_no_control += 1
+            continue
+        rows.append(int(row))
+        group_index.append(int(gid))
+        usable.append(bool(obs["tahoe_usable"].to_numpy()[row]))
+        split.append(str(obs["tahoe_split"].astype(str).to_numpy()[row]))
+    if not rows:
+        raise ContractError("tahoe_pairs: no treated row has a matched control")
     return {
-        "treated_row": np.flatnonzero(treated).astype(np.int32),
-        "control_group": groups[treated],
-        "usable": obs["tahoe_usable"].astype(bool).to_numpy()[treated],
-        "split": obs["tahoe_split"].astype(str).to_numpy()[treated],
+        "row": np.asarray(rows, dtype=np.int32),
+        "group_index": np.asarray(group_index, dtype=np.int32),
+        "usable": np.asarray(usable, dtype=bool),
+        "split": np.asarray(split, dtype=str),
+        "skipped_no_control": skipped_no_control,
     }
 
 

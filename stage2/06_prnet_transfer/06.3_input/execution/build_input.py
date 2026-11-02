@@ -36,7 +36,8 @@ import consensus as consensus_mod
 import folds as folds_mod
 import writers
 from contract import (
-    _frozen_manifest_row as _frozen_row,
+    Handoff as HandoffRecord, _frozen_manifest_row as _frozen_row,
+    companion_handoff, read_json,
     ARTIFACTS, CM_BUNDLE_MANIFEST, CM_OBS, CM_VIEW, CONFIG_VERSION, CONTRACT_ID,
     ContractError, DATA_ROOT, ELIGIBILITY_DECISIONS, FOLD_SEED, MANIFEST_SCHEMA,
     N_FOLDS, N_GENES, STEP_DATA, TAHOE_OBS, TAHOE_VIEW, TAHOE_VIEW_MANIFEST,
@@ -96,6 +97,58 @@ def _utc_now() -> str:
 # Handoffs (real or stub)
 # --------------------------------------------------------------------------- #
 
+def resolve_qc_path(kind: str) -> Path:
+    """Per-source QC table if present, else #2's single combined table."""
+    from contract import resolve_handoff
+    try:
+        return resolve_handoff(kind)
+    except ContractError:
+        return resolve_handoff("qc_combined")
+
+
+def read_qc_handoff(path: Path | str, kind: str):
+    """Normalise one per-source QC table; `path` may be #2's combined table."""
+    from contract import Handoff, _read_table, normalize_qc_table, sha256_file, split_combined_qc
+    from contract import relpath
+    resolved = Path(path).expanduser().resolve()
+    raw = _read_table(resolved)
+    combined_column = next((c for c in ("source", "dataset_id", "dataset")
+                            if c in raw.columns), None)
+    note = f"per-observation QC for {kind}"
+    if combined_column is not None:
+        parts = split_combined_qc(raw, resolved)
+        key = "cm" if kind == "cm" else "tahoe"
+        part = parts.get(key)
+        if part is None:
+            raise ContractError(f"{resolved}: no {kind} rows in the combined QC table")
+        raw = part.reset_index(drop=True)
+        note = f"per-observation QC for {kind}, split from the combined table"
+    table = normalize_qc_table(raw, resolved, kind)
+    handoff = Handoff(f"{kind}_qc", resolved, sha256_file(resolved),
+                      resolved.stat().st_size, len(table), note)
+    return table, handoff
+
+
+def qc_companion_checks(path: Path, kind: str, payload: dict) -> dict:
+    """Extract and validate the #2 handoff companion facts for one source."""
+    companion = companion_handoff(Path(path), ("handoff.json",))
+    if companion is None:
+        return {}
+    doc = read_json(companion)
+    out = {"handoff_json": str(companion), "sha256": sha256_file(companion)}
+    key = "temp_env" if kind == "cm" else "tahoe"
+    kept = doc.get("kept_observation_ids", {}).get(key)
+    if kept is not None:
+        out["kept_n_handoff"] = int(kept["n"])
+    routing = doc.get("routing", {}).get(key, {})
+    if routing:
+        out["routing"] = routing
+    mask = doc.get("gene_measurement_mask", {}).get("FAM153B", {}).get(key)
+    if mask is not None:
+        out["fam153b_measured_handoff"] = bool(mask.get("evidence", {}).get("measured"))
+    return out
+
+
 def load_handoffs_for_cm(args, cm_obs: pd.DataFrame):
     """Return (eligibility, cm_qc, records, stub) for the CM side."""
     if args.stub_handoffs:
@@ -117,25 +170,30 @@ def load_handoffs_for_cm(args, cm_obs: pd.DataFrame):
     records = [eligibility_record]
 
     if args.qc:
-        combined = pd.read_csv(args.qc, keep_default_na=False, dtype=str)
-        parts = split_combined_qc(combined, Path(args.qc))
-        cm_part = parts.get("cm")
-        if cm_part is None:
-            raise ContractError(f"{args.qc}: combined QC table has no CM rows")
-        scratch = Path(args.qc).with_suffix(".cm_scratch.csv")
-        cm_part.to_csv(scratch, index=False)
-        try:
-            cm_qc, record = load_qc(scratch, "cm")
-        finally:
-            scratch.unlink()
-        records.append(record)
+        cm_qc, record = read_qc_handoff(args.qc, "cm")
     elif args.cm_qc:
-        cm_qc, record = load_qc(args.cm_qc, "cm")
-        records.append(record)
+        cm_qc, record = read_qc_handoff(args.cm_qc, "cm")
     else:
-        from contract import resolve_handoff
-        cm_qc, record = load_qc(resolve_handoff("cm_qc"), "cm")
-        records.append(record)
+        cm_qc, record = read_qc_handoff(resolve_qc_path("cm_qc"), "cm")
+    records.append(record)
+    # #1's handoff.json carries the adjudicated class counts; reconcile them so a
+    # silently regenerated table cannot pass as the frozen audit.
+    companion = companion_handoff(record.path, ("handoff.json",))
+    if companion is not None:
+        doc = read_json(companion)
+        counts_doc = doc.get("counts", {})
+        observed = eligibility["eligibility_decision"].value_counts().to_dict()
+        for decision in ELIGIBILITY_DECISIONS:
+            expected = counts_doc.get(decision)
+            if expected is not None and int(expected) != int(observed.get(decision, 0)):
+                raise ContractError(
+                    f"#1 handoff.json says {expected} {decision} keys, "
+                    f"the table has {observed.get(decision, 0)}")
+        records.append(HandoffRecord("eligibility_handoff", companion,
+                                     sha256_file(companion),
+                                     companion.stat().st_size,
+                                     int(len(eligibility)),
+                                     "eligibility handoff companion (counts reconciled)"))
     return eligibility, cm_qc, records, False
 
 
@@ -148,21 +206,10 @@ def load_tahoe_qc(args, tahoe_index, *, stub: bool):
             "qc_reason": "stub: all observations pass",
         }), None
     if args.qc:
-        combined = pd.read_csv(args.qc, keep_default_na=False, dtype=str)
-        parts = split_combined_qc(combined, Path(args.qc))
-        part = parts.get("tahoe")
-        if part is None:
-            raise ContractError(f"{args.qc}: combined QC table has no Tahoe rows")
-        scratch = Path(args.qc).with_suffix(".tahoe_scratch.csv")
-        part.to_csv(scratch, index=False)
-        try:
-            return load_qc(scratch, "tahoe")
-        finally:
-            scratch.unlink()
+        return read_qc_handoff(args.qc, "tahoe")
     if args.tahoe_qc:
-        return load_qc(args.tahoe_qc, "tahoe")
-    from contract import resolve_handoff
-    return load_qc(resolve_handoff("tahoe_qc"), "tahoe")
+        return read_qc_handoff(args.tahoe_qc, "tahoe")
+    return read_qc_handoff(resolve_qc_path("tahoe_qc"), "tahoe")
 
 
 # --------------------------------------------------------------------------- #
@@ -203,6 +250,12 @@ def build_cm(handoffs, gene_axis, *, write: bool, out: Path) -> dict:
         "view_rows": int(len(obs)),
         "view_treated": int((~obs["is_control"].astype(bool)).sum()),
         "view_controls": int(obs["is_control"].astype(bool).sum()),
+        "qc_pass_rows": int(obs["qc_pass"].astype(bool).sum()),
+        "qc_fail_rows": int((~obs["qc_pass"].astype(bool)).sum()),
+        "qc_fail_treated_view": int(((~obs["is_control"].astype(bool))
+                                     & (~obs["qc_pass"].astype(bool))).sum()),
+        "qc_fail_controls_view": int((obs["is_control"].astype(bool)
+                                      & (~obs["qc_pass"].astype(bool))).sum()),
         "dropped_qc_fail_treated": int(((~obs["is_control"].astype(bool))
                                         & (~obs["qc_pass"].astype(bool))).sum()),
         "dropped_qc_fail_controls": int((obs["is_control"].astype(bool)
@@ -244,8 +297,24 @@ def build_cm(handoffs, gene_axis, *, write: bool, out: Path) -> dict:
     counts["main_set_drugs"] = int(main_drugs["drug_key"].nunique())
     counts["main_set_wells"] = int(len(main))
     counts["main_set_plates"] = int(main_drugs["plate"].nunique())
+    counts["main_set_without_matched_control"] = int(
+        (~main["matched_control_ok"].astype(bool)).sum())
+    counts["matched_control_source"] = (
+        "handoff" if "matched_control_ok" in handoffs["cm_qc"].columns else "derived")
+    counts["qc_pass_vehicle"] = {
+        "dmso": int((kept["is_control"].astype(bool)
+                     & (kept["vehicle"].astype(str) == "DMSO")).sum()),
+        "media": int((kept["is_control"].astype(bool)
+                      & (kept["vehicle"].astype(str) == "Media")).sum()),
+    }
     counts["eligibility_include_without_usable_well"] = int(
         len(include_keys - set(main_drugs["drug_key"])))
+    expansion = kept.loc[kept["expansion_set"].astype(bool)]
+    counts["expansion_set_wells"] = int(len(expansion))
+    counts["expansion_set_drugs"] = int(expansion["drug_key"].astype(str).nunique())
+    counts["expanded_train_drugs"] = int(
+        len(set(main_drugs["drug_key"].astype(str))
+            | set(expansion["drug_key"].astype(str))))
     counts["main_set_doses"] = sorted(float(d) for d in main["dose_um"].unique())
 
     # Representative structure per drug (all rows of a drug share the parent key).
@@ -260,11 +329,12 @@ def build_cm(handoffs, gene_axis, *, write: bool, out: Path) -> dict:
     drugs["inchikey"] = drugs["inchikey"].fillna("").astype(str)
 
     assign = folds_mod.cluster_drugs(drugs, n_folds=N_FOLDS, seed=FOLD_SEED)
-    fold_table = folds_mod.expand_fold_table(assign, main_drugs, n_folds=N_FOLDS)
+    fold_long = folds_mod.expand_fold_table(assign, main_drugs, n_folds=N_FOLDS)
+    fold_table = folds_mod.collapse_fold_table(fold_long)
     fold_facts = folds_mod.assert_fold_invariants(
         fold_table, assign, expected_drugs=set(main_drugs["drug_key"].astype(str)),
         n_folds=N_FOLDS)
-    sizes = folds_mod.fold_sizes(fold_table)
+    sizes = folds_mod.fold_sizes(fold_long)
     counts["folds"] = {
         "n_folds": N_FOLDS,
         "seed": FOLD_SEED,
@@ -279,10 +349,10 @@ def build_cm(handoffs, gene_axis, *, write: bool, out: Path) -> dict:
     }
 
     c_star, membership, summary, plate_names, plate_weights = (
-        consensus_mod.build_consensus(log1p, kept, fold_table,
+        consensus_mod.build_consensus(log1p, kept, fold_long,
                                       n_folds=N_FOLDS, n_genes=N_GENES))
     provenance = consensus_mod.assert_consensus_provenance(
-        membership, kept, fold_table, n_folds=N_FOLDS)
+        membership, kept, fold_long, n_folds=N_FOLDS)
     counts["consensus"] = {
         "fold_n_plates": [int(v) for v in summary["n_plates"]],
         "fold_n_wells": [int(v) for v in summary["n_wells"]],
@@ -292,6 +362,7 @@ def build_cm(handoffs, gene_axis, *, write: bool, out: Path) -> dict:
 
     result = {
         "obs": kept, "X": X, "log1p": log1p, "folds": fold_table,
+        "folds_long": fold_long,
         "assign": assign, "sizes": sizes, "c_star": c_star,
         "membership": membership, "consensus_summary": summary,
         "plate_names": plate_names, "plate_weights": plate_weights,
@@ -347,7 +418,7 @@ def build_tahoe(qc: pd.DataFrame, gene_axis, *, tahoe_rows: int | None,
             f"e.g. {sorted(missing)[:5]}")
     obs = writers.assemble_tahoe_obs(obs_all, qc)
     control_groups = writers.tahoe_control_groups(obs)
-    pairs = writers.tahoe_pairs(obs)
+    pairs = writers.tahoe_pairs(obs, control_groups)
 
     counts = {
         "rows": int(len(obs)),
@@ -364,8 +435,16 @@ def build_tahoe(qc: pd.DataFrame, gene_axis, *, tahoe_rows: int | None,
                              & (obs["tahoe_split"].astype(str) == "train")).sum()),
         "usable_valid": int((obs["tahoe_usable"].astype(bool)
                              & (obs["tahoe_split"].astype(str) == "valid")).sum()),
-        "control_groups": int(len(control_groups)),
-        "groups_with_zero_qc_pass": int((control_groups["n_qc_pass"] == 0).sum()),
+        "control_groups": int(control_groups["group_key"].nunique()),
+        "groups_with_zero_qc_pass": int(
+            obs.loc[obs["is_control"].astype(bool), "control_group"].nunique()
+            - control_groups["group_key"].nunique()),
+        "control_members": int(len(control_groups)),
+        "pairs": int(len(pairs["row"])),
+        "pairs_skipped_no_control": int(pairs["skipped_no_control"]),
+        "usable_without_pair": int(
+            int(obs["tahoe_usable"].astype(bool).sum())
+            - int(np.asarray(pairs["usable"], dtype=bool).sum())),
         "split_train_rows": int((obs["tahoe_split"].astype(str) == "train").sum()),
         "split_valid_rows": int((obs["tahoe_split"].astype(str) == "valid").sum()),
         "cell_lines": int(obs["cell_line_id"].astype(str).nunique()),
@@ -376,6 +455,8 @@ def build_tahoe(qc: pd.DataFrame, gene_axis, *, tahoe_rows: int | None,
                                         & (~obs["is_control"].astype(bool)),
                                         "tahoe_valid_group"].astype(str).nunique()),
         "time_source": TIME_SOURCE_TAHOE,
+        "matched_control_source": (
+            "handoff" if "matched_control_ok" in qc.columns else "derived"),
     }
     nnz = tahoe_gene_nnz(TAHOE_VIEW)
     counts["all_zero_measured_genes"] = int(
@@ -406,6 +487,10 @@ def _cm_uns(args, records, handoff_records) -> dict:
             "control_group": "inherited temp_env::Plate<N>; MIXES DMSO and Media rows — "
                              "never use it as a matched baseline",
             "main_set": "eligibility_decision == include AND qc_pass (treated rows only)",
+            "matched_control_ok": "carried from ticket #2's per-observation QC (same-plate "
+                                  "DMSO control availability); a control row is its own "
+                                  "matched control.  Derived when the handoff omits it.",
+            "matched_control_key": "ticket #2's matched-control group key (plate x vehicle)",
         },
         "control_cache": "NO uns['control_mean'] is carried: the inherited 02 cache is a "
                          "DMSO+Media raw-count mean and is superseded. The correctly "
@@ -439,8 +524,12 @@ def _tahoe_uns(args, records, handoff_records) -> dict:
             "vehicle": "'' on every treated row; 'DMSO_TF' on controls; no solvent column exists",
             "has_structure": "False on 2 drugs / 300 treated rows: kept for auditability, "
                              "excluded from training and evaluation via tahoe_usable",
-            "tahoe_usable": "~is_control AND has_structure AND qc_pass AND the control group "
-                            "keeps at least one QC-pass control",
+            "matched_control_ok": "carried from ticket #2's per-observation QC (same "
+                                  "(plate, cell_line) control availability); a control row "
+                                  "is its own matched control.",
+            "matched_control_key": "ticket #2's matched-control group key (plate x cell line)",
+            "tahoe_usable": "~is_control AND has_structure AND qc_pass AND "
+                            "matched_control_ok",
             "tahoe_split": "train | valid by plate13/plate14 (existing technical default)",
             "tahoe_valid_group": "drug_key x dose_uM x cell_line_id (CM-style grouping for "
                                  "direction AUPRC@200; controls keyed by plate x cell line)",
@@ -482,6 +571,11 @@ def build(args) -> dict:
     log(f"handoffs: {len(eligibility)} eligibility rows, {len(cm_qc)} CM QC rows"
         + (", STUB mode (not a frozen build)" if stub else ""))
     del cm_preview
+    handoff_checks: dict = {"stub": bool(stub)}
+    handoff_checks["fold_seed"] = FOLD_SEED
+    if not stub:
+        qc_record = next(r for r in handoff_records if r.kind == "cm_qc")
+        handoff_checks["cm_qc"] = qc_companion_checks(qc_record.path, "cm", {})
 
     cm = build_cm({"eligibility": eligibility, "cm_qc": cm_qc},
                   gene_axis, write=True, out=out)
@@ -494,9 +588,31 @@ def build(args) -> dict:
     cm_nnz = (cm["X"] != 0).sum(axis=0)
     cm_var = writers.var_frame(gene_axis, cm_measured, cm_nnz)
 
+    # Reconcile the artifact population against #2's own counts: the CM
+    # artifact must be exactly the QC-pass rows of the frozen view.
+    cm_kept_pass = int(cm["obs"]["qc_pass"].astype(bool).sum())
+    if cm_kept_pass != len(cm["obs"]):
+        raise ContractError("a kept CM row is not QC-pass")
+    if cm_kept_pass != int(cm["counts"]["qc_pass_rows"]):
+        raise ContractError(
+            f"kept CM rows {cm_kept_pass} != the view's QC-pass rows "
+            f"{cm['counts']['qc_pass_rows']}")
+    handoff_checks["cm_kept_rows"] = cm_kept_pass
+    handoff_checks["cm_qc_pass_rows_in_view"] = int(cm["counts"]["qc_pass_rows"])
+    handoff_checks["cm_qc_fail_rows_in_view"] = int(cm["counts"]["qc_fail_rows"])
+    handoff_checks["cm_handoff_pass_rows_all_wells"] = int(cm_qc["qc_pass"].sum())
+    fam = cm_measured.loc[contract_fam153b()]
+    if "cm_qc" in handoff_checks:
+        expected = handoff_checks["cm_qc"].get("fam153b_measured_handoff")
+        if expected is not None and bool(expected) != bool(fam):
+            raise ContractError(
+                "#2's handoff.json says FAM153B is measured in temp_env but the "
+                "gene-panel derivation disagrees")
+
     # ---- Tahoe side --------------------------------------------------------
     tahoe = None
     tahoe_measured = None
+    tahoe_var = None
     if args.skip_tahoe:
         log("Tahoe side skipped (--skip-tahoe)")
     else:
@@ -516,6 +632,25 @@ def build(args) -> dict:
         tahoe_measured = gene_measured_tahoe(gene_axis, ens_space)
         tahoe = build_tahoe(tahoe_qc, gene_axis, tahoe_rows=args.tahoe_rows,
                             tahoe_measured=tahoe_measured)
+        if not stub:
+            tahoe_qc_record = next(
+                (r for r in handoff_records if r.kind == "tahoe_qc"), None)
+            if tahoe_qc_record is not None:
+                handoff_checks["tahoe_qc"] = qc_companion_checks(
+                    tahoe_qc_record.path, "tahoe", {})
+                kept_n = handoff_checks["tahoe_qc"].get("kept_n_handoff")
+                observed = int(tahoe["obs"]["qc_pass"].astype(bool).sum())
+                if kept_n is not None and int(kept_n) != observed:
+                    raise ContractError(
+                        f"#2 handoff.json says {kept_n} kept Tahoe observations, "
+                        f"the view yields {observed}")
+            fam = tahoe_measured.loc[contract_fam153b()]
+            expected = handoff_checks.get("tahoe_qc", {}).get(
+                "fam153b_measured_handoff")
+            if expected is not None and bool(expected) != bool(fam):
+                raise ContractError(
+                    "#2's handoff.json says FAM153B is missing from Tahoe but the "
+                    "gene-space derivation disagrees")
         log(f"Tahoe: {tahoe['counts']['rows']} rows, "
             f"{tahoe['counts']['usable_treated']} usable treated "
             f"({tahoe['counts']['usable_train']} train / "
@@ -532,6 +667,7 @@ def build(args) -> dict:
         out / ARTIFACTS["consensus_controls"],
         schema=np.array("06.3_input/consensus/1"),
         c_star=cm["c_star"],
+        folds=np.arange(N_FOLDS, dtype=np.int16),
         fold_ids=np.arange(N_FOLDS, dtype=np.int16),
         plate_names=np.asarray(cm["plate_names"], dtype=str),
         plate_weights=cm["plate_weights"],
@@ -545,8 +681,8 @@ def build(args) -> dict:
         np.savez_compressed(
             out / ARTIFACTS["tahoe_pairs"],
             schema=np.array("06.3_input/tahoe_pairs/1"),
-            treated_row=tahoe["pairs"]["treated_row"],
-            control_group=tahoe["pairs"]["control_group"].astype(str),
+            row=tahoe["pairs"]["row"],
+            group_index=tahoe["pairs"]["group_index"],
             usable=tahoe["pairs"]["usable"],
             split=tahoe["pairs"]["split"].astype(str),
         )
@@ -591,6 +727,7 @@ def build(args) -> dict:
     write_counts_csv(out / ARTIFACTS["counts"], counts)
     log(f"counts written ({sum(1 for _ in (out / ARTIFACTS['counts']).read_text().splitlines())} rows)")
 
+    write_contract_json(out, cm, tahoe, cm_var, tahoe_var, counts, handoff_checks)
     config_path = out / ARTIFACTS["locked_config"]
     artifacts = []
     for name in [ARTIFACTS["cm"], ARTIFACTS["tahoe"], ARTIFACTS["folds"],
@@ -641,6 +778,7 @@ def build(args) -> dict:
              "sha256": sha256_file(TAHOE_VIEW_MANIFEST)},
         ],
         "handoffs": [record.as_dict() for record in handoff_records],
+        "handoff_checks": handoff_checks,
         "artifacts": artifacts,
         "counts": counts,
         "gates": {
@@ -654,6 +792,12 @@ def build(args) -> dict:
     (out / ARTIFACTS["manifest"]).write_text(canonical_json(manifest), encoding="utf-8")
     log(f"manifest written: {relpath(out)}  status={manifest['status']}")
     return manifest
+
+
+def contract_fam153b() -> str:
+    """The one CM axis slot with no Tahoe measurement (ADR 0031 D2 / #2 mask)."""
+    from contract import FAM153B_SYMBOL
+    return FAM153B_SYMBOL
 
 
 def _artifact_role(name: str) -> str:
@@ -670,6 +814,7 @@ def _artifact_role(name: str) -> str:
         ARTIFACTS["fold_sizes"]: "per fold/role drug and well counts",
         ARTIFACTS["consensus_summary"]: "per-fold consensus plate pool",
         ARTIFACTS["var_checks"]: "per-gene measurement audit",
+        ARTIFACTS["contract"]: "machine-readable interface contract for downstream tickets",
     }[name]
 
 
@@ -809,16 +954,95 @@ def verify(args) -> dict:
             path = DATA_ROOT / record["path"]
             ok = path.exists() and sha256_file(path) == record["sha256"]
             check(f"handoff {record['kind']} unchanged", ok)
-        eligibility = pd.read_csv(DATA_ROOT / manifest["handoffs"][0]["path"],
-                                  keep_default_na=False, dtype=str)
-        decisions_csv = eligibility.iloc[:, 1].astype(str).str.strip().str.lower()
-        check("eligibility decision values valid",
-              set(decisions_csv) <= set(ELIGIBILITY_DECISIONS))
-        resolvable = (set(cm.obs.loc[~cm.obs["is_control"].astype(bool),
-                                      "drug_key"].astype(str)) - {""})
-        uncovered = resolvable - set(eligibility.iloc[:, 0].astype(str))
-        check("eligibility covers every resolvable CM drug_key", not uncovered,
-              f"missing={sorted(uncovered)[:5]}")
+        eligibility_record = next((r for r in manifest["handoffs"]
+                                   if r["kind"] == "eligibility"), None)
+        if eligibility_record is None:
+            check("eligibility handoff recorded", False, "missing from manifest")
+        else:
+            eligibility, _ = load_eligibility(DATA_ROOT / eligibility_record["path"])
+            check("eligibility decision values valid",
+                  set(eligibility["eligibility_decision"]) <= set(ELIGIBILITY_DECISIONS))
+            resolvable = (set(cm.obs.loc[~cm.obs["is_control"].astype(bool),
+                                          "drug_key"].astype(str)) - {""})
+            uncovered = resolvable - set(eligibility["drug_key"].astype(str))
+            check("eligibility covers every resolvable CM drug_key", not uncovered,
+                  f"missing={sorted(uncovered)[:5]}")
+
+        # Per-observation QC reconciliation: the CM artifact holds exactly the
+        # QC-pass rows, and every Tahoe row carries the handoff's decision.
+        cm_ids = pd.Index(cm.obs.index.astype(str))
+        tahoe_obs = tahoe.obs if tahoe is not None else None
+        cm_qc_table = None
+        for record in manifest["handoffs"]:
+            if record["kind"] not in ("cm_qc", "tahoe_qc"):
+                continue
+            kind = "cm" if record["kind"] == "cm_qc" else "tahoe"
+            table, _ = read_qc_handoff(DATA_ROOT / record["path"], kind)
+            qc_map = table.set_index("well")
+            if kind == "cm":
+                cm_qc_table = qc_map
+                covered = cm_ids.isin(set(qc_map.index))
+                check("QC handoff covers every CM artifact row", bool(covered.all()),
+                      f"{int((~covered).sum())} uncovered")
+                passed = qc_map["qc_pass"].reindex(cm_ids)
+                check("every CM artifact row is QC-pass", bool(passed.fillna(False).all()))
+                check("CM kept-row count reconciles with the handoff",
+                      int(len(cm.obs)) == int(passed.fillna(False).sum()),
+                      f"{len(cm.obs)} rows")
+                if "matched_control_ok" in qc_map.columns:
+                    expected = qc_map["matched_control_ok"].reindex(cm_ids)
+                    treated = ~cm.obs["is_control"].astype(bool).to_numpy()
+                    got = cm.obs["matched_control_ok"].astype(bool).to_numpy()
+                    agree = np.where(expected.isna().to_numpy(), got, 
+                                     expected.to_numpy(dtype=object) == got)
+                    check("CM matched_control_ok matches the handoff",
+                          bool(np.asarray(agree, dtype=bool).all()))
+            else:
+                if tahoe_obs is None:
+                    continue
+                obs_ids = pd.Index(tahoe_obs.index.astype(str))
+                covered = obs_ids.isin(set(qc_map.index))
+                check("QC handoff covers every Tahoe artifact row", bool(covered.all()),
+                      f"{int((~covered).sum())} uncovered")
+                expected = qc_map["qc_pass"].reindex(obs_ids)
+                got = tahoe_obs["qc_pass"].astype(bool).to_numpy()
+                check("Tahoe qc_pass matches the handoff row by row",
+                      bool((expected.to_numpy(dtype=object) == got).all()))
+                check("Tahoe qc_pass count reconciles",
+                      int(got.sum()) == int(len(tahoe_obs)
+                                            - counts["tahoe"]["qc_fail_rows"]),
+                      f"{int(got.sum())} pass")
+                if "matched_control_ok" in qc_map.columns:
+                    expected = qc_map["matched_control_ok"].reindex(obs_ids)
+                    got = tahoe_obs["matched_control_ok"].astype(bool).to_numpy()
+                    agree = np.where(expected.isna().to_numpy(), got,
+                                     expected.to_numpy(dtype=object) == got)
+                    check("Tahoe matched_control_ok matches the handoff",
+                          bool(np.asarray(agree, dtype=bool).all()))
+
+        # The raw temp_env replicate id must agree between the two independent
+        # routes: our re-join from the design table and #2's per-observation QC.
+        if cm_qc_table is not None:
+            from contract import _read_table
+            source_record = next((r for r in manifest["handoffs"]
+                                  if r["kind"] == "cm_qc"), None)
+            raw = _read_table(DATA_ROOT / source_record["path"])
+            if "raw_replicate" in raw.columns:
+                if "source" in raw.columns:
+                    raw = raw.loc[raw["source"].astype(str) == "temp_env"]
+                elif "dataset_id" in raw.columns:
+                    raw = raw.loc[raw["dataset_id"].astype(str) == "temp_env"]
+                key_column = "observation_id" if "observation_id" in raw.columns else "well"
+                raw = raw.set_index(raw[key_column].astype(str))
+                expected = pd.to_numeric(raw["raw_replicate"].reindex(cm_ids),
+                                         errors="coerce").to_numpy()
+                got = cm.obs["replicate_raw"].to_numpy(dtype=np.float64)
+                same = np.isclose(expected, got, equal_nan=False)
+                check("cm replicate_raw agrees with #2's raw_replicate",
+                      bool(same.all()),
+                      f"{int((~same).sum())} mismatches")
+            check("matched-control provenance recorded",
+                  counts["cm"]["matched_control_source"] in ("handoff", "derived"))
     upstream = {
         "cm_view": (CM_BUNDLE_MANIFEST, "view", "temp_env_all-smiles.h5ad"),
         "tahoe_view": (TAHOE_VIEW_MANIFEST, "view", "tahoe_cm_schema"),
@@ -863,17 +1087,51 @@ def verify(args) -> dict:
               counts["tahoe"]["has_structure_false"])
         groups = pd.read_parquet(out / ARTIFACTS["tahoe_control_groups"])
         pairs = np.load(out / ARTIFACTS["tahoe_pairs"], allow_pickle=False)
-        check("tahoe control groups have >= 1 QC-pass control",
-              bool((groups["n_qc_pass"] >= 1).all()))
-        expected_rows = sorted(int(r) for rows in groups["control_rows"] for r in rows)
-        actual_controls = np.flatnonzero(obs["is_control"].astype(bool).to_numpy())
-        check("tahoe control membership == the control rows",
-              expected_rows == [int(r) for r in actual_controls])
-        check("tahoe pairs cover every treated row",
-              len(pairs["treated_row"]) == int((~obs["is_control"].astype(bool)).sum()))
-        check("tahoe pairs groups exist",
-              set(pairs["control_group"].astype(str)) <=
-              set(groups["control_group"].astype(str)))
+        plate = obs["plate"].astype(str).to_numpy()
+        line = obs["cell_line_id"].astype(str).to_numpy()
+        is_control = obs["is_control"].astype(bool).to_numpy()
+        qc_pass = obs["qc_pass"].astype(bool).to_numpy()
+        member_rows = groups["row"].to_numpy(dtype=np.int64)
+        check("tahoe control membership rows are controls",
+              bool(is_control[member_rows].all()))
+        check("tahoe control membership rows are QC-pass",
+              bool(qc_pass[member_rows].all()))
+        check("tahoe control membership rows are DMSO vehicle",
+              bool((obs["vehicle"].astype(str).to_numpy()[member_rows]
+                    == "DMSO_TF").all()))
+        expected_pass = np.flatnonzero(is_control & qc_pass)
+        check("tahoe control membership == the QC-pass control rows",
+              sorted(int(r) for r in member_rows) == [int(r) for r in expected_pass],
+              f"{len(member_rows)} members vs {len(expected_pass)} QC-pass controls")
+        group_key = (groups["plate"].astype(str) + "|"
+                     + groups["cell_line_id"].astype(str))
+        check("tahoe group_index maps one group_key",
+              groups.groupby("group_index")["group_key"].nunique().eq(1).all())
+        check("tahoe group_key matches its rows",
+              bool((group_key.to_numpy() == groups["group_key"].astype(str).to_numpy()).all()))
+        usable_mask = obs["tahoe_usable"].astype(bool).to_numpy()
+        key_of_row = np.array([f"{p}|{l}" for p, l in zip(plate, line)], dtype=object)
+        group_keys = set(groups["group_key"].astype(str))
+        usable_without = [i for i in np.flatnonzero(usable_mask)
+                          if key_of_row[i] not in group_keys]
+        check("every usable Tahoe row has a QC-pass matched-control group",
+              not usable_without, f"{len(usable_without)} row(s)")
+        pair_rows = pairs["row"].astype(np.int64)
+        pair_groups = pairs["group_index"].astype(np.int64)
+        check("tahoe pairs reference treated rows",
+              bool((~is_control[pair_rows]).all()))
+        index_of = dict(zip(groups["group_index"].astype(np.int64),
+                            groups["group_key"].astype(str)))
+        mismatched = sum(1 for row, gid in zip(pair_rows, pair_groups)
+                         if index_of.get(int(gid)) != key_of_row[int(row)])
+        check("tahoe pairs agree with the control-group keys", mismatched == 0,
+              f"{mismatched} mismatch(es)")
+        check("tahoe pairs cover every treated row with a matched control",
+              len(pair_rows) == counts["tahoe"]["pairs"],
+              f"{len(pair_rows)} pairs")
+        check("tahoe usable rows are all paired",
+              int(np.asarray(pairs["usable"], dtype=bool).sum()) == int(usable_mask.sum()),
+              f"{int(np.asarray(pairs['usable'], dtype=bool).sum())} paired usable")
         # measurement mask is membership, not counts
         ens = tahoe_gene_space_ensembl()
         measured = gene_measured_tahoe(gene_axis, ens)
@@ -883,6 +1141,54 @@ def verify(args) -> dict:
               int((~measured).sum()) == 1 and not bool(measured.loc["FAM153B"])
               if "FAM153B" in measured.index else False)
         tahoe.file.close()
+
+    # 8b. contract.json describes every field downstream code may read.
+    contract_path = out / ARTIFACTS["contract"]
+    if not contract_path.exists():
+        check("contract.json present", False, "missing")
+    else:
+        document = json.loads(contract_path.read_text())
+        described = document.get("artifacts", {})
+        required_artifacts = [ARTIFACTS["cm"], ARTIFACTS["folds"],
+                              ARTIFACTS["consensus_controls"],
+                              ARTIFACTS["consensus_membership"],
+                              ARTIFACTS["locked_config"]]
+        if tahoe is not None:
+            required_artifacts += [ARTIFACTS["tahoe"],
+                                   ARTIFACTS["tahoe_control_groups"],
+                                   ARTIFACTS["tahoe_pairs"]]
+        check("contract.json describes every frozen artifact",
+              all(name in described for name in required_artifacts),
+              f"missing={[n for n in required_artifacts if n not in described]}")
+        cm_fields = {entry["name"] for entry in described[ARTIFACTS["cm"]]["obs_columns"]}
+        for field in ("main_set", "expansion_set", "eligibility_decision", "qc_pass",
+                      "observation_id", "physical_well", "replicate_raw", "solvent",
+                      "chemical_index", "matched_control_ok", "drug_key", "dose_um",
+                      "is_control", "vehicle", "plate", "replicate"):
+            check(f"contract.json carries cm field {field}", field in cm_fields)
+        if tahoe is not None:
+            ta_fields = {entry["name"]
+                         for entry in described[ARTIFACTS["tahoe"]]["obs_columns"]}
+            for field in ("tahoe_split", "tahoe_usable", "physical_well",
+                          "cell_line_id", "observation_id", "qc_pass", "time_source",
+                          "matched_control_ok"):
+                check(f"contract.json carries tahoe field {field}", field in ta_fields)
+            check("contract.json exposes c* as an array",
+                  "c_star" in described[ARTIFACTS["consensus_controls"]]["arrays"])
+            check("contract.json exposes tahoe_pairs arrays",
+                  {"treated_row", "control_group", "usable", "split"}
+                  == set(described[ARTIFACTS["tahoe_pairs"]]["arrays"]))
+        fold_columns = {entry["name"]
+                        for entry in described[ARTIFACTS["folds"]]["columns"]}
+        check("contract.json exposes folds.parquet keys",
+              {"drug_key", "fold", "role", "plate"} <= fold_columns)
+        unmeaning = [entry["name"]
+                     for name in required_artifacts
+                     for entry in described[name].get("obs_columns",
+                                                      described[name].get("columns", []))
+                     if not entry["meaning"]]
+        check("contract.json gives every field a meaning", not unmeaning,
+              f"{unmeaning[:5]}")
 
     # 9. counts.csv re-flatten agrees with the manifest.
     table = pd.read_csv(out / ARTIFACTS["counts"], keep_default_na=False)
@@ -900,6 +1206,188 @@ def verify(args) -> dict:
     if failed:
         raise ContractError(f"{len(failed)} verification check(s) failed")
     return {"checks": len(checks), "failed": 0}
+
+
+def write_contract_json(out: Path, cm: dict, tahoe: dict | None,
+                        cm_var: pd.DataFrame, tahoe_var: pd.DataFrame | None,
+                        counts: dict, handoff_checks: dict) -> None:
+    """The machine-readable interface ticket #4/#5/#6/#7/#8/#9/#11 read.
+
+    It lists every frozen file with its keys, columns, shapes and dtypes and the
+    meaning of every field, plus the read rules that must not be re-derived.
+    """
+    from contract import FIELD_MEANINGS, N_GENES, N_FOLDS
+
+    def columns(frame: pd.DataFrame) -> list[dict]:
+        return [{"name": str(column), "dtype": str(dtype),
+                 "meaning": FIELD_MEANINGS.get(str(column), "")}
+                for column, dtype in frame.dtypes.items()]
+
+    membership = cm["membership"]
+    summary = cm["consensus_summary"]
+    fold_table = cm["folds"]
+    document = {
+        "schema": "06.3_input/contract/1",
+        "version": TOOL_VERSION,
+        "contract_id": CONTRACT_ID,
+        "purpose": "the single frozen two-source 18,164-gene input formal training reads; "
+                   "downstream tickets read these files and never re-derive folds, c* or config",
+        "gene_axis": {
+            "n_genes": N_GENES,
+            "order": "stage2/02_cm_data/output/corpus/v1/genes.csv (HGNC symbol, frozen order)",
+            "identity_columns": ["hgnc_id", "entrez_id", "ensembl_id", "match_type"],
+            "measurement_mask": "var.gene_measured is PER SOURCE: all True in cm_transfer.h5ad; "
+                                "False only for FAM153B in tahoe_transfer.h5ad.  It is gene-space "
+                                "membership, never a non-zero-count test (18 all-zero Tahoe "
+                                "columns are measured).",
+        },
+        "artifacts": {},
+        "fold_semantics": {
+            "n_folds": N_FOLDS,
+            "seed": FOLD_SEED,
+            "split_unit": "drug_key",
+            "roles": ["train", "valid", "test"],
+            "primary_key": ["drug_key", "fold", "plate"],
+            "population": "main_set drugs only; every main-set drug is test in exactly one "
+                          "fold and valid in exactly one fold",
+            "excluded": "exclude/uncertain drugs have no fold row and are never test/valid",
+            "plate_confounding": "a drug split is not a plate split; a fold's test drugs bring their plates",
+        },
+        "control_semantics": {
+            "cm_train": "mean of QC-pass DMSO rows on the same plate (obs.control_group mixes "
+                        "DMSO+Media and is NOT a matched baseline)",
+            "cm_validation_test_inference": "one fixed per-fold c* from consensus_controls.npz; "
+                                            "never a per-plate control",
+            "cm_truth_delta": "treated log1p_cp10k minus the same-plate QC-pass DMSO log mean, "
+                              "computed only at scoring time",
+            "tahoe_train_validation": "mean of the same (plate, cell_line) group's QC-pass control "
+                                      "rows on the log layer (tahoe_control_groups.parquet + "
+                                      "tahoe_pairs.npz); never across cell lines",
+            "consensus_provenance": "only control rows of plates carrying a TRAINING drug; "
+                                    "per-plate log mean then equal plate weight",
+        },
+        "role_selection": {
+            "main_set": "cm obs.main_set == True (include AND qc_pass) is the fold/score population",
+            "expansion_set": "cm obs.expansion_set == True (exclude AND qc_pass) is ticket #11's "
+                             "expansion training arm only; never scored, no fold row",
+            "uncertain": "never trained, never scored, no fold row",
+            "tahoe": "tahoe obs.tahoe_usable == True is trainable/evaluable; tahoe_split selects "
+                     "train vs valid; time_h never filters",
+        },
+        "locked_config": {"file": ARTIFACTS["locked_config"],
+                          "meaning": "the only recipe: model, dose encoding, loss, optimiser, "
+                                     "seeds, LR rule, metric, prediction policy, 30-unit policy"},
+        "renames": {},
+        "artifacts_tracked_in_git": sorted(TRACKED_RECORD),
+        "artifacts_local_only": [ARTIFACTS["cm"], ARTIFACTS["tahoe"]],
+        "handoff_checks": handoff_checks,
+        "frozen_counts": counts,
+    }
+
+    document["artifacts"][ARTIFACTS["cm"]] = {
+        "format": "anndata h5ad (dense)",
+        "local_only": True,
+        "shape": [int(len(cm["obs"])), N_GENES],
+        "X": {"encoding": "dense ndarray", "dtype": "int32", "meaning": "raw counts, non-negative"},
+        "layers": {"log1p_cp10k": {"encoding": "dense ndarray", "dtype": "float32",
+                                   "meaning": "row-wise log1p(counts / lib_size * 1e4)"}},
+        "obs_index": {"name": "well", "meaning": FIELD_MEANINGS["well"]},
+        "obs_columns": columns(cm["obs"]),
+        "var_index": {"name": "symbol", "meaning": FIELD_MEANINGS["symbol"]},
+        "var_columns": columns(cm_var),
+        "uns": {"schema": "input contract version", "column_provenance": "per-column notes",
+                "control_cache": "why no uns['control_mean'] is carried"},
+    }
+    if tahoe is not None:
+        document["artifacts"][ARTIFACTS["tahoe"]] = {
+            "format": "anndata h5ad (CSR; X and layers streamed from the 04 view)",
+            "local_only": True,
+            "shape": [int(len(tahoe["obs"])), N_GENES],
+            "X": {"encoding": "csr_matrix", "dtype": "int32", "meaning": "raw counts, non-negative"},
+            "layers": {"log1p_cp10k": {"encoding": "csr_matrix", "dtype": "float32",
+                                       "meaning": "row-wise log1p(counts / lib_size * 1e4)"}},
+            "obs_index": {"name": "well", "meaning": FIELD_MEANINGS["well"]},
+            "obs_columns": columns(tahoe["obs"]),
+            "var_index": {"name": "symbol", "meaning": FIELD_MEANINGS["symbol"]},
+            "var_columns": columns(tahoe_var),
+            "uns": {"schema": "input contract version", "column_provenance": "per-column notes",
+                    "control_cache": "why no uns['control_mean'] is carried"},
+        }
+    document["artifacts"][ARTIFACTS["folds"]] = {
+        "format": "parquet", "tracked": True, "rows": int(len(fold_table)),
+        "primary_key": ["drug_key", "fold", "plate"],
+        "columns": columns(fold_table),
+    }
+    document["artifacts"][ARTIFACTS["consensus_controls"]] = {
+        "format": "numpy npz (uncompressed keys, zlib compressed file)", "tracked": False,
+        "arrays": {
+            "c_star": {"shape": [N_FOLDS, N_GENES], "dtype": "float32",
+                       "meaning": "per-fold consensus control on the log1p_cp10k scale"},
+            "fold_ids": {"shape": [N_FOLDS], "dtype": "int16", "meaning": "0..4"},
+            "plate_names": {"shape": [int(len(cm["plate_names"]))], "dtype": "str",
+                            "meaning": "union of contributing plates across folds"},
+            "plate_weights": {"shape": [N_FOLDS, int(len(cm["plate_names"]))], "dtype": "float32",
+                              "meaning": "1/n_plates in that fold, 0 where the plate is not used"},
+            "n_plates": {"shape": [N_FOLDS], "dtype": "int16", "meaning": "contributing plates"},
+            "n_wells": {"shape": [N_FOLDS], "dtype": "int32", "meaning": "contributing control rows"},
+            "n_genes": {"shape": [], "dtype": "int64", "meaning": "18,164"},
+        },
+    }
+    document["artifacts"][ARTIFACTS["consensus_membership"]] = {
+        "format": "parquet", "tracked": True, "rows": int(len(membership)),
+        "primary_key": ["fold", "observation_id"],
+        "columns": columns(membership),
+    }
+    if tahoe is not None:
+        document["artifacts"][ARTIFACTS["tahoe_control_groups"]] = {
+            "format": "parquet (long form: one row per (group, member observation))",
+            "tracked": True,
+            "rows": int(len(tahoe["control_groups"])),
+            "primary_key": ["group_index", "row"],
+            "meaning": "matched-control membership: only QC-pass DMSO_TF control rows; "
+                       "a group's log-layer mean is the matched control",
+            "columns": columns(tahoe["control_groups"]),
+        }
+        document["artifacts"][ARTIFACTS["tahoe_pairs"]] = {
+            "format": "numpy npz", "tracked": True,
+            "meaning": "treated row -> control group; rows without a QC-pass matched "
+                       "control are absent (never re-paired)",
+            "arrays": {
+                "row": {"shape": [int(len(tahoe["pairs"]["row"]))],
+                        "dtype": "int32", "meaning": FIELD_MEANINGS["row"]},
+                "group_index": {"shape": [int(len(tahoe["pairs"]["group_index"]))],
+                                "dtype": "int32",
+                                "meaning": FIELD_MEANINGS["group_index"]},
+                "usable": {"shape": [int(len(tahoe["pairs"]["usable"]))], "dtype": "bool",
+                           "meaning": FIELD_MEANINGS["usable"]},
+                "split": {"shape": [int(len(tahoe["pairs"]["split"]))], "dtype": "str",
+                          "meaning": FIELD_MEANINGS["split"]},
+            },
+        }
+    for name, source in (("counts", None), ("fold_sizes", None),
+                         ("consensus_summary", None), ("var_checks", None)):
+        frame = {
+            "counts": None, "fold_sizes": cm["sizes"],
+            "consensus_summary": summary, "var_checks": None,
+        }[name]
+        entry = {"format": "csv", "tracked": True}
+        if frame is not None:
+            entry["rows"] = int(len(frame))
+            entry["columns"] = columns(frame)
+        document["artifacts"][ARTIFACTS[name]] = entry
+    document["artifacts"][ARTIFACTS["locked_config"]] = {
+        "format": "json", "tracked": True,
+        "meaning": "locked experiment config; hashed in manifest.json",
+    }
+    document["artifacts"][ARTIFACTS["manifest"]] = {
+        "format": "json", "tracked": True,
+        "meaning": "sha256/bytes of every artifact, source and handoff hashes, counts, git SHA",
+    }
+    document["artifacts"][ARTIFACTS["contract"]] = {
+        "format": "json", "tracked": True, "meaning": "this document",
+    }
+    (out / ARTIFACTS["contract"]).write_text(canonical_json(document), encoding="utf-8")
+    log(f"contract.json written ({len(document['artifacts'])} artifacts described)")
 
 
 def _flatten_dict(counts: dict) -> dict[str, str]:
