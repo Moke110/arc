@@ -9,11 +9,13 @@ metric, the budgets and the negative-result clause were fixed before execution
 (`.scratch/stage2-prnet-formal-transfer/spec.md`, gitignored; ticket graph in
 `.scratch/stage2-prnet-formal-transfer/ticket-plan.md`).
 
-Status: **in progress** (2026-11-02). The two audits are built and merged
-(#1 eligibility rule v1.3 / handoff v2, #2 per-observation QC) and the frozen input
-(#3) is built and verified (118 main-set drugs, 951 wells, 125/125 verify); no
-training has been executed. Each section below flips to executed only when its
-ticket closes with artifacts and evidence.
+Status: **first round executed and concluded (2026-11-02)** — audits, frozen input,
+pipeline, three seeded pretrains, both 45-candidate matrices, baselines and the
+30-unit evaluation are built, recorded and merged; the pre-registered result is
+**negative** (Tahoe-init does not beat random-init and neither beats the simple
+baselines). The two post-first-round ablations (#10/#11) are deferred with the
+concrete remaining work recorded on their tickets. No claim below extends beyond
+this scope.
 
 ## The first-round design (fixed)
 
@@ -56,8 +58,8 @@ every experiment consumes them rather than re-deriving a split.
 | `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | executed — 45/45 (42 ok / 3 capped), per-fold LR 1e-4/1e-4/1e-3/1e-3/1e-4, 15 checkpoints selected, warm start 14/14 keys per seed | [`README`](06.7_cm_tahoe/README.md), `output/record/record.json` |
 | `06.8_baselines/` five-fold baselines | #8 | built and verified — real five-fold record, `delta_mean` 0.1645 AUPRC@200 is the primary bar | [`README`](06.8_baselines/README.md), `output/summary_table.csv` |
 | `06.9_evaluation/` 30-unit evaluation + report | #9 | executed — 30/30 test units scored, 0 failed; **negative first round**: Tahoe-init −0.0063 vs random-init (95% CI [−0.0074, −0.0052]) and both far below `delta_mean` 0.1645 | [`README`](06.9_evaluation/README.md), `output/record/summary.json` |
-| `06.10_capacity_ablation/` capacity ablation | #10 | planned (post-first-round) | — |
-| `06.11_env_compound_ablation/` env-compound ablation | #11 | planned (post-first-round) | — |
+| `06.10_capacity_ablation/` capacity ablation | #10 | deferred (post-first-round, not a gate) — plan and remaining work recorded on the ticket | — |
+| `06.11_env_compound_ablation/` env-compound ablation | #11 | deferred (post-first-round, not a gate) — plan and remaining work recorded on the ticket | — |
 
 ## Boundaries
 

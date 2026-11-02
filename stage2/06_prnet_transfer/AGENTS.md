@@ -17,8 +17,8 @@ evidence in `stage2/{02,04,05}_*/output/` and every `source/` tree is read-only.
 - [`06.7_cm_tahoe/`](06.7_cm_tahoe/README.md) — #7: 45 Tahoe-init CM candidates with strict, axis-checked warm start.
 - [`06.8_baselines/`](06.8_baselines/README.md) — #8: five-fold constant / training-mean baselines on the identical test population and evaluator.
 - [`06.9_evaluation/`](06.9_evaluation/README.md) — #9: 30 selected checkpoints, paired pretraining gains, baseline comparison, stratification, report.
-- [`06.10_capacity_ablation/`](06.10_capacity_ablation/README.md) — #10: state latent 128 / hidden 256, post-first-round, not a completion gate.
-- [`06.11_env_compound_ablation/`](06.11_env_compound_ablation/README.md) — #11: extra environment compounds, post-first-round, not a completion gate.
+- `06.10_capacity_ablation/` (not built) — #10, deferred: state latent 128 / hidden 256, post-first-round, not a completion gate.
+- `06.11_env_compound_ablation/` (not built) — #11, deferred: extra environment compounds, post-first-round, not a completion gate.
 
 Rules: find the repo root by walking up to `.git` (never `Path.parents`); never
 rewrite frozen evidence; `06.4_pipeline/execution/` is the only place
