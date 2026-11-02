@@ -694,13 +694,17 @@ def build_record(
                  for unit in units),
                 default=0.0,
             ),
-            "gpu_peak_mib_max": max(
+            "gpu_peak_mib_device_max": max(
+                (
+                    float((unit.get("resources") or {}).get("gpu_peak_mib_device") or 0.0)
+                    for unit in units
+                ),
+                default=0.0,
+            ),
+            "gpu_peak_mib_attributed_max": max(
                 (
                     float(
-                        (unit.get("resources") or {}).get("gpu_peak_mib_attributed")
-                        or (unit.get("resources") or {}).get("gpu_peak_mib_process")
-                        or (unit.get("resources") or {}).get("gpu_peak_mib_device")
-                        or 0.0
+                        (unit.get("resources") or {}).get("gpu_peak_mib_attributed") or 0.0
                     )
                     for unit in units
                 ),
@@ -708,8 +712,8 @@ def build_record(
             ),
             "gpu_peak_source": {
                 str(unit.get("unit_id")): (
-                    "process" if (unit.get("resources") or {}).get("gpu_peak_mib_process")
-                    else "device-minus-baseline"
+                    "nvidia-smi per-process" if (unit.get("resources") or {}).get("gpu_peak_mib_process")
+                    else "device-minus-baseline (only attributable when the run is alone on the GPU)"
                     if (unit.get("resources") or {}).get("gpu_peak_mib_attributed")
                     else "device"
                     if (unit.get("resources") or {}).get("gpu_peak_mib_device")

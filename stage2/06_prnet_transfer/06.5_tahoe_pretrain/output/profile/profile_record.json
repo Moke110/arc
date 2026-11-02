@@ -43,7 +43,7 @@
     "--resume"
   ],
   "complete": true,
-  "created_utc": "2026-11-02T07:31:19+00:00",
+  "created_utc": "2026-11-02T07:35:00+00:00",
   "expected": {
     "budget": {
       "batch_size": 512,
@@ -103,19 +103,19 @@
     "branch": "feat/pt/t05-pretrain",
     "dirty": true,
     "root": "/home/chang/arc-wt/t05-pretrain",
-    "sha": "e0e2d6806afc3a546a38e8e65dad1fa2a268b6dd"
+    "sha": "0cb28535f413096a934a59e6981d97f1ea581c3a"
   },
   "host": {
     "cgroup": {
-      "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/run-r85fb9b22d7c74310aeec811fca208e87.scope",
-      "invocation": "51db1d73d68f4dd48c4a750580c387dc",
+      "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/run-rb759fc046d844d54ba7d646acb9be3d5.scope",
+      "invocation": "92d6365c812d4a0eb666772b39ec59d5",
       "memory_max": "12884901888"
     },
     "cuda_available": true,
     "cuda_device_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
     "cuda_device_total_mib": 16376.0,
     "cwd": "/home/chang/arc-wt/t05-pretrain",
-    "mem_available_gib_at_start": 42.2,
+    "mem_available_gib_at_start": 42.59,
     "python": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
     "python_version": "3.9.25",
     "repo_root": "/home/chang/arc-wt/t05-pretrain",
@@ -687,10 +687,11 @@
       "tahoe_seed20261021_one-epoch": 1,
       "tahoe_seed20261021_smoke": 2
     },
-    "gpu_peak_mib_max": 1716.0,
+    "gpu_peak_mib_attributed_max": 1716.0,
+    "gpu_peak_mib_device_max": 4003.0,
     "gpu_peak_source": {
-      "tahoe_seed20261021_one-epoch": "device-minus-baseline",
-      "tahoe_seed20261021_smoke": "device-minus-baseline"
+      "tahoe_seed20261021_one-epoch": "device-minus-baseline (only attributable when the run is alone on the GPU)",
+      "tahoe_seed20261021_smoke": "device-minus-baseline (only attributable when the run is alone on the GPU)"
     },
     "host_peak_rss_mb_max": 11273.390625,
     "n_completed": 2,
