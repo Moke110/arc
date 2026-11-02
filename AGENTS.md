@@ -7,6 +7,28 @@ Operating manual for agents in this repository (AI-driven MIRI drug-repositionin
 - **All modifications happen on `dev`.** `dev` is the working and integration branch: commit every change there. `main` only ever receives merges from `dev` — never work or commit on `main` directly.
 - **Push only `main`.** `origin` receives `main` and nothing else — never push `dev` or any other branch.
 
+## Execution environment (WSL2)
+
+This repo is developed inside one WSL2 distro on a single workstation, so every agent,
+worktree and subagent shares the same memory. Measured envelope and the crash record:
+[`docs/agents/execution-environment.md`](docs/agents/execution-environment.md). Read it
+before any job that loads datasets or trains.
+
+- **Measured now**: 8 vCPU, **31.3 GiB RAM** (`.wslconfig` requests 48 GB, but that only
+  applies after the next `wsl --shutdown`), 64 GiB swap on `D:`, one 16 GB GPU, 222 GB disk.
+- **Two heavy jobs repo-wide, no more.** Count worktrees and subagents together; keep their
+  combined peak under ~20 GiB. Six concurrent implementers is how the 2026-11-02 run crashed
+  this VM. Long training runs go one at a time.
+- **Cap each heavy process**: `systemd-run --user --scope -p MemoryMax=10G
+  -p MemorySwapMax=8G -- <cmd>` (fallback `ulimit -v 10485760`), and check `free -g` first —
+  abort if available is under 10 GiB.
+- **Bound the memory of data access**: no dense observation × 18,164 matrix, `.h5ad`
+  `backed="r"`/sliced reads, `float32`, chunk per fold/dose, `.npy` memmap for large caches,
+  never `n_jobs=-1`; with two jobs running set
+  `OMP_NUM_THREADS=MKL_NUM_THREADS=OPENBLAS_NUM_THREADS=2`.
+- **Record peaks**: run >1 GiB jobs under `/usr/bin/time -v` and put the peak RSS in the
+  ticket record; a rising peak in a test suite or build gate is a defect.
+
 ## Workflow
 
 The design-to-delivery chain is fixed; each skill consumes the previous step's output. Do not skip steps or run them out of order.
@@ -37,7 +59,7 @@ Execution rules:
 
 - `GLOSSARY.md` — domain vocabulary; use its terms in issues, tickets, code, and docs.
 - `docs/adr/` — architecture decision records; index at `docs/adr/README.md`. Read the ADRs that touch your area, and flag conflicts instead of silently overriding them.
-- `docs/agents/` — issue-tracker, triage-label, and domain-doc rules consumed by the skills.
+- `docs/agents/` — issue-tracker, triage-label, domain-doc, and execution-environment rules consumed by the skills.
 - `docs/data-inventory.md` — inventory of ignored large assets.
 - `docs/roadmap.md` — program-level roadmap.
 - `docs/wetlab-validation-stage1.md` — wet-lab validation record.
