@@ -26,9 +26,10 @@ budget against the requested 48 GiB until `free -h` actually reports it.
 The run had six implementer/merge subagents working concurrently (ticket #1 rule revision,
 ticket #3 input build, ticket #4 pipeline, ticket #8 baselines). The journal for boot `-2`
 ends abruptly at 12:33:50 with no shutdown sequence; that boot started 1,086
-`dsh-subprocess` scopes and a single scope peaked at **9.7 GiB** (`4min 33s` CPU, the
-`baselines.py --all` dry run). No `oom-kill` line was captured: the VM died rather than
-killing a userspace process. The host survived.
+`dsh-subprocess` scopes and a single scope peaked at **9.7 GiB** (`4min 33s` CPU). That
+scope ran `script/verify_all.sh` over the 52 GB of frozen external data, so most of the
+peak is page cache charged to the scope rather than anonymous memory. No `oom-kill` line
+was captured: the VM died rather than killing a userspace process. The host survived.
 
 `.wslconfig` was then edited to give WSL 48 GB and a 64 GB swap file. The distro was not
 restarted cleanly, so this session still runs on 31.3 GiB. Treat the numbers in the table as
@@ -74,7 +75,8 @@ or a misspelled section before trusting the 48 GB setting.
 |---|---|---|
 | `06.1_eligibility` offline build | 306 MiB | cheap |
 | `05_prnet_pretrain` 68-epoch GPU pretrain on the 67,018 × 18,164 view | **15,150 MiB host RSS** | a full pretrain must run alone; leave at least 16 GiB free before starting |
-| `06.8_baselines --all` on the synthetic fixture (pre-fix) | 9.7 GiB | unbounded allocation; ticket #8 is fixing it before the real run |
+| `script/verify_all.sh` (27 offline verifiers, 52 GB hashed) | 9.7 GiB charged, `4min 33s` CPU | mostly page cache; run it when no heavy job is running, not concurrently |
+| `06.8_baselines --all` on the synthetic fixture (post-fix) | 1.2-1.7 GiB | dominated by imports and the shared evaluator, not the data |
 | full test suites of the 06 substeps | < 1 GiB each | two suites may run together, a third heavy job may not |
 
 The pretrain number is the reason the training tickets (#5–#7) are serialised: two
