@@ -151,6 +151,35 @@ class HandoffTest(unittest.TestCase):
         self.assertEqual(len(parts["cm"]), 1)
         self.assertEqual(len(parts["tahoe"]), 2)
 
+    def test_qc_accepts_qc_status_combined_source_and_gz(self):
+        table = pd.DataFrame({
+            "observation_id": ["temp_env::Plate1-B02", "tahoe::plate1:smp_1:CVCL_1"],
+            "source": ["temp_env", "tahoe"],
+            "qc_status": ["pass", "fail"],
+            "qc_reason": ["ok", "few cells"],
+            "matched_control_ok": ["true", ""],
+        })
+        parts = contract.split_combined_qc(table, Path("observations.csv.gz"))
+        self.assertEqual(set(parts), {"cm", "tahoe"})
+        cm = contract.normalize_qc_table(parts["cm"], Path("observations.csv.gz"), "cm")
+        self.assertEqual(list(cm["qc_pass"]), [True])
+        self.assertEqual(list(cm["matched_control_ok"]), [True])
+        tahoe = contract.normalize_qc_table(parts["tahoe"], Path("observations.csv.gz"),
+                                           "tahoe")
+        self.assertEqual(list(tahoe["qc_pass"]), [False])
+
+    def test_qc_reads_gzipped_csv(self):
+        import gzip
+        handle = tempfile.NamedTemporaryFile("wb", suffix=".csv.gz", delete=False)
+        with gzip.open(handle.name, "wt") as fh:
+            fh.write("observation_id,qc_status,qc_reason\n"
+                     "temp_env::Plate1-B02,pass,ok\n")
+        handle.close()
+        table, handoff = contract.load_qc(handle.name, "cm")
+        self.assertEqual(list(table["qc_pass"]), [True])
+        self.assertEqual(handoff.rows, 1)
+        Path(handle.name).unlink()
+
     def test_resolve_handoff_missing_fails_closed(self):
         with self.assertRaises(contract.ContractError):
             contract.resolve_handoff("eligibility", override="/nonexistent/elig.csv")

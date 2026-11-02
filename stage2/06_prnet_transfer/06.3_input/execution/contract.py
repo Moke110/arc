@@ -18,7 +18,7 @@ import hashlib
 import json
 import os
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import pandas as pd
@@ -49,11 +49,13 @@ FAM153B_ENSEMBL = "ENSG00000182230"
 # ADR 0031 D3).  The 24 h claim is literature provenance, never a metadata value.
 TIME_SOURCE_TAHOE = "literature:10.1016/j.cell.2026.08.035"
 TIME_SOURCE_NOTE = (
-    "Atlas design states a single 24 h treatment (atlas paper, doi "
-    "10.1016/j.cell.2026.08.035, the citation ADR 0029 already sanctions).  No "
-    "atlas table carries a time column, so obs.time_h stays NaN and only this "
-    "provenance string is written; the value is not raw metadata and must not be "
-    "used to filter rows."
+    "Atlas design states a single 24 h treatment. The quoted authors' sentence "
+    "is in the v2 preprint (doi 10.1101/2025.02.20.639398), cited by ticket #2's "
+    "locked qc_rules.json time_sources.tahoe_preprint_24h; the formal record is "
+    "the Cell 2026 paper (doi 10.1016/j.cell.2026.08.035), the citation ADR 0029 "
+    "already sanctions and the value written in obs.time_source. No atlas table "
+    "carries a time column, so obs.time_h stays NaN and the value is provenance, "
+    "not raw metadata, and must not be used to filter rows."
 )
 
 CM_REPLICATE_PROVENANCE = (
@@ -66,8 +68,10 @@ CM_REPLICATE_PROVENANCE = (
 )
 CM_TIME_PROVENANCE = (
     "obs.time_h=24.0 on every temp_env row is a loader constant "
-    "(cmdata/sources.py:539), not a field read from GEO; the 24 h design is "
-    "recorded in the GSE262419 series matrix / paper (PMID 39046974)."
+    "(cmdata/sources.py:539), not a field read from GEO. The 24 h design is "
+    "sourced from the GSE262419 study paper: Tsai et al., Chem Res Toxicol 2024, "
+    "doi:10.1021/acs.chemrestox.4c00193 (PMID 39046974), quoted in ticket #2's "
+    "locked qc_rules.json time_sources.tempenv_paper_24h."
 )
 
 # Column name sets -----------------------------------------------------------
@@ -91,12 +95,14 @@ TAHOE_OBS_INHERITED = CM_OBS_INHERITED + [
 CM_OBS_ADDED = [
     "observation_id", "physical_well", "plate_no", "replicate_raw", "solvent",
     "chemical_index", "eligibility_decision", "elig_class", "qc_pass",
-    "qc_reason", "main_set",
+    "qc_reason", "matched_control_ok", "matched_control_key", "main_set",
+    "expansion_set",
 ]
 
 TAHOE_OBS_ADDED = [
     "observation_id", "physical_well", "tahoe_split", "tahoe_valid_group",
-    "qc_pass", "qc_reason", "tahoe_usable", "time_source",
+    "qc_pass", "qc_reason", "matched_control_ok", "matched_control_key",
+    "tahoe_usable", "time_source",
 ]
 
 CM_OBS = CM_OBS_INHERITED + CM_OBS_ADDED
@@ -125,15 +131,17 @@ ARTIFACTS = {
     "fold_sizes": "fold_sizes.csv",
     "consensus_summary": "consensus_summary.csv",
     "var_checks": "var_checks.csv",
+    "contract": "contract.json",
 }
 
 # Tracked record files: small, force-added past the repository-wide `output/`
 # and `*.csv` ignore rules (ADR 0030 / 04-05 precedent).  The two h5ad files are
 # local-only (16 GB / 650 MB) and never committed.
 TRACKED_RECORD = [
-    "manifest.json", "locked_config.json", "counts.csv", "fold_sizes.csv",
-    "consensus_summary.csv", "var_checks.csv", "folds.parquet",
-    "consensus_membership.parquet", "tahoe_control_groups.parquet",
+    "manifest.json", "locked_config.json", "contract.json", "counts.csv",
+    "fold_sizes.csv", "consensus_summary.csv", "var_checks.csv",
+    "folds.parquet", "consensus_membership.parquet",
+    "tahoe_control_groups.parquet",
 ]
 
 
@@ -194,9 +202,10 @@ def relpath(path: Path | str) -> str:
 # be overridden on the CLI.  See README "Upstream handoffs".
 HANDOFF_CANDIDATES = {
     "eligibility": [
+        # #1's designated durable artifact (one row per structure identity)
+        "06.1_eligibility/output/eligibility_table.csv",
         "06.1_eligibility/output/eligibility.csv",
         "06.1_eligibility/output/eligibility.parquet",
-        "06.1_eligibility/output/eligibility_table.csv",
         "06.1_eligibility/output/drug_eligibility.csv",
         "06.1_eligibility/output/eligibility_handoff.csv",
     ],
@@ -215,6 +224,8 @@ HANDOFF_CANDIDATES = {
     ],
     # A single combined per-observation table with a `source` column is accepted.
     "qc_combined": [
+        # #2's designated durable handoff (71,576 rows: temp_env + tahoe)
+        "06.2_qc/output/observations.csv.gz",
         "06.2_qc/output/obs_qc.csv",
         "06.2_qc/output/observation_qc.csv",
         "06.2_qc/output/qc_observations.csv",
@@ -290,6 +301,99 @@ def runtime_env() -> dict:
         "pandas": pandas.__version__,
     }
 
+
+
+# Human-readable meaning of every field a downstream ticket may read.  The
+# generated `contract.json` joins these with the dtypes measured on the frozen
+# artifacts, so a rename or a dtype change cannot pass unnoticed.
+FIELD_MEANINGS = {
+    # shared CM/Tahoe inherited columns
+    "well": "observation key: CM = `temp_env::Plate<N>-<well>`, Tahoe = `tahoe::<plate>:<smp>:<cell_line>`",
+    "dataset_id": "source id (`temp_env` | `tahoe`)",
+    "compound_name": "normalised display name of the perturbagen",
+    "drug_key": "desalted parent InChIKey (stereo retained); '' on control rows",
+    "inchikey": "exact structure key",
+    "smiles": "canonical SMILES (Tahoe: derived from the atlas SMILES)",
+    "dose_um": "dose in micromolar; 0.0 on control rows",
+    "dose_source": "provenance of the dose value",
+    "time_h": "exposure time in hours; 24.0 for CM (loader constant), NaN for Tahoe",
+    "is_control": "vehicle-control row",
+    "vehicle": "vehicle identity; CM DMSO/Media, Tahoe DMSO_TF on controls and '' on treated",
+    "plate": "physical plate id",
+    "control_group": "CM `temp_env::Plate<N>` (MIXES DMSO+Media — never a matched baseline); Tahoe `tahoe::<plate>::<cell_line>`",
+    "cell_type": "cell type (CM ipsc_cm; Tahoe NaN — see cell_line_id)",
+    "donor": "donor/line; CM literal 'NA', Tahoe NaN",
+    "replicate": "GENERATED within-group index, not a raw replicate id",
+    "atc": "ATC code (frozen annotation)",
+    "moa": "mechanism of action (frozen annotation)",
+    "mesh_classes": "PubChem MeSH classes",
+    "pharm_atc_moa": "old automatic atc-moa tier membership (annotation, not eligibility)",
+    "pharm_mesh": "old automatic atc-moa-mesh tier membership",
+    "annotation_source": "annotation provenance",
+    "lib_size": "X row sum",
+    "n_genes_detected": "(X > 0) row sum",
+    "cell_line_id": "Tahoe cell line (Cellosaurus id)",
+    "cell_name": "Tahoe cell line name",
+    "n_cells": "cells aggregated into this pseudobulk profile (not a technical replicate count)",
+    "moa_broad": "atlas broad MoA",
+    "moa_fine": "atlas fine MoA",
+    "pubchem_cid": "PubChem CID",
+    "has_structure": "structure resolvable; False = 2 Tahoe drugs / 300 treated rows kept for audit only",
+    "has_matched_control": "inherited 04 flag (True on every row; use `matched_control_ok` instead)",
+    "SMILES": "author-shim copy of smiles",
+    "dose": "author-shim copy of dose_um",
+    "paired_control_index": "author-shim pointer to the first control row of the row's control group",
+    # CM added
+    "observation_id": "unique observation key (= obs index `well`)",
+    "physical_well": "physical well token (CM `B2`; Tahoe `smp_1495`)",
+    "plate_no": "CM plate number 1-16",
+    "replicate_raw": "raw design Replicate_Number re-joined from the GSE262419 hash table",
+    "solvent": "raw design Solvent (CM)",
+    "chemical_index": "raw design Chemical_Index (CM)",
+    "eligibility_decision": "ticket #1 decision: include | exclude | uncertain (NaN on control rows)",
+    "elig_class": "ticket #1 decision class (approved | clinical | mechanism_tool | other_use | unknown)",
+    "qc_pass": "ticket #2 per-observation QC verdict",
+    "qc_reason": "ticket #2 reason codes (';'-joined, first is primary)",
+    "matched_control_ok": "ticket #2 matched-control availability; a control row is its own control",
+    "matched_control_key": "ticket #2 matched-control group key (CM plate x vehicle; Tahoe plate x cell line)",
+    "main_set": "treated AND eligibility include AND qc_pass — the fold/scored population",
+    "expansion_set": "treated AND eligibility exclude AND qc_pass — ticket #11 expansion training only, never scored",
+    # Tahoe added
+    "tahoe_split": "train | valid by plate13/plate14 (technical default, NOT a cold-drug split)",
+    "tahoe_valid_group": "validation grouping key: drug_key x dose x cell_line (controls: control x plate x cell_line)",
+    "tahoe_usable": "~is_control AND has_structure AND qc_pass AND matched_control_ok",
+    "time_source": "literature provenance for the 24 h claim; time_h itself stays NaN",
+    # var
+    "symbol": "HGNC symbol, the frozen gene-axis key/order",
+    "hgnc_id": "HGNC id from corpus/v1 genes.csv",
+    "entrez_id": "Entrez id from corpus/v1 genes.csv",
+    "ensembl_id": "Ensembl id from corpus/v1 genes.csv",
+    "match_type": "gene-identity match provenance from corpus/v1",
+    "gene_measured": "per-source measurement mask; False only for the FAM153B Tahoe slot",
+    "n_nonzero": "non-zero cells in this artifact's X column (audit only; NOT a measurement test)",
+    # side tables
+    "fold": "fold index 0-4",
+    "role": "train | valid | test within that fold",
+    "cluster_id": "identity cluster (drug_key + inchikey connectivity block); never split across folds",
+    "test_fold": "the fold in which this drug is test",
+    "valid_fold": "the fold in which this drug is valid",
+    "n_wells": "main-set wells of this drug (on this plate, for folds.parquet)",
+    "n_doses": "distinct doses of this drug (on this plate)",
+    "plate_weight": "consensus plate weight = 1 / n_plates",
+    "n_wells_plate": "QC-pass DMSO candidate rows on that plate in that fold",
+    "weight": "consensus well weight = plate_weight / n_wells_plate; sums to 1 per fold",
+    "row_ix": "0-based row position in cm_transfer.h5ad obs/X/layers",
+    "control_rows": "row positions (in tahoe_transfer.h5ad) of this group's control observations",
+    "control_rows_qc_pass": "the subset of control_rows that pass QC — the matched-control mean must use these",
+    "n_controls": "control observations in the group",
+    "n_qc_pass": "QC-pass control observations in the group (0 => treated rows of this group are not usable)",
+    "row": "0-based row position in the artifact (cm_transfer.h5ad for consensus membership; tahoe_transfer.h5ad for control groups and pairs)",
+    "group_index": "integer control-group id, shared by tahoe_control_groups.parquet and tahoe_pairs.npz",
+    "group_key": "canonical control group key `plate|cell_line_id` (never crosses cell lines)",
+    "treated_row": "row position in tahoe_transfer.h5ad of a treated observation",
+    "usable": "tahoe_usable of that treated row",
+    "split": "tahoe_split of that treated row",
+}
 
 # --------------------------------------------------------------------------- #
 # Gene axis
@@ -391,6 +495,20 @@ class SourceRecord:
         }
 
 
+def companion_handoff(path: Path, names=("handoff.json", "manifest.json")) -> Path | None:
+    """The machine-readable companion document next to a handoff table, if any."""
+    for name in names:
+        candidate = Path(path).expanduser().resolve().parent / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def read_json(path: Path) -> dict:
+    import json as _json
+    return _json.loads(Path(path).read_text(encoding="utf-8"))
+
+
 def _frozen_manifest_row(path: Path, key: str, value: str) -> dict:
     table = pd.read_csv(path, dtype=str, keep_default_na=False)
     row = table.loc[table[key] == value]
@@ -446,11 +564,12 @@ class Handoff:
     bytes: int
     rows: int
     note: str = ""
+    detail: dict = field(default_factory=dict)
 
     def as_dict(self) -> dict:
         return {"kind": self.kind, "path": relpath(self.path),
                 "sha256": self.sha256, "bytes": self.bytes, "rows": self.rows,
-                "note": self.note}
+                "note": self.note, "detail": self.detail}
 
 
 def resolve_handoff(kind: str, override: str | Path | None = None) -> Path:
@@ -473,9 +592,13 @@ def _read_table(path: Path) -> pd.DataFrame:
     suffix = path.suffix.lower()
     if suffix == ".parquet":
         return pd.read_parquet(path)
-    if suffix in (".csv", ".tsv", ".txt"):
-        sep = "\t" if suffix == ".tsv" else ","
-        return pd.read_csv(path, sep=sep, keep_default_na=False, dtype=str)
+    # pandas decompresses .gz transparently; `compression="infer"` keeps both
+    # a plain table and #2's `observations.csv.gz` on the same path.
+    if suffix in (".csv", ".tsv", ".txt", ".gz"):
+        stem = path.name[:-3].lower() if suffix == ".gz" else path.name.lower()
+        sep = "\t" if stem.endswith((".tsv", ".txt")) else ","
+        return pd.read_csv(path, sep=sep, keep_default_na=False, dtype=str,
+                           compression="infer")
     raise ContractError(f"unsupported handoff format: {path}")
 
 
@@ -485,6 +608,13 @@ def _require_columns(table: pd.DataFrame, required, path: Path, kind: str) -> No
         raise ContractError(
             f"{kind} handoff {path} is missing column(s) {missing}; "
             f"present: {list(table.columns)}")
+
+
+def names_present(table: pd.DataFrame, names) -> str | None:
+    for name in names:
+        if name in table.columns:
+            return name
+    return None
 
 
 def _first_present(table: pd.DataFrame, names, what: str, path: Path) -> str:
@@ -497,7 +627,8 @@ def _first_present(table: pd.DataFrame, names, what: str, path: Path) -> str:
 ELIGIBILITY_ALIASES = {
     "drug_key": ["drug_key", "drugkey", "drug", "parent_inchikey"],
     "eligibility_decision": ["eligibility_decision", "decision", "eligibility"],
-    "elig_class": ["elig_class", "eligibility_class", "class", "drug_class"],
+    "elig_class": ["elig_class", "eligibility_class", "decision_class", "class",
+                   "drug_class"],
 }
 
 
@@ -528,9 +659,56 @@ def load_eligibility(path: Path | str | None = None) -> tuple[pd.DataFrame, Hand
         raise ContractError(
             f"{resolved}: eligibility_decision values outside "
             f"{ELIGIBILITY_DECISIONS}: {bad}")
+    detail: dict = {}
+    companion = companion_handoff(resolved, ("handoff.json",))
+    if companion is not None:
+        doc = read_json(companion)
+        detail = {
+            "handoff_json": relpath(companion),
+            "handoff_json_sha256": sha256_file(companion),
+            "schema": doc.get("schema"),
+            "rule_version": (doc.get("rule") or {}).get("version"),
+            "rule_sha256": (doc.get("rule") or {}).get("sha256"),
+            "counts": doc.get("counts"),
+            "decision_class_counts": doc.get("decision_class_counts"),
+        }
+        declared = doc.get("counts") or {}
+        observed = table["eligibility_decision"].value_counts().to_dict()
+        for decision in ELIGIBILITY_DECISIONS:
+            if decision in declared and int(declared[decision]) != int(
+                    observed.get(decision, 0)):
+                raise ContractError(
+                    f"#1 handoff.json declares {declared[decision]} {decision} keys, "
+                    f"the table has {observed.get(decision, 0)} (rule "
+                    f"{(doc.get('rule') or {}).get('version')})")
+        # A newer handoff may add an explicit study/main-set list.  If it does,
+        # it must agree with the decision column — the decision is the authority.
+        include_keys = set(table.loc[table["eligibility_decision"] == "include",
+                                     "drug_key"])
+        for field_name in ("main_set", "study_set", "included_keys", "include_keys"):
+            declared_keys = doc.get(field_name)
+            if isinstance(declared_keys, list):
+                declared_set = {str(k) for k in declared_keys}
+                if declared_set != include_keys:
+                    raise ContractError(
+                        f"#1 handoff.json {field_name} disagrees with the decision "
+                        f"column: only_table={sorted(include_keys - declared_set)[:5]} "
+                        f"only_handoff={sorted(declared_set - include_keys)[:5]}")
+                detail[f"{field_name}_reconciled"] = True
+    # An explicit boolean column in the table must also agree.
+    for column in ("main_set", "study_set", "in_study"):
+        if column in raw.columns:
+            truthy = raw[column].astype(str).str.strip().str.lower().isin(
+                {"true", "1", "yes"})
+            expected = table["eligibility_decision"] == "include"
+            if (truthy.to_numpy() != expected.to_numpy()).any():
+                raise ContractError(
+                    f"#1 eligibility table column {column!r} disagrees with the "
+                    "decision column")
+            detail[f"table_{column}_reconciled"] = True
     handoff = Handoff("eligibility", resolved, sha256_file(resolved),
                       resolved.stat().st_size, len(table),
-                      "include/exclude/uncertain per drug_key")
+                      "include/exclude/uncertain per drug_key", detail)
     return table, handoff
 
 
@@ -548,8 +726,11 @@ def _bool_series(column: pd.Series, path: Path) -> pd.Series:
 
 QC_ALIASES = {
     "key": ["well", "observation_id", "obs_id", "observation", "row_id"],
-    "qc_pass": ["qc_pass", "pass", "qc_ok", "kept"],
+    "qc_pass": ["qc_pass", "qc_status", "pass", "qc_ok", "kept"],
     "qc_reason": ["qc_reason", "reason", "qc_note", "note"],
+    # #2's handoff also decides matched-control availability; carried when present.
+    "matched_control_ok": ["matched_control_ok", "matched_control_available"],
+    "matched_control_key": ["matched_control_key", "matched_control_group"],
 }
 
 
@@ -557,10 +738,20 @@ def load_qc(path: Path | str, kind: str = "cm") -> tuple[pd.DataFrame, Handoff]:
     """#2 handoff -> (key, qc_pass, qc_reason), validated.
 
     `kind` is "cm" (keys = CM well ids) or "tahoe" (keys = Tahoe observation ids).
-    A combined table with a `source` column is split by the caller.
+    A combined table with a `source` column is split by the caller and passed to
+    `normalize_qc_table`.
     """
     resolved = Path(path).expanduser().resolve()
     raw = _read_table(resolved)
+    table = normalize_qc_table(raw, resolved, kind)
+    handoff = Handoff(f"{kind}_qc", resolved, sha256_file(resolved),
+                      resolved.stat().st_size, len(table),
+                      f"per-observation QC for {kind}")
+    return table, handoff
+
+
+def normalize_qc_table(raw: pd.DataFrame, resolved: Path, kind: str) -> pd.DataFrame:
+    """Validate/normalise one per-source #2 QC table (see `load_qc`)."""
     key = _first_present(raw, QC_ALIASES["key"], "observation key", resolved)
     qc_col = _first_present(raw, QC_ALIASES["qc_pass"], "qc_pass", resolved)
     reason_col = _first_present(raw, QC_ALIASES["qc_reason"], "qc_reason", resolved)
@@ -569,22 +760,33 @@ def load_qc(path: Path | str, kind: str = "cm") -> tuple[pd.DataFrame, Handoff]:
         "qc_pass": _bool_series(raw[qc_col], resolved),
         "qc_reason": raw[reason_col].astype(str).str.strip(),
     })
+    column = names_present(raw, QC_ALIASES["matched_control_ok"])
+    if column is not None:
+        # controls have no matched-control entry; only treated rows are judged
+        values = raw[column].astype(str).str.strip().str.lower()
+        table["matched_control_ok"] = values.map(
+            {"true": True, "1": True, "false": False, "0": False, "": None})
+    column = names_present(raw, QC_ALIASES["matched_control_key"])
+    if column is not None:
+        table["matched_control_key"] = raw[column].astype(str).str.strip()
     if (table["well"] == "").any():
         raise ContractError(f"{resolved}: empty observation key row(s)")
     if table["well"].duplicated().any():
         dupes = table.loc[table["well"].duplicated(), "well"].unique()[:5]
         raise ContractError(f"{resolved}: duplicated observation id(s): {list(dupes)}")
-    handoff = Handoff(f"{kind}_qc", resolved, sha256_file(resolved),
-                      resolved.stat().st_size, len(table),
-                      f"per-observation QC for {kind}")
-    return table, handoff
+    return table
 
 
 def split_combined_qc(table: pd.DataFrame, path: Path) -> dict[str, pd.DataFrame]:
-    """Split a combined per-observation QC table on its `source` column."""
-    if "source" not in table.columns:
+    """Split a combined per-observation QC table on its `source` column.
+
+    #2's handoff is one `observations.csv.gz` with `source` ∈ {temp_env, tahoe}
+    and `qc_status` ∈ {pass, fail}; either column name is accepted.
+    """
+    source_column = names_present(table, ["source", "dataset_id", "dataset"])
+    if source_column is None:
         raise ContractError(f"{path}: combined QC table has no `source` column")
-    labels = table["source"].astype(str).str.strip().str.lower()
+    labels = table[source_column].astype(str).str.strip().str.lower()
     mapping = {"cm": {"cm", "temp_env", "temp-env"}, "tahoe": {"tahoe"}}
     out = {}
     for kind, accepted in mapping.items():
@@ -601,9 +803,15 @@ def split_combined_qc(table: pd.DataFrame, path: Path) -> dict[str, pd.DataFrame
 def build_locked_config() -> dict:
     """The locked, hashed experiment config.  No result may redefine it.
 
-    Every number is either quoted from the approved spec/ADR or marked
-    `derived_default` with a one-line rationale.  `build_input.py --verify`
-    re-hashes the file named in the manifest.
+    The **top level** is the canonical pipeline schema ticket #4's
+    `ptlib.config.normalize_locked_config` reads (`structure`, `recipe`,
+    `metric`, `loss`, `optimizer`, `prediction_noise`, `n_folds`, `seeds`,
+    `lrs`, `dose_encoding`), so the pipeline binds to these values instead of
+    falling back to its own defaults.  The decision record (folds, consensus,
+    validation, budgets, derived defaults) is carried beside it.
+
+    Every number is quoted from the approved spec/ADR or marked
+    `derived_default` with a one-line rationale; nothing contradicts the spec.
     """
     config = {
         "schema": "06.3_input/locked_config/1",
@@ -611,72 +819,112 @@ def build_locked_config() -> dict:
         "contract_id": CONTRACT_ID,
         "spec": ".scratch/stage2-prnet-formal-transfer/spec.md (approved 2026-11-02)",
         "frozen_by": "ticket #3 (GitHub issue Moke110/arc#3)",
+        "consumer_note": "top-level structure/recipe/metric/loss/optimizer/"
+                         "prediction_noise/n_folds/seeds/lrs/dose_encoding are the "
+                         "canonical pipeline schema (ticket #4); the blocks below are "
+                         "the decision record and must not be re-tuned",
+        # ---------------- canonical pipeline schema ----------------
+        "structure": {
+            "n_genes": N_GENES,
+            "hidden": [128],
+            "z_dim": 64,
+            "c_dim": 64,
+            "n_dim": 10,
+            "drug_dim": 1024,
+            "adaptor": [128],
+            "dropout": 0.05,
+        },
+        "recipe": {
+            "batch_size": 512,
+            "max_epochs": 100,
+            "min_epochs": 20,
+            "early_stop_patience": 20,
+            "sched_factor": 0.5,
+            "sched_patience": 10,
+            "min_lr": 1e-08,
+            "weight_decay": 1e-08,
+        },
+        "metric": {
+            "name": "direction_auprc",
+            "headline": "direction AUPRC@200",
+            "column": "AUPRC@200",
+            "k": 200,
+            "plateau_mode": "max",
+            "selection_metric": "validation direction AUPRC@200 (max)",
+            "true_set": "top-k up and bottom-k down of the condition's mean true delta; "
+                        "stable argsort, ties by corpus gene order; a direction with < k "
+                        "non-zero genes falls back to its non-zero support",
+            "per_condition_ap": "AP_up = average_precision(y_up, pred); AP_down = "
+                                "average_precision(y_down, -pred); condition score = mean "
+                                "of the non-NaN directions",
+            "condition": "CM: drug_key x dose_uM; Tahoe: drug_key x dose_uM x cell_line_id",
+            "replicate_rule": "average predictions within a condition BEFORE scoring",
+            "aggregation": "macro mean over conditions",
+            "not_a_significance_test": True,
+            "auxiliary": ["delta RMSE", "delta correlation",
+                          "low-response / toxicity stratification (labels are all "
+                          "`unknown` in this round)"],
+            "test_usage": "scored once after candidate selection; never used for LR, "
+                          "epoch, seed or capacity",
+        },
+        "loss": "gaussian_nll",
+        "optimizer": "adam",
+        "prediction_noise": "zero",
+        "n_folds": N_FOLDS,
+        "seeds": list(MODEL_SEEDS),
+        "lrs": {"pretrain": 0.001, "cm": [0.0001, 0.0003, 0.001]},
+        "dose_encoding": {
+            "fingerprint": "FCFP4",
+            "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, "
+                     "useFeatures=True, nBits=1024)",
+            "n_bits": 1024,
+            "radius": 2,
+            "use_features": True,
+            "dose_scale": "log10(dose_uM+1)",
+            "label": "FCFP4_bits * log10(dose_uM + 1)",
+            "binning": "none; the two sources' dose grids are not aligned",
+            "documented_scalings": {"0.05": 0.02119, "0.2": 0.07918, "0.5": 0.17609,
+                                    "1.0": 0.30103, "5.0": 0.77815, "10.0": 1.04139},
+        },
+        # ---------------- decision record ----------------
         "gene_axis": {
             "n_genes": N_GENES,
             "order": "stage2/02_cm_data/output/corpus/v1/genes.csv (HGNC symbol, lexicographic)",
             "identity_columns": ["hgnc_id", "entrez_id", "ensembl_id", "match_type"],
             "measurement_mask": "var.gene_measured, per source; never a measured zero",
         },
-        "model": {
+        "model_detail": {
             "architecture": "PRnet PGM (author structure, re-implemented in-file)",
             "in_dim": N_GENES,
-            "hidden_layers": [128],
-            "drug_latent": 64,
-            "state_latent": 64,
-            "noise_dim": 10,
-            "adaptor_layers": [128],
-            "drug_dimension": 1024,
-            "dropout": 0.05,
             "comb_num": 1,
             "params_expected": 386 * N_GENES + 173696,
             "params_formula": "386*n_genes + 173696 (measured 7,185,000 at 18,164)",
-            "objective": "expression target: predict treated log1p_cp10k from (control, structure, dose)",
+            "objective": "expression target: predict treated log1p_cp10k from "
+                         "(control, structure, dose)",
             "output_nonnegative_mean": True,
             "signed_delta_head": False,
+            "finetune": "full-parameter; no frozen layers",
+            "plateau_metric": "validation direction AUPRC@200",
+            "plateau_mode": "max",
+            "cm_lr_candidates": [0.0001, 0.0003, 0.001],
+            "pretrain_lr": 0.001,
         },
-        "dose_encoding": {
-            "fingerprint": "FCFP4",
-            "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
-            "n_bits": 1024,
-            "radius": 2,
-            "use_features": True,
-            "dose_transform": "log10(dose_uM + 1)",
-            "label": "FCFP4_bits * log10(dose_uM + 1)",
-            "binning": "none; the two sources' dose grids are not aligned",
-            "documented_scalings": {"0.05": 0.02119, "0.2": 0.07918, "0.5": 0.17609,
-                                    "1.0": 0.30103, "5.0": 0.77815, "10.0": 1.04139},
-        },
-        "loss": {
-            "name": "Gaussian NLL",
+        "loss_detail": {
             "implementation": "F.gaussian_nll_loss(mean, target, var, reduction='mean')",
             "clamp": False,
             "note": "a log-likelihood may be negative; never clamp or abs it",
         },
-        "optimisation": {
-            "optimizer": "Adam",
-            "batch_size": 512,
-            "weight_decay": 1e-08,
-            "max_epochs": 100,
-            "min_epochs": 20,
-            "early_stop_patience": 20,
-            "plateau_factor": 0.5,
-            "plateau_patience": 10,
-            "plateau_mode": "max",
-            "plateau_metric": "validation direction AUPRC@200",
-            "pretrain_lr": 0.001,
-            "cm_lr_candidates": [0.0001, 0.0003, 0.001],
-            "finetune": "full-parameter; no frozen layers",
-        },
         "data_contract": {
             "cm_rows": "QC-pass treated wells with a resolvable drug_key, plus QC-pass DMSO/Media control wells",
             "cm_main_set": "eligibility_decision == include AND qc_pass",
+            "cm_expansion_set": "eligibility_decision == exclude AND qc_pass (ticket #11 training only)",
             "cm_target": "layers['log1p_cp10k'] (row-wise log1p(CP10k))",
             "cm_train_control": "mean over QC-pass DMSO rows on the same plate (never the mixed-vehicle control_mean)",
             "cm_validation_test_input": "one fixed per-fold consensus c* (consensus_controls.npz); never a per-plate control",
             "eval_delta": "y - mean(log1p_cp10k of QC-pass matched same-plate DMSO rows), computed only at scoring time",
             "tahoe_target": "layers['log1p_cp10k']",
             "tahoe_control": "mean of the same (plate, cell_line) group's QC-pass control rows; never across cell lines",
-            "tahoe_rows_used": "~is_control & has_structure & qc_pass (tahoe_usable); time never filters rows",
+            "tahoe_rows_used": "~is_control & has_structure & qc_pass & matched_control_ok (tahoe_usable); time never filters rows",
             "deployment_semantics": "validation/test/inference receive one fixed c*; the experimental truth is computed separately at scoring time",
         },
         "folds": {
@@ -702,37 +950,26 @@ def build_locked_config() -> dict:
             "artifacts": ["consensus_controls.npz", "consensus_membership.parquet"],
             "forbidden": "test/valid drug treated expression; held-out plates' control rows; adjusting weights after seeing test data",
         },
-        "metric": {
-            "headline": "direction AUPRC@200",
-            "column": "AUPRC@200",
-            "k": 200,
-            "true_set": "top-k up and bottom-k down of the condition's mean true delta; stable argsort, ties by corpus gene order; a direction with < k non-zero genes falls back to its non-zero support",
-            "per_condition_ap": "AP_up = average_precision(y_up, pred); AP_down = average_precision(y_down, -pred); condition score = mean of the non-NaN directions",
-            "condition": "CM: drug_key x dose_uM; Tahoe: drug_key x dose_uM x cell_line_id",
-            "replicate_rule": "average predictions within a condition BEFORE scoring",
-            "aggregation": "macro mean over conditions",
-            "not_a_significance_test": True,
-            "auxiliary": ["delta RMSE", "delta correlation", "low-response / toxicity stratification"],
-            "selection_metric": "validation AUPRC@200 (max)",
-            "test_usage": "scored once after candidate selection; never used for LR, epoch, seed or capacity",
-        },
         "validation": {
             "cm": "the fold's valid roles only; model input is the fold's fixed c*",
             "tahoe_pretrain": "plate13 + plate14 valid (existing technical default; not a cold-drug claim)",
             "tahoe_conditions": "drug_key x dose_uM x cell_line_id",
             "tahoe_matched_control": "same (plate, cell_line) group only",
         },
-        "seeds": {
-            "model_seeds": list(MODEL_SEEDS),
-            "derived_default": "three consecutive seeds in the repo's 20261021 family; the spec fixes the count (3), not the values",
+        "seeds_detail": {
+            "derived_default": "three consecutive seeds in the repo's 20261021 family; "
+                               "the spec fixes the count (3), not the values",
             "no_seed_cherry_picking": True,
             "fold_seed": FOLD_SEED,
-            "fold_seed_derived_default": "study start date; the spec fixes only that the seed is recorded",
+            "fold_seed_derived_default": "study start date; the spec fixes only that the "
+                                         "seed is recorded",
         },
         "lr_selection": {
-            "rule": "per initialisation and per fold, choose the LR maximising the mean over the three seeds of the best validation AUPRC@200",
+            "rule": "per initialisation and per fold, choose the LR maximising the mean "
+                    "over the three seeds of the best validation AUPRC@200",
             "tie_break": "lower LR first, then candidate order",
-            "tie_break_derived_default": "the spec fixes the mean-of-three-seeds rule, not the tie-break",
+            "tie_break_derived_default": "the spec fixes the mean-of-three-seeds rule, "
+                                         "not the tie-break",
             "then_evaluate": "the three checkpoints (one per seed) at the selected LR",
         },
         "test_units": {
@@ -744,27 +981,35 @@ def build_locked_config() -> dict:
             "candidates_formula": "2 inits x 5 folds x 3 seeds x 3 LRs",
         },
         "prediction": {
-            "train_noise": "N(0,1) noise vector of width 10 per sample, drawn from a seeded generator recorded per run",
+            "train_noise": "N(0,1) noise vector of width 10 per sample, drawn from a "
+                           "seeded generator recorded per run",
             "validation_test_inference_noise": "exactly zero",
             "deterministic": True,
-            "repeat_inference_policy": "byte-identical predictions for the same checkpoint and input",
+            "repeat_inference_policy": "byte-identical predictions for the same "
+                                       "checkpoint and input",
         },
         "environments": {
             "builder": "/home/chang/miniconda3/envs/arc/bin/python (anndata 0.12.16)",
-            "reader_trainer": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python (anndata 0.10.8, torch 2.0.1+cu118)",
-            "note": "the builder writes the h5ad; the pinned trainer must read it (anndata 0.10.8 cannot write a dataframe/0.2.0 uns frame but reads one)",
+            "reader_trainer": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python "
+                              "(anndata 0.10.8, torch 2.0.1+cu118)",
+            "note": "the builder writes the h5ad; the pinned trainer must read it "
+                    "(anndata 0.10.8 cannot write a dataframe/0.2.0 uns frame but "
+                    "reads one)",
         },
         "derived_defaults": [
             {"key": "folds.seed", "value": FOLD_SEED,
              "rationale": "the spec requires a recorded seed, not a specific value"},
             {"key": "folds.assignment", "value": "greedy capacity ceil(n/5)",
              "rationale": "realises ~6:2:2 over clusters without a solver"},
-            {"key": "seeds.model_seeds", "value": list(MODEL_SEEDS),
+            {"key": "seeds", "value": list(MODEL_SEEDS),
              "rationale": "the spec fixes three seeds, not their values"},
             {"key": "lr_selection.tie_break", "value": "lower LR, then candidate order",
              "rationale": "the spec fixes the mean-of-three-seeds rule only"},
             {"key": "consensus_control.well_weight", "value": "plate_weight / n_wells_in_plate",
              "rationale": "equal plate weight is required; spelling it per well makes the pool auditable"},
+            {"key": "recipe.min_lr", "value": 1e-08,
+             "rationale": "the repo's existing plateau floor (05/03.1); the spec fixes "
+                          "factor and patience"},
         ],
     }
     return config
