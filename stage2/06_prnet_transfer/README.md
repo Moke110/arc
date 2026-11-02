@@ -51,7 +51,7 @@ every experiment consumes them rather than re-deriving a split.
 | `06.2_qc/` per-observation QC | #2 | built and verified — locked rule set | [`README`](06.2_qc/README.md) |
 | `06.3_input/` frozen inputs, folds, consensus | #3 | frozen and verified — 118 drugs / 951 wells, 125/125 verify | [`README`](06.3_input/README.md), `output/manifest.json` |
 | `06.4_pipeline/` pipeline + smoke | #4 | Phase A built; Phase B real-data smoke green (17/17 steps, GPU peak 2.9 GB, host peak 8.5 GiB) | [`README`](06.4_pipeline/README.md), `output/smoke/smoke_record.json` |
-| `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | wrapper built and profiling-verified (75.9 s/full epoch, 11.3 GiB peak); formal sweep running | [`README`](06.5_tahoe_pretrain/README.md) |
+| `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | executed — 3/3 seeds (29/95/53 epochs, best valid AUPRC@200 0.2008/0.2222/0.2313) | [`README`](06.5_tahoe_pretrain/README.md), `output/formal/tahoe_pretrain_record.json` |
 | `06.6_cm_random/` 45 random-init CM candidates | #6 | executed — 45/45 (40 ok / 5 capped), LR 1e-3 in all folds, 15 checkpoints selected | [`README`](06.6_cm_random/README.md), `output/record/record.json` |
 | `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | planned | — |
 | `06.8_baselines/` five-fold baselines | #8 | built and verified — real five-fold record, `delta_mean` 0.1645 AUPRC@200 is the primary bar | [`README`](06.8_baselines/README.md), `output/summary_table.csv` |
