@@ -75,6 +75,36 @@ def sha256_file(path: str | Path, chunk: int = 1 << 20) -> str:
     return h.hexdigest()
 
 
+def read_h5ad_obs(path: str | Path) -> pd.DataFrame:
+    """Decode only an h5ad's ``obs`` frame, with h5py — never ``anndata.read_h5ad``.
+
+    ``anndata.read_h5ad(..., backed="r")`` is **not** a metadata-only read: anndata
+    materialises every ``layers`` entry in memory even in backed mode.  On the frozen
+    Tahoe view that is 4.3 GB of ``log1p_cp10k`` for a caller that only wants ``obs``
+    (the "8.1 GB" in ``docs/agents/execution-environment.md`` is X plus that layer),
+    which is the memory trap that killed the 2026-11-02 session.  Decoding just the
+    ``obs`` group keeps the peak proportional to the metadata and never touches
+    ``X``/``layers``; this is the pattern of
+    ``06.3_input/execution/contract.py::read_h5ad_header``, copied rather than
+    imported so this substep keeps its independently re-derivable execution tree
+    (ADR 0030 §3).
+    """
+    import h5py
+
+    try:                                            # anndata >= 0.11
+        from anndata.io import read_elem
+    except ImportError:                             # pragma: no cover - 0.10 reader
+        from anndata.experimental import read_elem
+    path = Path(path)
+    with h5py.File(path, "r") as handle:
+        if "obs" not in handle:
+            raise RuntimeError(f"{path}: h5ad has no obs group")
+        obs = read_elem(handle["obs"])
+    if not isinstance(obs, pd.DataFrame):
+        raise RuntimeError(f"{path}: obs decoded to {type(obs)!r}, not a DataFrame")
+    return obs
+
+
 def _now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
@@ -335,8 +365,6 @@ def build_tempenv(root: Path) -> tuple[pd.DataFrame, dict]:
 # --------------------------------------------------------------------------- #
 
 def build_tahoe(root: Path) -> tuple[pd.DataFrame, dict]:
-    import anndata as ad
-
     sm = pd.read_parquet(root / TAHOE_META)
     if len(sm) != 1344:
         raise RuntimeError(f"tahoe sample_metadata rows changed: {len(sm)}")
@@ -355,8 +383,8 @@ def build_tahoe(root: Path) -> tuple[pd.DataFrame, dict]:
                                     ruleset.modified_z(np.log10(g["mean_gene_count"].to_numpy(dtype=float)))}))
     well_z = pd.concat(zs, ignore_index=True)
 
-    view = ad.read_h5ad(root / TAHOE_VIEW, backed="r")
-    obs = view.obs
+    # header-only read: never `anndata.read_h5ad(backed="r")` (see read_h5ad_obs)
+    obs = read_h5ad_obs(root / TAHOE_VIEW)
     keep_cols = ["well", "plate", "cell_line_id", "cell_name", "is_control", "dose_um",
                  "drug_key", "compound_name", "n_cells", "lib_size", "n_genes_detected",
                  "replicate", "has_structure", "time_h", "vehicle", "control_group"]
@@ -448,10 +476,8 @@ def assemble_tempenv(root: Path) -> tuple[pd.DataFrame, dict, dict]:
     df, meta = build_tempenv(root)
     refs = meta["refs"]
 
-    # frozen CM view: drug identity + the 18,164-axis QC columns
-    import anndata as ad
-    view = ad.read_h5ad(root / CM_VIEW, backed="r")
-    vo = view.obs
+    # frozen CM view: drug identity + the 18,164-axis QC columns (header-only read)
+    vo = read_h5ad_obs(root / CM_VIEW)
     v = pd.DataFrame({
         "observation_id": vo.index.astype(str),
         "drug_key": vo["drug_key"].astype(str).to_numpy(),

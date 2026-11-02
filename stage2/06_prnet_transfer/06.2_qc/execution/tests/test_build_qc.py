@@ -11,6 +11,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import pandas as pd
 
@@ -133,9 +134,7 @@ class TestCountInvariants(unittest.TestCase):
         self.assertEqual(int(sm.drug.nunique()), 380)        # 379 drugs + DMSO_TF
 
     def test_tahoe_view_observation_count(self):
-        import anndata as ad
-        view = ad.read_h5ad(data_root() / build_qc.TAHOE_VIEW, backed="r")
-        obs = view.obs
+        obs = build_qc.read_h5ad_obs(data_root() / build_qc.TAHOE_VIEW)
         self.assertEqual(len(obs), 67018)
         self.assertEqual(int(obs["is_control"].sum()), 1400)
         self.assertEqual(obs["control_group"].nunique(), 700)
@@ -144,6 +143,59 @@ class TestCountInvariants(unittest.TestCase):
         per_group = obs.loc[obs["is_control"].astype(bool)].groupby(
             "control_group", observed=True).size()
         self.assertEqual(set(per_group.unique()), {2})
+
+
+def _boom(*_args, **_kwargs):
+    raise AssertionError(
+        "anndata.read_h5ad was called: backed='r' still materialises `layers` "
+        "(8.1 GB on the Tahoe view) — use build_qc.read_h5ad_obs"
+    )
+
+
+@unittest.skipUnless(_have_inputs(), f"frozen inputs not found under {data_root()}")
+class TestNoBackedH5adRead(unittest.TestCase):
+    """Regression guard for the 2026-11-02 memory trap.
+
+    ``anndata.read_h5ad(..., backed="r")`` loads every ``layers`` entry even in backed
+    mode, so the Tahoe view cost 8.1 GB for an ``obs``-only caller. `anndata.read_h5ad`
+    is poisoned here: if either large-view path regresses to it, the test fails loudly
+    instead of quietly OOM-ing the workstation.
+    """
+
+    def _poison(self):
+        try:
+            import anndata
+        except ImportError:                                    # pragma: no cover
+            self.skipTest("anndata is not installed")
+        patcher = mock.patch.object(anndata, "read_h5ad", _boom)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_header_reader_decodes_obs_without_backed_mode(self):
+        self._poison()
+        obs = build_qc.read_h5ad_obs(data_root() / build_qc.TAHOE_VIEW)
+        self.assertEqual(len(obs), 67018)
+        self.assertIn("is_control", obs.columns)
+
+    def test_tahoe_build_never_opens_the_view_backed(self):
+        self._poison()
+        obs, info = build_qc.build_tahoe(data_root())
+        self.assertEqual(info["n_obs"], 67018)
+        self.assertEqual(len(obs), 67018)
+        # the observation_id composite is parsed from obs.well, so a wrong obs frame
+        # cannot silently produce the right row count
+        self.assertEqual(
+            obs.observation_id.str.extract(r"^(tahoe::plate\d+:smp_\d+:)")[0].nunique(),
+            1344,
+        )
+
+    def test_cm_view_merge_never_opens_the_view_backed(self):
+        self._poison()
+        vo = build_qc.read_h5ad_obs(data_root() / build_qc.CM_VIEW)
+        self.assertEqual(len(vo), 4478)
+        for column in ("drug_key", "compound_name", "inchikey", "lib_size",
+                       "n_genes_detected", "replicate"):
+            self.assertIn(column, vo.columns)
 
 
 if __name__ == "__main__":

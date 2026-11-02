@@ -192,18 +192,39 @@ become NaN under a plain `pandas.read_csv` — same convention as the frozen vie
 
 ```bash
 cd stage2/06_prnet_transfer/06.2_qc/execution
-PYTHONDONTWRITEBYTECODE=1 /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s tests -v   # 47 tests
+PYTHONDONTWRITEBYTECODE=1 /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s tests -v   # 50 tests
 ./run.sh --lock      # derive + freeze thresholds      (~20 s)
-./run.sh --build     # apply them, write every table    (~40 s)
+./run.sh --build     # apply them, write every table    (~25 s)
 ./run.sh --verify    # re-hash + count invariants       (~5 s)
 make record          # copy the tracked record into 06.2_qc/output/ (then git add -f)
 ```
 
 `QC_DATA_ROOT` (default `/home/chang/arc`, the main checkout that holds the gitignored
 `pert_data/` and `stage2/02|04` outputs) and `QC_OUT_ROOT` (default = data root) are the
-two overrides; `run.sh` is a thin wrapper over the three `build_qc.py` modes. Peak RSS is
-under 1.5 GB: the 16 GB Tahoe view is opened with `backed='r'` and only its `obs` is read —
-no matrix is ever materialised.
+two overrides; `run.sh` is a thin wrapper over the three `build_qc.py` modes.
+
+**Memory (measured 2026-11-02, after the loader fix).** Both large frozen views are read
+**header-only** — `build_qc.read_h5ad_obs` opens the file with `h5py` and decodes just the
+`obs` element (`06.3_input/execution/contract.py::read_h5ad_header` is the same pattern,
+copied rather than imported so this substep keeps an independently re-derivable execution
+tree). `anndata.read_h5ad(..., backed='r')` is **not** a metadata-only read: anndata
+materialises every `layers` entry even in backed mode, and the Tahoe view carries a 4.3 GB
+`log1p_cp10k` layer, so an obs-only backed open alone peaked at **7.95 GiB** (8,339,292
+KiB, measured) — the trap recorded in
+[`docs/agents/execution-environment.md`](../../../docs/agents/execution-environment.md).
+The full fixed `--build`, run under
+`systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=8G`, peaks at **1.92 GiB**
+(2,014,972 KiB by `/usr/bin/time -v`) in ~22 s. The earlier "peak RSS is under 1.5 GB …
+only its `obs` is read" claim predated the loader fix and was wrong; it is superseded by
+these measurements. A regression test poisons `anndata.read_h5ad`, so the build cannot
+silently go back to a backed open.
+
+**Determinism of the loader fix.** Rebuilding into a temporary out root (never overwriting
+the committed `output/`) and comparing by content hash reproduced **all 14 files**: 12
+byte-identical — including `observations.csv.gz` (compressed *and* uncompressed sha256
+`732c2098…`, 71,576 × 47) and `handoff.json` — and the two provenance JSONs differing only
+in `built_at` and `manifest.git_head` (plus the derived `files["qc_summary.json"]` hash
+that follows from `built_at`). No decision, count or label changed.
 
 ## 11. Deviations
 
