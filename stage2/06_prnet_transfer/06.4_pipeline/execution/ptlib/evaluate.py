@@ -300,9 +300,11 @@ def run_evaluation(options: EvaluateOptions) -> dict[str, Any]:
     )
     truth_delta = treated.astype(np.float64) - truth_baseline.astype(np.float64)
     pred_delta = np.asarray(predictions["delta"], dtype=np.float64)
-    # The prediction's Δ must be exactly prediction - the input baseline the model saw.
-    input_baseline = predictions["pred_expr"].astype(np.float64) - pred_delta
     if options.stage == "finetune":
+        # The prediction's Δ must be exactly prediction - the input baseline the
+        # model saw.  Only CM has a baseline to reconstruct: for the pretrain
+        # stage this would allocate a dead 8.5k x 18k float64 array (~1.2 GB).
+        input_baseline = predictions["pred_expr"].astype(np.float64) - pred_delta
         source = data_mod.CMPredictSource(
             frozen,
             data_mod.load_folds(frozen),

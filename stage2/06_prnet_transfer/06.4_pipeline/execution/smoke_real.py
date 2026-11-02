@@ -133,8 +133,12 @@ def main(argv: list[str] | None = None) -> int:
     card = str(EXECUTION / "make_model_card.py")
     common = [
         "--data-dir", str(data_dir), "--hash-cache", str(hash_cache),
-        "--table-cache", str(args.table_cache), "--device", args.device,
+        "--table-cache", str(args.table_cache),
     ]
+    # Only train/predict take --device; evaluate.py has no such flag (it scores
+    # numpy predictions on CPU).  Passing it to every step is what broke the first
+    # Phase-B run at the first evaluate call.
+    device_args = ["--device", args.device]
     record: dict = {
         "label": "PIPELINE SMOKE — not a science result",
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
@@ -184,7 +188,7 @@ def main(argv: list[str] | None = None) -> int:
          "--seed", str(args.seed), "--smoke", "--epochs", str(args.epochs),
          "--max-train-rows", str(args.pretrain_rows),
          "--max-valid-rows", str(args.valid_rows),
-         "--tahoe-cache", str(cache), "--cache-mode", "auto", *common],
+         "--tahoe-cache", str(cache), "--cache-mode", "auto", *common, *device_args],
         out_root / "logs" / "pretrain.log", env,
     )
     if not must(code, "pretrain"):
@@ -216,7 +220,7 @@ def main(argv: list[str] | None = None) -> int:
              "--seed", str(args.seed + 1), "--epochs", "1", "--min-epochs", "1",
              "--max-train-rows", str(args.pretrain_rows),
              "--max-valid-rows", str(args.valid_rows),
-             "--tahoe-cache", str(cache), "--cache-mode", "require", *common],
+             "--tahoe-cache", str(cache), "--cache-mode", "require", *common, *device_args],
             out_root / "logs" / "pretrain_warm.log", env,
         )
         if must(code, "warm-cache pretrain"):
@@ -238,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
                 "--seed", str(args.seed + 10 + offset), "--epochs", "1",
                 "--min-epochs", "1", "--max-train-rows", str(args.pretrain_rows),
                 "--max-valid-rows", str(args.valid_rows),
-                "--tahoe-cache", str(cache), "--cache-mode", "auto", *common,
+                "--tahoe-cache", str(cache), "--cache-mode", "auto", *common, *device_args,
             ]
             log_path = out_root / "logs" / f"concurrency_probe_{offset}.log"
             log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -275,7 +279,7 @@ def main(argv: list[str] | None = None) -> int:
         code = _run(
             [args.python, train, "--stage", "finetune", "--fold", str(args.fold),
              "--out", str(run_dir), "--seed", str(args.seed), "--smoke",
-             "--epochs", str(args.epochs), "--lr", str(args.cm_lr), *init_args, *common],
+             "--epochs", str(args.epochs), "--lr", str(args.cm_lr), *init_args, *common, *device_args],
             out_root / "logs" / f"{name}.log", env,
         )
         if not must(code, f"finetune {name}"):
@@ -305,7 +309,7 @@ def main(argv: list[str] | None = None) -> int:
             code = _run(
                 [args.python, predict, "--stage", "finetune", "--fold", str(args.fold),
                  "--role", role, "--checkpoint", str(run_dir / "checkpoint" / "model.pt"),
-                 "--out", str(pred_dir), *common],
+                 "--out", str(pred_dir), *common, *device_args],
                 out_root / "logs" / f"{name}_predict_{role}.log", env,
             )
             if not must(code, f"predict {name} {role}"):
@@ -344,7 +348,7 @@ def main(argv: list[str] | None = None) -> int:
     code = _run(
         [args.python, predict, "--stage", "pretrain", "--role", "valid",
          "--checkpoint", str(pretrain_dir / "checkpoint" / "model.pt"),
-         "--out", str(pred_dir), *common],
+         "--out", str(pred_dir), *common, *device_args],
         out_root / "logs" / "pretrain_predict_valid.log", env,
     )
     if must(code, "pretrain predict valid"):
@@ -384,13 +388,20 @@ def main(argv: list[str] | None = None) -> int:
          "headline_auprc", "checkpoint_sha256"],
     ]
 
+    def _checkpoint_sha(step: dict) -> str:
+        # pretrain records the path, the CM runs record the manifest checkpoint dict
+        checkpoint = step.get("checkpoint")
+        if isinstance(checkpoint, dict):
+            return str(checkpoint.get("sha256") or "")
+        return str(step.get("checkpoint_sha256") or "")
+
     def add_row(tag: str, step: dict, auprc: float | None = None) -> None:
         rows.append([
             tag, step.get("run_dir", ""), step.get("peak_rss_mb", ""), step.get("wall_s", ""),
             ";".join(str(x) for x in (step.get("per_epoch_seconds") or []) if x is not None),
             ";".join(str(x) for x in (step.get("per_epoch_valid_seconds") or []) if x is not None),
             "" if auprc is None else auprc,
-            ((step.get("checkpoint") or {}).get("sha256") or "")[:16],
+            _checkpoint_sha(step)[:16],
         ])
 
     pretrain_step = record["steps"].get("pretrain", {})
