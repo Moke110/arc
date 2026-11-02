@@ -1,0 +1,312 @@
+{
+  "schema": "stage2/06.8_baselines/v1",
+  "kind": "baselines",
+  "ticket": 8,
+  "status": "completed",
+  "created_utc": "2026-11-02T07:16:12+00:00",
+  "finished_utc": "2026-11-02T07:21:48+00:00",
+  "pipeline_version": "06.4.0",
+  "git": {
+    "sha": "e0e2d6806afc3a546a38e8e65dad1fa2a268b6dd",
+    "branch": "feat/prnet-formal-transfer",
+    "dirty": true
+  },
+  "command": [
+    "baselines.py",
+    "--all",
+    "--data-dir",
+    "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "--out-root",
+    "/home/chang/arc/stage2/06_prnet_transfer",
+    "--table-cache",
+    "/home/chang/arc/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache"
+  ],
+  "data": {
+    "dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "artifacts": {
+      "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+      "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+      "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+      "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+      "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+      "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+      "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+      "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+      "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+      "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+      "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+      "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+    },
+    "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
+    "locked_config": {
+      "path": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output/locked_config.json",
+      "sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "mapping": [
+        "metric.selection_metric -> metric.metric_name"
+      ],
+      "defaulted": []
+    },
+    "gene_axis": {
+      "n_genes": 18164,
+      "measured": 18164,
+      "gene_measured_source": "var.gene_measured"
+    },
+    "hash_verification": {
+      "verified": 8,
+      "cached": [],
+      "bytes": 16426331885
+    }
+  },
+  "input": {
+    "dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "artifact_sha256": {
+      "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+      "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+      "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+      "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+      "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+      "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+      "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+      "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+      "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+      "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+      "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+      "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+    },
+    "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
+    "locked_config": {
+      "path": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output/locked_config.json",
+      "sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "mapping": [
+        "metric.selection_metric -> metric.metric_name"
+      ],
+      "defaulted": []
+    },
+    "gene_axis": {
+      "n_genes": 18164,
+      "sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37"
+    }
+  },
+  "config": {
+    "baselines": [
+      "no_change",
+      "delta_mean",
+      "delta_mean_dose",
+      "ridge_fp"
+    ],
+    "primary_baselines": [
+      "no_change",
+      "delta_mean"
+    ],
+    "auxiliary_baselines": [
+      "delta_mean_dose",
+      "ridge_fp"
+    ],
+    "ridge_alpha": 1.0,
+    "ridge_alpha_policy": "fixed a priori (03.1 default); never tuned",
+    "dose_encoding": {
+      "binning": "none; the two sources' dose grids are not aligned",
+      "documented_scalings": {
+        "0.05": 0.02119,
+        "0.2": 0.07918,
+        "0.5": 0.17609,
+        "1.0": 0.30103,
+        "10.0": 1.04139,
+        "5.0": 0.77815
+      },
+      "dose_scale": "log10(dose_uM+1)",
+      "fingerprint": "FCFP4",
+      "label": "FCFP4_bits * log10(dose_uM + 1)",
+      "n_bits": 1024,
+      "radius": 2,
+      "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
+      "use_features": true
+    },
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "metric": {
+      "name": "direction_auprc",
+      "headline_k": 200,
+      "k_list": [
+        100,
+        200,
+        500
+      ],
+      "aggregation": "within-condition replicate mean first (condition = drug_key|dose_\u00b5M), then per-direction AP, macro over directions, macro over conditions",
+      "truth_delta": "treated log1p_cp10k \u2212 per-plate matched DMSO mean (evaluator only)",
+      "auxiliary": [
+        "\u0394 RMSE",
+        "Pearson",
+        "Spearman"
+      ]
+    },
+    "fit_rule": "only the fold's role=train treated responses are fitted; validation/test treated rows are never read",
+    "pooling": {
+      "delta_mean": "equal weight per training condition (drug_key|dose_\u00b5M)",
+      "delta_mean_dose": "per training dose",
+      "lookup": "exact training-condition match, else painted training-pool fallback"
+    },
+    "prediction_dir_format": "ptlib.predict format: pred_expr.npy, delta.npy, meta.csv (row ids), manifest.json; \u0394 = prediction \u2212 c*",
+    "memory": {
+      "gene_block_genes": 1024,
+      "row_block_rows": 64,
+      "row_level_delta_materialised": false,
+      "prediction_arrays": "np.lib.format memmaps filled in row blocks",
+      "n_jobs": "single process; no parallel fits",
+      "policy": "no dense observation \u00d7 n_genes array: the dense log1p layer is read and aggregated in gene blocks, and predictions are written in row blocks (ticket #8 memory rule)"
+    }
+  },
+  "folds": {
+    "0": {
+      "fold": 0,
+      "n_train_rows": 571,
+      "n_train_conditions": 212,
+      "n_train_drugs": 72,
+      "n_valid_rows": 188,
+      "n_test_rows": 192,
+      "n_test_conditions": 68,
+      "n_test_drugs": 23,
+      "n_test_conditions_seen_in_train": 0,
+      "n_plates_train": 16,
+      "train_row_sha256": "4b0990f6ee67f93a8ef729ec6f91b48873ae99825a738488d2d74b9156e8ca57",
+      "test_row_sha256": "bdbe69018821797754664d37a9e037fe0cd84742f9c7b8128040dd371fcc2607",
+      "c_star_sha256": "8e743deb4a3b3ce9bc43ef10766aef88c0d2d72a1b940b6e99f37f893c04c833",
+      "n_scored_conditions": 68,
+      "n_scored_replicates": 192,
+      "scored_conditions_unique": true,
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "test_rows_disjoint_from_train": true
+    },
+    "1": {
+      "fold": 1,
+      "n_train_rows": 572,
+      "n_train_conditions": 209,
+      "n_train_drugs": 71,
+      "n_valid_rows": 191,
+      "n_test_rows": 188,
+      "n_test_conditions": 67,
+      "n_test_drugs": 23,
+      "n_test_conditions_seen_in_train": 0,
+      "n_plates_train": 15,
+      "train_row_sha256": "ccbd5f1f4d74925c252cc7c63738cc1478abe3399c6c871d57fcfb3be6483add",
+      "test_row_sha256": "f74c131481b88b5ce9340e31fcbdf66e5d2752f5e78ced37e380bd13ec44a36b",
+      "c_star_sha256": "5eb6e4a0a028be14c8ac6a71235daf96cdd14b6b5ada8d62210821236b6f2031",
+      "n_scored_conditions": 67,
+      "n_scored_replicates": 188,
+      "scored_conditions_unique": true,
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "test_rows_disjoint_from_train": true
+    },
+    "2": {
+      "fold": 2,
+      "n_train_rows": 570,
+      "n_train_conditions": 205,
+      "n_train_drugs": 70,
+      "n_valid_rows": 190,
+      "n_test_rows": 191,
+      "n_test_conditions": 71,
+      "n_test_drugs": 24,
+      "n_test_conditions_seen_in_train": 0,
+      "n_plates_train": 15,
+      "train_row_sha256": "3fcd3b4b01193f660ff5452b007e932c7ec14041e3e63cffeddad7450797d07c",
+      "test_row_sha256": "e02ef9885246f00e2ca94d5e0cc17b6bc3a5ab2ac103493cf0a1c97c8bf4525e",
+      "c_star_sha256": "dc048a0c4283e3a87d3b5a225b1800ad9a712da26cc13a1706be29a3819402ad",
+      "n_scored_conditions": 71,
+      "n_scored_replicates": 191,
+      "scored_conditions_unique": true,
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "test_rows_disjoint_from_train": true
+    },
+    "3": {
+      "fold": 3,
+      "n_train_rows": 571,
+      "n_train_conditions": 206,
+      "n_train_drugs": 70,
+      "n_valid_rows": 190,
+      "n_test_rows": 190,
+      "n_test_conditions": 71,
+      "n_test_drugs": 24,
+      "n_test_conditions_seen_in_train": 0,
+      "n_plates_train": 15,
+      "train_row_sha256": "1c2e51add5771189a7ad78a6a26cb15ec61d52070d24b1154b42d660b31bc5ac",
+      "test_row_sha256": "e7ee1e30cd5f5d01c537ef2d6ec437ab171cf2ba836ec618643b0ab95b199bed",
+      "c_star_sha256": "dc048a0c4283e3a87d3b5a225b1800ad9a712da26cc13a1706be29a3819402ad",
+      "n_scored_conditions": 71,
+      "n_scored_replicates": 190,
+      "scored_conditions_unique": true,
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "test_rows_disjoint_from_train": true
+    },
+    "4": {
+      "fold": 4,
+      "n_train_rows": 569,
+      "n_train_conditions": 209,
+      "n_train_drugs": 71,
+      "n_valid_rows": 192,
+      "n_test_rows": 190,
+      "n_test_conditions": 70,
+      "n_test_drugs": 24,
+      "n_test_conditions_seen_in_train": 0,
+      "n_plates_train": 16,
+      "train_row_sha256": "f89f8a71b2f220c08c6495a7f8d64ef5e97980acfbd83832a3b251d1f10ba52b",
+      "test_row_sha256": "7181101f07a182e8afe3de840ab198c9add807ccb0140ab70f2b8acae2ce4111",
+      "c_star_sha256": "8e743deb4a3b3ce9bc43ef10766aef88c0d2d72a1b940b6e99f37f893c04c833",
+      "n_scored_conditions": 70,
+      "n_scored_replicates": 190,
+      "scored_conditions_unique": true,
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "test_rows_disjoint_from_train": true
+    }
+  },
+  "invariants": {
+    "n_folds": 5,
+    "n_main_drugs": 118,
+    "every_main_drug_tested_exactly_once": true,
+    "test_rows_disjoint_from_train": true,
+    "no_test_condition_seen_in_train": true,
+    "every_test_condition_scored_once": true,
+    "same_test_population_across_baselines": true,
+    "c_star_identical_across_baselines": true
+  },
+  "outputs": {
+    "root": "/home/chang/arc/stage2/06_prnet_transfer/06.8_baselines/output",
+    "summary_table": "summary_table.csv",
+    "metrics": "metrics.csv",
+    "per_drug_dose": "per_drug_dose.csv",
+    "fold_coverage": "fold_coverage.csv",
+    "baseline_runs": "folds/fold<k>/<baseline>/{pred,eval}/",
+    "fit_params": "folds/fold<k>/fits/<baseline>/params.npz (local, not tracked)"
+  },
+  "record_sha256": {
+    "summary_table": "f17b93111914fc1fd12c55c8bb86b2c25d88b364c22181c7e3834671b68023ec",
+    "metrics": "59a83c6203e8806cc73a712598c442e2b5643169c254b033019842dbe03d9401",
+    "per_drug_dose": "496552de9aed3f9a2d2f92d79eff621f6f066b357cf40b2583733a8c8318690b",
+    "fold_coverage": "13420af52172977f6f9d25afb041679db2a2d7da2bafd3e407e10a41e0848461"
+  },
+  "environment": {
+    "python": "3.9.25",
+    "numpy": "1.23.5",
+    "pandas": "1.5.3",
+    "sklearn": "1.3.2",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "timings": {
+    "wall_s": 321.6340385900003,
+    "per_fold_s": [
+      62.247333633999915,
+      61.35753413999964,
+      61.60434475300008,
+      62.025323609000225,
+      63.21760622000011
+    ]
+  },
+  "peak_rss_mb": 1081.33984375,
+  "warnings": []
+}
