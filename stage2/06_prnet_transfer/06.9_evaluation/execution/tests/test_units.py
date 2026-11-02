@@ -225,6 +225,46 @@ class UnitManifestTests(unittest.TestCase):
         self.assertEqual(identity, data["data_identity"])
 
 
+class CheckpointRootResolutionTests(unittest.TestCase):
+    """The #7 worktree handoff: record paths relative to a foreign checkout root."""
+
+    def test_relative_paths_resolve_via_arc_checkpoint_roots(self):
+        import os
+
+        root = _support.clean_dir(_support.tmp_root() / "relroots")
+        inputs = _support.make_selection_inputs(root)
+        for key in ("random_record", "tahoe_record"):
+            record = common.read_table(inputs[key])
+            record["checkpoint_worktree_relpath"] = [
+                str(Path(path).relative_to(root))
+                for path in record["checkpoint_worktree_relpath"]
+            ]
+            record.to_csv(inputs[key], index=False)
+        previous = os.environ.get("ARC_CHECKPOINT_ROOTS")
+        os.environ["ARC_CHECKPOINT_ROOTS"] = str(root)
+        common.repo_roots.cache_clear()
+        try:
+            payload = units_mod.build_unit_manifest(
+                data_dir=inputs["data"]["dir"],
+                random_record=inputs["random_record"],
+                tahoe_record=inputs["tahoe_record"],
+                baselines_dir=None,
+            )
+        finally:
+            if previous is None:
+                os.environ.pop("ARC_CHECKPOINT_ROOTS", None)
+            else:
+                os.environ["ARC_CHECKPOINT_ROOTS"] = previous
+            common.repo_roots.cache_clear()
+        self.assertTrue(payload["complete"])
+        self.assertEqual(len(payload["units"]), 30)
+        for unit in payload["units"]:
+            self.assertFalse(
+                unit["checkpoint"]["worktree_relpath"].startswith(".."),
+                "a resolved checkpoint must be record-relative to a known root",
+            )
+
+
 class ExpectedFoldCountsTests(unittest.TestCase):
     def test_reads_baseline_coverage(self):
         import pandas as pd
