@@ -1,6 +1,6 @@
 PY ?= /home/chang/miniconda3/envs/arc/bin/python
 ROOT := $(shell git rev-parse --show-toplevel)
-EXEC := stage2/06_prnet_transfer/eligibility/execution
+EXEC := stage2/06_prnet_transfer/06.1_eligibility/execution
 
 .PHONY: all build offline check test
 

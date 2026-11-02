@@ -272,10 +272,10 @@ the same completeness gates.
 From the repository root:
 
 ```bash
-bash stage2/06_prnet_transfer/eligibility/execution/run.sh            # fetch (cached), build, gates
-bash stage2/06_prnet_transfer/eligibility/execution/run.sh --offline  # rebuild from cache
-bash stage2/06_prnet_transfer/eligibility/execution/run.sh --check    # gates only
-make -C stage2/06_prnet_transfer/eligibility/execution test           # unittest
+bash stage2/06_prnet_transfer/06.1_eligibility/execution/run.sh            # fetch (cached), build, gates
+bash stage2/06_prnet_transfer/06.1_eligibility/execution/run.sh --offline  # rebuild from cache
+bash stage2/06_prnet_transfer/06.1_eligibility/execution/run.sh --check    # gates only
+make -C stage2/06_prnet_transfer/06.1_eligibility/execution test           # unittest
 ```
 
 `--out-root` overrides the step directory that owns `output/`; `--bindingdb` points

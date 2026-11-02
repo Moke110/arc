@@ -1,4 +1,4 @@
-# AGENTS.md — 06_prnet_transfer/eligibility
+# AGENTS.md — 06_prnet_transfer/06.1_eligibility
 
 Routing index for the 460-structure pharmacological eligibility audit (ticket #1):
 which temp_env compounds are approved/clinical drugs, mechanism tools, or other

@@ -4,7 +4,7 @@
     "version": "eligibility-rule-v1.2",
     "sha256": "e1af8cdb370bb1a8adc59ab49a5d658029f18e372e67248034fcccc2fd545bfa"
   },
-  "generated_at": "2026-11-02T12:12:03+08:00",
+  "generated_at": "2026-11-02T12:13:16+08:00",
   "source": {
     "compounds_csv": "stage2/02_cm_data/output/datasets-1/compounds.csv",
     "compounds_csv_sha256": "ebded8933196017646e9b5f7bd554ebe9b7b4e023448c194204201631ad99c0e",
@@ -23,7 +23,7 @@
       },
       "frozen_annotation": "compounds.csv atc/moa/mesh_classes (verified, not evidence)"
     },
-    "cache_dir": "/home/chang/arc-wt/t01-eligibility/stage2/06_prnet_transfer/eligibility/output/cache"
+    "cache_dir": "/home/chang/arc-wt/t01-eligibility/stage2/06_prnet_transfer/06.1_eligibility/output/cache"
   },
   "counts": {
     "total_keys": 460,

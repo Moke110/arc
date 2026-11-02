@@ -22,4 +22,4 @@ if [ ! -x "$PY" ]; then
   exit 1
 fi
 
-exec "$PY" stage2/06_prnet_transfer/eligibility/execution/build_eligibility.py "$@"
+exec "$PY" stage2/06_prnet_transfer/06.1_eligibility/execution/build_eligibility.py "$@"

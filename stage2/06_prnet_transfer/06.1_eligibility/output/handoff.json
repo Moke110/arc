@@ -4,7 +4,7 @@
     "version": "eligibility-rule-v1.2",
     "sha256": "e1af8cdb370bb1a8adc59ab49a5d658029f18e372e67248034fcccc2fd545bfa"
   },
-  "generated_at": "2026-11-02T12:12:03+08:00",
+  "generated_at": "2026-11-02T12:13:16+08:00",
   "counts": {
     "total_keys": 460,
     "total_name_records": 467,
@@ -49,7 +49,7 @@
       "targets": "CYP3A4",
       "atc_codes": "J01FA09",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/AGOYDEPGAOXOCK-KCBOHYOISA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/84029/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -65,7 +65,7 @@
       "targets": "CACNA1C; KCNH2",
       "atc_codes": "C01BD05",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ALOBUEHUHMBRLE-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/60753/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -81,7 +81,7 @@
       "targets": "",
       "atc_codes": "D02BA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ALYNCZNDIQEVRV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/978/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -97,7 +97,7 @@
       "targets": "ESR1; ESR2; NR1I2",
       "atc_codes": "L02AA03; G03CA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/BFPYWIDHMRZLRN-SLHNCBLASA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5991/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -113,7 +113,7 @@
       "targets": "",
       "atc_codes": "N05AL01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/BGRJTUBHPOOWDU-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5355/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -129,7 +129,7 @@
       "targets": "TUBA1A; TUBA1B; TUBA1C; TUBA3C; TUBA3D; TUBA3E; TUBA4A; TUBB; TUBB1; TUBB2A; TUBB2B; TUBB3; TUBB4A; TUBB4B; TUBB6; TUBB8",
       "atc_codes": "L01CD04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/BMQGVNUXMIRLCK-OAGWZNDDSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/9854073/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -145,7 +145,7 @@
       "targets": "AKR1C1; ASIC3; EDNRA; HSPA5; IKBKB; NFKB1; NFKB2; NFKBIA; PRKAA1; PRKAA2; PRKAB1; PRKAB2; PRKAG1; PRKAG2; PRKAG3; PTGS1; PTGS2; RPS6KA3; TP53",
       "atc_codes": "B01AC06; N02BA01; N02BA51; A01AD05; N02BA71",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/BSYNRYMUTXBXSQ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2244/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -161,7 +161,7 @@
       "targets": "GLO1; PLA2G2A; PPARA; PPARG; PTGDR2; PTGR2; PTGS1; PTGS2; SLC46A1",
       "atc_codes": "C01EB03; M02AA23; M01AB51; S01BC01; M01AB01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/CGIGDMFJXJATDK-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3715/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -177,7 +177,7 @@
       "targets": "PTGS1; PTGS2",
       "atc_codes": "G02CC02; M01AE02; M02AA12",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/CMWTZPSULFXXJA-VIFPVBQESA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/156391/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -193,7 +193,7 @@
       "targets": "",
       "atc_codes": "L01AB01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/COVZYZSDYWQREU-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2478/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -225,7 +225,7 @@
       "targets": "SCN10A; SCN11A; SCN1A; SCN2A; SCN3A; SCN4A; SCN5A; SCN7A; SCN8A; SCN9A",
       "atc_codes": "N03AB02; N03AB52",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/CXOFVDLJLONNDW-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/1775/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -241,7 +241,7 @@
       "targets": "HTR2A; HTR3A; HTR4; KCNH2",
       "atc_codes": "A03FA",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/DCSUBABJRXZOMT-IRLDBZIGSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6917698/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -257,7 +257,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/DECIPOUIJURFOJ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3293/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "mechanism_tool: mechanism from Broad moa/target antioxidant; use evidence from Broad Hub research-library membership"
     },
     {
@@ -273,7 +273,7 @@
       "targets": "TRPA1",
       "atc_codes": "P03BX03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/DOIRQSBPFJWKBE-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3026/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "mechanism_tool: mechanism from Broad moa/target TRPA1; use evidence from Broad Hub research-library membership"
     },
     {
@@ -305,7 +305,7 @@
       "targets": "HTR3A; HTR3B",
       "atc_codes": "A04AA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/FELGMEQIXOGIFQ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4595/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -321,7 +321,7 @@
       "targets": "DRD2; DRD3",
       "atc_codes": "A03FA03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/FGXWKSZFVQUSTL-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3151/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -337,7 +337,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/FIPWRIJSWJWJAI-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5794/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -369,7 +369,7 @@
       "targets": "NR3C1",
       "atc_codes": "H02AB08; R03BA06; R01AD11; D07XB02; S01BA05; C05AA12; D07AB09; A01AC01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/GFNANZIMVAIWHM-OBYCQNJPSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/31307/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -385,7 +385,7 @@
       "targets": "CA12; CA14; CA2; PTGS1",
       "atc_codes": "S01AX06; D10AX02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/GHMLBKRAJCXXBS-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5054/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -401,7 +401,7 @@
       "targets": "HRH1; KCNH1; KCNH2",
       "atc_codes": "R06AX12",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/GUGOEEXESWIERI-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5405/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -417,7 +417,7 @@
       "targets": "HRH1; KCNH1; KCNH2",
       "atc_codes": "R06AX11",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/GXDALQBWZGODGZ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2247/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -433,7 +433,7 @@
       "targets": "CYP2C8; PPARG; TRPM3",
       "atc_codes": "A10BG01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/GXPHKUHSUJUWKP-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5591/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -465,7 +465,7 @@
       "targets": "TERT",
       "atc_codes": "J05AF01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/HBOMLICNUCNMMY-XLPZGREQSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/35370/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -481,7 +481,7 @@
       "targets": "",
       "atc_codes": "G02CC01; M01AE51; M02AA13; R02AX02; C01EB16; M01AE01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/HEFNNWSXXWATRW-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3672/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -497,7 +497,7 @@
       "targets": "CACNA1C; CACNA1S; CACNA2D1; CACNG1; HTR3A; KCNA5",
       "atc_codes": "C05AE03; C08DB01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/HSUGRBWQSSZJOP-RTWAWAEBSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/39186/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -513,7 +513,7 @@
       "targets": "HTR2A; HTR2B; HTR2C; KCNH2",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/HXTGXYRHXAGCFP-OAQYLSRUSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5311271/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "clinical: documented phase Phase 3"
     },
     {
@@ -529,7 +529,7 @@
       "targets": "CACNA1C; CACNA1D; CACNA1F; CACNA1H; CACNA1S; CACNA2D1; CACNB2; CALM1; GLRA1; GLRA3; GLRB; KCNA1; KCNA5; NR1I2; TRPM3",
       "atc_codes": "C08CA05; C08CA55",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/HYIMSNHJOBLJNT-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4485/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -545,7 +545,7 @@
       "targets": "",
       "atc_codes": "B05CA03; P01CC02; S02AA02; D09AA03; D08AF01; S01AX04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/IAIWVQXQOWNYOU-FPYGCLRLSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5447130/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -561,7 +561,7 @@
       "targets": "CA1; CA12; CA14; CA2; CA4; CA9",
       "atc_codes": "R02AA19; C05BB05; N01BX03; D08AE03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ISWSIDIOOBJBQZ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/996/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -577,7 +577,7 @@
       "targets": "ADRB1; ADRB2",
       "atc_codes": "C07AB02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/IUBSYMUCCVWXPE-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4171/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -593,7 +593,7 @@
       "targets": "KCNH1; KCNH2; KCNJ12; KCNK2",
       "atc_codes": "C01BD04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/IXTMWRCNAAVVAI-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/71329/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -609,7 +609,7 @@
       "targets": "HRH1",
       "atc_codes": "R06AX13",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/JCCNYMKQOSZNPW-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3957/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -641,7 +641,7 @@
       "targets": "CA1; CA12; CA2; CA4; CA9; KCNMA1; SLC12A3",
       "atc_codes": "C03AX01; C03AA03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/JZUFKLXOESDKRF-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3639/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -657,7 +657,7 @@
       "targets": "SCN5A",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/KEECCEWTUVWFCV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4342/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "clinical: documented phase Phase 2"
     },
     {
@@ -689,7 +689,7 @@
       "targets": "UGT1A9",
       "atc_codes": "A06AB04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/KJFMBFZCATUALV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4764/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -705,7 +705,7 @@
       "targets": "DIO1; TPO",
       "atc_codes": "H03BA02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/KNAHARQHSZJURB-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4950/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -721,7 +721,7 @@
       "targets": "AKR1B1; ANG; APRT; BHMT; C8G; CA4; CPB1; CS; CTDSP1; GNMT; HGS; HS3ST3A1; IL4I1; ITPA; LSM6; MDH2; MIF; PDE5A; PKD2L1; PLEKHA1; RNASE1; RNASE3; SRC; TNFSF13B; UCK2",
       "atc_codes": "A09AB04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/KRKNYBCHXYNGOX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/311/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -737,7 +737,7 @@
       "targets": "JAK2",
       "atc_codes": "P03AA05",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/KUAZQDVKQLNFPE-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5455/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -769,7 +769,7 @@
       "targets": "DRD1; DRD2; DRD3; DRD4; DRD5; GRIN2B; HRH1; HTR1A; HTR1D; HTR2A; HTR2B; HTR7; KCNH1",
       "atc_codes": "N05AD01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/LNEPOXFFQSENCJ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3559/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -785,7 +785,7 @@
       "targets": "KCNA5; KCNA7; KCNH1; KCNH2; KCNH5; KCNK1; KCNK6; SCN5A; SLC29A4",
       "atc_codes": "C01BA01; C01BA51; C01BA71",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/LOUPRKONTZGTKE-LHHVKLHASA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/441074/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -801,7 +801,7 @@
       "targets": "CHRNA7",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/LUVXHMJTVXZFPD-ZDUSSCGKSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/9932000/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "mechanism_tool: mechanism from Broad moa/target nicotinic receptor agonist/CHRNA7; use evidence from Broad Hub research-library membership"
     },
     {
@@ -817,7 +817,7 @@
       "targets": "METAP2",
       "atc_codes": "R02AA14; D08AH03; G01AC30; A01AB07",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MCJGNVYPOGVAJF-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/1923/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -833,7 +833,7 @@
       "targets": "",
       "atc_codes": "C07AB03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/METKIMKYRPQLGS-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2249/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -849,7 +849,7 @@
       "targets": "",
       "atc_codes": "J01MB02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MHWLWQUZZRMNGJ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4421/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -865,7 +865,7 @@
       "targets": "COMT",
       "atc_codes": "N04BX01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MIQPIUSUKVNLNT-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4659569/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -881,7 +881,7 @@
       "targets": "AHR; AR",
       "atc_codes": "L02BB01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MKXKFYHWDHIYRV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3397/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -897,7 +897,7 @@
       "targets": "",
       "atc_codes": "P03BX01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MMOXZBCLCQITDF-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4284/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -913,7 +913,7 @@
       "targets": "DHFR",
       "atc_codes": "J04BA02; D10AX05",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MQJKPEGWNLWLTK-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2955/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -929,7 +929,7 @@
       "targets": "KCNA5",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MREBEPTUUMTTIA-PCLIKHOPSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/9571004/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "clinical: documented phase Phase 3"
     },
     {
@@ -945,7 +945,7 @@
       "targets": "ALOX5",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MWLSOWXNZPKENC-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/60490/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -961,7 +961,7 @@
       "targets": "ACAT1; ALOX5; CHUK; IKBKB; PLA2G1B; PPARG; PTGS1; PTGS2; SLC46A1; SLC7A11; TBXAS1",
       "atc_codes": "A07EC01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/NCEXYHBECQHGNR-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5339/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -993,7 +993,7 @@
       "targets": "EBP; ESR1; ESR2; GPER1; PRKCA; PRKCB; PRKCD; PRKCE; PRKCG; PRKCI; PRKCQ; PRKCZ",
       "atc_codes": "L02BA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/NKANXQFJJICGDU-QPLCGJKRSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2733526/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1009,7 +1009,7 @@
       "targets": "KDM2A; KDM7A; PHF8",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/NOQGZXFMHARMLW-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/15331/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "mechanism_tool: mechanism from Broad moa/target KDM2A inhibitor/KDM2A|KDM7A|PHF8; use evidence from Broad Hub research-library membership"
     },
     {
@@ -1025,7 +1025,7 @@
       "targets": "",
       "atc_codes": "J01XE01; J01XE51",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/NXFQHRVNIOXGAQ-YCRREMRBSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6604200/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1041,7 +1041,7 @@
       "targets": "FAAH; GABRA1; GABRA2; GABRA3; GABRA4; GABRA5; GABRA6; GABRB1; GABRB2; GABRB3; GABRD; GABRE; GABRG1; GABRG2; GABRG3; GABRP; GABRQ; SCN2A; SCN4A",
       "atc_codes": "N01AX10",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/OLBCVFGFOZPWHH-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4943/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1057,7 +1057,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ONCZDRURRATYFI-TVJDWZFNSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/11664966/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "mechanism_tool: mechanism from Broad moa/target mitochondrial electron transport inhibitor; use evidence from Broad Hub research-library membership"
     },
     {
@@ -1089,7 +1089,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/OSWPMRLSEDHDFF-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4133/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1121,7 +1121,7 @@
       "targets": "FOLR2; FOLR3; SLC19A1; SLC46A1",
       "atc_codes": "V04CX02; B03BB01; B03BB51",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/OVBPIULPVIDEAO-LBPRGKRZSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6037/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -1153,7 +1153,7 @@
       "targets": "HDAC2; HMGCR; ITGAL; NR1I2",
       "atc_codes": "C10AA02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PCZOHLXUXFIOCF-BXMDZJJMSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/53232/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1185,7 +1185,7 @@
       "targets": "ACHE; BCHE",
       "atc_codes": "S01EB05; V03AB19",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PIJVFDBKTWXHHD-HIFRSBDPSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5983/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1201,7 +1201,7 @@
       "targets": "ADA; PNP; POLA1; POLE; POLE2; POLE3; POLE4; RRM1; RRM2; RRM2B",
       "atc_codes": "L01BB04; L04AA40",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PTOAARAWEBMLNO-KVQBGUIXSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/20279/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1217,7 +1217,7 @@
       "targets": "CACNA1D; CACNA2D1; KCNN4",
       "atc_codes": "C08CA08",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PVHUJELLJLJGLN-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4507/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -1233,7 +1233,7 @@
       "targets": "DGAT2; HCAR1; HCAR2; HCAR3; NNMT; QPRT",
       "atc_codes": "C10AD02; C04AC01; C10AD52",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PVNIIMVLHYAWGP-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/938/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1249,7 +1249,7 @@
       "targets": "SCN10A; SCN11A; SCN1A; SCN2A; SCN3A; SCN4A; SCN5A; SCN7A; SCN8A; SCN9A",
       "atc_codes": "N03AX09",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PYZRQGJRPPTADH-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3878/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1265,7 +1265,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QASFUMOKHFSJGL-LAFRSMQTSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/442972/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "mechanism_tool: mechanism from Broad moa/target hedgehog pathway inhibitor; use evidence from Broad Hub research-library membership"
     },
     {
@@ -1281,7 +1281,7 @@
       "targets": "SLC18A1; SLC18A2",
       "atc_codes": "C02AA52; C02AA02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QEVHRUUCFGRFIF-MDEJGZGSSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5770/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1329,7 +1329,7 @@
       "targets": "CYP1A2; CYP2C19; CYP2C8; CYP2E1; CYP3A4",
       "atc_codes": "J04AC51; J04AC01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QRXWMOHMRWLFEY-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3767/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1345,7 +1345,7 @@
       "targets": "ADRA1A; ADRA1B; ADRA1D; ADRA2A; ADRA2B; ADRA2C; CALY; CHRM1; CHRM2; CHRM3; CHRM4; CHRM5; DRD1; DRD2; DRD3; DRD4; DRD5; HRH1; HRH4; HTR1A; HTR1B; HTR1D; HTR1E; HTR1F; HTR2A",
       "atc_codes": "N05AH02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QZUDBNBUXVUHMW-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/135398737/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1361,7 +1361,7 @@
       "targets": "ADRA1A; ADRA1B; ADRA1D; ADRA2A; ADRA2B; ADRA2C; DRD1; DRD2; DRD3; DRD4; HRH1; HTR1A; HTR1B; HTR1D; HTR1E; HTR1F; HTR2A; HTR2C; HTR6; HTR7",
       "atc_codes": "N05AX08",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RAPZEAPATHNIPO-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5073/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1377,7 +1377,7 @@
       "targets": "TSPO",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RAVIZVQZGXBOQO-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/1345/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "clinical: documented phase Phase 1"
     },
     {
@@ -1393,7 +1393,7 @@
       "targets": "CYP51A1",
       "atc_codes": "J02AC01; D01AC15",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RFHAOTPXVQNOHP-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3365/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1409,7 +1409,7 @@
       "targets": "ESR1; ESR2; ESRRB; ESRRG",
       "atc_codes": "G03CB02; G03CC05; L02AA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RGLYKWWBQGJZGM-ISLYRVAYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/448537/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1425,7 +1425,7 @@
       "targets": "CATSPER1; CATSPER2; CATSPER3; CATSPER4; CYP17A1; ESR1; NR3C2; OPRK1; PGR; TRPC5",
       "atc_codes": "G03DA04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RJKFOVLPORLFTN-LEKSSAKUSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5994/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1441,7 +1441,7 @@
       "targets": "ADRA1A; DRD2; DRD3; DRD4; HTR2A",
       "atc_codes": "N05AD08",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RMEDXOLNCUSCGS-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3168/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1457,7 +1457,7 @@
       "targets": "CYP11A1; CYP19A1",
       "atc_codes": "L02BG01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ROBVIMPUHSLWNV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2145/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1473,7 +1473,7 @@
       "targets": "ADORA1; ADORA2A; ADORA2B; ADORA3; ATM; ITPR1; ITPR2; ITPR3; PDE10A; PDE11A; PDE1A; PDE1B; PDE1C; PDE2A; PDE3A; PDE3B; PDE4A; PDE4B; PDE4C; PDE4D; PDE5A; PDE6A; PDE6B; PDE6C; PDE7A",
       "atc_codes": "N06BC01; D11AX26",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RYYVLZVUVIJVGH-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2519/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1489,7 +1489,7 @@
       "targets": "FAAH; PTGS1; PTGS2; TRPV1",
       "atc_codes": "N02BE51; N02BE01; N02BE71",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RZVAJINKPMORJF-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/1983/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1505,7 +1505,7 @@
       "targets": "CACNA1A; CACNA1B; CACNA1C; CACNA1D; CACNA1F; CACNA1G; CACNA1I; CACNA1S; CACNB1; CACNB2; CACNB3; CACNB4; CYP3A4; KCNA10; KCNA7; KCNH2; KCNJ11; NALCN; SCN5A; SLC29A4; SLC6A4",
       "atc_codes": "C08DA01; C08DA51",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/SGTNSNPWRIOYBX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2520/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1521,7 +1521,7 @@
       "targets": "CHAT; CHRNA10; CHRNA2; CHRNA3; CHRNA4; CHRNA5; CHRNA6; CHRNA7; CHRNA9; CHRNB2; CHRNB3; CHRNB4; CYP19A1; TBXAS1; TRPA1",
       "atc_codes": "N07BA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/SNICXCGAKADSCV-JTQLQIEISA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/89594/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1537,7 +1537,7 @@
       "targets": "PPARA",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/SZRPDCCEHVWOJX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5694/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "clinical: documented phase Phase 2"
     },
     {
@@ -1553,7 +1553,7 @@
       "targets": "CFTR; ESR1; ESR2; ESRRA; ESRRB; ESRRG; NCOA1; NCOA2; PPARG; PTK2B; TOP2A; TRPC5",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/TZBJGXHYKVUXJN-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5280961/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "clinical: documented phase Phase 2"
     },
     {
@@ -1569,7 +1569,7 @@
       "targets": "APP",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/UFBJCMHMOXMLKC-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/1493/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "clinical: documented phase Phase 2"
     },
     {
@@ -1585,7 +1585,7 @@
       "targets": "EGFR; EPHA1; EPHA10; EPHA2; EPHA3; EPHA4; EPHA5; EPHA6; EPHA7; EPHA8; EPHB1; EPHB2; EPHB3; EPHB4; EPHB6; ERBB2; ERBB3; ERBB4; FLT1; FLT4; KDR; PTK6; RET; SRC; TEK",
       "atc_codes": "L01EX04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/UHTHHESEBZOYNR-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3081361/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1601,7 +1601,7 @@
       "targets": "KCNQ4",
       "atc_codes": "C08EA02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/UIEATEWHFDRYRU-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2351/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1617,7 +1617,7 @@
       "targets": "MLNR",
       "atc_codes": "S01AA17; J01FA01; D10AF02; D10AF52",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ULGZDMOVFRHVEP-RWJQBGPGSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/12560/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1633,7 +1633,7 @@
       "targets": "CHRM1; CHRM2; CHRM3; KCND2; KCND3; KCNH2; SCN5A",
       "atc_codes": "C01BA03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/UVTNFZQICZKOEM-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3114/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1649,7 +1649,7 @@
       "targets": "ADORA1; AR",
       "atc_codes": "G03HA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/UWFYSQMTEOIJJG-FDTZYFLXSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/9880/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -1665,7 +1665,7 @@
       "targets": "KCNA5",
       "atc_codes": "C01BG11",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VBHQKCBVWWUUKN-KZNAEPCWSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/9930049/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1681,7 +1681,7 @@
       "targets": "PTGS1; PTGS2",
       "atc_codes": "N02BB71; S02DA03; N02BB51; N02BB01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VEQOALNAAJBPNY-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2206/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status Broad clinical_phase=Launched"
     },
     {
@@ -1697,7 +1697,7 @@
       "targets": "NR3C1",
       "atc_codes": "H02BX01; D07AA01; D10AA02; H02AB04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VHRSUDSXCMQTMA-PJHHCJLFSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6741/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1713,7 +1713,7 @@
       "targets": "PGR",
       "atc_codes": "G03DC02; G03AC01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VIKNJXKGJWUCNN-XGXHKTLJSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6230/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1729,7 +1729,7 @@
       "targets": "AR; NR1I2; NR3C1; PGR",
       "atc_codes": "G03XB01; G03XB51",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VKHAHZOOUSRJNA-GCNJZUOMSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/55245/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1745,7 +1745,7 @@
       "targets": "PLAU; SCN4A; SCN5A",
       "atc_codes": "C01BB02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VLPIATFUUWWMKC-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4178/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1761,7 +1761,7 @@
       "targets": "ESR1; ESR2; GPER1; KCNMA1; NR1I2",
       "atc_codes": "G03CA03",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/VOXZDWNPVJITMN-ZBRFXRBCSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5757/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1777,7 +1777,7 @@
       "targets": "",
       "atc_codes": "D01AC06; P02CA02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/WJCNZQLZVWNLKY-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5430/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1793,7 +1793,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/WJFKNYWRSNBZNX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/7108/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "clinical: documented phase Phase 2"
     },
     {
@@ -1809,7 +1809,7 @@
       "targets": "DHFR; SLC47A1",
       "atc_codes": "P01BD01; P01BD51",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/WKSAUQYGYAYLPV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/4993/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1857,7 +1857,7 @@
       "targets": "SCN10A; SCN9A",
       "atc_codes": "C01EB18",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/XKLMZUWKNUAPSZ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/56959/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1873,7 +1873,7 @@
       "targets": "KCNA10",
       "atc_codes": "H02CA04",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/XMAYWYJOQHXEEK-ZEQKJWHPSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/47576/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1889,7 +1889,7 @@
       "targets": "HSD11B1; NR3C1",
       "atc_codes": "A07EA03; H02AB07",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/XOFYZVNMUHMLCC-ZPOLXVRWSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5865/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1905,7 +1905,7 @@
       "targets": "CACNA1I; CALM1; DRD1; DRD2; DRD3; DRD4; DRD5; HRH1; HTR1A; HTR2A; KCNA10; KCNH2",
       "atc_codes": "N05AG02",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/YVUQSNJEYSNKRX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/16362/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1921,7 +1921,7 @@
       "targets": "ADRB1; ADRB2; KCNH2",
       "atc_codes": "C07AA07",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ZBMZVLHSJCTVON-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5253/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1937,7 +1937,7 @@
       "targets": "ADORA1; ADORA2A; ADORA2B; ADORA3; HDAC2; PDE3A; PDE3B; PDE4A; PDE4B; PDE4C; PDE4D; PDE5A",
       "atc_codes": "R03DA",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ZFXYFBGIUFBOJW-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2153/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -1953,7 +1953,7 @@
       "targets": "ABCA1; ABCB11; ABCC8; ABCC9; CFTR; CPT1A; KCNJ1; KCNJ11; KCNJ5; KCNJ8; SLCO2B1",
       "atc_codes": "A10BB01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ZNNLBTZKUZBEKO-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3488/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -2001,7 +2001,7 @@
       "targets": "CA1; CA12; CA14; CA2; CA4; CA6; CA9; CYP2A6",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ZYGHJZDHTFUPRJ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/323/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:16+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -2017,7 +2017,7 @@
       "targets": "CA2; GPR35; SLC12A1; SLC12A2",
       "atc_codes": "C03CA01",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ZZUFCTLCJUWOSV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3440/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:16+08:00",
       "rationale": "approved: documented status PubChem Max Phase=Approved"
     },
     {
@@ -3235,7 +3235,7 @@
       "targets": "",
       "atc_codes": "D01AE10",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/NUVBSKCKDOMJSU-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/8434/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "unknown: no documented status, mechanism or use"
     },
     {
@@ -3507,7 +3507,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QGHREAKMXXNCOA-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3085/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "unknown: no documented status, mechanism or use"
     },
     {
@@ -4549,7 +4549,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/BXNANOICGRISHX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2871/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker"
     },
     {
@@ -4645,7 +4645,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/CVXBEEMKQHEXEN-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6129/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker"
     },
     {
@@ -4661,7 +4661,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/CXVGEDCSTKKODG-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/19988/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "other use: documented use 'Cosmetics -> Uv absorber; Uv filter' (term 'cosmetic') and no human-use marker"
     },
     {
@@ -4677,7 +4677,7 @@
       "targets": "ACTA1; ATOX1; C22orf28; LYZ",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/CZMRCDWAGMRECN-UGDNZRGBSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5988/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:12+08:00",
       "rationale": "other use: documented use 'Cosmetics -> Humectant; Skin conditioning; Soothing' (term 'cosmetic') and no human-use marker"
     },
     {
@@ -4773,7 +4773,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/FEWJPZIEWOKRBE-JCYAYHJZSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/444305/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Food additives' (term 'food additive') and no human-use marker"
     },
     {
@@ -5045,7 +5045,7 @@
       "targets": "AR; ESR1; ESR2; ESRRG; PPARG",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/IISBACLAFKSPIT-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/6623/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Hydraulic fluids' (term 'hydraulic fluid') and no human-use marker"
     },
     {
@@ -5125,7 +5125,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/IWDCLRJOBJJRNH-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2879/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:11:59+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker"
     },
     {
@@ -5205,7 +5205,7 @@
       "targets": "GABRB1; GLRA1; GLRA2; GLRA3; GLRB",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/JLYXXMFPNIAWKQ-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/727/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker"
     },
     {
@@ -5237,7 +5237,7 @@
       "targets": "ATP2A1",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/JZODKRWQWUWGCD-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2374/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Cosmetics -> Antioxidant' (term 'cosmetic') and no human-use marker"
     },
     {
@@ -5349,7 +5349,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/LVQDKIWDGQRHTE-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/47866/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
     },
     {
@@ -5365,7 +5365,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/LXCFILQKKLGQFO-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/7456/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Food additives' (term 'food additive') and no human-use marker"
     },
     {
@@ -5429,7 +5429,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MRBKEAMVRSLQPH-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/8456/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Food additives' (term 'food additive') and no human-use marker"
     },
     {
@@ -5477,7 +5477,7 @@
       "targets": "ABAT; ALDH5A1",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/MWOOGOJBHIARFG-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/1183/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:13+08:00",
       "rationale": "other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker"
     },
     {
@@ -5717,7 +5717,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/OWRCNXZUPFZXOS-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/7594/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Polymerization promoter' (term 'polymer') and no human-use marker"
     },
     {
@@ -5797,7 +5797,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/PNVJTZOFSHSLTO-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3346/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'INSECTICIDES' (term 'insecticide') and no human-use marker"
     },
     {
@@ -5941,7 +5941,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QELSKZZBTMNZEB-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/7175/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Food Additives -> PRESERVATIVE -> JECFA Functional Classes' (term 'preservative') and no human-use marker"
     },
     {
@@ -5957,7 +5957,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QFOHBWFCKVYLES-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/7184/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker"
     },
     {
@@ -5989,7 +5989,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/QHPQWRBYOIRBIT-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/7393/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:00+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Flavouring Agent -> FLAVOURING_AGENT -> JECFA Functional Classes' (term 'flavour') and no human-use marker"
     },
     {
@@ -6149,7 +6149,7 @@
       "targets": "ATP5A1; ATP5B; ATP5C1; HCK; HIBCH; PIK3CG; PIM1; STK17B; UGT3A1",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/REFJWTPEDVJJIY-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5280343/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Food Additives -> COLOUR -> JECFA Functional Classes' (term 'food additive') and no human-use marker"
     },
     {
@@ -6245,7 +6245,7 @@
       "targets": "AR",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/RRAFCDWBNXTKKO-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3314/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Fragrance Ingredients' (term 'fragrance') and no human-use marker"
     },
     {
@@ -6325,7 +6325,7 @@
       "targets": "ACHE",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/SBPBAQFWLVIOKP-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2730/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'Insecticides' (term 'insecticide') and no human-use marker"
     },
     {
@@ -6373,7 +6373,7 @@
       "targets": "CYP1A1; CYP1A2; CYP2B6; CYP3A4; ESR1; MMP1; SULT2A1; UGT1A1",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/SMDHCQAYESWHAE-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/2319/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:14+08:00",
       "rationale": "other use: documented use 'HERBICIDES' (term 'herbicide') and no human-use marker"
     },
     {
@@ -6469,7 +6469,7 @@
       "targets": "TP53; TUBB",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/TWFZGCMQGLPBSX-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/25429/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:01+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "other use: documented use 'Environmental transformation -> Pesticides (parent, predecessor)' (term 'pesticide') and no human-use marker"
     },
     {
@@ -6853,7 +6853,7 @@
       "targets": "SLC22A6",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/WNLRTRBMVRJNCN-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/196/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "other use: documented use 'Food additives' (term 'food additive') and no human-use marker"
     },
     {
@@ -7125,7 +7125,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/YWTYJOPNNQFBPC-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/86418/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "other use: documented use 'Pesticides -> Insecticides -> Nicotinoid insecticides -> Nitroguanidine insecticides' (term 'insecticide') and no human-use marker"
     },
     {
@@ -7253,7 +7253,7 @@
       "targets": "",
       "atc_codes": "",
       "evidence_urls": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/ZOCSXAVNDGMNBV-UHFFFAOYSA-N/cids/JSON | https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/3352/JSON | https://repo-hub.broadinstitute.org/repurposing",
-      "retrieved_at": "2026-11-02T12:12:02+08:00",
+      "retrieved_at": "2026-11-02T12:13:15+08:00",
       "rationale": "other use: documented use 'Pesticides -> Insecticides -> Pyrazole insecticides -> Phenylpyrazole insecticides' (term 'insecticide') and no human-use marker"
     },
     {
