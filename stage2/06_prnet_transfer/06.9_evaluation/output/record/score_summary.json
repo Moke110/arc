@@ -17,7 +17,7 @@
     "min_available_gib": 6.0,
     "gpu_mem_used_mb": 1370
   },
-  "units_manifest": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
+  "units_manifest": "stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
   "units_manifest_sha256": "b4174c8407489f706427d736555ba7296338a6ecefcaca11ae51ab2d72c6ba7e",
   "selection_complete": true,
   "test_role_scored": true,

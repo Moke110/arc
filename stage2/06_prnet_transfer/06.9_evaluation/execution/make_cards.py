@@ -34,6 +34,24 @@ def _modelcard_module():
     return modelcard
 
 
+def _relativize_card(path: Path) -> None:
+    """Strip any checkout prefix from a generated card (ADR 0030 §4).
+
+    The shared pipeline writer renders the run manifest's ``command`` and ``run_dir``
+    verbatim, and #6/#7's manifests were produced in their own per-ticket worktrees.
+    Those checkout prefixes are meaningless from a clone, so they are rewritten
+    repo-relative here; no other line of the card moves. The longest root is replaced
+    first, so a worktree root never degrades into the main checkout's suffix.
+    """
+    roots = sorted({str(root) for root in common.repo_roots()}, key=len, reverse=True)
+    text = path.read_text(encoding="utf-8")
+    normalized = text
+    for root in roots:
+        normalized = normalized.replace(root + "/", "")
+    if normalized != text:
+        common.write_text_atomic(path, normalized)
+
+
 def build_cards(
     *,
     units_path: Path,
@@ -50,7 +68,7 @@ def build_cards(
     for unit in payload["units"]:
         unit_id = unit["unit_id"]
         eval_dir = out / "units" / unit_id / "eval"
-        run_dir = Path(unit["run_dir"])
+        run_dir = common.repo_path(unit["run_dir"])
         if not (eval_dir / "aggregate.json").exists():
             missing.append(unit_id)
             continue
@@ -58,6 +76,7 @@ def build_cards(
             raise EvaluationError(f"unit {unit_id}: candidate run dir vanished: {run_dir}")
         target = cards_dir / f"{unit_id}.md"
         modelcard.write_model_card(run_dir, eval_dir=eval_dir, out_path=target)
+        _relativize_card(target)
         rows.append(
             {
                 "unit_id": unit_id,
@@ -66,8 +85,8 @@ def build_cards(
                 "seed": int(unit["seed"]),
                 "init": unit["init_name"],
                 "lr": float(unit["lr"]),
-                "run_dir": str(run_dir),
-                "eval_dir": str(eval_dir),
+                "run_dir": common.relpath(run_dir),
+                "eval_dir": common.relpath(eval_dir),
                 "card": target.name,
                 "card_sha256": common.sha256_file(target),
                 "card_bytes": target.stat().st_size,
@@ -80,7 +99,7 @@ def build_cards(
         "phase": phase,
         "created_utc": now_utc(),
         "generator": "stage2/06_prnet_transfer/06.4_pipeline/execution/ptlib/modelcard.py",
-        "units_manifest": str(units_path),
+        "units_manifest": common.relpath(units_path),
         "units_manifest_sha256": common.sha256_file(units_path),
         "n_cards": len(rows),
         "n_missing": len(missing),

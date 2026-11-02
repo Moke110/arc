@@ -1,9 +1,9 @@
 # 06.9_evaluation — 30-unit test evaluation and the first-round report (ticket #9)
 
-Status: **harness built, offline-verified, and dry-run on the real validation role; the 30
-test units are pending the Lead's freeze signal.** Ticket #9 is the only place the test
-split of `06.3_input` is ever scored for the first-round PRnet study. The 30 units are
-exactly the checkpoints **selected before test** by
+Status: **executed 2026-11-02 — all 30 test units scored, record gates 29/29, first-round
+verdict `negative`.** Ticket #9 is the only place the test split of `06.3_input` is ever
+scored for the first-round PRnet study. The 30 units are exactly the checkpoints
+**selected before test** by
 [`06.6_cm_random`](../06.6_cm_random/README.md) (15 random-init) and
 [`06.7_cm_tahoe`](../06.7_cm_tahoe/README.md) (15 Tahoe-init); `06.8_baselines` supplies the
 paired `delta_mean` / `no_change` reference on the identical test population.
@@ -236,7 +236,7 @@ Tahoe-seen strata: 15 of the test drugs (45 conditions) have a drug key observed
 
 ### Input and model identity
 
-- units manifest: `/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json` sha256 `b4174c8407489f70…` (created 2026-11-02T11:34:51Z, 30/30 units scored).
+- units manifest: `stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json` sha256 `62b79b622622868f…` (created 2026-11-02T11:34:51Z, 30/30 units scored).
 - frozen data identity: `a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376` (manifest sha256 `3050d149198cb3d2…`).
 - every checkpoint sha256 and config digest re-verified against #6/#7's `selected_checkpoints.csv` before scoring; model cards in `output/model_cards/`.
 
@@ -281,3 +281,17 @@ make check            # re-derive the record byte-for-byte
   evaluations are byte-identical. No selection, LR, epoch or seed changed.
 - GitHub issue #9 stays open until the Lead's integration; this substep does not merge,
   push or close it.
+
+## Review deviations
+
+- **Deliberate per-substep duplication.** The `common.py` helpers and the matrix/record
+  definitions are repeated here instead of shared: ADR 0030 §3 gives every substep an
+  independently re-derivable execution tree, and the single shared trainer/evaluator lives
+  in [`06.4_pipeline`](../06.4_pipeline/README.md). Accepted as a maintainability cost.
+- **Results under `output/`, not the substep root.** Record CSVs (and, in 06.9, figures)
+  live in `output/record/` / `output/figures/` with a tracked record force-added, rather
+  than directly in the substep directory as ADR 0030 §3 asks. Accepted deviation: moving
+  them after the records were locked would break the recorded artifact paths.
+- **Checkpoint identity travels as columns.** `config_sha256`, `checkpoint_sha256`,
+  `checkpoint_bytes` and `checkpoint_worktree_relpath` are explicit CSV/JSON fields rather
+  than a dedicated identity type. Accepted for CSV/record compatibility.

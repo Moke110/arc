@@ -41,6 +41,8 @@ __all__ = [
     "DEFAULT_GPU_PY",
     "find_repo_root",
     "repo_roots",
+    "relpath",
+    "repo_path",
     "resolve_checkpoint_path",
     "pipeline_modules",
     "sha256_file",
@@ -100,6 +102,41 @@ DEFAULT_GPU_PY = "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python"
 #: abort a heavy run if MemAvailable (GiB) is below this — CM evaluation is far smaller
 #: than the 8.5 GiB full Tahoe-valid evaluation, but leave the repo-wide headroom rule.
 MIN_AVAILABLE_GIB = 6.0
+
+
+# --------------------------------------------------------------------------- #
+# Recorded paths
+# --------------------------------------------------------------------------- #
+def relpath(path: str | Path) -> str:
+    """Render *path* repo-relative, POSIX-separated (ADR 0030 §4).
+
+    A tracked record must not embed the checkout it was produced in: the first round
+    was scored in a per-ticket git worktree and every recorded path kept that worktree
+    prefix, which is meaningless from a clone. Every path this substep writes into the
+    record, the cards or the report goes through here.
+
+    Paths that are *not* under the repo root (a temp dir, an explicit override) are
+    returned unchanged rather than pretending they live inside the tree, and a path
+    that is already relative is taken to be repo-relative and left alone.
+    """
+    candidate = Path(path)
+    if not candidate.is_absolute():
+        return candidate.as_posix()
+    try:
+        return candidate.resolve().relative_to(ROOT).as_posix()
+    except (ValueError, OSError):
+        return str(candidate)
+
+
+def repo_path(path: str | Path) -> Path:
+    """Resolve a *recorded* path: an absolute path stays, a repo-relative one is anchored.
+
+    The record stores artifact references repo-relative (see :func:`relpath`), so a
+    consumer resolves them against :data:`ROOT` — never against the caller's cwd, which
+    is ``execution/`` under ``make``.
+    """
+    candidate = Path(path)
+    return candidate if candidate.is_absolute() else ROOT / candidate
 
 
 # --------------------------------------------------------------------------- #

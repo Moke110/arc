@@ -6,10 +6,10 @@
   "dry_run": false,
   "subset": false,
   "k": 200,
-  "created_utc": "2026-11-02T11:44:09Z",
+  "created_utc": "2026-11-02T11:59:00Z",
   "units_manifest": {
-    "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
-    "sha256": "b4174c8407489f706427d736555ba7296338a6ecefcaca11ae51ab2d72c6ba7e",
+    "path": "stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
+    "sha256": "62b79b622622868f0a57dbfc6541bf74524b084d2cfed3a0f43b50cbd29aeb71",
     "created_utc": "2026-11-02T11:34:51Z",
     "complete": true,
     "n_units": 30,
@@ -250,7 +250,7 @@
       }
     },
     "auprc_200": 0.1644890447,
-    "source": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
+    "source": "stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
     "source_sha256": "496552de9aed3f9a2d2f92d79eff621f6f066b357cf40b2583733a8c8318690b",
     "note": "#8's published bar: macro over five folds, identical 951-row / 347-condition test population"
   },
@@ -687,22 +687,22 @@
   "figures": [
     {
       "name": "auprc_by_fold.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/auprc_by_fold.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/auprc_by_fold.png",
       "sha256": "878242bf783d7e41962f7c61b82c167bdf34f31cd0ce443ede9b9a4cff20c7d5"
     },
     {
       "name": "paired_gain_by_drug.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/paired_gain_by_drug.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/paired_gain_by_drug.png",
       "sha256": "de2a9fe22fd81b2216a16ce594065a5017ee35a3742710ed1a872e41e52432b5"
     },
     {
       "name": "strata.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/strata.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/strata.png",
       "sha256": "3f815ba095776e94dfb952ada7540bdccd441047bedc045d233a68a4edc637f4"
     },
     {
       "name": "seed_stability.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/seed_stability.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/seed_stability.png",
       "sha256": "2f6c8f888930a7c39ce9839a14667764c2014c3b7fcae8e06f03a947451833e3"
     }
   ],

@@ -251,7 +251,7 @@ def render(record_dir: Path | str) -> str:
         "",
         "### Input and model identity",
         "",
-        f"- units manifest: `{identity.get('path')}` sha256 "
+        f"- units manifest: `{common.relpath(identity.get('path') or '')}` sha256 "
         f"`{str(identity.get('sha256'))[:16]}…` (created {identity.get('created_utc')}, "
         f"{identity.get('n_scored')}/{identity.get('n_units')} units scored).",
         f"- frozen data identity: `{summary.get('data_identity')}` (manifest sha256 "

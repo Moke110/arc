@@ -4,7 +4,7 @@
   "created_utc": "2026-11-02T11:34:51Z",
   "ticket": "#9 (Moke110/arc)",
   "frozen": {
-    "dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "dir": "stage2/06_prnet_transfer/06.3_input/output",
     "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
     "locked_config_sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
     "artifacts": {
@@ -25,7 +25,7 @@
   },
   "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
   "locked_config": {
-    "path": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output/locked_config.json",
+    "path": "stage2/06_prnet_transfer/06.3_input/output/locked_config.json",
     "sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
     "structure": {
       "n_genes": 18164,
@@ -85,7 +85,7 @@
       "label": "random-init (#6)",
       "init": "random",
       "source": "",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.6_cm_random/output/record/selected_checkpoints.csv",
+      "path": "stage2/06_prnet_transfer/06.6_cm_random/output/record/selected_checkpoints.csv",
       "sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
       "n_rows": 15,
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
@@ -106,7 +106,7 @@
       "label": "Tahoe-init (#7)",
       "init": "tahoe",
       "source": "",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.7_cm_tahoe/output/record/selected_checkpoints.csv",
+      "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/record/selected_checkpoints.csv",
       "sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
       "n_rows": 15,
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
@@ -123,7 +123,7 @@
         20261023
       ]
     },
-    "baselines": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output"
+    "baselines": "stage2/06_prnet_transfer/06.8_baselines/output"
   },
   "fold_reference": {
     "0": {
@@ -172,7 +172,7 @@
       "c_star_sha256": "8e743deb4a3b3ce9bc43ef10766aef88c0d2d72a1b940b6e99f37f893c04c833"
     },
     "source": {
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/fold_coverage.csv",
+      "path": "stage2/06_prnet_transfer/06.8_baselines/output/fold_coverage.csv",
       "sha256": "13420af52172977f6f9d25afb041679db2a2d7da2bafd3e407e10a41e0848461"
     }
   },
@@ -289,7 +289,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "2af29787185edbd0ee5247e6b5736c2ff7bf9dae1139f3b18bd6f512c08f406e",
@@ -301,7 +301,7 @@
       "config_sha256": "7a44567157557cf948a2fed2071da78efa80c244f3ad6972843b33e1964756a2",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0968342082982777,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -350,7 +350,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "cde60db040f3f5cef6ea0834f804f245bec922042eab82b2cef9cd4ad8de1a49",
@@ -362,7 +362,7 @@
       "config_sha256": "37d85eab8d5101b1c39e698bb9f1b89766f22aa0101f3d56ff0c7bfc87776d1d",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.097841351346183,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -411,7 +411,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "0d67a6f2416d699cacf34404a547a9d866cb9ac2dcd4d334e1d48ba9f579e72b",
@@ -423,7 +423,7 @@
       "config_sha256": "0129a6f3c0c0efe0fa3d5e01a32f265ca7809a8168f8d7983ef2bf387166cadb",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.1023785272615641,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -472,7 +472,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "acbbc9326bc51070d76b55e0ed5e1df5a1b5afb509ddbbd8bb13f24cc8644f52",
@@ -484,7 +484,7 @@
       "config_sha256": "56d740bc3d4c36e5557548d9d9a92ab0a1d85d999a30c3e6f7216bf6b2ed6a84",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.1028413819893274,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -533,7 +533,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "6f75cfc7060a1837acc3de96ba978b0db36a543ca0094c7da15f1224fca864aa",
@@ -545,7 +545,7 @@
       "config_sha256": "7ba8da26fe9408a7cea1e2461274cba40ad617dc356c05093fb62b0e111d5f24",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.1032442981543117,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -594,7 +594,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "b3fa1fbd879255799e996017e2ff39d12b739ac8380ba3aeadc89b3e47868700",
@@ -606,7 +606,7 @@
       "config_sha256": "11505ea204cc633756a7ef9b3e7b527b8df4d64d446563082ca1c454c20792fa",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.1029515770897508,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -655,7 +655,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "c8726b515fbb3e2528f210f36da8e49eebd40093cb9e8ab748a402852cc7cfde",
@@ -667,7 +667,7 @@
       "config_sha256": "2ba7911228c5f39541d643cd7e1e7e8c77a8d3b9fdb6bbe0c09a0eb1e849aafe",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0752467770960151,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -716,7 +716,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "7b6bd3abebef2245b3a8c414aab9ad46e93fe87f8c64e8a4cd84924e585c4ee4",
@@ -728,7 +728,7 @@
       "config_sha256": "e4d830daefa90cef20504bb5be1c72fc36909f4cdd1b07d89008c72df380640c",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0758160310546152,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -777,7 +777,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "a40c1b76856fbe2b1cc88d6841e4f82e139c82235d20146154361a5b313c6d4f",
@@ -789,7 +789,7 @@
       "config_sha256": "cf96a0ddb2c6664b0b41fa592a1069e654fd64e0360c2148a1c94d03fd16f5a6",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0749922068264953,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -838,7 +838,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "3b2a2812422a43bdcefcecb68f28750bf34e1242dba30e8e4c0a58381a850e2c",
@@ -850,7 +850,7 @@
       "config_sha256": "eb323697b457613c379ab4f0e09a3d6ebfba1c9515e156fd89b117b7e2c79a23",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0825200787927016,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -899,7 +899,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "216cf539a42da6e845046f7a504a91ff1e1475fa8f01750517b91585406d417c",
@@ -911,7 +911,7 @@
       "config_sha256": "f75767107c264b82ccbafaadc947774b65359c03c068f4a4608813303ae06aaf",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0832440187135298,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -960,7 +960,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "e2da8148aab340fb459a6b41a30dc1a9ab2eb607bbd6731d282482575480cafe",
@@ -972,7 +972,7 @@
       "config_sha256": "2fd740756c3487934df320d11f37d1713c3a6e70093eb792526fa78c617e0404",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0820416337836711,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -1021,7 +1021,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "9830d8c6b8e7af4395f4c6fe546d5f8a9c3fa06effdcb02ac04a3e0d2461ee4b",
@@ -1033,7 +1033,7 @@
       "config_sha256": "4e85d9c560da78692b88aba6ab649ff22ca0c6e0d778c5caf10b0a6f2857c06c",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0894986231023571,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -1082,7 +1082,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "b85fbfcba9feb0ab3197e21f8fac2654e8311ecd3854c8a2b19a0292a4fa6e7e",
@@ -1094,7 +1094,7 @@
       "config_sha256": "a5dd212f157bae9af0e96dc37ecf95326d6549abca3cc7108db47dc13cc0d7bb",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0897164039030967,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -1143,7 +1143,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "523aa1f88529689a06c9f7fbccb67413bfcc8aed8cabb286f4c47b3cdf87928b",
@@ -1155,7 +1155,7 @@
       "config_sha256": "9612db32932f008b5c5afabbfc14f3c4eb0448951b40d88d5ac7ac28f525ad50",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0898991671906706,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random",
+      "run_dir": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random",
       "init": {
         "mode": "random",
@@ -1204,7 +1204,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "ba7f853856ad3248815d2366325610132fd5a8550ef378c1f981e50d2c0c77c0",
@@ -1216,11 +1216,11 @@
       "config_sha256": "a69e12cb006797e544dd40a8ab6945a3385a89ac40a356dd7bb15b1e18b4502b",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0935015131716963,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
         "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
         "checkpoint_epoch": 8,
         "checkpoint_seed": 20261021,
@@ -1271,7 +1271,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "e62789905463e1d28df7472e87281cfa533dcc2321d0f43454b7d6029b862e79",
@@ -1283,11 +1283,11 @@
       "config_sha256": "3c1c85281b401b4144dfc439e4d866df3176307c92f5f2d791fea469e40bd3cc",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0883356887941103,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
         "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
         "checkpoint_epoch": 74,
         "checkpoint_seed": 20261022,
@@ -1338,7 +1338,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "16ea6bc280c905adfe59563c087c5484809d1ce7403fd4433fb6656881117fc4",
@@ -1350,11 +1350,11 @@
       "config_sha256": "a32ed883e3c74a484d829a633f6f8f97619080d86057ffe04deab199b9559481",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0910835077041161,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
         "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
         "checkpoint_epoch": 32,
         "checkpoint_seed": 20261023,
@@ -1405,7 +1405,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "41a06d4b8202a1451ef765ea90ed60f8541d1a0481c74900f0ebc0e2ebd9a041",
@@ -1417,11 +1417,11 @@
       "config_sha256": "cc66bd8deaa08b28343a17bebb1544d4f043b762f994fd6e40216651b6a97744",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0985181757199561,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
         "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
         "checkpoint_epoch": 8,
         "checkpoint_seed": 20261021,
@@ -1472,7 +1472,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "df3067eba878c4b26078173aa4e8b8c54bd0fe4a66936df416ab3411b96e2aea",
@@ -1484,11 +1484,11 @@
       "config_sha256": "9f5979a671fd8134d01cb5e299a301674525b8b008fce30bc71700d5847c8001",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.093596396208043,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
         "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
         "checkpoint_epoch": 74,
         "checkpoint_seed": 20261022,
@@ -1539,7 +1539,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "0188f130d6e8a98b829fa6364fabe45ed674dab2c3cfa17e5817ab15b8886b89",
@@ -1551,11 +1551,11 @@
       "config_sha256": "8820875681e57796783131378d9f3a9b40bb9496da01df7d6b26784c47018a83",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0948145881853362,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
         "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
         "checkpoint_epoch": 32,
         "checkpoint_seed": 20261023,
@@ -1606,7 +1606,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "4946f51ad5cc3411b3072dc9ead0c15fad922ccd627220623c320ff78c42c0b2",
@@ -1618,11 +1618,11 @@
       "config_sha256": "695363631c60534d87ebfc6cb98448150f68efc68306988ce2ab204ce7b17b53",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0699654645872474,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
         "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
         "checkpoint_epoch": 8,
         "checkpoint_seed": 20261021,
@@ -1673,7 +1673,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "9a3119fe4c03db81f73ee9b8a5969bdf51f707f0063e8aa9eadca22479ddc6ae",
@@ -1685,11 +1685,11 @@
       "config_sha256": "71ae5d8193f28886030fc47985df0b6cb885c0f32a5b371f1035df977f98ccfe",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0632968552353991,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
         "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
         "checkpoint_epoch": 74,
         "checkpoint_seed": 20261022,
@@ -1740,7 +1740,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "0d7d4c7f0c86107664cb89c9f51f2901e7ba7e0038baa2d5cdce0cd8fec864aa",
@@ -1752,11 +1752,11 @@
       "config_sha256": "94f383e084497399fe6e07055a596c939f952cbeabf8dd969199ceb527a94dbe",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0752920776843641,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
         "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
         "checkpoint_epoch": 32,
         "checkpoint_seed": 20261023,
@@ -1807,7 +1807,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "e6ed178fe2f14161284c119077f805c0e77d613ad17d4eae691d19efe360c035",
@@ -1819,11 +1819,11 @@
       "config_sha256": "4f665645986aa7388d4b525da6f32ab03c64d50a7591e6842ca94cd70a065149",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0762666624016969,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
         "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
         "checkpoint_epoch": 8,
         "checkpoint_seed": 20261021,
@@ -1874,7 +1874,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "f5c69e923185909ae348514d2528b1318e4403afb56bae01803cb8d0214a1a6e",
@@ -1886,11 +1886,11 @@
       "config_sha256": "828847a59db6a4089f11554aba3305104c47fd8cd060345fdb0f13f9446543a7",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0727715549635513,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
         "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
         "checkpoint_epoch": 74,
         "checkpoint_seed": 20261022,
@@ -1941,7 +1941,7 @@
       "lr": 0.001,
       "lr_tag": "1e-3",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "78a504fc5b599d6a538bdd74fe3ba07c90fb9f05946c02aa85d6883c7d6be81c",
@@ -1953,11 +1953,11 @@
       "config_sha256": "9e5953ec7ff134885460ebd328d08b251c14014270e6fc4715589825f6dd0f6f",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0743754712594295,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
         "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
         "checkpoint_epoch": 32,
         "checkpoint_seed": 20261023,
@@ -2008,7 +2008,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "1358c1e3bb407dff114f09ea48ac867f93a5916e2b4b1d1720f2779b4473a6b6",
@@ -2020,11 +2020,11 @@
       "config_sha256": "9876ab6ac88da2846124edf6364fa545aae771240cf6cc3079ef2aa20d9adeae",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0872209641885292,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
         "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
         "checkpoint_epoch": 8,
         "checkpoint_seed": 20261021,
@@ -2075,7 +2075,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "ab84feccdd3a9acd6a605453eb51462bc8ec2e3562d2a9705f044969b5f60745",
@@ -2087,11 +2087,11 @@
       "config_sha256": "acb6892d62efe5a9f37f6392a4741e37c2e0eff0c7754376af552247ff6f1d53",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.082700357545724,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
         "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
         "checkpoint_epoch": 74,
         "checkpoint_seed": 20261022,
@@ -2142,7 +2142,7 @@
       "lr": 0.0001,
       "lr_tag": "1e-4",
       "checkpoint": {
-        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
         "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
         "resolved_root": "/home/chang/arc",
         "sha256": "76757e378631c67fd444d02f9e38c3d47bd0da05c1c74e353245ee60ec5b2206",
@@ -2154,11 +2154,11 @@
       "config_sha256": "ee8e3ecea4c9136c989ed8172d2903b89f7d9c90dd2440c2794d218ac436363c",
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
       "best_valid_auprc": 0.0849877851386802,
-      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe",
+      "run_dir": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe",
       "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe",
       "init": {
         "mode": "pretrained",
-        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "source_path": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
         "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
         "checkpoint_epoch": 32,
         "checkpoint_seed": 20261023,

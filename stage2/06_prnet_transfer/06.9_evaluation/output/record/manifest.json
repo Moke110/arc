@@ -5,20 +5,20 @@
   "phase": "test",
   "dry_run": false,
   "subset": false,
-  "created_utc": "2026-11-02T11:44:09Z",
+  "created_utc": "2026-11-02T11:59:00Z",
   "command": [
     "write_record.py",
     "--phase",
     "test"
   ],
   "git": {
-    "sha": "f4f84885cd0531a01d1fc5b1e54a5e147a770642",
-    "branch": "feat/pt/t09-evaluation",
+    "sha": "553c4f1c0bcc5b97f4987376d8405eca402bf5c8",
+    "branch": "feat/prnet-formal-transfer",
     "dirty": true
   },
   "units_manifest": {
-    "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
-    "sha256": "b4174c8407489f706427d736555ba7296338a6ecefcaca11ae51ab2d72c6ba7e",
+    "path": "stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
+    "sha256": "62b79b622622868f0a57dbfc6541bf74524b084d2cfed3a0f43b50cbd29aeb71",
     "created_utc": "2026-11-02T11:34:51Z",
     "complete": true,
     "n_units": 30,
@@ -26,7 +26,7 @@
   },
   "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
   "frozen": {
-    "dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "dir": "stage2/06_prnet_transfer/06.3_input/output",
     "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
     "locked_config_sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
     "artifacts": {
@@ -50,7 +50,7 @@
       "label": "random-init (#6)",
       "init": "random",
       "source": "",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.6_cm_random/output/record/selected_checkpoints.csv",
+      "path": "stage2/06_prnet_transfer/06.6_cm_random/output/record/selected_checkpoints.csv",
       "sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
       "n_rows": 15,
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
@@ -71,7 +71,7 @@
       "label": "Tahoe-init (#7)",
       "init": "tahoe",
       "source": "",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.7_cm_tahoe/output/record/selected_checkpoints.csv",
+      "path": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/record/selected_checkpoints.csv",
       "sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
       "n_rows": 15,
       "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
@@ -89,7 +89,7 @@
       ]
     },
     "baselines": {
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
+      "path": "stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
       "sha256": "496552de9aed3f9a2d2f92d79eff621f6f066b357cf40b2583733a8c8318690b",
       "n_rows": 1388,
       "folds": [
@@ -121,9 +121,9 @@
     "selection_untouched": "the 30 units are #6/#7's frozen selection"
   },
   "baselines": {
-    "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output",
+    "path": "stage2/06_prnet_transfer/06.8_baselines/output",
     "record": {
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
+      "path": "stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
       "sha256": "496552de9aed3f9a2d2f92d79eff621f6f066b357cf40b2583733a8c8318690b",
       "n_rows": 1388,
       "folds": [
@@ -203,27 +203,27 @@
     "drug_gains.csv": "37089c8fe51a7febde0b7f0c40a52ca0904c8ad11d7fb1e850f445c086de5202",
     "strata.csv": "35b0a0eb2578f5b4b9963f15ddf3f4003667d197ed6e326c4c50ceb835b2e386",
     "tahoe_seen_drugs.json": "104a0e662e7a6fdb16c614266f462ab900f29ea6bd8c2a58b9ebd1c04c2fdcda",
-    "summary.json": "123c66b568b1cb73b608dd0ca349d956f42ed6b21d00b6e2cb91d913123715ca"
+    "summary.json": "6caceede972a8704ecffe6909dc6d93dd3b43e788bcfe2e97a05ea72678c2957"
   },
   "figures": [
     {
       "name": "auprc_by_fold.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/auprc_by_fold.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/auprc_by_fold.png",
       "sha256": "878242bf783d7e41962f7c61b82c167bdf34f31cd0ce443ede9b9a4cff20c7d5"
     },
     {
       "name": "paired_gain_by_drug.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/paired_gain_by_drug.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/paired_gain_by_drug.png",
       "sha256": "de2a9fe22fd81b2216a16ce594065a5017ee35a3742710ed1a872e41e52432b5"
     },
     {
       "name": "strata.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/strata.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/strata.png",
       "sha256": "3f815ba095776e94dfb952ada7540bdccd441047bedc045d233a68a4edc637f4"
     },
     {
       "name": "seed_stability.png",
-      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/seed_stability.png",
+      "path": "stage2/06_prnet_transfer/06.9_evaluation/output/figures/seed_stability.png",
       "sha256": "2f6c8f888930a7c39ce9839a14667764c2014c3b7fcae8e06f03a947451833e3"
     }
   ],
@@ -235,7 +235,7 @@
     "python_executable": "/home/chang/miniconda3/envs/arc/bin/python"
   },
   "timings": {
-    "wall_s": 12.516485643001943
+    "wall_s": 12.07073735099766
   },
-  "peak_rss_mb": 960.9765625
+  "peak_rss_mb": 960.76171875
 }

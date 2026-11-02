@@ -77,7 +77,7 @@ class SelectionRecord:
             "label": self.label,
             "init": self.init,
             "source": self.source,
-            "path": str(self.path),
+            "path": common.relpath(self.path),
             "sha256": self.sha256,
             "n_rows": self.n_rows,
             "data_identity": self.data_identity,
@@ -430,7 +430,7 @@ def expected_fold_counts(baselines_dir: Path | str | None) -> dict[str, Any]:
             "c_star_sha256": str(row.get("c_star_sha256", "")),
         }
     reference["source"] = {
-        "path": str(coverage),
+        "path": common.relpath(coverage),
         "sha256": common.sha256_file(coverage),
     }
     return reference
@@ -668,7 +668,7 @@ def build_unit_manifest(
         "frozen": frozen,
         "data_identity": identity,
         "locked_config": {
-            "path": str(data_dir / "locked_config.json"),
+            "path": common.relpath(data_dir / "locked_config.json"),
             "sha256": frozen["locked_config_sha256"],
             "structure": structure,
             "n_folds": n_folds,
@@ -684,7 +684,7 @@ def build_unit_manifest(
         "sources": {
             "random_record": random_rec.record(),
             "tahoe_record": tahoe_rec.record() if tahoe_rec is not None else None,
-            "baselines": str(baselines_dir) if baselines_dir else None,
+            "baselines": common.relpath(baselines_dir) if baselines_dir else None,
         },
         "fold_reference": expected_fold_counts(baselines_dir),
         "gates": gates,

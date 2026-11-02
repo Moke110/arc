@@ -64,7 +64,7 @@ Tahoe-seen strata: 15 of the test drugs (45 conditions) have a drug key observed
 
 ### Input and model identity
 
-- units manifest: `/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json` sha256 `b4174c8407489f70…` (created 2026-11-02T11:34:51Z, 30/30 units scored).
+- units manifest: `stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json` sha256 `62b79b622622868f…` (created 2026-11-02T11:34:51Z, 30/30 units scored).
 - frozen data identity: `a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376` (manifest sha256 `3050d149198cb3d2…`).
 - every checkpoint sha256 and config digest re-verified against #6/#7's `selected_checkpoints.csv` before scoring; model cards in `output/model_cards/`.
 

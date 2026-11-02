@@ -168,4 +168,5 @@ def _save(fig, path: Path) -> dict[str, Any]:
     plt.close(fig)
     import common
 
-    return {"name": path.name, "path": str(path), "sha256": common.sha256_file(path)}
+    return {"name": path.name, "path": common.relpath(path),
+            "sha256": common.sha256_file(path)}

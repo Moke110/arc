@@ -309,7 +309,7 @@ def load_baseline_conditions(
             f"#8's record covers folds {folds}, expected {sorted(int(v) for v in required_folds)}"
         )
     record = {
-        "path": str(path),
+        "path": common.relpath(path),
         "sha256": common.sha256_file(path),
         "n_rows": int(len(frame)),
         "folds": folds,
@@ -334,7 +334,7 @@ def load_baselines_summary(baselines_dir: Path | str) -> tuple[pd.DataFrame, dic
         ),
         string_columns=("scope", "fold", "baseline", "role"),
     )
-    record = {"path": str(path), "sha256": common.sha256_file(path)}
+    record = {"path": common.relpath(path), "sha256": common.sha256_file(path)}
     return frame, record
 
 

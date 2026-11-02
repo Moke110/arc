@@ -70,5 +70,5 @@
   },
   "failed_gates": [],
   "missing_inits": [],
-  "manifest": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json"
+  "manifest": "stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json"
 }

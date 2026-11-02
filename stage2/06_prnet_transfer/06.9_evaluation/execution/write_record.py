@@ -565,7 +565,7 @@ def build_record(
         "k": aggregate_mod.K,
         "created_utc": now_utc(),
         "units_manifest": {
-            "path": str(units_path),
+            "path": common.relpath(units_path),
             "sha256": sha256_file(units_path),
             "created_utc": units_payload.get("created_utc"),
             "complete": bool(units_payload.get("complete")),
@@ -675,7 +675,7 @@ def build_record(
             "selection_untouched": "the 30 units are #6/#7's frozen selection",
         },
         "baselines": {
-            "path": str(baselines_dir) if baselines_dir else None,
+            "path": common.relpath(baselines_dir) if baselines_dir else None,
             "record": baselines_record,
             "primary": aggregate_mod.PRIMARY_BASELINE,
         },

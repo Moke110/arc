@@ -120,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
             key for key, value in gates.items() if isinstance(value, bool) and not value
         ],
         "missing_inits": payload["missing_inits"],
-        "manifest": str(ns.out),
+        "manifest": common.relpath(ns.out),
     }
     write_json(check_path, summary)
     print(json.dumps(summary, indent=2))

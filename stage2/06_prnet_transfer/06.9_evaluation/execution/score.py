@@ -55,7 +55,8 @@ from common import (  # noqa: E402
 from units import fold_reference_for, load_unit_manifest  # noqa: E402
 
 SCHEMA = "stage2/06.9_evaluation/score/v1"
-PIPELINE_EXECUTION = Path(__file__).resolve().parents[2] / "06.4_pipeline" / "execution"
+#: ADR 0030 §4: resolve through the repo-root walk in `common`, never `Path.parents`
+PIPELINE_EXECUTION = common.PIPELINE_EXECUTION
 PREDICT_CLI = PIPELINE_EXECUTION / "predict.py"
 EVALUATE_CLI = PIPELINE_EXECUTION / "evaluate.py"
 
@@ -298,7 +299,7 @@ def score_unit(
         "init": unit["init_name"],
         "lr": float(unit["lr"]),
         "checkpoint_sha256": str(unit["checkpoint"]["sha256"]),
-        "checkpoint_path": str(unit["checkpoint"]["path"]),
+        "checkpoint_path": str(common.repo_path(unit["checkpoint"]["path"])),
         "config_sha256": str(unit["config_sha256"]),
         "data_identity": str(unit["data_identity"]),
         "created_utc": now_utc(),
@@ -341,7 +342,7 @@ def score_unit(
     predict_command = [
         gpu_py, str(PREDICT_CLI), "--stage", "finetune",
         "--fold", str(unit["fold"]), "--role", phase,
-        "--checkpoint", str(unit["checkpoint"]["path"]),
+        "--checkpoint", str(common.repo_path(unit["checkpoint"]["path"])),
         "--out", str(pred_dir), *common_data,
         "--device", "cuda", "--repeats", "2",
     ]
@@ -536,7 +537,7 @@ def _summary_from_rows(
         "host_peak_rss_mb": host_peak,
         "gpu_peak_mb": int(gpu_peak) if gpu_peak else 0,
         "preflight": dict(preflight),
-        "units_manifest": str(units_manifest),
+        "units_manifest": common.relpath(units_manifest),
         "units_manifest_sha256": units_manifest_sha256,
         "selection_complete": bool(selection_complete),
         "test_role_scored": phase == "test",
