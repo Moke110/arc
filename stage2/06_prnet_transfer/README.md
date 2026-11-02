@@ -31,28 +31,31 @@ closes with artifacts and evidence.
 
 ## Layout
 
-`eligibility/` · `qc/` · `input/` · `pipeline/` · `runs/` · `baselines/` ·
-`evaluation/` · `ablations/capacity/` · `ablations/env_compounds/` — see
-[`AGENTS.md`](AGENTS.md) for what each owns and
-[`docs/adr/`](../../docs/adr/) for the contracts. There is exactly one
+Per ADR 0030 §3 this container splits into eleven independently-concluded
+substeps, one per published ticket, each carrying `AGENTS.md`, `README.md`,
+`execution/` and `output/`: `06.1_eligibility/`, `06.2_qc/`, `06.3_input/`,
+`06.4_pipeline/`, `06.5_tahoe_pretrain/`, `06.6_cm_random/`, `06.7_cm_tahoe/`,
+`06.8_baselines/`, `06.9_evaluation/`, `06.10_capacity_ablation/`,
+`06.11_env_compound_ablation/`. See [`AGENTS.md`](AGENTS.md) for what each owns
+and [`docs/adr/`](../../docs/adr/) for the contracts. There is exactly one
 eligibility audit, one QC audit, one frozen input build, and one evaluator;
 every experiment consumes them rather than re-deriving a split.
 
 ## Status table
 
-| area | ticket | status | evidence |
+| substep | ticket | status | evidence |
 |---|---|---|---|
-| eligibility audit | #1 | planned | — |
-| QC audit | #2 | planned | — |
-| frozen inputs / folds / consensus | #3 | planned | — |
-| pipeline + smoke | #4 | planned | — |
-| 3 Tahoe pretrains | #5 | planned | — |
-| 45 random-init CM candidates | #6 | planned | — |
-| 45 Tahoe-init CM candidates | #7 | planned | — |
-| baselines | #8 | planned | — |
-| evaluation + report | #9 | planned | — |
-| capacity ablation | #10 | planned (post-first-round) | — |
-| env-compound ablation | #11 | planned (post-first-round) | — |
+| `06.1_eligibility/` eligibility audit | #1 | planned | — |
+| `06.2_qc/` per-observation QC | #2 | planned | — |
+| `06.3_input/` frozen inputs, folds, consensus | #3 | planned | — |
+| `06.4_pipeline/` pipeline + smoke | #4 | planned | — |
+| `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | planned | — |
+| `06.6_cm_random/` 45 random-init CM candidates | #6 | planned | — |
+| `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | planned | — |
+| `06.8_baselines/` five-fold baselines | #8 | planned | — |
+| `06.9_evaluation/` 30-unit evaluation + report | #9 | planned | — |
+| `06.10_capacity_ablation/` capacity ablation | #10 | planned (post-first-round) | — |
+| `06.11_env_compound_ablation/` env-compound ablation | #11 | planned (post-first-round) | — |
 
 ## Boundaries
 
