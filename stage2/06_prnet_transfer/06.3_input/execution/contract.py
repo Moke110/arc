@@ -136,12 +136,15 @@ ARTIFACTS = {
 
 # Tracked record files: small, force-added past the repository-wide `output/`
 # and `*.csv` ignore rules (ADR 0030 / 04-05 precedent).  The two h5ad files are
-# local-only (16 GB / 650 MB) and never committed.
+# local-only (16 GB / 218 MB) and never committed.  Both .npz caches are part of
+# the interface ticket #4 reads (c* and the treated-row -> control-group map), so
+# they are tracked as well — they are kilobytes, and a frozen input whose
+# required artifacts are absent from git is not a frozen input.
 TRACKED_RECORD = [
     "manifest.json", "locked_config.json", "contract.json", "counts.csv",
     "fold_sizes.csv", "consensus_summary.csv", "var_checks.csv",
-    "folds.parquet", "consensus_membership.parquet",
-    "tahoe_control_groups.parquet",
+    "folds.parquet", "consensus_membership.parquet", "consensus_controls.npz",
+    "tahoe_control_groups.parquet", "tahoe_pairs.npz",
 ]
 
 

@@ -261,6 +261,13 @@ class ColumnContractTest(unittest.TestCase):
         self.assertIn("locked_config.json", contract.ARTIFACTS.values())
         self.assertNotIn(contract.ARTIFACTS["tahoe"], contract.TRACKED_RECORD)
         self.assertNotIn(contract.ARTIFACTS["cm"], contract.TRACKED_RECORD)
+        # Every interface file ticket #4 requires must be in the tracked record:
+        # a frozen input whose required artifacts never reach git is not frozen.
+        for name in ("folds.parquet", "consensus_controls.npz",
+                     "consensus_membership.parquet", "tahoe_control_groups.parquet",
+                     "tahoe_pairs.npz", "locked_config.json", "manifest.json",
+                     "contract.json"):
+            self.assertIn(name, contract.TRACKED_RECORD)
 
 
 class EnvTest(unittest.TestCase):
