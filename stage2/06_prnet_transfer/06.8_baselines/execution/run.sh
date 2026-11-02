@@ -5,11 +5,13 @@
 #   ./run.sh run       fit + score every fold, write the tracked record
 #   ./run.sh fixture   build the synthetic frozen fixture (test aid only)
 #   ./run.sh dry-run   full record on the synthetic fixture (pipeline check, not evidence)
+#   ./run.sh mem-check row-replicated fixture under /usr/bin/time -v (memory gate)
 #
 # The frozen input and the compute output live in the main checkout (a worktree
 # is removed after merge), so the data root is explicit.  Override with
 # T08_DATA_DIR / T08_OUT_ROOT / T08_TABLE_CACHE; copy the tracked record back
-# into this step with `make record` and commit it with `git add -f`.
+# into this step with `make record`; the five record files are tracked through a
+# narrow `.gitignore` exception (`06.8_baselines/output/`).
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 
@@ -45,8 +47,11 @@ case "$1" in
       "$here/baselines.py" --all --data-dir "$FIXTURE" \
       --out-root /tmp/t08-baselines-dry-run --force
     ;;
+  mem-check)
+    exec make -C "$here" mem-check
+    ;;
   *)
-    echo "error: unknown command '$1' (check|run|fixture|dry-run)" >&2
+    echo "error: unknown command '$1' (check|run|fixture|dry-run|mem-check)" >&2
     exit 2
     ;;
 esac

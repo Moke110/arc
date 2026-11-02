@@ -37,6 +37,14 @@ matched-control means used to form the training Δ are controls, not held-out
 responses: they are never split by drug and the scored test truth uses the same
 per-plate DMSO definition.  Validation/test treated rows are never read here.
 
+Memory (ticket #8; ``docs/agents/execution-environment.md``): the dense CM log1p
+layer is read and aggregated one ``GENE_BLOCK`` of genes at a time, the matched
+controls are kept as ``n_plates × n_genes`` plate means, and the two prediction
+``.npy`` files are written through ``np.lib.format`` memmaps in ``ROW_BLOCK`` row
+blocks.  No ``n_observations × 18_164`` array is ever materialised, and there is
+no worker pool (single process).  ``tests/test_memory.py`` pins the block
+equivalence, and ``make mem-check`` measures the peak on a row-replicated fixture.
+
 Usage::
 
     PY=/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python
@@ -61,21 +69,28 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+import h5py
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 
 __all__ = [
     "BASELINES",
     "PRIMARY_BASELINES",
     "AUXILIARY_BASELINES",
     "RIDGE_ALPHA",
+    "GENE_BLOCK",
+    "ROW_BLOCK",
     "FitTable",
     "PredictionResult",
     "find_repo_root",
+    "iter_layer_blocks",
+    "plate_control_matrix",
     "build_fit_table",
     "condition_context",
     "ridge_features",
     "fit_baseline",
+    "condition_predictions",
     "predict_baseline",
     "write_prediction_dir",
     "score_prediction_dir",
@@ -98,6 +113,15 @@ AUXILIARY_BASELINES = ("delta_mean_dose", "ridge_fp")
 RIDGE_ALPHA = 1.0
 #: The step container whose ``06.8_baselines/output/`` this ticket owns.
 STEP_REL = Path("stage2/06_prnet_transfer")
+
+#: Genes per block when the dense CM log1p layer is read/aggregated.  The only
+#: large temporary is ``(n_train_rows × GENE_BLOCK)`` float64, never
+#: ``n_train_rows × 18_164`` (ticket #8 memory rule; execution-environment.md).
+GENE_BLOCK = 1024
+#: Scored rows per block when the prediction arrays are written.  Both ``.npy``
+#: files are created as ``np.lib.format`` memmaps and filled block by block, so
+#: no ``n_test_rows × 18_164`` array is ever materialised.
+ROW_BLOCK = 64
 
 
 # --------------------------------------------------------------------------- #
@@ -181,6 +205,11 @@ class FitTable:
     ``drug_key|dose_µM`` (the evaluator's CM condition), and ``condition_delta``
     is the within-condition mean, i.e. replicate aggregation happens **before**
     any pooling.
+
+    Memory (ticket #8): ``condition_delta`` is condition-level
+    (``n_conditions × n_genes`` float32) and is the only large array retained;
+    the ``n_train_rows × n_genes`` row matrix is never materialised
+    (:func:`build_fit_table` aggregates gene block by gene block).
     """
 
     fold: int
@@ -208,6 +237,116 @@ class FitTable:
         return {str(key): i for i, key in enumerate(self.unique_conditions)}
 
 
+def _row_runs(rows: np.ndarray) -> list[tuple[int, int]]:
+    """Split sorted unique *rows* into contiguous ``(start, stop)`` HDF5 ranges.
+
+    Mirrors the row-read contract of ``ptlib.h5io``: a dense frozen matrix is
+    read in contiguous ranges, never with one unbounded fancy index.
+    """
+    runs: list[tuple[int, int]] = []
+    start = 0
+    for position in range(1, len(rows) + 1):
+        if position == len(rows) or rows[position] != rows[position - 1] + 1:
+            runs.append((int(rows[start]), int(rows[position - 1]) + 1))
+            start = position
+    return runs
+
+
+def _log1p_layer_key(handle: h5py.File, path: Path) -> str:
+    for candidate in h5io.LOG1P_KEYS:
+        if candidate in handle:
+            return candidate
+    raise BaselineError(
+        f"{path} has no recognised log1p-CP10k layer (looked for {list(h5io.LOG1P_KEYS)})"
+    )
+
+
+def iter_layer_blocks(
+    path: Path | str,
+    rows: np.ndarray,
+    n_genes: int,
+    *,
+    block_genes: int = GENE_BLOCK,
+):
+    """Yield ``(g0, g1, block)`` float32 gene blocks of the dense CM log1p layer.
+
+    ``block`` is ``(len(rows), g1 − g0)`` in the given row order.  The full
+    ``rows × n_genes`` matrix is never materialised: each block is read straight
+    from the contiguous dense dataset and aggregated by the caller.  A CSR layer
+    is refused instead of densified — the frozen CM input contract (ticket #3) is
+    a dense float32 layer, so an unexpected encoding fails closed rather than
+    silently allocating the whole matrix.
+    """
+    rows = np.asarray(rows, dtype=np.int64)
+    if rows.ndim != 1 or rows.size == 0:
+        raise BaselineError("layer block read needs a non-empty 1-D row set")
+    if np.any(np.diff(rows) <= 0):
+        raise BaselineError("layer block read needs sorted, unique row ids")
+    path = Path(path)
+    with h5py.File(path, "r") as handle:
+        key = _log1p_layer_key(handle, path)
+        node = handle[key]
+        if isinstance(node, h5py.Group):
+            raise BaselineError(
+                f"{path} stores {key!r} as CSR; the CM input contract is a dense "
+                "float32 layer and the baselines read it in gene blocks instead of "
+                "densifying the whole matrix"
+            )
+        shape = tuple(int(x) for x in node.shape)
+        if len(shape) != 2 or shape[1] != int(n_genes):
+            raise BaselineError(f"{key!r} shape {shape} is not (*, {int(n_genes)})")
+        if int(rows.max()) >= shape[0]:
+            raise BaselineError(
+                f"row {int(rows.max())} is outside {key!r} with {shape[0]} rows"
+            )
+        runs = _row_runs(rows)
+        for g0 in range(0, int(n_genes), int(block_genes)):
+            g1 = min(g0 + int(block_genes), int(n_genes))
+            pieces = [node[r0:r1, g0:g1] for r0, r1 in runs]
+            block = pieces[0] if len(pieces) == 1 else np.vstack(pieces)
+            block = np.ascontiguousarray(block, dtype=np.float32)
+            if block.shape != (rows.size, g1 - g0):
+                raise BaselineError(
+                    f"layer block read returned {block.shape}, expected "
+                    f"{(rows.size, g1 - g0)}"
+                )
+            yield g0, g1, block
+
+
+def plate_control_matrix(
+    pool: data_mod.CMControlPool, rows: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Matched-control values compactly: ``(plate_means, plate_index_per_row)``.
+
+    Equivalent to :meth:`ptlib.data.CMControlPool.mean_for_rows` — same
+    ``plate_means`` table, same float32 values, same fail-closed missing-plate
+    rule — but keeps ``n_plates × n_genes`` instead of materialising
+    ``n_rows × n_genes``; the caller indexes it one gene block at a time.
+    """
+    frozen = pool.frozen
+    plate = frozen.cm_obs["plate"].astype(str).to_numpy()
+    rows = np.asarray(rows, dtype=np.int64)
+    plates = sorted(str(key) for key in pool.plate_means)
+    index = {key: i for i, key in enumerate(plates)}
+    per_row = np.empty(rows.size, dtype=np.int64)
+    for i, row in enumerate(rows):
+        key = str(plate[int(row)])
+        position = index.get(key)
+        if position is None:
+            raise BaselineError(
+                f"no QC-pass matched DMSO control on plate {key!r} for the fit Δ "
+                "(fails closed; one plate's control is never borrowed from another)"
+            )
+        per_row[i] = position
+    matrix = np.stack([pool.plate_means[key] for key in plates]).astype(np.float32)
+    if matrix.shape != (len(plates), int(frozen.n_genes)):
+        raise BaselineError(
+            f"plate control matrix shape {matrix.shape} is not "
+            f"({len(plates)}, {frozen.n_genes})"
+        )
+    return matrix, per_row
+
+
 def build_fit_table(
     frozen: data_mod.FrozenInput,
     fold_table: data_mod.FoldTable,
@@ -216,34 +355,31 @@ def build_fit_table(
     control_pool: data_mod.CMControlPool | None = None,
     source: data_mod.CMPredictSource | None = None,
 ) -> FitTable:
-    """Read the fold's training treated rows and build the fit table.
+    """Read the fold's training treated rows and build the condition fit table.
 
-    Fails closed if a row set is empty, if the layer read returns an unexpected
-    order, or if the condition key disagrees with the (drug, dose) pair.
+    Memory-bounded by construction (ticket #8): the dense log1p layer is read and
+    aggregated one ``GENE_BLOCK`` at a time, so the peak temporary is
+    ``n_train_rows × GENE_BLOCK`` float64 — never ``n_train_rows × n_genes``.
+    Fails closed if a row set is empty, if a block read returns an unexpected
+    shape/order, or if the condition key disagrees with the (drug, dose) pair.
     """
     structures = structures or frozen.structures()
     source = source or data_mod.CMPredictSource(frozen, fold_table, int(fold), structures)
     train_rows = np.asarray(source.rows_for("train"), dtype=np.int64)
     if train_rows.size == 0:
         raise BaselineError(f"fold {fold}: no training treated rows; a fit is impossible")
-
-    layer, sorted_rows = h5io.read_layer_rows(frozen.cm_h5ad, train_rows, frozen.n_genes)
-    if not np.array_equal(np.asarray(sorted_rows, dtype=np.int64), train_rows):
-        raise BaselineError(f"fold {fold}: training layer read returned an unexpected row order")
-
-    pool = control_pool or data_mod.CMControlPool(frozen)
-    control = pool.mean_for_rows(train_rows)
-    row_delta = layer.astype(np.float64) - control.astype(np.float64)
+    if np.any(np.diff(train_rows) <= 0):
+        raise BaselineError(f"fold {fold}: training rows are not sorted and unique")
 
     keys = np.asarray(source.condition_key(train_rows), dtype=object)
     unique, inverse = np.unique(keys, return_inverse=True)
     inverse = np.asarray(inverse, dtype=np.int64)
-    condition_delta = metrics_mod.aggregate_rows(row_delta, inverse, int(unique.size))
+    n_conditions = int(unique.size)
 
     obs = frozen.cm_obs
     drug = obs["drug_key"].astype(str).to_numpy()[train_rows]
     dose = pd.to_numeric(obs["dose_um"], errors="coerce").to_numpy(dtype=np.float64)[train_rows]
-    first = np.full(unique.size, -1, dtype=np.int64)
+    first = np.full(n_conditions, -1, dtype=np.int64)
     for position, condition in enumerate(inverse):
         if first[condition] < 0:
             first[condition] = position
@@ -258,7 +394,34 @@ def build_fit_table(
                 f"fold {fold}: condition key {key!r} disagrees with its (drug, dose) pair {expected!r}"
             )
 
-    pooled_mean = condition_delta.mean(axis=0)
+    counts_per_condition = np.bincount(inverse, minlength=n_conditions)
+    if np.any(counts_per_condition == 0):
+        raise BaselineError(f"fold {fold}: a training condition has no row")
+    incidence = sp.csr_matrix(
+        (
+            np.ones(train_rows.size, dtype=np.float64),
+            (np.arange(train_rows.size, dtype=np.int64), inverse),
+        ),
+        shape=(train_rows.size, n_conditions),
+    )
+
+    pool = control_pool or data_mod.CMControlPool(frozen)
+    plate_matrix, plate_index = plate_control_matrix(pool, train_rows)
+
+    n_genes = int(frozen.n_genes)
+    condition_delta = np.empty((n_conditions, n_genes), dtype=np.float32)
+    pooled_sum = np.zeros(n_genes, dtype=np.float64)
+    for g0, g1, layer_block in iter_layer_blocks(
+        frozen.cm_h5ad, train_rows, n_genes, block_genes=GENE_BLOCK
+    ):
+        control_block = plate_matrix[plate_index, g0:g1]
+        delta_block = layer_block.astype(np.float64) - control_block.astype(np.float64)
+        condition_block = np.asarray(incidence.T @ delta_block, dtype=np.float64)
+        condition_block /= counts_per_condition[:, None]
+        condition_delta[:, g0:g1] = condition_block.astype(np.float32)
+        pooled_sum[g0:g1] = condition_block.sum(axis=0)
+    pooled_mean = pooled_sum / float(n_conditions)
+
     plate = obs["plate"].astype(str).to_numpy()[train_rows]
     counts = {
         "fold": int(fold),
@@ -271,20 +434,26 @@ def build_fit_table(
             str(drug_key): int(np.sum(condition_drug == drug_key))
             for drug_key in sorted(np.unique(condition_drug))
         },
+        "memory_policy": {
+            "layer_read": "dense log1p layer in gene blocks",
+            "gene_block_genes": int(GENE_BLOCK),
+            "condition_delta_dtype": "float32",
+            "row_level_delta_materialised": False,
+        },
     }
     return FitTable(
         fold=int(fold),
-        n_genes=int(frozen.n_genes),
+        n_genes=n_genes,
         train_rows=train_rows,
         row_conditions=inverse,
         unique_conditions=np.asarray(unique, dtype=object),
-        condition_delta=np.asarray(condition_delta, dtype=np.float64),
+        condition_delta=condition_delta,
         condition_drug=np.asarray(condition_drug, dtype=object),
         condition_dose=np.asarray(condition_dose, dtype=np.float64),
         pooled_mean=np.asarray(pooled_mean, dtype=np.float64),
         counts=counts,
         train_rows_sha256=_sha256_rows(train_rows),
-        train_delta_sha256=_sha256_array(row_delta.astype(np.float32)),
+        train_delta_sha256=_sha256_array(condition_delta),
     )
 
 
@@ -395,7 +564,7 @@ def fit_baseline(
         unique_doses = np.asarray(sorted(set(dose_keys.tolist())), dtype=object)
         means = np.stack(
             [
-                table.condition_delta[dose_keys == dose].mean(axis=0)
+                table.condition_delta[dose_keys == dose].astype(np.float64).mean(axis=0)
                 for dose in unique_doses
             ]
         ).astype(np.float32)
@@ -466,55 +635,57 @@ def fit_baseline(
 # --------------------------------------------------------------------------- #
 # predictions
 # --------------------------------------------------------------------------- #
-def predict_baseline(
+def condition_predictions(
     name: str,
     params: Mapping[str, np.ndarray],
     table: FitTable,
     context: Mapping[str, Any],
     frozen: data_mod.FrozenInput,
-) -> PredictionResult:
-    """Predict a per-row Δ for the scored rows from the folded fit."""
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Predict one Δ per scored **condition** (``n_conditions × n_genes`` float32).
+
+    Bounded by construction: the retained matrix is condition-level.  A row-level
+    ``n_test_rows × n_genes`` array is only produced by the writer, one row block
+    at a time.
+    """
     n_genes = int(frozen.n_genes)
     n_conditions = int(context["condition_keys"].size)
-    inverse = np.asarray(context["row_conditions"], dtype=np.int64)
+    predicted = np.empty((n_conditions, n_genes), dtype=np.float32)
 
     if name == "no_change":
-        delta = np.zeros((inverse.size, n_genes), dtype=np.float32)
-        return PredictionResult(delta=delta, info={"rule": "zero Δ"})
-
-    predicted = np.empty((n_conditions, n_genes), dtype=np.float64)
-    info: dict[str, Any] = {}
-    pooled = (
-        np.asarray(params["pooled"], dtype=np.float64)
-        if name in ("delta_mean", "delta_mean_dose")
-        else None
-    )
-
-    if name == "delta_mean":
+        predicted.fill(0.0)
+        info: dict[str, Any] = {"rule": "zero Δ"}
+    elif name == "delta_mean":
+        pooled = np.asarray(params["pooled"], dtype=np.float32)
+        if pooled.shape != (n_genes,):
+            raise BaselineError(f"delta_mean pooled shape {pooled.shape} is not ({n_genes},)")
+        predicted[:] = pooled[None, :]
         lookup = table.condition_lookup()
-        collisions = 0
+        matched = 0
         for i, key in enumerate(context["condition_keys"]):
             index = lookup.get(str(key))
-            if index is None:
-                predicted[i] = pooled
-            else:
-                predicted[i] = table.condition_delta[index]
-                collisions += 1
+            if index is not None:
+                predicted[i] = table.condition_delta[index].astype(np.float32)
+                matched += 1
         info = {
             "pooling": "training condition mean, else pooled training mean",
-            "n_conditions_seen_in_train": int(collisions),
-            "fallback": "pooled training mean" if collisions < n_conditions else "none",
+            "n_conditions_seen_in_train": int(matched),
+            "fallback": "pooled training mean" if matched < n_conditions else "none",
         }
     elif name == "delta_mean_dose":
+        pooled = np.asarray(params["pooled"], dtype=np.float32)
+        means = np.asarray(params["means"], dtype=np.float32)
         doses = np.asarray(params["doses"]).astype(str)
-        means = np.asarray(params["means"], dtype=np.float64)
-        by_dose = {str(d): i for i, d in enumerate(doses)}
-        dose_keys = [f"{float(d):g}" for d in context["condition_dose"]]
+        if means.shape != (doses.size, n_genes):
+            raise BaselineError(
+                f"delta_mean_dose means shape {means.shape} is not ({doses.size}, {n_genes})"
+            )
+        predicted[:] = pooled[None, :]
+        by_dose = {str(dose): i for i, dose in enumerate(doses)}
         missing = 0
-        for i, key in enumerate(dose_keys):
-            index = by_dose.get(key)
+        for i, dose in enumerate(context["condition_dose"]):
+            index = by_dose.get(f"{float(dose):g}")
             if index is None:
-                predicted[i] = pooled
                 missing += 1
             else:
                 predicted[i] = means[index]
@@ -524,24 +695,53 @@ def predict_baseline(
             "fallback": "pooled training mean",
         }
     elif name == "ridge_fp":
-        coef = np.asarray(params["coef"], dtype=np.float64)
+        coef = np.asarray(params["coef"], dtype=np.float32)
         if coef.ndim == 1:  # single-gene fit; sklearn collapses the target axis
             coef = coef[None, :]
-        intercept = np.asarray(params["intercept"], dtype=np.float64).reshape(-1)
+        intercept = np.asarray(params["intercept"], dtype=np.float32).reshape(-1)
         n_bits = int(coef.shape[1])
+        if coef.shape[0] != n_genes or intercept.size != n_genes:
+            raise BaselineError(
+                f"ridge_fp coefficient shape {coef.shape} / intercept {intercept.shape} "
+                f"does not match ({n_genes}, {n_bits})"
+            )
         features = ridge_features(
             context["condition_smiles"], context["condition_dose"], n_bits
-        )
-        predicted = features @ coef.T + intercept[None, :]
+        ).astype(np.float64)
+        for g0 in range(0, n_genes, GENE_BLOCK):
+            g1 = min(g0 + GENE_BLOCK, n_genes)
+            block = features @ coef[g0:g1].astype(np.float64).T
+            block += intercept[g0:g1].astype(np.float64)[None, :]
+            predicted[:, g0:g1] = block.astype(np.float32)
         info = {"model": "ridge", "n_features": n_bits}
     else:  # pragma: no cover - fit validated the name
         raise BaselineError(f"unknown baseline {name!r}")
 
-    delta = predicted[inverse].astype(np.float32)
-    if delta.shape != (inverse.size, n_genes):
-        raise BaselineError(f"baseline {name} produced Δ shape {delta.shape}")
-    if not np.all(np.isfinite(delta)):
+    if predicted.shape != (n_conditions, n_genes):
+        raise BaselineError(f"baseline {name} produced Δ shape {predicted.shape}")
+    if not np.all(np.isfinite(predicted)):
         raise BaselineError(f"baseline {name} produced non-finite Δ")
+    return predicted, info
+
+
+def predict_baseline(
+    name: str,
+    params: Mapping[str, np.ndarray],
+    table: FitTable,
+    context: Mapping[str, Any],
+    frozen: data_mod.FrozenInput,
+) -> PredictionResult:
+    """Row-level Δ for the scored rows.
+
+    Test/small-input helper only: it materialises ``n_rows × n_genes``.  The
+    five-fold run path uses :func:`condition_predictions` + the blocked writer so
+    that array is never built in memory.
+    """
+    inverse = np.asarray(context["row_conditions"], dtype=np.int64)
+    predicted, info = condition_predictions(name, params, table, context, frozen)
+    delta = np.ascontiguousarray(predicted[inverse], dtype=np.float32)
+    if delta.shape != (inverse.size, int(frozen.n_genes)):
+        raise BaselineError(f"baseline {name} produced Δ shape {delta.shape}")
     return PredictionResult(delta=delta, info=info)
 
 
@@ -556,65 +756,129 @@ def write_prediction_dir(
     fold: int,
     meta: pd.DataFrame,
     c_star: np.ndarray,
-    delta: np.ndarray,
     fit_record: Mapping[str, Any],
     frozen: data_mod.FrozenInput,
     command: Sequence[str] = (),
     repeats: int = 2,
+    delta: np.ndarray | None = None,
+    condition_delta: np.ndarray | None = None,
+    row_conditions: np.ndarray | None = None,
 ) -> dict[str, Any]:
     """Write ``pred_expr.npy`` / ``delta.npy`` / ``meta.csv`` / ``manifest.json``.
 
-    ``pred_expr = c* + Δ`` and the stored Δ is recomputed as
-    ``pred_expr − c*`` so the evaluator's baseline check passes exactly; the
-    caller's Δ is also recomputed and required to be byte-identical (the
-    deterministic-prediction policy, mirroring ``ptlib.predict``).
+    ``pred_expr = c* + Δ`` and the stored Δ is recomputed as ``pred_expr − c*``
+    so the evaluator's baseline check passes exactly; the caller's Δ is also
+    recomputed and required to be byte-identical (the deterministic-prediction
+    policy, mirroring ``ptlib.predict``).
+
+    Memory (ticket #8): pass ``condition_delta`` + ``row_conditions`` from
+    :func:`condition_predictions` and the two ``.npy`` files are created as
+    ``np.lib.format`` memmaps and filled in ``ROW_BLOCK`` row blocks — no
+    ``n_rows × n_genes`` array is held in memory.  ``delta=`` (a row-level array)
+    is kept for the evaluator-sanity tests, which are fixture-sized.
     """
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    delta = np.asarray(delta, dtype=np.float32)
-    if delta.shape != (len(meta), int(frozen.n_genes)):
+    n_rows = int(len(meta))
+    n_genes = int(frozen.n_genes)
+    if n_rows == 0:
+        raise BaselineError("cannot write an empty prediction directory")
+    c_star64 = np.ascontiguousarray(np.asarray(c_star, dtype=np.float32)).astype(np.float64)
+    if c_star64.shape != (n_genes,):
+        raise BaselineError(f"c* shape {c_star64.shape} is not ({n_genes},)")
+    if (delta is None) == (condition_delta is None):
         raise BaselineError(
-            f"prediction Δ shape {delta.shape} does not match meta rows {len(meta)} "
-            f"and {frozen.n_genes} genes"
+            "pass exactly one of delta (row-level) or condition_delta (+ row_conditions)"
         )
-    c_star = np.asarray(c_star, dtype=np.float32)
-    if c_star.shape != (int(frozen.n_genes),):
-        raise BaselineError(f"c* shape {c_star.shape} is not ({frozen.n_genes},)")
 
-    predicted_expr = (c_star.astype(np.float64)[None, :] + delta.astype(np.float64)).astype(
-        np.float32
+    if condition_delta is not None:
+        condition_delta = np.asarray(condition_delta, dtype=np.float32)
+        if condition_delta.ndim != 2 or condition_delta.shape[1] != n_genes:
+            raise BaselineError(
+                f"condition Δ shape {condition_delta.shape} is not (*, {n_genes})"
+            )
+        row_conditions = np.asarray(row_conditions, dtype=np.int64)
+        if row_conditions.shape != (n_rows,):
+            raise BaselineError(
+                f"row_conditions shape {row_conditions.shape} is not ({n_rows},)"
+            )
+        if row_conditions.size and (
+            row_conditions.min() < 0 or row_conditions.max() >= condition_delta.shape[0]
+        ):
+            raise BaselineError("row_conditions index outside the condition Δ matrix")
+
+        def delta_block(start: int, stop: int) -> np.ndarray:
+            return condition_delta[row_conditions[start:stop]]
+
+    else:
+        delta = np.asarray(delta, dtype=np.float32)
+        if delta.shape != (n_rows, n_genes):
+            raise BaselineError(
+                f"prediction Δ shape {delta.shape} does not match meta rows {n_rows} "
+                f"and {n_genes} genes"
+            )
+
+        def delta_block(start: int, stop: int) -> np.ndarray:
+            return delta[start:stop]
+
+    pred_path = out_dir / "pred_expr.npy"
+    stored_path = out_dir / "delta.npy"
+    predicted_expr = np.lib.format.open_memmap(
+        pred_path, mode="w+", dtype=np.float32, shape=(n_rows, n_genes)
     )
-    stored_delta = (
-        predicted_expr.astype(np.float64) - c_star.astype(np.float64)
-    ).astype(np.float32)
-    input_baseline = predicted_expr.astype(np.float64) - stored_delta.astype(np.float64)
-    baseline_roundtrip = float(np.max(np.abs(input_baseline - c_star.astype(np.float64))))
+    stored_delta = np.lib.format.open_memmap(
+        stored_path, mode="w+", dtype=np.float32, shape=(n_rows, n_genes)
+    )
+    baseline_roundtrip = 0.0
+    identical = True
+    extra_repeats = max(1, int(repeats)) - 1
+    try:
+        for start in range(0, n_rows, ROW_BLOCK):
+            stop = min(start + ROW_BLOCK, n_rows)
+            block = np.ascontiguousarray(delta_block(start, stop), dtype=np.float32)
+            if block.shape != (stop - start, n_genes):
+                raise BaselineError(
+                    f"prediction Δ block {block.shape} does not match ({stop - start}, {n_genes})"
+                )
+            block64 = block.astype(np.float64)
+            pred_block = (c_star64[None, :] + block64).astype(np.float32)
+            stored_block = (pred_block.astype(np.float64) - c_star64).astype(np.float32)
+            predicted_expr[start:stop] = pred_block
+            stored_delta[start:stop] = stored_block
+            roundtrip = float(
+                np.max(
+                    np.abs(
+                        pred_block.astype(np.float64)
+                        - stored_block.astype(np.float64)
+                        - c_star64
+                    )
+                )
+            )
+            baseline_roundtrip = max(baseline_roundtrip, roundtrip)
+            for _ in range(extra_repeats):
+                again = (c_star64[None, :] + block64).astype(np.float32)
+                if again.tobytes() != pred_block.tobytes():
+                    identical = False
+    finally:
+        predicted_expr.flush()
+        stored_delta.flush()
+        del predicted_expr, stored_delta
+
     if baseline_roundtrip > 1e-5:
         raise BaselineError(
             f"prediction baseline round-trip differs from c* by {baseline_roundtrip:.3g}"
         )
-
-    identical = True
-    for _ in range(max(1, int(repeats)) - 1):
-        again = (c_star.astype(np.float64)[None, :] + delta.astype(np.float64)).astype(
-            np.float32
-        )
-        if not (
-            np.array_equal(again, predicted_expr)
-            and again.tobytes() == predicted_expr.tobytes()
-        ):
-            identical = False
     if not identical:
         raise BaselineError(
             f"baseline {baseline}: repeated prediction is not byte-identical "
             "(deterministic prediction policy violated)"
         )
-
-    np.save(out_dir / "pred_expr.npy", predicted_expr)
-    np.save(out_dir / "delta.npy", stored_delta)
     meta.to_csv(out_dir / "meta.csv", index=False)
 
     rows = np.asarray(meta["row"], dtype=np.int64)
+    pred_expr_sha256 = manifest_mod.sha256_file(pred_path)
+    delta_sha256 = manifest_mod.sha256_file(stored_path)
+    meta_sha256 = manifest_mod.sha256_file(out_dir / "meta.csv")
     payload = {
         "schema": "stage2/06.8_baselines/prediction/v1",
         "kind": "baselines_prediction",
@@ -623,15 +887,17 @@ def write_prediction_dir(
         "stage": "finetune",
         "scored_role": "test",
         "fold": int(fold),
-        "rows": int(len(meta)),
-        "n_genes": int(frozen.n_genes),
+        "rows": int(n_rows),
+        "n_genes": n_genes,
         "row_ids_sha256": _sha256_rows(rows),
-        "c_star_sha256": _sha256_array(c_star),
+        "c_star_sha256": _sha256_array(np.asarray(c_star, dtype=np.float32)),
         "predictions": {
-            "pred_expr_sha256": _sha256_array(predicted_expr),
-            "delta_sha256": _sha256_array(stored_delta),
-            "meta_sha256": manifest_mod.sha256_file(out_dir / "meta.csv"),
-            "pred_expr_shape": [int(x) for x in predicted_expr.shape],
+            # File-content sha256 (the evaluator hashes the same files); the
+            # arrays are written through memmaps and never hashed in memory.
+            "pred_expr_sha256": pred_expr_sha256,
+            "delta_sha256": delta_sha256,
+            "meta_sha256": meta_sha256,
+            "pred_expr_shape": [int(n_rows), int(n_genes)],
             "input_baseline_max_abs_diff": baseline_roundtrip,
         },
         "determinism": {
@@ -648,6 +914,14 @@ def write_prediction_dir(
             "delta": "prediction − the fold's fixed c*",
             "truth_delta": "treated log1p_cp10k − per-plate matched DMSO mean (evaluator only)",
             "replicate_aggregation": "within condition first (evaluator)",
+            "memory": {
+                "row_block_rows": int(ROW_BLOCK),
+                "gene_block_genes": int(GENE_BLOCK),
+                "prediction_arrays": (
+                    "np.lib.format.open_memmap written in row blocks; no dense "
+                    "n_rows × n_genes array in memory"
+                ),
+            },
         },
         "fit": dict(fit_record),
         "data": frozen.record(),
@@ -660,12 +934,12 @@ def write_prediction_dir(
     manifest_mod.write_json(out_dir / "manifest.json", payload)
     return {
         "dir": str(out_dir),
-        "rows": int(len(meta)),
+        "rows": int(n_rows),
         "row_ids_sha256": payload["row_ids_sha256"],
         "c_star_sha256": payload["c_star_sha256"],
-        "prediction_sha256": payload["predictions"]["pred_expr_sha256"],
-        "delta_sha256": payload["predictions"]["delta_sha256"],
-        "meta_sha256": payload["predictions"]["meta_sha256"],
+        "prediction_sha256": pred_expr_sha256,
+        "delta_sha256": delta_sha256,
+        "meta_sha256": meta_sha256,
         "input_baseline_max_abs_diff": baseline_roundtrip,
         "repeated_inference_identical": bool(identical),
     }
@@ -850,8 +1124,9 @@ def run_fold(
             )
             manifest_mod.write_json(fit_dir / "fit_record.json", fit_record)
             np.savez_compressed(fit_dir / "params.npz", **params)
-            prediction = predict_baseline(name, params, table, context, frozen)
-            prediction_info = prediction.info
+            condition_delta, prediction_info = condition_predictions(
+                name, params, table, context, frozen
+            )
             fit_record = {**fit_record, "prediction_rule": prediction_info}
             written = write_prediction_dir(
                 pred_dir,
@@ -860,11 +1135,13 @@ def run_fold(
                 fold=int(fold),
                 meta=meta,
                 c_star=c_star,
-                delta=prediction.delta,
+                condition_delta=condition_delta,
+                row_conditions=context["row_conditions"],
                 fit_record=fit_record,
                 frozen=frozen,
                 command=list(command),
             )
+            del condition_delta
             result = score_prediction_dir(
                 frozen,
                 pred_dir,
@@ -1215,6 +1492,18 @@ def run_all(
                 "ptlib.predict format: pred_expr.npy, delta.npy, meta.csv (row ids), "
                 "manifest.json; Δ = prediction − c*"
             ),
+            "memory": {
+                "gene_block_genes": int(GENE_BLOCK),
+                "row_block_rows": int(ROW_BLOCK),
+                "row_level_delta_materialised": False,
+                "prediction_arrays": "np.lib.format memmaps filled in row blocks",
+                "n_jobs": "single process; no parallel fits",
+                "policy": (
+                    "no dense observation × n_genes array: the dense log1p layer is read "
+                    "and aggregated in gene blocks, and predictions are written in row "
+                    "blocks (ticket #8 memory rule)"
+                ),
+            },
         },
         "folds": {
             str(result["coverage"]["fold"]): result["fold_record"]["coverage"]
@@ -1330,6 +1619,11 @@ def check_input(
         "primary_baselines": list(PRIMARY_BASELINES),
         "auxiliary_baselines": list(AUXILIARY_BASELINES),
         "ridge_alpha": float(RIDGE_ALPHA),
+        "memory": {
+            "gene_block_genes": int(GENE_BLOCK),
+            "row_block_rows": int(ROW_BLOCK),
+            "dense_observation_gene_matrix": False,
+        },
         "environment": _environment(),
     }
     return report
