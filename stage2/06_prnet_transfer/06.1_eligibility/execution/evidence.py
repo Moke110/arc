@@ -82,6 +82,23 @@ def sha256_file(path):
     return digest.hexdigest()
 
 
+def file_timestamp(path):
+    """ISO timestamp of a local evidence file (its mtime), stable across rebuilds.
+
+    Local sources (Broad Repurposing Hub tables, BindingDB TSV) are evidence only
+    at the bytes on disk, so their retrieval timestamp is the file mtime rather
+    than the build time: an offline rebuild then reproduces the same record.
+    """
+    try:
+        return (
+            datetime.fromtimestamp(Path(path).stat().st_mtime, tz=timezone.utc)
+            .astimezone()
+            .isoformat(timespec="seconds")
+        )
+    except OSError:
+        return ""
+
+
 class JsonlCache:
     """Append-only response cache: a JSONL index plus one gzip body per URL.
 
@@ -619,23 +636,17 @@ def build_evidence(rows, cache_dir, allow_network=True, bindingdb_path=DEFAULT_B
                 {
                     "source": "broad-repurposing-hub",
                     "url": "https://repo-hub.broadinstitute.org/repurposing",
-                    "retrieved_at": now_iso(),
+                    "retrieved_at": file_timestamp(BROAD_PHASE) or now_iso(),
                     "http_status": "local",
                 }
             )
         if binding_info.get("n_pairs"):
             binding_path = Path(binding.get("path") or DEFAULT_BINDINGDB)
-            try:
-                binding_ts = datetime.fromtimestamp(
-                    binding_path.stat().st_mtime, tz=timezone.utc
-                ).astimezone().isoformat(timespec="seconds")
-            except OSError:
-                binding_ts = now_iso()
             urls.append(
                 {
                     "source": "bindingdb",
                     "url": "https://www.bindingdb.org/",
-                    "retrieved_at": binding_ts,
+                    "retrieved_at": file_timestamp(binding_path) or now_iso(),
                     "http_status": "local",
                 }
             )

@@ -95,10 +95,83 @@ class TestExtractPubchem(unittest.TestCase):
         out = evidence.extract_pubchem(record)
         self.assertEqual(out["therapeutic_uses"], [])
 
+    def test_bare_uses_statements_are_extracted_separately(self):
+        # The HSDB/EPA bare "Uses" statements document what the compound is used
+        # for; v1.3 reads them as use evidence (v1.2 ignored them).
+        record = pugview_record(
+            [
+                {
+                    "TOCHeading": "Use and Manufacturing",
+                    "Section": [
+                        {
+                            "TOCHeading": "Uses",
+                            "Information": [
+                                {
+                                    "Value": {
+                                        "StringWithMarkup": [
+                                            {"String": "Used as a broad-spectrum "
+                                                       "fungicide for cereals."}
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Section": [
+                                leaf("Use Classification", ["Pesticides"]),
+                                leaf("Industry Uses", ["Farming (Pesticides)"]),
+                            ],
+                        }
+                    ],
+                }
+            ]
+        )
+        out = evidence.extract_pubchem(record)
+        self.assertEqual(
+            out["uses_texts"], ["Used as a broad-spectrum fungicide for cereals."]
+        )
+        self.assertEqual(out["use_classification"], ["Pesticides"])
+        self.assertEqual(out["industry_uses"], ["Farming (Pesticides)"])
+
+    def test_uses_texts_does_not_duplicate_subsection_leaves(self):
+        record = pugview_record(
+            [
+                {
+                    "TOCHeading": "Use and Manufacturing",
+                    "Section": [
+                        {
+                            "TOCHeading": "Uses",
+                            "Section": [leaf("Use Classification", ["Insecticides"])],
+                        }
+                    ],
+                }
+            ]
+        )
+        out = evidence.extract_pubchem(record)
+        self.assertEqual(out["uses_texts"], [])
+        self.assertEqual(out["use_classification"], ["Insecticides"])
+
     def test_empty_record_yields_no_claims(self):
         out = evidence.extract_pubchem(pugview_record([]))
         self.assertEqual(out["pubchem_max_phase"], "")
         self.assertEqual(out["mechanism_texts"], [])
+        self.assertEqual(out["uses_texts"], [])
+
+
+class TestLocalTimestamps(unittest.TestCase):
+    def test_file_timestamp_is_the_file_mtime_not_now(self):
+        # A local evidence source's retrieval timestamp must be a property of the
+        # evidence file, so an offline rebuild yields a byte-identical record.
+        from datetime import datetime, timezone
+
+        path = evidence.BROAD_PHASE
+        first = evidence.file_timestamp(path)
+        second = evidence.file_timestamp(path)
+        self.assertEqual(first, second)
+        self.assertEqual(
+            first,
+            datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+            .astimezone()
+            .isoformat(timespec="seconds"),
+        )
 
 
 class TestAtcCodes(unittest.TestCase):
