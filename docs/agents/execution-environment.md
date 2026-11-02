@@ -67,3 +67,15 @@ nvidia-smi --query-gpu=memory.total,memory.used --format=csv
 
 If `free -h` still reports ~32 GiB after a clean restart, check `.wslconfig` for a UTF-8 BOM
 or a misspelled section before trusting the 48 GB setting.
+
+## Known heavy jobs (measured)
+
+| job | measured peak | consequence |
+|---|---|---|
+| `06.1_eligibility` offline build | 306 MiB | cheap |
+| `05_prnet_pretrain` 68-epoch GPU pretrain on the 67,018 × 18,164 view | **15,150 MiB host RSS** | a full pretrain must run alone; leave at least 16 GiB free before starting |
+| `06.8_baselines --all` on the synthetic fixture (pre-fix) | 9.7 GiB | unbounded allocation; ticket #8 is fixing it before the real run |
+| full test suites of the 06 substeps | < 1 GiB each | two suites may run together, a third heavy job may not |
+
+The pretrain number is the reason the training tickets (#5–#7) are serialised: two
+concurrent 15 GiB trainers would consume the whole VM.
