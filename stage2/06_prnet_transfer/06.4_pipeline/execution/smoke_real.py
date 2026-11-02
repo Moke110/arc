@@ -32,6 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from ptlib import manifest as manifest_mod  # noqa: E402
 from ptlib import paths  # noqa: E402
 
 EXECUTION = Path(__file__).resolve().parent
@@ -82,6 +83,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--valid-rows", type=int, default=1000)
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--tahoe-cache", type=Path, default=None)
+    parser.add_argument("--table-cache", type=Path,
+                        default=paths.PIPELINE / "output" / "input_cache",
+                        help="derived CSV cache of the frozen parquet tables")
     parser.add_argument("--build-cache", action="store_true",
                         help="build the derived 4.9 GB log1p cache first (recommended for #5)")
     parser.add_argument("--concurrency-probe", action="store_true",
@@ -94,6 +98,29 @@ def main(argv: list[str] | None = None) -> int:
     out_root = Path(args.out_root)
     out_root.mkdir(parents=True, exist_ok=True)
     hash_cache = out_root / "hash_cache.json"
+    # Phase-B gate: never run the real-data smoke without ticket #3's certified input.
+    manifest_file = data_dir / "manifest.json"
+    if not manifest_file.exists():
+        print(
+            f"REFUSING: no frozen input manifest at {manifest_file}. Ticket #3 has not "
+            "frozen 06.3_input/output yet; the real-data smoke is pipeline evidence and "
+            "must not run on anything else."
+        )
+        return 2
+    try:
+        artifact_hashes = manifest_mod.normalize_artifact_manifest(
+            manifest_mod.read_json(manifest_file)
+        )
+        verified = manifest_mod.verify_artifacts(
+            data_dir, artifact_hashes, hash_cache=hash_cache
+        )
+    except manifest_mod.ManifestError as exc:
+        print(f"REFUSING: frozen input verification failed:\n{exc}")
+        return 2
+    print(
+        f"frozen input verified: {len(verified['verified'])} artifacts, "
+        f"{verified['bytes'] / 1024**3:.2f} GB (hash-cache hits: {len(verified['cached'])})"
+    )
     cache = Path(args.tahoe_cache) if args.tahoe_cache else (
         paths.PIPELINE / "output" / "cache" / "tahoe_log1p_cp10k_v1.npy"
     )
@@ -104,7 +131,10 @@ def main(argv: list[str] | None = None) -> int:
     predict = str(EXECUTION / "predict.py")
     evaluate = str(EXECUTION / "evaluate.py")
     card = str(EXECUTION / "make_model_card.py")
-    common = ["--data-dir", str(data_dir), "--hash-cache", str(hash_cache), "--device", args.device]
+    common = [
+        "--data-dir", str(data_dir), "--hash-cache", str(hash_cache),
+        "--table-cache", str(args.table_cache), "--device", args.device,
+    ]
     record: dict = {
         "label": "PIPELINE SMOKE — not a science result",
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
@@ -131,8 +161,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.build_cache:
         print("building derived Tahoe log1p cache (one-off) …")
         code = _run(
-            [args.python, train, "--stage", "pretrain", "--out", str(out_root / "_cache_build_check"),
-             "--check", "--cache-mode", "build", "--tahoe-cache", str(cache), *common],
+            [args.python, str(EXECUTION / "tools" / "build_cache.py"),
+             "--data-dir", str(data_dir), "--cache", str(cache)],
             out_root / "logs" / "cache_build.log", env,
         )
         if not must(code, "cache build"):

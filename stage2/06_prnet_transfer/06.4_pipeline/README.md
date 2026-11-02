@@ -202,10 +202,24 @@ to [`output/smoke/`](output/smoke/README.md) with the model cards.
 | CPU e2e (2-epoch pretrain + 2 × 2-epoch CM finetune + predict + evaluate + poisoning) | 120/60 Tahoe, 107/36 CM | ≈9 s | real 18,164 axis, real AUPRC@200 |
 | pinned-env CPU chain (pretrain 1 ep → warm-start finetune 1 ep → predict → evaluate) | 16/8 + CM fold | 0.1–0.4 s/step | `arc-stage2-bench-prnet`, CPU only |
 
+Measured derived-cache numbers (pinned env, pre-built 2026-11-02 from the 04
+pretrain view; the frozen copy is re-verified before use — see below):
+
+| cache action | measured |
+|---|---|
+| build 4.87 GB float32 memmap from the 16.3 GB CSR layer | 41 s wall (17.1 s write pass + 16.3 GB source hash), **peak RSS 9.7 GiB** (dirtied memmap pages) |
+| `--verify-cache deep` (full-array sha256) | 3.7 s |
+| read 512 random rows (37 MB) | 0.27 s first touch, 0.006 s repeat; process RSS 0.9 GiB |
+| sidecar identity | `source_sha256=969d3e55…` (04 view), `layer_sha256=f39c4cb3…`, 16-row sample max abs diff = 0 |
+
 Phase-B smoke will record, per run: wall time, peak RSS, per-epoch validation cost
 split, cold vs warm cache epoch times (2 epochs = one cold + one warm), and the
-measured concurrency rule for pretrain seeds (2-concurrent probe). Until those
-numbers exist this README makes **no** concurrency or throughput claim.
+measured concurrency rule for pretrain seeds (2-concurrent probe).
+
+**Operator rule for #5 until the Phase-B probe confirms it:** run **one pretrain
+seed at a time**; the cache build itself (~9.7 GiB peak) must also run alone. The
+2-concurrent probe exists to promote this to "two seeds fit" once measured — the
+shared memmap is designed for it, but no claim is made before the number exists.
 
 ## Deviations (D0–D3)
 

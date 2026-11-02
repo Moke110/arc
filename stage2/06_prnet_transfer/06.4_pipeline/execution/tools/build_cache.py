@@ -26,30 +26,49 @@ from ptlib import runtime  # noqa: E402
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build the derived Tahoe log1p memmap cache.")
     parser.add_argument("--data-dir", type=Path, default=paths.DEFAULT_FROZEN_INPUT)
+    parser.add_argument("--source-h5ad", type=Path, default=None,
+                        help="default <data-dir>/tahoe_transfer.h5ad; e.g. the 04 pretrain view "
+                             "for a pre-build before ticket #3 freezes the input")
+    parser.add_argument("--source-sha256", default=None,
+                        help="recorded source hash; computed from the file when omitted")
     parser.add_argument("--cache", type=Path,
                         default=paths.PIPELINE / "output" / "cache" / cache_mod.DEFAULT_CACHE_NAME)
     parser.add_argument("--verify", choices=("metadata", "deep"), default="deep",
                         help="deep (default) also verifies the existing cache checksum")
+    parser.add_argument("--rebind-frozen", action="store_true",
+                        help="existing cache: prove it is byte-identical to the frozen layer "
+                             "and record the frozen source sha256 (pre-built from the 04 view)")
     ns = parser.parse_args(argv)
     runtime.setup_logging(None)
-    raw = manifest_mod.read_json(ns.data_dir / "manifest.json")
-    hashes = manifest_mod.normalize_artifact_manifest(raw)
-    source_sha = hashes.get("tahoe_transfer.h5ad")
+    source_h5ad = ns.source_h5ad or (ns.data_dir / "tahoe_transfer.h5ad")
+    if not source_h5ad.exists():
+        raise SystemExit(f"Tahoe source h5ad not found: {source_h5ad}")
+    source_sha = ns.source_sha256
+    if not source_sha and (ns.data_dir / "manifest.json").exists() and ns.source_h5ad is None:
+        raw = manifest_mod.read_json(ns.data_dir / "manifest.json")
+        source_sha = manifest_mod.normalize_artifact_manifest(raw).get("tahoe_transfer.h5ad")
     if not source_sha:
-        raise SystemExit("frozen manifest has no tahoe_transfer.h5ad hash")
+        print(f"hashing source {source_h5ad} …")
+        source_sha = manifest_mod.sha256_file(source_h5ad)
+    print(f"source sha256={source_sha}")
     if ns.cache.exists():
+        if ns.rebind_frozen:
+            record = cache_mod.rebind_cache(ns.cache, source_h5ad, source_sha)
+            print(json.dumps({"status": "rebound", "path": str(ns.cache),
+                              "layer_sha256": record.get("layer_sha256"),
+                              "source_sha256": record.get("source_sha256"),
+                              "rebound_from": record.get("rebound_from"),
+                              "sample_max_abs_diff": record.get("sample_max_abs_diff")},
+                             indent=2, default=str))
+            return 0
         cache = cache_mod.open_cache(
-            ns.cache, source_sha,
-            source_h5ad=ns.data_dir / "tahoe_transfer.h5ad",
-            verify=ns.verify,
+            ns.cache, source_sha, source_h5ad=source_h5ad, verify=ns.verify,
         )
         print(json.dumps({"status": "existing-ok", "path": str(ns.cache),
                           "sha256": cache.record.get("file_sha256"),
                           "sample_max_abs_diff": cache.sample_max_abs_diff}, indent=2))
         return 0
-    record = cache_mod.build_cache(
-        ns.data_dir / "tahoe_transfer.h5ad", ns.cache, source_sha, log=None
-    )
+    record = cache_mod.build_cache(source_h5ad, ns.cache, source_sha, log=None)
     print(json.dumps(record, indent=2, default=str))
     return 0
 

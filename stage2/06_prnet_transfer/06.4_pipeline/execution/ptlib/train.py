@@ -792,18 +792,22 @@ def check_run(options: TrainOptions) -> dict[str, Any]:
     structures = frozen.structures()
     info: dict[str, Any] = {"stage": options.stage, "fold": options.fold}
     if options.stage == "pretrain":
+        cache = None
+        cache_info: dict[str, Any] = {"mode": "off"}
+        if options.cache_mode != "off":
+            cache, cache_info = _resolve_tahoe_cache(frozen, options)
         dataset = data_mod.TahoeDataset(
             frozen=frozen,
             structures=structures,
             max_train_rows=options.max_train_rows,
             max_valid_rows=options.max_valid_rows,
             seed=options.seed,
+            cache=cache,
             load_targets=False,
         ).prepare()
         info["counts"] = dataset.counts
         info["rows"] = {"train": int(dataset.rows_train.size), "valid": int(dataset.rows_valid.size)}
-        info["cache"] = {"requested": str(options.tahoe_cache) if options.tahoe_cache else None,
-                         "mode": options.cache_mode}
+        info["cache"] = cache_info
     else:
         folds = data_mod.load_folds(frozen)
         dataset = data_mod.CMDataset(

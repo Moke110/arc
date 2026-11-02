@@ -65,6 +65,39 @@ class CacheTests(unittest.TestCase):
         with self.assertRaisesRegex(cache_mod.CacheError, "checksum"):
             cache_mod.open_cache(copy, self.source_sha, self.source, verify="deep")
 
+    def test_hash_log1p_layer_matches_build_checksum(self):
+        self.assertEqual(
+            cache_mod.hash_log1p_layer(self.source), self.record["layer_sha256"]
+        )
+
+    def test_rebind_to_a_byte_identical_copy(self):
+        copy_dir = Path(self.tmp.name) / "copy"
+        copy_dir.mkdir()
+        import shutil
+
+        shutil.copy(self.source, copy_dir / "tahoe_transfer.h5ad")
+        new_sha = "b" * 64  # e.g. the frozen input has its own file hash
+        record = cache_mod.rebind_cache(self.cache_path, copy_dir / "tahoe_transfer.h5ad", new_sha)
+        self.assertEqual(record["source_sha256"], new_sha)
+        self.assertEqual(record["layer_sha256"], self.record["layer_sha256"])
+        self.assertEqual(record["rebound_from"]["source_sha256"], self.source_sha)
+        opened = cache_mod.open_cache(self.cache_path, new_sha, verify="metadata")
+        self.assertEqual(opened.record["rebound_from"]["source_sha256"], self.source_sha)
+
+    def test_rebind_refuses_a_different_matrix(self):
+        import h5py
+        import shutil
+
+        copy_dir = Path(self.tmp.name) / "tampered"
+        copy_dir.mkdir()
+        shutil.copy(self.source, copy_dir / "tahoe_transfer.h5ad")
+        with h5py.File(copy_dir / "tahoe_transfer.h5ad", "r+") as handle:
+            handle["layers/log1p_cp10k/data"][0] += 1.0
+        with self.assertRaisesRegex(cache_mod.CacheError, "does not match the frozen layer"):
+            cache_mod.rebind_cache(
+                self.cache_path, copy_dir / "tahoe_transfer.h5ad", "c" * 64
+            )
+
     def test_dataset_uses_cache_transparently(self):
         frozen = data_mod.open_frozen_input(self.dir)
         opened = cache_mod.open_cache(self.cache_path, self.source_sha, self.source)

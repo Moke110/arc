@@ -47,6 +47,8 @@ __all__ = [
     "build_cache",
     "open_cache",
     "cache_sidecar",
+    "hash_log1p_layer",
+    "rebind_cache",
 ]
 
 CACHE_SCHEMA = "ptlib.tahoe_log1p_cache/v1"
@@ -270,3 +272,97 @@ def open_cache(
         verify_mode=verify,
         sample_max_abs_diff=sample_max_abs_diff,
     )
+
+def hash_log1p_layer(
+    source_h5ad: Path | str, chunk_rows: int = 2048
+) -> str:
+    """Full-array sha256 of the frozen layer's logical dense float32 values.
+
+    Streams the CSR layer in row chunks and hashes the dense bytes in C order —
+    this is the same ``layer_sha256`` :func:`build_cache` records, so it can be
+    used to prove that a derived cache built from one file (e.g. the 04 pretrain
+    view) is byte-identical to the matrix in another (e.g. ticket #3's frozen
+    copy) without materialising either dense matrix twice.
+    """
+    import hashlib
+
+    source_h5ad = Path(source_h5ad)
+    meta = h5io.open_obs_var(source_h5ad)
+    n_obs, n_vars = meta.n_obs, meta.n_vars
+    digest = hashlib.sha256()
+    with h5py.File(source_h5ad, "r") as handle:
+        if _LAYER_KEY not in handle:
+            raise CacheError(f"{source_h5ad} has no {_LAYER_KEY}")
+        node = handle[_LAYER_KEY]
+        if isinstance(node, h5py.Group) and {"data", "indices", "indptr"} <= set(node.keys()):
+            indptr = node["indptr"][:].astype(np.int64)
+            data_node, index_node = node["data"], node["indices"]
+            shape = tuple(int(x) for x in node.attrs.get("shape", (n_obs, n_vars)))
+            if shape != (n_obs, n_vars):
+                raise CacheError(f"layer shape {shape} != obs/var shape {(n_obs, n_vars)}")
+            for start, stop in _chunk_ranges(n_obs, chunk_rows):
+                lo, hi = int(indptr[start]), int(indptr[stop])
+                chunk = sp.csr_matrix(
+                    (data_node[lo:hi], index_node[lo:hi], indptr[start : stop + 1] - lo),
+                    shape=(stop - start, n_vars),
+                ).toarray().astype(np.float32, copy=False)
+                digest.update(chunk.tobytes(order="C"))
+        else:  # dense fixture fallback
+            for start, stop in _chunk_ranges(n_obs, chunk_rows):
+                chunk = np.asarray(node[start:stop], dtype=np.float32)
+                digest.update(chunk.tobytes(order="C"))
+    return digest.hexdigest()
+
+
+def rebind_cache(
+    cache_path: Path | str,
+    new_source_h5ad: Path | str,
+    new_source_sha256: str,
+    sample_rows: int = 16,
+) -> dict[str, Any]:
+    """Point an existing cache at a byte-identical copy of the frozen layer.
+
+    Used when the memmap was pre-built from the 04 pretrain view (same matrix as
+    the frozen input) and ticket #3's frozen artifact then lands: the cache is
+    kept only if the frozen layer's **full-array checksum** equals the recorded
+    one and a random sample matches; the sidecar then records the new source and
+    keeps the previous source in ``rebound_from``.  Never rebuilds silently.
+    """
+    cache_path = Path(cache_path)
+    new_source_h5ad = Path(new_source_h5ad)
+    record = _read_sidecar(cache_path)
+    if manifest_mod.sha256_file(cache_path) != record.get("file_sha256"):
+        raise CacheError("derived Tahoe cache file changed; rebuild instead of rebinding")
+    frozen_layer_sha = hash_log1p_layer(new_source_h5ad)
+    if frozen_layer_sha != record.get("layer_sha256"):
+        raise CacheError(
+            "derived Tahoe cache does not match the frozen layer: full-array checksum "
+            f"{record.get('layer_sha256')} (cache) != {frozen_layer_sha} (frozen); "
+            "rebuild the cache from the frozen input"
+        )
+    matrix = np.load(cache_path, mmap_mode="r")
+    rng = np.random.default_rng(20261021)
+    sample = np.unique(rng.choice(matrix.shape[0], size=min(sample_rows, matrix.shape[0]), replace=False))
+    expected, _ = h5io.read_layer_rows(new_source_h5ad, sample, matrix.shape[1])
+    diff = float(np.max(np.abs(np.asarray(matrix[sample], dtype=np.float64) - expected)))
+    if diff != 0.0:
+        raise CacheError(f"derived Tahoe cache sample check against the frozen file failed: {diff}")
+    previous = {
+        "source_path": record.get("source_path"),
+        "source_sha256": record.get("source_sha256"),
+        "layer_sha256": record.get("layer_sha256"),
+    }
+    record.update(
+        {
+            "source_path": str(new_source_h5ad),
+            "source_sha256": new_source_sha256,
+            "sample_max_abs_diff": diff,
+            "verified_against_frozen_sha256": frozen_layer_sha,
+            "rebound_from": previous,
+            "rebound_utc": manifest_mod.now_utc(),
+        }
+    )
+    cache_sidecar(cache_path).write_text(
+        json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return record

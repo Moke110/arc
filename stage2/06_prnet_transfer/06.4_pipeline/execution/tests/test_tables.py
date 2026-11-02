@@ -65,5 +65,30 @@ class TableCacheTests(unittest.TestCase):
                 )
 
 
+class SmokeGateTests(unittest.TestCase):
+    """`smoke_real.py` must refuse to run without ticket #3's certified frozen input."""
+
+    def test_refuses_missing_manifest(self):
+        import smoke_real
+
+        with tempfile.TemporaryDirectory() as tmp:
+            empty = Path(tmp) / "not-frozen"
+            empty.mkdir()
+            code = smoke_real.main(
+                ["--data-dir", str(empty), "--out-root", str(Path(tmp) / "out")]
+            )
+        self.assertEqual(code, 2)
+
+    def test_refuses_tampered_artifacts(self):
+        import smoke_real
+
+        data_dir = _support.copy_fixture("smoke-gate-tampered")
+        (data_dir / "folds.parquet").write_bytes((data_dir / "folds.parquet").read_bytes() + b"x")
+        code = smoke_real.main(
+            ["--data-dir", str(data_dir), "--out-root", str(data_dir.parent / "gate-out")]
+        )
+        self.assertEqual(code, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
