@@ -1,34 +1,38 @@
 # AGENTS.md — stage2/06_prnet_transfer
 
-Routing index. Purpose, first-round contract, status and reproduce commands live in
-[`README.md`](README.md); the design decision is
-[ADR 0032](../../docs/adr/0032-prnet-formal-transfer.md). Layout follows
-[ADR 0030](../../docs/adr/0030-external-data-provenance-and-step-layout.md):
-`execution/<area>/` is harness/code, `output/<area>/` is the artifacts a later
-ticket reads. Frozen evidence in `stage2/02_cm_data/output/`,
-`stage2/04_tahoe_data/output/` and `stage2/05_prnet_pretrain/output/` is read-only
-here; every `output/` is gitignored and carries a tracked record (`git add -f`).
+Routing index. Study design, fixed contract and status live in
+[`README.md`](README.md); the decision is
+[ADR 0032](../../docs/adr/0032-prnet-formal-transfer.md). Per ADR 0030 §3 this
+step is a container whose independently-concluded **substeps** each carry their
+own `AGENTS.md`, `README.md`, `execution/` and `output/`; every `output/` is
+gitignored compute output with a tracked record force-added beside it. Frozen
+evidence in `stage2/02_cm_data/output/`, `stage2/04_tahoe_data/output/` and
+`stage2/05_prnet_pretrain/output/`, and every `source/` tree, is read-only here.
 
-- `execution/eligibility/` → `output/eligibility/` — the 460-structure
-  pharmacological eligibility audit (evidence table, ATC/MoA normalisation,
+- [`06.1_eligibility/`](06.1_eligibility/README.md) — #1: 460-structure
+  pharmacological audit (include / exclude / uncertain, ATC+MoA normalisation,
   coverage counts, handoff set).
-- `execution/qc/` → `output/qc/` — per-observation experimental QC, control
-  matching, thresholds locked before any model result, final counts, handoff.
-- `execution/input/` → `output/input/` — frozen two-source 18,164-gene input,
-  five drug-key folds, per-fold consensus-control membership, locked config.
-- `execution/pipeline/` — the only training/evaluation code: config-driven
-  structure, two-stage Gaussian-NLL training with direction-AUPRC@200 selection,
-  prediction, independent scoring, run manifests.
-- `execution/runs/` → `output/runs/` — three seeded Tahoe pretrains; 45
-  random-init and 45 Tahoe-init CM candidates; selection records.
-- `execution/baselines/` → `output/baselines/` — five-fold constant /
+- [`06.2_qc/`](06.2_qc/README.md) — #2: per-observation QC, control matching,
+  thresholds locked before any model result, counts and handoff.
+- [`06.3_input/`](06.3_input/README.md) — #3: frozen two-source 18,164-gene
+  input, five drug-key folds, per-fold consensus controls, locked config.
+- [`06.4_pipeline/`](06.4_pipeline/README.md) — #4: the only training/evaluation
+  code; real-data smoke of both initialisations, AUPRC@200 selection, scoring.
+- [`06.5_tahoe_pretrain/`](06.5_tahoe_pretrain/README.md) — #5: three seeded
+  formal pretrains, validation curves, model cards.
+- [`06.6_cm_random/`](06.6_cm_random/README.md) — #6: 45 random-init CM
+  candidates and the per-fold LR selection record.
+- [`06.7_cm_tahoe/`](06.7_cm_tahoe/README.md) — #7: 45 Tahoe-init CM candidates
+  with strict, axis-checked warm start.
+- [`06.8_baselines/`](06.8_baselines/README.md) — #8: five-fold constant /
   training-mean baselines on the identical test population and evaluator.
-- `execution/evaluation/` → `output/evaluation/` — the 30 selected checkpoints,
-  paired gains, stratification, model cards and the report.
-- `execution/ablations/{capacity,env_compounds}/` → `output/ablations/…` —
-  post-first-round ablations, explicitly not first-round completion gates.
+- [`06.9_evaluation/`](06.9_evaluation/README.md) — #9: 30 selected checkpoints,
+  paired pretraining gains, baseline comparison, stratification, report.
+- [`06.10_capacity_ablation/`](06.10_capacity_ablation/README.md) — #10: state
+  latent 128 / hidden 256, post-first-round, not a completion gate.
+- [`06.11_env_compound_ablation/`](06.11_env_compound_ablation/README.md) — #11:
+  extra environment compounds, post-first-round, not a completion gate.
 
 Rules: find the repo root by walking up to `.git` (never `Path.parents`); never
-rewrite frozen evidence or a `source/` tree; `execution/pipeline/` is the only
-place training/evaluation code lives; selection never reads test treated
-expression.
+rewrite frozen evidence; `06.4_pipeline/execution/` is the only place
+training/evaluation code lives; selection never reads test treated expression.
