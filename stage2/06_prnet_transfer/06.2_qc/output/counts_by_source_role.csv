@@ -1,0 +1,15 @@
+source,role,qc_status,observations,physical_wells
+tahoe,treated_compound,fail,6097,1316
+tahoe,treated_compound,pass,59521,1294
+tahoe,vehicle_control_dmso_tf,fail,106,28
+tahoe,vehicle_control_dmso_tf,pass,1294,28
+temp_env,control_media,fail,16,16
+temp_env,control_media,pass,64,64
+temp_env,positive_control_et1,fail,3,3
+temp_env,positive_control_et1,pass,45,45
+temp_env,technical_blank,fail,3,3
+temp_env,technical_blank,pass,29,29
+temp_env,treated_compound,fail,461,461
+temp_env,treated_compound,pass,3745,3745
+temp_env,vehicle_control_dmso,fail,54,54
+temp_env,vehicle_control_dmso,pass,138,138
