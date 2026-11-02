@@ -1,9 +1,10 @@
 # 06.8 · baselines — five-fold simple baselines (ticket #8)
 
-Status: **code finalized and fixture-verified 2026-11-02**; the real five-fold record is
-**pending** the ticket-#4 Phase-B GPU smoke and the shared-loader fix (see §6). No science
-result exists here: this step produces the paired-comparison reference for #9, it does not
-show that any model beats it.
+Status: **code finalized, fixture-verified, and the real five-fold record produced
+2026-11-02** on the frozen 06.3 input (integration `e0e2d68`, pinned
+`arc-stage2-bench-prnet` run; §3 measures it, §5 records it). No science result exists here:
+this step produces the paired-comparison reference for #9, it does not show that any model
+beats it.
 
 Frozen input: ticket #3's `06.3_input/output/` — 118 main-set drugs / 951 wells, five
 drug-level folds (per fold ≈ 570 train / 190 valid / 190 test wells; 16 plates). The truth Δ
@@ -75,6 +76,8 @@ rows**, so it is a conservative upper bound):
 | `make dry-run` on the standard fixture, `MemoryMax=4G` | 1,261,316 kB (1.203 GiB) | 1,244,788 kB (1.187 GiB) |
 | full `--all` on the 3,672-row replicated fixture (648 test rows/fold) | 1,922,484 kB (1.833 GiB) | 1,807,400 kB (1.724 GiB) |
 | pinned-env (`arc-stage2-bench-prnet`) fold-0 smoke on the fixture | — | 998 MB |
+| `make check` on the real 06.3 input (confirms the #4 header-read loader fix) | — | 881 MiB, 21.3 s |
+| **real `make run` on 06.3** (5 folds, 951 test rows, 16.4 GB input hash) | — | **1,081 MB peak** (`/usr/bin/time -v` 1,107,292 kB = 1.056 GiB), 5 m 37 s |
 
 The fixed full-run peak is now dominated by imports (~1 GB torch + numpy) and by the shared
 evaluator's own dense test-row arrays (`pred_expr`, `delta`, float64 truth/pred/Δ,
@@ -108,32 +111,55 @@ make record        # copy the record from OUT_ROOT into ./output/ (worktree runs
 are run file-by-file in a constrained session (`-p 'test_memory.py'` etc.) per
 `docs/agents/execution-environment.md`.
 
-## 5. Real run (pending Lead signal)
+## 5. Real record (produced 2026-11-02)
 
-The pinned GPU env has no parquet engine, so the derived CSV cache must be built once with
-the `arc` env before the run (the loader fails closed with the fix command otherwise):
+The pinned GPU env has no parquet engine, so the derived CSV cache is built once with the
+`arc` env (done; the loader fails closed with the fix command otherwise):
 
 ```bash
 cd /home/chang/arc/stage2/06_prnet_transfer/06.8_baselines/execution
 make tables        # arc env: 06.4_pipeline/output/input_cache from the frozen parquet tables
-
 free -g            # abort if available < 10 GiB
 systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=10G -- \
   /usr/bin/time -v make run
 ```
 
-Reads `DATA_DIR=/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output`, writes
-`/home/chang/arc/stage2/06_prnet_transfer/06.8_baselines/output/`. The run records its own
-peak RSS in `manifest.json`; that number goes into the ticket record.
+Result: exit 0, **5 folds**, 951 test rows / 347 scored test conditions over the folds,
+3,804 scored rows (951 × 4 baselines); all pairing invariants true; wall **5 m 37 s**
+(321.6 s in-run, including hashing the 16.4 GB frozen input — 108 s system time),
+**peak RSS 1,081 MB**. `make check` beforehand: 881 MiB / 21.3 s, confirming the #4
+header-read loader fix.
 
-## 6. Open dependency: the shared loader must not materialise the Tahoe layers
+Headline direction AUPRC@200 (per-condition macro, mean over the five folds; the primary
+`no_change`/`delta_mean` comparison only — #9 does the paired inference):
 
-`ptlib.data.open_frozen_input` opens both h5ads through `h5io.open_obs_var`, which is
-`anndata.read_h5ad(path, backed="r")` + obs/var copy. Per the measured trap in
-`docs/agents/execution-environment.md` that materialises the layers of the 16.2 GB
-`tahoe_transfer.h5ad` (~8.1 GB RSS) on **every** invocation, including `--check`. The fix
-belongs in #4 (metadata-only `h5py`/`read_elem` reads; ticket #3's
-`06.3_input/execution/contract.read_h5ad_header()` is the pattern) and is requested of
-implementer-pipeline; this step deliberately does **not** fork the loader. Re-merge
-`feat/prnet-formal-transfer` once the fix lands and confirm `make check`'s peak RSS on the
-real input before the real `--all`.
+| baseline | role | AUPRC@200 | up | down | RMSE | Pearson | Spearman |
+|---|---|---|---|---|---|---|---|
+| `no_change` | primary | 0.011011 (= 200/18,164, chance for all-tied scores) | 0.011011 | 0.011011 | 0.146374 | — | — |
+| `delta_mean` | primary | **0.164489** | 0.157242 | 0.171736 | 0.141931 | 0.247906 | 0.198945 |
+| `delta_mean_dose` | auxiliary | 0.160778 | 0.150774 | 0.170783 | 0.142387 | 0.240273 | 0.188591 |
+| `ridge_fp` | auxiliary | 0.151178 | 0.140513 | 0.161844 | 0.150953 | 0.217464 | 0.166430 |
+
+Per-fold `delta_mean` AUPRC@200: 0.182553 / 0.174654 / 0.161914 / 0.140450 / 0.162874.
+`no_change` is exactly `k/n_genes` in every fold, so every `no_change` condition has
+`pred_constant=True` and `regression_nan_reason=constant_prediction`; the fittable baselines
+are non-constant with finite regression metrics. Test-row counts per fold: 192 / 188 / 191 /
+190 / 190, conditions 68 / 67 / 71 / 71 / 70, disjoint from the fold's training rows, every
+condition scored exactly once, and `c*`/test population identical across the four baselines.
+
+The evaluator is reused verbatim: every `folds/fold<k>/<baseline>/eval/manifest.json` is a
+`ptlib.run_manifest/v1` `kind=evaluate` record with truth
+`CM per-plate matched DMSO mean (evaluation-only)` (138 control wells, 16 plates), metric
+`direction_auprc` (headline k=200), and its `pred_expr_sha256` matches the prediction
+directory for all 20 runs. Identity: all 13 frozen artifact sha256 (8 required re-hashed,
+16,426,331,885 bytes), frozen-manifest + locked-config sha256, one gene-axis sha256 across
+all folds, git `e0e2d68` (`dirty=true` because the record directory is the run's own output).
+
+## 6. Shared-loader dependency (resolved 2026-11-02)
+
+`ptlib.data.open_frozen_input` originally opened both h5ads through the old
+`h5io.open_obs_var` (`anndata.read_h5ad(backed="r")`), which materialises every layer — the
+~8.1 GB trap on the 16.2 GB Tahoe view (see `docs/agents/execution-environment.md`). Ticket
+#4 replaced it with h5py/`read_elem` header reads (0.90 s / 484 MiB on that view,
+regression-tested); integration `e0e2d68` carries the fix and the real `make check` above
+measured 881 MiB. This step never forks the loader.

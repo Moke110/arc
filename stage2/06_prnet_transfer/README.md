@@ -54,7 +54,7 @@ every experiment consumes them rather than re-deriving a split.
 | `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | planned | — |
 | `06.6_cm_random/` 45 random-init CM candidates | #6 | planned | — |
 | `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | planned | — |
-| `06.8_baselines/` five-fold baselines | #8 | built and verified on the synthetic fixture; real run pending the #4 loader fix | [`README`](06.8_baselines/README.md) |
+| `06.8_baselines/` five-fold baselines | #8 | built and verified — real five-fold record, `delta_mean` 0.1645 AUPRC@200 is the primary bar | [`README`](06.8_baselines/README.md), `output/summary_table.csv` |
 | `06.9_evaluation/` 30-unit evaluation + report | #9 | planned | — |
 | `06.10_capacity_ablation/` capacity ablation | #10 | planned (post-first-round) | — |
 | `06.11_env_compound_ablation/` env-compound ablation | #11 | planned (post-first-round) | — |
