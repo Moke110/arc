@@ -263,8 +263,8 @@
     },
     {
       "detail": {
-        "recomputed": "c26c3ecbf6f53ad3198012df063cb4685f9f7bea38281e7923c9eceb3c2ed5ea",
-        "stored": "c26c3ecbf6f53ad3198012df063cb4685f9f7bea38281e7923c9eceb3c2ed5ea"
+        "recomputed": "c177f9b48dbdb8aeca40631c8009c9d76dc04c9f1bab378326245ce3774cc6fe",
+        "stored": "c177f9b48dbdb8aeca40631c8009c9d76dc04c9f1bab378326245ce3774cc6fe"
       },
       "id": "record_content_sha256_matches",
       "ok": true
@@ -340,7 +340,7 @@
       "ok": true
     }
   ],
-  "content_sha256": "c26c3ecbf6f53ad3198012df063cb4685f9f7bea38281e7923c9eceb3c2ed5ea",
+  "content_sha256": "c177f9b48dbdb8aeca40631c8009c9d76dc04c9f1bab378326245ce3774cc6fe",
   "n_checks": 27,
   "n_failed": 0,
   "n_selected": 15,
