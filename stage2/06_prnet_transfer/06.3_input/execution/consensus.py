@@ -23,16 +23,25 @@ from contract import ContractError, N_GENES, N_FOLDS
 CONSENSUS_SCHEMA = "06.3_input/consensus/1"
 
 MEMBERSHIP_COLUMNS = [
-    "fold", "plate", "observation_id", "row_ix", "weight", "plate_weight",
+    # `row` is the 0-based position in cm_transfer.h5ad obs/X/layers (the name
+    # ticket #4's pipeline reads; keep it exact).
+    "fold", "plate", "observation_id", "row", "weight", "plate_weight",
     "n_wells_plate", "qc_pass", "vehicle",
 ]
 
 
 def allowed_plates(fold_table: pd.DataFrame, fold: int) -> list[str]:
-    """Plates carrying at least one training drug of `fold`, sorted."""
+    """Plates carrying at least one training drug of `fold`, sorted.
+
+    Accepts both the long `(drug_key, fold, role, plate)` table and the
+    collapsed export where a multi-plate drug's plates are ``;``-joined.
+    """
     sub = fold_table.loc[(fold_table["fold"].astype(int) == int(fold))
                          & (fold_table["role"] == "train"), "plate"]
-    plates = sorted(set(sub.astype(str)))
+    plates: set[str] = set()
+    for value in sub.astype(str):
+        plates.update(part for part in value.split(";") if part)
+    plates = sorted(plates)
     if not plates:
         raise ContractError(f"fold {fold} has no training-drug plate")
     return plates
@@ -60,7 +69,7 @@ def consensus_pool(obs: pd.DataFrame, fold_table: pd.DataFrame,
         "fold": np.int16(fold),
         "plate": plate[rows],
         "observation_id": obs["observation_id"].astype(str).to_numpy()[rows],
-        "row_ix": rows.astype(np.int32),
+        "row": rows.astype(np.int32),
     })
     counts = pool.groupby("plate", observed=True).size().rename("n_wells_plate")
     pool = pool.merge(counts, left_on="plate", right_index=True, how="left")
@@ -95,7 +104,7 @@ def build_consensus(log1p, obs: pd.DataFrame, fold_table: pd.DataFrame, *,
         used_plates.update(pool["plate"].astype(str).unique())
         weighted = np.zeros(n_genes, dtype=np.float64)
         for plate, sub in pool.groupby("plate", observed=True, sort=True):
-            idx = sub["row_ix"].to_numpy()
+            idx = sub["row"].to_numpy()
             plate_mean = np.asarray(log1p[idx], dtype=np.float64).mean(axis=0)
             weighted += float(sub["plate_weight"].iloc[0]) * plate_mean
         if not np.isfinite(weighted).all():
@@ -112,7 +121,7 @@ def build_consensus(log1p, obs: pd.DataFrame, fold_table: pd.DataFrame, *,
 
     membership = pd.concat(memberships, ignore_index=True)
     membership["fold"] = membership["fold"].astype(np.int16)
-    membership["row_ix"] = membership["row_ix"].astype(np.int32)
+    membership["row"] = membership["row"].astype(np.int32)
     membership["weight"] = membership["weight"].astype(np.float32)
     membership["plate_weight"] = membership["plate_weight"].astype(np.float32)
     membership["n_wells_plate"] = membership["n_wells_plate"].astype(np.int32)
@@ -138,7 +147,7 @@ def recompute_c_star(log1p, membership: pd.DataFrame, *,
         sub = membership.loc[membership["fold"].astype(int) == fold]
         if sub.empty:
             raise ContractError(f"consensus membership has no fold {fold}")
-        idx = sub["row_ix"].to_numpy()
+        idx = sub["row"].to_numpy()
         weights = sub["weight"].to_numpy(dtype=np.float64)
         if abs(weights.sum() - 1.0) > 1e-5:
             raise ContractError(
@@ -166,7 +175,7 @@ def assert_consensus_provenance(membership: pd.DataFrame, obs: pd.DataFrame,
     for col in MEMBERSHIP_COLUMNS:
         if col not in membership.columns:
             raise ContractError(f"consensus membership is missing {col!r}")
-    row_ix = membership["row_ix"].to_numpy(dtype=np.int64)
+    row_ix = membership["row"].to_numpy(dtype=np.int64)
     if row_ix.min() < 0 or row_ix.max() >= len(obs):
         raise ContractError("consensus membership row index outside obs")
     is_control = obs["is_control"].astype(bool).to_numpy()

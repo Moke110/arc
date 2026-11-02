@@ -94,7 +94,7 @@ class ConsensusTest(unittest.TestCase):
     def test_pool_is_dmso_only_and_never_media(self):
         vehicles = set(self.membership["vehicle"].astype(str))
         self.assertEqual(vehicles, {"DMSO"})
-        idx = self.membership["row_ix"].to_numpy()
+        idx = self.membership["row"].to_numpy()
         self.assertTrue(bool(self.obs["is_control"].to_numpy()[idx].all()))
         self.assertFalse((self.obs["vehicle"].astype(str).to_numpy()[idx] == "Media").any())
 
@@ -106,7 +106,7 @@ class ConsensusTest(unittest.TestCase):
         self.assertEqual(set(fold1["plate"]), {"P2", "P3"})
 
     def test_treated_rows_are_never_in_the_pool(self):
-        idx = self.membership["row_ix"].to_numpy()
+        idx = self.membership["row"].to_numpy()
         treated = ~self.obs["is_control"].to_numpy()[idx]
         self.assertFalse(treated.any())
         # and the treated expression (100 + level) is absent from c*
@@ -151,7 +151,7 @@ class ConsensusTest(unittest.TestCase):
         row = poisoned.index[poisoned["fold"] == 0][0]
         poisoned.loc[row, "plate"] = "P3"     # no training drug on P3 in fold 0
         obs = self.obs.copy()
-        obs.iloc[poisoned.loc[row, "row_ix"], obs.columns.get_loc("plate")] = "P3"
+        obs.iloc[poisoned.loc[row, "row"], obs.columns.get_loc("plate")] = "P3"
         with self.assertRaises(contract.ContractError):
             consensus.assert_consensus_provenance(poisoned, obs, self.folds,
                                                   n_folds=N_FOLDS_TEST)
@@ -159,7 +159,7 @@ class ConsensusTest(unittest.TestCase):
     def test_provenance_gate_rejects_a_treated_row(self):
         poisoned = self.membership.copy()
         treated = int(np.flatnonzero(~self.obs["is_control"].to_numpy())[0])
-        poisoned.loc[poisoned.index[0], "row_ix"] = treated
+        poisoned.loc[poisoned.index[0], "row"] = treated
         with self.assertRaises(contract.ContractError):
             consensus.assert_consensus_provenance(poisoned, self.obs, self.folds,
                                                   n_folds=N_FOLDS_TEST)
@@ -175,7 +175,7 @@ class ConsensusTest(unittest.TestCase):
 
     def test_provenance_gate_rejects_qc_failed_member(self):
         obs = self.obs.copy()
-        row_ix = int(self.membership.loc[self.membership["fold"] == 0, "row_ix"].iloc[0])
+        row_ix = int(self.membership.loc[self.membership["fold"] == 0, "row"].iloc[0])
         obs.iloc[row_ix, obs.columns.get_loc("qc_pass")] = False
         with self.assertRaises(contract.ContractError):
             consensus.assert_consensus_provenance(self.membership, obs, self.folds,

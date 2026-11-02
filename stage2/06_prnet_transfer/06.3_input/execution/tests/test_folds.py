@@ -98,6 +98,38 @@ class FoldAlgorithmTest(unittest.TestCase):
         self.assertEqual(role_counts["valid"], 100)
         self.assertEqual(role_counts["train"], 300)
 
+    def test_collapse_is_unique_per_drug_and_fold(self):
+        drugs = synthetic_drugs(100)
+        assign = folds.cluster_drugs(drugs)
+        plates = drugs[["drug_key", "plate", "n_wells", "n_doses"]].copy()
+        extra = plates.iloc[[0]].copy()
+        extra["plate"] = "Plate99"
+        plates = pd.concat([plates, extra], ignore_index=True)
+        long = folds.expand_fold_table(assign, plates)
+        collapsed = folds.collapse_fold_table(long)
+        self.assertFalse(collapsed.duplicated(["drug_key", "fold"]).any())
+        self.assertEqual(len(collapsed), 5 * 100)
+        two_plate = collapsed.loc[collapsed["drug_key"] == plates.iloc[0]["drug_key"]]
+        self.assertTrue((two_plate["n_plates"] == 2).all())
+        self.assertTrue(two_plate["plate"].str.contains(";").all())
+        # collapse preserves the wells and the role assignment
+        self.assertEqual(int(collapsed["n_wells"].sum()), int(long["n_wells"].sum()))
+        for fold in range(5):
+            self.assertEqual(
+                set(collapsed.loc[collapsed["fold"] == fold, "drug_key"]),
+                set(long.loc[long["fold"] == fold, "drug_key"]))
+        folds.assert_fold_invariants(collapsed, assign,
+                                     expected_drugs=set(drugs["drug_key"]))
+
+    def test_collapse_keeps_a_single_plate_drug_unchanged(self):
+        drugs = synthetic_drugs(30)
+        assign = folds.cluster_drugs(drugs)
+        plates = drugs[["drug_key", "plate", "n_wells", "n_doses"]]
+        collapsed = folds.collapse_fold_table(
+            folds.expand_fold_table(assign, plates))
+        self.assertTrue((collapsed["n_plates"] == 1).all())
+        self.assertFalse(collapsed["plate"].str.contains(";").any())
+
     def test_invariants_reject_a_foreign_drug(self):
         drugs = synthetic_drugs(30)
         assign = folds.cluster_drugs(drugs)

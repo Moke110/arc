@@ -192,6 +192,48 @@ def expand_fold_table(assign: pd.DataFrame, drug_plates: pd.DataFrame, *,
     return table
 
 
+def collapse_fold_table(table: pd.DataFrame) -> pd.DataFrame:
+    """The exported `folds.parquet`: exactly one row per ``(drug_key, fold)``.
+
+    Consumers key the split by ``drug_key`` only, so the per-plate expansion is
+    collapsed: a drug's plates are ``;``-joined (one key spans two plates) and
+    its wells/doses are summed/maxed.  The per-plate long form is recomputed on
+    demand from the CM artifact, so no information is lost — the collapse keeps
+    the table's primary key unambiguous.
+    """
+    required = {"drug_key", "cluster_id", "fold", "role", "test_fold",
+                "valid_fold", "plate", "n_wells", "n_doses"}
+    missing = required - set(table.columns)
+    if missing:
+        raise ContractError(f"collapse_fold_table: missing column(s) {sorted(missing)}")
+    grouped = (table.groupby(["drug_key", "fold"], observed=True)
+               .agg(cluster_id=("cluster_id", "first"),
+                    role=("role", "first"),
+                    plates=("plate", lambda values: ";".join(sorted(set(values)))),
+                    n_wells=("n_wells", "sum"),
+                    n_doses=("n_doses", "max"),
+                    test_fold=("test_fold", "first"),
+                    valid_fold=("valid_fold", "first"))
+               .reset_index())
+    grouped["n_plates"] = grouped["plates"].str.count(";") + 1
+    grouped = grouped.rename(columns={"plates": "plate"})
+    out = grouped[["drug_key", "cluster_id", "fold", "role", "plate", "n_wells",
+                   "n_doses", "n_plates", "test_fold", "valid_fold"]]
+    out = out.sort_values(["fold", "role", "drug_key"], kind="mergesort"
+                         ).reset_index(drop=True)
+    out["fold"] = out["fold"].astype(np.int16)
+    out["test_fold"] = out["test_fold"].astype(np.int16)
+    out["valid_fold"] = out["valid_fold"].astype(np.int16)
+    out["n_wells"] = out["n_wells"].astype(np.int32)
+    out["n_doses"] = out["n_doses"].astype(np.int32)
+    out["n_plates"] = out["n_plates"].astype(np.int8)
+    for column in ("drug_key", "cluster_id", "role", "plate"):
+        out[column] = out[column].astype(str)
+    if out.duplicated(["drug_key", "fold"]).any():
+        raise ContractError("folds.parquet would still duplicate a (drug_key, fold)")
+    return out
+
+
 def assert_fold_invariants(table: pd.DataFrame, assign: pd.DataFrame, *,
                            expected_drugs: set[str] | None = None,
                            n_folds: int = N_FOLDS) -> dict:
@@ -282,8 +324,15 @@ def fold_sizes(table: pd.DataFrame) -> pd.DataFrame:
     return out.sort_values("fold").reset_index(drop=True)
 
 
+def _split_plates(values) -> list[str]:
+    out: set[str] = set()
+    for value in values:
+        out.update(part for part in str(value).split(";") if part)
+    return sorted(out)
+
+
 def fold_plates(table: pd.DataFrame, fold: int, role: str) -> list[str]:
     """Sorted plates carrying a drug of `role` in `fold` (the consensus scope)."""
     sub = table.loc[(table["fold"].astype(int) == int(fold))
                     & (table["role"] == role), "plate"]
-    return sorted(set(sub.astype(str)))
+    return _split_plates(sub)
