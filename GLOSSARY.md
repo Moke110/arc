@@ -226,12 +226,24 @@ _Avoid_: baseline, control set, batch control
 A cited, per-compound completion of the pharmacology annotation, allowed only on the curated drug panels (`dtoxs`, `gse244740`) and never on the `gse262419` tiers.
 _Avoid_: manual override, curation fix
 
+**Pharmacology-qualified compound (药理资格合格化合物)**:
+A human-use approved or clinical-stage drug, or a research tool compound with a documented pharmacological mechanism, admitted by evidence review for the formal PRnet CM study. This qualification is separate from an automatic pharmacology tier and from experimental quality or transcriptional response strength.
+_Avoid_: ATC-positive drug, trainable drug (when only pharmacology has been reviewed)
+
+**CM consensus control (CM 共识对照)**:
+A fixed reference expression profile derived from eligible training CM vehicle controls, representing the CM background on which novel-drug effects are predicted. It is distinct from a treated observation's experimentally matched control and requires no new control measurement at prediction time.
+_Avoid_: matched control, Stage 1 baseline transcriptome
+
 
 ### Stage 2 benchmark
 
 **Cold-drug fold**:
 One of five Stage 2 benchmark splits in which a drug is never observed in the fold's train or validation set and is scored exactly once as test; every drug is test exactly once and valid exactly once across the five folds (6:2:2 = 276/92/92 drugs).
 _Avoid_: cold-start split, holdout (unqualified)
+
+**CM-unseen drug (CM 未见药物)**:
+A drug whose cardiomyocyte perturbation observations are withheld from model fitting across all CM sources used for adaptation. The drug may have been observed in non-CM pretraining, including Tahoe; this is the prediction setting for drugs without available CM wet-lab responses.
+_Avoid_: globally unseen drug, unseen drug (without specifying the CM scope)
 
 **Δ space**:
 The benchmark's target: `log1p_cp10k(treated) − mean(log1p_cp10k(same-plate DMSO))`, in the 18,164-gene corpus order. The model emits per-well Δ; the runner averages within a group.
