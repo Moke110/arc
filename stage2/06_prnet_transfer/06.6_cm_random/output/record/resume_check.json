@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "exit_code": 0,
+        "summary": {
+          "planned": 0,
+          "skipped": 45,
+          "units": 45
+        }
+      },
+      "id": "finished_matrix_all_skipped",
+      "ok": true
+    },
+    {
+      "detail": {
+        "config_sha256_original": "6241da7d2f3b49af31018c399f26b6bc5d19fcf596b01bdd071eb22b9f541b7e",
+        "config_sha256_rerun": "6241da7d2f3b49af31018c399f26b6bc5d19fcf596b01bdd071eb22b9f541b7e",
+        "exit_code": 0,
+        "rerun_wall_s": 25.593,
+        "summary": {
+          "completed": 1,
+          "failed": 0,
+          "failed_units": [],
+          "skipped_complete": 0,
+          "status_csv": "/home/chang/arc-wt/t06-cmrandom/stage2/06_prnet_transfer/06.6_cm_random/output/_resume_probe/interrupted_status.csv",
+          "units": 1
+        },
+        "unit_id": "cm_f0_s20261021_lr1e-4_random"
+      },
+      "id": "interrupted_unit_recoverable",
+      "ok": true
+    },
+    {
+      "detail": {
+        "exit_code": 0,
+        "summary": {
+          "planned": 0,
+          "skipped": 1,
+          "units": 1
+        }
+      },
+      "id": "recovered_unit_then_skipped",
+      "ok": true
+    }
+  ],
+  "created_utc": "2026-11-02T07:42:03+00:00",
+  "interrupted_unit": {
+    "original_config_sha256": "6241da7d2f3b49af31018c399f26b6bc5d19fcf596b01bdd071eb22b9f541b7e",
+    "original_manifest_sha256": "7af30cc40c2756431cf61340a8d08f2c44a83a3d629dec13a4032237775f4418",
+    "rerun_config_sha256": "6241da7d2f3b49af31018c399f26b6bc5d19fcf596b01bdd071eb22b9f541b7e",
+    "rerun_manifest_sha256": "9f1eea7e92b6e8eddf8289afbad220d93e26ebe34ccc27a8075a431ab0e72a14",
+    "unit_id": "cm_f0_s20261021_lr1e-4_random"
+  },
+  "n_units": 45,
+  "passed": true,
+  "queue": "/home/chang/arc-wt/t06-cmrandom/stage2/06_prnet_transfer/06.6_cm_random/output/units.json",
+  "schema": "cm_random.resume_check/v1"
+}
