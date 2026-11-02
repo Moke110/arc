@@ -46,3 +46,4 @@ gap). Two early records are marked superseded in place.
 | [0029](0029-tahoe-pseudobulk-pretrain-corpus.md) | Tahoe-100M enters Stage 2 as a pseudobulk pretrain corpus |
 | [0030](0030-external-data-provenance-and-step-layout.md) | External data provenance and the Stage 2 step layout |
 | [0031](0031-tahoe-cm-schema-view-and-prnet-pretrain.md) | A CM-schema Tahoe pretrain view and the PRnet pretrain bring-up |
+| [0032](0032-prnet-formal-transfer.md) | PRnet formal transfer: paired Tahoe-pretrained vs random-init CM study |
