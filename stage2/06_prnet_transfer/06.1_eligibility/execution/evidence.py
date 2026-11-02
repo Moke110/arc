@@ -305,6 +305,13 @@ def extract_pubchem(record_body):
             paths_ending("Use and Manufacturing/Uses/Use Classification")
         ),
         "industry_uses": _clean(paths_ending("Use and Manufacturing/Uses/Industry Uses")),
+        # The bare HSDB/EPA "Uses" entries are the sentences that document what a
+        # compound is actually used for ("Used as broad-spectrum fungicide ...").
+        # Without them a pesticide with a mechanism text but no Use Classification
+        # string looks undocumented; v1.3 reads them as use evidence.
+        "uses_texts": _clean(
+            paths_ending("Use and Manufacturing/Uses"), limit=25
+        ),
         "fda_approved_drugs": _clean(
             paths_ending("Drug and Medication Information/FDA Approved Drugs")
         ),
