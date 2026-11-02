@@ -49,9 +49,14 @@ Usage::
 
     PY=/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python
     $PY execution/baselines.py --check
-    $PY execution/baselines.py --all \\
-        --data-dir /home/chang/arc/stage2/06_prnet_transfer/06.3_input/output \\
-        --out-root /home/chang/arc/stage2/06_prnet_transfer
+    $PY execution/baselines.py --all
+
+Both defaults walk up from this file to the repository root (ADR 0030 §4 — never
+``Path.parents`` arithmetic): ``--data-dir`` is
+``<repo>/stage2/06_prnet_transfer/06.3_input/output`` and ``--out-root`` is
+``<repo>/stage2/06_prnet_transfer``, so the command behaves the same in a worktree
+as in the main checkout. Override either explicitly to read a frozen input that
+lives outside the current tree.
 
 Exit codes: 0 success, 1 contract/data error.
 """

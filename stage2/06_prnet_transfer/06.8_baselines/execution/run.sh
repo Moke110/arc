@@ -18,9 +18,9 @@ export PYTHONDONTWRITEBYTECODE=1
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$here" && git rev-parse --show-toplevel)"
 PY="${PYTHON:-/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python}"
-DATA_DIR="${T08_DATA_DIR:-/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output}"
-OUT_ROOT="${T08_OUT_ROOT:-/home/chang/arc/stage2/06_prnet_transfer}"
-TABLE_CACHE="${T08_TABLE_CACHE:-/home/chang/arc/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache}"
+DATA_DIR="${T08_DATA_DIR:-$ROOT/stage2/06_prnet_transfer/06.3_input/output}"
+OUT_ROOT="${T08_OUT_ROOT:-$ROOT/stage2/06_prnet_transfer}"
+TABLE_CACHE="${T08_TABLE_CACHE:-$ROOT/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache}"
 FIXTURE="${T08_FIXTURE:-/tmp/t08-baselines-fixture}"
 
 if [[ $# -lt 1 ]]; then
