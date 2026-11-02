@@ -11,7 +11,13 @@ Warm start (``--init pretrained --init-checkpoint PATH``) is strict by design:
   a checkpoint outside this pipeline is rejected, never repaired silently);
 * ``n_genes`` must equal the resolved gene axis;
 * the checkpoint's structure must be shape-compatible (``structure_compatible``);
-* the checkpoint sha256 and source path are recorded in the run manifest.
+* the checkpoint sha256 and source path are recorded in the run manifest;
+* :func:`load_provenance` additionally proves what was loaded and records it:
+  every model parameter **and** buffer key is present, shapes and dtypes match,
+  no tensor is non-finite, and every loaded tensor is bit-identical to the
+  checkpoint tensor after the strict load.  A warm start can therefore never
+  leave a silently random-initialised parameter behind: any gap raises before
+  training and the run manifest carries the empty missing/unexpected lists.
 
 Any mismatch raises :class:`CheckpointError` before training starts.
 """
@@ -34,9 +40,12 @@ __all__ = [
     "save_checkpoint",
     "read_checkpoint",
     "checkpoint_sha256",
+    "config_digest",
     "structure_from_checkpoint",
     "validate_checkpoint",
+    "state_dict_provenance",
     "load_into_model",
+    "load_provenance",
     "build_from_checkpoint",
 ]
 
@@ -112,6 +121,14 @@ def read_checkpoint(path: Path | str, map_location: str | torch.device = "cpu") 
     return dict(payload)
 
 
+def config_digest(payload: Mapping[str, Any]) -> str:
+    """Content digest of the exact config block a checkpoint recorded."""
+    config = payload.get("config")
+    if not isinstance(config, Mapping):
+        raise CheckpointError("checkpoint payload has no config object")
+    return config_mod.sha256_payload(config)
+
+
 def structure_from_checkpoint(payload: Mapping[str, Any]) -> dict[str, Any]:
     """Recover the canonical structure a checkpoint was trained with."""
     config = payload.get("config")
@@ -172,6 +189,112 @@ def load_into_model(model: torch.nn.Module, payload: Mapping[str, Any]) -> None:
         raise CheckpointError(
             f"strict state_dict load left missing={missing} unexpected={unexpected}"
         )
+
+
+def state_dict_provenance(
+    model: torch.nn.Module, payload: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Compare the checkpoint tensors with the model **without loading** them.
+
+    The returned record is the input to :func:`load_provenance`: it names every
+    model parameter/buffer key and the checkpoint key that fills it, so the run
+    manifest can prove a full, exact warm start instead of asserting one.  Every
+    list of problems is empty for an accepted checkpoint.
+    """
+    state = payload.get("state_dict")
+    if not isinstance(state, Mapping) or not state:
+        raise CheckpointError("checkpoint state_dict is missing or empty")
+    model_state = model.state_dict()
+    parameter_keys = {name for name, _ in model.named_parameters()}
+    buffer_keys = {name for name, _ in model.named_buffers()}
+    model_keys = set(model_state)
+    checkpoint_keys = set(state)
+
+    missing = sorted(model_keys - checkpoint_keys)
+    unexpected = sorted(checkpoint_keys - model_keys)
+    shape_mismatches: list[dict[str, Any]] = []
+    dtype_mismatches: list[dict[str, Any]] = []
+    nonfinite_keys: list[str] = []
+    for key in sorted(model_keys & checkpoint_keys):
+        want, got = model_state[key], state[key]
+        if not isinstance(got, torch.Tensor):
+            raise CheckpointError(f"checkpoint state_dict[{key!r}] is not a tensor")
+        if tuple(got.shape) != tuple(want.shape):
+            shape_mismatches.append(
+                {"key": key, "checkpoint": list(got.shape), "model": list(want.shape)}
+            )
+            continue
+        if got.dtype != want.dtype:
+            dtype_mismatches.append(
+                {"key": key, "checkpoint": str(got.dtype), "model": str(want.dtype)}
+            )
+            continue
+        if not bool(torch.isfinite(got).all()):
+            nonfinite_keys.append(key)
+    return {
+        "loaded_layers": sorted(checkpoint_keys),
+        "n_loaded_tensors": len(checkpoint_keys),
+        "n_model_parameters": len(parameter_keys),
+        "n_model_buffers": len(buffer_keys),
+        "n_loaded_parameter_tensors": len(checkpoint_keys & parameter_keys),
+        "n_loaded_buffer_tensors": len(checkpoint_keys & buffer_keys),
+        "missing_keys": missing,
+        "missing_parameter_keys": sorted(set(missing) & parameter_keys),
+        "missing_buffer_keys": sorted(set(missing) & buffer_keys),
+        "unexpected_keys": unexpected,
+        "shape_mismatches": shape_mismatches,
+        "dtype_mismatches": dtype_mismatches,
+        "nonfinite_keys": nonfinite_keys,
+        "n_parameters": int(sum(p.numel() for p in model.parameters())),
+        "n_loaded_elements": int(sum(int(t.numel()) for t in state.values())),
+    }
+
+
+def load_provenance(model: torch.nn.Module, payload: Mapping[str, Any]) -> dict[str, Any]:
+    """Strictly load *payload* into *model* and prove the load is complete.
+
+    Fails closed (``CheckpointError``) when the checkpoint would leave any model
+    parameter or buffer unloaded, has an unexpected key, a shape/dtype mismatch or
+    a non-finite tensor, and again when the post-load tensors are not bit-identical
+    to the checkpoint tensors.  Only then does it return the provenance record
+    written into the run manifest.
+    """
+    provenance = state_dict_provenance(model, payload)
+    problems = []
+    if provenance["missing_keys"]:
+        problems.append(f"missing keys {provenance['missing_keys']}")
+    if provenance["unexpected_keys"]:
+        problems.append(f"unexpected keys {provenance['unexpected_keys']}")
+    if provenance["shape_mismatches"]:
+        problems.append(f"shape mismatches {provenance['shape_mismatches']}")
+    if provenance["dtype_mismatches"]:
+        problems.append(f"dtype mismatches {provenance['dtype_mismatches']}")
+    if provenance["nonfinite_keys"]:
+        problems.append(f"non-finite tensors {provenance['nonfinite_keys']}")
+    if problems:
+        raise CheckpointError("warm start cannot load the checkpoint exactly: " + "; ".join(problems))
+    load_into_model(model, payload)
+    # The decisive anti-silent-reinit check: after the strict load every tensor
+    # must be bit-identical to the checkpoint.  A partially ignored load would
+    # leave a freshly constructed (random) tensor here and fail this comparison.
+    loaded = model.state_dict()
+    payload_state = payload["state_dict"]
+    mismatched = sorted(
+        key for key in loaded
+        if not torch.equal(loaded[key].detach().cpu(), payload_state[key].detach().cpu())
+    )
+    if mismatched:
+        raise CheckpointError(
+            f"post-load weights differ from the checkpoint for keys {mismatched}"
+        )
+    provenance.update(
+        {
+            "strict_load": True,
+            "weights_identical": True,
+            "n_tensors_compared": len(loaded),
+        }
+    )
+    return provenance
 
 
 def build_from_checkpoint(

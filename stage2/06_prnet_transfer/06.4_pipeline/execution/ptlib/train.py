@@ -312,13 +312,27 @@ def _build_model_for_run(frozen, cfg, options, device, logger):
     else:
         path = Path(options.init_checkpoint)
         payload = checkpoint_mod.read_checkpoint(path)
-        checkpoint_mod.validate_checkpoint(payload, int(struct["n_genes"]), struct)
-        checkpoint_mod.load_into_model(model, payload)
+        checkpoint_struct = checkpoint_mod.validate_checkpoint(
+            payload, int(struct["n_genes"]), struct
+        )
+        # Strict load + full provenance: every parameter/buffer key present,
+        # shapes identical, weights bit-identical after the load.  A warm start
+        # can never leave a silently random-initialised tensor behind.
+        load_provenance = checkpoint_mod.load_provenance(model, payload)
         init_record["source_path"] = str(path)
         init_record["checkpoint_sha256"] = checkpoint_mod.checkpoint_sha256(path)
         init_record["checkpoint_epoch"] = int(payload.get("epoch", -1))
         init_record["checkpoint_best_valid_auprc"] = float(payload.get("best_valid_auprc", math.nan))
         init_record["checkpoint_seed"] = int(payload.get("seed", -1))
+        init_record["checkpoint_config_sha256"] = checkpoint_mod.config_digest(payload)
+        init_record["checkpoint_structure"] = dict(checkpoint_struct)
+        init_record["gene_axis"] = {
+            "checkpoint": int(payload["n_genes"]),
+            "expected": int(struct["n_genes"]),
+            "matches": True,
+        }
+        init_record["structure_matches_run"] = True
+        init_record["load_provenance"] = load_provenance
         journal_init(logger, init_record)
     model.to(device)
     model_mod.check_architecture(model, struct)
@@ -327,12 +341,21 @@ def _build_model_for_run(frozen, cfg, options, device, logger):
 
 
 def journal_init(logger, record: Mapping[str, Any]) -> None:
+    provenance = record.get("load_provenance") or {}
     logger.info(
-        "warm start: loaded %s (sha256 %s…, epoch %s, run seed %s)",
+        "warm start: loaded %s (sha256 %s…, config %s…, epoch %s, run seed %s, "
+        "%s keys: %s params + %s buffers, missing=%s unexpected=%s, weights_identical=%s)",
         record.get("source_path"),
         str(record.get("checkpoint_sha256"))[:12],
+        str(record.get("checkpoint_config_sha256"))[:12],
         record.get("checkpoint_epoch"),
         record.get("checkpoint_seed"),
+        provenance.get("n_loaded_tensors"),
+        provenance.get("n_loaded_parameter_tensors"),
+        provenance.get("n_loaded_buffer_tensors"),
+        provenance.get("missing_keys"),
+        provenance.get("unexpected_keys"),
+        provenance.get("weights_identical"),
     )
 
 

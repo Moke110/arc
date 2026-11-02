@@ -129,7 +129,9 @@ a score.
 `schema=ptlib.run_manifest/v1`, `kind=train|predict|evaluate`, git SHA/branch/dirty,
 `data.dir` + every frozen artifact sha256, locked-config sha256 + alias/default
 mapping, resolved config + `config_sha256`, seed, structure, device (torch/CUDA,
-cudnn deterministic), initialisation (mode, source path, checkpoint sha256),
+cudnn deterministic), initialisation (mode, source path, checkpoint sha256; for a
+warm start also the checkpoint config digest, gene axis, the loaded parameter/buffer
+key list, the empty missing/unexpected/shape/dtype lists and `weights_identical`),
 checkpoint sha256 + strict-reload check, noise policy, wall time, **per-epoch
 validation cost split (gather/forward/AUPRC)**, peak RSS, epochs run and stop
 reason. `predict` additionally records row count, prediction sha256 and
