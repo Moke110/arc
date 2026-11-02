@@ -37,6 +37,7 @@ from typing import Any, Mapping
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import common  # noqa: E402
 from common import (  # noqa: E402
     DEFAULT_DATA_DIR,
     DEFAULT_GPU_PY,
@@ -59,7 +60,7 @@ PREDICT_CLI = PIPELINE_EXECUTION / "predict.py"
 EVALUATE_CLI = PIPELINE_EXECUTION / "evaluate.py"
 
 RUN_COLUMNS = (
-    "unit_id", "phase", "status", "fold", "seed", "init", "lr",
+    "unit_id", "phase", "status", "fold", "seed", "init", "lr", "started_utc",
     "predict_exit", "predict_wall_s", "predict_peak_rss_mb",
     "evaluate_exit", "evaluate_wall_s", "evaluate_peak_rss_mb",
     "gpu_peak_mb", "eval_manifest_sha256", "error",
@@ -398,35 +399,154 @@ def score_unit(
 # --------------------------------------------------------------------------- #
 # Queue + record
 # --------------------------------------------------------------------------- #
-def _write_runs_csv(out: Path, records: list[Mapping[str, Any]]) -> None:
+def _run_row(record: Mapping[str, Any]) -> dict[str, str]:
+    """Flatten one unit record to the ``score_runs.csv`` row."""
+    steps = record.get("steps") or {}
+    predict = steps.get("predict") or {}
+    evaluate = steps.get("evaluate") or {}
+    return {
+        "unit_id": str(record.get("unit_id", "")),
+        "phase": str(record.get("phase", "")),
+        "status": str(record.get("status", "")),
+        "fold": str(record.get("fold", "")),
+        "seed": str(record.get("seed", "")),
+        "init": str(record.get("init", "")),
+        "lr": str(record.get("lr", "")),
+        "started_utc": str(
+            predict.get("started_utc") or record.get("created_utc") or ""
+        ),
+        "predict_exit": str(predict.get("exit_code", "")),
+        "predict_wall_s": f"{predict.get('wall_s', ''):.3f}" if predict else "",
+        "predict_peak_rss_mb": f"{predict.get('peak_rss_mb', ''):.1f}" if predict else "",
+        "evaluate_exit": str(evaluate.get("exit_code", "")),
+        "evaluate_wall_s": f"{evaluate.get('wall_s', ''):.3f}" if evaluate else "",
+        "evaluate_peak_rss_mb": (
+            f"{evaluate.get('peak_rss_mb', ''):.1f}" if evaluate else ""
+        ),
+        "gpu_peak_mb": str((record.get("gpu") or {}).get("peak_mb", "")),
+        "eval_manifest_sha256": str(
+            (record.get("verification") or {}).get("eval_manifest_sha256", "")
+        ),
+        "error": str(record.get("error") or "").replace(",", ";"),
+    }
+
+
+def _read_runs_rows(out: Path) -> list[dict[str, str]]:
+    path = out / "record" / "score_runs.csv"
+    if not path.exists():
+        return []
+    try:
+        frame = common.read_table(path)
+    except (OSError, ValueError):  # pragma: no cover - corrupt scratch only
+        return []
+    return [dict(row) for row in frame.to_dict("records")]
+
+
+def _row_started_utc(out: Path, unit_id: str) -> str:
+    path = out / "units" / str(unit_id) / "record.json"
+    if not path.exists():
+        return ""
+    try:
+        record = load_json(path)
+    except (OSError, ValueError):  # pragma: no cover
+        return ""
+    steps = record.get("steps") or {}
+    return str(
+        (steps.get("predict") or {}).get("started_utc")
+        or record.get("created_utc")
+        or ""
+    )
+
+
+def _write_runs_csv(out: Path, records: list[Mapping[str, Any]]) -> list[dict[str, str]]:
+    """Write the run table cumulatively: a subset re-run must not drop earlier units."""
+    rows_by_unit: dict[str, dict[str, str]] = {}
+    for row in _read_runs_rows(out):
+        unit_id = str(row.get("unit_id", ""))
+        if not unit_id:
+            continue
+        if not row.get("started_utc"):
+            row["started_utc"] = _row_started_utc(out, unit_id)
+        rows_by_unit[unit_id] = row
+    for record in records:
+        row = _run_row(record)
+        rows_by_unit[row["unit_id"]] = row
+    rows = list(rows_by_unit.values())
     header = ",".join(RUN_COLUMNS)
     lines = [header]
-    for record in records:
-        steps = record.get("steps") or {}
-        predict = steps.get("predict") or {}
-        evaluate = steps.get("evaluate") or {}
-        values = {
-            "unit_id": record.get("unit_id", ""),
-            "phase": record.get("phase", ""),
-            "status": record.get("status", ""),
-            "fold": record.get("fold", ""),
-            "seed": record.get("seed", ""),
-            "init": record.get("init", ""),
-            "lr": record.get("lr", ""),
-            "predict_exit": predict.get("exit_code", ""),
-            "predict_wall_s": f"{predict.get('wall_s', ''):.3f}" if predict else "",
-            "predict_peak_rss_mb": f"{predict.get('peak_rss_mb', ''):.1f}" if predict else "",
-            "evaluate_exit": evaluate.get("exit_code", ""),
-            "evaluate_wall_s": f"{evaluate.get('wall_s', ''):.3f}" if evaluate else "",
-            "evaluate_peak_rss_mb": f"{evaluate.get('peak_rss_mb', ''):.1f}" if evaluate else "",
-            "gpu_peak_mb": (record.get("gpu") or {}).get("peak_mb", ""),
-            "eval_manifest_sha256": (record.get("verification") or {}).get(
-                "eval_manifest_sha256", ""
-            ),
-            "error": (record.get("error") or "").replace(",", ";"),
-        }
-        lines.append(",".join(str(values[column]) for column in RUN_COLUMNS))
+    for row in rows:
+        lines.append(",".join(str(row.get(column, "")) for column in RUN_COLUMNS))
     write_text_atomic(out / "record" / "score_runs.csv", "\n".join(lines) + "\n")
+    return rows
+
+
+def _summary_from_rows(
+    rows: list[Mapping[str, Any]],
+    *,
+    phase: str,
+    preflight: Mapping[str, Any],
+    units_manifest: Path,
+    units_manifest_sha256: str,
+    selection_complete: bool,
+) -> dict[str, Any]:
+    """Cumulative run summary over every unit in ``score_runs.csv`` (all invocations)."""
+
+    def number(value: Any) -> float:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 0.0
+
+    completed = [r for r in rows if r.get("status") == "completed"]
+    skipped = [r for r in rows if r.get("status") == "skipped_complete"]
+    failed = [r for r in rows if r.get("status") == "failed"]
+    wall = sum(
+        number(r.get("predict_wall_s")) + number(r.get("evaluate_wall_s")) for r in rows
+    )
+    host_peak = max(
+        (
+            max(number(r.get("predict_peak_rss_mb")), number(r.get("evaluate_peak_rss_mb")))
+            for r in rows
+        ),
+        default=0.0,
+    )
+    gpu_peak = max((number(r.get("gpu_peak_mb")) for r in rows), default=0.0)
+    started = min(
+        (str(r.get("started_utc")) for r in rows if r.get("started_utc")), default=""
+    )
+    return {
+        "schema": SCHEMA + "/summary",
+        "kind": "score_summary",
+        "phase": phase,
+        "created_utc": now_utc(),
+        "started_utc": started,
+        "units_planned": len(rows),
+        "units_completed": len(completed),
+        "units_skipped": len(skipped),
+        "units_failed": len(failed),
+        "failures": [
+            {
+                "unit_id": r.get("unit_id"),
+                "status": r.get("status"),
+                "error": r.get("error"),
+            }
+            for r in failed
+        ],
+        "wall_s": wall,
+        "host_peak_rss_mb": host_peak,
+        "gpu_peak_mb": int(gpu_peak) if gpu_peak else 0,
+        "preflight": dict(preflight),
+        "units_manifest": str(units_manifest),
+        "units_manifest_sha256": units_manifest_sha256,
+        "selection_complete": bool(selection_complete),
+        "test_role_scored": phase == "test",
+        "peak_rss_mb_process": peak_rss_mb(),
+        "note": (
+            "cumulative over every unit in score_runs.csv (a subset --only-unit re-run "
+            "does not drop earlier units); wall_s is the sum of per-unit predict+evaluate "
+            "wall time"
+        ),
+    }
 
 
 def run(
@@ -470,7 +590,6 @@ def run(
 
     out.mkdir(parents=True, exist_ok=True)
     runs: list[dict[str, Any]] = []
-    failures: list[dict[str, Any]] = []
     started = time.perf_counter()
     started_utc = now_utc()
     preflight: dict[str, Any] = {}
@@ -508,14 +627,6 @@ def run(
             force=force,
         )
         runs.append(record)
-        if record.get("status") not in {"completed", "skipped_complete"}:
-            failures.append(
-                {
-                    "unit_id": unit["unit_id"],
-                    "status": record.get("status"),
-                    "error": record.get("error"),
-                }
-            )
         _write_runs_csv(out, runs)
         print(
             f"    {record.get('status')} in "
@@ -525,39 +636,19 @@ def run(
             flush=True,
         )
 
-    summary = {
-        "schema": SCHEMA + "/summary",
-        "kind": "score_summary",
-        "phase": phase,
-        "created_utc": now_utc(),
-        "started_utc": started_utc,
-        "units_planned": len(units),
-        "units_completed": sum(1 for r in runs if r.get("status") == "completed"),
-        "units_skipped": sum(1 for r in runs if r.get("status") == "skipped_complete"),
-        "units_failed": len(failures),
-        "failures": failures,
-        "wall_s": time.perf_counter() - started,
-        "host_peak_rss_mb": max(
-            (float(r.get("host_peak_rss_mb") or 0.0) for r in runs), default=0.0
-        ),
-        "gpu_peak_mb": max(
-            (
-                (r.get("gpu") or {}).get("peak_mb") or 0
-                for r in runs
-            ),
-            default=0,
-        ),
-        "preflight": preflight,
-        "units_manifest": str(units_path),
-        "units_manifest_sha256": sha256_file(units_path),
-        "selection_complete": bool(units_payload.get("complete")),
-        "test_role_scored": phase == "test",
-        "peak_rss_mb_process": peak_rss_mb(),
-    }
+    merged_rows = _write_runs_csv(out, runs)
+    summary = _summary_from_rows(
+        merged_rows,
+        phase=phase,
+        preflight=preflight,
+        units_manifest=units_path,
+        units_manifest_sha256=sha256_file(units_path),
+        selection_complete=bool(units_payload.get("complete")),
+    )
     write_json(out / "record" / "score_summary.json", summary)
     print(json.dumps({k: v for k, v in summary.items() if k != "failures"}, indent=2))
-    if failures:
-        print(json.dumps({"failures": failures}, indent=2), file=sys.stderr)
+    if summary["units_failed"]:
+        print(json.dumps({"failures": summary["failures"]}, indent=2), file=sys.stderr)
         return 1
     return 0
 
