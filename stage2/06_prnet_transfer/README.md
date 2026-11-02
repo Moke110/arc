@@ -50,7 +50,7 @@ every experiment consumes them rather than re-deriving a split.
 | `06.1_eligibility/` eligibility audit | #1 | built and verified — rule v1.3, handoff v2 (118 include / 28 uncertain / 314 exclude) | [`README`](06.1_eligibility/README.md), `output/current.json` |
 | `06.2_qc/` per-observation QC | #2 | built and verified — locked rule set | [`README`](06.2_qc/README.md) |
 | `06.3_input/` frozen inputs, folds, consensus | #3 | frozen and verified — 118 drugs / 951 wells, 125/125 verify | [`README`](06.3_input/README.md), `output/manifest.json` |
-| `06.4_pipeline/` pipeline + smoke | #4 | Phase A built on synthetic fixture; Phase B real-data smoke pending | [`README`](06.4_pipeline/README.md) |
+| `06.4_pipeline/` pipeline + smoke | #4 | Phase A built; Phase B real-data smoke green (17/17 steps, GPU peak 2.9 GB, host peak 8.5 GiB) | [`README`](06.4_pipeline/README.md), `output/smoke/smoke_record.json` |
 | `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | planned | — |
 | `06.6_cm_random/` 45 random-init CM candidates | #6 | planned | — |
 | `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | planned | — |
