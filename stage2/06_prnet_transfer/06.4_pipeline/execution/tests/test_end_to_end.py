@@ -34,10 +34,13 @@ TMP = None
 
 
 def _pretrain_options(out_dir, seed=5):
+    # Hermetic: never resolve the developer's derived cache under output/cache/
+    # (the real 4.87 GB memmap lives there and is bound to the frozen source hash).
+    cache = Path(out_dir).parent / "cache" / "tahoe_log1p_cp10k_v1.npy"
     return train_mod.TrainOptions(
         stage="pretrain", out_dir=out_dir, data_dir=FIXTURE, seed=seed, device="cpu",
         epochs=2, min_epochs=1, batch_size=32, max_train_rows=120, max_valid_rows=60,
-        smoke=True, model_card=False, command=["test"],
+        smoke=True, model_card=False, tahoe_cache=cache, command=["test"],
     )
 
 

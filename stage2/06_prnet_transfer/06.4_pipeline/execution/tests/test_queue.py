@@ -12,21 +12,22 @@ import _support
 from ptlib import queue as queue_mod
 
 
-def _unit(unit_id: str, seed: int, stage: str = "pretrain") -> dict:
-    return {
-        "unit_id": unit_id,
-        "stage": stage,
-        "args": [
-            "--seed", str(seed),
-            "--device", "cpu",
-            "--epochs", "1",
-            "--min-epochs", "1",
-            "--batch-size", "8",
-            "--max-train-rows", "16",
-            "--max-valid-rows", "8",
-            "--no-model-card",
-        ],
-    }
+def _unit(unit_id: str, seed: int, stage: str = "pretrain", cache=None) -> dict:
+    args = [
+        "--seed", str(seed),
+        "--device", "cpu",
+        "--epochs", "1",
+        "--min-epochs", "1",
+        "--batch-size", "8",
+        "--max-train-rows", "16",
+        "--max-valid-rows", "8",
+        "--no-model-card",
+    ]
+    if cache is not None:
+        # Hermetic: keep the unit off the developer's real derived cache under
+        # output/cache/ (bound to the frozen input hash, not to this fixture).
+        args += ["--tahoe-cache", str(cache)]
+    return {"unit_id": unit_id, "stage": stage, "args": args}
 
 
 class QueueValidationTests(unittest.TestCase):
@@ -95,7 +96,9 @@ class QueueResumeTests(unittest.TestCase):
     def test_resume_skips_completed_and_reruns_changed_config(self):
         queue_path = Path(self.tmp.name) / "queue.json"
         out_root = Path(self.tmp.name) / "runs"
-        queue_path.write_text(json.dumps({"units": [_unit("u1", 11), _unit("u2", 12)]}))
+        cache = Path(self.tmp.name) / "cache" / "tahoe_log1p_cp10k_v1.npy"
+        queue_path.write_text(json.dumps({"units": [_unit("u1", 11, cache=cache),
+                                                    _unit("u2", 12, cache=cache)]}))
 
         first = queue_mod.run_queue(self._options(queue_path, out_root))
         self.assertEqual(first["completed"], 2, first)
@@ -128,7 +131,8 @@ class QueueResumeTests(unittest.TestCase):
             self.assertNotEqual(row["wall_s"], "")
 
         # change one unit's config → only that unit re-runs
-        queue_path.write_text(json.dumps({"units": [_unit("u1", 99), _unit("u2", 12)]}))
+        queue_path.write_text(json.dumps({"units": [_unit("u1", 99, cache=cache),
+                                                    _unit("u2", 12, cache=cache)]}))
         third = queue_mod.run_queue(self._options(queue_path, out_root))
         self.assertEqual(third["completed"], 1, third)
         self.assertEqual(third["skipped_complete"], 1, third)
