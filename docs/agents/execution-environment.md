@@ -84,6 +84,7 @@ still reports ~32 GiB, check `.wslconfig` for a UTF-8 BOM or a misspelled sectio
 | `script/verify_all.sh` (27 offline verifiers, 52 GB hashed) | 9.7 GiB charged, `4min 33s` CPU | mostly page cache; run it when no heavy job is running, not concurrently |
 | `06.4_pipeline` real-data smoke (ticket #4 Phase B) | measure per run and record here | the Tahoe view is 16.2 GB; the loader must be header/memmap-based |
 | `06.8_baselines --all` on the synthetic fixture (post-fix) | 1.2-1.7 GiB | dominated by imports and the shared evaluator, not the data |
+| `06.7_cm_tahoe` bounded wrapper profile (1 CM unit, 2 epochs, 2 workers) | **2,293 MiB host process tree**, 1,583 MiB scope cgroup, 1,325 MiB run manifest | ran as the second heavy job beside the #5 pretrain, never near the 12 GiB cap; a 45-unit matrix is expected to match #6's ~3.0 GiB |
 | full test suites of the 06 substeps | < 1 GiB each | two suites may run together, a third heavy job may not |
 
 The pretrain number is the reason the training tickets (#5–#7) are serialised: two
