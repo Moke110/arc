@@ -4,7 +4,10 @@ The frozen CM matrix is a dense ``int32`` ``X`` plus a dense ``float32``
 ``layers['log1p_cp10k']``; the Tahoe matrix is CSR.  Nothing here densifies a
 whole matrix by accident:
 
-* ``open_obs_var`` opens the file **backed** and copies only ``obs``/``var``;
+* ``open_obs_var`` decodes only the ``obs``/``var`` element groups with h5py —
+  never through ``anndata.read_h5ad(..., backed="r")``, whose "backed" mode
+  still materialises every ``layers`` entry (8.1 GB on the frozen Tahoe view,
+  12.9 GB on the 25.8 GB corpus) before the metadata copy;
 * ``read_dense_rows`` reads a requested row subset in contiguous runs (HDF5
   fancy indexing needs sorted, unique indices — the run split is what makes it
   fast);
@@ -19,7 +22,6 @@ encoding; the caller never silently falls back to a different matrix.
 
 from __future__ import annotations
 
-import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
@@ -41,9 +43,6 @@ __all__ = [
     "read_layer_all",
 ]
 
-_LOCK = threading.Lock()
-_BACKED: dict[str, Any] = {}
-
 
 class H5Error(RuntimeError):
     """A frozen artifact does not match the contracted encoding."""
@@ -58,48 +57,73 @@ class BackedMeta:
     uns_keys: tuple[str, ...]
 
 
+def _read_elem(payload: Any) -> Any:
+    """``anndata.io.read_elem`` on 0.11+, ``anndata.experimental.read_elem`` before."""
+    try:  # anndata >= 0.11
+        from anndata.io import read_elem
+    except ImportError:  # anndata 0.10.x
+        from anndata.experimental import read_elem
+    return read_elem(payload)
+
+
+def _matrix_shape(handle: h5py.File) -> tuple[int, int] | None:
+    """``(n_obs, n_vars)`` from the ``X`` node header, without reading values."""
+    if "X" not in handle:
+        return None
+    node = handle["X"]
+    if isinstance(node, h5py.Group):
+        raw = node.attrs.get("shape")
+        if raw is None:  # pragma: no cover - defensive
+            return None
+        return (int(raw[0]), int(raw[1]))
+    if isinstance(node, h5py.Dataset) and len(node.shape) == 2:
+        return (int(node.shape[0]), int(node.shape[1]))
+    return None  # pragma: no cover - defensive
+
+
 def open_obs_var(path: Path | str) -> BackedMeta:
-    """Open *path* backed and return ``obs`` / ``var`` copies plus ``uns`` keys.
+    """Decode ``obs`` / ``var`` / ``uns`` keys from an h5ad header.
 
-    Metadata reads are cheap; the expression matrices are never touched.  The
-    backed handle is cached per path and closed by :func:`close_backed` (or at
-    process exit) so repeated metadata calls do not re-parse a 16 GB file.
+    Reads the element groups with h5py instead of ``anndata.read_h5ad(backed="r")``:
+    backed mode keeps ``X`` lazy but **materialises every layer**, which is 8.1 GB
+    for the frozen Tahoe view and 12.9 GB for the CM corpus — more than the WSL2
+    budget before training starts (see ``docs/agents/execution-environment.md``).
+    Here the peak stays proportional to the metadata (a few MB for 67k rows), and
+    ``X`` / ``layers`` are never touched.  The expression values have explicit
+    readers (:func:`read_layer_rows`, the ``cache`` memmap) or nothing.
     """
-    import anndata as ad
-
-    key = str(Path(path).resolve())
-    with _LOCK:
-        backed = _BACKED.get(key)
-        if backed is None:
-            try:
-                backed = ad.read_h5ad(path, backed="r")
-            except FileNotFoundError as exc:
-                raise H5Error(f"frozen artifact not found: {path}") from exc
-            _BACKED[key] = backed
+    path = Path(path)
+    if not path.exists():
+        raise H5Error(f"frozen artifact not found: {path}")
     try:
-        obs = backed.obs.copy()
-        var = backed.var.copy()
-        n_obs, n_vars = int(backed.n_obs), int(backed.n_vars)
-        uns_keys = tuple(sorted(str(k) for k in backed.uns.keys()))
-    except Exception as exc:  # pragma: no cover - defensive
+        with h5py.File(path, "r") as handle:
+            obs = _read_elem(handle["obs"]) if "obs" in handle else None
+            var = _read_elem(handle["var"]) if "var" in handle else None
+            uns_keys = (
+                tuple(sorted(str(k) for k in handle["uns"].keys())) if "uns" in handle else ()
+            )
+            shape = _matrix_shape(handle)
+    except (OSError, KeyError) as exc:
         raise H5Error(f"cannot read obs/var from {path}: {exc}") from exc
+    if obs is None or var is None:
+        raise H5Error(f"{path}: h5ad has no obs/var group")
+    n_obs, n_vars = int(len(obs)), int(len(var))
+    if shape is not None:
+        if shape != (n_obs, n_vars):
+            raise H5Error(
+                f"{path}: obs/var lengths {(n_obs, n_vars)} disagree with X shape {shape}"
+            )
+        n_obs, n_vars = shape
     return BackedMeta(n_obs, n_vars, obs, var, uns_keys)
 
 
 def close_backed(path: Path | str | None = None) -> None:
-    """Close one cached backed handle, or all of them when *path* is ``None``."""
-    with _LOCK:
-        keys = [str(Path(path).resolve())] if path is not None else list(_BACKED)
-        for key in keys:
-            handle = _BACKED.pop(key, None)
-            if handle is None:
-                continue
-            file_handle = getattr(handle, "file", None)
-            if file_handle is not None:
-                try:
-                    file_handle.close()
-                except Exception:  # pragma: no cover - defensive
-                    pass
+    """Deprecated no-op kept for API compatibility.
+
+    :func:`open_obs_var` no longer holds a backed handle (a backed open is what
+    materialised the layers), so there is nothing to close.
+    """
+    del path
 
 
 def _resolve_key(handle: h5py.File, candidates: Sequence[str]) -> str:
