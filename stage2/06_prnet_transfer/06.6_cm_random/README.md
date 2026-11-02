@@ -229,7 +229,9 @@ interpreters are overridable; `GPU_PY` must be the pinned CUDA env.
 - The run was launched from integration commit `e0e2d68` with this substep's driver scripts
   still uncommitted (they are committed immediately after); the training path was the
   committed, unmodified `06.4_pipeline`. `matrix_run.json` records `git.dirty: true` for
-  that reason.
+  that reason. `record.json.git` records the tree state when the record was written; it is
+  deliberately outside `content_sha256` (as is `created_utc`), so the record re-derives
+  byte-identically after later commits/merges and `make check` leaves the tree clean.
 - The GitHub issue #6 stays open until the lead's integration; `06.5`/`06.7`/`06.9` are
   unaffected by this substep except through the 15 checkpoint files.
 
@@ -242,4 +244,4 @@ Tracked: `AGENTS.md`, `README.md`, `execution/**` (matrix/queue/record scripts, 
 `matrix_run.json`, `resume_check.json`, `record_check.json`).
 Local/gitignored: `*.pt` weights under `output/runs/`, `output/input_cache/`,
 `output/hash_cache.json`, `output/queue_status.csv`, `output/logs/`, `output/_resume_probe/`,
-`output/record/*.tmp`.
+`output/record/*.tmp` (write-then-rename scratch, absent once written).

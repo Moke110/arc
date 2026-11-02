@@ -579,12 +579,15 @@ def build_record(*, data_dir: Path, out_dir: Path) -> dict[str, Any]:
     queue_sha = common.sha256_file(queue_path) if queue_path.exists() else None
 
     rows = derived["candidate_rows"]
+    # ``git`` and ``created_utc`` stay outside the hashed content on purpose: the
+    # record must re-derive byte-identically after later commits/merges, and the
+    # commit the matrix actually ran at is preserved in the embedded
+    # ``matrix_run.json`` (written once, at run time).
     content: dict[str, Any] = {
         "schema": RECORD_SCHEMA,
         "ticket": 6,
         "issue": "Moke110/arc#6",
         "title": "45 random-init CM candidates (5 folds x 3 seeds x 3 LRs) and per-fold LR selection",
-        "git": common.pt_manifest.git_info(common.REPO_ROOT),
         "data": {
             **derived["frozen"],
             "identity_sha256": derived["data_identity"],
@@ -646,6 +649,7 @@ def build_record(*, data_dir: Path, out_dir: Path) -> dict[str, Any]:
     }
     content_hash = common.content_sha256(content)
     record = {"created_utc": common.pt_manifest.now_utc(),
+              "git": common.pt_manifest.git_info(common.REPO_ROOT),
               "content_sha256": content_hash, **content}
     return {
         "record": record,
@@ -719,9 +723,10 @@ def check_record(*, data_dir: Path, out_dir: Path) -> tuple[bool, dict[str, Any]
     })
 
     passed = all(gate["ok"] for gate in gates)
+    # No timestamps here: the check report is a tracked, deterministic artifact, so a
+    # re-run on the same tree leaves the worktree clean.
     report = {
         "schema": CHECK_SCHEMA,
-        "created_utc": common.pt_manifest.now_utc(),
         "passed": passed,
         "n_checks": len(gates),
         "n_failed": sum(1 for gate in gates if not gate["ok"]),

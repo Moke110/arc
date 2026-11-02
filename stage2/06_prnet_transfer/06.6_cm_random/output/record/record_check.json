@@ -184,8 +184,8 @@
     },
     {
       "detail": {
-        "recomputed": "1b8a889fc0deaa8f6f7fdd76049cffc6ed2a0f2758a032e6ce2a3ea81b03b6b8",
-        "stored": "1b8a889fc0deaa8f6f7fdd76049cffc6ed2a0f2758a032e6ce2a3ea81b03b6b8"
+        "recomputed": "97194dc50728e2531cb8e4e928a45d9039a5b9ded475fd8910e7cea3a23b5466",
+        "stored": "97194dc50728e2531cb8e4e928a45d9039a5b9ded475fd8910e7cea3a23b5466"
       },
       "id": "record_content_sha256_matches",
       "ok": true
@@ -260,8 +260,7 @@
       "ok": true
     }
   ],
-  "content_sha256": "1b8a889fc0deaa8f6f7fdd76049cffc6ed2a0f2758a032e6ce2a3ea81b03b6b8",
-  "created_utc": "2026-11-02T07:42:44+00:00",
+  "content_sha256": "97194dc50728e2531cb8e4e928a45d9039a5b9ded475fd8910e7cea3a23b5466",
   "n_checks": 20,
   "n_failed": 0,
   "n_selected": 15,
