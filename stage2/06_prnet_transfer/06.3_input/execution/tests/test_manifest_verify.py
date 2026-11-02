@@ -85,7 +85,7 @@ class StubBuildVerifyTest(unittest.TestCase):
             shutil.copytree(self.out, target)
             path = target / "locked_config.json"
             config = json.loads(path.read_text())
-            config["optimisation"]["batch_size"] = 256
+            config["recipe"]["batch_size"] = 256
             path.write_text(json.dumps(config))
             self.assertEqual(build_input.main([
                 "--verify", "--allow-stub", "--out-root", str(scratch)]), 1)
@@ -111,9 +111,8 @@ class StubBuildVerifyTest(unittest.TestCase):
                          == "include").all())
 
     def test_folds_cover_exactly_the_main_set(self):
-        cm = ad.read_h5ad(self.out / "cm_transfer.h5ad", backed="r")
-        main = set(cm.obs.loc[cm.obs["main_set"].astype(bool), "drug_key"].astype(str))
-        cm.file.close()
+        obs = contract.read_h5ad_header(self.out / "cm_transfer.h5ad").obs
+        main = set(obs.loc[obs["main_set"].astype(bool), "drug_key"].astype(str))
         table = pd.read_parquet(self.out / "folds.parquet")
         self.assertEqual(set(table["drug_key"].astype(str)), main)
         self.assertEqual(set(table["role"]), {"train", "valid", "test"})
@@ -143,9 +142,20 @@ class StubBuildVerifyTest(unittest.TestCase):
 class MissingHandoffTest(unittest.TestCase):
     @unittest.skipUnless(HAVE_DATA, f"frozen data not under {contract.DATA_ROOT}")
     def test_build_fails_closed_without_handoffs(self):
+        """No handoff flags -> the search must fail closed, not build anything.
+
+        The overrides are explicit and non-existent: without them the builder
+        would find the real #1/#2 handoffs on the main checkout and start a real
+        freeze, which this test must never do (16 GB of Tahoe is 16 GB).
+        """
         with tempfile.TemporaryDirectory(prefix="06_3_nohandoff_") as tmp:
-            rc = build_input.main(["--out-root", tmp])
+            absent = Path(tmp) / "no_such_handoff"
+            rc = build_input.main(["--out-root", tmp,
+                                   "--eligibility", str(absent),
+                                   "--cm-qc", str(absent),
+                                   "--tahoe-qc", str(absent)])
             self.assertEqual(rc, 1)
+            self.assertFalse(contract.output_dir(tmp).exists())
 
 
 if __name__ == "__main__":

@@ -32,6 +32,7 @@ import pandas as pd
 from contract import (
     CM_OBS, CM_OBS_INHERITED, ContractError, N_GENES, TAHOE_OBS,
     TAHOE_OBS_INHERITED, TAHOE_VALID_PLATES, TIME_SOURCE_TAHOE, VAR_COLUMNS,
+    read_h5ad_header,
 )
 
 _WELL_RE = re.compile(r"^([A-Z]+)0*(\d+)$")
@@ -477,6 +478,27 @@ def write_cm_h5ad(path: Path, obs: pd.DataFrame, X: np.ndarray,
     adata.write_h5ad(path, compression="gzip")
 
 
+def _csr_row_slice(src_path: Path, n_rows: int, group: str = "X"):
+    """Leading `n_rows` of a CSR group, read straight from the h5py datasets.
+
+    Only the requested rows' `data`/`indices` are read, so `--tahoe-rows N`
+    costs O(N x nnz-per-row) instead of the whole 8 GB matrix.
+    """
+    import h5py
+    import scipy.sparse as sp
+    with h5py.File(src_path, "r") as handle:
+        node = handle[group]
+        shape = tuple(int(v) for v in node.attrs["shape"])
+        if n_rows > shape[0]:
+            raise ContractError(
+                f"{src_path}: row limit {n_rows} exceeds the {shape[0]} source rows")
+        indptr = np.asarray(node["indptr"][: int(n_rows) + 1], dtype=np.int64)
+        nnz = int(indptr[-1])
+        data = np.asarray(node["data"][:nnz], dtype=node["data"].dtype)
+        indices = np.asarray(node["indices"][:nnz], dtype=node["indices"].dtype)
+    return sp.csr_matrix((data, indices, indptr), shape=(int(n_rows), shape[1]))
+
+
 def write_tahoe_h5ad(src_path: Path, dst_path: Path, obs: pd.DataFrame,
                      var: pd.DataFrame, uns: dict, *,
                      row_limit: int | None = None) -> None:
@@ -484,8 +506,11 @@ def write_tahoe_h5ad(src_path: Path, dst_path: Path, obs: pd.DataFrame,
 
     Full build: h5py copies the `X` and `layers` groups between files without
     materialising either matrix, then the new `obs`/`var`/`uns` groups are
-    grafted in place of the source's.  `row_limit` (smoke only) materialises a
-    leading slice instead, so the writer path is exercised without 16 GB.
+    grafted in place of the source's.  `row_limit` (smoke only) reads a leading
+    CSR slice instead, so the writer path is exercised without 16 GB.
+
+    Neither path may call `anndata.read_h5ad(..., backed="r")`: backed mode
+    materialises `layers` (8.1 GB here), which is outside the memory envelope.
     """
     import anndata as ad
     import h5py
@@ -495,17 +520,16 @@ def write_tahoe_h5ad(src_path: Path, dst_path: Path, obs: pd.DataFrame,
         raise ContractError(f"tahoe var has {len(var)} rows, expected {N_GENES}")
 
     if row_limit is not None:
-        src = ad.read_h5ad(src_path, backed="r")
-        try:
-            sub = src[: int(row_limit)].to_memory()
-            sub_obs = obs.iloc[: int(row_limit)]
-            sub_obs.index = pd.Index(sub_obs.index.astype(str), name="well")
-            adata = ad.AnnData(X=sub.X, obs=sub_obs, var=var,
-                               layers={"log1p_cp10k": sub.layers["log1p_cp10k"]},
-                               uns=uns)
-            adata.write_h5ad(dst_path, compression="gzip")
-        finally:
-            src.file.close()
+        limit = int(row_limit)
+        sub_obs = obs.iloc[:limit].copy()
+        sub_obs.index = pd.Index(sub_obs.index.astype(str), name="well")
+        adata = ad.AnnData(
+            X=_csr_row_slice(src_path, limit, "X"),
+            obs=sub_obs, var=var, uns=uns,
+            layers={"log1p_cp10k": _csr_row_slice(src_path, limit,
+                                                  "layers/log1p_cp10k")},
+        )
+        adata.write_h5ad(dst_path, compression="gzip")
         return
 
     with tempfile.TemporaryDirectory(prefix="tahoe_shell_") as tmp:
@@ -528,32 +552,29 @@ def write_tahoe_h5ad(src_path: Path, dst_path: Path, obs: pd.DataFrame,
 
 
 def verify_tahoe_h5ad(path: Path, *, expected_rows: int | None = None) -> dict:
-    """Read back the written Tahoe artifact and assert the frozen schema."""
-    import anndata as ad
-    adata = ad.read_h5ad(path, backed="r")
-    try:
-        shape = tuple(adata.shape)
-        if expected_rows is not None and shape[0] != expected_rows:
-            raise ContractError(f"{path}: {shape[0]} rows, expected {expected_rows}")
-        if shape[1] != N_GENES:
-            raise ContractError(f"{path}: {shape[1]} genes, expected {N_GENES}")
-        if tuple(adata.var.index) != tuple(adata.var_names):
-            raise ContractError(f"{path}: var index is not the gene axis")
-        missing = [c for c in TAHOE_OBS if c not in adata.obs.columns]
-        if missing:
-            raise ContractError(f"{path}: obs missing columns {missing}")
-        if "control_mean" in adata.uns:
-            raise ContractError(f"{path}: inherited uns['control_mean'] must not be carried")
-        X = adata.X
-        if getattr(X, "dtype", None) != np.int32:
-            raise ContractError(f"{path}: X is {getattr(X, 'dtype', None)}, expected int32")
-        nnz = getattr(X, "nnz", None)
-        if nnz is None:                       # CSRDataset exposes only shape/dtype
-            import h5py
-            with h5py.File(path, "r") as fh:
-                nnz = int(fh["X/indptr"][-1])
-        return {"rows": int(shape[0]), "cols": int(shape[1]),
-                "nnz": int(nnz), "X_dtype": str(X.dtype),
-                "layers": sorted(map(str, adata.layers.keys()))}
-    finally:
-        adata.file.close()
+    """Read back the written Tahoe artifact's header and assert the frozen schema."""
+    header = read_h5ad_header(path)
+    shape = tuple(header.shape)
+    if expected_rows is not None and shape[0] != expected_rows:
+        raise ContractError(f"{path}: {shape[0]} rows, expected {expected_rows}")
+    if shape[1] != N_GENES:
+        raise ContractError(f"{path}: {shape[1]} genes, expected {N_GENES}")
+    if tuple(header.var.index.astype(str)) != tuple(header.var.index.astype(str).unique()) \
+            or len(header.var) != N_GENES:
+        raise ContractError(f"{path}: var does not hold {N_GENES} unique gene symbols")
+    if list(header.var.columns) != VAR_COLUMNS:
+        raise ContractError(
+            f"{path}: var columns are {list(header.var.columns)}, expected {VAR_COLUMNS}")
+    missing = [c for c in TAHOE_OBS if c not in header.obs.columns]
+    if missing:
+        raise ContractError(f"{path}: obs missing columns {missing}")
+    if "control_mean" in header.uns:
+        raise ContractError(f"{path}: inherited uns['control_mean'] must not be carried")
+    if header.x_dtype != "int32":
+        raise ContractError(f"{path}: X is {header.x_dtype}, expected int32")
+    if header.layer_names != ["log1p_cp10k"]:
+        raise ContractError(
+            f"{path}: layers are {header.layer_names}, expected ['log1p_cp10k']")
+    return {"rows": int(shape[0]), "cols": int(shape[1]),
+            "nnz": int(header.x_nnz), "X_dtype": str(header.x_dtype),
+            "layers": list(header.layer_names)}

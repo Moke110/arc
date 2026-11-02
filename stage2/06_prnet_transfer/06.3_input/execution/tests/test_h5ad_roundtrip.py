@@ -402,6 +402,63 @@ class TahoeWriterTest(unittest.TestCase):
                                      self.var, {})
 
 
+class NoBackedReadTest(unittest.TestCase):
+    """The 16 GB artifacts must never be opened through anndata's backed mode.
+
+    `anndata.read_h5ad(..., backed="r")` still materialises `layers`, i.e. 8.1 GB
+    for the frozen Tahoe view.  That regression is invisible in a small-synthetic
+    fixture, so the guard is explicit: with `anndata.read_h5ad` poisoned, every
+    header/verify path the builder uses must still succeed.
+    """
+
+    def setUp(self):
+        from unittest import mock
+        self._mock = mock.patch("anndata.read_h5ad",
+                                side_effect=AssertionError("backed read is forbidden"))
+        self._mock.start()
+        self.addCleanup(self._mock.stop)
+
+    def test_header_reader_does_not_touch_anndata(self):
+        obs, _, _ = cm_assembled_obs()
+        var = small_var()
+        X = np.arange(len(obs) * len(var), dtype=np.int32).reshape(len(obs), len(var))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "cm.h5ad"
+            ad.AnnData(X=X, obs=obs, var=var,
+                       layers={"log1p_cp10k": X.astype(np.float32)},
+                       uns={"schema": "x"}).write_h5ad(path)
+            header = contract.read_h5ad_header(path)
+        self.assertEqual(header.shape, (len(obs), len(var)))
+        self.assertEqual(header.x_dtype, "int32")
+        self.assertEqual(header.x_nnz, int(len(obs) * len(var)))
+        self.assertEqual(header.layer_names, ["log1p_cp10k"])
+        self.assertEqual(list(header.obs.columns), contract.CM_OBS)
+        self.assertEqual(header.uns, {"schema": "x"})
+
+    @unittest.skipUnless(HAVE_CM_DATA, f"frozen data not under {contract.DATA_ROOT}")
+    def test_tahoe_writer_and_verify_do_not_touch_anndata_backed(self):
+        import scipy.sparse as sp
+        obs = tahoe_assembled_obs()
+        var = small_var()
+        n = len(obs)
+        rng = np.random.default_rng(1)
+        dense = rng.integers(0, 3, size=(n, len(var))).astype(np.int32)
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            src = directory / "source.h5ad"
+            ad.AnnData(X=sp.csr_matrix(dense), obs=tahoe_inherited_obs(), var=var,
+                       layers={"log1p_cp10k": sp.csr_matrix(
+                           np.log1p(dense.astype(np.float32)))}).write_h5ad(src)
+            for limit in (None, 2):
+                dst = directory / f"transfer_{limit}.h5ad"
+                writers.write_tahoe_h5ad(src, dst, obs, var, {"schema": "x"},
+                                         row_limit=limit)
+                facts = writers.verify_tahoe_h5ad(
+                    dst, expected_rows=limit if limit is not None else n)
+                self.assertGreater(facts["nnz"], 0)
+                self.assertEqual(facts["layers"], ["log1p_cp10k"])
+
+
 class PinnedReaderTest(unittest.TestCase):
     """The trainer env (anndata 0.10.8) must read what the writer produced."""
 

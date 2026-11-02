@@ -44,8 +44,9 @@ from contract import (
     TIME_SOURCE_NOTE, TIME_SOURCE_TAHOE, TOOL_VERSION, TRACKED_RECORD,
     build_locked_config, canonical_json, config_digest, gene_measured_cm,
     gene_measured_tahoe, git_state, load_eligibility, load_gene_axis, load_qc,
-    output_dir, relpath, runtime_env, sha256_file, source_records,
-    split_combined_qc, tahoe_gene_space_ensembl,
+    output_dir, relpath, resolve_handoff, runtime_env, sha256_file,
+    source_records, split_combined_qc, tahoe_gene_space_ensembl,
+    read_h5ad_header,
 )
 
 # --------------------------------------------------------------------------- #
@@ -217,23 +218,35 @@ def load_tahoe_qc(args, tahoe_index, *, stub: bool):
 # --------------------------------------------------------------------------- #
 
 def load_cm_view(need_matrix: bool = True) -> dict:
-    import anndata as ad
+    """The frozen CM view: obs/var/uns always, X + log layer only on demand.
+
+    `need_matrix=False` is the planning/inspection path (`--check`, the build
+    preamble); it decodes the metadata with h5py so a fail-closed handoff check
+    does not pay for the 289 MB view, let alone its 650 MB of dense matrices.
+    """
     if not CM_VIEW.exists():
         raise ContractError(f"missing frozen CM view: {CM_VIEW}")
-    adata = ad.read_h5ad(CM_VIEW)
-    var = adata.var
+    if not need_matrix:
+        header = read_h5ad_header(CM_VIEW)
+        obs, var, uns = header.obs, header.var, header.uns
+        out: dict = {}
+    else:
+        import anndata as ad
+        adata = ad.read_h5ad(CM_VIEW)
+        try:
+            obs, var, uns = adata.obs.copy(), adata.var.copy(), dict(adata.uns)
+            out = {"X": np.asarray(adata.X),
+                   "log1p": np.asarray(adata.layers["log1p_cp10k"])}
+        finally:
+            if adata.file is not None:
+                adata.file.close()
+        if out["X"].dtype != np.int32 or out["log1p"].dtype != np.float32:
+            raise ContractError(
+                f"{CM_VIEW}: X {out['X'].dtype} layer {out['log1p'].dtype}, "
+                "expected int32/float32")
     if list(var.index.astype(str)) != list(load_gene_axis().index):
         raise ContractError(f"{CM_VIEW}: var is not the frozen gene axis")
-    out = {"obs": adata.obs.copy(), "var": var.copy(), "uns": dict(adata.uns)}
-    if need_matrix:
-        X = np.asarray(adata.X)
-        layer = np.asarray(adata.layers["log1p_cp10k"])
-        if X.dtype != np.int32 or layer.dtype != np.float32:
-            raise ContractError(
-                f"{CM_VIEW}: X {X.dtype} layer {layer.dtype}, expected int32/float32")
-        out["X"] = X
-        out["log1p"] = layer
-    adata.file.close() if adata.file is not None else None
+    out.update({"obs": obs, "var": var, "uns": uns})
     return out
 
 
@@ -268,7 +281,7 @@ def build_cm(handoffs, gene_axis, *, write: bool, out: Path) -> dict:
         "kept_media_controls": int((keep & obs["is_control"].astype(bool)
                                     & (obs["vehicle"].astype(str) == "Media")).sum()),
         "drug_keys_in_view": int(obs.loc[~obs["is_control"].astype(bool),
-                                         "drug_key"].astype(str).nunique() - 1),
+                                         "drug_key"].astype(str).nunique()),
     }
     decision = obs["eligibility_decision"].astype(str)
     counts["eligibility_include_drugs"] = int(
@@ -397,13 +410,9 @@ def tahoe_gene_nnz(path: Path, n_genes: int = N_GENES,
 
 def build_tahoe(qc: pd.DataFrame, gene_axis, *, tahoe_rows: int | None,
                 tahoe_measured: pd.Series) -> dict:
-    import anndata as ad
-    view = ad.read_h5ad(TAHOE_VIEW, backed="r")
-    try:
-        obs_all = view.obs.copy()
-        var = view.var.copy()
-    finally:
-        view.file.close()
+    header = read_h5ad_header(TAHOE_VIEW)
+    obs_all = header.obs
+    var = header.var
     if list(var.index.astype(str)) != list(gene_axis.index):
         raise ContractError(f"{TAHOE_VIEW}: var is not the frozen gene axis")
 
@@ -549,7 +558,6 @@ def _tahoe_uns(args, records, handoff_records) -> dict:
 def build(args) -> dict:
     env = _require_writer_env()
     out = output_dir(args.out_root)
-    out.mkdir(parents=True, exist_ok=True)
     if (out / ARTIFACTS["manifest"]).exists() and not args.force:
         raise ContractError(
             f"{out} already holds a frozen manifest; refusing to overwrite it "
@@ -571,6 +579,9 @@ def build(args) -> dict:
     log(f"handoffs: {len(eligibility)} eligibility rows, {len(cm_qc)} CM QC rows"
         + (", STUB mode (not a frozen build)" if stub else ""))
     del cm_preview
+    # Only create the artifact directory once every handoff has resolved: a
+    # fail-closed build must leave no half-initialised output tree behind.
+    out.mkdir(parents=True, exist_ok=True)
     handoff_checks: dict = {"stub": bool(stub)}
     handoff_checks["fold_seed"] = FOLD_SEED
     if not stub:
@@ -616,13 +627,8 @@ def build(args) -> dict:
     if args.skip_tahoe:
         log("Tahoe side skipped (--skip-tahoe)")
     else:
-        log("reading the frozen Tahoe view (backed, obs only)…")
-        import anndata as ad
-        preview = ad.read_h5ad(TAHOE_VIEW, backed="r")
-        try:
-            tahoe_index = preview.obs.index.astype(str).to_numpy()
-        finally:
-            preview.file.close()
+        log("reading the frozen Tahoe view (h5py, obs only — layers never loaded)…")
+        tahoe_index = read_h5ad_header(TAHOE_VIEW, with_uns=False).obs.index.astype(str).to_numpy()
         if args.tahoe_rows is not None:
             tahoe_index = tahoe_index[: int(args.tahoe_rows)]
         tahoe_qc, tahoe_qc_record = load_tahoe_qc(args, tahoe_index, stub=stub)
@@ -733,9 +739,9 @@ def build(args) -> dict:
     for name in [ARTIFACTS["cm"], ARTIFACTS["tahoe"], ARTIFACTS["folds"],
                  ARTIFACTS["consensus_controls"], ARTIFACTS["consensus_membership"],
                  ARTIFACTS["tahoe_control_groups"], ARTIFACTS["tahoe_pairs"],
-                 ARTIFACTS["locked_config"], ARTIFACTS["counts"],
-                 ARTIFACTS["fold_sizes"], ARTIFACTS["consensus_summary"],
-                 ARTIFACTS["var_checks"]]:
+                 ARTIFACTS["locked_config"], ARTIFACTS["contract"],
+                 ARTIFACTS["counts"], ARTIFACTS["fold_sizes"],
+                 ARTIFACTS["consensus_summary"], ARTIFACTS["var_checks"]]:
         path = out / name
         if not path.exists():
             continue
@@ -867,9 +873,13 @@ def verify(args) -> dict:
     check("locked_config sha256", sha256_file(config_path) == manifest["config"]["sha256"])
     check("locked_config decisions unchanged", expected_digest == manifest["config"]["digest"],
           "the config is a fixed decision document, not a per-build output")
-    for key in ("model", "dose_encoding", "loss", "optimisation", "metric",
-                "test_units", "prediction"):
-        check(f"locked_config has {key}", key in locked)
+    for key in ("structure", "recipe", "metric", "loss", "optimizer",
+                "prediction_noise", "n_folds", "seeds", "lrs", "dose_encoding"):
+        check(f"locked_config has canonical {key}", key in locked)
+    # The decision record the pipeline must not re-tune travels beside the schema.
+    for key in ("folds", "consensus_control", "validation", "lr_selection",
+                "test_units", "derived_defaults", "data_contract"):
+        check(f"locked_config carries the decision record {key}", key in locked)
 
     # 3. Gene axis equality across corpus and both artifacts.
     gene_axis = load_gene_axis()
@@ -878,19 +888,18 @@ def verify(args) -> dict:
     check("cm var order == corpus/v1 genes.csv", axis_ok)
     check("cm obs columns == frozen contract", list(cm.obs.columns) == CM_OBS)
     tahoe_path = out / ARTIFACTS["tahoe"]
-    tahoe = None
+    header = None
     if tahoe_path.exists():
-        tahoe = ad.read_h5ad(tahoe_path, backed="r")
+        header = read_h5ad_header(tahoe_path)
         check("tahoe var order == corpus/v1 genes.csv",
-              list(tahoe.var.index.astype(str)) == list(gene_axis.index))
+              list(header.var.index.astype(str)) == list(gene_axis.index))
         check("tahoe obs columns == frozen contract",
-              list(tahoe.obs.columns) == TAHOE_OBS)
+              list(header.obs.columns) == TAHOE_OBS)
         check("tahoe carries no inherited uns['control_mean']",
-              "control_mean" not in tahoe.uns)
-        X = tahoe.X
-        check("tahoe X is int32 CSR", getattr(X, "dtype", None) == np.int32)
-        check("tahoe layers == ['log1p_cp10k']",
-              sorted(map(str, tahoe.layers.keys())) == ["log1p_cp10k"])
+              "control_mean" not in header.uns)
+        check("tahoe X is int32 CSR", header.x_dtype == "int32"
+              and int(header.x_nnz) >= 0)
+        check("tahoe layers == ['log1p_cp10k']", header.layer_names == ["log1p_cp10k"])
     check("cm carries no inherited uns['control_mean']", "control_mean" not in cm.uns)
 
     # 4. CM value contract.
@@ -971,7 +980,7 @@ def verify(args) -> dict:
         # Per-observation QC reconciliation: the CM artifact holds exactly the
         # QC-pass rows, and every Tahoe row carries the handoff's decision.
         cm_ids = pd.Index(cm.obs.index.astype(str))
-        tahoe_obs = tahoe.obs if tahoe is not None else None
+        tahoe_obs = header.obs if header is not None else None
         cm_qc_table = None
         for record in manifest["handoffs"]:
             if record["kind"] not in ("cm_qc", "tahoe_qc"):
@@ -1070,8 +1079,8 @@ def verify(args) -> dict:
               sha256_file(DATA_ROOT / record["path"]) == record["sha256"])
 
     # 8. Tahoe counts + control membership consistency.
-    if tahoe is not None:
-        obs = tahoe.obs
+    if header is not None:
+        obs = header.obs
         usable = obs["tahoe_usable"].astype(bool)
         check("tahoe usable treated reconciles",
               counts["tahoe"]["usable_treated"] == int(usable.sum()),
@@ -1136,11 +1145,10 @@ def verify(args) -> dict:
         ens = tahoe_gene_space_ensembl()
         measured = gene_measured_tahoe(gene_axis, ens)
         check("tahoe gene_measured == Ensembl membership",
-              bool((tahoe.var["gene_measured"].to_numpy() == measured.to_numpy()).all()))
+              bool((header.var["gene_measured"].to_numpy() == measured.to_numpy()).all()))
         check("only FAM153B is unmeasured in Tahoe",
               int((~measured).sum()) == 1 and not bool(measured.loc["FAM153B"])
               if "FAM153B" in measured.index else False)
-        tahoe.file.close()
 
     # 8b. contract.json describes every field downstream code may read.
     contract_path = out / ARTIFACTS["contract"]
@@ -1153,7 +1161,7 @@ def verify(args) -> dict:
                               ARTIFACTS["consensus_controls"],
                               ARTIFACTS["consensus_membership"],
                               ARTIFACTS["locked_config"]]
-        if tahoe is not None:
+        if header is not None:
             required_artifacts += [ARTIFACTS["tahoe"],
                                    ARTIFACTS["tahoe_control_groups"],
                                    ARTIFACTS["tahoe_pairs"]]
@@ -1166,7 +1174,7 @@ def verify(args) -> dict:
                       "chemical_index", "matched_control_ok", "drug_key", "dose_um",
                       "is_control", "vehicle", "plate", "replicate"):
             check(f"contract.json carries cm field {field}", field in cm_fields)
-        if tahoe is not None:
+        if header is not None:
             ta_fields = {entry["name"]
                          for entry in described[ARTIFACTS["tahoe"]]["obs_columns"]}
             for field in ("tahoe_split", "tahoe_usable", "physical_well",
@@ -1176,7 +1184,7 @@ def verify(args) -> dict:
             check("contract.json exposes c* as an array",
                   "c_star" in described[ARTIFACTS["consensus_controls"]]["arrays"])
             check("contract.json exposes tahoe_pairs arrays",
-                  {"treated_row", "control_group", "usable", "split"}
+                  {"row", "group_index", "usable", "split"}
                   == set(described[ARTIFACTS["tahoe_pairs"]]["arrays"]))
         fold_columns = {entry["name"]
                         for entry in described[ARTIFACTS["folds"]]["columns"]}
@@ -1247,7 +1255,7 @@ def write_contract_json(out: Path, cm: dict, tahoe: dict | None,
             "seed": FOLD_SEED,
             "split_unit": "drug_key",
             "roles": ["train", "valid", "test"],
-            "primary_key": ["drug_key", "fold", "plate"],
+            "primary_key": ["drug_key", "fold"],
             "population": "main_set drugs only; every main-set drug is test in exactly one "
                           "fold and valid in exactly one fold",
             "excluded": "exclude/uncertain drugs have no fold row and are never test/valid",
@@ -1315,7 +1323,12 @@ def write_contract_json(out: Path, cm: dict, tahoe: dict | None,
         }
     document["artifacts"][ARTIFACTS["folds"]] = {
         "format": "parquet", "tracked": True, "rows": int(len(fold_table)),
-        "primary_key": ["drug_key", "fold", "plate"],
+        "primary_key": ["drug_key", "fold"],
+        "meaning": "one row per (drug_key, fold): role is train|valid|test and every "
+                   "main-set drug appears in all five folds exactly once as test and once "
+                   "as valid. `plate` holds the drug's plate(s) ';'-joined (n_plates counts "
+                   "them); the per-plate long form is not exported because a consumer keys "
+                   "the split by drug_key alone",
         "columns": columns(fold_table),
     }
     document["artifacts"][ARTIFACTS["consensus_controls"]] = {
@@ -1400,8 +1413,29 @@ def _flatten_dict(counts: dict) -> dict[str, str]:
 # --check
 # --------------------------------------------------------------------------- #
 
+def _discover_qc(args, kind: str):
+    """Resolve one per-source QC table, falling back to #2's combined table."""
+    override = {
+        "cm_qc": args.qc or args.cm_qc,
+        "tahoe_qc": args.qc or args.tahoe_qc,
+    }[kind]
+    if override:
+        return Path(override).expanduser().resolve(), "override"
+    try:
+        return resolve_handoff(kind), "per-source"
+    except ContractError:
+        pass
+    return resolve_handoff("qc_combined"), "combined"
+
+
 def check(args) -> dict:
-    """Validate the frozen sources and report the build plan.  Writes nothing."""
+    """Validate the frozen sources and the resolved handoffs.  Writes nothing.
+
+    This is the pre-freeze gate: it reads the 289 MB CM view's metadata and both
+    handoffs (never the 16 GB Tahoe matrix), validates their schema and reports
+    what the build would do.  A handoff that is absent is reported as blocking
+    ticket #1/#2; a handoff that is present but malformed raises.
+    """
     gene_axis = load_gene_axis()
     records = source_records()
     log(f"gene axis: {N_GENES} symbols, {gene_axis['ensembl_id'].nunique()} Ensembl ids")
@@ -1409,21 +1443,46 @@ def check(args) -> dict:
         log(f"source {record.role}: {relpath(record.path)} ({record.bytes:,} B)")
 
     cm_preview = load_cm_view(need_matrix=False)
-    log(f"CM view: {len(cm_preview['obs'])} rows x 18,164 genes")
-    qc_available = {}
-    from contract import HANDOFF_CANDIDATES
-    for kind in ("eligibility", "cm_qc", "tahoe_qc"):
-        found = None
-        for rel in HANDOFF_CANDIDATES[kind]:
-            if (STEP_DATA / rel).exists():
-                found = STEP_DATA / rel
-                break
-        qc_available[kind] = relpath(found) if found else None
-        log(f"handoff {kind}: {qc_available[kind] or 'NOT PRESENT (blocked on #1/#2)'}")
+    cm_obs = cm_preview["obs"]
+    log(f"CM view: {len(cm_obs)} rows x {N_GENES:,} genes "
+        f"({int((~cm_obs['is_control'].astype(bool)).sum())} treated)")
+    report: dict = {"handoffs": {}, "blocked": []}
+
+    # --- #1 eligibility -----------------------------------------------------
+    try:
+        path = resolve_handoff("eligibility", args.eligibility)
+        table, record = load_eligibility(path)
+        counts = table["eligibility_decision"].value_counts().to_dict()
+        log(f"handoff eligibility: {relpath(record.path)} "
+            f"({len(table)} keys; " + ", ".join(
+                f"{k}={counts.get(k, 0)}" for k in ELIGIBILITY_DECISIONS) + ")")
+        report["handoffs"]["eligibility"] = record.as_dict()
+    except ContractError as exc:
+        log(f"handoff eligibility: BLOCKED — {exc}")
+        report["blocked"].append("eligibility")
+
+    # --- #2 per-observation QC ---------------------------------------------
+    for kind, label in (("cm_qc", "CM"), ("tahoe_qc", "Tahoe")):
+        try:
+            path, how = _discover_qc(args, kind)
+            table, record = read_qc_handoff(path, "cm" if kind == "cm_qc" else "tahoe")
+            passed = int(table["qc_pass"].astype(bool).sum())
+            log(f"handoff {kind}: {relpath(record.path)} [{how}] "
+                f"({len(table)} rows, {passed} QC-pass)")
+            report["handoffs"][kind] = {**record.as_dict(), "resolved_as": how}
+        except ContractError as exc:
+            log(f"handoff {kind}: BLOCKED — {exc}")
+            report["blocked"].append(kind)
+
     log("tahoe valid plates: plate13, plate14 (existing technical default)")
     log("folds: 5 by drug_key, seed 20261102, capacity ceil(n_main_drugs/5)")
-    log("check: PASS — frozen sources readable and on the corpus gene axis")
-    return {"handoffs": qc_available}
+    if report["blocked"]:
+        log("check: PASS for the frozen sources — still blocked on "
+            f"{', '.join(report['blocked'])}")
+    else:
+        log("check: PASS — frozen sources readable and both handoffs valid; "
+            "ready to freeze")
+    return report
 
 
 # --------------------------------------------------------------------------- #

@@ -298,7 +298,9 @@ def fold_sizes(table: pd.DataFrame) -> pd.DataFrame:
     grouped = (table.groupby(["fold", "role"], observed=True)
                .agg(n_drugs=("drug_key", "nunique"),
                     n_wells=("n_wells", "sum"),
-                    n_plates=("plate", "nunique"),
+                    # accept both the long form (one plate per row) and the
+                    # collapsed export (';'-joined plates)
+                    n_plates=("plate", lambda values: len(_split_plates(values))),
                     n_doses=("n_doses", "sum"))
                .reset_index())
     grouped["fold"] = grouped["fold"].astype(int)
@@ -316,7 +318,8 @@ def fold_sizes(table: pd.DataFrame) -> pd.DataFrame:
         "valid_wells": wells["valid"].values,
         "train_wells": wells["train"].values,
     })
-    plates = (table.groupby(["fold", "role"], observed=True)["plate"].nunique()
+    plates = (table.groupby(["fold", "role"], observed=True)["plate"]
+              .apply(lambda values: len(_split_plates(values)))
               .unstack(fill_value=0).reindex(columns=list(FOLD_ROLES)).fillna(0).astype(int))
     out["test_plates"] = plates["test"].values
     out["valid_plates"] = plates["valid"].values
