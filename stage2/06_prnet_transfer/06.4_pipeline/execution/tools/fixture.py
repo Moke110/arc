@@ -105,10 +105,22 @@ def _cm_frame(
     well_counter = 0
 
     def next_well(plate: str) -> str:
+        """Plate-well id from a 12-column grid with spreadsheet column letters.
+
+        ``A``..``Z`` then ``AA``..: a plain ``% 26`` wrap repeated the letter
+        (and therefore the well id) once a fixture needed more than 312 wells
+        per plate.  Ids stay unique for any fixture size.
+        """
         nonlocal well_counter
         well_counter += 1
-        letter = chr(ord("A") + (well_counter // 12) % 26)
-        return f"{plate}-{letter}{well_counter % 12 + 1:02d}"
+        index = well_counter - 1
+        letters = ""
+        column = index // 12
+        while column >= 0:
+            column, remainder = divmod(column, 26)
+            letters = chr(ord("A") + remainder) + letters
+            column -= 1
+        return f"{plate}-{letters}{index % 12 + 1:02d}"
 
     # controls: per plate 4 QC-pass DMSO, 1 QC-fail DMSO, 1 QC-pass Media
     for plate in CM_PLATES:
@@ -204,6 +216,8 @@ def _cm_frame(
             )
 
     obs = pd.DataFrame(rows)
+    if obs["well"].duplicated().any():
+        raise AssertionError("fixture CM well id is not unique (well grid wrapped)")
     counts = rng.poisson(lam=3.0, size=(len(obs), n_genes)).astype(np.int32)
     # Make the fixture's response signal detectable: treated wells on the first
     # few genes get a drug/dose-dependent shift, so AUPRC has something to rank.
