@@ -21,6 +21,7 @@ import os
 import platform
 import resource
 import subprocess
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -179,12 +180,32 @@ def _load_hash_cache(path: Path | None) -> dict[str, Any]:
 
 
 def _save_hash_cache(path: Path | None, payload: Mapping[str, Any]) -> None:
+    """Persist the frozen-artifact hash memo; safe for concurrent queue workers.
+
+    The memo path is shared by every unit of a parallel queue, so a fixed
+    ``<name>.tmp`` makes two simultaneous completions race: both write the same
+    temp file, the first ``replace`` moves it away, and the second raises
+    ``FileNotFoundError`` — killing that training unit with a data-path error that
+    has nothing to do with the data.  A unique temp file in the same directory
+    keeps the write atomic without a cross-process lock; the last writer wins and
+    every writer succeeds.
+    """
     if path is None:
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    tmp.replace(path)
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=path.name + ".", suffix=".tmp", dir=str(path.parent)
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
 
 
 def verify_artifacts(

@@ -208,5 +208,41 @@ class ResumeTests(unittest.TestCase):
         self.assertFalse(complete)
 
 
+class ConcurrentHashCacheTests(unittest.TestCase):
+    """The hash memo is shared by every worker of a parallel training queue.
+
+    Ticket #7 lost one candidate to this: two simultaneous units both wrote a
+    fixed ``hash_cache.json.tmp``, the first ``Path.replace`` moved it away and the
+    second raised ``FileNotFoundError``, failing that unit through no fault of its
+    data.  Saves must therefore use unique temp files.
+    """
+
+    def test_concurrent_saves_all_succeed_without_leftovers(self):
+        import concurrent.futures
+        import json as _json
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "hash_cache.json"
+            payloads = [
+                {"entry": index, "sha256": f"{index:064d}"} for index in range(8)
+            ]
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+                futures = [
+                    pool.submit(manifest._save_hash_cache, path, payload)
+                    for _ in range(20)
+                    for payload in payloads
+                ]
+                for future in futures:
+                    future.result()  # the old fixed-tmp code raised FileNotFoundError
+
+            stored = _json.loads(path.read_text(encoding="utf-8"))
+            self.assertIn(stored, payloads)
+            leftovers = sorted(
+                entry.name for entry in Path(tmp).iterdir() if entry.name != path.name
+            )
+            self.assertEqual(leftovers, [])
+
+
 if __name__ == "__main__":
     unittest.main()
