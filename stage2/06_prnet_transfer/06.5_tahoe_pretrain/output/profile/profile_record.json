@@ -1,0 +1,1532 @@
+{
+  "budget": {
+    "kind": "profile",
+    "overrides": {},
+    "overrides_by_unit": {
+      "tahoe_seed20261021_one-epoch": {
+        "max_epochs": 1,
+        "min_epochs": 1
+      },
+      "tahoe_seed20261021_smoke": {
+        "max_epochs": 2,
+        "min_epochs": 1
+      }
+    },
+    "profile_budgets": [
+      "smoke",
+      "one-epoch"
+    ],
+    "reference": {
+      "batch_size": 512,
+      "early_stop_patience": 20,
+      "lr": 0.001,
+      "max_epochs": 100,
+      "min_epochs": 20,
+      "min_lr": 1e-08,
+      "sched_factor": 0.5,
+      "sched_patience": 10,
+      "weight_decay": 1e-08
+    },
+    "row_subset": true,
+    "smoke": false
+  },
+  "command": [
+    "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/execution/run_pretrain.py",
+    "--mode",
+    "profile",
+    "--data-dir",
+    "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "--cache",
+    "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+    "--table-cache",
+    "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache",
+    "--resume"
+  ],
+  "complete": true,
+  "created_utc": "2026-11-02T07:31:19+00:00",
+  "expected": {
+    "budget": {
+      "batch_size": 512,
+      "early_stop_patience": 20,
+      "lr": 0.001,
+      "max_epochs": 100,
+      "min_epochs": 20,
+      "min_lr": 1e-08,
+      "sched_factor": 0.5,
+      "sched_patience": 10,
+      "weight_decay": 1e-08
+    },
+    "config_sha256": {
+      "tahoe_seed20261021_one-epoch": "e9fa888338a709999b15ae9d7f447de3b793b4d81231cac7d50f158cda38dc72",
+      "tahoe_seed20261021_smoke": "5c856b55101d789f5d0b0d9c438a75d5a9121f92141cf99c4fc24b1ead826c66"
+    },
+    "config_sha256_by_seed": {},
+    "locked_config_sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+    "loss": "gaussian_nll",
+    "lrs": {
+      "cm": [
+        0.0001,
+        0.0003,
+        0.001
+      ],
+      "pretrain": 0.001
+    },
+    "metric": {
+      "k": 200,
+      "name": "direction_auprc",
+      "plateau_mode": "max"
+    },
+    "n_folds": 5,
+    "optimizer": "adam",
+    "prediction_noise": "zero",
+    "seeds": [
+      20261021,
+      20261022,
+      20261023
+    ],
+    "structure": {
+      "adaptor": [
+        128
+      ],
+      "c_dim": 64,
+      "dropout": 0.05,
+      "drug_dim": 1024,
+      "hidden": [
+        128
+      ],
+      "n_dim": 10,
+      "n_genes": 18164,
+      "z_dim": 64
+    }
+  },
+  "git": {
+    "branch": "feat/pt/t05-pretrain",
+    "dirty": true,
+    "root": "/home/chang/arc-wt/t05-pretrain",
+    "sha": "e0e2d6806afc3a546a38e8e65dad1fa2a268b6dd"
+  },
+  "host": {
+    "cgroup": {
+      "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/run-r85fb9b22d7c74310aeec811fca208e87.scope",
+      "invocation": "51db1d73d68f4dd48c4a750580c387dc",
+      "memory_max": "12884901888"
+    },
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "cuda_device_total_mib": 16376.0,
+    "cwd": "/home/chang/arc-wt/t05-pretrain",
+    "mem_available_gib_at_start": 42.2,
+    "python": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "python_version": "3.9.25",
+    "repo_root": "/home/chang/arc-wt/t05-pretrain",
+    "requested_device": "cuda",
+    "torch": "2.0.1+cu118"
+  },
+  "input": {
+    "artifact_bytes": {
+      "cm_transfer.h5ad": 218559498,
+      "consensus_controls.npz": 330656,
+      "consensus_membership.parquet": 7517,
+      "consensus_summary.csv": 733,
+      "contract.json": 40655,
+      "counts.csv": 4636,
+      "fold_sizes.csv": 273,
+      "folds.parquet": 12966,
+      "locked_config.json": 9681,
+      "tahoe_control_groups.parquet": 21588,
+      "tahoe_pairs.npz": 91671,
+      "tahoe_transfer.h5ad": 16207298308,
+      "var_checks.csv": 911969
+    },
+    "artifacts": {
+      "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+      "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+      "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+      "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+      "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+      "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+      "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+      "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+      "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+      "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+      "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+      "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+    },
+    "cache": {
+      "built_utc": "2026-11-02T04:21:46+00:00",
+      "bytes": 4869259936,
+      "dtype": "float32",
+      "file_sha256": "b2bb89e9411d0e9304c7fca4447839aec34b7bec0d36117644c977bf9163d0f6",
+      "layer_sha256": "f39c4cb322512870a2c47ab3bb446e6ee9a92b365e4c8d70bf5f9995f8b03c77",
+      "path": "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+      "sample_max_abs_diff": 0.0,
+      "schema": "ptlib.tahoe_log1p_cache/v1",
+      "shape": [
+        67018,
+        18164
+      ],
+      "source_sha256": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15"
+    },
+    "contract_sha256": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+    "control_groups": {
+      "n_control_members": 1294,
+      "n_groups": 649,
+      "n_pairs": 60861,
+      "rule": "mean of the same (plate, cell_line) group's QC-pass control rows on the log layer (tahoe_control_groups.parquet + tahoe_pairs.npz); never across cell lines"
+    },
+    "counts_csv": {
+      "cm": {
+        "consensus": {
+          "fold_n_plates": [
+            16,
+            15,
+            15,
+            15,
+            16
+          ],
+          "fold_n_wells": [
+            138,
+            127,
+            132,
+            132,
+            138
+          ],
+          "members_total": 667,
+          "per_fold_plates": [
+            {
+              "fold": 0,
+              "n_plates": 16,
+              "n_wells": 138,
+              "plates": [
+                "Plate1",
+                "Plate10",
+                "Plate11",
+                "Plate12",
+                "Plate13",
+                "Plate14",
+                "Plate15",
+                "Plate16",
+                "Plate2",
+                "Plate3",
+                "Plate4",
+                "Plate5",
+                "Plate6",
+                "Plate7",
+                "Plate8",
+                "Plate9"
+              ]
+            },
+            {
+              "fold": 1,
+              "n_plates": 15,
+              "n_wells": 127,
+              "plates": [
+                "Plate1",
+                "Plate10",
+                "Plate11",
+                "Plate12",
+                "Plate13",
+                "Plate14",
+                "Plate15",
+                "Plate16",
+                "Plate3",
+                "Plate4",
+                "Plate5",
+                "Plate6",
+                "Plate7",
+                "Plate8",
+                "Plate9"
+              ]
+            },
+            {
+              "fold": 2,
+              "n_plates": 15,
+              "n_wells": 132,
+              "plates": [
+                "Plate1",
+                "Plate10",
+                "Plate11",
+                "Plate13",
+                "Plate14",
+                "Plate15",
+                "Plate16",
+                "Plate2",
+                "Plate3",
+                "Plate4",
+                "Plate5",
+                "Plate6",
+                "Plate7",
+                "Plate8",
+                "Plate9"
+              ]
+            },
+            {
+              "fold": 3,
+              "n_plates": 15,
+              "n_wells": 132,
+              "plates": [
+                "Plate1",
+                "Plate10",
+                "Plate11",
+                "Plate13",
+                "Plate14",
+                "Plate15",
+                "Plate16",
+                "Plate2",
+                "Plate3",
+                "Plate4",
+                "Plate5",
+                "Plate6",
+                "Plate7",
+                "Plate8",
+                "Plate9"
+              ]
+            },
+            {
+              "fold": 4,
+              "n_plates": 16,
+              "n_wells": 138,
+              "plates": [
+                "Plate1",
+                "Plate10",
+                "Plate11",
+                "Plate12",
+                "Plate13",
+                "Plate14",
+                "Plate15",
+                "Plate16",
+                "Plate2",
+                "Plate3",
+                "Plate4",
+                "Plate5",
+                "Plate6",
+                "Plate7",
+                "Plate8",
+                "Plate9"
+              ]
+            }
+          ]
+        },
+        "dropped_qc_fail_controls": 70,
+        "dropped_qc_fail_treated": 461,
+        "drug_keys_in_view": 460,
+        "eligibility_exclude_drugs": 314,
+        "eligibility_include_drugs": 118,
+        "eligibility_include_without_usable_well": 0,
+        "eligibility_uncertain_drugs": 28,
+        "expanded_train_drugs": 432,
+        "expansion_set_drugs": 314,
+        "expansion_set_wells": 2553,
+        "folds": {
+          "max_drugs_per_fold": 24,
+          "n_fold_rows": 590,
+          "n_folds": 5,
+          "seed": 20261102,
+          "test_drugs": [
+            23,
+            23,
+            24,
+            24,
+            24
+          ],
+          "test_wells": [
+            192,
+            188,
+            191,
+            190,
+            190
+          ],
+          "train_drugs": [
+            72,
+            71,
+            70,
+            70,
+            71
+          ],
+          "train_wells": [
+            571,
+            572,
+            570,
+            571,
+            569
+          ],
+          "valid_drugs": [
+            23,
+            24,
+            24,
+            24,
+            23
+          ],
+          "valid_wells": [
+            188,
+            191,
+            190,
+            190,
+            192
+          ]
+        },
+        "kept_controls": 202,
+        "kept_dmso_controls": 138,
+        "kept_media_controls": 64,
+        "kept_rows": 3947,
+        "kept_treated": 3745,
+        "main_set_doses": [
+          0.2,
+          1.0,
+          10.0
+        ],
+        "main_set_drugs": 118,
+        "main_set_plates": 16,
+        "main_set_wells": 951,
+        "main_set_without_matched_control": 0,
+        "matched_control_source": "handoff",
+        "qc_fail_controls_view": 70,
+        "qc_fail_rows": 531,
+        "qc_fail_treated_view": 461,
+        "qc_pass_rows": 3947,
+        "qc_pass_vehicle": {
+          "dmso": 138,
+          "media": 64
+        },
+        "view_controls": 272,
+        "view_rows": 4478,
+        "view_treated": 4206
+      },
+      "consensus": {
+        "fold_n_plates": [
+          16,
+          15,
+          15,
+          15,
+          16
+        ],
+        "fold_n_wells": [
+          138,
+          127,
+          132,
+          132,
+          138
+        ],
+        "members_total": 667,
+        "per_fold_plates": [
+          {
+            "fold": 0,
+            "n_plates": 16,
+            "n_wells": 138,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate12",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 1,
+            "n_plates": 15,
+            "n_wells": 127,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate12",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 2,
+            "n_plates": 15,
+            "n_wells": 132,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 3,
+            "n_plates": 15,
+            "n_wells": 132,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 4,
+            "n_plates": 16,
+            "n_wells": 138,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate12",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          }
+        ]
+      },
+      "folds": {
+        "max_drugs_per_fold": 24,
+        "n_fold_rows": 590,
+        "n_folds": 5,
+        "seed": 20261102,
+        "test_drugs": [
+          23,
+          23,
+          24,
+          24,
+          24
+        ],
+        "test_wells": [
+          192,
+          188,
+          191,
+          190,
+          190
+        ],
+        "train_drugs": [
+          72,
+          71,
+          70,
+          70,
+          71
+        ],
+        "train_wells": [
+          571,
+          572,
+          570,
+          571,
+          569
+        ],
+        "valid_drugs": [
+          23,
+          24,
+          24,
+          24,
+          23
+        ],
+        "valid_wells": [
+          188,
+          191,
+          190,
+          190,
+          192
+        ]
+      },
+      "genes": 18164,
+      "tahoe": {
+        "all_zero_measured_genes": 17,
+        "cell_lines": 50,
+        "control_groups": 649,
+        "control_members": 1294,
+        "controls": 1400,
+        "drug_keys": 354,
+        "groups_with_zero_qc_pass": 51,
+        "has_structure_false": 1700,
+        "matched_control_source": "handoff",
+        "pairs": 60861,
+        "pairs_skipped_no_control": 4757,
+        "plates": 14,
+        "qc_fail_controls": 106,
+        "qc_fail_rows": 6203,
+        "qc_fail_treated": 6097,
+        "rows": 67018,
+        "split_train_rows": 57422,
+        "split_valid_rows": 9596,
+        "time_source": "literature:10.1016/j.cell.2026.08.035",
+        "treated": 65618,
+        "unmeasured_genes": 1,
+        "usable_train": 50520,
+        "usable_treated": 59044,
+        "usable_valid": 8524,
+        "usable_without_pair": 0,
+        "valid_conditions": 8896
+      },
+      "tahoe_unmeasured_genes": 1
+    },
+    "data_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "gene_axis": {
+      "identity_columns": [
+        "hgnc_id",
+        "entrez_id",
+        "ensembl_id",
+        "match_type"
+      ],
+      "measurement_mask": "var.gene_measured is PER SOURCE: all True in cm_transfer.h5ad; False only for FAM153B in tahoe_transfer.h5ad.  It is gene-space membership, never a non-zero-count test (18 all-zero Tahoe columns are measured).",
+      "n_genes": 18164,
+      "order": "stage2/02_cm_data/output/corpus/v1/genes.csv (HGNC symbol, frozen order)"
+    },
+    "locked_config_sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+    "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
+    "table_cache": {
+      "manifest_sha256": "398f69b499003e9fa5970932147ab32670302c5d10f537f2354300930c4afb59",
+      "path": "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache",
+      "tables": {
+        "consensus_membership.parquet": {
+          "csv": "consensus_membership.csv",
+          "source_sha256": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676"
+        },
+        "folds.parquet": {
+          "csv": "folds.csv",
+          "source_sha256": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4"
+        },
+        "tahoe_control_groups.parquet": {
+          "csv": "tahoe_control_groups.csv",
+          "source_sha256": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99"
+        }
+      }
+    },
+    "tahoe_split": {
+      "n_controls": 1400,
+      "n_treated": 65618,
+      "split_train_rows": 57422,
+      "split_valid_rows": 9596,
+      "usable_train": 50520,
+      "usable_valid": 8524,
+      "valid_plates": [
+        "plate13",
+        "plate14"
+      ]
+    }
+  },
+  "kind": "tahoe_pretrain_seeds",
+  "mode": "profile",
+  "no_seed_cherry_picking": true,
+  "notes": [
+    "formal runs use the frozen locked recipe with no overrides; the only budget overrides in this record are the documented profile budgets",
+    "locked config notes: mapping=['metric.selection_metric -> metric.metric_name'] defaulted=[]"
+  ],
+  "schema": "06.5_tahoe_pretrain/record/1",
+  "seeds_completed": [
+    20261021
+  ],
+  "seeds_failed": [],
+  "seeds_missing": [],
+  "seeds_planned": [
+    20261021
+  ],
+  "seeds_requested": [
+    20261021
+  ],
+  "selection": {
+    "checkpoint_selection": "validation direction AUPRC@200 (max)",
+    "k": 200,
+    "metric": "direction_auprc",
+    "plateau_mode": "max",
+    "test_usage": "the Tahoe test/valid split never informs LR, epoch, seed or capacity",
+    "validation_split": "frozen tahoe_split valid = plate13 + plate14 (matched (plate, cell_line) DMSO control mean, log1p)"
+  },
+  "summary": {
+    "best_valid_auprc": {
+      "20261021": 0.09881243235019777
+    },
+    "best_valid_auprc_by_unit": {
+      "tahoe_seed20261021_one-epoch": 0.09881243235019777,
+      "tahoe_seed20261021_smoke": 0.04671302274259592
+    },
+    "epochs_run": {
+      "tahoe_seed20261021_one-epoch": 1,
+      "tahoe_seed20261021_smoke": 2
+    },
+    "gpu_peak_mib_max": 1716.0,
+    "gpu_peak_source": {
+      "tahoe_seed20261021_one-epoch": "device-minus-baseline",
+      "tahoe_seed20261021_smoke": "device-minus-baseline"
+    },
+    "host_peak_rss_mb_max": 11273.390625,
+    "n_completed": 2,
+    "n_failed": 0,
+    "n_units": 2,
+    "stop_reasons": {
+      "tahoe_seed20261021_one-epoch": "max_epochs",
+      "tahoe_seed20261021_smoke": "max_epochs"
+    },
+    "wall_s_total": 103.10313645699989
+  },
+  "units": [
+    {
+      "best_epoch": 1,
+      "best_valid_auprc": 0.04671302274259592,
+      "budget": "smoke",
+      "budget_config": {
+        "batch_size": 512,
+        "early_stop_patience": 20,
+        "lr": 0.001,
+        "max_epochs": 2,
+        "metric": {
+          "k": 200,
+          "name": "direction_auprc",
+          "plateau_mode": "max"
+        },
+        "min_epochs": 1,
+        "min_lr": 1e-08,
+        "sched_factor": 0.5,
+        "sched_patience": 10,
+        "weight_decay": 1e-08
+      },
+      "checkpoint": {
+        "best_epoch": 1,
+        "best_valid_auprc": 0.04671302274259592,
+        "path": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_smoke/checkpoint/model.pt",
+        "path_rel": "checkpoint/model.pt",
+        "reload_identical": true,
+        "sha256": "df7f963550008b07b8626183b959c5124bab922dab4136b4cb8beb88d1503d60"
+      },
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.4_pipeline/execution/train.py",
+        "--stage",
+        "pretrain",
+        "--data-dir",
+        "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+        "--out",
+        "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_smoke",
+        "--seed",
+        "20261021",
+        "--device",
+        "cuda",
+        "--cache-mode",
+        "require",
+        "--tahoe-cache",
+        "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+        "--table-cache",
+        "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache",
+        "--verify-cache",
+        "metadata",
+        "--smoke"
+      ],
+      "config": {
+        "config_sha256": "5c856b55101d789f5d0b0d9c438a75d5a9121f92141cf99c4fc24b1ead826c66",
+        "dose_encoding": {
+          "binning": "none; the two sources' dose grids are not aligned",
+          "documented_scalings": {
+            "0.05": 0.02119,
+            "0.2": 0.07918,
+            "0.5": 0.17609,
+            "1.0": 0.30103,
+            "10.0": 1.04139,
+            "5.0": 0.77815
+          },
+          "dose_scale": "log10(dose_uM+1)",
+          "fingerprint": "FCFP4",
+          "label": "FCFP4_bits * log10(dose_uM + 1)",
+          "n_bits": 1024,
+          "radius": 2,
+          "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
+          "use_features": true
+        },
+        "fold": null,
+        "init": "random",
+        "loss": "gaussian_nll",
+        "metric": {
+          "k": 200,
+          "name": "direction_auprc",
+          "plateau_mode": "max"
+        },
+        "optimizer": "adam",
+        "prediction_noise": "zero",
+        "recipe": {
+          "batch_size": 512,
+          "early_stop_patience": 20,
+          "lr": 0.001,
+          "max_epochs": 2,
+          "min_epochs": 1,
+          "min_lr": 1e-08,
+          "sched_factor": 0.5,
+          "sched_patience": 10,
+          "weight_decay": 1e-08
+        },
+        "run": {
+          "command": [
+            "train.py",
+            "--stage",
+            "pretrain",
+            "--data-dir",
+            "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+            "--out",
+            "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_smoke",
+            "--seed",
+            "20261021",
+            "--device",
+            "cuda",
+            "--cache-mode",
+            "require",
+            "--tahoe-cache",
+            "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+            "--table-cache",
+            "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache",
+            "--verify-cache",
+            "metadata",
+            "--smoke"
+          ],
+          "consensus": null,
+          "data_counts": {
+            "control_groups": 649,
+            "dropped_bad_dose": 0,
+            "dropped_bad_split": 0,
+            "dropped_no_matched_control": 0,
+            "dropped_no_smiles": 0,
+            "dropped_no_structure": 300,
+            "dropped_qc_fail": 6097,
+            "n_controls": 1400,
+            "n_obs": 67018,
+            "n_perturbed": 65618,
+            "n_train": 3000,
+            "n_valid": 1000,
+            "pairs_check": {
+              "pairs_checked": 60861,
+              "pairs_present": true
+            },
+            "smoke_subset": true,
+            "usable_mask_source": "obs.tahoe_usable"
+          },
+          "device": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "finished_utc": "2026-11-02T07:29:15+00:00",
+          "fold": null,
+          "folds": null,
+          "locked_config_defaulted": [],
+          "locked_config_mapping": [
+            "metric.selection_metric -> metric.metric_name"
+          ],
+          "recipe_overrides": {
+            "max_epochs": 2,
+            "min_epochs": 1
+          },
+          "seed": 20261021,
+          "smoke": true,
+          "stage": "pretrain",
+          "started_utc": "2026-11-02T07:28:48+00:00",
+          "structure_notes": {
+            "requested": null,
+            "source": "locked"
+          },
+          "structures": [
+            "repo CM corpus compounds.csv (525 keys)",
+            "repo Tahoe pretrain-view compounds.csv (700 keys)"
+          ],
+          "tahoe_cache": {
+            "build_seconds": 17.142,
+            "file_sha256": "b2bb89e9411d0e9304c7fca4447839aec34b7bec0d36117644c977bf9163d0f6",
+            "layer_sha256": "f39c4cb322512870a2c47ab3bb446e6ee9a92b365e4c8d70bf5f9995f8b03c77",
+            "mode": "reused",
+            "path": "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+            "sample_max_abs_diff": 0.0,
+            "source_sha256": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+            "verify": "metadata"
+          },
+          "wall_s": 27.18313278400001
+        },
+        "seed": 20261021,
+        "stage": "pretrain",
+        "structure": {
+          "adaptor": [
+            128
+          ],
+          "c_dim": 64,
+          "dropout": 0.05,
+          "drug_dim": 1024,
+          "hidden": [
+            128
+          ],
+          "n_dim": 10,
+          "n_genes": 18164,
+          "z_dim": 64
+        },
+        "train_drugs": "main"
+      },
+      "config_matches_expected": true,
+      "config_sha256": "5c856b55101d789f5d0b0d9c438a75d5a9121f92141cf99c4fc24b1ead826c66",
+      "device": {
+        "cuda_available": true,
+        "cuda_version": "11.8",
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+        "python": "3.9.25",
+        "requested": "cuda",
+        "resolved": "cuda:0",
+        "torch_version": "2.0.1+cu118"
+      },
+      "epochs_run": 2,
+      "exit_code": 0,
+      "expected_config_sha256": "5c856b55101d789f5d0b0d9c438a75d5a9121f92141cf99c4fc24b1ead826c66",
+      "failures": [],
+      "git": {
+        "branch": "feat/pt/t05-pretrain",
+        "dirty": true,
+        "sha": "e0e2d6806afc3a546a38e8e65dad1fa2a268b6dd"
+      },
+      "init": {
+        "checkpoint_sha256": null,
+        "mode": "random",
+        "parameter_count": 7185000,
+        "source_path": null
+      },
+      "input": {
+        "artifacts": {
+          "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+          "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+          "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+          "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+          "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+          "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+          "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+          "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+          "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+          "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+          "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+          "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+          "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+        },
+        "cache": {
+          "build_seconds": 17.142,
+          "file_sha256": "b2bb89e9411d0e9304c7fca4447839aec34b7bec0d36117644c977bf9163d0f6",
+          "layer_sha256": "f39c4cb322512870a2c47ab3bb446e6ee9a92b365e4c8d70bf5f9995f8b03c77",
+          "mode": "reused",
+          "path": "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+          "sample_max_abs_diff": 0.0,
+          "source_sha256": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+          "verify": "metadata"
+        },
+        "data_counts": {
+          "control_groups": 649,
+          "dropped_bad_dose": 0,
+          "dropped_bad_split": 0,
+          "dropped_no_matched_control": 0,
+          "dropped_no_smiles": 0,
+          "dropped_no_structure": 300,
+          "dropped_qc_fail": 6097,
+          "n_controls": 1400,
+          "n_obs": 67018,
+          "n_perturbed": 65618,
+          "n_train": 3000,
+          "n_valid": 1000,
+          "pairs_check": {
+            "pairs_checked": 60861,
+            "pairs_present": true
+          },
+          "smoke_subset": true,
+          "usable_mask_source": "obs.tahoe_usable"
+        },
+        "gene_axis": {
+          "gene_measured_source": "var.gene_measured",
+          "measured": 18164,
+          "n_genes": 18164
+        },
+        "hash_verification": {
+          "bytes": 16426331885,
+          "cached": [],
+          "verified": 8
+        },
+        "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3"
+      },
+      "manifest_sha256": "b613900d247f037338294b75f6dab106eceffedfbf6be4ddd8f04e9269018df4",
+      "metric": {
+        "k": 200,
+        "name": "direction_auprc",
+        "plateau_mode": "max"
+      },
+      "model_card": {
+        "exists": true,
+        "path": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_smoke/model_card.md",
+        "sha256": "d96182d6105c3a3c9ef7dc2056a9fe0f84af4fab33596ebb7ad40e53682b2dd1",
+        "tracked_copy": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/model_cards/tahoe_seed20261021_smoke/model_card.md",
+        "tracked_copy_rel": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/model_cards/tahoe_seed20261021_smoke/model_card.md"
+      },
+      "noise_policy": {
+        "inference": "zero noise, model.eval(), fixed row order",
+        "train": "per-batch torch.randn from the seeded CPU generator",
+        "validation": "zero noise, model.eval(), fixed row order"
+      },
+      "resources": {
+        "gpu_after_mib": 3014.0,
+        "gpu_baseline_mib": 2287.0,
+        "gpu_peak_mib_attributed": 1716.0,
+        "gpu_peak_mib_device": 4003.0,
+        "gpu_peak_mib_device_minus_baseline": 1716.0,
+        "gpu_peak_mib_process": null,
+        "gpu_process_attribution": "unavailable: the driver reports [N/A] for per-process GPU memory; the device peak minus the baseline is the run's GPU peak when the run is alone on the GPU",
+        "host_peak_rss_mb_pipeline": 2703.40234375,
+        "host_peak_rss_mb_sampler": 2703.4,
+        "interval_s": 1.0,
+        "samples": 27
+      },
+      "run_dir": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_smoke",
+      "seed": 20261021,
+      "status": "completed",
+      "stop_reason": "max_epochs",
+      "timings": {
+        "epoch_seconds": {
+          "max": 6.154516733000037,
+          "mean": 6.127186509500007,
+          "median": 6.154516733000037,
+          "min": 6.0998562859999765,
+          "n_epochs": 2,
+          "train_mean": 0.24892603200009944,
+          "valid_mean": 5.878260477499907
+        },
+        "finished_utc": "2026-11-02T07:29:15+00:00",
+        "per_epoch_train_s": [
+          0.2768137010002647,
+          0.22103836299993418
+        ],
+        "per_epoch_valid_forward_s": [
+          0.01585148799995295,
+          0.019265028000518214
+        ],
+        "per_epoch_valid_gather_s": [
+          0.03145657699997173,
+          0.022582550999686646
+        ],
+        "per_epoch_valid_metrics_s": [
+          5.830394966999847,
+          5.8369703439998375
+        ],
+        "per_epoch_valid_s": [
+          5.877703031999772,
+          5.878817923000042
+        ],
+        "per_epoch_valid_total_s": 11.756520954999814,
+        "s_per_step": 0.04148767200001657,
+        "started_utc": "2026-11-02T07:28:48+00:00",
+        "steps_per_epoch": 6,
+        "train_loop_s": 0.4978520640001989,
+        "wall_s": 27.18313278400001,
+        "wall_s_outer": null,
+        "wall_s_pipeline": 27.18313278400001
+      },
+      "unit_id": "tahoe_seed20261021_smoke",
+      "validation": {
+        "best": {
+          "epoch": 1,
+          "valid_auprc": 0.04671302274259592
+        },
+        "best_epoch_is_first_argmax": true,
+        "first": {
+          "epoch": 1,
+          "lr": 0.001,
+          "train_loss": -0.06236669135093689,
+          "train_seconds": 0.2768137010002647,
+          "valid_auprc": 0.04671302274259592,
+          "valid_auprc_down": 0.0867729972429624,
+          "valid_auprc_up": 0.006653048242229444,
+          "valid_loss": -0.0920888906121254,
+          "valid_pcc": 0.07055779213627077,
+          "valid_rmse": 0.4421849917085326,
+          "valid_seconds": 5.877703031999772,
+          "valid_spearman": 0.09636063386516795
+        },
+        "last": {
+          "epoch": 2,
+          "lr": 0.001,
+          "train_loss": -0.2115335910320282,
+          "train_seconds": 0.22103836299993418,
+          "valid_auprc": 0.036418104524254855,
+          "valid_auprc_down": 0.05245986257436923,
+          "valid_auprc_up": 0.020376346474140494,
+          "valid_loss": 0.11003435301780701,
+          "valid_pcc": 0.06509936494022467,
+          "valid_rmse": 0.46545078497153386,
+          "valid_seconds": 5.878817923000042,
+          "valid_spearman": 0.08469055466257606
+        },
+        "n_epochs": 2
+      },
+      "validation_curve": [
+        {
+          "epoch": 1,
+          "lr": 0.001,
+          "train_loss": -0.06236669135093689,
+          "train_seconds": 0.2768137010002647,
+          "valid_auprc": 0.04671302274259592,
+          "valid_auprc_down": 0.0867729972429624,
+          "valid_auprc_up": 0.006653048242229444,
+          "valid_loss": -0.0920888906121254,
+          "valid_pcc": 0.07055779213627077,
+          "valid_rmse": 0.4421849917085326,
+          "valid_seconds": 5.877703031999772,
+          "valid_spearman": 0.09636063386516795
+        },
+        {
+          "epoch": 2,
+          "lr": 0.001,
+          "train_loss": -0.2115335910320282,
+          "train_seconds": 0.22103836299993418,
+          "valid_auprc": 0.036418104524254855,
+          "valid_auprc_down": 0.05245986257436923,
+          "valid_auprc_up": 0.020376346474140494,
+          "valid_loss": 0.11003435301780701,
+          "valid_pcc": 0.06509936494022467,
+          "valid_rmse": 0.46545078497153386,
+          "valid_seconds": 5.878817923000042,
+          "valid_spearman": 0.08469055466257606
+        }
+      ]
+    },
+    {
+      "best_epoch": 1,
+      "best_valid_auprc": 0.09881243235019777,
+      "budget": "one-epoch",
+      "budget_config": {
+        "batch_size": 512,
+        "early_stop_patience": 20,
+        "lr": 0.001,
+        "max_epochs": 1,
+        "metric": {
+          "k": 200,
+          "name": "direction_auprc",
+          "plateau_mode": "max"
+        },
+        "min_epochs": 1,
+        "min_lr": 1e-08,
+        "sched_factor": 0.5,
+        "sched_patience": 10,
+        "weight_decay": 1e-08
+      },
+      "checkpoint": {
+        "best_epoch": 1,
+        "best_valid_auprc": 0.09881243235019777,
+        "path": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_one-epoch/checkpoint/model.pt",
+        "path_rel": "checkpoint/model.pt",
+        "reload_identical": true,
+        "sha256": "e19842937a1848c7ff9356d1e086ecc35b418002ef9a3ca16a7254c03f89bb08"
+      },
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.4_pipeline/execution/train.py",
+        "--stage",
+        "pretrain",
+        "--data-dir",
+        "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+        "--out",
+        "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_one-epoch",
+        "--seed",
+        "20261021",
+        "--device",
+        "cuda",
+        "--cache-mode",
+        "require",
+        "--tahoe-cache",
+        "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+        "--table-cache",
+        "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache",
+        "--verify-cache",
+        "metadata",
+        "--epochs",
+        "1",
+        "--min-epochs",
+        "1"
+      ],
+      "config": {
+        "config_sha256": "e9fa888338a709999b15ae9d7f447de3b793b4d81231cac7d50f158cda38dc72",
+        "dose_encoding": {
+          "binning": "none; the two sources' dose grids are not aligned",
+          "documented_scalings": {
+            "0.05": 0.02119,
+            "0.2": 0.07918,
+            "0.5": 0.17609,
+            "1.0": 0.30103,
+            "10.0": 1.04139,
+            "5.0": 0.77815
+          },
+          "dose_scale": "log10(dose_uM+1)",
+          "fingerprint": "FCFP4",
+          "label": "FCFP4_bits * log10(dose_uM + 1)",
+          "n_bits": 1024,
+          "radius": 2,
+          "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
+          "use_features": true
+        },
+        "fold": null,
+        "init": "random",
+        "loss": "gaussian_nll",
+        "metric": {
+          "k": 200,
+          "name": "direction_auprc",
+          "plateau_mode": "max"
+        },
+        "optimizer": "adam",
+        "prediction_noise": "zero",
+        "recipe": {
+          "batch_size": 512,
+          "early_stop_patience": 20,
+          "lr": 0.001,
+          "max_epochs": 1,
+          "min_epochs": 1,
+          "min_lr": 1e-08,
+          "sched_factor": 0.5,
+          "sched_patience": 10,
+          "weight_decay": 1e-08
+        },
+        "run": {
+          "command": [
+            "train.py",
+            "--stage",
+            "pretrain",
+            "--data-dir",
+            "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+            "--out",
+            "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_one-epoch",
+            "--seed",
+            "20261021",
+            "--device",
+            "cuda",
+            "--cache-mode",
+            "require",
+            "--tahoe-cache",
+            "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+            "--table-cache",
+            "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/input_cache",
+            "--verify-cache",
+            "metadata",
+            "--epochs",
+            "1",
+            "--min-epochs",
+            "1"
+          ],
+          "consensus": null,
+          "data_counts": {
+            "control_groups": 649,
+            "dropped_bad_dose": 0,
+            "dropped_bad_split": 0,
+            "dropped_no_matched_control": 0,
+            "dropped_no_smiles": 0,
+            "dropped_no_structure": 300,
+            "dropped_qc_fail": 6097,
+            "n_controls": 1400,
+            "n_obs": 67018,
+            "n_perturbed": 65618,
+            "n_train": 50520,
+            "n_valid": 8524,
+            "pairs_check": {
+              "pairs_checked": 60861,
+              "pairs_present": true
+            },
+            "smoke_subset": false,
+            "usable_mask_source": "obs.tahoe_usable"
+          },
+          "device": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "finished_utc": "2026-11-02T07:30:36+00:00",
+          "fold": null,
+          "folds": null,
+          "locked_config_defaulted": [],
+          "locked_config_mapping": [
+            "metric.selection_metric -> metric.metric_name"
+          ],
+          "recipe_overrides": {
+            "max_epochs": 1,
+            "min_epochs": 1
+          },
+          "seed": 20261021,
+          "smoke": false,
+          "stage": "pretrain",
+          "started_utc": "2026-11-02T07:29:17+00:00",
+          "structure_notes": {
+            "requested": null,
+            "source": "locked"
+          },
+          "structures": [
+            "repo CM corpus compounds.csv (525 keys)",
+            "repo Tahoe pretrain-view compounds.csv (700 keys)"
+          ],
+          "tahoe_cache": {
+            "build_seconds": 17.142,
+            "file_sha256": "b2bb89e9411d0e9304c7fca4447839aec34b7bec0d36117644c977bf9163d0f6",
+            "layer_sha256": "f39c4cb322512870a2c47ab3bb446e6ee9a92b365e4c8d70bf5f9995f8b03c77",
+            "mode": "reused",
+            "path": "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+            "sample_max_abs_diff": 0.0,
+            "source_sha256": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+            "verify": "metadata"
+          },
+          "wall_s": 75.92000367299988
+        },
+        "seed": 20261021,
+        "stage": "pretrain",
+        "structure": {
+          "adaptor": [
+            128
+          ],
+          "c_dim": 64,
+          "dropout": 0.05,
+          "drug_dim": 1024,
+          "hidden": [
+            128
+          ],
+          "n_dim": 10,
+          "n_genes": 18164,
+          "z_dim": 64
+        },
+        "train_drugs": "main"
+      },
+      "config_matches_expected": true,
+      "config_sha256": "e9fa888338a709999b15ae9d7f447de3b793b4d81231cac7d50f158cda38dc72",
+      "device": {
+        "cuda_available": true,
+        "cuda_version": "11.8",
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+        "python": "3.9.25",
+        "requested": "cuda",
+        "resolved": "cuda:0",
+        "torch_version": "2.0.1+cu118"
+      },
+      "epochs_run": 1,
+      "exit_code": 0,
+      "expected_config_sha256": "e9fa888338a709999b15ae9d7f447de3b793b4d81231cac7d50f158cda38dc72",
+      "failures": [],
+      "git": {
+        "branch": "feat/pt/t05-pretrain",
+        "dirty": true,
+        "sha": "e0e2d6806afc3a546a38e8e65dad1fa2a268b6dd"
+      },
+      "init": {
+        "checkpoint_sha256": null,
+        "mode": "random",
+        "parameter_count": 7185000,
+        "source_path": null
+      },
+      "input": {
+        "artifacts": {
+          "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+          "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+          "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+          "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+          "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+          "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+          "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+          "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+          "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+          "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+          "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+          "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+          "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+        },
+        "cache": {
+          "build_seconds": 17.142,
+          "file_sha256": "b2bb89e9411d0e9304c7fca4447839aec34b7bec0d36117644c977bf9163d0f6",
+          "layer_sha256": "f39c4cb322512870a2c47ab3bb446e6ee9a92b365e4c8d70bf5f9995f8b03c77",
+          "mode": "reused",
+          "path": "/home/chang/arc-wt/t04-pipeline/stage2/06_prnet_transfer/06.4_pipeline/output/cache/tahoe_log1p_cp10k_v1.npy",
+          "sample_max_abs_diff": 0.0,
+          "source_sha256": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+          "verify": "metadata"
+        },
+        "data_counts": {
+          "control_groups": 649,
+          "dropped_bad_dose": 0,
+          "dropped_bad_split": 0,
+          "dropped_no_matched_control": 0,
+          "dropped_no_smiles": 0,
+          "dropped_no_structure": 300,
+          "dropped_qc_fail": 6097,
+          "n_controls": 1400,
+          "n_obs": 67018,
+          "n_perturbed": 65618,
+          "n_train": 50520,
+          "n_valid": 8524,
+          "pairs_check": {
+            "pairs_checked": 60861,
+            "pairs_present": true
+          },
+          "smoke_subset": false,
+          "usable_mask_source": "obs.tahoe_usable"
+        },
+        "gene_axis": {
+          "gene_measured_source": "var.gene_measured",
+          "measured": 18164,
+          "n_genes": 18164
+        },
+        "hash_verification": {
+          "bytes": 16426331885,
+          "cached": [],
+          "verified": 8
+        },
+        "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3"
+      },
+      "manifest_sha256": "ae3f25a771803360f6eb30d5fe956b6b510e3cc7cbfd13dd74eb4db4ef60671f",
+      "metric": {
+        "k": 200,
+        "name": "direction_auprc",
+        "plateau_mode": "max"
+      },
+      "model_card": {
+        "exists": true,
+        "path": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_one-epoch/model_card.md",
+        "sha256": "58be90860f7cfe301eb9e2cc2e30e40edd2cefee3efdf0b4f3cd4513bd58c266",
+        "tracked_copy": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/model_cards/tahoe_seed20261021_one-epoch/model_card.md",
+        "tracked_copy_rel": "stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/model_cards/tahoe_seed20261021_one-epoch/model_card.md"
+      },
+      "noise_policy": {
+        "inference": "zero noise, model.eval(), fixed row order",
+        "train": "per-batch torch.randn from the seeded CPU generator",
+        "validation": "zero noise, model.eval(), fixed row order"
+      },
+      "resources": {
+        "gpu_after_mib": 2905.0,
+        "gpu_baseline_mib": 3012.0,
+        "gpu_peak_mib_attributed": 877.0,
+        "gpu_peak_mib_device": 3889.0,
+        "gpu_peak_mib_device_minus_baseline": 877.0,
+        "gpu_peak_mib_process": null,
+        "gpu_process_attribution": "unavailable: the driver reports [N/A] for per-process GPU memory; the device peak minus the baseline is the run's GPU peak when the run is alone on the GPU",
+        "host_peak_rss_mb_pipeline": 11273.390625,
+        "host_peak_rss_mb_sampler": 11273.4,
+        "interval_s": 1.0,
+        "samples": 75
+      },
+      "run_dir": "/home/chang/arc-wt/t05-pretrain/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/profile/runs/tahoe_seed20261021_one-epoch",
+      "seed": 20261021,
+      "status": "completed",
+      "stop_reason": "max_epochs",
+      "timings": {
+        "epoch_seconds": {
+          "max": 50.931059998999444,
+          "mean": 50.931059998999444,
+          "median": 50.931059998999444,
+          "min": 50.931059998999444,
+          "n_epochs": 1,
+          "train_mean": 2.728460981000353,
+          "valid_mean": 48.20259901799909
+        },
+        "finished_utc": "2026-11-02T07:30:36+00:00",
+        "per_epoch_train_s": [
+          2.728460981000353
+        ],
+        "per_epoch_valid_forward_s": [
+          0.13992107299964118
+        ],
+        "per_epoch_valid_gather_s": [
+          0.1911779029992431
+        ],
+        "per_epoch_valid_metrics_s": [
+          47.87150004200021
+        ],
+        "per_epoch_valid_s": [
+          48.20259901799909
+        ],
+        "per_epoch_valid_total_s": 48.20259901799909,
+        "s_per_step": 0.027560211929296495,
+        "started_utc": "2026-11-02T07:29:17+00:00",
+        "steps_per_epoch": 99,
+        "train_loop_s": 2.728460981000353,
+        "wall_s": 75.92000367299988,
+        "wall_s_outer": null,
+        "wall_s_pipeline": 75.92000367299988
+      },
+      "unit_id": "tahoe_seed20261021_one-epoch",
+      "validation": {
+        "best": {
+          "epoch": 1,
+          "valid_auprc": 0.09881243235019777
+        },
+        "best_epoch_is_first_argmax": true,
+        "first": {
+          "epoch": 1,
+          "lr": 0.001,
+          "train_loss": -1.2908246752296473,
+          "train_seconds": 2.728460981000353,
+          "valid_auprc": 0.09881243235019777,
+          "valid_auprc_down": 0.05039789672718984,
+          "valid_auprc_up": 0.14722696797320567,
+          "valid_loss": -0.8693165816034526,
+          "valid_pcc": 0.21857069459780157,
+          "valid_rmse": 0.14680323882321608,
+          "valid_seconds": 48.20259901799909,
+          "valid_spearman": 0.2142061477254877
+        },
+        "last": {
+          "epoch": 1,
+          "lr": 0.001,
+          "train_loss": -1.2908246752296473,
+          "train_seconds": 2.728460981000353,
+          "valid_auprc": 0.09881243235019777,
+          "valid_auprc_down": 0.05039789672718984,
+          "valid_auprc_up": 0.14722696797320567,
+          "valid_loss": -0.8693165816034526,
+          "valid_pcc": 0.21857069459780157,
+          "valid_rmse": 0.14680323882321608,
+          "valid_seconds": 48.20259901799909,
+          "valid_spearman": 0.2142061477254877
+        },
+        "n_epochs": 1
+      },
+      "validation_curve": [
+        {
+          "epoch": 1,
+          "lr": 0.001,
+          "train_loss": -1.2908246752296473,
+          "train_seconds": 2.728460981000353,
+          "valid_auprc": 0.09881243235019777,
+          "valid_auprc_down": 0.05039789672718984,
+          "valid_auprc_up": 0.14722696797320567,
+          "valid_loss": -0.8693165816034526,
+          "valid_pcc": 0.21857069459780157,
+          "valid_rmse": 0.14680323882321608,
+          "valid_seconds": 48.20259901799909,
+          "valid_spearman": 0.2142061477254877
+        }
+      ]
+    }
+  ]
+}
