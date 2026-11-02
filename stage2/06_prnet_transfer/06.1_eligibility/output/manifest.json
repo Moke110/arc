@@ -1,0 +1,42 @@
+{
+  "schema": "prnet-eligibility-manifest-v1",
+  "rule": {
+    "version": "eligibility-rule-v1.2",
+    "sha256": "e1af8cdb370bb1a8adc59ab49a5d658029f18e372e67248034fcccc2fd545bfa"
+  },
+  "counts": {
+    "total_keys": 460,
+    "total_name_records": 467,
+    "include": 126,
+    "exclude": 193,
+    "uncertain": 141
+  },
+  "generated_at": "2026-11-02T12:13:16+08:00",
+  "files": [
+    {
+      "path": "eligibility_table.csv",
+      "sha256": "0663d725ac2400d450b4a5eec474764965e7fe1a557d9c589224bac6f7d8fc97",
+      "bytes": 403360
+    },
+    {
+      "path": "old_tier_comparison.csv",
+      "sha256": "0b36be77dfd3c9e845c5f0b80f3aed189e2564365cb7db48b13385ab4b8825df",
+      "bytes": 78980
+    },
+    {
+      "path": "evidence_manifest.csv",
+      "sha256": "ddcd57d6d03a1d9cda8cc3131ae1c851f6c24c3518be8da3d13a022ab826d2c9",
+      "bytes": 38095
+    },
+    {
+      "path": "summary.json",
+      "sha256": "fbb4ed1614c439c2b68837153bb49aa63e40064184fbcc2fda9d267e94cfa736",
+      "bytes": 29531
+    },
+    {
+      "path": "handoff.json",
+      "sha256": "3aa2282b734c2223b7ecae6bd57d787b8a321697e22bf4e008b7f84bd3f778ff",
+      "bytes": 392667
+    }
+  ]
+}
