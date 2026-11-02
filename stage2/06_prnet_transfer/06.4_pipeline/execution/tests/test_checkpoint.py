@@ -75,6 +75,86 @@ class CheckpointRoundTripTests(unittest.TestCase):
         self.assertEqual(len(digest), 64)
         self.assertEqual(digest, checkpoint.checkpoint_sha256(self.path))
 
+    def test_config_digest_is_the_recorded_config(self):
+        payload = checkpoint.read_checkpoint(self.path)
+        digest = checkpoint.config_digest(payload)
+        self.assertEqual(len(digest), 64)
+        self.assertEqual(digest, config.sha256_payload(payload["config"]))
+
+
+class LoadProvenanceTests(unittest.TestCase):
+    """``load_provenance`` proves a full, bit-identical warm start and fails closed."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+        torch.manual_seed(0)
+        self.struct = structure()
+        self.model = model.build_model(self.struct)
+        model.random_init(self.model, seed=11)
+        self.path = self.dir / "model.pt"
+        checkpoint.save_checkpoint(
+            self.path, self.model, {"structure": self.struct, "init": "random"},
+            seed=11, n_genes=64, best_valid_auprc=0.42, epoch=3,
+        )
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _payload(self):
+        return checkpoint.read_checkpoint(self.path)
+
+    def test_records_every_key_and_proves_the_load(self):
+        payload = self._payload()
+        target = model.build_model(self.struct)
+        provenance = checkpoint.load_provenance(target, payload)
+        self.assertTrue(provenance["strict_load"])
+        self.assertTrue(provenance["weights_identical"])
+        self.assertEqual(provenance["missing_keys"], [])
+        self.assertEqual(provenance["missing_parameter_keys"], [])
+        self.assertEqual(provenance["unexpected_keys"], [])
+        self.assertEqual(provenance["shape_mismatches"], [])
+        self.assertEqual(provenance["dtype_mismatches"], [])
+        self.assertEqual(
+            provenance["loaded_layers"], sorted(self.model.state_dict())
+        )
+        self.assertEqual(provenance["n_loaded_tensors"], len(self.model.state_dict()))
+        # every model parameter tensor is named in the provenance
+        self.assertEqual(provenance["n_loaded_parameter_tensors"], provenance["n_model_parameters"])
+        self.assertEqual(provenance["n_loaded_buffer_tensors"], provenance["n_model_buffers"])
+        self.assertGreater(provenance["n_parameters"], 0)
+        for key, value in self.model.state_dict().items():
+            torch.testing.assert_close(target.state_dict()[key], value)
+
+    def test_missing_key_fails_before_loading(self):
+        payload = self._payload()
+        removed = "encoder.mean_encoder.bias"
+        payload["state_dict"].pop(removed)
+        with self.assertRaisesRegex(checkpoint.CheckpointError, "missing keys"):
+            checkpoint.load_provenance(model.build_model(self.struct), payload)
+
+    def test_unexpected_key_fails_before_loading(self):
+        payload = self._payload()
+        key = next(iter(payload["state_dict"]))
+        payload["state_dict"][f"extra.{key}"] = payload["state_dict"][key]
+        with self.assertRaisesRegex(checkpoint.CheckpointError, "unexpected keys"):
+            checkpoint.load_provenance(model.build_model(self.struct), payload)
+
+    def test_shape_mismatch_fails_closed(self):
+        payload = self._payload()
+        key = "encoder.mean_encoder.weight"
+        payload["state_dict"][key] = payload["state_dict"][key][:1]
+        with self.assertRaisesRegex(checkpoint.CheckpointError, "shape mismatches"):
+            checkpoint.load_provenance(model.build_model(self.struct), payload)
+
+    def test_partial_load_cannot_pass_silently(self):
+        """A warm start that only loads one tensor must be rejected, not accepted."""
+        payload = self._payload()
+        first = next(iter(payload["state_dict"]))
+        payload["state_dict"] = {first: payload["state_dict"][first]}
+        with self.assertRaises(checkpoint.CheckpointError):
+            checkpoint.load_provenance(model.build_model(self.struct), payload)
+
 
 class StrictnessTests(unittest.TestCase):
     def setUp(self):

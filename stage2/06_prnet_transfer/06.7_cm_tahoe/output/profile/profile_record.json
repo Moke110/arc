@@ -1,0 +1,654 @@
+{
+  "bounded_budget": {
+    "epochs": 2,
+    "note": "wrapper/profile validation only; never the formal 100-epoch locked budget"
+  },
+  "candidate": {
+    "best_epoch": 2,
+    "best_valid_auprc": 0.08261928116652585,
+    "checkpoint": {
+      "best_epoch": 2,
+      "best_valid_auprc": 0.08261928116652585,
+      "path": "checkpoint/model.pt",
+      "reload_identical": true,
+      "sha256": "c1858923da49f63e9095cc0fe1d300e88f25d5e19a9aea3aedde50c3f35ab622"
+    },
+    "config_sha256": "3aecef64487115e9170560520d7ce7d369b0f41d493d7e596a32fafd74ef4f12",
+    "epochs_run": 2,
+    "init": {
+      "checkpoint_best_valid_auprc": 0.2007510602887422,
+      "checkpoint_config_sha256": "5ec0002761b5b21af5fac81fc0a8ec02691b6c8677afbaaaa0ae19746c4a5ae3",
+      "checkpoint_epoch": 8,
+      "checkpoint_seed": 20261021,
+      "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+      "checkpoint_structure": {
+        "adaptor": [
+          128
+        ],
+        "c_dim": 64,
+        "dropout": 0.05,
+        "drug_dim": 1024,
+        "hidden": [
+          128
+        ],
+        "n_dim": 10,
+        "n_genes": 18164,
+        "z_dim": 64
+      },
+      "gene_axis": {
+        "checkpoint": 18164,
+        "expected": 18164,
+        "matches": true
+      },
+      "load_provenance": {
+        "dtype_mismatches": [],
+        "loaded_layers": [
+          "CombAdaptor.FC.L0.weight",
+          "CombAdaptor.comb_encoder.bias",
+          "CombAdaptor.comb_encoder.weight",
+          "decoder.FirstL.0.weight",
+          "decoder.FirstL.1.bias",
+          "decoder.FirstL.1.num_batches_tracked",
+          "decoder.FirstL.1.running_mean",
+          "decoder.FirstL.1.running_var",
+          "decoder.FirstL.1.weight",
+          "decoder.recon_decoder.bias",
+          "decoder.recon_decoder.weight",
+          "encoder.FC.L0.weight",
+          "encoder.mean_encoder.bias",
+          "encoder.mean_encoder.weight"
+        ],
+        "missing_buffer_keys": [],
+        "missing_keys": [],
+        "missing_parameter_keys": [],
+        "n_loaded_buffer_tensors": 3,
+        "n_loaded_elements": 7185257,
+        "n_loaded_parameter_tensors": 11,
+        "n_loaded_tensors": 14,
+        "n_model_buffers": 3,
+        "n_model_parameters": 11,
+        "n_parameters": 7185000,
+        "n_tensors_compared": 14,
+        "nonfinite_keys": [],
+        "shape_mismatches": [],
+        "strict_load": true,
+        "unexpected_keys": [],
+        "weights_identical": true
+      },
+      "mode": "pretrained",
+      "parameter_count": 7185000,
+      "source_path": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt",
+      "structure_matches_run": true
+    },
+    "manifest": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe/manifest.json",
+    "manifest_sha256": "953a70bfb07693cec6c5baac93ed56b0fb9a475e9372bf4ad6cc3183069fe5bb",
+    "peak_rss_mb": 1334.7109375,
+    "run_dir": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe",
+    "status": "completed",
+    "stop_reason": "max_epochs",
+    "timings": {
+      "finished_utc": "2026-11-02T08:09:46+00:00",
+      "per_epoch_train_s": [
+        6.017583978999937,
+        0.028387391000251228
+      ],
+      "per_epoch_valid_forward_s": [
+        0.009278941999582457,
+        0.0027582849997997982
+      ],
+      "per_epoch_valid_gather_s": [
+        0.004288459000235889,
+        0.0040825730002325145
+      ],
+      "per_epoch_valid_metrics_s": [
+        0.3850366730002861,
+        0.39509893900049065
+      ],
+      "per_epoch_valid_s": [
+        0.39860407400010445,
+        0.40193979700052296
+      ],
+      "per_epoch_valid_total_s": 0.8005438710006274,
+      "started_utc": "2026-11-02T08:09:37+00:00",
+      "train_loop_s": 6.0459713700001885,
+      "wall_s": 9.288330803999997
+    }
+  },
+  "checkpoint_root": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs",
+  "command": [
+    "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "run_matrix.py",
+    "--profile",
+    "--profile-epochs",
+    "2",
+    "--data-dir",
+    "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "--checkpoint-root",
+    "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs",
+    "--out-dir",
+    "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output",
+    "--table-cache",
+    "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/input_cache",
+    "--hash-cache",
+    "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/hash_cache.json",
+    "--random-runs-root",
+    "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs",
+    "--workers",
+    "2",
+    "--omp-threads",
+    "2",
+    "--scope",
+    "systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=12G"
+  ],
+  "created_utc": "2026-11-02T08:09:46+00:00",
+  "data_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+  "git": {
+    "branch": "feat/pt/t07-cmtahoe",
+    "dirty": true,
+    "sha": "3a2211ee371cd0bd7faaa58de4e39d586e6fb317"
+  },
+  "mode": "profile",
+  "notes": [
+    "bounded wrapper profile only: 2 epochs on one unit, never the formal 100-epoch budget",
+    "run against the first available #5 formal checkpoint while the seed-20261021 pretrain was still improving; the checkpoint was snapshotted byte-identically first, so the live sweep's next os.replace cannot tear the verification/load",
+    "the GPU device peak includes the concurrent #5 pretrain; this WSL2 driver reports [N/A] for per-process GPU memory, so the unit's own GPU footprint is not claimed",
+    "the ticket-#6 comparison uses the same (fold, seed, lr) random-init run manifest and proves the resolved config differs only in `init`"
+  ],
+  "passed": true,
+  "path_comparison": {
+    "comparable": true,
+    "differing_config_keys": [
+      "init"
+    ],
+    "differing_config_values": {
+      "init": {
+        "random": "random",
+        "tahoe": "pretrained"
+      }
+    },
+    "expected_config_notes": {
+      "locked_config_mapping": [],
+      "recipe_overrides": {},
+      "structure": {
+        "requested": null,
+        "source": "locked"
+      }
+    },
+    "expected_init_only_difference": {
+      "init": {
+        "random": "random",
+        "tahoe": "pretrained"
+      }
+    },
+    "only_init_differs": true,
+    "passed": true,
+    "random_shared_flags": {
+      "--device": [
+        "cuda"
+      ],
+      "--fold": [
+        "0"
+      ],
+      "--lr": [
+        "0.001"
+      ],
+      "--seed": [
+        "20261021"
+      ]
+    },
+    "shared_unit_args_identical": true,
+    "tahoe_expected_config": {
+      "dose_encoding": {
+        "binning": "none; the two sources' dose grids are not aligned",
+        "documented_scalings": {
+          "0.05": 0.02119,
+          "0.2": 0.07918,
+          "0.5": 0.17609,
+          "1.0": 0.30103,
+          "10.0": 1.04139,
+          "5.0": 0.77815
+        },
+        "dose_scale": "log10(dose_uM+1)",
+        "fingerprint": "FCFP4",
+        "label": "FCFP4_bits * log10(dose_uM + 1)",
+        "n_bits": 1024,
+        "radius": 2,
+        "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
+        "use_features": true
+      },
+      "fold": 0,
+      "init": "pretrained",
+      "loss": "gaussian_nll",
+      "metric": {
+        "k": 200,
+        "name": "direction_auprc",
+        "plateau_mode": "max"
+      },
+      "optimizer": "adam",
+      "prediction_noise": "zero",
+      "recipe": {
+        "batch_size": 512,
+        "early_stop_patience": 20,
+        "lr": 0.001,
+        "max_epochs": 100,
+        "min_epochs": 20,
+        "min_lr": 1e-08,
+        "sched_factor": 0.5,
+        "sched_patience": 10,
+        "weight_decay": 1e-08
+      },
+      "seed": 20261021,
+      "stage": "finetune",
+      "structure": {
+        "adaptor": [
+          128
+        ],
+        "c_dim": 64,
+        "dropout": 0.05,
+        "drug_dim": 1024,
+        "hidden": [
+          128
+        ],
+        "n_dim": 10,
+        "n_genes": 18164,
+        "z_dim": 64
+      },
+      "train_drugs": "main"
+    },
+    "tahoe_expected_config_sha256": "c05d5ea18c4ba2966e608b37c4eb14af470912e08b2c0daeefeb780d93725a98",
+    "tahoe_shared_flags": {
+      "--device": [
+        "cuda"
+      ],
+      "--fold": [
+        "0"
+      ],
+      "--lr": [
+        "0.001"
+      ],
+      "--seed": [
+        "20261021"
+      ]
+    },
+    "tahoe_unit_args": [
+      "--fold",
+      "0",
+      "--seed",
+      "20261021",
+      "--lr",
+      "0.001",
+      "--init",
+      "pretrained",
+      "--init-checkpoint",
+      "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt",
+      "--device",
+      "cuda",
+      "--hash-cache",
+      "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/hash_cache.json",
+      "--epochs",
+      "2",
+      "--min-epochs",
+      "1"
+    ],
+    "ticket6_reference": {
+      "available": true,
+      "random_checkpoint_sha256": "2af29787185edbd0ee5247e6b5736c2ff7bf9dae1139f3b18bd6f512c08f406e",
+      "random_command": [
+        "train.py",
+        "--stage",
+        "finetune",
+        "--out",
+        "/home/chang/arc-wt/t06-cmrandom/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
+        "--data-dir",
+        "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+        "--fold",
+        "0",
+        "--seed",
+        "20261021",
+        "--lr",
+        "0.001",
+        "--init",
+        "random",
+        "--device",
+        "cuda",
+        "--hash-cache",
+        "/home/chang/arc-wt/t06-cmrandom/stage2/06_prnet_transfer/06.6_cm_random/output/hash_cache.json",
+        "--table-cache",
+        "/home/chang/arc-wt/t06-cmrandom/stage2/06_prnet_transfer/06.6_cm_random/output/input_cache"
+      ],
+      "random_config": {
+        "dose_encoding": {
+          "binning": "none; the two sources' dose grids are not aligned",
+          "documented_scalings": {
+            "0.05": 0.02119,
+            "0.2": 0.07918,
+            "0.5": 0.17609,
+            "1.0": 0.30103,
+            "10.0": 1.04139,
+            "5.0": 0.77815
+          },
+          "dose_scale": "log10(dose_uM+1)",
+          "fingerprint": "FCFP4",
+          "label": "FCFP4_bits * log10(dose_uM + 1)",
+          "n_bits": 1024,
+          "radius": 2,
+          "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
+          "use_features": true
+        },
+        "fold": 0,
+        "init": "random",
+        "loss": "gaussian_nll",
+        "metric": {
+          "k": 200,
+          "name": "direction_auprc",
+          "plateau_mode": "max"
+        },
+        "optimizer": "adam",
+        "prediction_noise": "zero",
+        "recipe": {
+          "batch_size": 512,
+          "early_stop_patience": 20,
+          "lr": 0.001,
+          "max_epochs": 100,
+          "min_epochs": 20,
+          "min_lr": 1e-08,
+          "sched_factor": 0.5,
+          "sched_patience": 10,
+          "weight_decay": 1e-08
+        },
+        "seed": 20261021,
+        "stage": "finetune",
+        "structure": {
+          "adaptor": [
+            128
+          ],
+          "c_dim": 64,
+          "dropout": 0.05,
+          "drug_dim": 1024,
+          "hidden": [
+            128
+          ],
+          "n_dim": 10,
+          "n_genes": 18164,
+          "z_dim": 64
+        },
+        "train_drugs": "main"
+      },
+      "random_config_sha256": "7a44567157557cf948a2fed2071da78efa80c244f3ad6972843b33e1964756a2",
+      "random_init": {
+        "checkpoint_sha256": null,
+        "mode": "random",
+        "parameter_count": 7185000,
+        "source_path": null
+      },
+      "random_manifest_sha256": "bc5eb0b5644450334048c462b11debdd44579acbff874917a614bdd43081a069",
+      "random_run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
+      "random_unit_id": "cm_f0_s20261021_lr1e-3_random"
+    }
+  },
+  "peaks": {
+    "errors": [],
+    "gpu_used_mib": 2880.0,
+    "host_process_tree_rss_mib": 2293.6,
+    "host_rss_start_mib": 557.7,
+    "n_samples": 12,
+    "scope_cgroup_memory_current_mib": 1583.2
+  },
+  "preflight": {
+    "created_utc": "2026-11-02T08:09:34+00:00",
+    "cuda_check": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "1"
+    },
+    "free_gib_min": 12.0,
+    "gpu": {
+      "available": true,
+      "n_gpus": 1,
+      "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "total_mib": 16376.0,
+      "used_mib": 1945.0
+    },
+    "gpu_memory_attributable": false,
+    "gpu_processes": [
+      {
+        "memory_attributable": false,
+        "pid": 1011669,
+        "used_mib": null
+      }
+    ],
+    "heavy_gpu_threshold_mib": 1024.0,
+    "host": "DESKTOP-ADOFOQR",
+    "max_other_heavy_gpu": 1,
+    "mem_available_gib": 38.45,
+    "nproc": 8,
+    "omp_threads": 2,
+    "other_heavy_gpu_processes": [
+      {
+        "memory_attributable": false,
+        "pid": 1011669,
+        "used_mib": null
+      }
+    ],
+    "python": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "queue": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/profile_queue.json",
+    "queue_sha256": "b7ed31ae3ffda8a6cf7975c5c1f01b234979c167ffbb455c49de1d3acf78ffeb",
+    "scope": "systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=12G",
+    "units": 1,
+    "workers": 2
+  },
+  "problems": [],
+  "profile_staging": {
+    "axis_check": {
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/execution/check_init.py",
+        "--data-dir",
+        "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+        "--checkpoint-root",
+        "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints",
+        "--seeds",
+        "20261021",
+        "--out",
+        "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/init_seed20261021.json"
+      ],
+      "exit_code": 0,
+      "log": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/init_seed20261021.log",
+      "out": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/init_seed20261021.json",
+      "raw_output": "{\n  \"init_check\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/init_seed20261021.json\",\n  \"all_verified\": true,\n  \"requested_seeds\": [\n    20261021\n  ],\n  \"provenance_sha256\": \"9adeb5d1a5396271af30fa4ab32ed4597e8805ccfad6b586eff6cb6c07dc5f62\",\n  \"checkpoints\": {\n    \"20261021\": {\n      \"path\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt\",\n      \"sha256\": \"a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04\",\n      \"checkpoint_config_sha256\": \"5ec0002761b5b21af5fac81fc0a8ec02691b6c8677afbaaaa0ae19746c4a5ae3\",\n      \"checkpoint_epoch\": 8,\n      \"gene_axis\": {\n        \"checkpoint\": 18164,\n        \"expected\": 18164,\n        \"matches\": true\n      },\n      \"parameter_count\": 7185000,\n      \"n_loaded_tensors\": 14,\n      \"missing_keys\": [],\n      \"unexpected_keys\": [],\n      \"weights_identical\": true,\n      \"matches_fresh_random_init\": false\n    }\n  }\n}\n"
+    },
+    "checkpoint": {
+      "attempts": 1,
+      "byte_identical": true,
+      "note": "staged snapshot of the live formal checkpoint; sha256-equal to the source inode at copy time",
+      "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+      "source_sha256_at_copy": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+      "staged_path": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt",
+      "staged_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04"
+    }
+  },
+  "random_runs_root": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs",
+  "raw_startup": {
+    "available": true,
+    "config_lines": [],
+    "head": [
+      "$ /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.4_pipeline/execution/train.py --stage finetune --out /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe --data-dir /home/chang/arc/stage2/06_prnet_transfer/06.3_input/output --fold 0 --seed 20261021 --lr 0.001 --init pretrained --init-checkpoint /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt --device cuda --hash-cache /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/hash_cache.json --epochs 2 --min-epochs 1 --table-cache /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/input_cache",
+      "2026-11-02 16:09:38,217 INFO ptlib.train: warm start: loaded /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt (sha256 a2c83736cf4f\u2026, config 5ec0002761b5\u2026, epoch 8, run seed 20261021, 14 keys: 11 params + 3 buffers, missing=[] unexpected=[], weights_identical=True)",
+      "2026-11-02 16:09:45,702 INFO ptlib.train: epoch 1/2 | train_nll=9238.704426 | valid_nll=1123.591064 | valid_AUPRC@200=0.080426 | lr=1.00e-03 | train 6.0s | valid 0.4s (gather 0.0s/forward 0.0s/ap 0.4s) | best 0.080426 @1 | stale 0/20",
+      "2026-11-02 16:09:46,353 INFO ptlib.train: epoch 2/2 | train_nll=2326.498748 | valid_nll=481.157684 | valid_AUPRC@200=0.082619 | lr=1.00e-03 | train 0.0s | valid 0.4s (gather 0.0s/forward 0.0s/ap 0.4s) | best 0.082619 @2 | stale 0/20",
+      "2026-11-02 16:09:46,430 INFO ptlib.train: finished finetune: epochs=2 stop=max_epochs best_valid_AUPRC@200=0.082619 wall=9.3s peak_rss=1335 MiB",
+      "{",
+      "  \"run_dir\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe\",",
+      "  \"checkpoint\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe/checkpoint/model.pt\",",
+      "  \"best_valid_auprc\": 0.08261928116652585,",
+      "  \"best_epoch\": 2,",
+      "  \"epochs_run\": 2,",
+      "  \"stop_reason\": \"max_epochs\"",
+      "}"
+    ],
+    "log": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/queue_logs/cm_f0_s20261021_lr1e-3_tahoe.log",
+    "n_lines": 13,
+    "warm_start_lines": [
+      "2026-11-02 16:09:38,217 INFO ptlib.train: warm start: loaded /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt (sha256 a2c83736cf4f\u2026, config 5ec0002761b5\u2026, epoch 8, run seed 20261021, 14 keys: 11 params + 3 buffers, missing=[] unexpected=[], weights_identical=True)"
+    ]
+  },
+  "run": {
+    "exit_code": 0,
+    "queue_log": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/logs/run_queue.log",
+    "queue_summary": {
+      "completed": 1,
+      "failed": 0,
+      "failed_units": [],
+      "skipped_complete": 0,
+      "status_csv": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/queue_status.csv",
+      "units": 1
+    },
+    "status_csv": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/queue_status.csv",
+    "wall_s": 11.559
+  },
+  "schema": "cm_tahoe.profile/v1",
+  "unit": {
+    "args": [
+      "--fold",
+      "0",
+      "--seed",
+      "20261021",
+      "--lr",
+      "0.001",
+      "--init",
+      "pretrained",
+      "--init-checkpoint",
+      "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt",
+      "--device",
+      "cuda",
+      "--hash-cache",
+      "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/hash_cache.json",
+      "--epochs",
+      "2",
+      "--min-epochs",
+      "1"
+    ],
+    "fold": 0,
+    "lr": 0.001,
+    "lr_label": "1e-3",
+    "seed": 20261021,
+    "unit_id": "cm_f0_s20261021_lr1e-3_tahoe"
+  },
+  "warmstart": {
+    "provenance_sha256": "9adeb5d1a5396271af30fa4ab32ed4597e8805ccfad6b586eff6cb6c07dc5f62",
+    "record": {
+      "anti_random_init": {
+        "canary": "fresh random_init(model, seed) with the same structure and seed",
+        "matches_fresh_random_init": false,
+        "n_tensors": 14,
+        "n_tensors_identical_to_random_init": 0
+      },
+      "checkpoint_best_valid_auprc": 0.2007510602887422,
+      "checkpoint_config": {
+        "init": "random",
+        "metric": {
+          "k": 200,
+          "name": "direction_auprc",
+          "plateau_mode": "max"
+        },
+        "recipe": {
+          "batch_size": 512,
+          "early_stop_patience": 20,
+          "lr": 0.001,
+          "max_epochs": 100,
+          "min_epochs": 20,
+          "min_lr": 1e-08,
+          "sched_factor": 0.5,
+          "sched_patience": 10,
+          "weight_decay": 1e-08
+        },
+        "seed": 20261021,
+        "stage": "pretrain",
+        "structure": {
+          "adaptor": [
+            128
+          ],
+          "c_dim": 64,
+          "dropout": 0.05,
+          "drug_dim": 1024,
+          "hidden": [
+            128
+          ],
+          "n_dim": 10,
+          "n_genes": 18164,
+          "z_dim": 64
+        },
+        "train_drugs": "main"
+      },
+      "checkpoint_config_sha256": "5ec0002761b5b21af5fac81fc0a8ec02691b6c8677afbaaaa0ae19746c4a5ae3",
+      "checkpoint_epoch": 8,
+      "checkpoint_relpath": "checkpoint/model.pt",
+      "checkpoint_stage": "pretrain",
+      "checkpoint_structure": {
+        "adaptor": [
+          128
+        ],
+        "c_dim": 64,
+        "dropout": 0.05,
+        "drug_dim": 1024,
+        "hidden": [
+          128
+        ],
+        "n_dim": 10,
+        "n_genes": 18164,
+        "z_dim": 64
+      },
+      "gene_axis": {
+        "checkpoint": 18164,
+        "expected": 18164,
+        "matches": true
+      },
+      "load_provenance": {
+        "dtype_mismatches": [],
+        "loaded_layers": [
+          "CombAdaptor.FC.L0.weight",
+          "CombAdaptor.comb_encoder.bias",
+          "CombAdaptor.comb_encoder.weight",
+          "decoder.FirstL.0.weight",
+          "decoder.FirstL.1.bias",
+          "decoder.FirstL.1.num_batches_tracked",
+          "decoder.FirstL.1.running_mean",
+          "decoder.FirstL.1.running_var",
+          "decoder.FirstL.1.weight",
+          "decoder.recon_decoder.bias",
+          "decoder.recon_decoder.weight",
+          "encoder.FC.L0.weight",
+          "encoder.mean_encoder.bias",
+          "encoder.mean_encoder.weight"
+        ],
+        "missing_buffer_keys": [],
+        "missing_keys": [],
+        "missing_parameter_keys": [],
+        "n_loaded_buffer_tensors": 3,
+        "n_loaded_elements": 7185257,
+        "n_loaded_parameter_tensors": 11,
+        "n_loaded_tensors": 14,
+        "n_model_buffers": 3,
+        "n_model_parameters": 11,
+        "n_parameters": 7185000,
+        "n_tensors_compared": 14,
+        "nonfinite_keys": [],
+        "shape_mismatches": [],
+        "strict_load": true,
+        "unexpected_keys": [],
+        "weights_identical": true
+      },
+      "parameter_count": 7185000,
+      "path": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt",
+      "payload_model": "prnet",
+      "payload_seed": 20261021,
+      "seed": 20261021,
+      "seed_matches": true,
+      "sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+      "size_bytes": 28746059,
+      "state_dict_sha256": "e1b8b24c6b34050bc14a6999ec17529865e1e4f4192292a5903d352c3382aa38",
+      "structure_matches_run": true,
+      "structure_problems": []
+    }
+  }
+}
