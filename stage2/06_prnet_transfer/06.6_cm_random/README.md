@@ -245,3 +245,17 @@ Tracked: `AGENTS.md`, `README.md`, `execution/**` (matrix/queue/record scripts, 
 Local/gitignored: `*.pt` weights under `output/runs/`, `output/input_cache/`,
 `output/hash_cache.json`, `output/queue_status.csv`, `output/logs/`, `output/_resume_probe/`,
 `output/record/*.tmp` (write-then-rename scratch, absent once written).
+
+## Review deviations
+
+- **Deliberate per-substep duplication.** The `common.py` helpers and the matrix/record
+  definitions are repeated here instead of shared: ADR 0030 §3 gives every substep an
+  independently re-derivable execution tree, and the single shared trainer/evaluator lives
+  in [`06.4_pipeline`](../06.4_pipeline/README.md). Accepted as a maintainability cost.
+- **Results under `output/`, not the substep root.** Record CSVs (and, in 06.9, figures)
+  live in `output/record/` / `output/figures/` with a tracked record force-added, rather
+  than directly in the substep directory as ADR 0030 §3 asks. Accepted deviation: moving
+  them after the records were locked would break the recorded artifact paths.
+- **Checkpoint identity travels as columns.** `config_sha256`, `checkpoint_sha256`,
+  `checkpoint_bytes` and `checkpoint_worktree_relpath` are explicit CSV/JSON fields rather
+  than a dedicated identity type. Accepted for CSV/record compatibility.

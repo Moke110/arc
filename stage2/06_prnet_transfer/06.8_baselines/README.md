@@ -163,3 +163,15 @@ all folds, git `e0e2d68` (`dirty=true` because the record directory is the run's
 #4 replaced it with h5py/`read_elem` header reads (0.90 s / 484 MiB on that view,
 regression-tested); integration `e0e2d68` carries the fix and the real `make check` above
 measured 881 MiB. This step never forks the loader.
+
+## 7. Review deviations
+
+- **Deliberate per-substep duplication.** This substep carries its own path/hash helpers
+  and fold/baseline definitions instead of sharing them: ADR 0030 §3 gives every substep
+  an independently re-derivable execution tree, and the single shared evaluator lives in
+  [`06.4_pipeline`](../06.4_pipeline/README.md) (imported, never forked). Accepted as a
+  maintainability cost.
+- **Results under `output/`, not the substep root.** The five record files live in
+  `output/` behind a narrow `.gitignore` exception rather than directly in the substep
+  directory as ADR 0030 §3 asks. Accepted deviation: moving them after the records were
+  locked would break the recorded artifact paths.
