@@ -31,9 +31,10 @@ closes with artifacts and evidence.
 
 ## Layout
 
-`eligibility/` · `qc/` · `input/` · `pipeline/` · `runs/` · `baselines/` ·
-`evaluation/` · `ablations/capacity/` · `ablations/env_compounds/` — see
-[`AGENTS.md`](AGENTS.md) for what each owns and
+Per ADR 0030 the step has one harness tree and one artifact tree:
+`execution/{eligibility,qc,input,pipeline,runs,baselines,evaluation,ablations}/`
+and `output/{eligibility,qc,input,runs,baselines,evaluation,ablations}/`. See
+[`AGENTS.md`](AGENTS.md) for what each area owns and
 [`docs/adr/`](../../docs/adr/) for the contracts. There is exactly one
 eligibility audit, one QC audit, one frozen input build, and one evaluator;
 every experiment consumes them rather than re-deriving a split.
