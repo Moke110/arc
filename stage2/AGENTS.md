@@ -22,12 +22,13 @@ results, selection constraints and reproduce commands live in each step's
   valid Gaussian NLL −2.628080 at epoch 47, 956 s (15.9 min) on GPU; artifacts under
   `output/` (ADR 0031). Pipeline claim only.
 - [`06_prnet_transfer/`](06_prnet_transfer/README.md) — the formal-transfer
-  study (started 2026-11-02): 460-compound eligibility audit, per-observation QC,
+  study (executed 2026-11-02): 460-compound eligibility audit, per-observation QC,
   frozen two-source input with five drug-key folds and consensus controls, then 3
   formal Tahoe pretrains × 90 CM candidates and a paired
-  pretrained-vs-random, model-vs-baseline evaluation. Status: **in progress**
-  (audits merged, frozen input under build, no training yet); its
-  README carries the fixed first-round design.
+  pretrained-vs-random, model-vs-baseline evaluation. Status: **first round
+  executed and concluded — negative** (Tahoe-init −0.0063 AUPRC@200 vs random,
+  both far below the `delta_mean` baseline); the post-first-round ablations
+  (#10/#11) are deferred. Its README carries the fixed design and the results.
 - [`_envs/`](_envs/README.md) — non-step: shared per-model benchmark
   environments and their `pip freeze` locks (ADR 0021).
 - [`audit/`](audit/README.md) — non-step: entrant audit, fairness audit, and the
