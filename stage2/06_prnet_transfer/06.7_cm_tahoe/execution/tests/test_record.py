@@ -112,13 +112,63 @@ class CleanMatrixTests(RecordTestBase):
                   newline="", encoding="utf-8") as handle:
             rows = list(_csv.DictReader(handle))
         self.assertEqual(len(rows), 15)
+        candidates = {}
+        with open(fixture["out_dir"] / "record" / "candidate_record.csv",
+                  newline="", encoding="utf-8") as handle:
+            for candidate_row in _csv.DictReader(handle):
+                candidates[candidate_row["unit_id"]] = candidate_row
         for fold in range(5):
             fold_rows = [row for row in rows if int(row["fold"]) == fold]
             self.assertEqual(len(fold_rows), 3)
             self.assertEqual(sorted(int(row["seed"]) for row in fold_rows),
                              [20261021, 20261022, 20261023])
-            expected = fixture["checkpoints"][str(fold_rows[0]["seed"])]
-            self.assertEqual(fold_rows[0]["init_checkpoint_sha256"], expected["sha256"])
+            # one common selected LR per fold
+            self.assertEqual(len({row["lr_selected"] for row in fold_rows}), 1)
+            for row in fold_rows:
+                candidate_row = candidates[row["unit_id"]]
+                expected = fixture["checkpoints"][str(row["seed"])]
+                self.assertEqual(row["lr_selected"], candidate_row["lr"])
+                self.assertEqual(row["config_sha256"], candidate_row["config_sha256"])
+                self.assertEqual(row["checkpoint_sha256"], candidate_row["checkpoint_sha256"])
+                self.assertEqual(row["data_identity"], candidate_row["data_identity"])
+                # the warm-start identity stays in candidate_record.csv, not here
+                self.assertEqual(candidate_row["init_checkpoint_sha256"], expected["sha256"])
+
+    def test_selected_columns_are_ticket9_drop_in_compatible(self):
+        """Ticket #9's builder reads exactly these columns from this file."""
+        expected = [
+            "fold", "seed", "seed_index", "lr_selected", "unit_id", "config_sha256",
+            "checkpoint_worktree_relpath", "checkpoint_sha256", "checkpoint_bytes",
+            "best_valid_auprc", "best_epoch", "epochs_run", "stop_reason", "data_identity",
+        ]
+        self.assertEqual(list(write_record.SELECTED_COLUMNS), expected)
+        fixture = self._fixture()
+        write_record.write_record(
+            data_dir=fixture["data_dir"], out_dir=fixture["out_dir"],
+            random_record_path=fixture["random_record_path"],
+        )
+        with open(fixture["out_dir"] / "record" / "selected_checkpoints.csv",
+                  newline="", encoding="utf-8") as handle:
+            self.assertEqual(next(_csv.reader(handle)), expected)
+
+    def test_real_data_identity_matches_ticket6(self):
+        """The real frozen input hashes to the same identity as ticket #6's record.
+
+        Reads only tracked small files (the frozen manifest + locked config and
+        ticket #6's record), so it is offline and catches any identity drift
+        before the 45-unit matrix runs.
+        """
+        manifest = _support.REAL_LOCKED_CONFIG.parent / "manifest.json"
+        if not manifest.exists() or not _support.REAL_RANDOM_RECORD.exists():
+            self.skipTest("the tracked frozen manifest or ticket #6 record is absent")
+        frozen = _support.common.frozen_identity(_support.REAL_LOCKED_CONFIG.parent)
+        identity = _support.common.data_identity_sha256(frozen)
+        random_record = json.loads(
+            _support.REAL_RANDOM_RECORD.read_text(encoding="utf-8")
+        )
+        self.assertEqual(identity, random_record["data"]["identity_sha256"])
+        self.assertEqual(identity,
+                         "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376")
 
     def test_record_content_hash_is_stable_across_rebuilds(self):
         fixture = self._fixture()

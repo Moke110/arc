@@ -92,10 +92,13 @@ SELECTION_COLUMNS = (
     "fold", "selected_lr", "selected_lr_label", "selected_mean_auprc", "tie_break_applied",
     "complete", "n_seeds", "note", "candidates_ok", "candidates_capped", "candidates_failed",
 )
+#: Drop-in compatible with ticket #6's record: ticket #9's unit-manifest builder
+#: reads exactly these columns (and only these).  The warm-start identity of each
+#: selected candidate stays in ``candidate_record.csv`` and in ``record.json``'s
+#: ``warmstart`` block, so #9 re-verifies it from the candidate manifest/run dir.
 SELECTED_COLUMNS = (
     "fold", "seed", "seed_index", "lr_selected", "unit_id", "config_sha256",
     "checkpoint_worktree_relpath", "checkpoint_sha256", "checkpoint_bytes",
-    "init_checkpoint_sha256", "init_checkpoint_config_sha256",
     "best_valid_auprc", "best_epoch", "epochs_run", "stop_reason", "data_identity",
 )
 
@@ -384,8 +387,6 @@ def derive_candidates(
             "checkpoint_worktree_relpath": row["checkpoint_worktree_relpath"],
             "checkpoint_sha256": row["checkpoint_sha256"],
             "checkpoint_bytes": row["checkpoint_bytes"],
-            "init_checkpoint_sha256": row["init_checkpoint_sha256"],
-            "init_checkpoint_config_sha256": row["init_checkpoint_config_sha256"],
             "best_valid_auprc": row["best_valid_auprc"],
             "best_epoch": row["best_epoch"],
             "epochs_run": row["epochs_run"],
