@@ -1,0 +1,85 @@
+{
+  "checkpoint_root": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs",
+  "created_utc": "2026-11-02T11:31:16+00:00",
+  "data_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+  "git": {
+    "branch": "feat/pt/t07-cmtahoe",
+    "dirty": false,
+    "sha": "d691fbf9e9f9592c091ccc9771cfddcf68b46aaa"
+  },
+  "peaks": {
+    "errors": [],
+    "gpu_used_mib": 3412.0,
+    "host_process_tree_rss_mib": 3514.4,
+    "host_rss_start_mib": 450.1,
+    "n_samples": 914,
+    "scope_cgroup_memory_current_mib": 3748.1
+  },
+  "preflight": {
+    "created_utc": "2026-11-02T11:14:59+00:00",
+    "cuda_check": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "1"
+    },
+    "free_gib_min": 12.0,
+    "gpu": {
+      "available": true,
+      "n_gpus": 1,
+      "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "total_mib": 16376.0,
+      "used_mib": 1319.0
+    },
+    "gpu_memory_attributable": true,
+    "gpu_processes": [],
+    "heavy_gpu_threshold_mib": 1024.0,
+    "host": "DESKTOP-ADOFOQR",
+    "max_other_heavy_gpu": 1,
+    "mem_available_gib": 44.34,
+    "nproc": 8,
+    "omp_threads": 2,
+    "other_heavy_gpu_processes": [],
+    "python": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "queue": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/units.json",
+    "queue_sha256": "7a26eb4ec10361ce1b98d860db1bcb6aa96221871c99998e4c43fd679cd950b7",
+    "scope": "systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=12G",
+    "units": 45,
+    "workers": 2
+  },
+  "run": {
+    "exit_code": 0,
+    "n_unit_rows": 45,
+    "queue_log": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/logs/run_queue.log",
+    "queue_status_csv": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/queue_status.csv",
+    "queue_summary": {
+      "completed": 45,
+      "failed": 0,
+      "failed_units": [],
+      "skipped_complete": 0,
+      "status_csv": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/queue_status.csv",
+      "units": 45
+    },
+    "units_failed": [],
+    "wall_s": 923.563
+  },
+  "schema": "cm_tahoe.matrix_run/v1",
+  "status": "completed",
+  "warmstart": {
+    "checkpoint_config_sha256": {
+      "20261021": "5ec0002761b5b21af5fac81fc0a8ec02691b6c8677afbaaaa0ae19746c4a5ae3",
+      "20261022": "9c3c9514c1af8c3d7e7573a51ed8588f3f2c3cfe9951e9546f21913d09adb872",
+      "20261023": "55b19d1b7b81a2102fbf2ff3283303306b1b11aa0a1dab1d736fc52915b0dd33"
+    },
+    "checkpoint_sha256": {
+      "20261021": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+      "20261022": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
+      "20261023": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec"
+    },
+    "provenance_sha256": "3b52ea219b97db1d5a9f891a25e9adc724d181d6778ee8e3c4b39c648e26a58d",
+    "seeds": [
+      20261021,
+      20261022,
+      20261023
+    ]
+  }
+}

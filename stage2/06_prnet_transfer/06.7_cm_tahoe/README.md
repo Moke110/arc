@@ -1,13 +1,15 @@
 # 06.7_cm_tahoe — 45 Tahoe-init CM candidates and the per-fold LR selection (ticket #7)
 
-**Status: built and wrapper-profile-verified; the 45-unit matrix has not run yet.**
-The substep mirrors [`06.6_cm_random`](../06.6_cm_random/README.md) exactly — same five
-folds, three seeds, three learning-rate candidates, recipe, budget, early stopping and
-per-fold LR rule — changing **only the initialisation**: every candidate warm-starts from
-that seed's formal Tahoe pretrain checkpoint from ticket #5.  Until the Lead-run sweep in
-`06.5_tahoe_pretrain/output/formal/` finishes and the Lead signals it, the matrix must not
-start (two heavy jobs repo-wide; a training ticket runs alone).  This substep trains
-**only** Tahoe-init candidates; the test split is untouched until ticket #9.
+**Status: executed and verified** (2026-11-02 19:15–19:31 Asia/Shanghai, after the
+ticket-#5 formal sweep).  The full Tahoe-initialisation candidate matrix — **5 folds × 3
+seeds × 3 learning rates = 45 full-parameter CM finetunes**, each warm-starting from its
+seed's formal pretrain checkpoint — ran on the frozen `06.3_input` view under the
+ticket-#4 trainer: **45/45 completed**, every candidate is recorded with its warm-start
+provenance, and the per-fold common learning rate is locked.  The substep mirrors
+[`06.6_cm_random`](../06.6_cm_random/README.md) exactly — same folds, seeds, learning-rate
+candidates, recipe, budget, early stopping and per-fold LR rule — changing **only the
+initialisation**.  This substep trains **only** Tahoe-init candidates; the test split is
+untouched until ticket #9.
 
 The decision is [ADR 0032](../../../docs/adr/0032-prnet-formal-transfer.md); the study
 design is [`stage2/06_prnet_transfer/README.md`](../README.md); the frozen input, folds,
@@ -23,7 +25,7 @@ drives the shared queue, and records/gates the outcome.
 |---|---|
 | the strict warm-start loader + provenance record | [`execution/warmstart.py`](execution/warmstart.py) (wraps `06.4`'s `ptlib.checkpoint`; the trainer itself records the same provenance in every run manifest) |
 | the 45-unit matrix definition (folds × seeds × LRs from the frozen config, seed→checkpoint) | [`execution/matrix.py`](execution/matrix.py), `execution/build_queue.py` → `output/units.json` (written after the sweep) |
-| every candidate's outcome, config, data identity, checkpoint, warm-start identity, validation curve | `output/record/candidate_record.csv`, `validation_curves.csv` (after the Lead-run matrix) |
+| every candidate's outcome, config, data identity, checkpoint, warm-start identity, validation curve | [`output/record/candidate_record.csv`](output/record/candidate_record.csv), `validation_curves.csv` |
 | per-fold LR selection (three-seed mean, lower LR on tie) | `output/record/lr_scores.csv`, `lr_selection.csv` |
 | the **15 selected checkpoints** ticket #9 scores | `output/record/selected_checkpoints.csv` |
 | run-level evidence (scope, pre-flight, wall, peaks, resume proof, gates, warm-start block) | `output/record/matrix_run.json`, `resume_check.json`, `record.json`, `record_check.json` |
@@ -94,8 +96,8 @@ the loaded weights are **not** a fresh random init.
 
 ## Execution
 
-After the Lead signals that the `#5` sweep finished (all three `tahoe_seed*/checkpoint/model.pt`
-exist and are final):
+The executed sequence (reproduce it after the `#5` sweep's three `tahoe_seed*/checkpoint/model.pt`
+are final):
 
 ```
 cd stage2/06_prnet_transfer/06.7_cm_tahoe/execution
@@ -146,17 +148,136 @@ claim and the run is not part of the matrix.
 
 ## Results
 
-No matrix result yet.  When the Lead runs it, the record carries per fold × LR the
-three-seed mean validation AUPRC@200, the chosen common LR, the 15 selected checkpoints
-(3 seeds per fold at that LR), per-candidate stop reasons/epochs, and the full warm-start
-provenance per seed — exactly the columns `06.6` produced for the random branch, plus the
-initialisation identity.  The selection rule is re-derived from the recorded curves and
-gated, never re-picked.
+### 45-candidate outcome summary
+
+**42 `ok`** (early-stopped on validation AUPRC), **3 `capped`** (consumed the whole
+100-epoch budget without an AUPRC improvement trigger — the budget bound, not a failure),
+**0 failed**.  All 45 have a manifest, a checkpoint whose bytes match its recorded sha256,
+a complete validation curve, and a warm-start provenance block.  The Tahoe-init runs
+generally peak early (the 1e-4 candidates at epochs 9–29) and the higher LRs run longer:
+
+| LR | candidates | epochs min / mean / max | capped |
+|---|---|---|---|
+| 1e-4 | 15 | 35 / 39.9 / 50 | 0 |
+| 3e-4 | 15 | 31 / 43.9 / 100 | 1 |
+| 1e-3 | 15 | 28 / 55.3 / 100 | 2 |
+
+The three `capped` candidates are all seed `20261021` (`fold2 lr3e-4`, `fold2 lr1e-3`,
+`fold4 lr1e-3`); they are usable candidates with their best-validation checkpoint and are
+labelled so they are never silently read as early-stopped runs.
+
+### Per-fold LR selection (three-seed mean validation AUPRC@200)
+
+| fold | 1e-4 | 3e-4 | 1e-3 | selected | margin over next |
+|---|---|---|---|---|---|
+| 0 | **0.090974** | 0.090711 | 0.089994 | 1e-4 | +0.000263 |
+| 1 | **0.095643** | 0.094575 | 0.092251 | 1e-4 | +0.001068 |
+| 2 | 0.065851 | 0.065605 | **0.069518** | 1e-3 | +0.003667 |
+| 3 | 0.074176 | 0.074310 | **0.074471** | 1e-3 | +0.000162 |
+| 4 | **0.084970** | 0.084633 | 0.083655 | 1e-4 | +0.000337 |
+
+No tie-break was needed in any fold.  Unlike the random-init branch (which selected 1e-3
+in every fold), Tahoe init selects the **lowest** LR in folds 0, 1 and 4 and the highest in
+folds 2 and 3 — the optimum shifts with the already-trained weights, which is exactly what
+the per-fold, three-seed rule is for.
+
+**Paired reading against ticket #6 (not a selection input — the test split is still
+unscored).** With the same folds/seeds/LRs/recipe/budget, the random-init branch's selected
+three-seed means are higher in every fold:
+
+| fold | random init (#6) | Tahoe init (#7) | difference |
+|---|---|---|---|
+| 0 | 0.099018 | 0.090974 | −0.008044 |
+| 1 | 0.103012 | 0.095643 | −0.007369 |
+| 2 | 0.075352 | 0.069518 | −0.005834 |
+| 3 | 0.082602 | 0.074471 | −0.008131 |
+| 4 | 0.089705 | 0.084970 | −0.004735 |
+
+This is a **validation-selection** comparison only; whether the gap holds on the held-out
+drugs is ticket #9's question, and a negative transfer result is a valid first-round
+outcome under the study's negative-result clause.
+
+### The 15 selected checkpoints (input to ticket #9)
+
+One checkpoint per `(fold, seed)` at that fold's selected LR; all three seeds are kept.
+Validation AUPRC is each seed's best epoch; full sha256 and checkout-relative paths are in
+[`output/record/selected_checkpoints.csv`](output/record/selected_checkpoints.csv) (the
+14-column schema ticket #9 consumes, identical to #6's).
+
+| fold | seed | valid AUPRC@200 | best epoch | epochs run | stop |
+|---|---|---|---|---|---|
+| 0 | 20261021 | 0.093502 | 29 | 50 | early stop |
+| 0 | 20261022 | 0.088336 | 15 | 36 | early stop |
+| 0 | 20261023 | 0.091084 | 22 | 43 | early stop |
+| 1 | 20261021 | 0.098518 | 17 | 38 | early stop |
+| 1 | 20261022 | 0.093596 | 14 | 35 | early stop |
+| 1 | 20261023 | 0.094815 | 17 | 38 | early stop |
+| 2 | 20261021 | 0.069965 | 83 | 100 | **max_epochs (capped)** |
+| 2 | 20261022 | 0.063297 | 9 | 30 | early stop |
+| 2 | 20261023 | 0.075292 | 34 | 55 | early stop |
+| 3 | 20261021 | 0.076267 | 29 | 50 | early stop |
+| 3 | 20261022 | 0.072772 | 17 | 38 | early stop |
+| 3 | 20261023 | 0.074375 | 15 | 36 | early stop |
+| 4 | 20261021 | 0.087221 | 25 | 46 | early stop |
+| 4 | 20261022 | 0.082700 | 16 | 37 | early stop |
+| 4 | 20261023 | 0.084988 | 20 | 41 | early stop |
+
+15 checkpoints × 28,746,059 bytes = **431,190,885 bytes**; selected_checkpoints.csv sha256
+`8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17`.
+
+### Warm-start provenance (executed)
+
+All 45 candidates loaded the matching seed's pretrain checkpoint exactly; the record's
+`warmstart` block (also in `units.json`) carries the proof, and every candidate manifest
+carries the same proof in `init`:
+
+| seed | checkpoint sha256 | config digest | pretrain epoch | pretrain val AUPRC | keys loaded | missing / unexpected | weights identical | fresh-random canary |
+|---|---|---|---|---|---|---|---|---|
+| 20261021 | `a2c83736cf4faed9…` | `5ec0002761b5b21a…` | 8 | 0.200751 | 14 (11 params + 3 buffers) | `[]` / `[]` | true | false |
+| 20261022 | `e911e0545586a2bf…` | `9c3c9514c1af8c3d…` | 74 | 0.222222 | 14 (11 params + 3 buffers) | `[]` / `[]` | true | false |
+| 20261023 | `5cf773515b8e8f0f…` | `55b19d1b7b81a210…` | 32 | 0.231263 | 14 (11 params + 3 buffers) | `[]` / `[]` | true | false |
+
+Three-seed provenance sha256 `3b52ea219b97db1d5a9f891a25e9adc724d181d6778ee8e3c4b39c648e26a58d`;
+gene axis 18,164 = 18,164 for all; every checkpoint is a `stage: pretrain` payload whose
+payload seed equals the matrix seed.  The three seed files are distinct and unchanged since
+verification (`init_checkpoint_bytes_match`), and each fold×seed used exactly its own seed's
+checkpoint (`seed_checkpoint_one_to_one`).
+
+### Data identity and branch symmetry
+
+Data identity `a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376` — the
+same frozen bytes as ticket #6.  The `matrix_symmetry_with_ticket6` gate confirms the
+folds, seeds, LRs, recipe, structure, metric, loss, optimiser, noise policy, budget and
+selection rule are identical to #6's record; only `init` (`random` → `pretrained`) differs.
+
+### Execution (one heavy run, alone, 12 GiB scope)
+
+| quantity | measured |
+|---|---|
+| command | `systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=12G -- … run_matrix.py … --workers 2 --omp-threads 2` |
+| wall time | **923.6 s (15 min 24 s)** for all 45 units, 2 workers |
+| queue summary | `{units:45, completed:45, skipped_complete:0, failed:0}` |
+| host peak RSS (process tree, 1 Hz) | **3,514 MiB** |
+| scope cgroup peak memory | 3,748 MiB (cap 12 GiB — never approached) |
+| GPU device peak | **3,412 MiB** of 16,376 (idle baseline ≈1,300 MiB) |
+| pre-flight | 44.3 GiB `MemAvailable`, no other heavy GPU process, CUDA present |
+| resume proof (`make resume`) | 45/45 skipped when complete; an interrupted unit re-ran with the identical config fingerprint (`a69e12cb…`) and was then skipped |
+
+**First attempt (kept for the audit trail, not the recorded run).** The first matrix
+launch completed 44/45 units and lost `cm_f0_s20261021_lr1e-4_tahoe` to a genuine
+concurrency defect in the shared frozen-artifact hash memo: two workers wrote the same
+`hash_cache.json.tmp`, the first `replace` moved it away and the second raised
+`FileNotFoundError` inside `open_frozen_input` (907 s, peaks 3,527 MiB host / 3,265 MiB
+GPU).  Fixed in `06.4_pipeline` (`d691fbf`: unique `tempfile.mkstemp` temp per writer,
+`os.replace`, regression-tested with 160 concurrent saves); the recorded run is the clean
+45/45 re-run on the fixed code.  First-pass matrix/status/log kept locally in
+`output/first_attempt/`.
 
 ## Evidence and gates
 
 `make check` re-derives the record and applies the 06.6 gate set plus the ticket-#7
-additions, all of which must pass (`output/record/record_check.json`, `passed: true`):
+additions; **all 27 gates pass** (`output/record/record_check.json`, `passed: true`, 0
+failed):
 
 | gate group | what it proves |
 |---|---|
@@ -184,7 +305,7 @@ selection, by ticket #9.
 From `stage2/06_prnet_transfer/06.7_cm_tahoe/execution/`:
 
 ```bash
-make test          # 65 offline stdlib tests (arc env, CPU, synthetic checkpoints/runs)
+make test          # 67 offline stdlib tests (arc env, CPU, synthetic checkpoints/runs)
 make tables        # derived CSV cache of the frozen parquet tables (pinned env has no engine)
 make init          # verify the three #5 checkpoints (fail closed)
 make queue         # output/units.json (45 units, every seed's own checkpoint)
@@ -230,9 +351,10 @@ make resume        # resume proof, scoped
 ## Tracked vs local
 
 Tracked: `AGENTS.md`, `README.md`, `execution/**` (matrix/warm-start/queue/record scripts,
-Makefile, `run.sh`, 65 tests), `output/README.md`, and the force-added
-`output/profile/profile_record.json` (bounded wrapper evidence).  The full matrix record
-(`output/units.json`, `output/record/*`, `output/init/*`) is force-added by the Lead-run
-matrix step.  Local/gitignored: `*.pt` weights under `output/runs/` and
-`output/profile/staged_checkpoints/`, `output/profile/runs/`, `output/input_cache/`, `output/hash_cache.json`,
-`output/queue_status.csv`, `output/logs/`, `output/_resume_probe/`, `output/profile/logs/`.
+Makefile, `run.sh`, 67 tests), `output/README.md`, and the force-added evidence:
+`output/profile/profile_record.json` (bounded wrapper profile), `output/units.json` (the
+45-unit matrix + verified warm-start block), `output/init/tahoe_init.json` (three-seed
+provenance), and all nine files of `output/record/`.  Local/gitignored: `*.pt` weights
+under `output/runs/`, `output/profile/staged_checkpoints/`, `output/profile/runs/`,
+`output/input_cache/`, `output/hash_cache.json`, `output/queue_status.csv`, `output/logs/`,
+`output/_resume_probe/`, `output/profile/logs/`, `output/first_attempt/`.

@@ -53,7 +53,7 @@ every experiment consumes them rather than re-deriving a split.
 | `06.4_pipeline/` pipeline + smoke | #4 | Phase A built; Phase B real-data smoke green (17/17 steps, GPU peak 2.9 GB, host peak 8.5 GiB) | [`README`](06.4_pipeline/README.md), `output/smoke/smoke_record.json` |
 | `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | executed — 3/3 seeds (29/95/53 epochs, best valid AUPRC@200 0.2008/0.2222/0.2313) | [`README`](06.5_tahoe_pretrain/README.md), `output/formal/tahoe_pretrain_record.json` |
 | `06.6_cm_random/` 45 random-init CM candidates | #6 | executed — 45/45 (40 ok / 5 capped), LR 1e-3 in all folds, 15 checkpoints selected | [`README`](06.6_cm_random/README.md), `output/record/record.json` |
-| `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | built and wrapper-profile-verified (`#5` seed 20261021, 2-epoch profile); 45-unit matrix pending the Lead-run sweep | [`README`](06.7_cm_tahoe/README.md), `output/profile/profile_record.json` |
+| `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | executed — 45/45 (42 ok / 3 capped), per-fold LR 1e-4/1e-4/1e-3/1e-3/1e-4, 15 checkpoints selected, warm start 14/14 keys per seed | [`README`](06.7_cm_tahoe/README.md), `output/record/record.json` |
 | `06.8_baselines/` five-fold baselines | #8 | built and verified — real five-fold record, `delta_mean` 0.1645 AUPRC@200 is the primary bar | [`README`](06.8_baselines/README.md), `output/summary_table.csv` |
 | `06.9_evaluation/` 30-unit evaluation + report | #9 | planned | — |
 | `06.10_capacity_ablation/` capacity ablation | #10 | planned (post-first-round) | — |

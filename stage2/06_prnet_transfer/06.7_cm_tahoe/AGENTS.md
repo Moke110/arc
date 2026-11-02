@@ -25,7 +25,7 @@ the frozen input is [`06.3_input`](../06.3_input/README.md), the warm-start sour
   and gates it (`--check`): warm-start provenance per candidate/seed, one-to-one config/
   checkpoint/data identity, selection follows from the curves, 15 selected, #6 symmetry,
   no test-path artifacts.
-- `execution/tests/` — stdlib `unittest` (65 tests, offline synthetic checkpoints/runs).
+- `execution/tests/` — stdlib `unittest` (67 tests, offline synthetic checkpoints/runs).
 - `execution/Makefile`, `execution/run.sh` — `test`, `tables`, `init`, `queue`, `plan`,
   `matrix`, `profile`, `record`, `check`, `resume`, `check-input`.
 - `output/` — gitignored compute output; only `profile/` (tracked wrapper evidence) and the
