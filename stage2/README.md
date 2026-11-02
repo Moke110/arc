@@ -15,12 +15,13 @@ the second.
 | [`03_models_cmbench/`](03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork | ADR 0027, ADR 0028 |
 | [`04_tahoe_data/`](04_tahoe_data/README.md) | what do we pretrain on? | **Tahoe-100M pseudobulk corpus** (67,018 profiles × 62,710 genes, 25.8 GB, QA gates pass) **and its CM-schema pretrain view** — 67,018 × 18,164, 16.32 GB, **nine gates 9/9 PASS** | ADR 0029, ADR 0031 |
 | [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **executed 2026-11-01**: PRnet pretrained on the 04 view — **68 epochs**, early stop at 68, best valid Gaussian NLL **−2.628080** at epoch 47, **956 s (15.9 min)** on an RTX 4070 Ti SUPER; pipeline claim only | ADR 0031 |
+| [`06_prnet_transfer/`](06_prnet_transfer/README.md) | does Tahoe pretraining improve unseen-drug CM prediction? | **planned** (started 2026-11-02): eligibility + QC audits, frozen five-fold input with consensus controls, 3 formal Tahoe pretrains, 90 CM candidates, 30-unit paired evaluation against `no_change`/`delta_mean`; capacity and env-compound ablations follow the first round | ADR 0032 |
 
 The stage is now in **selection follow-up**: the benchmark evidence exists, the pretrain
 corpus exists, and PRnet has been pretrained on its CM-schema view — but no model has
 been finetuned on that checkpoint or evaluated against the benchmark, so the
-pretrain→finetune question is still open (see
-[`05_prnet_pretrain/`](05_prnet_pretrain/README.md)).
+pretrain→finetune question is still open. The formal-transfer study that answers it is
+[`06_prnet_transfer/`](06_prnet_transfer/README.md) (status: planned).
 
 ## Selection constraints in force
 
