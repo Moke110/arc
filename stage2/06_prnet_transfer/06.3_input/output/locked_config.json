@@ -1,0 +1,238 @@
+{
+  "consensus_control": {
+    "artifacts": [
+      "consensus_controls.npz",
+      "consensus_membership.parquet"
+    ],
+    "candidate_wells": "CM control rows with vehicle == 'DMSO' AND qc_pass on plates that carry >= 1 TRAINING drug of the fold",
+    "cross_plate_weight": "equal weight per plate (1 / n_plates)",
+    "forbidden": "test/valid drug treated expression; held-out plates' control rows; adjusting weights after seeing test data",
+    "held_out_environment_rule": "a plate whose fold drugs are all test/valid contributes no control row",
+    "name": "CM consensus control c*",
+    "per_fold": true,
+    "plate_mean": "per-plate mean of log1p_cp10k over candidate wells",
+    "well_weight": "plate_weight / n_wells_in_plate"
+  },
+  "consumer_note": "top-level structure/recipe/metric/loss/optimizer/prediction_noise/n_folds/seeds/lrs/dose_encoding are the canonical pipeline schema (ticket #4); the blocks below are the decision record and must not be re-tuned",
+  "contract_id": "stage2/06_prnet_transfer/06.3_input/contract@1.0.0",
+  "data_contract": {
+    "cm_expansion_set": "eligibility_decision == exclude AND qc_pass (ticket #11 training only)",
+    "cm_main_set": "eligibility_decision == include AND qc_pass",
+    "cm_rows": "QC-pass treated wells with a resolvable drug_key, plus QC-pass DMSO/Media control wells",
+    "cm_target": "layers['log1p_cp10k'] (row-wise log1p(CP10k))",
+    "cm_train_control": "mean over QC-pass DMSO rows on the same plate (never the mixed-vehicle control_mean)",
+    "cm_validation_test_input": "one fixed per-fold consensus c* (consensus_controls.npz); never a per-plate control",
+    "deployment_semantics": "validation/test/inference receive one fixed c*; the experimental truth is computed separately at scoring time",
+    "eval_delta": "y - mean(log1p_cp10k of QC-pass matched same-plate DMSO rows), computed only at scoring time",
+    "tahoe_control": "mean of the same (plate, cell_line) group's QC-pass control rows; never across cell lines",
+    "tahoe_rows_used": "~is_control & has_structure & qc_pass & matched_control_ok (tahoe_usable); time never filters rows",
+    "tahoe_target": "layers['log1p_cp10k']"
+  },
+  "derived_defaults": [
+    {
+      "key": "folds.seed",
+      "rationale": "the spec requires a recorded seed, not a specific value",
+      "value": 20261102
+    },
+    {
+      "key": "folds.assignment",
+      "rationale": "realises ~6:2:2 over clusters without a solver",
+      "value": "greedy capacity ceil(n/5)"
+    },
+    {
+      "key": "seeds",
+      "rationale": "the spec fixes three seeds, not their values",
+      "value": [
+        20261021,
+        20261022,
+        20261023
+      ]
+    },
+    {
+      "key": "lr_selection.tie_break",
+      "rationale": "the spec fixes the mean-of-three-seeds rule only",
+      "value": "lower LR, then candidate order"
+    },
+    {
+      "key": "consensus_control.well_weight",
+      "rationale": "equal plate weight is required; spelling it per well makes the pool auditable",
+      "value": "plate_weight / n_wells_in_plate"
+    },
+    {
+      "key": "recipe.min_lr",
+      "rationale": "the repo's existing plateau floor (05/03.1); the spec fixes factor and patience",
+      "value": 1e-08
+    }
+  ],
+  "dose_encoding": {
+    "binning": "none; the two sources' dose grids are not aligned",
+    "documented_scalings": {
+      "0.05": 0.02119,
+      "0.2": 0.07918,
+      "0.5": 0.17609,
+      "1.0": 0.30103,
+      "10.0": 1.04139,
+      "5.0": 0.77815
+    },
+    "dose_scale": "log10(dose_uM+1)",
+    "fingerprint": "FCFP4",
+    "label": "FCFP4_bits * log10(dose_uM + 1)",
+    "n_bits": 1024,
+    "radius": 2,
+    "rdkit": "AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, useFeatures=True, nBits=1024)",
+    "use_features": true
+  },
+  "environments": {
+    "builder": "/home/chang/miniconda3/envs/arc/bin/python (anndata 0.12.16)",
+    "note": "the builder writes the h5ad; the pinned trainer must read it (anndata 0.10.8 cannot write a dataframe/0.2.0 uns frame but reads one)",
+    "reader_trainer": "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python (anndata 0.10.8, torch 2.0.1+cu118)"
+  },
+  "folds": {
+    "assignment": "greedy, capacity = ceil(n_main_drugs / n_folds) drugs per fold",
+    "cluster_rule": "connected components of drug_key <-> inchikey[:14] (salt/connectivity cannot straddle)",
+    "excluded_drugs": "eligibility exclude/uncertain receive NO fold (reserved for the #11 expansion ablation)",
+    "n_folds": 5,
+    "plate_confounding": "459/460 temp_env keys sit on one plate; a fold's test drugs bring their plates. A drug split is NOT a plate split.",
+    "ratios": "~6:2:2 drugs per fold (test:valid:train)",
+    "roles": [
+      "train",
+      "valid",
+      "test"
+    ],
+    "seed": 20261102,
+    "split_unit": "drug_key",
+    "valid_fold": "(test_fold + n_folds - 1) % n_folds"
+  },
+  "frozen_by": "ticket #3 (GitHub issue Moke110/arc#3)",
+  "gene_axis": {
+    "identity_columns": [
+      "hgnc_id",
+      "entrez_id",
+      "ensembl_id",
+      "match_type"
+    ],
+    "measurement_mask": "var.gene_measured, per source; never a measured zero",
+    "n_genes": 18164,
+    "order": "stage2/02_cm_data/output/corpus/v1/genes.csv (HGNC symbol, lexicographic)"
+  },
+  "loss": "gaussian_nll",
+  "loss_detail": {
+    "clamp": false,
+    "implementation": "F.gaussian_nll_loss(mean, target, var, reduction='mean')",
+    "note": "a log-likelihood may be negative; never clamp or abs it"
+  },
+  "lr_selection": {
+    "rule": "per initialisation and per fold, choose the LR maximising the mean over the three seeds of the best validation AUPRC@200",
+    "then_evaluate": "the three checkpoints (one per seed) at the selected LR",
+    "tie_break": "lower LR first, then candidate order",
+    "tie_break_derived_default": "the spec fixes the mean-of-three-seeds rule, not the tie-break"
+  },
+  "lrs": {
+    "cm": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "pretrain": 0.001
+  },
+  "metric": {
+    "aggregation": "macro mean over conditions",
+    "auxiliary": [
+      "delta RMSE",
+      "delta correlation",
+      "low-response / toxicity stratification (labels are all `unknown` in this round)"
+    ],
+    "column": "AUPRC@200",
+    "condition": "CM: drug_key x dose_uM; Tahoe: drug_key x dose_uM x cell_line_id",
+    "headline": "direction AUPRC@200",
+    "k": 200,
+    "name": "direction_auprc",
+    "not_a_significance_test": true,
+    "per_condition_ap": "AP_up = average_precision(y_up, pred); AP_down = average_precision(y_down, -pred); condition score = mean of the non-NaN directions",
+    "plateau_mode": "max",
+    "replicate_rule": "average predictions within a condition BEFORE scoring",
+    "selection_metric": "validation direction AUPRC@200 (max)",
+    "test_usage": "scored once after candidate selection; never used for LR, epoch, seed or capacity",
+    "true_set": "top-k up and bottom-k down of the condition's mean true delta; stable argsort, ties by corpus gene order; a direction with < k non-zero genes falls back to its non-zero support"
+  },
+  "model_detail": {
+    "architecture": "PRnet PGM (author structure, re-implemented in-file)",
+    "cm_lr_candidates": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "comb_num": 1,
+    "finetune": "full-parameter; no frozen layers",
+    "in_dim": 18164,
+    "objective": "expression target: predict treated log1p_cp10k from (control, structure, dose)",
+    "output_nonnegative_mean": true,
+    "params_expected": 7185000,
+    "params_formula": "386*n_genes + 173696 (measured 7,185,000 at 18,164)",
+    "plateau_metric": "validation direction AUPRC@200",
+    "plateau_mode": "max",
+    "pretrain_lr": 0.001,
+    "signed_delta_head": false
+  },
+  "n_folds": 5,
+  "optimizer": "adam",
+  "prediction": {
+    "deterministic": true,
+    "repeat_inference_policy": "byte-identical predictions for the same checkpoint and input",
+    "train_noise": "N(0,1) noise vector of width 10 per sample, drawn from a seeded generator recorded per run",
+    "validation_test_inference_noise": "exactly zero"
+  },
+  "prediction_noise": "zero",
+  "recipe": {
+    "batch_size": 512,
+    "early_stop_patience": 20,
+    "max_epochs": 100,
+    "min_epochs": 20,
+    "min_lr": 1e-08,
+    "sched_factor": 0.5,
+    "sched_patience": 10,
+    "weight_decay": 1e-08
+  },
+  "schema": "06.3_input/locked_config/1",
+  "seeds": [
+    20261021,
+    20261022,
+    20261023
+  ],
+  "seeds_detail": {
+    "derived_default": "three consecutive seeds in the repo's 20261021 family; the spec fixes the count (3), not the values",
+    "fold_seed": 20261102,
+    "fold_seed_derived_default": "study start date; the spec fixes only that the seed is recorded",
+    "no_seed_cherry_picking": true
+  },
+  "spec": ".scratch/stage2-prnet-formal-transfer/spec.md (approved 2026-11-02)",
+  "structure": {
+    "adaptor": [
+      128
+    ],
+    "c_dim": 64,
+    "dropout": 0.05,
+    "drug_dim": 1024,
+    "hidden": [
+      128
+    ],
+    "n_dim": 10,
+    "n_genes": 18164,
+    "z_dim": 64
+  },
+  "test_units": {
+    "candidates": 90,
+    "candidates_formula": "2 inits x 5 folds x 3 seeds x 3 LRs",
+    "count": 30,
+    "definition": "one (init, fold, seed) selected checkpoint at the fold's chosen LR",
+    "factors": "2 inits x 5 folds x 3 seeds",
+    "policy": "all 30 reported; no seed or fold selection; paired by drug_key"
+  },
+  "validation": {
+    "cm": "the fold's valid roles only; model input is the fold's fixed c*",
+    "tahoe_conditions": "drug_key x dose_uM x cell_line_id",
+    "tahoe_matched_control": "same (plate, cell_line) group only",
+    "tahoe_pretrain": "plate13 + plate14 valid (existing technical default; not a cold-drug claim)"
+  },
+  "version": "1.0.0"
+}
