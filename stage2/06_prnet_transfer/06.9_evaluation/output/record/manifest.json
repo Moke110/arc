@@ -1,0 +1,241 @@
+{
+  "schema": "stage2/06.9_evaluation/record/v1",
+  "kind": "evaluation_record",
+  "ticket": "#9 (Moke110/arc)",
+  "phase": "test",
+  "dry_run": false,
+  "subset": false,
+  "created_utc": "2026-11-02T11:44:09Z",
+  "command": [
+    "write_record.py",
+    "--phase",
+    "test"
+  ],
+  "git": {
+    "sha": "f4f84885cd0531a01d1fc5b1e54a5e147a770642",
+    "branch": "feat/pt/t09-evaluation",
+    "dirty": true
+  },
+  "units_manifest": {
+    "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
+    "sha256": "b4174c8407489f706427d736555ba7296338a6ecefcaca11ae51ab2d72c6ba7e",
+    "created_utc": "2026-11-02T11:34:51Z",
+    "complete": true,
+    "n_units": 30,
+    "n_scored": 30
+  },
+  "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+  "frozen": {
+    "dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
+    "locked_config_sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+    "artifacts": {
+      "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+      "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+      "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+      "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+      "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+      "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+      "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+      "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+      "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+      "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+      "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+      "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+    }
+  },
+  "sources": {
+    "random_record": {
+      "label": "random-init (#6)",
+      "init": "random",
+      "source": "",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.6_cm_random/output/record/selected_checkpoints.csv",
+      "sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "n_rows": 15,
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "lr_by_fold": {
+        "0": 0.001,
+        "1": 0.001,
+        "2": 0.001,
+        "3": 0.001,
+        "4": 0.001
+      },
+      "seeds": [
+        20261021,
+        20261022,
+        20261023
+      ]
+    },
+    "tahoe_record": {
+      "label": "Tahoe-init (#7)",
+      "init": "tahoe",
+      "source": "",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.7_cm_tahoe/output/record/selected_checkpoints.csv",
+      "sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "n_rows": 15,
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "lr_by_fold": {
+        "0": 0.0001,
+        "1": 0.0001,
+        "2": 0.001,
+        "3": 0.001,
+        "4": 0.0001
+      },
+      "seeds": [
+        20261021,
+        20261022,
+        20261023
+      ]
+    },
+    "baselines": {
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
+      "sha256": "496552de9aed3f9a2d2f92d79eff621f6f066b357cf40b2583733a8c8318690b",
+      "n_rows": 1388,
+      "folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "baselines": [
+        "delta_mean",
+        "delta_mean_dose",
+        "no_change",
+        "ridge_fp"
+      ],
+      "n_conditions_per_fold": {
+        "0": 68,
+        "1": 67,
+        "2": 71,
+        "3": 71,
+        "4": 70
+      }
+    }
+  },
+  "metric": {
+    "name": "direction_auprc",
+    "headline_k": 200,
+    "aggregation": "replicates averaged within condition, direction AP, macro over conditions; then macro over folds of the three-seed mean",
+    "selection_untouched": "the 30 units are #6/#7's frozen selection"
+  },
+  "baselines": {
+    "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output",
+    "record": {
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv",
+      "sha256": "496552de9aed3f9a2d2f92d79eff621f6f066b357cf40b2583733a8c8318690b",
+      "n_rows": 1388,
+      "folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "baselines": [
+        "delta_mean",
+        "delta_mean_dose",
+        "no_change",
+        "ridge_fp"
+      ],
+      "n_conditions_per_fold": {
+        "0": 68,
+        "1": 67,
+        "2": 71,
+        "3": 71,
+        "4": 70
+      }
+    },
+    "primary": "delta_mean"
+  },
+  "bootstrap": {
+    "n_bootstrap": 10000,
+    "seed": 20261102,
+    "unit": "drug (fold pooled; doses/seeds/runs are not independent drugs)",
+    "interval": "percentile 95% (2.5, 97.5)"
+  },
+  "deviations": [
+    {
+      "id": "variance_head_guard_relaxed",
+      "component": "stage2/06_prnet_transfer/06.4_pipeline/execution/ptlib/model.py::check_architecture",
+      "fix_commit": "813c0bb",
+      "what": "The all-zero architecture probe required the decoder variance to be strictly positive. Four selected Tahoe-init checkpoints underflow softplus to exactly 0 on that off-distribution input; the guard now rejects only non-finite or negative variance and accepts an exact zero.",
+      "cause": "softplus(raw variance logit) is mathematically > 0 but float32 underflows to 0 for very negative logits; the fast-learning-rate Tahoe checkpoints retain a more negative variance head than the random-init ones.",
+      "evidence": {
+        "weights_non_finite": 0,
+        "zero_probe_var_zeros": {
+          "e9_f0_s20261023_lr1e-4_tahoe": "464 of 36,328 (2 x 18,164)",
+          "e9_f1_s20261023_lr1e-4_tahoe": "300 of 36,328",
+          "e9_f4_s20261022_lr1e-4_tahoe": "2 of 36,328",
+          "e9_f4_s20261023_lr1e-4_tahoe": "482 of 36,328"
+        },
+        "real_input_var_min": {
+          "e9_f0_s20261023_lr1e-4_tahoe": 2.186267226284011e-12,
+          "e9_f1_s20261023_lr1e-4_tahoe": 3.797551162421087e-11,
+          "e9_f4_s20261022_lr1e-4_tahoe": 8.789152131788436e-13,
+          "e9_f4_s20261023_lr1e-4_tahoe": 1.1615077788462713e-08
+        },
+        "real_input_var_zeros": 0,
+        "real_input_rows": 32,
+        "metric_uses": "predicted mean only: ptlib.predict.predict_rows returns the mean; the variance is unused by \u0394 or the direction-AUPRC@200 metric"
+      },
+      "unit_ids": [
+        "e9_f0_s20261023_lr1e-4_tahoe",
+        "e9_f1_s20261023_lr1e-4_tahoe",
+        "e9_f4_s20261022_lr1e-4_tahoe",
+        "e9_f4_s20261023_lr1e-4_tahoe"
+      ],
+      "effect_on_results": "none on any predicted value: guard-only change, no model, loss, checkpoint or selection changed; the 26 already-scored units are byte-identical (eval manifest + unit record hashes) and only the 4 failed units were re-scored",
+      "recovery": "4/4 re-scored successfully; final 30/30 units completed"
+    }
+  ],
+  "gates": {
+    "passed": true,
+    "n_gates": 29,
+    "failed": []
+  },
+  "record_sha256": {
+    "unit_results.csv": "de2a0038049928e9d2934badd36a2cd943bb60ee7f6bbf2c8d854a0161637630",
+    "fold_seed_table.csv": "7520d24ce92a291d8ea88a465745eafd8060fb316e809a360b52db614bce1056",
+    "per_drug_dose.csv": "06d83c894adbd13555304dceb3c0d8340dc3e59feb9e0aa2564e85273ea7c848",
+    "paired_by_drug.csv": "c2f2905b69387a5a35496bc6f40cefc344a7823cc925f87a530f4668618c07d5",
+    "drug_gains.csv": "37089c8fe51a7febde0b7f0c40a52ca0904c8ad11d7fb1e850f445c086de5202",
+    "strata.csv": "35b0a0eb2578f5b4b9963f15ddf3f4003667d197ed6e326c4c50ceb835b2e386",
+    "tahoe_seen_drugs.json": "104a0e662e7a6fdb16c614266f462ab900f29ea6bd8c2a58b9ebd1c04c2fdcda",
+    "summary.json": "123c66b568b1cb73b608dd0ca349d956f42ed6b21d00b6e2cb91d913123715ca"
+  },
+  "figures": [
+    {
+      "name": "auprc_by_fold.png",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/auprc_by_fold.png",
+      "sha256": "878242bf783d7e41962f7c61b82c167bdf34f31cd0ce443ede9b9a4cff20c7d5"
+    },
+    {
+      "name": "paired_gain_by_drug.png",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/paired_gain_by_drug.png",
+      "sha256": "de2a9fe22fd81b2216a16ce594065a5017ee35a3742710ed1a872e41e52432b5"
+    },
+    {
+      "name": "strata.png",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/strata.png",
+      "sha256": "3f815ba095776e94dfb952ada7540bdccd441047bedc045d233a68a4edc637f4"
+    },
+    {
+      "name": "seed_stability.png",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/figures/seed_stability.png",
+      "sha256": "2f6c8f888930a7c39ce9839a14667764c2014c3b7fcae8e06f03a947451833e3"
+    }
+  ],
+  "environment": {
+    "python": "3.13.13",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python_executable": "/home/chang/miniconda3/envs/arc/bin/python"
+  },
+  "timings": {
+    "wall_s": 12.516485643001943
+  },
+  "peak_rss_mb": 960.9765625
+}

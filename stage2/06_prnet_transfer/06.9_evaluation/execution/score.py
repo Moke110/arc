@@ -564,6 +564,9 @@ def run(
     plan: bool,
     min_available_gib: float,
 ) -> int:
+    out = Path(out).resolve()
+    data_dir = Path(data_dir).resolve()
+    units_path = Path(units_path).resolve()
     try:
         units_payload = load_unit_manifest(units_path, require_complete=(phase == "test"))
     except EvaluationError as exc:
@@ -690,6 +693,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     ns = build_parser().parse_args(argv)
+    # Resolve every path once: a relative --out would otherwise be re-interpreted by a
+    # child whose cwd is the (relative) unit directory, nesting the outputs.
+    ns.units = Path(ns.units).resolve()
+    ns.out = Path(ns.out).resolve()
+    ns.data_dir = Path(ns.data_dir).resolve()
+    if ns.table_cache is not None:
+        ns.table_cache = Path(ns.table_cache).resolve()
+    if ns.hash_cache is not None:
+        ns.hash_cache = Path(ns.hash_cache).resolve()
     if ns.phase == "test" and not ns.confirm_frozen_selection:
         print(
             "refusing --phase test: the 30 units must be selected and frozen before the "

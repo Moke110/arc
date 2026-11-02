@@ -1,0 +1,2204 @@
+{
+  "schema": "stage2/06.9_evaluation/units/v1",
+  "kind": "evaluation_units",
+  "created_utc": "2026-11-02T11:34:51Z",
+  "ticket": "#9 (Moke110/arc)",
+  "frozen": {
+    "dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
+    "manifest_sha256": "3050d149198cb3d26e55d3b7644a78207e67e49c29ec6c95fd51817018de11f3",
+    "locked_config_sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+    "artifacts": {
+      "cm_transfer.h5ad": "738d7831ba8f346c7eff4e2fe0524edaec3fbd2f15fb947857ad21a9aeacf4f0",
+      "consensus_controls.npz": "2a84e1350423c0021fd44ead1961a57331faf2c381cda2adc786cdc60c6acd22",
+      "consensus_membership.parquet": "33101dda0f5128188a6694c24e0d8f8e7b28779945f074182c0b2f824f38e676",
+      "consensus_summary.csv": "0d97e9b266117fab4e19bcde220597530fdc5b23cf3c744d62ac22c016803e82",
+      "contract.json": "a8e7b359b1e06ce53f905919f6acb2af334cfbd8bd38be1f240b9c47245e01ac",
+      "counts.csv": "aebbdee867ddb6f32400a5510668b448ce7494daffc4f9f49b73c0f636304b1a",
+      "fold_sizes.csv": "2e67872e87a89008d80596c3540bbbe79481eee8a8e278021c34860465447e0a",
+      "folds.parquet": "2243d4d4930fe909ac2dff1cdd9eb7f67e9dc4fdb3fb340d3909dbead9057cf4",
+      "locked_config.json": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+      "tahoe_control_groups.parquet": "814aaeec7f1557bed321c074bc9b589dd60f40ec1b6878320f23e76cf4cb7f99",
+      "tahoe_pairs.npz": "f11c8bdd6654bd3582a2325c44666d0c3c1e496bb0819d9b1daece01705777a6",
+      "tahoe_transfer.h5ad": "00f8d906ab305dbd44fbb8387bded0afd7e8513bb36001e0462bc5f6f940ef15",
+      "var_checks.csv": "fa1abcdd2b28df6031a146e3b6a8e8a6366f509843d0a4ef71fd91e7e4aacaa8"
+    }
+  },
+  "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+  "locked_config": {
+    "path": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output/locked_config.json",
+    "sha256": "8b48ba7651be402b594bf5116c3586b57c1e8103717709a75a153f9b38806cc3",
+    "structure": {
+      "n_genes": 18164,
+      "hidden": [
+        128
+      ],
+      "z_dim": 64,
+      "c_dim": 64,
+      "n_dim": 10,
+      "drug_dim": 1024,
+      "adaptor": [
+        128
+      ],
+      "dropout": 0.05
+    },
+    "n_folds": 5,
+    "seeds": [
+      20261021,
+      20261022,
+      20261023
+    ],
+    "cm_lrs": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "metric_k": 200,
+    "mapping": [
+      "metric.selection_metric -> metric.metric_name"
+    ],
+    "defaulted": []
+  },
+  "requirements": {
+    "n_folds": 5,
+    "seeds": [
+      20261021,
+      20261022,
+      20261023
+    ],
+    "lrs": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "inits": [
+      "random",
+      "tahoe"
+    ],
+    "n_units": 30,
+    "k": 200,
+    "complete": true
+  },
+  "complete": true,
+  "missing_inits": [],
+  "sources": {
+    "random_record": {
+      "label": "random-init (#6)",
+      "init": "random",
+      "source": "",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.6_cm_random/output/record/selected_checkpoints.csv",
+      "sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "n_rows": 15,
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "lr_by_fold": {
+        "0": 0.001,
+        "1": 0.001,
+        "2": 0.001,
+        "3": 0.001,
+        "4": 0.001
+      },
+      "seeds": [
+        20261021,
+        20261022,
+        20261023
+      ]
+    },
+    "tahoe_record": {
+      "label": "Tahoe-init (#7)",
+      "init": "tahoe",
+      "source": "",
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.7_cm_tahoe/output/record/selected_checkpoints.csv",
+      "sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "n_rows": 15,
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "lr_by_fold": {
+        "0": 0.0001,
+        "1": 0.0001,
+        "2": 0.001,
+        "3": 0.001,
+        "4": 0.0001
+      },
+      "seeds": [
+        20261021,
+        20261022,
+        20261023
+      ]
+    },
+    "baselines": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output"
+  },
+  "fold_reference": {
+    "0": {
+      "n_valid_rows": 188,
+      "n_test_rows": 192,
+      "n_test_conditions": 68,
+      "n_test_drugs": 23,
+      "test_row_sha256": "bdbe69018821797754664d37a9e037fe0cd84742f9c7b8128040dd371fcc2607",
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "c_star_sha256": "8e743deb4a3b3ce9bc43ef10766aef88c0d2d72a1b940b6e99f37f893c04c833"
+    },
+    "1": {
+      "n_valid_rows": 191,
+      "n_test_rows": 188,
+      "n_test_conditions": 67,
+      "n_test_drugs": 23,
+      "test_row_sha256": "f74c131481b88b5ce9340e31fcbdf66e5d2752f5e78ced37e380bd13ec44a36b",
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "c_star_sha256": "5eb6e4a0a028be14c8ac6a71235daf96cdd14b6b5ada8d62210821236b6f2031"
+    },
+    "2": {
+      "n_valid_rows": 190,
+      "n_test_rows": 191,
+      "n_test_conditions": 71,
+      "n_test_drugs": 24,
+      "test_row_sha256": "e02ef9885246f00e2ca94d5e0cc17b6bc3a5ab2ac103493cf0a1c97c8bf4525e",
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "c_star_sha256": "dc048a0c4283e3a87d3b5a225b1800ad9a712da26cc13a1706be29a3819402ad"
+    },
+    "3": {
+      "n_valid_rows": 190,
+      "n_test_rows": 190,
+      "n_test_conditions": 71,
+      "n_test_drugs": 24,
+      "test_row_sha256": "e7ee1e30cd5f5d01c537ef2d6ec437ab171cf2ba836ec618643b0ab95b199bed",
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "c_star_sha256": "dc048a0c4283e3a87d3b5a225b1800ad9a712da26cc13a1706be29a3819402ad"
+    },
+    "4": {
+      "n_valid_rows": 192,
+      "n_test_rows": 190,
+      "n_test_conditions": 70,
+      "n_test_drugs": 24,
+      "test_row_sha256": "7181101f07a182e8afe3de840ab198c9add807ccb0140ab70f2b8acae2ce4111",
+      "gene_axis_sha256": "aa202aad58ba70c62f37a21f318e00cbe678d9eb5d9150f62ddb389e6e266a37",
+      "c_star_sha256": "8e743deb4a3b3ce9bc43ef10766aef88c0d2d72a1b940b6e99f37f893c04c833"
+    },
+    "source": {
+      "path": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.8_baselines/output/fold_coverage.csv",
+      "sha256": "13420af52172977f6f9d25afb041679db2a2d7da2bafd3e407e10a41e0848461"
+    }
+  },
+  "gates": {
+    "unit_count": 30,
+    "unit_count_ok": true,
+    "no_missing_unit": true,
+    "no_extra_unit": true,
+    "missing_units": [],
+    "extra_units": [],
+    "seeds_per_fold_init": {
+      "0:random": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "0:tahoe": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "1:random": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "1:tahoe": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "2:random": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "2:tahoe": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "3:random": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "3:tahoe": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "4:random": [
+        20261021,
+        20261022,
+        20261023
+      ],
+      "4:tahoe": [
+        20261021,
+        20261022,
+        20261023
+      ]
+    },
+    "three_seeds_per_fold_init": true,
+    "one_lr_per_fold_init": true,
+    "lr_per_fold_init": {
+      "0:random": [
+        0.001
+      ],
+      "0:tahoe": [
+        0.0001
+      ],
+      "1:random": [
+        0.001
+      ],
+      "1:tahoe": [
+        0.0001
+      ],
+      "2:random": [
+        0.001
+      ],
+      "2:tahoe": [
+        0.001
+      ],
+      "3:random": [
+        0.001
+      ],
+      "3:tahoe": [
+        0.001
+      ],
+      "4:random": [
+        0.001
+      ],
+      "4:tahoe": [
+        0.0001
+      ]
+    },
+    "checkpoint_sha256_verified": true,
+    "checkpoint_bytes_match": true,
+    "config_digest_chain_ok": true,
+    "data_identity_uniform": true,
+    "init_provenance_ok": true,
+    "warm_start_sources_verified": true,
+    "warm_start_sources_present": true,
+    "no_test_artifacts_in_candidate_runs": true,
+    "records_complete": true
+  },
+  "units": [
+    {
+      "unit_id": "e9_f0_s20261021_lr1e-3_random",
+      "init_name": "random",
+      "fold": 0,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "2af29787185edbd0ee5247e6b5736c2ff7bf9dae1139f3b18bd6f512c08f406e",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "2af29787185edbd0ee5247e6b5736c2ff7bf9dae1139f3b18bd6f512c08f406e"
+      },
+      "config_sha256": "7a44567157557cf948a2fed2071da78efa80c244f3ad6972843b33e1964756a2",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0968342082982777,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261021_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 10,
+        "epochs_run": 31,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 30.67989769199994,
+        "train_peak_rss_mb": 1328.46875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "bc5eb0b5644450334048c462b11debdd44579acbff874917a614bdd43081a069",
+        "fit_history_sha256": "d638d2351dfc417f879a5d1bf54a93977bc279bf1b6a02cc82268cc86f5125bf"
+      },
+      "manifest_sha256": "bc5eb0b5644450334048c462b11debdd44579acbff874917a614bdd43081a069",
+      "fit_history_sha256": "d638d2351dfc417f879a5d1bf54a93977bc279bf1b6a02cc82268cc86f5125bf"
+    },
+    {
+      "unit_id": "e9_f0_s20261022_lr1e-3_random",
+      "init_name": "random",
+      "fold": 0,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "cde60db040f3f5cef6ea0834f804f245bec922042eab82b2cef9cd4ad8de1a49",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "cde60db040f3f5cef6ea0834f804f245bec922042eab82b2cef9cd4ad8de1a49"
+      },
+      "config_sha256": "37d85eab8d5101b1c39e698bb9f1b89766f22aa0101f3d56ff0c7bfc87776d1d",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.097841351346183,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261022_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 9,
+        "epochs_run": 30,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 28.782181172000037,
+        "train_peak_rss_mb": 1330.32421875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "57c734a834b1435e242aa6c481d30cf5cc0ffe30011fc1b9e06a500e5fd478c8",
+        "fit_history_sha256": "38bcc8f9195cd82a203636338145d7fc10013eb5a1016e8e1f2a0d47c78705a9"
+      },
+      "manifest_sha256": "57c734a834b1435e242aa6c481d30cf5cc0ffe30011fc1b9e06a500e5fd478c8",
+      "fit_history_sha256": "38bcc8f9195cd82a203636338145d7fc10013eb5a1016e8e1f2a0d47c78705a9"
+    },
+    {
+      "unit_id": "e9_f0_s20261023_lr1e-3_random",
+      "init_name": "random",
+      "fold": 0,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "0d67a6f2416d699cacf34404a547a9d866cb9ac2dcd4d334e1d48ba9f579e72b",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "0d67a6f2416d699cacf34404a547a9d866cb9ac2dcd4d334e1d48ba9f579e72b"
+      },
+      "config_sha256": "0129a6f3c0c0efe0fa3d5e01a32f265ca7809a8168f8d7983ef2bf387166cadb",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.1023785272615641,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f0_s20261023_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 62,
+        "epochs_run": 83,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 66.34145353600024,
+        "train_peak_rss_mb": 1329.4921875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "4dded3dbc4009bad7af70d41f5ef649195ef4c073831c4f9f557461d1b5d6b41",
+        "fit_history_sha256": "d47af163f5341cf1ceb553d86c6539e255ca932184816a7295052819ea1c568a"
+      },
+      "manifest_sha256": "4dded3dbc4009bad7af70d41f5ef649195ef4c073831c4f9f557461d1b5d6b41",
+      "fit_history_sha256": "d47af163f5341cf1ceb553d86c6539e255ca932184816a7295052819ea1c568a"
+    },
+    {
+      "unit_id": "e9_f1_s20261021_lr1e-3_random",
+      "init_name": "random",
+      "fold": 1,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "acbbc9326bc51070d76b55e0ed5e1df5a1b5afb509ddbbd8bb13f24cc8644f52",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "acbbc9326bc51070d76b55e0ed5e1df5a1b5afb509ddbbd8bb13f24cc8644f52"
+      },
+      "config_sha256": "56d740bc3d4c36e5557548d9d9a92ab0a1d85d999a30c3e6f7216bf6b2ed6a84",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.1028413819893274,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261021_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 48,
+        "epochs_run": 69,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 58.498920081999586,
+        "train_peak_rss_mb": 1332.03515625
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "c726afaa30461586e131bb54abfb5805437405becbbb3622fd83f7be370cde10",
+        "fit_history_sha256": "baedff1173bb12a0a605bc5457e7ed043c42e52fb67754e9bd63036c2c51a9d0"
+      },
+      "manifest_sha256": "c726afaa30461586e131bb54abfb5805437405becbbb3622fd83f7be370cde10",
+      "fit_history_sha256": "baedff1173bb12a0a605bc5457e7ed043c42e52fb67754e9bd63036c2c51a9d0"
+    },
+    {
+      "unit_id": "e9_f1_s20261022_lr1e-3_random",
+      "init_name": "random",
+      "fold": 1,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "6f75cfc7060a1837acc3de96ba978b0db36a543ca0094c7da15f1224fca864aa",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "6f75cfc7060a1837acc3de96ba978b0db36a543ca0094c7da15f1224fca864aa"
+      },
+      "config_sha256": "7ba8da26fe9408a7cea1e2461274cba40ad617dc356c05093fb62b0e111d5f24",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.1032442981543117,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261022_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 49,
+        "epochs_run": 70,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 58.78078778000008,
+        "train_peak_rss_mb": 1333.62109375
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "28e0d6a27bd04ccef67d57554849270541a9dc845b8f64b3a598074e2e34db65",
+        "fit_history_sha256": "58b3d0171c7e9434e5fffe6a4eea6c64338ff7c9f4d3ed8f285bdf5dfbc1180e"
+      },
+      "manifest_sha256": "28e0d6a27bd04ccef67d57554849270541a9dc845b8f64b3a598074e2e34db65",
+      "fit_history_sha256": "58b3d0171c7e9434e5fffe6a4eea6c64338ff7c9f4d3ed8f285bdf5dfbc1180e"
+    },
+    {
+      "unit_id": "e9_f1_s20261023_lr1e-3_random",
+      "init_name": "random",
+      "fold": 1,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "b3fa1fbd879255799e996017e2ff39d12b739ac8380ba3aeadc89b3e47868700",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "b3fa1fbd879255799e996017e2ff39d12b739ac8380ba3aeadc89b3e47868700"
+      },
+      "config_sha256": "11505ea204cc633756a7ef9b3e7b527b8df4d64d446563082ca1c454c20792fa",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.1029515770897508,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f1_s20261023_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 69,
+        "epochs_run": 90,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 72.02986566199979,
+        "train_peak_rss_mb": 1325.58203125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "2b6cbce6266c26935802b111a7e1abaa49c3683aa54700333f0675d9047675e9",
+        "fit_history_sha256": "5f04bae96a355a6ad22229528cc4886872956cd875eb59d9e8c23b280818558b"
+      },
+      "manifest_sha256": "2b6cbce6266c26935802b111a7e1abaa49c3683aa54700333f0675d9047675e9",
+      "fit_history_sha256": "5f04bae96a355a6ad22229528cc4886872956cd875eb59d9e8c23b280818558b"
+    },
+    {
+      "unit_id": "e9_f2_s20261021_lr1e-3_random",
+      "init_name": "random",
+      "fold": 2,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "c8726b515fbb3e2528f210f36da8e49eebd40093cb9e8ab748a402852cc7cfde",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "c8726b515fbb3e2528f210f36da8e49eebd40093cb9e8ab748a402852cc7cfde"
+      },
+      "config_sha256": "2ba7911228c5f39541d643cd7e1e7e8c77a8d3b9fdb6bbe0c09a0eb1e849aafe",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0752467770960151,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261021_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 60,
+        "epochs_run": 81,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 67.93060003900018,
+        "train_peak_rss_mb": 1334.0703125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "4935f21eb02279efe5a857a3635267be2c50ea8194f0ece4e7cf91876a287ad1",
+        "fit_history_sha256": "d53e15e5e1f561747dfd03b002311989245bb598a687339bd79c51628be18ae9"
+      },
+      "manifest_sha256": "4935f21eb02279efe5a857a3635267be2c50ea8194f0ece4e7cf91876a287ad1",
+      "fit_history_sha256": "d53e15e5e1f561747dfd03b002311989245bb598a687339bd79c51628be18ae9"
+    },
+    {
+      "unit_id": "e9_f2_s20261022_lr1e-3_random",
+      "init_name": "random",
+      "fold": 2,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "7b6bd3abebef2245b3a8c414aab9ad46e93fe87f8c64e8a4cd84924e585c4ee4",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "7b6bd3abebef2245b3a8c414aab9ad46e93fe87f8c64e8a4cd84924e585c4ee4"
+      },
+      "config_sha256": "e4d830daefa90cef20504bb5be1c72fc36909f4cdd1b07d89008c72df380640c",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0758160310546152,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261022_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 88,
+        "epochs_run": 100,
+        "stop_reason": "max_epochs",
+        "train_wall_s": 81.66230567100001,
+        "train_peak_rss_mb": 1326.9140625
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "332522473fa31d9c1f0ca8175f54cd8c2dcccbfcc77ca1920aba91f87593eda3",
+        "fit_history_sha256": "7d2dab20738e45a35f0df5f2006dc340561f0e7799247992bd3fe1223b428b3f"
+      },
+      "manifest_sha256": "332522473fa31d9c1f0ca8175f54cd8c2dcccbfcc77ca1920aba91f87593eda3",
+      "fit_history_sha256": "7d2dab20738e45a35f0df5f2006dc340561f0e7799247992bd3fe1223b428b3f"
+    },
+    {
+      "unit_id": "e9_f2_s20261023_lr1e-3_random",
+      "init_name": "random",
+      "fold": 2,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "a40c1b76856fbe2b1cc88d6841e4f82e139c82235d20146154361a5b313c6d4f",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "a40c1b76856fbe2b1cc88d6841e4f82e139c82235d20146154361a5b313c6d4f"
+      },
+      "config_sha256": "cf96a0ddb2c6664b0b41fa592a1069e654fd64e0360c2148a1c94d03fd16f5a6",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0749922068264953,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f2_s20261023_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 66,
+        "epochs_run": 87,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 70.50624472000027,
+        "train_peak_rss_mb": 1335.0
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "cc735264312e2a150081d2e8ed9d1a3ee7ae05bf9ad7e5a809aac1d74348358e",
+        "fit_history_sha256": "41c5d26c0cdffe179cc6075656a6f94092183356bd89b9287f656b23c266b31a"
+      },
+      "manifest_sha256": "cc735264312e2a150081d2e8ed9d1a3ee7ae05bf9ad7e5a809aac1d74348358e",
+      "fit_history_sha256": "41c5d26c0cdffe179cc6075656a6f94092183356bd89b9287f656b23c266b31a"
+    },
+    {
+      "unit_id": "e9_f3_s20261021_lr1e-3_random",
+      "init_name": "random",
+      "fold": 3,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "3b2a2812422a43bdcefcecb68f28750bf34e1242dba30e8e4c0a58381a850e2c",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "3b2a2812422a43bdcefcecb68f28750bf34e1242dba30e8e4c0a58381a850e2c"
+      },
+      "config_sha256": "eb323697b457613c379ab4f0e09a3d6ebfba1c9515e156fd89b117b7e2c79a23",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0825200787927016,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261021_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 99,
+        "epochs_run": 100,
+        "stop_reason": "max_epochs",
+        "train_wall_s": 78.59233899499986,
+        "train_peak_rss_mb": 1330.4140625
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "afdc7865ecd893173f1df00d1a11a6c69f56594f8f638d5216fbb7b2b225f73f",
+        "fit_history_sha256": "68534abbacdd6df4480ec0f2c29368af279e2db05d97f1f3454f837432b806e9"
+      },
+      "manifest_sha256": "afdc7865ecd893173f1df00d1a11a6c69f56594f8f638d5216fbb7b2b225f73f",
+      "fit_history_sha256": "68534abbacdd6df4480ec0f2c29368af279e2db05d97f1f3454f837432b806e9"
+    },
+    {
+      "unit_id": "e9_f3_s20261022_lr1e-3_random",
+      "init_name": "random",
+      "fold": 3,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "216cf539a42da6e845046f7a504a91ff1e1475fa8f01750517b91585406d417c",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "216cf539a42da6e845046f7a504a91ff1e1475fa8f01750517b91585406d417c"
+      },
+      "config_sha256": "f75767107c264b82ccbafaadc947774b65359c03c068f4a4608813303ae06aaf",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0832440187135298,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261022_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 97,
+        "epochs_run": 100,
+        "stop_reason": "max_epochs",
+        "train_wall_s": 78.74000549199991,
+        "train_peak_rss_mb": 1326.296875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "3432f304909e34f2521b20ae65914a7d97d699aa3df87984de0ce95b9bc76081",
+        "fit_history_sha256": "c28707b35cf583a142ba4139f3f14bcbb8db4a6c967f565d8f8a613bd33a4c72"
+      },
+      "manifest_sha256": "3432f304909e34f2521b20ae65914a7d97d699aa3df87984de0ce95b9bc76081",
+      "fit_history_sha256": "c28707b35cf583a142ba4139f3f14bcbb8db4a6c967f565d8f8a613bd33a4c72"
+    },
+    {
+      "unit_id": "e9_f3_s20261023_lr1e-3_random",
+      "init_name": "random",
+      "fold": 3,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "e2da8148aab340fb459a6b41a30dc1a9ab2eb607bbd6731d282482575480cafe",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "e2da8148aab340fb459a6b41a30dc1a9ab2eb607bbd6731d282482575480cafe"
+      },
+      "config_sha256": "2fd740756c3487934df320d11f37d1713c3a6e70093eb792526fa78c617e0404",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0820416337836711,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f3_s20261023_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 66,
+        "epochs_run": 87,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 68.22882362900009,
+        "train_peak_rss_mb": 1327.83203125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "49862fdd3389457837f82e6205b4391002ec306ad542b48ec6e1795c94ec6702",
+        "fit_history_sha256": "a90aa1b3b900eee6b36042c57ae0c5699bfa7ce39e1d5491db34624a06e045f2"
+      },
+      "manifest_sha256": "49862fdd3389457837f82e6205b4391002ec306ad542b48ec6e1795c94ec6702",
+      "fit_history_sha256": "a90aa1b3b900eee6b36042c57ae0c5699bfa7ce39e1d5491db34624a06e045f2"
+    },
+    {
+      "unit_id": "e9_f4_s20261021_lr1e-3_random",
+      "init_name": "random",
+      "fold": 4,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "9830d8c6b8e7af4395f4c6fe546d5f8a9c3fa06effdcb02ac04a3e0d2461ee4b",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "9830d8c6b8e7af4395f4c6fe546d5f8a9c3fa06effdcb02ac04a3e0d2461ee4b"
+      },
+      "config_sha256": "4e85d9c560da78692b88aba6ab649ff22ca0c6e0d778c5caf10b0a6f2857c06c",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0894986231023571,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261021_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 6,
+        "epochs_run": 27,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 26.178431775999798,
+        "train_peak_rss_mb": 1332.55078125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "0e48ce646247961faa1dad881c9f5bcd3f052eb80243265850f1c7509fc2322c",
+        "fit_history_sha256": "18f0ca3d673873e2a7e4844f192ca868240964b4e6b8dacc866c8217ff9c1a33"
+      },
+      "manifest_sha256": "0e48ce646247961faa1dad881c9f5bcd3f052eb80243265850f1c7509fc2322c",
+      "fit_history_sha256": "18f0ca3d673873e2a7e4844f192ca868240964b4e6b8dacc866c8217ff9c1a33"
+    },
+    {
+      "unit_id": "e9_f4_s20261022_lr1e-3_random",
+      "init_name": "random",
+      "fold": 4,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "b85fbfcba9feb0ab3197e21f8fac2654e8311ecd3854c8a2b19a0292a4fa6e7e",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "b85fbfcba9feb0ab3197e21f8fac2654e8311ecd3854c8a2b19a0292a4fa6e7e"
+      },
+      "config_sha256": "a5dd212f157bae9af0e96dc37ecf95326d6549abca3cc7108db47dc13cc0d7bb",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0897164039030967,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261022_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 11,
+        "epochs_run": 32,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 30.18973197100013,
+        "train_peak_rss_mb": 1336.16796875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "460835fdb6720a7b10d5cd3fdb126401fc1a9236c3279397d6e8482df0e31de9",
+        "fit_history_sha256": "08388221df568e0b46c4cfe7390bbddf1e817e6760f7ef13067d30fb70c12409"
+      },
+      "manifest_sha256": "460835fdb6720a7b10d5cd3fdb126401fc1a9236c3279397d6e8482df0e31de9",
+      "fit_history_sha256": "08388221df568e0b46c4cfe7390bbddf1e817e6760f7ef13067d30fb70c12409"
+    },
+    {
+      "unit_id": "e9_f4_s20261023_lr1e-3_random",
+      "init_name": "random",
+      "fold": 4,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "523aa1f88529689a06c9f7fbccb67413bfcc8aed8cabb286f4c47b3cdf87928b",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "523aa1f88529689a06c9f7fbccb67413bfcc8aed8cabb286f4c47b3cdf87928b"
+      },
+      "config_sha256": "9612db32932f008b5c5afabbfc14f3c4eb0448951b40d88d5ac7ac28f525ad50",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0898991671906706,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.6_cm_random/output/runs/cm_f4_s20261023_lr1e-3_random",
+      "init": {
+        "mode": "random",
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 8,
+        "epochs_run": 29,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 28.979703162000078,
+        "train_peak_rss_mb": 1326.0
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "random-init (#6)",
+      "record_sha256": "f489bb0ce67e02fcafe06cc1a52f30009353d0843f828f56a325cbd43ad22bb7",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "7999b489108c0c411f41965b0bf88d99e8372dd9baed71af479bbdb313ff536c",
+        "fit_history_sha256": "84eaa53bf4b5a12d609b5614f2d01b67cfb6cb570ef5d8036b32f9e5460e7eec"
+      },
+      "manifest_sha256": "7999b489108c0c411f41965b0bf88d99e8372dd9baed71af479bbdb313ff536c",
+      "fit_history_sha256": "84eaa53bf4b5a12d609b5614f2d01b67cfb6cb570ef5d8036b32f9e5460e7eec"
+    },
+    {
+      "unit_id": "e9_f0_s20261021_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 0,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "ba7f853856ad3248815d2366325610132fd5a8550ef378c1f981e50d2c0c77c0",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "ba7f853856ad3248815d2366325610132fd5a8550ef378c1f981e50d2c0c77c0"
+      },
+      "config_sha256": "a69e12cb006797e544dd40a8ab6945a3385a89ac40a356dd7bb15b1e18b4502b",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0935015131716963,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+        "checkpoint_epoch": 8,
+        "checkpoint_seed": 20261021,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 29,
+        "epochs_run": 50,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 41.357354822999696,
+        "train_peak_rss_mb": 1335.88671875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "afbcb67c8ca67e16dfbc4cc77aa323c4d71b2892af0e1520f04aca504c8f6a2c",
+        "fit_history_sha256": "c63a2c6d1ac034fd7a717dedf4fbdd5c48a20fe1e461fc1800d6acbe324dec9d"
+      },
+      "manifest_sha256": "afbcb67c8ca67e16dfbc4cc77aa323c4d71b2892af0e1520f04aca504c8f6a2c",
+      "fit_history_sha256": "c63a2c6d1ac034fd7a717dedf4fbdd5c48a20fe1e461fc1800d6acbe324dec9d"
+    },
+    {
+      "unit_id": "e9_f0_s20261022_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 0,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "e62789905463e1d28df7472e87281cfa533dcc2321d0f43454b7d6029b862e79",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "e62789905463e1d28df7472e87281cfa533dcc2321d0f43454b7d6029b862e79"
+      },
+      "config_sha256": "3c1c85281b401b4144dfc439e4d866df3176307c92f5f2d791fea469e40bd3cc",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0883356887941103,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261022_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
+        "checkpoint_epoch": 74,
+        "checkpoint_seed": 20261022,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 15,
+        "epochs_run": 36,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 32.32487438099997,
+        "train_peak_rss_mb": 1333.44921875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "29805c1205271ffe6997f40c8cbb31e8f2705b9898020f24f2579a7e6f887e71",
+        "fit_history_sha256": "9fc2d1be97d0a835fff5692f6e3415ec3b68aa58e27d1883bde2ab0e599361a4"
+      },
+      "manifest_sha256": "29805c1205271ffe6997f40c8cbb31e8f2705b9898020f24f2579a7e6f887e71",
+      "fit_history_sha256": "9fc2d1be97d0a835fff5692f6e3415ec3b68aa58e27d1883bde2ab0e599361a4"
+    },
+    {
+      "unit_id": "e9_f0_s20261023_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 0,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "16ea6bc280c905adfe59563c087c5484809d1ce7403fd4433fb6656881117fc4",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "16ea6bc280c905adfe59563c087c5484809d1ce7403fd4433fb6656881117fc4"
+      },
+      "config_sha256": "a32ed883e3c74a484d829a633f6f8f97619080d86057ffe04deab199b9559481",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0910835077041161,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261023_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
+        "checkpoint_epoch": 32,
+        "checkpoint_seed": 20261023,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 22,
+        "epochs_run": 43,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 36.744750806999946,
+        "train_peak_rss_mb": 1328.2578125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "32430d2dd886da7d1a34acff0034123a30453c7371305e7b6915e88a143bc733",
+        "fit_history_sha256": "53b107277aa29c6e4b0aa2ec7103d5ce26aa4386dfe94376cd94b6cfca36e8b8"
+      },
+      "manifest_sha256": "32430d2dd886da7d1a34acff0034123a30453c7371305e7b6915e88a143bc733",
+      "fit_history_sha256": "53b107277aa29c6e4b0aa2ec7103d5ce26aa4386dfe94376cd94b6cfca36e8b8"
+    },
+    {
+      "unit_id": "e9_f1_s20261021_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 1,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "41a06d4b8202a1451ef765ea90ed60f8541d1a0481c74900f0ebc0e2ebd9a041",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "41a06d4b8202a1451ef765ea90ed60f8541d1a0481c74900f0ebc0e2ebd9a041"
+      },
+      "config_sha256": "cc66bd8deaa08b28343a17bebb1544d4f043b762f994fd6e40216651b6a97744",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0985181757199561,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261021_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+        "checkpoint_epoch": 8,
+        "checkpoint_seed": 20261021,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 17,
+        "epochs_run": 38,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 33.55535778400008,
+        "train_peak_rss_mb": 1336.41796875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "2ce65e0429899bde83ba5791e8358f6a8d3c3969af53e5be9b923cb92b1e9c3c",
+        "fit_history_sha256": "cabd6f2fb3b22ba9149ccac76285122f8d567f6149cb33ec2188e45d1d845023"
+      },
+      "manifest_sha256": "2ce65e0429899bde83ba5791e8358f6a8d3c3969af53e5be9b923cb92b1e9c3c",
+      "fit_history_sha256": "cabd6f2fb3b22ba9149ccac76285122f8d567f6149cb33ec2188e45d1d845023"
+    },
+    {
+      "unit_id": "e9_f1_s20261022_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 1,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "df3067eba878c4b26078173aa4e8b8c54bd0fe4a66936df416ab3411b96e2aea",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "df3067eba878c4b26078173aa4e8b8c54bd0fe4a66936df416ab3411b96e2aea"
+      },
+      "config_sha256": "9f5979a671fd8134d01cb5e299a301674525b8b008fce30bc71700d5847c8001",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.093596396208043,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261022_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
+        "checkpoint_epoch": 74,
+        "checkpoint_seed": 20261022,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 14,
+        "epochs_run": 35,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 31.53212540899949,
+        "train_peak_rss_mb": 1336.8984375
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "19b01abee87aa8ca3df4c665b01438d42e9cf178c6b10a6b624cac0cf1f0e288",
+        "fit_history_sha256": "c8f892d3e81f3c7d044d76820483b0d4cfd9a5b03d8b36348a8fe415133f7723"
+      },
+      "manifest_sha256": "19b01abee87aa8ca3df4c665b01438d42e9cf178c6b10a6b624cac0cf1f0e288",
+      "fit_history_sha256": "c8f892d3e81f3c7d044d76820483b0d4cfd9a5b03d8b36348a8fe415133f7723"
+    },
+    {
+      "unit_id": "e9_f1_s20261023_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 1,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "0188f130d6e8a98b829fa6364fabe45ed674dab2c3cfa17e5817ab15b8886b89",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "0188f130d6e8a98b829fa6364fabe45ed674dab2c3cfa17e5817ab15b8886b89"
+      },
+      "config_sha256": "8820875681e57796783131378d9f3a9b40bb9496da01df7d6b26784c47018a83",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0948145881853362,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f1_s20261023_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
+        "checkpoint_epoch": 32,
+        "checkpoint_seed": 20261023,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 17,
+        "epochs_run": 38,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 33.75538239399975,
+        "train_peak_rss_mb": 1330.03125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "1305361a52f6ec9b69a517c8bbed3bb5cda366286d22bb7475bb94b1b5f7d544",
+        "fit_history_sha256": "b184e3292fa71d29bfb6e13aa2ee90f8392ab3f8bdfd29cb6582a9fb117f5901"
+      },
+      "manifest_sha256": "1305361a52f6ec9b69a517c8bbed3bb5cda366286d22bb7475bb94b1b5f7d544",
+      "fit_history_sha256": "b184e3292fa71d29bfb6e13aa2ee90f8392ab3f8bdfd29cb6582a9fb117f5901"
+    },
+    {
+      "unit_id": "e9_f2_s20261021_lr1e-3_tahoe",
+      "init_name": "tahoe",
+      "fold": 2,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "4946f51ad5cc3411b3072dc9ead0c15fad922ccd627220623c320ff78c42c0b2",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "4946f51ad5cc3411b3072dc9ead0c15fad922ccd627220623c320ff78c42c0b2"
+      },
+      "config_sha256": "695363631c60534d87ebfc6cb98448150f68efc68306988ce2ab204ce7b17b53",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0699654645872474,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261021_lr1e-3_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+        "checkpoint_epoch": 8,
+        "checkpoint_seed": 20261021,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 83,
+        "epochs_run": 100,
+        "stop_reason": "max_epochs",
+        "train_wall_s": 77.38230767599816,
+        "train_peak_rss_mb": 1341.015625
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "2c89630aff89f99e6f46f686904bfc97f5a39f34be3309ff066142a2d50490a4",
+        "fit_history_sha256": "6bd31a3079c032b062cd5ae84db87529f1c0f79edcd9c9fa36d813ffb713afa4"
+      },
+      "manifest_sha256": "2c89630aff89f99e6f46f686904bfc97f5a39f34be3309ff066142a2d50490a4",
+      "fit_history_sha256": "6bd31a3079c032b062cd5ae84db87529f1c0f79edcd9c9fa36d813ffb713afa4"
+    },
+    {
+      "unit_id": "e9_f2_s20261022_lr1e-3_tahoe",
+      "init_name": "tahoe",
+      "fold": 2,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "9a3119fe4c03db81f73ee9b8a5969bdf51f707f0063e8aa9eadca22479ddc6ae",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "9a3119fe4c03db81f73ee9b8a5969bdf51f707f0063e8aa9eadca22479ddc6ae"
+      },
+      "config_sha256": "71ae5d8193f28886030fc47985df0b6cb885c0f32a5b371f1035df977f98ccfe",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0632968552353991,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261022_lr1e-3_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
+        "checkpoint_epoch": 74,
+        "checkpoint_seed": 20261022,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 9,
+        "epochs_run": 30,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 28.384977685000194,
+        "train_peak_rss_mb": 1337.671875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "ffa62d81b01a910b7951c979c0637b0648c8196ed84448086245e478041022ee",
+        "fit_history_sha256": "fe5b3e5a06c65fcb001e028d44e3a9bf37ec1f1bf8d749e7a4512783f3b5821b"
+      },
+      "manifest_sha256": "ffa62d81b01a910b7951c979c0637b0648c8196ed84448086245e478041022ee",
+      "fit_history_sha256": "fe5b3e5a06c65fcb001e028d44e3a9bf37ec1f1bf8d749e7a4512783f3b5821b"
+    },
+    {
+      "unit_id": "e9_f2_s20261023_lr1e-3_tahoe",
+      "init_name": "tahoe",
+      "fold": 2,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "0d7d4c7f0c86107664cb89c9f51f2901e7ba7e0038baa2d5cdce0cd8fec864aa",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "0d7d4c7f0c86107664cb89c9f51f2901e7ba7e0038baa2d5cdce0cd8fec864aa"
+      },
+      "config_sha256": "94f383e084497399fe6e07055a596c939f952cbeabf8dd969199ceb527a94dbe",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0752920776843641,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f2_s20261023_lr1e-3_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
+        "checkpoint_epoch": 32,
+        "checkpoint_seed": 20261023,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 34,
+        "epochs_run": 55,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 45.93469332799941,
+        "train_peak_rss_mb": 1332.6796875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "e4cf19656d90b4a812029cc1454fc30ce1c674c83d25f9d69bbd9aa578ebeca3",
+        "fit_history_sha256": "fd47c61fe6dfd22f1854f5cdf1d8956981f387e697d0e75388ee65158e683769"
+      },
+      "manifest_sha256": "e4cf19656d90b4a812029cc1454fc30ce1c674c83d25f9d69bbd9aa578ebeca3",
+      "fit_history_sha256": "fd47c61fe6dfd22f1854f5cdf1d8956981f387e697d0e75388ee65158e683769"
+    },
+    {
+      "unit_id": "e9_f3_s20261021_lr1e-3_tahoe",
+      "init_name": "tahoe",
+      "fold": 3,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "e6ed178fe2f14161284c119077f805c0e77d613ad17d4eae691d19efe360c035",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "e6ed178fe2f14161284c119077f805c0e77d613ad17d4eae691d19efe360c035"
+      },
+      "config_sha256": "4f665645986aa7388d4b525da6f32ab03c64d50a7591e6842ca94cd70a065149",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0762666624016969,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261021_lr1e-3_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+        "checkpoint_epoch": 8,
+        "checkpoint_seed": 20261021,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 29,
+        "epochs_run": 50,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 42.87128966000091,
+        "train_peak_rss_mb": 1333.2421875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "25e37bc053652ae613b35e945b0b75a5ca316242e43a1ed4d2391ceeab77059a",
+        "fit_history_sha256": "8b22f1d4ec0e30f9691a59acd76130616a80513604cafb0a6885bbaf35726f20"
+      },
+      "manifest_sha256": "25e37bc053652ae613b35e945b0b75a5ca316242e43a1ed4d2391ceeab77059a",
+      "fit_history_sha256": "8b22f1d4ec0e30f9691a59acd76130616a80513604cafb0a6885bbaf35726f20"
+    },
+    {
+      "unit_id": "e9_f3_s20261022_lr1e-3_tahoe",
+      "init_name": "tahoe",
+      "fold": 3,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "f5c69e923185909ae348514d2528b1318e4403afb56bae01803cb8d0214a1a6e",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "f5c69e923185909ae348514d2528b1318e4403afb56bae01803cb8d0214a1a6e"
+      },
+      "config_sha256": "828847a59db6a4089f11554aba3305104c47fd8cd060345fdb0f13f9446543a7",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0727715549635513,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261022_lr1e-3_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
+        "checkpoint_epoch": 74,
+        "checkpoint_seed": 20261022,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 17,
+        "epochs_run": 38,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 33.51917418099765,
+        "train_peak_rss_mb": 1341.4609375
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "4918269c9d135473d2e75ae95340c10d5945de1dbeb010f4271460fb6a9a2c37",
+        "fit_history_sha256": "974191b0f5f45e815c9d514442903a1a715030df652af4dfd356fd94933e68b5"
+      },
+      "manifest_sha256": "4918269c9d135473d2e75ae95340c10d5945de1dbeb010f4271460fb6a9a2c37",
+      "fit_history_sha256": "974191b0f5f45e815c9d514442903a1a715030df652af4dfd356fd94933e68b5"
+    },
+    {
+      "unit_id": "e9_f3_s20261023_lr1e-3_tahoe",
+      "init_name": "tahoe",
+      "fold": 3,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.001,
+      "lr_tag": "1e-3",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "78a504fc5b599d6a538bdd74fe3ba07c90fb9f05946c02aa85d6883c7d6be81c",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "78a504fc5b599d6a538bdd74fe3ba07c90fb9f05946c02aa85d6883c7d6be81c"
+      },
+      "config_sha256": "9e5953ec7ff134885460ebd328d08b251c14014270e6fc4715589825f6dd0f6f",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0743754712594295,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f3_s20261023_lr1e-3_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
+        "checkpoint_epoch": 32,
+        "checkpoint_seed": 20261023,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 15,
+        "epochs_run": 36,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 32.56821463799861,
+        "train_peak_rss_mb": 1342.9453125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "bf09181b6a9bede4f5dc2bd10df98a20cf9ad93574556538dcea3d8750cfccec",
+        "fit_history_sha256": "caa4f35d5896dbd82acb8171e67aee6cdae1a274b8158644cfaf92d4eb11ff77"
+      },
+      "manifest_sha256": "bf09181b6a9bede4f5dc2bd10df98a20cf9ad93574556538dcea3d8750cfccec",
+      "fit_history_sha256": "caa4f35d5896dbd82acb8171e67aee6cdae1a274b8158644cfaf92d4eb11ff77"
+    },
+    {
+      "unit_id": "e9_f4_s20261021_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 4,
+      "seed": 20261021,
+      "seed_index": 0,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "1358c1e3bb407dff114f09ea48ac867f93a5916e2b4b1d1720f2779b4473a6b6",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "1358c1e3bb407dff114f09ea48ac867f93a5916e2b4b1d1720f2779b4473a6b6"
+      },
+      "config_sha256": "9876ab6ac88da2846124edf6364fa545aae771240cf6cc3079ef2aa20d9adeae",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0872209641885292,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261021_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261021/checkpoint/model.pt",
+        "checkpoint_sha256": "a2c83736cf4faed9953214cba475ec4b8ed8a8f4d5cb40de34a92960189f5f04",
+        "checkpoint_epoch": 8,
+        "checkpoint_seed": 20261021,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 25,
+        "epochs_run": 46,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 39.67197429299995,
+        "train_peak_rss_mb": 1331.27734375
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "e4639f9986cb8b69a1c4e6a129c51733400b2297485f838e3f27214d8b566db1",
+        "fit_history_sha256": "94c4ba2974c3bc515c735682a0c060c98571cc3b91ef36e6859ad859d2d1887b"
+      },
+      "manifest_sha256": "e4639f9986cb8b69a1c4e6a129c51733400b2297485f838e3f27214d8b566db1",
+      "fit_history_sha256": "94c4ba2974c3bc515c735682a0c060c98571cc3b91ef36e6859ad859d2d1887b"
+    },
+    {
+      "unit_id": "e9_f4_s20261022_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 4,
+      "seed": 20261022,
+      "seed_index": 1,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "ab84feccdd3a9acd6a605453eb51462bc8ec2e3562d2a9705f044969b5f60745",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "ab84feccdd3a9acd6a605453eb51462bc8ec2e3562d2a9705f044969b5f60745"
+      },
+      "config_sha256": "acb6892d62efe5a9f37f6392a4741e37c2e0eff0c7754376af552247ff6f1d53",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.082700357545724,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261022_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261022/checkpoint/model.pt",
+        "checkpoint_sha256": "e911e0545586a2bf9c216d083aef58afdab7f71c2b7213e289b65a631d568a24",
+        "checkpoint_epoch": 74,
+        "checkpoint_seed": 20261022,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 16,
+        "epochs_run": 37,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 32.807661320999614,
+        "train_peak_rss_mb": 1341.546875
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "f404d0a4e1c9d267431337984dc8620affc74f150b90c7c663e82352e2de16b2",
+        "fit_history_sha256": "01c4b5b861527ad74d817131dc7ee6e5df48cd7a4513bf61c1f1e104e31e491b"
+      },
+      "manifest_sha256": "f404d0a4e1c9d267431337984dc8620affc74f150b90c7c663e82352e2de16b2",
+      "fit_history_sha256": "01c4b5b861527ad74d817131dc7ee6e5df48cd7a4513bf61c1f1e104e31e491b"
+    },
+    {
+      "unit_id": "e9_f4_s20261023_lr1e-4_tahoe",
+      "init_name": "tahoe",
+      "fold": 4,
+      "seed": 20261023,
+      "seed_index": 2,
+      "lr": 0.0001,
+      "lr_tag": "1e-4",
+      "checkpoint": {
+        "path": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe/checkpoint/model.pt",
+        "resolved_root": "/home/chang/arc",
+        "sha256": "76757e378631c67fd444d02f9e38c3d47bd0da05c1c74e353245ee60ec5b2206",
+        "sha256_verified": true,
+        "bytes": 28746059,
+        "bytes_match": true,
+        "record_sha256": "76757e378631c67fd444d02f9e38c3d47bd0da05c1c74e353245ee60ec5b2206"
+      },
+      "config_sha256": "ee8e3ecea4c9136c989ed8172d2903b89f7d9c90dd2440c2794d218ac436363c",
+      "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+      "best_valid_auprc": 0.0849877851386802,
+      "run_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe",
+      "run_dir_worktree_relpath": "stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f4_s20261023_lr1e-4_tahoe",
+      "init": {
+        "mode": "pretrained",
+        "source_path": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs/tahoe_seed20261023/checkpoint/model.pt",
+        "checkpoint_sha256": "5cf773515b8e8f0fa831e579381952dd483d97fc6c9a51f76d62efee910739ec",
+        "checkpoint_epoch": 32,
+        "checkpoint_seed": 20261023,
+        "source_file_present": true,
+        "source_sha256_verified": true,
+        "parameter_count": 7185000
+      },
+      "training": {
+        "best_epoch": 20,
+        "epochs_run": 41,
+        "stop_reason": "early_stop_no_auprc_improvement_20",
+        "train_wall_s": 36.10573452199969,
+        "train_peak_rss_mb": 1341.0078125
+      },
+      "structure": {
+        "n_genes": 18164,
+        "hidden": [
+          128
+        ],
+        "z_dim": 64,
+        "c_dim": 64,
+        "n_dim": 10,
+        "drug_dim": 1024,
+        "adaptor": [
+          128
+        ],
+        "dropout": 0.05
+      },
+      "n_genes": 18164,
+      "parameter_count": 7185000,
+      "record_label": "Tahoe-init (#7)",
+      "record_sha256": "8a9a6d6c5e7e1063b5177ea119780b6ebc1a13d8dbaf89fc6bb950ad77fe3c17",
+      "verification": {
+        "config_digest_chain": true,
+        "no_test_artifacts": true,
+        "candidate_manifest_sha256": "a7bac005d67644ca786f70f457114eee7eed91eca917beab6bf03ec7107354c0",
+        "fit_history_sha256": "a470cf9c8a350fa8bd12c276b10e307370778ddc2040eb0223468218bcb3ba79"
+      },
+      "manifest_sha256": "a7bac005d67644ca786f70f457114eee7eed91eca917beab6bf03ec7107354c0",
+      "fit_history_sha256": "a470cf9c8a350fa8bd12c276b10e307370778ddc2040eb0223468218bcb3ba79"
+    }
+  ]
+}

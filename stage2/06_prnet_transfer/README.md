@@ -55,7 +55,7 @@ every experiment consumes them rather than re-deriving a split.
 | `06.6_cm_random/` 45 random-init CM candidates | #6 | executed — 45/45 (40 ok / 5 capped), LR 1e-3 in all folds, 15 checkpoints selected | [`README`](06.6_cm_random/README.md), `output/record/record.json` |
 | `06.7_cm_tahoe/` 45 Tahoe-init CM candidates | #7 | executed — 45/45 (42 ok / 3 capped), per-fold LR 1e-4/1e-4/1e-3/1e-3/1e-4, 15 checkpoints selected, warm start 14/14 keys per seed | [`README`](06.7_cm_tahoe/README.md), `output/record/record.json` |
 | `06.8_baselines/` five-fold baselines | #8 | built and verified — real five-fold record, `delta_mean` 0.1645 AUPRC@200 is the primary bar | [`README`](06.8_baselines/README.md), `output/summary_table.csv` |
-| `06.9_evaluation/` 30-unit evaluation + report | #9 | planned | — |
+| `06.9_evaluation/` 30-unit evaluation + report | #9 | executed — 30/30 test units scored, 0 failed; **negative first round**: Tahoe-init −0.0063 vs random-init (95% CI [−0.0074, −0.0052]) and both far below `delta_mean` 0.1645 | [`README`](06.9_evaluation/README.md), `output/record/summary.json` |
 | `06.10_capacity_ablation/` capacity ablation | #10 | planned (post-first-round) | — |
 | `06.11_env_compound_ablation/` env-compound ablation | #11 | planned (post-first-round) | — |
 

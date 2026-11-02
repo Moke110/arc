@@ -1,0 +1,74 @@
+{
+  "schema": "stage2/06.9_evaluation/units/v1",
+  "complete": true,
+  "n_units": 30,
+  "inits": {
+    "random": 15,
+    "tahoe": 15
+  },
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "seeds": [
+    20261021,
+    20261022,
+    20261023
+  ],
+  "selected_lr_by_fold_init": {
+    "0:random": [
+      0.001
+    ],
+    "0:tahoe": [
+      0.0001
+    ],
+    "1:random": [
+      0.001
+    ],
+    "1:tahoe": [
+      0.0001
+    ],
+    "2:random": [
+      0.001
+    ],
+    "2:tahoe": [
+      0.001
+    ],
+    "3:random": [
+      0.001
+    ],
+    "3:tahoe": [
+      0.001
+    ],
+    "4:random": [
+      0.001
+    ],
+    "4:tahoe": [
+      0.0001
+    ]
+  },
+  "data_identity": "a57b0e35b1126d0b88da361a43ff27479f42e005a5291cd7641d3fa52cb7b376",
+  "checkpoint_bytes_total": 862381770,
+  "gates": {
+    "unit_count_ok": true,
+    "no_missing_unit": true,
+    "no_extra_unit": true,
+    "three_seeds_per_fold_init": true,
+    "one_lr_per_fold_init": true,
+    "checkpoint_sha256_verified": true,
+    "checkpoint_bytes_match": true,
+    "config_digest_chain_ok": true,
+    "data_identity_uniform": true,
+    "init_provenance_ok": true,
+    "warm_start_sources_verified": true,
+    "warm_start_sources_present": true,
+    "no_test_artifacts_in_candidate_runs": true,
+    "records_complete": true
+  },
+  "failed_gates": [],
+  "missing_inits": [],
+  "manifest": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json"
+}

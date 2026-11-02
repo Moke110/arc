@@ -89,6 +89,62 @@ DECISION_RULE = (
 )
 
 
+DEVIATIONS = [
+    {
+        "id": "variance_head_guard_relaxed",
+        "component": (
+            "stage2/06_prnet_transfer/06.4_pipeline/execution/ptlib/model.py::"
+            "check_architecture"
+        ),
+        "fix_commit": "813c0bb",
+        "what": (
+            "The all-zero architecture probe required the decoder variance to be strictly "
+            "positive. Four selected Tahoe-init checkpoints underflow softplus to exactly 0 "
+            "on that off-distribution input; the guard now rejects only non-finite or "
+            "negative variance and accepts an exact zero."
+        ),
+        "cause": (
+            "softplus(raw variance logit) is mathematically > 0 but float32 underflows to 0 "
+            "for very negative logits; the fast-learning-rate Tahoe checkpoints retain a "
+            "more negative variance head than the random-init ones."
+        ),
+        "evidence": {
+            "weights_non_finite": 0,
+            "zero_probe_var_zeros": {
+                "e9_f0_s20261023_lr1e-4_tahoe": "464 of 36,328 (2 x 18,164)",
+                "e9_f1_s20261023_lr1e-4_tahoe": "300 of 36,328",
+                "e9_f4_s20261022_lr1e-4_tahoe": "2 of 36,328",
+                "e9_f4_s20261023_lr1e-4_tahoe": "482 of 36,328",
+            },
+            "real_input_var_min": {
+                "e9_f0_s20261023_lr1e-4_tahoe": 2.186267226284011e-12,
+                "e9_f1_s20261023_lr1e-4_tahoe": 3.797551162421087e-11,
+                "e9_f4_s20261022_lr1e-4_tahoe": 8.789152131788436e-13,
+                "e9_f4_s20261023_lr1e-4_tahoe": 1.1615077788462713e-08,
+            },
+            "real_input_var_zeros": 0,
+            "real_input_rows": 32,
+            "metric_uses": (
+                "predicted mean only: ptlib.predict.predict_rows returns the mean; the "
+                "variance is unused by Δ or the direction-AUPRC@200 metric"
+            ),
+        },
+        "unit_ids": [
+            "e9_f0_s20261023_lr1e-4_tahoe",
+            "e9_f1_s20261023_lr1e-4_tahoe",
+            "e9_f4_s20261022_lr1e-4_tahoe",
+            "e9_f4_s20261023_lr1e-4_tahoe",
+        ],
+        "effect_on_results": (
+            "none on any predicted value: guard-only change, no model, loss, checkpoint or "
+            "selection changed; the 26 already-scored units are byte-identical (eval "
+            "manifest + unit record hashes) and only the 4 failed units were re-scored"
+        ),
+        "recovery": "4/4 re-scored successfully; final 30/30 units completed",
+    }
+]
+
+
 class RecordError(common.EvaluationError):
     """The record cannot be derived from the frozen artifacts."""
 
@@ -161,6 +217,8 @@ def _models_block(
                 "n_seeds": int(row["n_seeds"]),
             }
         fold_means = [entry["auprc_200"] for entry in per_fold.values()]
+        fold_ups = [entry["auprc_up_200"] for entry in per_fold.values()]
+        fold_downs = [entry["auprc_down_200"] for entry in per_fold.values()]
         seed_means = (
             unit_rows.groupby("seed")["auprc_200"].mean().sort_index().to_dict()
         )
@@ -168,6 +226,10 @@ def _models_block(
         models[init] = {
             "n_units": int(len(unit_rows)),
             "macro_auprc_200_over_folds": float(np.mean(fold_means)) if fold_means else None,
+            "macro_auprc_up_200_over_folds": float(np.mean(fold_ups)) if fold_ups else None,
+            "macro_auprc_down_200_over_folds": (
+                float(np.mean(fold_downs)) if fold_downs else None
+            ),
             "per_fold": per_fold,
             "seed_stability": {
                 "per_seed_mean_over_folds": {
@@ -518,6 +580,7 @@ def build_record(
         "questions": questions,
         "strata": _strata_block(strata, tahoe_seen_record),
         "budgets": budgets,
+        "deviations": DEVIATIONS,
         "negative_result_clause": NEGATIVE_RESULT_CLAUSE,
         "scope_statement": SCOPE_STATEMENT,
         "decision_rule": DECISION_RULE,
@@ -617,6 +680,7 @@ def build_record(
             "primary": aggregate_mod.PRIMARY_BASELINE,
         },
         "bootstrap": summary["bootstrap"],
+        "deviations": DEVIATIONS,
         "gates": checks_mod.gate_summary(check),
         "record_sha256": table_hashes,
         "figures": figures,

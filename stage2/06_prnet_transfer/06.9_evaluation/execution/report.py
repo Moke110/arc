@@ -104,8 +104,8 @@ def render(record_dir: Path | str) -> str:
         aux = block.get("auxiliary") or {}
         lines.append(
             f"| {init} | **{_fmt(block.get('macro_auprc_200_over_folds'))}** | {folds} | "
-            f"{_fmt((list(per_fold.values())[0] or {}).get('auprc_up_200')) if per_fold else 'n/a'} | "
-            f"{_fmt((list(per_fold.values())[0] or {}).get('auprc_down_200')) if per_fold else 'n/a'} | "
+            f"{_fmt(block.get('macro_auprc_up_200_over_folds'))} | "
+            f"{_fmt(block.get('macro_auprc_down_200_over_folds'))} | "
             f"{_fmt(aux.get('rmse'))} | {_fmt(aux.get('pcc'))} | {_fmt(aux.get('spearman'))} |"
         )
     if primary.get("bars"):
@@ -198,9 +198,24 @@ def render(record_dir: Path | str) -> str:
             f"Low-response and toxicity labels are **unknown** on all "
             f"{strata.get('unknown_labels', {}).get('response_label', {}).get('n_conditions', 'n/a')} "
             "conditions: no per-well readout exists in this round and the labels are never "
-            "inferred from transcriptomic magnitude (06.2 §6). Tahoe-seen strata: "
-            f"{strata.get('tahoe_seen', {}).get('n_tahoe_seen_drug_keys', 'n/a')} of the test "
-            "drug keys were observed in Tahoe treated rows.",
+            "inferred from transcriptomic magnitude (06.2 §6).",
+        ]
+        seen_rows = strata_table[strata_table["stratum_type"] == "tahoe_seen"]
+        if not seen_rows.empty:
+            values = {
+                str(row["stratum_value"]): (int(row["n_drugs"]), int(row["n_conditions"]))
+                for _, row in seen_rows.iterrows()
+            }
+            seen = values.get("True", (0, 0))
+            unseen = values.get("False", (0, 0))
+            lines.append(
+                f"Tahoe-seen strata: {seen[0]} of the test drugs ({seen[1]} conditions) have a "
+                f"drug key observed in Tahoe treated rows; {unseen[0]} drugs "
+                f"({unseen[1]} conditions) were never observed there. "
+                f"({strata.get('tahoe_seen', {}).get('n_tahoe_seen_drug_keys', 'n/a')} drug "
+                "keys are observed in Tahoe treated rows overall.)"
+            )
+        lines += [
         ]
     else:
         lines.append("- no strata table in this record.")
@@ -231,6 +246,7 @@ def render(record_dir: Path | str) -> str:
         )
 
     identity = summary.get("units_manifest") or {}
+    deviations = summary.get("deviations") or []
     lines += [
         "",
         "### Input and model identity",
@@ -244,6 +260,18 @@ def render(record_dir: Path | str) -> str:
         "`selected_checkpoints.csv` before scoring; model cards in "
         "`output/model_cards/`.",
         "",
+        *(
+            ["### Recorded deviations", ""]
+            + [
+                f"- `{dev.get('id')}` ({dev.get('component')}, fix `{dev.get('fix_commit')}`): "
+                f"{dev.get('what')} Units: {', '.join(dev.get('unit_ids') or [])}. "
+                f"Effect on results: {dev.get('effect_on_results')}; {dev.get('recovery')}."
+                for dev in deviations
+            ]
+            + [""]
+            if deviations
+            else []
+        ),
         "### Scope, negative-result clause and decision rule",
         "",
         f"- **Scope.** {summary.get('scope_statement', '')}",

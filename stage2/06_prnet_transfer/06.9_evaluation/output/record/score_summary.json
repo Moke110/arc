@@ -1,0 +1,26 @@
+{
+  "schema": "stage2/06.9_evaluation/score/v1/summary",
+  "kind": "score_summary",
+  "phase": "test",
+  "created_utc": "2026-11-02T11:42:22Z",
+  "started_utc": "2026-11-02T11:34:59Z",
+  "units_planned": 30,
+  "units_completed": 30,
+  "units_skipped": 0,
+  "units_failed": 0,
+  "failures": [],
+  "wall_s": 208.412,
+  "host_peak_rss_mb": 897.2,
+  "gpu_peak_mb": 1593,
+  "preflight": {
+    "mem_available_gib": 44.49594497680664,
+    "min_available_gib": 6.0,
+    "gpu_mem_used_mb": 1370
+  },
+  "units_manifest": "/home/chang/arc-wt/t09-evaluation/stage2/06_prnet_transfer/06.9_evaluation/output/record/units.json",
+  "units_manifest_sha256": "b4174c8407489f706427d736555ba7296338a6ecefcaca11ae51ab2d72c6ba7e",
+  "selection_complete": true,
+  "test_role_scored": true,
+  "peak_rss_mb_process": 119.35546875,
+  "note": "cumulative over every unit in score_runs.csv (a subset --only-unit re-run does not drop earlier units); wall_s is the sum of per-unit predict+evaluate wall time"
+}
