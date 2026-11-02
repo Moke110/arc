@@ -1,4 +1,4 @@
-# 06 · qc — per-observation experimental design + QC audit (ticket #2)
+# 06.2 · qc — per-observation experimental design + QC audit (ticket #2)
 
 Status: **built and verified 2026-11-02** — two sources audited from raw plate/well
 provenance to a keep/exclude/unresolved observation list, with the rule set and its
@@ -191,12 +191,12 @@ become NaN under a plain `pandas.read_csv` — same convention as the frozen vie
 ## 10. Reproduce
 
 ```bash
-cd stage2/06_prnet_transfer/qc/execution
+cd stage2/06_prnet_transfer/06.2_qc/execution
 PYTHONDONTWRITEBYTECODE=1 /home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s tests -v   # 47 tests
 ./run.sh --lock      # derive + freeze thresholds      (~20 s)
 ./run.sh --build     # apply them, write every table    (~40 s)
 ./run.sh --verify    # re-hash + count invariants       (~5 s)
-make record          # copy the tracked record into qc/output/ (then git add -f)
+make record          # copy the tracked record into 06.2_qc/output/ (then git add -f)
 ```
 
 `QC_DATA_ROOT` (default `/home/chang/arc`, the main checkout that holds the gitignored

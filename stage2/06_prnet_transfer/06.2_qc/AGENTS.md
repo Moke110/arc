@@ -1,4 +1,4 @@
-# AGENTS.md — stage2/06_prnet_transfer/qc (ticket #2)
+# AGENTS.md — stage2/06_prnet_transfer/06.2_qc (ticket #2)
 
 Routing only. What was decided, what it counts and how to rerun it live in
 [`README.md`](README.md); the rule text with its evidence is

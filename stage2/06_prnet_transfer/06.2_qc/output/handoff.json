@@ -1,12 +1,12 @@
 {
-  "artifact": "stage2/06_prnet_transfer/qc/output/handoff.json",
+  "artifact": "stage2/06_prnet_transfer/06.2_qc/output/handoff.json",
   "version": "handoff-v1",
   "consumer": "ticket #3 (frozen two-source input, five folds, consensus controls)",
   "rules_version": "qc-rules-v1.0.0",
-  "rules_sha256": "ce77d03dbb493a5c97132319d53a403a4f6bde367b6357db021a4f609217f3e6",
-  "locked_at": "2026-11-02T12:00:52+08:00",
+  "rules_sha256": "94b11c95791e0ccf21d63a4a26d948c988401712422ade5dca8a09ef92165686",
+  "locked_at": "2026-11-02T12:09:32+08:00",
   "observation_table": {
-    "path": "stage2/06_prnet_transfer/qc/output/observations.csv.gz",
+    "path": "stage2/06_prnet_transfer/06.2_qc/output/observations.csv.gz",
     "gitignored": true,
     "sha256_uncompressed_csv": "732c2098937e8bd2191ba0e99ce9a375ce07f3c9013dc0307eb267ca8d9fbc1b",
     "sha256_gz": "da5c641069ee81aee7f27070fb2be37b171fca28527e2efac6a90f89b954a0a0",
@@ -42,7 +42,7 @@
       ],
       "vehicle_value": "DMSO",
       "control_rows": "role == 'vehicle_control_dmso' and qc_status == 'pass'",
-      "table": "stage2/06_prnet_transfer/qc/output/temp_env_dmso_controls.csv",
+      "table": "stage2/06_prnet_transfer/06.2_qc/output/temp_env_dmso_controls.csv",
       "rule": "same physical plate and same vehicle; Media is a different arm and Blank is not a control"
     },
     "tahoe": {
@@ -51,7 +51,7 @@
         "cell_line_id"
       ],
       "control_rows": "role == 'vehicle_control_dmso_tf' and qc_status == 'pass'",
-      "table": "stage2/06_prnet_transfer/qc/output/tahoe_dmso_controls.csv",
+      "table": "stage2/06_prnet_transfer/06.2_qc/output/tahoe_dmso_controls.csv",
       "rule": "same plate and same cell line only; never average across the ~50 lines of a plate; the two control profiles of a group are two wells, not two donors"
     }
   },
@@ -89,7 +89,7 @@
       "arm_rows": 65618,
       "arm_qc_pass_without_matched_control": 204
     },
-    "table": "stage2/06_prnet_transfer/qc/output/matched_control_availability.csv"
+    "table": "stage2/06_prnet_transfer/06.2_qc/output/matched_control_availability.csv"
   },
   "qc_flags": {
     "columns": [

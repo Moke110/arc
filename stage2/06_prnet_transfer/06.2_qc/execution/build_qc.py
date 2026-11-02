@@ -25,8 +25,6 @@ import gzip
 import hashlib
 import io
 import json
-import math
-import os
 import platform
 import re
 import sys
@@ -42,8 +40,9 @@ import rules as ruleset
 # Paths / provenance
 # --------------------------------------------------------------------------- #
 
+TEMPENV_SRC = "pert_data/GSE262419/source"
 TEMPENV_HASH = "pert_data/GSE262419/source/GSE262419_hash.csv.gz"
-TEMPENV_PLATE = "pert_data/GSE262419/source/GSE262419_Plate{:02d}.csv.gz"
+TEMPENV_PLATE = TEMPENV_SRC + "/GSE262419_Plate{:02d}.csv.gz"
 TEMPENV_SERIES = "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz"
 TAHOE_META = "pert_data/Tahoe-100M/source/metadata/sample_metadata.parquet"
 TAHOE_GENE_META = "pert_data/Tahoe-100M/source/metadata/gene_metadata.parquet"
@@ -53,7 +52,7 @@ TAHOE_PB_MANIFEST = "stage2/04_tahoe_data/output/pseudobulk/manifest.csv"
 CM_VIEW = "stage2/02_cm_data/output/datasets-1/temp_env_all-smiles.h5ad"
 CM_GENES = "stage2/02_cm_data/output/corpus/v1/genes.csv"
 
-OUT_DIR = "stage2/06_prnet_transfer/qc/output"
+OUT_DIR = "stage2/06_prnet_transfer/06.2_qc/output"
 FULL_TABLE = "observations.csv.gz"
 
 N_PLATES_TEMPENV = 16
@@ -787,7 +786,7 @@ def cmd_lock(root: Path, data: Path, out: Path) -> int:
         TEMPENV_HASH, TEMPENV_SERIES, TAHOE_META, TAHOE_GENE_META,
         TAHOE_VIEW_MANIFEST, TAHOE_PB_MANIFEST, CM_GENES)}
     doc = {
-        "artifact": "stage2/06_prnet_transfer/qc/output/qc_rules.json",
+        "artifact": "stage2/06_prnet_transfer/06.2_qc/output/qc_rules.json",
         "rules_version": ruleset.RULES_VERSION,
         "locked_at": _now(),
         "rules_sha256": sha,
@@ -937,7 +936,7 @@ def build_summary(table: pd.DataFrame, lock: dict, te_info: dict, th_info: dict,
 
     te_mean_all = te.lib_size_panel / te_info["n_panel_genes"]
     return {
-        "artifact": "stage2/06_prnet_transfer/qc/output/qc_summary.json",
+        "artifact": "stage2/06_prnet_transfer/06.2_qc/output/qc_summary.json",
         "rules_version": lock["rules_version"],
         "rules_sha256": lock["rules_sha256"],
         "locked_at": lock["locked_at"],
@@ -1033,7 +1032,7 @@ def build_handoff(table: pd.DataFrame, lock: dict, files: dict, refs: dict,
     te = table[table.source == "temp_env"]
     th = table[table.source == "tahoe"]
     return {
-        "artifact": "stage2/06_prnet_transfer/qc/output/handoff.json",
+        "artifact": "stage2/06_prnet_transfer/06.2_qc/output/handoff.json",
         "version": "handoff-v1",
         "consumer": "ticket #3 (frozen two-source input, five folds, consensus controls)",
         "rules_version": lock["rules_version"],

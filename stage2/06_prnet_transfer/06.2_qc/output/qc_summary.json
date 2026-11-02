@@ -1,9 +1,9 @@
 {
-  "artifact": "stage2/06_prnet_transfer/qc/output/qc_summary.json",
+  "artifact": "stage2/06_prnet_transfer/06.2_qc/output/qc_summary.json",
   "rules_version": "qc-rules-v1.0.0",
-  "rules_sha256": "ce77d03dbb493a5c97132319d53a403a4f6bde367b6357db021a4f609217f3e6",
-  "locked_at": "2026-11-02T12:00:52+08:00",
-  "built_at": "2026-11-02T12:02:57+08:00",
+  "rules_sha256": "94b11c95791e0ccf21d63a4a26d948c988401712422ade5dca8a09ef92165686",
+  "locked_at": "2026-11-02T12:09:32+08:00",
+  "built_at": "2026-11-02T12:13:00+08:00",
   "model_results_seen": false,
   "observation_unit": {
     "temp_env": "physical well (one TempO-Seq library)",

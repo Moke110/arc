@@ -176,8 +176,9 @@ RULES = {
                     "citation": ("technical-blank control distribution of GSE262419, derived in "
                                  "this audit; 3-MAD band from " +
                                  EV_IGLEWICZ["citation"]),
-                    "url": "pert_data/GSE262419/source/GSE262419_Plate*.csv.gz "
-                           "(Blank wells, Chemical_name == 'Blank')",
+                    "url": "pert_data/GSE262419/source/ "
+                           "(the GSE262419_Plate01..16.csv.gz matrices, rows "
+                           "Chemical_name == 'Blank')",
                     "retrieved": "2026-11-02",
                     "why_not_the_paper": ("the study names no detection floor per well; the "
                                           "blank wells are the only same-run no-cell reference"),
@@ -382,7 +383,7 @@ def blank_separation(blank_n_genes, k: float = 3.0):
 # Decision functions
 # --------------------------------------------------------------------------- #
 
-def _resolve(df: pd.DataFrame, required, reason_code="unresolved_missing_metric"):
+def _resolve(df: pd.DataFrame, required):
     """Rows with a missing required metric are unresolved, not pass and not fail."""
     missing = pd.Series(False, index=df.index)
     for col in required:

@@ -9,6 +9,7 @@
 # in a worktree, so the data root is explicit. Override with QC_DATA_ROOT /
 # QC_OUT_ROOT; the tracked record is copied back into this step with `make record`.
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PY="${PYTHON:-/home/chang/miniconda3/envs/arc/bin/python}"

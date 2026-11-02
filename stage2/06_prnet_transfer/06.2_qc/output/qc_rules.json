@@ -1,8 +1,8 @@
 {
-  "artifact": "stage2/06_prnet_transfer/qc/output/qc_rules.json",
+  "artifact": "stage2/06_prnet_transfer/06.2_qc/output/qc_rules.json",
   "rules_version": "qc-rules-v1.0.0",
-  "locked_at": "2026-11-02T12:00:52+08:00",
-  "rules_sha256": "ce77d03dbb493a5c97132319d53a403a4f6bde367b6357db021a4f609217f3e6",
+  "locked_at": "2026-11-02T12:09:32+08:00",
+  "rules_sha256": "94b11c95791e0ccf21d63a4a26d948c988401712422ade5dca8a09ef92165686",
   "hash_scope": "sha256 over the canonical JSON of {rules_version, forbidden_bases, sources, instantiated_thresholds, time_sources, derived_reference_info}",
   "model_results_seen": false,
   "model_results_note": "no model has been trained or evaluated for stage2/06 at lock time; no DEG table, effect size, response statistic or model metric was read by the locking code",
@@ -12,7 +12,7 @@
     "model performance (loss, AUPRC, correlation with truth)"
   ],
   "data_root": "/home/chang/arc",
-  "git_head": "ad79af587cf2b57653935dab266a13457d018cc2",
+  "git_head": "530eeb41da10d89694ecd8a1cc087aaf2b8316b9",
   "environment": {
     "python": "3.13.13",
     "pandas": "2.3.3",
@@ -188,7 +188,7 @@
           "evidence": {
             "kind": "project_derived",
             "citation": "technical-blank control distribution of GSE262419, derived in this audit; 3-MAD band from Iglewicz B, Hoaglin DC. How to Detect and Handle Outliers. ASQC Quality Press, 1993: modified z-score M = 0.6745·(x − median)/MAD with |M| > 3.5 as the flag (equivalently |x − median| > 3·1.4826·MAD)",
-            "url": "pert_data/GSE262419/source/GSE262419_Plate*.csv.gz (Blank wells, Chemical_name == 'Blank')",
+            "url": "pert_data/GSE262419/source/ (the GSE262419_Plate01..16.csv.gz matrices, rows Chemical_name == 'Blank')",
             "retrieved": "2026-11-02",
             "why_not_the_paper": "the study names no detection floor per well; the blank wells are the only same-run no-cell reference"
           },
