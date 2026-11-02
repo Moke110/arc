@@ -379,21 +379,79 @@ FIELD_MEANINGS = {
     "valid_fold": "the fold in which this drug is valid",
     "n_wells": "main-set wells of this drug (on this plate, for folds.parquet)",
     "n_doses": "distinct doses of this drug (on this plate)",
+    "n_plates": "plates carrying this drug's main-set wells (`plate` is ';'-joined)",
     "plate_weight": "consensus plate weight = 1 / n_plates",
     "n_wells_plate": "QC-pass DMSO candidate rows on that plate in that fold",
     "weight": "consensus well weight = plate_weight / n_wells_plate; sums to 1 per fold",
-    "row_ix": "0-based row position in cm_transfer.h5ad obs/X/layers",
-    "control_rows": "row positions (in tahoe_transfer.h5ad) of this group's control observations",
-    "control_rows_qc_pass": "the subset of control_rows that pass QC — the matched-control mean must use these",
     "n_controls": "control observations in the group",
     "n_qc_pass": "QC-pass control observations in the group (0 => treated rows of this group are not usable)",
     "row": "0-based row position in the artifact (cm_transfer.h5ad for consensus membership; tahoe_transfer.h5ad for control groups and pairs)",
     "group_index": "integer control-group id, shared by tahoe_control_groups.parquet and tahoe_pairs.npz",
     "group_key": "canonical control group key `plate|cell_line_id` (never crosses cell lines)",
-    "treated_row": "row position in tahoe_transfer.h5ad of a treated observation",
     "usable": "tahoe_usable of that treated row",
     "split": "tahoe_split of that treated row",
 }
+
+# --------------------------------------------------------------------------- #
+# Reading the 16 GB h5ad files without materialising their matrices
+# --------------------------------------------------------------------------- #
+
+
+@dataclass(frozen=True)
+class H5adHeader:
+    """The metadata of an h5ad artifact, decoded without reading X or layers."""
+
+    obs: pd.DataFrame
+    var: pd.DataFrame
+    uns: dict
+    shape: tuple[int, int]
+    x_dtype: str
+    x_nnz: int
+    layer_names: list[str]
+
+
+def _read_elem(payload):
+    """`anndata.io.read_elem` on 0.11+, `anndata.experimental.read_elem` before."""
+    try:                                            # anndata >= 0.11
+        from anndata.io import read_elem
+    except ImportError:                             # pragma: no cover - 0.10 reader
+        from anndata.experimental import read_elem
+    return read_elem(payload)
+
+
+def read_h5ad_header(path: Path | str, *, with_uns: bool = True) -> H5adHeader:
+    """Open a large h5ad with h5py and decode only obs/var/uns/shape.
+
+    ``anndata.read_h5ad(..., backed="r")`` is **not** safe here: backed mode
+    still materialises ``layers``, which is 8.1 GB for the frozen Tahoe view
+    (67,018 x 18,164, 1.01e9 nnz) and 12.9 GB for the 25.8 GB corpus (1.61e9
+    nnz).  That alone exceeds the WSL2 memory envelope and is what killed the
+    2026-11-02 session.  Reading the element groups directly keeps the peak
+    proportional to the metadata (a few MB), and `X` is never touched.
+    """
+    import h5py
+
+    path = Path(path)
+    with h5py.File(path, "r") as handle:
+        parts: dict = {name: _read_elem(handle[name]) if name in handle else None
+                       for name in ("obs", "var")}
+        uns = _read_elem(handle["uns"]) if (with_uns and "uns" in handle) else {}
+        matrix = handle["X"]
+        if isinstance(matrix, h5py.Group):
+            shape = tuple(int(v) for v in matrix.attrs["shape"])
+            x_dtype = str(matrix["data"].dtype)
+            x_nnz = int(matrix["indptr"][-1])
+        else:                                       # dense encoding
+            shape = tuple(int(v) for v in matrix.shape)
+            x_dtype = str(matrix.dtype)
+            x_nnz = int(shape[0] * shape[1])
+        layer_names = sorted(handle["layers"].keys()) if "layers" in handle else []
+    obs, var = parts["obs"], parts["var"]
+    if obs is None or var is None:
+        raise ContractError(f"{path}: h5ad has no obs/var group")
+    return H5adHeader(obs=obs, var=var, uns=dict(uns) if uns else {}, shape=shape,
+                      x_dtype=x_dtype, x_nnz=x_nnz, layer_names=layer_names)
+
 
 # --------------------------------------------------------------------------- #
 # Gene axis
@@ -439,18 +497,12 @@ def gene_measured_cm(axis: pd.DataFrame) -> pd.Series:
 
 def tahoe_gene_space_ensembl() -> set[str]:
     """The Tahoe corpus's native 62,710-gene space, as Ensembl ids (var only)."""
-    import anndata as ad
     if not TAHOE_CORPUS.exists():
         raise ContractError(f"missing Tahoe corpus: {TAHOE_CORPUS}")
-    corpus = ad.read_h5ad(TAHOE_CORPUS, backed="r")
-    try:
-        var = corpus.var
-        if "ensembl_id" not in var.columns:
-            raise ContractError(f"{TAHOE_CORPUS}: var has no ensembl_id")
-        ens = {str(x) for x in var["ensembl_id"].tolist()}
-    finally:
-        corpus.file.close()
-    return ens
+    var = read_h5ad_header(TAHOE_CORPUS, with_uns=False).var
+    if "ensembl_id" not in var.columns:
+        raise ContractError(f"{TAHOE_CORPUS}: var has no ensembl_id")
+    return {str(x) for x in var["ensembl_id"].tolist()}
 
 
 def gene_measured_tahoe(axis: pd.DataFrame, ensembl_space: set[str]) -> pd.Series:
@@ -572,12 +624,62 @@ class Handoff:
                 "note": self.note, "detail": self.detail}
 
 
+def _current_pointer(directory: Path) -> Path | None:
+    """Resolve a versioned artifact set through its `current.json` pointer.
+
+    ADR 0030: a new rule version gets a new artifact identity, the previous
+    record is never overwritten, and downstream steps read the pointer instead
+    of a version directory.  Ticket #1 writes ``<output>/current.json`` with
+    ``table: {path, sha256}``; resolving through it keeps a future rule revision
+    consumable and lets this build fail closed if the table drifts from the
+    pointer's declared digest.
+    """
+    pointer = Path(directory) / "current.json"
+    if not pointer.exists():
+        return None
+    block = (read_json(pointer).get("table") or {})
+    declared = str(block.get("path") or "")
+    if not declared:
+        return None
+    path = (pointer.parent / declared).expanduser().resolve()
+    if not path.exists():
+        raise ContractError(f"{pointer} points at a missing table: {path}")
+    expected = block.get("sha256")
+    if expected and sha256_file(path) != str(expected):
+        raise ContractError(
+            f"{path} does not match the sha256 recorded in {pointer}; the "
+            "versioned handoff and its pointer disagree")
+    return path
+
+
+def current_pointer_record(path: Path | str) -> dict | None:
+    """The `current.json` pointer governing `path`, if it lives in a version set."""
+    path = Path(path).expanduser().resolve()
+    pointer = path.parent.parent / "current.json"
+    if not pointer.exists():
+        return None
+    document = read_json(pointer)
+    return {"path": relpath(pointer), "sha256": sha256_file(pointer),
+            "artifact_version": document.get("artifact_version"),
+            "rule": document.get("rule"), "handoff": document.get("handoff")}
+
+
 def resolve_handoff(kind: str, override: str | Path | None = None) -> Path:
     if override:
         path = Path(override).expanduser().resolve()
         if not path.exists():
             raise ContractError(f"{kind} handoff not found: {path}")
         return path
+    # Versioned artifact sets first: `current.json` is the authoritative pointer.
+    searched_dirs: list[Path] = []
+    for rel in HANDOFF_CANDIDATES[kind]:
+        directory = (STEP_DATA / rel).parent
+        if directory in searched_dirs:
+            continue
+        searched_dirs.append(directory)
+        resolved = _current_pointer(directory)
+        if resolved is not None:
+            return resolved
     for rel in HANDOFF_CANDIDATES[kind]:
         candidate = STEP_DATA / rel
         if candidate.exists():
@@ -683,18 +785,29 @@ def load_eligibility(path: Path | str | None = None) -> tuple[pd.DataFrame, Hand
                     f"{(doc.get('rule') or {}).get('version')})")
         # A newer handoff may add an explicit study/main-set list.  If it does,
         # it must agree with the decision column — the decision is the authority.
+        # handoff v2 lists `include`/`uncertain`/`exclude` as records with a
+        # `drug_key`; older shapes use bare key lists.
         include_keys = set(table.loc[table["eligibility_decision"] == "include",
                                      "drug_key"])
-        for field_name in ("main_set", "study_set", "included_keys", "include_keys"):
+        for field_name in ("include", "main_set", "study_set", "included_keys",
+                           "include_keys"):
             declared_keys = doc.get(field_name)
-            if isinstance(declared_keys, list):
-                declared_set = {str(k) for k in declared_keys}
-                if declared_set != include_keys:
-                    raise ContractError(
-                        f"#1 handoff.json {field_name} disagrees with the decision "
-                        f"column: only_table={sorted(include_keys - declared_set)[:5]} "
-                        f"only_handoff={sorted(declared_set - include_keys)[:5]}")
-                detail[f"{field_name}_reconciled"] = True
+            if not isinstance(declared_keys, list):
+                continue
+            if declared_keys and isinstance(declared_keys[0], dict):
+                declared_keys = [row.get("drug_key") for row in declared_keys]
+            declared_set = {str(k) for k in declared_keys if k is not None}
+            if declared_set != include_keys:
+                raise ContractError(
+                    f"#1 handoff.json {field_name} disagrees with the decision "
+                    f"column: only_table={sorted(include_keys - declared_set)[:5]} "
+                    f"only_handoff={sorted(declared_set - include_keys)[:5]}")
+            detail[f"handoff_{field_name}_reconciled"] = True
+    # The versioned-artifact pointer (ADR 0030) is the provenance of *which*
+    # handoff was consumed; record it so the manifest names the rule version.
+    pointer = current_pointer_record(resolved)
+    if pointer is not None:
+        detail["current_pointer"] = pointer
     # An explicit boolean column in the table must also agree.
     for column in ("main_set", "study_set", "in_study"):
         if column in raw.columns:
@@ -762,10 +875,17 @@ def normalize_qc_table(raw: pd.DataFrame, resolved: Path, kind: str) -> pd.DataF
     })
     column = names_present(raw, QC_ALIASES["matched_control_ok"])
     if column is not None:
-        # controls have no matched-control entry; only treated rows are judged
+        # controls have no matched-control entry; only treated rows are judged.
+        # Fail closed on an unknown token instead of silently reading it as NaN.
         values = raw[column].astype(str).str.strip().str.lower()
-        table["matched_control_ok"] = values.map(
-            {"true": True, "1": True, "false": False, "0": False, "": None})
+        known = {"true": True, "1": True, "yes": True,
+                 "false": False, "0": False, "no": False, "": None}
+        unknown = sorted(set(values) - set(known))
+        if unknown:
+            raise ContractError(
+                f"{resolved}: matched_control_ok has unknown value(s) {unknown}; "
+                "expected true/false or empty")
+        table["matched_control_ok"] = values.map(known)
     column = names_present(raw, QC_ALIASES["matched_control_key"])
     if column is not None:
         table["matched_control_key"] = raw[column].astype(str).str.strip()

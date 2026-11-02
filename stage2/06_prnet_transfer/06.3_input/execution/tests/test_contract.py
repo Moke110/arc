@@ -185,6 +185,60 @@ class HandoffTest(unittest.TestCase):
             contract.resolve_handoff("eligibility", override="/nonexistent/elig.csv")
 
 
+class VersionedPointerTest(unittest.TestCase):
+    """ADR 0030: ticket #1 publishes versioned records behind `current.json`.
+
+    Ticket #3 must consume the pointer, never a hard-coded `v1.3` path, so a
+    future rule revision stays consumable and a drifted table fails closed.
+    """
+
+    def setUp(self):
+        import json
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.addCleanup(self._tmp.cleanup)
+        self.out = self.root / "06.1_eligibility" / "output"
+        self.out.mkdir(parents=True)
+        self.table = self.out / "v9" / "eligibility_table.csv"
+        self.table.parent.mkdir()
+        self.table.write_text("drug_key,decision,decision_class\n"
+                              "AAAA-BBBB-CCCCCC,include,approved\n")
+        self.pointer = self.out / "current.json"
+        self._write_pointer(contract.sha256_file(self.table))
+
+    def _write_pointer(self, digest: str) -> None:
+        import json
+        self.pointer.write_text(json.dumps({
+            "schema": "prnet-eligibility-current-v1",
+            "artifact_version": "v9",
+            "rule": {"version": "eligibility-rule-v9", "sha256": "0" * 64},
+            "table": {"path": "v9/eligibility_table.csv", "sha256": digest},
+        }))
+
+    def test_resolve_follows_the_pointer(self):
+        from unittest import mock
+        with mock.patch.object(contract, "STEP_DATA", self.root):
+            resolved = contract.resolve_handoff("eligibility")
+            self.assertEqual(resolved, self.table.resolve())
+            table, handoff = contract.load_eligibility()
+            self.assertEqual(list(table["eligibility_decision"]), ["include"])
+            self.assertEqual(handoff.detail["current_pointer"]["artifact_version"], "v9")
+
+    def test_a_drifted_table_fails_closed(self):
+        from unittest import mock
+        self._write_pointer("f" * 64)
+        with mock.patch.object(contract, "STEP_DATA", self.root):
+            with self.assertRaises(contract.ContractError):
+                contract.resolve_handoff("eligibility")
+
+    def test_a_missing_target_fails_closed(self):
+        from unittest import mock
+        self.table.unlink()
+        with mock.patch.object(contract, "STEP_DATA", self.root):
+            with self.assertRaises(contract.ContractError):
+                contract.resolve_handoff("eligibility")
+
+
 class ColumnContractTest(unittest.TestCase):
     def test_obs_column_lists(self):
         self.assertEqual(len(contract.CM_OBS_INHERITED), 24)
