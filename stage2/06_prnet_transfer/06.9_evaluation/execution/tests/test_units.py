@@ -191,6 +191,34 @@ class UnitManifestTests(unittest.TestCase):
         finally:
             manifest_file.write_text(json.dumps(original), encoding="utf-8")
 
+    def test_config_json_with_run_metadata_is_accepted(self):
+        # train.py's config.json carries `config_sha256` + `run` metadata beyond the
+        # canonical config block; the candidate must still verify.
+        import json
+
+        run = self.inputs["random_runs"][0]["result"]["run_dir"]
+        config = json.loads((run / "config.json").read_text(encoding="utf-8"))
+        self.assertIn("run", config)
+        self.assertIn("config_sha256", config)
+        payload = self._build()
+        self.assertTrue(payload["complete"])
+
+    def test_manifest_config_block_tamper_fails(self):
+        import json
+
+        run = self.inputs["random_runs"][0]["result"]["run_dir"]
+        manifest_file = run / "manifest.json"
+        original = json.loads(manifest_file.read_text(encoding="utf-8"))
+        tampered = json.loads(manifest_file.read_text(encoding="utf-8"))
+        tampered["config"]["recipe"]["batch_size"] = 256
+        manifest_file.write_text(json.dumps(tampered), encoding="utf-8")
+        try:
+            with self.assertRaises(units_mod.UnitError) as caught:
+                self._build()
+            self.assertIn("manifest.config", str(caught.exception))
+        finally:
+            manifest_file.write_text(json.dumps(original), encoding="utf-8")
+
     def test_frozen_identity_matches_selection_record(self):
         data = self.inputs["data"]
         identity = common.data_identity_sha256(data["frozen"])

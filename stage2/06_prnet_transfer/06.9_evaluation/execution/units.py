@@ -259,6 +259,15 @@ def read_candidate_run(
             f"{run_dir}: candidate manifest config_sha256 {manifest.get('config_sha256')} "
             f"!= recomputed {digest}"
         )
+    # train.py writes config.json as the resolved config *plus* `config_sha256` and a
+    # `run` metadata block; config_fingerprint() hashes only the canonical config keys,
+    # so the digest is stable, but the manifest's own config block must agree too.
+    manifest_config = manifest.get("config") or {}
+    if manifest_config and fingerprint(manifest_config) != digest:
+        raise UnitError(
+            f"{run_dir}: manifest.config does not reproduce the recorded config digest "
+            f"{digest}"
+        )
     if str(config_sha256) != digest:
         raise UnitError(
             f"selected record config_sha256 {config_sha256} != recomputed {digest} "

@@ -120,7 +120,14 @@ def make_candidate_run(
         "init": {"mode": "pretrained" if init == "tahoe" else "random"},
     }
     digest = config_mod.config_fingerprint(config)
+    # mirror train.py: config.json is the resolved config plus the digest and run metadata
     config["config_sha256"] = digest
+    config["run"] = {
+        "unit_id": f"run_f{fold}_s{seed}_{lr}_{init}",
+        "wall_s": 41.8,
+        "peak_rss_mb": 1330.0,
+        "torch": "2.0.1+cu118",
+    }
     write_json(run_dir / "config.json", config)
     checkpoint_sha = write_bytes(
         run_dir / "checkpoint" / "model.pt", f"weights-{fold}-{seed}-{init}".encode()
