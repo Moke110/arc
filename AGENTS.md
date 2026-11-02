@@ -1,62 +1,51 @@
 # AGENTS.md
 
-Routing index for the ARC repo root: AI-driven MIRI drug-repositioning pipeline (SMILES → HG/UniMol embeddings → XPert DEG prediction → efficacy ranking). Research code, not a software project. Details live in each subdirectory's `AGENTS.md`.
+Operating manual for agents in this repository (AI-driven MIRI drug-repositioning, research code): how to work, where the reference docs live, and which skills to use. This is not a status board — do not add plans, progress, or result summaries here.
 
-## Where to start
+## Branch rules
 
-1. **Read ADR 0030** — `docs/adr/0030-external-data-provenance-and-step-layout.md`. It is the law for the external-data layout and the Stage 2 step layout.
-2. **Read the category `README.md`** for the data/model you need: `pert_data/`, `pert_model/`, `disease_data/`, `drug_emb_model/`. Each category's `AGENTS.md` is the one-line-per-项 routing index.
-3. **Read the step `README.md`** for the Stage 2 step you run; every step carries the same members: `AGENTS.md` (routing), `README.md` (human summary), `execution/` (harness + intermediates), `output/` (artifacts later steps read).
-4. **Check health** from the repo root (all offline; none needs the network): `script/check_paths.sh`, `script/check_tracked.sh`, `script/verify_all.sh`.
+- **All modifications happen on `dev`.** `dev` is the working and integration branch: commit every change there. `main` only ever receives merges from `dev` — never work or commit on `main` directly.
+- **Push only `main`.** `origin` receives `main` and nothing else — never push `dev` or any other branch.
 
-## External data — four provenance categories (27 项)
+## Workflow
 
-Every download source is one **项** under ADR 0030: `script/` (downloader + offline verifier), `source/` (untouched download, byte-identical to upstream, gitignored), `local/` (declared local additions, gitignored), `author_log.json` (tracked provenance record), `manifest.sha256` (tracked per-file hashes over `source/`). The machine-readable origin/size/version is each `author_log.json`; the human inventory of every large ignored asset is [`docs/data-inventory.md`](docs/data-inventory.md).
+The design-to-delivery chain is fixed; each skill consumes the previous step's output. Do not skip steps or run them out of order.
 
-- `pert_data/` — CM drug-perturbation data lake + XPert L1000 pretrain h5ads (8 项: `Tahoe-100M`, `LINCS-LDS-1593`, `DToxS-iPSC`, `GSE244740`, `GSE247541`, `GSE262419`, `XPert-L1000`, `Annotation`); own `AGENTS.md`.
-- `pert_model/` — drug-perturbation prediction model library (14 项: nine deployed, five reference-only); own `AGENTS.md`, deployed/reference/excluded split in `README.md`.
-- `disease_data/` — shared per-GSE MIRI disease inputs (3 项: `GSE108940` rat, `GSE137293` pig, `GSE160516` mouse); own `AGENTS.md`.
-- `drug_emb_model/` — HG HeteroGNN and KPGT drug-embedding libraries (2 项; code libraries, their `source/` trees stay tracked); own `AGENTS.md`.
+1. **`grill-with-docs`** — interrogate the plan and write decisions into the repo as they resolve: create/update the ADR under `docs/adr/`, and the affected terms in `GLOSSARY.md`.
+2. **`to-spec`** — synthesize the agreed design into a spec and publish it as an issue on the tracker (`Moke110/arc`, label `ready-for-agent`).
+3. **`to-tickets`** — split the spec into tracer-bullet tickets; publish one issue per ticket in dependency order with native `blocked_by` edges and `ready-for-agent`.
+4. **`implement-spec`** — implement the published tickets on `dev` (the integration branch), working the frontier of the ticket graph, and finish with the `code-review` pass.
 
-## Stage 1
+Execution rules:
 
-`stage1/` — the completed MIRI screens: frozen `xpert-fda-miri-v0/` (legacy snapshot) and the finalized 11-step workflows `xpert-fda-miri-v1/` (canonical), `-v1.1/`, `-v2/`, `-v3/`. Each workflow owns its scripts, prompts, and outputs. Details: `stage1/AGENTS.md`.
+- **Subagent context budget: under ~20% per agent.** Fan work out to subagents — one ticket (or one narrow prefactor scope) per implementer subagent, plus separate exploration and merger subagents. Pass context pointers (spec path, issue number, research-note path, commit SHA), not pasted content; when a window fills, hand off to a fresh subagent.
+- **Close the tracker at the end: no open issue survives the run.** Resolve every ticket: completed work closes with its evidence; unfinished work is recorded as a comment on the owning ticket (what remains and why) and the ticket is then closed. Report the `dev` state and the closed-ticket list.
 
-## Stage 2
+## Tracker and doc conventions
 
-`stage2/` — model setup and selection; stage overview `stage2/README.md`, routing `stage2/AGENTS.md`. Steps (each with `AGENTS.md`, `README.md`, `execution/`, `output/`, human-facing `.png`/`.csv` at step level):
+- **Issue tracker**: GitHub issues at `Moke110/arc` via the `gh` CLI; specs are drafted in `.scratch/<feature-slug>/spec.md` and published. `.scratch/` is not a tracker and keeps no issue files. See `docs/agents/issue-tracker.md`.
+- **Triage labels**: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+- **Domain docs**: single-context — root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
-- `01_setup/` — nine deployed non-preprint models load/train on their native assets; run cards under `execution/<model>/`.
-- `02_cm_data/` — frozen model-agnostic CM corpus (`output/corpus/v1/`, ADR 0026) and the five `datasets-1` h5ad views.
-- `03_models_cmbench/` — the executed 60-unit cold-drug benchmark, split into independently concluded substeps: `03.1_cold_drug_18k/` (primary) and `03.2_hvg_sensitivity_5k/` (HVG sensitivity fork). Each substep carries its own `execution/`, `output/` (`input/`, `units/`, `results/`), `summary.png`, `summary_table.csv`.
-- `04_tahoe_data/` — Tahoe-100M pseudobulk pretrain corpus from the already-downloaded atlas (ADR 0029) plus its built, verified CM-schema pretrain view (67,018 × 18,164, nine gates 9/9).
-- `05_prnet_pretrain/` — PRnet pretrained on 04's view, executed 2026-11-01 (68 epochs, best valid Gaussian NLL −2.628080); pipeline claim only, artifacts under `output/` (ADR 0031).
-- Non-step directories: `_envs/` (shared per-model benchmark environments), `audit/` (non-computational records), `_archive/` (superseded `cm_bench_v1` benchmark + archived plan).
+## Before touching a tree
 
-## Docs, reference, other trees
+- Read the owning `AGENTS.md` (routing) and `README.md` (summary) first; every external-data category and Stage 2 step carries both.
+- External data follows the four-provenance layout in ADR 0030 (`docs/adr/0030-external-data-provenance-and-step-layout.md`) — `script/`, `source/`, `local/`, plus tracked `author_log.json` and `manifest.sha256`. ADR 0030 is the law for that layout and the Stage 2 step layout. Never modify an item's `source/` tree; declared additions go in its `local/`.
+- Health checks from the repo root (all offline): `script/check_paths.sh`, `script/check_tracked.sh`, `script/verify_all.sh`.
 
-- `docs/` — decision records ([`docs/adr/README.md`](docs/adr/README.md), 0009–0031 indexed; 0023 is a numbering gap), the AICM roadmap (`roadmap.md`), the ignored-asset inventory (`data-inventory.md`), the wet-lab record (`wetlab-validation-stage1.md`), agent docs, teaching material.
-- `GLOSSARY.md` — domain vocabulary, including the external-item / step-layout terms.
-- `tableA_cardiomyocyte_hypoxia_compound_datasets.csv` — orphan dataset table, tracked; the same table is in `docs/data-inventory.md`.
-- `archived/` — gitignored provenance archive of orphaned HG FDA-extension data/weights.
-- `presentation/` — thesis proposal deck (`开题.pptx`) and its background literature review (`my_review.md`).
-- `reference/` — background literature library (PDFs, markdowns, index; gitignored).
-- `wet_data/` — Stage-1 wet-lab validation raw data (gitignored); record in `docs/wetlab-validation-stage1.md`.
-- `logs/` — runtime logs (Tahoe fetch/QA history; ephemeral).
+## Reference docs
+
+- `GLOSSARY.md` — domain vocabulary; use its terms in issues, tickets, code, and docs.
+- `docs/adr/` — architecture decision records; index at `docs/adr/README.md`. Read the ADRs that touch your area, and flag conflicts instead of silently overriding them.
+- `docs/agents/` — issue-tracker, triage-label, and domain-doc rules consumed by the skills.
+- `docs/data-inventory.md` — inventory of ignored large assets.
+- `docs/roadmap.md` — program-level roadmap.
+- `docs/wetlab-validation-stage1.md` — wet-lab validation record.
+- Routing indexes: `stage1/AGENTS.md`, `stage2/AGENTS.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`, `disease_data/AGENTS.md`, `drug_emb_model/AGENTS.md`; each Stage 2 step has its own `AGENTS.md` + `README.md`.
 - `environment.yml` — shared conda environment `arc`; `skills-lock.json` — pinned agent-skills lockfile.
-- `.agents/`, `.claude/` — agent skills and local config.
-- `.scratch/` (issue tracker + specs), `.serena/`, `.vscode/`, `.env`, `.gitignore` — workspace scratch, tooling, and config.
 
-## Agent skills
+## Skills
 
-### Issue tracker
-
-Issues and specs live as local markdown files under `.scratch/<feature-slug>/`. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Default canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
+- Workflow chain: `grill-with-docs` (grilling + domain-modeling), `to-spec`, `to-tickets`, `implement-spec`.
+- Supporting: `grilling`, `domain-modeling`, `code-review`, `tdd`, `diagnosing-bugs`, `prototype`, `research`, `pr`, `wizard`, `writing-for-agents`.
+- Installed under `~/.agents/skills/` and symlinked from `.claude/skills/`; repo-local skills live in `.agents/skills/` and are pinned by `skills-lock.json`.
