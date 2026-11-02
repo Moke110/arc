@@ -1,0 +1,29 @@
+{
+  "schema": "prnet-eligibility-current-v1",
+  "artifact_version": "v1.3",
+  "rule": {
+    "version": "eligibility-rule-v1.3",
+    "sha256": "504b8e4215b6d3c4403124146f2ef63b16fe45dd08f9e829d75215f8ec459ce6"
+  },
+  "handoff": {
+    "path": "v1.3/handoff.json",
+    "schema": "prnet-eligibility-handoff-v2",
+    "sha256": "e52cac242978ca4f936024efaf24339d85a2cec687effe117ed212abd2eb2087"
+  },
+  "table": {
+    "path": "v1.3/eligibility_table.csv",
+    "sha256": "37485af6587d577ab24ff22e8a6222f3f9d4695d60fd1007d0c24d7f5fc4ba85"
+  },
+  "manifest": {
+    "path": "v1.3/manifest.json",
+    "sha256": "f3243576d6f745588e143a6c75dbc7d5a74f8108bec4995d08c0f0808685c7f0"
+  },
+  "previous": {
+    "artifact_version": "v1.2",
+    "manifest": "v1.2/manifest.json",
+    "rule": {
+      "version": "eligibility-rule-v1.2",
+      "sha256": "e1af8cdb370bb1a8adc59ab49a5d658029f18e372e67248034fcccc2fd545bfa"
+    }
+  }
+}

@@ -25,7 +25,8 @@ results, selection constraints and reproduce commands live in each step's
   study (started 2026-11-02): 460-compound eligibility audit, per-observation QC,
   frozen two-source input with five drug-key folds and consensus controls, then 3
   formal Tahoe pretrains × 90 CM candidates and a paired
-  pretrained-vs-random, model-vs-baseline evaluation. Status: **planned**; its
+  pretrained-vs-random, model-vs-baseline evaluation. Status: **in progress**
+  (audits merged, frozen input under build, no training yet); its
   README carries the fixed first-round design.
 - [`_envs/`](_envs/README.md) — non-step: shared per-model benchmark
   environments and their `pip freeze` locks (ADR 0021).
