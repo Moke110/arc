@@ -1,0 +1,160 @@
+{
+  "artifact": "stage2/06_prnet_transfer/qc/output/observations.csv.gz",
+  "table": {
+    "bytes": 2171454,
+    "sha256_gz": "da5c641069ee81aee7f27070fb2be37b171fca28527e2efac6a90f89b954a0a0",
+    "sha256_uncompressed": "732c2098937e8bd2191ba0e99ce9a375ce07f3c9013dc0307eb267ca8d9fbc1b",
+    "rows": 71576,
+    "columns": 47
+  },
+  "sha256_uncompressed_csv": "732c2098937e8bd2191ba0e99ce9a375ce07f3c9013dc0307eb267ca8d9fbc1b",
+  "sha256_of_full_per_observation_table": "732c2098937e8bd2191ba0e99ce9a375ce07f3c9013dc0307eb267ca8d9fbc1b",
+  "note": "the full per-observation table is gitignored; this manifest entry is its content identity (sha256 over the uncompressed CSV bytes)",
+  "rules_version": "qc-rules-v1.0.0",
+  "rules_sha256": "ce77d03dbb493a5c97132319d53a403a4f6bde367b6357db021a4f609217f3e6",
+  "locked_at": "2026-11-02T12:00:52+08:00",
+  "built_at": "2026-11-02T12:02:57+08:00",
+  "git_head": "ad79af587cf2b57653935dab266a13457d018cc2",
+  "environment": {
+    "python": "3.13.13",
+    "pandas": "2.3.3",
+    "numpy": "2.4.6",
+    "anndata": "0.12.16",
+    "pyarrow": "25.0.1"
+  },
+  "rows": 71576,
+  "columns": 47,
+  "column_order": [
+    "observation_id",
+    "source",
+    "role",
+    "plate",
+    "physical_well",
+    "cell_line_id",
+    "cell_name",
+    "cell_type",
+    "donor",
+    "compound_name",
+    "drug_key",
+    "dose_um",
+    "is_control",
+    "vehicle",
+    "time_h",
+    "time_source_id",
+    "raw_replicate",
+    "raw_replicate_source",
+    "frozen_view_replicate_index",
+    "lib_size_panel",
+    "n_genes_panel",
+    "n_genes_retained_by_filter",
+    "mean_count_per_gene_retained",
+    "meanr_vs_vehicle_pool",
+    "meanr_vs_plate_vehicle",
+    "n_cells",
+    "mean_gene_count",
+    "mean_tscp_count",
+    "mean_mread_count",
+    "mean_pcnt_mito",
+    "well_z_tscp",
+    "well_z_gene_count",
+    "lib_size_view",
+    "n_genes_detected_view",
+    "has_structure",
+    "qc_status",
+    "qc_reason",
+    "qc_flags",
+    "matched_control_key",
+    "matched_control_n",
+    "matched_control_n_total",
+    "matched_control_ok",
+    "matched_control_status",
+    "response_label",
+    "toxicity_label",
+    "label_evidence",
+    "physical_well_uid"
+  ],
+  "rows_by_source": {
+    "tahoe": 67018,
+    "temp_env": 4558
+  },
+  "input_sha256": {
+    "pert_data/GSE262419/source/GSE262419_hash.csv.gz": "dbdaadfc357fabfadb291d2818d5ce242bba52486b3d8ec86460b61457d57f3c",
+    "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz": "73cf40abd48722e6db57803450bf967540bebd429a1b6904bfe81fb75f2aed63",
+    "pert_data/Tahoe-100M/source/metadata/sample_metadata.parquet": "33167f0ce28cff8357c503cda67d1c7fea200bff6918ee1de3c4f3549175b9d3",
+    "pert_data/Tahoe-100M/source/metadata/gene_metadata.parquet": "d6104d1ca570d94832be0d27ffe8b7e4e54cfd366c9080239219f9c406eb751c",
+    "stage2/04_tahoe_data/output/pretrain_view/manifest.csv": "9db69f4e1fd5d259ecfa7a1698adb3a97e911c4850990487c8d9258344b47f95",
+    "stage2/04_tahoe_data/output/pseudobulk/manifest.csv": "d3cdb7efc9faf477e0abe2d1b031dff2040f8f8736e61de2e0ae4e729e693371",
+    "stage2/02_cm_data/output/corpus/v1/genes.csv": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+  },
+  "files": {
+    "observations.csv.gz": {
+      "bytes": 2171454,
+      "sha256_gz": "da5c641069ee81aee7f27070fb2be37b171fca28527e2efac6a90f89b954a0a0",
+      "sha256_uncompressed": "732c2098937e8bd2191ba0e99ce9a375ce07f3c9013dc0307eb267ca8d9fbc1b",
+      "rows": 71576,
+      "columns": 47
+    },
+    "counts_by_source_role.csv": {
+      "bytes": 594,
+      "sha256": "ab6c4d2e1d4120379f38336ac890bbe34e6fda3a3ec47ecadea574c27d491fa6",
+      "rows": 14,
+      "columns": 5
+    },
+    "counts_by_plate_dose.csv": {
+      "bytes": 12141,
+      "sha256": "4942f116722ce47c0cf76e3c8d4ca7bf12621824651c098f9e76f3551a3a15b2",
+      "rows": 258,
+      "columns": 7
+    },
+    "counts_tahoe_by_cell_line.csv": {
+      "bytes": 3028,
+      "sha256": "b5fc3d8bed61f7723a44a5a89a389b9a2d1ef1f460b2e9f5f681a109f3019e2b",
+      "rows": 97,
+      "columns": 5
+    },
+    "exclusions_by_rule.csv": {
+      "bytes": 1123,
+      "sha256": "b5d8fad22f76a64ace061dcf388bf70fdbf60ab4c0a4876f632f334fe8cc126f",
+      "rows": 8,
+      "columns": 9
+    },
+    "primary_reason_counts.csv": {
+      "bytes": 307,
+      "sha256": "9cca2ac1ec872af656b79f13bf4575660111fcb9a2a02c838b7b038111705eb8",
+      "rows": 6,
+      "columns": 4
+    },
+    "plate_drug_confounding.csv": {
+      "bytes": 167,
+      "sha256": "394516972f2638f5a1fbb8aebd4029f7af7f812754c4f34b5badd3d03b8b85f1",
+      "rows": 3,
+      "columns": 7
+    },
+    "matched_control_availability.csv": {
+      "bytes": 55669,
+      "sha256": "f5d0f23e60aa03ad8a7485664651f53f8ac8f3c551e60b5461ed075632ac815e",
+      "rows": 748,
+      "columns": 10
+    },
+    "temp_env_dmso_controls.csv": {
+      "bytes": 15346,
+      "sha256": "c1139f9be12444cd7b4a415457163b9ed69a96da0ba653a64e1846c96bfbad70",
+      "rows": 192,
+      "columns": 10
+    },
+    "tahoe_dmso_controls.csv": {
+      "bytes": 145754,
+      "sha256": "61eb16f25e014f74c2d895b60f8873355477c0c80b4379203bb8ea22bb63a73b",
+      "rows": 1400,
+      "columns": 11
+    },
+    "qc_summary.json": {
+      "bytes": 5142,
+      "sha256": "9adcb3e0af85a8287a1833f7f42216de307512d5f80c8d821c42d7c4e0decccb"
+    },
+    "handoff.json": {
+      "bytes": 6763,
+      "sha256": "474573d341080a80e35329a2c39d0e0debb03b3861f5b09afb7af5ea57e42ede"
+    }
+  }
+}

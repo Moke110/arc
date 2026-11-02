@@ -1,0 +1,7 @@
+source,primary_reason,observations,physical_wells
+tahoe,derived_plate_depth_outlier,384,9
+tahoe,project_min_cells_per_profile,5251,1344
+tahoe,src_cell_line_excluded,568,568
+temp_env,derived_blank_separation_floor,481,481
+temp_env,src_sample_expression_floor,17,17
+temp_env,src_vehicle_reproducibility,39,39
