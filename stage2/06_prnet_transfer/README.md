@@ -67,6 +67,12 @@ re-deriving a split.
 
 - The CM responses are general iPSC-CM responses at 24 h; nothing here becomes a
   hypoxia/reoxygenation efficacy claim, and no dose extrapolation is claimed.
+- **Record provenance.** Locked audit records under `06.1`, `06.4` (smoke cards),
+  `06.5`, `06.6` and `06.7` embed the absolute worktree path where the run was
+  produced (e.g. `/home/chang/arc-wt/t05-pretrain`). ADR 0030 §4 keeps frozen
+  evidence path strings byte-for-byte, so these historical strings are deliberately
+  not rewritten; the 06.9 record, regenerated after the code review, resolves every
+  path repo-relatively.
 - The checkpoint from `05_prnet_pretrain` is a pipeline bring-up artifact
   (raw-count controls vs log targets). It is **not** the formal pretrain and is
   not reused as one; formal pretrains come from `runs/`.
