@@ -1,0 +1,6 @@
+fold,test_drugs,valid_drugs,train_drugs,test_wells,valid_wells,train_wells,test_plates,valid_plates,train_plates
+0,23,23,72,192,188,571,10,11,16
+1,23,24,71,188,191,572,11,13,15
+2,24,24,70,191,190,570,13,13,15
+3,24,24,70,190,190,571,13,10,15
+4,24,23,71,190,192,569,10,10,16

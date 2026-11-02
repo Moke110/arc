@@ -10,9 +10,10 @@ metric, the budgets and the negative-result clause were fixed before execution
 `.scratch/stage2-prnet-formal-transfer/ticket-plan.md`).
 
 Status: **in progress** (2026-11-02). The two audits are built and merged
-(#1 eligibility rule v1.3 / handoff v2, #2 per-observation QC); the frozen input
-(#3) is under build and no training has been executed. Each section below flips
-to executed only when its ticket closes with artifacts and evidence.
+(#1 eligibility rule v1.3 / handoff v2, #2 per-observation QC) and the frozen input
+(#3) is built and verified (118 main-set drugs, 951 wells, 125/125 verify); no
+training has been executed. Each section below flips to executed only when its
+ticket closes with artifacts and evidence.
 
 ## The first-round design (fixed)
 
@@ -48,7 +49,7 @@ every experiment consumes them rather than re-deriving a split.
 |---|---|---|---|
 | `06.1_eligibility/` eligibility audit | #1 | built and verified — rule v1.3, handoff v2 (118 include / 28 uncertain / 314 exclude) | [`README`](06.1_eligibility/README.md), `output/current.json` |
 | `06.2_qc/` per-observation QC | #2 | built and verified — locked rule set | [`README`](06.2_qc/README.md) |
-| `06.3_input/` frozen inputs, folds, consensus | #3 | in progress — builder under test | [`README`](06.3_input/README.md) |
+| `06.3_input/` frozen inputs, folds, consensus | #3 | frozen and verified — 118 drugs / 951 wells, 125/125 verify | [`README`](06.3_input/README.md), `output/manifest.json` |
 | `06.4_pipeline/` pipeline + smoke | #4 | Phase A built on synthetic fixture; Phase B real-data smoke pending | [`README`](06.4_pipeline/README.md) |
 | `06.5_tahoe_pretrain/` 3 Tahoe pretrains | #5 | planned | — |
 | `06.6_cm_random/` 45 random-init CM candidates | #6 | planned | — |

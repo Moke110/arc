@@ -1,0 +1,1453 @@
+{
+  "artifacts": {
+    "cm_transfer.h5ad": {
+      "X": {
+        "dtype": "int32",
+        "encoding": "dense ndarray",
+        "meaning": "raw counts, non-negative"
+      },
+      "format": "anndata h5ad (dense)",
+      "layers": {
+        "log1p_cp10k": {
+          "dtype": "float32",
+          "encoding": "dense ndarray",
+          "meaning": "row-wise log1p(counts / lib_size * 1e4)"
+        }
+      },
+      "local_only": true,
+      "obs_columns": [
+        {
+          "dtype": "object",
+          "meaning": "observation key: CM = `temp_env::Plate<N>-<well>`, Tahoe = `tahoe::<plate>:<smp>:<cell_line>`",
+          "name": "well"
+        },
+        {
+          "dtype": "category",
+          "meaning": "source id (`temp_env` | `tahoe`)",
+          "name": "dataset_id"
+        },
+        {
+          "dtype": "category",
+          "meaning": "normalised display name of the perturbagen",
+          "name": "compound_name"
+        },
+        {
+          "dtype": "category",
+          "meaning": "desalted parent InChIKey (stereo retained); '' on control rows",
+          "name": "drug_key"
+        },
+        {
+          "dtype": "category",
+          "meaning": "exact structure key",
+          "name": "inchikey"
+        },
+        {
+          "dtype": "category",
+          "meaning": "canonical SMILES (Tahoe: derived from the atlas SMILES)",
+          "name": "smiles"
+        },
+        {
+          "dtype": "float64",
+          "meaning": "dose in micromolar; 0.0 on control rows",
+          "name": "dose_um"
+        },
+        {
+          "dtype": "category",
+          "meaning": "provenance of the dose value",
+          "name": "dose_source"
+        },
+        {
+          "dtype": "float64",
+          "meaning": "exposure time in hours; 24.0 for CM (loader constant), NaN for Tahoe",
+          "name": "time_h"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "vehicle-control row",
+          "name": "is_control"
+        },
+        {
+          "dtype": "category",
+          "meaning": "vehicle identity; CM DMSO/Media, Tahoe DMSO_TF on controls and '' on treated",
+          "name": "vehicle"
+        },
+        {
+          "dtype": "category",
+          "meaning": "physical plate id",
+          "name": "plate"
+        },
+        {
+          "dtype": "category",
+          "meaning": "CM `temp_env::Plate<N>` (MIXES DMSO+Media — never a matched baseline); Tahoe `tahoe::<plate>::<cell_line>`",
+          "name": "control_group"
+        },
+        {
+          "dtype": "category",
+          "meaning": "cell type (CM ipsc_cm; Tahoe NaN — see cell_line_id)",
+          "name": "cell_type"
+        },
+        {
+          "dtype": "category",
+          "meaning": "donor/line; CM literal 'NA', Tahoe NaN",
+          "name": "donor"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "GENERATED within-group index, not a raw replicate id",
+          "name": "replicate"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ATC code (frozen annotation)",
+          "name": "atc"
+        },
+        {
+          "dtype": "category",
+          "meaning": "mechanism of action (frozen annotation)",
+          "name": "moa"
+        },
+        {
+          "dtype": "category",
+          "meaning": "PubChem MeSH classes",
+          "name": "mesh_classes"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "old automatic atc-moa tier membership (annotation, not eligibility)",
+          "name": "pharm_atc_moa"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "old automatic atc-moa-mesh tier membership",
+          "name": "pharm_mesh"
+        },
+        {
+          "dtype": "category",
+          "meaning": "annotation provenance",
+          "name": "annotation_source"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "X row sum",
+          "name": "lib_size"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "(X > 0) row sum",
+          "name": "n_genes_detected"
+        },
+        {
+          "dtype": "object",
+          "meaning": "unique observation key (= obs index `well`)",
+          "name": "observation_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "physical well token (CM `B2`; Tahoe `smp_1495`)",
+          "name": "physical_well"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "CM plate number 1-16",
+          "name": "plate_no"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "raw design Replicate_Number re-joined from the GSE262419 hash table",
+          "name": "replicate_raw"
+        },
+        {
+          "dtype": "category",
+          "meaning": "raw design Solvent (CM)",
+          "name": "solvent"
+        },
+        {
+          "dtype": "category",
+          "meaning": "raw design Chemical_Index (CM)",
+          "name": "chemical_index"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ticket #1 decision: include | exclude | uncertain (NaN on control rows)",
+          "name": "eligibility_decision"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ticket #1 decision class (approved | clinical | mechanism_tool | other_use | unknown)",
+          "name": "elig_class"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "ticket #2 per-observation QC verdict",
+          "name": "qc_pass"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ticket #2 reason codes (';'-joined, first is primary)",
+          "name": "qc_reason"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "ticket #2 matched-control availability; a control row is its own control",
+          "name": "matched_control_ok"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ticket #2 matched-control group key (CM plate x vehicle; Tahoe plate x cell line)",
+          "name": "matched_control_key"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "treated AND eligibility include AND qc_pass — the fold/scored population",
+          "name": "main_set"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "treated AND eligibility exclude AND qc_pass — ticket #11 expansion training only, never scored",
+          "name": "expansion_set"
+        }
+      ],
+      "obs_index": {
+        "meaning": "observation key: CM = `temp_env::Plate<N>-<well>`, Tahoe = `tahoe::<plate>:<smp>:<cell_line>`",
+        "name": "well"
+      },
+      "shape": [
+        3947,
+        18164
+      ],
+      "uns": {
+        "column_provenance": "per-column notes",
+        "control_cache": "why no uns['control_mean'] is carried",
+        "schema": "input contract version"
+      },
+      "var_columns": [
+        {
+          "dtype": "object",
+          "meaning": "HGNC id from corpus/v1 genes.csv",
+          "name": "hgnc_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "Entrez id from corpus/v1 genes.csv",
+          "name": "entrez_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "Ensembl id from corpus/v1 genes.csv",
+          "name": "ensembl_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "gene-identity match provenance from corpus/v1",
+          "name": "match_type"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "per-source measurement mask; False only for the FAM153B Tahoe slot",
+          "name": "gene_measured"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "non-zero cells in this artifact's X column (audit only; NOT a measurement test)",
+          "name": "n_nonzero"
+        }
+      ],
+      "var_index": {
+        "meaning": "HGNC symbol, the frozen gene-axis key/order",
+        "name": "symbol"
+      }
+    },
+    "consensus_controls.npz": {
+      "arrays": {
+        "c_star": {
+          "dtype": "float32",
+          "meaning": "per-fold consensus control on the log1p_cp10k scale",
+          "shape": [
+            5,
+            18164
+          ]
+        },
+        "fold_ids": {
+          "dtype": "int16",
+          "meaning": "0..4",
+          "shape": [
+            5
+          ]
+        },
+        "n_genes": {
+          "dtype": "int64",
+          "meaning": "18,164",
+          "shape": []
+        },
+        "n_plates": {
+          "dtype": "int16",
+          "meaning": "contributing plates",
+          "shape": [
+            5
+          ]
+        },
+        "n_wells": {
+          "dtype": "int32",
+          "meaning": "contributing control rows",
+          "shape": [
+            5
+          ]
+        },
+        "plate_names": {
+          "dtype": "str",
+          "meaning": "union of contributing plates across folds",
+          "shape": [
+            16
+          ]
+        },
+        "plate_weights": {
+          "dtype": "float32",
+          "meaning": "1/n_plates in that fold, 0 where the plate is not used",
+          "shape": [
+            5,
+            16
+          ]
+        }
+      },
+      "format": "numpy npz (uncompressed keys, zlib compressed file)",
+      "tracked": false
+    },
+    "consensus_membership.parquet": {
+      "columns": [
+        {
+          "dtype": "int16",
+          "meaning": "fold index 0-4",
+          "name": "fold"
+        },
+        {
+          "dtype": "object",
+          "meaning": "physical plate id",
+          "name": "plate"
+        },
+        {
+          "dtype": "object",
+          "meaning": "unique observation key (= obs index `well`)",
+          "name": "observation_id"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "0-based row position in the artifact (cm_transfer.h5ad for consensus membership; tahoe_transfer.h5ad for control groups and pairs)",
+          "name": "row"
+        },
+        {
+          "dtype": "float32",
+          "meaning": "consensus well weight = plate_weight / n_wells_plate; sums to 1 per fold",
+          "name": "weight"
+        },
+        {
+          "dtype": "float32",
+          "meaning": "consensus plate weight = 1 / n_plates",
+          "name": "plate_weight"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "QC-pass DMSO candidate rows on that plate in that fold",
+          "name": "n_wells_plate"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "ticket #2 per-observation QC verdict",
+          "name": "qc_pass"
+        },
+        {
+          "dtype": "object",
+          "meaning": "vehicle identity; CM DMSO/Media, Tahoe DMSO_TF on controls and '' on treated",
+          "name": "vehicle"
+        }
+      ],
+      "format": "parquet",
+      "primary_key": [
+        "fold",
+        "observation_id"
+      ],
+      "rows": 667,
+      "tracked": true
+    },
+    "consensus_summary.csv": {
+      "columns": [
+        {
+          "dtype": "int64",
+          "meaning": "fold index 0-4",
+          "name": "fold"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "plates carrying this drug's main-set wells (`plate` is ';'-joined)",
+          "name": "n_plates"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "main-set wells of this drug (on this plate, for folds.parquet)",
+          "name": "n_wells"
+        },
+        {
+          "dtype": "object",
+          "meaning": "",
+          "name": "plates"
+        },
+        {
+          "dtype": "float64",
+          "meaning": "consensus plate weight = 1 / n_plates",
+          "name": "plate_weight"
+        }
+      ],
+      "format": "csv",
+      "rows": 5,
+      "tracked": true
+    },
+    "contract.json": {
+      "format": "json",
+      "meaning": "this document",
+      "tracked": true
+    },
+    "counts.csv": {
+      "format": "csv",
+      "tracked": true
+    },
+    "fold_sizes.csv": {
+      "columns": [
+        {
+          "dtype": "int64",
+          "meaning": "fold index 0-4",
+          "name": "fold"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "test_drugs"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "valid_drugs"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "train_drugs"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "test_wells"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "valid_wells"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "train_wells"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "test_plates"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "valid_plates"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "",
+          "name": "train_plates"
+        }
+      ],
+      "format": "csv",
+      "rows": 5,
+      "tracked": true
+    },
+    "folds.parquet": {
+      "columns": [
+        {
+          "dtype": "object",
+          "meaning": "desalted parent InChIKey (stereo retained); '' on control rows",
+          "name": "drug_key"
+        },
+        {
+          "dtype": "object",
+          "meaning": "identity cluster (drug_key + inchikey connectivity block); never split across folds",
+          "name": "cluster_id"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "fold index 0-4",
+          "name": "fold"
+        },
+        {
+          "dtype": "object",
+          "meaning": "train | valid | test within that fold",
+          "name": "role"
+        },
+        {
+          "dtype": "object",
+          "meaning": "physical plate id",
+          "name": "plate"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "main-set wells of this drug (on this plate, for folds.parquet)",
+          "name": "n_wells"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "distinct doses of this drug (on this plate)",
+          "name": "n_doses"
+        },
+        {
+          "dtype": "int8",
+          "meaning": "plates carrying this drug's main-set wells (`plate` is ';'-joined)",
+          "name": "n_plates"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "the fold in which this drug is test",
+          "name": "test_fold"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "the fold in which this drug is valid",
+          "name": "valid_fold"
+        }
+      ],
+      "format": "parquet",
+      "meaning": "one row per (drug_key, fold): role is train|valid|test and every main-set drug appears in all five folds exactly once as test and once as valid. `plate` holds the drug's plate(s) ';'-joined (n_plates counts them); the per-plate long form is not exported because a consumer keys the split by drug_key alone",
+      "primary_key": [
+        "drug_key",
+        "fold"
+      ],
+      "rows": 590,
+      "tracked": true
+    },
+    "locked_config.json": {
+      "format": "json",
+      "meaning": "locked experiment config; hashed in manifest.json",
+      "tracked": true
+    },
+    "manifest.json": {
+      "format": "json",
+      "meaning": "sha256/bytes of every artifact, source and handoff hashes, counts, git SHA",
+      "tracked": true
+    },
+    "tahoe_control_groups.parquet": {
+      "columns": [
+        {
+          "dtype": "int32",
+          "meaning": "integer control-group id, shared by tahoe_control_groups.parquet and tahoe_pairs.npz",
+          "name": "group_index"
+        },
+        {
+          "dtype": "object",
+          "meaning": "canonical control group key `plate|cell_line_id` (never crosses cell lines)",
+          "name": "group_key"
+        },
+        {
+          "dtype": "object",
+          "meaning": "physical plate id",
+          "name": "plate"
+        },
+        {
+          "dtype": "object",
+          "meaning": "Tahoe cell line (Cellosaurus id)",
+          "name": "cell_line_id"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "0-based row position in the artifact (cm_transfer.h5ad for consensus membership; tahoe_transfer.h5ad for control groups and pairs)",
+          "name": "row"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "control observations in the group",
+          "name": "n_controls"
+        },
+        {
+          "dtype": "int16",
+          "meaning": "QC-pass control observations in the group (0 => treated rows of this group are not usable)",
+          "name": "n_qc_pass"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "ticket #2 per-observation QC verdict",
+          "name": "qc_pass"
+        }
+      ],
+      "format": "parquet (long form: one row per (group, member observation))",
+      "meaning": "matched-control membership: only QC-pass DMSO_TF control rows; a group's log-layer mean is the matched control",
+      "primary_key": [
+        "group_index",
+        "row"
+      ],
+      "rows": 1294,
+      "tracked": true
+    },
+    "tahoe_pairs.npz": {
+      "arrays": {
+        "group_index": {
+          "dtype": "int32",
+          "meaning": "integer control-group id, shared by tahoe_control_groups.parquet and tahoe_pairs.npz",
+          "shape": [
+            60861
+          ]
+        },
+        "row": {
+          "dtype": "int32",
+          "meaning": "0-based row position in the artifact (cm_transfer.h5ad for consensus membership; tahoe_transfer.h5ad for control groups and pairs)",
+          "shape": [
+            60861
+          ]
+        },
+        "split": {
+          "dtype": "str",
+          "meaning": "tahoe_split of that treated row",
+          "shape": [
+            60861
+          ]
+        },
+        "usable": {
+          "dtype": "bool",
+          "meaning": "tahoe_usable of that treated row",
+          "shape": [
+            60861
+          ]
+        }
+      },
+      "format": "numpy npz",
+      "meaning": "treated row -> control group; rows without a QC-pass matched control are absent (never re-paired)",
+      "tracked": true
+    },
+    "tahoe_transfer.h5ad": {
+      "X": {
+        "dtype": "int32",
+        "encoding": "csr_matrix",
+        "meaning": "raw counts, non-negative"
+      },
+      "format": "anndata h5ad (CSR; X and layers streamed from the 04 view)",
+      "layers": {
+        "log1p_cp10k": {
+          "dtype": "float32",
+          "encoding": "csr_matrix",
+          "meaning": "row-wise log1p(counts / lib_size * 1e4)"
+        }
+      },
+      "local_only": true,
+      "obs_columns": [
+        {
+          "dtype": "object",
+          "meaning": "observation key: CM = `temp_env::Plate<N>-<well>`, Tahoe = `tahoe::<plate>:<smp>:<cell_line>`",
+          "name": "well"
+        },
+        {
+          "dtype": "category",
+          "meaning": "source id (`temp_env` | `tahoe`)",
+          "name": "dataset_id"
+        },
+        {
+          "dtype": "category",
+          "meaning": "normalised display name of the perturbagen",
+          "name": "compound_name"
+        },
+        {
+          "dtype": "category",
+          "meaning": "desalted parent InChIKey (stereo retained); '' on control rows",
+          "name": "drug_key"
+        },
+        {
+          "dtype": "category",
+          "meaning": "exact structure key",
+          "name": "inchikey"
+        },
+        {
+          "dtype": "category",
+          "meaning": "canonical SMILES (Tahoe: derived from the atlas SMILES)",
+          "name": "smiles"
+        },
+        {
+          "dtype": "float64",
+          "meaning": "dose in micromolar; 0.0 on control rows",
+          "name": "dose_um"
+        },
+        {
+          "dtype": "category",
+          "meaning": "provenance of the dose value",
+          "name": "dose_source"
+        },
+        {
+          "dtype": "float64",
+          "meaning": "exposure time in hours; 24.0 for CM (loader constant), NaN for Tahoe",
+          "name": "time_h"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "vehicle-control row",
+          "name": "is_control"
+        },
+        {
+          "dtype": "category",
+          "meaning": "vehicle identity; CM DMSO/Media, Tahoe DMSO_TF on controls and '' on treated",
+          "name": "vehicle"
+        },
+        {
+          "dtype": "category",
+          "meaning": "physical plate id",
+          "name": "plate"
+        },
+        {
+          "dtype": "category",
+          "meaning": "CM `temp_env::Plate<N>` (MIXES DMSO+Media — never a matched baseline); Tahoe `tahoe::<plate>::<cell_line>`",
+          "name": "control_group"
+        },
+        {
+          "dtype": "category",
+          "meaning": "cell type (CM ipsc_cm; Tahoe NaN — see cell_line_id)",
+          "name": "cell_type"
+        },
+        {
+          "dtype": "category",
+          "meaning": "donor/line; CM literal 'NA', Tahoe NaN",
+          "name": "donor"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "GENERATED within-group index, not a raw replicate id",
+          "name": "replicate"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ATC code (frozen annotation)",
+          "name": "atc"
+        },
+        {
+          "dtype": "category",
+          "meaning": "mechanism of action (frozen annotation)",
+          "name": "moa"
+        },
+        {
+          "dtype": "category",
+          "meaning": "PubChem MeSH classes",
+          "name": "mesh_classes"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "old automatic atc-moa tier membership (annotation, not eligibility)",
+          "name": "pharm_atc_moa"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "old automatic atc-moa-mesh tier membership",
+          "name": "pharm_mesh"
+        },
+        {
+          "dtype": "category",
+          "meaning": "annotation provenance",
+          "name": "annotation_source"
+        },
+        {
+          "dtype": "int64",
+          "meaning": "X row sum",
+          "name": "lib_size"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "(X > 0) row sum",
+          "name": "n_genes_detected"
+        },
+        {
+          "dtype": "category",
+          "meaning": "Tahoe cell line (Cellosaurus id)",
+          "name": "cell_line_id"
+        },
+        {
+          "dtype": "category",
+          "meaning": "Tahoe cell line name",
+          "name": "cell_name"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "cells aggregated into this pseudobulk profile (not a technical replicate count)",
+          "name": "n_cells"
+        },
+        {
+          "dtype": "category",
+          "meaning": "atlas broad MoA",
+          "name": "moa_broad"
+        },
+        {
+          "dtype": "category",
+          "meaning": "atlas fine MoA",
+          "name": "moa_fine"
+        },
+        {
+          "dtype": "category",
+          "meaning": "PubChem CID",
+          "name": "pubchem_cid"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "structure resolvable; False = 2 Tahoe drugs / 300 treated rows kept for audit only",
+          "name": "has_structure"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "inherited 04 flag (True on every row; use `matched_control_ok` instead)",
+          "name": "has_matched_control"
+        },
+        {
+          "dtype": "category",
+          "meaning": "author-shim copy of smiles",
+          "name": "SMILES"
+        },
+        {
+          "dtype": "float64",
+          "meaning": "author-shim copy of dose_um",
+          "name": "dose"
+        },
+        {
+          "dtype": "category",
+          "meaning": "author-shim pointer to the first control row of the row's control group",
+          "name": "paired_control_index"
+        },
+        {
+          "dtype": "object",
+          "meaning": "unique observation key (= obs index `well`)",
+          "name": "observation_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "physical well token (CM `B2`; Tahoe `smp_1495`)",
+          "name": "physical_well"
+        },
+        {
+          "dtype": "category",
+          "meaning": "train | valid by plate13/plate14 (technical default, NOT a cold-drug split)",
+          "name": "tahoe_split"
+        },
+        {
+          "dtype": "object",
+          "meaning": "validation grouping key: drug_key x dose x cell_line (controls: control x plate x cell_line)",
+          "name": "tahoe_valid_group"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "ticket #2 per-observation QC verdict",
+          "name": "qc_pass"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ticket #2 reason codes (';'-joined, first is primary)",
+          "name": "qc_reason"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "ticket #2 matched-control availability; a control row is its own control",
+          "name": "matched_control_ok"
+        },
+        {
+          "dtype": "category",
+          "meaning": "ticket #2 matched-control group key (CM plate x vehicle; Tahoe plate x cell line)",
+          "name": "matched_control_key"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "~is_control AND has_structure AND qc_pass AND matched_control_ok",
+          "name": "tahoe_usable"
+        },
+        {
+          "dtype": "object",
+          "meaning": "literature provenance for the 24 h claim; time_h itself stays NaN",
+          "name": "time_source"
+        }
+      ],
+      "obs_index": {
+        "meaning": "observation key: CM = `temp_env::Plate<N>-<well>`, Tahoe = `tahoe::<plate>:<smp>:<cell_line>`",
+        "name": "well"
+      },
+      "shape": [
+        67018,
+        18164
+      ],
+      "uns": {
+        "column_provenance": "per-column notes",
+        "control_cache": "why no uns['control_mean'] is carried",
+        "schema": "input contract version"
+      },
+      "var_columns": [
+        {
+          "dtype": "object",
+          "meaning": "HGNC id from corpus/v1 genes.csv",
+          "name": "hgnc_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "Entrez id from corpus/v1 genes.csv",
+          "name": "entrez_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "Ensembl id from corpus/v1 genes.csv",
+          "name": "ensembl_id"
+        },
+        {
+          "dtype": "object",
+          "meaning": "gene-identity match provenance from corpus/v1",
+          "name": "match_type"
+        },
+        {
+          "dtype": "bool",
+          "meaning": "per-source measurement mask; False only for the FAM153B Tahoe slot",
+          "name": "gene_measured"
+        },
+        {
+          "dtype": "int32",
+          "meaning": "non-zero cells in this artifact's X column (audit only; NOT a measurement test)",
+          "name": "n_nonzero"
+        }
+      ],
+      "var_index": {
+        "meaning": "HGNC symbol, the frozen gene-axis key/order",
+        "name": "symbol"
+      }
+    },
+    "var_checks.csv": {
+      "format": "csv",
+      "tracked": true
+    }
+  },
+  "artifacts_local_only": [
+    "cm_transfer.h5ad",
+    "tahoe_transfer.h5ad"
+  ],
+  "artifacts_tracked_in_git": [
+    "consensus_controls.npz",
+    "consensus_membership.parquet",
+    "consensus_summary.csv",
+    "contract.json",
+    "counts.csv",
+    "fold_sizes.csv",
+    "folds.parquet",
+    "locked_config.json",
+    "manifest.json",
+    "tahoe_control_groups.parquet",
+    "tahoe_pairs.npz",
+    "var_checks.csv"
+  ],
+  "contract_id": "stage2/06_prnet_transfer/06.3_input/contract@1.0.0",
+  "control_semantics": {
+    "cm_train": "mean of QC-pass DMSO rows on the same plate (obs.control_group mixes DMSO+Media and is NOT a matched baseline)",
+    "cm_truth_delta": "treated log1p_cp10k minus the same-plate QC-pass DMSO log mean, computed only at scoring time",
+    "cm_validation_test_inference": "one fixed per-fold c* from consensus_controls.npz; never a per-plate control",
+    "consensus_provenance": "only control rows of plates carrying a TRAINING drug; per-plate log mean then equal plate weight",
+    "tahoe_train_validation": "mean of the same (plate, cell_line) group's QC-pass control rows on the log layer (tahoe_control_groups.parquet + tahoe_pairs.npz); never across cell lines"
+  },
+  "fold_semantics": {
+    "excluded": "exclude/uncertain drugs have no fold row and are never test/valid",
+    "n_folds": 5,
+    "plate_confounding": "a drug split is not a plate split; a fold's test drugs bring their plates",
+    "population": "main_set drugs only; every main-set drug is test in exactly one fold and valid in exactly one fold",
+    "primary_key": [
+      "drug_key",
+      "fold"
+    ],
+    "roles": [
+      "train",
+      "valid",
+      "test"
+    ],
+    "seed": 20261102,
+    "split_unit": "drug_key"
+  },
+  "frozen_counts": {
+    "cm": {
+      "consensus": {
+        "fold_n_plates": [
+          16,
+          15,
+          15,
+          15,
+          16
+        ],
+        "fold_n_wells": [
+          138,
+          127,
+          132,
+          132,
+          138
+        ],
+        "members_total": 667,
+        "per_fold_plates": [
+          {
+            "fold": 0,
+            "n_plates": 16,
+            "n_wells": 138,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate12",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 1,
+            "n_plates": 15,
+            "n_wells": 127,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate12",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 2,
+            "n_plates": 15,
+            "n_wells": 132,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 3,
+            "n_plates": 15,
+            "n_wells": 132,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          },
+          {
+            "fold": 4,
+            "n_plates": 16,
+            "n_wells": 138,
+            "plates": [
+              "Plate1",
+              "Plate10",
+              "Plate11",
+              "Plate12",
+              "Plate13",
+              "Plate14",
+              "Plate15",
+              "Plate16",
+              "Plate2",
+              "Plate3",
+              "Plate4",
+              "Plate5",
+              "Plate6",
+              "Plate7",
+              "Plate8",
+              "Plate9"
+            ]
+          }
+        ]
+      },
+      "dropped_qc_fail_controls": 70,
+      "dropped_qc_fail_treated": 461,
+      "drug_keys_in_view": 460,
+      "eligibility_exclude_drugs": 314,
+      "eligibility_include_drugs": 118,
+      "eligibility_include_without_usable_well": 0,
+      "eligibility_uncertain_drugs": 28,
+      "expanded_train_drugs": 432,
+      "expansion_set_drugs": 314,
+      "expansion_set_wells": 2553,
+      "folds": {
+        "max_drugs_per_fold": 24,
+        "n_fold_rows": 590,
+        "n_folds": 5,
+        "seed": 20261102,
+        "test_drugs": [
+          23,
+          23,
+          24,
+          24,
+          24
+        ],
+        "test_wells": [
+          192,
+          188,
+          191,
+          190,
+          190
+        ],
+        "train_drugs": [
+          72,
+          71,
+          70,
+          70,
+          71
+        ],
+        "train_wells": [
+          571,
+          572,
+          570,
+          571,
+          569
+        ],
+        "valid_drugs": [
+          23,
+          24,
+          24,
+          24,
+          23
+        ],
+        "valid_wells": [
+          188,
+          191,
+          190,
+          190,
+          192
+        ]
+      },
+      "kept_controls": 202,
+      "kept_dmso_controls": 138,
+      "kept_media_controls": 64,
+      "kept_rows": 3947,
+      "kept_treated": 3745,
+      "main_set_doses": [
+        0.2,
+        1.0,
+        10.0
+      ],
+      "main_set_drugs": 118,
+      "main_set_plates": 16,
+      "main_set_wells": 951,
+      "main_set_without_matched_control": 0,
+      "matched_control_source": "handoff",
+      "qc_fail_controls_view": 70,
+      "qc_fail_rows": 531,
+      "qc_fail_treated_view": 461,
+      "qc_pass_rows": 3947,
+      "qc_pass_vehicle": {
+        "dmso": 138,
+        "media": 64
+      },
+      "view_controls": 272,
+      "view_rows": 4478,
+      "view_treated": 4206
+    },
+    "consensus": {
+      "fold_n_plates": [
+        16,
+        15,
+        15,
+        15,
+        16
+      ],
+      "fold_n_wells": [
+        138,
+        127,
+        132,
+        132,
+        138
+      ],
+      "members_total": 667,
+      "per_fold_plates": [
+        {
+          "fold": 0,
+          "n_plates": 16,
+          "n_wells": 138,
+          "plates": [
+            "Plate1",
+            "Plate10",
+            "Plate11",
+            "Plate12",
+            "Plate13",
+            "Plate14",
+            "Plate15",
+            "Plate16",
+            "Plate2",
+            "Plate3",
+            "Plate4",
+            "Plate5",
+            "Plate6",
+            "Plate7",
+            "Plate8",
+            "Plate9"
+          ]
+        },
+        {
+          "fold": 1,
+          "n_plates": 15,
+          "n_wells": 127,
+          "plates": [
+            "Plate1",
+            "Plate10",
+            "Plate11",
+            "Plate12",
+            "Plate13",
+            "Plate14",
+            "Plate15",
+            "Plate16",
+            "Plate3",
+            "Plate4",
+            "Plate5",
+            "Plate6",
+            "Plate7",
+            "Plate8",
+            "Plate9"
+          ]
+        },
+        {
+          "fold": 2,
+          "n_plates": 15,
+          "n_wells": 132,
+          "plates": [
+            "Plate1",
+            "Plate10",
+            "Plate11",
+            "Plate13",
+            "Plate14",
+            "Plate15",
+            "Plate16",
+            "Plate2",
+            "Plate3",
+            "Plate4",
+            "Plate5",
+            "Plate6",
+            "Plate7",
+            "Plate8",
+            "Plate9"
+          ]
+        },
+        {
+          "fold": 3,
+          "n_plates": 15,
+          "n_wells": 132,
+          "plates": [
+            "Plate1",
+            "Plate10",
+            "Plate11",
+            "Plate13",
+            "Plate14",
+            "Plate15",
+            "Plate16",
+            "Plate2",
+            "Plate3",
+            "Plate4",
+            "Plate5",
+            "Plate6",
+            "Plate7",
+            "Plate8",
+            "Plate9"
+          ]
+        },
+        {
+          "fold": 4,
+          "n_plates": 16,
+          "n_wells": 138,
+          "plates": [
+            "Plate1",
+            "Plate10",
+            "Plate11",
+            "Plate12",
+            "Plate13",
+            "Plate14",
+            "Plate15",
+            "Plate16",
+            "Plate2",
+            "Plate3",
+            "Plate4",
+            "Plate5",
+            "Plate6",
+            "Plate7",
+            "Plate8",
+            "Plate9"
+          ]
+        }
+      ]
+    },
+    "folds": {
+      "max_drugs_per_fold": 24,
+      "n_fold_rows": 590,
+      "n_folds": 5,
+      "seed": 20261102,
+      "test_drugs": [
+        23,
+        23,
+        24,
+        24,
+        24
+      ],
+      "test_wells": [
+        192,
+        188,
+        191,
+        190,
+        190
+      ],
+      "train_drugs": [
+        72,
+        71,
+        70,
+        70,
+        71
+      ],
+      "train_wells": [
+        571,
+        572,
+        570,
+        571,
+        569
+      ],
+      "valid_drugs": [
+        23,
+        24,
+        24,
+        24,
+        23
+      ],
+      "valid_wells": [
+        188,
+        191,
+        190,
+        190,
+        192
+      ]
+    },
+    "genes": 18164,
+    "tahoe": {
+      "all_zero_measured_genes": 17,
+      "cell_lines": 50,
+      "control_groups": 649,
+      "control_members": 1294,
+      "controls": 1400,
+      "drug_keys": 354,
+      "groups_with_zero_qc_pass": 51,
+      "has_structure_false": 1700,
+      "matched_control_source": "handoff",
+      "pairs": 60861,
+      "pairs_skipped_no_control": 4757,
+      "plates": 14,
+      "qc_fail_controls": 106,
+      "qc_fail_rows": 6203,
+      "qc_fail_treated": 6097,
+      "rows": 67018,
+      "split_train_rows": 57422,
+      "split_valid_rows": 9596,
+      "time_source": "literature:10.1016/j.cell.2026.08.035",
+      "treated": 65618,
+      "unmeasured_genes": 1,
+      "usable_train": 50520,
+      "usable_treated": 59044,
+      "usable_valid": 8524,
+      "usable_without_pair": 0,
+      "valid_conditions": 8896
+    },
+    "tahoe_unmeasured_genes": 1
+  },
+  "gene_axis": {
+    "identity_columns": [
+      "hgnc_id",
+      "entrez_id",
+      "ensembl_id",
+      "match_type"
+    ],
+    "measurement_mask": "var.gene_measured is PER SOURCE: all True in cm_transfer.h5ad; False only for FAM153B in tahoe_transfer.h5ad.  It is gene-space membership, never a non-zero-count test (18 all-zero Tahoe columns are measured).",
+    "n_genes": 18164,
+    "order": "stage2/02_cm_data/output/corpus/v1/genes.csv (HGNC symbol, frozen order)"
+  },
+  "handoff_checks": {
+    "cm_handoff_pass_rows_all_wells": 4021,
+    "cm_kept_rows": 3947,
+    "cm_qc": {
+      "fam153b_measured_handoff": true,
+      "handoff_json": "/home/chang/arc/stage2/06_prnet_transfer/06.2_qc/output/handoff.json",
+      "kept_n_handoff": 4021,
+      "routing": {
+        "control_media": "Media is NOT a vehicle control — never merge it into a DMSO pool",
+        "positive_control_et1": "ET-1 at 0.01 uM is a peptide positive control, not a small-molecule treatment; excluded from the training arm",
+        "technical_blank": "no cells; never a control",
+        "treated_compound": "training/scoring arm",
+        "vehicle_control_dmso": "the only vehicle control; source of the consensus pool"
+      },
+      "sha256": "8d0308e8e011bf8b790b01eed091ddfdbe5f49082a69c2577071549b190523f2"
+    },
+    "cm_qc_fail_rows_in_view": 531,
+    "cm_qc_pass_rows_in_view": 3947,
+    "fold_seed": 20261102,
+    "stub": false,
+    "tahoe_qc": {
+      "fam153b_measured_handoff": false,
+      "handoff_json": "/home/chang/arc/stage2/06_prnet_transfer/06.2_qc/output/handoff.json",
+      "kept_n_handoff": 60815,
+      "routing": {
+        "no_structure": "2 drugs have no resolvable structure: dropped by the dose encoder, counted as an input-layer exclusion, not a QC failure",
+        "treated_compound": "training/scoring arm",
+        "vehicle_control_dmso_tf": "vehicle control (exact drug == 'DMSO_TF')"
+      },
+      "sha256": "8d0308e8e011bf8b790b01eed091ddfdbe5f49082a69c2577071549b190523f2"
+    }
+  },
+  "locked_config": {
+    "file": "locked_config.json",
+    "meaning": "the only recipe: model, dose encoding, loss, optimiser, seeds, LR rule, metric, prediction policy, 30-unit policy"
+  },
+  "purpose": "the single frozen two-source 18,164-gene input formal training reads; downstream tickets read these files and never re-derive folds, c* or config",
+  "renames": {},
+  "role_selection": {
+    "expansion_set": "cm obs.expansion_set == True (exclude AND qc_pass) is ticket #11's expansion training arm only; never scored, no fold row",
+    "main_set": "cm obs.main_set == True (include AND qc_pass) is the fold/score population",
+    "tahoe": "tahoe obs.tahoe_usable == True is trainable/evaluable; tahoe_split selects train vs valid; time_h never filters",
+    "uncertain": "never trained, never scored, no fold row"
+  },
+  "schema": "06.3_input/contract/1",
+  "version": "1.0.0"
+}

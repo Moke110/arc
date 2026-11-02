@@ -79,3 +79,12 @@ or a misspelled section before trusting the 48 GB setting.
 
 The pretrain number is the reason the training tickets (#5–#7) are serialised: two
 concurrent 15 GiB trainers would consume the whole VM.
+
+## Measured trap: `anndata.read_h5ad(backed="r")` is not bounded
+
+`backed="r"` keeps `X` lazy but **still materialises every `layers` entry**. Measured on the
+06.3 inputs: 8.1 GB for the 16.2 GB Tahoe view and 12.9 GB for the 25.8 GB CM corpus — the
+symptom is a SIGKILL (exit 137) that looks like an OOM. Use `h5py` header reads plus
+`read_elem`/CSR row slices for metadata and per-row access; ticket #3's
+`contract.read_h5ad_header()` is the pattern, with regression tests that poison
+`anndata.read_h5ad`. The frozen 06.3 output is 16.4 GB on disk; do not load it whole.
