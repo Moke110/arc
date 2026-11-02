@@ -741,7 +741,9 @@ def _run_axis_check(
 def run_profile(ns: argparse.Namespace) -> int:
     out_dir: Path = ns.out_dir
     profile_dir = out_dir / "profile"
-    out_root: Path = out_dir / "runs"
+    # Profile runs live beside the profile evidence, never in the formal
+    # ``output/runs/`` tree: that tree must contain exactly the 45 matrix units.
+    out_root: Path = profile_dir / "runs"
     status_csv = profile_dir / "queue_status.csv"
     profile_dir.mkdir(parents=True, exist_ok=True)
 

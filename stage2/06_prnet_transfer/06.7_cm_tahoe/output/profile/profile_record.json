@@ -80,38 +80,38 @@
       "source_path": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt",
       "structure_matches_run": true
     },
-    "manifest": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-3_tahoe/manifest.json",
-    "manifest_sha256": "0d20096b2c9d3ed22ad7f4d965b561d3ef22301f233604859af429e533fbd98d",
-    "peak_rss_mb": 1333.93359375,
-    "run_dir": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-3_tahoe",
+    "manifest": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe/manifest.json",
+    "manifest_sha256": "953a70bfb07693cec6c5baac93ed56b0fb9a475e9372bf4ad6cc3183069fe5bb",
+    "peak_rss_mb": 1334.7109375,
+    "run_dir": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe",
     "status": "completed",
     "stop_reason": "max_epochs",
     "timings": {
-      "finished_utc": "2026-11-02T08:02:53+00:00",
+      "finished_utc": "2026-11-02T08:09:46+00:00",
       "per_epoch_train_s": [
-        6.054633855999782,
-        0.030908366999938153
+        6.017583978999937,
+        0.028387391000251228
       ],
       "per_epoch_valid_forward_s": [
-        0.0031933170002957922,
-        0.0027577690007092315
+        0.009278941999582457,
+        0.0027582849997997982
       ],
       "per_epoch_valid_gather_s": [
-        0.004251475999808463,
-        0.004039036999529344
+        0.004288459000235889,
+        0.0040825730002325145
       ],
       "per_epoch_valid_metrics_s": [
-        0.402372548999665,
-        0.39705810899977223
+        0.3850366730002861,
+        0.39509893900049065
       ],
       "per_epoch_valid_s": [
-        0.40981734199976927,
-        0.4038549150000108
+        0.39860407400010445,
+        0.40193979700052296
       ],
-      "per_epoch_valid_total_s": 0.8136722569997801,
-      "started_utc": "2026-11-02T08:02:42+00:00",
-      "train_loop_s": 6.08554222299972,
-      "wall_s": 9.303582037000524
+      "per_epoch_valid_total_s": 0.8005438710006274,
+      "started_utc": "2026-11-02T08:09:37+00:00",
+      "train_loop_s": 6.0459713700001885,
+      "wall_s": 9.288330803999997
     }
   },
   "checkpoint_root": "/home/chang/arc/stage2/06_prnet_transfer/06.5_tahoe_pretrain/output/formal/runs",
@@ -140,12 +140,12 @@
     "--scope",
     "systemd-run --user --scope -p MemoryMax=12G -p MemorySwapMax=12G"
   ],
-  "created_utc": "2026-11-02T08:02:53+00:00",
+  "created_utc": "2026-11-02T08:09:46+00:00",
   "data_dir": "/home/chang/arc/stage2/06_prnet_transfer/06.3_input/output",
   "git": {
     "branch": "feat/pt/t07-cmtahoe",
     "dirty": true,
-    "sha": "c1ee5d05981935fb172daed449647f8a4d39b973"
+    "sha": "3a2211ee371cd0bd7faaa58de4e39d586e6fb317"
   },
   "mode": "profile",
   "notes": [
@@ -388,14 +388,14 @@
   },
   "peaks": {
     "errors": [],
-    "gpu_used_mib": 2919.0,
-    "host_process_tree_rss_mib": 2293.1,
-    "host_rss_start_mib": 558.1,
+    "gpu_used_mib": 2880.0,
+    "host_process_tree_rss_mib": 2293.6,
+    "host_rss_start_mib": 557.7,
     "n_samples": 12,
-    "scope_cgroup_memory_current_mib": 1581.9
+    "scope_cgroup_memory_current_mib": 1583.2
   },
   "preflight": {
-    "created_utc": "2026-11-02T08:02:40+00:00",
+    "created_utc": "2026-11-02T08:09:34+00:00",
     "cuda_check": {
       "returncode": 0,
       "stderr": "",
@@ -407,7 +407,7 @@
       "n_gpus": 1,
       "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
       "total_mib": 16376.0,
-      "used_mib": 1984.0
+      "used_mib": 1945.0
     },
     "gpu_memory_attributable": false,
     "gpu_processes": [
@@ -420,7 +420,7 @@
     "heavy_gpu_threshold_mib": 1024.0,
     "host": "DESKTOP-ADOFOQR",
     "max_other_heavy_gpu": 1,
-    "mem_available_gib": 38.26,
+    "mem_available_gib": 38.45,
     "nproc": 8,
     "omp_threads": 2,
     "other_heavy_gpu_processes": [
@@ -472,24 +472,24 @@
     "available": true,
     "config_lines": [],
     "head": [
-      "$ /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.4_pipeline/execution/train.py --stage finetune --out /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-3_tahoe --data-dir /home/chang/arc/stage2/06_prnet_transfer/06.3_input/output --fold 0 --seed 20261021 --lr 0.001 --init pretrained --init-checkpoint /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt --device cuda --hash-cache /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/hash_cache.json --epochs 2 --min-epochs 1 --table-cache /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/input_cache",
-      "2026-11-02 16:02:43,726 INFO ptlib.train: warm start: loaded /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt (sha256 a2c83736cf4f\u2026, config 5ec0002761b5\u2026, epoch 8, run seed 20261021, 14 keys: 11 params + 3 buffers, missing=[] unexpected=[], weights_identical=True)",
-      "2026-11-02 16:02:52,575 INFO ptlib.train: epoch 1/2 | train_nll=9238.704426 | valid_nll=1123.591064 | valid_AUPRC@200=0.080426 | lr=1.00e-03 | train 6.1s | valid 0.4s (gather 0.0s/forward 0.0s/ap 0.4s) | best 0.080426 @1 | stale 0/20",
-      "2026-11-02 16:02:53,236 INFO ptlib.train: epoch 2/2 | train_nll=2326.498748 | valid_nll=481.157684 | valid_AUPRC@200=0.082619 | lr=1.00e-03 | train 0.0s | valid 0.4s (gather 0.0s/forward 0.0s/ap 0.4s) | best 0.082619 @2 | stale 0/20",
-      "2026-11-02 16:02:53,315 INFO ptlib.train: finished finetune: epochs=2 stop=max_epochs best_valid_AUPRC@200=0.082619 wall=9.3s peak_rss=1334 MiB",
+      "$ /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.4_pipeline/execution/train.py --stage finetune --out /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe --data-dir /home/chang/arc/stage2/06_prnet_transfer/06.3_input/output --fold 0 --seed 20261021 --lr 0.001 --init pretrained --init-checkpoint /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt --device cuda --hash-cache /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/hash_cache.json --epochs 2 --min-epochs 1 --table-cache /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/input_cache",
+      "2026-11-02 16:09:38,217 INFO ptlib.train: warm start: loaded /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt (sha256 a2c83736cf4f\u2026, config 5ec0002761b5\u2026, epoch 8, run seed 20261021, 14 keys: 11 params + 3 buffers, missing=[] unexpected=[], weights_identical=True)",
+      "2026-11-02 16:09:45,702 INFO ptlib.train: epoch 1/2 | train_nll=9238.704426 | valid_nll=1123.591064 | valid_AUPRC@200=0.080426 | lr=1.00e-03 | train 6.0s | valid 0.4s (gather 0.0s/forward 0.0s/ap 0.4s) | best 0.080426 @1 | stale 0/20",
+      "2026-11-02 16:09:46,353 INFO ptlib.train: epoch 2/2 | train_nll=2326.498748 | valid_nll=481.157684 | valid_AUPRC@200=0.082619 | lr=1.00e-03 | train 0.0s | valid 0.4s (gather 0.0s/forward 0.0s/ap 0.4s) | best 0.082619 @2 | stale 0/20",
+      "2026-11-02 16:09:46,430 INFO ptlib.train: finished finetune: epochs=2 stop=max_epochs best_valid_AUPRC@200=0.082619 wall=9.3s peak_rss=1335 MiB",
       "{",
-      "  \"run_dir\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-3_tahoe\",",
-      "  \"checkpoint\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/cm_f0_s20261021_lr1e-3_tahoe/checkpoint/model.pt\",",
+      "  \"run_dir\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe\",",
+      "  \"checkpoint\": \"/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/cm_f0_s20261021_lr1e-3_tahoe/checkpoint/model.pt\",",
       "  \"best_valid_auprc\": 0.08261928116652585,",
       "  \"best_epoch\": 2,",
       "  \"epochs_run\": 2,",
       "  \"stop_reason\": \"max_epochs\"",
       "}"
     ],
-    "log": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/runs/queue_logs/cm_f0_s20261021_lr1e-3_tahoe.log",
+    "log": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/runs/queue_logs/cm_f0_s20261021_lr1e-3_tahoe.log",
     "n_lines": 13,
     "warm_start_lines": [
-      "2026-11-02 16:02:43,726 INFO ptlib.train: warm start: loaded /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt (sha256 a2c83736cf4f\u2026, config 5ec0002761b5\u2026, epoch 8, run seed 20261021, 14 keys: 11 params + 3 buffers, missing=[] unexpected=[], weights_identical=True)"
+      "2026-11-02 16:09:38,217 INFO ptlib.train: warm start: loaded /home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/staged_checkpoints/tahoe_seed20261021/checkpoint/model.pt (sha256 a2c83736cf4f\u2026, config 5ec0002761b5\u2026, epoch 8, run seed 20261021, 14 keys: 11 params + 3 buffers, missing=[] unexpected=[], weights_identical=True)"
     ]
   },
   "run": {
@@ -504,7 +504,7 @@
       "units": 1
     },
     "status_csv": "/home/chang/arc-wt/t07-cmtahoe/stage2/06_prnet_transfer/06.7_cm_tahoe/output/profile/queue_status.csv",
-    "wall_s": 11.642
+    "wall_s": 11.559
   },
   "schema": "cm_tahoe.profile/v1",
   "unit": {

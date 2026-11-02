@@ -122,7 +122,9 @@ The first available formal checkpoint (seed 20261021, best epoch 8 at that momen
 **snapshotted byte-identically** (`_stage_checkpoint`: source/copy sha256 equal, so the live
 sweep's next `os.replace` cannot tear the read), verified by `check_init.py` as its own
 process, and used for one unit (`cm_f0_s20261021_lr1e-3_tahoe`) with a 2-epoch bounded
-budget through the same queue path as the matrix (`--workers 2`):
+budget through the same queue path as the matrix (`--workers 2`).  Profile runs live
+under `output/profile/runs/`, so the formal `output/runs/` tree holds exactly the 45
+matrix units:
 
 | quantity | measured |
 |---|---|
@@ -232,5 +234,5 @@ Makefile, `run.sh`, 65 tests), `output/README.md`, and the force-added
 `output/profile/profile_record.json` (bounded wrapper evidence).  The full matrix record
 (`output/units.json`, `output/record/*`, `output/init/*`) is force-added by the Lead-run
 matrix step.  Local/gitignored: `*.pt` weights under `output/runs/` and
-`output/profile/staged_checkpoints/`, `output/input_cache/`, `output/hash_cache.json`,
+`output/profile/staged_checkpoints/`, `output/profile/runs/`, `output/input_cache/`, `output/hash_cache.json`,
 `output/queue_status.csv`, `output/logs/`, `output/_resume_probe/`, `output/profile/logs/`.
