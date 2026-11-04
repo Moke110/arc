@@ -30,6 +30,8 @@ class SirenkoSource(unittest.TestCase):
                              ['24hr_beat_count!F120', '24hr_beat_count!F121'])
             self.assertEqual({record['condition']['condition_vehicle_percent']
                               for record in bundle['records']}, {.1, .3})
+            self.assertEqual({record['dose'] for record in bundle['records']},
+                             {3e-7, 3e-6, 1e-5, 3e-5})
             release = Path(temp)/'release'
             built = subprocess.run([sys.executable, str(EXECUTION/'corpus.py'), 'build',
                                     '--input', str(output), '--output', str(release)],

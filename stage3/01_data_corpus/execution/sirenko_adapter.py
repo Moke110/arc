@@ -2,6 +2,7 @@
 """Extract the full frozen Sirenko 24 h beat-count workbook offline."""
 import argparse
 from collections import Counter
+from decimal import Decimal
 import hashlib
 import json
 import math
@@ -89,7 +90,7 @@ def extract(root):
                 },
                 'phenotype': 'beat_count', 'assay_method': 'FLIPR_Calcium5',
                 'batch': None,
-                'drug': None, 'dose': dose * 1e-6, 'original_dose': dose,
+                'drug': None, 'dose': float(Decimal(str(dose))*Decimal('1e-6')), 'original_dose': dose,
                 'original_dose_unit': 'uM', 'dose_basis': 'source_administered_form',
                 'identity_evidence': identity['identity_evidence'],
                 'dose_evidence': 'article.xml P18 four24h concentrations; source dose headers; uM*1e-6 mol/L; parent basis unresolved',
