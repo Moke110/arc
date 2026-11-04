@@ -43,18 +43,11 @@ COMPOUND_ANNOTATION_PATH = ANNOTATION_LOCAL / "cm_compound_annotation.csv"
 # when the Stage 2 code is committed.
 SOURCE_COMMIT = "c921f7d"
 
-# Legacy identity-table helpers (`cmdata.corpus`): corpus/v1 held the gene set,
-# the drug set, the exclusion report and the per-source gene sets, and no
-# matrix.  Since ADR 0033 those tables live read-only in
+# The retired v1 identity tables (corpus/v1: gene set, drug set, exclusion
+# report, per-source gene sets) live read-only in
 # `stage2/_frozen/cm-data-v1/corpus/v1/`; ticket #16 re-exports their content
-# under `output/corpus/v2/tables/`.  These paths are kept for the helper
-# functions only; no build reads or writes them.
-CORPUS_VERSION = "v1"
-CORPUS_DIR = OUTPUT_DIR / "corpus" / CORPUS_VERSION
-GENES_CSV = CORPUS_DIR / "genes.csv"
-COMPOUNDS_CSV = CORPUS_DIR / "compounds.csv"
-EXCLUSIONS_CSV = CORPUS_DIR / "excluded_compounds.csv"
-CORPUS_README = CORPUS_DIR / "README.md"
+# under `output/corpus/v2/tables/`.  No build reads or writes the v1 paths, and
+# the v1 writer that owned them was deleted with ADR 0033.
 
 # ---------------------------------------------------------------------------
 # v2 corpus artifacts (ADR 0033; ticket #15 writes the four CM h5ads)
@@ -158,11 +151,15 @@ TEMP_ENV_DIR = PERT_DATA / "GSE262419" / "source"          # GSE262419
 
 SOURCE_DATASETS = ["dtoxs_primary", "dtoxs_ipsc", "screen_ctox", "temp_env"]
 
-# Stage 2 dataset id -> GEO accession.  This is the single place where the
+# Stage 2 dataset id -> source accession.  This is the single place where the
 # memorable name and the accession meet; the raw folder, the read-only Stage 1
-# baseline and the papers keep the accession.  Documented in README.md,
-# corpus/v1/README.md and ADR 0026.
+# baseline and the papers keep the accession.  The DToxS arms carry their own
+# deposit ids: the PromoCell chromatin/transcriptome package (LINCS-LDS-1593,
+# well-level Level-3) and the iPSC GEO series (GSE217423).  Documented in
+# README.md, output/corpus/v2/README.md and ADR 0026/0033.
 SOURCE_ACCESSIONS = {
+    "dtoxs_primary": "LINCS-LDS-1593",  # DToxS PromoCell primary-CM deposit
+    "dtoxs_ipsc": "GSE217423",          # DToxS iPSC-CM panel
     "screen_ctox": "GSE244740",   # ScreenSeq hiPSC-CM, drug cardiotoxicity panel
     "temp_env": "GSE262419",      # TempO-Seq hiPSC-CM, environmental chemical panel
 }
@@ -176,7 +173,7 @@ RAW_DIRS = {
 
 
 def source_accession(dataset_id: str) -> str:
-    """GEO accession for a Stage 2 dataset id, or "" for a DToxS panel."""
+    """Source accession (GEO series or LINCS deposit) for a Stage 2 dataset id."""
     return SOURCE_ACCESSIONS.get(dataset_id, "")
 
 

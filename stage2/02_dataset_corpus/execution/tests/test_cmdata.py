@@ -18,6 +18,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from cmdata import paths  # noqa: E402
+from cmdata import tables  # noqa: E402
 from cmdata.annotation import CompoundAnnotation, HgncIndex  # noqa: E402
 from cmdata.drugs import CompoundError, _validate_key, canonical_smiles  # noqa: E402
 from cmdata.genes import (compute_universe, map_probe_space,  # noqa: E402
@@ -185,7 +186,17 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(list(paths.CORPUS_TO_SOURCE), paths.CORPUS_IDS)
         self.assertEqual(paths.source_accession("screen_ctox"), "GSE244740")
         self.assertEqual(paths.source_accession("temp_env"), "GSE262419")
-        self.assertEqual(paths.source_accession("dtoxs_primary"), "")
+        self.assertEqual(paths.source_accession("dtoxs_primary"),
+                         "LINCS-LDS-1593")
+        self.assertEqual(paths.source_accession("dtoxs_ipsc"), "GSE217423")
+
+    def test_provenance_accessions_match_the_table_layer(self):
+        # The build record and the coverage README read different maps; a
+        # missing entry here is how `accession: ""` reached the #15 record.
+        for corpus_id, source_id in paths.CORPUS_TO_SOURCE.items():
+            self.assertEqual(tables.CORPUS_PROVENANCE[corpus_id]["accession"],
+                             paths.source_accession(source_id),
+                             f"{corpus_id}: provenance maps disagree")
 
     def test_raw_folders_keep_accession(self):
         # ADR 0030: one directory per GEO source item, named for the accession;
