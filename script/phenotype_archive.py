@@ -11,8 +11,15 @@ import zipfile
 import io
 
 
-def validate(name, content, pmcid):
+def validate(name, content, pmcid, html_markers=None):
     """Reject download/error documents before originals enter the archive."""
+    if name.endswith('.html'):
+        text = content.decode('utf-8')
+        required = (html_markers or {}).get(name, [])
+        if not required or not all(marker in text for marker in required):
+            raise ValueError('HTML lacks expected article identity: ' + name)
+        if any(marker in text.lower() for marker in ['preparing to download', 'recaptcha', '<title>access denied', '<title>error']):
+            raise ValueError('HTML challenge/error document: ' + name)
     if name.endswith('.xls') and not content.startswith(bytes.fromhex('d0cf11e0a1b11ae1')):
         raise ValueError('not a real OLE XLS: ' + name)
     if name.endswith('.xlsx'):
@@ -31,6 +38,8 @@ def validate(name, content, pmcid):
 
 def verify(item, dataset_id, pmcid, assets):
     """Check source-only inventory, bytes, formats and frozen provenance offline."""
+    log = json.loads((item/'author_log.json').read_text())
+    html_markers = log.get('validation', {}).get('expected_html_markers', {})
     rows = (item/'manifest.sha256').read_text().splitlines()
     if not rows:
         raise ValueError('empty manifest')
@@ -42,17 +51,29 @@ def verify(item, dataset_id, pmcid, assets):
         content = (item/'source'/name).read_bytes()
         if hashlib.sha256(content).hexdigest() != digest:
             raise ValueError('hash mismatch: ' + name)
-        validate(name, content, pmcid)
+        validate(name, content, pmcid, html_markers)
         seen.add(name)
     if seen != set(assets) or {p.name for p in (item/'source').iterdir()} != seen:
         raise ValueError('source inventory differs from manifest')
-    log = json.loads((item/'author_log.json').read_text())
     if log['dataset_id'] != dataset_id or {r['path'] for r in log['sources']} != seen:
         raise ValueError('author log source identity mismatch')
     for row in log['sources']:
         content = (item/'source'/row['path']).read_bytes()
         if row['sha256'] != hashlib.sha256(content).hexdigest() or row['bytes'] != len(content) or row['url'] != assets[row['path']]:
             raise ValueError('author log source provenance mismatch')
+    declared = set()
+    for row in log.get('local_additions', []):
+        relative = Path(row['path'])
+        path = item / relative
+        if relative.is_absolute() or relative.parts[0] != 'local' or '..' in relative.parts or row['path'] in declared:
+            raise ValueError('invalid local-addition path')
+        content = path.read_bytes()
+        if hashlib.sha256(content).hexdigest() != row['sha256'] or len(content) != row['bytes'] or not row.get('origin'):
+            raise ValueError('local-addition provenance mismatch: ' + row['path'])
+        declared.add(row['path'])
+    existing = {str(path.relative_to(item)) for path in (item/'local').rglob('*') if path.is_file()}
+    if declared != existing:
+        raise ValueError('undeclared local additions')
     print('PASS: ' + item.name + ' original assets, formats, hashes and provenance')
 
 
@@ -74,7 +95,7 @@ def acquire(item, dataset_id, pmcid, assets, provenance):
         if Path(name).name != name:
             raise ValueError('source asset names must be basenames')
         dest = source / name
-        if dest.exists():
+        if dest.exists() and previous is not None:
             content = dest.read_bytes()
             media = next((r['media_type'] for r in previous['sources'] if r['path'] == name), 'unknown') if previous else 'unknown'
         else:
@@ -85,10 +106,12 @@ def acquire(item, dataset_id, pmcid, assets, provenance):
                 media = next((line.split(':',1)[1].strip() for line in reversed(headers.read_text().splitlines()) if line.lower().startswith('content-type:')), 'unknown')
         if len(content) > 10_000_000:
             raise ValueError('unexpected asset size')
-        validate(name, content, pmcid)
+        validate(name, content, pmcid, provenance.get('validation', {}).get('expected_html_markers', {}))
         digest = hashlib.sha256(content).hexdigest()
         if name in expected and digest != expected[name]:
             raise ValueError('pinned source hash differs: ' + name)
+        if dest.exists() and dest.read_bytes() != content:
+            raise ValueError('existing unrecorded original differs: ' + name)
         if not dest.exists():
             fd, temp = tempfile.mkstemp(dir=source)
             with os.fdopen(fd, 'wb') as handle:
