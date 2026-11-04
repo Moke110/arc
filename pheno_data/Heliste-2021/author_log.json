@@ -1,0 +1,65 @@
+{
+  "upstream_identifier": "10.1038/s41598-021-96033-z",
+  "version": "PMC8371130.1; supplementary datasets S1/S2/S3",
+  "license": {
+    "status": "CC BY 4.0, third-party exceptions as article specifies",
+    "evidence": "PMC metadata license_code=CC BY and article license text"
+  },
+  "validation": {
+    "status": "formats_and_hashes_validated",
+    "scope": "Dataset S1 drug CTG; S2 shRNA is not included; S3 selected hit names",
+    "ancillary_not_archived": {
+      "asset": "41598_2021_96033_MOESM3_ESM.xlsx",
+      "meaning": "Dataset S2 shRNA, not drug measurements",
+      "reason": "two bounded official refetch attempts timed out at 30 seconds; not required for CTG drug extraction"
+    }
+  },
+  "dataset_id": "heliste_2021",
+  "retrieved_at": "2026-11-04T13:09:27.763289+00:00",
+  "sources": [
+    {
+      "path": "PMC8371130.1.xml",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8371130.1/PMC8371130.1.xml",
+      "media_type": "binary/octet-stream",
+      "bytes": 152927,
+      "sha256": "c384bee618cceedd60a96db5776f30b2d2b93afb1cf93ce767beae0f017250ad"
+    },
+    {
+      "path": "PMC8371130.1.json",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8371130.1/PMC8371130.1.json",
+      "media_type": "binary/octet-stream",
+      "bytes": 1717,
+      "sha256": "981f8541014dd5403b9481827abc74bf03bbe477dd147145ee663de225522edc"
+    },
+    {
+      "path": "41598_2021_96033_MOESM1_ESM.pdf",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8371130.1/41598_2021_96033_MOESM1_ESM.pdf",
+      "media_type": "binary/octet-stream",
+      "bytes": 790037,
+      "sha256": "f2e059ae55611c3def411b26430cdb9b733b39c23d0e39707f1e44b4e25a6daf"
+    },
+    {
+      "path": "41598_2021_96033_MOESM2_ESM.xlsx",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8371130.1/41598_2021_96033_MOESM2_ESM.xlsx",
+      "media_type": "binary/octet-stream",
+      "bytes": 101938,
+      "sha256": "e3bce1a6b017d1d71a2033e89986b462a294fdf576bfeff16f9b75fe60c73aac"
+    },
+    {
+      "path": "41598_2021_96033_MOESM4_ESM.xlsx",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8371130.1/41598_2021_96033_MOESM4_ESM.xlsx",
+      "media_type": "binary/octet-stream",
+      "bytes": 10205,
+      "sha256": "181119aaec3d8221317fc150a34ae62d8b436a60d4ddc547e33a0f1387beb2e3"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/assessment_v1.json",
+      "origin": "Independent openpyxl and OOXML audit of source DatasetS1; article Sec7 timing/control review; code heliste_adapter.py",
+      "version": "v1",
+      "bytes": 1505,
+      "sha256": "86666ae49578a4f7ddf7fcadd01dc0dd01453792a3b07d62fdd67bd6a854d9e9"
+    }
+  ]
+}

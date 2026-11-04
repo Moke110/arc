@@ -17,3 +17,16 @@ locally downloaded bytes are not redistributed in git.
 
 The consumer is `stage3/01_data_corpus/`; the frozen statistical contract is in
 [the formal corpus design](../docs/research/stage3-formal-corpus-design.md).
+
+Heliste is archived with `python pheno_data/Heliste-2021/script/download.py` and
+verified offline by `bash pheno_data/Heliste-2021/script/verify.sh`. Dataset S1
+contains 689 unique labels and 2,756 supplied relative CTG values per oxygen
+condition; Dataset S3 has 48 selected hit labels. Dataset S2 is shRNA data and
+is excluded from the chemical archive after bounded acquisition timeouts.
+The source assessment is frozen in its declared `local/assessment_v1.json`.
+Unknown normalization denominators, independent replicate units and canonical
+identities produce explicit scientific exclusions. HR timing is 24 h
+pretreatment, 48 h hypoxia and 24 h reoxygenation, with drug persistence unknown.
+The parallel normoxia experiment has about 96 h elapsed time. The adapter is
+`stage3/01_data_corpus/execution/heliste_adapter.py --output BUNDLE.json`; it retains
+all 5,512 values and two recognized CTG partitions without inventing labels.

@@ -1,0 +1,49 @@
+{
+  "ancillary_not_archived": "Dataset S2 shRNA XLSX had two30s official-download timeouts; article/supplement identify it and it is not used as drug data.",
+  "canonical_drugs_resolved": 0,
+  "corpus_expected_status": "empty-after-QC",
+  "dataset_id": "heliste_2021",
+  "dataset_s2": "shRNA; excluded from drug measurements",
+  "dataset_s3_hit_labels": 48,
+  "distinct_exact_labels": 689,
+  "independent_ooxml_column_counts": {
+    "B": 689,
+    "C": 689,
+    "D": 689,
+    "E": 689,
+    "F": 689,
+    "G": 689,
+    "H": 689,
+    "I": 689
+  },
+  "license_attribution": "Heliste et al. Scientific Reports 2021; DOI10.1038/s41598-021-96033-z; NLM PMC8371130.1. Derived assessment from unchanged originals.",
+  "methods_evidence": "source/PMC8371130.1.xml#Sec7 Drug library screening",
+  "model_training": "not run",
+  "normalization_denominator": "unresolved",
+  "numeric_values_by_column": {
+    "CTRL_1000nM": 689,
+    "CTRL_200nM": 689,
+    "CTRL_40nM": 689,
+    "CTRL_5000nM": 689,
+    "HYP_1000nM": 689,
+    "HYP_200nM": 689,
+    "HYP_40nM": 689,
+    "HYP_5000nM": 689
+  },
+  "numeric_values_by_oxygen": {
+    "CTRL": 2756,
+    "HYP": 2756
+  },
+  "source_labels": 689,
+  "source_units": "relative viability, not raw RLU",
+  "table": "Supplementary Dataset S1",
+  "timing_assessment": {
+    "HR_pretreatment_h": 24,
+    "drug_persistence": "unknown",
+    "elapsed_h": 96,
+    "hypoxia_h": 48,
+    "parallel_normoxia_exposure_h": null,
+    "reoxygenation_h": 24
+  },
+  "view500_assessment": "not run"
+}
