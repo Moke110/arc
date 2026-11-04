@@ -20,6 +20,7 @@ class HelisteWorkflow(unittest.TestCase):
             self.assertEqual(audit['numeric_values_by_oxygen'],{'CTRL':2756,'HYP':2756})
             self.assertEqual(audit['dataset_s3_hit_labels'],48)
             self.assertEqual(len(data['records']),5512)
+            self.assertEqual({r['dose'] for r in data['records']},{4e-8,2e-7,1e-6,5e-6})
             self.assertEqual({r['phenotype'] for r in data['records']},{'ctg_atp_viability'})
             self.assertEqual({m['representation'] for r in data['records'] for m in r['measurements']},{'normalized_only'})
             subprocess.run([sys.executable,str(EXECUTION/'corpus.py'),'build','--input',str(bundle),'--output',str(release)],check=True)

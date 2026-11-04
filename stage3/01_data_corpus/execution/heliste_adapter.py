@@ -1,5 +1,6 @@
 """Heliste Dataset S1: preserve relative CTG values without inventing controls."""
 from collections import Counter
+from decimal import Decimal
 from pathlib import Path
 import hashlib
 import json
@@ -64,7 +65,7 @@ def build_bundle(root):
             records.append({
                 'comparison_id':comparison,'source':'heliste_2021','condition':condition,
                 'phenotype':'ctg_atp_viability','assay_method':'CTG','batch':'unresolved:heliste_2021:S1',
-                'drug':None,'administered_drug_label':row[0], 'dose':int(dose[:-2])*1e-9,
+                'drug':None,'administered_drug_label':row[0], 'dose':float(Decimal(dose[:-2])*Decimal('1e-9')),
                 'dose_original':int(dose[:-2]),'dose_original_unit':'nM',
                 'identity_evidence':'Dataset S1 drug label only; no chemical identifiers; aliases, salts and active parent unresolved',
                 'dose_evidence':f'Dataset S1 column {header}; canonical mol/L = nM * 1e-9',
