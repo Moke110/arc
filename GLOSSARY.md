@@ -33,6 +33,15 @@ _Avoid_: independent sample (without a counting definition)
 A drug–readout observation that meets the declared experimental-condition, identity, and measurement-evidence criteria of a Stage 3 counting stratum. Qualification for counting does not by itself establish a reliable direction label for training.
 _Avoid_: training sample (when only counting eligibility is established)
 
+**Stage 3 drug identity**:
+The evidence-resolved active parent of a single pharmacological intervention, retaining its known stereochemistry. The administered salt, hydrate, or other chemical form remains separately described; an alias or a different salt does not by itself create another drug.
+
+**Phenotype counting stratum**:
+A declared comparable experimental target with one readout, biological model, injury and dosing protocol, vehicle profile, and reference meaning. Exact doses and permitted exposure times vary within it; study, donor, plate, and well identities describe evidence rather than additional drug–readout combinations.
+
+**Phenotype combination**:
+One drug under one exact experimental condition measured for one readout within a phenotype counting stratum. Replicate measurements and independent studies of the same combination add evidence without adding another combination.
+
 **Readout direction**:
 An increase, no change, or decrease in one measured phenotype readout relative to its specified control. The direction describes the readout itself; whether that direction implies benefit depends on the readout and condition.
 _Avoid_: efficacy label (when only a measurement direction is known)
