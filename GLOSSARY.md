@@ -29,6 +29,10 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 A drug-associated measurement of one cardiomyocyte readout under a documented experimental condition, with its experimental source and reference control retained. Multiple doses, times, cell models, and repeats must remain distinguishable.
 _Avoid_: independent sample (without a counting definition)
 
+**Qualified phenotype observation**:
+A drug–readout observation that meets the declared experimental-condition, identity, and measurement-evidence criteria of a Stage 3 counting stratum. Qualification for counting does not by itself establish a reliable direction label for training.
+_Avoid_: training sample (when only counting eligibility is established)
+
 **Readout direction**:
 An increase, no change, or decrease in one measured phenotype readout relative to its specified control. The direction describes the readout itself; whether that direction implies benefit depends on the readout and condition.
 _Avoid_: efficacy label (when only a measurement direction is known)

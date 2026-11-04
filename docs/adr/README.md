@@ -11,7 +11,7 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-The index covers every record in the directory, 0001–0034 (33 files; 0023 is the
+The index covers every record in the directory, 0001–0035 (34 files; 0023 is the
 gap). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033.
 
@@ -50,3 +50,4 @@ amended by 0033.
 | [0032](0032-prnet-formal-transfer.md) | PRnet formal transfer: paired Tahoe-pretrained vs random-init CM study |
 | [0033](0033-stage2-dataset-corpus.md) | Stage 2 dataset corpus — native-axis corpora, views downstream, 04 folded into 02 |
 | [0034](0034-stage3-phenotype-data-boundary.md) | Stage 3 starts with drug–phenotype data; predicted transcriptomes remain outside the first data-planning effort |
+| [0035](0035-stage3-stratified-phenotype-curation.md) | Stage 3 curates separate experimental strata and distinguishes retention, qualified counting, and label readiness |
