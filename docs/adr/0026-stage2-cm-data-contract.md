@@ -1,6 +1,6 @@
 # Stage 2 CM data — frozen corpus and filtered views
 
-**Status:** accepted (2026-10-20)
+**Status:** accepted (2026-10-20); amended by [ADR 0033](0033-stage2-dataset-corpus.md) (2026-11-04)
 
 Stage 2 needs cardiomyocyte perturbation data for model adaptation, but Stage 1's
 `Union finetune data` is unusable for it: 978 landmarks, per-plate quantile
@@ -83,3 +83,21 @@ intersection drops ~12k unmapped `dtoxs` identifiers and ~1.4k TempO-Seq genes
 that are not shared; a future model needing them must rebuild with a new corpus
 version, not silently widen a view. Stage 1 artifacts remain untouched and serve only as
 the well-set regression baseline for QA.
+
+**Update (2026-11-04) — corpus layer superseded in part.** ADR 0033 folds this
+step into `stage2/02_dataset_corpus/`. What changes here: the corpus now carries
+matrices, on each source's **native** gene axis, so decision 1's four-source
+intersection survives as the **CM gene axis** (`genes.csv`, the projection target
+for a benchmark or CM-model view) rather than as a corpus universe; decision 6
+("the corpus is frozen without matrices") is retired; `datasets-1/` and its five
+views are no longer produced by a data step — they belong to
+`03_models_cmbench/` (frozen, to be rebuilt when the benchmark is redone), with
+the 2026-10 build preserved read-only as `stage2/_frozen/cm-data-v1/`; and the
+short ids `screen_ctox`/`temp_env` become `sctox`/`tenv`, with `dtoxs_cm`
+splitting back into `dtoxs_primary` + `dtoxs_ipsc`. What stands: raw-count `X`
+with one `log1p_cp10k` layer (decision 2), controls as rows with
+`control_group = dataset::plate` and vehicle (3), the desalted-parent-InChIKey
+drug identity and the structure-beats-name rule (4), the three pharmacology
+tiers as rules rather than pre-applied filters (5), and the manual-supplement
+boundary on the curated panels. The v1 gene/drug universes (18,164 symbols,
+525 drug keys) are unchanged.

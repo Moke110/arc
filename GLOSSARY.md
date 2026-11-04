@@ -192,23 +192,39 @@ An output permitted only to prove that a model runs, not to support a Stage 2 cl
 **Selection stage**:
 The deferred Stage 2 stage after setup: choose which model(s) to adapt to CM data and define the evaluation. Its metric, folds, and gene space are not fixed by the setup plan.
 
-### Stage 2 CM data
+### Stage 2 dataset corpus
 
-**CM perturbation corpus**:
-The frozen gene set and drug set that every Stage 2 CM dataset bundle derives from (`stage2/02_cm_data/output/corpus/v1/`); it holds no expression matrices. The gene set is the four-source intersection named by latest HGNC symbol; the drug set is every structure-resolvable small molecule, unfiltered by pharmacology.
-_Avoid_: union finetune data, finetune corpus, training set
+**Dataset corpus**:
+The information-maximal h5ad substrate between a raw downloaded dataset and a model's training input: one file per source dataset, raw counts in `X`, the source's **native** gene axis, every raw well including vehicle controls and technical blanks, and no model-facing filter, no integer encoding and no Δ. Lives in `stage2/02_dataset_corpus/output/corpus/<version>/`; the five corpora are `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv` and `tahoe`.
+_Avoid_: CM perturbation corpus (retired name for the matrix-free gene/drug universe), union finetune data, finetune corpus, training set, dataset bundle
 
-**Dataset bundle**:
-One numbered build output under `stage2/02_cm_data/output/datasets-<n>/`: a set of h5ad views plus its manifest, gene crosswalk, compound table, and QA report.
-_Avoid_: dataset version, output, export
+**Corpus coverage**:
+The README record of what a corpus contains, as five counts: distinct cell lines, distinct chemicals, distinct doses, distinct times, and distinct `(cell line, chemical, dose)` combinations at that corpus's own time point; vehicle controls and technical blanks are counted separately and never as chemicals.
+_Avoid_: corpus stats, dataset summary
+
+**CM gene axis**:
+The frozen 18,164-symbol four-source intersection named by latest HGNC symbol — the shared axis a CM benchmark or CM-model view projects onto, not a corpus gene universe (each corpus keeps its source's native axis).
+_Avoid_: corpus gene set, CM universe
+
+**Dataset id**:
+The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv`, `tahoe` — carried in each h5ad's `dataset_id` column. The GEO accession or atlas name stays the provenance anchor on the raw folder; historical records that predate the 2026-11 rename keep `screen_ctox`, `temp_env` and `dtoxs_cm`.
+_Avoid_: source name, dataset name, accession
 
 **View**:
-A single h5ad inside a dataset bundle — the corpus filtered by exactly one rule (for example one pharmacology tier), value-identical to the other views on the rows it retains.
-_Avoid_: subset, variant, dataset
+A derived, model-facing h5ad that a consuming step builds from one or more corpora (one pharmacology tier, or a projection onto the CM gene axis); it is reproducible and disposable, and it is owned by the consumer that defines its rule — the corpus step never ships one.
+_Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
-A projection of a frozen corpus onto another corpus's gene axis and column conventions, so that a model pretrained on the source can be adapted to the target without a gene-space remap. It is distinguished from the corpus itself — which freezes identity, not projections — and from a `datasets-<n>` bundle, which is built from the CM corpus and carries a per-view membership: a pretrain view belongs to no numbered bundle build, carries no membership, and comes from a corpus other than the CM corpus. A view is derived, reproducible and disposable; the corpus is not. It is schema-isomorphic, not layout-isomorphic: what a consumer asserts about shape, genes, columns and value conventions matches; how the values are stored need not.
-_Avoid_: pretrain corpus (for a view — the corpus is the source, never the projection), pretrain dataset, dataset bundle (for a view), projection (unqualified)
+A view that projects one corpus's gene axis and column conventions onto another corpus's (today: `tahoe` onto the CM gene axis), so a model pretrained on the source can be adapted to the target without a gene-space remap. Produced by the pretraining step that consumes it (`stage2/05_prnet_pretrain/`), not by the corpus step.
+_Avoid_: pretrain corpus (for a view — the corpus is the source, never the projection), pretrain dataset, projection (unqualified)
+
+**Dataset bundle** (retired 2026-11-04):
+The former numbered view build under `stage2/02_cm_data/output/datasets-<n>/`; replaced by the dataset corpus plus consumer-owned views (ADR 0033).
+_Avoid_: dataset version, output, export
+
+**Frozen CM evidence (v1)**:
+The archived five 18,164-gene CM views of the retired bundle, kept read-only because a frozen benchmark and a concluded transfer study name them as input evidence; nothing new is built from it.
+_Avoid_: legacy bundle, old views
 
 **Pharmacology tier**:
 The named compound-inclusion rule of a view: `atc-moa` (ATC or ChEMBL mechanism), `atc-moa-mesh` (plus PubChem MeSH classes), or `all-smiles` (any resolvable small molecule).

@@ -11,8 +11,9 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-The index covers every record in the directory, 0001–0031 (21 + 9 = 30 files; 0023 is the
-gap). Two early records are marked superseded in place.
+The index covers every record in the directory, 0001–0033 (32 files; 0023 is the
+gap). Two early records are marked superseded in place, and 0026 is marked
+amended by 0033.
 
 | # | Decision |
 |---|---|
@@ -40,10 +41,11 @@ gap). Two early records are marked superseded in place.
 | [0022](0022-v2-other-and-limits-analysis.md) | v2 non-numbered `_other` stage + `13_limits` limitations analysis |
 | [0024](0024-stage2-bringup-978-quarantine.md) | Stage 2 bring-up quarantines the 978-landmark PRnet demo |
 | [0025](0025-stage1-stage2-directory-split.md) | Split stage1 and stage2, rename setup, and exclude preprint models |
-| [0026](0026-stage2-cm-data-contract.md) | Stage 2 CM data — frozen corpus and filtered views |
+| [0026](0026-stage2-cm-data-contract.md) | Stage 2 CM data — frozen corpus and filtered views — *amended by 0033* |
 | [0027](0027-stage2-benchmark-contract.md) | Stage 2 whole-transcriptome benchmark contract |
 | [0028](0028-stage2-5k-hvg-benchmark.md) | Stage 2 5,000-gene HVG sensitivity benchmark |
 | [0029](0029-tahoe-pseudobulk-pretrain-corpus.md) | Tahoe-100M enters Stage 2 as a pseudobulk pretrain corpus |
 | [0030](0030-external-data-provenance-and-step-layout.md) | External data provenance and the Stage 2 step layout |
 | [0031](0031-tahoe-cm-schema-view-and-prnet-pretrain.md) | A CM-schema Tahoe pretrain view and the PRnet pretrain bring-up |
 | [0032](0032-prnet-formal-transfer.md) | PRnet formal transfer: paired Tahoe-pretrained vs random-init CM study |
+| [0033](0033-stage2-dataset-corpus.md) | Stage 2 dataset corpus — native-axis corpora, views downstream, 04 folded into 02 |
