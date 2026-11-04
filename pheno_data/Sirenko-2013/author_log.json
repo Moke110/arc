@@ -34,5 +34,20 @@
     "status": "validated_original_formats_and_sha256",
     "table": "Supplemental Table 3, 24hr_beat_count"
   },
-  "local_additions": []
+  "local_additions": [
+    {
+      "path": "local/identities-v1.json",
+      "bytes": 71491,
+      "sha256": "94850618cfd4e44533c9846c6742871bb3cd4cf56f511cda1c6ea03bd2c4da6f",
+      "origin": "Offline extraction of frozen Supplemental Table3 by stage3/01_data_corpus/execution/sirenko_adapter.py; unresolved parents and usage explicitly retained",
+      "version": "v1"
+    },
+    {
+      "path": "local/source-audit-v1.json",
+      "bytes": 1088,
+      "sha256": "a50451dff2407c7c8a8f44ae5f70dcbe3791c6a237b70f68a9363afd25fa6097",
+      "origin": "Offline extraction of frozen Supplemental Table3 by stage3/01_data_corpus/execution/sirenko_adapter.py; unresolved parents and usage explicitly retained",
+      "version": "v1"
+    }
+  ]
 }
