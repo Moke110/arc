@@ -1,6 +1,6 @@
 # Data inventory
 
-> **Measured 2026-10-30T23:01:54+0800 with `du -sb`** (bytes; decimal units, 1 GB = 10^9 B). Re-run `du -sb <path>` to refresh; small drifts come from regenerated caches/logs. The ten measured trees sum to **571,890,327,159 B** (571.9 GB); tracked docs plus small top-level files make the whole repository content ≈572 GB (excluding `.git` and the `.scratch/` workspace).
+> **Measured with `du -sb`** (bytes; decimal units, 1 GB = 10^9 B). The ten top-level trees were measured 2026-10-30T23:01:54+0800; the `stage2/` subtree was re-measured 2026-11-04 after the 02+04 corpus merge, and the Stage 2 rows below carry that later measurement. Re-run `du -sb <path>` to refresh; small drifts come from regenerated caches/logs. The ten measured trees sum to **614,789,001,785 B** (614.8 GB); tracked docs plus small top-level files make the whole repository content ≈615 GB (excluding `.git` and the `.scratch/` workspace).
 >
 > This page is the human index of every large asset deliberately outside version control: where it came from, how big it is, whether it can be rebuilt, and whether it must be backed up. **Machine-readable source of truth** for the external data is each item's `author_log.json` (`sources[]`: origin, version, files, bytes, `tree_sha256`; `local_additions[]`) plus its `manifest.sha256`; `script/verify_all.sh` checks all 27 項 offline (27/27 pass, 2026-10-30, ticket 09). Contract: [ADR 0030](adr/0030-external-data-provenance-and-step-layout.md). A newcomer should read that ADR first, then a category `README.md`, then a step `README.md`.
 
@@ -21,13 +21,13 @@ Three classes of asset live outside version control:
 | `disease_data/` | 7,423,432 | 7.4 MB | 3 項 | source/ ignored; local/deg/ mixed (JSON tracked, CSV ignored) |
 | `drug_emb_model/` | 930,113,535 | 930.1 MB | 2 項 | source/ tracked (code libraries); only `source/models/` + `feature_extract/` ignored |
 | `stage1/` | 22,459,911,402 | 22.5 GB | 5 workflows (v0, v1, v1.1, v2, v3) | code + reports tracked (v0 gitignored); fold outputs ignored |
-| `stage2/` | 90,308,230,462 | 90.3 GB | 4 steps + non-step dirs | docs/scripts/results tracked; output trees and venvs ignored |
+| `stage2/` | 133,206,905,088 | 133.2 GB | 5 steps (04 a gap) + non-step dirs | docs/scripts/results tracked; output trees and venvs ignored |
 | `archived/` | 3,593,246,074 | 3.6 GB | orphaned HG FDA extension | ignored (provenance only) |
 | `reference/` | 1,635,164,057 | 1.6 GB | literature library | ignored |
 | `wet_data/` | 296,458 | 296.5 kB | wet-lab raw data | ignored |
 | `logs/` | 811,271 | 811.3 kB | runtime logs | ignored |
 
-Notes: `stage2/**/output` carries the bulk of Stage 2 (the benchmark units and the Tahoe pseudobulk corpus); `stage1/**/output` is dominated by fold-level predictions/checkpoints; `reference/PDFs` + `reference/_work` dominate the literature library. The 285 external weight/data symlinks were materialized into the repository in ticket 02 — the archive they came from (`/mnt/f/arc-weights`, 40 GB) remains untouched as an offline backup.
+Notes: `stage2/**/output` carries the bulk of Stage 2 (the benchmark units, the corpus h5ads, the 05 CM-schema view and the 06 five-fold input); `stage1/**/output` is dominated by fold-level predictions/checkpoints; `reference/PDFs` + `reference/_work` dominate the literature library. The 285 external weight/data symlinks were materialized into the repository in ticket 02 — the archive they came from (`/mnt/f/arc-weights`, 40 GB) remains untouched as an offline backup.
 
 **Hard-link caveat.** `du -sb` counts a hard-linked inode **once per invocation**. There are 15 hard-linked files across `stage1/xpert-fda-miri-v{1,1.1,3}/input/` (notably the 5.57 GB `all_drugs_unimol_arr.npy`), and the venv trees share many inodes internally. Every row below was measured with its **own** `du -sb <path>` invocation, so per-subtree rows match a single-path `du`; sums of rows can exceed a parent total (the `stage1/` total counts the shared UniMol array once, while three workflow rows each count their own copy).
 
@@ -108,31 +108,48 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — 90.3 GB
+## Stage 2 — 133.2 GB
 
-Every step follows the same layout: tracked code and docs (`AGENTS.md`, `README.md`, `execution/`, human-facing `.png`/`.csv`), with generated payload in `output/`. The benchmark step keeps its two independence-concluded substeps (`03.1_cold_drug_18k/`, `03.2_hvg_sensitivity_5k/`), each with its own `execution/` and `output/`.
+Every step follows the same layout: tracked code and docs (`AGENTS.md`, `README.md`,
+`execution/`, human-facing `.png`/`.csv`), with generated payload in `output/`. There are
+**five live steps** — `01_setup/`, `02_dataset_corpus/`, `03_models_cmbench/`,
+`05_prnet_pretrain/`, `06_prnet_transfer/` — and `04` is a **deliberate gap**: the retired
+Tahoe data step was folded into `02_dataset_corpus/` and the number is not reused (ADR 0033),
+so 05/06 keep theirs. The benchmark step is **frozen**: it reads its inputs read-only from
+`stage2/_frozen/cm-data-v1/` (a temporary bridge, deleted once 03/05/06 are redone) and keeps
+its two independently-concluded substeps (`03.1_cold_drug_18k/`, `03.2_hvg_sensitivity_5k/`),
+each with its own `execution/` and `output/`.
+
+Sizes below are `du -sb` apparent sizes of each whole directory, including the ignored
+`output/` payload, the local-only h5ads and any `.`-directories; each row was measured with
+its own invocation on 2026-11-04 (the other top-level trees in this page retain their
+2026-10-30 measurement).
 
 | tree | `du -sb` bytes | ≈ | what | reconstructible? | backup |
 |---|---:|---:|---|---|---|
-| `stage2/01_setup/` | 6,678,329,171 | 6.7 GB | nine deployed models' run cards + surviving smoke evidence + the biolord `.venv` | yes — rerun the run cards; the `.venv` is rebuilt from `requirements.txt`/lock | no backup needed (execution evidence is tiny; the venv is rebuildable) |
-| `stage2/02_cm_data/` | 880,388,566 | 880.4 MB | frozen CM corpus + the five `datasets-1` h5ad views | yes — rebuild with `execution/build_cm_datasets.py` from the 項 sources (minutes-hours) | no backup needed; rebuild |
-| `stage2/03_models_cmbench/` | 50,525,482,574 | 50.5 GB | executed 60-unit cold-drug benchmark (two substeps: input snapshots, per-unit predictions/checkpoints, result tables) | yes — rerun the harness per unit (GPU-days), but the conclusion tables are tracked | conclusions tracked; optional cold backup of `output/units/` (≈49 GB) if the GPU rerun cost matters |
-| `stage2/04_tahoe_data/` | 30,218,235,101 | 30.2 GB | Tahoe pseudobulk pretrain corpus (`output/pseudobulk/`) | yes — rerun `execution/build_pseudobulk.py` from `pert_data/Tahoe-100M/source/` (hours) | optional cold backup of the 25.8 GB h5ad; source is re-downloadable |
+| `stage2/01_setup/` | 6,678,393,484 | 6.7 GB | nine deployed models' run cards + surviving smoke evidence + the biolord `.venv` | yes — rerun the run cards; the `.venv` is rebuilt from `requirements.txt`/lock | no backup needed (execution evidence is tiny; the venv is rebuildable) |
+| `stage2/02_dataset_corpus/` | 30,737,233,872 | 30.7 GB | five corpus h5ads (`output/corpus/v2/`: `tahoe.h5ad` 25.8 GB + four CM native-axis corpora), seven crosswalk tables + coverage README, build records, per-plate pseudobulk parts (`execution/_parts/`, local) | yes — rebuild the four CM corpora and tables with `execution/build_corpus.py --all` (minutes; ~7.7 GiB peak RSS); `tahoe.h5ad` is the moved pseudobulk artifact, hours to rebuild | no backup needed; the 25.8 GB h5ad is rebuildable from `pert_data/Tahoe-100M/source/` |
+| `stage2/03_models_cmbench/` | 50,525,483,973 | 50.5 GB | executed 60-unit cold-drug benchmark (two substeps: input snapshots, per-unit predictions/checkpoints, result tables), **frozen** | yes — rerun the harness per unit (GPU-days), but the conclusion tables are tracked; inputs are read-only in `_frozen/` | conclusions tracked; optional cold backup of `output/units/` (≈49 GB) if the GPU rerun cost matters |
+| `stage2/05_prnet_pretrain/` | 16,380,056,134 | 16.4 GB | CM-schema Tahoe view (16.32 GB, local-only) + checkpoint + the pretrain run's tracked artifacts; the step owns the view builder too | yes — replay the projection (`execution/build_pretrain_view.py --verify`: reads the corpus parts, writes nothing) and rerun the pretrain (GPU, ~16 min) | no backup needed; view and run are reproducible |
+| `stage2/06_prnet_transfer/` | 25,999,659,408 | 26.0 GB | concluded formal-transfer study: frozen two-source five-fold input (`06.3_input/output/`, 16.4 GB), per-observation QC, 3 Tahoe pretrains × 90 CM candidates, 30-unit evaluation, plus pipeline caches | yes — rerun the study (GPU-days); the frozen records (contracts, manifests, result tables) are tracked | conclusions tracked; optional cold backup of `06.3_input/output/` (16.4 GB) and the candidate payload |
+| `stage2/_frozen/cm-data-v1/` | 880,255,952 | 880.3 MB | **temporary bridge**: the retired v1 CM evidence (five 18,164-gene views + identity tables), read-only while the frozen benchmark and the concluded transfer study name it as input (ADR 0033 §8) | yes in principle — the corpus `--verify` G4 gate reproduces all five views from the v2 corpora; nothing here is regenerated | no backup needed; reconstructible from `02_dataset_corpus` |
 | `stage2/_envs/` | 1,845,080,839 | 1.8 GB | shared per-model benchmark environments (`biolord`/`cmonge` venvs + tracked conda locks) | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
 | `stage2/_archive/` | 160,641,314 | 160.6 MB | superseded `cm_bench_v1` benchmark (tracked) + archived plan | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
-| `stage2/audit/` | 64,435 | 64.4 kB | non-computational audit records (tracked) | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
+| `stage2/audit/` | 88,429 | 88.4 kB | non-computational audit records (tracked) | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
 
 ### Step output trees
 
 | output tree | `du -sb` bytes | ≈ | contents |
 |---|---:|---:|---|
-| `stage2/01_setup/execution/` | 6,678,214,241 | 6.7 GB | run cards + `output/{run.log,meta.json}`; the biolord `.venv` dominates this number |
-| `stage2/02_cm_data/output/` | 880,230,851 | 880.2 MB | `corpus/v1/` (frozen gene/drug sets) + `datasets-1/` (5 h5ad views) |
+| `stage2/01_setup/execution/` | 6,678,278,497 | 6.7 GB | run cards + `output/{run.log,meta.json}`; the biolord `.venv` dominates this number |
+| `stage2/02_dataset_corpus/output/` | 26,323,831,515 | 26.3 GB | `corpus/v2/` five h5ad corpora (25.8 GB `tahoe.h5ad` + four CM) + `tables/` seven CSVs + coverage `README.md` |
 | `stage2/03_models_cmbench/03.1_cold_drug_18k/output/` | 35,684,946,935 | 35.7 GB | `input/` frozen snapshot, `units/` per-unit predictions, `results/` conclusion tables |
 | `stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/output/` | 14,835,847,483 | 14.8 GB | same shape for the HVG 5k fork |
-| `stage2/04_tahoe_data/output/` | 30,218,197,063 | 30.2 GB | `pseudobulk/` corpus (single 25.8 GB h5ad + QA tables/parts) |
+| `stage2/05_prnet_pretrain/output/` | 16,348,533,392 | 16.3 GB | `pretrain_view/` CM-schema view (16.32 GB, local-only) + tracked run records plus the local `checkpoint/` |
+| `stage2/06_prnet_transfer/06.3_input/output/` | 16,427,310,127 | 16.4 GB | the frozen two-source five-fold input: `{cm,tahoe}_transfer.h5ad`, consensus controls/membership, fold tables, contract/manifest |
+| `stage2/06_prnet_transfer/06.4_pipeline/output/` | 4,869,458,560 | 4.9 GB | pipeline data caches for the candidate runs (local; rebuilt by the pipeline) |
 
-Tracked conclusions (force-added in ticket 07, so a clone keeps the answer even without the GPU payload): `03.1`/`03.2` `output/results/{leaderboard,per_drug,fidelity,run_cards}.csv`, `bootstrap.npz` (and `comparison_18k.csv` in 03.2), plus the already-tracked `summary.png`/`summary_table.csv` at each substep root. Each substep's `output/results/LOCAL_ARTIFACTS.md` records the deliberately local evidence (notably the 53 MB `metrics.csv`, with its sha256 and byte count) and the file/byte totals of `output/input/` and `output/units/`.
+Tracked conclusions (force-added in ticket 07, so a clone keeps the answer even without the GPU payload): `03.1`/`03.2` `output/results/{leaderboard,per_drug,fidelity,run_cards}.csv`, `bootstrap.npz` (and `comparison_18k.csv` in 03.2), plus the already-tracked `summary.png`/`summary_table.csv` at each substep root. Each substep's `output/results/LOCAL_ARTIFACTS.md` records the deliberately local evidence (notably the 53 MB `metrics.csv`, with its sha256 and byte count) and the file/byte totals of `output/input/` and `output/units/`. `05`'s five human artifacts and `06`'s contract/manifest/result records are likewise force-added (each step's README lists them).
 
 ## Archived, literature, wet-lab, logs
 
