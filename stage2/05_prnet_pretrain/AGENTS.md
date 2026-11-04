@@ -6,8 +6,10 @@ pretrain run) and `docs/adr/0033-stage2-dataset-corpus.md` (this step owns the
 view). Trains, and owns the CM-schema view it trains on. Never import
 `pert_model/` or `03_models_cmbench/` — both are replicated in-file on purpose.
 
-- `execution/build_pretrain_view.py` — owns the view builder (moved byte-identical
-  from the retired `04_tahoe_data`). Reads `02_dataset_corpus/output/corpus/v2/
+- `execution/build_pretrain_view.py` — owns the view builder (moved from the
+  retired `04_tahoe_data`, then its path constants were repointed at the merged
+  corpus and `--verify` was added; only the view file itself was moved
+  byte-identically). Reads `02_dataset_corpus/output/corpus/v2/
   tahoe.h5ad`, `.../tables/{genes,compounds}.csv` and `02_dataset_corpus/
   execution/_parts/`; writes `output/pretrain_view/`. Flags: `--check` paths,
   `--qa` gates, `--verify` replays the projection and compares the content hash

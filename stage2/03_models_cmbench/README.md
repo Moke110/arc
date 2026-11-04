@@ -41,8 +41,8 @@ human figure and table sit at substep level, per the ADR 0030 step contract.
 The two substeps duplicate the harness **on purpose**: each must be reproducible
 standalone, and each resolves the repository root by walking up to `.git`
 (never by counting directory levels). Their only shared dependencies are the
-CM corpus (`stage2/02_cm_data/output/`) and the per-model environments
-(`stage2/_envs/`).
+frozen CM corpus evidence (`stage2/_frozen/cm-data-v1/`) and the per-model
+environments (`stage2/_envs/`).
 
 ## Reproduce
 

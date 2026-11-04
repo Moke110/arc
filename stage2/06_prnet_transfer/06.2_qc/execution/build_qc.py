@@ -139,7 +139,7 @@ TIME_SOURCES = {
         "source": "temp_env",
         "time_h": 24.0,
         "materialised_from": ("frozen view obs.time_h, which is a hardcoded loader constant "
-                              "(stage2/_frozen/cm-data-v1/execution/cmdata/sources.py), "
+                              "(stage2/02_dataset_corpus/execution/cmdata/sources.py), "
                               "not a GEO field"),
         "basis": {
             "kind": "source_study",

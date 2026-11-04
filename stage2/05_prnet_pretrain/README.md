@@ -12,9 +12,10 @@ evaluation, no comparison against `03_models_cmbench`**. The decision is
 [`.scratch/stage2-05-prnet-pretrain/spec.md`](../../.scratch/stage2-05-prnet-pretrain/spec.md)
 §2). Since the 02+04 merge
 ([ADR 0033](../../docs/adr/0033-stage2-dataset-corpus.md)) this step also **owns**
-the CM-schema view and its builder, both inherited byte-identically from the
-retired `stage2/04_tahoe_data/`; the view's deviations (D0–D3) are documented
-below and mirrored into `output/model_card.md`.
+the CM-schema view (moved byte-identically) and its builder (moved, then
+repointed at the merged corpus and given a `--verify` replay), both inherited
+from the retired `stage2/04_tahoe_data/`; the view's deviations (D0–D3) are
+documented below and mirrored into `output/model_card.md`.
 
 ## Status
 
@@ -85,8 +86,10 @@ step's own view, `stage2/05_prnet_pretrain/output/`, `cuda`, `20261021`.
 
 ## View ownership (since the 02+04 merge)
 
-`execution/build_pretrain_view.py` was moved here byte-identically from the
-retired `stage2/04_tahoe_data/`, and the view itself was **moved, not rebuilt**:
+`execution/build_pretrain_view.py` was moved here from the retired
+`stage2/04_tahoe_data/`; its path constants were then repointed at the merged
+corpus + tables and `--verify` was added, so the builder is **not** a
+byte-identical move. The view file itself was **moved, not rebuilt**:
 `output/pretrain_view/tahoe_cm_schema.h5ad` is 16,319,543,984 B with
 `content_sha256 = 476812c0…`, unchanged (ADR 0033 decision 5). The builder reads
 the merged corpus and its identity tables, and writes this step's own

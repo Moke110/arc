@@ -8,9 +8,11 @@
 > bridge, not an archive.
 >
 > **Read-only. Nothing new may be built here.** No build writes into this tree,
-> no new artifact may be derived from it, and it must not grow. Every file below
-> is a moved original, byte-for-byte; the only additions are this README and the
-> archival code copy in [`execution/`](execution/README.md).
+> no new artifact may be derived from it, and it must not grow. The data and
+> evidence files below (`datasets-1/`, `corpus/v1/`) are byte-identical moved
+> originals. The only additions are this README and the archival code copy in
+> [`execution/`](execution/README.md), whose files carry an added three-line
+> provenance header (the copied bodies are unchanged).
 
 ## What is here
 
@@ -21,9 +23,14 @@
 | [`execution/`](execution/README.md) | archival copy of the retired view-construction code (`views.py`, the view/tier constants from `paths.py`, the tier-nesting gates from `qa.py`) — evidence only, not an entry point | tracked |
 | `README.md` | this file | tracked |
 
-Moved from `stage2/02_cm_data/output/{datasets-1,corpus/v1}/` on 2026-11-04 at
-`dev` commit `7e7d689`; tracked files with `git mv`, the untracked h5ads and
-`gene_crosswalk.csv` with `mv` (same filesystem, a rename — content untouched).
+Moved from `stage2/02_cm_data/output/{datasets-1,corpus/v1}/` on 2026-11-04;
+tracked files with `git mv`, the untracked h5ads and `gene_crosswalk.csv` with
+`mv` (same filesystem, a rename — content untouched). The bundle move is `dev`
+commit `58b4d84`; the retired step's Tahoe outputs moved to
+`02_dataset_corpus/` and `05_prnet_pretrain/` in `27c1180`/`d6c275a`. `7e7d689`
+is the **pre-move fixed point** — the state the archival code in
+[`execution/`](execution/README.md) was copied from — not the commit that
+performed the moves.
 
 ## The five views
 
@@ -75,7 +82,8 @@ hashes are not rewritten, and no result is recomputed. Later tickets
   loaders); five views built 2026-10-30 from the four CM raw sources under
   `pert_data/`.
 - Moved read-only here on 2026-11-04 by ticket #13 (parent spec #12, ADR 0033
-  decision 8). No file content was regenerated, edited or re-hashed except as
-  recorded above.
+  decision 8). No data or evidence file was regenerated, edited or re-hashed
+  except as recorded above; the archival `execution/` copies add only a
+  three-line provenance header, leaving the copied bodies unchanged.
 - Deletion condition: `03`/`05`/`06` are redone and no record points here any
   more. Do not delete earlier: the frozen benchmark would lose its evidence.
