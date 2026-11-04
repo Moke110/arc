@@ -16,6 +16,19 @@ reference and is never imported.  The copy carries the Stage 2 fixes:
   perturbation;
 * ``cell_type`` and ``donor`` are explicit covariates.
 
+Ticket #15 added two row-level provenance columns without touching any resolved
+value (ADR 0033; the corpus ``obs`` carries both):
+
+* ``cell_line`` — the raw cell-line label.  For ``dtoxs_primary`` it is the
+  ``Cell`` field of the composite well key (``A``/``B``/``D``/``E`` on plates
+  1/2/5, ``PC-A``…``PC-E`` on plate 4), which is otherwise only recoverable by
+  parsing ``well``; for ``dtoxs_ipsc`` it is the raw cell label
+  (``MSN02-04R-CM`` / ``MSN09-04R-CM``).  ``screen_ctox`` / ``temp_env`` name no
+  per-well line, so it is ``NA`` (same convention as ``donor``).
+* ``n_raw_rows`` — how many raw design rows collapsed into one loaded well.
+  ``dtoxs_primary`` has 956 design rows for 842 wells (36 keys reused across
+  the experiment-5 sub-batches); every other source has one row per well.
+
 Counts are raw (untransformed) and are returned as ``int32``.
 """
 
@@ -134,12 +147,13 @@ def _empty_frame(records: list[dict]) -> pd.DataFrame:
     ordered = [
         "well", "dataset_id", "compound_name", "compound_code", "dose_um",
         "dose_source", "time_h", "is_control", "is_blank", "vehicle", "plate",
-        "cell_type", "donor", "entity_type", "dataset_smiles",
-        "dataset_inchikey", "annotation_note",
+        "cell_type", "donor", "cell_line", "n_raw_rows", "entity_type",
+        "dataset_smiles", "dataset_inchikey", "annotation_note",
     ]
     for column in ordered:
         if column not in meta:
-            meta[column] = ""
+            meta[column] = 1 if column == "n_raw_rows" else ""
+    meta["n_raw_rows"] = meta["n_raw_rows"].astype(np.int32)
     return meta[ordered]
 
 
@@ -171,17 +185,36 @@ def _load_dtoxs_lincs_raw() -> pd.DataFrame:
     return raw
 
 
-def _read_dtoxs_design() -> dict[str, tuple[str, str, str]]:
+def _read_dtoxs_design() -> dict[str, tuple[str, str, str, str]]:
     out = {}
     for design_path in sorted(glob.glob(
             str(paths.DTOXS_LEVEL3 / "**"
                 / "PromoCell-DGE-Experiment-Design-*.tsv"), recursive=True)):
         design = pd.read_csv(design_path, sep="\t")
         key = _dtoxs_key(design)
-        for k, state, plate, well in zip(key, design["State"],
-                                         design["Plate"], design["Well"]):
-            out[k] = (str(state), str(plate), str(well))
+        for k, state, plate, well, cell in zip(
+                key, design["State"], design["Plate"], design["Well"],
+                design["Cell"]):
+            out[k] = (str(state), str(plate), str(well), str(cell))
     return out
+
+
+def _dtoxs_design_row_counts() -> dict[str, int]:
+    """How many raw design rows collapsed into each composite well key.
+
+    The eight experiment-design tables hold 956 rows for 842 wells: 36 keys are
+    reused inside the experiment-5 sub-batches.  ``_read_dtoxs_design`` keeps
+    one row per key (the loader's behaviour since ticket 03); this counter
+    exposes the collapse so the corpus can record ``n_raw_rows``.
+    """
+    counts: dict[str, int] = {}
+    for design_path in sorted(glob.glob(
+            str(paths.DTOXS_LEVEL3 / "**"
+                / "PromoCell-DGE-Experiment-Design-*.tsv"), recursive=True)):
+        design = pd.read_csv(design_path, sep="\t")
+        for key in _dtoxs_key(design):
+            counts[key] = counts.get(key, 0) + 1
+    return counts
 
 
 def _dtoxs_small_molecules() -> dict[str, dict]:
@@ -249,12 +282,13 @@ def _dcic_doses() -> pd.DataFrame:
 def load_dtoxs_primary() -> SourceData:
     raw = _load_dtoxs_lincs_raw()
     design = _read_dtoxs_design()
+    design_rows = _dtoxs_design_row_counts()
     small = _dtoxs_small_molecules()
     rows = []
     for column in raw.columns:
         if column not in design:
             raise SourceError(f"dtoxs_primary: well {column!r} has no design row")
-        state, plate, _well = design[column]
+        state, plate, _well, cell = design[column]
         vehicle, is_control = _dtoxs_vehicle(state)
         if is_control:
             identity = {"compound_name": vehicle, "entity_type": "control",
@@ -291,6 +325,8 @@ def load_dtoxs_primary() -> SourceData:
             "plate": plate,
             "cell_type": "primary_cm",
             "donor": "NA",
+            "cell_line": cell,
+            "n_raw_rows": design_rows.get(column, 1),
             "entity_type": entity,
             "dataset_smiles": identity["smiles"] if not is_control else "",
             "dataset_inchikey": identity["inchikey"] if not is_control else "",
@@ -383,6 +419,8 @@ def load_dtoxs_ipsc() -> SourceData:
             "plate": column.split(".")[4],
             "cell_type": "ipsc_cm",
             "donor": donor_match.group(1) if donor_match else "NA",
+            "cell_line": cell_line,
+            "n_raw_rows": 1,
             "entity_type": entity,
             "dataset_smiles": identity.get("smiles", "") if entity == "small_molecule" else "",
             "dataset_inchikey": identity.get("inchikey", "") if entity == "small_molecule" else "",
@@ -458,6 +496,8 @@ def load_screen_ctox() -> SourceData:
             "plate": f"{assay.lower()}_plate{plate}",
             "cell_type": "ipsc_cm",
             "donor": "NA",
+            "cell_line": "NA",
+            "n_raw_rows": 1,
             "entity_type": "control" if is_control else "small_molecule",
             "dataset_smiles": "",
             "dataset_inchikey": "",
@@ -543,6 +583,8 @@ def load_temp_env() -> SourceData:
             "plate": plate_of_well.get(well_id, ""),
             "cell_type": "ipsc_cm",
             "donor": "NA",
+            "cell_line": "NA",
+            "n_raw_rows": 1,
             "entity_type": entity,
             "dataset_smiles": "",
             "dataset_inchikey": "",

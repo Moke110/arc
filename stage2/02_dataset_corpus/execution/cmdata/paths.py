@@ -22,9 +22,9 @@ HERE = Path(__file__).resolve().parent          # stage2/02_dataset_corpus/execu
 REPO_ROOT = find_repo_root(HERE)
 # The step's two areas, derived from the repo root rather than by counting
 # ancestors: `execution/` holds this package and the build, `output/` holds the
-# corpus.  Ticket #14 folded the older CM step into `02_dataset_corpus`; the
-# corpus and view/tier constants below still describe the retired v1 layout and
-# are rewritten by ticket #15 (ADR 0033).
+# corpus.  Ticket #14 folded the older CM step into `02_dataset_corpus`; ticket
+# #15 (ADR 0033) wrote the v2 corpus constants below and retired the view/tier
+# layer (views are consumer-owned).
 STEP_DIR = REPO_ROOT / "stage2" / "02_dataset_corpus"
 EXECUTION_DIR = STEP_DIR / "execution"
 OUTPUT_DIR = STEP_DIR / "output"
@@ -38,19 +38,85 @@ ANNOTATION_LOCAL = PERT_DATA / "Annotation" / "local"   # local additions
 HGNC_PATH = ANNOTATION_DIR / "hgnc_complete_set.txt"
 COMPOUND_ANNOTATION_PATH = ANNOTATION_LOCAL / "cm_compound_annotation.csv"
 
-CORPUS_VERSION = "v1"
 # Provenance of the vendored Stage 1 loaders (the data lake itself is not
-# versioned by git). Kept as a constant so the manifest stays reproducible
+# versioned by git). Kept as a constant so the record stays reproducible
 # when the Stage 2 code is committed.
 SOURCE_COMMIT = "c921f7d"
+
+# Legacy identity-table helpers (`cmdata.corpus`): corpus/v1 held the gene set,
+# the drug set, the exclusion report and the per-source gene sets, and no
+# matrix.  Since ADR 0033 those tables live read-only in
+# `stage2/_frozen/cm-data-v1/corpus/v1/`; ticket #16 re-exports their content
+# under `output/corpus/v2/tables/`.  These paths are kept for the helper
+# functions only; no build reads or writes them.
+CORPUS_VERSION = "v1"
 CORPUS_DIR = OUTPUT_DIR / "corpus" / CORPUS_VERSION
 GENES_CSV = CORPUS_DIR / "genes.csv"
 COMPOUNDS_CSV = CORPUS_DIR / "compounds.csv"
 EXCLUSIONS_CSV = CORPUS_DIR / "excluded_compounds.csv"
 CORPUS_README = CORPUS_DIR / "README.md"
 
-DEFAULT_BUNDLE = "datasets-1"
-BUNDLE_DIR = OUTPUT_DIR / DEFAULT_BUNDLE
+# ---------------------------------------------------------------------------
+# v2 corpus artifacts (ADR 0033; ticket #15 writes the four CM h5ads)
+# ---------------------------------------------------------------------------
+CORPUS_V2_DIR = OUTPUT_DIR / "corpus" / "v2"
+TABLES_DIR = CORPUS_V2_DIR / "tables"           # ticket #16
+TAHOE_H5AD = CORPUS_V2_DIR / "tahoe.h5ad"       # moved by ticket #14
+BUILD_RECORD_DIR = EXECUTION_DIR / "build_record"
+CORPUS_BUILD_RECORD = BUILD_RECORD_DIR / "corpus_build.json"
+EXCLUDED_COMPOUNDS_RECORD = BUILD_RECORD_DIR / "excluded_compounds.csv"
+REPRODUCIBILITY_RECORD = BUILD_RECORD_DIR / "corpus_reproducibility.json"
+
+# Raw source id -> corpus dataset id (ADR 0033 decision 9, renames forward-only).
+# `dtoxs_cm` splits back into its two arms; the GEO-sourced short names change.
+SOURCE_TO_CORPUS = {
+    "dtoxs_primary": "dtoxs_primary",
+    "dtoxs_ipsc": "dtoxs_ipsc",
+    "screen_ctox": "sctox",
+    "temp_env": "tenv",
+}
+CORPUS_TO_SOURCE = {corpus: source for source, corpus in SOURCE_TO_CORPUS.items()}
+CORPUS_IDS = ["dtoxs_primary", "dtoxs_ipsc", "sctox", "tenv"]
+
+
+def corpus_h5ad(corpus_id: str) -> Path:
+    """Path of one CM corpus h5ad under ``output/corpus/v2/``."""
+    if corpus_id not in CORPUS_TO_SOURCE:
+        raise KeyError(f"unknown corpus {corpus_id!r}")
+    return CORPUS_V2_DIR / f"{corpus_id}.h5ad"
+
+
+# The four CM corpora share one obs contract: the 24 ADR-0026 columns in their
+# v1 order, then the three ticket-#15 additions (ADR 0033 decision 10).
+CORPUS_OBS = [
+    "well", "dataset_id", "compound_name", "drug_key", "inchikey", "smiles",
+    "dose_um", "dose_source", "time_h", "is_control", "vehicle", "plate",
+    "control_group", "cell_type", "donor", "replicate", "atc", "moa",
+    "mesh_classes", "pharm_atc_moa", "pharm_mesh", "annotation_source",
+    "lib_size", "n_genes_detected", "cell_line", "n_raw_rows", "is_blank",
+]
+
+# Row/axis/chemical acceptance counts (spec #12 contract table, ADR 0033 §2).
+# A drift is a hard failure: the corpus is the information-maximal substrate
+# and its shape is part of the published contract.
+EXPECTED_CORPUS_COUNTS = {
+    "dtoxs_primary": {
+        "rows": 779, "perturbed": 677, "control": 102, "blank": 0,
+        "chemicals": 47, "axis": 26328,
+    },
+    "dtoxs_ipsc": {
+        "rows": 312, "perturbed": 296, "control": 16, "blank": 0,
+        "chemicals": 37, "axis": 26328,
+    },
+    "sctox": {
+        "rows": 3072, "perturbed": 2520, "control": 552, "blank": 0,
+        "chemicals": 42, "axis": 31880,
+    },
+    "tenv": {
+        "rows": 4510, "perturbed": 4206, "control": 272, "blank": 32,
+        "chemicals": 460, "axis": 19613,
+    },
+}
 
 # Raw sources (read-only).
 DTOXS_ROOT = PERT_DATA / "LINCS-LDS-1593" / "source"
@@ -90,14 +156,6 @@ def source_accession(dataset_id: str) -> str:
     return SOURCE_ACCESSIONS.get(dataset_id, "")
 
 
-def stage1_dataset_name(dataset_id: str) -> str:
-    """Name the read-only Stage 1 baseline uses for this Stage 2 dataset."""
-    accession = SOURCE_ACCESSIONS.get(dataset_id)
-    return accession.lower() if accession else dataset_id
-
-# Stage 1 regression baselines (read-only; outputs, never code).
-STAGE1_OUTPUT = (REPO_ROOT / "stage1" / "xpert-fda-miri-v3"
-                 / "03_cm_finetune_data" / "output")
 
 # Frozen per-source expectations (ticket 03 / 08).  A loader drift is a hard
 # failure in `sources.check_sources`.
@@ -120,47 +178,3 @@ EXPECTED_SOURCE_COUNTS = {
         "blanks": 32,
     },
 }
-
-# Frozen view expectations (README / tickets 04-08).  `manifest.csv` remains
-# authoritative; these are QA expectations and a guard against silent drift.
-EXPECTED_VIEWS = {
-    "dtoxs_cm.h5ad": {
-        "perturbed": 957, "controls": 118, "drugs": 46,
-    },
-    "screen_ctox.h5ad": {
-        "perturbed": 2520, "controls": 552, "drugs": 42,
-    },
-    "temp_env_atc-moa.h5ad": {
-        "perturbed": 1047, "controls": 272, "drugs": 113,
-    },
-    "temp_env_atc-moa-mesh.h5ad": {
-        "perturbed": 2310, "controls": 272, "drugs": 252,
-    },
-    "temp_env_all-smiles.h5ad": {
-        "perturbed": 4206, "controls": 272, "drugs": 460,
-    },
-}
-
-# Per-source pharmacology tier counts (drug keys).  These are the ticket-02
-# audited counts and gate a rerun against a silent identity/pharmacology drift.
-EXPECTED_TIER_COUNTS = {
-    "dtoxs": {"atc-moa": 46, "atc-moa-mesh": 46, "all-smiles": 47},
-    "screen_ctox": {"atc-moa": 42, "atc-moa-mesh": 42, "all-smiles": 42},
-    "temp_env": {"atc-moa": 113, "atc-moa-mesh": 252, "all-smiles": 460},
-}
-TIER_DATASETS = {
-    "dtoxs": ["dtoxs_primary", "dtoxs_ipsc"],
-    "screen_ctox": ["screen_ctox"],
-    "temp_env": ["temp_env"],
-}
-
-VIEWS = [
-    ("dtoxs_cm.h5ad", ["dtoxs_primary", "dtoxs_ipsc"], "atc-moa"),
-    ("screen_ctox.h5ad", ["screen_ctox"], "atc-moa"),
-    ("temp_env_atc-moa.h5ad", ["temp_env"], "atc-moa"),
-    ("temp_env_atc-moa-mesh.h5ad", ["temp_env"], "atc-moa-mesh"),
-    ("temp_env_all-smiles.h5ad", ["temp_env"], "all-smiles"),
-]
-
-# The three temp_env views share one corpus projection; QA asserts it.
-TEMP_ENV_VIEWS = [name for name, _, _ in VIEWS if name.startswith("temp_env_")]

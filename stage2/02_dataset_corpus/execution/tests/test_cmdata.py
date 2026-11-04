@@ -2,7 +2,7 @@
 
 Run from the repository root:
 
-    python -m unittest discover -s stage2/02_cm_data/tests -v
+    python -m unittest discover -s stage2/02_dataset_corpus/execution/tests -v
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from cmdata.genes import (compute_universe, map_probe_space,  # noqa: E402
                           map_symbol_space, split_probe)
 from cmdata.sources import _parse_conc_um  # noqa: E402
 from cmdata.text import normalize_name  # noqa: E402
-from cmdata.views import _replicate_index  # noqa: E402
+from cmdata.corpus_h5ad import _replicate_index  # noqa: E402
 
 
 def fake_hgnc() -> HgncIndex:
@@ -173,18 +173,19 @@ class SourceParsingTests(unittest.TestCase):
 
 
 class NamingTests(unittest.TestCase):
-    def test_dataset_ids_map_to_accessions(self):
+    def test_corpus_ids_map_from_source_ids(self):
         self.assertEqual(set(paths.SOURCE_DATASETS),
                          {"dtoxs_primary", "dtoxs_ipsc", "screen_ctox",
                           "temp_env"})
-        self.assertEqual(paths.SOURCE_ACCESSIONS,
-                         {"screen_ctox": "GSE244740",
-                          "temp_env": "GSE262419"})
+        self.assertEqual(paths.SOURCE_TO_CORPUS,
+                         {"dtoxs_primary": "dtoxs_primary",
+                          "dtoxs_ipsc": "dtoxs_ipsc",
+                          "screen_ctox": "sctox",
+                          "temp_env": "tenv"})
+        self.assertEqual(list(paths.CORPUS_TO_SOURCE), paths.CORPUS_IDS)
+        self.assertEqual(paths.source_accession("screen_ctox"), "GSE244740")
+        self.assertEqual(paths.source_accession("temp_env"), "GSE262419")
         self.assertEqual(paths.source_accession("dtoxs_primary"), "")
-        self.assertEqual(paths.stage1_dataset_name("screen_ctox"), "gse244740")
-        self.assertEqual(paths.stage1_dataset_name("temp_env"), "gse262419")
-        self.assertEqual(paths.stage1_dataset_name("dtoxs_primary"),
-                         "dtoxs_primary")
 
     def test_raw_folders_keep_accession(self):
         # ADR 0030: one directory per GEO source item, named for the accession;
@@ -194,93 +195,48 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(paths.SCREEN_CTOX_DIR.name, "source")
         self.assertEqual(paths.TEMP_ENV_DIR.name, "source")
 
-    def test_view_names_use_dataset_ids(self):
-        for name, datasets, _ in paths.VIEWS:
-            self.assertNotIn("gse", name)
-            stem = name.removesuffix(".h5ad")
-            if len(datasets) == 1:
-                self.assertTrue(stem == datasets[0]
-                                or stem.startswith(datasets[0] + "_"))
-            else:
-                self.assertIn("_cm", stem)
+    def test_corpus_paths_and_contract(self):
+        for corpus_id in paths.CORPUS_IDS:
+            path = paths.corpus_h5ad(corpus_id)
+            self.assertEqual(path.parent, paths.CORPUS_V2_DIR)
+            self.assertEqual(path.name, f"{corpus_id}.h5ad")
+            self.assertIn(corpus_id, paths.EXPECTED_CORPUS_COUNTS)
+        self.assertEqual(len(paths.CORPUS_OBS), 27)
+        self.assertEqual(paths.CORPUS_OBS[:24], [
+            "well", "dataset_id", "compound_name", "drug_key", "inchikey",
+            "smiles", "dose_um", "dose_source", "time_h", "is_control",
+            "vehicle", "plate", "control_group", "cell_type", "donor",
+            "replicate", "atc", "moa", "mesh_classes", "pharm_atc_moa",
+            "pharm_mesh", "annotation_source", "lib_size", "n_genes_detected"])
+        self.assertEqual(paths.CORPUS_OBS[24:],
+                         ["cell_line", "n_raw_rows", "is_blank"])
+        for forbidden in ("pert_idx", "cell_idx", "dose_idx"):
+            self.assertNotIn(forbidden, paths.CORPUS_OBS)
 
-    def test_expected_views_match_views(self):
-        self.assertEqual(set(paths.EXPECTED_VIEWS),
-                         {name for name, _, _ in paths.VIEWS})
+class NativeAxisTests(unittest.TestCase):
+    def test_duplicate_ids_are_summed_in_first_appearance_order(self):
+        from types import SimpleNamespace
 
+        from cmdata.corpus_h5ad import native_gene_axis
+        from cmdata.genes import SourceGeneMap
 
-@unittest.skipUnless(paths.GENES_CSV.exists() and paths.BUNDLE_DIR.exists(),
-                     "built corpus/bundle not present")
-class BuiltBundleTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        import anndata as ad
-
-        cls.genes = pd.read_csv(paths.GENES_CSV)
-        cls.manifest = pd.read_csv(paths.BUNDLE_DIR / "manifest.csv")
-        cls.views = {
-            name: ad.read_h5ad(paths.BUNDLE_DIR / name, backed="r")
-            for name in cls.manifest["view"]
-        }
-
-    def test_gene_axis(self):
-        self.assertEqual(self.genes["symbol"].is_unique, True)
-        self.assertEqual(len(self.genes), 18164)
-        for adata in self.views.values():
-            self.assertEqual(list(adata.var_names), self.genes["symbol"].tolist())
-
-    def test_contract_columns(self):
-        required = {"well", "dataset_id", "compound_name", "drug_key", "inchikey",
-                    "smiles", "dose_um", "dose_source", "time_h", "is_control",
-                    "vehicle", "plate", "control_group", "cell_type", "donor",
-                    "replicate", "atc", "moa", "mesh_classes", "pharm_atc_moa",
-                    "pharm_mesh", "annotation_source", "lib_size",
-                    "n_genes_detected"}
-        for adata in self.views.values():
-            self.assertTrue(required.issubset(adata.obs.columns))
-            self.assertEqual(list(adata.layers), ["log1p_cp10k"])
-            self.assertEqual(adata.X.dtype, np.int32)
-            for forbidden in ("pert_idx", "cell_idx", "dose_idx"):
-                self.assertNotIn(forbidden, adata.obs.columns)
-
-    def test_manifest_counts(self):
-        for row in self.manifest.itertuples(index=False):
-            adata = self.views[row.view]
-            self.assertEqual(adata.n_obs, row.n_obs)
-            self.assertEqual(adata.n_vars, 18164)
-            controls = int(adata.obs["is_control"].sum())
-            self.assertEqual(controls, row.n_controls)
-            self.assertEqual(adata.n_obs - controls, row.n_perturbed)
-            self.assertEqual(adata.obs.loc[~adata.obs["is_control"], "drug_key"].nunique(),
-                             row.n_drugs)
-            self.assertEqual(adata.uns["control_mean"].shape[0], row.n_control_groups)
-
-    def test_control_rows_are_clean(self):
-        for adata in self.views.values():
-            controls = adata.obs[adata.obs["is_control"]]
-            self.assertTrue((controls["dose_um"] == 0).all())
-            self.assertTrue((controls["drug_key"] == "").all())
-            self.assertTrue(controls["control_group"].isin(
-                adata.obs["control_group"]).all())
-
-    def test_screen_ctox_plates_are_physical(self):
-        # Optimization and Screening plates are numbered independently in
-        # GSE244740; merging equal numbers would mix two physical plates into
-        # one control group and bias the contrast.
-        obs = self.views["screen_ctox.h5ad"].obs
-        expected = {f"screen_ctox::{assay}_plate{n}"
-                    for assay, last in (("optimization", 5), ("screening", 3))
-                    for n in range(1, last + 1)}
-        self.assertEqual(set(obs["control_group"].astype(str)), expected)
-        self.assertEqual(obs["plate"].nunique(), 8)
-        prefix = obs["well"].astype(str).str.extract(
-            r"^screen_ctox::(S\d+Nr\d+)_", expand=False)
-        self.assertFalse(prefix.isna().any())
-        pairs = pd.DataFrame({"plate": obs["plate"].astype(str),
-                              "prefix": prefix})
-        self.assertTrue((pairs.groupby("plate", observed=True)["prefix"]
-                         .nunique() == 1).all())
-        self.assertEqual(pairs["prefix"].nunique(), 8)
+        index = fake_hgnc()
+        mapping = SourceGeneMap(
+            "fake", ["A1BG_1", "A1BG_2", "A2M_1", "NOPE_1", "A1BG_3"],
+            np.array(["HGNC:1", "HGNC:1", "HGNC:2", None, "HGNC:1"],
+                     dtype=object),
+            np.array(["direct", "direct", "alias", "unmapped", "direct"],
+                     dtype=object),
+            np.array([True, True, False, False, True]))
+        counts = np.array([[1, 2, 3, 4, 5], [10, 20, 30, 40, 50]],
+                          dtype=np.int32)
+        source = SimpleNamespace(dataset_id="fake", counts=counts,
+                                 gene_map=mapping)
+        native, var = native_gene_axis(source, index)
+        self.assertEqual(list(var.index), ["A1BG", "A2M"])
+        self.assertEqual(native.tolist(), [[8, 3], [80, 30]])
+        self.assertEqual(var.loc["A1BG", "match_type"], "direct")
+        self.assertEqual(var.loc["A2M", "match_type"], "alias")
 
 
 if __name__ == "__main__":

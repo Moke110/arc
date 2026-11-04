@@ -1,28 +1,29 @@
-"""Bundle QA: cross-view invariants, Stage 1 regression and the QA report."""
+"""Corpus QA gates for the native-axis Stage 2 CM corpora (ticket #15).
+
+Two independent checks:
+
+* ``corpus_structure_gates`` runs **in the build** against the in-memory
+  ``AnnData`` before it is written: gate G1 (the h5ad contract) plus the row /
+  chemical counts of the published corpus table (G2 counting).
+* ``source_value_check`` re-reads a raw source cell for a couple of wells and
+  compares it with the loaded matrix, so a silent loader change cannot reach a
+  corpus unnoticed.
+
+The retired v1 view gates (shared var axis, tier nesting, per-view
+``control_mean``) were removed with the view layer (ADR 0033 decision 5); the
+frozen copies live in ``stage2/_frozen/cm-data-v1/execution/``.
+"""
 
 from __future__ import annotations
 
 import glob
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr
 
 from . import paths
-from .drugs import dataset_members
-from .genes import GeneUniverse
-from .sources import SCREEN_CTOX_STAGE1_UNDERSCORE_FIXES, _dtoxs_key
-from .views import ViewData
-
-CONTRACT_OBS = [
-    "well", "dataset_id", "compound_name", "drug_key", "inchikey", "smiles",
-    "dose_um", "dose_source", "time_h", "is_control", "vehicle", "plate",
-    "control_group", "cell_type", "donor", "replicate", "atc", "moa",
-    "mesh_classes", "pharm_atc_moa", "pharm_mesh", "annotation_source",
-    "lib_size", "n_genes_detected",
-]
+from .sources import _dtoxs_key
 
 
 @dataclass
@@ -33,122 +34,154 @@ class GateResult:
     skipped: bool = False
 
 
-def view_exclusions(table, views: dict[str, ViewData]) -> pd.DataFrame:
-    """Corpus compounds of a view's datasets that the view tier filters out."""
-    rows = []
-    for name, datasets, tier in paths.VIEWS:
-        if name not in views:
-            continue
-        view = views[name]
-        used = set(view.adata.obs.loc[~view.adata.obs["is_control"], "drug_key"])
-        wanted = set(datasets)
-        mask = table.compounds["datasets"].apply(
-            lambda value: bool(dataset_members(value) & wanted))
-        subset = table.compounds.loc[mask]
-        for row in subset.to_dict("records"):
-            if row["drug_key"] in used:
-                continue
-            rows.append({
-                "view": name,
-                "tier": tier,
-                "drug_key": row["drug_key"],
-                "compound_name": row["compound_name"],
-                "datasets": row["datasets"],
-                "reason": f"in corpus but outside the {tier} tier",
-            })
-    return pd.DataFrame(rows, columns=["view", "tier", "drug_key",
-                                       "compound_name", "datasets", "reason"])
+def _fail(results: list[GateResult], name: str, detail: str) -> None:
+    results.append(GateResult(name, False, detail))
 
 
-# ---------------------------------------------------------------------------
-# Cross-view gates
-# ---------------------------------------------------------------------------
-def cross_view_gates(views: dict[str, ViewData],
-                     universe: GeneUniverse) -> list[GateResult]:
-    results = []
+def corpus_structure_gates(adata, corpus_id: str,
+                           expected: dict | None = None) -> list[GateResult]:
+    """G1 structure contract + G2 counts for one built corpus."""
+    results: list[GateResult] = []
+    obs, var, X = adata.obs, adata.var, adata.X
 
-    # 1. identical var
-    base = views[list(views)[0]].adata.var
-    ok = all(view.adata.var.equals(base) for view in views.values())
-    results.append(GateResult("var identical across all views", ok,
-                              f"{len(base):,} genes"))
+    # 1. unique row index (one row per raw well / profile)
+    wells = obs.index.astype(str)
+    ok = bool(obs.index.is_unique and not obs.index.isna().any()
+              and (wells != "").all())
+    results.append(GateResult(
+        "index unique", ok,
+        f"{len(wells):,} rows" if ok else "duplicate, empty or missing row index"))
 
-    # 2. temp_env tier nesting + value identity + shared controls
-    narrow_to_wide = [("temp_env_atc-moa.h5ad", "temp_env_atc-moa-mesh.h5ad"),
-                      ("temp_env_atc-moa-mesh.h5ad", "temp_env_all-smiles.h5ad")]
-    for narrow, wide in narrow_to_wide:
-        if narrow not in views or wide not in views:
-            continue
-        a, b = views[narrow].adata, views[wide].adata
-        a_pos = {well: i for i, well in enumerate(a.obs["well"])}
-        b_pos = {well: i for i, well in enumerate(b.obs["well"])}
-        missing = sorted(set(a_pos) - set(b_pos))
-        ok = not missing
-        detail = f"{narrow} rows absent from {wide}: {missing[:5]}"
-        if ok:
-            for well, row_a in a_pos.items():
-                row_b = b_pos[well]
-                if not np.array_equal(a.X[row_a], b.X[row_b]):
-                    ok, detail = False, f"X differs for {well}"
-                    break
-                if not np.allclose(a.layers["log1p_cp10k"][row_a],
-                                   b.layers["log1p_cp10k"][row_b], atol=1e-6):
-                    ok, detail = False, f"layer differs for {well}"
-                    break
-                for column in CONTRACT_OBS:
-                    if a.obs.iloc[row_a][column] != b.obs.iloc[row_b][column]:
-                        ok, detail = False, f"{column} differs for {well}"
-                        break
-                if not ok:
-                    break
-        results.append(GateResult(f"tier nesting {narrow} ⊆ {wide}", ok, detail))
+    # 2. obs contract columns, in order, no integer encodings
+    missing = [column for column in paths.CORPUS_OBS
+               if column not in obs.columns]
+    if missing:
+        _fail(results, "obs contract columns", f"missing {missing}")
+    else:
+        results.append(GateResult(
+            "obs contract columns", True,
+            f"{len(paths.CORPUS_OBS)} columns in the ADR-0033 order"))
+    forbidden = {"pert_idx", "cell_idx", "dose_idx", "pert_dose_idx"}
+    leaked = sorted(forbidden & set(obs.columns))
+    results.append(GateResult(
+        "no integer model encodings", not leaked,
+        "none" if not leaked else f"leaked columns {leaked}"))
 
-    # 3. the 272 temp_env controls are identical across the three views
-    temp_views = [views[name] for name in paths.TEMP_ENV_VIEWS if name in views]
-    if len(temp_views) >= 2:
-        reference = temp_views[0].adata
-        ref_ctrl = reference.obs["is_control"].to_numpy()
-        ref_wells = reference.obs.loc[ref_ctrl, "well"].tolist()
-        ok, detail = True, (f"{len(ref_wells)} control rows")
-        for view in temp_views[1:]:
-            adata = view.adata
-            ctrl = adata.obs["is_control"].to_numpy()
-            wells = adata.obs.loc[ctrl, "well"].tolist()
-            if set(wells) != set(ref_wells):
-                ok, detail = False, f"{view.name}: control wells differ"
+    # 3. X = non-negative integer raw counts
+    integer = np.issubdtype(X.dtype, np.integer)
+    finite = bool(np.isfinite(X).all()) if np.issubdtype(
+        X.dtype, np.floating) else True
+    negative = int((X < 0).sum())
+    ok = bool(integer and finite and negative == 0)
+    results.append(GateResult(
+        "X non-negative integer counts", ok,
+        (f"{X.dtype}, shape {X.shape}, min 0" if ok
+         else f"dtype {X.dtype}, {negative} negative cells, finite={finite}")))
+
+    # 4. the log1p_cp10k layer equals log1p(1e4 * x / row_sum) (chunked)
+    lib_size = X.sum(axis=1, dtype=np.int64)
+    layer_ok, layer_detail = False, "layer missing"
+    layer = adata.layers.get("log1p_cp10k")
+    if layer is not None:
+        layer = np.asarray(layer)
+        layer_ok = True
+        for start in range(0, X.shape[0], 512):
+            stop = min(start + 512, X.shape[0])
+            expected_layer = np.log1p(X[start:stop] / lib_size[start:stop, None]
+                                      * 1e4)
+            if not np.allclose(layer[start:stop], expected_layer,
+                               rtol=1e-5, atol=1e-6):
+                layer_ok, layer_detail = False, f"differs in rows {start}..{stop}"
                 break
-            position = {well: i for i, well in enumerate(adata.obs["well"])}
-            for well in ref_wells:
-                ref_row = reference.obs.index[reference.obs["well"] == well][0]
-                ref_pos = reference.obs.index.get_loc(ref_row)
-                row = position[well]
-                if not np.array_equal(reference.X[ref_pos], adata.X[row]):
-                    ok, detail = False, f"{view.name}: control counts differ at {well}"
-                    break
-                for column in ("control_group", "vehicle", "compound_name",
-                               "dose_um"):
-                    if (reference.obs.iloc[ref_pos][column]
-                            != adata.obs.iloc[row][column]):
-                        ok = False
-                        detail = f"{view.name}: control {column} differs at {well}"
-                        break
-                if not ok:
-                    break
-            if not ok:
-                break
-        results.append(GateResult("temp_env controls identical across views", ok, detail))
+        if layer_ok:
+            layer_detail = (f"float32 formula holds on {X.shape[0]:,} rows"
+                            if layer.dtype == np.float32
+                            else f"formula holds but dtype is {layer.dtype}")
+            layer_ok = bool(layer.dtype == np.float32)
+    results.append(
+        GateResult("log1p_cp10k layer", layer_ok, layer_detail))
+
+    # 5. no extra containers / uns payload
+    uns = {"has": list(getattr(adata, "uns", {}).keys())}
+    uns_ok = not uns["has"]
+    results.append(GateResult(
+        "uns empty", uns_ok, "empty" if uns_ok else f"keys {uns['has']}"))
+
+    containers = {name: list(getattr(adata, name, {}).keys())
+                  for name in ("obsm", "varm", "obsp", "varp")}
+    extra = {name: keys for name, keys in containers.items() if keys}
+    results.append(GateResult(
+        "obsm/varm/obsp/varp empty", not extra,
+        "empty" if not extra else f"present {sorted(extra)}"))
+
+    # 6. per-row library statistics
+    n_detected = (X > 0).sum(axis=1).astype(np.int32)
+    ok = bool((obs["lib_size"].to_numpy() == lib_size).all()
+              and (obs["n_genes_detected"].to_numpy() == n_detected).all()
+              and (lib_size > 0).all())
+    results.append(GateResult(
+        "lib_size / n_genes_detected", ok,
+        f"row sums match on {X.shape[0]:,} rows"
+        if ok else "obs library statistics do not match X"))
+
+    # 7. row semantics: controls, blanks, perturbed compounds
+    control = obs["is_control"].to_numpy()
+    blank = obs["is_blank"].to_numpy()
+    perturbed = ~control & ~blank
+    problems = []
+    if (obs.loc[control, "dose_um"].to_numpy() != 0).any():
+        problems.append("control rows with a non-zero dose")
+    if (obs.loc[control, "drug_key"].astype(str) != "").any():
+        problems.append("control rows with a drug_key")
+    if (blank & control).any():
+        problems.append("rows both blank and control")
+    if (obs.loc[blank, "dose_um"].to_numpy() != 0).any():
+        problems.append("blank rows with a non-zero dose")
+    if (obs.loc[perturbed, "dose_um"].to_numpy() <= 0).any():
+        problems.append("perturbed rows without a positive dose")
+    for column in ("drug_key", "smiles", "inchikey"):
+        if (obs.loc[perturbed, column].astype(str) == "").any():
+            problems.append(f"perturbed rows missing {column}")
+    results.append(GateResult(
+        "row semantics", not problems,
+        "controls/blanks/perturbed rows well formed" if not problems
+        else "; ".join(problems)))
+
+    # 8. single dataset identity + published counts
+    dataset_ids = set(obs["dataset_id"].astype(str))
+    ok = dataset_ids == {corpus_id}
+    stats = {
+        "rows": int(adata.n_obs),
+        "perturbed": int(perturbed.sum()),
+        "control": int(control.sum()),
+        "blank": int(blank.sum()),
+        "chemicals": int(obs.loc[perturbed, "drug_key"].astype(str).nunique()),
+        "axis": int(adata.n_vars),
+    }
+    results.append(GateResult(
+        "dataset_id", ok,
+        f"{{'{corpus_id}'}}" if ok else f"got {sorted(dataset_ids)}"))
+    if expected:
+        mismatched = {key: (expected[key], stats.get(key))
+                      for key in expected if stats.get(key) != expected[key]}
+        results.append(GateResult(
+            "published counts", not mismatched,
+            f"rows {stats['rows']:,} / pert {stats['perturbed']:,} / "
+            f"ctrl {stats['control']:,} / blank {stats['blank']:,} / "
+            f"chemicals {stats['chemicals']:,} / axis {stats['axis']:,}"
+            if not mismatched else f"mismatched {mismatched}"))
     return results
 
 
 # ---------------------------------------------------------------------------
-# Source-value spot checks (tickets 04/06/07)
+# Source-value spot checks
 # ---------------------------------------------------------------------------
 def _raw_counts_value(dataset_id: str, well: str, gene_id: str) -> float | None:
     """Re-read one raw source cell for the spot check.
 
-    Returns the value as the loader should see it (duplicate DToxS gene rows
-    summed; duplicate temp_env probe rows take the last occurrence, matching
-    the loader).
+    Returns the value as the loader sees it (duplicate DToxS gene rows summed;
+    duplicate temp_env probe rows take the last occurrence, matching the
+    loader).
     """
     raw_well = well.split("::", 1)[1]
     if dataset_id == "screen_ctox":
@@ -222,323 +255,3 @@ def source_value_check(sources: dict[str, object],
              if not failures else f"mismatches: {failures}"),
             skipped=not checks))
     return results
-
-
-# ---------------------------------------------------------------------------
-# Stage 1 regression (read-only)
-# ---------------------------------------------------------------------------
-def stage1_regression(sources: dict[str, object], universe: GeneUniverse,
-                      n_wells: int = 5) -> list[GateResult]:
-    import anndata as ad
-
-    results = []
-    for dataset_id in paths.SOURCE_DATASETS:
-        stage1_name = paths.stage1_dataset_name(dataset_id)
-        path = paths.STAGE1_OUTPUT / f"{stage1_name}.h5ad"
-        if not path.exists():
-            results.append(GateResult(f"stage1 {dataset_id}", True,
-                                      f"baseline missing: {path}", skipped=True))
-            continue
-        stage1 = ad.read_h5ad(path, backed="r")
-        source = sources[dataset_id]
-        # Stage 1 baselines keep the GEO accession as dataset id and well
-        # prefix; translate to the Stage 2 id so the sets compare directly.
-        stage1_prefix = f"{stage1_name}::"
-        stage1_to_ours = {
-            well: (f"{dataset_id}::" + well.split("::", 1)[1]
-                   if well.startswith(stage1_prefix) else well)
-            for well in stage1.obs["well"].astype(str)
-        }
-        ours_to_stage1 = {ours: raw for raw, ours in stage1_to_ours.items()}
-        stage1_wells = set(stage1_to_ours.values())
-        our_wells = set(source.meta["well"].astype(str))
-        missing = sorted(stage1_wells - our_wells)
-        well_ok = not missing
-        results.append(GateResult(
-            f"stage1 {dataset_id}: well set", well_ok,
-            (f"{len(stage1_wells):,} Stage 1 wells all present; "
-             f"{len(our_wells - stage1_wells):,} extra source rows "
-             "(controls / HG-excluded)") if well_ok else f"missing {missing[:5]}"))
-
-        # Dose agreement on shared wells.  Stage 1 looked up underscore names
-        # before normalization and fell back to the sunitinib top dose for the
-        # four audited fixes; those wells are reported as corrections.
-        shared = sorted(stage1_wells & our_wells)
-        ours = source.meta.set_index("well")
-        dose_mismatch, dose_fixed = [], []
-        for well in shared:
-            if well not in ours.index:
-                continue
-            expected = float(stage1.obs.loc[
-                stage1.obs["well"] == ours_to_stage1[well], "dose"].iloc[0])
-            actual = float(ours.loc[well, "dose_um"])
-            if abs(expected - actual) > 1e-9:
-                name = str(ours.loc[well, "compound_name"])
-                if name in SCREEN_CTOX_STAGE1_UNDERSCORE_FIXES:
-                    dose_fixed.append((well, expected, actual, name))
-                else:
-                    dose_mismatch.append((well, expected, actual, name))
-        detail = f"{len(shared):,} shared wells"
-        if dose_fixed:
-            detail += (f"; {len(dose_fixed)} wells corrected from the Stage 1 "
-                       f"underscore-name fallback "
-                       f"({sorted({x[3] for x in dose_fixed})})")
-        if dose_mismatch:
-            detail = f"{len(dose_mismatch)} mismatches, e.g. {dose_mismatch[:2]}"
-        results.append(GateResult(
-            f"stage1 {dataset_id}: doses", not dose_mismatch, detail))
-
-        # Counts: Stage 1 X is a per-plate monotonic (quantile) transform of
-        # raw log2 CPM; ranks must agree exactly on the shared gene axis.
-        # For temp_env, Stage 1's `entrez`-preferred landmark mapping selects
-        # probes by the numeric suffix, which is a probe id, not an Entrez id;
-        # it zeroes those landmarks.  Stage 2 keys on the symbol and recovers
-        # them, so the rank check uses the Stage 1-mappable subset and reports
-        # the exclusions explicitly.
-        symbols = stage1.var["gene_symbol"].astype(str).tolist()
-        allowed, excluded_entrez = set(symbols), 0
-        stage1_map = (paths.STAGE1_OUTPUT / "gene_maps"
-                      / f"{stage1_name}_to_l1000_gene_map.csv")
-        if stage1_map.exists():
-            mapping = pd.read_csv(stage1_map)
-            if "match_type" in mapping:
-                excluded_entrez = int((mapping["match_type"] == "entrez").sum())
-                allowed = set(mapping.loc[
-                    mapping["match_type"].isin(
-                        ["direct", "legacy_alias", "ensembl"]),
-                    "l1000_gene_symbol"].astype(str))
-        universe_pos = {symbol: i for i, symbol in enumerate(universe.symbols)}
-        affected = set()
-        if dataset_id == "temp_env" and stage1_map.exists():
-            # A probe suffix that equals *any* landmark Entrez is hijacked by
-            # Stage 1's entrez-first lookup; Stage 2 keys on the symbol, so
-            # those genes cannot be compared landmark-by-landmark.
-            landmark_entrez = set(mapping["l1000_gene_id"].astype(str))
-            symbol_of = dict(zip(universe.genes["hgnc_id"],
-                                 universe.genes["symbol"]))
-            for raw_id, hgnc_id in zip(source.gene_map.raw_ids,
-                                       source.gene_map.hgnc_ids):
-                if hgnc_id is None:
-                    continue
-                suffix = str(raw_id).rsplit("_", 1)[-1]
-                if suffix in landmark_entrez:
-                    affected.add(symbol_of.get(hgnc_id, ""))
-        pairs = [(j, universe_pos[s]) for j, s in enumerate(symbols)
-                 if s in universe_pos and s in allowed and s not in affected]
-        if not pairs:
-            results.append(GateResult(f"stage1 {dataset_id}: counts", False,
-                                      "no shared genes"))
-            continue
-        columns, rows = zip(*pairs)
-        sampled = shared[:n_wells]
-        rhos = []
-        for well in sampled:
-            source_row = int(np.flatnonzero(source.meta["well"].to_numpy() == well)[0])
-            raw = source.mapped_counts[source_row, list(rows)]
-            stage1_row = int(np.flatnonzero(
-                stage1.obs["well"].to_numpy() == ours_to_stage1[well])[0])
-            transformed = np.asarray(stage1.X[stage1_row]).ravel()[list(columns)]
-            if np.all(raw == raw[0]):
-                continue
-            rho = float(spearmanr(raw, transformed).statistic)
-            rhos.append(rho)
-        ok = bool(rhos) and min(rhos) > 0.999
-        detail = (f"{len(pairs)} shared genes, {len(rhos)} sampled wells, "
-                  f"min Spearman {min(rhos):.6f}" if rhos
-                  else f"{len(pairs)} shared genes, no testable wells")
-        if excluded_entrez:
-            detail += (f"; {excluded_entrez} Stage 1 entrez-mapped landmarks "
-                       "excluded (probe-id suffix bug, recovered by symbol)")
-        if affected:
-            detail += (f"; {len(affected & allowed)} probe-suffix collision "
-                       "genes excluded (Stage 1 hijacks the probe by suffix)")
-        results.append(GateResult(f"stage1 {dataset_id}: counts rank", ok, detail))
-    return results
-
-
-# ---------------------------------------------------------------------------
-# Report
-# ---------------------------------------------------------------------------
-def _source_gene_stats(source, universe: GeneUniverse) -> dict:
-    counts = dict(source.gene_map.counts)
-    resolved = source.gene_map.resolved_ids
-    return {
-        "counts": counts,
-        "resolved_unique": len(resolved),
-        "entrez_verified": int(source.gene_map.verified.sum()),
-        "in_intersection": len(resolved & set(universe.genes["hgnc_id"])),
-    }
-
-
-def write_report(path: Path, *, views: dict[str, ViewData],
-                 sources: dict[str, object], universe: GeneUniverse,
-                 table, gate_results: list[GateResult],
-                 stage1_results: list[GateResult],
-                 manifest: pd.DataFrame, drift_note: str) -> None:
-    lines = [
-        "# datasets-1 — QA report",
-        "",
-        f"Corpus: `corpus/{paths.CORPUS_VERSION}`",
-        "",
-        f"Gene axis: **{len(universe):,}** genes",
-        "",
-        f"Compounds in corpus: **{table.compounds['drug_key'].nunique():,}** drug keys",
-        "",
-        "## Dataset ids",
-        "",
-        "| dataset_id | accession |",
-        "|---|---|",
-    ]
-    for dataset_id in paths.SOURCE_DATASETS:
-        accession = paths.source_accession(dataset_id) or "—"
-        lines.append(f"| `{dataset_id}` | {accession} |")
-    lines += [
-        "",
-        "## Per-view counts",
-        "",
-        "| view | perturbed | controls | drug keys | obs |",
-        "|---|---|---|---|---|",
-    ]
-    for name, view in views.items():
-        lines.append(f"| `{name}` | {view.n_perturbed:,} | {view.n_controls:,} | "
-                     f"{view.n_drugs:,} | {view.adata.n_obs:,} |")
-    lines += [
-        "",
-        "## Gates",
-        "",
-        "| gate | result | detail |",
-        "|---|---|---|",
-    ]
-    for result in gate_results + stage1_results:
-        status = ("SKIP" if result.skipped
-                  else ("PASS" if result.passed else "FAIL"))
-        lines.append(f"| {result.name} | {status} | {result.detail} |")
-
-    lines += [
-        "",
-        "## Gene-side losses",
-        "",
-        "Per source: identifiers seen, how they resolved, and the unique genes",
-        "they contributed. `unmapped`/`ambiguous` identifiers are dropped, never",
-        "guessed.",
-        "",
-        "| source | direct | alias | previous | entrez | ensembl | entrez-verified | unmapped | ambiguous | unique genes | in intersection |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
-    ]
-    for dataset_id, source in sources.items():
-        stats = _source_gene_stats(source, universe)
-        counts = stats["counts"]
-        lines.append(
-            f"| {dataset_id} | {counts.get('direct', 0):,} | "
-            f"{counts.get('alias', 0):,} | {counts.get('previous', 0):,} | "
-            f"{counts.get('entrez', 0):,} | {counts.get('ensembl', 0):,} | "
-            f"{stats['entrez_verified']:,} | {counts.get('unmapped', 0):,} | "
-            f"{counts.get('ambiguous', 0):,} | {stats['resolved_unique']:,} | "
-            f"{stats['in_intersection']:,} |")
-
-    lines += [
-        "",
-        "## Excluded compounds (not in the corpus)",
-        "",
-    ]
-    if table.exclusions.empty:
-        lines.append("None.")
-    else:
-        lines += ["| dataset | compound | entity | wells | reason |",
-                  "|---|---|---|---|---|"]
-        for row in table.exclusions.to_dict("records"):
-            lines.append(f"| {row['dataset_id']} | {row['compound_name']} | "
-                         f"{row['entity_type']} | {row['n_wells']} | {row['reason']} |")
-
-    lines += [
-        "",
-        "## View-level exclusions (in the corpus, filtered by the view tier)",
-        "",
-    ]
-    excluded = view_exclusions(table, views)
-    for name, datasets, tier in paths.VIEWS:
-        if name not in views:
-            continue
-        group = excluded[excluded["view"] == name] if not excluded.empty else excluded
-        if group.empty:
-            lines.append(f"- `{name}` ({tier}): no view-level compound exclusions")
-            continue
-        entries = len(group)
-        keys = group["drug_key"].nunique()
-        lines.append(f"<details><summary><code>{name}</code> ({tier}): "
-                     f"{entries} compound {'entry' if entries == 1 else 'entries'} "
-                     f"({keys} drug {'key' if keys == 1 else 'keys'}) filtered "
-                     f"by the tier</summary>")
-        lines.append("")
-        lines.append("| compound | drug_key | reason |")
-        lines.append("|---|---|---|")
-        for row in group.sort_values("compound_name").to_dict("records"):
-            lines.append(f"| {row['compound_name']} | `{row['drug_key']}` | "
-                         f"{row['reason']} |")
-        lines.append("")
-        lines.append("</details>")
-        lines.append("")
-
-    lines += [
-        "",
-        "## Salt / free-base collapses",
-        "",
-        "These names share one `drug_key` (parent structure) but remain separate",
-        "rows, so a cold-drug split cannot leak across them:",
-        "",
-    ]
-    pairs = [("Tamoxifen", "Tamoxifen citrate"),
-             ("Diltiazem", "Diltiazem hydrochloride"),
-             ("Estradiol", "17beta-Estradiol"),
-             ("Perfluorooctanoic acid", "Ammonium perfluorooctanoate")]
-    by_name = table.compounds.set_index("compound_name")
-    for free, salt in pairs:
-        if free in by_name.index and salt in by_name.index:
-            lines.append(f"- {free} / {salt}: `{by_name.loc[free, 'drug_key']}`")
-    lines += [
-        "",
-        "Doxorubicin and epirubicin are 4'-epimers and carry **different** parent",
-        "keys (connectivity-only keys would collapse them; the build rejects",
-        "14-character keys).",
-        "",
-        "## Tier counts",
-        "",
-        "| tier | drug keys (corpus) |",
-        "|---|---|",
-    ]
-    for tier in ("atc-moa", "atc-moa-mesh", "all-smiles"):
-        lines.append(f"| {tier} | {len(table.members(tier)):,} |")
-    lines += [
-        "",
-        "## Drift",
-        "",
-        drift_note,
-        "",
-        "## Manifest",
-        "",
-        "| view | obs | perturbed | controls | drug keys | genes | content sha256 |",
-        "|---|---|---|---|---|---|---|",
-    ]
-    for row in manifest.to_dict("records"):
-        lines.append(f"| `{row['view']}` | {row['n_obs']:,} | "
-                     f"{row['n_perturbed']:,} | {row['n_controls']:,} | "
-                     f"{row['n_drugs']:,} | {row['n_genes']:,} | "
-                     f"`{row['content_sha256'][:16]}` |")
-    lines += [
-        "",
-        "## Caveats",
-        "",
-        "- `dtoxs_primary` doses are literature/clinical Cmax values; `DIC`",
-        "  (diclofenac, 3 wells) uses the 5 uM recorded in the DToxS DCIC design",
-        "  workbook and is marked `dose_source=measured`.",
-        "- `screen_ctox` doses are derived from the curated paper Table-1 top",
-        "  concentration (`dose_source=derived_top_dose`), not measured.",
-        "- The DToxS `AMI` arm is a pentyl-benzofuran homolog (CID 16218975), not",
-        "  amiodarone; it is in `all-smiles` only.",
-        "- `dtoxs_cm.h5ad` intentionally mixes `primary_cm` and `ipsc_cm`; cell",
-        "  type and donor are covariates, not collapsed constants.",
-        "- The 32 `temp_env` `Blank` wells are technical blanks, neither",
-        "  controls nor perturbations.",
-        "",
-    ]
-    path.write_text("\n".join(lines))
