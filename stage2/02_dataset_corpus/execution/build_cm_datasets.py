@@ -2,8 +2,10 @@
 """Build the Stage 2 CM corpus and one dataset bundle.
 
 Single entry point (ADR 0026): sources -> frozen corpus -> filtered views.
+Ticket #14 moved this build from the retired `02_cm_data` step; the views it
+still writes are retired (ADR 0033) and ticket #15 rewrites this entry point.
 
-    python stage2/02_cm_data/execution/build_cm_datasets.py --bundle datasets-1
+    python stage2/02_dataset_corpus/execution/build_cm_datasets.py --bundle datasets-1
 
 The build is deterministic for a fixed corpus: the gene axis order is frozen,
 row order follows the source files, and a rerun produces the same content
@@ -282,7 +284,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--bundle", default=paths.DEFAULT_BUNDLE,
-                        help="bundle directory name under stage2/02_cm_data")
+                        help="bundle directory name under stage2/02_dataset_corpus")
     parser.add_argument("--check", action="store_true",
                         help="print per-source counts and exit")
     parser.add_argument("--corpus-only", action="store_true",

@@ -141,6 +141,11 @@ stage2/01_setup/execution/biolord/.venv/
 stage2/_envs/biolord/
 stage2/_envs/cmonge/
 
+# Stage 2 · 02_dataset_corpus: the 14 per-plate pseudobulk `_parts/*.npz` are
+# already covered by the global `*.npz` rule; this one rule keeps their scan
+# bookkeeping (`_parts/_state/shard_plate.json`) out of git too.
+stage2/02_dataset_corpus/execution/_parts/_state/
+
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 /archived/
 

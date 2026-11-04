@@ -5,13 +5,14 @@ Unit = (plate, well, cell_line); well is upstream `sample`.
 Values = summed raw UMI counts, plus a derived log1p_cp10k layer.
 Gene space = Tahoe native 62,710 (token_id 3..62712 -> column 0..62709).
 
-Stages (each resumable; `_parts/` and `_state/` under output/pseudobulk/ are the
-resumable part-cache and bookkeeping state, not results):
+Stages (each resumable; `execution/_parts/` and its `_state/` are the resumable
+part-cache and bookkeeping state, not results; QA records land in
+`execution/build_record/`):
 
-    python stage2/04_tahoe_data/execution/build_pseudobulk.py scan
-    python stage2/04_tahoe_data/execution/build_pseudobulk.py aggregate
-    python stage2/04_tahoe_data/execution/build_pseudobulk.py assemble
-    python stage2/04_tahoe_data/execution/build_pseudobulk.py qa
+    python stage2/02_dataset_corpus/execution/tahoe/build_pseudobulk.py scan
+    python stage2/02_dataset_corpus/execution/tahoe/build_pseudobulk.py aggregate
+    python stage2/02_dataset_corpus/execution/tahoe/build_pseudobulk.py assemble
+    python stage2/02_dataset_corpus/execution/tahoe/build_pseudobulk.py qa
 
 `--check` prints the repository root, the Tahoe source it reads and the corpus
 output directory, then exits. `--plates plate1,plate2` limits any stage;
@@ -48,9 +49,15 @@ def find_repo_root(start: Path) -> Path:
 ROOT = find_repo_root(Path(__file__).resolve().parent)
 assert (ROOT / "stage2").is_dir(), f"resolved repo root has no stage2/: {ROOT}"
 DATA_HOME = ROOT / "pert_data" / "Tahoe-100M" / "source"
-OUT = ROOT / "stage2" / "04_tahoe_data" / "output" / "pseudobulk"
-PARTS = OUT / "_parts"
-STATE = OUT / "_state"
+# Ticket #14 moved this builder out of the retired step `04` into the
+# `02_dataset_corpus` step: the corpus is `output/corpus/v2/tahoe.h5ad`, the
+# resumable per-plate cache is `execution/_parts/`, and the tracked QA/manifests
+# are `execution/build_record/tahoe_pseudobulk_*`.
+STEP = ROOT / "stage2" / "02_dataset_corpus"
+OUT = STEP / "output" / "corpus" / "v2"
+RECORD = STEP / "execution" / "build_record"
+PARTS = STEP / "execution" / "_parts"
+STATE = PARTS / "_state"
 
 N_GENES = 62_710
 TOKEN_OFFSET = 3          # token_id 3 is the first gene
@@ -320,7 +327,7 @@ def stage_assemble(args) -> int:
     }, index=[g["gene_symbol"] for g in gene_meta])
 
     OUT.mkdir(parents=True, exist_ok=True)
-    dest = OUT / "tahoe_pseudobulk.h5ad"
+    dest = OUT / "tahoe.h5ad"
     skeleton = ad.AnnData(X=sp.csr_matrix((n_rows, N_GENES), dtype=np.int32),
                           obs=obs, var=var)
     skeleton.write_h5ad(dest)
@@ -370,7 +377,8 @@ def stage_assemble(args) -> int:
         "dose_um": obs["dose_um"], "n_cells": obs["n_cells"],
         "is_control": obs["is_control"],
     })
-    manifest.to_csv(OUT / "manifest.csv", index=False)
+    RECORD.mkdir(parents=True, exist_ok=True)
+    manifest.to_csv(RECORD / "tahoe_pseudobulk_manifest.csv", index=False)
     print(f"assemble: wrote {dest} ({dest.stat().st_size/1e9:.1f} GB) "
           f"in {time.time()-t0:.0f}s", flush=True)
     # round-trip check
@@ -554,11 +562,11 @@ def stage_qa(args) -> int:
         "control_missing": sorted(set(ctrl_missing)),
         "gate_controls_present": not ctrl_missing,
     }
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "qa.json").write_text(json.dumps(summary, indent=2))
+    RECORD.mkdir(parents=True, exist_ok=True)
+    (RECORD / "tahoe_pseudobulk_qa.json").write_text(json.dumps(summary, indent=2))
     import csv as _csv
     keys = sorted({k for r in results for k in r})
-    with open(OUT / "qa_contrasts.csv", "w", newline="") as fh:
+    with open(RECORD / "tahoe_pseudobulk_qa_contrasts.csv", "w", newline="") as fh:
         w = _csv.DictWriter(fh, fieldnames=keys)
         w.writeheader()
         for r in results:
@@ -590,7 +598,7 @@ def stage_qa(args) -> int:
                 "reported for context only: on genes with no real effect both estimates are noise, "
                 "so rank agreement there is uninformative (measured ~0.2).",
                 ""]
-    (OUT / "qa_report.md").write_text("\n".join(lines_md))
+    (RECORD / "tahoe_pseudobulk_qa_report.md").write_text("\n".join(lines_md))
     print(json.dumps({k: v for k, v in summary.items() if k != "control_missing"}, indent=2))
     return 0 if (summary["gate_pearson_ge_0.60_base500"]
                  and summary["gate_detected_ge_12000"]

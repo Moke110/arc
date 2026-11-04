@@ -18,16 +18,18 @@ def find_repo_root(start: Path) -> Path:
     raise RuntimeError(f"cannot find the repository root above {start}")
 
 
-HERE = Path(__file__).resolve().parent          # stage2/02_cm_data/execution/cmdata
+HERE = Path(__file__).resolve().parent          # stage2/02_dataset_corpus/execution/cmdata
 REPO_ROOT = find_repo_root(HERE)
 # The step's two areas, derived from the repo root rather than by counting
 # ancestors: `execution/` holds this package and the build, `output/` holds the
-# frozen corpus and the h5ad bundles.
-STEP_DIR = REPO_ROOT / "stage2" / "02_cm_data"
+# corpus.  Ticket #14 folded the older CM step into `02_dataset_corpus`; the
+# corpus and view/tier constants below still describe the retired v1 layout and
+# are rewritten by ticket #15 (ADR 0033).
+STEP_DIR = REPO_ROOT / "stage2" / "02_dataset_corpus"
 EXECUTION_DIR = STEP_DIR / "execution"
 OUTPUT_DIR = STEP_DIR / "output"
 assert (EXECUTION_DIR / "cmdata" / "paths.py").resolve() == Path(__file__).resolve(), (
-    f"02_cm_data layout mismatch: {EXECUTION_DIR} does not hold this package"
+    f"02_dataset_corpus layout mismatch: {EXECUTION_DIR} does not hold this package"
 )
 PERT_DATA = REPO_ROOT / "pert_data"
 ANNOTATION_DIR = PERT_DATA / "Annotation" / "source"   # the HGNC download
