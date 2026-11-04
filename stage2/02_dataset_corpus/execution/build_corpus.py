@@ -20,6 +20,10 @@ Other modes:
     --check         print the four raw-source counts and exit
     --repeat-check  build the selected corpus twice, assert identical file
                     sha256 (gate G5), record ``corpus_reproducibility.json``
+    --tables        write the seven crosswalk tables, ``output/corpus/v2/
+                    README.md`` and ``build_record/corpus_coverage.json``
+                    (ticket #16) from the built corpora + the raw sources
+    --all           build the four corpora, then the tables
     --verify        G1-G6 gates: NOT IMPLEMENTED until ticket #17
 """
 
@@ -44,7 +48,7 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from cmdata import paths, qa, sources  # noqa: E402
+from cmdata import paths, qa, sources, tables  # noqa: E402
 from cmdata.annotation import AnnotationError, load_assets  # noqa: E402
 from cmdata.corpus_h5ad import (CorpusError, build_corpus, content_digest,  # noqa: E402
                                 corpus_stats, write_corpus)
@@ -52,6 +56,8 @@ from cmdata.drugs import (CompoundError, CompoundTable,  # noqa: E402
                           build_compound_table, tier_counts)
 
 MIN_FREE_GIB = 12.0
+TABLES_COMMAND = ("python stage2/02_dataset_corpus/execution/build_corpus.py "
+                  "--tables")
 
 
 class BuildError(RuntimeError):
@@ -98,38 +104,6 @@ def _load_sources(index) -> dict:
               f"{len(source.gene_ids):,} source genes "
               f"({time.time() - started:.1f}s)")
     return loaded
-
-
-def _excluded_compounds(table: CompoundTable) -> pd.DataFrame:
-    """The 8 non-small-molecule keys (143 wells) + the 32 blank wells."""
-    exclusions = table.exclusions
-    rows = []
-    compounds = exclusions[exclusions["entity_type"] != "technical_blank"]
-    for (name, entity), group in compounds.groupby(
-            ["compound_name", "entity_type"], sort=True):
-        rows.append({
-            "dataset_id": ";".join(sorted(group["dataset_id"].astype(str))),
-            "compound_name": name,
-            "compound_code": ";".join(sorted({
-                str(code) for code in group["compound_code"] if str(code)})),
-            "entity_type": entity,
-            "n_wells": int(group["n_wells"].sum()),
-            "reason": f"non-small-molecule perturbagen ({entity})",
-        })
-    blanks = exclusions[exclusions["entity_type"] == "technical_blank"]
-    if len(blanks):
-        rows.append({
-            "dataset_id": ";".join(sorted(blanks["dataset_id"].astype(str))),
-            "compound_name": "Blank",
-            "compound_code": "",
-            "entity_type": "technical_blank",
-            "n_wells": int(blanks["n_wells"].sum()),
-            "reason": ("technical blank (concentration 0; kept as a corpus row, "
-                       "neither control nor perturbation)"),
-        })
-    return pd.DataFrame(rows, columns=[
-        "dataset_id", "compound_name", "compound_code", "entity_type",
-        "n_wells", "reason"])
 
 
 def _write_frame_atomic(frame: pd.DataFrame, path: Path) -> None:
@@ -288,7 +262,7 @@ def build(args) -> None:
         record["corpora"][corpus_id] = _build_one(
             corpus_id, loaded, table, index)
 
-    exclusions = _excluded_compounds(table)
+    exclusions = tables.excluded_compounds_frame(table)
     _write_frame_atomic(exclusions, paths.EXCLUDED_COMPOUNDS_RECORD)
     record["excluded_compounds"] = {
         "file": str(paths.EXCLUDED_COMPOUNDS_RECORD.relative_to(paths.REPO_ROOT)),
@@ -309,6 +283,41 @@ def build(args) -> None:
               f"{entry['chemicals']:,} chemicals  {entry['bytes']:,} B")
     print(f"Build record: "
           f"{paths.CORPUS_BUILD_RECORD.relative_to(paths.REPO_ROOT)}")
+
+    if getattr(args, "all", False):
+        print("\nBuilding crosswalk tables, coverage README and coverage record")
+        # The four built sources keep their row metadata and gene maps; their
+        # count matrices were released by _build_one, and the tables never need
+        # them, so --all does not pay the global source load twice.
+        tables.build_tables(index, annotation, loaded, table, _environment(),
+                            TABLES_COMMAND)
+
+
+def tables_mode(args) -> None:
+    """Ticket #16: regenerate the seven tables + README from the corpus files."""
+    available = _available_gib()
+    print(f"available memory: {available:.1f} GiB (need >= {MIN_FREE_GIB:.0f} GiB)")
+    if available < MIN_FREE_GIB:
+        raise BuildError(
+            f"only {available:.1f} GiB available; refusing to start a build "
+            f"that needs at least {MIN_FREE_GIB:.0f} GiB")
+
+    print("Loading pinned annotation assets")
+    index, annotation = load_assets()
+    print(f"  HGNC genes: {len(index.genes):,}; "
+          f"compound annotation rows: {len(annotation.table):,}")
+
+    print("Loading sources (the crosswalk needs the raw gene ids)")
+    loaded = _load_sources(index)
+    print("Building compound table (tier source for tables/compounds.csv)")
+    table = build_compound_table(
+        {dataset_id: loaded[dataset_id].meta
+         for dataset_id in paths.SOURCE_DATASETS}, annotation)
+    for source in loaded.values():
+        source.counts = None
+    gc.collect()
+    tables.build_tables(index, annotation, loaded, table, _environment(),
+                        TABLES_COMMAND)
 
 
 def repeat_check(corpus_id: str) -> int:
@@ -368,6 +377,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repeat-check", action="store_true",
                         help="G5: build the selected corpus twice and compare "
                              "its file sha256 (does not write output/)")
+    parser.add_argument("--tables", action="store_true",
+                        help="write the seven crosswalk tables, the coverage "
+                             "README and build_record/corpus_coverage.json "
+                             "(ticket #16) from the built corpora")
+    parser.add_argument("--all", action="store_true",
+                        help="build the four corpora, then the tables")
     parser.add_argument("--verify", action="store_true",
                         help="G1-G6 gates; reserved for ticket #17")
     args = parser.parse_args(argv)
@@ -395,9 +410,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"\nREPEAT CHECK FAILED: {exc}", file=sys.stderr)
             return 2
     try:
-        build(args)
-    except (CorpusError, CompoundError, AnnotationError,
-            sources.SourceError, BuildError) as exc:
+        if args.tables and not args.all:
+            tables_mode(args)
+        else:
+            build(args)
+    except (CorpusError, CompoundError, AnnotationError, sources.SourceError,
+            tables.TablesError, BuildError) as exc:
         print(f"\nBUILD FAILED: {exc}", file=sys.stderr)
         return 2
     return 0

@@ -61,9 +61,12 @@ CORPUS_README = CORPUS_DIR / "README.md"
 # ---------------------------------------------------------------------------
 CORPUS_V2_DIR = OUTPUT_DIR / "corpus" / "v2"
 TABLES_DIR = CORPUS_V2_DIR / "tables"           # ticket #16
+CORPUS_V2_README = CORPUS_V2_DIR / "README.md"  # ticket #16
 TAHOE_H5AD = CORPUS_V2_DIR / "tahoe.h5ad"       # moved by ticket #14
 BUILD_RECORD_DIR = EXECUTION_DIR / "build_record"
 CORPUS_BUILD_RECORD = BUILD_RECORD_DIR / "corpus_build.json"
+COVERAGE_RECORD = BUILD_RECORD_DIR / "corpus_coverage.json"  # ticket #16
+TAHOE_MOVE_RECORD = BUILD_RECORD_DIR / "tahoe_corpus_move.json"
 EXCLUDED_COMPOUNDS_RECORD = BUILD_RECORD_DIR / "excluded_compounds.csv"
 REPRODUCIBILITY_RECORD = BUILD_RECORD_DIR / "corpus_reproducibility.json"
 
@@ -94,6 +97,26 @@ CORPUS_OBS = [
     "control_group", "cell_type", "donor", "replicate", "atc", "moa",
     "mesh_classes", "pharm_atc_moa", "pharm_mesh", "annotation_source",
     "lib_size", "n_genes_detected", "cell_line", "n_raw_rows", "is_blank",
+]
+
+# `tahoe.h5ad` keeps its Tahoe-native obs (ADR 0033 decision 10); the corpus
+# README lists it separately and the asymmetry paragraph explains why.  Index =
+# `profile_id`; `is_blank` is not stored, so `metadata_tahoe.csv` adds it as a
+# constant False column.
+TAHOE_OBS = [
+    "plate", "well", "cell_line_id", "n_cells", "cell_name", "drug",
+    "dose_um", "is_control", "control_group",
+]
+
+# The seven crosswalk tables under `output/corpus/v2/tables/` (ticket #16).
+TABLE_FILES = [
+    "genes.csv",
+    "gene_crosswalk.csv",
+    "compounds.csv",
+    "excluded_compounds.csv",
+    "source_gene_sets.csv",
+    "metadata_cm.csv",
+    "metadata_tahoe.csv",
 ]
 
 # Row/axis/chemical acceptance counts (spec #12 contract table, ADR 0033 §2).

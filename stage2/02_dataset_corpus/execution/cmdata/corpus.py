@@ -29,6 +29,33 @@ def _write_csv(frame: pd.DataFrame, path: Path) -> None:
     frame.to_csv(path, index=False, lineterminator="\n")
 
 
+def source_gene_set_frame(index, source_maps: dict) -> pd.DataFrame:
+    """One row per (source, resolved HGNC gene), the frozen drift baseline.
+
+    Shared by the retired v1 freeze helper and the v2 table build (ticket #16),
+    so ``output/corpus/v2/tables/source_gene_sets.csv`` is the same content the
+    frozen ``corpus/v1/source_gene_sets.csv`` recorded (104,149 rows: the sum of
+    the four native axes).
+    """
+    source_rows = []
+    for dataset_id, mapping in source_maps.items():
+        seen = set()
+        for hgnc_id, match, verified in zip(mapping.hgnc_ids, mapping.match_types,
+                                            mapping.verified):
+            if hgnc_id is None or hgnc_id in seen:
+                continue
+            seen.add(hgnc_id)
+            source_rows.append({
+                "dataset_id": dataset_id,
+                "hgnc_id": hgnc_id,
+                "symbol": index.ref(hgnc_id).symbol,
+                "match_type": match,
+                "entrez_verified": bool(verified),
+            })
+    return pd.DataFrame(source_rows).sort_values(
+        ["dataset_id", "symbol"], kind="stable").reset_index(drop=True)
+
+
 def freeze_corpus(universe: GeneUniverse, table: CompoundTable,
                   source_stats: dict, source_maps: dict, index,
                   out_dir: Path = paths.CORPUS_DIR,
@@ -46,23 +73,8 @@ def freeze_corpus(universe: GeneUniverse, table: CompoundTable,
     # gene set: a rerun that maps a new gene in any source fails, even when the
     # gene is outside the four-way intersection and would otherwise be silently
     # dropped by the view writer.
-    source_rows = []
-    for dataset_id, mapping in source_maps.items():
-        seen = set()
-        for hgnc_id, match, verified in zip(mapping.hgnc_ids, mapping.match_types,
-                                            mapping.verified):
-            if hgnc_id is None or hgnc_id in seen:
-                continue
-            seen.add(hgnc_id)
-            source_rows.append({
-                "dataset_id": dataset_id,
-                "hgnc_id": hgnc_id,
-                "symbol": index.ref(hgnc_id).symbol,
-                "match_type": match,
-                "entrez_verified": bool(verified),
-            })
-    _write_csv(pd.DataFrame(source_rows).sort_values(
-        ["dataset_id", "symbol"], kind="stable"), out_dir / "source_gene_sets.csv")
+    _write_csv(source_gene_set_frame(index, source_maps),
+               out_dir / "source_gene_sets.csv")
 
     tier_counts = {
         tier: table.members(tier)
