@@ -39,3 +39,9 @@ MTT/CCK8 under the corpus phenotype `cell_viability`; see
 The labeling criteria and unresolved-endpoint policy are being refined in the
 formal design. No threshold or no-change inference is approved merely by moving
 label generation into the corpus step.
+
+The user's next decision in [ADR 0040](0040-numeric-endpoints-and-source-readout-sequences.md)
+requires numeric corpus endpoints and assigns 0 when an evaluable comparison
+fails the joint magnitude-and-significance rule. This replaces this record's
+equivalence-only class-0 and nullable-corpus policies for the formal corpus; handling
+of missing test evidence is being specified explicitly rather than inferred.

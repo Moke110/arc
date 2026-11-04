@@ -29,16 +29,19 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 The biological indicator represented by a Stage 3 corpus target. MTT and CCK8 measurements both belong to `cell_viability`; their assay methods and source measurement scales remain identifiable.
 
 **Condition**:
-The detailed biological and experimental context of a Stage 3 phenotype measurement, including cell type and drug, hypoxia, and reoxygenation timings. Corpus conditions remain separate so a later model data view can choose which contexts to select or combine.
+The detailed biological and experimental context of a Stage 3 phenotype measurement, including cell type and drug, hypoxia, and reoxygenation timings. Drug time denotes pre-HR treatment duration in an HR experiment or direct exposure duration without HR; drug persistence during HR remains separately described.
 
 **Readout**:
 The concrete numerical measurement provided by an experimental source, together with its unit, assay method, and raw or author-normalized representation. A readout is distinct from both the phenotype being measured and its endpoint label.
 
 **Endpoint**:
-The direction label of a phenotype change relative to its specified reference: increase (+1), no change (0), or decrease (−1). In Stage 3 this term denotes the response label, rather than the assay time or the measured indicator itself.
+The numeric corpus response class: +1 or −1 requires both the corresponding change-magnitude criterion and statistical significance; 0 is the rule's non-change class when the joint criterion fails on evaluable evidence. Class 0 does not itself assert demonstrated biological equivalence, and final corpus endpoints are numeric rather than an unknown class.
 
 **Phenotype corpus sample**:
-A drug–dose–endpoint sample within a particular condition and phenotype, retaining its source readout evidence. Different endpoints for the same drug and dose remain distinct at the corpus stage.
+A source-dataset–drug–dose–endpoint unit within a particular condition and phenotype. Records from the same dataset with the same remaining key are grouped together, retaining all readout values rather than averaging them.
+
+**Readout sequence**:
+The numerical source measurements retained by one merged phenotype corpus sample, with their individual assay, unit, experiment, and source references still recoverable. Multiple measurements or representations do not by themselves establish independent biological replicates.
 
 **Model data view**:
 A selection of corpus conditions and samples, with explicitly chosen merging and aggregation rules, for a particular modeling task. These choices do not overwrite the underlying corpus measurements.
@@ -64,14 +67,14 @@ The comparable target used for evidence counting in the wayfinder design, fixing
 The wayfinder evidence-counting unit: one drug under one exact condition measured for one indicator within a phenotype counting stratum. It is distinct from a corpus sample whose identity also retains endpoint.
 
 **Readout direction**:
-An increase, no change, or decrease in one measured phenotype readout relative to its specified control. The direction describes the readout itself; whether that direction implies benefit depends on the readout and condition.
+The increase, non-change, or decrease classification relative to a specified control under the declared endpoint rule. Whether that direction implies benefit depends on the phenotype and condition.
 _Avoid_: efficacy label (when only a measurement direction is known)
 
 **Label-ready phenotype observation**:
-A phenotype observation with a valid matched comparison, sufficient uncertainty evidence, and an accepted direction under a frozen phenotype/assay-specific labeling rule. A point estimate or qualification for the sample count alone does not establish label readiness.
+A phenotype observation admitted as a numerically labeled corpus record under the frozen magnitude-and-significance rule, with its input and processing evidence retained. Point estimates or source-table coverage alone do not establish this status.
 
 **Unresolved direction**:
-An observation whose direction cannot yet be assigned under the accepted evidence rule. It is neither the no-change class nor an additional phenotype class.
+A source-level observation for which the endpoint rule cannot yet be evaluated from the available evidence. It is not an allowed final corpus endpoint or an additional phenotype class.
 
 ### External data provenance
 

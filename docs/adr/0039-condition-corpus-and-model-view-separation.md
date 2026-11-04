@@ -46,3 +46,11 @@ See [ADR 0038](0038-dedicated-phenotype-data-and-stage3-corpus.md),
 [ADR 0036](0036-stage3-continuous-evidence-before-direction-labels.md),
 [GLOSSARY.md](../../GLOSSARY.md), and the
 [original wayfinder curation contract](../research/stage3-curation-contract.md).
+
+## Subsequent numerical-label and grouping decisions (2026-11-04)
+
+The user resolved drug-time semantics, source-inclusive identity, same-key readout
+sequences and the requirement for fully numeric magnitude-and-significance
+endpoints in [ADR 0040](0040-numeric-endpoints-and-source-readout-sequences.md).
+Numeric cutoffs, test provenance and the admission of untestable inputs remain
+under discussion; the finer condition and model-view boundaries above are retained.
