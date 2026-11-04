@@ -33,3 +33,12 @@ See [ADR 0001](0001-category-taxonomy.md),
 [ADR 0037](0037-stage3-phenotype-release-layout.md),
 [GLOSSARY.md](../../GLOSSARY.md), and the
 [completed wayfinder map](https://github.com/Moke110/arc/issues/21).
+
+## Subsequent corpus-boundary decisions (2026-11-04)
+
+The user resolved fine condition partitions, a common MTT/CCK8 `cell_viability`
+phenotype, endpoint-inclusive sample identity, corpus-stage label derivation and
+source `readout` retention in
+[ADR 0039](0039-condition-corpus-and-model-view-separation.md).
+Labeling criteria, same-key repeated measurements and unresolved endpoints remain
+under discussion; the workspace boundary above is unchanged.

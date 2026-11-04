@@ -11,7 +11,7 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-The index covers every record in the directory, 0001–0038 (37 files; 0023 is the
+The index covers every record in the directory, 0001–0039 (38 files; 0023 is the
 gap). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 
@@ -53,4 +53,5 @@ amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 | [0035](0035-stage3-stratified-phenotype-curation.md) | Stage 3 curates separate experimental strata and distinguishes retention, qualified counting, and label readiness |
 | [0036](0036-stage3-continuous-evidence-before-direction-labels.md) | Stage 3 retains continuous evidence and unresolved directions instead of manufacturing three-class labels |
 | [0037](0037-stage3-phenotype-release-layout.md) | Stage 3 uses existing provenance items and typed CSV/JSON releases with separate qualification and labeling gates |
-| [0038](0038-dedicated-phenotype-data-and-stage3-corpus.md) | Dedicated pheno_data category and Stage 3 01_data_corpus workspace; partition and sample-grain details under discussion |
+| [0038](0038-dedicated-phenotype-data-and-stage3-corpus.md) | Dedicated pheno_data category and Stage 3 01_data_corpus workspace boundary |
+| [0039](0039-condition-corpus-and-model-view-separation.md) | Fine condition corpus, shared MTT/CCK8 phenotype, endpoint-inclusive sample identity, retained readouts and later model views |

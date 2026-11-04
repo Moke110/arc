@@ -26,10 +26,22 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 ### Stage 3 phenotype data
 
 **Phenotype**:
-The particular cardiomyocyte indicator measured by an experiment, with its measurement definition and assay retained. Different measurement methods are not assumed interchangeable merely because they describe the same broad biological property.
+The biological indicator represented by a Stage 3 corpus target. MTT and CCK8 measurements both belong to `cell_viability`; their assay methods and source measurement scales remain identifiable.
+
+**Condition**:
+The detailed biological and experimental context of a Stage 3 phenotype measurement, including cell type and drug, hypoxia, and reoxygenation timings. Corpus conditions remain separate so a later model data view can choose which contexts to select or combine.
+
+**Readout**:
+The concrete numerical measurement provided by an experimental source, together with its unit, assay method, and raw or author-normalized representation. A readout is distinct from both the phenotype being measured and its endpoint label.
 
 **Endpoint**:
 The direction label of a phenotype change relative to its specified reference: increase (+1), no change (0), or decrease (−1). In Stage 3 this term denotes the response label, rather than the assay time or the measured indicator itself.
+
+**Phenotype corpus sample**:
+A drug–dose–endpoint sample within a particular condition and phenotype, retaining its source readout evidence. Different endpoints for the same drug and dose remain distinct at the corpus stage.
+
+**Model data view**:
+A selection of corpus conditions and samples, with explicitly chosen merging and aggregation rules, for a particular modeling task. These choices do not overwrite the underlying corpus measurements.
 
 **Phenotype data**:
 Experimental measurements linking pharmacological perturbations to cell phenotype readouts and their controls, conditions, and provenance. These are distinct from transcriptomic perturbation measurements and from model-predicted perturbomes.
@@ -46,17 +58,17 @@ _Avoid_: training sample (when only counting eligibility is established)
 The evidence-resolved active parent of a single pharmacological intervention, retaining its known stereochemistry. The administered salt, hydrate, or other chemical form remains separately described; an alias or a different salt does not by itself create another drug.
 
 **Phenotype counting stratum**:
-A declared comparable experimental target with one readout, biological model, injury and dosing protocol, vehicle profile, and reference meaning. Exact doses and permitted exposure times vary within it; study, donor, plate, and well identities describe evidence rather than additional drug–readout combinations.
+The comparable target used for evidence counting in the wayfinder design, fixing a measurement definition, biological model, protocol, vehicle profile, and reference meaning while allowing declared dose/time axes. It is distinct from the finer condition partitions of the formal Stage 3 corpus.
 
 **Phenotype combination**:
-One drug under one exact experimental condition measured for one readout within a phenotype counting stratum. Replicate measurements and independent studies of the same combination add evidence without adding another combination.
+The wayfinder evidence-counting unit: one drug under one exact condition measured for one indicator within a phenotype counting stratum. It is distinct from a corpus sample whose identity also retains endpoint.
 
 **Readout direction**:
 An increase, no change, or decrease in one measured phenotype readout relative to its specified control. The direction describes the readout itself; whether that direction implies benefit depends on the readout and condition.
 _Avoid_: efficacy label (when only a measurement direction is known)
 
 **Label-ready phenotype observation**:
-A phenotype observation with a valid matched comparison, sufficient uncertainty evidence, and an accepted direction under a frozen readout-specific labeling rule. A point estimate or qualification for the sample count alone does not establish label readiness.
+A phenotype observation with a valid matched comparison, sufficient uncertainty evidence, and an accepted direction under a frozen phenotype/assay-specific labeling rule. A point estimate or qualification for the sample count alone does not establish label readiness.
 
 **Unresolved direction**:
 An observation whose direction cannot yet be assigned under the accepted evidence rule. It is neither the no-change class nor an additional phenotype class.

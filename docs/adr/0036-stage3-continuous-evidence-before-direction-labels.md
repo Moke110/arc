@@ -30,3 +30,12 @@ and [owning decision ticket](https://github.com/Moke110/arc/issues/26).
 See [ADR 0034](0034-stage3-phenotype-data-boundary.md),
 [ADR 0035](0035-stage3-stratified-phenotype-curation.md), and
 [GLOSSARY.md](../../GLOSSARY.md).
+
+## Subsequent corpus-design refinement (2026-11-04)
+
+The user subsequently assigned endpoint derivation to `01_data_corpus` and unified
+MTT/CCK8 under the corpus phenotype `cell_viability`; see
+[ADR 0039](0039-condition-corpus-and-model-view-separation.md).
+The labeling criteria and unresolved-endpoint policy are being refined in the
+formal design. No threshold or no-change inference is approved merely by moving
+label generation into the corpus step.
