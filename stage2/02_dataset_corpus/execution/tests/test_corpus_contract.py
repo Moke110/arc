@@ -130,6 +130,11 @@ class CorpusContractTests(unittest.TestCase):
                                  paths.EXPECTED_CORPUS_COUNTS[corpus_id]["axis"])
                 self.assertEqual(len(entry["content_sha256"]), 64)
                 self.assertTrue(all(gate["passed"] for gate in entry["gates"]))
+                # Provenance: the record carries the source accession the
+                # coverage README shows, and no CM corpus is left blank.
+                self.assertEqual(entry["accession"],
+                                 paths.source_accession(entry["source_dataset"]))
+                self.assertNotEqual(entry["accession"], "")
 
     def test_excluded_compounds_accounting(self):
         frame = pd.read_csv(EXCLUDED)

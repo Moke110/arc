@@ -121,7 +121,8 @@
     "stage2/04_tahoe_data"
   ],
   "smoke_check": {
-    "command": "/usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python stage2/02_dataset_corpus/execution/build_cm_datasets.py --check",
+    "command": "/usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python stage2/02_dataset_corpus/execution/build_corpus.py --check",
+    "command_note": "Recorded by ticket #14 on 2026-11-04 against the then-named `build_cm_datasets.py`; ticket #15 renamed the entry point to `build_corpus.py` and `--check` kept its behaviour. The wall/peak numbers are the original #14 measurement and were not re-run after the rename.",
     "exit_code": 0,
     "wall_seconds": 54.81,
     "peak_rss_kib": 7853744,

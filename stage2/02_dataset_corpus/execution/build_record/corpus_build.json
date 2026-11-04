@@ -3,7 +3,7 @@
     "dtoxs_primary": {
       "dataset_id": "dtoxs_primary",
       "source_dataset": "dtoxs_primary",
-      "accession": "",
+      "accession": "LINCS-LDS-1593",
       "rows": 779,
       "perturbed": 677,
       "control": 102,
@@ -148,7 +148,7 @@
     "dtoxs_ipsc": {
       "dataset_id": "dtoxs_ipsc",
       "source_dataset": "dtoxs_ipsc",
-      "accession": "",
+      "accession": "GSE217423",
       "rows": 312,
       "perturbed": 296,
       "control": 16,
