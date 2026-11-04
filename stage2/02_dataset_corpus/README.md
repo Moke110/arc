@@ -1,24 +1,24 @@
 # 02_dataset_corpus — Stage 2 dataset corpus
 
-**Status:** skeleton in build (ticket #14, 2026-11-04). The directory layout,
-the code move and the Tahoe corpus move are done; this is **not yet the corpus
-contract**. Tickets #15 (four CM corpora on native gene axes), #16
-(seven crosswalk tables + coverage README) and #20 (docs and gates) fill the
-rest. The governing decision is
+**Status:** the four CM corpora are built (ticket #15, 2026-11-04); the seven
+crosswalk tables + coverage README (ticket #16), the `--verify` gate suite
+(ticket #17), the downstream CM-schema view (ticket #18) and the docs/ADR sweep
+(ticket #20) are still open. The governing decision is
 [ADR 0033](../../docs/adr/0033-stage2-dataset-corpus.md).
 
 ## Purpose
 
 One step owns every Stage 2 source dataset as an information-maximal h5ad
 corpus: the substrate between a raw download and a model's training input. Model
-adaptation (tiers, gene-space projection, author shims) belongs to the consumer
-that builds a view, not here (ADR 0033 §5). `stage2/04_tahoe_data/` was folded
-into this step and removed; `05`/`06` keep their numbers, so 04 is a gap in the
-sequence, not a renumber.
+adaptation (pharmacology tiers, gene-space projection, author shims) belongs to
+the consumer that builds a view, not here (ADR 0033 §5). `stage2/04_tahoe_data/`
+was folded into this step and removed; `05`/`06` keep their numbers, so 04 is a
+gap in the sequence, not a renumber.
 
-From this decision the dataset ids are `dtoxs_primary`, `dtoxs_ipsc`, `sctox`
-(was `screen_ctox`) and `tenv` (was `temp_env`). Frozen records keep their old
-strings; the corpus README will carry the rename table (ticket #16).
+Dataset ids are forward-only renames (ADR 0033 §9): `sctox` (was
+`screen_ctox`), `tenv` (was `temp_env`), and `dtoxs_primary`/`dtoxs_ipsc` (the
+merged `dtoxs_cm` splits back into its two arms). Frozen records keep their old
+strings; ticket #16's README carries the rename table.
 
 ## Layout
 
@@ -26,30 +26,139 @@ strings; the corpus README will carry the rename table (ticket #16).
 02_dataset_corpus/
 ├── AGENTS.md  README.md
 ├── execution/                        # code, intermediates, build records
-│   ├── build_cm_datasets.py          # CLI today (ticket #15 replaces it)
-│   ├── cmdata/                       # CM library; views.py retired
+│   ├── build_corpus.py               # single entry point (ticket #15)
+│   ├── cmdata/                       # CM library
+│   │   ├── paths.py sources.py genes.py drugs.py annotation.py
+│   │   ├── corpus.py qa.py primary_doses.py text.py
+│   │   └── corpus_h5ad.py            # native-axis corpus builder/writer
 │   ├── tahoe/build_pseudobulk.py     # Tahoe corpus builder (moved from 04)
 │   ├── _parts/                       # 14 per-plate CSR parts + _state (local)
-│   ├── build_record/                 # tracked QA/manifests
-│   └── tests/
+│   ├── build_record/                 # tracked QA/manifests incl. #15 records
+│   └── tests/                        # test_cmdata.py + test_corpus_contract.py
 └── output/                           # artifacts a later step reads
     └── corpus/v2/
+        ├── dtoxs_primary.h5ad  dtoxs_ipsc.h5ad  sctox.h5ad  tenv.h5ad
         ├── tahoe.h5ad                # 67,018 × 62,710 CSR int32 (25.8 GB, local)
         └── tables/                   # seven crosswalk tables (ticket #16)
 ```
 
-The four CM corpora (`dtoxs_primary.h5ad`, `dtoxs_ipsc.h5ad`, `sctox.h5ad`,
-`tenv.h5ad`), the seven tables and `output/corpus/v2/README.md` do not exist
-yet. No corpus is rebuilt from this skeleton state.
+## Corpus contract (ADR 0033 §2–3, §10)
 
-## What this step owns (target contract, ADR 0033)
+| corpus | rows (pert / control / blank) | chemicals | native gene axis | container |
+|---|---|---|---|---|
+| `dtoxs_primary` | 779 (677 / 102 / 0) | 47 | 26,328 | dense `int32` X + dense `float32` layer |
+| `dtoxs_ipsc` | 312 (296 / 16 / 0) | 37 | 26,328 | same |
+| `sctox` | 3,072 (2,520 / 552 / 0) | 42 | 31,880 | same |
+| `tenv` | 4,510 (4,206 / 272 / 32) | 460 | 19,613 | same |
+| `tahoe` | 67,018 (65,618 / 1,400 / 0) | 379 | 62,710 | CSR `int32` + CSR `float32` layer |
 
-`X` = summed raw counts (`int32`), `layers['log1p_cp10k'] = log1p(1e4·x/row_sum)`
-(`float32`), native gene axis per source, a CM `obs` contract for the four CM
-corpora and the Tahoe-native nine-column `obs` for `tahoe`, empty
-`uns`/`obsm`/`varm`/`obsp`/`varp`, no integer encodings, no tier filter, no Δ.
-The five corpora: `dtoxs_primary` 779 × 26,328 · `dtoxs_ipsc` 312 × 26,328 ·
-`sctox` 3,072 × 31,880 · `tenv` 4,510 × 19,613 · `tahoe` 67,018 × 62,710.
+Shared semantics: `X` = raw source counts **summed per resolved HGNC id**
+(non-negative `int32`, dense for the four CM corpora); one
+`layers["log1p_cp10k"] = log1p(1e4·X/row_sum)` `float32`; `var` = that source's
+native resolved axis; `uns` empty; `obsm/varm/obsp/varp` empty; no
+`pert_idx`/`cell_idx`/`dose_idx`; no Δ; no pharmacology tier filter; one row per
+raw well (Tahoe: one pseudobulk profile per plate × well × cell line). The
+18,164-gene four-source intersection is **not** a corpus universe any more: it
+is the CM projection target owned by `tables/genes.csv` (ticket #16).
+
+### Native gene axis and the 18,164 projection
+
+The axis is the unique resolved HGNC ids of the source, in first-appearance
+order over that source's raw gene ids, each represented by its canonical HGNC
+symbol (`HgncIndex.ref(hgnc_id).symbol`). Duplicate raw ids that resolve to one
+HGNC id are summed. `var` = `symbol` index plus `hgnc_id`, `entrez_id`,
+`ensembl_id`, `match_type` (resolution type of the first raw id that introduced
+the gene), so a consumer can rebuild the 18,164 projection with an identity gene
+map: join `hgnc_id` to `tables/genes.csv` and sum. Rebuilding the five frozen v1
+views this way reproduces their `content_sha256` 5/5 (dry-run 2026-11-04; the
+formal gate is ticket #17) — the corpus stores exactly the integers the v1
+writer produced before it projected.
+
+### `obs` (four CM corpora, 27 columns, index = `well`)
+
+`well, dataset_id, compound_name, drug_key, inchikey, smiles, dose_um,
+dose_source, time_h, is_control, vehicle, plate, control_group, cell_type,
+donor, replicate, atc, moa, mesh_classes, pharm_atc_moa, pharm_mesh,
+annotation_source, lib_size, n_genes_detected, cell_line, n_raw_rows, is_blank`
+— ADR 0026's 24 columns in their v1 order plus three additions.
+
+- `dataset_id` uses the v2 short ids (`sctox`, `tenv`); `control_group =
+  <dataset_id>::<plate>` uses the same new id. Ticket #17's reconstruction
+  remaps `sctox`→`screen_ctox` and `tenv`→`temp_env`.
+- `well` is the loader's string **verbatim**, so it keeps the historical id
+  prefix (`screen_ctox::…`, `temp_env::…`). This is deliberate provenance: the
+  G4 gate remaps `dataset_id`/`control_group`, not the well identity.
+- `donor` is unchanged (`NA` for the dtoxs-primary and the GEO arms). The
+  recovered raw cell-line label is backfilled into `cell_line`: `A/B/D/E` and
+  `PC-A…PC-E` for `dtoxs_primary` (the only place the label exists),
+  `MSN02-04R-CM`/`MSN09-04R-CM` for `dtoxs_ipsc`, `NA` for `sctox`/`tenv` (the
+  sources name no per-well line).
+- `n_raw_rows` records the raw design rows collapsed into that well before the
+  loader deduplicates: `dtoxs_primary` 956 → 842 wells (36 keys reused in the
+  experiment-5 sub-batches; 26 keys × 5 rows, 10 × 2 rows), 1 for every well of
+  every other source.
+- `lib_size`/`n_genes_detected` are native-axis values. A view consumer that
+  projects onto 18,164 must recompute both from the projected matrix; the v1
+  view hash depends on that, not on the corpus values.
+
+Row set: vehicle controls + technical blanks + every SMILES-resolvable
+small-molecule compound; no pharmacology tier is applied. The 8
+non-small-molecule perturbagen keys (143 wells: four DToxS biologics, four iPSC
+antibodies, the `ET-1` peptide) stay excluded with reasons, and the 32 `tenv`
+technical blanks are retained rows (`is_blank=True`, never counted as
+chemicals) — both recorded in
+`execution/build_record/excluded_compounds.csv` (promoted into
+`output/corpus/v2/tables/` by ticket #16).
+
+## Building
+
+From the repository root (the repo root is found by walking up to `.git`, never
+by counting `../..` — ADR 0030 §4):
+
+```bash
+PY=/home/chang/miniconda3/envs/arc/bin/python
+$PY stage2/02_dataset_corpus/execution/build_corpus.py --check          # raw source counts
+$PY stage2/02_dataset_corpus/execution/build_corpus.py --corpus all     # four corpora, one at a time
+$PY stage2/02_dataset_corpus/execution/build_corpus.py --corpus tenv    # one corpus
+$PY stage2/02_dataset_corpus/execution/build_corpus.py --corpus dtoxs_ipsc --repeat-check
+```
+
+Each build loads the four raw sources (the compound table is global, so
+identity cannot depend on which corpus is being written), checks
+`MemAvailable >= 12 GiB`, builds and validates one corpus at a time (G1
+structure + row/axis/chemical counts + a raw-source spot check; any failure
+aborts), then writes it with `track_times=False`, gzip and an atomic
+`.tmp`→rename. Equivalence is content-level (ADR 0033 §7): `content_sha256` is
+the v1 recipe minus `uns` (`X` bytes | layer bytes | `obs.to_csv(index=False)` |
+`var.to_csv()`); file sha256/bytes are recorded separately.
+
+Records in `execution/build_record/`:
+
+| file | contents |
+|---|---|
+| `corpus_build.json` | per corpus: rows / perturbed / control / blank / chemicals / axis, source and `n_raw_rows` provenance, dtypes, obs/var columns, `content_sha256`, file sha256, bytes, wall time, peak RSS, gate results; plus the excluded-compound accounting |
+| `excluded_compounds.csv` | 8 non-small-molecule keys (143 wells) + the 32 blank wells, with reasons |
+| `corpus_reproducibility.json` | gate G5: two builds of one corpus, identical file sha256 |
+
+Measured build (2026-11-04, `/usr/bin/time -v`, one corpus per process):
+
+| corpus | rows × axis | chemicals | bytes | wall | peak RSS | file sha256 (first 16) |
+|---|---|---|---|---|---:|---:|---|
+| `dtoxs_primary` | 779 × 26,328 | 47 | 47,402,239 | 2.4 s | 7.66 GiB | `a29540f403cb407c…` |
+| `dtoxs_ipsc` | 312 × 26,328 | 37 | 18,902,113 | 1.6 s | 7.66 GiB | `16e846212c9fc20b…` |
+| `sctox` | 3,072 × 31,880 | 42 | 164,875,596 | 11.2 s | 7.66 GiB | `c254d9096c59b7a2…` |
+| `tenv` | 4,510 × 19,613 | 460 | 255,148,955 | 11.5 s | 7.66 GiB | `a3d521f0ca0fbc73…` |
+
+The peak RSS is dominated by loading the four raw sources (~56 s per process),
+not by the matrix build. G5 PASS: `dtoxs_ipsc` written twice → identical file
+sha256 (`16e84621…`). `--verify` (G1–G6, including the v1 reconstruction gate)
+is ticket #17 and currently exits with a clear TODO.
+
+Tests (contract tests skip when the local-only h5ads are absent):
+
+```bash
+$PY -m unittest discover -s stage2/02_dataset_corpus/execution/tests -v
+```
 
 ## Moved in ticket #14
 
@@ -74,19 +183,3 @@ Move evidence (hashes, bytes, inodes, disk before/after, `_view_parts`
 reclaimed, `--check` peak RSS) is in
 `execution/build_record/tahoe_corpus_move.json` and
 `execution/build_record/tahoe_cm_schema_move.json`.
-
-## Running today
-
-From the repository root (the repo root is found by walking up to `.git`, never
-by counting `../..` — ADR 0030 §4):
-
-```bash
-PY=/home/chang/miniconda3/envs/arc/bin/python
-$PY stage2/02_dataset_corpus/execution/build_cm_datasets.py --check   # source counts
-```
-
-`--check` loads the four raw CM sources from `pert_data/` (measured 2026-11-04:
-54.8 s wall, peak RSS 7,853,744 KiB ≈ 7.49 GiB); per the execution-environment
-rule, run it under `/usr/bin/time -v` and do not run it alongside another heavy
-job. The measured result is recorded in
-`execution/build_record/tahoe_corpus_move.json`.
