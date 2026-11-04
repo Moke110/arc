@@ -41,7 +41,10 @@ The numeric corpus response class: +1 or −1 requires both the corresponding ch
 A source-dataset–drug–dose–endpoint unit within a particular condition and phenotype. Records from the same dataset with the same remaining key are grouped together, retaining all readout values rather than averaging them.
 
 **Readout sequence**:
-The numerical source measurements retained by one merged phenotype corpus sample, with their individual assay, unit, experiment, and source references still recoverable. Multiple measurements or representations do not by themselves establish independent biological replicates.
+The numerical source measurements retained by one merged phenotype corpus sample, preferring raw values and retaining author-normalized values separately. A normalized-only source retains its supplied values with that representation identified; per-value assay, unit, experiment and source references remain recoverable.
+
+**Phenotype fold change**:
+The ratio of a treated-group mean to the mean of its matched control on a compatible measurement scale, requiring a positive, valid denominator. It describes an experimental phenotype contrast rather than a transcriptomic fold change.
 
 **Model data view**:
 A selection of corpus conditions and samples, with explicitly chosen merging and aggregation rules, for a particular modeling task. These choices do not overwrite the underlying corpus measurements.

@@ -1,6 +1,6 @@
 # Numeric endpoints and source-aware readout sequences in the formal corpus
 
-**Status: accepted rule structure and grouping (2026-11-04); cutoffs and untestable-input policy under discussion**
+**Status: accepted rule structure, grouping and parameterization (2026-11-04); statistical-family and export details under discussion**
 
 The user resolved the next grill-with-docs frontier: drug time is pre-HR treatment
 duration for HR experiments; endpoint is assigned numerically using a conjunction
@@ -67,3 +67,48 @@ See [ADR 0039](0039-condition-corpus-and-model-view-separation.md),
 [ADR 0036](0036-stage3-continuous-evidence-before-direction-labels.md),
 [GLOSSARY.md](../../GLOSSARY.md), and the
 [source-evidence audit](../research/stage3-sample-count-audit.md).
+
+## Accepted parameterization (2026-11-04)
+
+The user accepted all four proposed execution choices in the next interview round:
+
+- Fold change is relative to the matched-control mean. The initial operational
+  magnitude boundaries are `FC >= 1.2` upward and `FC <= 0.8` downward. These are
+  project starting parameters, not claimed to be calibrated biological boundaries.
+- Significance uses Benjamini–Hochberg-adjusted `p_adj < 0.05`. Preserve raw p-values
+  and adjusted values with their method, comparison and family provenance. Do not
+  substitute an unadjusted threshold without an explicit rule change.
+- Exclude a candidate from the corpus when its magnitude cannot be established,
+  or when magnitude passes but the required p-value criterion cannot be evaluated.
+  Retain source material and the exclusion reason. Missing p is not silently 0,
+  1, or a nonsignificant result. Admitted corpus endpoints remain numeric.
+- Prefer raw source values for the `readout` sequence. Preserve supplied normalized
+  values separately. If only normalized values exist, retain those source values
+  as readout and mark their representation; do not invent raw values. Distinct
+  representations of one measurement do not create extra repeats.
+
+For an evaluable comparison, this gives the rule:
+
+```text
+FC >= 1.2 and p_adj < 0.05  -> endpoint = +1
+FC <= 0.8 and p_adj < 0.05  -> endpoint = -1
+otherwise                  -> endpoint = 0
+```
+
+The last branch applies only when the conjunction is decidable. If FC is known
+to lie strictly between 0.8 and 1.2, magnitude already fails and endpoint is 0
+without inventing a p-value; record unavailable test evidence as unavailable.
+If FC crosses a magnitude boundary but the significance criterion is unavailable,
+exclude the candidate rather than executing a programming-language NaN comparison
+and falling through to 0. Nonpositive/invalid control denominators do not yield
+an invented fold change.
+
+The p-value computation/acceptance route, BH family scope, handling of incomplete
+published test families, final file format and the placement of the historical
+500-observation coverage gate remain the next design frontier. No particular test
+or export format is implicitly approved by accepting the numbers above.
+
+The chosen BH cutoff is a labeling procedure, not a claim that the final
+amplitude-filtered label subset has exactly 5% false discovery rate. The numerical
+implementation must preserve procedure and assumptions; official definitions are
+in [SciPy's false-discovery-control documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.false_discovery_control.html).
