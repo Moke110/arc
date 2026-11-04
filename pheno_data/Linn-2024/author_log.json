@@ -1,0 +1,45 @@
+{
+  "upstream_identifier": "10.3390/ijms25031427",
+  "version": "PMC10855687.1",
+  "license": {
+    "status": "CC BY 4.0",
+    "evidence": "article.xml permissions; metadata.json"
+  },
+  "validation": {
+    "status": "validated_original_formats_and_sha256"
+  },
+  "dataset_id": "linn_2024",
+  "retrieved_at": "2026-11-04T13:12:26.371932+00:00",
+  "sources": [
+    {
+      "path": "article.xml",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC10855687.1/PMC10855687.1.xml",
+      "media_type": "binary/octet-stream",
+      "bytes": 77433,
+      "sha256": "ae121e2e89194fc95acb8d508dd96270e0a16f4fa750a2b30d7ecc30f36db236"
+    },
+    {
+      "path": "metadata.json",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC10855687.1/PMC10855687.1.json",
+      "media_type": "binary/octet-stream",
+      "bytes": 1147,
+      "sha256": "efd6e592f38c163bfa1b03cc1a36ef39e5e541304ba8b84e75ebe2472efab888"
+    },
+    {
+      "path": "ijms-25-01427-g003.jpg",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC10855687.1/ijms-25-01427-g003.jpg",
+      "media_type": "binary/octet-stream",
+      "bytes": 94544,
+      "sha256": "e000a8d1cb2c49e277c0c89e5c2c1b6ebc55f02f2f5e5ebb3911eb1525753700"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/linn_v1.json",
+      "sha256": "3cd9c41b267ebce47df470805852dd75c171563152563c7ccbce8442930ab42c",
+      "bytes": 27401,
+      "origin": "stage3/01_data_corpus/execution/curation/linn_v1.json; reviewed author-summary figure digitization, version1",
+      "source_image_sha256": "e000a8d1cb2c49e277c0c89e5c2c1b6ebc55f02f2f5e5ebb3911eb1525753700"
+    }
+  ]
+}

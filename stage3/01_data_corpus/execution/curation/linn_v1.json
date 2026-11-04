@@ -1,0 +1,1006 @@
+{
+  "curation_version": 1,
+  "source": "linn_2024",
+  "figure": "Fig3b",
+  "image": "ijms-25-01427-g003.jpg",
+  "dimensions": [
+    797,
+    636
+  ],
+  "readout_definition": "author reported mean technical-well MTT viability percent versus non-treated control",
+  "reported_error": "SD across3 technical replicates per point; CC50 SEM from3 independent experiments does not apply to curve points",
+  "independent_review": {
+    "reviewer": "/root",
+    "date": "2026-11-04",
+    "method": "separate visual inspection of unmodified original JPEG and every point coordinate/value table",
+    "correction": "added leftmost hiPSC remdesivir log-axis point625,309;43pixels/decade calibration; all six curves have eight nonzero points",
+    "scope": "approximate summary extraction only, no raw replicates or exact dose grid verified"
+  },
+  "controls": {
+    "hiPSC-CM:doxorubicin": {
+      "x_px": 105,
+      "y_px": 308
+    },
+    "AC16:doxorubicin": {
+      "x_px": 105,
+      "y_px": 501
+    },
+    "hiPSC-CM:panduratin A": {
+      "x_px": 350,
+      "y_px": 307
+    },
+    "AC16:panduratin A": {
+      "x_px": 350,
+      "y_px": 501
+    },
+    "hiPSC-CM:remdesivir": {
+      "status": "zero dose not plotted on this unbroken log axis; caption defines non-treated reference100%"
+    },
+    "AC16:remdesivir": {
+      "x_px": 600,
+      "y_px": 504
+    }
+  },
+  "points": [
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 1,
+      "x_px": 165,
+      "y_px": 335,
+      "readout_percent": 68,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.12,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 2,
+      "x_px": 175,
+      "y_px": 350,
+      "readout_percent": 51,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.25,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 3,
+      "x_px": 185,
+      "y_px": 361,
+      "readout_percent": 39,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.52,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 4,
+      "x_px": 194,
+      "y_px": 360,
+      "readout_percent": 40,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.0,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 5,
+      "x_px": 204,
+      "y_px": 367,
+      "readout_percent": 32,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 2.05,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 6,
+      "x_px": 214,
+      "y_px": 367,
+      "readout_percent": 32,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 4.22,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 7,
+      "x_px": 223,
+      "y_px": 366,
+      "readout_percent": 33,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 8.06,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "doxorubicin",
+      "point": 8,
+      "x_px": 232,
+      "y_px": 366,
+      "readout_percent": 33,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 15.4,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 396,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 1,
+      "x_px": 165,
+      "y_px": 514,
+      "readout_percent": 84,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.12,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 2,
+      "x_px": 175,
+      "y_px": 537,
+      "readout_percent": 59,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.25,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 3,
+      "x_px": 184,
+      "y_px": 534,
+      "readout_percent": 62,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.49,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 4,
+      "x_px": 194,
+      "y_px": 562,
+      "readout_percent": 31,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.0,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 5,
+      "x_px": 203,
+      "y_px": 582,
+      "readout_percent": 9,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.91,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 6,
+      "x_px": 213,
+      "y_px": 576,
+      "readout_percent": 16,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 3.92,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 7,
+      "x_px": 223,
+      "y_px": 580,
+      "readout_percent": 11,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 8.06,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "doxorubicin",
+      "point": 8,
+      "x_px": 233,
+      "y_px": 581,
+      "readout_percent": 10,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 16.55,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 162,
+        "log10dose0": -1,
+        "pixels_per_decade": 32
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 1,
+      "x_px": 396,
+      "y_px": 311,
+      "readout_percent": 96,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.76,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 2,
+      "x_px": 411,
+      "y_px": 310,
+      "readout_percent": 97,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.51,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 3,
+      "x_px": 426,
+      "y_px": 308,
+      "readout_percent": 99,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 2.99,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 4,
+      "x_px": 442,
+      "y_px": 303,
+      "readout_percent": 104,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 6.2,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 5,
+      "x_px": 457,
+      "y_px": 384,
+      "readout_percent": 14,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 12.28,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 6,
+      "x_px": 472,
+      "y_px": 390,
+      "readout_percent": 8,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 24.33,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 7,
+      "x_px": 487,
+      "y_px": 395,
+      "readout_percent": 2,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 48.21,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "panduratin A",
+      "point": 8,
+      "x_px": 502,
+      "y_px": 394,
+      "readout_percent": 3,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 95.54,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 397,
+      "y_hundred_px": 307,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 1,
+      "x_px": 397,
+      "y_px": 506,
+      "readout_percent": 93,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.8,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 2,
+      "x_px": 412,
+      "y_px": 511,
+      "readout_percent": 88,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.58,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 3,
+      "x_px": 429,
+      "y_px": 517,
+      "readout_percent": 81,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 3.42,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 4,
+      "x_px": 444,
+      "y_px": 531,
+      "readout_percent": 66,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 6.79,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 5,
+      "x_px": 459,
+      "y_px": 549,
+      "readout_percent": 46,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 13.45,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 6,
+      "x_px": 474,
+      "y_px": 572,
+      "readout_percent": 20,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 26.65,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 7,
+      "x_px": 489,
+      "y_px": 590,
+      "readout_percent": 0,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 52.82,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "panduratin A",
+      "point": 8,
+      "x_px": 503,
+      "y_px": 590,
+      "readout_percent": 0,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 100.0,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 402,
+        "log10dose0": 0,
+        "pixels_per_decade": 50.5
+      },
+      "y_zero_px": 590,
+      "y_hundred_px": 500,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 1,
+      "x_px": 625,
+      "y_px": 309,
+      "readout_percent": 97,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.77,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 2,
+      "x_px": 638,
+      "y_px": 310,
+      "readout_percent": 96,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.53,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 3,
+      "x_px": 651,
+      "y_px": 317,
+      "readout_percent": 88,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 3.08,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 4,
+      "x_px": 665,
+      "y_px": 321,
+      "readout_percent": 83,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 6.52,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 5,
+      "x_px": 678,
+      "y_px": 331,
+      "readout_percent": 72,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 13.07,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 6,
+      "x_px": 691,
+      "y_px": 342,
+      "readout_percent": 60,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 26.22,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 7,
+      "x_px": 703,
+      "y_px": 365,
+      "readout_percent": 34,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 49.85,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "hiPSC-CM",
+      "drug": "remdesivir",
+      "point": 8,
+      "x_px": 716,
+      "y_px": 380,
+      "readout_percent": 17,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 100.0,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 630,
+        "log10dose0": 0,
+        "pixels_per_decade": 43
+      },
+      "y_zero_px": 395,
+      "y_hundred_px": 306,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 1,
+      "x_px": 647,
+      "y_px": 511,
+      "readout_percent": 92,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 0.84,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 2,
+      "x_px": 662,
+      "y_px": 531,
+      "readout_percent": 70,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 1.63,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 3,
+      "x_px": 678,
+      "y_px": 534,
+      "readout_percent": 67,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 3.31,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 4,
+      "x_px": 694,
+      "y_px": 542,
+      "readout_percent": 58,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 6.71,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 5,
+      "x_px": 709,
+      "y_px": 547,
+      "readout_percent": 52,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 13.04,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 6,
+      "x_px": 725,
+      "y_px": 549,
+      "readout_percent": 50,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 26.49,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 7,
+      "x_px": 741,
+      "y_px": 552,
+      "readout_percent": 47,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 53.8,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    },
+    {
+      "cell": "AC16",
+      "drug": "remdesivir",
+      "point": 8,
+      "x_px": 756,
+      "y_px": 568,
+      "readout_percent": 29,
+      "readout_precision_percent": 3,
+      "dose_estimate_um": 104.53,
+      "dose_precision_relative": 0.15,
+      "dose_exact_um": null,
+      "axis": {
+        "x0": 651,
+        "log10dose0": 0,
+        "pixels_per_decade": 52
+      },
+      "y_zero_px": 594,
+      "y_hundred_px": 504,
+      "status": "independently visually reviewed approximate author summary; exact dose unresolved"
+    }
+  ]
+}
