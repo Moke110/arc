@@ -44,8 +44,13 @@ class Workflow(unittest.TestCase):
             self.assertNotEqual(process.returncode,0,process.stdout)
         return process
     def build(self,bundle=None,release='release',success=True,test_only=True):
+        selected=copy.deepcopy(self.bundle if bundle is None else bundle)
+        for record in selected['records']:
+            key=lambda other:(other['source'],other['condition'],other['phenotype'],other['assay_method'],other.get('batch'))
+            members=sorted(other['comparison_id'] for other in selected['records'] if key(other)==key(record))
+            record['statistics'].setdefault('family_members',members)
         input_path=self.directory/(release+'-input.json')
-        input_path.write_text(json.dumps(self.bundle if bundle is None else bundle))
+        input_path.write_text(json.dumps(selected))
         self.cli('build','--input',str(input_path),'--output',str(self.directory/release),
                  *(['--test-only'] if test_only else []),success=success)
         return self.directory/release
@@ -92,6 +97,87 @@ class Workflow(unittest.TestCase):
         release=self.build()
         (release/'coverage.json').write_text('{}')
         self.cli('verify','--release',str(release),'--test-only',success=False)
+
+    def test_full_bh_family_includes_small_effect_before_label_selection(self):
+        self.bundle['records']=[self.record('a',1.3,None),self.record('b',.7,None),self.record('c',1.1,None)]
+        for record,p in zip(self.bundle['records'],(.01,.04,.20)):
+            record['drug']='parent-'+record['comparison_id']
+            record['statistics'].update(p_raw=p,correction='none')
+        release=self.build()
+        comparisons=json.loads((release/'comparisons.json').read_text())
+        self.assertEqual([r['p_adjusted'] for r in comparisons],[.03,.06,.20])
+        self.assertEqual([r['endpoint'] for r in comparisons],[1,0,0])
+        families=json.loads((release/'families.json').read_text())
+        self.assertEqual(families[0]['eligible_members'],['a','b','c'])
+
+    def test_independent_paired_and_summary_routes_use_actual_experimental_units(self):
+        self.bundle['records']=[self.record('a',2,None),self.record('b',2,None),self.record('c',2,None)]
+        for record in self.bundle['records']:
+            record['batch']=record['comparison_id']
+            record['statistics'].update(correction='none',independent_units=True)
+        self.bundle['records'][0]['statistics'].update(design='independent',
+            treated_values=[1,2,3],control_values=[0,1,2],treated_unit_ids=['t1','t2','t3'],control_unit_ids=['c1','c2','c3'])
+        self.bundle['records'][1]['statistics'].update(design='paired',
+            treated_values=[2,4,7],control_values=[1,2,3],treated_unit_ids=['u1','u2','u3'],control_unit_ids=['u1','u2','u3'])
+        self.bundle['records'][2]['statistics'].update(design='independent_summary',
+            treated_summary={'mean':2,'sd':1,'n':3},control_summary={'mean':1,'sd':1,'n':3})
+        release=self.build()
+        comparisons=json.loads((release/'comparisons.json').read_text())
+        self.assertAlmostEqual(comparisons[0]['p_raw'],.2878641347266908)
+        self.assertAlmostEqual(comparisons[1]['p_raw'],.11808289631180317)
+        self.assertAlmostEqual(comparisons[2]['p_raw'],.2878641347266908)
+        self.assertEqual([r['statistical_origin'] for r in comparisons],['recomputed_Welch','recomputed_paired','recomputed_Welch_summary'])
+
+    def test_endpoint_boundaries_missing_tests_and_invalid_denominators(self):
+        cases=[('small',1.1,None,0),('large',1.3,None,None),('low',.8,.05,0),
+               ('high',1.2,.05,0),('lowmissing',.8,None,None),('highmissing',1.2,None,None),
+               ('zero',0.,.01,-1),('badcontrol',1.1,.01,None)]
+        self.bundle['records']=[]
+        for identity,fc,p,endpoint in cases:
+            record=self.record(identity,fc,p)
+            record['drug']='parent-'+identity
+            if identity=='badcontrol':
+                record['statistics']['control_mean']=0
+            self.bundle['records'].append(record)
+        release=self.build()
+        comparisons={r['comparison_id']:r for r in json.loads((release/'comparisons.json').read_text())}
+        for identity,_,_,endpoint in cases:
+            self.assertEqual(comparisons[identity]['endpoint'],endpoint,identity)
+        self.assertIsNone(comparisons['small']['p_adjusted'])
+        self.assertIn('missing_required_adjusted_p',comparisons['large']['exclusion_reasons'])
+        self.assertIn('unevaluable_fold_change',comparisons['badcontrol']['exclusion_reasons'])
+
+    def test_technical_units_unknown_pairing_and_selective_p_cannot_create_significance(self):
+        self.bundle['records']=[self.record('technical',1.3,None),self.record('paired',1.3,None),self.record('selective',1.3,None)]
+        for record in self.bundle['records']:
+            record['statistics'].update(correction='none',independent_units=True,design='independent',
+                treated_values=[1,2,3],control_values=[0,1,2],treated_unit_ids=['t','t','t'],control_unit_ids=['c','c','c'])
+        self.bundle['records'][1]['statistics'].update(design='paired',
+            treated_unit_ids=['u1','u2','u3'],control_unit_ids=['u1','u2','other'])
+        self.bundle['records'][2]['statistics'].update(p_raw=.001,family_complete=False)
+        release=self.build()
+        comparisons=json.loads((release/'comparisons.json').read_text())
+        self.assertTrue(all(record['endpoint'] is None for record in comparisons))
+        self.assertTrue(all(record['p_adjusted'] is None for record in comparisons))
+
+    def test_cross_source_and_endpoint_stay_separate_and_canonical_times_share_partition(self):
+        other=copy.deepcopy(self.bundle['sources'][0]);other['source']='fixture2'
+        self.bundle['sources'].append(other)
+        self.bundle['records'].append(self.record('c',.7,.01))
+        self.bundle['records'].append(self.record('d',1.3,.01))
+        self.bundle['records'][-1]['source']='fixture2'
+        self.bundle['records'][1]['condition']['condition_drug_time']=24.0
+        release=self.build()
+        self.assertEqual(len(self.rows(release)),3)
+        coverage=json.loads((release/'coverage.json').read_text())
+        self.assertEqual(coverage['drug_dose_union'],1)
+        self.assertEqual(len(list(release.glob('*.parquet'))),1)
+
+    def test_declared_family_cannot_omit_small_effect_record(self):
+        self.bundle['records']=[self.record('a',1.3,None),self.record('b',.7,None)]
+        for record,p in zip(self.bundle['records'],(.01,.04)):
+            record['statistics'].update(p_raw=p,correction='none',family_members=['a','b','c'])
+        self.build(success=False)
 
 if __name__=='__main__':
     unittest.main()

@@ -7,9 +7,8 @@ from collections import Counter, defaultdict
 import hashlib
 import json
 import math
-import os
+import statistics as standard_statistics
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -17,6 +16,7 @@ import tempfile
 import pyarrow as pa
 import pyarrow.parquet as pq
 import scipy
+from scipy import stats as scipy_stats
 
 CORE_CONDITION = ('condition_cell_type', 'condition_drug_time', 'condition_hypoxia_time',
                   'condition_reoxygen_time', 'condition_drug_schedule')
@@ -207,20 +207,116 @@ def validate_bundle(bundle, test_only):
     return sources
 
 
+def family_identity(record):
+    key = [record['source'], condition_record(record), record['phenotype'], record['assay_method'], record.get('batch')]
+    return 'family-' + digest(key)[:20]
+
+
+def recompute_test(stats):
+    """Summarize technical values by independently documented experimental unit."""
+    if stats.get('independent_units') is not True:
+        return None
+    design = stats.get('design')
+    if design == 'independent_summary':
+        treated, control = stats.get('treated_summary',{}), stats.get('control_summary',{})
+        for summary in (treated,control):
+            if (not finite(summary.get('mean')) or not finite(summary.get('sd')) or summary['sd'] < 0 or
+                    not isinstance(summary.get('n'),int) or isinstance(summary['n'],bool) or summary['n'] < 2):
+                return None
+        if treated['sd'] == 0 and control['sd'] == 0:
+            return None
+        outcome = scipy_stats.ttest_ind_from_stats(treated['mean'],treated['sd'],treated['n'],
+                    control['mean'],control['sd'],control['n'],equal_var=False,alternative='two-sided')
+        return float(outcome.pvalue), 'recomputed_Welch_summary', treated['mean'], control['mean']
+    if design not in ('independent','paired'):
+        return None
+    units = []
+    for side in ('treated','control'):
+        values,identities = stats.get(side+'_values'),stats.get(side+'_unit_ids')
+        if (not isinstance(values,list) or not isinstance(identities,list) or len(values)!=len(identities) or
+                not values or not all(finite(value) for value in values) or
+                not all(isinstance(identity,str) and identity for identity in identities)):
+            return None
+        grouped=defaultdict(list)
+        for identity,value in zip(identities,values):
+            grouped[identity].append(value)
+        means={identity:standard_statistics.mean(values) for identity,values in grouped.items()}
+        if len(means)<2:
+            return None
+        units.append(means)
+    treated,control=units
+    if design=='paired':
+        if set(treated)!=set(control):
+            return None
+        identities=sorted(treated)
+        tvalues=[treated[identity] for identity in identities]
+        cvalues=[control[identity] for identity in identities]
+        if standard_statistics.variance([a-b for a,b in zip(tvalues,cvalues)])==0:
+            return None
+        outcome=scipy_stats.ttest_rel(tvalues,cvalues,alternative='two-sided')
+        origin='recomputed_paired'
+    else:
+        if set(treated)&set(control):
+            return None
+        tvalues,cvalues=list(treated.values()),list(control.values())
+        if standard_statistics.variance(tvalues)==0 and standard_statistics.variance(cvalues)==0:
+            return None
+        outcome=scipy_stats.ttest_ind(tvalues,cvalues,equal_var=False,alternative='two-sided')
+        origin='recomputed_Welch'
+    return float(outcome.pvalue),origin,standard_statistics.mean(tvalues),standard_statistics.mean(cvalues)
+
+
 def test_result(record):
-    """First slice accepts applicable author BH results; raw/recomputed tests follow."""
     stats = record.get('statistics', {})
-    p_adjusted = stats.get('p_adjusted')
-    valid = (probability(p_adjusted) and stats.get('correction') == 'BH' and
-             stats.get('family_matches') is True and stats.get('family_complete') is True and
-             stats.get('sidedness') == 'two-sided' and bool(stats.get('method')) and bool(stats.get('evidence')))
-    return {'p_raw': None, 'p_adjusted': p_adjusted if valid else None,
-            'statistical_origin': 'source_BH' if valid else 'unavailable',
-            'test_missing_reason': None if valid else 'no_applicable_numerical_test'}
+    result = {'p_raw': None, 'p_adjusted': None, 'statistical_origin': 'unavailable',
+              'test_missing_reason': 'no_applicable_numerical_test'}
+    known = (stats.get('sidedness') == 'two-sided' and bool(stats.get('method')) and
+             bool(stats.get('evidence')) and bool(record.get('batch')))
+    if not known:
+        return result
+    if (probability(stats.get('p_adjusted')) and stats.get('correction') == 'BH' and
+            stats.get('family_matches') is True and stats.get('family_complete') is True):
+        return dict(result, p_adjusted=float(stats['p_adjusted']), statistical_origin='source_BH', test_missing_reason=None)
+    if probability(stats.get('p_raw')) and stats.get('correction') in ('none','raw'):
+        return dict(result, p_raw=float(stats['p_raw']), statistical_origin='source_raw_p',
+                    test_missing_reason='family_adjustment_unavailable')
+    recomputed = recompute_test(stats)
+    if recomputed is not None and probability(recomputed[0]):
+        return dict(result,p_raw=recomputed[0],statistical_origin=recomputed[1],
+                    tested_treated_mean=recomputed[2],tested_control_mean=recomputed[3],
+                    test_missing_reason='family_adjustment_unavailable')
+    return result
+
+
+def adjusted_results(bundle):
+    results = {record['comparison_id']: test_result(record) for record in bundle['records']}
+    by_family = defaultdict(list)
+    for record in bundle['records']:
+        by_family[family_identity(record)].append(record)
+    for records in by_family.values():
+        actual_members = sorted(record['comparison_id'] for record in records)
+        for record in records:
+            result = results[record['comparison_id']]
+            declared = record.get('statistics',{}).get('family_members')
+            if declared is not None and (not isinstance(declared,list) or sorted(declared) != actual_members):
+                raise ValueError('Declared BH family membership differs from frozen comparisons')
+            if declared is None and result['p_adjusted'] is not None:
+                result.update(p_adjusted=None, statistical_origin='unavailable', test_missing_reason='undeclared_BH_family')
+        eligible = [record for record in records if probability(results[record['comparison_id']]['p_raw'])]
+        complete = all(record.get('statistics',{}).get('family_complete') is True and
+                       record.get('statistics',{}).get('family_matches') is True and
+                       record.get('statistics',{}).get('family_members') == actual_members for record in eligible)
+        if eligible and complete:
+            adjusted = scipy_stats.false_discovery_control([results[record['comparison_id']]['p_raw'] for record in eligible], method='bh')
+            for record,p_adj in zip(eligible,adjusted):
+                result=results[record['comparison_id']]
+                result.update(p_adjusted=float(p_adj), test_missing_reason=None)
+    return results
 
 
 def derive(bundle, test_only):
     sources = validate_bundle(bundle, test_only)
+    statistics_results = adjusted_results(bundle)
     comparisons, excluded, partitions = [], [], {}
     groups = {}
     families = {}
@@ -230,19 +326,21 @@ def derive(bundle, test_only):
         partition_key = (condition_id, record['phenotype'])
         partitions[partition_key] = {'condition_id': condition_id, 'condition': condition, 'phenotype': record['phenotype']}
         stats = record.get('statistics', {})
-        result = test_result(record)
-        family_key = [record['source'], condition, record['phenotype'], record['assay_method'], record.get('batch')]
-        family_id = 'family-' + digest(family_key)[:20]
+        result = statistics_results[record['comparison_id']]
+        family_id = family_identity(record)
         family = families.setdefault(family_id, {'family_id': family_id, 'source': record['source'],
                     'condition_id': condition_id, 'phenotype': record['phenotype'], 'assay_method': record['assay_method'],
-                    'batch': record.get('batch'), 'members': [], 'method': 'BH'})
+                    'batch': record.get('batch'), 'members': [], 'eligible_members': [], 'method': 'BH'})
         family['members'].append(record['comparison_id'])
+        if result['p_raw'] is not None or result['p_adjusted'] is not None:
+            family['eligible_members'].append(record['comparison_id'])
         reasons = list(record.get('quality_reasons', []))
         if not record.get('drug') or not record.get('identity_evidence'):
             reasons.append('unresolved_drug_identity')
         if not finite(record.get('dose')) or record['dose'] <= 0 or not record.get('dose_evidence'):
             reasons.append('unresolved_canonical_dose')
-        treated, control = stats.get('treated_mean'), stats.get('control_mean')
+        treated = result.get('tested_treated_mean', stats.get('treated_mean'))
+        control = result.get('tested_control_mean', stats.get('control_mean'))
         fc = None
         if (stats.get('scale_compatible') is True and stats.get('control_matched') is True and
                 record.get('control_evidence') and finite(treated) and treated >= 0 and finite(control) and control > 0):
@@ -293,7 +391,16 @@ def derive(bundle, test_only):
         'measurement_entries': sum(len(record['measurements']) for record in bundle['records']),
         'finite_source_values': sum(finite(m.get('value')) for record in bundle['records'] for m in record['measurements']),
         'representation_counts': dict(Counter(m['representation'] for record in bundle['records'] for m in record['measurements'])),
-        'experimental_units': len({(r['source'], m['experimental_unit']) for r in bundle['records'] for m in r['measurements'] if m.get('experimental_unit')}),
+        'experimental_units': len({(r['source'],r.get('batch'), m['experimental_unit']) for r in bundle['records'] for m in r['measurements'] if m.get('experimental_unit')}),
+        'unknown_unit_measurements': sum(m.get('experimental_unit') is None for r in bundle['records'] for m in r['measurements']),
+        'supplied_normalized_representations': sum(m.get('normalized_value') is not None for r in bundle['records'] for m in r['measurements']),
+        'fc_computable_comparisons': sum(r['fc'] is not None for r in comparisons),
+        'adjusted_p_available_comparisons': sum(r['p_adjusted'] is not None for r in comparisons),
+        'partition_coverage': [{'condition_id':p['condition_id'],'phenotype':p['phenotype'],
+            'sample_rows':len(p['rows']),
+            'class_rows':{str(label):sum(r['endpoint']==label for r in p['rows']) for label in (-1,0,1)},
+            'drug_dose_union':len({(r['drug'],r['dose']) for r in p['rows']}),
+            'distinct_drugs':len({r['drug'] for r in p['rows']})} for p in sorted(partitions.values(),key=lambda p:p['path'])],
         'sample_rows': len(rows), 'class_rows': {str(label): sum(row['endpoint'] == label for row in rows) for label in (-1,0,1)},
         'distinct_drugs': len({row['drug'] for row in rows}),
         'drug_dose_union': len({(row['condition_id'], row['phenotype'],row['drug'],row['dose']) for row in rows}),
@@ -311,7 +418,8 @@ def write_json(path, value):
 def payload(bundle, directory, test_only, frozen_rules=None):
     derived = derive(bundle, test_only)
     rules = dict(RULES, software={'python':sys.version.split()[0], 'pyarrow':pa.__version__, 'scipy':scipy.__version__},
-                 implementation_sha256=file_hash(__file__))
+                 implementation_sha256=file_hash(__file__),
+                 code_commit=subprocess.run(['git','rev-parse','HEAD'],cwd=root_path(),capture_output=True,text=True,check=True).stdout.strip())
     if frozen_rules is not None:
         if any(frozen_rules.get(key) != value for key,value in RULES.items()):
             raise ValueError('Unsupported frozen rule version or thresholds')

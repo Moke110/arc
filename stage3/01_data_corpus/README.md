@@ -3,7 +3,7 @@
 This step consumes frozen sources and declared curation evidence from
 [`pheno_data`](../../pheno_data/README.md). Code and run records belong in
 `execution/`; immutable releases belong in `output/`. The public offline
-build/verification workflow is implemented under tickets #31–#32.
+build/verification workflow is `execution/corpus.py` (tickets #31–#32).
 
 Each complete condition/phenotype partition keeps source, canonical drug, molar
 dose and numeric endpoint in its sample identity. Readouts remain numerical
@@ -44,3 +44,19 @@ a new release directory. Verification checks hashes, types, keys and evidence,
 then reconstructs labels and logical outputs offline. Recorded software/code
 versions are historical provenance; rule thresholds must match a supported rule
 version. A numerical corpus remains separate from model-view or training status.
+
+Statistics run at the original comparison before sample grouping. Numerical
+source p-values are preferred; matching complete author BH results are reused.
+Independent experimental units support two-sided Welch, paired designs support
+two-sided paired t-tests, and known independent mean/sample-SD/n supports Welch
+from summaries. Technical measurements are summarized by documented unit for the
+test while corpus readouts remain unchanged. Unknown or degenerate inputs retain
+an unavailable-test reason.
+
+BH includes all eligible tests in the complete source × full condition × phenotype
+× assay × original batch family before magnitude filtering. Exact declared family
+membership prevents selective fragments from silently becoming complete families.
+FC ≥ 1.2 or ≤ 0.8 requires adjusted p < 0.05 for ±1; strict interior FC gives 0
+without inventing missing p; invalid FC or missing required p produces exclusion.
+The input contract is documented in
+[`execution/bundle-format.md`](execution/bundle-format.md).
