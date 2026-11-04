@@ -419,7 +419,7 @@ def payload(bundle, directory, test_only, frozen_rules=None):
     derived = derive(bundle, test_only)
     rules = dict(RULES, software={'python':sys.version.split()[0], 'pyarrow':pa.__version__, 'scipy':scipy.__version__},
                  implementation_sha256=file_hash(__file__),
-                 code_commit=subprocess.run(['git','rev-parse','HEAD'],cwd=root_path(),capture_output=True,text=True,check=True).stdout.strip())
+                 code_commit=subprocess.run(['git','log','-1','--format=%H','--',str(Path(__file__).resolve().relative_to(root_path()))],cwd=root_path(),capture_output=True,text=True,check=True).stdout.strip())
     if frozen_rules is not None:
         if any(frozen_rules.get(key) != value for key,value in RULES.items()):
             raise ValueError('Unsupported frozen rule version or thresholds')
