@@ -103,7 +103,11 @@ BUILT_FROM = "stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad"
 #: 06.3 input contract.  `--verify` replays the projection and compares to this.
 RECORDED_CONTENT_SHA256 = "476812c09d06c29e56069a3a1e670834384abb524a9468dc596229b5cbcbf407"
 PSEUDOBULK_UNIT = "(plate, well, cell_line)"
-CORPUS_VERSION = "v1"
+#: The corpus this builder now reads is v2 (`02_dataset_corpus/output/corpus/v2/`).
+#: A rebuild therefore writes `corpus_version: v2` into `manifest.csv`; the
+#: already-frozen `output/pretrain_view/manifest.csv` from 2026-11-01 records
+#: `v1` and is **not** rewritten — frozen evidence keeps its historical strings.
+CORPUS_VERSION = "v2"
 
 N_VIEW_GENES = 18_164
 N_VIEW_OBS = 67_018
@@ -680,7 +684,7 @@ def assemble(parts: list[Path], var: pd.DataFrame, obs, control_mean: pd.DataFra
             x_data[nz0:nz0 + part_nnz] = values
             x_indices[nz0:nz0 + part_nnz] = indices
             # same formula as the frozen CM view writer
-            # (stage2/_frozen/cm-data-v1/execution/cmdata/views.py): counts / lib_size * 1e4
+            # (stage2/_frozen/cm-data-v1/execution/views.py): counts / lib_size * 1e4
             lib_per_nnz = np.repeat(data["row_sum"], np.diff(part_ptr))
             log1p = np.log1p(values / lib_per_nnz * 1e4).astype(np.float32)
             l_data[nz0:nz0 + part_nnz] = log1p

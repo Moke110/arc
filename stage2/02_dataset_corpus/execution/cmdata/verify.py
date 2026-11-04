@@ -1,9 +1,12 @@
 """Executable verification gates G1-G6 for the v2 dataset corpus (ticket #17).
 
 ``build_corpus.py --verify`` runs these gates **reading only from disk**: it
-never loads a raw source for G1-G4/G6 and never writes into ``output/``.  The
-only write outside ``execution/build_record/`` is gate G5's temporary corpus,
-which is deleted afterwards.
+never loads a raw source for G1-G4/G6.  It writes exactly three things: the
+``## Gate results`` section of ``output/corpus/v2/README.md``, the coverage
+record ``execution/build_record/corpus_coverage.json`` (the README hash plus the
+G4-G6 fields) and ``execution/build_record/verify.json``.  Gate G5's temporary
+corpus goes to a temp directory under ``execution/`` and is deleted afterwards;
+no corpus, table or other artifact under ``output/`` is written.
 
 ======================  ===================================================
 G1 structure            the five corpora: unique index; non-negative integer
@@ -1122,7 +1125,8 @@ def _write_verify_record(payload: dict) -> dict:
 
 
 def run_verify(command: str | None = None) -> int:
-    """Run G1-G6, print one line per gate, write ``verify.json``; 0 iff all pass."""
+    """Run G1-G6, print one line per gate, write ``verify.json`` and refresh the
+    coverage README's gate section + the coverage record; 0 iff all pass."""
     started = time.time()
     print("Stage 2 dataset corpus verification — gates G1-G6 (ticket #17)")
     available = _available_gib()

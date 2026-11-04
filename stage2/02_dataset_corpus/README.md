@@ -165,6 +165,12 @@ in 76.8 s at 7.66 GiB peak RSS; **all six gates PASS** — G4 reproduces the 5/5
 frozen v1 `content_sha256` values (full record:
 `execution/build_record/verify.json`).
 
+`--verify` reads only from disk and writes exactly three things: the
+`## Gate results` section of `output/corpus/v2/README.md`, the README hash plus
+the G4–G6 fields of `execution/build_record/corpus_coverage.json`, and
+`execution/build_record/verify.json`. No corpus, table or other artifact under
+`output/` is written (G5's temporary corpus is deleted).
+
 ## Tables and coverage README (ticket #16)
 
 `output/corpus/v2/tables/` holds the seven crosswalk tables and
