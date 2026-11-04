@@ -71,3 +71,22 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
 Stage 2's current state, benchmark results, and selection constraints are written up in
 `stage2/README.md` (agent routing: `stage2/AGENTS.md`); its plan and the `cm_bench_v1`
 benchmark are archived under `stage2/_archive/`, so this roadmap no longer duplicates them.
+
+## Stage 3 — cardiomyocyte phenotype direction prediction (planning)
+
+Predict the direction of change (+1 / 0 / −1) of one phenotype readout under one
+specified experimental condition from the drug-induced perturbome predicted by a
+Stage 2 model. Input representation and model design remain undecided.
+
+The first effort plans the drug–phenotype experimental database: 24–48 h drug
+exposure followed by MTT/CCK8, the same exposure followed by hypoxia/reoxygenation
+and MTT/CCK8, and other single readouts with at least 500 non-repeat drug–readout
+observations under comparable conditions. It does not require paired measured
+transcriptomes or process Stage 2 predictions. Scope and counting boundaries are
+recorded in [ADR 0034](adr/0034-stage3-phenotype-data-boundary.md).
+
+The canonical decision index is the
+[Stage 3 phenotype-database wayfinder map](https://github.com/Moke110/arc/issues/21).
+It tracks source feasibility, inclusion strata, counting and deduplication, control
+and direction evidence, and the curation contract. It precedes the repository's
+spec and implementation workflow; production data ingestion has not started.

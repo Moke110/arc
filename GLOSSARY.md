@@ -20,6 +20,19 @@ _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 **Stage 2 tree**:
 The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
 
+**Stage 3**:
+The AICM stage that predicts the direction of change of one cardiomyocyte phenotype readout under one specified experimental condition from a drug-induced perturbome. Its first effort establishes the drug–phenotype data foundation; the perturbome will come from Stage 2 model predictions.
+
+### Stage 3 phenotype data
+
+**Phenotype observation**:
+A drug-associated measurement of one cardiomyocyte readout under a documented experimental condition, with its experimental source and reference control retained. Multiple doses, times, cell models, and repeats must remain distinguishable.
+_Avoid_: independent sample (without a counting definition)
+
+**Readout direction**:
+An increase, no change, or decrease in one measured phenotype readout relative to its specified control. The direction describes the readout itself; whether that direction implies benefit depends on the readout and condition.
+_Avoid_: efficacy label (when only a measurement direction is known)
+
 ### External data provenance
 
 The repository has four external-source categories — `pert_data/`, `pert_model/`,
