@@ -179,5 +179,41 @@ class Workflow(unittest.TestCase):
             record['statistics'].update(p_raw=p,correction='none',family_members=['a','b','c'])
         self.build(success=False)
 
+    def test_coverage_separates_sources_partitions_and_unknown_independence(self):
+        self.bundle['sources'].append({'source':'not-acquired','test_only':True,
+                                      'status':'unavailable','assets':[],'reason':'bounded download failure'})
+        self.bundle['records'][0]['measurements'][0]['experimental_unit']=None
+        excluded=self.bundle['records'][1]
+        excluded['drug']=None
+        excluded['statistics']['control_matched']=False
+        excluded['quality_reasons']=['pharmacology_unresolved']
+        self.bundle['source_audits']={'fixture':{'all_doses':2,'control_gap':'not published'}}
+        release=self.build()
+        self.assertEqual(json.loads((release/'source_audits.json').read_text()),self.bundle['source_audits'])
+        coverage=json.loads((release/'coverage.json').read_text())
+        self.assertEqual(coverage['source_status_counts'],{'archived':1,'unavailable':1})
+        self.assertEqual(coverage['archived_source_count'],1)
+        self.assertEqual(coverage['unavailable_source_count'],1)
+        source=coverage['per_source']['fixture']
+        self.assertEqual(source['measurement_entries'],2)
+        self.assertEqual(source['finite_source_values'],2)
+        self.assertEqual(source['known_unit_count'],1)
+        self.assertEqual(source['unknown_unit_measurements'],1)
+        self.assertEqual(source['experimental_units_status'],'partially_known')
+        self.assertIsNone(source['independent_experimental_units'])
+        self.assertEqual(source['independence_unknown_entries'],2)
+        self.assertEqual(source['identity_eligible_comparisons'],1)
+        self.assertEqual(source['dose_eligible_comparisons'],2)
+        self.assertEqual(source['fc_computable_comparisons'],1)
+        self.assertEqual(source['admitted_comparisons'],1)
+        self.assertEqual(source['excluded_comparisons'],1)
+        self.assertEqual(source['class_rows'],{'-1':0,'0':0,'1':1})
+        self.assertEqual(source['drug_dose_union'],1)
+        self.assertEqual(coverage['partition_coverage'][0]['measurement_entries'],2)
+        self.assertEqual(coverage['partition_coverage'][0]['excluded_comparisons'],1)
+        self.assertEqual(coverage['per_source']['not-acquired']['assessment_status'],'not_run')
+        self.assertEqual(source['exclusion_reasons_overlapping']['unresolved_drug_identity'],1)
+        self.assertEqual(source['exclusion_reasons_overlapping']['unevaluable_fold_change'],1)
+
 if __name__=='__main__':
     unittest.main()

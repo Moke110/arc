@@ -129,13 +129,13 @@ def validate_bundle(bundle, test_only):
             entry = registered.get(name)
             if not entry or source.get('item') != 'pheno_data/' + entry['item']:
                 raise ValueError('Unregistered production dataset')
-            if source.get('status') == 'unavailable':
+            if source.get('status') in ('candidate','unavailable'):
                 if entry['status'] not in ('candidate','unavailable'):
                     raise ValueError('Active source cannot be silently marked unavailable')
             elif entry['status'] != 'active':
                 raise ValueError('Production records require active archived source')
         sources[name] = source
-        if source.get('status') == 'unavailable':
+        if source.get('status') in ('candidate','unavailable'):
             if source.get('assets') or not source.get('reason'):
                 raise ValueError('Unavailable source must have reason and no verified assets')
             continue
@@ -172,7 +172,7 @@ def validate_bundle(bundle, test_only):
             assets[asset['path']] = asset['sha256']
     seen_comparisons, seen_measurements = set(), set()
     for record in bundle['records']:
-        if record['source'] not in sources or sources[record['source']].get('status') == 'unavailable':
+        if record['source'] not in sources or sources[record['source']].get('status') in ('candidate','unavailable'):
             raise ValueError('Record references unknown/unavailable source')
         comparison_id = record['comparison_id']
         if not comparison_id or comparison_id in seen_comparisons:
@@ -314,6 +314,60 @@ def adjusted_results(bundle):
     return results
 
 
+def coverage_summary(comparisons, rows):
+    """Count evidence and admission at one declared source/condition scope."""
+    measurements = [(record,measurement) for record in comparisons for measurement in record['measurements']]
+    units = {(record['source'],record.get('batch'),measurement['experimental_unit'])
+             for record,measurement in measurements if measurement.get('experimental_unit')}
+    unknown_units = sum(not measurement.get('experimental_unit') for _,measurement in measurements)
+    independent = [(record,measurement) for record,measurement in measurements
+                   if measurement.get('experimental_unit') and
+                   (measurement.get('experimental_unit_independence') == 'independent' or
+                    record.get('statistics',{}).get('independent_units') is True)]
+    unknown_independence = len(measurements)-len(independent)
+    independent_units = {(r['source'],r.get('batch'),m['experimental_unit']) for r,m in independent}
+    if not measurements:
+        units_status = 'no_measurements'
+    elif unknown_units == len(measurements):
+        units_status = 'unknown'
+    elif unknown_units:
+        units_status = 'partially_known'
+    else:
+        units_status = 'known_identifiers'
+    identity_eligible = lambda record: bool(record.get('drug') and record.get('identity_evidence'))
+    dose_eligible = lambda record: finite(record.get('dose')) and record['dose'] > 0 and bool(record.get('dose_evidence'))
+    return {
+        'assessment_status':'assessed' if comparisons else 'not_run',
+        'comparisons':len(comparisons),
+        'measurement_entries':len(measurements),
+        'finite_source_values':sum(finite(m.get('value')) for _,m in measurements),
+        'representation_counts':dict(Counter(m['representation'] for _,m in measurements)),
+        'known_unit_count':len(units),
+        'unknown_unit_measurements':unknown_units,
+        'experimental_units':len(units) if not unknown_units else None,
+        'experimental_units_status':units_status,
+        'documented_independent_unit_count':len(independent_units),
+        'independence_unknown_entries':unknown_independence,
+        'independent_experimental_units':len(independent_units) if not unknown_independence else None,
+        'independence_status':'not_run' if not measurements else ('unknown_or_incomplete' if unknown_independence else 'documented'),
+        'supplied_normalized_representations':sum(m.get('normalized_value') is not None for _,m in measurements),
+        'identity_eligible_comparisons':sum(identity_eligible(r) for r in comparisons),
+        'dose_eligible_comparisons':sum(dose_eligible(r) for r in comparisons),
+        'identity_and_dose_eligible_comparisons':sum(identity_eligible(r) and dose_eligible(r) for r in comparisons),
+        'fc_computable_comparisons':sum(r['fc'] is not None for r in comparisons),
+        'raw_p_available_comparisons':sum(r['p_raw'] is not None for r in comparisons),
+        'adjusted_p_available_comparisons':sum(r['p_adjusted'] is not None for r in comparisons),
+        'admitted_comparisons':sum(not r['exclusion_reasons'] for r in comparisons),
+        'excluded_comparisons':sum(bool(r['exclusion_reasons']) for r in comparisons),
+        'exclusion_reasons_overlapping':dict(Counter(reason for r in comparisons for reason in r['exclusion_reasons'])),
+        'exclusion_count_semantics':'One comparison may have multiple reasons; reason counts overlap and must not be summed as mutually exclusive attrition.',
+        'sample_rows':len(rows),
+        'class_rows':{str(label):sum(row['endpoint']==label for row in rows) for label in (-1,0,1)},
+        'drug_dose_union':len({(r['condition_id'],r['phenotype'],r['drug'],r['dose']) for r in rows}),
+        'distinct_drugs':len({r['drug'] for r in rows}),
+        'count_scope':'Drug-dose union preserves complete condition/phenotype, removes source/endpoint; unit counts identify known units and separately disclose unknown independence.'}
+
+
 def derive(bundle, test_only):
     sources = validate_bundle(bundle, test_only)
     statistics_results = adjusted_results(bundle)
@@ -386,27 +440,34 @@ def derive(bundle, test_only):
         partition['rows'] = [row for row in rows if row['condition_id'] == partition['condition_id'] and row['phenotype'] == partition['phenotype']]
         partition['path'] = partition['condition_id'] + '-' + digest(partition['phenotype'])[:12] + '.parquet'
         partition['data_status'] = 'numerically_valid_small_corpus' if partition['rows'] else 'empty_after_QC'
-    coverage = {'source_count': len(sources), 'source_status': {name: source.get('status', 'archived') for name, source in sources.items()},
-        'comparisons': len(comparisons), 'admitted_comparisons': len(comparisons)-len(excluded), 'excluded_comparisons': len(excluded),
-        'measurement_entries': sum(len(record['measurements']) for record in bundle['records']),
-        'finite_source_values': sum(finite(m.get('value')) for record in bundle['records'] for m in record['measurements']),
-        'representation_counts': dict(Counter(m['representation'] for record in bundle['records'] for m in record['measurements'])),
-        'experimental_units': len({(r['source'],r.get('batch'), m['experimental_unit']) for r in bundle['records'] for m in r['measurements'] if m.get('experimental_unit')}),
-        'unknown_unit_measurements': sum(m.get('experimental_unit') is None for r in bundle['records'] for m in r['measurements']),
-        'supplied_normalized_representations': sum(m.get('normalized_value') is not None for r in bundle['records'] for m in r['measurements']),
-        'fc_computable_comparisons': sum(r['fc'] is not None for r in comparisons),
-        'adjusted_p_available_comparisons': sum(r['p_adjusted'] is not None for r in comparisons),
-        'partition_coverage': [{'condition_id':p['condition_id'],'phenotype':p['phenotype'],
-            'sample_rows':len(p['rows']),
-            'class_rows':{str(label):sum(r['endpoint']==label for r in p['rows']) for label in (-1,0,1)},
-            'drug_dose_union':len({(r['drug'],r['dose']) for r in p['rows']}),
-            'distinct_drugs':len({r['drug'] for r in p['rows']})} for p in sorted(partitions.values(),key=lambda p:p['path'])],
-        'sample_rows': len(rows), 'class_rows': {str(label): sum(row['endpoint'] == label for row in rows) for label in (-1,0,1)},
-        'distinct_drugs': len({row['drug'] for row in rows}),
-        'drug_dose_union': len({(row['condition_id'], row['phenotype'],row['drug'],row['dose']) for row in rows}),
-        'exclusion_reasons_overlapping': dict(Counter(reason for entry in excluded for reason in entry['reasons'])),
-        'model_view_500_assessment': 'not_run', 'training_status': 'not_trained',
-        'scope': 'Drug-dose union is within complete condition/phenotype; source and endpoint removed.'}
+    coverage = coverage_summary(comparisons,rows)
+    coverage.update(source_count=len(sources),
+        source_status={name:source.get('status','archived') for name,source in sources.items()},
+        source_status_counts=dict(Counter(source.get('status','archived') for source in sources.values())),
+        archived_source_count=sum(source.get('status','archived') in ('archived','active') for source in sources.values()),
+        candidate_source_count=sum(source.get('status')=='candidate' for source in sources.values()),
+        unavailable_source_count=sum(source.get('status')=='unavailable' for source in sources.values()),
+        model_view_500_assessment='not_run',training_status='not_trained',
+        scope='Drug-dose union is within complete condition/phenotype; source and endpoint removed.')
+    coverage['partition_coverage']=[]
+    for partition in sorted(partitions.values(),key=lambda p:p['path']):
+        subset=[r for r in comparisons if r['condition_id']==partition['condition_id'] and r['phenotype']==partition['phenotype']]
+        coverage['partition_coverage'].append(dict(coverage_summary(subset,partition['rows']),
+                condition_id=partition['condition_id'],phenotype=partition['phenotype'],condition=partition['condition']))
+    coverage['per_source']={}
+    for name,source in sorted(sources.items()):
+        subset=[r for r in comparisons if r['source']==name]
+        selected=[r for r in rows if r['source']==name]
+        summary=dict(coverage_summary(subset,selected),source=name,status=source.get('status','archived'))
+        summary['partition_coverage']=[]
+        for partition in sorted(partitions.values(),key=lambda p:p['path']):
+            partition_comparisons=[r for r in subset if r['condition_id']==partition['condition_id'] and r['phenotype']==partition['phenotype']]
+            if not partition_comparisons:
+                continue
+            partition_rows=[r for r in selected if r['condition_id']==partition['condition_id'] and r['phenotype']==partition['phenotype']]
+            summary['partition_coverage'].append(dict(coverage_summary(partition_comparisons,partition_rows),
+                  condition_id=partition['condition_id'],phenotype=partition['phenotype']))
+        coverage['per_source'][name]=summary
     return {'partitions': sorted(partitions.values(), key=lambda p:p['path']), 'comparisons': comparisons,
             'families': sorted(families.values(), key=lambda f:f['family_id']), 'exclusions': excluded, 'coverage': coverage}
 
@@ -430,6 +491,7 @@ def payload(bundle, directory, test_only, frozen_rules=None):
         'endpoint':[-1,0,1], 'readout':'nonempty finite float64 list aligned with annotations',
         'key':['condition_id','phenotype','source','drug','dose','endpoint']})
     write_json(directory/'source_registry.json',bundle['sources'])
+    write_json(directory/'source_audits.json',bundle.get('source_audits',{}))
     for name in ('comparisons','families','exclusions','coverage'):
         write_json(directory/(name+'.json'), derived[name])
     partitions = []

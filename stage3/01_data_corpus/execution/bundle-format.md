@@ -17,3 +17,26 @@ Source-specific adapter modules emit this bundle; corpus.py owns validation, sta
 Raw source p: method+sidedness='two-sided'+evidence+batch known, `p_raw` [0,1], `correction` 'none' or 'raw'. Matching author BH: p_adjusted, correction 'BH', matching/complete flags and exact declaration. No invented p from text.
 Recomputation: `independent_units:true` and `design` 'independent'/'paired' with `treated_values`, `control_values`, `treated_unit_ids`, `control_unit_ids` lists. Same unit repeated means technical observations summarized only for test; retained measurements unchanged. Paired requires identical unit key sets; independent requires disjoint IDs. At least 2 independent units each. Or `design:'independent_summary'`, `treated_summary` and `control_summary` each `{mean, sd, n}` with corrected sample SD, integer independent n>=2. Degenerate/unknown designs produce no numerical test. Recomputed means also drive FC, avoiding inconsistent duplicate summaries. Control match and compatible scale evidence still required.
 All measurement extra fields retained verbatim in `source_metadata` JSON and comparisons ledger. Readout representation raw/normalized_only/summary.
+
+
+# Coverage and source audits
+Optional top-level `source_audits` is frozen into `source_audits.json` and the
+release checksum inventory. It carries adapter-derived original source counts,
+coordinate/QC audits and limitations, independently of corpus admission counts.
+
+`coverage.json` reports global, `per_source`, and complete condition/phenotype
+`partition_coverage` scopes. Per-source summaries also carry their partition
+breakdown. Every scope separates measurement entries/finite values, known unit
+identifiers, unknown independence, identity/dose eligibility, computable FC,
+raw/adjusted test availability, admitted/excluded comparisons, sample class rows,
+distinct drugs and the drug-dose union with source/endpoint removed. Exclusion
+reason counts overlap; they are not a mutually exclusive attrition sum.
+
+`known_unit_count` counts documented identifiers. `experimental_units` is null
+when identifiers are incomplete. `independent_experimental_units` remains null
+when any entry has unknown independence; `documented_independent_unit_count` and
+`independence_unknown_entries` show the observed evidence separately. A known
+identifier establishes independence only with `experimental_unit_independence:
+"independent"` or the comparison's documented `statistics.independent_units:true`.
+No-measurement sources carry `assessment_status:not_run`; archived, candidate and
+unavailable source counts remain separate.
