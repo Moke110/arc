@@ -3,11 +3,13 @@
 import argparse
 import hashlib
 import json
+from decimal import Decimal
 from pathlib import Path
 
 ROOT=next(p for p in Path(__file__).resolve().parents if (p/'.git').exists())
 HERE=Path(__file__).resolve().parent
-SOURCES={'linn_2024':{'item':'Linn-2024','curation':'linn_v1.json','image':'ijms-25-01427-g003.jpg','method':'MTT'}}
+SOURCES={'linn_2024':{'item':'Linn-2024','curation':'linn_v1.json','image':'ijms-25-01427-g003.jpg','method':'MTT'},
+         'liu_2021':{'item':'Liu-2021','curation':'liu_v1.json','image':'FEB4-11-2966-g004.jpg','method':'CCK8'}}
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -58,7 +60,7 @@ def linn_records(source,data,config):
     records=[]
     for index,point in enumerate(data['points'],1):
         identity=f'{source}-Fig3b-{index:02}'
-        cond=condition(point['cell'],48,0,0,condition_species='Homo sapiens',condition_model='MUi019-A' if point['cell']=='hiPSC-CM' else 'AC16',condition_infection='absent in cytotoxicity experiment',condition_vehicle='not explicitly specified')
+        cond=condition(point['cell'],48,0,0,condition_species='Homo sapiens',condition_model='MUi019-A' if point['cell']=='hiPSC-CM' else 'AC16',condition_infection='absent in cytotoxicity experiment',condition_vehicle='not explicitly specified',condition_unresolved_context=source)
         measurement={'measurement_id':identity,'value':point['readout_percent'],'normalized_value':None,
             'assay_method':'MTT','unit':'percent non-treated control','representation':'summary',
             'asset':'pheno_data/Linn-2024/source/'+config['image'],'selector':f"Fig3b {point['cell']} {point['drug']} black point{point['point']} x={point['x_px']} y={point['y_px']}",
@@ -74,15 +76,45 @@ def linn_records(source,data,config):
                 'evidence':'Caption defines non-treated normalization; matched vehicle not established. Technical-well SD cannot give independent-group p; CC50 independent n does not apply.'}})
     return records
 
+def liu_records(source,data,config):
+    records=[]
+    for index,point in enumerate(data['points'],1):
+        injury=point['panel']=='2B'
+        identity=f'{source}-Fig{point["panel"]}-{index:02}'
+        control=data['controls'][point['panel']]
+        cond=condition('H9C2',24,4 if injury else 0,24 if injury else 0,
+            condition_species='Rattus norvegicus',condition_model='rat H9C2 cell line',
+            condition_vehicle='PBS comparator explicitly shown; administered solvent unconfirmed' if injury else 'unspecified zero-dose control',
+            condition_oxygen='95%N2/5%CO2 glucose-free injury;95%air/5%CO2 reoxygenation' if injury else '95%air/5%CO2',
+            condition_unresolved_context=source)
+        records.append({'comparison_id':identity,'source':source,'condition':cond,'phenotype':'cell_viability',
+            'assay_method':'CCK8','batch':'Fig'+point['panel'],'drug':'icariin',
+            'dose':float(Decimal(str(point['dose_um']))*Decimal('1e-6')),
+            'identity_evidence':'article.xml Methods names icariin (ICA), Sigma-Aldrich; unchanged named active parent, administered chemical form retained as unspecified',
+            'administered_form':'icariin; product identifier and vehicle unspecified',
+            'dose_evidence':'Original labeled µmol/L from Fig2A/B; exact decimal ×1e-6 mol/L',
+            'control_evidence':control['selector']+' in same source panel and experimental model; values on common source percentage scale. Methods explicitly expresses CCK8 absorbance as control percentage; normal reference is not HR drug control.',
+            'measurements':[{'measurement_id':identity,'value':point['readout_percent'],'normalized_value':None,
+                'assay_method':'CCK8','unit':'percent control' if not injury else 'percent normal reference',
+                'representation':'summary','asset':'pheno_data/Liu-2021/source/'+config['image'],
+                'selector':f"Fig{point['panel']} ICA{point['dose_um']}µM x={point['x_px']} y={point['y_px']}",
+                'experimental_unit':None,'extraction':point,'independent_n':None,'reported_error_type':'SD',
+                'review':data['independent_review'],'readout_scale':'author-normalized summary; raw absorbance unavailable'}],
+            'quality_reasons':[],
+            'statistics':{'treated_mean':point['readout_percent'],'control_mean':control['mean'],
+                'scale_compatible':True,'control_matched':True,'p_raw':None,'p_adjusted':None,
+                'evidence':'Approximate author means on shared source scale; mean±SD and three repetitions reported but independent unit unclear. Stars/Tukey statement does not give numerical p or BH. Small magnitude yields operational0 without a significance claim.'}})
+    return records
+
 def build_sources(selected):
     sources=[];records=[];audits={}
     for name in selected:
         context,data,config=source_context(name)
         sources.append(context)
-        current=linn_records(name,data,config)
+        current={'linn_2024':linn_records,'liu_2021':liu_records}[name](name,data,config)
         records.extend(current)
         audits[name]={'curation_version':data['curation_version'],'source_comparisons':len(current),
-            'independent_review':data['independent_review'],'status':'archived and fully extracted; exact dose grid unresolved; public build determines admission'}
+            'independent_review':data['independent_review'],'status':'archived and independently extracted; public build determines admission'}
     return {'schema_version':1,'sources':sources,'records':records,'source_audits':audits}
 
 if __name__=='__main__':

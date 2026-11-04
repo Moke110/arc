@@ -1,0 +1,161 @@
+{
+  "curation_version": 1,
+  "source": "liu_2021",
+  "figure": "Fig2A/B",
+  "image": "FEB4-11-2966-g004.jpg",
+  "image_dimensions": [
+    710,
+    1013
+  ],
+  "points": [
+    {
+      "panel": "2A",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 2.5,
+      "x_px": 79,
+      "y_px": 73,
+      "readout_percent": 99,
+      "precision_percent": 3,
+      "control_percent": 100,
+      "control_kind": "zero-dose",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2A",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 5,
+      "x_px": 103,
+      "y_px": 76,
+      "readout_percent": 96,
+      "precision_percent": 3,
+      "control_percent": 100,
+      "control_kind": "zero-dose",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2A",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 10,
+      "x_px": 127,
+      "y_px": 72,
+      "readout_percent": 100,
+      "precision_percent": 3,
+      "control_percent": 100,
+      "control_kind": "zero-dose",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2A",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 20,
+      "x_px": 152,
+      "y_px": 74,
+      "readout_percent": 98,
+      "precision_percent": 3,
+      "control_percent": 100,
+      "control_kind": "zero-dose",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2B",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 2.5,
+      "x_px": 300,
+      "y_px": 115,
+      "readout_percent": 52,
+      "precision_percent": 3,
+      "control_percent": 40,
+      "control_kind": "H/R+PBS",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2B",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 5,
+      "x_px": 318,
+      "y_px": 105,
+      "readout_percent": 63,
+      "precision_percent": 3,
+      "control_percent": 40,
+      "control_kind": "H/R+PBS",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2B",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 10,
+      "x_px": 336,
+      "y_px": 93,
+      "readout_percent": 77,
+      "precision_percent": 3,
+      "control_percent": 40,
+      "control_kind": "H/R+PBS",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    },
+    {
+      "panel": "2B",
+      "cell": "H9C2",
+      "drug": "icariin",
+      "dose_um": 20,
+      "x_px": 355,
+      "y_px": 90,
+      "readout_percent": 80,
+      "precision_percent": 3,
+      "control_percent": 40,
+      "control_kind": "H/R+PBS",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_repetitions": 3
+    }
+  ],
+  "independent_review": {
+    "reviewer": "/root",
+    "date": "2026-11-04",
+    "method": "separate original JPEG and per-point coordinate table inspection",
+    "scope": "all8 approximate single-drug summaries checked within\u00b13percent; no raw replicates or exact p inferred"
+  },
+  "controls": {
+    "2A": {
+      "selector": "Fig2A0\u00b5M icariin",
+      "mean": 100,
+      "y_px": 72,
+      "unit": "percent control",
+      "vehicle": "unspecified"
+    },
+    "2B": {
+      "selector": "Fig2B H/R+PBS",
+      "mean": 40,
+      "y_px": 126,
+      "unit": "percent normal reference",
+      "note": "Actual experimental model control, not normal100 reference; PBS solvent role not independently asserted"
+    }
+  },
+  "excluded_panels": [
+    "Fig3 erastin mechanism combination",
+    "Fig5 Znpp mechanism combination (g002.jpg, not Fig2)"
+  ],
+  "protocol": "24h drug;HR4h glucose-free95%N2/5%CO2 then24hreoxygenation95%air/5%CO2; persistenceunknown",
+  "error": "caption SD,3 repetitions; independent experimental unit unclear",
+  "uninterpretable_source_statement": "ICA did not affect the cell viability of normal H9C2 cells (P < 0.01). This conflicting sentence does not establish an exact p."
+}

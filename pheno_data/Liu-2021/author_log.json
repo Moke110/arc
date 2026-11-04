@@ -1,0 +1,41 @@
+{
+  "dataset_id": "liu_2021",
+  "upstream_identifier": "10.1002/2211-5463.13276",
+  "version": "PMC8564343.1",
+  "retrieved_at": "2026-11-04T13:03:15.140024+00:00",
+  "acquisition_note": "Original primary bytes obtained during this run in /tmp, archived unchanged; later live acquisition stalled before writing source files",
+  "sources": [
+    {
+      "path": "article.xml",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8564343.1/PMC8564343.1.xml",
+      "media_type": "application/xml",
+      "bytes": 107106,
+      "sha256": "a01178226f8c4b9555d088cc83e15b263e2428e7e87c036a97f8f584a0fd0acb",
+      "retrieved_at": "2026-11-04T13:03:15.140024+00:00"
+    },
+    {
+      "path": "FEB4-11-2966-g004.jpg",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC8564343.1/FEB4-11-2966-g004.jpg",
+      "media_type": "image/jpeg",
+      "bytes": 156256,
+      "sha256": "ed4c24b893cf0c9b992919c73e173ab5c733a2462c3e27e538d0d51baf94bd95",
+      "retrieved_at": "2026-11-04T13:04:20.276665+00:00"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/liu_v1.json",
+      "sha256": "644c3d151df8eb2bc6ce1013a53b048a78ca13eda197f22fbbf5cf680fb5eee6",
+      "bytes": 4172,
+      "origin": "stage3/01_data_corpus/execution/curation/liu_v1.json; reviewed author-summary figure digitization, version1",
+      "source_image_sha256": "ed4c24b893cf0c9b992919c73e173ab5c733a2462c3e27e538d0d51baf94bd95"
+    }
+  ],
+  "license": {
+    "status": "CC BY4.0",
+    "evidence": "article.xml permissions"
+  },
+  "validation": {
+    "status": "validated_original_formats_and_sha256"
+  }
+}

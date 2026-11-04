@@ -29,4 +29,22 @@ class ViabilitySources(unittest.TestCase):
             self.assertEqual(coverage['excluded_comparisons'],48)
             self.assertEqual(coverage['sample_rows'],0)
 
+    def test_liu_single_drug_normoxia_and_hr_have_different_controls(self):
+        with tempfile.TemporaryDirectory() as temp:
+            bundle=Path(temp)/'bundle.json'
+            run=subprocess.run([sys.executable,str(EXEC/'viability_adapters.py'),'--source','liu_2021','--output',str(bundle)],capture_output=True,text=True)
+            self.assertEqual(run.returncode,0,run.stderr)
+            data=json.loads(bundle.read_text())
+            self.assertEqual(len(data['records']),8)
+            self.assertEqual(sorted({r['dose'] for r in data['records']}),[2.5e-6,5e-6,10e-6,20e-6])
+            self.assertEqual({r['statistics']['control_mean'] for r in data['records']},{40,100})
+            release=Path(temp)/'release'
+            for args in [('build','--input',str(bundle),'--output',str(release)),('verify','--release',str(release))]:
+                run=subprocess.run([sys.executable,str(EXEC/'corpus.py'),*args],capture_output=True,text=True)
+                self.assertEqual(run.returncode,0,run.stderr)
+            coverage=json.loads((release/'coverage.json').read_text())
+            self.assertEqual(coverage['sample_rows'],4)
+            self.assertEqual(coverage['class_rows'],{'-1':0,'0':4,'1':0})
+            self.assertEqual(coverage['excluded_comparisons'],4)
+
 if __name__=='__main__': unittest.main()
