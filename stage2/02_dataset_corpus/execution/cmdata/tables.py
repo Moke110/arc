@@ -335,7 +335,12 @@ def metadata_tahoe_frame() -> pd.DataFrame:
     return frame[["profile_id", "dataset_id", "is_blank", *paths.TAHOE_OBS]]
 
 
-def _five_counts(frame: pd.DataFrame, corpus_id: str) -> dict:
+def five_counts(frame: pd.DataFrame, corpus_id: str) -> dict:
+    """The five coverage counts (+ controls, blanks, rows) for one corpus.
+
+    Public so gate G2 (ticket #17) can re-derive the same numbers from a
+    corpus's own ``obs`` instead of trusting the rendered README.
+    """
     spec = COVERAGE_SPEC[corpus_id]
     control = frame["is_control"].astype(bool).to_numpy()
     blank = frame["is_blank"].astype(bool).to_numpy()
@@ -390,7 +395,7 @@ def coverage_frames(metadata_cm: pd.DataFrame,
     frames["tahoe"] = metadata_tahoe
     coverage = {}
     for corpus_id in ALL_CORPORA:
-        entry = _five_counts(frames[corpus_id], corpus_id)
+        entry = five_counts(frames[corpus_id], corpus_id)
         times = entry["times_h"]
         if times == [24.0]:
             entry["t24"] = {key: entry[key] for key in (
@@ -809,28 +814,38 @@ def render_readme(context: dict) -> str:
     add("")
 
     # -- gates ----------------------------------------------------------
-    add("## Gate results")
-    add("")
-    add("| gate | result | evidence |")
-    add("|---|---|---|")
-    gate_bits = "; ".join(
-        f"`{corpus_id}` {entry['passed']}/{entry['total']}"
-        for corpus_id, entry in gates.items())
-    add(f"| G1 structure + counts | **PASS** (#15) | per-corpus build gates "
-        f"passed: {gate_bits} |")
-    add("| G2 counts | **PASS** (this build) | this coverage table is rendered "
-        "from `corpus_coverage.json`; `test_tables_contract` re-parses the "
-        "table and asserts equality item by item |")
-    add("| G3 crosswalk coverage | **PASS** (this build) | every `var` id of "
-        "all five corpora has a crosswalk row (incl. Tahoe `token_id`/"
-        "`ensembl_id`); the 18,164 `genes.csv` symbols are a subset of each CM "
-        "corpus `var`; `compounds.csv` covers every non-control/non-blank "
-        "`drug_key`. Verified before writing; see `test_tables_contract` |")
-    add("| G4 v1 reconstruction | not run | ticket #17 (needs the frozen v1 "
-        "view writer; see `.scratch/stage2-corpus-reorg/impl-notes-g4-proof.md`) |")
-    add("| G5 reproducibility | not run | ticket #17 (ticket #15's "
-        "`--repeat-check` already passes for `dtoxs_ipsc`) |")
-    add("| G6 no stale paths | not run | ticket #17 |")
+    verify = context.get("verify")
+    if verify:
+        # Ticket #17's --verify owns the gate section.  Render the same block
+        # it patches in place, so a later --tables rerun cannot regress it.
+        from .verify import render_gate_block
+
+        lines.extend(render_gate_block(verify))
+    else:
+        add("## Gate results")
+        add("")
+        add("| gate | result | evidence |")
+        add("|---|---|---|")
+        gate_bits = "; ".join(
+            f"`{corpus_id}` {entry['passed']}/{entry['total']}"
+            for corpus_id, entry in gates.items())
+        add(f"| G1 structure + counts | **PASS** (#15) | per-corpus build "
+            f"gates passed: {gate_bits} |")
+        add("| G2 counts | **PASS** (this build) | this coverage table is "
+            "rendered from `corpus_coverage.json`; `test_tables_contract` "
+            "re-parses the table and asserts equality item by item |")
+        add("| G3 crosswalk coverage | **PASS** (this build) | every `var` id "
+            "of all five corpora has a crosswalk row (incl. Tahoe `token_id`/"
+            "`ensembl_id`); the 18,164 `genes.csv` symbols are a subset of "
+            "each CM corpus `var`; `compounds.csv` covers every "
+            "non-control/non-blank `drug_key`. Verified before writing; see "
+            "`test_tables_contract` |")
+        add("| G4 v1 reconstruction | not run | ticket #17 (needs the frozen "
+            "v1 view writer; see "
+            "`.scratch/stage2-corpus-reorg/impl-notes-g4-proof.md`) |")
+        add("| G5 reproducibility | not run | ticket #17 (ticket #15's "
+            "`--repeat-check` already passes for `dtoxs_ipsc`) |")
+        add("| G6 no stale paths | not run | ticket #17 |")
     add("")
 
     # -- reproduce ------------------------------------------------------
@@ -921,6 +936,9 @@ def build_tables(index: HgncIndex, annotation: CompoundAnnotation,
     tahoe_move = {}
     if paths.TAHOE_MOVE_RECORD.exists():
         tahoe_move = json.loads(paths.TAHOE_MOVE_RECORD.read_text())
+    verify_record = None
+    if paths.VERIFY_RECORD.exists():
+        verify_record = json.loads(paths.VERIFY_RECORD.read_text())
     context = {
         "coverage": coverage,
         "tables": tables,
@@ -928,6 +946,7 @@ def build_tables(index: HgncIndex, annotation: CompoundAnnotation,
         "tahoe_move": tahoe_move,
         "environment": environment,
         "generated_at": generated_at,
+        "verify": verify_record,
     }
     readme = write_text(render_readme(context), paths.CORPUS_V2_README)
     print(f"  README.md: {readme['bytes']:,} B")
@@ -979,7 +998,12 @@ def build_tables(index: HgncIndex, annotation: CompoundAnnotation,
             "G3": "PASS: crosswalk covers every var id of all five corpora; "
                   "18,164 genes.csv symbols subset of each CM corpus var; "
                   "compounds.csv covers every perturbed drug_key",
-            "G4-G6": "not run (ticket #17)",
+            **(  # ticket #17: the executable gates, if they have been run
+                {gate: {"passed": bool(verify_record["gates"][gate]["passed"]),
+                        "detail": verify_record["gates"][gate]["detail"]}
+                 for gate in ("G4", "G5", "G6")}
+                | {"verified_by": _rel(paths.VERIFY_RECORD)}
+                if verify_record else {"G4-G6": "not run (ticket #17)"}),
         },
         "frozen_identity_check": checks,
     }

@@ -266,8 +266,15 @@ class TablesInventoryTests(unittest.TestCase):
                 self.assertIn(key, entry)
         for corpus_id in ("dtoxs_primary", "dtoxs_ipsc"):
             self.assertIsNone(self.record["corpora"][corpus_id]["t24"])
-        self.assertEqual(self.record["gate_results"]["G4-G6"].startswith(
-            "not run"), True)
+        # Ticket #17 replaced the "G4-G6 not run" placeholder with the
+        # executable gates' results and the verify record pointer.
+        self.assertNotIn("G4-G6", self.record["gate_results"])
+        for gate in ("G4", "G5", "G6"):
+            self.assertTrue(self.record["gate_results"][gate]["passed"])
+        self.assertEqual(self.record["gate_results"]["verified_by"],
+                         "stage2/02_dataset_corpus/execution/build_record/"
+                         "verify.json")
+        self.assertEqual(self.record["verification"]["result"], "PASS")
 
 
 @unittest.skipUnless(not _tables_skip() and not _corpora_skip(),

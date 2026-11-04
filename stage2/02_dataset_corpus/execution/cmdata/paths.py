@@ -69,6 +69,7 @@ COVERAGE_RECORD = BUILD_RECORD_DIR / "corpus_coverage.json"  # ticket #16
 TAHOE_MOVE_RECORD = BUILD_RECORD_DIR / "tahoe_corpus_move.json"
 EXCLUDED_COMPOUNDS_RECORD = BUILD_RECORD_DIR / "excluded_compounds.csv"
 REPRODUCIBILITY_RECORD = BUILD_RECORD_DIR / "corpus_reproducibility.json"
+VERIFY_RECORD = BUILD_RECORD_DIR / "verify.json"          # ticket #17
 
 # Raw source id -> corpus dataset id (ADR 0033 decision 9, renames forward-only).
 # `dtoxs_cm` splits back into its two arms; the GEO-sourced short names change.

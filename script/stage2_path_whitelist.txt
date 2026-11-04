@@ -1,0 +1,24 @@
+# stage2_path_whitelist.txt — frozen recorded evidence that keeps retired step paths.
+#
+# Read by script/check_stage2_paths.sh. One entry per line:
+#
+#     <file-glob>:<literal-ERE>     exempt only that literal in that file
+#     <file-glob>                   exempt any literal in that file (last resort)
+#
+# `#` comments and blank lines are ignored. The file half is a shell glob
+# matched against the repo-relative source path; the literal half is an
+# extended regular expression matched against the exact extracted literal.
+#
+# Use this file ONLY for frozen evidence whose bytes are already committed:
+# a recorded payload string that reproduces an existing frozen output, or a
+# historical record quoted verbatim. A live document or live path literal that
+# merely needs updating is a path to FIX, not to whitelist.
+#
+# --- ticket #17: frozen 06.3 input-record payload strings ---------------------
+# These four `gene_axis` / `order` strings are not live filesystem paths: they
+# are recorded provenance inside the 06.3 input writer/contract and they
+# reproduce the already-frozen `stage2/06_prnet_transfer/06.3_input/output/
+# *.json` byte-for-byte. Rewriting them would break that frozen evidence, so
+# they stay verbatim and are exempted here, one exact literal per file.
+stage2/06_prnet_transfer/06.3_input/execution/build_input.py:^stage2/02_cm_data/output/corpus/v1/genes\.csv$
+stage2/06_prnet_transfer/06.3_input/execution/contract.py:^stage2/02_cm_data/output/corpus/v1/genes\.csv$

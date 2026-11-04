@@ -136,12 +136,24 @@ Row counts: `genes.csv` 18,164; `compounds.csv` 532 key/name rows / 525 `drug_ke
 
 | gate | result | evidence |
 |---|---|---|
-| G1 structure + counts | **PASS** (#15) | per-corpus build gates passed: `dtoxs_primary` 12/12; `dtoxs_ipsc` 12/12; `sctox` 12/12; `tenv` 12/12 |
-| G2 counts | **PASS** (this build) | this coverage table is rendered from `corpus_coverage.json`; `test_tables_contract` re-parses the table and asserts equality item by item |
-| G3 crosswalk coverage | **PASS** (this build) | every `var` id of all five corpora has a crosswalk row (incl. Tahoe `token_id`/`ensembl_id`); the 18,164 `genes.csv` symbols are a subset of each CM corpus `var`; `compounds.csv` covers every non-control/non-blank `drug_key`. Verified before writing; see `test_tables_contract` |
-| G4 v1 reconstruction | not run | ticket #17 (needs the frozen v1 view writer; see `.scratch/stage2-corpus-reorg/impl-notes-g4-proof.md`) |
-| G5 reproducibility | not run | ticket #17 (ticket #15's `--repeat-check` already passes for `dtoxs_ipsc`) |
-| G6 no stale paths | not run | ticket #17 |
+| G1 structure + counts | **PASS** (`--verify`) | 5/5 corpora: unique index, non-negative int32 X (dense x4, CSR tahoe), sampled log1p_cp10k formula, empty uns/obsm/varm/obsp/varp, no integer encodings, obs/var contract and published counts |
+| G2 counts | **PASS** (`--verify`) | 5/5 corpora: README coverage table = corpus_coverage.json = the corpora's own obs for every five-count item |
+| G3 crosswalk coverage | **PASS** (`--verify`) | every var id of all five corpora resolves in gene_crosswalk.csv; the 18,164 genes.csv symbols are a subset of every CM corpus var; compounds.csv covers every perturbed drug_key |
+| G4 v1 reconstruction | **PASS** (`--verify`) | 5/5 content_sha256 equal the frozen stage2/_frozen/cm-data-v1/datasets-1/manifest.csv (rebuilt from the v2 corpora with the archived v1 writer) |
+| G5 reproducibility | **PASS** (`--verify`) | `dtoxs_ipsc` rebuilt twice in a temp dir: identical file sha256 16e846212c9f...; content_sha256 6c5e2f2f9806... = corpus_build.json |
+| G6 no stale paths | **PASS** (`--verify`) | `script/check_stage2_paths.sh`: 0 stale retired step-path literal(s) in 230 tracked stage2 executable file(s); 4 whitelisted (frozen-record payload) |
+
+### G4 rebuilt v1 view hashes
+
+| view | rebuilt `content_sha256` | frozen `manifest.csv` | n_obs | match |
+|---|---|---|---:|---|
+| `dtoxs_cm.h5ad` | `17198963e925c74231eb0ffaf5d876b691f15fd458359cc543091ec367743ac1` | `17198963e925c74231eb0ffaf5d876b691f15fd458359cc543091ec367743ac1` | 1,075 | yes |
+| `screen_ctox.h5ad` | `c0fffab49d0a2a91acabb307b51a4899d2f1a7c804d09ab7d9e34436ae88f749` | `c0fffab49d0a2a91acabb307b51a4899d2f1a7c804d09ab7d9e34436ae88f749` | 3,072 | yes |
+| `temp_env_atc-moa.h5ad` | `91591d58dd63aed0866508ca098c2ffb4ff8423208f3cb63f2d0e3f5dccc0af5` | `91591d58dd63aed0866508ca098c2ffb4ff8423208f3cb63f2d0e3f5dccc0af5` | 1,319 | yes |
+| `temp_env_atc-moa-mesh.h5ad` | `4633eaef47ea3860ff2b79b180e7968418fa1f0ce9d62dfe589fa329964b2c05` | `4633eaef47ea3860ff2b79b180e7968418fa1f0ce9d62dfe589fa329964b2c05` | 2,582 | yes |
+| `temp_env_all-smiles.h5ad` | `f84066c4dfd2c017785d85a3f6bd54cb2a8eb40bfba28e9e99d650e4b8a613fb` | `f84066c4dfd2c017785d85a3f6bd54cb2a8eb40bfba28e9e99d650e4b8a613fb` | 4,478 | yes |
+
+Machine-readable record: [`execution/build_record/verify.json`](../../../execution/build_record/verify.json) (ticket #17). Regenerate with `python stage2/02_dataset_corpus/execution/build_corpus.py --verify`.
 
 ## Regenerating the tables and this README
 

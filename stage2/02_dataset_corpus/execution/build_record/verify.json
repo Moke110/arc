@@ -1,0 +1,581 @@
+{
+  "ticket": "#17",
+  "adr": "0033",
+  "step": "stage2/02_dataset_corpus",
+  "checked_at": "2026-11-04T10:20:12+00:00",
+  "command": "python stage2/02_dataset_corpus/execution/build_corpus.py --verify",
+  "gates": {
+    "G1": {
+      "gate": "G1",
+      "title": "structure",
+      "passed": true,
+      "detail": "5/5 corpora: unique index, non-negative int32 X (dense x4, CSR tahoe), sampled log1p_cp10k formula, empty uns/obsm/varm/obsp/varp, no integer encodings, obs/var contract and published counts",
+      "data": {
+        "corpora": {
+          "dtoxs_primary": {
+            "shape": [
+              779,
+              26328
+            ],
+            "dtype": "int32",
+            "layer_dtype": "float32",
+            "index": "well",
+            "sampled_rows": [
+              0,
+              111,
+              222,
+              333,
+              555,
+              666,
+              777,
+              778
+            ],
+            "counts": {
+              "rows": 779,
+              "perturbed": 677,
+              "control": 102,
+              "blank": 0,
+              "chemicals": 47
+            },
+            "published": {
+              "rows": 779,
+              "perturbed": 677,
+              "control": 102,
+              "blank": 0,
+              "chemicals": 47,
+              "axis": 26328
+            }
+          },
+          "dtoxs_ipsc": {
+            "shape": [
+              312,
+              26328
+            ],
+            "dtype": "int32",
+            "layer_dtype": "float32",
+            "index": "well",
+            "sampled_rows": [
+              0,
+              44,
+              88,
+              132,
+              220,
+              264,
+              308,
+              311
+            ],
+            "counts": {
+              "rows": 312,
+              "perturbed": 296,
+              "control": 16,
+              "blank": 0,
+              "chemicals": 37
+            },
+            "published": {
+              "rows": 312,
+              "perturbed": 296,
+              "control": 16,
+              "blank": 0,
+              "chemicals": 37,
+              "axis": 26328
+            }
+          },
+          "sctox": {
+            "shape": [
+              3072,
+              31880
+            ],
+            "dtype": "int32",
+            "layer_dtype": "float32",
+            "index": "well",
+            "sampled_rows": [
+              0,
+              438,
+              876,
+              1314,
+              2190,
+              2628,
+              3066,
+              3071
+            ],
+            "counts": {
+              "rows": 3072,
+              "perturbed": 2520,
+              "control": 552,
+              "blank": 0,
+              "chemicals": 42
+            },
+            "published": {
+              "rows": 3072,
+              "perturbed": 2520,
+              "control": 552,
+              "blank": 0,
+              "chemicals": 42,
+              "axis": 31880
+            }
+          },
+          "tenv": {
+            "shape": [
+              4510,
+              19613
+            ],
+            "dtype": "int32",
+            "layer_dtype": "float32",
+            "index": "well",
+            "sampled_rows": [
+              0,
+              644,
+              1288,
+              1932,
+              3220,
+              3864,
+              4508,
+              4509
+            ],
+            "counts": {
+              "rows": 4510,
+              "perturbed": 4206,
+              "control": 272,
+              "blank": 32,
+              "chemicals": 460
+            },
+            "published": {
+              "rows": 4510,
+              "perturbed": 4206,
+              "control": 272,
+              "blank": 32,
+              "chemicals": 460,
+              "axis": 19613
+            }
+          },
+          "tahoe": {
+            "shape": [
+              67018,
+              62710
+            ],
+            "dtype": "int32 (CSR)",
+            "layer_dtype": "float32 (CSR)",
+            "index": "profile_id",
+            "sampled_rows": [
+              0,
+              22339,
+              44678,
+              67017
+            ],
+            "counts": {
+              "rows": 67018,
+              "perturbed": 65618,
+              "control": 1400,
+              "blank": 0,
+              "chemicals": 379
+            },
+            "published": {
+              "rows": 67018,
+              "perturbed": 65618,
+              "control": 1400,
+              "blank": 0,
+              "chemicals": 379,
+              "axis": 62710
+            }
+          }
+        },
+        "problems": []
+      }
+    },
+    "G2": {
+      "gate": "G2",
+      "title": "counts",
+      "passed": true,
+      "detail": "5/5 corpora: README coverage table = corpus_coverage.json = the corpora's own obs for every five-count item",
+      "data": {
+        "corpora": {
+          "dtoxs_primary": {
+            "readme": {
+              "distinct_cell_lines": "4",
+              "chemicals": "47",
+              "distinct_doses": "21",
+              "combinations": "164",
+              "control": "102",
+              "blank": "0"
+            },
+            "record": {
+              "rows": 779,
+              "perturbed": 677,
+              "control": 102,
+              "blank": 0,
+              "distinct_cell_lines": 4,
+              "chemicals": 47,
+              "distinct_doses": 21,
+              "combinations": 164,
+              "time_window": "48 h"
+            },
+            "recomputed": {
+              "rows": 779,
+              "perturbed": 677,
+              "control": 102,
+              "blank": 0,
+              "distinct_cell_lines": 4,
+              "chemicals": 47,
+              "distinct_doses": 21,
+              "combinations": 164,
+              "time_window": "48 h"
+            }
+          },
+          "dtoxs_ipsc": {
+            "readme": {
+              "distinct_cell_lines": "2",
+              "chemicals": "37",
+              "distinct_doses": "14",
+              "combinations": "74",
+              "control": "16",
+              "blank": "0"
+            },
+            "record": {
+              "rows": 312,
+              "perturbed": 296,
+              "control": 16,
+              "blank": 0,
+              "distinct_cell_lines": 2,
+              "chemicals": 37,
+              "distinct_doses": 14,
+              "combinations": 74,
+              "time_window": "48 h"
+            },
+            "recomputed": {
+              "rows": 312,
+              "perturbed": 296,
+              "control": 16,
+              "blank": 0,
+              "distinct_cell_lines": 2,
+              "chemicals": 37,
+              "distinct_doses": 14,
+              "combinations": 74,
+              "time_window": "48 h"
+            }
+          },
+          "sctox": {
+            "readme": {
+              "distinct_cell_lines": "1",
+              "chemicals": "42",
+              "distinct_doses": "115",
+              "combinations": "336",
+              "control": "552",
+              "blank": "0"
+            },
+            "record": {
+              "rows": 3072,
+              "perturbed": 2520,
+              "control": 552,
+              "blank": 0,
+              "distinct_cell_lines": 1,
+              "chemicals": 42,
+              "distinct_doses": 115,
+              "combinations": 336,
+              "time_window": "24 h"
+            },
+            "recomputed": {
+              "rows": 3072,
+              "perturbed": 2520,
+              "control": 552,
+              "blank": 0,
+              "distinct_cell_lines": 1,
+              "chemicals": 42,
+              "distinct_doses": 115,
+              "combinations": 336,
+              "time_window": "24 h"
+            }
+          },
+          "tenv": {
+            "readme": {
+              "distinct_cell_lines": "1",
+              "chemicals": "460",
+              "distinct_doses": "3",
+              "combinations": "1,380",
+              "control": "272",
+              "blank": "32"
+            },
+            "record": {
+              "rows": 4510,
+              "perturbed": 4206,
+              "control": 272,
+              "blank": 32,
+              "distinct_cell_lines": 1,
+              "chemicals": 460,
+              "distinct_doses": 3,
+              "combinations": 1380,
+              "time_window": "24 h"
+            },
+            "recomputed": {
+              "rows": 4510,
+              "perturbed": 4206,
+              "control": 272,
+              "blank": 32,
+              "distinct_cell_lines": 1,
+              "chemicals": 460,
+              "distinct_doses": 3,
+              "combinations": 1380,
+              "time_window": "24 h"
+            }
+          },
+          "tahoe": {
+            "readme": {
+              "distinct_cell_lines": "50",
+              "chemicals": "379",
+              "distinct_doses": "3",
+              "combinations": "56,827",
+              "control": "1,400",
+              "blank": "0"
+            },
+            "record": {
+              "rows": 67018,
+              "perturbed": 65618,
+              "control": 1400,
+              "blank": 0,
+              "distinct_cell_lines": 50,
+              "chemicals": 379,
+              "distinct_doses": 3,
+              "combinations": 56827,
+              "time_window": "n.a. (no time column)"
+            },
+            "recomputed": {
+              "rows": 67018,
+              "perturbed": 65618,
+              "control": 1400,
+              "blank": 0,
+              "distinct_cell_lines": 50,
+              "chemicals": 379,
+              "distinct_doses": 3,
+              "combinations": 56827,
+              "time_window": "n.a. (no time column)"
+            }
+          }
+        },
+        "problems": []
+      }
+    },
+    "G3": {
+      "gate": "G3",
+      "title": "crosswalk",
+      "passed": true,
+      "detail": "every var id of all five corpora resolves in gene_crosswalk.csv; the 18,164 genes.csv symbols are a subset of every CM corpus var; compounds.csv covers every perturbed drug_key",
+      "data": {
+        "totals": {
+          "genes_symbols": 18164,
+          "crosswalk_rows": 269067,
+          "compounds_drug_keys": 525,
+          "dtoxs_primary": {
+            "var": 26328,
+            "crosswalk_rows": 38478,
+            "missing_var_symbols": 0,
+            "missing_var_hgnc_ids": 0,
+            "genes_symbols_subset": true,
+            "perturbed_drug_keys": 47,
+            "missing_drug_keys": 0
+          },
+          "dtoxs_ipsc": {
+            "var": 26328,
+            "crosswalk_rows": 38478,
+            "missing_var_symbols": 0,
+            "missing_var_hgnc_ids": 0,
+            "genes_symbols_subset": true,
+            "perturbed_drug_keys": 37,
+            "missing_drug_keys": 0
+          },
+          "sctox": {
+            "var": 31880,
+            "crosswalk_rows": 44154,
+            "missing_var_symbols": 0,
+            "missing_var_hgnc_ids": 0,
+            "genes_symbols_subset": true,
+            "perturbed_drug_keys": 42,
+            "missing_drug_keys": 0
+          },
+          "tenv": {
+            "var": 19613,
+            "crosswalk_rows": 22537,
+            "missing_var_symbols": 0,
+            "missing_var_hgnc_ids": 0,
+            "genes_symbols_subset": true,
+            "perturbed_drug_keys": 460,
+            "missing_drug_keys": 0
+          },
+          "tahoe": {
+            "var": 62710,
+            "crosswalk_rows": 125420,
+            "missing_var_symbols": 0,
+            "missing_token_id": 0,
+            "missing_ensembl_id": 0
+          }
+        },
+        "problems": []
+      }
+    },
+    "G4": {
+      "gate": "G4",
+      "title": "v1 reconstruction",
+      "passed": true,
+      "detail": "5/5 content_sha256 equal the frozen stage2/_frozen/cm-data-v1/datasets-1/manifest.csv (rebuilt from the v2 corpora with the archived v1 writer)",
+      "data": {
+        "frozen_manifest": "stage2/_frozen/cm-data-v1/datasets-1/manifest.csv",
+        "views": [
+          {
+            "view": "dtoxs_cm.h5ad",
+            "datasets": [
+              "dtoxs_primary",
+              "dtoxs_ipsc"
+            ],
+            "tier": "atc-moa",
+            "rows": 1075,
+            "n_perturbed": 957,
+            "n_controls": 118,
+            "n_drugs": 46,
+            "n_genes": 18164,
+            "rebuilt_content_sha256": "17198963e925c74231eb0ffaf5d876b691f15fd458359cc543091ec367743ac1",
+            "frozen_content_sha256": "17198963e925c74231eb0ffaf5d876b691f15fd458359cc543091ec367743ac1",
+            "match": true,
+            "counts_match_manifest": true
+          },
+          {
+            "view": "screen_ctox.h5ad",
+            "datasets": [
+              "screen_ctox"
+            ],
+            "tier": "atc-moa",
+            "rows": 3072,
+            "n_perturbed": 2520,
+            "n_controls": 552,
+            "n_drugs": 42,
+            "n_genes": 18164,
+            "rebuilt_content_sha256": "c0fffab49d0a2a91acabb307b51a4899d2f1a7c804d09ab7d9e34436ae88f749",
+            "frozen_content_sha256": "c0fffab49d0a2a91acabb307b51a4899d2f1a7c804d09ab7d9e34436ae88f749",
+            "match": true,
+            "counts_match_manifest": true
+          },
+          {
+            "view": "temp_env_atc-moa.h5ad",
+            "datasets": [
+              "temp_env"
+            ],
+            "tier": "atc-moa",
+            "rows": 1319,
+            "n_perturbed": 1047,
+            "n_controls": 272,
+            "n_drugs": 113,
+            "n_genes": 18164,
+            "rebuilt_content_sha256": "91591d58dd63aed0866508ca098c2ffb4ff8423208f3cb63f2d0e3f5dccc0af5",
+            "frozen_content_sha256": "91591d58dd63aed0866508ca098c2ffb4ff8423208f3cb63f2d0e3f5dccc0af5",
+            "match": true,
+            "counts_match_manifest": true
+          },
+          {
+            "view": "temp_env_atc-moa-mesh.h5ad",
+            "datasets": [
+              "temp_env"
+            ],
+            "tier": "atc-moa-mesh",
+            "rows": 2582,
+            "n_perturbed": 2310,
+            "n_controls": 272,
+            "n_drugs": 252,
+            "n_genes": 18164,
+            "rebuilt_content_sha256": "4633eaef47ea3860ff2b79b180e7968418fa1f0ce9d62dfe589fa329964b2c05",
+            "frozen_content_sha256": "4633eaef47ea3860ff2b79b180e7968418fa1f0ce9d62dfe589fa329964b2c05",
+            "match": true,
+            "counts_match_manifest": true
+          },
+          {
+            "view": "temp_env_all-smiles.h5ad",
+            "datasets": [
+              "temp_env"
+            ],
+            "tier": "all-smiles",
+            "rows": 4478,
+            "n_perturbed": 4206,
+            "n_controls": 272,
+            "n_drugs": 460,
+            "n_genes": 18164,
+            "rebuilt_content_sha256": "f84066c4dfd2c017785d85a3f6bd54cb2a8eb40bfba28e9e99d650e4b8a613fb",
+            "frozen_content_sha256": "f84066c4dfd2c017785d85a3f6bd54cb2a8eb40bfba28e9e99d650e4b8a613fb",
+            "match": true,
+            "counts_match_manifest": true
+          }
+        ],
+        "matched": 5,
+        "expected": 5,
+        "problems": []
+      }
+    },
+    "G5": {
+      "gate": "G5",
+      "title": "reproducibility",
+      "passed": true,
+      "detail": "`dtoxs_ipsc` rebuilt twice in a temp dir: identical file sha256 16e846212c9f...; content_sha256 6c5e2f2f9806... = corpus_build.json",
+      "data": {
+        "corpus": "dtoxs_ipsc",
+        "runs": 2,
+        "file_sha256_run1": "16e846212c9fc20b556141bbc6b4efbfe4f2355beb53403b4a9e54540b467a1c",
+        "file_sha256_run2": "16e846212c9fc20b556141bbc6b4efbfe4f2355beb53403b4a9e54540b467a1c",
+        "content_sha256": "6c5e2f2f9806f76ce77401498ff496b01ec2f3aed6178e372be32d0862394f24",
+        "record_content_sha256": "6c5e2f2f9806f76ce77401498ff496b01ec2f3aed6178e372be32d0862394f24",
+        "record_file_sha256": "16e846212c9fc20b556141bbc6b4efbfe4f2355beb53403b4a9e54540b467a1c",
+        "checks": {
+          "identical_file_sha256": true,
+          "content_sha256_matches_record": true,
+          "file_sha256_matches_record": true
+        },
+        "problems": []
+      }
+    },
+    "G6": {
+      "gate": "G6",
+      "title": "path audit",
+      "passed": true,
+      "detail": "`script/check_stage2_paths.sh`: 0 stale retired step-path literal(s) in 230 tracked stage2 executable file(s); 4 whitelisted (frozen-record payload)",
+      "data": {
+        "script": "script/check_stage2_paths.sh",
+        "exit_code": 0,
+        "stale": 0,
+        "distinct": 0,
+        "files_scanned": 230,
+        "whitelisted": 4,
+        "wall_seconds": 0.43,
+        "stdout_tail": [
+          "== check_stage2_paths: no retired step paths in tracked stage2 executable code ==",
+          "repo root: /home/chang/arc",
+          "tracked stage2 executable files scanned: 230",
+          "stage2 path literals: 4 occurrences (retired 02/04 step roots + datasets-1)",
+          "whitelisted: 4 occurrences (entries in script/stage2_path_whitelist.txt: 2)",
+          "stale: 0 occurrences, 0 distinct",
+          "",
+          "RESULT: PASS \u2014 0 stale stage2 path literals",
+          "exit: 0"
+        ],
+        "stderr": ""
+      }
+    }
+  },
+  "passed": 6,
+  "total": 6,
+  "result": "PASS",
+  "environment": {
+    "python": "3.13.13",
+    "anndata": "0.12.16",
+    "h5py": "3.16.0",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "wall_seconds": 76.8,
+  "peak_rss_kib": 8035712,
+  "peak_rss_gib": 7.66,
+  "readme": {
+    "file": "stage2/02_dataset_corpus/output/corpus/v2/README.md",
+    "sha256": "c387acb61a05f6dc50b0ad443845081288826f479dd24a1d2c792c28b1e4f352",
+    "bytes": 15257
+  },
+  "coverage_record": {
+    "file": "stage2/02_dataset_corpus/execution/build_record/corpus_coverage.json",
+    "sha256": "09bce3bf53c7aaca050d67b3bc7d9bc055b444b2fe38c6c8b32febe555c17fbc",
+    "bytes": 14558
+  }
+}

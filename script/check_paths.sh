@@ -235,14 +235,32 @@ main() {
     echo "baseline written: $baseline_path"
   fi
 
-  if [ "$occ_unresolved" -eq 0 ]; then
+  # Ticket #17: the stage2 retired-step-path audit is part of this health check.
+  # It is a separate script so the stage2 owners can run it alone; a red audit
+  # makes this combined check red too.
+  local stage2_status=0
+  echo
+  if [ -f "$repo_root/script/check_stage2_paths.sh" ]; then
+    bash "$repo_root/script/check_stage2_paths.sh" || stage2_status=$?
+  else
+    echo "ERROR: script/check_stage2_paths.sh is missing (ticket #17)" >&2
+    stage2_status=1
+  fi
+
+  if [ "$occ_unresolved" -eq 0 ] && [ "$stage2_status" -eq 0 ]; then
     echo
     echo "RESULT: PASS — every extracted path literal resolves"
+    echo "stage2 retired-step-path audit: PASS"
     echo "exit: 0"
     return 0
   fi
   echo
-  echo "RESULT: FAIL — $occ_unresolved occurrence(s) of ${distinct_unresolved:-0} unresolved literal(s) outside the whitelist"
+  if [ "$occ_unresolved" -gt 0 ]; then
+    echo "RESULT: FAIL — $occ_unresolved occurrence(s) of ${distinct_unresolved:-0} unresolved literal(s) outside the whitelist"
+  fi
+  if [ "$stage2_status" -ne 0 ]; then
+    echo "RESULT: FAIL — the stage2 retired-step-path audit is red (see above)"
+  fi
   echo "hint: add the owning files to script/path_whitelist.txt only for frozen evidence;"
   echo "      otherwise fix the literal or the path."
   echo "exit: 1"

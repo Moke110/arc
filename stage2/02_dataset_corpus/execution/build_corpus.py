@@ -24,7 +24,14 @@ Other modes:
                     README.md`` and ``build_record/corpus_coverage.json``
                     (ticket #16) from the built corpora + the raw sources
     --all           build the four corpora, then the tables
-    --verify        G1-G6 gates: NOT IMPLEMENTED until ticket #17
+    --verify        G1-G6 executable gates, reading only from disk: corpus
+                    structure (G1), README/record/obs counts (G2), crosswalk
+                    coverage (G3), v1-view reconstruction equivalence from the
+                    v2 corpora (G4), double-write reproducibility (G5) and the
+                    stage2 path audit (G6).  Prints one PASS/FAIL line per
+                    gate, writes ``execution/build_record/verify.json`` and
+                    refreshes the coverage README gate section; exits non-zero
+                    if any gate fails (ticket #17)
 """
 
 from __future__ import annotations
@@ -384,16 +391,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--all", action="store_true",
                         help="build the four corpora, then the tables")
     parser.add_argument("--verify", action="store_true",
-                        help="G1-G6 gates; reserved for ticket #17")
+                        help="run the G1-G6 executable gates (ticket #17); "
+                             "writes build_record/verify.json")
     args = parser.parse_args(argv)
 
     if args.check:
         return sources.check_sources()
     if args.verify:
-        print("TODO(#17): the --verify entry point (G1-G6, including the v1 "
-              "reconstruction gate) is implemented by ticket #17, not #15.",
-              file=sys.stderr)
-        return 3
+        from cmdata.verify import run_verify
+
+        return run_verify(
+            "python stage2/02_dataset_corpus/execution/build_corpus.py --verify")
     if args.repeat_check:
         if args.corpus == "all":
             print("--repeat-check needs one corpus (G5 checks one small "

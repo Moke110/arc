@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Regression (#17): script/check_stage2_paths.sh detects retired stage2 paths.
+#
+# Runs the audit against fixture files (via the STAGE2_PATH_AUDIT_FILES test
+# hook, so the tracked tree is never dirtied) and against the real tracked tree.
+# Positive, negative and frozen-exemption cases are all exercised.
+
+set -uo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+audit="$repo_root/script/check_stage2_paths.sh"
+tmp="$(mktemp -d)"
+trap 'rm -rf -- "${tmp:-}"' EXIT
+
+fail() {
+  echo "FAIL: $*" >&2
+  exit 1
+}
+
+run() {
+  STAGE2_PATH_AUDIT_FILES="$1" bash "$audit"
+}
+
+# 1. Positive: a clean tracked tree reports 0 stale.
+out="$(bash "$audit")" || fail "the tracked stage2 tree should be clean"
+printf '%s\n' "$out" | grep -q '^stale: 0 occurrences' \
+  || fail "tracked tree did not report stale: 0"
+
+# 2. Positive: clean fixture.
+printf 'x = 1\n' >"$tmp/clean.py"
+printf '%s\n' "$tmp/clean.py" >"$tmp/list_clean"
+out="$(run "$tmp/list_clean")" || fail "a clean fixture should pass"
+printf '%s\n' "$out" | grep -q '^stale: 0 occurrences' \
+  || fail "clean fixture did not report stale: 0"
+
+# 3. Negative: a retired 02_cm_data literal is reported and fails.
+printf 'SOURCE = "stage2/02_cm_data/output/corpus/v1/genes.csv"\n' >"$tmp/stale02.py"
+printf '%s\n' "$tmp/stale02.py" >"$tmp/list_stale02"
+if out="$(run "$tmp/list_stale02")"; then
+  fail "a stage2/02_cm_data literal must fail the audit"
+fi
+printf '%s\n' "$out" | grep -q '^stale: 1 occurrences' \
+  || fail "stale literal was not counted"
+printf '%s\n' "$out" | grep -q 'stage2/02_cm_data/output/corpus/v1/genes.csv' \
+  || fail "stale literal was not printed"
+
+# 4. Negative: a retired 04_tahoe_data literal fails.
+printf 'p = "stage2/04_tahoe_data/output/pseudobulk"\n' >"$tmp/stale04.py"
+printf '%s\n' "$tmp/stale04.py" >"$tmp/list_stale04"
+if run "$tmp/list_stale04" >/dev/null; then
+  fail "a stage2/04_tahoe_data literal must fail the audit"
+fi
+
+# 5. Negative: a bare `datasets-1` path component fails.
+printf 'p = "stage2/03_models_cmbench/datasets-1/x.h5ad"\n' >"$tmp/bare.py"
+printf '%s\n' "$tmp/bare.py" >"$tmp/list_bare"
+if run "$tmp/list_bare" >/dev/null; then
+  fail "a non-frozen datasets-1 path must fail the audit"
+fi
+
+# 6. Allowed: the frozen prefix and a FROZEN-rooted binding are legitimate.
+printf 'p = "stage2/_frozen/cm-data-v1/datasets-1/x.h5ad"\n' >"$tmp/frozen.py"
+printf 'q = FROZEN / "datasets-1/x.h5ad"\n' >"$tmp/rooted.py"
+printf '%s\n%s\n' "$tmp/frozen.py" "$tmp/rooted.py" >"$tmp/list_ok"
+out="$(run "$tmp/list_ok")" || fail "frozen-rooted datasets-1 should pass"
+printf '%s\n' "$out" | grep -q '^stale: 0 occurrences' \
+  || fail "frozen-rooted datasets-1 was counted as stale"
+
+echo "PASS: stage2 path audit detects retired literals and exempts frozen paths"

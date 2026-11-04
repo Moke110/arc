@@ -425,8 +425,8 @@
   },
   "readme": {
     "file": "stage2/02_dataset_corpus/output/corpus/v2/README.md",
-    "sha256": "436796959f22212a4a223965723b5ae01de510ab6773374d603d178aac9f20a7",
-    "bytes": 13779
+    "sha256": "c387acb61a05f6dc50b0ad443845081288826f479dd24a1d2c792c28b1e4f352",
+    "bytes": 15257
   },
   "build": {
     "source_commit": "c921f7d",
@@ -519,12 +519,37 @@
     },
     "G2": "PASS: this record renders the README coverage table; test_tables_contract re-parses the table and asserts equality",
     "G3": "PASS: crosswalk covers every var id of all five corpora; 18,164 genes.csv symbols subset of each CM corpus var; compounds.csv covers every perturbed drug_key",
-    "G4-G6": "not run (ticket #17)"
+    "G4": {
+      "passed": true,
+      "detail": "5/5 content_sha256 equal the frozen stage2/_frozen/cm-data-v1/datasets-1/manifest.csv (rebuilt from the v2 corpora with the archived v1 writer)"
+    },
+    "G5": {
+      "passed": true,
+      "detail": "`dtoxs_ipsc` rebuilt twice in a temp dir: identical file sha256 16e846212c9f...; content_sha256 6c5e2f2f9806... = corpus_build.json"
+    },
+    "G6": {
+      "passed": true,
+      "detail": "`script/check_stage2_paths.sh`: 0 stale retired step-path literal(s) in 230 tracked stage2 executable file(s); 4 whitelisted (frozen-record payload)"
+    },
+    "verified_by": "stage2/02_dataset_corpus/execution/build_record/verify.json"
   },
   "frozen_identity_check": {
     "genes.csv": true,
     "compounds.csv": true,
     "source_gene_sets.csv": true,
     "gene_crosswalk.csv (four-source part)": true
+  },
+  "verification": {
+    "record": "stage2/02_dataset_corpus/execution/build_record/verify.json",
+    "checked_at": "2026-11-04T10:20:12+00:00",
+    "result": "PASS",
+    "gates": {
+      "G1": true,
+      "G2": true,
+      "G3": true,
+      "G4": true,
+      "G5": true,
+      "G6": true
+    }
   }
 }
