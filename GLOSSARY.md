@@ -46,6 +46,12 @@ One drug under one exact experimental condition measured for one readout within 
 An increase, no change, or decrease in one measured phenotype readout relative to its specified control. The direction describes the readout itself; whether that direction implies benefit depends on the readout and condition.
 _Avoid_: efficacy label (when only a measurement direction is known)
 
+**Label-ready phenotype observation**:
+A phenotype observation with a valid matched comparison, sufficient uncertainty evidence, and an accepted direction under a frozen readout-specific labeling rule. A point estimate or qualification for the sample count alone does not establish label readiness.
+
+**Unresolved direction**:
+An observation whose direction cannot yet be assigned under the accepted evidence rule. It is neither the no-change class nor an additional phenotype class.
+
 ### External data provenance
 
 The repository has four external-source categories — `pert_data/`, `pert_model/`,
