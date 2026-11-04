@@ -4,6 +4,8 @@
 
 **Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
 
+**Update (2026-11-04, ADR 0033):** paths in this record were rewritten by the dataset-corpus merge; the decision itself is unchanged. The three curated views are now `stage2/_frozen/cm-data-v1/datasets-1/{dtoxs_cm,screen_ctox,temp_env_all-smiles}.h5ad`, kept read-only with the frozen benchmark; the merged `stage2/02_dataset_corpus/` holds the corpora they are reconstructed from.
+
 ADR 0027 froze the cold-drug benchmark at all 18,164 corpus genes and explicitly
 excluded HVG selection. That contract answered one question: how do the seven
 cold-drug-capable models rank on the whole transcriptome? It left a second

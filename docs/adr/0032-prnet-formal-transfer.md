@@ -3,6 +3,13 @@
 Status: accepted (user-approved 2026-11-02; the ticket graph is published as
 GitHub issues #1–#11 in `Moke110/arc`)
 
+**Update (2026-11-04, ADR 0033):** step labels in this record were rewritten by the
+dataset-corpus merge; the decision itself is unchanged. "The frozen 02/04/05
+outputs" now means: the `02_dataset_corpus` corpus tables, the `05_prnet_pretrain`
+retired-view/pretrain evidence, and the `03.1` benchmark input — the retired v1 CM
+views they name live read-only in `stage2/_frozen/cm-data-v1/`, and no result,
+hash or digest key in this study changed.
+
 ## Context
 
 `05_prnet_pretrain` proved PRnet can be trained on the Tahoe CM-schema view

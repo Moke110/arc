@@ -2,6 +2,8 @@
 
 **Status:** accepted (2026-11-01)
 
+**Update (2026-11-04, ADR 0033):** paths in this record were rewritten by the dataset-corpus merge; the decision itself is unchanged. The view builder is now `stage2/05_prnet_pretrain/execution/build_pretrain_view.py` and the view's tracked record is `stage2/05_prnet_pretrain/output/pretrain_view/{manifest.csv,compounds.csv,qa.json,qa_report.md}` (the h5ad stays local-only); the source corpus is `stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad` and the CM axis is `stage2/02_dataset_corpus/output/corpus/v2/tables/genes.csv`. The `datasets-1` bundle this record contrasts against is retired, though the view remains distinct from any bundle (ADR 0033).
+
 ADR 0029 froze the Tahoe corpus at 62,710 native genes and deliberately refused to
 freeze pairing or projection rules: "projections (18,164 / 978 landmarks / HVG) are
 views". Stage 2 also had no model that had ever been trained on that corpus. This

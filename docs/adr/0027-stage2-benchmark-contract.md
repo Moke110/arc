@@ -4,6 +4,8 @@
 
 **Update (2026-10-30, ADR 0030):** paths in this record were rewritten by the external-data / step-layout restructure; the decision itself is unchanged.
 
+**Update (2026-11-04, ADR 0033):** paths in this record were rewritten by the dataset-corpus merge; the decision itself is unchanged. The benchmark dataset literal is now `stage2/_frozen/cm-data-v1/datasets-1/temp_env_all-smiles.h5ad` — the frozen v1 view evidence, kept read-only while the benchmark stays frozen; the merged `stage2/02_dataset_corpus/` holds the native-axis corpora it was reconstructed from (the reconstruction gate reproduces all five views content-identically).
+
 Stage 2 must choose one open-source model to supply whole-transcriptome
 perturbomes to future MIRI drug scoring. Setup (ADR 0021, `01_setup/README.md`)
 proved that nine models run in isolated environments, but it did not compare

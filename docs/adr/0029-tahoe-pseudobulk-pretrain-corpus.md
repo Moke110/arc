@@ -19,6 +19,14 @@
    whose view carries four declared deviations (D0–D3) and whose pretrain run
    claims only that the pipeline works; neither amends this corpus.
 
+**Update (2026-11-04, ADR 0033):** paths in this record were rewritten by the
+dataset-corpus merge; the decision itself is unchanged. The corpus is built and
+owned by `stage2/02_dataset_corpus/`, and the corpus artifact is
+`stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`; the CM-schema projection
+view is built and owned by `stage2/05_prnet_pretrain/`. The `02_cm_data/datasets-1`
+path inside the 2026-11-01 measurement note above stays as the historical record
+of what was measured.
+
 Projections of this corpus are still views, not amendments to it. The first
 projection — a CM-schema 18,164-gene view — was **built and verified 2026-11-01**
 (67,018 × 18,164; nine gates 9/9 PASS) and is decided by **ADR 0031**, which

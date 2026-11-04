@@ -2,6 +2,8 @@
 
 **Status: accepted (2026-10-30)**
 
+**Update (2026-11-04, ADR 0033):** the Stage 2 step inventory in this record was rewritten by the dataset-corpus merge; the external-items contract is unchanged. The tree now has **five live steps** — `01_setup`, `02_dataset_corpus`, `03_models_cmbench` (frozen), `05_prnet_pretrain`, `06_prnet_transfer` — with **`04` a deliberate gap**, not a renumber.
+
 Two reproducibility gaps have accumulated. First, the four external-source
 categories (`pert_data/`, `pert_model/`, `disease_data/`, `drug_emb_model/`) mix
 downloaded bytes with locally generated artifacts, and their provenance lives in
