@@ -105,7 +105,10 @@ with explicit exclusion of required evidence that cannot be evaluated.
 The corpus retains small files and reports source/endpoint-independent coverage;
 the third-category 500 target is assessed in later model-view selection rather
 than enforced per corpus file. Corpus construction, data views and training have
-not run. The agreed design now hands off to `to-spec` → `to-tickets` →
-`implement-spec`; the earlier
+not run. The [implementation specification](https://github.com/Moke110/arc/issues/29)
+and ten native child tickets are published with thirteen verified blocking edges.
+The initial frontier is
+[phenotype-source integration](https://github.com/Moke110/arc/issues/30);
+execution proceeds through `implement-spec` when requested. The earlier
 [wayfinder curation contract](research/stage3-curation-contract.md) remains historical
 where it conflicts with the formal design.

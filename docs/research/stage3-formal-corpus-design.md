@@ -3,6 +3,8 @@
 日期：2026-11-04。状态：`grill-with-docs` 访谈已完成；本文件交接已同意设计，
 不是已发布 spec、生产数据、已运行验收或模型结果。
 
+规格及实施票现已另行发布，入口见本文末节；本文件仍为设计基线，实施尚未执行。
+
 依据：[ADR 0038](../adr/0038-dedicated-phenotype-data-and-stage3-corpus.md)、
 [ADR 0039](../adr/0039-condition-corpus-and-model-view-separation.md)、
 [ADR 0040](../adr/0040-numeric-endpoints-and-source-readout-sequences.md)、
@@ -184,3 +186,28 @@ Heliste 每氧条件 2,756 个有值标签–剂量组合，但缺明确分母�
 稳定 ID/文件名编码、JSON manifest/schema、统计与缺失原因字段、离线 fixture、规则版本、
 可重跑入口及发布报告。实现必须同时验收“形成数值 corpus”和“证据不足但完整归档/排除”的
 合法输出。设计已定，不借实现选择重开科学规则；随后按 `to-tickets` → `implement-spec` 推进。
+
+## 8. 已发布规格与实施票
+
+2026-11-04，用户要求 to-spec 后直接 to-tickets，不进行中途确认；规格已先发布并回读，再按依赖顺序发布实施票。
+
+正式规格：[规格：Stage 3 正式表型工作空间与数值 corpus](https://github.com/Moke110/arc/issues/29)。
+
+| 阶段 | 实施票 |
+| --- | --- |
+| Stage 3 01 | [Stage 3 01 — 接入表型来源类别并验证首个真实数据项](https://github.com/Moke110/arc/issues/30) |
+| Stage 3 02 | [Stage 3 02 — 打通冻结来源到 Parquet corpus 的最小闭环](https://github.com/Moke110/arc/issues/31) |
+| Stage 3 03 | [Stage 3 03 — 完成统计比较、BH 校正与数值 endpoint 发布](https://github.com/Moke110/arc/issues/32) |
+| Stage 3 04 | [Stage 3 04 — 发布 Sirenko 24 h beat_count 完整语料与质控证据](https://github.com/Moke110/arc/issues/33) |
+| Stage 3 05 | [Stage 3 05 — 发布 Linn MTT 试点与双细胞模型语料](https://github.com/Moke110/arc/issues/34) |
+| Stage 3 06 | [Stage 3 06 — 发布 Liu icariin CCK8 常氧和 HR 语料](https://github.com/Moke110/arc/issues/35) |
+| Stage 3 07 | [Stage 3 07 — 发布 Duan 原代心肌 MTT 与 A/R 语料](https://github.com/Moke110/arc/issues/36) |
+| Stage 3 08 | [Stage 3 08 — 归档 Heliste CTG 并发布条件隔离与准入结果](https://github.com/Moke110/arc/issues/37) |
+| Stage 3 09 | [Stage 3 09 — 发布多来源 corpus 与可复核覆盖损耗报告](https://github.com/Moke110/arc/issues/38) |
+| Stage 3 10 | [Stage 3 10 — 完成仓库回归、双轴审查与实施交接](https://github.com/Moke110/arc/issues/39) |
+
+上述十票已作为规格的原生子议题关联，十三条 blocked_by 关系已回读核验。
+初始顺序为来源接入→最小corpus闭环→完整统计→五个来源适配→多来源发布→最终回归与双轴审查；
+来源适配票之间无虚构依赖。规格正文和开放状态未被拆票改写。
+发布时规格与全部实施票均为 ready-for-agent，等待实施；不因本轮发布结束关闭它们。
+本次未实施下载/语料构建，也未运行数据验收或声称500已达标。实际工作状态以GitHub为准。
