@@ -89,7 +89,7 @@ SMOKE_EPOCHS = 2
 SMOKE_TRAIN_ROWS = 3000
 SMOKE_VALID_ROWS = 1000
 
-VIEW_DEFAULT = "stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad"
+VIEW_DEFAULT = "stage2/05_prnet_pretrain/output/pretrain_view/tahoe_cm_schema.h5ad"
 OUTPUT_DEFAULT = "stage2/05_prnet_pretrain/output"
 
 #: candidate ``uns`` keys holding the ``control_group`` labels when
@@ -1037,7 +1037,7 @@ def write_model_card(
         "`fit_history.json`, `summary.png`, `summary_table.csv`, `checkpoint/model.pt`,",
         "`config.json`, `model_card.md`.",
         "",
-        "## Deviations inherited from the 04 view (D0–D3)",
+        "## Deviations inherited with the view (D0–D3)",
         "",
         "- **D0 layout**: `X`/`log1p_cp10k` are CSR instead of the CM views' dense `int32`.",
         "  Dense would be 4.87 GB (9.74 GB with the layer), not 4.87 TB — the plan's units error —",
@@ -1075,7 +1075,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--view", type=Path, default=Path(VIEW_DEFAULT),
-                        help="pretrain view .h5ad (04 output)")
+                        help="pretrain view .h5ad (owned by this step)")
     parser.add_argument("--output", type=Path, default=Path(OUTPUT_DEFAULT),
                         help="run directory (overwritten on rerun)")
     parser.add_argument("--device", default="cuda", choices=("cuda", "cpu"),
@@ -1111,7 +1111,7 @@ def main(argv: list[str] | None = None) -> int:
     if not view.exists():
         raise SystemExit(
             f"view not found: {view}\n"
-            "Build it first: `python stage2/04_tahoe_data/execution/build_pretrain_view.py`\n"
+            "Build it first: `python stage2/05_prnet_pretrain/execution/build_pretrain_view.py`\n"
             "or smoke-test this step on the synthetic fixture:\n"
             "  python stage2/05_prnet_pretrain/execution/_smoke/make_fixture.py\n"
             "  python stage2/05_prnet_pretrain/execution/train_prnet.py --smoke "

@@ -10,21 +10,23 @@ evaluation, no comparison against `03_models_cmbench`**. The decision is
 [ADR 0031](../../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md) §2
 (contract as planned in
 [`.scratch/stage2-05-prnet-pretrain/spec.md`](../../.scratch/stage2-05-prnet-pretrain/spec.md)
-§2); the view it consumes is built by
-[`stage2/04_tahoe_data/`](../04_tahoe_data/README.md) and its deviations are
-recorded there (D0–D3, mirrored into `output/model_card.md`).
+§2). Since the 02+04 merge
+([ADR 0033](../../docs/adr/0033-stage2-dataset-corpus.md)) this step also **owns**
+the CM-schema view and its builder, both inherited byte-identically from the
+retired `stage2/04_tahoe_data/`; the view's deviations (D0–D3) are documented
+below and mirrored into `output/model_card.md`.
 
 ## Status
 
 | | |
 |---|---|
-| execution | **EXECUTED 2026-11-01** (fresh user go-ahead) — after 04's view passed QA 9/9 |
+| execution | **EXECUTED 2026-11-01** (fresh user go-ahead) — after the inherited view passed QA 9/9 |
 | pretrain run | **68 epochs**, early stop fired at epoch 68 (patience 21 > 20 once the 20-epoch floor was met); best valid **−2.628080** at epoch 47; `NVIDIA GeForce RTX 4070 Ti SUPER` (torch 2.0.1+cu118) |
-| data | `stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad` — 67,018 × 18,164; 65,318 samples (**55,922 train / 9,396 valid**, split by plate: `plate13` + `plate14` valid); **300** treated rows dropped (no resolvable structure); 700 control groups; 375 unique SMILES; 1,400 controls / 65,618 treated |
+| data | `stage2/05_prnet_pretrain/output/pretrain_view/tahoe_cm_schema.h5ad` (moved byte-identically from `04_tahoe_data`; `content_sha256` `476812c0…`) — 67,018 × 18,164; 65,318 samples (**55,922 train / 9,396 valid**, split by plate: `plate13` + `plate14` valid); **300** treated rows dropped (no resolvable structure); 700 control groups; 375 unique SMILES; 1,400 controls / 65,618 treated |
 | cost | **956 s (15.9 min)** wall between the run's own start/finish stamps (`17:01:45`→`17:17:41`), over 68 epochs; the in-process monotonic timer reads 883.2 s for the same span — it runs low against the wall clock on this host (see `model_card.md`); peak host RSS **15,150 MiB** on a 31 GiB host |
 | loss | Gaussian NLL is **negative throughout** (train −0.714 → −2.814; best valid −2.628). It is a log-likelihood, so its sign carries no meaning; it is never clamped. It says nothing about transfer, and it is **not comparable** to any `03_models_cmbench` figure |
 | pipeline | **smoke-verified on CUDA** (2 epochs on a synthetic fixture, ticket 04) — retained as the pipeline proof |
-| fixture encoding | carries 04's production `dataframe/0.2.0` `uns['control_mean']` (generated with the `arc` env) |
+| fixture encoding | carries the production view's `dataframe/0.2.0` `uns['control_mean']` (generated with the `arc` env) |
 
 The plan of record is
 [`.scratch/stage2-05-prnet-pretrain/`](../../.scratch/stage2-05-prnet-pretrain/)
@@ -32,7 +34,7 @@ The plan of record is
 The accepted decision record is
 [`docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md`](../../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md).
 
-Real run (2026-11-01). `execution/run.sh` on 04's view: 68 epochs in 956 s (15.9 min
+Real run (2026-11-01). `execution/run.sh` on the inherited view: 68 epochs in 956 s (15.9 min
 between the start and finish stamps), with early
 stopping firing at epoch 68 after 21 stale epochs; the valid Gaussian NLL fell from
 −1.359030 at epoch 1 to a best **−2.628080** at epoch 47 and was still the best when the
@@ -68,8 +70,8 @@ $PY stage2/05_prnet_pretrain/execution/train_prnet.py --check
 stage2/05_prnet_pretrain/execution/run.sh
 
 # 2. pipeline check without the real view: build the synthetic fixture, then smoke
-#    (the fixture is written with the `arc` env so it carries 04's exact
-#     dataframe/0.2.0 encoding for uns['control_mean']; see Environment)
+#    (the fixture is written with the `arc` env so it carries the production
+#     view's exact dataframe/0.2.0 encoding for uns['control_mean']; see Environment)
 $ARC stage2/05_prnet_pretrain/execution/_smoke/make_fixture.py
 $PY stage2/05_prnet_pretrain/execution/train_prnet.py --smoke \
     --view stage2/05_prnet_pretrain/execution/_smoke/tahoe_cm_schema_smoke.h5ad
@@ -78,12 +80,41 @@ $PY stage2/05_prnet_pretrain/execution/train_prnet.py --smoke \
 $PY stage2/05_prnet_pretrain/execution/train_prnet.py --replot
 ```
 
-`--view` / `--output` / `--device` / `--seed` are overridable; defaults are the 04
-view, `stage2/05_prnet_pretrain/output/`, `cuda`, `20261021`.
+`--view` / `--output` / `--device` / `--seed` are overridable; defaults are this
+step's own view, `stage2/05_prnet_pretrain/output/`, `cuda`, `20261021`.
+
+## View ownership (since the 02+04 merge)
+
+`execution/build_pretrain_view.py` was moved here byte-identically from the
+retired `stage2/04_tahoe_data/`, and the view itself was **moved, not rebuilt**:
+`output/pretrain_view/tahoe_cm_schema.h5ad` is 16,319,543,984 B with
+`content_sha256 = 476812c0…`, unchanged (ADR 0033 decision 5). The builder reads
+the merged corpus and its identity tables, and writes this step's own
+`output/pretrain_view/`:
+
+| input | path |
+|---|---|
+| Tahoe corpus (obs + row order) | `stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad` |
+| per-plate CSR corpus parts | `stage2/02_dataset_corpus/execution/_parts/` |
+| 18,164-gene CM axis | `stage2/02_dataset_corpus/output/corpus/v2/tables/genes.csv` |
+| CM drug table (overlap routes) | `stage2/02_dataset_corpus/output/corpus/v2/tables/compounds.csv` |
+
+A rebuild is not part of this round (it is hours of I/O and must reproduce the
+same hash). **`--verify`** is the check that the moved file still equals what the
+corpus implies: it replays the projection over the corpus parts in the builder's
+own order (two streaming passes, one part in memory, no second 16 GB write) and
+compares the recomputed `content_sha256` to the recorded `476812c0…`. It is
+**default off**, reads only, and needs the merged corpus + tables; missing inputs
+exit with a message (no traceback), and a hash mismatch exits non-zero.
+
+```bash
+$ARC stage2/05_prnet_pretrain/execution/build_pretrain_view.py --check   # paths only
+$ARC stage2/05_prnet_pretrain/execution/build_pretrain_view.py --verify  # replay + compare
+```
 
 ## Input contract
 
-One file only: `stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad`
+One file only: `stage2/05_prnet_pretrain/output/pretrain_view/tahoe_cm_schema.h5ad`
 (67,018 × 18,164; schema per spec §1.2–1.4). The trainer never touches the corpus,
 the per-plate parts, or CM h5ads, and it never densifies the matrix — it reads obs
 and `uns` via anndata **backed** mode and the CSR layer through h5py.
@@ -156,7 +187,8 @@ model card are the evidence a later reader needs, and the weights are regenerabl
 
 ## Deviations
 
-Inherited from the 04 view and recorded in `model_card.md`:
+Inherited with the moved view and still recorded here (the builder now lives in
+this step):
 
 - **D0 layout** — CSR instead of CM's dense `int32`; the builder never materialises a
   dense 18,164 × 67,018 buffer, so what differs is storage layout, not schema.
@@ -173,7 +205,7 @@ Two further notes for this step:
   dataset draws both from one matrix, so this is a recorded deviation from parity,
   not a match with it. It does not affect the pipeline claim, but it must be
   resolved before any finetune or transfer claim.
-- `uns['control_mean']` is 04's production DataFrame encoding (`dataframe/0.2.0`,
+- `uns['control_mean']` is the production view's DataFrame encoding (`dataframe/0.2.0`,
   written by anndata 0.12.16 in the `arc` env). The pinned 0.10.8 reader here
   handles it and materialises a `(700, 18164)` `DataFrame`; `config.json` records
   which encoding was read. The trainer also accepts a transposed DataFrame or a
@@ -187,8 +219,9 @@ Two pinned environments, split by role:
 - **05 trains/reads** with `/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python` —
   Python 3.9.25, torch 2.0.1+cu118 (CUDA available), anndata 0.10.8, RDKit
   2025.09.2, matplotlib 3.9.4 (Agg).
-- **04 writes** the view with `/home/chang/miniconda3/envs/arc/bin/python` —
-  anndata 0.12.16. That is why the smoke fixture is generated with `arc`: it must
+- **The view builder** writes the view with `/home/chang/miniconda3/envs/arc/bin/python`
+  — anndata 0.12.16 (`execution/build_pretrain_view.py`; it moved here from 04).
+  That is why the smoke fixture is generated with `arc`: it must
   carry the identical `dataframe/0.2.0` encoding for `uns['control_mean']` that
   production carries. (anndata 0.10.8 cannot *write* that encoding — HDF5
   overflows — but it *reads* it, which is all this step needs.)
@@ -204,5 +237,5 @@ figure). Targets are gathered per batch.
 CM finetune / warm start, cold-drug re-benchmark, the 5k HVG fork, any
 pretraining *protocol* beyond ADR 0031's bring-up (transfer, warm-start or
 finetune experiments), any edit inside
-`pert_model/`, any regeneration of `03_models_cmbench`, and rebuilding the 04
-corpus or its view.
+`pert_model/`, any regeneration of `03_models_cmbench`, and rebuilding the
+`02_dataset_corpus` corpus or this view.

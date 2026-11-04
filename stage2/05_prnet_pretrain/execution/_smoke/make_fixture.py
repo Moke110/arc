@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-"""Synthetic stand-in for the 04 pretrain view, used only to smoke-test the trainer.
+"""Synthetic stand-in for the pretrain view, used only to smoke-test the trainer.
 
 The real pretraining input is
-``stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad`` (67,018 x 18,164,
-built by ``stage2/04_tahoe_data/execution/build_pretrain_view.py``).  That file is
-produced by a peer step and does not exist while this step is being written, so this
-script writes a *tiny* file with the exact same schema:
+``stage2/05_prnet_pretrain/output/pretrain_view/tahoe_cm_schema.h5ad`` (67,018 x 18,164,
+built by ``stage2/05_prnet_pretrain/execution/build_pretrain_view.py``).  That file is
+16.3 GB of real data, so this script writes a *tiny* file with the exact same schema:
 
 * ``X`` int32 CSR (300 x 18,164) and ``layers['log1p_cp10k']`` float32 CSR, same pattern;
 * ``var`` = the frozen CM gene axis copied verbatim from
-  ``stage2/02_cm_data/output/corpus/v1/genes.csv`` (``FAM153B`` stays all-zero, D2);
+  ``stage2/02_dataset_corpus/output/corpus/v2/tables/genes.csv`` (``FAM153B`` stays
+  all-zero, D2);
 * ``obs`` = the 24 CM columns + the Tahoe-native extras + the three author shims,
   with 2 control groups, 40 drugs (2 of them structure-less) and plates ``plate1``
   (train) / ``plate13`` (valid);
@@ -118,7 +118,8 @@ def find_repo_root(start: Path) -> Path:
 
 
 def load_gene_axis(root: Path) -> pd.DataFrame:
-    genes = pd.read_csv(root / "stage2/02_cm_data/output/corpus/v1/genes.csv")
+    genes = pd.read_csv(
+        root / "stage2/02_dataset_corpus/output/corpus/v2/tables/genes.csv")
     if len(genes) != N_GENES:
         raise SystemExit(f"genes.csv has {len(genes)} rows, expected {N_GENES}")
     return genes

@@ -3,11 +3,13 @@
 
 Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §Implementation Decisions
 (agreed 2026-11-01).
-This is a *separate* entry point from `build_pseudobulk.py`: it never rebuilds
-the corpus and never touches `output/pseudobulk/`. It projects the frozen
-62,710-gene corpus onto the frozen 18,164-gene CM axis and writes one h5ad whose
-schema is identical to the CM views (`stage2/02_cm_data/output/datasets-1/`),
-plus the side files a downstream trainer needs.
+This is a *separate* entry point from the corpus builder in
+`stage2/02_dataset_corpus/`: it never rebuilds the corpus. It projects the frozen
+62,710-gene Tahoe corpus (`stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`)
+onto the frozen 18,164-gene CM axis (`.../corpus/v2/tables/genes.csv`) and writes
+one h5ad under this step's own `output/pretrain_view/`, whose schema is identical
+to the frozen CM views (`stage2/_frozen/cm-data-v1/datasets-1/`), plus the side
+files a downstream trainer needs.
 
 Layout differs from CM on purpose (deviation D0): CM views are dense int32; this
 view is CSR.  Schema (obs, var, layers, uns) is identical; only the container
@@ -21,10 +23,11 @@ slice writes — a recorded deviation, not a size win.
 Usage (run from the repository root; any cwd works, the root is found by
 walking up to `.git`):
 
-    python stage2/04_tahoe_data/execution/build_pretrain_view.py --check
-    python stage2/04_tahoe_data/execution/build_pretrain_view.py            # build + QA
-    python stage2/04_tahoe_data/execution/build_pretrain_view.py --force    # rebuild _view_parts/
-    python stage2/04_tahoe_data/execution/build_pretrain_view.py --qa       # QA only, non-zero on failure
+    python stage2/05_prnet_pretrain/execution/build_pretrain_view.py --check
+    python stage2/05_prnet_pretrain/execution/build_pretrain_view.py            # build + QA
+    python stage2/05_prnet_pretrain/execution/build_pretrain_view.py --force    # rebuild _view_parts/
+    python stage2/05_prnet_pretrain/execution/build_pretrain_view.py --qa       # QA only, non-zero on failure
+    python stage2/05_prnet_pretrain/execution/build_pretrain_view.py --verify   # replay the content hash
 
 Output tree (`output/pretrain_view/`):
 
@@ -82,18 +85,23 @@ def find_repo_root(start: Path) -> Path:
 ROOT = find_repo_root(Path(__file__).resolve().parent)
 assert (ROOT / "stage2").is_dir(), f"resolved repo root has no stage2/: {ROOT}"
 
-CORPUS_DIR = ROOT / "stage2" / "04_tahoe_data" / "output" / "pseudobulk"
-CORPUS_H5AD = CORPUS_DIR / "tahoe_pseudobulk.h5ad"
-CORPUS_PARTS = CORPUS_DIR / "_parts"
-OUT_DIR = ROOT / "stage2" / "04_tahoe_data" / "output" / "pretrain_view"
+CORPUS_H5AD = ROOT / "stage2" / "02_dataset_corpus" / "output" / "corpus" / "v2" / "tahoe.h5ad"
+CORPUS_PARTS = ROOT / "stage2" / "02_dataset_corpus" / "execution" / "_parts"
+OUT_DIR = ROOT / "stage2" / "05_prnet_pretrain" / "output" / "pretrain_view"
 VIEW_PARTS = OUT_DIR / "_view_parts"
 VIEW_H5AD = OUT_DIR / "tahoe_cm_schema.h5ad"
-GENES_CSV = ROOT / "stage2" / "02_cm_data" / "output" / "corpus" / "v1" / "genes.csv"
-CM_COMPOUNDS = ROOT / "stage2" / "02_cm_data" / "output" / "datasets-1" / "compounds.csv"
+GENES_CSV = (ROOT / "stage2" / "02_dataset_corpus" / "output" / "corpus" / "v2"
+             / "tables" / "genes.csv")
+CM_COMPOUNDS = (ROOT / "stage2" / "02_dataset_corpus" / "output" / "corpus" / "v2"
+                / "tables" / "compounds.csv")
 TAHOE_META = ROOT / "pert_data" / "Tahoe-100M" / "source" / "metadata"
 
 VIEW_NAME = "tahoe_cm_schema"
-BUILT_FROM = "stage2/04_tahoe_data/output/pseudobulk/tahoe_pseudobulk.h5ad"
+BUILT_FROM = "stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad"
+
+#: `content_sha256()` of the view as recorded by the move (ticket #14) and by the
+#: 06.3 input contract.  `--verify` replays the projection and compares to this.
+RECORDED_CONTENT_SHA256 = "476812c09d06c29e56069a3a1e670834384abb524a9468dc596229b5cbcbf407"
 PSEUDOBULK_UNIT = "(plate, well, cell_line)"
 CORPUS_VERSION = "v1"
 
@@ -151,7 +159,7 @@ def short_commit() -> str:
 # frozen inputs: CM gene axis, Tahoe gene map, drug metadata, corpus obs
 # ---------------------------------------------------------------------------
 def load_cm_var() -> pd.DataFrame:
-    """The 18,164-row CM `var`, copied verbatim from `corpus/v1/genes.csv`."""
+    """The 18,164-row CM `var`, copied verbatim from `corpus/v2/tables/genes.csv`."""
     genes = pd.read_csv(GENES_CSV, dtype=str)
     assert len(genes) == N_VIEW_GENES, len(genes)
     assert list(genes.columns) == ["symbol", "hgnc_id", "entrez_id", "ensembl_id", "match_type"]
@@ -671,7 +679,8 @@ def assemble(parts: list[Path], var: pd.DataFrame, obs, control_mean: pd.DataFra
             indices = data["indices"]
             x_data[nz0:nz0 + part_nnz] = values
             x_indices[nz0:nz0 + part_nnz] = indices
-            # same formula as 02_cm_data/execution/cmdata/views.py: counts / lib_size * 1e4
+            # same formula as the frozen CM view writer
+            # (stage2/_frozen/cm-data-v1/execution/cmdata/views.py): counts / lib_size * 1e4
             lib_per_nnz = np.repeat(data["row_sum"], np.diff(part_ptr))
             log1p = np.log1p(values / lib_per_nnz * 1e4).astype(np.float32)
             l_data[nz0:nz0 + part_nnz] = log1p
@@ -713,6 +722,98 @@ def content_sha256(path: Path, chunk: int = 32_000_000) -> str:
                 block = dataset[start:start + chunk]
                 digest.update(np.ascontiguousarray(block).tobytes())
     return digest.hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# optional `--verify`: replay the projection and recompute the content hash
+# ---------------------------------------------------------------------------
+def _project_part(part: Path, colmap: np.ndarray):
+    """Project one corpus part onto the CM axis in memory (verify only).
+
+    Mirrors the retained-column rule of `build_view_parts` exactly — same
+    `colmap`, same zero drop, same CSR row pointers, same `sort_indices` — but
+    writes no `_view_parts/` cache.  Returns the CSR matrix and its per-row
+    retained nnz.
+    """
+    import scipy.sparse as sp
+
+    src = np.load(part, allow_pickle=False)
+    indptr = src["indptr"].astype(np.int64)
+    values, indices = src["data"], src["indices"]
+    target = colmap[indices]
+    keep = (target >= 0) & (values != 0)
+    kept_target = target[keep].astype(np.int32)
+    kept_values = values[keep].astype(np.int32)
+    counts = np.add.reduceat(keep, indptr[:-1], dtype=np.int32).astype(np.int64)
+    newptr = np.zeros(len(indptr), dtype=np.int64)
+    np.cumsum(counts, out=newptr[1:])
+    matrix = sp.csr_matrix((kept_values, kept_target, newptr),
+                           shape=(len(indptr) - 1, N_VIEW_GENES))
+    matrix.sort_indices()
+    return matrix, counts
+
+
+def verify_content_hash(chunk: int = 32_000_000) -> int:
+    """Recompute the view's `content_sha256` from the corpus + tables and compare it.
+
+    The recorded hash covers only the CSR `X/data`, `X/indices` and `X/indptr`
+    arrays (see `content_sha256`), so this replays the pass-1 projection over the
+    per-plate corpus parts in the same order and hashes the arrays that a rebuild
+    would write — without creating a second 16 GB h5ad.  Two passes keep peak RSS
+    at one part: pass A hashes `data` while accumulating `indptr`; pass B
+    re-derives and hashes `indices`.  Missing inputs exit with a message, not a
+    traceback; a mismatch exits non-zero.
+    """
+    required = [CORPUS_H5AD, GENES_CSV, TAHOE_META / "gene_metadata.parquet"]
+    missing = [path for path in required if not path.exists()]
+    if not CORPUS_PARTS.is_dir():
+        missing.append(CORPUS_PARTS)
+    if missing:
+        raise SystemExit("--verify needs inputs that are missing:\n  "
+                         + "\n  ".join(str(path) for path in missing))
+
+    parts = input_parts()
+    obs = load_corpus_obs()
+    verify_row_order(obs, parts)
+    colmap = build_colmap(load_cm_var())
+
+    t0 = time.time()
+    digest = hashlib.sha256()
+    indptr = np.zeros(N_VIEW_OBS + 1, dtype=np.int64)
+    row0 = 0
+    for part in parts:
+        matrix, counts = _project_part(part, colmap)
+        n_part = matrix.shape[0]
+        if row0 + n_part > N_VIEW_OBS:
+            raise SystemExit(f"{part.stem}: {row0 + n_part} rows exceeds {N_VIEW_OBS}")
+        base = indptr[row0]
+        indptr[row0 + 1:row0 + n_part + 1] = base + np.cumsum(counts)
+        data = matrix.data
+        for start in range(0, data.shape[0], chunk):
+            digest.update(np.ascontiguousarray(data[start:start + chunk]).tobytes())
+        row0 += n_part
+        log(f"  verify pass A {part.stem}: {n_part:,} rows, {data.shape[0]:,} nnz")
+        del matrix, data, counts
+    if row0 != N_VIEW_OBS:
+        raise SystemExit(f"replayed {row0} rows, the view records {N_VIEW_OBS}")
+
+    for part in parts:
+        matrix, _ = _project_part(part, colmap)
+        indices = matrix.indices
+        for start in range(0, indices.shape[0], chunk):
+            digest.update(np.ascontiguousarray(indices[start:start + chunk]).tobytes())
+        log(f"  verify pass B {part.stem}: {indices.shape[0]:,} indices")
+        del matrix, indices
+
+    for start in range(0, indptr.shape[0], chunk):
+        digest.update(np.ascontiguousarray(indptr[start:start + chunk]).tobytes())
+
+    got = digest.hexdigest()
+    match = got == RECORDED_CONTENT_SHA256
+    log(f"verify: recomputed content_sha256 = {got}")
+    log(f"verify: recorded   content_sha256 = {RECORDED_CONTENT_SHA256}")
+    log(f"verify: {'MATCH' if match else 'MISMATCH'} ({time.time() - t0:.0f}s)")
+    return 0 if match else 1
 
 
 def build_compounds(drugs: pd.DataFrame) -> pd.DataFrame:
@@ -954,7 +1055,7 @@ def run_qa(colmap: np.ndarray) -> dict:
               and list(var["match_type"].astype(str)) == list(genes["match_type"])
               and list(var["match_type"].cat.categories) == ["alias", "direct", "entrez"]
               and var.index.name == "symbol")
-    gate(2, "var identical to corpus/v1/genes.csv (values, order, dtypes)", {
+    gate(2, "var identical to corpus/v2/tables/genes.csv (values, order, dtypes)", {
         "rows": n_genes, "index_name": var.index.name,
         "columns": list(var.columns), "columns_ok": var_columns_ok,
         "dtypes": {c: str(t) for c, t in var.dtypes.items()},
@@ -1265,7 +1366,7 @@ def write_qa_files(qa: dict, var: pd.DataFrame, drugs: pd.DataFrame,
 
     report = f"""# Pretrain view — QA report
 
-QA run at {qa['checked_at']} by `stage2/04_tahoe_data/execution/build_pretrain_view.py`.
+QA run at {qa['checked_at']} by `stage2/05_prnet_pretrain/execution/build_pretrain_view.py`.
 Contract: `.scratch/stage2-05-prnet-pretrain/spec.md` §Implementation Decisions
 ("the view's contract"). Source corpus:
 `{BUILT_FROM}` (never rebuilt; the view only projects the frozen rows onto the frozen
@@ -1289,7 +1390,7 @@ The machine-readable measurements are in [`qa.json`](qa.json).
 
 ## Gene mapping (verbatim CM axis, joined on `ensembl_id`)
 
-- CM axis: **{len(var)}** slots, order and values copied from `corpus/v1/genes.csv`.
+- CM axis: **{len(var)}** slots, order and values copied from `corpus/v2/tables/genes.csv`.
 - Measured by Ensembl: **{measured_by_ensembl}/{len(var)}**; by symbol:
   **{measured_by_symbol}/{len(var)}** — the symbol route loses
   {len(var) - measured_by_symbol} of the {len(var)} CM genes
@@ -1373,6 +1474,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="rebuild the _view_parts/ cache (a missing part is rebuilt anyway)")
     parser.add_argument("--qa", action="store_true",
                         help="QA the existing view only; exits non-zero if a gate fails")
+    parser.add_argument("--verify", action="store_true",
+                        help="replay the projection from the corpus + tables, compare "
+                             "the recomputed content hash to the recorded value and exit "
+                             "(default off; reads the parts, writes nothing)")
     args = parser.parse_args(argv)
 
     log(f"repo root : {ROOT}")
@@ -1380,6 +1485,8 @@ def main(argv: list[str] | None = None) -> int:
     log(f"corpus parts: {CORPUS_PARTS}")
     log(f"gene axis : {GENES_CSV}")
     log(f"output    : {OUT_DIR}")
+    if args.verify:
+        return verify_content_hash()
     if args.check:
         return 0
 
