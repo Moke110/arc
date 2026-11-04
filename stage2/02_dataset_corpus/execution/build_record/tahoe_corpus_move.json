@@ -1,0 +1,164 @@
+{
+  "ticket": 14,
+  "kind": "dataset_corpus_move",
+  "moved_on": "2026-11-04",
+  "old_path": "stage2/04_tahoe_data/output/pseudobulk/tahoe_pseudobulk.h5ad",
+  "new_path": "stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad",
+  "move_method": "same-filesystem rename (mv); device 2096 before and after, inode unchanged",
+  "device": 2096,
+  "shape": [
+    67018,
+    62710
+  ],
+  "bytes": 25805562874,
+  "file_sha256": "300955e0b7739b87960d1056536eb3c14e10f1376792c695a137eed818ed7f45",
+  "content_sha256": "e591e157c3dd65cf23d338040a35d1d1ce2fbd0f3e5a2b3dd445549327a308a9",
+  "content_sha256_recipe": "sha256 over, in order: the literal prefix b'shape=67018x62710;'; the raw bytes of the HDF5 datasets X/data, X/indices, X/indptr, layers/log1p_cp10k/data, layers/log1p_cp10k/indices, layers/log1p_cp10k/indptr (each read in 32,000,000-element row slices, never densified); then obs.to_csv(lineterminator='\\n') and var.to_csv(lineterminator='\\n'), both with their index included (obs index = profile_id, var index = gene symbol).",
+  "content_sha256_note": "04_tahoe_data never recorded a content hash for the corpus (its manifest/qa carry shape and build gates only), so there is no prior accepted value to compare against. Move integrity is shown by (a) the unchanged inode 198768 before and after, (b) the unchanged byte size 25,805,562,874, and (c) this documented content_sha256 plus the file sha256, recorded here as the corpus baseline for later tickets (#15/#17).",
+  "inode_before": 198768,
+  "inode_after": 198768,
+  "obs_columns": [
+    "plate",
+    "well",
+    "cell_line_id",
+    "n_cells",
+    "cell_name",
+    "drug",
+    "dose_um",
+    "is_control",
+    "control_group"
+  ],
+  "var_columns": [
+    "ensembl_id",
+    "token_id"
+  ],
+  "hash_jobs": {
+    "file_sha256": {
+      "tool": "sha256sum",
+      "wall_seconds": 34.26,
+      "peak_rss_kib": 3524
+    },
+    "content_sha256": {
+      "tool": "tmp/hash_move.py corpus",
+      "wall_seconds": 34.9,
+      "peak_rss_kib": 427884
+    }
+  },
+  "parts_move": {
+    "old_path": "stage2/04_tahoe_data/output/pseudobulk/_parts",
+    "new_path": "stage2/02_dataset_corpus/execution/_parts",
+    "npz_files": 14,
+    "npz_bytes": 4408178536,
+    "state_file": {
+      "old_path": "stage2/04_tahoe_data/output/pseudobulk/_state/shard_plate.json",
+      "new_path": "stage2/02_dataset_corpus/execution/_parts/_state/shard_plate.json",
+      "bytes": 68177,
+      "inode_before": 130377,
+      "inode_after": 130377
+    },
+    "consistency": "shard_plate.json holds 3,388 shard->plate entries whose distinct plate set equals the 14 plate*.npz stems on disk (G7)"
+  },
+  "side_files": [
+    {
+      "old_path": "stage2/04_tahoe_data/output/pseudobulk/manifest.csv",
+      "new_path": "stage2/02_dataset_corpus/execution/build_record/tahoe_pseudobulk_manifest.csv",
+      "bytes": 3777926,
+      "inode_before": 525540,
+      "inode_after": 525540,
+      "sha256": "d3cdb7efc9faf477e0abe2d1b031dff2040f8f8736e61de2e0ae4e729e693371"
+    },
+    {
+      "old_path": "stage2/04_tahoe_data/output/pseudobulk/qa.json",
+      "new_path": "stage2/02_dataset_corpus/execution/build_record/tahoe_pseudobulk_qa.json",
+      "bytes": 759,
+      "inode_before": 525541,
+      "inode_after": 525541,
+      "sha256": "51f22d3a6fe95433e095bea00453c4dd8cdddcbc0e5e549230a82d0a8b73f4e7"
+    },
+    {
+      "old_path": "stage2/04_tahoe_data/output/pseudobulk/qa_report.md",
+      "new_path": "stage2/02_dataset_corpus/execution/build_record/tahoe_pseudobulk_qa_report.md",
+      "bytes": 962,
+      "inode_before": 525543,
+      "inode_after": 525543,
+      "sha256": "c506fdd74096ee6785f624a226e41df5e4e7ad8a8288fa155d1e3e3253e62fad"
+    },
+    {
+      "old_path": "stage2/04_tahoe_data/output/pseudobulk/qa_contrasts.csv",
+      "new_path": "stage2/02_dataset_corpus/execution/build_record/tahoe_pseudobulk_qa_contrasts.csv",
+      "bytes": 607829,
+      "inode_before": 525542,
+      "inode_after": 525542,
+      "sha256": "ecf99609afaf10cd3062307568d428f7ed721cfc9b7ae1baf83b39bb1ce2471f"
+    }
+  ],
+  "view_parts_reclaimed": {
+    "old_path": "stage2/04_tahoe_data/output/pretrain_view/_view_parts",
+    "bytes": 8260324196,
+    "files": 28,
+    "deleted_at": "2026-11-04T17:23+08:00",
+    "df_used_delta_bytes": -8260022272,
+    "note": "per-plate gather cache, regenerable in 175 s by rebuilding the view (ADR 0033 decision 9/consequences); du -sb before deletion = 8,260,324,196 B, and the measured df used delta (-8,260,022,272 B) accounts for it minus the ~0.3 MB of new tracked records."
+  },
+  "disk": {
+    "mount": "/home/chang/arc",
+    "filesystem": "/dev/sdd",
+    "capacity_bytes": 1292480991232,
+    "before": {
+      "used_bytes": 1006780203008,
+      "available_bytes": 219971018752,
+      "recorded_at": "2026-11-04T17:22+08:00"
+    },
+    "after": {
+      "used_bytes": 998520180736,
+      "available_bytes": 228231041024,
+      "recorded_at": "2026-11-04T17:29+08:00"
+    },
+    "delta_used_bytes": -8260022272
+  },
+  "old_step_trees_removed": [
+    "stage2/02_cm_data",
+    "stage2/04_tahoe_data"
+  ],
+  "smoke_check": {
+    "command": "/usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python stage2/02_dataset_corpus/execution/build_cm_datasets.py --check",
+    "exit_code": 0,
+    "wall_seconds": 54.81,
+    "peak_rss_kib": 7853744,
+    "peak_rss_gib": 7.49,
+    "counts": {
+      "dtoxs_primary": {
+        "wells": 842,
+        "controls": 102,
+        "blanks": 0,
+        "perturbed": 740,
+        "small_molecule_perturbed": 677,
+        "distinct_compound_names": 54
+      },
+      "dtoxs_ipsc": {
+        "wells": 344,
+        "controls": 16,
+        "blanks": 0,
+        "perturbed": 328,
+        "small_molecule_perturbed": 296,
+        "distinct_compound_names": 42
+      },
+      "screen_ctox": {
+        "wells": 3072,
+        "controls": 552,
+        "blanks": 0,
+        "perturbed": 2520,
+        "small_molecule_perturbed": 2520,
+        "distinct_compound_names": 44
+      },
+      "temp_env": {
+        "wells": 4558,
+        "controls": 272,
+        "blanks": 32,
+        "perturbed": 4254,
+        "small_molecule_perturbed": 4206,
+        "distinct_compound_names": 466
+      }
+    }
+  }
+}
