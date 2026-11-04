@@ -42,7 +42,7 @@ class GeneSetContractTest(unittest.TestCase):
         cls.selected = pd.read_csv(DATA / "gene_set_5k.csv")
         cls.ranks = pd.read_csv(DATA / "gene_set_5k_ranks.csv")
         cls.corpus = pd.read_csv(
-            ROOT / "stage2/02_cm_data/output/corpus/v1/genes.csv", usecols=["symbol"]
+            ROOT / "stage2/_frozen/cm-data-v1/corpus/v1/genes.csv", usecols=["symbol"]
         )["symbol"].astype(str).to_numpy()
 
     def test_manifest_hashes(self) -> None:

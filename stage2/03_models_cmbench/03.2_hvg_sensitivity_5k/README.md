@@ -1,5 +1,10 @@
 # 03.2_hvg_sensitivity_5k — the 5,000-gene HVG sensitivity benchmark
 
+> **Frozen banner — this benchmark predates the `02+04` merge.** Its inputs
+> now live read-only in `stage2/_frozen/cm-data-v1/`; `02_cm_data` no longer
+> produces them, and nothing here rebuilds or rewrites the frozen `output/`
+> record. Redoing the benchmark on the merged corpus is a separate project.
+
 **Status: executed** (2026-10-22/23). 60/60 units completed: five CPU baselines
 plus seven real models × five cold-drug folds, on a 5,000-gene HVG axis. This is
 a **sensitivity fork** of [`../03.1_cold_drug_18k/`](../03.1_cold_drug_18k/), not

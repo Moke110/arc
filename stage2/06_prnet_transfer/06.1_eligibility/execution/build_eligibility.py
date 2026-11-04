@@ -35,7 +35,8 @@ SCHEMA_HANDOFF = "prnet-eligibility-handoff-v2"
 SCHEMA_MANIFEST = "prnet-eligibility-manifest-v2"
 SCHEMA_CHANGE_REPORT = "prnet-eligibility-change-report-v1"
 SCHEMA_CURRENT = "prnet-eligibility-current-v1"
-COMPOUNDS_CSV = Path("stage2/02_cm_data/output/datasets-1/compounds.csv")
+# The v1 bundle is frozen (ticket #13): read-only under stage2/_frozen/.
+COMPOUNDS_CSV = Path("stage2/_frozen/cm-data-v1/datasets-1/compounds.csv")
 DEFAULT_BINDINGDB = evidence.DEFAULT_BINDINGDB
 
 # Files that belong to one artifact version.

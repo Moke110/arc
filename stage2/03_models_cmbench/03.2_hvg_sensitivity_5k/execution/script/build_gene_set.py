@@ -40,8 +40,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from repo_root import BENCH, ROOT  # noqa: E402
 
 DATA = BENCH / "output" / "input"
-CORPUS_GENES = ROOT / "stage2/02_cm_data/output/corpus/v1/genes.csv"
-DATASET_DIR = ROOT / "stage2/02_cm_data/output/datasets-1"
+# The v1 evidence is frozen (ticket #13): the producer is retired, the files
+# are read-only in stage2/_frozen/cm-data-v1/ and never rebuilt here.
+FROZEN = ROOT / "stage2/_frozen/cm-data-v1"
+CORPUS_GENES = FROZEN / "corpus/v1/genes.csv"
+DATASET_DIR = FROZEN / "datasets-1"
 
 SOURCES = ("dtoxs_cm", "screen_ctox", "temp_env_all-smiles")
 TARGET_SIZE = 5_000
@@ -72,7 +75,7 @@ def sha256_file(path: Path) -> str:
 def corpus_symbols() -> np.ndarray:
     genes = pd.read_csv(CORPUS_GENES, usecols=["symbol"])["symbol"].astype(str)
     if len(genes) != N_GENES or genes.duplicated().any():
-        raise GeneSetError("corpus/v1/genes.csv is not the frozen 18,164-gene table")
+        raise GeneSetError(f"{CORPUS_GENES} is not the frozen 18,164-gene table")
     return genes.to_numpy()
 
 
@@ -84,7 +87,7 @@ def _read_view(name: str, symbols: np.ndarray) -> tuple[np.ndarray, np.ndarray, 
         raise GeneSetError(f"missing source view: {path}")
     adata = ad.read_h5ad(path)
     if tuple(adata.var_names.astype(str)) != tuple(symbols):
-        raise GeneSetError(f"{name}: var order does not match corpus/v1/genes.csv")
+        raise GeneSetError(f"{name}: var order does not match {CORPUS_GENES}")
     if LAYER not in adata.layers:
         raise GeneSetError(f"{name}: missing layers[{LAYER!r}]")
     if tuple(adata.shape[1:]) != (N_GENES,):

@@ -58,7 +58,7 @@ class DataContractTest(unittest.TestCase):
             for k in (100, 200, 500)
         }
         cls.genes = pd.read_csv(
-            ROOT / "stage2/02_cm_data/output/corpus/v1/genes.csv", usecols=["symbol"]
+            ROOT / "stage2/_frozen/cm-data-v1/corpus/v1/genes.csv", usecols=["symbol"]
         )["symbol"].astype(str).to_numpy()
 
     # -- manifest ---------------------------------------------------------

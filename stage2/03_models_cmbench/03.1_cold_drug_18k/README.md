@@ -1,5 +1,10 @@
 # 03.1_cold_drug_18k — the 18,164-gene cold-drug benchmark
 
+> **Frozen banner — this benchmark predates the `02+04` merge.** Its inputs
+> now live read-only in `stage2/_frozen/cm-data-v1/`; `02_cm_data` no longer
+> produces them, and nothing here rebuilds or rewrites the frozen `output/`
+> record. Redoing the benchmark on the merged corpus is a separate project.
+
 **Status: executed** (2026-10-21/22). 60/60 units completed: five CPU baselines
 plus seven real models × five cold-drug folds, under one fixed contract
 (ADR 0027). This is the **primary** Stage 2 leaderboard.

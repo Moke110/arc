@@ -43,9 +43,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from repo_root import BENCH, ROOT  # noqa: E402
 
-SOURCE = ROOT / "stage2/02_cm_data/output/datasets-1/temp_env_all-smiles.h5ad"
-SOURCE_MANIFEST = ROOT / "stage2/02_cm_data/output/datasets-1/manifest.csv"
-GENES = ROOT / "stage2/02_cm_data/output/corpus/v1/genes.csv"
+# The v1 evidence is frozen (ticket #13): the producer is retired, the files
+# are read-only in stage2/_frozen/cm-data-v1/ and never rebuilt here.
+FROZEN = ROOT / "stage2/_frozen/cm-data-v1"
+SOURCE = FROZEN / "datasets-1/temp_env_all-smiles.h5ad"
+SOURCE_MANIFEST = FROZEN / "datasets-1/manifest.csv"
+GENES = FROZEN / "corpus/v1/genes.csv"
 DEFAULT_OUT = BENCH / "output" / "input"
 DEFAULT_GENE_SET = DEFAULT_OUT / "gene_set_5k.csv"
 DEFAULT_SOURCE_DATA = BENCH.parent / "03.1_cold_drug_18k" / "output" / "input"
@@ -229,7 +232,7 @@ def load_source(
     genes = pd.read_csv(GENES, usecols=["symbol"])
     var_names = np.asarray(a.var_names.astype(str))
     if list(var_names) != genes["symbol"].astype(str).tolist():
-        raise BuildError("var order does not match corpus/v1/genes.csv")
+        raise BuildError(f"var order does not match {GENES}")
     if len(set(var_names.tolist())) != SOURCE_GENES:
         raise BuildError("duplicate gene symbols")
     if not np.array_equal(var_names[selected_index], selected_symbols):

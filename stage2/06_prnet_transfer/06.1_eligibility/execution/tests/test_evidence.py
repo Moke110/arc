@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import evidence  # noqa: E402
 
-COMPOUNDS = evidence.ROOT / "stage2/02_cm_data/output/datasets-1/compounds.csv"
+COMPOUNDS = evidence.ROOT / "stage2/_frozen/cm-data-v1/datasets-1/compounds.csv"
 
 
 def pugview_record(sections, title="Example"):
