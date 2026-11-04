@@ -25,6 +25,15 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 
 ### Stage 3 phenotype data
 
+**Phenotype**:
+The particular cardiomyocyte indicator measured by an experiment, with its measurement definition and assay retained. Different measurement methods are not assumed interchangeable merely because they describe the same broad biological property.
+
+**Endpoint**:
+The direction label of a phenotype change relative to its specified reference: increase (+1), no change (0), or decrease (−1). In Stage 3 this term denotes the response label, rather than the assay time or the measured indicator itself.
+
+**Phenotype data**:
+Experimental measurements linking pharmacological perturbations to cell phenotype readouts and their controls, conditions, and provenance. These are distinct from transcriptomic perturbation measurements and from model-predicted perturbomes.
+
 **Phenotype observation**:
 A drug-associated measurement of one cardiomyocyte readout under a documented experimental condition, with its experimental source and reference control retained. Multiple doses, times, cell models, and repeats must remain distinguishable.
 _Avoid_: independent sample (without a counting definition)

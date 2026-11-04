@@ -37,3 +37,12 @@ See [ADR 0001](0001-category-taxonomy.md),
 [ADR 0035](0035-stage3-stratified-phenotype-curation.md),
 [ADR 0036](0036-stage3-continuous-evidence-before-direction-labels.md), and
 [wayfinder map](https://github.com/Moke110/arc/issues/21).
+
+## Subsequent workspace amendment (2026-11-04)
+
+The user's subsequent grill-with-docs instruction replaces this record's placement
+under `pert_data/` and planned first-step name with a dedicated `pheno_data/`
+category and `stage3/01_data_corpus/`. See
+[ADR 0038](0038-dedicated-phenotype-data-and-stage3-corpus.md).
+The original record remains the historical wayfinder decision; corpus partition,
+sample identity and training-label admission are being refined in the new design.
