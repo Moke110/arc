@@ -272,6 +272,15 @@ def build(args) -> None:
             "var.to_csv(lineterminator='\\n'))  # v1 recipe minus uns"),
         "row_rule": ("vehicle controls + technical blanks + every "
                      "SMILES-resolvable small molecule; no tier filter"),
+        "well_id_policy": (
+            "obs['well'] is the loader string verbatim, so it keeps the "
+            "historical id prefix (screen_ctox::, temp_env::); dataset_id and "
+            "control_group use the v2 ids (sctox::, tenv::). Ticket #17 "
+            "remaps those two for the v1 comparison, never the well id."),
+        "pharmacology_tiers": (
+            "pharm_atc_moa/pharm_mesh are copied per row; all three tier "
+            "booleans live in tables/compounds.csv for a consumer to filter "
+            "on; no tier is applied when building a corpus"),
         "environment": _environment(),
     }
 

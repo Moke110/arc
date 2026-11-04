@@ -501,10 +501,10 @@
       "file": "stage2/02_dataset_corpus/output/corpus/v2/tenv.h5ad",
       "file_sha256": "a3d521f0ca0fbc732f2f6ba5e31ec2f1efb000102c30d64b7c991cc23ed4a886",
       "bytes": 255148955,
-      "built_at": "2026-11-04T09:44:47+00:00",
-      "wall_seconds": 11.5,
-      "peak_rss_kib": 8029404,
-      "peak_rss_gib": 7.66,
+      "built_at": "2026-11-04T09:49:30+00:00",
+      "wall_seconds": 13.0,
+      "peak_rss_kib": 8161956,
+      "peak_rss_gib": 7.78,
       "gates": [
         {
           "name": "index unique",
@@ -584,12 +584,14 @@
   "ticket": "#15",
   "adr": "0033",
   "step": "stage2/02_dataset_corpus",
-  "updated_at": "2026-11-04T09:44:36+00:00",
+  "updated_at": "2026-11-04T09:49:17+00:00",
   "build": {
     "source_commit": "c921f7d",
     "writer": "track_times=False, gzip, .tmp -> atomic rename",
     "content_digest_recipe": "sha256(X.tobytes() | layers['log1p_cp10k'].tobytes() | obs.to_csv(index=False, lineterminator='\\n') | var.to_csv(lineterminator='\\n'))  # v1 recipe minus uns",
     "row_rule": "vehicle controls + technical blanks + every SMILES-resolvable small molecule; no tier filter",
+    "well_id_policy": "obs['well'] is the loader string verbatim, so it keeps the historical id prefix (screen_ctox::, temp_env::); dataset_id and control_group use the v2 ids (sctox::, tenv::). Ticket #17 remaps those two for the v1 comparison, never the well id.",
+    "pharmacology_tiers": "pharm_atc_moa/pharm_mesh are copied per row; all three tier booleans live in tables/compounds.csv for a consumer to filter on; no tier is applied when building a corpus",
     "environment": {
       "python": "3.13.13",
       "anndata": "0.12.16",
