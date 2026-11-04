@@ -1,37 +1,28 @@
 # AGENTS.md — stage2
 
-Routing index for Stage 2 (model setup and selection). One line per step; purpose,
-results, selection constraints and reproduce commands live in each step's
-`README.md`, and the stage overview is [`README.md`](README.md). Stage 1 is
-`stage1/`, not a dependency here; the data contract is ADR 0030.
+Routing index for Stage 2. One line per step; purpose, results, constraints and
+reproduce commands live in each step's `README.md`; overview: [`README.md`](README.md).
+Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
 
 - [`01_setup/`](01_setup/README.md) — nine deployed non-preprint models proven to
-  load/train in their own pinned environments; run cards under `execution/<model>/`
-  (ADR 0021, ADR 0024).
-- [`02_cm_data/`](02_cm_data/README.md) — frozen model-agnostic CM corpus
-  (`output/corpus/v1/`) and the five `output/datasets-1/` h5ad views (ADR 0026).
-- [`03_models_cmbench/`](03_models_cmbench/README.md) — the executed 60-unit
-  cold-drug benchmark in two substeps: `03.1_cold_drug_18k/` (primary, ADR 0027)
-  and `03.2_hvg_sensitivity_5k/` (HVG sensitivity fork, ADR 0028).
-- [`04_tahoe_data/`](04_tahoe_data/README.md) — the Tahoe-100M pseudobulk
-  pretrain corpus built from the already-downloaded atlas (ADR 0029), plus its
-  CM-schema pretrain view: 67,018 x 18,164, built and verified 2026-11-01, nine
-  gates 9/9 PASS (ADR 0031).
-- [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) — the executed PRnet
-  pretrain on 04's view (2026-11-01): 68 epochs, early stop at epoch 68, best
-  valid Gaussian NLL −2.628080 at epoch 47, 956 s (15.9 min) on GPU; artifacts under
-  `output/` (ADR 0031). Pipeline claim only.
-- [`06_prnet_transfer/`](06_prnet_transfer/README.md) — the formal-transfer
-  study (executed 2026-11-02): 460-compound eligibility audit, per-observation QC,
-  frozen two-source input with five drug-key folds and consensus controls, then 3
-  formal Tahoe pretrains × 90 CM candidates and a paired
-  pretrained-vs-random, model-vs-baseline evaluation. Status: **first round
-  executed and concluded — negative** (Tahoe-init −0.0063 AUPRC@200 vs random,
-  both far below the `delta_mean` baseline); the post-first-round ablations
-  (#10/#11) are deferred. Its README carries the fixed design and the results.
-- [`_envs/`](_envs/README.md) — non-step: shared per-model benchmark
-  environments and their `pip freeze` locks (ADR 0021).
-- [`audit/`](audit/README.md) — non-step: entrant audit, fairness audit, and the
-  2026-10-26 selection decisions.
-- [`_archive/`](_archive/README.md) — non-step: superseded `cm_bench_v1/`
-  benchmark and the archived `PLAN.md`; nothing here is an active dependency.
+  load/train in pinned per-model environments; run cards under `execution/<model>/`.
+- [`02_dataset_corpus/`](02_dataset_corpus/README.md) — every source dataset as a
+  native-axis raw-count h5ad corpus: five corpora in `output/corpus/v2/`, seven
+  crosswalk tables + coverage README, `--verify` G1–G6 PASS (ADR 0033, amends 0026).
+- [`03_models_cmbench/`](03_models_cmbench/README.md) — executed 60-unit cold-drug
+  benchmark, **frozen pending a redo on the merged corpus**; inputs now point at
+  `stage2/_frozen/cm-data-v1/` (ADR 0027, ADR 0028).
+- **`04` is a deliberate gap** — the retired Tahoe data step was folded into
+  `02_dataset_corpus/` (ADR 0033); the number is not reused.
+- [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) — executed PRnet pretrain
+  (2026-11-01; pipeline claim only) and owner of the CM-schema Tahoe view + builder
+  it trains on (ADR 0031, ADR 0033).
+- [`06_prnet_transfer/`](06_prnet_transfer/README.md) — formal-transfer study
+  (executed 2026-11-02, paths only reconnected after the merge): frozen five-fold
+  input, 3 Tahoe pretrains × 90 CM candidates, 30-unit paired evaluation; status
+  **negative** first round, ablations #10/#11 deferred (ADR 0032).
+- [`_envs/`](_envs/README.md) — non-step: shared per-model environments + locks.
+- [`audit/`](audit/README.md) — non-step: entrant/fairness audit, 2026-10-26
+  selection decisions.
+- [`_archive/`](_archive/README.md) — non-step: superseded `cm_bench_v1/` and the
+  archived `PLAN.md`; nothing here is an active dependency.

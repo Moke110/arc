@@ -6,24 +6,32 @@ model run in its own environment?") is deliberately separate from selection
 ("which model is best?"): `01_setup/` answers the first, `03_models_cmbench/`
 the second.
 
-## Current state (2026-11-01)
+## Current state (2026-11-04)
 
 | step | question | what it produced | record |
 |---|---|---|---|
 | [`01_setup/`](01_setup/README.md) | does each model run? | 9/9 run cards, one pinned environment per model; **no model emitted a whole-transcriptome CM perturbome** | ADR 0021, ADR 0024 |
-| [`02_cm_data/`](02_cm_data/README.md) | what do we evaluate on? | frozen corpus: **18,164 genes × 525 drug keys**; five `datasets-1` h5ad views | ADR 0026 |
-| [`03_models_cmbench/`](03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork | ADR 0027, ADR 0028 |
-| [`04_tahoe_data/`](04_tahoe_data/README.md) | what do we pretrain on? | **Tahoe-100M pseudobulk corpus** (67,018 profiles × 62,710 genes, 25.8 GB, QA gates pass) **and its CM-schema pretrain view** — 67,018 × 18,164, 16.32 GB, **nine gates 9/9 PASS** | ADR 0029, ADR 0031 |
-| [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **executed 2026-11-01**: PRnet pretrained on the 04 view — **68 epochs**, early stop at 68, best valid Gaussian NLL **−2.628080** at epoch 47, **956 s (15.9 min)** on an RTX 4070 Ti SUPER; pipeline claim only | ADR 0031 |
-| [`06_prnet_transfer/`](06_prnet_transfer/README.md) | does Tahoe pretraining improve unseen-drug CM prediction? | **executed 2026-11-02 and concluded — negative first round**: eligibility + QC audits, frozen five-fold input with consensus controls, 3 formal Tahoe pretrains, 90 CM candidates, 30-unit paired evaluation. Tahoe-init −0.0063 AUPRC@200 vs random (95% CI [−0.0074, −0.0052], n=118 drugs) and both inits far below `delta_mean` (−0.0800 / −0.0738); no transfer gain demonstrated under the pre-registered rule. The capacity (#10) and env-compound (#11) ablations are deferred | ADR 0032 |
+| [`02_dataset_corpus/`](02_dataset_corpus/README.md) | what data substrate do we build on? | **five source-dataset corpora** — four CM native-axis + `tahoe.h5ad`, 67,018 × 62,710, 25.8 GB — raw counts, every raw well (controls + blanks), no pharmacology filter and no Δ; **seven crosswalk tables** + coverage README (18,164-gene CM axis as `tables/genes.csv`); `--verify` **G1–G6 PASS**, with G4 reproducing 5/5 frozen v1 view content hashes | ADR 0033 (amends ADR 0026) |
+| [`03_models_cmbench/`](03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork. **Frozen pending a redo on the merged corpus**: its inputs now live read-only in `stage2/_frozen/cm-data-v1/`, and no output is rebuilt or rewritten | ADR 0027, ADR 0028 |
+| [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **executed 2026-11-01**: PRnet pretrained on **its own** CM-schema Tahoe view (`output/pretrain_view/tahoe_cm_schema.h5ad`, 67,018 × 18,164, 16.32 GB) — **68 epochs**, early stop at 68, best valid Gaussian NLL **−2.628080** at epoch 47, **956 s (15.9 min)** on an RTX 4070 Ti SUPER; pipeline claim only. Since the merge this step also owns the view and its builder, inherited byte-identically | ADR 0031, ADR 0033 |
+| [`06_prnet_transfer/`](06_prnet_transfer/README.md) | does Tahoe pretraining improve unseen-drug CM prediction? | **executed 2026-11-02 and concluded — negative first round**: eligibility + QC audits, frozen five-fold input with consensus controls, 3 formal Tahoe pretrains, 90 CM candidates, 30-unit paired evaluation. Tahoe-init −0.0063 AUPRC@200 vs random (95% CI [−0.0074, −0.0052], n=118 drugs) and both inits far below `delta_mean` (−0.0800 / −0.0738); no transfer gain demonstrated under the pre-registered rule. The capacity (#10) and env-compound (#11) ablations are deferred. Paths only were reconnected after the merge; no result, hash or digest key changed | ADR 0032 |
 
-The stage is now in **first-round conclusion**: the benchmark evidence exists, the pretrain
-corpus exists, PRnet has been pretrained on its CM-schema view, and the formal-transfer
+**The two data steps are now one, and `04` is a deliberate gap.** On 2026-11-04
+the retired Tahoe data step was folded into `02_dataset_corpus/`: one information-maximal
+corpus layer, with every model-facing view owned by its consumer (ADR 0033). The
+number `04` is not reused — a missing number is cheaper misdirection than renaming a
+concluded study's nine substeps — so `05`/`06` keep their numbers. The five retired v1
+CM views and the old identity tables live read-only in `stage2/_frozen/cm-data-v1/`
+as a **temporary bridge**, deleted once `03`/`05`/`06` are redone.
+
+The stage is now in **first-round conclusion**: the benchmark evidence exists, the dataset
+corpora exist, PRnet has been pretrained on the CM-schema view, and the formal-transfer
 study has finetuned that checkpoint and evaluated it against the benchmark. It **answered**
 the pretrain→finetune question for this round, and the answer is **negative** — see
 [`06_prnet_transfer/README.md`](06_prnet_transfer/README.md) and the ticket #9 results block
 in [`06.9_evaluation/README.md`](06_prnet_transfer/06.9_evaluation/README.md). The
-post-first-round ablations (#10/#11) are deferred, not planned work in flight.
+post-first-round ablations (#10/#11) are deferred, not planned work in flight, and the
+benchmark redo on the merged corpus is a separate project.
 
 ## Selection constraints in force
 
@@ -59,29 +67,28 @@ post-first-round ablations (#10/#11) are deferred, not planned work in flight.
   are L1000 977/2,000-gene; biolord ships no weights; several others had no
   checkpoint at all. This is why selection needed its own benchmark and a
   gene-space/retraining decision rather than a leaderboard.
-- **`02_cm_data/`** — the model-agnostic CM corpus and its filtered views:
-  18,164 genes, 525 resolvable drug keys (`atc-moa` 177, `atc-moa-mesh` 316,
-  `all-smiles` 525), five `datasets-1` views including the benchmark's
-  `temp_env_all-smiles.h5ad` (4,478 wells, 460 drug keys, 16 plates, three doses,
-  24 h, `ipsc_cm`). Reruns reproduce the frozen `manifest.csv`.
+- **`02_dataset_corpus/`** — the information-maximal data substrate: five raw-count
+  h5ad corpora on their sources' **native** gene axes (`dtoxs_primary` 779 × 26,328,
+  `dtoxs_ipsc` 312 × 26,328, `sctox` 3,072 × 31,880, `tenv` 4,510 × 19,613, `tahoe`
+  67,018 × 62,710), one row per raw well including vehicle controls and technical
+  blanks, no pharmacology filter, no integer encoding and no Δ. `output/corpus/v2/`
+  also holds the seven crosswalk tables and the coverage README; the frozen
+  18,164-gene CM axis survives as the projection target (`tables/genes.csv`), not as
+  a corpus universe. The `--verify` suite passes G1–G6, including the reconstruction
+  gate: the five retired v1 CM views are rebuilt from the v2 corpora and their
+  content hashes match the archived manifest 5/5.
 - **`03_models_cmbench/`** — the executed benchmark: five CPU baselines plus
   seven real adapters × five cold-drug folds = 60/60 units, one fixed
   group/fold/metric contract, 12-entry registry, per-unit fidelity ledgers, and
   the conclusion tables. `03.1_cold_drug_18k/` is the primary leaderboard;
   `03.2_hvg_sensitivity_5k/` re-runs the same wells, folds, entrants, seeds and
   budgets on a 5,000-gene HVG axis to test whether the ranking depends on gene
-  space.
-- **`04_tahoe_data/`** — the pretraining substrate: Tahoe-100M aggregated to
-  `(plate, well, cell_line)` pseudobulk profiles, 62,710 native genes, summed
-  raw counts plus `log1p_cp10k`, controls as rows, Δ deliberately not
-  materialized. QA: median 25,290 detected genes/profile; 3,755 contrasts vs
-  the authors' DESeq2 DE give Pearson 0.779 at `baseMean > 500` (gate ≥ 0.60)
-  and 0.812 at `baseMean > 800`; all 700 `(plate, cell_line)` pairs carry a
-  vehicle. Its CM-schema pretrain view (`output/pretrain_view/`) projects that
-  corpus to 18,164 genes: 67,018 × 18,164, 16.32 GB, nine consumer-side gates
-  9/9 PASS.
+  space. The step is **frozen**: both substeps read `stage2/_frozen/cm-data-v1/`
+  and nothing rebuilds or rewrites their `output/`.
 - **`05_prnet_pretrain/`** — the first model trained on the Tahoe corpus inside
-  Stage 2: PRnet's `PGM` from random init on the 04 view (7,185,000 parameters;
+  Stage 2: PRnet's `PGM` from random init on the CM-schema view that this step now
+  owns (`output/pretrain_view/tahoe_cm_schema.h5ad`, 67,018 × 18,164, 16.32 GB,
+  moved byte-identically from the retired Tahoe step; 7,185,000 parameters;
   68 epochs, early stop at epoch 68, best valid Gaussian NLL −2.628080 at epoch
   47; 956 s (15.9 min) and 15,150 MiB peak RSS on an RTX 4070 Ti SUPER). A pipeline
   bring-up — no finetune, no cold-drug evaluation, no comparison with the
@@ -112,11 +119,12 @@ gitignored (multi-GB, interpreter-specific); rebuild recipes are in
 ## Where the decisions live
 
 - ADR [0021](../docs/adr/0021-per-model-environments-stage2.md) — one conda environment per model.
-- ADR [0026](../docs/adr/0026-stage2-cm-data-contract.md) — frozen CM corpus and filtered views.
+- ADR [0026](../docs/adr/0026-stage2-cm-data-contract.md) — frozen CM corpus and filtered views (amended by ADR 0033).
 - ADR [0027](../docs/adr/0027-stage2-benchmark-contract.md) — the 18,164-gene cold-drug benchmark contract.
 - ADR [0028](../docs/adr/0028-stage2-5k-hvg-benchmark.md) — the 5,000-gene HVG sensitivity fork.
-- ADR [0029](../docs/adr/0029-tahoe-pseudobulk-pretrain-corpus.md) — the Tahoe-100M pseudobulk pretrain corpus.
+- ADR [0029](../docs/adr/0029-tahoe-pseudobulk-pretrain-corpus.md) — the Tahoe-100M pseudobulk corpus.
 - ADR [0031](../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md) — the CM-schema Tahoe pretrain view and the PRnet pretrain bring-up.
+- ADR [0033](../docs/adr/0033-stage2-dataset-corpus.md) — one dataset-corpus layer, views downstream; the Tahoe data step is folded in and `04` is a gap.
 - [`audit/model_selection_decisions.md`](audit/model_selection_decisions.md) — the live selection override and what follows from it.
 - [`_archive/PLAN.md`](_archive/PLAN.md) — the superseded plan, archived as-is; this page carries its live content.
 

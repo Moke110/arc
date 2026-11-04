@@ -1,14 +1,16 @@
 # AGENTS.md — stage2/02_dataset_corpus
 
 Routing index. Human record: `README.md`; coverage/provenance/gates:
-`output/corpus/v2/README.md`; decisions: ADR 0033, ADR 0026. Status: #15
-built the four CM corpora (`tahoe.h5ad` moved in #14), #16 wrote the seven
-tables + coverage README; #17 `--verify`, #18 downstream view, #20 docs open.
+`output/corpus/v2/README.md`; decisions: ADR 0033, ADR 0026. Status: #14 moved
+everything here (`tahoe.h5ad` included), #15 built the four CM corpora, #16 wrote
+the seven tables + coverage README, #17 `--verify` **G1–G6 PASS** (G4 reproduces
+5/5 frozen v1 content hashes), #18 moved the CM-schema view to `05`; #20 docs.
 
 - `execution/build_corpus.py` — single entry point: `--corpus
   all|dtoxs_primary|dtoxs_ipsc|sctox|tenv`, `--check`, `--repeat-check` (G5),
   `--tables` (seven tables + coverage README + `corpus_coverage.json`),
-  `--all`, `--verify` (TODO #17). `.tmp`→rename, `track_times=False`.
+  `--all`, `--verify` (G1–G6, reads only from disk; record in
+  `build_record/verify.json`). `.tmp`→rename, `track_times=False`.
 - `execution/cmdata/` — CM library: `paths`, `sources`, `genes`, `drugs`,
   `annotation`, `corpus`, `qa` (G1 + spot check), `corpus_h5ad` (native-axis
   build/digest/write), `tables` (crosswalk/coverage/README, G2/G3). Views are

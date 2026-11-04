@@ -1,11 +1,12 @@
 # 02_dataset_corpus — Stage 2 dataset corpus
 
-**Status:** the four CM corpora are built and the seven crosswalk tables +
-coverage README are written (tickets #15/#16, 2026-11-04); the `--verify` gate
-suite (ticket #17), the downstream CM-schema view (ticket #18) and the docs/ADR
-sweep (ticket #20) are still open. The governing decision is
-[ADR 0033](../../docs/adr/0033-stage2-dataset-corpus.md); the artifact record
-(coverage, provenance, renames, schemas, gates) is
+**Status:** the five corpora (four CM + `tahoe.h5ad`), the seven crosswalk tables
+and the coverage README are built (tickets #14–#16), and the `--verify` gate suite
+**G1–G6 PASS** — including G4, which reproduces 5/5 frozen v1 view content hashes
+(ticket #17; `execution/build_record/verify.json`). The CM-schema view is owned by
+`05_prnet_pretrain/` (ticket #18), and the docs/ADR sweep is ticket #20. The
+governing decision is [ADR 0033](../../docs/adr/0033-stage2-dataset-corpus.md); the
+artifact record (coverage, provenance, renames, schemas, gates) is
 [`output/corpus/v2/README.md`](output/corpus/v2/README.md).
 
 ## Purpose
@@ -75,9 +76,9 @@ HGNC id are summed. `var` = `symbol` index plus `hgnc_id`, `entrez_id`,
 `ensembl_id`, `match_type` (resolution type of the first raw id that introduced
 the gene), so a consumer can rebuild the 18,164 projection with an identity gene
 map: join `hgnc_id` to `tables/genes.csv` and sum. Rebuilding the five frozen v1
-views this way reproduces their `content_sha256` 5/5 (dry-run 2026-11-04; the
-formal gate is ticket #17) — the corpus stores exactly the integers the v1
-writer produced before it projected.
+views this way reproduces their `content_sha256` 5/5 (the formal G4 gate in
+`--verify`; `execution/build_record/verify.json`) — the corpus stores exactly the
+integers the v1 writer produced before it projected.
 
 ### `obs` (four CM corpora, 27 columns, index = `well`)
 
@@ -159,8 +160,10 @@ Measured build (2026-11-04, `/usr/bin/time -v`, one corpus per process):
 
 The peak RSS is dominated by loading the four raw sources (~56 s per process),
 not by the matrix build. G5 PASS: `dtoxs_ipsc` written twice → identical file
-sha256 (`16e84621…`). `--verify` (G1–G6, including the v1 reconstruction gate)
-is ticket #17 and currently exits with a clear TODO.
+sha256 (`16e84621…`). `--verify` runs G1–G6, including the v1 reconstruction gate,
+in 76.8 s at 7.66 GiB peak RSS; **all six gates PASS** — G4 reproduces the 5/5
+frozen v1 `content_sha256` values (full record:
+`execution/build_record/verify.json`).
 
 ## Tables and coverage README (ticket #16)
 
