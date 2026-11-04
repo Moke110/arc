@@ -124,7 +124,7 @@ main() {
   : >"$unresolved_rows"
 
   # `(^|not-a-path-char)` prevents matching the tail of a longer identifier.
-  local pattern='(^|[^[:alnum:]_./@-])(pert_data|pert_model|disease_data|drug_emb_model)/[[:alnum:]_./+@-]*'
+  local pattern='(^|[^[:alnum:]_./@-])(pert_data|pert_model|disease_data|drug_emb_model|pheno_data)/[[:alnum:]_./+@-]*'
 
   local files_scanned=0
   local f
@@ -139,7 +139,7 @@ main() {
       local match="${hit#*:}"
       local literal
       case "$match" in
-        pert_data/* | pert_model/* | disease_data/* | drug_emb_model/*) literal="$match" ;;
+        pert_data/* | pert_model/* | disease_data/* | drug_emb_model/* | pheno_data/*) literal="$match" ;;
         *) literal="${match:1}" ;; # drop the one boundary character grep captured
       esac
       literal="$(trim_literal "$literal")"
@@ -190,7 +190,7 @@ main() {
   echo "repo root: $repo_root"
   echo "tracked text files scanned: $files_scanned"
   echo "path literals scanned: $occ_total occurrences, ${distinct_total:-0} distinct" \
-    "(pert_data, pert_model, disease_data, drug_emb_model)"
+    "(pert_data, pert_model, disease_data, drug_emb_model, pheno_data)"
   echo "resolved:    $occ_resolved occurrences, ${distinct_resolved:-0} distinct"
   echo "whitelisted: $occ_whitelisted occurrences, $distinct_whitelisted distinct" \
     "(entries in script/path_whitelist.txt: $whitelist_entries)"

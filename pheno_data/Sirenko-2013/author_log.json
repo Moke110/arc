@@ -1,0 +1,38 @@
+{
+  "dataset_id": "sirenko_2013",
+  "upstream_identifier": "10.1016/j.taap.2013.09.017",
+  "version": "PMC3900303.1; publisher Table 3 bytes pinned by manifest",
+  "retrieved_at": "2026-11-04T13:03:24.782651+00:00",
+  "sources": [
+    {
+      "path": "publisher-mmc3.xls",
+      "url": "https://ars.els-cdn.com/content/image/1-s2.0-S0041008X13004171-mmc3.xls",
+      "media_type": "application/excel",
+      "bytes": 231424,
+      "sha256": "103b1601944ace5ebe11c269884a3634ab23b17ef2d7446131051a6e5c77b496"
+    },
+    {
+      "path": "article.xml",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC3900303.1/PMC3900303.1.xml",
+      "media_type": "binary/octet-stream",
+      "bytes": 90494,
+      "sha256": "7709437214261ade5907bb7b067ab49539a9c0b6b8a30963b9a6e8ed201035c0"
+    },
+    {
+      "path": "metadata.json",
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC3900303.1/PMC3900303.1.json",
+      "media_type": "binary/octet-stream",
+      "bytes": 676,
+      "sha256": "448334ea1e1980809f0e18d3bf66868490527aeeab264ec83f4b5e2e9b33dd60"
+    }
+  ],
+  "license": {
+    "evidence": "article.xml copyright and metadata.json license_code=TDM; is_pmc_openaccess=false",
+    "status": "rights reserved; public accessibility does not establish redistribution permission"
+  },
+  "validation": {
+    "status": "validated_original_formats_and_sha256",
+    "table": "Supplemental Table 3, 24hr_beat_count"
+  },
+  "local_additions": []
+}

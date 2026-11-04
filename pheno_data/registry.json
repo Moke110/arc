@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "item": "Sirenko-2013",
+      "dataset_id": "sirenko_2013",
+      "status": "active"
+    },
+    {
+      "item": "Heliste-2021",
+      "dataset_id": "heliste_2021",
+      "status": "candidate"
+    },
+    {
+      "item": "Linn-2024",
+      "dataset_id": "linn_2024",
+      "status": "candidate"
+    },
+    {
+      "item": "Liu-2021",
+      "dataset_id": "liu_2021",
+      "status": "candidate"
+    },
+    {
+      "item": "Duan-2014",
+      "dataset_id": "duan_2014",
+      "status": "candidate"
+    }
+  ]
+}

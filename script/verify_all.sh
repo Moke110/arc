@@ -5,7 +5,7 @@
 #   Under the provenance contract (ADR 0030) each external item owns
 #   `script/verify.sh`, which checks the downloaded bytes against the item's
 #   `manifest.sha256` without the network and without the original archive. This
-#   wrapper gives later tickets one red/green answer across all four external
+#   wrapper gives later tickets one red/green answer across all five external
 #   categories.
 #
 # Usage
@@ -13,7 +13,7 @@
 #   script/verify_all.sh --help print this text
 #
 # What it does
-#   1. Checks the exact 27-item inventory accepted by ADR 0030. A missing
+#   1. Checks the 27 legacy items plus active ADR 0038 phenotype items. A missing
 #      category/item/verifier, or an unknown extra item directory, is a failure.
 #   2. An item without `manifest.sha256` is a failure, not a skip: every item is
 #      expected to carry one (27/27 hashed 2026-10-30), so a deleted manifest
@@ -23,7 +23,7 @@
 #   4. Prints a PASS/FAIL summary and the exit code.
 #
 # Exit status
-#   0  all 27 expected items exist and passed
+#   0  all expected active items exist and passed
 #   1  the inventory is incomplete/unexpected, or at least one verifier failed
 #   2  the script could not locate the repository root
 #
@@ -76,7 +76,7 @@ main() {
   tmpdir="$(mktemp -d)" || exit 2
   trap 'rm -rf -- "${tmpdir:-}"' EXIT
 
-  local categories=(pert_data pert_model disease_data drug_emb_model)
+  local categories=(pert_data pert_model disease_data drug_emb_model pheno_data)
   local expected_items=(
     pert_data/Annotation
     pert_data/DToxS-iPSC
@@ -106,6 +106,33 @@ main() {
     drug_emb_model/HG
     drug_emb_model/KPGT
   )
+  # ADR 0038 extends the legacy inventory with a declared phenotype registry.
+  # Invalid or absent registry is fatal, including on otherwise intact clones.
+  local phenotype_items
+  phenotype_items="$(python3 - "$repo_root/pheno_data/registry.json" <<'REGISTRY'
+import json, pathlib, re, sys
+try:
+    data = json.loads(pathlib.Path(sys.argv[1]).read_text())
+    assert data["schema_version"] == 1 and isinstance(data["items"], list)
+    names, ids = set(), set()
+    for row in data["items"]:
+        name, key, state = row["item"], row["dataset_id"], row["status"]
+        assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", name)
+        assert name not in names and key not in ids and not key.startswith("test")
+        assert state in {"active", "candidate", "unavailable"}
+        names.add(name); ids.add(key)
+        if state == "active":
+            print("pheno_data/" + name)
+        elif (pathlib.Path(sys.argv[1]).parent / name).exists():
+            raise ValueError("non-active item has a directory: " + name)
+except (OSError, ValueError, KeyError, TypeError, AssertionError) as exc:
+    print("invalid phenotype inventory: " + str(exc), file=sys.stderr)
+    sys.exit(1)
+REGISTRY
+)" || { echo "FAIL: phenotype category missing or invalid inventory" >&2; return 1; }
+  while IFS= read -r item; do
+    [ -z "$item" ] || expected_items+=("$item")
+  done <<<"$phenotype_items"
   local category item verifier manifest
   local total=0 passed=0 failed=0
   local failed_items="$tmpdir/failed.txt"
@@ -117,7 +144,7 @@ main() {
 
   # Reject directories that are not part of ADR 0030's exact inventory. This
   # catches a missing item being accidentally replaced by a differently named
-  # directory while preserving the total count of 27.
+  # directory while preserving the total count.
   for category in "${categories[@]}"; do
     if [ ! -d "$category" ]; then
       failed=$((failed + 1))
@@ -152,7 +179,7 @@ main() {
       continue
     fi
     manifest="$item/manifest.sha256"
-    if [ ! -f "$manifest" ]; then
+    if [ ! -s "$manifest" ]; then
       failed=$((failed + 1))
       printf '%s\n' "$item" >>"$failed_items"
       echo "  FAIL  $item  (manifest.sha256 missing)"

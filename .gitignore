@@ -165,3 +165,7 @@ stage2/06_prnet_transfer/06.8_baselines/output/*
 !stage2/06_prnet_transfer/06.8_baselines/output/per_drug_dose.csv
 !stage2/06_prnet_transfer/06.8_baselines/output/fold_coverage.csv
 !stage2/06_prnet_transfer/06.8_baselines/output/manifest.json
+
+# Phenotype external sources (ADR 0038); scripts and provenance stay tracked.
+/pheno_data/*/source/
+/pheno_data/*/local/

@@ -2,7 +2,7 @@
 
 > **Measured with `du -sb`** (bytes; decimal units, 1 GB = 10^9 B). The ten top-level trees were measured 2026-10-30T23:01:54+0800; the `stage2/` subtree was re-measured 2026-11-04 after the 02+04 corpus merge, and the Stage 2 rows below carry that later measurement. Re-run `du -sb <path>` to refresh; small drifts come from regenerated caches/logs. The ten measured trees sum to **614,789,001,785 B** (614.8 GB); tracked docs plus small top-level files make the whole repository content ≈615 GB (excluding `.git` and the `.scratch/` workspace).
 >
-> This page is the human index of every large asset deliberately outside version control: where it came from, how big it is, whether it can be rebuilt, and whether it must be backed up. **Machine-readable source of truth** for the external data is each item's `author_log.json` (`sources[]`: origin, version, files, bytes, `tree_sha256`; `local_additions[]`) plus its `manifest.sha256`; `script/verify_all.sh` checks all 27 項 offline (27/27 pass, 2026-10-30, ticket 09). Contract: [ADR 0030](adr/0030-external-data-provenance-and-step-layout.md). A newcomer should read that ADR first, then a category `README.md`, then a step `README.md`.
+> This page is the human index of every large asset deliberately outside version control: where it came from, how big it is, whether it can be rebuilt, and whether it must be backed up. **Machine-readable source of truth** for the external data is each item's `author_log.json` (`sources[]`: origin, version, files, bytes, `tree_sha256`; `local_additions[]`) plus its `manifest.sha256`; `script/verify_all.sh` preserves the 27 legacy 項 and also validates all active items in `pheno_data/registry.json`; the 27/27 result below is the historical 2026-10-30 check. Contract: [ADR 0030](adr/0030-external-data-provenance-and-step-layout.md). A newcomer should read that ADR first, then a category `README.md`, then a step `README.md`.
 
 ## What is outside git, and why
 
@@ -31,7 +31,7 @@ Notes: `stage2/**/output` carries the bulk of Stage 2 (the benchmark units, the 
 
 **Hard-link caveat.** `du -sb` counts a hard-linked inode **once per invocation**. There are 15 hard-linked files across `stage1/xpert-fda-miri-v{1,1.1,3}/input/` (notably the 5.57 GB `all_drugs_unimol_arr.npy`), and the venv trees share many inodes internally. Every row below was measured with its **own** `du -sb <path>` invocation, so per-subtree rows match a single-path `du`; sums of rows can exceed a parent total (the `stage1/` total counts the shared UniMol array once, while three workflow rows each count their own copy).
 
-## External data — 27 項, 453.0 GB (6,005 files) of `source/` content
+## External data — legacy 27 項 plus registered phenotype sources
 
 Each external item is one directory per download source under ADR 0030: `script/` (downloader + offline verifier), `source/` (untouched download), `local/` (declared local additions), `author_log.json`, `manifest.sha256`. The sizes below are the whole item directory (`du -sb`); the source-only file counts and bytes are in the item's `author_log.json`, and the per-file hashes in its `manifest.sha256`. All 27 verified 27/27 on 2026-10-30.
 
@@ -184,3 +184,19 @@ than living as an untracked, one-`git clean`-away file. The original CSV is trac
 | Wang 2025 Acta Pharm Sin B | ✅ 3D 心肌组织(CM+CF+BMDM) 缺氧/OGD | ✅ 76 化合物(T. vernicifluum) | 收缩性(可量化) + 抗纤维化 | 76 化合物 | 论文 + GEO GSE275028 |
 | Oroxin A 2022 Front Pharmacol | ✅ H9c2 OGD/R | ✅ 2661 天然化合物(10 µM) | CCK-8 活力 | 2661 化合物(单点) | CC-BY；doi 10.3389/fphar.2022.894899 |
 | ChEMBL H9c2 H/R 系列 | ✅ H/R | ✅ 每个 AID 1–20 化合物 | 存活/凋亡/坏死、caspase-3、线粒体 ROS、Zn²⁺ | 极小 | PubChem AID 1780097–1780110、2109509–2109554 等(ChEMBL→PubChem) |
+
+### pheno_data — phenotype originals (2026-11-04)
+
+The fifth category follows ADR 0038. Its authoritative inventory is
+`pheno_data/registry.json`, which distinguishes active acquired products from
+candidate/unavailable products. Active products must have nonempty source-only
+manifests and working offline verification; root inventory verification rejects
+missing or unregistered items. The 27 legacy items remain mandatory.
+
+`pheno_data/Sirenko-2013/` archives publisher Table 3 XLS, article XML and PMC
+metadata from official URLs, with exact byte counts, hashes, media types and
+retrieval timestamps in its author log. `source/` and declared `local/` additions
+stay ignored; scripts and provenance stay tracked. Copyright is reserved: public
+retrieval is not a redistribution license. These originals support the Stage 3
+24 h beat-count adapter; numerical table coverage does not establish label or
+training eligibility. Run `bash pheno_data/Sirenko-2013/script/verify.sh` offline.
