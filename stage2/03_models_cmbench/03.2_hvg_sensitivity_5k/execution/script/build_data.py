@@ -111,7 +111,11 @@ def sha256_file(path: Path) -> str:
 
 
 def _content_digest(a: ad.AnnData) -> str:
-    """Exact copy of `stage2/02_cm_data/execution/build_cm_datasets.py:_content_digest`.
+    """Exact copy of the frozen v1 `_content_digest` recipe.
+
+    The v1 recipe is recorded in `stage2/_frozen/cm-data-v1/README.md` (the
+    retired producer has moved there); this copy stays byte-compatible with
+    `stage2/_frozen/cm-data-v1/datasets-1/manifest.csv`.
 
     This is a provenance check only.  `uns["control_mean"]` is read here to
     reproduce the corpus digest recorded in `manifest.csv`; it is never used

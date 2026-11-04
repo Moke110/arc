@@ -40,7 +40,7 @@ v1.3 states the precedence, encodes it, and re-decides every one of the 460
 drug_keys; the v1.2 record is kept byte-identical beside it. No model result
 existed at any revision, so this is pre-registration development.
 
-Scope: every drug_key of the frozen stage2/02_cm_data/output/datasets-1/compounds.csv
+Scope: every drug_key of the frozen stage2/_frozen/cm-data-v1/datasets-1/compounds.csv
 with temp_env_all-smiles=True: 460 structure identities carried by 467 name records.
 
 Evidence sources (per-row URLs and retrieval timestamps are kept in the table):

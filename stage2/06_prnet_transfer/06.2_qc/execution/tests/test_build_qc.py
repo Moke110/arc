@@ -42,7 +42,7 @@ class TestRepoRoot(unittest.TestCase):
 
 class TestObservationIds(unittest.TestCase):
     def test_temp_env_well_ids_match_the_frozen_view_format(self):
-        # literals copied from stage2/02_cm_data/output/datasets-1/temp_env_all-smiles.h5ad
+        # literals copied from stage2/_frozen/cm-data-v1/datasets-1/temp_env_all-smiles.h5ad
         self.assertEqual(build_qc.tempenv_well_id(1, "B2"), "temp_env::Plate1-B02")
         self.assertEqual(build_qc.tempenv_well_id(16, "N23"), "temp_env::Plate16-N23")
         self.assertEqual(build_qc.tempenv_well_id(4, "J10"), "temp_env::Plate4-J10")
