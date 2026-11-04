@@ -1,30 +1,28 @@
 # AGENTS.md — stage2/02_dataset_corpus
 
-Routing index. Human record: `README.md`; contracts: ADR 0033 (the corpus
-layer) and ADR 0026 (CM identity). Status: ticket #15 built the four CM
-corpora; #16 tables, #17 `--verify`, #18 downstream view, #20 docs are open.
+Routing index. Human record: `README.md`; coverage/provenance/gates:
+`output/corpus/v2/README.md`; decisions: ADR 0033, ADR 0026. Status: #15
+built the four CM corpora (`tahoe.h5ad` moved in #14), #16 wrote the seven
+tables + coverage README; #17 `--verify`, #18 downstream view, #20 docs open.
 
 - `execution/build_corpus.py` — single entry point: `--corpus
-  all|dtoxs_primary|dtoxs_ipsc|sctox|tenv`, `--check` (raw source counts),
-  `--repeat-check` (gate G5), `--verify` (TODO, ticket #17). One corpus at a
-  time, `.tmp`→rename, `track_times=False`.
-- `execution/cmdata/` — CM library: `paths` (layout + corpus contract counts),
-  `sources` (four raw loaders; `cell_line`/`n_raw_rows` provenance), `genes`,
-  `drugs`, `annotation`, `corpus`, `qa` (G1 gates + source spot check),
-  `corpus_h5ad` (native-axis build/digest/write). Views are consumer-owned: the
-  retired v1 view writer is archived in `stage2/_frozen/cm-data-v1/execution/`.
-- `execution/tahoe/build_pseudobulk.py` — Tahoe pseudobulk builder (moved from
-  `04` in ticket #14).
-- `execution/_parts/` — 14 per-plate CSR parts + `_state/shard_plate.json`;
-  local-only resumable cache, not an artifact.
-- `execution/build_record/` — tracked records: `tahoe_pseudobulk_*` (#14),
-  `corpus_build.json` + `excluded_compounds.csv` + `corpus_reproducibility.json`
-  (#15). CSV is gitignored, force-add it.
-- `execution/tests/` — `test_cmdata.py` (units) and
-  `test_corpus_contract.py` (G1 + counts; skips when local h5ads are absent).
-- `output/corpus/v2/` — the one output class: five h5ad corpora (four CM dense
-  + `tahoe.h5ad` 25.8 GB CSR, local-only), seven tables (#16), one README.
+  all|dtoxs_primary|dtoxs_ipsc|sctox|tenv`, `--check`, `--repeat-check` (G5),
+  `--tables` (seven tables + coverage README + `corpus_coverage.json`),
+  `--all`, `--verify` (TODO #17). `.tmp`→rename, `track_times=False`.
+- `execution/cmdata/` — CM library: `paths`, `sources`, `genes`, `drugs`,
+  `annotation`, `corpus`, `qa` (G1 + spot check), `corpus_h5ad` (native-axis
+  build/digest/write), `tables` (crosswalk/coverage/README, G2/G3). Views are
+  consumer-owned; the v1 view writer is frozen in `stage2/_frozen/cm-data-v1/`.
+- `execution/tahoe/build_pseudobulk.py` — Tahoe pseudobulk builder (#14);
+  `execution/_parts/` — per-plate CSR cache (local-only).
+- `execution/build_record/` — tracked records (#14 `tahoe_pseudobulk_*`, #15
+  corpus build/reproducibility/exclusions, #16 `corpus_coverage.json`);
+  `*.csv` and `output/` are gitignored — force-add.
+- `execution/tests/` — `test_cmdata.py`, `test_corpus_contract.py` (G1),
+  `test_tables_contract.py` (G2/G3); skip when the local h5ads are absent.
+- `output/corpus/v2/` — five h5ad corpora (four CM dense + `tahoe.h5ad` 25.8 GB
+  CSR, local-only), `tables/` seven CSVs, `README.md`.
 
-Run from the repository root; code finds the repo root by walking up to `.git`,
-never `parents[N]`/`../..` (ADR 0030 §4). Check `free -g` ≥ 12 GiB, build one
-corpus at a time (peak measured ~7.7 GiB), record peak RSS.
+Run from the repository root; find it by walking up to `.git`, never
+`parents[N]`/`../..` (ADR 0030 §4). Check `free -g` ≥ 12 GiB and record peak
+RSS: a corpus build peaks ~7.7 GiB; `--tables` pays the same global load.
