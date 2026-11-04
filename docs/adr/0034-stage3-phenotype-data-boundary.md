@@ -47,3 +47,15 @@ See [GLOSSARY.md](../../GLOSSARY.md), [roadmap](../roadmap.md),
 [0030](0030-external-data-provenance-and-step-layout.md). The GitHub wayfinder map
 is the canonical index of subsequent decisions:
 [Stage 3 决策地图：心肌细胞药物表型数据库](https://github.com/Moke110/arc/issues/21).
+
+## Subsequent decisions (2026-11-04)
+
+The user subsequently delegated automatic completion of all remaining map tickets
+to sequential subagents with main-session review. The design questions recorded
+above were resolved in [ADR 0035](0035-stage3-stratified-phenotype-curation.md),
+[ADR 0036](0036-stage3-continuous-evidence-before-direction-labels.md), the
+[counting decision](../research/stage3-counting-decision.md), and
+[ADR 0037](0037-stage3-phenotype-release-layout.md).
+The [curation contract](../research/stage3-curation-contract.md) is the consolidated
+handoff. The original scope remains; factual gaps, qualified counts and label
+readiness require implementation-time verification rather than presumed success.

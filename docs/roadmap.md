@@ -72,7 +72,7 @@ Stage 2's current state, benchmark results, and selection constraints are writte
 `stage2/README.md` (agent routing: `stage2/AGENTS.md`); its plan and the `cm_bench_v1`
 benchmark are archived under `stage2/_archive/`, so this roadmap no longer duplicates them.
 
-## Stage 3 — cardiomyocyte phenotype direction prediction (planning)
+## Stage 3 — cardiomyocyte phenotype direction prediction (wayfinding complete)
 
 Predict the direction of change (+1 / 0 / −1) of one phenotype readout under one
 specified experimental condition from the drug-induced perturbome predicted by a
@@ -87,6 +87,16 @@ recorded in [ADR 0034](adr/0034-stage3-phenotype-data-boundary.md).
 
 The canonical decision index is the
 [Stage 3 phenotype-database wayfinder map](https://github.com/Moke110/arc/issues/21).
-It tracks source feasibility, inclusion strata, counting and deduplication, control
-and direction evidence, and the curation contract. It precedes the repository's
-spec and implementation workflow; production data ingestion has not started.
+The source-feasibility research and all four design decisions are complete. Exact
+MTT/CCK8 sources form figure-level pilots; Sirenko 24 h beat count is the preferred
+third-category curation target; Heliste CTG stays in an isolated HR extension.
+Retention, qualified counting and reliable direction labels have distinct gates.
+
+The consolidated [curation contract](research/stage3-curation-contract.md),
+[ADR 0035](adr/0035-stage3-stratified-phenotype-curation.md),
+[ADR 0036](adr/0036-stage3-continuous-evidence-before-direction-labels.md), and
+[ADR 0037](adr/0037-stage3-phenotype-release-layout.md) hand off to the repository's
+grill-with-docs → to-spec → to-tickets workflow. The future first step is
+`stage3/01_phenotype_database/`; production ingestion has not started. A qualified
+500-observation dataset and a reliable labeled dataset have not yet been verified;
+insufficient evidence is an explicit audit outcome, not a reason to lower the gate.

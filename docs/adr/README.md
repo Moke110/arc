@@ -11,9 +11,9 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-The index covers every record in the directory, 0001–0036 (35 files; 0023 is the
+The index covers every record in the directory, 0001–0037 (36 files; 0023 is the
 gap). Two early records are marked superseded in place, and 0026 is marked
-amended by 0033.
+amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 
 | # | Decision |
 |---|---|
@@ -52,3 +52,4 @@ amended by 0033.
 | [0034](0034-stage3-phenotype-data-boundary.md) | Stage 3 starts with drug–phenotype data; predicted transcriptomes remain outside the first data-planning effort |
 | [0035](0035-stage3-stratified-phenotype-curation.md) | Stage 3 curates separate experimental strata and distinguishes retention, qualified counting, and label readiness |
 | [0036](0036-stage3-continuous-evidence-before-direction-labels.md) | Stage 3 retains continuous evidence and unresolved directions instead of manufacturing three-class labels |
+| [0037](0037-stage3-phenotype-release-layout.md) | Stage 3 uses existing provenance items and typed CSV/JSON releases with separate qualification and labeling gates |
