@@ -17,6 +17,14 @@ baselines). The two post-first-round ablations (#10/#11) are deferred with the
 concrete remaining work recorded on their tickets. No claim below extends beyond
 this scope.
 
+**Post-merge path reconnection (2026-11-04).** The 02+04 merge (ADR 0033) moved the
+CM v1 evidence to `stage2/_frozen/cm-data-v1/` and the Tahoe CM-schema view to
+`stage2/05_prnet_pretrain/output/pretrain_view/`. `06.2`, `06.3` and `06.4` data
+roots were reconnected to those locations and to
+`stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`: paths were reconnected to
+the post-merge locations; the recorded results, hashes and digest keys are
+unchanged.
+
 ## The first-round design (fixed)
 
 | | |
@@ -24,7 +32,7 @@ this scope.
 | question | prediction of the transcriptomic response of unseen drugs in iPSC-CM; paired Tahoe-init vs random-init comparison |
 | scope | 24 h only; Tahoe + temp_env only (no ScreenSeq, no DToxS branch, no GSE247541) |
 | CM data | temp_env (`GSE262419`) restricted to the eligibility ∩ QC set; low-response and toxicity/stress wells are kept and stratified |
-| gene axis | the frozen 18,164 genes of `02_cm_data` corpus/v1, order preserved |
+| gene axis | the frozen 18,164 genes of the CM `corpus/v1` tables (now `stage2/_frozen/cm-data-v1/corpus/v1`), order preserved |
 | model | the author PRnet `PGM`: hidden 128, drug latent 64, state latent 64, noise 10; FCFP4 × log10(dose+1); full-parameter finetune; Gaussian NLL loss |
 | split | five folds by `drug_key` (~6:2:2); every dose/replicate of a drug stays together; test and valid once per drug |
 | control | CM train uses same-plate/same-vehicle matched controls; validation, test and inference get one fixed training CM consensus `c*`; experimental truth Δ uses matched controls and never enters a model input |

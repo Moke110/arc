@@ -152,7 +152,7 @@ class DrugStructures:
 
     The frozen input contract does not list a structures table, so this looks in
     the frozen input first and then in *frozen, tracked* repo evidence (the CM
-    corpus ``compounds.csv`` and the 04 pretrain-view ``compounds.csv``/obs).
+    corpus ``compounds.csv`` and the 05 pretrain-view ``compounds.csv``/obs).
     The source of every resolved drug is recorded in the run manifest.  A
     structure-bearing drug with no SMILES is counted and dropped; a scored
     (valid/test) row with no SMILES fails closed.
@@ -187,10 +187,10 @@ class DrugStructures:
             ("frozen input compounds.csv", data_dir / "compounds.csv",
              ("drug_key", "parent_inchikey", "compound_name"), ("smiles", "SMILES")),
             ("repo CM corpus compounds.csv",
-             paths.ROOT / "stage2/02_cm_data/output/corpus/v1/compounds.csv",
+             paths.ROOT / "stage2/_frozen/cm-data-v1/corpus/v1/compounds.csv",
              ("drug_key",), ("smiles",)),
             ("repo Tahoe pretrain-view compounds.csv",
-             paths.ROOT / "stage2/04_tahoe_data/output/pretrain_view/compounds.csv",
+             paths.ROOT / "stage2/05_prnet_pretrain/output/pretrain_view/compounds.csv",
              ("parent_inchikey", "drug", "compound_name"), ("smiles",)),
         ]
         for label, path, keys, value_cols in candidates:

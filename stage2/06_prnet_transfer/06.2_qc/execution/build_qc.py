@@ -46,11 +46,12 @@ TEMPENV_PLATE = TEMPENV_SRC + "/GSE262419_Plate{:02d}.csv.gz"
 TEMPENV_SERIES = "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz"
 TAHOE_META = "pert_data/Tahoe-100M/source/metadata/sample_metadata.parquet"
 TAHOE_GENE_META = "pert_data/Tahoe-100M/source/metadata/gene_metadata.parquet"
-TAHOE_VIEW = "stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad"
-TAHOE_VIEW_MANIFEST = "stage2/04_tahoe_data/output/pretrain_view/manifest.csv"
-TAHOE_PB_MANIFEST = "stage2/04_tahoe_data/output/pseudobulk/manifest.csv"
-CM_VIEW = "stage2/02_cm_data/output/datasets-1/temp_env_all-smiles.h5ad"
-CM_GENES = "stage2/02_cm_data/output/corpus/v1/genes.csv"
+TAHOE_VIEW = "stage2/05_prnet_pretrain/output/pretrain_view/tahoe_cm_schema.h5ad"
+TAHOE_VIEW_MANIFEST = "stage2/05_prnet_pretrain/output/pretrain_view/manifest.csv"
+TAHOE_PB_MANIFEST = ("stage2/02_dataset_corpus/execution/build_record/"
+                     "tahoe_pseudobulk_manifest.csv")
+CM_VIEW = "stage2/_frozen/cm-data-v1/datasets-1/temp_env_all-smiles.h5ad"
+CM_GENES = "stage2/_frozen/cm-data-v1/corpus/v1/genes.csv"
 
 OUT_DIR = "stage2/06_prnet_transfer/06.2_qc/output"
 FULL_TABLE = "observations.csv.gz"
@@ -138,7 +139,8 @@ TIME_SOURCES = {
         "source": "temp_env",
         "time_h": 24.0,
         "materialised_from": ("frozen view obs.time_h, which is a hardcoded loader constant "
-                              "(stage2/02_cm_data/execution/cmdata/sources.py), not a GEO field"),
+                              "(stage2/_frozen/cm-data-v1/execution/cmdata/sources.py), "
+                              "not a GEO field"),
         "basis": {
             "kind": "source_study",
             "citation": ("Tsai et al., Chem Res Toxicol 2024, doi:10.1021/acs.chemrestox.4c00193 "

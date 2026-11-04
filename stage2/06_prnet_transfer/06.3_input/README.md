@@ -12,9 +12,13 @@ experiment config. Nothing downstream may re-derive any of them (ADR 0032).
 It consumes two upstream handoffs — ticket #1's **rule v1.3 / handoff v2**
 (resolved through `06.1_eligibility/output/current.json`, never a hard-coded
 version directory) and ticket #2's per-observation QC — and it does not rewrite
-the frozen inputs it reads: `02_cm_data/output/` (corpus + `datasets-1` view),
-`04_tahoe_data/output/` (pseudobulk corpus + pretrain view) and every `source/`
-tree stay byte-identical. It performs no network access and no model run.
+the frozen inputs it reads: the CM v1 corpus + `datasets-1` view (now
+`stage2/_frozen/cm-data-v1/`), the Tahoe corpus
+(`stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`) and pretrain view
+(`stage2/05_prnet_pretrain/output/pretrain_view/`), and every `source/` tree stay
+byte-identical. **Post-merge (2026-11-04):** paths were reconnected to the
+post-merge locations; the recorded results, hashes and digest keys are unchanged.
+It performs no network access and no model run.
 
 ## Frozen counts
 
@@ -57,7 +61,7 @@ Every number below is written by the build into `output/counts.csv`, recorded in
 
 ### 1. Gene axis
 
-18,164 HGNC symbols in `stage2/02_cm_data/output/corpus/v1/genes.csv` order. Both
+18,164 HGNC symbols in `stage2/_frozen/cm-data-v1/corpus/v1/genes.csv` order. Both
 sources already live on this axis; the build asserts symbol-order equality
 against the corpus for each artifact and records a per-source check
 (`var_checks.csv`). `var` carries `hgnc_id`, `entrez_id`, `ensembl_id`,
@@ -68,8 +72,8 @@ non-zero counts:
 
 | artifact | derivation | result |
 |---|---|---|
-| `cm_transfer.h5ad` | symbol ∈ the frozen `temp_env` resolved gene set (`corpus/v1/source_gene_sets.csv`) | all 18,164 measured |
-| `tahoe_transfer.h5ad` | `ensembl_id` ∈ the Tahoe corpus's 62,710-gene space (`pseudobulk/tahoe_pseudobulk.h5ad` var) | 18,163 measured, **`FAM153B` / `ENSG00000182230` unmeasured** |
+| `cm_transfer.h5ad` | symbol ∈ the frozen `temp_env` resolved gene set (`stage2/_frozen/cm-data-v1/corpus/v1/source_gene_sets.csv`) | all 18,164 measured |
+| `tahoe_transfer.h5ad` | `ensembl_id` ∈ the Tahoe corpus's 62,710-gene space (`stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad` var) | 18,163 measured, **`FAM153B` / `ENSG00000182230` unmeasured** |
 
 Measured fact worth keeping: **17 Tahoe columns are all-zero although measured**
 (`NKX2-1`, `KRTAP10-1`, `SFTA3`, …) and two CM columns are all-zero although

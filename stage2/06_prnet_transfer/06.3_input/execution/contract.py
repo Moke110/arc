@@ -180,14 +180,17 @@ EXECUTION = SUBSTEP / "execution"
 DATA_ROOT = Path(os.environ.get("ARC_DATA_ROOT", str(ROOT))).expanduser().resolve()
 STEP_DATA = DATA_ROOT / "stage2" / "06_prnet_transfer"
 
-# Frozen inputs (read-only; never written by this ticket).
-CORPUS_GENES = DATA_ROOT / "stage2/02_cm_data/output/corpus/v1/genes.csv"
-CORPUS_SOURCE_GENE_SETS = DATA_ROOT / "stage2/02_cm_data/output/corpus/v1/source_gene_sets.csv"
-CM_VIEW = DATA_ROOT / "stage2/02_cm_data/output/datasets-1/temp_env_all-smiles.h5ad"
-CM_BUNDLE_MANIFEST = DATA_ROOT / "stage2/02_cm_data/output/datasets-1/manifest.csv"
-TAHOE_VIEW = DATA_ROOT / "stage2/04_tahoe_data/output/pretrain_view/tahoe_cm_schema.h5ad"
-TAHOE_VIEW_MANIFEST = DATA_ROOT / "stage2/04_tahoe_data/output/pretrain_view/manifest.csv"
-TAHOE_CORPUS = DATA_ROOT / "stage2/04_tahoe_data/output/pseudobulk/tahoe_pseudobulk.h5ad"
+# Frozen inputs (read-only; never written by this ticket).  After the 02+04
+# merge the CM v1 views/tables live in `stage2/_frozen/cm-data-v1/` and the
+# Tahoe view is owned by `stage2/05_prnet_pretrain/` (ADR 0033).
+CORPUS_GENES = DATA_ROOT / "stage2/_frozen/cm-data-v1/corpus/v1/genes.csv"
+CORPUS_SOURCE_GENE_SETS = (DATA_ROOT
+                           / "stage2/_frozen/cm-data-v1/corpus/v1/source_gene_sets.csv")
+CM_VIEW = DATA_ROOT / "stage2/_frozen/cm-data-v1/datasets-1/temp_env_all-smiles.h5ad"
+CM_BUNDLE_MANIFEST = DATA_ROOT / "stage2/_frozen/cm-data-v1/datasets-1/manifest.csv"
+TAHOE_VIEW = DATA_ROOT / "stage2/05_prnet_pretrain/output/pretrain_view/tahoe_cm_schema.h5ad"
+TAHOE_VIEW_MANIFEST = DATA_ROOT / "stage2/05_prnet_pretrain/output/pretrain_view/manifest.csv"
+TAHOE_CORPUS = DATA_ROOT / "stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad"
 GSE262419_HASH = DATA_ROOT / "pert_data/GSE262419/source/GSE262419_hash.csv.gz"
 
 
@@ -579,11 +582,11 @@ def source_records() -> list[SourceRecord]:
     records = [
         SourceRecord("cm_view", CM_VIEW, str(cm_row["content_sha256"]),
                      int(cm_row["bytes"]),
-                     "02 datasets-1 content_sha256 over X + layers",
+                     "frozen CM view content_sha256 over X + layers",
                      digest_kind="content"),
         SourceRecord("tahoe_view", TAHOE_VIEW, str(th_row["content_sha256"]),
                      int(th_row["bytes"]),
-                     "04 pretrain_view content_sha256 over CSR data/indices/indptr",
+                     "05 pretrain_view content_sha256 over CSR data/indices/indptr",
                      digest_kind="content"),
         SourceRecord("gene_axis", CORPUS_GENES, sha256_file(CORPUS_GENES),
                      CORPUS_GENES.stat().st_size,
@@ -596,7 +599,7 @@ def source_records() -> list[SourceRecord]:
                      GSE262419_HASH.stat().st_size,
                      "raw temp_env design table (replicate/solvent/chemical index)"),
         SourceRecord("tahoe_corpus", TAHOE_CORPUS, None, TAHOE_CORPUS.stat().st_size,
-                     "62,710-gene space for the Tahoe measurement mask; the 04 "
+                     "62,710-gene space for the Tahoe measurement mask; the corpus "
                      "manifest is per-profile, so no file content hash exists — "
                      "the derived gene space is digested instead",
                      digest_kind="none"),

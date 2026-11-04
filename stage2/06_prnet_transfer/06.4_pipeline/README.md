@@ -10,6 +10,13 @@ evaluator's c\* baseline guard passes.  No science result exists here: the smoke
 2 epochs on a small Tahoe subset — pipeline evidence, not a model result.  Ticket #3's
 frozen input (`06.3_input/output/`) is the only data this pipeline trains on.
 
+**Post-merge path reconnection (2026-11-04).** The two repo-relative structure
+fallbacks in `ptlib/data.py` now read
+`stage2/_frozen/cm-data-v1/corpus/v1/compounds.csv` and
+`stage2/05_prnet_pretrain/output/pretrain_view/compounds.csv`: paths were
+reconnected to the post-merge locations; the recorded results, hashes and digest
+keys are unchanged.
+
 This substep is the **single place** the study's training and evaluation code
 lives (ADR 0032; step `AGENTS.md`). Tickets #5–#11 invoke it through the CLIs
 below and record their own results; #10/#11 only pass `--structure` /

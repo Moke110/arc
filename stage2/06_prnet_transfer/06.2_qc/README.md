@@ -200,8 +200,11 @@ make record          # copy the tracked record into 06.2_qc/output/ (then git ad
 ```
 
 `QC_DATA_ROOT` (default `/home/chang/arc`, the main checkout that holds the gitignored
-`pert_data/` and `stage2/02|04` outputs) and `QC_OUT_ROOT` (default = data root) are the
-two overrides; `run.sh` is a thin wrapper over the three `build_qc.py` modes.
+`pert_data/`, the frozen CM evidence under `stage2/_frozen/cm-data-v1/` and the Tahoe
+view under `stage2/05_prnet_pretrain/output/pretrain_view/`) and `QC_OUT_ROOT`
+(default = data root) are the two overrides; `run.sh` is a thin wrapper over the three
+`build_qc.py` modes. **Post-merge (2026-11-04):** paths were reconnected to the
+post-merge locations; the recorded results, hashes and digest keys are unchanged.
 
 **Memory (measured 2026-11-02, after the loader fix).** Both large frozen views are read
 **header-only** — `build_qc.read_h5ad_obs` opens the file with `h5py` and decodes just the
