@@ -1,6 +1,6 @@
 # Dedicated phenotype provenance category and Stage 3 corpus workspace
 
-**Status: accepted workspace boundary (2026-11-04); corpus partition and sample-grain decisions under discussion**
+**Status: accepted (2026-11-04); corpus details completed by ADRs 0039–0041**
 
 After completion of the Stage 3 wayfinder map, the user explicitly chose a separate
 `pheno_data/` category for cell drug-perturbation phenotype datasets and
@@ -42,3 +42,8 @@ source `readout` retention in
 [ADR 0039](0039-condition-corpus-and-model-view-separation.md).
 Labeling criteria, same-key repeated measurements and unresolved endpoints remain
 under discussion; the workspace boundary above is unchanged.
+
+Those subsequent design branches are now resolved in ADRs
+[0040](0040-numeric-endpoints-and-source-readout-sequences.md) and
+[0041](0041-formal-corpus-statistics-export-and-coverage.md).
+See the consolidated [formal corpus design](../research/stage3-formal-corpus-design.md).

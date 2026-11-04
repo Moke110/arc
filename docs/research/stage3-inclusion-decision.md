@@ -1,5 +1,7 @@
 # Stage 3：首批表型来源与纳入分层决定
 
+> 历史 wayfinder 决策资产。后续用户访谈已形成[正式 corpus 设计](stage3-formal-corpus-design.md)；目录、样本键、phenotype 合并、数值标签、格式和规模门槛等冲突部分以正式设计及 ADR 0038–0041 为准。本文保留当时的取舍与证据。
+
 日期：2026-11-04。对应 [确定 Stage 3 首批表型数据的纳入分层与优先来源](https://github.com/Moke110/arc/issues/24)，上游为
 [来源研究：MTT/CCK8](stage3-viability-sources.md)、[其他读数](stage3-other-readout-sources.md)
 及[原始附表实测审计](stage3-sample-count-audit.md)。遵循 [ADR 0034](../adr/0034-stage3-phenotype-data-boundary.md)

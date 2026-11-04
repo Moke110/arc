@@ -1,5 +1,7 @@
 # Stage 3：表型方向对照与三分类证据决定
 
+> 历史 wayfinder 决策资产。后续用户访谈已形成[正式 corpus 设计](stage3-formal-corpus-design.md)；目录、样本键、phenotype 合并、数值标签、格式和规模门槛等冲突部分以正式设计及 ADR 0038–0041 为准。本文保留当时的取舍与证据。
+
 日期：2026-11-04。对应[确定表型变化方向的对照及三分类标签证据要求](https://github.com/Moke110/arc/issues/26)，
 依赖[首批纳入决定](stage3-inclusion-decision.md)、[计数决定](stage3-counting-decision.md)、
 [原始附表审计](stage3-sample-count-audit.md)、[活性来源核验](stage3-viability-sources.md)、

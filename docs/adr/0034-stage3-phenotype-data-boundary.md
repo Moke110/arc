@@ -59,3 +59,9 @@ above were resolved in [ADR 0035](0035-stage3-stratified-phenotype-curation.md),
 The [curation contract](../research/stage3-curation-contract.md) is the consolidated
 handoff. The original scope remains; factual gaps, qualified counts and label
 readiness require implementation-time verification rather than presumed success.
+
+The later user-led formal-workspace interview is complete in ADRs
+[0038](0038-dedicated-phenotype-data-and-stage3-corpus.md)–
+[0041](0041-formal-corpus-statistics-export-and-coverage.md).
+Its [formal corpus design](../research/stage3-formal-corpus-design.md) is the current
+spec handoff, replacing the explicitly changed wayfinder contract details.

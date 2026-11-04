@@ -1,6 +1,6 @@
 # Preserve fine conditions, endpoint-bearing samples and source readouts before model views
 
-**Status: accepted corpus boundaries (2026-11-04); labeling criteria and repeated-measurement storage under discussion**
+**Status: accepted (2026-11-04); refined by ADRs 0040–0041**
 
 The user refined the formal Stage 3 corpus design after ADR 0038. The corpus is
 partitioned into one file per `(condition, phenotype)`. Condition attributes use
@@ -54,3 +54,9 @@ sequences and the requirement for fully numeric magnitude-and-significance
 endpoints in [ADR 0040](0040-numeric-endpoints-and-source-readout-sequences.md).
 Numeric cutoffs, test provenance and the admission of untestable inputs remain
 under discussion; the finer condition and model-view boundaries above are retained.
+
+The subsequent rounds resolved those branches in ADRs
+[0040](0040-numeric-endpoints-and-source-readout-sequences.md) and
+[0041](0041-formal-corpus-statistics-export-and-coverage.md).
+The final [formal corpus design](../research/stage3-formal-corpus-design.md) replaces
+the intermediate interview-state descriptions when drafting the implementation spec.

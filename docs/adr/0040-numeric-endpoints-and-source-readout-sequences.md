@@ -1,6 +1,6 @@
 # Numeric endpoints and source-aware readout sequences in the formal corpus
 
-**Status: accepted rule structure, grouping and parameterization (2026-11-04); statistical-family and export details under discussion**
+**Status: accepted (2026-11-04); final statistical-family and export decisions in ADR 0041**
 
 The user resolved the next grill-with-docs frontier: drug time is pre-HR treatment
 duration for HR experiments; endpoint is assigned numerically using a conjunction
@@ -112,3 +112,12 @@ The chosen BH cutoff is a labeling procedure, not a claim that the final
 amplitude-filtered label subset has exactly 5% false discovery rate. The numerical
 implementation must preserve procedure and assumptions; official definitions are
 in [SciPy's false-discovery-control documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.false_discovery_control.html).
+
+## Final design branches resolved (2026-11-04)
+
+The user accepted the statistical route and BH family, Parquet with JSON metadata,
+and coverage reporting without a per-file 500-row filter. These are recorded in
+[ADR 0041](0041-formal-corpus-statistics-export-and-coverage.md).
+The earlier pending-question paragraphs describe interview history rather than
+remaining choices. The consolidated
+[formal corpus design](../research/stage3-formal-corpus-design.md) is the handoff.

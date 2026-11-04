@@ -72,7 +72,7 @@ Stage 2's current state, benchmark results, and selection constraints are writte
 `stage2/README.md` (agent routing: `stage2/AGENTS.md`); its plan and the `cm_bench_v1`
 benchmark are archived under `stage2/_archive/`, so this roadmap no longer duplicates them.
 
-## Stage 3 — cardiomyocyte phenotype direction prediction (wayfinding complete)
+## Stage 3 — cardiomyocyte phenotype direction prediction (formal corpus design agreed)
 
 Predict the direction of change (+1 / 0 / −1) of one phenotype readout under one
 specified experimental condition from the drug-induced perturbome predicted by a
@@ -92,11 +92,20 @@ MTT/CCK8 sources form figure-level pilots; Sirenko 24 h beat count is the prefer
 third-category curation target; Heliste CTG stays in an isolated HR extension.
 Retention, qualified counting and reliable direction labels have distinct gates.
 
-The consolidated [curation contract](research/stage3-curation-contract.md),
-[ADR 0035](adr/0035-stage3-stratified-phenotype-curation.md),
-[ADR 0036](adr/0036-stage3-continuous-evidence-before-direction-labels.md), and
-[ADR 0037](adr/0037-stage3-phenotype-release-layout.md) hand off to the repository's
-grill-with-docs → to-spec → to-tickets workflow. The future first step is
-`stage3/01_phenotype_database/`; production ingestion has not started. A qualified
-500-observation dataset and a reliable labeled dataset have not yet been verified;
-insufficient evidence is an explicit audit outcome, not a reason to lower the gate.
+The subsequent grill-with-docs interview replaced specified wayfinder design
+choices with the agreed [formal corpus design](research/stage3-formal-corpus-design.md)
+and ADRs [0038](adr/0038-dedicated-phenotype-data-and-stage3-corpus.md)–
+[0041](adr/0041-formal-corpus-statistics-export-and-coverage.md).
+Phenotype originals belong to the new `pheno_data` category; the future first step
+is `stage3/01_data_corpus/`. Each fine condition/phenotype has one Parquet file;
+MTT/CCK8 share `cell_viability`. Samples retain source, drug, dose, numeric endpoint
+and measurement sequences. Endpoint uses FC ≥1.2 / ≤0.8 and BH-adjusted p <0.05,
+with explicit exclusion of required evidence that cannot be evaluated.
+
+The corpus retains small files and reports source/endpoint-independent coverage;
+the third-category 500 target is assessed in later model-view selection rather
+than enforced per corpus file. Corpus construction, data views and training have
+not run. The agreed design now hands off to `to-spec` → `to-tickets` →
+`implement-spec`; the earlier
+[wayfinder curation contract](research/stage3-curation-contract.md) remains historical
+where it conflicts with the formal design.

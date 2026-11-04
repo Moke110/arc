@@ -46,3 +46,9 @@ category and `stage3/01_data_corpus/`. See
 [ADR 0038](0038-dedicated-phenotype-data-and-stage3-corpus.md).
 The original record remains the historical wayfinder decision; corpus partition,
 sample identity and training-label admission are being refined in the new design.
+
+The completed formal design in ADRs
+[0039](0039-condition-corpus-and-model-view-separation.md)–[0041](0041-formal-corpus-statistics-export-and-coverage.md)
+also replaces the CSV primary carrier, endpoint-free sample identity, nullable
+corpus labels and per-stratum 500 gate from the early wayfinder plan.
+See the current [formal corpus design](../research/stage3-formal-corpus-design.md).

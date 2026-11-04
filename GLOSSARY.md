@@ -21,7 +21,7 @@ _Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
 The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
 
 **Stage 3**:
-The AICM stage that predicts the direction of change of one cardiomyocyte phenotype readout under one specified experimental condition from a drug-induced perturbome. Its first effort establishes the drug–phenotype data foundation; the perturbome will come from Stage 2 model predictions.
+The AICM stage that predicts the direction of change of one cardiomyocyte phenotype under one specified experimental condition from a drug-induced perturbome. Its first effort establishes the drug–phenotype data foundation; the perturbome will come from Stage 2 model predictions.
 
 ### Stage 3 phenotype data
 
@@ -40,11 +40,17 @@ The numeric corpus response class: +1 or −1 requires both the corresponding ch
 **Phenotype corpus sample**:
 A source-dataset–drug–dose–endpoint unit within a particular condition and phenotype. Records from the same dataset with the same remaining key are grouped together, retaining all readout values rather than averaging them.
 
+**Phenotype corpus**:
+The quality-controlled collection of phenotype corpus samples, partitioned by fine condition and phenotype, with numeric endpoints, retained measurement sequences and provenance. It precedes the selection and aggregation performed by model data views.
+
 **Readout sequence**:
 The numerical source measurements retained by one merged phenotype corpus sample, preferring raw values and retaining author-normalized values separately. A normalized-only source retains its supplied values with that representation identified; per-value assay, unit, experiment and source references remain recoverable.
 
 **Phenotype fold change**:
 The ratio of a treated-group mean to the mean of its matched control on a compatible measurement scale, requiring a positive, valid denominator. It describes an experimental phenotype contrast rather than a transcriptomic fold change.
+
+**BH family**:
+The predeclared set of eligible drug–dose comparison tests sharing source dataset, full condition, phenotype, assay method and original experimental batch, whose p-values are adjusted together. Its membership is determined before selecting tests by effect magnitude or significance.
 
 **Model data view**:
 A selection of corpus conditions and samples, with explicitly chosen merging and aggregation rules, for a particular modeling task. These choices do not overwrite the underlying corpus measurements.

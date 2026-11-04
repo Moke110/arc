@@ -11,9 +11,11 @@ files its `See` section names.
 **Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
 sequence runs 0022 → 0024 deliberately); there is nothing to restore.
 
-The index covers every record in the directory, 0001–0040 (39 files; 0023 is the
+The index covers every record in the directory, 0001–0041 (40 files; 0023 is the
 gap). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
+Its formal workspace/corpus design subsequently replaces the specified wayfinder
+details in 0038–0041; consult the later records for the current contract.
 
 | # | Decision |
 |---|---|
@@ -56,3 +58,4 @@ amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 | [0038](0038-dedicated-phenotype-data-and-stage3-corpus.md) | Dedicated pheno_data category and Stage 3 01_data_corpus workspace boundary |
 | [0039](0039-condition-corpus-and-model-view-separation.md) | Fine condition corpus, shared MTT/CCK8 phenotype, endpoint-inclusive sample identity, retained readouts and later model views |
 | [0040](0040-numeric-endpoints-and-source-readout-sequences.md) | Source-inclusive sample keys, retained readout sequences and numeric magnitude-plus-significance endpoints |
+| [0041](0041-formal-corpus-statistics-export-and-coverage.md) | Statistical comparison/BH families, Parquet corpus files and coverage without per-file 500 filtering |

@@ -1,5 +1,7 @@
 # Stage 3：首批表型整理溯源契约与 spec 交接
 
+> 历史 wayfinder 决策资产。后续用户访谈已形成[正式 corpus 设计](stage3-formal-corpus-design.md)；目录、样本键、phenotype 合并、数值标签、格式和规模门槛等冲突部分以正式设计及 ADR 0038–0041 为准。本文保留当时的取舍与证据。
+
 日期：2026-11-04。对应[确定首批表型数据库的整理溯源契约与 spec 交接条件](https://github.com/Moke110/arc/issues/27)，
 上游为[确定 Stage 3 首批表型数据的纳入分层与优先来源](https://github.com/Moke110/arc/issues/24)、
 [定义独立药物表型样本与跨研究条件等价及去重规则](https://github.com/Moke110/arc/issues/25)、
