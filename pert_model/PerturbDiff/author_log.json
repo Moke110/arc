@@ -1,0 +1,24 @@
+{
+  "item": "PerturbDiff",
+  "category": "pert_model",
+  "purpose": "Stage2 tenv candidate runtime qualification #51; source admission is not runtime eligibility",
+  "retrieved_at": "2026-11-05T22:00:24.812307+08:00",
+  "sources": [
+    {
+      "kind": "repo",
+      "id": "DeepGraphLearning/PerturbDiff",
+      "url": "https://github.com/DeepGraphLearning/PerturbDiff",
+      "version": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "license": "MIT",
+      "method": "GitHub API tarball pinned commit; strip sole archive root; preserve all file bytes",
+      "path": "source/",
+      "files": 117,
+      "bytes": 1203863,
+      "tree_sha256": "3416b2737c53166fe4a8e62b34e9efcfa708c3e9942e68a417beca447959a074"
+    }
+  ],
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "verify_result": "pass",
+  "notes": "No upstream checkpoints/data fetched; random-initialized native setup and full-axis proof remain separate gates."
+}
