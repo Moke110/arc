@@ -138,6 +138,7 @@ def run(request, config):
                'adapter_parameters':2048*50+50,'adapter_dimensions':[2048,50],'batch_size':batch,'iterations':iterations,
                'validation_groups':len(validation[2]),'validation_batch_policy':'one seeded random held-out condition per validation event',
                'qualification_only':qualification,'gene_count':n_genes,'backend':jax.default_backend(),
+               'device_kind':jax.devices()[0].device_kind,'device_memory_stats':jax.devices()[0].memory_stats(),
                'recipe_deviations':['Shared Morgan linear map replaces precomputed RDKit descriptor representation.',
                     'Direct native transport on complete gene space; optional separately trained AE omitted.',
                     'Same-plate DMSO mean replaces distribution of individual control cells.',
