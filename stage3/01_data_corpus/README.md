@@ -20,8 +20,8 @@ separate assessments.
 Run with the `arc` environment (`pyarrow`, `scipy`, `xlrd`):
 
 ```bash
-python stage3/01_data_corpus/execution/release.py build --release-id v1
-python stage3/01_data_corpus/execution/release.py verify --release-id v1
+python stage3/01_data_corpus/execution/release.py build --release-id v2
+python stage3/01_data_corpus/execution/release.py verify --release-id v2
 python -m unittest discover -s stage3/01_data_corpus/execution/tests -v
 ```
 

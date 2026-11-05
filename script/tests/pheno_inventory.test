@@ -38,6 +38,6 @@ with tempfile.TemporaryDirectory() as tmp:
     (source / 'script/verify.sh').unlink()
     check(1)
     (source / 'script/verify.sh').write_text('exit 0\n')
-    (root / 'pheno_data/Unknown').mkdir()
+    (root / 'pheno_data' / 'Unknown').mkdir()
     check(1)
 print('PASS: fifth-category inventory fails closed')

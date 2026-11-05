@@ -129,8 +129,8 @@ def duan_records(source,data,config):
                 'selector':f"Fig2B {point['drug']} {point['dose_original']}{point['dose_unit']} x={point['x_px']} y={point['y_px']}",
                 'experimental_unit':None,'extraction':point,'reported_error_type':'SD','independent_n':None,
                 'review':data['independent_review'],'readout_scale':'author relative viability summary; raw absorbance unavailable'}],
-            'quality_reasons':['active_parent_identity_unresolved'],
-            'statistics':{'treated_mean':point['readout'],'control_mean':.27,'scale_compatible':True,'control_matched':True,
+            'quality_reasons':['active_parent_identity_unresolved','matched_vehicle_unconfirmed'],
+            'statistics':{'treated_mean':point['readout'],'control_mean':.27,'scale_compatible':True,'control_matched':False,
                 'p_raw':None,'p_adjusted':None,'evidence':'Approximate source means; mean±SD of3experiments without confirmed independent units. StarsfP<0.01 do not give exact p or complete BH family; no invented significance.'}})
     return records
 

@@ -20,7 +20,8 @@ class FrozenLocalProvenance(unittest.TestCase):
             subprocess.run(['git','-C',tmp,'add','corpus.py'],check=True)
             subprocess.run(['git','-C',tmp,'-c','user.name=Test','-c','user.email=test@example.invalid',
                             'commit','-qm','isolated public CLI fixture'],check=True)
-            item=root/'pheno_data/TemporarySource'
+            item_path=Path('pheno_data')/'TemporarySource'
+            item=root/item_path
             (item/'source').mkdir(parents=True)
             (item/'local').mkdir()
             original=b'original evidence'
@@ -40,11 +41,11 @@ class FrozenLocalProvenance(unittest.TestCase):
             helper.asset=local
             record=helper.record('a',1.1,None)
             record['source']='temporary_source'
-            record['measurements'][0]['asset']='pheno_data/TemporarySource/local/curation.json'
-            bundle={'schema_version':1,'sources':[{'source':'temporary_source','item':'pheno_data/TemporarySource',
+            record['measurements'][0]['asset']=str(item_path/'local/curation.json')
+            bundle={'schema_version':1,'sources':[{'source':'temporary_source','item':str(item_path),
                 'status':'active','test_only':False,'assets':[
-                    {'path':'pheno_data/TemporarySource/source/source.txt','sha256':sha(original)},
-                    {'path':'pheno_data/TemporarySource/local/curation.json','sha256':sha(curation)}]}],
+                    {'path':str(item_path/'source/source.txt'),'sha256':sha(original)},
+                    {'path':str(item_path/'local/curation.json'),'sha256':sha(curation)}]}],
                 'records':[record]}
             def build(name,success):
                 path=root/'bundle.json'
