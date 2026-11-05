@@ -3,8 +3,10 @@
 Frozen source-level audit for [spec #40](https://github.com/Moke110/arc/issues/40),
 2026-11-05 (Asia/Shanghai). All 14 downloaded model items and six additional
 candidates are accounted for in `candidate_registry.json`. The old entrant
-registry is historical evidence only. No candidate has yet passed this study's
-18,164-gene runtime gate; `runtime_qualified_models` is intentionally empty.
+registry is historical evidence only. At this source-audit snapshot, no candidate had passed the study's
+18,164-gene runtime gate; its `runtime_qualified_models` stays empty as frozen
+research evidence. Subsequent runtime admission is recorded separately in
+[`../execution/formal/registry.json`](../execution/formal/registry.json).
 
 ## Effective discovery and limitations
 

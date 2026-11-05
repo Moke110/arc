@@ -55,3 +55,36 @@ its cumulative four-hour training allowance. Terminal recovery outcomes are
 published to both scheduler state and `run.json`, so dead or interrupted workers
 remain visible to the prediction barrier. Completed outputs still require
 identity, prediction and checkpoint verification before reuse.
+
+
+The runtime entrant registry is frozen in
+[`execution/formal/registry.json`](execution/formal/registry.json): PRnet, CPA,
+chemCPA, CMonge and PerturbDiff passed real full-axis train/save/reload/predict
+and resource admission. Eleven candidates remain excluded with evidence and
+four remain unresolved with named gaps in that registry. This admission proves
+execution under the selected contract; it does not establish convergence or
+test performance. Native setup evidence remains distinct from runtime admission.
+
+The formal matrix contains **63 expected outcomes**: five predictors and the
+`no_change`/`delta_mean` references, each with three folds and three seeds. The
+reference seed copies are deterministic. Commands, resource profiles, input
+hashes and expected identities are pinned under `execution/formal/`; the queue
+uses serial long training and each run's four-hour cumulative training budget.
+The native measured recipes imply roughly two days of serial work for CMonge
+and PerturbDiff alone. These projections are estimates; actual terminal statuses
+and telemetry determine completion.
+
+Dispatch from the repository root after offline gates pass:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python \
+  stage2/03_modes_tenv/execution/script/schedule.py run \
+  stage2/03_modes_tenv/execution/formal/queue.json
+```
+
+Predictions and checkpoints stay local at `output/formal/`. Test scoring waits
+for all 63 completed or terminal failure outcomes; no pilot is a formal run.
+After that barrier, use `benchmark.py seal` with the frozen commands and models,
+then `evaluate --workers 2` and `replay`. All three figures export both PNG and
+text-preserving SVG, with metric-defined counts distinguished from completed
+runs.
