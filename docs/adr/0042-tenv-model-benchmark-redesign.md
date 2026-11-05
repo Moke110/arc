@@ -1,8 +1,12 @@
 # Rebuild the Stage 2 tenv model comparison after the corpus refactor
 
-**Status:** proposed (2026-11-05); experiment decisions resolved except Morgan
-parameters and final shared-understanding confirmation. Research and admission
-evidence remain required before implementation.
+**Status:** accepted (2026-11-05). The user confirmed the complete experiment
+design, exact Morgan parameters and the artifact-CLI testing boundary.
+Research and admission evidence remain required before formal execution.
+
+**Spec:** [GitHub issue #40](https://github.com/Moke110/arc/issues/40), published
+with ready-for-agent. The ticket breakdown is drafted and awaits user approval;
+no implementation tickets or training have started in this planning handoff.
 
 The dataset corpus refactor (ADR 0033) separates native-axis source evidence
 from consumer-owned views. Rebuild the tenv comparison using newly screened
@@ -38,9 +42,9 @@ than inheriting its entrant registry or scores.
 - **Selected by the user:** one common Morgan fingerprint representation plus
   a trainable linear dimension adapter for each predictor. One-hot and KPGT
   were considered and withdrawn; neither is the current input policy.
-- Propose Morgan radius 2, 2,048-bit binary vectors, atom-based invariants
+- Use Morgan radius 2, 2,048-bit binary vectors, atom-based invariants
   (ECFP-style, not feature-based FCFP), chirality enabled. These exact parameters
-  still require confirmation. Fix the RDKit version and structure-normalization
+  are confirmed. Fix the RDKit version and structure-normalization
   rule; cache one canonical parent-structure fingerprint per drug and share it
   across models, folds and seeds.
 - Feed the cached fingerprint through `Linear(2048, d_model)` at the existing
@@ -159,10 +163,12 @@ defines configurable circular fingerprints. It does not establish superiority
 over KPGT on tenv. KPGT was inspected but not selected; its local provenance
 gap and 2,304-dimensional base output do not block the chosen Morgan design.
 
-This ADR awaits exact Morgan-parameter and shared-understanding confirmation.
-Then the fixed workflow continues through published spec, dependency tickets
-and implementation; this design record does not authorize bypassing those
-steps. ADR 0027 remains the contract of the frozen historical benchmark.
+The user confirmed the shared understanding and authorized the published spec
+and dependency-ticket workflow. Test at the artifact CLI boundary: frozen
+inputs, isolated-environment fit/predict, persisted predictions, offline metrics
+and all three figures; add focused behavior checks for metric edge cases and
+resource scheduling. Ticket breakdown approval still precedes ticket publication.
+ADR 0027 remains the contract of the frozen historical benchmark.
 
 ## See
 

@@ -59,4 +59,4 @@ details in 0038–0041; consult the later records for the current contract.
 | [0039](0039-condition-corpus-and-model-view-separation.md) | Fine condition corpus, shared MTT/CCK8 phenotype, endpoint-inclusive sample identity, retained readouts and later model views |
 | [0040](0040-numeric-endpoints-and-source-readout-sequences.md) | Source-inclusive sample keys, retained readout sequences and numeric magnitude-plus-significance endpoints |
 | [0041](0041-formal-corpus-statistics-export-and-coverage.md) | Statistical comparison/BH families, Parquet corpus files and coverage without per-file 500 filtering |
-| [0042](0042-tenv-model-benchmark-redesign.md) | Proposed tenv model comparison after the corpus refactor; design interview open |
+| [0042](0042-tenv-model-benchmark-redesign.md) | Tenv model comparison with shared Morgan inputs, trainable adapters and three-fold three-seed evaluation |
