@@ -68,6 +68,8 @@ def save_torch(path, value):
 
 
 def fit_predict(request, config):
+    config = dict(config)
+    config['batch_size'] = max(2, int(config['batch_size'] * float(os.environ.get('TENV_BATCH_SCALE', '1'))))
     if config['max_epochs'] < 1 or config['batch_size'] < 2 or config['threads'] not in (1,2):
         raise ValueError('invalid bounded PRnet recipe')
     torch.set_num_threads(config['threads'])

@@ -1,0 +1,22 @@
+{
+  "input_root": "/home/chang/arc/stage2/03_modes_tenv/output/input",
+  "output_root": "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/pilot_output",
+  "verified_idle_pids": [
+    5561
+  ],
+  "idle_pid_reason": "verified persistent Biomni MCP server, not training",
+  "admission_timeout_seconds": 300,
+  "jobs": [
+    {
+      "model": "prnet",
+      "fold": 0,
+      "seed": 17,
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/pilot.config.json"
+      ]
+    }
+  ]
+}

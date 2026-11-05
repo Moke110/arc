@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 from pathlib import Path
@@ -164,6 +165,20 @@ def stop_owned(process):
         process.wait(timeout=10)
 
 
+def scope_failure_evidence(log_text):
+    """Scope OOM may surface as SIGTERM after systemd kills the whole group."""
+    match = re.search(r'Running as unit:\s*([\w.-]+\.scope)', log_text)
+    if not match:
+        return ''
+    unit = match.group(1)
+    try:
+        result = subprocess.run(['journalctl', '--user', '-u', unit, '--no-pager', '-n', '30'],
+                                capture_output=True, text=True, timeout=5)
+        return result.stdout + result.stderr
+    except (OSError, subprocess.SubprocessError) as exc:
+        return 'scope journal unavailable: ' + str(exc)
+
+
 def worker(job_path):
     from benchmark import run_one
     job = json.loads(Path(job_path).read_text())
@@ -172,6 +187,15 @@ def worker(job_path):
 
 
 def schedule(queue_path):
+    # Admission and launch form one workstation-wide critical section. Separate
+    # qualification queues must not both observe an empty host and race imports.
+    lock_path = Path(__file__).resolve().parent.parent / '.scheduler.lock'
+    with lock_path.open('a') as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        return schedule_queue(queue_path)
+
+
+def schedule_queue(queue_path):
     """Run a frozen queue, recording telemetry and durable attempt accounting."""
     from artifacts import run_directory, validate_run, run_identity
     queue_path = Path(queue_path).resolve()
@@ -255,6 +279,10 @@ def schedule(queue_path):
                     continue
                 entry['log'].close()
                 log_text = entry['log_path'].read_text(errors='replace')
+                if status:
+                    scope_evidence = scope_failure_evidence(log_text)
+                    entry['log_path'].with_suffix('.journal.log').write_text(scope_evidence)
+                    log_text += scope_evidence
                 rss_matches = re.findall(r'Maximum resident set size \(kbytes\):\s*(\d+)', log_text)
                 if rss_matches:
                     state['peak_host_rss_gib'] = max(state.get('peak_host_rss_gib', 0),
@@ -272,7 +300,9 @@ def schedule(queue_path):
                             reason = 'invalid_artifacts'
                     elif 'TENV_RETRY_ENVIRONMENT' in log_text:
                         reason = 'environment'
-                    elif 'CUDA out of memory' in log_text or 'Memory cgroup out of memory' in log_text:
+                    elif any(marker in log_text for marker in
+                             ('CUDA out of memory', 'Memory cgroup out of memory',
+                              'oom-kill', 'killed by the OOM killer')):
                         reason = 'oom'
                     else:
                         reason = 'process_exit_' + str(status)
