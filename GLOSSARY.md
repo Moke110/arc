@@ -319,6 +319,13 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 
 ### Stage 2 benchmark
 
+**Tenv benchmark sample**:
+One model's training-and-test result under one fixed fold and one fixed training
+seed in the redesigned tenv comparison. Three folds crossed with three seeds
+yield nine run samples per model; these are not nine independent biological
+samples.
+_Avoid_: well, drug–dose group, independent replicate
+
 **Cold-drug fold**:
 One of five Stage 2 benchmark splits in which a drug is never observed in the fold's train or validation set and is scored exactly once as test; every drug is test exactly once and valid exactly once across the five folds (6:2:2 = 276/92/92 drugs).
 _Avoid_: cold-start split, holdout (unqualified)
