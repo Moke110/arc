@@ -211,6 +211,14 @@ def schedule_queue(queue_path):
     pending = []
     record = output / 'scheduling'
     record.mkdir(parents=True, exist_ok=True)
+    def mirror_terminal(job, state):
+        # Recovery/shutdown must publish the same durable outcome to the
+        # prediction barrier as the scheduler, including pre-existing failures.
+        if state.get('status') in TERMINAL and state['status'] != 'completed':
+            directory = run_directory(output, job['model'], job['fold'], job['seed'])
+            save(directory / 'run.json', dict(identity=state['identity'], status=state['status'],
+                 stop_reason=state.get('stop_reason', 'recovered_terminal_state'),
+                 training_seconds=state.get('training_seconds', 0)))
     for job in jobs:
         key = f"{job['model']}_fold{job['fold']}_seed{job['seed']}"
         job = dict(job, input_root=input_root, output_root=str(output), id=key)
@@ -224,6 +232,7 @@ def schedule_queue(queue_path):
         if state.get('status') == 'completed':
             validate_run(input_root, output, job['model'], job['fold'], job['seed'], job.get('command'))
         elif state.get('status') in TERMINAL:
+            mirror_terminal(job, state)
             continue
         elif state.get('status') == 'running':
             # Reconnecting to a live orphan risks dispatching a duplicate fit.
@@ -233,6 +242,7 @@ def schedule_queue(queue_path):
             state = transition(state, 'interrupted', 0)
             states[key] = state
             save(state_path, state)
+            mirror_terminal(job, state)
         else:
             pending.append(job)
     history = []
@@ -371,6 +381,7 @@ def schedule_queue(queue_path):
             entry['log'].close()
             states[key] = transition(states[key], 'scheduler_interrupted', 0)
             save(record / (key + '.json'), states[key])
+            mirror_terminal(entry['job'], states[key])
     save(record / 'summary.json', {key: state for key, state in states.items()})
     return 0
 

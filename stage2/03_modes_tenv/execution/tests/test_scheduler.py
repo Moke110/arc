@@ -57,6 +57,40 @@ class SchedulerContract(unittest.TestCase):
             state.unlink()
             self.assertEqual(transition('oom', 14400)['status'], 'timeout')
 
+    def test_recovered_terminal_states_satisfy_prediction_barrier(self):
+        # Durable scheduler state is the recovery input after a dead worker or
+        # scheduler shutdown. Both must become terminal artifact outcomes.
+        from test_pipeline import fixture
+        from artifacts import run_identity, write_json, run_directory
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td); fixture(root/'input')
+            jobs = []
+            for fold in range(3):
+                for seed in (17,42,2026):
+                    identity = run_identity(root/'input','no_change',fold,seed)
+                    key = f'no_change_fold{fold}_seed{seed}'
+                    dead = fold == 0 and seed == 17
+                    state = dict(identity=identity,status='running' if dead else 'failed',
+                                 pid=2147483647,training_seconds=12.,stop_reason='scheduler_interrupted')
+                    write_json(root/'output/scheduling'/f'{key}.json',state)
+                    write_json(run_directory(root/'output','no_change',fold,seed)/'run.json',
+                               dict(identity=identity,status='running'))
+                    jobs.append(dict(model='no_change',fold=fold,seed=seed))
+            write_json(root/'queue.json',dict(input_root=str(root/'input'),output_root=str(root/'output'),jobs=jobs))
+            # Isolate the installed CLI's workstation lock from real experiments.
+            import shutil
+            isolated = root/'isolated/script'; isolated.mkdir(parents=True)
+            for module in SCRIPT.parent.glob('*.py'):
+                shutil.copyfile(module,isolated/module.name)
+            result = subprocess.run([sys.executable,str(isolated/'schedule.py'),'run',str(root/'queue.json')],capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            benchmark = SCRIPT.with_name('benchmark.py')
+            result = subprocess.run([sys.executable,str(benchmark),'seal','--input',str(root/'input'),
+                                     '--output',str(root/'output'),'--models','no_change'],capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            manifest = json.loads((root/'output/predictions.json').read_text())
+            self.assertTrue(all(run['status']=='failed' for run in manifest['runs']))
+
     def test_pressure_stops_only_newest_owned_task(self):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / 'pressure.json'
