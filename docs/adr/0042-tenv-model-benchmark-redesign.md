@@ -5,8 +5,13 @@ design, exact Morgan parameters and the artifact-CLI testing boundary.
 Research and admission evidence remain required before formal execution.
 
 **Spec:** [GitHub issue #40](https://github.com/Moke110/arc/issues/40), published
-with ready-for-agent. The ticket breakdown is drafted and awaits user approval;
-no implementation tickets or training have started in this planning handoff.
+with ready-for-agent. The user approved the ticket breakdown; seven fixed
+implementation tickets [#41](https://github.com/Moke110/arc/issues/41) through
+[#47](https://github.com/Moke110/arc/issues/47) are published as native sub-issues
+with verified blocked_by edges. Further per-model tickets will be instantiated
+after discovery, under the approved one-model-per-ticket scope, and attached as
+native blockers of formal training before dispatch. No implementation or
+training has started in this planning handoff.
 
 The dataset corpus refactor (ADR 0033) separates native-axis source evidence
 from consumer-owned views. Rebuild the tenv comparison using newly screened
@@ -167,7 +172,8 @@ The user confirmed the shared understanding and authorized the published spec
 and dependency-ticket workflow. Test at the artifact CLI boundary: frozen
 inputs, isolated-environment fit/predict, persisted predictions, offline metrics
 and all three figures; add focused behavior checks for metric edge cases and
-resource scheduling. Ticket breakdown approval still precedes ticket publication.
+resource scheduling. The approved graph starts at research #41 and input #42;
+#42 → #43 → #44, {#41,#44} → #45, then per-model admission tickets → #46 → #47.
 ADR 0027 remains the contract of the frozen historical benchmark.
 
 ## See
