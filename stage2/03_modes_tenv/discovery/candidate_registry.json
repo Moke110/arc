@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-11-05",
+  "spec_issue": 40,
+  "discovery_issue": 41,
+  "scope": "14 downloaded model items plus 6 freshly inspected candidates",
+  "preferred_pilot": "PRnet",
+  "runtime_qualified_models": [],
+  "runtime_work_list": [
+    "PRnet",
+    "CPA",
+    "chemCPA",
+    "CMonge",
+    "PerturbDiff"
+  ],
+  "candidates": [
+    {
+      "model": "PRnet",
+      "status": "admitted-to-runtime-validation",
+      "publication": "https://doi.org/10.1038/s41467-024-53457-1",
+      "baseline": "PGM.forward concatenates x baseline with adapted chemical context",
+      "dose": "Native fingerprint scaling by log10(dose+1); keep dose explicit in request",
+      "morgan_interface": "Linear(2048,1024) before native CombAdaptor; scale adapted fingerprint by native dose rule",
+      "decision": "Preferred pilot. Configurable x_dim controls encoder input and full mean/variance output; no 978 checkpoint reuse.",
+      "evidence": [
+        "pert_model/PRnet/source/models/PRnet.py:74",
+        "pert_model/PRnet/source/models/PRnet.py:133",
+        "pert_model/PRnet/source/data/_utils.py:44",
+        "pert_model/PRnet/source/trainer/PRnetTrainer.py:130"
+      ],
+      "source_repository": "https://github.com/Perturbation-Response-Prediction/PRnet",
+      "source_commit": "f19174bde3ed2633f54c7831799cc38c4ffc7a0d",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "CPA",
+      "status": "admitted-to-runtime-validation",
+      "publication": "https://doi.org/10.15252/msb.202211517",
+      "baseline": "Native encoder consumes expression before perturbation shift",
+      "dose": "GeneralizedSigmoid supports raw-dose fallback; default learned per-drug dosers need cold-drug scrutiny",
+      "morgan_interface": "PerturbationNetwork accepts external drug_embeddings plus native nn.Linear projection",
+      "decision": "Source-compatible RDKit path. Select and disclose a native dose configuration without fitting held-out drug-specific response parameters.",
+      "evidence": [
+        "pert_model/CPA/source/cpa/_utils.py:105",
+        "pert_model/CPA/source/cpa/_utils.py:135",
+        "pert_model/CPA/source/cpa/_module.py:247",
+        "pert_model/CPA/source/cpa/_model.py:150"
+      ],
+      "source_repository": "https://github.com/theislab/CPA",
+      "source_commit": "fbd7c0250edc23eff003a10c99655579c53afd63",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "chemCPA",
+      "status": "admitted-to-runtime-validation",
+      "publication": "https://neurips.cc/virtual/2022/poster/53227",
+      "baseline": "predict computes latent_basal = encoder(genes)",
+      "dose": "Native amortized doser consumes drug embedding and dose; avoids unseen-drug learned doser table",
+      "morgan_interface": "Existing fixed-embedding interface plus trainable embedding encoder; replace common chemistry projection with joint Linear",
+      "decision": "Source-compatible; retain Gaussian reconstruction plus native adversary objectives/alternation and validate author loss selection.",
+      "evidence": [
+        "pert_model/chemCPA/source/chemCPA/model.py:287",
+        "pert_model/chemCPA/source/chemCPA/model.py:387",
+        "pert_model/chemCPA/source/chemCPA/model.py:479",
+        "pert_model/chemCPA/source/chemCPA/model.py:574"
+      ],
+      "source_repository": "https://github.com/theislab/chemCPA",
+      "source_commit": "43e830eb0958c54e4aa64442c17ec0fed19b3f15",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "CMonge",
+      "status": "admitted-to-runtime-validation",
+      "publication": "https://doi.org/10.1038/s42256-026-01242-8",
+      "baseline": "Conditional transport __call__(x,c) maps control x",
+      "dose": "RDKitEmbedding appends log dose parsed from condition; preserve actual floating dose rather than int truncation",
+      "morgan_interface": "Continuous RDKit condition representation before native conditional network; train Linear jointly in JAX transport params",
+      "decision": "Source-compatible continuous conditional transport. Published reduced-space setup is not proof of 18164-gene Sinkhorn/transport feasibility.",
+      "evidence": [
+        "pert_model/CMonge/source/cmonge/models/embedding.py:129",
+        "pert_model/CMonge/source/cmonge/models/nn.py:139",
+        "pert_model/CMonge/source/configs/conditional-monge-sciplex.yml:1"
+      ],
+      "source_repository": "https://github.com/AI4SCR/Conditional-Monge",
+      "source_commit": "195f5cd1822e7c7de7c7ee842a7e4082992ccc04",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "biolord",
+      "status": "excluded",
+      "publication": "https://doi.org/10.1038/s41587-023-02079-x",
+      "baseline": "Unknown latent comes from sample_indices lookup; ordered networks consume attributes, not baseline vector",
+      "dose": "Ordered attributes can represent dose",
+      "morgan_interface": "Chemical ordered attributes exist, but do not fix baseline input",
+      "decision": "No native expression encoder for a new approved same-plate baseline. Adding one would change core architecture; observation latents are not baseline participation.",
+      "evidence": [
+        "pert_model/biolord/source/src/biolord/_module.py:19",
+        "pert_model/biolord/source/src/biolord/_module.py:293",
+        "pert_model/biolord/source/src/biolord/_module.py:324",
+        "pert_model/biolord/source/src/biolord/_module.py:366"
+      ],
+      "source_repository": "https://github.com/nitzanlab/biolord",
+      "source_commit": "b7688790e49728d7f8d0906b980a629de484b19b",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "Squidiff",
+      "status": "excluded",
+      "publication": "Not needed for explicit exclusion",
+      "baseline": "not reevaluated",
+      "dose": "not reevaluated",
+      "morgan_interface": "not reevaluated",
+      "decision": "Explicit user exclusion in ADR0042; historical results preserved. This is not an inferred architecture/resource failure.",
+      "evidence": [
+        "docs/adr/0042-tenv-model-benchmark-redesign.md:30"
+      ],
+      "source_repository": "https://github.com/siyuh/Squidiff",
+      "source_commit": "abdfc27d84947dcccd745d1067c0840a41d32eb8",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "PerturbNet",
+      "status": "excluded",
+      "publication": "Not needed for explicit exclusion",
+      "baseline": "not reevaluated",
+      "dose": "not reevaluated",
+      "morgan_interface": "not reevaluated",
+      "decision": "Explicit user exclusion in ADR0042; historical results preserved. This is not an inferred architecture/resource failure.",
+      "evidence": [
+        "docs/adr/0042-tenv-model-benchmark-redesign.md:30"
+      ],
+      "source_repository": "https://github.com/welch-lab/PerturbNet",
+      "source_commit": "e1375b2ca71c87d5b7277c45648ed06fe335a38d",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "XPert",
+      "status": "excluded",
+      "publication": "Not needed for explicit exclusion",
+      "baseline": "not reevaluated",
+      "dose": "not reevaluated",
+      "morgan_interface": "not reevaluated",
+      "decision": "Explicit user exclusion in ADR0042; historical results preserved. This is not an inferred architecture/resource failure.",
+      "evidence": [
+        "docs/adr/0042-tenv-model-benchmark-redesign.md:30"
+      ],
+      "source_repository": null,
+      "source_commit": "unknown",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "scVIDR",
+      "status": "excluded",
+      "publication": "https://doi.org/10.1016/j.patter.2023.100817",
+      "baseline": "Control latent input exists",
+      "dose": "Native latent interpolation handles dose",
+      "morgan_interface": "No chemical representation interface",
+      "decision": "Native prediction transports the learned shift of an observed treatment; no structure-based new-drug input.",
+      "evidence": [
+        "pert_model/scVIDR/source/vidr/vidr.py:85",
+        "pert_model/scVIDR/source/vidr/PCAEval.py:72"
+      ],
+      "source_repository": "https://github.com/BhattacharyaLab/scVIDR",
+      "source_commit": "bcb6a96c85cddc4eef052be739c122efb737fe0e",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "DECANT",
+      "status": "excluded",
+      "publication": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13587831/",
+      "baseline": "forward_view consumes both treated and control bags",
+      "dose": "Dose is context to disentangle",
+      "morgan_interface": "No chemical-only new-drug predictor in released mechanism model",
+      "decision": "Released forward_view requires treated expression to infer mechanism representation; cannot expose test-treated bag for prediction.",
+      "evidence": [
+        "pert_model/DECANT/source/decant/scripts/train_decant_mechanism_model.py:654",
+        "pert_model/DECANT/source/README.md:1"
+      ],
+      "source_repository": "https://github.com/bliulab/DECANT",
+      "source_commit": "e50642a980cbdf9fa73ec152dbe81a6047ab396b",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "WAVE",
+      "status": "excluded",
+      "publication": "Formal publication gate not needed after interface failure",
+      "baseline": "GeneDrugFusion.forward accepts gene_expr",
+      "dose": "Absent from forward and native train call",
+      "morgan_interface": "Fingerprint path exists",
+      "decision": "No explicit native dose conditioning. Creating dose branch is outside allowed adapter-only modification.",
+      "evidence": [
+        "pert_model/WAVE/source/wave/model.py:87",
+        "pert_model/WAVE/source/wave/train.py:72"
+      ],
+      "source_repository": "https://github.com/ZJUFanLab/WAVE",
+      "source_commit": "e27e453beb48d0ff912585060b5a09cb04335262",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "TranSiGen",
+      "status": "excluded",
+      "publication": "Published paper referenced by source README",
+      "baseline": "forward(x1,features) encodes baseline x1",
+      "dose": "Absent from forward and dataset drug-feature interface",
+      "morgan_interface": "Continuous chemical feature interface exists",
+      "decision": "No native dose-conditioning path; dose cannot be silently ignored or invented.",
+      "evidence": [
+        "pert_model/TranSiGen/source/src/model.py:161",
+        "pert_model/TranSiGen/source/src/dataset.py:1"
+      ],
+      "source_repository": "https://github.com/myzhengSIMM/TranSiGen",
+      "source_commit": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "State",
+      "status": "excluded",
+      "publication": "Pinned README refers to preprint; current publication not a necessary gate after chemical failure",
+      "baseline": "Transition uses control state",
+      "dose": "Drug-dose categorical condition",
+      "morgan_interface": "Pinned transition path uses categorical perturbation identity",
+      "decision": "Pinned model has no verified native structure-derived cold-drug interface; adding a chemistry backbone is not the agreed adapter.",
+      "evidence": [
+        "pert_model/State/source/README.md:1",
+        "stage2/audit/entrant_audit.csv"
+      ],
+      "source_repository": "https://github.com/ArcInstitute/state",
+      "source_commit": "9bbfe78a434a55205e4de834e1ea99f85f7a3add",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "ExPO",
+      "status": "unresolved",
+      "publication": "https://doi.org/10.1186/s13321-026-01226-1",
+      "baseline": "Native CellContextEncoder basal projector exists and n_genes is configurable",
+      "dose": "Continuous Fourier dose/time features",
+      "morgan_interface": "Chemical encoder is ChemBERTa with LoRA; boundary replacement/fidelity not verified",
+      "decision": "Do not inherit old 978-only exclusion: dimension changes are allowed. Need confirm joint Morgan adapter at existing representation boundary while preserving core operator, objective on expression/delta rather than L1000 z-scores, native setup, and full-axis runtime.",
+      "evidence": [
+        "pert_model/ExPO/source/expo/models/cell_encoder.py:35",
+        "pert_model/ExPO/source/expo/models/expo_model.py:58",
+        "pert_model/ExPO/source/expo/models/expo_model.py:148"
+      ],
+      "source_repository": "https://github.com/MLBC-lab/ExPO",
+      "source_commit": "7e88cbae17b44397ff7d75983475334b40488d65",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "PertDiff",
+      "status": "excluded",
+      "publication": "https://doi.org/10.1093/bioinformatics/btag482",
+      "baseline": "FNN control_predict consumes unperturbed sequence",
+      "dose": "No dose input in FNN forward",
+      "morgan_interface": "Precomputed 768-dimensional MPG vectors",
+      "decision": "No explicit dose-conditioning input; 978-specific layer shapes also require changes. Formal publication and baseline input do not remedy missing native dose.",
+      "evidence": [
+        "https://github.com/Panda-myj/PertDiff/blob/073a92dd154bf096cdb8878f60ffa3add59ae75d/code/improved_diffusion/fnn.py#L305"
+      ],
+      "source_repository": "https://github.com/Panda-myj/PertDiff",
+      "source_commit": "073a92dd154bf096cdb8878f60ffa3add59ae75d",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    },
+    {
+      "model": "PerturbDiff",
+      "status": "admitted-to-runtime-validation",
+      "publication": "https://proceedings.mlr.press/v306/yuan26d.html",
+      "baseline": "Cross_DiT forward(x_input,x_control_input,t,self_condition) has control branch",
+      "dose": "CovEncoder chemberta_cls path contains separate dose index embedding",
+      "morgan_interface": "Frozen chemical embedding followed by nn.Linear; use common Morgan and jointly trained linear at this boundary",
+      "decision": "Source-compatible candidate; needs ADR0030 source acquisition, native setup/environment and full-axis runtime. 12626-gene config alone is insufficient. Categorical doses are permissible metadata when shared with training; no test responses.",
+      "evidence": [
+        "https://github.com/DeepGraphLearning/PerturbDiff/blob/31be89cb8cce5dddef0782bac29d5c748ce55931/src/models/covariate_encoding.py#L84",
+        "https://github.com/DeepGraphLearning/PerturbDiff/blob/31be89cb8cce5dddef0782bac29d5c748ce55931/src/models/cross_dit/cross_dit_main.py#L228"
+      ],
+      "source_repository": "https://github.com/DeepGraphLearning/PerturbDiff",
+      "source_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "scDFM",
+      "status": "unresolved",
+      "publication": "https://openreview.net/forum?id=QSGanMEcUV",
+      "baseline": "Control branch is present in Model.forward",
+      "dose": "No explicit native dose path in inspected run/config/embedding files",
+      "morgan_interface": "Model has continuous perturbation vector but native PerturbationEmbedding is categorical lookup",
+      "decision": "Official repo says ICLR2026, OpenReview browser challenge prevents direct venue verification. Need verify native dose and chemical conditioning without new architecture before setup/full-axis runtime; do not admit from continuous vector signature alone.",
+      "evidence": [
+        "https://github.com/AI4Science-WestlakeU/scDFM/blob/8de47e7d3d443939f93f768f7902c66e0e82eda2/src/models/perturbation/moduls.py#L38",
+        "https://github.com/AI4Science-WestlakeU/scDFM/blob/8de47e7d3d443939f93f768f7902c66e0e82eda2/config/config_flow.py"
+      ],
+      "source_repository": "https://github.com/AI4Science-WestlakeU/scDFM",
+      "source_commit": "8de47e7d3d443939f93f768f7902c66e0e82eda2",
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "scDPR",
+      "status": "unresolved",
+      "publication": "https://doi.org/10.1016/j.neunet.2026.109005",
+      "baseline": "Paper claims cell-specific attributes; exact input contract not verified",
+      "dose": "Paper explicitly claims dose",
+      "morgan_interface": "Paper claims drug molecular features; code interface not verified",
+      "decision": "New relevant Biomni hit. Bounded exact-title/model-name primary search found formal article but no verified public model/train/test repository. Cannot admit without code, license, interface, environment and runtime evidence.",
+      "evidence": [
+        "biomni_targeted_network.log:25",
+        "https://www.sciencedirect.com/science/article/pii/S0893608026004661"
+      ],
+      "source_repository": null,
+      "source_commit": null,
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "CellFlow",
+      "status": "unresolved",
+      "publication": "https://github.com/theislab/CellFlow",
+      "baseline": "Control-conditioned flow framework",
+      "dose": "Dose extensibility not verified",
+      "morgan_interface": "Embedding path not verified",
+      "decision": "Official README still points to preprint; formal venue and native chemical/dose interfaces unverified. Do not declare a preprint formally published.",
+      "evidence": [
+        "https://github.com/theislab/CellFlow#cellflow---modeling-complex-perturbations-with-flow-matching"
+      ],
+      "source_repository": null,
+      "source_commit": null,
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": [
+        "author-loss fidelity ledger",
+        "full 18164-gene train/save/reload/predict",
+        "joint adapter behavioral check",
+        "measured host/GPU resource profile"
+      ]
+    },
+    {
+      "model": "MAP",
+      "status": "excluded",
+      "publication": "https://doi.org/10.1038/s42256-026-01286-w",
+      "baseline": "Paper encodes control cells with pretrained State SE-600M",
+      "dose": "Log-dose scales drug token",
+      "morgan_interface": "Knowledge-pretrained molecular encoder",
+      "decision": "Published pipeline depends on external pretrained cell/molecular representations, outside random-init/no-independent-pretraining contract; removing them is unverified core-method change.",
+      "evidence": [
+        "https://www.nature.com/articles/s42256-026-01286-w#Sec10"
+      ],
+      "source_repository": null,
+      "source_commit": null,
+      "full_axis_runtime": "not_run",
+      "runtime_qualified": false,
+      "missing_gates": []
+    }
+  ]
+}
