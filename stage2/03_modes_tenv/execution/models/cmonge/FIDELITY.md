@@ -28,9 +28,10 @@ epsilon 1) plus upstream `regularizer` (Monge gap, Euclidean cost, epsilon .01),
 with native unit regularizer strength. AdamW uses learning rate .0001, weight
 decay .00001 and cosine decay to .01 of initial rate. Formal budget is 10000
 iterations, batch size 512; the single OOM retry may halve the batch. Validation
-selects the minimum mean of the same author objective across fixed held-out
-groups, evaluated every 100 iterations; this expands the upstream stochastic
-single-condition validation log into a reproducible checkpoint criterion.
+selects the minimum of the same author objective on one randomly sampled held-out
+condition every 100 iterations. An independent per-run seeded RNG samples both
+the condition and its batch; sampled group IDs are saved in checkpoint history.
+A final off-cadence iteration is also validated to support bounded qualifiers.
 
 Qualification uses 3 iterations, batch 4 and at most 3 groups on the complete gene
 axis. It can establish train/save/reload/predict and adapter/baseline/dose behavior,
@@ -44,8 +45,6 @@ imported. The isolated existing CPU JAX environment is used; timings and recipe
 deviations are recorded explicitly rather than claiming the native AE benchmark
 was reproduced.
 
-Pause handoff: the user requested suspension after started programs drained.
-The streamed all-138-condition validation probe completed with one512OOM and
-one256retry; see `pause_record.json` and `PAUSE.md`. Native one-sampled-condition
-validation per100iterations is the accepted correction and remains **unimplemented**.
-No formal run or test scoring has started. This ticket remains open.
+Native sampled-condition validation was restored after resume; the old all-group
+profile and its unique OOM retry remain in `pause_record.json`. Fresh native
+qualification/profile evidence is recorded in `admission.json`.

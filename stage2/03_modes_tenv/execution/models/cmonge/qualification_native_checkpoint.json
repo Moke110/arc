@@ -1,0 +1,74 @@
+{
+  "identity": {
+    "model": "cmonge",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "293ccbf122eb7f70b70a1496e940ab601914a9b94414e63f7332bf0133e3ebb7",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "d23438e50cd27b9ba991c08b371d9ddf0a892dbc09607af68842a0427dd399a1"
+  },
+  "blobs": {
+    "best.msgpack": "fbc5e5faef5500465052714ba9eeb4bc142151014ffa9a0fe2513ad2dae150a9"
+  },
+  "training_seconds": 1.5613934840075672,
+  "inference_seconds": 0.482557117997203,
+  "author_objective": "Sinkhorn divergence + Monge gap (Euclidean)",
+  "best_validation_loss": 31.660850524902344,
+  "selection": "minimum sampled held-out-condition native author objective",
+  "history": [
+    {
+      "iteration": 1,
+      "validation_loss": 31.660850524902344,
+      "validation_group_id": "0286b222b0edc4181ef9b530",
+      "validation_conditions_evaluated": 1,
+      "training_loss": 20.581178665161133,
+      "fitting_loss": 20.55345344543457,
+      "regularizer": 0.027725934982299805
+    },
+    {
+      "iteration": 2,
+      "validation_loss": 35.900360107421875,
+      "validation_group_id": "03c56d6f677695d135f107f7",
+      "validation_conditions_evaluated": 1,
+      "training_loss": 27.05076789855957,
+      "fitting_loss": 27.023042678833008,
+      "regularizer": 0.027725696563720703
+    },
+    {
+      "iteration": 3,
+      "validation_loss": 32.21589660644531,
+      "validation_group_id": "00ca630c7aa251ae064fb76f",
+      "validation_conditions_evaluated": 1,
+      "training_loss": 21.15814781188965,
+      "fitting_loss": 21.130422592163086,
+      "regularizer": 0.027725934982299805
+    }
+  ],
+  "adapter_parameter_change": 0.0024494219105690718,
+  "baseline_sensitivity": 0.16078031063079834,
+  "dose_sensitivity": 0.0002428293228149414,
+  "reload_max_absolute_error": 0.0,
+  "trainable_parameters": 2464016,
+  "adapter_parameters": 102450,
+  "adapter_dimensions": [
+    2048,
+    50
+  ],
+  "batch_size": 4,
+  "iterations": 3,
+  "validation_groups": 3,
+  "validation_batch_policy": "one seeded random held-out condition per validation event",
+  "qualification_only": true,
+  "gene_count": 18164,
+  "backend": "cpu",
+  "recipe_deviations": [
+    "Shared Morgan linear map replaces precomputed RDKit descriptor representation.",
+    "Direct native transport on complete gene space; optional separately trained AE omitted.",
+    "Same-plate DMSO mean replaces distribution of individual control cells.",
+    "Explicit log(float micromolar dose) preserves fractional concentrations.",
+    "Checkpoint selection uses seeded native single-condition validation; final iteration also validated if off cadence."
+  ]
+}

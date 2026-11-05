@@ -38,6 +38,7 @@ def run(request, config):
     n_genes=int(request['n_genes'])
     if not qualification and n_genes!=18164: raise ValueError('formal CMonge requires full gene axis')
     seed=request['identity']['seed']; rng=np.random.default_rng(seed)
+    validation_rng=np.random.default_rng(seed+7927)
     iterations=int(config.get('iterations',10000)); eval_every=int(config.get('eval_every',100))
     batch=max(1,int(config.get('batch_size',512)*float(os.environ.get('TENV_BATCH_SCALE','1'))))
     if iterations<1 or batch<1 or eval_every<1: raise ValueError('invalid training budget')
@@ -91,17 +92,15 @@ def run(request, config):
         if not np.isfinite(total): raise ValueError('nonfinite native author training objective')
         write_json(output/'progress.json',{'phase':'training','training_seconds':time.monotonic()-started,'iteration':iteration+1,'author_training_loss':total})
         if (iteration+1)%eval_every==0 or iteration+1==iterations:
-            # Regenerate one fixed group batch at a time. Caching all validation
-            # batches at 18k genes would exceed the formal process memory cap.
-            losses=[]
-            for group_index in range(len(validation[2])):
-                fixed_rng=np.random.default_rng(seed+7927+group_index*104729)
-                group_batch=sample(validation,group_index,fixed_rng)
-                losses.append(float(loss_eval(state.params,*group_batch)[0]))
-                del group_batch
-            value=float(np.mean(losses))
+            # Match native stochastic validation: one held-out condition, with
+            # a separate seeded stream so validation never changes training draws.
+            group_index=int(validation_rng.integers(len(validation[2])))
+            group_batch=sample(validation,group_index,validation_rng)
+            value=float(loss_eval(state.params,*group_batch)[0])
+            del group_batch
+            validation_group_id=validation[0][validation[2][group_index][0]]['group_id']
             if not np.isfinite(value): raise ValueError('nonfinite native author validation objective')
-            history.append({'iteration':iteration+1,'validation_loss':value,'training_loss':total,'fitting_loss':float(parts[0]),'regularizer':float(parts[1])})
+            history.append({'iteration':iteration+1,'validation_loss':value,'validation_group_id':validation_group_id,'validation_conditions_evaluated':1,'training_loss':total,'fitting_loss':float(parts[0]),'regularizer':float(parts[1])})
             if value<best_loss:
                 best_loss=value;best=jax.tree_util.tree_map(lambda x:np.array(x),state.params)
                 (output/'best.msgpack').write_bytes(serialization.to_bytes(best))
@@ -132,17 +131,17 @@ def run(request, config):
     write_json(output/'checkpoint.json',{'identity':request['identity'],'blobs':{'best.msgpack':sha256(output/'best.msgpack')},
                'training_seconds':training_seconds,'inference_seconds':time.monotonic()-inference_start,
                'author_objective':'Sinkhorn divergence + Monge gap (Euclidean)','best_validation_loss':best_loss,
-               'selection':'minimum mean held-out-group native author objective','history':history,
+               'selection':'minimum sampled held-out-condition native author objective','history':history,
                'adapter_parameter_change':adapter_change,'baseline_sensitivity':baseline_sensitivity,'dose_sensitivity':dose_sensitivity,
                'reload_max_absolute_error':reload_error,'trainable_parameters':sum(int(x.size) for x in jax.tree_util.tree_leaves(restored)),
                'adapter_parameters':2048*50+50,'adapter_dimensions':[2048,50],'batch_size':batch,'iterations':iterations,
-               'validation_groups':len(validation[2]),'validation_batch_policy':'one streamed group; fixed per-group seed',
+               'validation_groups':len(validation[2]),'validation_batch_policy':'one seeded random held-out condition per validation event',
                'qualification_only':qualification,'gene_count':n_genes,'backend':jax.default_backend(),
                'recipe_deviations':['Shared Morgan linear map replaces precomputed RDKit descriptor representation.',
                     'Direct native transport on complete gene space; optional separately trained AE omitted.',
                     'Same-plate DMSO mean replaces distribution of individual control cells.',
                     'Explicit log(float micromolar dose) preserves fractional concentrations.',
-                    'Checkpoint selection evaluates native total validation objective across fixed held-out groups.']})
+                    'Checkpoint selection uses seeded native single-condition validation; final iteration also validated if off cadence.']})
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--request',required=True);parser.add_argument('--config',required=True)

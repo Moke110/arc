@@ -10,11 +10,11 @@ SCRIPT = Path(__file__).resolve().parents[1] / 'script' / 'schedule.py'
 
 
 class SchedulerContract(unittest.TestCase):
-    def policy(self, snapshot, profile=None, active=None):
+    def policy(self, snapshot, profile=None, active=None, max_active_jobs=2):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / 'request.json'
             source.write_text(json.dumps(dict(snapshot=snapshot, profile=profile,
-                                             active=active or [])))
+                                             active=active or [], max_active_jobs=max_active_jobs)))
             p = subprocess.run([sys.executable, str(SCRIPT), 'admit', str(source)],
                                capture_output=True, text=True)
             self.assertEqual(p.returncode, 0, p.stderr)
@@ -32,6 +32,8 @@ class SchedulerContract(unittest.TestCase):
         s = dict(available_gib=24, gpu_free_gib=10, external_heavy=1,
                  external_peak_gib=8, observable=True)
         self.assertTrue(self.policy(s, dict(host_peak_gib=8, gpu_peak_gib=4))['admit'])
+        self.assertFalse(self.policy(s, dict(host_peak_gib=2),
+                         active=[dict(profile=dict(host_peak_gib=2))], max_active_jobs=1)['admit'])
         self.assertFalse(self.policy(s, dict(host_peak_gib=12, gpu_peak_gib=4))['admit'])
         s['observable'] = False
         self.assertFalse(self.policy(s, dict(host_peak_gib=1))['admit'])

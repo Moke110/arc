@@ -52,8 +52,10 @@ def transition(state, reason, seconds):
     return state
 
 
-def admit(snapshot, profile=None, active=()):
+def admit(snapshot, profile=None, active=(), max_active_jobs=2):
     """Require known resources before overlapping work, including unrelated jobs."""
+    if max_active_jobs not in (1, 2):
+        raise ValueError('max_active_jobs must be 1 or 2')
     def decision(ok, reason):
         return {'admit': ok, 'reason': reason}
     if not snapshot.get('observable', False):
@@ -61,8 +63,8 @@ def admit(snapshot, profile=None, active=()):
     if snapshot['available_gib'] < 12:
         return decision(False, 'less than 12 GiB available RAM')
     external = snapshot['external_heavy']
-    if len(active) + external >= 2:
-        return decision(False, 'two heavy tasks already active')
+    if len(active) + external >= max_active_jobs:
+        return decision(False, 'configured heavy-task limit already reached')
     if not profile:
         return decision(not active and not external and snapshot['gpu_free_gib'] >= 1,
                         'unknown profile starts alone with GPU headroom')
@@ -203,6 +205,9 @@ def schedule_queue(queue_path):
     output = Path(queue['output_root']).resolve()
     input_root = str(Path(queue['input_root']).resolve())
     jobs = queue['jobs']
+    max_active_jobs = queue.get('max_active_jobs', 2)
+    if max_active_jobs not in (1, 2):
+        raise ValueError('max_active_jobs must be 1 or 2')
     keys = [(job['model'], job['fold'], job['seed']) for job in jobs]
     if len(keys) != len(set(keys)):
         raise ValueError('duplicate run in scheduler queue')
@@ -338,7 +343,7 @@ def schedule_queue(queue_path):
             dispatched = False
             for job in list(pending):
                 policy = admit(snapshot, job.get('profile'),
-                               [entry['job'] for entry in active.values()])
+                               [entry['job'] for entry in active.values()], max_active_jobs=max_active_jobs)
                 if not policy['admit']:
                     continue
                 key = job['id']
