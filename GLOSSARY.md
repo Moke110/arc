@@ -326,6 +326,18 @@ yield nine run samples per model; these are not nine independent biological
 samples.
 _Avoid_: well, drug–dose group, independent replicate
 
+**Tenv directional truth set**:
+The at-most-100 genes with the largest strictly positive true Δ, or the
+at-most-100 with the smallest strictly negative true Δ, for a tenv drug–dose
+group. The labels depend on observed responses and are shared across models
+and training seeds.
+_Avoid_: significant DEG set, predicted top-100 set
+
+**Tenv Recall@P80**:
+The greatest recall attainable with a nonempty prediction set at precision
+at least 0.8 for one tenv directional truth set; zero when no such set is
+attainable.
+
 **Cold-drug fold**:
 One of five Stage 2 benchmark splits in which a drug is never observed in the fold's train or validation set and is scored exactly once as test; every drug is test exactly once and valid exactly once across the five folds (6:2:2 = 276/92/92 drugs).
 _Avoid_: cold-start split, holdout (unqualified)
