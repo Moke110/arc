@@ -156,6 +156,23 @@ verification remain research prerequisites; no new model is declared qualified
 by this proposed record. Historical structure-based exclusion reasons alone
 cannot establish exclusion from the new one-hot task.
 
+## Research evidence so far (2026-11-05)
+
+Biomni Layer 2 was invoked in the prescribed `biomni_e1` environment. The broad
+PubMed query first failed on sandbox DNS; its network-enabled retry and a narrow
+CellFlow query both returned HTTP 500. A subsequent arXiv query was cancelled
+without a result. These attempts do not satisfy the requested completed Biomni
+research; an effective retrieval is still required before closing discovery.
+
+Primary publication pages identify new candidates
+[PertDiff (Bioinformatics)](https://academic.oup.com/bioinformatics/article/42/7/btag482/8722292),
+[PerturbDiff (ICML/PMLR)](https://proceedings.mlr.press/v306/yuan26d.html) and
+[scDFM (ICLR)](https://openreview.net/pdf?id=QSGanMEcUV).
+Publication evidence is not full-space or hardware admission evidence. The
+[theislab CellFlow README](https://github.com/theislab/CellFlow) still points
+to a preprint; formal publication has not been verified. Reassess all candidates
+under the latest one-hot requirement before adding repositories or setup runs.
+
 The old ADR 0027 contract remains the contract of the frozen historical study;
 its five-fold single-seed entrant list and k=200 primary metric must not silently
 govern the new experiment. Final choices will be recorded here as they resolve.
