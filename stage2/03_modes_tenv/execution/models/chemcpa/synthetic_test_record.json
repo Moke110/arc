@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-05",
+  "test": "test_chemcpa.ChemCPASubprocess.test_full_axis_preserves_adversarial_training_and_cold_prediction",
+  "kind": "synthetic full-axis artifact subprocess; not real-data admission",
+  "red": "FileNotFoundError for missing models/chemcpa/config.json before implementation",
+  "green": "1 test passed",
+  "shape": {"train": 8, "validation": 2, "test": 2, "genes": 18164},
+  "epochs": 2,
+  "batch_size": 2,
+  "device": "cpu",
+  "wall_seconds": 4.19,
+  "maximum_resident_set_kbytes": 1359644,
+  "memory_max": "10G",
+  "memory_swap_max": "8G",
+  "log": "synthetic_test.log",
+  "exit_code": 0
+}
