@@ -38,3 +38,20 @@ training counts are 260/261/261. Two complete builds have identical manifests
 and array hashes. Three synthetic CLI tests pass, including normalization
 order and malformed-control rejection. Build peaks and commands are in
 `execution/input_record/verification.json`; arrays remain local-only.
+
+Resource-owned execution uses the isolated artifact adapters through one scheduler:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python \
+  stage2/03_modes_tenv/execution/script/schedule.py run <queue.json>
+```
+
+A queue records `input_root`, `output_root` and unique model/fold/seed `jobs`.
+Set `max_active_jobs: 1` for long training runs; the default ceiling is two,
+subject to real host/GPU telemetry, measured resource profiles and headroom.
+Unknown profiles start alone. Each job may set `inference_timeout_seconds`
+(default 1800); inference has its own scheduler watchdog and does not consume
+its cumulative four-hour training allowance. Terminal recovery outcomes are
+published to both scheduler state and `run.json`, so dead or interrupted workers
+remain visible to the prediction barrier. Completed outputs still require
+identity, prediction and checkpoint verification before reuse.
