@@ -28,7 +28,7 @@
         "https://docs.jax.dev/en/latest/installation.html",
         "https://pypi.org/project/jax-cuda12-plugin/0.4.38/"
       ],
-      "status": "dependencies prepared; GPU runtime admission pending",
+      "status": "isolated CUDA runtime full-axis qualified; formal-batch resource decision is recorded in stage2/03_modes_tenv/execution/models/cmonge/admission.json",
       "lock": "stage2/03_modes_tenv/execution/models/cmonge/cuda_overlay.lock",
       "file_hash_manifest": "stage2/03_modes_tenv/execution/models/cmonge/cuda_overlay.sha256"
     }
