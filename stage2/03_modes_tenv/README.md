@@ -90,9 +90,30 @@ text-preserving SVG, with metric-defined counts distinguished from completed
 runs.
 
 
-Execution is **paused at the user's request on 2026-11-06** after 34/63 formal
+After evaluation, publish the verified CSV tables and three PNG/SVG figures to
+the step directory (ADR 0030):
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python \
+  stage2/03_modes_tenv/execution/script/deliver.py \
+  --output stage2/03_modes_tenv/output/formal \
+  --publish stage2/03_modes_tenv
+```
+
+This artifact-only delivery replays the original checked evaluation, then adds
+completion, incomplete-entry and deterministic-reference labels to the best-run
+figure. It preserves all scored values, selected runs, source arrays and frozen
+run identities. `publication.json` records source/evaluation/rendering hashes
+and the exact published table/figure hashes. Run delivery again after an original
+`benchmark.py replay` to restore the additional presentation labels. Publication
+is withheld until the formal evaluation barrier has passed.
+
+
+Execution **resumed at the user's request on 2026-11-06** from the verified
+34/63-run save point, using the unchanged serial queue. Formal test scoring
+remains withheld until all 63 outcomes settle. The historical pause occurred after 34/63 formal
 runs completed naturally (both references 9 each, PRnet 9, CPA 7), with zero failures
 and 29 not dispatched. No formal test scoring has occurred. The verified pause
 manifest, remaining cases and exact same-queue continuation commands are in
 [`execution/formal/PAUSE.md`](execution/formal/PAUSE.md). Full binaries remain
-local; no experiment process remains active.
+local; the pause record describes the stopped state before this continuation.
