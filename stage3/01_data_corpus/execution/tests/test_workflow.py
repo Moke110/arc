@@ -70,6 +70,17 @@ class Workflow(unittest.TestCase):
         self.build(changed,success=False)
         self.cli('verify','--release',str(release),'--test-only')
 
+    def test_renaming_ids_cannot_duplicate_the_same_source_measurement(self):
+        first=self.record('a',1.3,.01)
+        repeated=copy.deepcopy(first)
+        repeated['comparison_id']='renamed-comparison'
+        repeated['measurements'][0]['measurement_id']='renamed-measurement'
+        self.bundle['records']=[first,repeated]
+        self.build(release='same-cell-twice',success=False)
+        repeated['measurements'][0]['selector']='a distinct real source cell'
+        release=self.build(release='equal-values-distinct-cells')
+        self.assertEqual(self.rows(release)[0]['readout'],[13.,13.])
+
     def test_test_sources_are_rejected_in_production_and_missing_evidence_fails(self):
         self.build(success=False,test_only=False)
         malformed=copy.deepcopy(self.bundle)
@@ -109,6 +120,19 @@ class Workflow(unittest.TestCase):
         self.assertEqual([r['endpoint'] for r in comparisons],[1,0,0])
         families=json.loads((release/'families.json').read_text())
         self.assertEqual(families[0]['eligible_members'],['a','b','c'])
+
+    def test_mixed_author_bh_and_raw_family_does_not_adjust_incomplete_raw_subset(self):
+        raw=self.record('raw',1.3,None)
+        raw['statistics'].update(p_raw=.04,correction='none')
+        author=self.record('author',1.1,.9)
+        self.bundle['records']=[raw,author]
+        release=self.build()
+        comparisons={r['comparison_id']:r for r in json.loads((release/'comparisons.json').read_text())}
+        self.assertIsNone(comparisons['raw']['p_adjusted'])
+        self.assertIsNone(comparisons['raw']['endpoint'])
+        self.assertEqual(comparisons['author']['p_adjusted'],.9)
+        self.assertEqual(comparisons['author']['statistical_origin'],'source_BH')
+        self.assertEqual(comparisons['author']['endpoint'],0)
 
     def test_independent_paired_and_summary_routes_use_actual_experimental_units(self):
         self.bundle['records']=[self.record('a',2,None),self.record('b',2,None),self.record('c',2,None)]

@@ -155,9 +155,15 @@ def validate_bundle(bundle, test_only):
             actual_assets = {asset['path']:asset['sha256'] for asset in source['assets']}
             if not expected or any(actual_assets.get(path) != sha for path,sha in expected.items()):
                 raise ValueError('Source registry omits or changes original manifest assets')
-            local_paths = {str(Path(source['item'])/entry['path']) for entry in provenance.get('local_additions',[])}
-            if any(path not in expected and path not in local_paths for path in actual_assets):
+            local_entries = {str(Path(source['item'])/entry['path']):entry
+                             for entry in provenance.get('local_additions',[])}
+            if any(path not in expected and path not in local_entries for path in actual_assets):
                 raise ValueError('Undeclared local curation asset')
+            for path, sha in actual_assets.items():
+                if path in local_entries:
+                    entry = local_entries[path]
+                    if entry.get('sha256') != sha or entry.get('bytes') != (root/path).stat().st_size:
+                        raise ValueError('Local curation differs from declared hash/bytes: '+path)
         for asset in source['assets']:
             path = Path(asset['path'])
             absolute = path if path.is_absolute() else root / path
@@ -170,7 +176,7 @@ def validate_bundle(bundle, test_only):
             if asset['path'] in assets and assets[asset['path']] != asset['sha256']:
                 raise ValueError('Conflicting frozen asset identities')
             assets[asset['path']] = asset['sha256']
-    seen_comparisons, seen_measurements = set(), set()
+    seen_comparisons, seen_measurements, seen_source_observations = set(), set(), set()
     for record in bundle['records']:
         if record['source'] not in sources or sources[record['source']].get('status') in ('candidate','unavailable'):
             raise ValueError('Record references unknown/unavailable source')
@@ -196,6 +202,10 @@ def validate_bundle(bundle, test_only):
             seen_measurements.add(identity)
             if measurement['asset'] not in own_assets or not measurement['selector']:
                 raise ValueError('Broken measurement source evidence')
+            observation = (record['source'], measurement['asset'], measurement['selector'])
+            if observation in seen_source_observations:
+                raise ValueError('Duplicate physical source measurement')
+            seen_source_observations.add(observation)
             if measurement['representation'] not in ('raw', 'normalized_only', 'summary'):
                 raise ValueError('Invalid measurement representation')
             if measurement.get('value') is not None and not finite(measurement['value']):
@@ -306,7 +316,12 @@ def adjusted_results(bundle):
         complete = all(record.get('statistics',{}).get('family_complete') is True and
                        record.get('statistics',{}).get('family_matches') is True and
                        record.get('statistics',{}).get('family_members') == actual_members for record in eligible)
-        if eligible and complete:
+        # Applicable author-BH results prove additional eligible tests exist.
+        # Without their raw p values, adjusting the remaining subset changes m.
+        missing_raw_members = any(
+            results[record['comparison_id']]['p_adjusted'] is not None and
+            results[record['comparison_id']]['p_raw'] is None for record in records)
+        if eligible and complete and not missing_raw_members:
             adjusted = scipy_stats.false_discovery_control([results[record['comparison_id']]['p_raw'] for record in eligible], method='bh')
             for record,p_adj in zip(eligible,adjusted):
                 result=results[record['comparison_id']]
