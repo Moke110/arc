@@ -97,6 +97,35 @@ class SchedulerContract(unittest.TestCase):
             manifest = json.loads((root/'output/predictions.json').read_text())
             self.assertTrue(all(run['status']=='failed' for run in manifest['runs']))
 
+    @unittest.skipUnless(Path('/proc/1/comm').read_text().strip() in ('systemd','init','wsl-init'),
+                         'requires observable host and user systemd scopes')
+    def test_jax_memory_failure_has_only_one_smaller_batch_retry(self):
+        # Emit native error text without allocating memory or exhausting threads.
+        from test_pipeline import fixture
+        from artifacts import write_json
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); fixture(root/'input')
+            adapter=root/'failure.py'
+            adapter.write_text("import sys\nprint('RESOURCE_EXHAUSTED: '+('Out of memory allocating 123 bytes.' if 'oom' in sys.argv else 'pthread_create failed'),file=sys.stderr)\nraise SystemExit(1)\n")
+            write_json(root/'failure.identity.json',dict(source_files=['failure.py'],
+                       environment_files=[sys.executable],config_files=['failure.py']))
+            jobs=[dict(model=name,fold=0,seed=17,profile=dict(host_peak_gib=.5,gpu_peak_gib=0),
+                       command=[sys.executable,str(adapter),kind])
+                  for name,kind in [('jax_memory','oom'),('jax_threads','threads')]]
+            write_json(root/'queue.json',dict(input_root=str(root/'input'),output_root=str(root/'output'),
+                       jobs=jobs,admission_timeout_seconds=30))
+            result=subprocess.run([sys.executable,str(SCRIPT),'run',str(root/'queue.json')],
+                                  capture_output=True,text=True,timeout=120)
+            self.assertEqual(result.returncode,0,result.stderr)
+            memory=json.loads((root/'output/scheduling/jax_memory_fold0_seed17.json').read_text())
+            threads=json.loads((root/'output/scheduling/jax_threads_fold0_seed17.json').read_text())
+            self.assertEqual(memory['oom_retries'],1)
+            self.assertEqual(memory['batch_scale'],.5)
+            self.assertEqual([a['reason'] for a in memory['attempts']],['oom','oom'])
+            self.assertEqual(memory['status'],'failed')
+            self.assertEqual(len(threads['attempts']),1)
+            self.assertEqual(threads.get('oom_retries',0),0)
+
     def test_pressure_stops_only_newest_owned_task(self):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / 'pressure.json'

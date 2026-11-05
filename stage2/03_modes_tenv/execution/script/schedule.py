@@ -318,7 +318,7 @@ def schedule_queue(queue_path):
                             reason = 'invalid_artifacts'
                     elif 'TENV_RETRY_ENVIRONMENT' in log_text:
                         reason = 'environment'
-                    elif any(marker in log_text for marker in
+                    elif ('RESOURCE_EXHAUSTED' in log_text and 'out of memory' in log_text.lower()) or any(marker in log_text for marker in
                              ('CUDA out of memory', 'Memory cgroup out of memory',
                               'oom-kill', 'killed by the OOM killer')):
                         reason = 'oom'
