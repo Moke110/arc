@@ -1,0 +1,24 @@
+Running as unit: run-ra83c5ea5dd6040608d7bafec2361cebe.scope; invocation ID: c33d2f8e267e4834bbb002bd2d7ae19d
+	Command being timed: "/home/chang/miniconda3/bin/python /home/chang/arc/stage2/03_modes_tenv/execution/script/schedule.py worker /home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal_profile_output/scheduling/cmonge_fold0_seed17.job.json"
+	User time (seconds): 923.30
+	System time (seconds): 151.47
+	Percent of CPU this job got: 164%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 10:52.65
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5874356
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 12
+	Minor (reclaiming a frame) page faults: 167652403
+	Voluntary context switches: 41120
+	Involuntary context switches: 18744
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

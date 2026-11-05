@@ -43,3 +43,9 @@ No historical benchmark implementation or upstream source file is modified or
 imported. The isolated existing CPU JAX environment is used; timings and recipe
 deviations are recorded explicitly rather than claiming the native AE benchmark
 was reproduced.
+
+Pause handoff: the user requested suspension after started programs drained.
+The streamed all-138-condition validation probe completed with one512OOM and
+one256retry; see `pause_record.json` and `PAUSE.md`. Native one-sampled-condition
+validation per100iterations is the accepted correction and remains **unimplemented**.
+No formal run or test scoring has started. This ticket remains open.

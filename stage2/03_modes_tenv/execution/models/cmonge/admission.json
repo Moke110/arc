@@ -1,6 +1,6 @@
 {
   "ticket": 50,
-  "status": "runtime-qualified",
+  "status": "bounded-full-axis-qualified; formal admission paused pending native validation correction",
   "formal_training_completed": false,
   "qualification_scope": "real tenv input, fold0/seed17, three iterations batch4, at most three train and validation groups; full ordered gene axis; complete fold test prediction without test scoring",
   "prediction_shape": [
@@ -108,5 +108,17 @@
     "Bounded admission proof is not full-budget convergence, a benchmark score or formal nine-run completeness.",
     "Native direct-space transport omits optional separately trained AE and uses same-plate control means; see FIDELITY.md.",
     "CPU-only JAX runtime; workstation GPU usage is unrelated background usage."
-  ]
+  ],
+  "formal_ready": false,
+  "pause_record": "pause_record.json",
+  "latest_qualification_record": "qualification_v2_checkpoint.json",
+  "formal_resource_profile": {
+    "host_peak_gib": 5.703834533691406,
+    "gpu_peak_gib": 0.0,
+    "backend": "cpu",
+    "time_v_peak_rss_kib": 5874356,
+    "time_v_worker_wall_seconds": 652.65,
+    "sampled_retry_tree_peak_gib": 5.703834533691406
+  },
+  "pending_native_validation_correction": true
 }

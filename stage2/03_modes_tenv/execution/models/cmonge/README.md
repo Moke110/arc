@@ -35,3 +35,9 @@ behavior. Native best held-out objective 30.88014856974284; this is author
 validation loss, not a test score. Peak RSS 928464 KiB, training 1.825 s, inference
 0.647 s. See `admission.json`, `qualification_checkpoint.json`, scheduler telemetry
 and worker log. Formal nine-run execution remains separate.
+
+Pause handoff: the user requested suspension after started programs drained.
+The streamed all-138-condition validation probe completed with one512OOM and
+one256retry; see `pause_record.json` and `PAUSE.md`. Native one-sampled-condition
+validation per100iterations is the accepted correction and remains **unimplemented**.
+No formal run or test scoring has started. This ticket remains open.

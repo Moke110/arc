@@ -59,8 +59,6 @@ def run(request, config):
         chemical=np.array([morgan[drug_index[r['drug_key']]] for r in selected],dtype='float32')
         target=baseline+np.asarray(delta[indices],dtype='float32')
         return tuple(jnp.asarray(v) for v in (baseline,chemical,np.log(dose)[:,None],target))
-    valid_rng=np.random.default_rng(seed+7927)
-    valid_batches=[sample(validation,i,valid_rng) for i in range(len(validation[2]))]
     model=AdaptedTransport(n_genes)
     first=sample(training,0,rng)
     params=model.init(jax.random.PRNGKey(seed),*first[:3])['params']
@@ -93,7 +91,14 @@ def run(request, config):
         if not np.isfinite(total): raise ValueError('nonfinite native author training objective')
         write_json(output/'progress.json',{'phase':'training','training_seconds':time.monotonic()-started,'iteration':iteration+1,'author_training_loss':total})
         if (iteration+1)%eval_every==0 or iteration+1==iterations:
-            losses=[float(loss_eval(state.params,*b)[0]) for b in valid_batches]
+            # Regenerate one fixed group batch at a time. Caching all validation
+            # batches at 18k genes would exceed the formal process memory cap.
+            losses=[]
+            for group_index in range(len(validation[2])):
+                fixed_rng=np.random.default_rng(seed+7927+group_index*104729)
+                group_batch=sample(validation,group_index,fixed_rng)
+                losses.append(float(loss_eval(state.params,*group_batch)[0]))
+                del group_batch
             value=float(np.mean(losses))
             if not np.isfinite(value): raise ValueError('nonfinite native author validation objective')
             history.append({'iteration':iteration+1,'validation_loss':value,'training_loss':total,'fitting_loss':float(parts[0]),'regularizer':float(parts[1])})
@@ -131,6 +136,7 @@ def run(request, config):
                'adapter_parameter_change':adapter_change,'baseline_sensitivity':baseline_sensitivity,'dose_sensitivity':dose_sensitivity,
                'reload_max_absolute_error':reload_error,'trainable_parameters':sum(int(x.size) for x in jax.tree_util.tree_leaves(restored)),
                'adapter_parameters':2048*50+50,'adapter_dimensions':[2048,50],'batch_size':batch,'iterations':iterations,
+               'validation_groups':len(validation[2]),'validation_batch_policy':'one streamed group; fixed per-group seed',
                'qualification_only':qualification,'gene_count':n_genes,'backend':jax.default_backend(),
                'recipe_deviations':['Shared Morgan linear map replaces precomputed RDKit descriptor representation.',
                     'Direct native transport on complete gene space; optional separately trained AE omitted.',
