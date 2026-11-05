@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "identity": {
+    "model": "cmonge",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "293ccbf122eb7f70b70a1496e940ab601914a9b94414e63f7332bf0133e3ebb7",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "987b093db15f116a97cd8d79902f400cb6a6674c2d0da713aaaf7c215dd728f3"
+  },
+  "elapsed_seconds": 789.9904949620104,
+  "training_seconds": 787.0530794259976,
+  "inference_seconds": 0.4853394040110288,
+  "deterministic_reference": false,
+  "artifacts": {
+    "prediction.npy": "ca3a9782e21c441c39679379f5445347657ac110f4ead06bc56a2b9ecbcc5920",
+    "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+    "checkpoint.json": "f2f6d0d70ab63f7d3887398b79dac950025a46029c7227f67cac2e8ad5ab6d9c",
+    "request.json": "8a8cc26a2abca077e118f5717619b70ab691cf495aac9fca0580a899c62746d0"
+  }
+}

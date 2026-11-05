@@ -1,0 +1,155 @@
+[
+  {
+    "package": "nvidia-cufft-cu12",
+    "version": "11.3.3.83",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cufft_cu12-11.3.3.83.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-nccl-cu12",
+    "version": "2.27.3",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_nccl_cu12-2.27.3.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-cusparse-cu12",
+    "version": "12.5.8.93",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cusparse_cu12-12.5.8.93.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-nvjitlink-cu12",
+    "version": "12.8.93",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_nvjitlink_cu12-12.8.93.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-cusolver-cu12",
+    "version": "11.7.3.90",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cusolver_cu12-11.7.3.90.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-cuda-cupti-cu12",
+    "version": "12.8.90",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cuda_cupti_cu12-12.8.90.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-cublas-cu12",
+    "version": "12.8.4.1",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cublas_cu12-12.8.4.1.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-cuda-runtime-cu12",
+    "version": "12.8.90",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cuda_runtime_cu12-12.8.90.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  },
+  {
+    "package": "nvidia-cudnn-cu12",
+    "version": "9.10.2.21",
+    "dist_info": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia_cudnn_cu12-9.10.2.21.dist-info",
+    "source_environment": "arc-stage2-bench-chemcpa",
+    "library_dirs": [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cublas",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_cupti",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cuda_runtime",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cudnn",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cufft",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusolver",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/cusparse",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nccl",
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/lib/python3.9/site-packages/nvidia/nvjitlink"
+    ]
+  }
+]

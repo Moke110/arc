@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import signal
 import sys
+sys.dont_write_bytecode = True
 import time
 os.environ.setdefault('JAX_PLATFORM_NAME','cpu')
 os.environ.setdefault('XLA_PYTHON_CLIENT_PREALLOCATE','false')

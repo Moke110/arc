@@ -1,0 +1,86 @@
+CMonge: sha256sum -c ../manifest.sha256 (cwd: source/)
+.github/workflows/ci.yml: OK
+.github/workflows/pypi.yml: OK
+.gitignore: OK
+.pre-commit-config.yaml: OK
+LICENSE: OK
+Notebooks/03_CMonge_results/Fig. 2D, 2E, Extended Data Fig. 3 - Pathway Enrichment Venn and Bars.ipynb: OK
+Notebooks/03_CMonge_results/Fig. A7, A10- Performance vs distance in embedding.ipynb: OK
+Notebooks/03_CMonge_results/Figure 2, Fig. A8, A9 - Table A1, A8- Monge benchmark 4i.ipynb: OK
+Notebooks/03_CMonge_results/Figure 4, Fig. A4 - 4i ID OOD results.ipynb: OK
+Notebooks/03_CMonge_results/Figure 5C - Full sciplex chemCPA and CMonge comparison.ipynb: OK
+Notebooks/03_CMonge_results/Figure 5D,  Fig. A11  - CMonge sciplex Source, target, transport UMAPs.ipynb: OK
+Notebooks/03_CMonge_results/Figure 5D, Fig. A11 - chemCPA sciplex Source, Target, Transport UMAPs.ipynb: OK
+Notebooks/03_CMonge_results/Figures 1C&3, Fig. A3 - Table 1, A2, A3 - Sciplex ID.ipynb: OK
+Notebooks/03_CMonge_results/Figures 1D, 5A, 5B, Fig. A5, A6 - Table 1, 2, A3, A5 - Sciplex OOD.ipynb: OK
+Notebooks/03_CMonge_results/Table A4, A6, A7 - chemCPA - ID - OOD.ipynb: OK
+Notebooks/03_CMonge_results/Table A6, A7 - CMonge 5perc OOD CV.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/5perc drug split.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/Adata for monge drug dose ood.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/Adata for monge drug dose.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/Adata_for_monge_ID_sciplex.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/Adata_for_monge_dose_ood.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/RDkit embeddings for 4i.ipynb: OK
+Notebooks/04_CMonge_manuscript_analyses/chemCPA model size.ipynb: OK
+README.md: OK
+assets/nature-machine-intelligence-cover-vol8-issue6.jpg: OK
+assets/overview.jpg: OK
+cmonge/__init__.py: OK
+cmonge/datasets/__init__.py: OK
+cmonge/datasets/conditional_loader.py: OK
+cmonge/datasets/single_loader.py: OK
+cmonge/evaluate.py: OK
+cmonge/metrics.py: OK
+cmonge/models/__init__.py: OK
+cmonge/models/embedding.py: OK
+cmonge/models/nn.py: OK
+cmonge/models/rdkit.py: OK
+cmonge/tests/__init__.py: OK
+cmonge/tests/configs/synthetic.yml: OK
+cmonge/tests/configs/test.h5ad: OK
+cmonge/tests/conftest.py: OK
+cmonge/tests/datasets/__init__.py: OK
+cmonge/tests/datasets/test_conditional_loader.py: OK
+cmonge/tests/datasets/test_single_loader.py: OK
+cmonge/tests/models/__init__.py: OK
+cmonge/tests/models/test_attention_pooling.py: OK
+cmonge/tests/test_imports.py: OK
+cmonge/trainers/__init__.py: OK
+cmonge/trainers/ae_trainer.py: OK
+cmonge/trainers/conditional_monge_trainer.py: OK
+cmonge/trainers/conditional_trainer.py: OK
+cmonge/trainers/ot_trainer.py: OK
+cmonge/utils.py: OK
+configs/autoencoder-4i.yml: OK
+configs/autoencoder-demo.yml: OK
+configs/autoencoder-sciplex.yml: OK
+configs/autoencoder-synthetic.yml: OK
+configs/conditional-dual-sciplex.yml: OK
+configs/conditional-monge-sciplex.yml: OK
+configs/demo_config.yml: OK
+configs/dual-4i.yml: OK
+configs/dual-sciplex.yml: OK
+configs/dual-synthetic.yml: OK
+configs/monge-4i.yml: OK
+configs/monge-sciplex.yml: OK
+configs/monge-synthetic.yml: OK
+data/dummy_data.h5ad: OK
+data/lincs_trapnell.smiles: OK
+data/trapnell_drugs_smiles.csv: OK
+logs/demo_logs.yml: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/_CHECKPOINT_METADATA: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/_METADATA: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/_sharding: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/d/4769feb186b5ce623050448ae2f326ab: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/manifest.ocdbt: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/ocdbt.process_0/d/11097d75a32032875ec7756bab40cb78: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/ocdbt.process_0/d/2441ea942e782fcca157b632cef2ba6b: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/ocdbt.process_0/d/7f23f30c838699325bb8d7bc7792cc67: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/ocdbt.process_0/d/bc274c4cbe1abeacd2324985ad6665cc: OK
+models/demo/cond-sciplex/autoencoder_50_cond-sciplex_homogeneous_49/ocdbt.process_0/manifest.ocdbt: OK
+models/embed/demo/rdkit: OK
+pyproject.toml: OK
+scripts/.gitkeep: OK
+scripts/demo_train.py: OK
+scripts/train.py: OK
+uv.lock: OK

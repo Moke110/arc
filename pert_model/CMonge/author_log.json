@@ -17,7 +17,22 @@
       "tree_sha256": "ac75d569c7cad04e0d534a8f8c94c46d07f680aa1ccc9e580b6784fc5f3033a6"
     }
   ],
-  "local_additions": [],
+  "local_additions": [
+    {
+      "path": "local/tenv_cuda/",
+      "kind": "isolated JAX CUDA12 runtime overlay",
+      "purpose": "Whole18164-gene tenv resource feasibility; preserves CPU environment and upstream source",
+      "method": "Cached pinned JAX CUDA12 plugin/PJRT0.4.38 and nvcc12.9.86 installed with uv --offline --no-deps; NVIDIA-only library directories symlinked from pinned chemCPAcu128 environment",
+      "record": "stage2/03_modes_tenv/execution/models/cmonge/cuda_overlay_reused_libraries.json",
+      "upstream_documentation": [
+        "https://docs.jax.dev/en/latest/installation.html",
+        "https://pypi.org/project/jax-cuda12-plugin/0.4.38/"
+      ],
+      "status": "dependencies prepared; GPU runtime admission pending",
+      "lock": "stage2/03_modes_tenv/execution/models/cmonge/cuda_overlay.lock",
+      "file_hash_manifest": "stage2/03_modes_tenv/execution/models/cmonge/cuda_overlay.sha256"
+    }
+  ],
   "manifest": "manifest.sha256",
   "verified_at": "2026-10-30T22:11+08:00",
   "verify_result": "pass",
