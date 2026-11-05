@@ -43,7 +43,7 @@ with tempfile.TemporaryDirectory() as tmp:
         (item/'source/article.html').write_bytes(raw)
         digest = hashlib.sha256(raw).hexdigest()
         (item/'manifest.sha256').write_text(digest+'  article.html\n')
-        (item/'author_log.json').write_text(json.dumps({'dataset_id':'test_archive','sources':[{'path':'article.html','url':assets['article.html'],'sha256':digest,'bytes':len(raw)}],'validation':{'expected_html_markers':markers},'local_additions':[]}))
+        (item/'author_log.json').write_text(json.dumps({'dataset_id':'test_archive','sources':[{'path':'article.html','url':assets['article.html'],'sha256':digest,'bytes':len(raw)}],'validation':{'expected_html_markers':markers},'source_tree':{'files':1,'bytes':len(raw),'tree_sha256':hashlib.sha256((item/'manifest.sha256').read_bytes()).hexdigest()},'local_additions':[]}))
     freeze('<html><meta name="citation_doi" content="10.1234/test"><title>Expected title</title></html>')
     verify(item, 'test_archive', 'PMC0', assets)
     freeze('<html><title>Preparing to download</title>citation_doi 10.1234/test Expected title</html>')
