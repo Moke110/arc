@@ -98,3 +98,15 @@ systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
 Formal command: the isolated interpreter plus `execution/script/chemcpa_adapter.py`.
 The artifact CLI appends `--request <request.json>`; pilot-only recipe overrides
 use an explicit `--config <json>` included in the command identity.
+
+Real tenv qualification completed after resumption: fold0/seed17, two full epochs,
+batch256, all18,164genes and1,401test wells; complete identities, source/input hashes,
+finite predictions and checkpoint blobs verified. The joint adapter, native
+predictor, drug adversary and doser all changed; baseline/dose sensitivity is
+nonzero and save/reload error is0. Training1.550s, inference0.496s,
+peakRSS2,029,232KiB and GPUreserved750,780,416bytes. Validation combined
+autoencoder objective−7.387612 is an author-objective checkpoint value,
+not a test score. Compact evidence is in `pilot_record/`; binary predictions
+and checkpoint remain local under `execution/pilots/chemcpa/`.
+`formal_profile.json` applies the measured fullbatch256 resource peak to the
+unchanged201epoch formal recipe; no formal run has been completed by this pilot.

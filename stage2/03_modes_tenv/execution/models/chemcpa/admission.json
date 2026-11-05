@@ -1,0 +1,55 @@
+{
+  "ticket": 49,
+  "model": "chemcpa",
+  "status": "qualified",
+  "native_source_commit": "43e830eb0958c54e4aa64442c17ec0fed19b3f15",
+  "code_commit": "5c21f59",
+  "gene_count": 18164,
+  "pilot_fold": 0,
+  "pilot_seed": 17,
+  "pilot_epochs": 2,
+  "test_well_predictions": 1401,
+  "shape_finite_identity_hash_verified": true,
+  "upstream_source_unchanged": true,
+  "input_manifest_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+  "behavior": {
+    "baseline_sensitivity_l2": 19.282390594482422,
+    "dose_sensitivity_l2": 0.27179306745529175,
+    "adapter_parameter_change_l2": 4.307296276092529,
+    "predictor_parameter_change_l2": 50.3604850769043,
+    "adversary_parameter_change_l2": 1.221014380455017,
+    "doser_parameter_change_l2": 1.0243589878082275,
+    "reload_max_abs_error": 0.0
+  },
+  "training_seconds": 1.549793487007264,
+  "inference_seconds": 0.49568808199546766,
+  "best_author_validation_combined_objective": -7.387611974629281,
+  "adapter_parameters": 397506,
+  "trainable_parameters": 14997879,
+  "adversary_steps": 7,
+  "autoencoder_steps": 13,
+  "resource_profile": {
+    "host_peak_gib": 1.9352264404296875,
+    "gpu_peak_gib": 0.69921875,
+    "measured_rss_kib": 2029232,
+    "gpu_allocated_bytes": 740369408,
+    "gpu_reserved_bytes": 750780416,
+    "basis": "Full batch256 on complete18164genes, all frozen fold0 train/validation wells, two full epochs plus checkpoint reload and all1401 test predictions; formal architecture/batch identical, only epoch cap differs",
+    "scheduler_headroom_policy": 1.2,
+    "heavy_slots": 1,
+    "pilot_run": "execution/pilots/chemcpa/runs/chemcpa/fold_0/seed_17",
+    "formal_config_sha256": "977944bb1526e19ccee053d14a426ca5af90426208d6fd0ff1357869d78d8dcc"
+  },
+  "scientific_limit": "Pilot proves full-axis execution and reload, not convergence or test performance. Formal nine-run training/evaluation remains separate.",
+  "fidelity_ledger": "FIDELITY.md",
+  "native_setup_evidence": "stage2/01_setup/execution/chemcpa/",
+  "commands": [
+    [
+      "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+      "stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+      "--config",
+      "stage2/03_modes_tenv/execution/models/chemcpa/pilot.config.json"
+    ],
+    "/home/chang/miniconda3/envs/arc/bin/python stage2/03_modes_tenv/execution/script/schedule.py run stage2/03_modes_tenv/execution/models/chemcpa/pilot.queue.json"
+  ]
+}
