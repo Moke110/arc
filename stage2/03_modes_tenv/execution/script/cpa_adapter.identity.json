@@ -1,0 +1,23 @@
+{
+  "source_files": [
+    "cpa_adapter.py",
+    "predictor_inputs.py",
+    "artifacts.py",
+    "../../../../pert_model/CPA/source/cpa/__init__.py",
+    "../../../../pert_model/CPA/source/cpa/_api.py",
+    "../../../../pert_model/CPA/source/cpa/_data.py",
+    "../../../../pert_model/CPA/source/cpa/_metrics.py",
+    "../../../../pert_model/CPA/source/cpa/_model.py",
+    "../../../../pert_model/CPA/source/cpa/_module.py",
+    "../../../../pert_model/CPA/source/cpa/_plotting.py",
+    "../../../../pert_model/CPA/source/cpa/_task.py",
+    "../../../../pert_model/CPA/source/cpa/_tuner.py",
+    "../../../../pert_model/CPA/source/cpa/_utils.py"
+  ],
+  "environment_files": [
+    "../models/cpa/env.actual.lock"
+  ],
+  "config_files": [
+    "../models/cpa/config.json"
+  ]
+}
