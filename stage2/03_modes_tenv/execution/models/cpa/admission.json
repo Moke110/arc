@@ -1,0 +1,50 @@
+{
+  "ticket": 48,
+  "model": "cpa",
+  "status": "qualified",
+  "native_source_commit": "fbd7c0250edc23eff003a10c99655579c53afd63",
+  "code_commit": "b7d6d05",
+  "gene_count": 18164,
+  "pilot_fold": 0,
+  "pilot_seed": 17,
+  "pilot_epochs": 2,
+  "test_well_predictions": 1401,
+  "shape_finite_identity_hash_verified": true,
+  "upstream_source_unchanged": true,
+  "input_manifest_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+  "behavior": {
+    "adapter_parameter_change_l2": 1.289003849029541,
+    "predictor_parameter_change_l2": 23.047801971435547,
+    "adversary_parameter_change_l2": 0.6720874905586243,
+    "baseline_sensitivity_l2": 2.8076250553131104,
+    "reload_max_abs_error": 0.0
+  },
+  "training_seconds": 9.976069115000428,
+  "inference_seconds": 0.6872659950022353,
+  "best_author_validation_reconstruction_nll": 16495.301013095774,
+  "resource_profile": {
+    "host_peak_gib": 1.7894859313964844,
+    "gpu_peak_gib": 1.400390625,
+    "basis": "same architecture and full batch128, all18164genes, all training/control/validation wells, two full epochs plus checkpoint reload/full test prediction; only epoch cap differs from formal",
+    "measured_rss_kib": 1876412,
+    "gpu_allocated_bytes": 1359595008,
+    "gpu_reserved_bytes": 1503657984,
+    "scheduler_headroom_policy": 1.2,
+    "heavy_slots": 1,
+    "pilot_run": "execution/pilots/cpa/runs/cpa/fold_0/seed_17",
+    "formal_config_sha256": "b6c5c42f4cc6652a86b8f68f6a4e279b44cae1f9eab08f056772febe30e186f4"
+  },
+  "scientific_limit": "Pilot proves full-axis execution and reload, not convergence or test performance. Formal nine-run training/evaluation remains separate.",
+  "recipe_deviations": [
+    "fixed full gene axis",
+    "shared Morgan external embeddings replace native extraction",
+    "native linear dose option replaces drug-specific learned dose scale",
+    "add upstream-omitted chem projection to AE optimizer",
+    "streamed native training_step replaces Lightning/AnnData materialization",
+    "no varying cell-type covariate because tenv has one declared context"
+  ],
+  "commands": [
+    "python -m unittest discover -s stage2/03_modes_tenv/execution/tests -p test_cpa.py -v",
+    "python stage2/03_modes_tenv/execution/script/schedule.py run stage2/03_modes_tenv/execution/models/cpa/pilot.queue.json"
+  ]
+}

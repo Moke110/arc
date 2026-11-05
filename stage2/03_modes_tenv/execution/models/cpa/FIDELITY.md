@@ -38,3 +38,15 @@ sensitivity, exact reload equality, timings and peaks. Model and optimizer
 states are saved together in checksum-declared `best.pt`. Only successful full-axis
 real train/save/reload/predict evidence establishes runtime admission; synthetic
 fixtures alone do not establish it.
+
+The scheduler-owned real-data pilot completed on fold0/seed17 using all
+18,164 genes, 2,388 treated training wells plus 16 measured controls, 417
+validation wells and 1,401 full-axis test predictions. Two complete epochs used
+9.976 seconds training; inference/checkpoint reload used 0.687 seconds. Adapter,
+predictor and adversary parameters changed, baseline mean sensitivity was
+nonzero, and reload predictions agreed exactly. Peak host RSS was 1,876,412 KiB;
+GPU allocation/reservation peaked at 1,359,595,008/1,503,657,984 bytes. The
+checkpoint and telemetry evidence copies are under `pilot_record/`; full binary
+artifacts remain local under `execution/pilots/cpa/`. `admission.json` and
+`formal_profile.json` record this runtime admission and measured resource
+profile. No test metrics were calculated at admission.
