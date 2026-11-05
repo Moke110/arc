@@ -2,6 +2,7 @@
 """Build or verify the complete first-wave phenotype release, entirely offline."""
 import argparse
 import hashlib
+from importlib.metadata import version
 import json
 from pathlib import Path
 import re
@@ -50,9 +51,17 @@ def frozen_bundle():
             combined['source_audits'][key] = {'acquisition_status': entry['status'], 'reason': reason,
                                             'extraction_status': 'not_run'}
     combined['sources'].sort(key=lambda row: row['source'])
+    for source in combined['sources']:
+        if source['status'] != 'unavailable':
+            item = root/source['item']
+            provenance = item/'author_log.json'
+            source['provenance'] = json.loads(provenance.read_text())
+            source['provenance_sha256'] = hashlib.sha256(provenance.read_bytes()).hexdigest()
+            source['source_manifest_sha256'] = hashlib.sha256((item/'manifest.sha256').read_bytes()).hexdigest()
     combined['records'].sort(key=lambda row: (row['source'],row['comparison_id']))
     combined['adapter_versions'] = {name: hashlib.sha256((HERE/name).read_bytes()).hexdigest()
         for name in ('release.py','sirenko_adapter.py','heliste_adapter.py','viability_adapters.py')}
+    combined['adapter_software'] = {name: version(name) for name in ('xlrd','openpyxl')}
     return combined
 
 
