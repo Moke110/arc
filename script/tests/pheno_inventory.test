@@ -14,7 +14,7 @@ with tempfile.TemporaryDirectory() as tmp:
     shutil.copy(ROOT / 'script/verify_all.sh', root / 'script/verify_all.sh')
     for item in ('Annotation DToxS-iPSC GSE244740 GSE247541 GSE262419 LINCS-LDS-1593 Tahoe-100M XPert-L1000').split():
         (root / 'pert_data' / item / 'script').mkdir(parents=True)
-    for category, names in [('pert_model', 'PRnet CPA chemCPA biolord PerturbNet scVIDR Squidiff CMonge DECANT WAVE ExPO State TranSiGen XPert'), ('disease_data', 'GSE108940 GSE137293 GSE160516'), ('drug_emb_model', 'HG KPGT')]:
+    for category, names in [('pert_model', 'PRnet CPA chemCPA biolord PerturbNet scVIDR Squidiff CMonge DECANT WAVE ExPO State TranSiGen XPert PerturbDiff'), ('disease_data', 'GSE108940 GSE137293 GSE160516'), ('drug_emb_model', 'HG KPGT')]:
         for item in names.split():
             (root / category / item / 'script').mkdir(parents=True)
     for directory in root.glob('*/*/script'):

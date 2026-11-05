@@ -60,3 +60,6 @@ stage2/_archive/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/manifest.
 stage2/_archive/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/gene_set_5k*.json
 stage2/_archive/03_models_cmbench/03.*/output/results/run_cards.csv
 stage2/_archive/03_models_cmbench/03.*/output/results/metrics.csv
+# Frozen bytecode cleanup evidence records the original locations of four
+# unmanifested interpreter caches relocated out of immutable CMonge source.
+stage2/03_modes_tenv/execution/models/cmonge/native_bytecode_cleanup.json

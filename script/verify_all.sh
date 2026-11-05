@@ -13,10 +13,11 @@
 #   script/verify_all.sh --help print this text
 #
 # What it does
-#   1. Checks the 27 legacy items plus active ADR 0038 phenotype items. A missing
+#   1. Checks 28 core items plus active ADR 0038 phenotype items. A missing
 #      category/item/verifier, or an unknown extra item directory, is a failure.
 #   2. An item without `manifest.sha256` is a failure, not a skip: every item is
-#      expected to carry one (27/27 hashed 2026-10-30), so a deleted manifest
+#      expected to carry one (initial27/27 hashed2026-10-30; additions hashed
+#      on admission), so a deleted manifest
 #      must turn this check red. The message says how to regenerate it.
 #   3. For every expected item it runs its verifier from the item directory
 #      and collects the result. A verifier failure makes the whole check fail.
@@ -100,6 +101,7 @@ main() {
     pert_model/State
     pert_model/TranSiGen
     pert_model/XPert
+    pert_model/PerturbDiff
     disease_data/GSE108940
     disease_data/GSE137293
     disease_data/GSE160516
