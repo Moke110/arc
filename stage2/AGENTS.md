@@ -9,9 +9,11 @@ Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
 - [`02_dataset_corpus/`](02_dataset_corpus/README.md) — every source dataset as a
   native-axis raw-count h5ad corpus: five corpora in `output/corpus/v2/`, seven
   crosswalk tables + coverage README, `--verify` G1–G6 PASS (ADR 0033, amends 0026).
-- [`03_models_cmbench/`](03_models_cmbench/README.md) — executed 60-unit cold-drug
+- [`_archive/03_models_cmbench/`](_archive/03_models_cmbench/README.md) — executed 60-unit cold-drug
   benchmark, **frozen pending a redo on the merged corpus**; inputs now point at
   `stage2/_frozen/cm-data-v1/` (ADR 0027, ADR 0028).
+- [`03_modes_tenv/`](03_modes_tenv/README.md) — active shared-Morgan tenv comparison;
+  frozen input, discovery, runtime admission and artifact pipeline (ADR 0042).
 - **`04` is a deliberate gap** — the retired Tahoe data step was folded into
   `02_dataset_corpus/` (ADR 0033); the number is not reused.
 - [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) — executed PRnet pretrain

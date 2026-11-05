@@ -1,0 +1,25 @@
+Running as unit: run-r9996fb2f1b284eaabc70c12d10eec2e5.scope; invocation ID: a16173edc4ee457cb5ed58d236b2f94f
+{"status": "verified", "gene_count": 18164, "drug_count": 460, "folds": [{"fold": 0, "train": {"drugs": 260, "wells": 2388, "groups": 780}, "validation": {"drugs": 46, "wells": 417, "groups": 138}, "test": {"drugs": 154, "wells": 1401, "groups": 462}}, {"fold": 1, "train": {"drugs": 261, "wells": 2379, "groups": 783}, "validation": {"drugs": 46, "wells": 420, "groups": 138}, "test": {"drugs": 153, "wells": 1407, "groups": 459}}, {"fold": 2, "train": {"drugs": 261, "wells": 2388, "groups": 783}, "validation": {"drugs": 46, "wells": 420, "groups": 138}, "test": {"drugs": 153, "wells": 1398, "groups": 459}}]}
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python stage2/03_modes_tenv/execution/script/inputs.py build"
+	User time (seconds): 19.18
+	System time (seconds): 0.91
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:20.29
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 574472
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 7
+	Minor (reclaiming a frame) page faults: 146321
+	Voluntary context switches: 396
+	Involuntary context switches: 145
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

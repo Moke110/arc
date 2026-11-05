@@ -55,8 +55,8 @@ stage2/_archive/cm_bench_v1/03_state/entry.py
 # check_paths does not scan (it scans the four external-data categories), so
 # these entries are documentary: they make the A3 exemption explicit and keep it
 # intact if the scan is ever widened. Do not rewrite these files.
-stage2/03_models_cmbench/03.1_cold_drug_18k/output/input/manifest.json
-stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/manifest.json
-stage2/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/gene_set_5k*.json
-stage2/03_models_cmbench/03.*/output/results/run_cards.csv
-stage2/03_models_cmbench/03.*/output/results/metrics.csv
+stage2/_archive/03_models_cmbench/03.1_cold_drug_18k/output/input/manifest.json
+stage2/_archive/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/manifest.json
+stage2/_archive/03_models_cmbench/03.2_hvg_sensitivity_5k/output/input/gene_set_5k*.json
+stage2/_archive/03_models_cmbench/03.*/output/results/run_cards.csv
+stage2/_archive/03_models_cmbench/03.*/output/results/metrics.csv

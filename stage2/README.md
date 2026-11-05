@@ -3,16 +3,17 @@
 Stage 2 chooses the open-source whole-transcriptome drug-perturbation model that
 will produce the perturbomes feeding future MIRI drug scoring. Setup ("does the
 model run in its own environment?") is deliberately separate from selection
-("which model is best?"): `01_setup/` answers the first, `03_models_cmbench/`
+("which model is best?"): `01_setup/` answers the first, `_archive/03_models_cmbench/`
 the second.
 
-## Current state (2026-11-04)
+## Current state (2026-11-05)
 
 | step | question | what it produced | record |
 |---|---|---|---|
 | [`01_setup/`](01_setup/README.md) | does each model run? | 9/9 run cards, one pinned environment per model; **no model emitted a whole-transcriptome CM perturbome** | ADR 0021, ADR 0024 |
 | [`02_dataset_corpus/`](02_dataset_corpus/README.md) | what data substrate do we build on? | **five source-dataset corpora** — four CM native-axis + `tahoe.h5ad`, 67,018 × 62,710, 25.8 GB — raw counts, every raw well (controls + blanks), no pharmacology filter and no Δ; **seven crosswalk tables** + coverage README (18,164-gene CM axis as `tables/genes.csv`); `--verify` **G1–G6 PASS**, with G4 reproducing 5/5 frozen v1 view content hashes | ADR 0033 (amends ADR 0026) |
-| [`03_models_cmbench/`](03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork. **Frozen pending a redo on the merged corpus**: its inputs now live read-only in `stage2/_frozen/cm-data-v1/`, and no output is rebuilt or rewritten | ADR 0027, ADR 0028 |
+| [`_archive/03_models_cmbench/`](_archive/03_models_cmbench/README.md) | which model is best? | executed **60-unit cold-drug benchmark** in two substeps; primary 18k leaderboard + 5k HVG sensitivity fork. **Frozen pending a redo on the merged corpus**: its inputs now live read-only in `stage2/_frozen/cm-data-v1/`, and no output is rebuilt or rewritten | ADR 0027, ADR 0028 |
+| [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | active ADR 0042 implementation; historical comparison sealed separately | ADR 0042 |
 | [`05_prnet_pretrain/`](05_prnet_pretrain/README.md) | can we train on it at all? | **executed 2026-11-01**: PRnet pretrained on **its own** CM-schema Tahoe view (`output/pretrain_view/tahoe_cm_schema.h5ad`, 67,018 × 18,164, 16.32 GB) — **68 epochs**, early stop at 68, best valid Gaussian NLL **−2.628080** at epoch 47, **956 s (15.9 min)** on an RTX 4070 Ti SUPER; pipeline claim only. Since the merge this step also owns the view (moved byte-identically) and its builder (moved, then repointed at the merged corpus and given a `--verify` replay) | ADR 0031, ADR 0033 |
 | [`06_prnet_transfer/`](06_prnet_transfer/README.md) | does Tahoe pretraining improve unseen-drug CM prediction? | **executed 2026-11-02 and concluded — negative first round**: eligibility + QC audits, frozen five-fold input with consensus controls, 3 formal Tahoe pretrains, 90 CM candidates, 30-unit paired evaluation. Tahoe-init −0.0063 AUPRC@200 vs random (95% CI [−0.0074, −0.0052], n=118 drugs) and both inits far below `delta_mean` (−0.0800 / −0.0738); no transfer gain demonstrated under the pre-registered rule. The capacity (#10) and env-compound (#11) ablations are deferred. Paths only were reconnected after the merge; no result, hash or digest key changed | ADR 0032 |
 
@@ -24,7 +25,11 @@ concluded study's nine substeps — so `05`/`06` keep their numbers. The five re
 CM views and the old identity tables live read-only in `stage2/_frozen/cm-data-v1/`
 as a **temporary bridge**, deleted once `03`/`05`/`06` are redone.
 
-The stage is now in **first-round conclusion**: the benchmark evidence exists, the dataset
+The new tenv comparison is owned by `03_modes_tenv/` under ADR 0042. The historical
+selection constraints and scores below describe the sealed first round; its entrant
+list does not determine admission to the new comparison.
+
+The prior stage reached **first-round conclusion**: the benchmark evidence exists, the dataset
 corpora exist, PRnet has been pretrained on the CM-schema view, and the formal-transfer
 study has finetuned that checkpoint and evaluated it against the benchmark. It **answered**
 the pretrain→finetune question for this round, and the answer is **negative** — see
@@ -77,7 +82,7 @@ benchmark redo on the merged corpus is a separate project.
   a corpus universe. The `--verify` suite passes G1–G6, including the reconstruction
   gate: the five retired v1 CM views are rebuilt from the v2 corpora and their
   content hashes match the archived manifest 5/5.
-- **`03_models_cmbench/`** — the executed benchmark: five CPU baselines plus
+- **`_archive/03_models_cmbench/`** — the executed benchmark: five CPU baselines plus
   seven real adapters × five cold-drug folds = 60/60 units, one fixed
   group/fold/metric contract, 12-entry registry, per-unit fidelity ledgers, and
   the conclusion tables. `03.1_cold_drug_18k/` is the primary leaderboard;
