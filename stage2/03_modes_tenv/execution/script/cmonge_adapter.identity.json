@@ -1,0 +1,5 @@
+{
+  "source_files":["../../../../pert_model/CMonge/manifest.sha256","../../../../pert_model/CMonge/author_log.json","../../../../pert_model/CMonge/source/cmonge/models/nn.py","../../../../pert_model/CMonge/source/cmonge/metrics.py"],
+  "environment_files":["../../../_envs/cmonge.lock"],
+  "config_files":["../models/cmonge/formal.json","../../../../pert_model/CMonge/source/configs/conditional-monge-sciplex.yml"]
+}
