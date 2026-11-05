@@ -36,7 +36,7 @@ all 5,512 values and two recognized CTG partitions without inventing labels.
 | `Sirenko-2013` | Full 24 h beat-count XLS and methods | Parent/use identity, matched control moments and numerical tests unresolved |
 | `Heliste-2021` | Full Dataset S1, selected-hit S3, methods and supplement PDF | CTG denominator and independent statistics unresolved; parallel 96 h normoxia isolated |
 | `Linn-2024` | Original MTT Figure 3 and article | Exact dose grid and matched vehicle unresolved; 48 approximate summaries retained |
-| `Liu-2021` | XML-confirmed Figure 2 and methods | Four normoxic small-effect zero labels; H/R significance unavailable |
+| `Liu-2021` | XML-confirmed Figure 2 and methods | Matched administered vehicle unconfirmed; all eight comparisons excluded |
 | `Duan-2013` | Original Figure 2 and article HTML | SYA parent identity and required statistics unresolved; 4 h toxicity panel excluded |
 
 Use `python pheno_data/<Item>/script/download.py` for acquisition and

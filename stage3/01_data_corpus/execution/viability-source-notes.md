@@ -99,7 +99,9 @@ bar0.27 is the A/R drug comparator, while untreated normal1.0 is only injury
 reference. Mean±SD of three experiments does not establish independent units;
 later figures explicitly say independent, but that statement is not imported
 into this MTT panel. No summary is expanded into invented replicates and no star
-becomes numerical p. All four treatment/model ratios cross the effect threshold,
+becomes numerical p. Vehicle composition is unreported, so the model values
+remain source baselines and do not establish a valid matched-control FC.
+All four descriptive treatment/model ratios would cross the effect threshold,
 but necessary adjusted p remains unavailable. Source drug names and exact
 administered dose units are preserved, with decimal canonical unit conversion.
 

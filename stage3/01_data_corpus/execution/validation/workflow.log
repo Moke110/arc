@@ -1,0 +1,52 @@
+test_source_tree_summary_must_match_originals_and_manifest_bytes (test_archive_provenance.ArchiveProvenance.test_source_tree_summary_must_match_originals_and_manifest_bytes) ... ok
+test_full_source_values_are_retained_and_unresolved_comparisons_excluded (test_heliste.HelisteWorkflow.test_full_source_values_are_retained_and_unresolved_comparisons_excluded) ... {"ancillary_not_archived": "Dataset S2 shRNA XLSX had two30s official-download timeouts; article/supplement identify it and it is not used as drug data.", "canonical_drugs_resolved": 0, "corpus_expected_status": "empty-after-QC", "curation_asset": "pheno_data/Heliste-2021/local/assessment_v1.json", "dataset_id": "heliste_2021", "dataset_s2": "shRNA; excluded from drug measurements", "dataset_s3_hit_labels": 48, "distinct_exact_labels": 689, "independent_ooxml_column_counts": {"B": 689, "C": 689, "D": 689, "E": 689, "F": 689, "G": 689, "H": 689, "I": 689}, "methods_evidence": "source/PMC8371130.1.xml#Sec7 Drug library screening", "model_training": "not run", "normalization_denominator": "unresolved", "numeric_values_by_column": {"CTRL_1000nM": 689, "CTRL_200nM": 689, "CTRL_40nM": 689, "CTRL_5000nM": 689, "HYP_1000nM": 689, "HYP_200nM": 689, "HYP_40nM": 689, "HYP_5000nM": 689}, "numeric_values_by_oxygen": {"CTRL": 2756, "HYP": 2756}, "source_labels": 689, "source_units": "relative viability, not raw RLU", "table": "Supplementary Dataset S1", "view500_assessment": "not run"}
+{"data_status": "empty_after_QC", "partitions": 2, "sample_rows": 0, "status": "PASS"}
+{"data_status": "empty_after_QC", "partitions": 2, "sample_rows": 0, "status": "PASS"}
+ok
+test_consumed_local_evidence_must_match_author_log_hash_and_bytes (test_provenance.FrozenLocalProvenance.test_consumed_local_evidence_must_match_author_log_hash_and_bytes) ... ok
+test_all_five_sources_are_accounted_for_without_invented_labels (test_release.CompleteRelease.test_all_five_sources_are_accounted_for_without_invented_labels) ... ok
+test_complete_source_preserves_blanks_and_zero_anomalies (test_sirenko.SirenkoSource.test_complete_source_preserves_blanks_and_zero_anomalies) ... ok
+test_duan_primary_ar_preserves_summary_and_excludes_unknown_tests (test_viability_sources.ViabilitySources.test_duan_primary_ar_preserves_summary_and_excludes_unknown_tests) ... ok
+test_linn_full_six_curves_retain_uncertain_doses (test_viability_sources.ViabilitySources.test_linn_full_six_curves_retain_uncertain_doses) ... ok
+test_liu_single_drug_normoxia_and_hr_have_different_controls (test_viability_sources.ViabilitySources.test_liu_single_drug_normoxia_and_hr_have_different_controls) ... ok
+test_corrupted_release_is_rejected (test_workflow.Workflow.test_corrupted_release_is_rejected) ... ok
+test_coverage_separates_sources_partitions_and_unknown_independence (test_workflow.Workflow.test_coverage_separates_sources_partitions_and_unknown_independence) ... ok
+test_cross_source_and_endpoint_stay_separate_and_canonical_times_share_partition (test_workflow.Workflow.test_cross_source_and_endpoint_stay_separate_and_canonical_times_share_partition) ... ok
+test_declared_family_cannot_omit_small_effect_record (test_workflow.Workflow.test_declared_family_cannot_omit_small_effect_record) ... ok
+test_empty_after_qc_preserves_blanks_and_unknown_timing (test_workflow.Workflow.test_empty_after_qc_preserves_blanks_and_unknown_timing) ... ok
+test_endpoint_boundaries_missing_tests_and_invalid_denominators (test_workflow.Workflow.test_endpoint_boundaries_missing_tests_and_invalid_denominators) ... ok
+test_frozen_evidence_becomes_one_native_list_and_cannot_overwrite_release (test_workflow.Workflow.test_frozen_evidence_becomes_one_native_list_and_cannot_overwrite_release) ... ok
+test_full_bh_family_includes_small_effect_before_label_selection (test_workflow.Workflow.test_full_bh_family_includes_small_effect_before_label_selection) ... ok
+test_independent_paired_and_summary_routes_use_actual_experimental_units (test_workflow.Workflow.test_independent_paired_and_summary_routes_use_actual_experimental_units) ... ok
+test_mixed_author_bh_and_raw_family_does_not_adjust_incomplete_raw_subset (test_workflow.Workflow.test_mixed_author_bh_and_raw_family_does_not_adjust_incomplete_raw_subset) ... ok
+test_renaming_ids_cannot_duplicate_the_same_source_measurement (test_workflow.Workflow.test_renaming_ids_cannot_duplicate_the_same_source_measurement) ... ok
+test_technical_units_unknown_pairing_and_selective_p_cannot_create_significance (test_workflow.Workflow.test_technical_units_unknown_pairing_and_selective_p_cannot_create_significance) ... ok
+test_test_sources_are_rejected_in_production_and_missing_evidence_fails (test_workflow.Workflow.test_test_sources_are_rejected_in_production_and_missing_evidence_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 25.138s
+
+OK
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s stage3/01_data_corpus/execution/tests -v"
+	User time (seconds): 61.00
+	System time (seconds): 2.63
+	Percent of CPU this job got: 244%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:26.03
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 382712
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1299922
+	Voluntary context switches: 3060
+	Involuntary context switches: 5397
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

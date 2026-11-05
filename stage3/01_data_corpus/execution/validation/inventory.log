@@ -1,0 +1,5 @@
+PASS: fifth-category inventory fails closed
+PASS: real frozen source CLI rejects hash mismatch and missing original
+PASS: tmpl_puu3or original assets, formats, hashes and provenance
+PASS: HTML article identity and challenge rejection
+PASS: verify_all fails closed when the external inventory is missing

@@ -1,0 +1,262 @@
+{
+  "adapter_versions": {
+    "heliste_adapter.py": "d2e49add1eb1a42cf56ce9487077fd82ab6f53cb21b686ff0f3df53557d3df37",
+    "release.py": "08dfe3fdc81e4d224efe432c4bf6c9c5c9361d6a55e9a3f8ba0f7d519085d993",
+    "sirenko_adapter.py": "8cf6fa2677ba32f7c1acffc818872c4eb24700d389686b7c1f7fc79d2c0b2ceb",
+    "viability_adapters.py": "590a769f32946579537daae0466ecb0d66c8e7c2408c21fb9ef0b78b686013b1"
+  },
+  "checksums": {
+    "comparisons.json": "a2be6219a2257d0c3327ff6e184344eff58bdb8bad32353cb8846eb60fae7f9a",
+    "condition-2cf84554aa43ece0e4fd-6b80525c7a82.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-357424c632d9b1283bcf-4d13e6061aa8.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-370b12e9df1452cca6b8-4d13e6061aa8.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-685bad66f59876fd4661-dfbd2eaa5d79.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-9626db2c3cb0a1b4332b-6b80525c7a82.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-9d0021054ddf697d89d0-4d13e6061aa8.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-a8f0341a093e1faf3471-4d13e6061aa8.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-e4f22cf6c262e0fa24ae-4d13e6061aa8.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "condition-e9588143669266f49396-dfbd2eaa5d79.parquet": "d6d70459b9d445dab21a626d3761ce868b16576299b619ac977c1b475b371488",
+    "coverage.json": "5a5d06ad4c7af813ea354aa72d18508444e9ca2d241cc75ca179c40777455c3d",
+    "exclusions.json": "99ec1fc679546c12be0e9c9632ffc2d4c3dcab957a50d3892dc2fa0e2a6bd7a2",
+    "families.json": "f11cb25701fc9e4006bab3eaf1e6842c80a26fe90cc7f8eaadf1f32b6c4c8d78",
+    "input.json": "28db169d2be00c3e905271f023ccae6c35863b65302a76147b0fdfe48b94b25e",
+    "manifest.json": "2a716776ee9e2299df8619388bf596b6ef22bb3d695362df4e0ec6b323a45059",
+    "rules.json": "b8268bcbb02ca8f1eefc04d2d833151c411c1d50432937c3adc04e8daa9f2ba7",
+    "schema.json": "9ccc3b713fc45cd1c62e49f12712c3f1a2f7e71c6fbb6740b690b119409064f7",
+    "source_audits.json": "9175239d7d2dd92e4a64531238fb5ffc1731c42cfdc854081d3c57a9aeed29ec",
+    "source_registry.json": "068e6958ea7900fa04dac8e2f80e4c6350952bcd44693c2b5c1da79c6b8d1ac6"
+  },
+  "checksums_file_sha256": "075e6756d5aa31a7519cb040daeded47d2e4bc8d5c51ee9f2911e861a80a7599",
+  "input_sha256": "28db169d2be00c3e905271f023ccae6c35863b65302a76147b0fdfe48b94b25e",
+  "release": "v1",
+  "release_manifest": {
+    "data_status": "empty_after_QC",
+    "input_sha256": "18b3b07fd961b2e938f4129adff7324a9668ab8642637b1deb5d1f9788441f99",
+    "partitions": [
+      {
+        "condition": {
+          "condition_cell_type": "HL-1 mouse immortalized atrial cardiomyocyte",
+          "condition_drug_persistence": "unknown",
+          "condition_drug_schedule": "24h pretreatment then HR; drug persistence unknown",
+          "condition_drug_time": 24.0,
+          "condition_elapsed_time": 96.0,
+          "condition_hypoxia_time": 48.0,
+          "condition_oxygen_protocol": "1% O2 hypoxia then reoxygenation",
+          "condition_reoxygen_time": 24.0,
+          "condition_source_context": "heliste_2021 drug library screen",
+          "condition_species": "Mus musculus",
+          "condition_unresolved_context": "heliste_2021",
+          "condition_vehicle": "0.01% DMSO"
+        },
+        "condition_id": "condition-2cf84554aa43ece0e4fd",
+        "data_status": "empty_after_QC",
+        "path": "condition-2cf84554aa43ece0e4fd-6b80525c7a82.parquet",
+        "phenotype": "ctg_atp_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_cell_type": "H9C2",
+          "condition_drug_schedule": "direct",
+          "condition_drug_time": 24.0,
+          "condition_hypoxia_time": 0.0,
+          "condition_model": "rat H9C2 cell line",
+          "condition_oxygen": "95%air/5%CO2",
+          "condition_reoxygen_time": 0.0,
+          "condition_species": "Rattus norvegicus",
+          "condition_unresolved_context": "liu_2021",
+          "condition_vehicle": "unspecified zero-dose control"
+        },
+        "condition_id": "condition-357424c632d9b1283bcf",
+        "data_status": "empty_after_QC",
+        "path": "condition-357424c632d9b1283bcf-4d13e6061aa8.parquet",
+        "phenotype": "cell_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_cell_type": "hiPSC-CM",
+          "condition_drug_schedule": "direct",
+          "condition_drug_time": 48.0,
+          "condition_hypoxia_time": 0.0,
+          "condition_infection": "absent in cytotoxicity experiment",
+          "condition_model": "MUi019-A",
+          "condition_reoxygen_time": 0.0,
+          "condition_species": "Homo sapiens",
+          "condition_unresolved_context": "linn_2024",
+          "condition_vehicle": "not explicitly specified"
+        },
+        "condition_id": "condition-370b12e9df1452cca6b8",
+        "data_status": "empty_after_QC",
+        "path": "condition-370b12e9df1452cca6b8-4d13e6061aa8.parquet",
+        "phenotype": "cell_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_acquisition_duration": "up_to800frames_8fps_exact_window_unknown",
+          "condition_cell_type": "hiPSC-CM_iCell",
+          "condition_drug_schedule": "direct_exposure",
+          "condition_drug_time": 24.0,
+          "condition_hypoxia_time": 0.0,
+          "condition_maturation": "8-10_days_post_plating",
+          "condition_reoxygen_time": 0.0,
+          "condition_species": "Homo sapiens",
+          "condition_unresolved_context": "sirenko_2013",
+          "condition_vehicle": "DMSO",
+          "condition_vehicle_percent": 0.3
+        },
+        "condition_id": "condition-685bad66f59876fd4661",
+        "data_status": "empty_after_QC",
+        "path": "condition-685bad66f59876fd4661-dfbd2eaa5d79.parquet",
+        "phenotype": "beat_count",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_cell_type": "HL-1 mouse immortalized atrial cardiomyocyte",
+          "condition_drug_persistence": "unknown",
+          "condition_drug_schedule": "parallel normoxia; drug persistence unknown",
+          "condition_drug_time": null,
+          "condition_elapsed_time": 96.0,
+          "condition_hypoxia_time": 0.0,
+          "condition_oxygen_protocol": "21% O2 normoxia",
+          "condition_reoxygen_time": 0.0,
+          "condition_source_context": "heliste_2021 drug library screen",
+          "condition_species": "Mus musculus",
+          "condition_unresolved_context": "heliste_2021",
+          "condition_vehicle": "0.01% DMSO"
+        },
+        "condition_id": "condition-9626db2c3cb0a1b4332b",
+        "data_status": "empty_after_QC",
+        "path": "condition-9626db2c3cb0a1b4332b-6b80525c7a82.parquet",
+        "phenotype": "ctg_atp_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_cell_type": "AC16",
+          "condition_drug_schedule": "direct",
+          "condition_drug_time": 48.0,
+          "condition_hypoxia_time": 0.0,
+          "condition_infection": "absent in cytotoxicity experiment",
+          "condition_model": "AC16",
+          "condition_reoxygen_time": 0.0,
+          "condition_species": "Homo sapiens",
+          "condition_unresolved_context": "linn_2024",
+          "condition_vehicle": "not explicitly specified"
+        },
+        "condition_id": "condition-9d0021054ddf697d89d0",
+        "data_status": "empty_after_QC",
+        "path": "condition-9d0021054ddf697d89d0-4d13e6061aa8.parquet",
+        "phenotype": "cell_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_cell_type": "H9C2",
+          "condition_drug_schedule": "pretreatment; persistence during injury unknown",
+          "condition_drug_time": 24.0,
+          "condition_hypoxia_time": 4.0,
+          "condition_model": "rat H9C2 cell line",
+          "condition_oxygen": "95%N2/5%CO2 glucose-free injury;95%air/5%CO2 reoxygenation",
+          "condition_reoxygen_time": 24.0,
+          "condition_species": "Rattus norvegicus",
+          "condition_unresolved_context": "liu_2021",
+          "condition_vehicle": "PBS comparator explicitly shown; administered solvent unconfirmed"
+        },
+        "condition_id": "condition-a8f0341a093e1faf3471",
+        "data_status": "empty_after_QC",
+        "path": "condition-a8f0341a093e1faf3471-4d13e6061aa8.parquet",
+        "phenotype": "cell_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_background": "Sprague-Dawley1–3day neonates; sex unspecified",
+          "condition_cell_type": "primary neonatal rat cardiomyocytes",
+          "condition_drug_schedule": "pretreatment; persistence during injury unknown",
+          "condition_drug_time": 24.0,
+          "condition_hypoxia_time": 3.0,
+          "condition_oxygen": "anoxia95%N2/5%CO2 then normal reoxygenation medium",
+          "condition_reoxygen_time": 6.0,
+          "condition_species": "Rattus norvegicus",
+          "condition_unresolved_context": "duan_2013",
+          "condition_vehicle": "drug-free A/R model; vehicle composition unreported"
+        },
+        "condition_id": "condition-e4f22cf6c262e0fa24ae",
+        "data_status": "empty_after_QC",
+        "path": "condition-e4f22cf6c262e0fa24ae-4d13e6061aa8.parquet",
+        "phenotype": "cell_viability",
+        "sample_rows": 0
+      },
+      {
+        "condition": {
+          "condition_acquisition_duration": "up_to800frames_8fps_exact_window_unknown",
+          "condition_cell_type": "hiPSC-CM_iCell",
+          "condition_drug_schedule": "direct_exposure",
+          "condition_drug_time": 24.0,
+          "condition_hypoxia_time": 0.0,
+          "condition_maturation": "8-10_days_post_plating",
+          "condition_reoxygen_time": 0.0,
+          "condition_species": "Homo sapiens",
+          "condition_unresolved_context": "sirenko_2013",
+          "condition_vehicle": "DMSO",
+          "condition_vehicle_percent": 0.1
+        },
+        "condition_id": "condition-e9588143669266f49396",
+        "data_status": "empty_after_QC",
+        "path": "condition-e9588143669266f49396-dfbd2eaa5d79.parquet",
+        "phenotype": "beat_count",
+        "sample_rows": 0
+      }
+    ],
+    "rule_version": "fc-bh-v1",
+    "schema_version": 1,
+    "test_only": false
+  },
+  "release_path": "stage3/01_data_corpus/output/corpus/v1",
+  "result": {
+    "class_rows": {
+      "-1": 0,
+      "0": 0,
+      "1": 0
+    },
+    "comparisons": 6096,
+    "excluded_comparisons": 6096,
+    "experimental_units": null,
+    "finite_source_values": 6610,
+    "independent_experimental_units": null,
+    "measurement_entries": 6620,
+    "sample_rows": 0,
+    "source_count": 5
+  },
+  "rules": {
+    "adjusted_p_cutoff": 0.05,
+    "code_commit": "18783a2cdb557fdb8b1bdfe243d54b0a537cfcbb",
+    "dose_unit": "mol/L",
+    "family_fields": [
+      "source",
+      "condition",
+      "phenotype",
+      "assay_method",
+      "batch"
+    ],
+    "fc_high": 1.2,
+    "fc_low": 0.8,
+    "implementation_sha256": "4d88b60cf11a599119ca3a02cfa1b45a6f524f79b4944fd60d728dc531251f85",
+    "interpretation": "Operational change rule; zero is not equivalence; no final-subset FDR guarantee.",
+    "rule_version": "fc-bh-v1",
+    "schema_version": 1,
+    "software": {
+      "pyarrow": "25.0.1",
+      "python": "3.13.13",
+      "scipy": "1.17.1"
+    },
+    "time_unit": "h"
+  },
+  "scientific_status": "All comparisons excluded; no admitted training samples.",
+  "training": "not_run",
+  "validated_date": "2026-11-05",
+  "view500": "not_run"
+}

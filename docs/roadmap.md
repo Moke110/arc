@@ -72,7 +72,7 @@ Stage 2's current state, benchmark results, and selection constraints are writte
 `stage2/README.md` (agent routing: `stage2/AGENTS.md`); its plan and the `cm_bench_v1`
 benchmark are archived under `stage2/_archive/`, so this roadmap no longer duplicates them.
 
-## Stage 3 — cardiomyocyte phenotype direction prediction (formal corpus design agreed)
+## Stage 3 — cardiomyocyte phenotype direction prediction (first-wave corpus audited)
 
 Predict the direction of change (+1 / 0 / −1) of one phenotype readout under one
 specified experimental condition from the drug-induced perturbome predicted by a
@@ -96,7 +96,7 @@ The subsequent grill-with-docs interview replaced specified wayfinder design
 choices with the agreed [formal corpus design](research/stage3-formal-corpus-design.md)
 and ADRs [0038](adr/0038-dedicated-phenotype-data-and-stage3-corpus.md)–
 [0041](adr/0041-formal-corpus-statistics-export-and-coverage.md).
-Phenotype originals belong to the new `pheno_data` category; the future first step
+Phenotype originals belong to the new `pheno_data` category; the first step
 is `stage3/01_data_corpus/`. Each fine condition/phenotype has one Parquet file;
 MTT/CCK8 share `cell_viability`. Samples retain source, drug, dose, numeric endpoint
 and measurement sequences. Endpoint uses FC ≥1.2 / ≤0.8 and BH-adjusted p <0.05,
@@ -104,11 +104,16 @@ with explicit exclusion of required evidence that cannot be evaluated.
 
 The corpus retains small files and reports source/endpoint-independent coverage;
 the third-category 500 target is assessed in later model-view selection rather
-than enforced per corpus file. Corpus construction, data views and training have
-not run. The [implementation specification](https://github.com/Moke110/arc/issues/29)
-and ten native child tickets are published with thirteen verified blocking edges.
-The initial frontier is
-[phenotype-source integration](https://github.com/Moke110/arc/issues/30);
-execution proceeds through `implement-spec` when requested. The earlier
+than enforced per corpus file. The first-wave build has now archived five sources
+and published an offline-verified local `v2`: 6,096 original comparison units,
+6,610 finite readouts and nine recognized typed partitions, with zero admitted
+samples. Identity, dose, matched-vehicle and statistical gaps remain explicit;
+this is an audited empty-after-QC corpus, not evidence of absent biological effects.
+See the [implementation handoff](../stage3/01_data_corpus/execution/handoff.md)
+and [source coverage](../stage3/01_data_corpus/source_coverage.csv).
+The [implementation specification](https://github.com/Moke110/arc/issues/29)
+and its ten child tickets track the implementation and actual acceptance evidence.
+Data views, the 500-observation model-view assessment and training remain not run.
+The earlier
 [wayfinder curation contract](research/stage3-curation-contract.md) remains historical
 where it conflicts with the formal design.

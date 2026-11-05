@@ -1,0 +1,6 @@
+source,comparisons,measurement_entries,finite_source_values,identity_and_dose_eligible_comparisons,fc_computable_comparisons,adjusted_p_available_comparisons,admitted_comparisons,excluded_comparisons,sample_rows,distinct_drugs,drug_dose_union,independent_experimental_units,independence_status
+duan_2013,4,4,4,0,0,0,0,4,0,0,0,unknown,unknown_or_incomplete
+heliste_2021,5512,5512,5512,0,0,0,0,5512,0,0,0,unknown,unknown_or_incomplete
+linn_2024,48,48,48,0,0,0,0,48,0,0,0,unknown,unknown_or_incomplete
+liu_2021,8,8,8,8,0,0,0,8,0,0,0,unknown,unknown_or_incomplete
+sirenko_2013,524,1048,1038,0,0,0,0,524,0,0,0,unknown,unknown_or_incomplete
