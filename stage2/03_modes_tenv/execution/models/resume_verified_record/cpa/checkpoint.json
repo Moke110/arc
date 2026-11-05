@@ -1,0 +1,90 @@
+{
+  "identity": {
+    "model": "cpa",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "3159552ce1b22e3b796eb5ab6783eb7a5c7c76180dde5c7dee406aec3c8f640c"
+  },
+  "author_objective": "CPA native Gaussian reconstruction NLL + native adversarial disentanglement",
+  "best_epoch": 2,
+  "best_validation_loss": 16495.301013095774,
+  "stop_reason": "max_epochs",
+  "history": [
+    {
+      "epoch": 1,
+      "training_loss": 17129.462668014246,
+      "validation_loss": 18376.080509030275
+    },
+    {
+      "epoch": 2,
+      "training_loss": 10793.315904157134,
+      "validation_loss": 16495.301013095774
+    }
+  ],
+  "training_seconds": 11.047703474003356,
+  "inference_seconds": 1.0023547279997729,
+  "selection": "minimum native Gaussian reconstruction NLL on validation",
+  "trainable_parameters": 29435343,
+  "adapter_parameters": 262272,
+  "behavior": {
+    "adapter_parameter_change_l2": 1.289003849029541,
+    "predictor_parameter_change_l2": 23.047801971435547,
+    "adversary_parameter_change_l2": 0.6720874905586243,
+    "baseline_sensitivity_l2": 2.8076250553131104,
+    "reload_max_abs_error": 0.0
+  },
+  "config": {
+    "max_epochs": 2,
+    "early_stop_patience": 10,
+    "batch_size": 128,
+    "n_latent": 128,
+    "n_hidden_encoder": 512,
+    "n_hidden_decoder": 512,
+    "n_layers_encoder": 3,
+    "n_layers_decoder": 3,
+    "dropout_rate_encoder": 0.1,
+    "dropout_rate_decoder": 0.1,
+    "n_hidden_adv": 64,
+    "n_layers_adv": 3,
+    "learning_rate": 0.0005,
+    "weight_decay": 1e-06,
+    "adv_learning_rate": 0.0003,
+    "adv_weight_decay": 4e-07,
+    "adv_steps": 3,
+    "reg_adv": 1.0,
+    "pen_adv": 1.0,
+    "step_size_lr": 45,
+    "max_training_seconds": 14400,
+    "inference_max_seconds": 1800,
+    "threads": 2,
+    "device": "auto"
+  },
+  "config_sha256": "fc86f5a42b3eb031bc43dd5e8679d703e6daeee7f2afc3ed6390397a85353cc7",
+  "blobs": {
+    "best.pt": "6c1f05bd6da4036dc78672fee35d825b37c77ef026e4bbcdf3bff911240e0e1f"
+  },
+  "source": "CPA CPAModule + CPATrainingPlan.training_step; unchanged upstream",
+  "recipe_deviations": [
+    "fixed full gene axis",
+    "shared Morgan external embeddings replace native extraction",
+    "native linear dose option replaces drug-specific learned dose scale",
+    "add upstream-omitted chem projection to AE optimizer",
+    "streamed native training_step replaces Lightning/AnnData materialization",
+    "no varying cell-type covariate because tenv has one declared context"
+  ],
+  "environment": {
+    "python": "3.9.25 (main, Nov  3 2025, 22:33:05) \n[GCC 11.2.0]",
+    "torch": "2.0.1+cu118",
+    "numpy": "1.23.5",
+    "scvi_tools": "0.20.3",
+    "device": "cuda"
+  },
+  "peak_rss_kbytes": 1871676,
+  "peak_gpu_bytes": 1359595008,
+  "peak_gpu_reserved_bytes": 1503657984
+}

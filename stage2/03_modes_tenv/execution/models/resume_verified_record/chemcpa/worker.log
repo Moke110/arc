@@ -1,0 +1,24 @@
+Running as unit: run-rae67f44efe9942cdb2016b124e954bff.scope; invocation ID: 13d26d37bb7a438e9d9b63766f8ccfa7
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python /home/chang/arc/stage2/03_modes_tenv/execution/script/schedule.py worker /home/chang/arc/stage2/03_modes_tenv/execution/pilots/resume_verified/scheduling/chemcpa_fold0_seed17.job.json"
+	User time (seconds): 3.67
+	System time (seconds): 1.49
+	Percent of CPU this job got: 106%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.84
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2031212
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 173
+	Minor (reclaiming a frame) page faults: 618345
+	Voluntary context switches: 1355
+	Involuntary context switches: 15
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

@@ -1,0 +1,110 @@
+{
+  "identity": {
+    "model": "chemcpa",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "c0ff632d05484622b402e913b0cf021ac0ff2990e4e5629bbcc0599815e7aed5"
+  },
+  "author_objective": "GaussianNLL - reg_adversary * drug_BCE",
+  "best_epoch": 2,
+  "best_validation_loss": -7.387611974629281,
+  "history": [
+    {
+      "epoch": 1,
+      "reconstruction_loss": -0.19043977136787657,
+      "drug_adversary_BCE": 0.712062005721145,
+      "autoencoder_objective": -6.6708812745571935,
+      "adversary_gradient_penalty": 3.059867061674595,
+      "validation_reconstruction_loss": -0.2546067609489679,
+      "validation_drug_adversary_BCE": 0.6915516283014695,
+      "validation_autoencoder_objective": -6.548384209045118
+    },
+    {
+      "epoch": 2,
+      "reconstruction_loss": -0.708537146074688,
+      "drug_adversary_BCE": 0.7187152120535897,
+      "autoencoder_objective": -7.249529135686469,
+      "adversary_gradient_penalty": 0.5064229468504587,
+      "validation_reconstruction_loss": -0.9904686101048971,
+      "validation_drug_adversary_BCE": 0.7029093210931591,
+      "validation_autoencoder_objective": -7.387611974629281
+    }
+  ],
+  "stop_reason": "max_epochs",
+  "training_seconds": 1.6174549930001376,
+  "inference_seconds": 0.4549216150044231,
+  "trainable_parameters": 14997879,
+  "adapter_parameters": 397506,
+  "adversary_steps": 7,
+  "autoencoder_steps": 13,
+  "behavior": {
+    "baseline_sensitivity_l2": 19.282390594482422,
+    "dose_sensitivity_l2": 0.27179306745529175,
+    "adapter_parameter_change_l2": 4.307296276092529,
+    "predictor_parameter_change_l2": 50.3604850769043,
+    "adversary_parameter_change_l2": 1.221014380455017,
+    "doser_parameter_change_l2": 1.0243589878082275,
+    "reload_max_abs_error": 0.0
+  },
+  "blobs": {
+    "best.pt": "76da10dfd4c325b337bfb178a210a138c391002f6ff07a7bee984d8bbb908b25"
+  },
+  "config": {
+    "max_epochs": 2,
+    "batch_size": 256,
+    "chemical_dimension": 194,
+    "early_stop_patience": 50,
+    "max_training_seconds": 14400,
+    "inference_max_seconds": 1800,
+    "device": "auto",
+    "threads": 2,
+    "hparams": {
+      "adversary_depth": 3,
+      "adversary_lr": 0.0011926173789223548,
+      "adversary_steps": 3,
+      "adversary_wd": 9.846738873614555e-06,
+      "adversary_width": 128,
+      "autoencoder_depth": 4,
+      "autoencoder_lr": 0.0015751320499779737,
+      "autoencoder_wd": 6.251373574521742e-07,
+      "autoencoder_width": 256,
+      "batch_size": 256,
+      "dim": 32,
+      "dosers_depth": 3,
+      "dosers_lr": 0.0015751320499779737,
+      "dosers_wd": 6.251373574521742e-07,
+      "dosers_width": 64,
+      "dropout": 0.262378,
+      "embedding_encoder_depth": 4,
+      "embedding_encoder_width": 128,
+      "penalty_adversary": 0.4550475813202185,
+      "reg_adversary": 9.100951626404369,
+      "reg_adversary_cov": 16.165583124257587,
+      "reg_multi_task": 0,
+      "step_size_lr": 6
+    },
+    "configured_batch_size": 256,
+    "batch_scale": 1.0
+  },
+  "config_sha256": "ca8de226f6a32f693a5738e82b528126343fdcca0eac8bb1c118162f0a6d03a9",
+  "selection": "minimum native combined autoencoder objective on validation, never test response metrics",
+  "training_method": "native treated-expression reconstruction plus adversarial disentanglement",
+  "covariates": "none: frozen tenv request has no variable cell-type covariate",
+  "output": "native expression mean minus approved same-plate control baseline",
+  "environment": {
+    "python": "3.9.25 (main, Nov  3 2025, 22:33:05) \n[GCC 11.2.0]",
+    "executable": "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+    "numpy": "1.23.5",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "device": "cuda"
+  },
+  "peak_rss_kbytes": 2031212,
+  "peak_gpu_bytes": 740369408,
+  "peak_gpu_reserved_bytes": 750780416
+}

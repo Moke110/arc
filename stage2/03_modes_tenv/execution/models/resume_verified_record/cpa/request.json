@@ -1,0 +1,49 @@
+{
+  "identity": {
+    "model": "cpa",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "3159552ce1b22e3b796eb5ab6783eb7a5c7c76180dde5c7dee406aec3c8f640c"
+  },
+  "predictor_files": {
+    "train_cases": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/train.csv",
+    "validation_cases": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/validation.csv",
+    "test_cases": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+    "train_expression": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/train_expression.npy",
+    "validation_expression": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/validation_expression.npy",
+    "controls": "/home/chang/arc/stage2/03_modes_tenv/output/input/controls.npy",
+    "morgan": "/home/chang/arc/stage2/03_modes_tenv/output/input/morgan.npy",
+    "drugs": "/home/chang/arc/stage2/03_modes_tenv/output/input/drugs.csv",
+    "genes": "/home/chang/arc/stage2/03_modes_tenv/output/input/genes.csv"
+  },
+  "target_kind": "delta",
+  "n_genes": 18164,
+  "output_directory": "/home/chang/arc/stage2/03_modes_tenv/execution/pilots/resume_verified/runs/cpa/fold_0/seed_17",
+  "command_evidence": {
+    "actual_environment_packages_sha256": "312615ae02aec26d348ecd300d3a91095ad47a55d3f491ef5d5935e3d043ba84",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py": "0ba52ea6cdf7b1c1d06e2ef245dd0af4334e5e39e9c93285287d88cad44c2a5c",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.identity.json": "9a2f1bb6f51adf3afdd379cc3a5efca34e741599d45603e432d9ffe579e3a2bf",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/predictor_inputs.py": "14ec30b818d8e698b4b438c52ceaccc3c6af4a4d081a64282c84c94690ab135c",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/artifacts.py": "cfcdc539b78ed779ad19205ccca5f78c2f9fef1cec57c4a5e77bd5cc7cf4d82a",
+    "/home/chang/arc/pert_model/CPA/source/cpa/__init__.py": "b5d054aace113d9a7d9e5e46a0faa69488d2ff24cc1c2565c4b6a58e9d42f618",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_api.py": "56d50507ca7e043398d1d53e6bb23794143b8715227cd2280e097d245e9e63e7",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_data.py": "340552d355ed4f14f674ca88c5ce4dddc549d5f6d78d65ed46d46622fa30eac9",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_metrics.py": "90103d486344d5b0778256d14061688b664b2a39aab409c4cacad1cefd2a3c1a",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_model.py": "eb45cd988b9b54d7736bb3aba21d8935726e12d3b477ff129bf897921b5d95cc",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_module.py": "4cb563a51c0cead37a2c03a72323e0b1e7310929e7ebd1a2a0bed7d79ac2358a",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_plotting.py": "43f111637b3e13dc766a36b47fc5cf42183b8636d694ad77b5b99cb607aa46c0",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_task.py": "95c4563296b10a50814ed7a4f28b7de7248caef3c518110d70c119a324b9d225",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_tuner.py": "ed5cd421de3634be5d9c074abea816e705d31df45ec4418a49555dd44d3b15aa",
+    "/home/chang/arc/pert_model/CPA/source/cpa/_utils.py": "93ecdb6c04b7a8855604a4d266731581e07f6e93035124c8db6ead8c412f7248",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/env.actual.lock": "8a7d8d373652128b0566e490f11a3c49cc0462ff03add4ff8615e8bee7ecaf25",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json": "b6c5c42f4cc6652a86b8f68f6a4e279b44cae1f9eab08f056772febe30e186f4",
+    "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python3.9": "a222a93d1e1047c2d8ec0fbbf33a45511f5349c6a4d47e407352b45eed577a31",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/pilot.config.json": "392f176b4abb2db1aa38f7438fa97a0e3a66dc68495b10d4c6721894d1dbc41d"
+  },
+  "progress_contract": "progress.json: phase training/inference, training_seconds; checkpoint.json: training_seconds,inference_seconds,blobs filename:sha256"
+}

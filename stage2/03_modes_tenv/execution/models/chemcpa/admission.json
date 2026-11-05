@@ -51,5 +51,24 @@
       "stage2/03_modes_tenv/execution/models/chemcpa/pilot.config.json"
     ],
     "/home/chang/miniconda3/envs/arc/bin/python stage2/03_modes_tenv/execution/script/schedule.py run stage2/03_modes_tenv/execution/models/chemcpa/pilot.queue.json"
-  ]
+  ],
+  "current_identity_verification": {
+    "core_identity_commit": "5e83c46",
+    "record": "execution/models/resume_verified_record/chemcpa",
+    "identity": {
+      "model": "chemcpa",
+      "fold": 0,
+      "seed": 17,
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "config_sha256": "c0ff632d05484622b402e913b0cf021ac0ff2990e4e5629bbcc0599815e7aed5"
+    },
+    "shape_finite_order_and_all_hashes_verified": true,
+    "training_seconds": 1.6174549930001376,
+    "inference_seconds": 0.4549216150044231,
+    "actual_installed_environment_in_identity": true
+  }
 }

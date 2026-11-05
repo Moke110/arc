@@ -8,5 +8,6 @@
   "scheduler_headroom_policy": 1.2,
   "heavy_slots": 1,
   "pilot_run": "execution/pilots/cpa/runs/cpa/fold_0/seed_17",
-  "formal_config_sha256": "b6c5c42f4cc6652a86b8f68f6a4e279b44cae1f9eab08f056772febe30e186f4"
+  "formal_config_sha256": "b6c5c42f4cc6652a86b8f68f6a4e279b44cae1f9eab08f056772febe30e186f4",
+  "current_identity_evidence": "execution/models/resume_verified_record/cpa"
 }
