@@ -2,6 +2,7 @@
 import csv
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 import numpy as np
 
@@ -108,14 +109,46 @@ def command_evidence(command):
 
     A command script foo.py must have foo.identity.json beside it, containing
     nonempty source_files/environment_files/config_files lists. Relative paths
-    resolve against that sidecar. Checkpoints declare every binary in blobs.
+    resolve against that sidecar. Optional environment_file_manifests entries
+    declare {manifest, root} paths relative to the sidecar; every sha256sum-listed
+    environment file is verified live. Optional symlink_roots explicitly permit
+    resolved dependencies outside the manifest root. environment_probe_paths
+    prepends declared overlay paths to the live interpreter's package metadata
+    probe on every identity check. Checkpoints declare binaries in blobs.
     """
     if command is None:
         return {}
     scripts=[Path(arg).resolve() for arg in command if Path(arg).is_file() and str(arg).endswith('.py')]
     if not scripts:
         raise ValueError('external command needs an adapter script identity sidecar')
-    evidence={}
+    # Probe live package metadata with the actual interpreter, including any
+    # explicitly declared overlay search paths. This needs no installed pip.
+    probe_paths = []
+    for script in scripts:
+        sidecar = script.with_suffix('.identity.json')
+        if not sidecar.is_file():
+            raise ValueError('external adapter identity sidecar missing')
+        for path in read_json(sidecar).get('environment_probe_paths', []):
+            probe_paths.append(str((sidecar.parent / path).resolve()))
+    probe_code = """import importlib.metadata,json,re,sys
+sys.path[:0]=json.loads(sys.argv[1])
+packages={}
+for distribution in importlib.metadata.distributions():
+    name=distribution.metadata.get('Name')
+    if name:
+        packages.setdefault(re.sub(r'[-_.]+','-',name).lower(),distribution.version)
+print(json.dumps(packages,sort_keys=True,separators=(',',':')))
+"""
+    try:
+        probe = subprocess.run([str(command[0]), '-c', probe_code, json.dumps(probe_paths)],
+                               capture_output=True, text=True, timeout=30, check=True)
+        packages = json.loads(probe.stdout)
+        if not isinstance(packages, dict):
+            raise ValueError('package metadata probe did not return a mapping')
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        raise ValueError('external environment probe failed: ' + type(exc).__name__) from exc
+    normalized = json.dumps(packages,sort_keys=True,separators=(',',':'))
+    evidence={'actual_environment_packages_sha256':hashlib.sha256(normalized.encode()).hexdigest()}
     for script in scripts:
         sidecar=script.with_suffix('.identity.json')
         if not sidecar.is_file():
@@ -129,6 +162,29 @@ def command_evidence(command):
                 path=Path(name)
                 if not path.is_absolute(): path=sidecar.parent/path
                 evidence[str(path.resolve())]=sha256(path)
+        for specification in declaration.get('environment_file_manifests', []):
+            manifest = (sidecar.parent / specification['manifest']).resolve()
+            root = (sidecar.parent / specification['root']).resolve()
+            evidence[str(manifest)] = sha256(manifest)
+            symlink_roots = [(sidecar.parent / value).resolve()
+                             for value in specification.get('symlink_roots', [])]
+            lines = manifest.read_text().splitlines()
+            if not lines:
+                raise ValueError('empty external environment file manifest')
+            for line in lines:
+                if (len(line) < 67 or line[64:66] not in ('  ', ' *') or
+                        any(char not in '0123456789abcdefABCDEF' for char in line[:64])):
+                    raise ValueError('invalid external environment file manifest')
+                relative = Path(line[66:])
+                if relative.is_absolute() or '..' in relative.parts:
+                    raise ValueError('external environment manifest path escapes root')
+                path = (root / relative).resolve()
+                if not any(path.is_relative_to(allowed) for allowed in [root, *symlink_roots]):
+                    raise ValueError('external environment manifest symlink escapes allowed roots')
+                digest = sha256(path)
+                if digest != line[:64].lower():
+                    raise ValueError('environment manifest file mismatch: ' + str(path))
+                evidence[str(path)] = digest
     for argument in command:
         path=Path(argument)
         if path.is_file(): evidence[str(path.resolve())]=sha256(path)
