@@ -1,0 +1,280 @@
+{
+  "identity": {
+    "model": "cpa",
+    "fold": 0,
+    "seed": 2026,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+  },
+  "author_objective": "CPA native Gaussian reconstruction NLL + native adversarial disentanglement",
+  "best_epoch": 30,
+  "best_validation_loss": -11954.437137009143,
+  "stop_reason": "author_patience",
+  "history": [
+    {
+      "epoch": 1,
+      "training_loss": 17131.909737026832,
+      "validation_loss": 18402.712567446044
+    },
+    {
+      "epoch": 2,
+      "training_loss": 10814.24099970102,
+      "validation_loss": 16541.837834419963
+    },
+    {
+      "epoch": 3,
+      "training_loss": 5727.927410208246,
+      "validation_loss": 11919.707195181354
+    },
+    {
+      "epoch": 4,
+      "training_loss": 1999.393076764962,
+      "validation_loss": 6832.144367318645
+    },
+    {
+      "epoch": 5,
+      "training_loss": -788.4232224450135,
+      "validation_loss": 4683.749592513489
+    },
+    {
+      "epoch": 6,
+      "training_loss": -2595.9486423181415,
+      "validation_loss": 2835.210478492206
+    },
+    {
+      "epoch": 7,
+      "training_loss": -3527.506076298617,
+      "validation_loss": 19671.457696342924
+    },
+    {
+      "epoch": 8,
+      "training_loss": -4274.697325746152,
+      "validation_loss": 1546.937841913969
+    },
+    {
+      "epoch": 9,
+      "training_loss": -4918.819325375676,
+      "validation_loss": -1573.9701194122827
+    },
+    {
+      "epoch": 10,
+      "training_loss": -5191.360697665349,
+      "validation_loss": -3226.7117624259968
+    },
+    {
+      "epoch": 11,
+      "training_loss": -5502.56386328775,
+      "validation_loss": -4205.546753222422
+    },
+    {
+      "epoch": 12,
+      "training_loss": -5857.428716624636,
+      "validation_loss": -4713.452511428357
+    },
+    {
+      "epoch": 13,
+      "training_loss": -6144.8563218204035,
+      "validation_loss": -6933.457146001949
+    },
+    {
+      "epoch": 14,
+      "training_loss": -6455.373660273242,
+      "validation_loss": -7765.124106574116
+    },
+    {
+      "epoch": 15,
+      "training_loss": -6743.958187363509,
+      "validation_loss": -8814.223925547063
+    },
+    {
+      "epoch": 16,
+      "training_loss": -6748.397031152506,
+      "validation_loss": -8362.48246871253
+    },
+    {
+      "epoch": 17,
+      "training_loss": -7051.659665531406,
+      "validation_loss": -8842.531769896583
+    },
+    {
+      "epoch": 18,
+      "training_loss": -7264.235741537542,
+      "validation_loss": -9705.40306036421
+    },
+    {
+      "epoch": 19,
+      "training_loss": -7344.110174448835,
+      "validation_loss": -9610.787594143436
+    },
+    {
+      "epoch": 20,
+      "training_loss": -7642.614568980085,
+      "validation_loss": -10921.08803816322
+    },
+    {
+      "epoch": 21,
+      "training_loss": -7539.333167864756,
+      "validation_loss": -10791.45670338729
+    },
+    {
+      "epoch": 22,
+      "training_loss": -7449.844031107009,
+      "validation_loss": -10226.274931617207
+    },
+    {
+      "epoch": 23,
+      "training_loss": -7827.367977199459,
+      "validation_loss": -10701.158751124101
+    },
+    {
+      "epoch": 24,
+      "training_loss": -7838.657327306052,
+      "validation_loss": -11251.896182272932
+    },
+    {
+      "epoch": 25,
+      "training_loss": -8009.326280743033,
+      "validation_loss": -11096.748089028777
+    },
+    {
+      "epoch": 26,
+      "training_loss": -8078.838750194987,
+      "validation_loss": -11304.28083548786
+    },
+    {
+      "epoch": 27,
+      "training_loss": -8445.957380602642,
+      "validation_loss": -11582.753194319544
+    },
+    {
+      "epoch": 28,
+      "training_loss": -8465.55940294821,
+      "validation_loss": -11499.365592682105
+    },
+    {
+      "epoch": 29,
+      "training_loss": -8741.35022358569,
+      "validation_loss": -11861.771643622602
+    },
+    {
+      "epoch": 30,
+      "training_loss": -8722.812148210014,
+      "validation_loss": -11954.437137009143
+    },
+    {
+      "epoch": 31,
+      "training_loss": -8158.239002703827,
+      "validation_loss": -11796.156994716726
+    },
+    {
+      "epoch": 32,
+      "training_loss": -8252.655266937916,
+      "validation_loss": -11455.743327993854
+    },
+    {
+      "epoch": 33,
+      "training_loss": -8428.45847172031,
+      "validation_loss": -11853.876810270534
+    },
+    {
+      "epoch": 34,
+      "training_loss": -7904.7954255927625,
+      "validation_loss": -11752.70490482614
+    },
+    {
+      "epoch": 35,
+      "training_loss": -8284.45810205647,
+      "validation_loss": -10639.425830429407
+    },
+    {
+      "epoch": 36,
+      "training_loss": -8572.0089718633,
+      "validation_loss": -11798.312661589478
+    },
+    {
+      "epoch": 37,
+      "training_loss": -8501.630951181625,
+      "validation_loss": -11778.273147107315
+    },
+    {
+      "epoch": 38,
+      "training_loss": -8630.105166519343,
+      "validation_loss": -11785.97689738834
+    },
+    {
+      "epoch": 39,
+      "training_loss": -8920.217087731386,
+      "validation_loss": -11420.325551277729
+    },
+    {
+      "epoch": 40,
+      "training_loss": -8558.622406665974,
+      "validation_loss": -11292.824029058003
+    }
+  ],
+  "training_seconds": 201.94003382600204,
+  "inference_seconds": 0.7008924689871492,
+  "selection": "minimum native Gaussian reconstruction NLL on validation",
+  "trainable_parameters": 29435343,
+  "adapter_parameters": 262272,
+  "behavior": {
+    "adapter_parameter_change_l2": 4.290402889251709,
+    "predictor_parameter_change_l2": 94.89225769042969,
+    "adversary_parameter_change_l2": 3.162097454071045,
+    "baseline_sensitivity_l2": 29.593456268310547,
+    "reload_max_abs_error": 0.0
+  },
+  "config": {
+    "max_epochs": 2000,
+    "early_stop_patience": 10,
+    "batch_size": 128,
+    "n_latent": 128,
+    "n_hidden_encoder": 512,
+    "n_hidden_decoder": 512,
+    "n_layers_encoder": 3,
+    "n_layers_decoder": 3,
+    "dropout_rate_encoder": 0.1,
+    "dropout_rate_decoder": 0.1,
+    "n_hidden_adv": 64,
+    "n_layers_adv": 3,
+    "learning_rate": 0.0005,
+    "weight_decay": 1e-06,
+    "adv_learning_rate": 0.0003,
+    "adv_weight_decay": 4e-07,
+    "adv_steps": 3,
+    "reg_adv": 1.0,
+    "pen_adv": 1.0,
+    "step_size_lr": 45,
+    "max_training_seconds": 14400,
+    "inference_max_seconds": 1800,
+    "threads": 2,
+    "device": "auto"
+  },
+  "config_sha256": "2a28f73c343d2f82c40a745bdef584d70edf9cc47dbf4e25e63da00389e53ee3",
+  "blobs": {
+    "best.pt": "70e1e7266d033e56cfe7357478a68bd8d99158973f94d3ddea3141ec286929ec"
+  },
+  "source": "CPA CPAModule + CPATrainingPlan.training_step; unchanged upstream",
+  "recipe_deviations": [
+    "fixed full gene axis",
+    "shared Morgan external embeddings replace native extraction",
+    "native linear dose option replaces drug-specific learned dose scale",
+    "add upstream-omitted chem projection to AE optimizer",
+    "streamed native training_step replaces Lightning/AnnData materialization",
+    "no varying cell-type covariate because tenv has one declared context"
+  ],
+  "environment": {
+    "python": "3.9.25 (main, Nov  3 2025, 22:33:05) \n[GCC 11.2.0]",
+    "torch": "2.0.1+cu118",
+    "numpy": "1.23.5",
+    "scvi_tools": "0.20.3",
+    "device": "cuda"
+  },
+  "peak_rss_kbytes": 1872372,
+  "peak_gpu_bytes": 1359595008,
+  "peak_gpu_reserved_bytes": 1503657984
+}

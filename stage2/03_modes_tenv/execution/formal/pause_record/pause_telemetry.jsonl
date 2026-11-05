@@ -1,0 +1,1 @@
+{"observable": true, "available_gib": 40.84693908691406, "owned_rss_gib": {"747319": 0.0}, "gpu_used_gib": 2.0029296875, "gpu_free_gib": 13.9892578125, "external_heavy": 0, "external_peak_gib": 0, "external_pids": [], "idle_pids": [], "timestamp": 1793896113.9678674, "pause_drain": true}

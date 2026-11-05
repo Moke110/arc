@@ -88,3 +88,11 @@ After that barrier, use `benchmark.py seal` with the frozen commands and models,
 then `evaluate --workers 2` and `replay`. All three figures export both PNG and
 text-preserving SVG, with metric-defined counts distinguished from completed
 runs.
+
+
+Execution is **paused at the user's request on 2026-11-06** after 34/63 formal
+runs completed naturally (both references 9 each, PRnet 9, CPA 7), with zero failures
+and 29 not dispatched. No formal test scoring has occurred. The verified pause
+manifest, remaining cases and exact same-queue continuation commands are in
+[`execution/formal/PAUSE.md`](execution/formal/PAUSE.md). Full binaries remain
+local; no experiment process remains active.

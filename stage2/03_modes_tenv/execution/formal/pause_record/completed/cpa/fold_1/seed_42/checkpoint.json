@@ -1,0 +1,305 @@
+{
+  "identity": {
+    "model": "cpa",
+    "fold": 1,
+    "seed": 42,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+  },
+  "author_objective": "CPA native Gaussian reconstruction NLL + native adversarial disentanglement",
+  "best_epoch": 35,
+  "best_validation_loss": -13356.960472470239,
+  "stop_reason": "author_patience",
+  "history": [
+    {
+      "epoch": 1,
+      "training_loss": 17022.53257151944,
+      "validation_loss": 18390.894289434524
+    },
+    {
+      "epoch": 2,
+      "training_loss": 10672.412370335334,
+      "validation_loss": 16332.888820684524
+    },
+    {
+      "epoch": 3,
+      "training_loss": 5765.691713490019,
+      "validation_loss": 11754.28591889881
+    },
+    {
+      "epoch": 4,
+      "training_loss": 2362.826513366062,
+      "validation_loss": 6758.345256696429
+    },
+    {
+      "epoch": 5,
+      "training_loss": -247.24689687836394,
+      "validation_loss": 5926.053138950893
+    },
+    {
+      "epoch": 6,
+      "training_loss": -2109.818858665514,
+      "validation_loss": 10896.771149553571
+    },
+    {
+      "epoch": 7,
+      "training_loss": -3302.7865993810346,
+      "validation_loss": 5944.041931733631
+    },
+    {
+      "epoch": 8,
+      "training_loss": -4217.854161909578,
+      "validation_loss": 1036.8971066429501
+    },
+    {
+      "epoch": 9,
+      "training_loss": -4943.413933243084,
+      "validation_loss": 3797.0741885230655
+    },
+    {
+      "epoch": 10,
+      "training_loss": -5480.006039600731,
+      "validation_loss": -3290.4661458333335
+    },
+    {
+      "epoch": 11,
+      "training_loss": -5835.951413059433,
+      "validation_loss": 1173.3043956938245
+    },
+    {
+      "epoch": 12,
+      "training_loss": -6202.474240564653,
+      "validation_loss": -6913.304766555059
+    },
+    {
+      "epoch": 13,
+      "training_loss": -5646.496741053954,
+      "validation_loss": -693.0738676525298
+    },
+    {
+      "epoch": 14,
+      "training_loss": -5219.343451934368,
+      "validation_loss": -7722.8209263392855
+    },
+    {
+      "epoch": 15,
+      "training_loss": -5711.104556612083,
+      "validation_loss": -774.44609375
+    },
+    {
+      "epoch": 16,
+      "training_loss": -5963.565220103732,
+      "validation_loss": -1916.053966703869
+    },
+    {
+      "epoch": 17,
+      "training_loss": -6340.825782269377,
+      "validation_loss": -8453.286667596727
+    },
+    {
+      "epoch": 18,
+      "training_loss": -6785.90410543613,
+      "validation_loss": 4904.236011904762
+    },
+    {
+      "epoch": 19,
+      "training_loss": -6873.4456287105295,
+      "validation_loss": -6582.356606910343
+    },
+    {
+      "epoch": 20,
+      "training_loss": -7155.223047690501,
+      "validation_loss": -8794.841959635416
+    },
+    {
+      "epoch": 21,
+      "training_loss": -7295.873355542145,
+      "validation_loss": -10244.195070684524
+    },
+    {
+      "epoch": 22,
+      "training_loss": -7537.5289005414925,
+      "validation_loss": -11811.582961309523
+    },
+    {
+      "epoch": 23,
+      "training_loss": -7506.769060705898,
+      "validation_loss": -10431.421303013392
+    },
+    {
+      "epoch": 24,
+      "training_loss": -7693.880217167928,
+      "validation_loss": -11720.12517671131
+    },
+    {
+      "epoch": 25,
+      "training_loss": -7680.025823656054,
+      "validation_loss": -12179.106845238095
+    },
+    {
+      "epoch": 26,
+      "training_loss": -7885.679393715749,
+      "validation_loss": -11753.489657738095
+    },
+    {
+      "epoch": 27,
+      "training_loss": -7907.996952880349,
+      "validation_loss": -12343.9060546875
+    },
+    {
+      "epoch": 28,
+      "training_loss": -8104.741553040188,
+      "validation_loss": -12894.115680803572
+    },
+    {
+      "epoch": 29,
+      "training_loss": -8052.998175112539,
+      "validation_loss": -12593.22697172619
+    },
+    {
+      "epoch": 30,
+      "training_loss": -8291.846474996739,
+      "validation_loss": -12501.25935639881
+    },
+    {
+      "epoch": 31,
+      "training_loss": -8395.1732421875,
+      "validation_loss": -13209.22634858631
+    },
+    {
+      "epoch": 32,
+      "training_loss": -8322.58667185869,
+      "validation_loss": -12816.167429315476
+    },
+    {
+      "epoch": 33,
+      "training_loss": -8530.322576127022,
+      "validation_loss": -12791.25599888393
+    },
+    {
+      "epoch": 34,
+      "training_loss": -8551.906075890527,
+      "validation_loss": -13053.087239583334
+    },
+    {
+      "epoch": 35,
+      "training_loss": -8657.078113990736,
+      "validation_loss": -13356.960472470239
+    },
+    {
+      "epoch": 36,
+      "training_loss": -8376.046709453289,
+      "validation_loss": -12968.38863467262
+    },
+    {
+      "epoch": 37,
+      "training_loss": -8845.973808145225,
+      "validation_loss": -12996.881817336309
+    },
+    {
+      "epoch": 38,
+      "training_loss": -8641.302950075025,
+      "validation_loss": -13097.485100446429
+    },
+    {
+      "epoch": 39,
+      "training_loss": -8429.100026911534,
+      "validation_loss": -12257.487806919642
+    },
+    {
+      "epoch": 40,
+      "training_loss": -8028.285983983559,
+      "validation_loss": -12414.325744047619
+    },
+    {
+      "epoch": 41,
+      "training_loss": -8128.1913043123695,
+      "validation_loss": -12151.44201078869
+    },
+    {
+      "epoch": 42,
+      "training_loss": -8079.064457202505,
+      "validation_loss": -12611.136495535715
+    },
+    {
+      "epoch": 43,
+      "training_loss": -8415.273360842903,
+      "validation_loss": -11554.719498697918
+    },
+    {
+      "epoch": 44,
+      "training_loss": -8344.350545162448,
+      "validation_loss": -12696.738337053572
+    },
+    {
+      "epoch": 45,
+      "training_loss": -8385.281174158403,
+      "validation_loss": -12380.41130952381
+    }
+  ],
+  "training_seconds": 234.01664434401027,
+  "inference_seconds": 0.6577719300112221,
+  "selection": "minimum native Gaussian reconstruction NLL on validation",
+  "trainable_parameters": 29435343,
+  "adapter_parameters": 262272,
+  "behavior": {
+    "adapter_parameter_change_l2": 4.355349063873291,
+    "predictor_parameter_change_l2": 96.9291763305664,
+    "adversary_parameter_change_l2": 3.803318500518799,
+    "baseline_sensitivity_l2": 16.87164878845215,
+    "reload_max_abs_error": 0.0
+  },
+  "config": {
+    "max_epochs": 2000,
+    "early_stop_patience": 10,
+    "batch_size": 128,
+    "n_latent": 128,
+    "n_hidden_encoder": 512,
+    "n_hidden_decoder": 512,
+    "n_layers_encoder": 3,
+    "n_layers_decoder": 3,
+    "dropout_rate_encoder": 0.1,
+    "dropout_rate_decoder": 0.1,
+    "n_hidden_adv": 64,
+    "n_layers_adv": 3,
+    "learning_rate": 0.0005,
+    "weight_decay": 1e-06,
+    "adv_learning_rate": 0.0003,
+    "adv_weight_decay": 4e-07,
+    "adv_steps": 3,
+    "reg_adv": 1.0,
+    "pen_adv": 1.0,
+    "step_size_lr": 45,
+    "max_training_seconds": 14400,
+    "inference_max_seconds": 1800,
+    "threads": 2,
+    "device": "auto"
+  },
+  "config_sha256": "2a28f73c343d2f82c40a745bdef584d70edf9cc47dbf4e25e63da00389e53ee3",
+  "blobs": {
+    "best.pt": "a2e3a64bfdb4694ef81d81d33c4c137b8bf39c30da422930312f5ae25e5db458"
+  },
+  "source": "CPA CPAModule + CPATrainingPlan.training_step; unchanged upstream",
+  "recipe_deviations": [
+    "fixed full gene axis",
+    "shared Morgan external embeddings replace native extraction",
+    "native linear dose option replaces drug-specific learned dose scale",
+    "add upstream-omitted chem projection to AE optimizer",
+    "streamed native training_step replaces Lightning/AnnData materialization",
+    "no varying cell-type covariate because tenv has one declared context"
+  ],
+  "environment": {
+    "python": "3.9.25 (main, Nov  3 2025, 22:33:05) \n[GCC 11.2.0]",
+    "torch": "2.0.1+cu118",
+    "numpy": "1.23.5",
+    "scvi_tools": "0.20.3",
+    "device": "cuda"
+  },
+  "peak_rss_kbytes": 1868048,
+  "peak_gpu_bytes": 1360479744,
+  "peak_gpu_reserved_bytes": 1503657984
+}
