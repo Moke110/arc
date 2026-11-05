@@ -3,8 +3,13 @@
     "../../../../pert_model/PRnet/source/models/PRnet.py",
     "../../../../pert_model/PRnet/source/train_sciplex.py",
     "../../../../pert_model/PRnet/source/trainer/PRnetTrainer.py",
-    "../../../../pert_model/PRnet/source/data/_utils.py"
+    "../../../../pert_model/PRnet/source/data/_utils.py",
+    "predictor_inputs.py"
   ],
-  "environment_files": ["../models/prnet/env.actual.lock"],
-  "config_files": ["../models/prnet/config.json"]
+  "environment_files": [
+    "../models/prnet/env.actual.lock"
+  ],
+  "config_files": [
+    "../models/prnet/config.json"
+  ]
 }
