@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-05",
+  "reason": "Source manifest code/text bytes unchanged; current adapters set sys.dont_write_bytecode=True; inherited source extras left unchanged.",
+  "checked_manifest_code_text_files": 218,
+  "chemcpa_package_cache_exists": false,
+  "action": "Pre-existing Nov2 bytecode caches briefly relocated during handoff, then restored unchanged per parent instruction; no source file remains moved.",
+  "restored_preexisting_caches": [
+    {
+      "source_relative": "models/__pycache__/__init__.cpython-39.pyc",
+      "destination": "stage2/03_modes_tenv/execution/models/prnet/generated_bytecode_cache/models/__pycache__/__init__.cpython-39.pyc",
+      "sha256": "407b8d902bc1942fa2a6a5399a53caa8a427f2d96c9ef48ff16612cb3e0cf7a3"
+    },
+    {
+      "source_relative": "models/__pycache__/PRnet.cpython-39.pyc",
+      "destination": "stage2/03_modes_tenv/execution/models/prnet/generated_bytecode_cache/models/__pycache__/PRnet.cpython-39.pyc",
+      "sha256": "550be82287f2afb3f8c115c6f3a90ab92fec938961e0c06208f0f545bcc1ec38"
+    }
+  ]
+}

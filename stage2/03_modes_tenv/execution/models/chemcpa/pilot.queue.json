@@ -1,0 +1,22 @@
+{
+  "input_root": "stage2/03_modes_tenv/output/input",
+  "output_root": "stage2/03_modes_tenv/execution/pilots/chemcpa",
+  "verified_idle_pids": [
+    5561
+  ],
+  "admission_timeout_seconds": 900,
+  "jobs": [
+    {
+      "model": "chemcpa",
+      "fold": 0,
+      "seed": 17,
+      "profile": null,
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "stage2/03_modes_tenv/execution/models/chemcpa/pilot.config.json"
+      ]
+    }
+  ]
+}
