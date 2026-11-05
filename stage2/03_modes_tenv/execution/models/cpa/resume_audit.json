@@ -1,0 +1,24 @@
+{
+  "pause_commit": "0fd4089",
+  "checks": {
+    "completed_pilot_current_identity": true,
+    "prediction_identity_shape_finite_hashes": true,
+    "checkpoint_blob_hashes": true,
+    "all_frozen_input_file_hashes": true,
+    "current_pip_freeze_matches_lock": true
+  },
+  "identity": {
+    "model": "cpa",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "293ccbf122eb7f70b70a1496e940ab601914a9b94414e63f7332bf0133e3ebb7",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "9166900dff540302be99ae66d663cf34c88566afbdd7f930af2638fef43c332b"
+  },
+  "environment_lock_sha256": "8a7d8d373652128b0566e490f11a3c49cc0462ff03add4ff8615e8bee7ecaf25",
+  "formal_training_started": false,
+  "test_scoring_started": false
+}

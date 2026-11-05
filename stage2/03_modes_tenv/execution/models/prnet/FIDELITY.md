@@ -61,9 +61,14 @@ selected-checkpoint reload, Gaussian validation objective and blob checksums.
 The capped run took 2.15s wall time and peaked at 1,036,336KiB RSS under
 `MemoryMax=10G`, `MemorySwapMax=8G`; see `synthetic_test_record.json`.
 
-This is synthetic artifact-contract evidence. Actual tenv admission requires
-the separately scheduled full-axis pilot, measured host/GPU peaks and its
-checkpoint/prediction evidence. No runtime admission is claimed here.
+The separately scheduled real-tenv pilot also passed: fold 0 / seed 17, two
+epochs, all 18,164 genes and 1,401 finite test-well predictions. Exact reload,
+trained adapter/predictor changes and baseline sensitivity passed. Peak RSS was
+1,423,696 KiB; GPU reservation peaked at 864,026,624 bytes. See `admission.json`
+and `pilot_record/`. On explicit resume, `resume_audit.json` records revalidation
+of current identities, all input hashes, prediction and checkpoint hashes, and
+the actual environment lock. This qualifies execution, not convergence or
+formal test performance.
 
 Run the synthetic seam test from the repository root:
 

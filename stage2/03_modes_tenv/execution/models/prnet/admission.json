@@ -39,5 +39,5 @@
     "checkpoint.json": "64cca8318621c4c361be862b34fcbd4a7d6648d257a498a61074b364ebedfc49",
     "request.json": "2acc56ea62368dd075a34a0d8a1ed2ef00f489e1abcaeda80c749a8fd61c8fcb"
   },
-  "next": "Freeze final entrant registry and model-ticket dependency closure before formal nine-run dispatch via scheduler; see #46. Current user instruction pauses all new dispatch."
+  "next": "Admission verified after explicit resume; freeze final entrant registry and close model dependencies before formal nine-run dispatch through #46 scheduler."
 }
