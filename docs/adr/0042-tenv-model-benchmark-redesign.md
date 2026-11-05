@@ -1,231 +1,174 @@
 # Rebuild the Stage 2 tenv model comparison after the corpus refactor
 
-**Status:** proposed (2026-11-05); requirements recorded, design interview open.
+**Status:** proposed (2026-11-05); experiment decisions resolved except Morgan
+parameters and final shared-understanding confirmation. Research and admission
+evidence remain required before implementation.
 
-The refactored dataset corpus (ADR 0033) separates native-axis source evidence
-from consumer-owned model views. The next model comparison must consume that
-corpus and requalify its models rather than inherit the old seven-model registry
-or reuse its scores. This record captures the new request; unresolved choices
-below are not defaults or authorization to start the benchmark.
+The dataset corpus refactor (ADR 0033) separates native-axis source evidence
+from consumer-owned views. Rebuild the tenv comparison using newly screened
+models and shared chemical features, preserving the historical study rather
+than inheriting its entrant registry or scores.
 
-## Requirements established by the request
+## Boundary and model admission
 
-- Preserve the existing `stage2/03_models_cmbench/` evidence and seal the old
-  comparison before replacing it with the tenv comparison. The requested new
-  name is `03_modes_tenv`; the archive location is resolved in round 3.
-- Repeat model discovery using Biomni and primary upstream sources. Screen all
-  downloaded models against the same conditions: baseline transcriptome plus
-  drug input; post-treatment transcriptome or transcriptome-change output;
-  approximately 18,000 measured genes at both input and output with limited
-  expansion on this workstation; public model, training and testing code.
-- Exclude Squidiff, PerturbNet and XPert from the new comparison. Do not rewrite
-  historical eligibility or results. In particular, the prior Squidiff record
-  establishes non-convergence and an opportunity-cost exclusion, not a proven
-  architectural gene-space ceiling.
-- Retain ADR 0030 provenance layout for admitted upstream repositories in
-  `pert_model/`. Newly admitted models without setup evidence require a run card
-  and an isolated environment in `stage2/01_setup/` (ADR 0021).
-- Freeze three folds and three training seeds shared across models. Each model
-  produces nine training-and-test run samples, one for every fold × seed pair.
+- Archive the existing step at `stage2/_archive/03_models_cmbench/`, preserving
+  results and its existing `_frozen` inputs. The active replacement is
+  `stage2/03_modes_tenv/`, using the user's requested spelling. Do not delete
+  the frozen-input bridge while other concluded studies still depend on it.
+- Repeat discovery with Biomni and primary upstream sources; screen all
+  downloaded models under the same final contract. Admission requires public
+  model/training/testing code, formal publication, baseline transcriptome plus
+  drug and dose input, post-treatment transcriptome or Δ output, and full
+  18,164-gene input/output within this workstation's measured resources.
+- Exclude Squidiff, PerturbNet and XPert as explicitly requested. Preserve old
+  eligibility and results. Historical Squidiff evidence establishes failed
+  convergence/opportunity-cost exclusion, not an architectural gene ceiling.
+- Allow input/output dimension changes and the agreed chemical adapter, retaining
+  core model architecture. No HVG substitution, zero-filled full-space output,
+  test-treated-expression inputs or new core architecture as admission shortcuts.
+  Verify that baseline expression actually participates in prediction; freely
+  learned training-observation latents alone do not demonstrate that capability.
+- Follow ADR 0030 for upstream repositories in `pert_model/`; leave source
+  trees untouched and declare local additions. Newly admitted models require
+  native setup evidence, isolated environments and run cards in `01_setup/`.
+  Full-space bounded training/prediction evidence is an additional admission gate.
+
+## Shared chemical representation and model boundary
+
+- **Selected by the user:** one common Morgan fingerprint representation plus
+  a trainable linear dimension adapter for each predictor. One-hot and KPGT
+  were considered and withdrawn; neither is the current input policy.
+- Propose Morgan radius 2, 2,048-bit binary vectors, atom-based invariants
+  (ECFP-style, not feature-based FCFP), chirality enabled. These exact parameters
+  still require confirmation. Fix the RDKit version and structure-normalization
+  rule; cache one canonical parent-structure fingerprint per drug and share it
+  across models, folds and seeds.
+- Feed the cached fingerprint through `Linear(2048, d_model)` at the existing
+  drug-representation interface. Initialize the adapter and perturbation
+  predictor randomly for each run and train them together only on training
+  responses. Keep actual dose as an explicit model input. Record adapter
+  dimensions and trainable parameter counts and disclose native-recipe deviations.
+- The user's model boundary is the parameters updateable in one backward pass.
+  The jointly trained adapter belongs to its perturbation predictor. A drug
+  encoder trained independently outside perturbation data is a separate model,
+  excluded from this comparison; Morgan extraction has no learned parameters.
+- Common input information does not imply identical learned adapted vectors,
+  or reproduction of each author's complete original chemical pipeline.
+  Models without a compatible representation interface must be reviewed rather
+  than given an unapproved replacement backbone.
+
+## Input, target and fold–seed table
+
+- Build a consumer-owned view from `02_dataset_corpus/` tenv raw counts:
+  project to the ordered 18,164-gene CM axis, then recompute CP10K and log1p.
+  Retain all 460 structure-resolved small molecules without a pharmacology
+  filter; blanks and non-DMSO controls are not treated training targets.
+- The baseline for each treated well is its same-plate DMSO mean log-expression.
+  Test-plate DMSO is an allowed input; test treated expression is evaluator-only.
+  Δ is treated log-expression minus that matched-control mean. Convert any
+  post-expression prediction to this common Δ.
+- Average observed and predicted well-level Δ within each `(drug_key, dose)`
+  group. Compute metrics per group and give groups equal macro-average weight.
+- Freeze three outer cold-drug test folds, with every drug tested exactly once.
+  Keep all doses/repeats and same-parent-connectivity stereoisomers together.
+  Split metadata may use chemistry; test responses never determine membership.
+- Within each outer fold's remaining approximately two thirds of drugs, hold
+  out 15% for validation, preserving structure blocks. Overall proportions
+  are approximately 56.7%/10%/33.3%; integer block sizes determine exact counts.
+- Split seed is `20261105`; training seeds are `17`, `42`, `2026`.
+  All models share the same frozen drug-role membership. One
+  `(model, fold, seed)` is one run sample, giving nine per model rather than
+  nine independent biological replicates.
+
+## Training, scheduling and failures
+
+- Random initialization, no external pretraining, author training methods and
+  losses, no extra HPO. Select checkpoints by each author's own validation
+  loss matching its training objective, rather than a common MSE or PR metric.
+- Four-hour cumulative training ceiling per run, up to 36 hours per model.
+  Mark incomplete runs/timeouts; never impute samples. Entries missing any of
+  nine completed runs cannot receive a complete ranking.
+- A dedicated scheduling agent records WSL available RAM and GPU usage every
+  five seconds and owns dispatch. The user authorizes parallel model training
+  when measured resources allow, including long fits. Retain at most two heavy
+  tasks repo-wide, approximately 28 GiB combined peak budget, per-process caps,
+  at least 12 GiB available RAM, bounded data access and peak accounting.
+- Use measured task peaks plus 20% headroom to admit concurrency; otherwise
+  run serially. Stop dispatch below the RAM floor; if pressure keeps worsening,
+  save and stop the newer task belonging to this experiment. Do not stop
+  unrelated processes.
+- A repairable environmental failure permits one retry; OOM permits one retry
+  with smaller batch size within the same four-hour training budget.
+  Persistent failures remain reported failures.
+
+## Evaluation and computation
+
 - Report AUPRC_positive@100, AUPRC_negative@100, Recall_positive@P80,
-  Recall_negative@P80, PCC, Spearman, RMSE and R².
-- Deliver an eight-panel metric bar figure with model bars, run-sample dots and
-  error bars, plus per-model positive/negative precision curves in red/blue with
-  light bands showing the run-sample range. Round 3 adds both simple baselines
-  to these figures and requests a third, best-single-run PR overview.
+  Recall_negative@P80, PCC, Spearman, RMSE and R², all on the common Δ target.
+- For each group's true Δ, positive truth is its largest 100 strictly positive
+  entries; negative truth is its smallest 100 strictly negative entries.
+  Keep fewer if fewer same-sign genes exist. Rank all genes by predicted Δ
+  for positive and by its negation for negative. AP@100 means average precision
+  against those labels, not truncating prediction rankings to 100 genes.
+- Recall@P80 is maximum recall at precision at least 0.8 with a nonempty
+  prediction set, or zero if no such set is attainable.
+- Empty-direction AP/recall, undefined PCC/Spearman and zero-variance-truth R²
+  remain NaN. Macro means use valid groups and disclose valid-group counts.
+- Cache truth/labels once per fold. Persist all model/fold/seed predictions
+  before downstream test scoring; then evaluate in bounded CPU parallelism.
+  Share rankings/PR computations between AP, Recall@P80 and curves. Author
+  validation loss remains available during training for checkpoint selection.
+- Include `no_change` (zero Δ) and `delta_mean` (training-group mean Δ) under the
+  same folds and scoring rules, in all three figures. Their identical
+  seed copies are deterministic references, not independent trained fits.
 
-## Decisions resolved in interview round 1
+## Figures
 
-- **Cold-drug evaluation.** Hold every dose and replicate of a test drug out
-  of training and validation; put stereoisomers sharing the same active-parent
-  connectivity into one split block. Round 3 replaces the originally agreed
-  structure-derived drug input with one-hot identity; the held-out-drug split
-  remains agreed, but its scientific interpretation requires clarification.
-- **Complete CM gene axis.** All models consume and predict the same ordered
-  18,164 genes. Input/output dimension and batch-size changes are allowed;
-  HVG substitution, zero-filled reconstruction and a new core architecture are
-  not admission paths.
-- **Publication gate retained.** Exclude preprint-only models, retaining ADR
-  0025's publication-status restriction. Public code alone does not establish
-  admission.
-- **Directional truth sets.** For each drug–dose group's true Δ, positive truth
-  is the largest 100 strictly positive entries; negative truth is the smallest
-  100 strictly negative entries. Keep fewer when fewer same-sign genes exist.
-  Rank all genes by predicted Δ for positive and by its negation for negative.
-  AUPRC@100 is average precision with those labels, not a truncation of the
-  prediction ranking. Recall@P80 is the maximum recall attained at precision
-  at least 0.8 with a nonempty prediction set, or zero if none is attainable.
-- **Cache and evaluate separately.** Generate each fold's truth sets once and
-  reuse them across seeds and models. Persist every `(model, fold, seed)`
-  prediction before downstream evaluation. After the prediction stage, compute
-  metrics in bounded CPU parallelism; reuse each direction's ranking/PR
-  computation for AP, Recall@P80 and the curve rather than sorting repeatedly.
-  Seeds never alter test truth.
-- **PR figure.** Horizontal axis is recall and vertical axis is precision.
-  Positive/negative are red/blue; the nine-run mean is the central curve and
-  their minimum–maximum range is the light band. This is a PR curve, not a
-  curve of AUPRC against rank.
+1. Eight metric panels: model/baseline bars are nine-run arithmetic means,
+   dots are individual run samples, error bars are ± one sample standard
+   deviation. Describe run variation without treating runs as independent
+   biological replicates.
+2. Per-model/baseline PR panels: x = recall, y = precision, positive red and
+   negative blue. Macro-average groups on a shared recall grid within each
+   run, then plot the nine-run mean and light minimum–maximum range.
+3. One best-single-run PR overview: choose each entry's run maximizing
+   `(AP_positive@100 + AP_negative@100) / 2`, break ties in fixed fold/seed
+   order, and average its two directional precision curves on a common recall
+   grid into one line. Label this as post-hoc best test performance; entries
+   may select different folds. Nine-run summaries remain the primary evidence.
 
-## Decisions resolved in interview round 2
+## Research evidence and remaining work
 
-- **Fold–seed design.** Freeze three outer drug-structure-block test folds;
-  each drug is tested exactly once. Within each fold's remaining approximately
-  two thirds of drugs, hold out 15% for validation, preserving blocks. Approximate
-  overall train/validation/test fractions are 56.7%/10%/33.3%; integer block
-  membership determines exact counts. Split seed is `20261105`, training seeds
-  are `17`, `42`, `2026`. Every model uses identical membership for each fold,
-  independent of its training seed.
-- **Consumer view and baseline.** Project tenv raw counts onto the ordered CM
-  gene axis, then recompute CP10K and log1p on that axis. Each treated well's
-  baseline input is the mean log-expression of same-plate DMSO wells. Test-plate
-  DMSO is an allowed measured input; test treated expression is evaluator-only
-  ground truth and must not be exposed to training or prediction.
-- **Target and scoring unit.** Score Δ = treated log-expression minus matched
-  DMSO mean. Convert post-treatment-expression outputs to that same Δ. Average
-  well-level predicted and observed Δ within each `(drug_key, dose)` group,
-  compute all eight metrics per group, then take an equal-weight group macro
-  average for each run sample.
-- **Compound and dose scope.** Use all 460 structure-resolved tenv small
-  molecules, without a pharmacology-qualification filter. Exclude blanks and
-  non-DMSO controls from treated training targets. All entrants must support
-  actual dose as an input; an architecture's configurable gene dimension alone
-  does not establish qualification.
-- **Initialization and budget.** Train all formal comparisons from random
-  initialization with no external pretraining. Follow author training methods,
-  use validation for checkpoint selection and perform no additional HPO.
-  Each `(model, fold, seed)` has a four-hour training ceiling (up to 36 hours
-  per model). Mark timeouts and failures explicitly; never impute missing run
-  samples. Models without nine completed runs cannot receive a complete ranking.
-- **Dedicated scheduling agent.** During execution one agent owns dispatch and
-  monitors WSL available RAM and GPU memory at high frequency. The user's
-  instruction permits concurrent training when measured resources allow it,
-  including long fits; this refines the default serial-long-fit rule for this
-  experiment. Retain the repo-wide maximum of two heavy jobs, combined peak
-  approximately 28 GiB, per-process memory caps, 12 GiB available-RAM admission
-  floor, bounded data access and peak accounting. GPU/host profiles must justify
-  starting a second model; concurrency is opportunistic, not guaranteed.
-- **Figures.** For each metric the model bar is the arithmetic mean of its
-  nine run samples, dots are those samples and the error bar is ± one sample
-  standard deviation. This describes run variation, not independent biological
-  replicates. For PR, first macro-average groups within each run on a shared
-  recall grid; then compute the nine-run mean and minimum–maximum band.
-- **Undefined metrics.** A direction with no true genes has NaN AP and recall;
-  undefined PCC/Spearman and zero-variance-truth R² also remain NaN. Macro means
-  use valid groups only and report valid-group counts for every metric.
+Biomni Layer 2 was invoked in the prescribed environment: sandbox DNS failed;
+network-enabled broad and narrow PubMed calls returned HTTP 500; an arXiv call
+was cancelled without a result. A further bounded Biomni Google-search call
+failed on sandbox DNS and returned HTTP 429 on its network-enabled retry;
+its process has ended. These attempts are not a completed Biomni
+research pass; an effective retrieval is still required.
 
-## Decisions resolved in interview round 3
+Primary pages identify new candidates
+[PertDiff](https://academic.oup.com/bioinformatics/article/42/7/btag482/8722292),
+[PerturbDiff](https://proceedings.mlr.press/v306/yuan26d.html) and
+[scDFM](https://openreview.net/pdf?id=QSGanMEcUV). Publication is not full-space,
+adapter or resource admission evidence. Formal publication of theislab
+CellFlow has not been verified. Reassess every candidate under the selected
+Morgan-plus-adapter contract; no new entrant is declared qualified here.
 
-- **Model boundary.** The user defines a model by the parameters updateable in
-  one backward pass. A drug encoder trained independently on data outside the
-  perturbation dataset is a separate model and is not included in this test.
-- **One-hot drug inputs.** Replace structure features with one-hot drug identity
-  for every entrant, using its required drug-representation dimension. This
-  explicitly replaces round 1's chemical-structure-input admission gate. Exact
-  dimension handling where a model expects fewer than 460 coordinates is open;
-  no collisions, hashing or non-one-hot encoding are implicitly allowed.
-  **Reopened in round 4:** the user withdrew one-hot and requested a common
-  informative chemical representation, considering KPGT plus dimension adapters.
-  One-hot must not be implemented as the current agreed input policy.
-- **Author validation loss.** Select checkpoints using each author's own loss
-  on the validation data, matching its training objective and reducing redundant
-  metric work. Do not substitute a common Δ-MSE selection criterion. The
-  across-model comparison still uses the eight common test metrics.
-- **Baselines in all figures.** Include `no_change` (Δ = zero) and `delta_mean`
-  (training-group mean Δ) in both the metric figure and PR figure, evaluated
-  under the same folds and scoring rules as entrants. These deterministic
-  baselines have no trainable model parameters; seed copies are identical and
-  are not independent fits.
-- **Third figure.** Add a single PR overview with one curve per model/baseline,
-  each from that entry's best `(fold, seed)` run. The best-run selection score
-  and how to combine directions in one curve remain open.
-  **Resolved in round 4:** select the run maximizing the test mean of positive
-  and negative AP@100, break ties in fixed fold/seed order, and average the two
-  directional precision curves on a common recall grid to produce one curve
-  per entry. Label it as a post-hoc best-test-run display; entries may select
-  different folds. The nine-run summaries remain the primary evidence.
-- **Scheduling and retries.** Sample and record RAM/GPU usage every five
-  seconds. Admit at most two heavy tasks using measured peaks plus 20% headroom,
-  still satisfying the approximately 28 GiB combined budget and at least
-  12 GiB available RAM. Stop dispatch below the floor; if pressure continues
-  worsening, save and stop the newer task belonging to this experiment.
-  Repairable environmental failures permit one retry; OOM permits one retry
-  after reducing batch size within the same cumulative four-hour training
-  budget. Persistent failures are reported rather than replaced with synthetic
-  results.
-- **Archive and active paths.** Archive the old step at
-  `stage2/_archive/03_models_cmbench/`, preserving its results and existing
-  `_frozen` inputs. Use `stage2/03_modes_tenv/` for the new comparison.
+The [RDKit Morgan documentation](https://www.rdkit.org/docs/GettingStartedInPython.html#morgan-fingerprints-circular-fingerprints)
+defines configurable circular fingerprints. It does not establish superiority
+over KPGT on tenv. KPGT was inspected but not selected; its local provenance
+gap and 2,304-dimensional base output do not block the chosen Morgan design.
 
-## Remaining design frontier
-
-Choose the shared chemical representation and the trainable adapter boundary.
-The user has withdrawn the one-hot proposal, reopening structure-based
-held-out-drug prediction. Model discovery and source
-verification remain research prerequisites; no new model is declared qualified
-by this proposed record. Historical structure-based exclusion reasons alone
-cannot establish current admission without checking the final representation
-and adapter contract.
-
-## Shared chemical representation under discussion (round 4)
-
-The user asks whether KPGT or another shared chemical featurizer can supply
-informative, consistent drug inputs, optionally with one dimension adapter per
-predictor. This is a proposal, not yet a selected benchmark configuration.
-
-- The [official KPGT paper](https://www.nature.com/articles/s41467-023-43214-1)
-  explicitly supports frozen feature extraction. The
-  [official extraction code](https://github.com/lihan97/KPGT/blob/main/scripts/extract_features.py)
-  calls `generate_fps`; the base config uses hidden dimension 768 and its
-  readout concatenates three such vectors, giving 2,304 features. Local source
-  agrees. The category README's 512-dimensional description is not the raw
-  KPGT base readout; do not use it as an adapter-shape contract.
-- A possible design is one frozen checkpoint, one standardized structure per
-  drug, one cached float32 `460 × 2304` feature table, and a separately
-  initialized linear `2304 → d_model` adapter for each prediction run. The
-  adapter trains only on training perturbation responses with the predictor;
-  validation selects checkpoints and test responses remain evaluator-only.
-- Under the user's model boundary, the frozen external KPGT is a common input
-  featurizer, not an entrant. The trainable adapter is part of its predictor.
-  Random initialization then applies to the adapter and perturbation predictor,
-  not to the common pretrained chemical featurizer. End-to-end fine-tuning of
-  KPGT would change both this boundary and the resource profile.
-- Common feature origin does not make the learned adapted vectors identical.
-  Report adapter dimensions and parameter counts; no claim that this exactly
-  reproduces each author's native chemical pipeline is justified.
-- Local KPGT weights and source have unknown upstream versions/URLs in their
-  author log. Pin and verify an official checkpoint/code provenance or recover
-  a documented match before treating that asset as a reproducible input. Do
-  not alter the current external item's `source/` in place.
-- A new local extraction wrapper must use frozen parameters, evaluation mode
-  and inference mode. The current vendored extractor only detaches outputs and
-  is not itself a sufficient resource-bounded frozen-extraction wrapper.
-
-## Research evidence so far (2026-11-05)
-
-Biomni Layer 2 was invoked in the prescribed `biomni_e1` environment. The broad
-PubMed query first failed on sandbox DNS; its network-enabled retry and a narrow
-CellFlow query both returned HTTP 500. A subsequent arXiv query was cancelled
-without a result. These attempts do not satisfy the requested completed Biomni
-research; an effective retrieval is still required before closing discovery.
-
-Primary publication pages identify new candidates
-[PertDiff (Bioinformatics)](https://academic.oup.com/bioinformatics/article/42/7/btag482/8722292),
-[PerturbDiff (ICML/PMLR)](https://proceedings.mlr.press/v306/yuan26d.html) and
-[scDFM (ICLR)](https://openreview.net/pdf?id=QSGanMEcUV).
-Publication evidence is not full-space or hardware admission evidence. The
-[theislab CellFlow README](https://github.com/theislab/CellFlow) still points
-to a preprint; formal publication has not been verified. Reassess all candidates
-under the latest one-hot requirement before adding repositories or setup runs.
-
-The old ADR 0027 contract remains the contract of the frozen historical study;
-its five-fold single-seed entrant list and k=200 primary metric must not silently
-govern the new experiment. Final choices will be recorded here as they resolve.
+This ADR awaits exact Morgan-parameter and shared-understanding confirmation.
+Then the fixed workflow continues through published spec, dependency tickets
+and implementation; this design record does not authorize bypassing those
+steps. ADR 0027 remains the contract of the frozen historical benchmark.
 
 ## See
 
 - [Dataset corpus contract](0033-stage2-dataset-corpus.md)
 - [Historical benchmark contract](0027-stage2-benchmark-contract.md)
 - [External-data and step layout](0030-external-data-provenance-and-step-layout.md)
-- [Historical model publication gate](0025-stage1-stage2-directory-split.md)
+- [Publication gate](0025-stage1-stage2-directory-split.md)
 - [Stage 2 overview](../../stage2/README.md)
 - [Execution environment](../agents/execution-environment.md)

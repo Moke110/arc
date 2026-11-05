@@ -329,6 +329,11 @@ The same structure-derived feature vector supplied for a compound to every
 tenv entrant before any model-specific dimension adaptation. Its common origin
 does not imply that separately trained adapters produce identical vectors.
 
+**Tenv adapted predictor**:
+A perturbation predictor together with its jointly trained linear adapter from
+the shared Morgan fingerprint to the predictor's drug-representation interface.
+The adapter's parameters belong to the compared model.
+
 **Tenv benchmark sample**:
 One model's training-and-test result under one fixed fold and one fixed training
 seed in the redesigned tenv comparison. Three folds crossed with three seeds
