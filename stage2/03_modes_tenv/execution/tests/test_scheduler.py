@@ -56,6 +56,10 @@ class SchedulerContract(unittest.TestCase):
             self.assertEqual(transition('environment', 0)['status'], 'failed')
             state.unlink()
             self.assertEqual(transition('oom', 14400)['status'], 'timeout')
+            state.unlink()
+            inference = transition('inference_timeout', 0)
+            self.assertEqual(inference['status'], 'timeout')
+            self.assertEqual(inference['training_seconds'], 0)
 
     def test_recovered_terminal_states_satisfy_prediction_barrier(self):
         # Durable scheduler state is the recovery input after a dead worker or

@@ -38,7 +38,7 @@ def transition(state, reason, seconds):
     state['training_seconds'] += seconds
     state['stop_reason'] = reason
     state['status'] = 'failed'
-    if state['training_seconds'] >= 14400 or reason == 'timeout':
+    if state['training_seconds'] >= 14400 or reason in ('timeout', 'inference_timeout'):
         state['status'] = 'timeout'
     elif reason == 'completed':
         state['status'] = 'completed'
@@ -282,6 +282,9 @@ def schedule_queue(queue_path):
                     state['inference_seconds'] = state.get('inference_seconds', 0) + delta
                 if state['training_seconds'] >= 14400:
                     entry['forced_reason'] = 'timeout'
+                    stop_owned(entry['process'])
+                elif state.get('inference_seconds', 0) >= entry['job'].get('inference_timeout_seconds', 1800):
+                    entry['forced_reason'] = 'inference_timeout'
                     stop_owned(entry['process'])
                 status = entry['process'].poll()
                 if status is None:
