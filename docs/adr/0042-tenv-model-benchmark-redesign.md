@@ -123,6 +123,9 @@ below are not defaults or authorization to start the benchmark.
   explicitly replaces round 1's chemical-structure-input admission gate. Exact
   dimension handling where a model expects fewer than 460 coordinates is open;
   no collisions, hashing or non-one-hot encoding are implicitly allowed.
+  **Reopened in round 4:** the user withdrew one-hot and requested a common
+  informative chemical representation, considering KPGT plus dimension adapters.
+  One-hot must not be implemented as the current agreed input policy.
 - **Author validation loss.** Select checkpoints using each author's own loss
   on the validation data, matching its training objective and reducing redundant
   metric work. Do not substitute a common Δ-MSE selection criterion. The
@@ -135,6 +138,11 @@ below are not defaults or authorization to start the benchmark.
 - **Third figure.** Add a single PR overview with one curve per model/baseline,
   each from that entry's best `(fold, seed)` run. The best-run selection score
   and how to combine directions in one curve remain open.
+  **Resolved in round 4:** select the run maximizing the test mean of positive
+  and negative AP@100, break ties in fixed fold/seed order, and average the two
+  directional precision curves on a common recall grid to produce one curve
+  per entry. Label it as a post-hoc best-test-run display; entries may select
+  different folds. The nine-run summaries remain the primary evidence.
 - **Scheduling and retries.** Sample and record RAM/GPU usage every five
   seconds. Admit at most two heavy tasks using measured peaks plus 20% headroom,
   still satisfying the approximately 28 GiB combined budget and at least
@@ -150,11 +158,47 @@ below are not defaults or authorization to start the benchmark.
 
 ## Remaining design frontier
 
-Clarify one-hot dimensionality, the held-out-identity task interpretation, and
-the best-run PR overview's selection/direction rules. Model discovery and source
+Choose the shared chemical representation and the trainable adapter boundary.
+The user has withdrawn the one-hot proposal, reopening structure-based
+held-out-drug prediction. Model discovery and source
 verification remain research prerequisites; no new model is declared qualified
 by this proposed record. Historical structure-based exclusion reasons alone
-cannot establish exclusion from the new one-hot task.
+cannot establish current admission without checking the final representation
+and adapter contract.
+
+## Shared chemical representation under discussion (round 4)
+
+The user asks whether KPGT or another shared chemical featurizer can supply
+informative, consistent drug inputs, optionally with one dimension adapter per
+predictor. This is a proposal, not yet a selected benchmark configuration.
+
+- The [official KPGT paper](https://www.nature.com/articles/s41467-023-43214-1)
+  explicitly supports frozen feature extraction. The
+  [official extraction code](https://github.com/lihan97/KPGT/blob/main/scripts/extract_features.py)
+  calls `generate_fps`; the base config uses hidden dimension 768 and its
+  readout concatenates three such vectors, giving 2,304 features. Local source
+  agrees. The category README's 512-dimensional description is not the raw
+  KPGT base readout; do not use it as an adapter-shape contract.
+- A possible design is one frozen checkpoint, one standardized structure per
+  drug, one cached float32 `460 × 2304` feature table, and a separately
+  initialized linear `2304 → d_model` adapter for each prediction run. The
+  adapter trains only on training perturbation responses with the predictor;
+  validation selects checkpoints and test responses remain evaluator-only.
+- Under the user's model boundary, the frozen external KPGT is a common input
+  featurizer, not an entrant. The trainable adapter is part of its predictor.
+  Random initialization then applies to the adapter and perturbation predictor,
+  not to the common pretrained chemical featurizer. End-to-end fine-tuning of
+  KPGT would change both this boundary and the resource profile.
+- Common feature origin does not make the learned adapted vectors identical.
+  Report adapter dimensions and parameter counts; no claim that this exactly
+  reproduces each author's native chemical pipeline is justified.
+- Local KPGT weights and source have unknown upstream versions/URLs in their
+  author log. Pin and verify an official checkpoint/code provenance or recover
+  a documented match before treating that asset as a reproducible input. Do
+  not alter the current external item's `source/` in place.
+- A new local extraction wrapper must use frozen parameters, evaluation mode
+  and inference mode. The current vendored extractor only detaches outputs and
+  is not itself a sufficient resource-bounded frozen-extraction wrapper.
 
 ## Research evidence so far (2026-11-05)
 
