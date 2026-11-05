@@ -1,0 +1,48 @@
+{
+  "upstream_identifier": "10.1038/aps.2012.185",
+  "version": "Published2013;PMC4002788 original article; source hashes frozen",
+  "license": {
+    "status": "Copyright2013 CPS and SIMM; no open reuse license established",
+    "evidence": "PMC4002788.html copyright"
+  },
+  "validation": {
+    "status": "validated_original_formats_and_sha256",
+    "expected_html_markers": {
+      "PMC4002788.html": [
+        "10.1038/aps.2012.185",
+        "23396376",
+        "Safflor yellow A protects neonatal rat cardiomyocytes"
+      ]
+    }
+  },
+  "dataset_id": "duan_2013",
+  "retrieved_at": "2026-11-04T13:05:37.863407+00:00",
+  "acquisition_note": "Original primary PMC/CDN bytes acquired earlier in this run, archived unchanged; S3 listing had no asset and EuropePMCXML/publisherPDF attempts failed, none of those error payloads archived",
+  "sources": [
+    {
+      "path": "PMC4002788.html",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4002788/",
+      "media_type": "text/html",
+      "bytes": 199908,
+      "sha256": "d5f859a68693e8b38bc48cc9d73259c46d63187032996175d0f392b3f35ac8be",
+      "retrieved_at": "2026-11-04T13:05:37.863407+00:00"
+    },
+    {
+      "path": "aps2012185f2.jpg",
+      "url": "https://cdn.ncbi.nlm.nih.gov/pmc/blobs/55ec/4002788/62dd84a93b5a/aps2012185f2.jpg",
+      "media_type": "image/jpeg",
+      "bytes": 86436,
+      "sha256": "09df45548d90706b0a6ca34fb33bd443702cd600465215dfd9b39c013c9aab34",
+      "retrieved_at": "2026-11-04T13:06:26.150976+00:00"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/duan_v1.json",
+      "sha256": "1165399781c9c36f88ce3611cce5918d9c0345fec9a00f6650c9afeb40487a9d",
+      "bytes": 2782,
+      "origin": "stage3/01_data_corpus/execution/curation/duan_v1.json; reviewed author-summary figure digitization, version1",
+      "source_image_sha256": "09df45548d90706b0a6ca34fb33bd443702cd600465215dfd9b39c013c9aab34"
+    }
+  ]
+}

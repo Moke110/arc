@@ -77,3 +77,38 @@ micromolar conversion avoids binary-arithmetic source key drift.
 Use the same commands above with `--source liu_2021`. Public build/verify and
 real-source regression produce one4-row normoxic partition and an explicit empty
 HR partition, with complete comparison/exclusion evidence.
+
+## Duan 2013 primary cardiomyocytes (#36)
+
+Correct publication year is2013 (DOI10.1038/aps.2012.185; PMID23396376),
+replacing the earlier candidate inventory spelling Duan-2014. Original PMC HTML
+and NCBI-hosted Figure2 are archived unchanged with actual earlier retrieval
+provenance. Article identity markers and JPEG format/hash are verified offline.
+Failed EuropePMC XML/publisher PDF attempts were error documents and were not
+archived as originals. Copyright2013CPS/SIMM is preserved; no CC license invented.
+
+Figure2B contains four target comparisons: NAC200µmol/L and SYA40/60/80nmol/L.
+All four approximate author mean values0.82/0.41/0.55/0.81 (±0.02 extraction
+precision) are independently checked against the original pixels. The model
+bar0.27 is the A/R drug comparator, while untreated normal1.0 is only injury
+reference. Mean±SD of three experiments does not establish independent units;
+later figures explicitly say independent, but that statement is not imported
+into this MTT panel. No summary is expanded into invented replicates and no star
+becomes numerical p. All four treatment/model ratios cross the effect threshold,
+but necessary adjusted p remains unavailable. Source drug names and exact
+administered dose units are preserved, with decimal canonical unit conversion.
+
+The source protocol is24h pretreatment→3h anoxia→6hreoxygenation in neonatal
+1–3day Sprague-Dawley rat primary cardiomyocytes. Anoxia uses95%N2/5%CO2 and
+specified hypoxia solution, then maintenance medium replacement; actual drug
+persistence is not stated. Unknown context is source-scoped. Panel2A is only4h
+normoxic toxicity, explicitly excluded from the24h target. SYA chemical-parent
+identity (including distinction from hydroxysafflor yellowA) and NAC precise
+form/stereochemistry remain unresolved rather than supplied from an assumed
+alias. This is visible as an additional identity exclusion.
+
+Offline public build/verify therefore yields four retained comparisons with
+explicit exclusions and one typed empty primary/A/R cell_viability partition.
+Use `--source duan_2013` with the same preparation/build/verify workflow. The
+source archive and real-source public-workflow test both pass. No numerical
+corpus sample or independently replicated experiment is claimed for this source.

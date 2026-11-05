@@ -47,4 +47,23 @@ class ViabilitySources(unittest.TestCase):
             self.assertEqual(coverage['class_rows'],{'-1':0,'0':4,'1':0})
             self.assertEqual(coverage['excluded_comparisons'],4)
 
+    def test_duan_primary_ar_preserves_summary_and_excludes_unknown_tests(self):
+        with tempfile.TemporaryDirectory() as temp:
+            bundle=Path(temp)/'bundle.json'
+            run=subprocess.run([sys.executable,str(EXEC/'viability_adapters.py'),'--source','duan_2013','--output',str(bundle)],capture_output=True,text=True)
+            self.assertEqual(run.returncode,0,run.stderr)
+            data=json.loads(bundle.read_text())
+            self.assertEqual(len(data['records']),4)
+            self.assertEqual([r['measurements'][0]['value'] for r in data['records']],[.82,.41,.55,.81])
+            self.assertEqual([r['dose'] for r in data['records']],[.0002,4e-8,6e-8,8e-8])
+            self.assertTrue(all(r['statistics']['control_mean']==.27 for r in data['records']))
+            self.assertTrue(all(r['condition']['condition_hypoxia_time']==3 and r['condition']['condition_reoxygen_time']==6 for r in data['records']))
+            release=Path(temp)/'release'
+            for args in [('build','--input',str(bundle),'--output',str(release)),('verify','--release',str(release))]:
+                run=subprocess.run([sys.executable,str(EXEC/'corpus.py'),*args],capture_output=True,text=True)
+                self.assertEqual(run.returncode,0,run.stderr)
+            coverage=json.loads((release/'coverage.json').read_text())
+            self.assertEqual(coverage['excluded_comparisons'],4)
+            self.assertEqual(coverage['sample_rows'],0)
+
 if __name__=='__main__': unittest.main()

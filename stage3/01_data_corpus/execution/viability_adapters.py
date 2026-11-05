@@ -9,7 +9,8 @@ from pathlib import Path
 ROOT=next(p for p in Path(__file__).resolve().parents if (p/'.git').exists())
 HERE=Path(__file__).resolve().parent
 SOURCES={'linn_2024':{'item':'Linn-2024','curation':'linn_v1.json','image':'ijms-25-01427-g003.jpg','method':'MTT'},
-         'liu_2021':{'item':'Liu-2021','curation':'liu_v1.json','image':'FEB4-11-2966-g004.jpg','method':'CCK8'}}
+         'liu_2021':{'item':'Liu-2021','curation':'liu_v1.json','image':'FEB4-11-2966-g004.jpg','method':'CCK8'},
+         'duan_2013':{'item':'Duan-2013','curation':'duan_v1.json','image':'aps2012185f2.jpg','method':'MTT'}}
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -106,12 +107,39 @@ def liu_records(source,data,config):
                 'evidence':'Approximate author means on shared source scale; mean±SD and three repetitions reported but independent unit unclear. Stars/Tukey statement does not give numerical p or BH. Small magnitude yields operational0 without a significance claim.'}})
     return records
 
+def duan_records(source,data,config):
+    records=[]
+    for index,point in enumerate(data['points'],1):
+        identity=f'{source}-Fig2B-{index:02}'
+        factor='1e-6' if point['dose_unit']=='umol/L' else '1e-9'
+        cond=condition('primary neonatal rat cardiomyocytes',24,3,6,
+            condition_species='Rattus norvegicus',condition_background='Sprague-Dawley1–3day neonates; sex unspecified',
+            condition_oxygen='anoxia95%N2/5%CO2 then normal reoxygenation medium',
+            condition_vehicle='drug-free A/R model; vehicle composition unreported',condition_unresolved_context=source)
+        records.append({'comparison_id':identity,'source':source,'condition':cond,'phenotype':'cell_viability',
+            'assay_method':'MTT','batch':'Fig2B','drug':None,
+            'dose':float(Decimal(str(point['dose_original']))*Decimal(factor)),
+            'source_drug_name':point['drug'],'administered_form':'unresolved named SYA or NAC preparation',
+            'identity_evidence':data['identity_limitations'],
+            'dose_evidence':'Exact source-labeled molarity converted by Decimal; active-parent identity unresolved, no cross-source canonical identity asserted',
+            'control_evidence':'Fig2BModel same A/R protocol without drug, source-summary0.27 on common viability scale; normalControl1.0 is injury reference only. Vehicle composition unknown.',
+            'measurements':[{'measurement_id':identity,'value':point['readout'],'normalized_value':None,
+                'assay_method':'MTT','unit':'source relative cell viability','representation':'summary',
+                'asset':'pheno_data/Duan-2013/source/'+config['image'],
+                'selector':f"Fig2B {point['drug']} {point['dose_original']}{point['dose_unit']} x={point['x_px']} y={point['y_px']}",
+                'experimental_unit':None,'extraction':point,'reported_error_type':'SD','independent_n':None,
+                'review':data['independent_review'],'readout_scale':'author relative viability summary; raw absorbance unavailable'}],
+            'quality_reasons':['active_parent_identity_unresolved'],
+            'statistics':{'treated_mean':point['readout'],'control_mean':.27,'scale_compatible':True,'control_matched':True,
+                'p_raw':None,'p_adjusted':None,'evidence':'Approximate source means; mean±SD of3experiments without confirmed independent units. StarsfP<0.01 do not give exact p or complete BH family; no invented significance.'}})
+    return records
+
 def build_sources(selected):
     sources=[];records=[];audits={}
     for name in selected:
         context,data,config=source_context(name)
         sources.append(context)
-        current={'linn_2024':linn_records,'liu_2021':liu_records}[name](name,data,config)
+        current={'linn_2024':linn_records,'liu_2021':liu_records,'duan_2013':duan_records}[name](name,data,config)
         records.extend(current)
         audits[name]={'curation_version':data['curation_version'],'source_comparisons':len(current),
             'independent_review':data['independent_review'],'status':'archived and independently extracted; public build determines admission'}

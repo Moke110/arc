@@ -1,0 +1,91 @@
+{
+  "curation_version": 1,
+  "source": "duan_2013",
+  "figure": "Fig2B",
+  "image": "aps2012185f2.jpg",
+  "points": [
+    {
+      "panel": "2B",
+      "drug": "N-acetylcysteine",
+      "dose_original": 200,
+      "dose_unit": "umol/L",
+      "x_px": 382,
+      "y_px": 556,
+      "readout": 0.82,
+      "precision": 0.02,
+      "control_readout": 0.27,
+      "control_selector": "Fig2B Model",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_experiments": 3
+    },
+    {
+      "panel": "2B",
+      "drug": "safflor yellow A",
+      "dose_original": 40,
+      "dose_unit": "nmol/L",
+      "x_px": 473,
+      "y_px": 669,
+      "readout": 0.41,
+      "precision": 0.02,
+      "control_readout": 0.27,
+      "control_selector": "Fig2B Model",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_experiments": 3
+    },
+    {
+      "panel": "2B",
+      "drug": "safflor yellow A",
+      "dose_original": 60,
+      "dose_unit": "nmol/L",
+      "x_px": 565,
+      "y_px": 631,
+      "readout": 0.55,
+      "precision": 0.02,
+      "control_readout": 0.27,
+      "control_selector": "Fig2B Model",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_experiments": 3
+    },
+    {
+      "panel": "2B",
+      "drug": "safflor yellow A",
+      "dose_original": 80,
+      "dose_unit": "nmol/L",
+      "x_px": 657,
+      "y_px": 560,
+      "readout": 0.81,
+      "precision": 0.02,
+      "control_readout": 0.27,
+      "control_selector": "Fig2B Model",
+      "error_type": "SD",
+      "independent_n": null,
+      "reported_experiments": 3
+    }
+  ],
+  "independent_review": {
+    "reviewer": "/root",
+    "date": "2026-11-04",
+    "method": "separate original JPEG and4row coordinate table inspection",
+    "scope": "approximate summary values checked within\u00b10.02; independent n and exact p not established"
+  },
+  "controls": {
+    "normal": {
+      "mean": 1.0,
+      "selector": "Fig2BControl",
+      "role": "injury reference, never drug comparator"
+    },
+    "model": {
+      "mean": 0.27,
+      "selector": "Fig2BModel",
+      "role": "same A/R model without drug",
+      "y_px": 710
+    }
+  },
+  "excluded_panel": "Fig2A4h normoxic toxicity, outside24h target",
+  "protocol": "neonatal rat1\u20133d primary cardiomyocytes;24h predrug\u21923h anoxia95%N2/5%CO2\u21926hreoxygenation after maintenance medium replacement; drug persistence unreported",
+  "error": "Mean\u00b1SD three experiments; unlike later figures caption does not explicitly establish independent experiments",
+  "identity_limitations": "SYA molecular formula/mass and structure not resolved to validated active parent; do not silently equate with hydroxysafflor yellow A. NAC source name does not specify stereochemistry/form; no synthetic mapping."
+}
