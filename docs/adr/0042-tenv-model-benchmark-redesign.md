@@ -58,19 +58,65 @@ below are not defaults or authorization to start the benchmark.
   prediction before downstream evaluation. After the prediction stage, compute
   metrics in bounded CPU parallelism; reuse each direction's ranking/PR
   computation for AP, Recall@P80 and the curve rather than sorting repeatedly.
-  Seeds never alter test truth. Degenerate empty truth-set handling is still
-  to be specified.
+  Seeds never alter test truth.
 - **PR figure.** Horizontal axis is recall and vertical axis is precision.
   Positive/negative are red/blue; the nine-run mean is the central curve and
   their minimum–maximum range is the light band. This is a PR curve, not a
   curve of AUPRC against rank.
 
+## Decisions resolved in interview round 2
+
+- **Fold–seed design.** Freeze three outer drug-structure-block test folds;
+  each drug is tested exactly once. Within each fold's remaining approximately
+  two thirds of drugs, hold out 15% for validation, preserving blocks. Approximate
+  overall train/validation/test fractions are 56.7%/10%/33.3%; integer block
+  membership determines exact counts. Split seed is `20261105`, training seeds
+  are `17`, `42`, `2026`. Every model uses identical membership for each fold,
+  independent of its training seed.
+- **Consumer view and baseline.** Project tenv raw counts onto the ordered CM
+  gene axis, then recompute CP10K and log1p on that axis. Each treated well's
+  baseline input is the mean log-expression of same-plate DMSO wells. Test-plate
+  DMSO is an allowed measured input; test treated expression is evaluator-only
+  ground truth and must not be exposed to training or prediction.
+- **Target and scoring unit.** Score Δ = treated log-expression minus matched
+  DMSO mean. Convert post-treatment-expression outputs to that same Δ. Average
+  well-level predicted and observed Δ within each `(drug_key, dose)` group,
+  compute all eight metrics per group, then take an equal-weight group macro
+  average for each run sample.
+- **Compound and dose scope.** Use all 460 structure-resolved tenv small
+  molecules, without a pharmacology-qualification filter. Exclude blanks and
+  non-DMSO controls from treated training targets. All entrants must support
+  actual dose as an input; an architecture's configurable gene dimension alone
+  does not establish qualification.
+- **Initialization and budget.** Train all formal comparisons from random
+  initialization with no external pretraining. Follow author training methods,
+  use validation for checkpoint selection and perform no additional HPO.
+  Each `(model, fold, seed)` has a four-hour training ceiling (up to 36 hours
+  per model). Mark timeouts and failures explicitly; never impute missing run
+  samples. Models without nine completed runs cannot receive a complete ranking.
+- **Dedicated scheduling agent.** During execution one agent owns dispatch and
+  monitors WSL available RAM and GPU memory at high frequency. The user's
+  instruction permits concurrent training when measured resources allow it,
+  including long fits; this refines the default serial-long-fit rule for this
+  experiment. Retain the repo-wide maximum of two heavy jobs, combined peak
+  approximately 28 GiB, per-process memory caps, 12 GiB available-RAM admission
+  floor, bounded data access and peak accounting. GPU/host profiles must justify
+  starting a second model; concurrency is opportunistic, not guaranteed.
+- **Figures.** For each metric the model bar is the arithmetic mean of its
+  nine run samples, dots are those samples and the error bar is ± one sample
+  standard deviation. This describes run variation, not independent biological
+  replicates. For PR, first macro-average groups within each run on a shared
+  recall grid; then compute the nine-run mean and minimum–maximum band.
+- **Undefined metrics.** A direction with no true genes has NaN AP and recall;
+  undefined PCC/Spearman and zero-variance-truth R² also remain NaN. Macro means
+  use valid groups only and report valid-group counts for every metric.
+
 ## Remaining design frontier
 
-Open choices include validation allocation inside three folds, seed values, baseline/control
-availability, normalization and aggregation, initialization and training budgets,
-failure handling, uncertainty conventions, and archive paths. No new model is
-declared qualified by this proposed record.
+Remaining decisions concern admissible adapters, checkpoint-selection criterion,
+baseline comparators, failure/retry policy, scheduler monitoring details and
+archive paths. Model discovery and source verification remain research
+prerequisites; no new model is declared qualified by this proposed record.
 
 The old ADR 0027 contract remains the contract of the frozen historical study;
 its five-fold single-seed entrant list and k=200 primary metric must not silently

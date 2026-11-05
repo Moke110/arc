@@ -339,7 +339,10 @@ at least 0.8 for one tenv directional truth set; zero when no such set is
 attainable.
 
 **Cold-drug fold**:
-One of five Stage 2 benchmark splits in which a drug is never observed in the fold's train or validation set and is scored exactly once as test; every drug is test exactly once and valid exactly once across the five folds (6:2:2 = 276/92/92 drugs).
+One Stage 2 benchmark split whose test drugs are absent from its training and
+validation sets at every dose and repeat; each drug is tested exactly once
+across the outer folds. The historical benchmark used five folds; the redesigned
+tenv comparison uses three, with validation drawn from the remaining drugs.
 _Avoid_: cold-start split, holdout (unqualified)
 
 **CM-unseen drug (CM 未见药物)**:
@@ -347,11 +350,15 @@ A drug whose cardiomyocyte perturbation observations are withheld from model fit
 _Avoid_: globally unseen drug, unseen drug (without specifying the CM scope)
 
 **Δ space**:
-The benchmark's target: `log1p_cp10k(treated) − mean(log1p_cp10k(same-plate DMSO))`, in the 18,164-gene corpus order. The model emits per-well Δ; the runner averages within a group.
+The CM benchmark target: `log1p_cp10k(treated) − mean(log1p_cp10k(same-plate DMSO))`,
+on the ordered 18,164-gene CM axis. It expresses a treated well's change from its
+matched control reference; group targets average these well-level changes.
 _Avoid_: fold change, expression delta (unqualified)
 
 **Group**:
-One `(drug_key, dose)` pair in the benchmark — 1,380 groups, each the mean of its 3–6 wells. AUPRC is macro-averaged over groups.
+One `(drug_key, dose)` pair in a CM benchmark, represented by the mean response
+of its measured wells. Groups receive equal weight in benchmark metric macro
+averages.
 _Avoid_: condition (unqualified), sample
 
 **Cold-drug-capable model**:
@@ -359,7 +366,9 @@ A model whose drug input is derived from chemical structure (fingerprint, RDKit 
 _Avoid_: warm-drug model, structure model
 
 **Entrant set**:
-The seven cold-drug-capable models in the Stage 2 benchmark: PRnet, CPA, chemCPA, biolord, PerturbNet, Squidiff, CMonge. scVIDR and DECANT are documented exclusions, not rows.
+The models admitted under a particular benchmark's frozen task, code and
+resource gates. The historical seven-model set does not establish admission to
+the redesigned tenv comparison.
 _Avoid_: candidate list, all models
 
 **Ideal-fit label**:
