@@ -1,0 +1,87 @@
+{
+  "identity": {
+    "model": "cmonge",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "7b502880242502e872ece4aefda84f7e1b4aba2fc79a94bd88ec30a493a70bc3"
+  },
+  "blobs": {
+    "best.msgpack": "8819dac22033132b26c15148e094ea28c87ed5806ccb9eae056a16edb8a25517"
+  },
+  "training_seconds": 4.470137609998346,
+  "inference_seconds": 0.821375978004653,
+  "author_objective": "Sinkhorn divergence + Monge gap (Euclidean)",
+  "best_validation_loss": 31.658950805664062,
+  "selection": "minimum sampled held-out-condition native author objective",
+  "history": [
+    {
+      "iteration": 1,
+      "validation_loss": 31.658950805664062,
+      "validation_group_id": "0286b222b0edc4181ef9b530",
+      "validation_conditions_evaluated": 1,
+      "training_loss": 20.579545974731445,
+      "fitting_loss": 20.551820755004883,
+      "regularizer": 0.027725696563720703
+    },
+    {
+      "iteration": 2,
+      "validation_loss": 35.898887634277344,
+      "validation_group_id": "03c56d6f677695d135f107f7",
+      "validation_conditions_evaluated": 1,
+      "training_loss": 27.04913902282715,
+      "fitting_loss": 27.021413803100586,
+      "regularizer": 0.0277252197265625
+    },
+    {
+      "iteration": 3,
+      "validation_loss": 32.21455383300781,
+      "validation_group_id": "00ca630c7aa251ae064fb76f",
+      "validation_conditions_evaluated": 1,
+      "training_loss": 21.15662956237793,
+      "fitting_loss": 21.128904342651367,
+      "regularizer": 0.027725696563720703
+    }
+  ],
+  "adapter_parameter_change": 0.002449420280754566,
+  "baseline_sensitivity": 0.16055217385292053,
+  "dose_sensitivity": 0.00024941563606262207,
+  "reload_max_absolute_error": 0.0,
+  "trainable_parameters": 2464016,
+  "adapter_parameters": 102450,
+  "adapter_dimensions": [
+    2048,
+    50
+  ],
+  "batch_size": 4,
+  "iterations": 3,
+  "validation_groups": 3,
+  "validation_batch_policy": "one seeded random held-out condition per validation event",
+  "qualification_only": true,
+  "gene_count": 18164,
+  "backend": "gpu",
+  "device_kind": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "device_memory_stats": {
+    "num_allocs": 2405,
+    "bytes_in_use": 45138688,
+    "peak_bytes_in_use": 169863168,
+    "largest_alloc_size": 38204672,
+    "bytes_limit": 12878217216,
+    "bytes_reserved": 0,
+    "peak_bytes_reserved": 0,
+    "largest_free_block_bytes": 0,
+    "pool_bytes": 270532608,
+    "peak_pool_bytes": 270532608
+  },
+  "recipe_deviations": [
+    "Shared Morgan linear map replaces precomputed RDKit descriptor representation.",
+    "Direct native transport on complete gene space; optional separately trained AE omitted.",
+    "Same-plate DMSO mean replaces distribution of individual control cells.",
+    "Explicit log(float micromolar dose) preserves fractional concentrations.",
+    "Checkpoint selection uses seeded native single-condition validation; final iteration also validated if off cadence."
+  ]
+}

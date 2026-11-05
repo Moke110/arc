@@ -6,3 +6,5 @@ profile_native_output/
 qualification_gpu_output/
 profile_gpu_output/
 native_import_cache/
+qualification_gpu_repaired_output/
+profile_gpu512_output/

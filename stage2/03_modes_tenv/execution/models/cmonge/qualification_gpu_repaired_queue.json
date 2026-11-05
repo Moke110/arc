@@ -1,0 +1,18 @@
+{
+  "input_root": "/home/chang/arc/stage2/03_modes_tenv/output/input",
+  "output_root": "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/qualification_gpu_repaired_output",
+  "admission_timeout_seconds": 300,
+  "jobs": [
+    {
+      "model": "cmonge",
+      "fold": 0,
+      "seed": 17,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/qualification.json"
+      ]
+    }
+  ]
+}
