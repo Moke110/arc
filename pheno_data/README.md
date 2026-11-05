@@ -30,3 +30,17 @@ pretreatment, 48 h hypoxia and 24 h reoxygenation, with drug persistence unknown
 The parallel normoxia experiment has about 96 h elapsed time. The adapter is
 `stage3/01_data_corpus/execution/heliste_adapter.py --output BUNDLE.json`; it retains
 all 5,512 values and two recognized CTG partitions without inventing labels.
+
+| Active item | Source evidence | Corpus limitation |
+| --- | --- | --- |
+| `Sirenko-2013` | Full 24 h beat-count XLS and methods | Parent/use identity, matched control moments and numerical tests unresolved |
+| `Heliste-2021` | Full Dataset S1, selected-hit S3, methods and supplement PDF | CTG denominator and independent statistics unresolved; parallel 96 h normoxia isolated |
+| `Linn-2024` | Original MTT Figure 3 and article | Exact dose grid and matched vehicle unresolved; 48 approximate summaries retained |
+| `Liu-2021` | XML-confirmed Figure 2 and methods | Four normoxic small-effect zero labels; H/R significance unavailable |
+| `Duan-2013` | Original Figure 2 and article HTML | SYA parent identity and required statistics unresolved; 4 h toxicity panel excluded |
+
+Use `python pheno_data/<Item>/script/download.py` for acquisition and
+`bash pheno_data/<Item>/script/verify.sh` for offline verification. Liu and Duan
+record use of original primary bytes acquired earlier in the run, rather
+than claiming a later refetch succeeded. Figure-derived values retain their
+extraction precision and independent review; summary n never expands into wells.

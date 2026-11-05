@@ -200,3 +200,12 @@ stay ignored; scripts and provenance stay tracked. Copyright is reserved: public
 retrieval is not a redistribution license. These originals support the Stage 3
 24 h beat-count adapter; numerical table coverage does not establish label or
 training eligibility. Run `bash pheno_data/Sirenko-2013/script/verify.sh` offline.
+
+The remaining active phenotype items are `pheno_data/Heliste-2021/`,
+`pheno_data/Linn-2024/`, `pheno_data/Liu-2021/` and `pheno_data/Duan-2013/`.
+Together with the 27 legacy items, the inventory has 32 mandatory acquired items.
+Original images/tables remain ignored; small declared curation snapshots and
+download/verification code provide reconstruction evidence. The immutable local
+corpus release and its ledgers live in `stage3/01_data_corpus/output/corpus/`;
+tracked coverage and handoff records describe actual admission separately from
+source availability. No model view or training result is implied by the archive.

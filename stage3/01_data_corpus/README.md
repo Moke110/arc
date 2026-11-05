@@ -20,11 +20,24 @@ separate assessments.
 Run with the `arc` environment (`pyarrow`, `scipy`, `xlrd`):
 
 ```bash
-python stage3/01_data_corpus/execution/sirenko_tracer.py --output /tmp/sirenko-tracer.json
-python stage3/01_data_corpus/execution/corpus.py build --input /tmp/sirenko-tracer.json --output /tmp/sirenko-tracer-release
-python stage3/01_data_corpus/execution/corpus.py verify --release /tmp/sirenko-tracer-release
-python -m unittest discover -s stage3/01_data_corpus/execution/tests -p test_workflow.py -v
+python stage3/01_data_corpus/execution/release.py build --release-id v1
+python stage3/01_data_corpus/execution/release.py verify --release-id v1
+python -m unittest discover -s stage3/01_data_corpus/execution/tests -v
 ```
+
+For a fresh checkout, acquire the five source items with each item's
+`script/download.py` first; these are the only network operations. Materialize
+the frozen local additions explicitly before the offline build:
+
+```bash
+python stage3/01_data_corpus/execution/sirenko_adapter.py --freeze-curation --output /tmp/sirenko-input.json
+python stage3/01_data_corpus/execution/viability_adapters.py --prepare
+```
+
+The tracked Heliste local assessment is already present in a checkout.
+Releases live under `output/corpus/<release-id>/`. `release.py bundle --output
+/tmp/phenotype-input.json` exports the complete frozen input without publishing;
+`corpus.py build --input ... --output ...` also supports an explicit release path.
 
 Build and verify read frozen local assets only. Production sources must match the
 active phenotype registry and include every original manifest asset; declared
@@ -34,8 +47,8 @@ sources/releases and cannot admit them through the production workflow.
 The tracer reads original F2/G2 values (26 and 27 peaks) and O2/P2 normalized
 values without creating extra observations. Missing canonical identity and
 matched vehicle statistics produce an explicit empty-after-QC partition and
-comparison-level reasons. It demonstrates the public workflow; the full source
-adapter is delivered by #33.
+comparison-level reasons. `sirenko_tracer.py` remains a minimal example;
+`sirenko_adapter.py` extracts the full frozen 24 h workbook.
 
 A release contains Parquet files plus input, schema, rule/software/code identity,
 source registry, comparison/family, exclusion, coverage, manifest and checksum
@@ -60,3 +73,9 @@ FC ≥ 1.2 or ≤ 0.8 requires adjusted p < 0.05 for ±1; strict interior FC giv
 without inventing missing p; invalid FC or missing required p produces exclusion.
 The input contract is documented in
 [`execution/bundle-format.md`](execution/bundle-format.md).
+
+The first-wave result and validation evidence are recorded in
+[`execution/handoff.md`](execution/handoff.md) and the step-level
+[`source_coverage.csv`](source_coverage.csv). Numerical zero means the operational
+joint rule failed; missing p is preserved and does not become a claim of
+statistical nonsignificance. Empty partitions retain their conditions and reasons.
