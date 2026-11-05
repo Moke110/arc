@@ -26,9 +26,9 @@ class CompleteRelease(unittest.TestCase):
                                         capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,result.stderr)
             coverage = json.loads((release/'coverage.json').read_text())
-            self.assertEqual(coverage['sample_rows'],4)
-            self.assertEqual(coverage['class_rows'],{'-1':0,'0':4,'1':0})
-            self.assertEqual(coverage['excluded_comparisons'],6092)
+            self.assertEqual(coverage['sample_rows'],0)
+            self.assertEqual(coverage['class_rows'],{'-1':0,'0':0,'1':0})
+            self.assertEqual(coverage['excluded_comparisons'],6096)
             self.assertEqual(len(json.loads((release/'manifest.json').read_text())['partitions']),9)
             self.assertEqual(set(json.loads((release/'source_audits.json').read_text())),
                              {'sirenko_2013','heliste_2021','linn_2024','liu_2021','duan_2013'})

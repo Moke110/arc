@@ -94,17 +94,17 @@ def liu_records(source,data,config):
             'identity_evidence':'article.xml Methods names icariin (ICA), Sigma-Aldrich; unchanged named active parent, administered chemical form retained as unspecified',
             'administered_form':'icariin; product identifier and vehicle unspecified',
             'dose_evidence':'Original labeled µmol/L from Fig2A/B; exact decimal ×1e-6 mol/L',
-            'control_evidence':control['selector']+' in same source panel and experimental model; values on common source percentage scale. Methods explicitly expresses CCK8 absorbance as control percentage; normal reference is not HR drug control.',
+            'control_evidence':control['selector']+' in same source panel and experimental model; values on common source percentage scale. Methods explicitly expresses CCK8 absorbance as control percentage; normal reference is not HR drug control. Matching administered vehicle is unconfirmed, so this baseline does not establish a valid matched-control FC.',
             'measurements':[{'measurement_id':identity,'value':point['readout_percent'],'normalized_value':None,
                 'assay_method':'CCK8','unit':'percent control' if not injury else 'percent normal reference',
                 'representation':'summary','asset':'pheno_data/Liu-2021/source/'+config['image'],
                 'selector':f"Fig{point['panel']} ICA{point['dose_um']}µM x={point['x_px']} y={point['y_px']}",
                 'experimental_unit':None,'extraction':point,'independent_n':None,'reported_error_type':'SD',
                 'review':data['independent_review'],'readout_scale':'author-normalized summary; raw absorbance unavailable'}],
-            'quality_reasons':[],
+            'quality_reasons':['matched_vehicle_unconfirmed'],
             'statistics':{'treated_mean':point['readout_percent'],'control_mean':control['mean'],
-                'scale_compatible':True,'control_matched':True,'p_raw':None,'p_adjusted':None,
-                'evidence':'Approximate author means on shared source scale; mean±SD and three repetitions reported but independent unit unclear. Stars/Tukey statement does not give numerical p or BH. Small magnitude yields operational0 without a significance claim.'}})
+                'scale_compatible':True,'control_matched':False,'p_raw':None,'p_adjusted':None,
+                'evidence':'Approximate author means on shared source scale; mean±SD and three repetitions reported but independent unit unclear. Stars/Tukey statement does not give numerical p or BH. Unconfirmed vehicle matching prevents FC and endpoint admission even for apparent small effects.'}})
     return records
 
 def duan_records(source,data,config):

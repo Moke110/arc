@@ -44,5 +44,10 @@
       "origin": "stage3/01_data_corpus/execution/curation/duan_v1.json; reviewed author-summary figure digitization, version1",
       "source_image_sha256": "09df45548d90706b0a6ca34fb33bd443702cd600465215dfd9b39c013c9aab34"
     }
-  ]
+  ],
+  "source_tree": {
+    "files": 2,
+    "bytes": 286344,
+    "tree_sha256": "f9aeaafc70e9f472dc21e089016f51b10c55a2262f1bdf6f90d85024985cf85a"
+  }
 }

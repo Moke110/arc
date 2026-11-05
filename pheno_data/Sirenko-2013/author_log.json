@@ -49,5 +49,10 @@
       "origin": "Offline extraction of frozen Supplemental Table3 by stage3/01_data_corpus/execution/sirenko_adapter.py; unresolved parents and usage explicitly retained",
       "version": "v1"
     }
-  ]
+  ],
+  "source_tree": {
+    "files": 3,
+    "bytes": 322594,
+    "tree_sha256": "3a3050582e5f17b59d7be8649b6a87efb6853dc9be20e95feec555626b763c98"
+  }
 }

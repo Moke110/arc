@@ -53,16 +53,20 @@ Fig2A four nonzero doses2.5/5/10/20µM,24h normoxia, H9C2 rat cell line:
 approximate percent values99/96/100/98 from pixel calibration (±3percent).
 Control is actual0µM panel-A control100, and Methods explicitly says absorbance
 is expressed as control percentage. Its precise vehicle composition remains
-unknown; no PBS assumption is made for normoxia. Source small effects admit four
-operational class0 rows without p. These are **magnitude_failed_without_p**,
-not demonstrated nonsignificant or equivalent effects.
+unknown; no PBS assumption is made for normoxia. The apparent small effects do
+not establish a legal FC: matching administered vehicle is unconfirmed. Review
+therefore excludes all four normoxic comparisons with matched_vehicle_unconfirmed;
+none receives class0. Same-panel0µM establishes a plotted baseline, not verified
+vehicle matching. Original v1 extraction bytes remain unchanged; the adapter
+interpretation is corrected without rewriting its measurement evidence.
 
 Fig2B includes all four doses, including20µM (early research only confirmed the
 lower range):24h pretreatment→4h glucose-free95%N2/5%CO2→24hreoxygenation
 95%air/5%CO2. Drug persistence remains unknown. Model comparator is the explicit
 H/R+PBS bar~40percent, not normal reference100. Drug means~52/63/77/80percent
-cross the magnitude threshold against this comparator. No numerical p or valid
-independent n is established, so all four are excluded rather than labeled0.
+would cross the magnitude threshold against this plotted comparator. Matching
+administered vehicle is also unconfirmed in the HR panel, so FC is unevaluable.
+No numerical p or valid independent n is established either; all four are excluded.
 Published SD and three repetitions do not establish independent unit structure;
 ANOVA/Tukey stars do not become exact p/BH. A conflicting Results sentence says
 normal viability was unaffected but gives P<0.01; this is retained as an
@@ -75,8 +79,9 @@ or injury persistence scopes condition identity to this source. Exact decimal
 micromolar conversion avoids binary-arithmetic source key drift.
 
 Use the same commands above with `--source liu_2021`. Public build/verify and
-real-source regression produce one4-row normoxic partition and an explicit empty
-HR partition, with complete comparison/exclusion evidence.
+real-source regression produce two explicit empty-after-QC normoxic/HR partitions
+with all eight comparison/exclusion records. Earlier four class0 admissions were
+withdrawn after review identified the unsupported vehicle-matching assumption.
 
 ## Duan 2013 primary cardiomyocytes (#36)
 

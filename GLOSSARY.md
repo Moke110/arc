@@ -1,6 +1,6 @@
 # ARC
 
-AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository holds four external-source data/model categories (one directory per download source; see *External data provenance*), the Stage 1 drug-repositioning workflows (`stage1/`), Stage 2 model setup/selection (`stage2/`), and dev-tool files.
+AI-driven drug repositioning for cardiac diseases. Predict the transcriptional perturbation a drug causes on cardiomyocytes, then rank drugs by predicted MIRI efficacy. The repository holds five external-source data/model categories (one directory per download source; see *External data provenance*), the Stage 1 drug-repositioning workflows (`stage1/`), Stage 2 model setup/selection (`stage2/`), and dev-tool files.
 
 ## Language
 
@@ -87,9 +87,10 @@ A source-level observation for which the endpoint rule cannot yet be evaluated f
 
 ### External data provenance
 
-The repository has four external-source categories — `pert_data/`, `pert_model/`,
-`disease_data/`, and `drug_emb_model/` — holding 27 项 in total (8 + 14 + 3 + 2), one per
-download source. Each 项 is verified offline from its tracked manifest by
+The repository has five external-source categories — `pert_data/`, `pert_model/`,
+`disease_data/`, `drug_emb_model/`, and `pheno_data/` — holding 32 active 项 in total
+(8 + 14 + 3 + 2 + 5), one per download source. ADR 0038 adds the independent
+phenotype category to ADR 0030's historical four-category, 27-item inventory. Each 项 is verified offline from its tracked manifest by
 `script/verify_all.sh`; its machine-readable record is the author log.
 
 **External item (项)**:

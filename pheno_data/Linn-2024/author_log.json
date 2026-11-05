@@ -41,5 +41,10 @@
       "origin": "stage3/01_data_corpus/execution/curation/linn_v1.json; reviewed author-summary figure digitization, version1",
       "source_image_sha256": "e000a8d1cb2c49e277c0c89e5c2c1b6ebc55f02f2f5e5ebb3911eb1525753700"
     }
-  ]
+  ],
+  "source_tree": {
+    "files": 3,
+    "bytes": 173124,
+    "tree_sha256": "fa3cc65730e6c4ee3631a75da17b8578443171e004e298ad2b50cce317cfb493"
+  }
 }

@@ -43,9 +43,11 @@ class ViabilitySources(unittest.TestCase):
                 run=subprocess.run([sys.executable,str(EXEC/'corpus.py'),*args],capture_output=True,text=True)
                 self.assertEqual(run.returncode,0,run.stderr)
             coverage=json.loads((release/'coverage.json').read_text())
-            self.assertEqual(coverage['sample_rows'],4)
-            self.assertEqual(coverage['class_rows'],{'-1':0,'0':4,'1':0})
-            self.assertEqual(coverage['excluded_comparisons'],4)
+            self.assertEqual(coverage['sample_rows'],0)
+            self.assertEqual(coverage['class_rows'],{'-1':0,'0':0,'1':0})
+            self.assertEqual(coverage['excluded_comparisons'],8)
+            self.assertTrue(all('matched_vehicle_unconfirmed' in r['quality_reasons'] for r in data['records']))
+            self.assertTrue(all(r['statistics']['control_matched'] is False for r in data['records']))
 
     def test_duan_primary_ar_preserves_summary_and_excludes_unknown_tests(self):
         with tempfile.TemporaryDirectory() as temp:

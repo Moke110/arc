@@ -36,6 +36,15 @@ def validate(name, content, pmcid, html_markers=None):
         raise ValueError('wrong article metadata')
 
 
+def source_tree_summary(item):
+    """ADR 0030 tree identity uses the exact source-only manifest bytes."""
+    manifest = (item/'manifest.sha256').read_bytes()
+    names = [line.split('  ', 1)[1] for line in manifest.decode().splitlines()]
+    return {'files': len(names),
+            'bytes': sum((item/'source'/name).stat().st_size for name in names),
+            'tree_sha256': hashlib.sha256(manifest).hexdigest()}
+
+
 def verify(item, dataset_id, pmcid, assets):
     """Check source-only inventory, bytes, formats and frozen provenance offline."""
     log = json.loads((item/'author_log.json').read_text())
@@ -61,6 +70,8 @@ def verify(item, dataset_id, pmcid, assets):
         content = (item/'source'/row['path']).read_bytes()
         if row['sha256'] != hashlib.sha256(content).hexdigest() or row['bytes'] != len(content) or row['url'] != assets[row['path']]:
             raise ValueError('author log source provenance mismatch')
+    if log.get('source_tree') != source_tree_summary(item):
+        raise ValueError('source-tree count, bytes or manifest digest mismatch')
     declared = set()
     for row in log.get('local_additions', []):
         relative = Path(row['path'])
@@ -121,6 +132,7 @@ def acquire(item, dataset_id, pmcid, assets, provenance):
     if not manifest.exists():
         manifest.write_text(''.join(f"{r['sha256']}  {r['path']}\n" for r in sorted(records,key=lambda r:r['path'])))
     if previous is None:
-        log = dict(provenance, dataset_id=dataset_id, retrieved_at=datetime.now(timezone.utc).isoformat(), sources=records, local_additions=[])
+        log = dict(provenance, dataset_id=dataset_id, retrieved_at=datetime.now(timezone.utc).isoformat(), sources=records,
+                   source_tree=source_tree_summary(item), local_additions=[])
         (item/'author_log.json').write_text(json.dumps(log,indent=2)+'\n')
     verify(item, dataset_id, pmcid, assets)

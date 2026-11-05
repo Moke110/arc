@@ -37,5 +37,10 @@
   },
   "validation": {
     "status": "validated_original_formats_and_sha256"
+  },
+  "source_tree": {
+    "files": 2,
+    "bytes": 263362,
+    "tree_sha256": "0c611f15fce4f005f53992befbf27496f59a5bc0a0990cee65c4b9c06dfa52c0"
   }
 }
