@@ -59,6 +59,16 @@ class Pipeline(unittest.TestCase):
             result=subprocess.run([sys.executable,str(SCRIPT),'replay','--output',str(root / 'output')],capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertEqual(hashes,{p.name:sha256(p) for p in (root / 'output').glob('*.csv')})
+            # Completion and metric definition are different: one constant-truth
+            # fold leaves six defined correlation runs out of nine completions.
+            np.save(root/'input/fold_0/evaluator/truth.npy',np.zeros((1,4),dtype='float32'))
+            summary=evaluate(root/'input',root/'output',workers=1)
+            self.assertEqual(summary[1]['PCC_valid_runs'],6)
+            import xml.etree.ElementTree as ET
+            svg=ET.parse(root/'output/metrics.svg')
+            visible=' '.join(''.join(node.itertext()) for node in svg.iter() if node.tag.endswith('}text'))
+            self.assertIn('delta_mean (completed 9/9; defined 6/9)',visible)
+            self.assertIn('no_change (completed 9/9; defined 0/9)',visible)
             failed=root/'output/runs/delta_mean/fold_2/seed_2026/run.json'
             run=read_json(failed);run['status']='timeout';write_json(failed,run)
             freeze_predictions(root/'input',root/'output',['no_change','delta_mean'])
