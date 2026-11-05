@@ -319,6 +319,16 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 
 ### Stage 2 benchmark
 
+**Tenv model boundary**:
+The parameters updateable together in one backward pass for the tenv prediction
+task. A drug encoder trained independently on non-perturbation data is a separate
+model and is outside this comparison.
+
+**Tenv drug identity input**:
+A one-hot vector identifying a compound, with no chemical-structure similarity
+encoded between different compounds. Identity labels are shared across folds
+and seeds; held-out-drug responses remain unavailable to fitting.
+
 **Tenv benchmark sample**:
 One model's training-and-test result under one fixed fold and one fixed training
 seed in the redesigned tenv comparison. Three folds crossed with three seeds

@@ -12,7 +12,7 @@ below are not defaults or authorization to start the benchmark.
 
 - Preserve the existing `stage2/03_models_cmbench/` evidence and seal the old
   comparison before replacing it with the tenv comparison. The requested new
-  name is `03_modes_tenv`; final spelling and archive location remain open.
+  name is `03_modes_tenv`; the archive location is resolved in round 3.
 - Repeat model discovery using Biomni and primary upstream sources. Screen all
   downloaded models against the same conditions: baseline transcriptome plus
   drug input; post-treatment transcriptome or transcriptome-change output;
@@ -31,14 +31,16 @@ below are not defaults or authorization to start the benchmark.
   Recall_negative@P80, PCC, Spearman, RMSE and R².
 - Deliver an eight-panel metric bar figure with model bars, run-sample dots and
   error bars, plus per-model positive/negative precision curves in red/blue with
-  light bands showing the run-sample range.
+  light bands showing the run-sample range. Round 3 adds both simple baselines
+  to these figures and requests a third, best-single-run PR overview.
 
 ## Decisions resolved in interview round 1
 
 - **Cold-drug evaluation.** Hold every dose and replicate of a test drug out
   of training and validation; put stereoisomers sharing the same active-parent
-  connectivity into one split block. Admission requires a structure-derived path
-  for scoring an unseen drug.
+  connectivity into one split block. Round 3 replaces the originally agreed
+  structure-derived drug input with one-hot identity; the held-out-drug split
+  remains agreed, but its scientific interpretation requires clarification.
 - **Complete CM gene axis.** All models consume and predict the same ordered
   18,164 genes. Input/output dimension and batch-size changes are allowed;
   HVG substitution, zero-filled reconstruction and a new core architecture are
@@ -111,12 +113,48 @@ below are not defaults or authorization to start the benchmark.
   undefined PCC/Spearman and zero-variance-truth R² also remain NaN. Macro means
   use valid groups only and report valid-group counts for every metric.
 
+## Decisions resolved in interview round 3
+
+- **Model boundary.** The user defines a model by the parameters updateable in
+  one backward pass. A drug encoder trained independently on data outside the
+  perturbation dataset is a separate model and is not included in this test.
+- **One-hot drug inputs.** Replace structure features with one-hot drug identity
+  for every entrant, using its required drug-representation dimension. This
+  explicitly replaces round 1's chemical-structure-input admission gate. Exact
+  dimension handling where a model expects fewer than 460 coordinates is open;
+  no collisions, hashing or non-one-hot encoding are implicitly allowed.
+- **Author validation loss.** Select checkpoints using each author's own loss
+  on the validation data, matching its training objective and reducing redundant
+  metric work. Do not substitute a common Δ-MSE selection criterion. The
+  across-model comparison still uses the eight common test metrics.
+- **Baselines in all figures.** Include `no_change` (Δ = zero) and `delta_mean`
+  (training-group mean Δ) in both the metric figure and PR figure, evaluated
+  under the same folds and scoring rules as entrants. These deterministic
+  baselines have no trainable model parameters; seed copies are identical and
+  are not independent fits.
+- **Third figure.** Add a single PR overview with one curve per model/baseline,
+  each from that entry's best `(fold, seed)` run. The best-run selection score
+  and how to combine directions in one curve remain open.
+- **Scheduling and retries.** Sample and record RAM/GPU usage every five
+  seconds. Admit at most two heavy tasks using measured peaks plus 20% headroom,
+  still satisfying the approximately 28 GiB combined budget and at least
+  12 GiB available RAM. Stop dispatch below the floor; if pressure continues
+  worsening, save and stop the newer task belonging to this experiment.
+  Repairable environmental failures permit one retry; OOM permits one retry
+  after reducing batch size within the same cumulative four-hour training
+  budget. Persistent failures are reported rather than replaced with synthetic
+  results.
+- **Archive and active paths.** Archive the old step at
+  `stage2/_archive/03_models_cmbench/`, preserving its results and existing
+  `_frozen` inputs. Use `stage2/03_modes_tenv/` for the new comparison.
+
 ## Remaining design frontier
 
-Remaining decisions concern admissible adapters, checkpoint-selection criterion,
-baseline comparators, failure/retry policy, scheduler monitoring details and
-archive paths. Model discovery and source verification remain research
-prerequisites; no new model is declared qualified by this proposed record.
+Clarify one-hot dimensionality, the held-out-identity task interpretation, and
+the best-run PR overview's selection/direction rules. Model discovery and source
+verification remain research prerequisites; no new model is declared qualified
+by this proposed record. Historical structure-based exclusion reasons alone
+cannot establish exclusion from the new one-hot task.
 
 The old ADR 0027 contract remains the contract of the frozen historical study;
 its five-fold single-seed entrant list and k=200 primary metric must not silently
