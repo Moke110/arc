@@ -36,7 +36,14 @@ not a successful completion. No early-stop rule or smaller backbone is invented.
 Declared data/runtime deviations: bulk replicate wells form native populations
 within each drug-dose group; training resamples three wells per population rather
 than native single-cell256. Training batches contain8 populations and use2 CPU
-threads. Validation uses up to5 batches (the author's documented runtime limit),
+threads. This is not an arbitrary resource-driven shrink: README
+`COMMON_TAHOE_TRAIN` uses2,048 raw cells and `use_cell_set=256`.
+`src/data/data_module/data_module.py:65` passes the raw-cell batch to DataLoader;
+`src/data/sampler.py:156-161` yields individual cells; and
+`src/data/dataset/dataset_core.py:95` reshapes that into8 populations. The
+adapter preserves the native optimizer population batch;3 bulk wells replace
+256 single cells as the separately declared population-size adaptation. The
+base config's128 micro-batch is raw cells, not128 populations. Validation uses up to5 batches (the author's documented runtime limit),
 on the same author objective with a fixed noise/resampling seed for checkpoint
 comparability, every training epoch (derived per fold and batch size). Test inference buckets groups by actual well count
 and retains every well. No evaluator files are read. EMA uses the same README scratch runtime block: decay0.99, updates every10
@@ -48,3 +55,31 @@ Compact tests deliberately use12 training steps,64 genes and2 reverse sampling
 steps. These exercise artifact behavior only and cannot establish full-gene
 qualification or formal training feasibility. Real qualification and throughput
 must be measured separately before admission.
+
+## Native checkpoint cadence and measured feasibility
+
+Formal `checkpoint_interval=20000` comes from
+`configs/lightning/base.yaml`; README `COMMON_TRAIN_RUNTIME` changes save_top_k
+to-1 but does not change the20k step cadence. Native epoch validation remains.
+An off-epoch checkpoint-eligible step evaluates fresh native validation on its
+current EMA weights, and the selected checkpoint is the minimum fresh author
+objective among eligible steps. A loss from older weights never selects a new
+checkpoint. Qualifier/test explicitly shorten checkpoint interval to100/12;
+formal200,000-step fitting retains20k. No early stop is introduced.
+
+Calling parent `nn.Module.to(cuda)` does not invoke Lightning child.to metadata
+updates. This integration defect originally placed the native EMA copy on CPU
+and invalidated the5.533h resource exclusion. Explicit native.to(device) before
+native EMA setup plus device assertions fixes placement without changing EMA
+math. The GPU artifact regression reproduced CPU metadata versus CUDA parameters,
+then passed after correction. Device evidence is emitted in each checkpoint.
+
+The final current100-step profile retains GPU EMA, native epoch validation and
+checkpoint cadence instrumentation. It passes complete1,401×18,164 predictions,
+reload and input participation. Observed step/validation/epoch-EMA/checkpoint/
+progress timing projects3.294h for200,000steps, conservative3.314h with observed
+maximum overheads, before inference. A10% runtime planning cushion gives3.645h,
+within4h, while remaining an uncertain extrapolation rather than a completed fit.
+`resource_assessment.json` records all components and source identities. Earlier
+CPU-EMA and dense-checkpoint profiles remain superseded diagnostics. No formal
+fit, convergence result or test metric is claimed by these qualification records.

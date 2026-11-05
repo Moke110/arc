@@ -33,7 +33,7 @@ class PerturbDiffArtifact(unittest.TestCase):
                      'target_kind':'delta','predictor_files':files,'output_directory':str(root/'output')}
             (root/'request.json').write_text(json.dumps(request))
             config=json.loads((STEP/'models/perturbdiff/config.json').read_text())
-            config.update(max_steps=12,validation_interval=12,batch_groups=2,population_size=2,device='cpu',sampling_start_time=2)
+            config.update(max_steps=12,validation_interval=5,checkpoint_interval=12,batch_groups=2,population_size=2,device='auto',sampling_start_time=2)
             (root/'config.json').write_text(json.dumps(config))
             result=subprocess.run([PYTHON,str(STEP/'script/perturbdiff_adapter.py'),'--request',str(root/'request.json'),
                                    '--config',str(root/'config.json')],capture_output=True,text=True)
@@ -44,6 +44,12 @@ class PerturbDiffArtifact(unittest.TestCase):
             self.assertTrue(np.isfinite(pred).all())
             checkpoint=json.loads((output/'checkpoint.json').read_text())
             self.assertEqual(checkpoint['identity'],request['identity'])
+            devices=checkpoint['device_evidence']
+            self.assertEqual(devices['native_reported_device'],devices['prediction_model_device'])
+            self.assertEqual(devices['ema_parameter_device'],devices['prediction_model_device'])
+            self.assertEqual(checkpoint['checkpoint_candidate_steps'],[12])
+            self.assertEqual(checkpoint['best_step'],12)
+            self.assertEqual([h['step'] for h in checkpoint['history']],[5,10,12])
             self.assertEqual(checkpoint['author_objective'],'native GaussianDiffusion MSE + energy MMD')
             self.assertEqual(checkpoint['architecture'],{'depth':8,'hidden_size':512,'diffusion_steps':1000})
             for name in ('adapter_parameter_change_l2','baseline_sensitivity_l2','dose_sensitivity_l2'):

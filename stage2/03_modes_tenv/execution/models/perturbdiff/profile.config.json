@@ -1,6 +1,6 @@
 {
   "max_steps": 100,
-  "validation_interval": 100,
+  "validation_interval": null,
   "validation_max_batches": 5,
   "batch_groups": 8,
   "population_size": 3,
@@ -16,5 +16,6 @@
   "expression_scale": 10.0,
   "schedule_training_steps": 200000,
   "ema_decay": 0.99,
-  "ema_update_steps": 10
+  "ema_update_steps": 10,
+  "checkpoint_interval": 100
 }

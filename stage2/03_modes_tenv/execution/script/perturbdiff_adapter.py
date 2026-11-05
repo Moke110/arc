@@ -139,7 +139,7 @@ def fit_predict(request,config):
     config=dict(config)
     config['batch_groups']=max(1,int(config['batch_groups']*float(os.environ.get('TENV_BATCH_SCALE','1'))))
     if (config['max_steps']<1 or (config['validation_interval'] is not None and config['validation_interval']<1) or config['validation_max_batches']<1
-        or config['population_size']<1 or not 1<=config['sampling_start_time']<=1000
+        or config['checkpoint_interval']<1 or config['population_size']<1 or not 1<=config['sampling_start_time']<=1000
         or config['threads'] not in (1,2)):
         raise ValueError('invalid bounded native PerturbDiff recipe')
     torch.set_num_threads(config['threads'])
@@ -153,6 +153,9 @@ def fit_predict(request,config):
     if config['validation_interval'] is None:
         config['validation_interval']=max(1,(len(groups_for(inputs.cases['train']))+config['batch_groups']-1)//config['batch_groups'])
     model=JointPerturbDiff(inputs,config,directory).to(device)
+    # nn.Module.to recurses through child._apply, bypassing Lightning's to()
+    # metadata update. Native EMA.setup uses native.device to place its copy.
+    model.native.to(device)
     initial_adapter=model.adapter.weight.detach().cpu().clone()
     initial_predictor=digest(model.native.model)
     decay=[]; no_decay=[]
@@ -166,16 +169,27 @@ def fit_predict(request,config):
     ema=EMAWeightAveraging(decay=config['ema_decay'],update_steps=config['ema_update_steps'])
     context=SimpleNamespace(global_step=0,current_epoch=0)
     ema.setup(context,model.native,'fit')
+    device_evidence={'requested_device':str(device),
+                     'native_reported_device':str(model.native.device),
+                     'prediction_model_device':str(next(model.native.parameters()).device),
+                     'ema_parameter_device':str(next(ema._average_model.parameters()).device)}
+    if not (device_evidence['native_reported_device']==device_evidence['prediction_model_device']
+            ==device_evidence['ema_parameter_device']):
+        raise ValueError('native Lightning metadata/predictor/EMA device mismatch')
     rng=np.random.default_rng(seed)
     groups={role:groups_for(cases) for role,cases in inputs.cases.items()}
     start=time.monotonic(); best=float('inf'); best_step=None; history=[]; step_seconds=[]; stopped=False
+    checkpoint_candidates=[]
+    timing={'progress_seconds':0.,'epoch_ema_seconds':[],'validation_events':[],'checkpoint_events':[]}
     config_hash=hashlib.sha256(json.dumps(config,sort_keys=True).encode()).hexdigest()
     def stop(signum,frame):
         nonlocal stopped
         stopped=True
     signal.signal(signal.SIGTERM,stop); signal.signal(signal.SIGINT,stop)
     def progress(phase,**extra):
+        progress_start=time.monotonic()
         write_json(directory/'progress.json',{'phase':phase,'training_seconds':time.monotonic()-start,**extra})
+        timing['progress_seconds']+=time.monotonic()-progress_start
     def snapshot(step):
         return {'identity':request['identity'],'config':config,'config_sha256':config_hash,
                 'model_state':model.state_dict(),'optimizer_state':optimizer.state_dict(),
@@ -210,7 +224,9 @@ def fit_predict(request,config):
                 torch.cuda.synchronize()
             step_seconds.append(time.monotonic()-step_start)
             progress('training',step=step)
-            if step%config['validation_interval']==0 or step==config['max_steps']:
+            checkpoint_eligible=step%config['checkpoint_interval']==0 or step==config['max_steps']
+            if step%config['validation_interval']==0 or checkpoint_eligible:
+                validation_start=time.monotonic()
                 model.eval(); values=[]
                 ema.on_validation_epoch_start(context,model.native)
                 # Native validation computes the same randomly sampled diffusion
@@ -227,13 +243,28 @@ def fit_predict(request,config):
                 if not np.isfinite(validation):
                     raise ValueError('nonfinite native validation objective')
                 history.append({'step':step,'training_loss':float(loss.detach()),'validation_loss':validation})
-                if validation<best:
-                    best=validation; best_step=step; save(directory/'best.pt',snapshot(step))
+                checkpoint_seconds=0.
+                if checkpoint_eligible:
+                    checkpoint_candidates.append(step)
+                    if validation<best:
+                        best=validation; best_step=step
+                        checkpoint_start=time.monotonic()
+                        save(directory/'best.pt',snapshot(step))
+                        checkpoint_seconds=time.monotonic()-checkpoint_start
+                        timing['checkpoint_events'].append({'step':step,'seconds':checkpoint_seconds})
                 ema.on_validation_epoch_end(context,model.native)
-                progress('training',step=step,best_validation_loss=best)
+                if device.type=='cuda':
+                    torch.cuda.synchronize()
+                timing['validation_events'].append({'step':step,'seconds':time.monotonic()-validation_start-checkpoint_seconds,
+                                                    'batches':len(values),'checkpoint_eligible':checkpoint_eligible})
+                progress('training',step=step,best_validation_loss=best if best_step is not None else None)
             if step>=config['max_steps']:
                 break
+        epoch_ema_start=time.monotonic()
         ema.on_train_epoch_end(context,model.native)
+        if device.type=='cuda':
+            torch.cuda.synchronize()
+        timing['epoch_ema_seconds'].append(time.monotonic()-epoch_ema_start)
         context.current_epoch+=1
         if stop_reason!='max_steps':
             break
@@ -293,6 +324,8 @@ def fit_predict(request,config):
     result={'identity':request['identity'],'author_objective':'native GaussianDiffusion MSE + energy MMD',
             'architecture':{'depth':8,'hidden_size':512,'diffusion_steps':1000},
             'best_step':best_step,'best_validation_loss':best,'history':history,'training_step_seconds':step_seconds,
+            'checkpoint_candidate_steps':checkpoint_candidates,'training_timing':timing,
+            'selection_policy':'minimum fresh native validation objective at checkpoint-eligible steps; every native epoch also validates',
             'stop_reason':stop_reason,
             'training_seconds':training_seconds,'inference_seconds':time.monotonic()-inference_start,
             'behavior':{'adapter_parameter_change_l2':adapter_change,'predictor_parameters_changed':predictor_changed,
@@ -304,6 +337,7 @@ def fit_predict(request,config):
             'peak_rss_kbytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
             'peak_gpu_bytes':torch.cuda.max_memory_allocated() if device.type=='cuda' else 0,
             'peak_gpu_reserved_bytes':torch.cuda.max_memory_reserved() if device.type=='cuda' else 0,
+            'device_evidence':device_evidence,
             'environment':{'python':sys.version,'torch':torch.__version__,'numpy':np.__version__,'device':str(device)}}
     write_json(directory/'checkpoint.json',result)
     write_json(directory/'progress.json',{'phase':'complete','training_seconds':training_seconds,

@@ -14,5 +14,44 @@
     "save/reload identical",
     "prediction shape and finite values",
     "case ordering"
-  ]
+  ],
+  "gpu_device_regression": {
+    "red": {
+      "result": "FAIL as expected",
+      "test_seconds": 15.42,
+      "time_v_peak_rss_kbytes": 3030300,
+      "observed": "native_reported_device cpu versus prediction_model_device cuda:0",
+      "cause": "parent nn.Module.to bypassed Lightning child.to metadata update, placing native EMA on CPU"
+    },
+    "green": {
+      "result": "PASS",
+      "test_seconds": 8.686,
+      "time_v_wall_seconds": 8.77,
+      "time_v_peak_rss_kbytes": 2281864,
+      "fix": "explicit model.native.to(device) before native EMA.setup",
+      "device_checks": [
+        "native_reported_device",
+        "prediction_model_device",
+        "ema_parameter_device"
+      ],
+      "native_ema_recipe_unchanged": true
+    }
+  },
+  "gpu_checkpoint_cadence_regression": {
+    "red": "Missing checkpoint-candidate artifact under old every-validation save behavior",
+    "green": "PASS",
+    "test_seconds": 8.53,
+    "time_v_wall_seconds": 10.96,
+    "time_v_peak_rss_kbytes": 2282236,
+    "validation_steps": [
+      5,
+      10,
+      12
+    ],
+    "checkpoint_candidate_steps": [
+      12
+    ],
+    "fresh_checkpoint_validation": true,
+    "progress_before_first_checkpoint": "null best validation, never infinity"
+  }
 }

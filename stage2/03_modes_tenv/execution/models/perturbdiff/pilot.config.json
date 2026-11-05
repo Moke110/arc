@@ -16,5 +16,6 @@
   "expression_scale": 10.0,
   "schedule_training_steps": 200000,
   "ema_decay": 0.99,
-  "ema_update_steps": 10
+  "ema_update_steps": 10,
+  "checkpoint_interval": 12
 }

@@ -1,0 +1,20 @@
+{
+  "input_root": "stage2/03_modes_tenv/output/input",
+  "output_root": "stage2/03_modes_tenv/execution/pilots/perturbdiff_gpu_native_checkpoint_profile",
+  "verified_idle_pids": [],
+  "admission_timeout_seconds": 900,
+  "jobs": [
+    {
+      "model": "perturbdiff",
+      "fold": 0,
+      "seed": 17,
+      "profile": null,
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "stage2/03_modes_tenv/execution/models/perturbdiff/profile.config.json"
+      ]
+    }
+  ]
+}
