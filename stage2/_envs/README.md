@@ -70,3 +70,25 @@ normalised-expression cell-VAE branch imports it, and its CUDA 10 runtime
 segfaults beside torch 1.13/cu117. CMonge stayed on CPU JAX after the CUDA 12
 wheel install exceeded its timebox; the 10k-iteration recipe is ~32 min/fold on
 CPU, inside the budget.
+
+## PerturbDiff isolated overlay (2026-11-05)
+
+`perturbdiff/` is a local-only venv overlay with system site packages from the
+existing arc interpreter. It preserves the shared arc environment. Its effective
+freeze is tracked at `stage2/01_setup/execution/perturbdiff/env.lock` and
+`stage2/03_modes_tenv/execution/models/perturbdiff/env.actual.lock`; the native
+setup run card records the actual Python/framework and resource evidence.
+The source and native setup are separate from tenv runtime admission.
+
+Rebuild the same overlay against a compatible existing arc base, installing only
+the overlay packages rather than replacing the shared CUDA/PyTorch installation:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python -m venv --system-site-packages stage2/_envs/perturbdiff
+stage2/_envs/perturbdiff/bin/python -m pip install --no-deps \
+  geomloss==0.3.1 timm==1.0.31 pytorch-lightning==2.6.6 torchvision==0.27.1
+```
+
+Verify the actual overlay versions against the tracked effective lock before
+using that recipe; the base is inherited, so installing these four packages alone
+does not reproduce an arbitrary different arc base.

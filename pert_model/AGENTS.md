@@ -1,6 +1,6 @@
 # AGENTS.md — pert_model
 
-Drug-perturbation model code and weights as fourteen external 项 (ADR 0030):
+Drug-perturbation model code and weights as external 项 (ADR 0030):
 each has tracked `script/` + `author_log.json`, and gitignored `source/`
 (upstream clone + downloaded assets) and `local/` (declared local additions).
 
@@ -15,6 +15,7 @@ Deployed (run cards in `../stage2/01_setup/`):
 - `Squidiff/` — Squidiff (BSD-3-Clause); configurable genes, rFCFP × dose scaling.
 - `CMonge/` — Conditional Monge Gap (MIT); RDKit structure + categorical `drug-dose`, bundled demo data.
 - `DECANT/` — DECANT (MIT); configurable genes, dose context, no data/weights.
+- `PerturbDiff/` — native setup: `../stage2/01_setup/execution/perturbdiff/`; tenv admission: `../stage2/03_modes_tenv/`.
 
 Reference-only (not deployed):
 

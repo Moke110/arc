@@ -18,7 +18,7 @@ across the four categories, 27/27 verified. `script/verify.sh` checks it offline
 missing manifest is a failure. Run `script/verify_all.sh` from the repository root to check
 every item.
 
-## The fourteen 项
+## The fourteen historical 项
 
 | 项 | upstream | licence | stage | what it is |
 |---|---|---|---|---|
@@ -44,6 +44,20 @@ Nine items are **deployed** in Stage 2 setup (run cards under
 same contract; `pert_model/` is the model-code one, so its `source/` trees are
 the upstream repositories themselves plus whatever weights/data the authors
 publish separately.
+
+## Addition on 2026-11-05
+
+`PerturbDiff/` contains the MIT-licensed
+[DeepGraphLearning/PerturbDiff](https://github.com/DeepGraphLearning/PerturbDiff)
+source at commit `31be89cb8cce5dddef0782bac29d5c748ce55931`,117 immutable
+files/1,203,863bytes. Its `author_log.json`, source manifest and offline verifier
+record provenance; no upstream checkpoint or dataset was downloaded.
+[Native setup](../stage2/01_setup/execution/perturbdiff/README.md) separately
+proves2,000-gene synthetic native training, save/reload and DDIM sampling in an
+isolated overlay. The tenv full-gene adapter and runtime decision belong to
+[03_modes_tenv](../stage2/03_modes_tenv/execution/models/perturbdiff/README.md).
+Native setup does not establish formal benchmark admission. The historical
+fourteen-item inventory and its nine deployed models above retain their dates.
 
 ## Excluded preprints (not part of this repository)
 

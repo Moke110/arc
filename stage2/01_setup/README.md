@@ -165,3 +165,16 @@ conclusion above remains the correct statement for the setup stage itself.
 Common conventions: one environment per model (`arc` itself stays clean); no
 upstream model code is edited — adapters live in `execution/<model>/`; outputs
 stay in `execution/<model>/output/` and out of git except the textual evidence.
+
+## Native setup addition (2026-11-05)
+
+[PerturbDiff](execution/perturbdiff/README.md) has a separate native setup record:
+unmodified2,000-gene Cross_DiT, two synthetic optimization steps with native
+GaussianDiffusion MSE + energy MMD, checkpoint save/reload error0 and100-step
+DDIM output shape2×3×2,000. Peak RSS2,525,488KiB and CUDA allocated2,021,450,240
+bytes; wall9.64s under10GiB scope. The effective isolated environment and exact
+source commit are pinned in the run card. No downloaded pretrained weights,
+actual tenv responses or benchmark test scores are part of this setup proof.
+The earlier nine-model setup record remains the2026-10-19 result; this addition
+is not a retroactive tenth success in that historical tally. Full18,164-gene
+runtime admission is separately owned by `03_modes_tenv` ticket #51.
