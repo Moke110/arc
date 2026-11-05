@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "before_formal_dispatch": true,
+  "provenance": {
+    "items_verified": 33,
+    "items_expected": 33,
+    "wall_seconds": 265.26,
+    "peak_rss_kib": 21736,
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "initial_inventory_gap_fixed": "PerturbDiff registered in strict expected inventory; fixture red/green and fail-closed regression pass"
+  },
+  "paths": "pass; frozen relocated CMonge bytecode source locations narrowly exempted as immutable cleanup evidence",
+  "tracked_files": "pass",
+  "tests": {
+    "pipeline": "4pass7.244s",
+    "metrics": "3pass0.001s",
+    "environment_identity": "3pass4.431s",
+    "scheduler": "6pass16.867s on observable host"
+  },
+  "independent_admission_audit": {
+    "scope": "CMonge/PerturbDiff native objectives, Morgan/baseline/dose, EMA/checkpoint and inference isolation",
+    "actionable_P1_P2_findings": 0,
+    "kind": "read-only static; runtime projections and convergence remain separate"
+  },
+  "model_admission_tickets_closed": [
+    45,
+    48,
+    49,
+    50,
+    51
+  ],
+  "frozen_expected_runs": 63,
+  "git_code_and_registry_commit": "329f02c"
+}
