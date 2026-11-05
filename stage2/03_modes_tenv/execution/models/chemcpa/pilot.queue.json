@@ -1,9 +1,7 @@
 {
   "input_root": "stage2/03_modes_tenv/output/input",
   "output_root": "stage2/03_modes_tenv/execution/pilots/chemcpa",
-  "verified_idle_pids": [
-    5561
-  ],
+  "verified_idle_pids": [],
   "admission_timeout_seconds": 900,
   "jobs": [
     {
