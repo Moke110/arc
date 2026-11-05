@@ -10,5 +10,5 @@
   "native_evidence": "pert_model/CMonge/source/cmonge/trainers/conditional_monge_trainer.py:136-138 fixed num_train_iters range",
   "host_peak_rss_kib": 6243472,
   "sampled_tree_peak_gib": 6.034931182861328,
-  "cuda_runtime_status": "isolated dependencies prepared; GPU qualifier not run"
+  "cuda_runtime_status": "GPU512 admitted; profile_gpu512_checkpoint.json and admission.json retain final identity and measured resource evidence"
 }

@@ -8,7 +8,7 @@ trainer has a fixed iteration range and no early stopping. See
 profile is qualification evidence, not a formal run or test score.
 
 The CUDA overlay preserves JAX/jaxlib0.4.38 and the original isolated CPU
-environment. Matching CUDA12 plugin/PJRT packages and nvcc12.9.86 are installed
+environment. Matching CUDA12 plugin/PJRT packages and nvcc 12.9.86 are installed
 under `pert_model/CMonge/local/tenv_cuda/`. Nine NVIDIA-only component directories
 and their package metadata are symlinked from the existing chemCPA CUDA12.8
 runtime. No chemCPA Python model packages are imported, and its environment is
@@ -44,8 +44,19 @@ installation (44376KiB peakRSS) and hash-generation measurements.
 only the isolated overlay on its import path, then runs the same native adapter.
 Its identity sidecar pins the wrapper, adapter, upstream source, CPU environment
 lock, CUDA lock and full overlay file manifest. CUDA setup alone is not runtime
-admission: full18164-gene train/save/reload/predict and formal-batch throughput
+admission: full 18,164-gene train/save/reload/predict and formal-batch throughput
 qualification are separate required gates.
 
 Primary references: [official JAX installation documentation](https://docs.jax.dev/en/latest/installation.html),
 [matching CUDA plugin release](https://pypi.org/project/jax-cuda12-plugin/0.4.38/).
+
+The final native batch512 CUDA profile passed 100 steps in 72.350 s with full-axis
+prediction/reload and adapter/input behavior checks. Its projected 10,000-step
+training duration is 2.010 h. JAX allocator peak 0.649 GiB and pool peak 1 GiB are
+separate from the conservative 3.316 GiB workstation GPU total. Native batch 512
+remains unchanged for formal runs. See admission.json and profile_gpu512_*.
+
+The initial CUDA attempt selected /usr/bin/ptxas 12.0 and rejected JAX PTX 8.3.
+The unique environment repair pins overlay nvcc 12.9.86 ahead of system tools in
+PATH and sets --xla_gpu_cuda_data_dir. Initial failure and consumed retry/time
+remain recorded; the base environment and dependency versions were unchanged.

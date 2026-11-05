@@ -41,10 +41,20 @@ host resources. Real full-axis qualification passed on the frozen tenv release; 
 The independent review and complete formal nine-run matrix remain separate.
 
 No historical benchmark implementation or upstream source file is modified or
-imported. The isolated existing CPU JAX environment is used; timings and recipe
-deviations are recorded explicitly rather than claiming the native AE benchmark
-was reproduced.
+imported. The existing CPU JAX environment is preserved. An isolated matching CUDA12
+plugin overlay enables the separately qualified GPU execution; see CUDA.md.
+Timings and recipe deviations are explicit rather than claiming the native AE
+benchmark was reproduced.
 
 Native sampled-condition validation was restored after resume; the old all-group
 profile and its unique OOM retry remain in `pause_record.json`. Fresh native
 qualification/profile evidence is recorded in `admission.json`.
+
+Final native batch512 GPU qualification passed 100 training iterations and one
+seeded held-out validation event, full finite 1401 × 18164 prediction, exact reload
+and joint adapter/baseline/dose behavior. Measured training 72.350 s projects 2.010 h
+for the unchanged 10,000-step recipe; formal allowance remains four hours. GPU
+allocator/pool peaks and conservative workstation telemetry are in admission.json.
+The first CUDA attempt required one assembler-path repair; the CPU-only batch-512 OOM
+is preserved separately and does not establish a GPU batch 512 failure. No extra OOM
+retry was allowed during the successful GPU batch 512 profile.

@@ -1,43 +1,56 @@
 # CMonge runtime admission
 
-Owned by [ticket #50](https://github.com/Moke110/arc/issues/50). The
-[FIDELITY.md](FIDELITY.md) ledger explains the native direct-space transport,
-shared Morgan adapter, objective and recipe deviations. Source compatibility
-and small synthetic tests do not establish formal admission.
+[Ticket #50](https://github.com/Moke110/arc/issues/50): **admitted on CUDA** against
+the frozen tenv full 18,164-gene contract. The final 100-step native batch512 profile
+produced finite 1401 × 18164 predictions, exact checkpoint reload, trained Morgan
+adapter parameters, and nonzero baseline/dose sensitivity. No test score was
+computed. See `admission.json` and `profile_gpu512_*` evidence.
 
-The isolated interpreter is `stage2/_envs/cmonge/bin/python` (existing CPU JAX).
-The adapter command is that interpreter followed by
-`stage2/03_modes_tenv/execution/script/cmonge_adapter.py --config <config>`;
-`benchmark.run_one` appends the safe `--request` path. The scheduler owns the
-full-space qualification and formal dispatch; direct uncapped jobs are prohibited.
-`qualification.json` is a bounded train/save/reload/predict probe, while
-`formal.json` retains the 10000-iteration, 512-sample author recipe.
+The native objective is Sinkhorn divergence plus Euclidean Monge gap. Validation
+samples one held-out condition every 100 iterations using an independent per-run
+seeded RNG; checkpoint history records its group ID. Formal configuration keeps
+the author's 10,000 iterations and batch 512 in `formal.json`. Bounded profiling
+used 100 iterations, not a completed formal run.
 
-The synthetic artifact test checks joint adapter weight updates, finite native
-training/validation objective, baseline and dose participation, exact checkpoint
-reload and binary checkpoint checksum validation. Run from repository root:
+GPU batch 512 profile: 72.350 s training/validation, 0.750 s inference; peak RSS 1,695,352 KiB,
+conservative sampled process-tree peak 1.711 GiB; JAX allocator peak 0.649 GiB and
+pool peak 1 GiB. Workstation GPU total peaked 3.316 GiB, including background use;
+the scheduling profile conservatively uses that total. Linear extrapolation is
+2.010 h per 10,000-step run, within the enforced four-hour training allowance;
+this remains an estimate. Nine formal runs remain separate.
+
+The CPU native 100-step profile took 787.053 s, projecting 21.86 h; its batch 512 OOM
+and unique batch-256 retry remain preserved. GPU batch 512 was separately measured with further
+OOM retry disabled and succeeded. GPU batch 256 is a measured fallback, not a third
+CPU retry. The first CUDA qualifier found the system's old CUDA 12.0 assembler;
+one recorded environment repair pins overlay nvcc 12.9.86 through PATH and XLA's
+CUDA tools directory. No dependency or upstream source was replaced during that
+repair. See `CUDA.md`, `FIDELITY.md` and the initial failure evidence.
+
+Formal adapter command (the benchmark appends `--request`):
+
+```bash
+stage2/_envs/cmonge/bin/python \
+  stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py \
+  --config stage2/03_modes_tenv/execution/models/cmonge/formal.json
+```
+
+The GPU wrapper loads the isolated CUDA overlay and runs the same native
+adapter. Its sidecar verifies live package metadata and 341 actual file hashes,
+including explicitly allowed NVIDIA-only symlink targets. CPU environment and
+upstream 85-file source manifest remain unchanged. Generated unmanifested native
+bytecode was relocated; both entrypoints now suppress bytecode writes.
+
+The accepted subprocess/artifact test exercises native objective, seeded
+multi-condition validation replay, joint adapter updates, input participation,
+checkpoint reload and explicit device memory evidence. Last run: PASS, 7.438 s,
+642,568 KiB peakRSS. Run through the repository memory gate:
 
 ```bash
 systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- /usr/bin/time -v \
   python -m unittest discover -s stage2/03_modes_tenv/execution/tests -p test_cmonge.py -v
 ```
 
-Measured synthetic test: PASS, 3.812 seconds unittest time, 642540 KiB peak RSS
-(4.26 seconds wall including test runner). An earlier fixture with entirely zero
-chemical fingerprints correctly failed adapter-kernel participation; the fixture
-now supplies nonzero binary features. No result from this probe is a benchmark
-score or evidence of full-axis admission. Real-data admission evidence is recorded
-separately after the scheduler-owned full-axis probe.
-
-Real full-axis qualification: **PASS** (fold 0, seed 17), full finite prediction
-shape [1401, 18164], exact reload agreement, nonzero joint adapter/baseline/dose
-behavior. Native best held-out objective 30.88014856974284; this is author
-validation loss, not a test score. Peak RSS 928464 KiB, training 1.825 s, inference
-0.647 s. See `admission.json`, `qualification_checkpoint.json`, scheduler telemetry
-and worker log. Formal nine-run execution remains separate.
-
-Resume correction: validation now samples one held-out condition using an
-independent per-run seeded RNG and records its ID at each validation event.
-The original all-group profile and unique512OOM/256retry remain preserved in
-`pause_record.json`; fresh native qualification/profile evidence is recorded in
-`admission.json`. No test score is computed during qualification.
+`PAUSE.md` and `pause_record.json` preserve the historical pause state; the
+current runtime outcome is `admission.json`. All formal execution must use the
+resource scheduler. Qualification output arrays/checkpoints remain local-only.

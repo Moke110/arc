@@ -1,8 +1,9 @@
 {
   "ticket": 50,
-  "status": "bounded-full-axis-qualified; formal admission paused pending native validation correction",
+  "status": "admitted",
+  "formal_ready": true,
   "formal_training_completed": false,
-  "qualification_scope": "real tenv input, fold0/seed17, three iterations batch4, at most three train and validation groups; full ordered gene axis; complete fold test prediction without test scoring",
+  "qualification_scope": "Frozen real tenv fold0/seed17; 100 native training iterations batch512, all eligible training groups, one seeded held-out condition at iteration100; full ordered18164-gene axis and complete fold test prediction; no test scoring.",
   "prediction_shape": [
     1401,
     18164
@@ -16,44 +17,32 @@
       "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
       "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
       "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
-      "source_sha256": "293ccbf122eb7f70b70a1496e940ab601914a9b94414e63f7332bf0133e3ebb7",
-      "environment_sha256": "a66a75608fa2bd9fbb0abfacaec7010150cab87a66cabf1b319d8e7cc0622577",
-      "config_sha256": "a2c078703ca8de3c33acdd71864161f071369638728f8643d5b5774d099794cb"
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "config_sha256": "44411e847dd07144d729d2364621ebd08e2acea6abb0ef23ba341b575cc37f43"
     },
     "blobs": {
-      "best.msgpack": "5fd121297833e0ddf618a67ca1ad8b51a5a26818f23c042ee6972fba445ed9a1"
+      "best.msgpack": "fc0d20513304395c30a5642e894bf3db8c44ff958d9759a9dfe2461683ff2fef"
     },
-    "training_seconds": 1.8251019470044412,
-    "inference_seconds": 0.6465166809939547,
+    "training_seconds": 72.3498511009966,
+    "inference_seconds": 0.750044333995902,
     "author_objective": "Sinkhorn divergence + Monge gap (Euclidean)",
-    "best_validation_loss": 30.88014856974284,
-    "selection": "minimum mean held-out-group native author objective",
+    "best_validation_loss": 23.282506942749023,
+    "selection": "minimum sampled held-out-condition native author objective",
     "history": [
       {
-        "iteration": 1,
-        "validation_loss": 31.045425415039062,
-        "training_loss": 20.581178665161133,
-        "fitting_loss": 20.55345344543457,
-        "regularizer": 0.027725934982299805
-      },
-      {
-        "iteration": 2,
-        "validation_loss": 30.92704137166341,
-        "training_loss": 27.05076789855957,
-        "fitting_loss": 27.023042678833008,
-        "regularizer": 0.027725696563720703
-      },
-      {
-        "iteration": 3,
-        "validation_loss": 30.88014856974284,
-        "training_loss": 21.15814781188965,
-        "fitting_loss": 21.130422592163086,
-        "regularizer": 0.027725934982299805
+        "iteration": 100,
+        "validation_loss": 23.282506942749023,
+        "validation_group_id": "af50bd463f05826ec6f708e2",
+        "validation_conditions_evaluated": 1,
+        "training_loss": 26.60714340209961,
+        "fitting_loss": 26.482376098632812,
+        "regularizer": 0.12476634979248047
       }
     ],
-    "adapter_parameter_change": 0.005269413348287344,
-    "baseline_sensitivity": 0.1557808518409729,
-    "dose_sensitivity": 0.0002551283687353134,
+    "adapter_parameter_change": 0.09293816983699799,
+    "baseline_sensitivity": 0.125880166888237,
+    "dose_sensitivity": 0.00012740492820739746,
     "reload_max_absolute_error": 0.0,
     "trainable_parameters": 2464016,
     "adapter_parameters": 102450,
@@ -61,64 +50,119 @@
       2048,
       50
     ],
-    "batch_size": 4,
-    "iterations": 3,
+    "batch_size": 512,
+    "iterations": 100,
+    "validation_groups": 138,
+    "validation_batch_policy": "one seeded random held-out condition per validation event",
     "qualification_only": true,
     "gene_count": 18164,
-    "backend": "cpu",
+    "backend": "gpu",
+    "device_kind": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "device_memory_stats": {
+      "num_allocs": 7381,
+      "bytes_in_use": 254118400,
+      "peak_bytes_in_use": 696879616,
+      "largest_alloc_size": 355993600,
+      "bytes_limit": 12878217216,
+      "bytes_reserved": 0,
+      "peak_bytes_reserved": 0,
+      "largest_free_block_bytes": 0,
+      "pool_bytes": 1073741824,
+      "peak_pool_bytes": 1073741824
+    },
     "recipe_deviations": [
       "Shared Morgan linear map replaces precomputed RDKit descriptor representation.",
       "Direct native transport on complete gene space; optional separately trained AE omitted.",
       "Same-plate DMSO mean replaces distribution of individual control cells.",
       "Explicit log(float micromolar dose) preserves fractional concentrations.",
-      "Checkpoint selection evaluates native total validation objective across fixed held-out groups."
+      "Checkpoint selection uses seeded native single-condition validation; final iteration also validated if off cadence."
     ]
   },
   "run_artifacts": {
-    "prediction.npy": "f71b6b73bd7e6d640865da6b6950dbefbc831fa703db3725f94f637be752e4be",
+    "prediction.npy": "c1398b7878ddd35204da4e6e92130cb03b65ba60ff781a59001946d99f33e330",
     "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
-    "checkpoint.json": "15f7f5e0d9b4cb1827119853f04caa95de5748493f0455ad4aa973d979bab66e",
-    "request.json": "74d2d19f91230eab8d07b0b7e2d48d7a993fd189e331721662057812823820df"
+    "checkpoint.json": "bebb6c8d10b5952df63bbc372fe84c9eed619c6208512ebabc180038ccc4f29c",
+    "request.json": "2d7301425194499e7bc1a2dd820d7129719c07365c193a40611b96c3dfdb1de0"
   },
   "profile": {
-    "host_peak_gib": 0.8854522705078125,
-    "gpu_peak_gib": 0.0,
-    "backend": "cpu",
-    "measured_rss_kib": 928464,
-    "training_seconds": 1.8251019470044412,
-    "inference_seconds": 0.6465166809939547,
-    "worker_wall_seconds": 6.0,
-    "scheduler_wall_seconds": 10.94,
-    "workstation_gpu_used_peak_gib": 2.333984375
+    "host_peak_gib": 1.7112617492675781,
+    "gpu_peak_gib": 3.31640625,
+    "gpu_profile_basis": "Conservative workstation GPU total; includes unrelated background. JAX-owned allocator/pool peaks reported separately.",
+    "gpu_allocator_peak_gib": 0.649019718170166,
+    "gpu_pool_peak_gib": 1.0,
+    "measured_rss_kib": 1695352,
+    "backend": "gpu",
+    "device_kind": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "batch_size": 512,
+    "iterations": 100,
+    "training_seconds": 72.3498511009966,
+    "inference_seconds": 0.750044333995902,
+    "projected_formal_training_hours": 2.0097180861387947,
+    "projection_is_estimate": true
   },
+  "formal_resource_profile": {
+    "host_peak_gib": 1.7112617492675781,
+    "gpu_peak_gib": 3.31640625,
+    "gpu_profile_basis": "Conservative workstation GPU total; includes unrelated background. JAX-owned allocator/pool peaks reported separately.",
+    "gpu_allocator_peak_gib": 0.649019718170166,
+    "gpu_pool_peak_gib": 1.0,
+    "measured_rss_kib": 1695352,
+    "backend": "gpu",
+    "device_kind": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "batch_size": 512,
+    "iterations": 100,
+    "training_seconds": 72.3498511009966,
+    "inference_seconds": 0.750044333995902,
+    "projected_formal_training_hours": 2.0097180861387947,
+    "projection_is_estimate": true
+  },
+  "formal_recipe": {
+    "iterations": 10000,
+    "batch_size": 512,
+    "eval_every": 100,
+    "configuration": "formal.json",
+    "training_budget_seconds": 14400,
+    "native_early_stopping": false
+  },
+  "formal_command": [
+    "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+    "--config",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+  ],
   "resource_constraints": {
     "MemoryMax": "10G",
     "MemorySwapMax": "8G",
     "telemetry_seconds": 5,
+    "bounded_threads": 2,
     "owned_tasks": 1
   },
   "evidence_files": {
-    "checkpoint": "stage2/03_modes_tenv/execution/models/cmonge/qualification_output/runs/cmonge/fold_0/seed_17/checkpoint.json",
-    "run": "stage2/03_modes_tenv/execution/models/cmonge/qualification_output/runs/cmonge/fold_0/seed_17/run.json",
-    "telemetry": "stage2/03_modes_tenv/execution/models/cmonge/qualification_output/scheduling/telemetry.jsonl",
-    "time": "stage2/03_modes_tenv/execution/models/cmonge/qualification_output/scheduling/cmonge_fold0_seed17.attempt0.log"
+    "checkpoint": "profile_gpu512_checkpoint.json",
+    "run": "profile_gpu512_run.json",
+    "state": "profile_gpu512_state.json",
+    "telemetry": "profile_gpu512_telemetry.jsonl",
+    "worker": "profile_gpu512_worker.log",
+    "upstream_verification": "upstream_verify_native.log",
+    "cuda_environment_verification": "cuda_environment_probe.log"
   },
-  "reproduce": "python stage2/03_modes_tenv/execution/script/schedule.py run stage2/03_modes_tenv/execution/models/cmonge/qualification_queue.json",
+  "reproduce": "python stage2/03_modes_tenv/execution/script/schedule.py run stage2/03_modes_tenv/execution/models/cmonge/profile_gpu512_queue.json",
+  "native_validation_correction_completed": true,
+  "pending_native_validation_correction": false,
+  "prior_cpu_profile": "native_resource_assessment.json",
+  "retry_evidence": {
+    "CPU_512_OOM": "formal_profile_oom_journal.log",
+    "CPU_unique_256_retry": "formal_profile_state.json",
+    "GPU_environment_failure": "qualification_gpu_initial_failure.json",
+    "GPU_single_environment_repair": "qualification_gpu_state.json",
+    "GPU_256_fallback": "profile_gpu_state.json",
+    "GPU_512_no_retry": "profile_gpu512_state.json"
+  },
   "limitations": [
-    "Bounded admission proof is not full-budget convergence, a benchmark score or formal nine-run completeness.",
-    "Native direct-space transport omits optional separately trained AE and uses same-plate control means; see FIDELITY.md.",
-    "CPU-only JAX runtime; workstation GPU usage is unrelated background usage."
-  ],
-  "formal_ready": false,
-  "pause_record": "pause_record.json",
-  "latest_qualification_record": "qualification_v2_checkpoint.json",
-  "formal_resource_profile": {
-    "host_peak_gib": 5.703834533691406,
-    "gpu_peak_gib": 0.0,
-    "backend": "cpu",
-    "time_v_peak_rss_kib": 5874356,
-    "time_v_worker_wall_seconds": 652.65,
-    "sampled_retry_tree_peak_gib": 5.703834533691406
-  },
-  "pending_native_validation_correction": true
+    "Qualification/profile is not a formal run, convergence result or test score. Nine formal runs remain separate.",
+    "Formal10000-step runtime projection is an estimate from100steps; enforce four-hour cumulative allowance per formal identity.",
+    "CPU512OOM is device-specific; separately qualified GPU512 preserves native author batch size. No extra OOM retry was allowed in GPU512 profiling.",
+    "Same-plate DMSO means and shared Morgan dose adaptation replace author data-conditioning inputs as disclosed in FIDELITY.md.",
+    "GPU runtime reuses explicitly pinned NVIDIA-only library directories; live metadata and341file hashes are verified before every external run."
+  ]
 }
