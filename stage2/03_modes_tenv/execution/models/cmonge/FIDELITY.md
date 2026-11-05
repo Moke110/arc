@@ -36,8 +36,8 @@ Qualification uses 3 iterations, batch 4 and at most 3 groups on the complete ge
 axis. It can establish train/save/reload/predict and adapter/baseline/dose behavior,
 not formal performance or full-budget convergence. Checkpoint evidence reports
 parameter change, baseline/dose sensitivity, exact reload agreement and measured
-host resources. Formal admission remains unresolved until the actual real-data
-full-axis qualification completes and the independent review passes.
+host resources. Real full-axis qualification passed on the frozen tenv release; see admission.json.
+The independent review and complete formal nine-run matrix remain separate.
 
 No historical benchmark implementation or upstream source file is modified or
 imported. The isolated existing CPU JAX environment is used; timings and recipe

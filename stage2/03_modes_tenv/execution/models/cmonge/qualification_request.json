@@ -1,0 +1,41 @@
+{
+  "identity": {
+    "model": "cmonge",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "293ccbf122eb7f70b70a1496e940ab601914a9b94414e63f7332bf0133e3ebb7",
+    "environment_sha256": "a66a75608fa2bd9fbb0abfacaec7010150cab87a66cabf1b319d8e7cc0622577",
+    "config_sha256": "a2c078703ca8de3c33acdd71864161f071369638728f8643d5b5774d099794cb"
+  },
+  "predictor_files": {
+    "train_cases": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/train.csv",
+    "validation_cases": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/validation.csv",
+    "test_cases": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+    "train_expression": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/train_expression.npy",
+    "validation_expression": "/home/chang/arc/stage2/03_modes_tenv/output/input/fold_0/validation_expression.npy",
+    "controls": "/home/chang/arc/stage2/03_modes_tenv/output/input/controls.npy",
+    "morgan": "/home/chang/arc/stage2/03_modes_tenv/output/input/morgan.npy",
+    "drugs": "/home/chang/arc/stage2/03_modes_tenv/output/input/drugs.csv",
+    "genes": "/home/chang/arc/stage2/03_modes_tenv/output/input/genes.csv"
+  },
+  "target_kind": "delta",
+  "n_genes": 18164,
+  "output_directory": "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/qualification_output/runs/cmonge/fold_0/seed_17",
+  "command_evidence": {
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_adapter.py": "6d63788b1637330764d6d030bed932b867d5bd242a667fd3671a105119ac0e8e",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_adapter.identity.json": "1cdc03478bb2b826a7869b31582e5824c9b3a80853c3255e0721694954f71350",
+    "/home/chang/arc/pert_model/CMonge/manifest.sha256": "ac75d569c7cad04e0d534a8f8c94c46d07f680aa1ccc9e580b6784fc5f3033a6",
+    "/home/chang/arc/pert_model/CMonge/author_log.json": "91a2c9485a147af93b7bae06ed3d4e2c1521159b5b3a7f2dcab27c27e2d30cb5",
+    "/home/chang/arc/pert_model/CMonge/source/cmonge/models/nn.py": "5e8082ecaee28e84850c28b0dd4222b248d521d0bb77dcb24747986ce62761ba",
+    "/home/chang/arc/pert_model/CMonge/source/cmonge/metrics.py": "76f77cb9889e83bb4c23a3a56b38b0423ad720eaffee563444df7361e352f835",
+    "/home/chang/arc/stage2/_envs/cmonge.lock": "d48fa706c43f485909c635388aeb3e8e49463f75ec4ab9f0af77c4a24d07290a",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json": "4ed77584baf9d63d44b14f31eb2a2f9a2e502c831c82eb77ab79904500836b31",
+    "/home/chang/arc/pert_model/CMonge/source/configs/conditional-monge-sciplex.yml": "962f94bb7e18aaaede86d802466f1ec9cb85f594052356ef7492a9d6af0d2fc4",
+    "/home/chang/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11": "6ec402210289b1d16bf3440775d3595e93f92e1e0ec808d4607b85f528592159",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/qualification.json": "53edcd2fe8f77976a86278f81867263fa26feb71b2135bb523b3650cc1b2c1ab"
+  },
+  "progress_contract": "progress.json: phase training/inference, training_seconds; checkpoint.json: training_seconds,inference_seconds,blobs filename:sha256"
+}

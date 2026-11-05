@@ -28,3 +28,10 @@ chemical fingerprints correctly failed adapter-kernel participation; the fixture
 now supplies nonzero binary features. No result from this probe is a benchmark
 score or evidence of full-axis admission. Real-data admission evidence is recorded
 separately after the scheduler-owned full-axis probe.
+
+Real full-axis qualification: **PASS** (fold 0, seed 17), full finite prediction
+shape [1401, 18164], exact reload agreement, nonzero joint adapter/baseline/dose
+behavior. Native best held-out objective 30.88014856974284; this is author
+validation loss, not a test score. Peak RSS 928464 KiB, training 1.825 s, inference
+0.647 s. See `admission.json`, `qualification_checkpoint.json`, scheduler telemetry
+and worker log. Formal nine-run execution remains separate.
