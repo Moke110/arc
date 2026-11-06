@@ -131,6 +131,35 @@ than inheriting its entrant registry or scores.
   same folds and scoring rules, in all three figures. Their identical
   seed copies are deterministic references, not independent trained fits.
 
+## User-authorized partial evaluation amendment (2026-11-06)
+
+The user explicitly amended the evaluation timing contract: “Amend the contract;
+score finished models now”. Completed runs with validated persisted predictions
+may now be scored against evaluator-only test truth while the remaining formal
+runs continue. This exception supersedes the global prediction-barrier requirement
+for partial evaluation only; the canonical final evaluation still requires all
+63 model/fold/seed outcomes to reach terminal status, including recorded failures.
+
+- Freeze each partial evaluation's included run identities, prediction hashes,
+  completion counts and truth/metric identities. Use a separate, explicitly dated
+  partial-evaluation namespace for metrics, tables, source arrays and figures.
+  Partial work must neither create a final seal nor overwrite canonical final
+  evaluation outputs or the live scheduler's prediction/status records.
+- Keep training and evaluation independent: partial test results must not influence
+  training, checkpoint selection, hyperparameters, retries, admission or scheduling.
+  Existing author validation-loss checkpoint selection and the frozen run matrix
+  remain binding. Evaluation is bounded CPU work subject to current measured RAM
+  and the repo-wide heavy-job limit; ongoing fits continue under their scheduler.
+- Primary partial figures compare entries with all nine completed runs and include
+  both deterministic reference baselines. Show any partly completed entry separately
+  with its completed/expected run count; it cannot receive a complete ranking or a
+  nine-run mean/range label. Retain NaN reasons and valid-group counts. Best-single-run
+  displays remain explicitly post-hoc, with their available-run selection scope.
+- Partial delivery supplements the study. After all 63 outcomes settle, perform the
+  canonical integrity/seal, full scoring, replay, independent review and tracker
+  closure under the original final-delivery requirements. Partial evidence does
+  not satisfy final matrix completeness or close formal execution by itself.
+
 ## Figures
 
 1. Eight metric panels: model/baseline bars are nine-run arithmetic means,
