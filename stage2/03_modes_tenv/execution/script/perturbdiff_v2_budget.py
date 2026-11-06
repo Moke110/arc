@@ -161,8 +161,9 @@ def supervise(account, request_path, command):
             # before wait, preserving this ownership guarantee.
             while worker.poll() is None and time.monotonic() - start < remaining:
                 time.sleep(min(.1, max(.001, remaining - (time.monotonic() - start))))
-            timed_out = worker.poll() is None
-            if timed_out:
+            alive = worker.poll() is None
+            timed_out = alive or time.monotonic() - start >= remaining
+            if alive:
                 if not matches(identity):
                     raise ValueError('worker process identity changed')
                 os.killpg(worker.pid, signal.SIGKILL)
