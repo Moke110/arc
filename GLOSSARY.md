@@ -81,6 +81,9 @@ _Avoid_: training sample (when only counting eligibility is established)
 **Stage 3 drug identity**:
 The evidence-resolved active parent of a single pharmacological intervention, retaining its known stereochemistry. The administered salt, hydrate, or other chemical form remains separately described; an alias or a different salt does not by itself create another drug.
 
+**Stage 3 desalted parent**:
+The chemical structure of a Stage 3 intervention after removing counterions and solvates and normalizing removable protonation, while retaining stereochemistry and permanent charges. Distinct source treatments may share a parent without becoming the same measurement.
+
 **Phenotype counting stratum**:
 The comparable target used for evidence counting in the wayfinder design, fixing a measurement definition, biological model, protocol, vehicle profile, and reference meaning while allowing declared dose/time axes. It is distinct from the finer condition partitions of the formal Stage 3 corpus.
 

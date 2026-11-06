@@ -29,3 +29,25 @@ The user also included imaging-based viability in `cell_viability` and requested
 The user selected Heliste 2021 to build separate baseline and hypoxia–reoxygenation cardiomyocyte chemical-perturbation `cell_viability` corpora now. The requested Stage 3 step layout is `stage3/01_corpus/output/baseline/` and `stage3/01_corpus/output/H-R/`. This replaces the earlier `01_data_corpus/output/corpus/<release-id>/` layout for the new build; migration of the historical step is still to be designed. Broader sources remain potential later additions rather than prerequisites for this anchor.
 
 The user accepted replacement of the existing `01_data_corpus` step by `01_corpus`, retaining historical work through Git. Each condition directory contains `corpus.parquet`, a readable `corpus.csv`, `source_annotation.json` and a chemical-resolution report. One record represents one supplied chemical–dose–condition value, with `rep: null` and `readout: {"source_reported": value}` because the workbook does not establish physical replicate identity or a group-mean interpretation. Preserve the author-normalized scale and unresolved normalization details in the annotation. Treatments require evidence-backed canonical SMILES; unresolved identities remain in the report pending resolution, without invented structures or control rows. Existing endpoint-gated code and the historical Heliste `empty-after-QC` assessment do not establish admission rules for this source-first build.
+
+## Desalted parent amendment (2026-11-06)
+
+The user requested desalted forms for all Heliste chemicals, including the six
+previously pending labels. This replaces the first implementation's preservation
+of reference salts in corpus canonical SMILES. Apply a deterministic, versioned
+parent transformation to every resolved reference: remove counterions and
+solvates, normalize removable protonation, retain stereochemistry and permanent
+charges. Keep original labels, reference structures and resolution evidence so
+the administered form remains auditable. Supplied molar doses remain unchanged;
+parent mapping does not authorize an inferred dose or potency conversion.
+
+Reference candidates may be admitted when evidence supports the supplied
+chemical identity and all relevant candidates converge to one desalted parent.
+Desalting alone does not resolve stereoisomer mixtures, contradictory identities
+or a polymer without a defensible finite molecular representation. Keep these
+explicitly pending rather than select an arbitrary structure. Preserve separate
+source rows even when parents coincide, and report source-label and unique-parent
+counts separately. Freeze new identity evidence as a new declared local addition;
+retain the previous snapshot and immutable source bytes. Rebuild both condition
+exports through the existing offline build/verify seam and retain complete
+5,512-cell accounting.
