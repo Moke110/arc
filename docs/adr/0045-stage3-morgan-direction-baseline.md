@@ -1,6 +1,6 @@
 # Establish a Morgan baseline for Stage 3 phenotype direction prediction
 
-**Status: agreed design; awaiting final shared-understanding confirmation (2026-11-06)**
+**Status: accepted; user confirmed complete design (2026-11-06)**
 
 Stage 3 ultimately maps a drug-induced transcriptomic perturbation Δ to cardiomyocyte phenotype direction. While Stage 2 transcriptome prediction is unfinished, `stage3/02_base_morgan` will establish a Morgan-fingerprint baseline. The user accepted a shallow MLP with one nonlinear hidden layer; Morgan and future Δ predictors share the hidden-layer and output-head architecture, with the first layer accommodating their different input dimensions.
 
@@ -29,3 +29,5 @@ Persist predictions and metrics for every fold × seed. Report metric means and 
 ## Delivery boundary
 
 The next spec and implementation cover the complete `02_base_morgan` training and evaluation pipeline. Freeze and retain the shared comparison protocol now. Concrete Δ integration is a later design step after Stage 2 determines the prediction source, gene axis and coverage; do not invent Δ vectors or make their availability a prerequisite for completing 02. Proceed to specification only after the user confirms the complete design understanding.
+
+Published specification: [GitHub issue #58](https://github.com/Moke110/arc/issues/58). The public prepare/train/evaluate/verify acceptance seam was confirmed by the user during specification.
