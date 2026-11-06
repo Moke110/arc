@@ -59,6 +59,35 @@ class ReportingTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Unexpected'):
                 summarize(prepared, paths)
 
+    def test_readable_tables_and_mode_separation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            prepared, paths = self.fixture(Path(tmp))
+            prepared['provenance_metadata'] = {'coverage': {'baseline': {
+                'source_values': 7, 'admitted_values': 4, 'pending_values': 3, 'resolved_labels': 4}}}
+            manifest_path = paths[0] / 'run.json'
+            manifest = json.loads(manifest_path.read_text())
+            manifest.update(mode='smoke', smoke_epochs=2)
+            manifest_path.write_text(json.dumps(manifest))
+            summary = summarize(prepared, paths[:2])
+            held = dict(summary['aggregates'][0], setting='cold_dose', scope='held_dose',
+                        held_dose=0.2, generalization_type='interpolation')
+            summary['aggregates'].append(held)
+            report = render_report(summary)
+            self.assertIn('INCOMPLETE formal benchmark', report)
+            self.assertIn('| 3 | 1 | 1 | 1 | 0 |', report)
+            self.assertIn('| baseline | 7 | 4 | 3 | 4 |', report)
+            self.assertIn('| baseline/cell_viability | cold_drug | formal |', report)
+            self.assertIn('| baseline/cell_viability | cold_drug | smoke |', report)
+            self.assertIn('| baseline/cell_viability | formal | 0.2 | interpolation |', report)
+            self.assertLess(report.index('## Cold-dose held levels'), report.index('## Unweighted fold'))
+            self.assertIn('## Per-class precision and recall', report)
+            self.assertIn('## Cold-drug pooled OOF per seed', report)
+            self.assertIn('[summary.json](summary.json)', report)
+            self.assertIn('[run ledger](benchmark.json)', report)
+            self.assertNotIn('```json', report)
+            self.assertIn('not biological replication', report)
+            self.assertIn('training-only', report)
+
     def test_corruption_and_provenance(self):
         with tempfile.TemporaryDirectory() as tmp:
             prepared, paths = self.fixture(Path(tmp))

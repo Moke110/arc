@@ -151,14 +151,70 @@ def summarize(prepared, runs, require_complete=False):
 
 
 def render_report(summary):
-    """Render every persisted metric and count, retaining explicit incomplete status."""
+    """Render compact scientific tables; JSON artifacts retain exhaustive detail."""
     lines = ['# Morgan direction benchmark', '',
-             'Status: ' + ('complete formal benchmark' if summary['complete'] else 'INCOMPLETE formal benchmark'),
-             f"Expected runs: {summary['expected_runs']}; completed formal: {summary['completed_formal']}.",
-             'Run accounting: ' + json.dumps(summary['status_counts'], sort_keys=True), '',
-             'Directions describe magnitude relative to each source arm’s assumed vehicle=100. Class 0 is within-band, not demonstrated equivalence. Direction does not establish therapeutic benefit. Source measurements are not established independent biological replicates. Seed variation is optimization variation, not biological replication. Softmax does not establish probability calibration.', '',
-             'Pending source identity accounting is unchanged and excluded from admitted measurement coverage. Unknown source coverage is left null.', '',
-             'All metrics retain classes [-1, 0, +1], with zero division set to zero. Standard deviations are sample SD (ddof=1), null for fewer than two contributors. Fold means are unweighted; pooled OOF metrics concatenate measurements and are distinct.', '']
-    for label, value in [('Source coverage (null means not supplied)', summary['source_coverage']), ('Coverage, classes and split roles', summary['targets']), ('Held-dose results followed by overall fold × seed means', summary['aggregates']), ('Cold-drug pooled three-fold OOF per seed', summary['cold_drug_pooled_oof']), ('Cold-drug pooled OOF seed mean and SD', summary['cold_drug_pooled_oof_aggregates']), ('Every expected run and regenerated metrics', summary['runs']), ('Metric numerical convention', summary['metric_convention'])]:
-        lines.extend(['## ' + label, '', '```json', json.dumps(value, indent=2, sort_keys=True, allow_nan=False), '```', ''])
+             'Status: ' + ('complete formal benchmark' if summary['complete'] else 'INCOMPLETE formal benchmark'), '',
+             'Machine-readable detail: [summary.json](summary.json) and [run ledger](benchmark.json).', '']
+
+    def table(title, headers, rows):
+        lines.extend(['## ' + title, '', '| ' + ' | '.join(headers) + ' |',
+                      '| ' + ' | '.join('---' for _ in headers) + ' |'])
+        for row in rows:
+            lines.append('| ' + ' | '.join(str(x).replace('|', r'\|').replace('\n', ' ') for x in row) + ' |')
+        if not rows:
+            lines.append('| ' + ' | '.join(['No results available'] + ['—'] * (len(headers) - 1)) + ' |')
+        lines.append('')
+
+    def number(value):
+        return '—' if value is None else f'{value:.4f}'
+
+    def mean_sd(item, metric, index=None):
+        value = item[metric]
+        mean, sd = value['mean'], value['std']
+        if index is not None:
+            mean, sd = mean[index], None if sd is None else sd[index]
+        return number(mean) + ' ± ' + number(sd)
+
+    def target(item):
+        return item['condition'] + '/' + item['phenotype']
+
+    counts = summary['status_counts']
+    smoke = sum(r.get('mode') == 'smoke' for r in summary['runs'])
+    table('Run status', ['Expected', 'Completed formal', 'Completed smoke', 'Pending', 'Failed'],
+          [[summary['expected_runs'], summary['completed_formal'], smoke, counts['pending'], counts['failed']]])
+    lines.extend(['Smoke and formal results are reported separately. Smoke fits do not complete the formal benchmark.', ''])
+    source = summary.get('source_coverage') or {}
+    coverage = source.get('coverage', source)
+    source_rows = [[condition, c.get('source_values', '—'), c.get('admitted_values', '—'),
+                    c.get('pending_values', '—'), c.get('resolved_labels', '—')]
+                   for condition, c in sorted(coverage.items()) if isinstance(c, dict)]
+    table('Source coverage', ['Condition', 'Source measurements', 'Admitted', 'Pending identity', 'Resolved labels'], source_rows)
+    lines.extend(['Pending identities are excluded from admitted measurements; — means coverage was not supplied.', ''])
+    table('Admitted coverage and class distribution',
+          ['Target', 'Measurements', 'Parents', 'Parent–dose combinations', 'Source labels', '-1', '0', '+1'],
+          [[target(t), *[t['coverage'][k] for k in ('measurements', 'parents', 'combinations', 'source_labels')],
+            *[t['coverage']['classes'][str(c)] for c in CLASS_ORDER]] for t in summary['targets']])
+    table('Split role counts', ['Target', 'Setting', 'Fold', 'Role', 'Measurements', 'Parents', 'Combinations'],
+          [[target(t), s['setting'], s['fold'], role, c['measurements'], c['parents'], c['combinations']]
+           for t in summary['targets'] for s in t['splits'] for role, c in s['roles'].items()])
+    held = [a for a in summary['aggregates'] if a['scope'] == 'held_dose']
+    table('Cold-dose held levels', ['Target', 'Mode', 'Held dose (µM)', 'Generalization', 'n seeds', 'Macro-F1 mean ± SD', 'Log loss mean ± SD'],
+          [[target(a), a['mode'], a['held_dose'], a['generalization_type'], a['n_runs'], mean_sd(a, 'macro_f1'), mean_sd(a, 'log_loss')] for a in held])
+    overall = [a for a in summary['aggregates'] if a['scope'] == 'overall_fold_mean']
+    table('Unweighted fold × seed means', ['Target', 'Setting', 'Mode', 'n runs', 'Macro-F1 mean ± SD', 'Log loss mean ± SD'],
+          [[target(a), a['setting'], a['mode'], a['n_runs'], mean_sd(a, 'macro_f1'), mean_sd(a, 'log_loss')] for a in overall])
+    table('Cold-drug pooled OOF per seed', ['Target', 'Mode', 'Seed', 'Macro-F1', 'Log loss'],
+          [[target(a), a['mode'], a['seed'], number(a['metrics']['macro_f1']), number(a['metrics']['log_loss'])] for a in summary['cold_drug_pooled_oof']])
+    table('Cold-drug pooled OOF across seeds', ['Target', 'Mode', 'n seeds', 'Macro-F1 mean ± SD', 'Log loss mean ± SD'],
+          [[target(a), a['mode'], a['n_runs'], mean_sd(a, 'macro_f1'), mean_sd(a, 'log_loss')] for a in summary['cold_drug_pooled_oof_aggregates']])
+    table('Per-class precision and recall (fold × seed)', ['Target', 'Setting', 'Mode', 'Class', 'n runs', 'Precision mean ± SD', 'Recall mean ± SD'],
+          [[target(a), a['setting'], a['mode'], c, a['n_runs'], mean_sd(a, 'precision', j), mean_sd(a, 'recall', j)]
+           for a in overall for j, c in enumerate(CLASS_ORDER)])
+    table('Every expected run', ['Target', 'Setting', 'Fold', 'Seed', 'Status', 'Mode'],
+          [[target(r['identity']), r['identity']['setting'], r['identity']['fold'], r['identity']['seed'], r['status'], r.get('mode', '—')] for r in summary['runs']])
+    lines.extend(['## Interpretation and limitations', '',
+        'Dose normalization uses training-only log10(µM) mean and standard deviation. Directions describe magnitude relative to each source arm’s assumed vehicle=100: -1 below 80, 0 from 80 through 120 inclusive, +1 above 120. Class 0 is within-band, not demonstrated equivalence.', '',
+        'Source measurements are not established independent biological replicates. Training seeds describe optimization variation, not biological replication. Direction does not establish therapeutic benefit or clinical efficacy. Softmax does not establish probability calibration.', '',
+        'All metrics retain classes [-1, 0, +1], with zero division set to zero. SD is sample SD (ddof=1); — denotes unavailable SD for fewer than two contributors. Fold means are unweighted. Pooled OOF metrics concatenate all three outer test folds within a seed and are distinct from fold means. Cold-dose interior levels are interpolation; boundary levels are extrapolation.', '',
+        'Confusion matrices, per-run class metrics, numerical log-loss conventions and split details are retained in [summary.json](summary.json). Saved predictions retain measurement provenance; checkpoint selection uses validation data only.', ''])
     return '\n'.join(lines)
