@@ -220,3 +220,64 @@ ADR 0027 remains the contract of the frozen historical benchmark.
 - [Publication gate](0025-stage1-stage2-directory-split.md)
 - [Stage 2 overview](../../stage2/README.md)
 - [Execution environment](../agents/execution-environment.md)
+
+## Amendment (2026-11-06): uniform PerturbDiff v2 protocol
+
+The user selected **all nine PerturbDiff fold/seed slots** for
+`perturbdiff-v2-all-validation-ema`. This is adapted validation stopping, rather
+than a claim to reproduce the author's complete training recipe. Keep the
+objective, architecture, optimizer, scheduler, training batch/population and
+sampling settings unchanged. The other 54 formal identities and artifacts must
+remain byte-identical through migration.
+
+- Validation and checkpoint eligibility occur every **1,000 steps and at the
+  configured maximum step (200,000)**. Fresh deterministic EMA validation uses
+  fixed draws and **all 138 validation groups**, in bounded batches of eight
+  (18 batches; the final two-group batch receives its group-count weight).
+  Record group IDs, count and hash. Legacy v1 used the fixed first 40 groups,
+  covering only 14 of 46 validation drugs; its loss is not the same validation
+  population as v2.
+- Predeclare early stopping from training/validation evidence only: minimum
+  **20,000 steps**, **10** consecutive eligible checks without an absolute
+  reference improvement of at least **0.01**. Initialize the reference and zero
+  patience counter at the first eligible event at/after 20,000; the earliest
+  patience stop is **30,000**. Independently retain the strict minimum EMA
+  validation-loss checkpoint across all eligible events, including those before
+  20,000; patience reference and best-checkpoint selection are distinct.
+  Legacy-history variation is operational context, not a biological noise
+  estimate or a confidence interval for the all-group validation population.
+- Restart each v2 fit from its declared seed. Native v1 snapshots lack complete
+  continuation state and must never be relabeled v2 or treated as exact resume.
+  Exact v2 resume is unsupported until independently verified; a best-weight
+  reload is prediction evidence, not proof of training continuation.
+- The original **14,400-second cumulative allowance per fold/seed** covers v1,
+  v2 and every retry. Debit legacy work conservatively using full scheduler
+  attempt wall time (including setup/inference where inseparable), reconciled
+  against training/checkpoint timing and interrupted work. Preserve the reviewed
+  ledger; restarting from seed creates no credit. New training includes
+  validation/checkpoint overhead; separately timed new inference keeps its
+  watchdog. Remaining budget may be insufficient for v2 completion. Exhaustion
+  is terminal timeout, never successful inference from a partial fit.
+- Preserve the native binaries, hashes and histories of completed legacy v1
+  fold 0 seeds **17/42** and interrupted fold 0 seed **2026**, explicitly labeled
+  legacy v1. Only validated v2 outcomes count toward the nine PerturbDiff slots
+  in the final 63-outcome matrix; legacy outcomes remain audit evidence.
+
+**Execution status at this amendment:** production is stopped; migration has
+not been applied. Automatic approval review rejected the exact production
+archive/formal-directory exchange before execution because trusted explicit
+user approval for that mutation was absent. That user approval remains required;
+runtime integration and independent clearance are also pending before restart.
+Documentation authorization does not authorize applying or restarting production.
+The reviewed 1,001-step CUDA synthetic smoke is **TEST ONLY**, with all 138 groups,
+exact prediction reload and timeout rejection; it demonstrates neither protocol
+convergence nor a completed formal v2 run.
+
+Final delivery after all 63 outcomes settle must regenerate learning curves
+alongside the existing metrics/PR figures. Label legacy v1 and formal v2
+histories separately, disclose their different validation populations, record
+source hashes and plotted coordinates, and show missing/interrupted/timeout
+histories honestly. Never splice v1 and seed-restarted v2 into a continuous curve
+or count legacy v1 as formal v2 completion. Renderer changes are a separate
+implementation scope. Issues **#40, #46 and #47 remain open** until final
+63-outcome evaluation, replay, delivery and review; this amendment is not closure.

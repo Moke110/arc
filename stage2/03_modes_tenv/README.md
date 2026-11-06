@@ -74,7 +74,8 @@ The native measured recipes imply roughly two days of serial work for CMonge
 and PerturbDiff alone. These projections are estimates; actual terminal statuses
 and telemetry determine completion.
 
-Dispatch from the repository root after offline gates pass:
+Historical v1 dispatch command (production is currently stopped; the v2
+migration and independently cleared runtime must precede any restart):
 
 ```bash
 /home/chang/miniconda3/envs/arc/bin/python \
@@ -145,7 +146,7 @@ omitted without smoothing or reconstruction. `no_change` and `delta_mean` have
 explicit “not applicable” panels because deterministic references do not fit.
 
 
-Execution **resumed at the user's request on 2026-11-06** from the verified
+Historical continuation **resumed at the user's request on 2026-11-06** from the verified
 34/63-run save point, using the unchanged serial queue. Canonical final test scoring
 remains withheld until all 63 outcomes settle; partial evaluation is permitted
 under the ADR 0042 amendment. The historical pause occurred after 34/63 formal
@@ -154,3 +155,17 @@ and 29 not dispatched. No formal test scoring has occurred. The verified pause
 manifest, remaining cases and exact same-queue continuation commands are in
 [`execution/formal/PAUSE.md`](execution/formal/PAUSE.md). Full binaries remain
 local; the pause record describes the stopped state before this continuation.
+
+
+PerturbDiff is now assigned the uniform nine-slot v2 protocol in the
+[ADR 0042 amendment](../../docs/adr/0042-tenv-model-benchmark-redesign.md#amendment-2026-11-06-uniform-perturbdiff-v2-protocol).
+Production is **stopped**, and the reviewed migration is **not applied**:
+automatic approval review rejected the production archival/formal-directory
+exchange pending explicit user approval. Runtime integration and restart
+clearance remain pending. The 1,001-step synthetic smoke is TEST ONLY, not formal
+completion or convergence. Preserve legacy v1 fold 0 seeds 17/42 and interrupted
+2026 separately; restart v2 from seed with the original cumulative 14,400-second
+cap and conservative legacy wall debits. The other 54 identities/artifacts stay
+byte-identical. Final learning curves must distinguish v1/v2 protocols and their
+validation populations, without splicing histories; the renderer amendment is
+pending separate implementation. #40/#46/#47 stay open through final delivery.
