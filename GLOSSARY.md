@@ -31,6 +31,12 @@ The biological indicator represented by a Stage 3 corpus target. MTT, CCK8, Cell
 **Condition**:
 The experimental state of a Stage 3 phenotype measurement, such as baseline or hypoxia–reoxygenation. Detailed context, including cell type and treatment, hypoxia and reoxygenation timings, further describes that state.
 
+**Baseline**:
+The source's normoxic reference condition for chemical perturbation, including its documented culture and exposure schedule. It includes treated measurements and does not mean vehicle-only controls.
+
+**Hypoxia–reoxygenation (H-R)**:
+The experimental condition in which a hypoxic interval is followed by restoration of oxygen. Its interpretation retains the source's hypoxia, reoxygenation and chemical-treatment schedule.
+
 **Readout**:
 The source-supplied measurement evidence, including individual values or reported group statistics such as mean, SD, n and p-value. Its interpretation includes the assay, units and raw or author-normalized scale.
 

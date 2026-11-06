@@ -23,3 +23,9 @@ Source: [Heliste 2021](https://pmc.ncbi.nlm.nih.gov/articles/PMC8371130/), [arch
 ## Imaging viability scope amendment (2026-11-06)
 
 The user also included imaging-based viability in `cell_viability` and requested acquisition/feasibility assessment of Huang 2022 as a baseline anchor. This replaces the earlier imaging exclusion. Whole-well Hoechst/propidium-iodide live/dead quantification is therefore eligible; retain its measurement definition and do not substitute functional imaging endpoints such as calcium or beat rate. Huang's reported 2,374/2,375-compound, 13-donor, 24 h screen is a leading design-fit candidate, but its full numerical data must be obtained before corpus construction can be claimed. See the [access audit](../research/stage3-huang-2022-access-audit.md).
+
+## Heliste anchor selection (2026-11-06)
+
+The user selected Heliste 2021 to build separate baseline and hypoxia–reoxygenation cardiomyocyte chemical-perturbation `cell_viability` corpora now. The requested Stage 3 step layout is `stage3/01_corpus/output/baseline/` and `stage3/01_corpus/output/H-R/`. This replaces the earlier `01_data_corpus/output/corpus/<release-id>/` layout for the new build; migration of the historical step is still to be designed. Broader sources remain potential later additions rather than prerequisites for this anchor.
+
+The corpus representation and migration details remain under interview. Existing endpoint-gated code and the historical Heliste `empty-after-QC` assessment do not establish admission rules for this source-first build.
