@@ -114,6 +114,36 @@ User-facing interim figures are `output/metrics.png`, `output/pr_panels.png` and
 figures overwrite those same display paths after all 63 outcomes settle; the
 partial snapshot evidence remains separate.
 
+Native learning curves are an additional artifact-only deliverable. Rebuild the
+interim figure without loading models, datasets, prediction arrays or test truth:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python \
+  stage2/03_modes_tenv/execution/script/learning_curves.py
+```
+
+After all 63 outcomes are terminal, final delivery and every subsequent replay
+must also run that command with `--final`. It checks the terminal barrier and
+overwrites `output/learning_curves.png` and the text-preserving SVG companion at
+the same display paths. `output/learning_curves.json` records source checkpoint
+hashes, actual plotted coordinates, available/missing histories, run statuses and
+the renderer hash. These files are presentation artifacts, not formal scores.
+The renderer is standalone and outside the frozen common-source and adapter
+identity allowlists; training code, recipes and existing replay code stay frozen.
+
+Each fitted-model panel expects nine blue training and nine green validation
+curves (three folds × seeds 17/42/2026); available counts are printed in-panel.
+PRnet uses native Gaussian NLL; CPA uses its saved reconstruction NLL component;
+chemCPA uses its saved combined autoencoder objective; CMonge uses the sampled
+Sinkhorn-plus-Monge objective; PerturbDiff uses its saved weighted diffusion loss.
+The axes preserve native epoch/iteration/step coordinates and objective units.
+Native reductions differ, so values are not comparable across models. CMonge
+samples one condition at each event; PerturbDiff pairs its last training batch
+with bounded EMA validation batches. Histories can remain unavailable until an
+adapter completes training and inference. Missing/unfinished histories are
+omitted without smoothing or reconstruction. `no_change` and `delta_mean` have
+explicit “not applicable” panels because deterministic references do not fit.
+
 
 Execution **resumed at the user's request on 2026-11-06** from the verified
 34/63-run save point, using the unchanged serial queue. Canonical final test scoring
