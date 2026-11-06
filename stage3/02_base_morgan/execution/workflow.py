@@ -6,6 +6,8 @@ import json
 import math
 from pathlib import Path
 import random
+import subprocess
+import sys
 
 SPLIT_SEED = 20261105
 TRAINING_SEEDS = [17, 42, 2026]
@@ -23,6 +25,12 @@ def digest(value):
 def read_rows(source):
     """Accept one CSV fixture or the existing corpus release's condition CSVs."""
     from rdkit import Chem
+    if source.is_dir():
+        verifier = Path(__file__).resolve().parents[2] / '01_corpus/execution/corpus.py'
+        result = subprocess.run([sys.executable, str(verifier), 'verify', '--output', str(source)],
+                                capture_output=True, text=True)
+        if result.returncode:
+            raise ValueError('Frozen corpus verification failed: ' + result.stderr.strip())
     paths = sorted(source.glob('*/corpus.csv')) if source.is_dir() else [source]
     if not paths:
         raise ValueError('No condition corpus.csv inputs found')
@@ -93,7 +101,10 @@ def prepare(source, output):
                 for s in splits for seed in TRAINING_SEEDS]
     payload = dict(schema_version=1, scope='cold_drug', split_seed=SPLIT_SEED, training_seeds=TRAINING_SEEDS,
                    class_order=CLASSES, rows=rows, input_fingerprint=digest(rows), splits=splits,
-                   expected_runs=expected, features=dict(radius=2, bits=2048, chirality=True, rdkit_version=rdkit.__version__))
+                   expected_runs=expected, features=dict(radius=2, bits=2048, chirality=True, rdkit_version=rdkit.__version__,
+                                 effective_configuration=dict(countSimulation=False, useBondTypes=True,
+                                     onlyNonzeroInvariants=False, includeRingMembership=True,
+                                     includeRedundantEnvironments=False)))
     payload['split_fingerprint'] = digest(splits)
     target = output / 'prepared.json'
     if output.exists():
@@ -110,9 +121,34 @@ def main():
     command = commands.add_parser('prepare')
     command.add_argument('--input', type=Path, required=True)
     command.add_argument('--output', type=Path, required=True)
+    command = commands.add_parser('train')
+    command.add_argument('--prepared', type=Path, required=True)
+    command.add_argument('--output', type=Path, required=True)
+    command.add_argument('--condition', required=True)
+    command.add_argument('--phenotype', required=True)
+    command.add_argument('--setting', choices=['cold_drug'], required=True)
+    command.add_argument('--fold', type=int, required=True)
+    command.add_argument('--seed', type=int, choices=TRAINING_SEEDS, required=True)
+    command.add_argument('--smoke-epochs', type=int)
+    for name in ['evaluate', 'verify']:
+        command = commands.add_parser(name)
+        command.add_argument('--run', type=Path, required=True)
+        if name == 'verify':
+            command.add_argument('--prepared', type=Path)
     args = parser.parse_args()
     try:
-        prepare(args.input, args.output)
+        if args.command == 'prepare':
+            prepare(args.input, args.output)
+        else:
+            from training import train, evaluate, verify
+            if args.command == 'train':
+                result = train(args.prepared, args.output, args.condition, args.phenotype,
+                               args.setting, args.fold, args.seed, smoke_epochs=args.smoke_epochs)
+            elif args.command == 'evaluate':
+                result = evaluate(args.run)
+            else:
+                result = verify(args.run, args.prepared)
+            print(json.dumps(result, sort_keys=True, allow_nan=False))
     except (ValueError, KeyError, OSError) as error:
         parser.exit(1, f'{error}\n')
 

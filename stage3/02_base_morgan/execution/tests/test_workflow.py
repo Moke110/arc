@@ -1,6 +1,7 @@
 """Acceptance tests at the public workflow subprocess seam."""
 import csv
 import json
+import math
 from pathlib import Path
 import subprocess
 import sys
@@ -62,6 +63,80 @@ class PrepareAcceptance(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('positive and finite', result.stderr)
             self.assertFalse((root / 'invalid').exists())
+
+
+    def test_public_smoke_roundtrip_and_corruption(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rows = [dict(condition=condition, phenotype='cell_viability', canonical_smiles=smiles,
+                         dose_um=dose, direction=parent % 3 - 1, source_label=f'{parent}-{alias}',
+                         source_asset='fixture', source_cell=f'{parent}-{dose}-{alias}')
+                    for condition in ['baseline', 'H-R']
+                    for parent, smiles in enumerate(['C', 'CC', 'CCC', 'CCCC', 'CCO', 'CCN', 'CO', 'CN', 'CCCl'])
+                    for dose in [0.04, 0.2, 1, 5] for alias in range(2)]
+            source = root / 'fixture.csv'
+            with source.open('w') as handle:
+                writer = csv.DictWriter(handle, fieldnames=rows[0])
+                writer.writeheader()
+                writer.writerows(rows)
+            def invoke(*args, ok=True):
+                result = subprocess.run([sys.executable, str(CLI), *map(str, args)], capture_output=True, text=True)
+                if ok:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                return result
+            prepared = root / 'prepared'
+            run = root / 'run'
+            invoke('prepare', '--input', source, '--output', prepared)
+            invoke('train', '--prepared', prepared / 'prepared.json', '--output', run,
+                   '--condition', 'baseline', '--phenotype', 'cell_viability', '--setting', 'cold_drug',
+                   '--fold', 0, '--seed', 17, '--smoke-epochs', 2)
+            payload = json.loads((prepared / 'prepared.json').read_text())
+            doses = [math.log10(row['dose_um']) for row, role in zip(payload['rows'], payload['splits'][0]['roles'])
+                     if role == 'train' and row['condition'] == 'baseline']
+            statistics = json.loads((run / 'run.json').read_text())['dose_statistics']
+            self.assertAlmostEqual(statistics['mean'], sum(doses) / len(doses))
+            self.assertAlmostEqual(statistics['std'], (sum((d-statistics['mean'])**2 for d in doses) / len(doses))**0.5)
+            invoke('train', '--prepared', prepared / 'prepared.json', '--output', root / 'hr-run',
+                   '--condition', 'H-R', '--phenotype', 'cell_viability', '--setting', 'cold_drug',
+                   '--fold', 0, '--seed', 17, '--smoke-epochs', 2)
+            invoke('verify', '--run', root / 'hr-run', '--prepared', prepared / 'prepared.json')
+            first = json.loads(invoke('evaluate', '--run', run).stdout)
+            self.assertGreater(first['n'], 0)
+            self.assertEqual(first, json.loads(invoke('evaluate', '--run', run).stdout))
+            invoke('verify', '--run', run, '--prepared', prepared / 'prepared.json')
+            payload = json.loads((prepared / 'prepared.json').read_text())
+            payload['rows'][0]['direction'] = 1 - payload['rows'][0]['direction']
+            (prepared / 'prepared.json').write_text(json.dumps(payload))
+            invoke('verify', '--run', run, '--prepared', prepared / 'prepared.json', ok=False)
+            predictions = run / 'predictions.json'
+            records = json.loads(predictions.read_text())
+            records[0]['probabilities'] = [1, 1, 1]
+            predictions.write_text(json.dumps(records))
+            invoke('verify', '--run', run, ok=False)
+            invoke('evaluate', '--run', run, ok=False)
+
+    def test_directory_requires_verified_corpus_and_impossible_split_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fake = root / 'fake'
+            fake.mkdir()
+            result = subprocess.run([sys.executable, str(CLI), 'prepare', '--input', str(fake),
+                                     '--output', str(root / 'out')], capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('Frozen corpus verification failed', result.stderr)
+            source = root / 'small.csv'
+            with source.open('w') as handle:
+                writer = csv.DictWriter(handle, fieldnames=['condition', 'phenotype', 'canonical_smiles',
+                                        'dose_um', 'direction', 'source_asset', 'source_cell'])
+                writer.writeheader()
+                writer.writerow(dict(condition='baseline', phenotype='cell_viability', canonical_smiles='C',
+                                     dose_um=1, direction=0, source_asset='fixture', source_cell='1'))
+            result = subprocess.run([sys.executable, str(CLI), 'prepare', '--input', str(source),
+                                     '--output', str(root / 'out')], capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('at least six parents', result.stderr)
 
 
 
