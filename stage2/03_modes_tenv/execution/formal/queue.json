@@ -559,118 +559,6 @@
       "inference_timeout_seconds": 1800
     },
     {
-      "model": "cmonge",
-      "fold": 0,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 1,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 1,
-      "seed": 42,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 1,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 2,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 2,
-      "seed": 42,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 2,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
       "model": "perturbdiff",
       "fold": 0,
       "seed": 17,
@@ -813,6 +701,118 @@
         "gpu_peak_gib": 7.2705078125
       },
       "inference_timeout_seconds": 3600
+    },
+    {
+      "model": "cmonge",
+      "fold": 0,
+      "seed": 2026,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
+    },
+    {
+      "model": "cmonge",
+      "fold": 1,
+      "seed": 17,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
+    },
+    {
+      "model": "cmonge",
+      "fold": 1,
+      "seed": 42,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
+    },
+    {
+      "model": "cmonge",
+      "fold": 1,
+      "seed": 2026,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
+    },
+    {
+      "model": "cmonge",
+      "fold": 2,
+      "seed": 17,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
+    },
+    {
+      "model": "cmonge",
+      "fold": 2,
+      "seed": 42,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
+    },
+    {
+      "model": "cmonge",
+      "fold": 2,
+      "seed": 2026,
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "profile": {
+        "host_peak_gib": 1.7112617492675781,
+        "gpu_peak_gib": 3.31640625
+      },
+      "inference_timeout_seconds": 1800
     }
   ]
 }
