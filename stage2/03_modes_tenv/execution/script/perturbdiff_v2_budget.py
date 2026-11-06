@@ -137,6 +137,9 @@ def supervise(account, request_path, command):
         expected = f"perturbdiff_fold{request['identity']['fold']}_seed{request['identity']['seed']}"
         if expected != state['key']:
             raise ValueError('request fold/seed mismatch')
+        inference_limit = float(request.get('inference_timeout_seconds', 1800))
+        if not math.isfinite(inference_limit) or not 0 < inference_limit <= 1800:
+            raise ValueError('inference timeout must be finite and at most 1800 seconds')
         request['prior_training_seconds'] = consumed
         attempt_index = len(state['attempts'])
         injected = account / f'request-{attempt_index}.json'
@@ -159,10 +162,22 @@ def supervise(account, request_path, command):
             # Popen owns an unreaped child. A live child cannot have its PID
             # recycled; poll returning None does not reap it. Kill the group
             # before wait, preserving this ownership guarantee.
+            inference_started = None
+            inference_expired = False
             while worker.poll() is None and time.monotonic() - start < remaining:
+                if request.get('output_directory'):
+                    try:
+                        progress = read(Path(request['output_directory']) / 'progress.json')
+                    except (OSError, ValueError):
+                        progress = {}
+                    if progress.get('phase') == 'inference':
+                        inference_started = inference_started or time.monotonic()
+                    if inference_started is not None and time.monotonic() - inference_started >= inference_limit:
+                        inference_expired = True
+                        break
                 time.sleep(min(.1, max(.001, remaining - (time.monotonic() - start))))
             alive = worker.poll() is None
-            timed_out = alive or time.monotonic() - start >= remaining
+            timed_out = alive or inference_expired or time.monotonic() - start >= remaining
             if alive:
                 if not matches(identity):
                     raise ValueError('worker process identity changed')
@@ -171,7 +186,7 @@ def supervise(account, request_path, command):
             elapsed = time.monotonic() - start
             # A timeout remains terminal even if an adapter emitted artifacts.
             attempt.update(status='timeout' if timed_out else 'exited', returncode=returncode,
-                           wall_seconds=elapsed)
+                           wall_seconds=elapsed, stop_reason='inference_timeout' if inference_expired else ('timeout' if timed_out else 'process_exit'))
             state['consumed_seconds'] = CAP if timed_out else min(CAP, consumed + elapsed)
             write(account / 'account.json', state)
             return 124 if timed_out else returncode

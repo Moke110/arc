@@ -38,6 +38,24 @@ class BudgetCLI(unittest.TestCase):
         return self.cli('initialize', '--source', self.source, '--sha256', digest,
             '--key', KEY, '--account', self.account, ok=consumed is not None and cap == 14400)
 
+    def test_detached_inference_deadline_is_terminal_timeout(self):
+        self.initialize(100)
+        (self.root / 'progress.json').write_text(json.dumps({'phase': 'inference'}))
+        self.request.write_text(json.dumps({'identity': {'fold': 0, 'seed': 17},
+            'output_directory': str(self.root), 'inference_timeout_seconds': .05}))
+        self.cli('launch', '--account', self.account, '--request', self.request,
+            '--', sys.executable, '-c', 'import time;time.sleep(30)', '{request}')
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            state = json.loads((self.account / 'account.json').read_text())
+            if state['attempts'] and state['attempts'][-1]['status'] == 'timeout':
+                break
+            time.sleep(.02)
+        else:
+            self.fail((self.account / 'watchdog.log').read_text())
+        self.assertEqual(state['consumed_seconds'], 14400)
+        self.assertEqual(state['attempts'][-1]['stop_reason'], 'inference_timeout')
+
     def test_missing_debit_and_cap_reset(self):
         self.initialize(None)
         self.initialize(100, 28800)
