@@ -49,9 +49,14 @@ def preflight(formal, reviewed):
     return queue, expected
 
 
-def outcome(account):
+def outcome(account, ledger_path=None, job=None):
     """Only authenticated terminal account outcomes permit artifact acceptance."""
     state = load_account(Path(account))
+    if ledger_path is not None:
+        if state['migration_sha256'] != sha256(ledger_path):
+            raise ValueError('account ledger binding mismatch')
+        if state['key'] != key(job):
+            raise ValueError('account job binding mismatch')
     if not state['attempts']:
         return None, state
     attempt = state['attempts'][-1]
@@ -62,10 +67,10 @@ def outcome(account):
     return None, state
 
 
-def finish(queue, job, identity, account):
+def finish(queue, job, identity, account, ledger_path=None):
     from artifacts import write_json
     directory = run_directory(queue['output_root'], job['model'], job['fold'], job['seed'])
-    status, account_state = outcome(account)
+    status, account_state = outcome(account, ledger_path, job)
     if status is None:
         raise ValueError('watchdog is not terminal')
     reason = account_state['attempts'][-1].get('stop_reason', 'watchdog_' + status)
@@ -108,6 +113,11 @@ def run_v2(formal, reviewed, queue, job, identity):
     output = Path(queue['output_root']); record = output / 'scheduling'
     directory = run_directory(output, job['model'], job['fold'], job['seed'])
     state_path = record / (key(job) + '.json')
+    ledger_path = Path(formal) / 'budget-ledger.json'
+    ledger = read_json(ledger_path); account = Path(ledger['ledger'][key(job)]['account_path'])
+    if not account.exists():
+        initialize(str(ledger_path), sha256(ledger_path), key(job), str(account))
+    _, account_state = outcome(account, ledger_path, job)
     if (directory / 'run.json').exists():
         previous = read_json(directory / 'run.json')
         if previous.get('identity') != identity:
@@ -117,11 +127,6 @@ def run_v2(formal, reviewed, queue, job, identity):
             return
         if previous.get('status') in TERMINAL:
             return
-    ledger_path = Path(formal) / 'budget-ledger.json'
-    ledger = read_json(ledger_path); account = Path(ledger['ledger'][key(job)]['account_path'])
-    if not account.exists():
-        initialize(str(ledger_path), sha256(ledger_path), key(job), str(account))
-    account_state = load_account(account)
     if not account_state['attempts'] and account_state['consumed_seconds'] >= 14400:
         state = dict(status='timeout', identity=identity, training_seconds=14400, stop_reason='historical_budget_exhausted')
         directory.mkdir(parents=True, exist_ok=True)
@@ -129,10 +134,10 @@ def run_v2(formal, reviewed, queue, job, identity):
         publish(state_path, state)
         return
     if account_state['attempts']:
-        status, _ = outcome(account)
+        status, _ = outcome(account, ledger_path, job)
         if status is None:
             raise ValueError('outstanding watchdog reservation; refuse duplicate and require review')
-        finish(queue, job, identity, account)
+        finish(queue, job, identity, account, ledger_path)
         return
     blocked = time.monotonic()
     while True:
@@ -145,6 +150,7 @@ def run_v2(formal, reviewed, queue, job, identity):
             raise ValueError('resource admission timed out')
         time.sleep(5)
     preflight(formal, reviewed)
+    outcome(account, ledger_path, job)
     verify_input_files(queue['input_root'])
     files = predictor_files(queue['input_root'], job['fold'])
     directory.mkdir(parents=True, exist_ok=True)
@@ -164,9 +170,9 @@ def run_v2(formal, reviewed, queue, job, identity):
                    check=True, env=env)
     launch_deadline = time.monotonic() + 30
     while True:
-        status, account_state = outcome(account)
+        status, account_state = outcome(account, ledger_path, job)
         if status is not None:
-            finish(queue, job, identity, account)
+            finish(queue, job, identity, account, ledger_path)
             return
         if not account_state['attempts'] and time.monotonic() > launch_deadline:
             raise ValueError('watchdog launch not confirmed')
