@@ -378,13 +378,25 @@ every 1,000 steps plus maximum step, with predeclared validation early stopping.
 It is distinct from legacy v1's fixed first-40-group validation population.
 _Avoid_: exact native recipe, resumed v1
 
+**CMonge v2 protocol**:
+The uniform nine-slot tenv recipe `cmonge-v2-full-validation-fixed-draws`
+defined in ADR 0042: fixed-draw validation over all 138 conditions with equal
+condition weighting and predeclared validation early stopping. Its validation
+population differs from legacy v1's single sampled condition.
+_Avoid_: exact native recipe, resumed v1
+
+**Joint tenv v2 migration**:
+Replacement of all nine CMonge and all nine PerturbDiff formal identities as one
+reviewed transition, preserving the other 45 identities and separate legacy
+evidence. The formal matrix still expects 63 outcomes.
+
 **Cumulative fold/seed training allowance**:
 The original 14,400-second cap shared by all protocol versions and retries of
 one tenv model/fold/seed slot. Conservative legacy full-wall debits survive
 migration and seed restart; exhaustion yields terminal timeout.
 _Avoid_: fresh v2 budget, per-attempt allowance
 
-**Legacy PerturbDiff v1 outcome**:
+**Legacy tenv v1 outcome**:
 A preserved pre-v2 binary/history/status with its original identity and hashes.
 It supplies audit and budget evidence, and cannot fill a formal v2 outcome slot
 or establish exact training continuation.

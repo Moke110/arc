@@ -160,19 +160,30 @@ manifest, remaining cases and exact same-queue continuation commands are in
 local; the pause record describes the stopped state before this continuation.
 
 
-PerturbDiff is now assigned the uniform nine-slot v2 protocol in the
-[ADR 0042 amendment](../../docs/adr/0042-tenv-model-benchmark-redesign.md#amendment-2026-11-06-uniform-perturbdiff-v2-protocol).
-Production is **stopped**, and the reviewed migration is **not applied**:
-automatic approval review rejected the production archival/formal-directory
-exchange pending explicit user approval. Runtime integration and restart
-clearance remain pending. The 1,001-step synthetic smoke is TEST ONLY, not formal
-completion or convergence. Preserve legacy v1 fold 0 seeds 17/42 and interrupted
-2026 separately; restart v2 from seed with the original cumulative 14,400-second
-cap and conservative legacy wall debits. The other 54 identities/artifacts stay
-byte-identical. Learning curves distinguish formal v2 (all 138 validation groups / 46 drugs)
-from legacy v1 (first 40 groups / 14 of 46 drugs) in separate panels. Only v2
-histories fill the nine formal PerturbDiff slots; missing counts stay explicit.
-The JSON manifest keeps `legacy_records` separate from formal `records`, reading
-legacy artifacts from `legacy/perturbdiff-v1/runs/` after migration and from the
-old live namespace before it. Histories are never spliced or reconstructed.
-Pre-migration legacy statuses do not satisfy the final 63-outcome barrier. #40/#46/#47 stay open through final delivery.
+CMonge and PerturbDiff are each assigned nine formal v2 slots under the
+[ADR 0042 joint amendment](../../docs/adr/0042-tenv-model-benchmark-redesign.md#amendment-2026-11-06-joint-cmonge-and-perturbdiff-v2-protocols).
+Production remains **STOPPED**; joint 18-identity migration is **NOT APPLIED** and
+restart has not occurred. The user explicitly authorized archival, joint migration
+and resume after checks; independent joint integration, ledger/deadline and
+migration review are still pending. The earlier automatic approval rejection
+preceded that explicit confirmation. The other 45 identities/artifacts remain
+byte-identical. Preserve four completed legacy outcomes and the interrupted
+PerturbDiff outcome separately; none supplies formal v2 completion credit.
+
+CMonge validates all 138 equal-weight conditions with fixed draws and saves
+latest/best prediction-only checkpoints and event history every 50 iterations.
+Minimum 500 iterations, patience 10 subsequent checks and relative delta 0.001
+give earliest patience stop at 1,000 iterations. PerturbDiff validates all 138
+group-weighted EMA groups and saves checkpoints every 1,000 steps; minimum
+20,000, patience 10 and absolute delta 0.01 give earliest stop at 30,000 steps.
+Both restart from seed under the original cumulative 14,400-second allowance,
+including legacy attempts and retries; exact resume is unsupported. CMonge's
+measured full-validation maximum projects ~6.14 hours, and fold 0 seed 17 has
+only 424.49 seconds remaining. Preserve full validation and report honest
+terminal timeouts under independently enforced wall deadlines.
+
+The standalone learning-curve renderer supports both v2 native histories and
+separate legacy panels (commit `d03f44a`); its existing curve contract above
+applies. Missing histories stay explicit and legacy trajectories are never
+spliced into formal v2 slots. Pre-migration legacy statuses do not satisfy the
+final 63-outcome barrier. #40/#46/#47 stay open through formal delivery/review.

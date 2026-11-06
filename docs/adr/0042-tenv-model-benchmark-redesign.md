@@ -221,63 +221,98 @@ ADR 0027 remains the contract of the frozen historical benchmark.
 - [Stage 2 overview](../../stage2/README.md)
 - [Execution environment](../agents/execution-environment.md)
 
-## Amendment (2026-11-06): uniform PerturbDiff v2 protocol
+## Amendment (2026-11-06): joint CMonge and PerturbDiff v2 protocols
 
-The user selected **all nine PerturbDiff fold/seed slots** for
-`perturbdiff-v2-all-validation-ema`. This is adapted validation stopping, rather
-than a claim to reproduce the author's complete training recipe. Keep the
-objective, architecture, optimizer, scheduler, training batch/population and
-sampling settings unchanged. The other 54 formal identities and artifacts must
-remain byte-identical through migration.
+The user explicitly confirmed archival, joint formal migration and resume after
+checks, and requested more frequent checkpoint saving, validation and early-stop
+detection for **both CMonge and PerturbDiff**. This supersedes the earlier
+PerturbDiff-only amendment: replace all **18 fold/seed identities** together,
+nine per model; the other **45 identities and artifacts remain byte-identical**.
+These are adapted validation-stopping recipes, not claims to reproduce the
+complete author recipes. Keep each model's architecture, native objective,
+optimizer, training population/batch, schedule and sampling settings unchanged.
 
-- Validation and checkpoint eligibility occur every **1,000 steps and at the
-  configured maximum step (200,000)**. Fresh deterministic EMA validation uses
-  fixed draws and **all 138 validation groups**, in bounded batches of eight
-  (18 batches; the final two-group batch receives its group-count weight).
-  Record group IDs, count and hash. Legacy v1 used the fixed first 40 groups,
-  covering only 14 of 46 validation drugs; its loss is not the same validation
-  population as v2.
-- Predeclare early stopping from training/validation evidence only: minimum
-  **20,000 steps**, **10** consecutive eligible checks without an absolute
-  reference improvement of at least **0.01**. Initialize the reference and zero
-  patience counter at the first eligible event at/after 20,000; the earliest
-  patience stop is **30,000**. Independently retain the strict minimum EMA
-  validation-loss checkpoint across all eligible events, including those before
-  20,000; patience reference and best-checkpoint selection are distinct.
+### CMonge: `cmonge-v2-full-validation-fixed-draws`
+
+- Validate and save checkpoints every **50 iterations**, plus the configured
+  final iteration; retain the native **10,000-iteration** maximum. Each event
+  evaluates **all 138 sorted validation conditions** (46 drugs) using identical
+  seeded draws across events and an **equal-weight mean of native condition
+  objectives**. Preserve training RNG state around validation. Legacy v1 sampled
+  one held-out condition per event every 100 iterations; these populations differ.
+- Initialize the patience reference at the first eligible event at/after **500
+  iterations**. Stop after **10 subsequent** eligible checks without relative
+  improvement of at least **0.001**, using denominator
+  `max(abs(reference), 1e-12)`; earliest patience stop is **1,000 iterations**.
+  Select the strict minimum checkpoint independently from that patience threshold,
+  including earlier events. Persist event history and latest/best prediction-only
+  checkpoints; these snapshots do not establish exact training continuation.
+- The bounded full-axis train/save/reload/predict proof completed in **82.29 s**,
+  peak RSS **1,634,500 KiB (~1.56 GiB)**, with finite 2 × 18,164 predictions and
+  zero reload error. A separate 51-iteration cost probe timed out: its first
+  50 training iterations took 39.0069 s and full validation took 71.5771 s.
+  Linear extrapolation to 10,000 iterations is **~6.14 hours**, above the original
+  four-hour allowance; earliest patience eligibility projects ~2,211 s. These
+  synthetic probes prove execution/cost only, not formal qualification,
+  convergence or completion. Keep the full population and report honest timeouts.
+
+### PerturbDiff: `perturbdiff-v2-all-validation-ema`
+
+- Validation and checkpoint eligibility occur every **1,000 steps**, plus the
+  configured maximum **200,000 steps**. Deterministic EMA validation uses fixed
+  draws and **all 138 validation groups**, in bounded batches of eight; the final
+  two-group batch receives its group-count weight. Record IDs, count and hash.
+  Legacy v1 used the first 40 groups, covering only 14 of 46 validation drugs.
+- Initialize the reference and zero patience counter at the first eligible event
+  at/after **20,000 steps**. Stop after **10 subsequent** eligible checks without
+  an absolute reference improvement of at least **0.01**; earliest patience stop
+  is **30,000 steps**. Independently select the strict minimum EMA validation-loss
+  checkpoint across all eligible events, including those before 20,000.
   Legacy-history variation is operational context, not a biological noise
-  estimate or a confidence interval for the all-group validation population.
-- Restart each v2 fit from its declared seed. Native v1 snapshots lack complete
-  continuation state and must never be relabeled v2 or treated as exact resume.
-  Exact v2 resume is unsupported until independently verified; a best-weight
-  reload is prediction evidence, not proof of training continuation.
-- The original **14,400-second cumulative allowance per fold/seed** covers v1,
-  v2 and every retry. Debit legacy work conservatively using full scheduler
-  attempt wall time (including setup/inference where inseparable), reconciled
-  against training/checkpoint timing and interrupted work. Preserve the reviewed
-  ledger; restarting from seed creates no credit. New training includes
-  validation/checkpoint overhead; separately timed new inference keeps its
-  watchdog. Remaining budget may be insufficient for v2 completion. Exhaustion
-  is terminal timeout, never successful inference from a partial fit.
-- Preserve the native binaries, hashes and histories of completed legacy v1
-  fold 0 seeds **17/42** and interrupted fold 0 seed **2026**, explicitly labeled
-  legacy v1. Only validated v2 outcomes count toward the nine PerturbDiff slots
-  in the final 63-outcome matrix; legacy outcomes remain audit evidence.
+  estimate or confidence interval for the all-group validation population.
+- The 1,001-step CUDA synthetic smoke is **TEST ONLY**, with all 138 groups,
+  prediction reload and timeout rejection; it proves neither convergence nor a
+  completed formal v2 run.
 
-**Execution status at this amendment:** production is stopped; migration has
-not been applied. Automatic approval review rejected the exact production
-archive/formal-directory exchange before execution because trusted explicit
-user approval for that mutation was absent. That user approval remains required;
-runtime integration and independent clearance are also pending before restart.
-Documentation authorization does not authorize applying or restarting production.
-The reviewed 1,001-step CUDA synthetic smoke is **TEST ONLY**, with all 138 groups,
-exact prediction reload and timeout rejection; it demonstrates neither protocol
-convergence nor a completed formal v2 run.
+### Joint archival, budget and activation contract
+
+Restart both v2 fits from their declared seeds. Exact resume is unsupported;
+legacy snapshots and prediction reloads do not prove training continuation.
+Preserve the original identities, native binaries/checkpoints, logs, histories
+and hashes of **four completed legacy v1 outcomes** (CMonge and PerturbDiff fold
+0 seeds 17/42) and **one interrupted legacy PerturbDiff fold 0 seed 2026**.
+Archive them as legacy, never relabel them v2 or credit them to the 18 formal
+v2 slots. Final matrix size remains 63 outcomes.
+
+The original **14,400-second cumulative allowance per model/fold/seed** spans
+v1, v2 and every retry. Conservatively debit all legacy scheduler attempt wall
+time, including setup/inference when inseparable, and reconcile interrupted work
+against logs/checkpoints. Preserve an authenticated, identity-bound ledger;
+seed restart grants no new credit. CMonge fold 0 seed 17 has conservative prior
+wall debit **13,975.509756658023 s**, leaving **424.490243341977 s**; seed 42 debit
+is **9,056.932746226995 s**, leaving **5,343.067253773005 s**. Independently
+reconcile every attempt and untouched slot before migration. The seed-17
+remaining allowance cannot reach the earliest patience stop under measured cost.
+New training includes setup, validation and checkpoint overhead; separately timed
+new inference has its own watchdog. Both models require an independent hard
+wall-deadline supervisor that terminates the owned process group; cooperative
+between-group checks alone cannot enforce the cap. Exhaustion yields an honest
+terminal timeout, never successful adoption of a partial fit.
+
+**Execution status at this amendment:** production remains **STOPPED**, joint
+migration **NOT APPLIED**, and no restart has occurred. The earlier production
+apply was rejected by automatic approval review before execution for lack of
+trusted explicit user authorization. The user has since explicitly supplied
+that authorization for archival, joint migration and resume after checks.
+Independent joint integration, ledger/deadline and migration review remain
+pending; authorization does not constitute those technical checks passing.
 
 Final delivery after all 63 outcomes settle must regenerate learning curves
-alongside the existing metrics/PR figures. Label legacy v1 and formal v2
-histories separately, disclose their different validation populations, record
-source hashes and plotted coordinates, and show missing/interrupted/timeout
-histories honestly. Never splice v1 and seed-restarted v2 into a continuous curve
-or count legacy v1 as formal v2 completion. Renderer changes are a separate
-implementation scope. Issues **#40, #46 and #47 remain open** until final
-63-outcome evaluation, replay, delivery and review; this amendment is not closure.
+alongside metrics/PR figures and after every replay. Both models' formal v2 and
+legacy v1 histories have separate populations/panels, source hashes and native
+coordinates; missing, interrupted and timeout histories stay explicit. Never
+splice seed-restarted trajectories or count legacy histories as formal v2 slots.
+The standalone renderer implements both v2 schemas (commit `d03f44a`); this is
+presentation support, not production activation or convergence evidence.
+Issues **#40, #46 and #47 remain open** pending formal outcomes, final evaluation,
+replay, delivery and review. This amendment is not closure.
