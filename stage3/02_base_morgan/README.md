@@ -107,3 +107,13 @@ have no telemetry bypass. Run the narrow acceptance test with:
 ```bash
 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s stage3/02_base_morgan/execution/tests -p test_benchmark.py -v
 ```
+
+The recorded Heliste release completed all 60 formal fits. See the local
+[results report](output/formal/report.md), tracked
+[execution record](execution/validation/formal-execution.md),
+[independent numerical audit](execution/validation/formal-data-audit.md) and
+[final two-axis review](execution/validation/review-final.md). Checkpoints and
+predictions remain ignored; tracked release and split manifests bind their
+identities and hashes. The repository-wide source sweep was safely interrupted
+by another session's formal trainer and remains an
+[explicit unfinished gate](execution/validation/offline-verification.md).
