@@ -82,8 +82,10 @@ Dispatch from the repository root after offline gates pass:
   stage2/03_modes_tenv/execution/formal/queue.json
 ```
 
-Predictions and checkpoints stay local at `output/formal/`. Test scoring waits
-for all 63 completed or terminal failure outcomes; no pilot is a formal run.
+Predictions and checkpoints stay local at `output/formal/`. Canonical final test
+scoring waits for all 63 completed or terminal failure outcomes; no pilot is a
+formal run. The user-authorized 2026-11-06 amendment in ADR 0042 permits separate
+partial scoring of validated completed predictions while remaining fits continue.
 After that barrier, use `benchmark.py seal` with the frozen commands and models,
 then `evaluate --workers 2` and `replay`. All three figures export both PNG and
 text-preserving SVG, with metric-defined counts distinguished from completed
@@ -91,13 +93,13 @@ runs.
 
 
 After evaluation, publish the verified CSV tables and three PNG/SVG figures to
-the step directory (ADR 0030):
+the step output directory (user-selected display location):
 
 ```bash
 /home/chang/miniconda3/envs/arc/bin/python \
   stage2/03_modes_tenv/execution/script/deliver.py \
   --output stage2/03_modes_tenv/output/formal \
-  --publish stage2/03_modes_tenv
+  --publish stage2/03_modes_tenv/output
 ```
 
 This artifact-only delivery replays the original checked evaluation, then adds
@@ -105,13 +107,18 @@ completion, incomplete-entry and deterministic-reference labels to the best-run
 figure. It preserves all scored values, selected runs, source arrays and frozen
 run identities. `publication.json` records source/evaluation/rendering hashes
 and the exact published table/figure hashes. Run delivery again after an original
-`benchmark.py replay` to restore the additional presentation labels. Publication
-is withheld until the formal evaluation barrier has passed.
+`benchmark.py replay` to restore the additional presentation labels. Canonical final publication follows the formal evaluation barrier. Interim
+scores, provenance and snapshots use a separate partial-evaluation namespace.
+User-facing interim figures are `output/metrics.png`, `output/pr_panels.png` and
+`output/best_run.png`, with SVG companions when produced. The canonical final
+figures overwrite those same display paths after all 63 outcomes settle; the
+partial snapshot evidence remains separate.
 
 
 Execution **resumed at the user's request on 2026-11-06** from the verified
-34/63-run save point, using the unchanged serial queue. Formal test scoring
-remains withheld until all 63 outcomes settle. The historical pause occurred after 34/63 formal
+34/63-run save point, using the unchanged serial queue. Canonical final test scoring
+remains withheld until all 63 outcomes settle; partial evaluation is permitted
+under the ADR 0042 amendment. The historical pause occurred after 34/63 formal
 runs completed naturally (both references 9 each, PRnet 9, CPA 7), with zero failures
 and 29 not dispatched. No formal test scoring has occurred. The verified pause
 manifest, remaining cases and exact same-queue continuation commands are in

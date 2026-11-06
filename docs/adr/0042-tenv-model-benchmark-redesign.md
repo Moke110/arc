@@ -142,9 +142,16 @@ for partial evaluation only; the canonical final evaluation still requires all
 
 - Freeze each partial evaluation's included run identities, prediction hashes,
   completion counts and truth/metric identities. Use a separate, explicitly dated
-  partial-evaluation namespace for metrics, tables, source arrays and figures.
+  partial-evaluation namespace for metrics, tables, source arrays and snapshot
+  figures. Publish the current user-facing PNG figures at
+  `stage2/03_modes_tenv/output/metrics.png`,
+  `stage2/03_modes_tenv/output/pr_panels.png` and
+  `stage2/03_modes_tenv/output/best_run.png`, with SVG companions when
+  produced. Canonical final figures overwrite these same display paths after all
+  63 outcomes settle. Interim provenance, scores and snapshots stay separate;
+  display-file replacement does not replace canonical evaluation evidence.
   Partial work must neither create a final seal nor overwrite canonical final
-  evaluation outputs or the live scheduler's prediction/status records.
+  evaluation records or the live scheduler's prediction/status records.
 - Keep training and evaluation independent: partial test results must not influence
   training, checkpoint selection, hyperparameters, retries, admission or scheduling.
   Existing author validation-loss checkpoint selection and the frozen run matrix
