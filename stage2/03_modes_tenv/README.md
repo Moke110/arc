@@ -135,12 +135,15 @@ identity allowlists; training code, recipes and existing replay code stay frozen
 Each fitted-model panel expects nine blue training and nine green validation
 curves (three folds × seeds 17/42/2026); available counts are printed in-panel.
 PRnet uses native Gaussian NLL; CPA uses its saved reconstruction NLL component;
-chemCPA uses its saved combined autoencoder objective; CMonge uses the sampled
+chemCPA uses its saved combined autoencoder objective; CMonge uses the native
 Sinkhorn-plus-Monge objective; PerturbDiff uses its saved weighted diffusion loss.
 The axes preserve native epoch/iteration/step coordinates and objective units.
-Native reductions differ, so values are not comparable across models. CMonge
-samples one condition at each event; PerturbDiff pairs its last training batch
-with bounded EMA validation batches. Histories can remain unavailable until an
+Native reductions differ, so values are not comparable across models. Formal CMonge v2 averages all 138 validation conditions with fixed draws;
+legacy v1 samples one held-out condition per event. Formal PerturbDiff v2 pairs
+its last training batch with all 138 group-weighted EMA validation groups; legacy
+v1 covers the first 40 groups. Both models have separate legacy panels excluded
+from their nine formal slots. CMonge durable `history.json` can show events before
+final checkpoint/inference; source hashes and native coordinates remain explicit. Histories can remain unavailable until an
 adapter completes training and inference. Missing/unfinished histories are
 omitted without smoothing or reconstruction. `no_change` and `delta_mean` have
 explicit “not applicable” panels because deterministic references do not fit.
@@ -166,6 +169,10 @@ clearance remain pending. The 1,001-step synthetic smoke is TEST ONLY, not forma
 completion or convergence. Preserve legacy v1 fold 0 seeds 17/42 and interrupted
 2026 separately; restart v2 from seed with the original cumulative 14,400-second
 cap and conservative legacy wall debits. The other 54 identities/artifacts stay
-byte-identical. Final learning curves must distinguish v1/v2 protocols and their
-validation populations, without splicing histories; the renderer amendment is
-pending separate implementation. #40/#46/#47 stay open through final delivery.
+byte-identical. Learning curves distinguish formal v2 (all 138 validation groups / 46 drugs)
+from legacy v1 (first 40 groups / 14 of 46 drugs) in separate panels. Only v2
+histories fill the nine formal PerturbDiff slots; missing counts stay explicit.
+The JSON manifest keeps `legacy_records` separate from formal `records`, reading
+legacy artifacts from `legacy/perturbdiff-v1/runs/` after migration and from the
+old live namespace before it. Histories are never spliced or reconstructed.
+Pre-migration legacy statuses do not satisfy the final 63-outcome barrier. #40/#46/#47 stay open through final delivery.
