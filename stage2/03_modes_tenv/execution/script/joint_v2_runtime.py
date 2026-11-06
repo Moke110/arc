@@ -171,7 +171,8 @@ def run_v2(formal, reviewed, queue, job, identity):
                'MemorySwapMax=8G', '--', '/usr/bin/time', '-v', *job['command'], '--request', '{request}']
     env = dict(os.environ, OMP_NUM_THREADS='2', MKL_NUM_THREADS='2', OPENBLAS_NUM_THREADS='2', NUMEXPR_NUM_THREADS='2')
     subprocess.run([sys.executable, str(SCRIPT / 'joint_v2_budget.py'), 'launch',
-                    '--account', str(account), '--request', str(directory / 'request.json'), '--', *command],
+                    '--account', str(account), '--request', str(directory / 'request.json'),
+                    '--formal', str(Path(formal).resolve()), '--reviewed-stage-sha256', reviewed, '--', *command],
                    check=True, env=env)
     launch_deadline = time.monotonic() + 30
     while True:

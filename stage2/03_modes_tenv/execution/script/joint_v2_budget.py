@@ -112,7 +112,36 @@ def matches(identity):
         return False
 
 
-def supervise(account, request_path, command):
+def inference_timeout(request, state, formal=None, reviewed=None):
+    """Bind formal inference to the committed queue, independently of training credit."""
+    value = request.get('inference_timeout_seconds', 1800)
+    if isinstance(value, bool):
+        raise ValueError('invalid inference timeout')
+    limit = float(value)
+    ceiling = 1800
+    if formal is not None or reviewed is not None:
+        from joint_v2_apply import inventory
+        formal = Path(formal).resolve()
+        queue = read(formal / 'queue.json')
+        journal = read(Path(queue['output_root']) / 'joint-v2-apply.json')
+        if (not reviewed or journal.get('status') != 'committed'
+                or journal.get('reviewed_sha256') != reviewed
+                or journal.get('formal') != str(formal)
+                or inventory(formal) != journal.get('new_formal')):
+            raise ValueError('committed inference contract changed')
+        if hashlib.sha256((formal / 'budget-ledger.json').read_bytes()).hexdigest() != state['migration_sha256']:
+            raise ValueError('inference contract ledger binding mismatch')
+        jobs = [j for j in queue['jobs'] if
+                f"{j['model']}_fold{j['fold']}_seed{j['seed']}" == state['key']]
+        if len(jobs) != 1 or value != jobs[0].get('inference_timeout_seconds', 1800):
+            raise ValueError('inference timeout differs from committed queue')
+        ceiling = 3600
+    if not math.isfinite(limit) or not 0 < limit <= ceiling:
+        raise ValueError('inference timeout must be finite and within authenticated bound')
+    return limit
+
+
+def supervise(account, request_path, command, formal=None, reviewed=None):
     """Run from a detached session/service; hold one account lock across the attempt.
 
     Full remaining credit is reserved durably BEFORE spawn. SIGKILL, boot loss or
@@ -139,9 +168,7 @@ def supervise(account, request_path, command):
         expected = f"{request['identity']['model']}_fold{request['identity']['fold']}_seed{request['identity']['seed']}"
         if expected != state['key']:
             raise ValueError('request fold/seed mismatch')
-        inference_limit = float(request.get('inference_timeout_seconds', 1800))
-        if not math.isfinite(inference_limit) or not 0 < inference_limit <= 1800:
-            raise ValueError('inference timeout must be finite and at most 1800 seconds')
+        inference_limit = inference_timeout(request, state, formal, reviewed)
         request['prior_training_seconds'] = consumed
         attempt_index = len(state['attempts'])
         injected = account / f'request-{attempt_index}.json'
@@ -243,7 +270,12 @@ def main():
     run.add_argument('--account', required=True)
     run.add_argument('--request', required=True)
     run.add_argument('command', nargs=argparse.REMAINDER)
+    for action in (launch, run):
+        action.add_argument('--formal')
+        action.add_argument('--reviewed-stage-sha256')
     args = parser.parse_args()
+    if args.action in ('launch', 'supervise') and bool(args.formal) != bool(args.reviewed_stage_sha256):
+        parser.error('--formal and --reviewed-stage-sha256 are required together')
     if args.action == 'initialize':
         initialize(args.source, args.sha256, args.key, args.account)
     elif args.action == 'inspect':
@@ -255,6 +287,8 @@ def main():
         with (account / 'watchdog.log').open('ab', buffering=0) as log:
             child = subprocess.Popen([sys.executable, str(Path(__file__).resolve()),
                 'supervise', '--account', str(account), '--request', str(Path(args.request).resolve()),
+                *(['--formal', args.formal, '--reviewed-stage-sha256', args.reviewed_stage_sha256]
+                  if args.formal and args.reviewed_stage_sha256 else []),
                 '--', *command], stdin=subprocess.DEVNULL, stdout=log, stderr=log,
                 start_new_session=True, close_fds=True)
         print(json.dumps({'watchdog_pid': child.pid, 'dispatch_confirmed': False}))
@@ -264,7 +298,7 @@ def main():
         if os.getsid(0) != os.getpid():
             raise ValueError('watchdog must be launched in its own session')
         command = args.command[1:] if args.command[:1] == ['--'] else args.command
-        sys.exit(supervise(args.account, args.request, command))
+        sys.exit(supervise(args.account, args.request, command, args.formal, args.reviewed_stage_sha256))
 
 
 if __name__ == '__main__':

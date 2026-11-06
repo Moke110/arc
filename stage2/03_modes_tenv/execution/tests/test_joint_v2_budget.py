@@ -40,6 +40,40 @@ class BudgetCLI(unittest.TestCase):
         return self.cli('initialize', '--source', self.source, '--sha256', digest,
             '--key', self.key, '--account', self.account, ok=consumed is not None and cap == 14400)
 
+    def test_committed_model_inference_contract_before_reservation(self):
+        self.initialize(12591.858767883998)
+        formal = self.root / 'formal'; formal.mkdir()
+        limit = 3600 if self.model == 'perturbdiff' else 1800
+        identity = {'model': self.model, 'fold': 0, 'seed': 17}
+        (formal / 'queue.json').write_text(json.dumps({'output_root': str(self.root),
+            'jobs': [dict(identity, inference_timeout_seconds=limit)]}))
+        (formal / 'budget-ledger.json').write_bytes(self.source.read_bytes())
+        sys.path.insert(0, str(CLI.parent))
+        from joint_v2_apply import inventory
+        (self.root / 'joint-v2-apply.json').write_text(json.dumps(dict(status='committed',
+            formal=str(formal.resolve()), reviewed_sha256='reviewed', new_formal=inventory(formal))))
+        for requested, accepted in ((limit + 1, False), (limit, True)):
+            self.request.write_text(json.dumps(dict(identity=identity, inference_timeout_seconds=requested)))
+            self.cli('launch', '--account', self.account, '--request', self.request,
+                '--formal', formal, '--reviewed-stage-sha256', 'reviewed',
+                '--', sys.executable, '-c', 'import json,sys; r=json.load(open(sys.argv[1])); assert r["inference_timeout_seconds"]==' + str(limit), '{request}')
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline:
+                state = json.loads(self.cli('inspect', '--account', self.account).stdout)
+                log = (self.account / 'watchdog.log').read_text()
+                if (accepted and state['attempts'] and state['attempts'][-1]['status'] == 'exited') or (not accepted and 'ValueError' in log):
+                    break
+                time.sleep(.02)
+            else:
+                self.fail(log)
+            if accepted:
+                self.assertEqual(state['attempts'][-1]['returncode'], 0, log)
+                self.assertGreater(state['consumed_seconds'], 12591.858767883998)
+                self.assertLess(state['consumed_seconds'], 12596)
+            else:
+                self.assertEqual(state['attempts'], [])
+                self.assertEqual(state['consumed_seconds'], 12591.858767883998)
+
     def test_detached_inference_deadline_is_terminal_timeout(self):
         self.initialize(100)
         (self.root / 'progress.json').write_text(json.dumps({'phase': 'inference'}))
