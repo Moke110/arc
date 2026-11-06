@@ -42,7 +42,7 @@ The design-to-delivery chain is fixed; each skill consumes the previous step's o
 
 Execution rules:
 
-- **Subagent context budget: under ~20% per agent.** Fan work out to subagents — one ticket (or one narrow prefactor scope) per implementer subagent, plus separate exploration and merger subagents. Pass context pointers (spec path, issue number, research-note path, commit SHA), not pasted content; when a window fills, hand off to a fresh subagent.
+- **Subagent context budget: under 20% per agent.** Dispatch tickets to fresh-context subagents, one ticket (or one narrow prefactor scope) per implementer, with separate exploration and integration subagents. Pass context pointers (spec path, issue number, research-note path, commit SHA), not conversation history or pasted documents. Before reaching 20% context usage, save a concise handoff and continue with a fresh subagent.
 - **Close the tracker at the end: no open issue survives the run.** Resolve every ticket: completed work closes with its evidence; unfinished work is recorded as a comment on the owning ticket (what remains and why) and the ticket is then closed. Report the `dev` state and the closed-ticket list.
 
 ## Tracker and doc conventions
