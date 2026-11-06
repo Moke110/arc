@@ -7,6 +7,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from warm_start import warm_start
 
 CLI = Path(__file__).resolve().parents[1] / 'workflow.py'
 
@@ -68,6 +72,16 @@ class WarmStartAcceptance(unittest.TestCase):
             self.assertIn('coverage', message)
             self.assertFalse((Path(tmp) / 'prepared').exists())
 
+    def test_target_specific_singleton_cannot_borrow_training_from_other_target(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            rows = [r for r in self.fixture()
+                    if r['condition'] != 'H-R' or r['canonical_smiles'] != 'C'
+                    or r['dose_um'] == .04]
+            message = self.prepare(Path(tmp), rows, ok=False)
+            self.assertIn('warm_start impossible parent coverage', message)
+            self.assertIn('H-R', message)
+            self.assertFalse((Path(tmp) / 'prepared').exists())
+
     def test_joint_coverage_can_be_impossible_despite_non_singleton_marginals(self):
         with tempfile.TemporaryDirectory() as tmp:
             rows = [r for r in self.fixture() if r['canonical_smiles'] in ['C', 'CC']
@@ -75,6 +89,28 @@ class WarmStartAcceptance(unittest.TestCase):
             message = self.prepare(Path(tmp), rows, ok=False)
             self.assertIn('warm_start impossible', message)
             self.assertIn('20% validation', message)
+
+    def test_dense_release_sized_grid_needs_no_feasibility_solver(self):
+        rows = [dict(parent_id=f'p{parent:04}', dose_um=dose, condition=condition,
+                     phenotype='cell_viability', direction=0)
+                for parent in range(663) for dose in [.04, .2, 1, 5]
+                for condition in ['baseline', 'H-R']]
+        with patch('warm_start._solve', side_effect=AssertionError('dense grid invoked solver')):
+            splits = warm_start(rows)
+            reversed_splits = warm_start(list(reversed(rows)))
+        tested = []
+        for split, reverse in zip(splits, reversed_splits):
+            self.assertEqual(split['combination_roles'], reverse['combination_roles'])
+            combinations = split['combination_roles']
+            tests = [r for r in combinations if r['role'] == 'test']
+            validation = [r for r in combinations if r['role'] == 'validation']
+            self.assertEqual(len(validation), math.ceil(.2 * (2652 - len(tests))))
+            for axis in ['parent_id', 'dose_um']:
+                train = {r[axis] for r in combinations if r['role'] == 'train'}
+                self.assertEqual(train, {r[axis] for r in combinations})
+            tested.extend((r['parent_id'], r['dose_um']) for r in tests)
+        self.assertEqual(len(tested), 2652)
+        self.assertEqual(len(set(tested)), 2652)
 
     def test_public_train_evaluate_verify_roundtrip(self):
         with tempfile.TemporaryDirectory() as tmp:

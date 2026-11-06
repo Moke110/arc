@@ -17,19 +17,32 @@ def warm_start(rows):
     """
     combinations = sorted({(r['parent_id'], r['dose_um']) for r in rows})
     indices = {key: i for i, key in enumerate(combinations)}
-    groups = []
-    for axis, label in [(0, 'parent'), (1, 'dose')]:
-        for value in sorted({key[axis] for key in combinations}):
-            members = {i for i, key in enumerate(combinations) if key[axis] == value}
-            if len(members) < 2:
-                raise ValueError(f'warm_start impossible {label} coverage for {value}: only one combination; '
-                                 'add another measured combination for this marginal input')
-            groups.append(members)
-    targets = [{indices[r['parent_id'], r['dose_um']] for r in rows
-                if (r['condition'], r['phenotype']) == target}
-               for target in sorted({(r['condition'], r['phenotype']) for r in rows})]
     if not combinations:
         raise ValueError('warm_start requires measured parent–dose combinations')
+    target_keys = sorted({(r['condition'], r['phenotype']) for r in rows})
+    targets = [{indices[r['parent_id'], r['dose_um']] for r in rows
+                if (r['condition'], r['phenotype']) == target} for target in target_keys]
+    groups = []
+    for target_key, target in zip(target_keys, targets):
+        for axis, label in [(0, 'parent'), (1, 'dose')]:
+            marginal = {}
+            for i in sorted(target):
+                marginal.setdefault(combinations[i][axis], set()).add(i)
+            for value, members in sorted(marginal.items()):
+                if len(members) < 2:
+                    raise ValueError(f'warm_start impossible {label} coverage for {value} '
+                                     f'in target {target_key}: only one combination; '
+                                     'add another measured combination for this marginal input')
+                groups.append(members)
+    # Index the constraints once: validation selection should scale with the
+    # groups containing a combination, rather than all parents in the release.
+    memberships = [[] for _ in combinations]
+    for group_index, group in enumerate(groups):
+        for i in group:
+            memberships[i].append(group_index)
+    parents = {}
+    for i, (parent, dose) in enumerate(combinations):
+        parents.setdefault(parent, []).append(i)
 
     def valid(assignments):
         for assigned in assignments:
@@ -45,18 +58,29 @@ def warm_start(rows):
         rng = random.Random(SPLIT_SEED + attempt)
         order = list(range(len(combinations)))
         rng.shuffle(order)
+        # Stagger each parent's seeded dose order across the three folds. A
+        # four-dose parent contributes at most two test combinations per fold,
+        # leaving room for validation while retaining training coverage.
+        outer = [set() for _ in range(3)]
+        for offset, members in enumerate(parents.values()):
+            shuffled = list(members)
+            rng.shuffle(shuffled)
+            for position, i in enumerate(shuffled):
+                outer[(offset + position) % 3].add(i)
         candidate = []
         for fold in range(3):
-            test = set(order[fold::3])
+            test = outer[fold]
             available = [i for i in order if i not in test]
             rng.shuffle(available)
             assigned = ['test' if i in test else 'train' for i in range(len(combinations))]
+            remaining = [sum(assigned[i] == 'train' for i in group) for group in groups]
             needed = math.ceil(.2 * len(available))
             for i in available:
-                if needed and all(any(j != i and assigned[j] == 'train' for j in group)
-                                  for group in groups if i in group):
+                if needed and all(remaining[g] > 1 for g in memberships[i]):
                     assigned[i] = 'validation'
                     needed -= 1
+                    for g in memberships[i]:
+                        remaining[g] -= 1
             if needed:
                 break
             candidate.append(assigned)
