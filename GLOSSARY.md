@@ -38,10 +38,10 @@ The source-supplied measurement evidence, including individual values or reporte
 A derived response class describing a phenotype contrast under a declared labeling rule. An endpoint and its statistical test are not prerequisites for a Stage 3 corpus sample (ADR 0043).
 
 **Phenotype corpus sample**:
-A retained source measurement described by source, replicate index, condition, chemical, dose and readout, without an attribute-based uniqueness requirement. Physically separate samples remain separate even when their values match; controls have no chemical or dose (ADR 0043).
+A retained measurement record interpreted according to the source underlying its condition–phenotype corpus. Its representation follows the selected source; physically separate samples are not merged merely because their values match (ADR 0044).
 
 **Phenotype corpus**:
-The quality-controlled collection of phenotype corpus samples with source readouts, experimental context and provenance, accompanied by an annotation for each source. Statistical significance and endpoint availability do not determine sample admission; model data views perform later selection and aggregation.
+The collection of source measurements for a chosen condition and phenotype, first built around its best available source and later extended with similar sources converted to its established representation. Source measurements retain experimental context and provenance without requiring significance tests or endpoint labels (ADR 0044).
 
 **Replicate index**:
 An index distinguishing physically separate samples whose other attributes apart from readout are identical. It does not imply biological independence.
