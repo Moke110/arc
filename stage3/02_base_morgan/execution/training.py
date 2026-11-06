@@ -45,27 +45,58 @@ def _sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _prepared(path):
+def _feature_configuration():
     import rdkit
+    return dict(radius=2, bits=2048, chirality=True, rdkit_version=rdkit.__version__,
+                effective_configuration=dict(countSimulation=False, useBondTypes=True,
+                    onlyNonzeroInvariants=False, includeRingMembership=True,
+                    includeRedundantEnvironments=False))
+
+
+def _prepared(path):
+    from workflow import SPLIT_SEED, TRAINING_SEEDS, CLASSES, cold_drug
     value = json.loads(Path(path).read_text())
     if digest(value['rows']) != value['input_fingerprint'] or digest(value['splits']) != value['split_fingerprint']:
         raise ValueError('Prepared input or split fingerprint mismatch')
-    expected = dict(radius=2, bits=2048, chirality=True, rdkit_version=rdkit.__version__)
-    effective = value['features'].get('effective_configuration')
-    if effective is not None:
-        expected['effective_configuration'] = dict(countSimulation=False, useBondTypes=True,
-            onlyNonzeroInvariants=False, includeRingMembership=True, includeRedundantEnvironments=False)
-    if value['features'] != expected:
+    if value['features'] != _feature_configuration():
         raise ValueError('Incompatible fingerprint configuration or RDKit version')
+    if (value.get('schema_version') != 1 or value.get('scope') != 'cold_drug'
+            or value.get('split_seed') != SPLIT_SEED or value.get('training_seeds') != TRAINING_SEEDS
+            or value.get('class_order') != CLASSES):
+        raise ValueError('Incompatible prepared configuration')
+    rows = value['rows']
+    if not rows or len({r['measurement_id'] for r in rows}) != len(rows):
+        raise ValueError('Missing or duplicate measurement identity')
+    from rdkit import Chem
+    for row in rows:
+        molecule = Chem.MolFromSmiles(row['canonical_smiles'])
+        if (molecule is None or Chem.MolToSmiles(molecule, isomericSmiles=True) != row['canonical_smiles']
+                or Chem.MolToInchiKey(molecule) != row['parent_id']
+                or row['direction'] not in CLASSES or not np.isfinite(float(row['dose_um']))
+                or float(row['dose_um']) <= 0):
+            raise ValueError('Invalid prepared measurement')
+    # Reconstruct the entire canonical partition, including counts and mappings.
+    # Future settings must register their own deterministic reconstruction here.
+    if value['splits'] != cold_drug(rows):
+        raise ValueError('Prepared split membership/counts differ from canonical cold_drug partitions')
+    expected = [dict(condition=c, phenotype=p, setting=s['setting'], fold=s['fold'], seed=seed)
+                for c, p in sorted({(r['condition'], r['phenotype']) for r in rows})
+                for s in value['splits'] for seed in TRAINING_SEEDS]
+    if value['expected_runs'] != expected:
+        raise ValueError('Prepared expected run identities differ from canonical configuration')
     return value
+
+
+def _statistics(rows):
+    doses = np.log10([float(r['dose_um']) for r in rows])
+    return dict(mean=float(doses.mean()), std=float(doses.std()) or 1.0, n=len(doses), ddof=0)
 
 
 def predict(checkpoint_path, rows):
     """Infer with saved best weights and training-only dose statistics."""
-    import rdkit
     torch = _torch()
     checkpoint = torch.load(Path(checkpoint_path), map_location='cpu', weights_only=True)
-    if checkpoint['config'] != CONFIG or checkpoint['features']['rdkit_version'] != rdkit.__version__:
+    if checkpoint['config'] != CONFIG or checkpoint['features'] != _feature_configuration():
         raise ValueError('Incompatible checkpoint configuration/software')
     model = _model(torch)
     model.load_state_dict(checkpoint['state_dict'])
@@ -100,7 +131,7 @@ def train(prepared_path, output_path, condition, phenotype, setting, fold, seed,
     doses = np.log10([float(r['dose_um']) for r in groups['train']])
     if not np.isfinite(doses).all():
         raise ValueError('Training dose must be positive and finite')
-    statistics = dict(mean=float(doses.mean()), std=float(doses.std()) or 1.0, n=len(doses), ddof=0)
+    statistics = _statistics(groups['train'])
     torch = _torch()
     random.seed(seed)
     np.random.seed(seed)
@@ -180,7 +211,17 @@ def verify(run_path, prepared_path=None):
     for key in ['identity', 'features', 'config', 'dose_statistics', 'selected_epoch', 'input_fingerprint', 'split_fingerprint']:
         if checkpoint[key] != manifest[key]:
             raise ValueError(f'Checkpoint metadata mismatch: {key}')
+    if manifest['config'] != CONFIG or manifest['features'] != _feature_configuration():
+        raise ValueError('Incompatible saved configuration')
+    smoke = manifest['smoke_epochs']
+    if (manifest['status'] != 'completed' or manifest['mode'] != ('formal' if smoke is None else 'smoke')
+            or (smoke is not None and (type(smoke) is not int or not 1 <= smoke <= CONFIG['max_epochs']))):
+        raise ValueError('Inconsistent formal/smoke configuration')
     history = json.loads((run/'history.json').read_text())
+    limit = smoke or CONFIG['max_epochs']
+    if (not history or len(history) > limit
+            or [h['epoch'] for h in history] != list(range(1, len(history)+1))):
+        raise ValueError('Invalid training history schedule')
     best = max(history, key=lambda item: item['validation_macro_f1'])
     if best['epoch'] != manifest['selected_epoch'] or best['validation_macro_f1'] != manifest['best_validation_macro_f1']:
         raise ValueError('Checkpoint selection inconsistent with validation history')
@@ -201,6 +242,10 @@ def verify(run_path, prepared_path=None):
         if identity not in prepared['expected_runs']:
             raise ValueError('Unexpected saved run identity')
         split = next(s for s in prepared['splits'] if s['setting'] == identity['setting'] and s['fold'] == identity['fold'])
+        training_rows = [r for r, role in zip(prepared['rows'], split['roles']) if role == 'train'
+                         and (r['condition'], r['phenotype']) == (identity['condition'], identity['phenotype'])]
+        if manifest['dose_statistics'] != _statistics(training_rows):
+            raise ValueError('Dose statistics differ from prepared training rows')
         expected = [r for r, role in zip(prepared['rows'], split['roles']) if role == 'test'
                     and (r['condition'], r['phenotype']) == (identity['condition'], identity['phenotype'])]
         actual = [{k: v for k, v in r.items() if k not in ['probabilities', 'prediction', 'run_identity']} for r in records]
