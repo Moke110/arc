@@ -46,8 +46,10 @@ Preparation fails when any condition–phenotype target lacks a role. Seeds 17,
 binary bits, chirality, effective generator options and RDKit version.
 
 Each run saves a checkpoint, training-only log-dose statistics, learning history,
-run metadata, test measurement probabilities and regenerated metrics. Evaluation
-uses saved artifacts without retraining. Verification checks artifact consistency
+run metadata, test measurement probabilities and regenerated metrics. Dose scaling
+uses measurement-weighted population statistics (`ddof=0`); a constant training
+log-dose uses scale 1. The saved statistics apply to every inference row.
+Evaluation uses saved artifacts without retraining. Verification checks artifact consistency
 and can bind the run to the supplied prepared release. Predictions describe
 magnitude direction relative to the source's assumed same-arm vehicle=100;
 class 0 is within-band, not demonstrated equivalence, and direction is not
