@@ -72,3 +72,12 @@ available-run test-selection disclosure. All figures visibly show PARTIAL,
 snapshot date/counts and primary/descriptive scope. SVG text remains editable
 text; publication hashes match all six visible copies. Focused tests also reject
 tampered scores, source predictions, frozen identities and invalid publish paths.
+
+Independent narrow Standards/Spec review: **PASS**, no actionable blocker.
+Reviewer independently checked exact frozen evaluator reuse, read-only source and
+identity boundaries, all scored-artifact hashes, six visible publication hashes,
+nonsealed 47/63 snapshot and final-barrier-false status, and visually inspected
+all three real PNGs. Initial presentation finding (incomplete-entry separation
+and available-run best-selection disclosure) was resolved before commit.
+Generated CSV CRLF and Matplotlib SVG whitespace are preserved byte-for-byte
+with their provenance hashes; source-only whitespace checks pass.
