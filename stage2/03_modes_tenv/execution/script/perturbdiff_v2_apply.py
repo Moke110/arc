@@ -87,7 +87,8 @@ def exchange(left, right):
 
 
 def host_stopped(stopped, namespace, service):
-    if not namespace or os.readlink('/proc/1/ns/pid') != namespace:
+    if (not namespace or os.readlink('/proc/self/ns/pid') != namespace or
+            Path('/proc/1/comm').read_text().strip() != 'systemd'):
         raise ValueError('actual host PID namespace required')
     request = read(stopped / 'request.json')
     if Path('/proc/sys/kernel/random/boot_id').read_text().strip() != request['target']['boot_id']:
