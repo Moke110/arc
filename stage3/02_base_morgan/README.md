@@ -1,10 +1,9 @@
 # 02_base_morgan — structure and dose baseline
 
 This step consumes the frozen [01_corpus](../01_corpus/README.md) release under
-[ADR 0045](../../docs/adr/0045-stage3-morgan-direction-baseline.md). The current
-tracer bullet implements cold-drug preparation and individual run training,
-evaluation and verification. Cold-dose, warm-start and the complete 60-fit
-benchmark remain subsequent work; smoke runs are explicitly marked.
+[ADR 0045](../../docs/adr/0045-stage3-morgan-direction-baseline.md). The public workflow implements cold-drug, cold-dose and warm-start preparation
+and individual run training, evaluation and verification. The complete 60-fit
+benchmark remains subsequent work; smoke runs are explicitly marked.
 
 ```bash
 python stage3/02_base_morgan/execution/workflow.py prepare --input stage3/01_corpus/output --output /tmp/morgan-prepared
@@ -27,9 +26,21 @@ label and dose, sorted by stable measurement identity. Canonical JSON SHA256
 fingerprints freeze inputs and partitions. Reusing an output requires identical
 preparation; choose fresh locations for incompatible artifacts.
 
-The split seed is 20261105. Three outer folds test each parent once; validation
+Preparation defaults to `--settings cold_drug`; select any combination of
+`cold_drug cold_dose warm_start` explicitly to freeze the desired run scope.
+Settings are stored in canonical order, independently of CLI argument order.
+
+The split seed is 20261105. Three cold-drug outer folds test each parent once; validation
 holds out the ceiling of 20% of each remaining parent pool (at least one parent).
 All aliases and doses of a parent receive the same role across conditions.
+Cold dose creates four global held-dose folds in order 0.04, 0.2, 1 and 5 µM.
+The two boundary doses are extrapolation; the interior doses are interpolation.
+Validation reserves the ceiling of 20% of non-test parent–dose combinations,
+keeping every validation and test parent represented in training within each
+condition–phenotype target. All aliases share the combination role. The manifest
+persists held dose, generalization type, combination assignments and role counts.
+Missing dose levels or impossible parent coverage fail with a diagnostic.
+
 Preparation fails when any condition–phenotype target lacks a role. Seeds 17,
 42 and 2026 share these partitions. Feature metadata freezes radius 2, 2048
 binary bits, chirality, effective generator options and RDKit version.

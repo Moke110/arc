@@ -54,13 +54,13 @@ def _feature_configuration():
 
 
 def _prepared(path):
-    from workflow import SPLIT_SEED, TRAINING_SEEDS, CLASSES, cold_drug
+    from workflow import SPLIT_SEED, TRAINING_SEEDS, CLASSES, reconstruct_splits
     value = json.loads(Path(path).read_text())
     if digest(value['rows']) != value['input_fingerprint'] or digest(value['splits']) != value['split_fingerprint']:
         raise ValueError('Prepared input or split fingerprint mismatch')
     if value['features'] != _feature_configuration():
         raise ValueError('Incompatible fingerprint configuration or RDKit version')
-    if (value.get('schema_version') != 1 or value.get('scope') != 'cold_drug'
+    if (value.get('schema_version') != 1 or value.get('scope') != '+'.join(value.get('settings', ['cold_drug']))
             or value.get('split_seed') != SPLIT_SEED or value.get('training_seeds') != TRAINING_SEEDS
             or value.get('class_order') != CLASSES):
         raise ValueError('Incompatible prepared configuration')
@@ -76,9 +76,8 @@ def _prepared(path):
                 or float(row['dose_um']) <= 0):
             raise ValueError('Invalid prepared measurement')
     # Reconstruct the entire canonical partition, including counts and mappings.
-    # Future settings must register their own deterministic reconstruction here.
-    if value['splits'] != cold_drug(rows):
-        raise ValueError('Prepared split membership/counts differ from canonical cold_drug partitions')
+    if value['splits'] != reconstruct_splits(rows, value.get('settings', ['cold_drug'])):
+        raise ValueError('Prepared split membership/counts differ from canonical partitions')
     expected = [dict(condition=c, phenotype=p, setting=s['setting'], fold=s['fold'], seed=seed)
                 for c, p in sorted({(r['condition'], r['phenotype']) for r in rows})
                 for s in value['splits'] for seed in TRAINING_SEEDS]

@@ -92,14 +92,34 @@ def cold_drug(rows):
     return splits
 
 
-def prepare(source, output):
+SETTINGS = ['cold_drug', 'cold_dose', 'warm_start']
+
+
+def reconstruct_splits(rows, settings):
+    if not settings or settings != [s for s in SETTINGS if s in settings]:
+        raise ValueError('Settings must be unique and in canonical cold_drug, cold_dose, warm_start order')
+    splits = []
+    for setting in settings:
+        if setting == 'cold_drug':
+            splits.extend(cold_drug(rows))
+        elif setting == 'cold_dose':
+            from cold_dose import cold_dose
+            splits.extend(cold_dose(rows))
+        else:
+            from warm_start import warm_start
+            splits.extend(warm_start(rows))
+    return splits
+
+
+def prepare(source, output, settings=None):
     import rdkit
     rows = read_rows(source)
-    splits = cold_drug(rows)
+    settings = [s for s in SETTINGS if s in (settings or ['cold_drug'])]
+    splits = reconstruct_splits(rows, settings)
     expected = [dict(condition=condition, phenotype=phenotype, setting=s['setting'], fold=s['fold'], seed=seed)
                 for condition, phenotype in sorted({(r['condition'], r['phenotype']) for r in rows})
                 for s in splits for seed in TRAINING_SEEDS]
-    payload = dict(schema_version=1, scope='cold_drug', split_seed=SPLIT_SEED, training_seeds=TRAINING_SEEDS,
+    payload = dict(schema_version=1, scope='+'.join(settings), settings=settings, split_seed=SPLIT_SEED, training_seeds=TRAINING_SEEDS,
                    class_order=CLASSES, rows=rows, input_fingerprint=digest(rows), splits=splits,
                    expected_runs=expected, features=dict(radius=2, bits=2048, chirality=True, rdkit_version=rdkit.__version__,
                                  effective_configuration=dict(countSimulation=False, useBondTypes=True,
@@ -121,12 +141,13 @@ def main():
     command = commands.add_parser('prepare')
     command.add_argument('--input', type=Path, required=True)
     command.add_argument('--output', type=Path, required=True)
+    command.add_argument('--settings', nargs='+', choices=SETTINGS, default=['cold_drug'])
     command = commands.add_parser('train')
     command.add_argument('--prepared', type=Path, required=True)
     command.add_argument('--output', type=Path, required=True)
     command.add_argument('--condition', required=True)
     command.add_argument('--phenotype', required=True)
-    command.add_argument('--setting', choices=['cold_drug'], required=True)
+    command.add_argument('--setting', choices=SETTINGS, required=True)
     command.add_argument('--fold', type=int, required=True)
     command.add_argument('--seed', type=int, choices=TRAINING_SEEDS, required=True)
     command.add_argument('--smoke-epochs', type=int)
@@ -138,7 +159,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
-            prepare(args.input, args.output)
+            prepare(args.input, args.output, args.settings)
         else:
             from training import train, evaluate, verify
             if args.command == 'train':
