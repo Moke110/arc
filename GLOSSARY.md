@@ -29,19 +29,22 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 The biological indicator represented by a Stage 3 corpus target. MTT and CCK8 measurements both belong to `cell_viability`; their assay methods and source measurement scales remain identifiable.
 
 **Condition**:
-The detailed biological and experimental context of a Stage 3 phenotype measurement, including cell type and drug, hypoxia, and reoxygenation timings. Drug time denotes pre-HR treatment duration in an HR experiment or direct exposure duration without HR; drug persistence during HR remains separately described.
+The experimental state of a Stage 3 phenotype measurement, such as baseline or hypoxia–reoxygenation. Detailed context, including cell type and treatment, hypoxia and reoxygenation timings, further describes that state.
 
 **Readout**:
 The concrete numerical measurement provided by an experimental source, together with its unit, assay method, and raw or author-normalized representation. A readout is distinct from both the phenotype being measured and its endpoint label.
 
 **Endpoint**:
-The numeric corpus response class: +1 or −1 requires both the corresponding change-magnitude criterion and statistical significance; 0 is the rule's non-change class when the joint criterion fails on evaluable evidence. Class 0 does not itself assert demonstrated biological equivalence, and final corpus endpoints are numeric rather than an unknown class.
+A derived response class describing a phenotype contrast under a declared labeling rule. An endpoint and its statistical test are not prerequisites for a Stage 3 corpus sample (ADR 0043).
 
 **Phenotype corpus sample**:
-A source-dataset–drug–dose–endpoint unit within a particular condition and phenotype. Records from the same dataset with the same remaining key are grouped together, retaining all readout values rather than averaging them.
+A source measurement identified by source, replicate, condition, chemical, dose and readout. Controls have no chemical or dose; treated measurements identify the chemical by canonical SMILES and the dose in micromolar (ADR 0043).
 
 **Phenotype corpus**:
-The quality-controlled collection of phenotype corpus samples, partitioned by fine condition and phenotype, with numeric endpoints, retained measurement sequences and provenance. It precedes the selection and aggregation performed by model data views.
+The quality-controlled collection of phenotype corpus samples with source readouts, experimental context and provenance, accompanied by an annotation for each source. Statistical significance and endpoint availability do not determine sample admission; model data views perform later selection and aggregation.
+
+**Source annotation**:
+The description of one phenotype source’s experimental design, control types and readout meaning, providing context for its measurements.
 
 **Readout sequence**:
 The numerical source measurements retained by one merged phenotype corpus sample, preferring raw values and retaining author-normalized values separately. A normalized-only source retains its supplied values with that representation identified; per-value assay, unit, experiment and source references remain recoverable.
@@ -73,7 +76,7 @@ The evidence-resolved active parent of a single pharmacological intervention, re
 The comparable target used for evidence counting in the wayfinder design, fixing a measurement definition, biological model, protocol, vehicle profile, and reference meaning while allowing declared dose/time axes. It is distinct from the finer condition partitions of the formal Stage 3 corpus.
 
 **Phenotype combination**:
-The wayfinder evidence-counting unit: one drug under one exact condition measured for one indicator within a phenotype counting stratum. It is distinct from a corpus sample whose identity also retains endpoint.
+The wayfinder evidence-counting unit: one drug under one exact condition measured for one indicator within a phenotype counting stratum. It is distinct from the source-measurement identity of the current corpus sample.
 
 **Readout direction**:
 The increase, non-change, or decrease classification relative to a specified control under the declared endpoint rule. Whether that direction implies benefit depends on the phenotype and condition.
@@ -83,7 +86,7 @@ _Avoid_: efficacy label (when only a measurement direction is known)
 A phenotype observation admitted as a numerically labeled corpus record under the frozen magnitude-and-significance rule, with its input and processing evidence retained. Point estimates or source-table coverage alone do not establish this status.
 
 **Unresolved direction**:
-A source-level observation for which the endpoint rule cannot yet be evaluated from the available evidence. It is not an allowed final corpus endpoint or an additional phenotype class.
+A source-level observation for which the endpoint rule cannot yet be evaluated from the available evidence. It does not prevent retention of the source measurement in the phenotype corpus.
 
 ### External data provenance
 
