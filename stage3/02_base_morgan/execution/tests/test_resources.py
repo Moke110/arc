@@ -19,6 +19,41 @@ def snapshot(**changes):
 
 
 class ResourceTest(unittest.TestCase):
+    def test_external_training_entrypoints_and_inline_code_redaction(self):
+        commands = [
+            ('python\0/other/project/train.py\0--token\0SECRET', True),
+            ('python3.11\0-m\0package.trainer\0--token\0SECRET', True),
+            ('python\0-X\0dev\0/other/train.py', True),
+            ('python\0/other/worker.py', True),
+            ('torchrun\0--nnodes\0' + '1\0--token\0SECRET', True),
+            ('python\0/other/monitor.py\0--label\0train\0--token\0SECRET', False),
+            ('python\0-c\0print("SECRET stage3/train.py")', False),
+            ('bash\0-c\0python /other/train.py SECRET', False),
+            ('python\0/other/monitor.py\0--input\0/other/train.py', False),
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root/'meminfo').write_text('MemAvailable: 20971520 kB\n')
+            (root/'1').mkdir()
+            (root/'1/comm').write_text('systemd')
+            (root/'1/cmdline').write_bytes(b'init')
+            (root/'1/status').write_text('PPid:\t0\n')
+            process = root/'12'
+            process.mkdir()
+            (process/'status').write_text('PPid:\t1\nVmRSS:\t100 kB\n')
+            result = subprocess.CompletedProcess([], 0, '0, 100, 16000, 4\n', '')
+            for command, expected in commands:
+                with self.subTest(command=command), patch.object(resources.subprocess, 'run', return_value=result):
+                    (process/'cmdline').write_bytes(command.encode())
+                    value = resources.collect_snapshot(proc_root=root)
+                    self.assertEqual(bool(value['peers']), expected)
+                    self.assertNotIn('SECRET', json.dumps(value))
+                    if expected:
+                        with self.assertRaisesRegex(resources.ResourceError, 'external_long_training'):
+                            resources.preflight(value)
+                    else:
+                        resources.preflight(value)
+
     def test_policy_and_unknown_visibility(self):
         resources.preflight(snapshot())
         for changes, message in [

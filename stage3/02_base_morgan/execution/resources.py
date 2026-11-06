@@ -19,6 +19,49 @@ class ResourceError(RuntimeError):
     """Resource policy or visibility prevents a safe launch."""
 
 
+def _workload(args):
+    """Inspect entry points, never inline code or arbitrary option values."""
+    if not args:
+        return None, False, False
+    safe_path = re.compile(r'[A-Za-z0-9_./+-]+\.py')
+    executable = Path(args[0]).name.lower()
+    entry = None
+    remaining = []
+    if re.fullmatch(r'python(?:\d+(?:\.\d+)*)?', executable):
+        skip_value = False
+        for index, token in enumerate(args[1:], 1):
+            if skip_value:
+                skip_value = False
+                continue
+            if token == '-c':
+                break  # Inline source may contain secrets or misleading paths.
+            if token == '-m':
+                if index + 1 < len(args) and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.]*', args[index + 1]):
+                    entry = args[index + 1]
+                    remaining = args[index + 2:]
+                break
+            if token in ('-W', '-X'):
+                # These consume an option value; do not mistake it for a script.
+                skip_value = True
+                continue
+            if token.startswith('-'):
+                continue
+            if safe_path.fullmatch(token):
+                entry, remaining = token, args[index + 1:]
+            break
+    elif safe_path.fullmatch(args[0]):
+        entry, remaining = args[0], args[1:]
+    elif executable in ('torchrun', 'accelerate', 'deepspeed'):
+        return None, True, True
+    if entry is None:
+        return None, False, False
+    training = bool(re.search(r'(^|[/_.-])(train(?:er|ing)?|fit|worker|pretrain)([._/-]|$)', entry.lower()))
+    # Public workflows use an immediate subcommand. Do not inspect option values.
+    training |= bool(remaining and remaining[0] in ('train', 'fit', 'pretrain', 'benchmark'))
+    repository_job = 'stage2/' in entry or 'stage3/' in entry
+    return entry, repository_job or training, training
+
+
 def _processes(proc_root):
     records = []
     readable = True
@@ -30,13 +73,10 @@ def _processes(proc_root):
             status = directory.joinpath('status').read_text()
             rss = re.search(r'^VmRSS:\s+(\d+)', status, re.M)
             parent = re.search(r'^PPid:\s+(\d+)', status, re.M)
-            # Retain only a source code path, never arbitrary arguments.
-            code = next((a for a in args if a.endswith('.py') and ('stage2/' in a or 'stage3/' in a)), None)
-            training = any(re.search(r'(^|[/_-])(train|fit|worker|pretrain)([._/-]|$)', a.lower())
-                           for a in args if not a.startswith('--')) or 'train' in args
+            code, heavy, training = _workload(args)
             records.append(dict(pid=int(directory.name), ppid=int(parent[1]) if parent else 0,
                                 code_path=code, rss_bytes=int(rss[1]) * 1024 if rss else 0,
-                                heavy=bool(code), long_training=bool(code and training)))
+                                heavy=heavy, long_training=training))
         except FileNotFoundError:
             continue  # Process exited during the scan.
         except (PermissionError, OSError):
