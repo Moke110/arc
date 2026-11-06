@@ -32,22 +32,25 @@ The biological indicator represented by a Stage 3 corpus target. MTT and CCK8 me
 The experimental state of a Stage 3 phenotype measurement, such as baseline or hypoxia–reoxygenation. Detailed context, including cell type and treatment, hypoxia and reoxygenation timings, further describes that state.
 
 **Readout**:
-The concrete numerical measurement provided by an experimental source, together with its unit, assay method, and raw or author-normalized representation. A readout is distinct from both the phenotype being measured and its endpoint label.
+The source-supplied measurement evidence, including individual values or reported group statistics such as mean, SD, n and p-value. Its interpretation includes the assay, units and raw or author-normalized scale.
 
 **Endpoint**:
 A derived response class describing a phenotype contrast under a declared labeling rule. An endpoint and its statistical test are not prerequisites for a Stage 3 corpus sample (ADR 0043).
 
 **Phenotype corpus sample**:
-A source measurement identified by source, replicate, condition, chemical, dose and readout. Controls have no chemical or dose; treated measurements identify the chemical by canonical SMILES and the dose in micromolar (ADR 0043).
+A retained source measurement described by source, replicate index, condition, chemical, dose and readout, without an attribute-based uniqueness requirement. Physically separate samples remain separate even when their values match; controls have no chemical or dose (ADR 0043).
 
 **Phenotype corpus**:
 The quality-controlled collection of phenotype corpus samples with source readouts, experimental context and provenance, accompanied by an annotation for each source. Statistical significance and endpoint availability do not determine sample admission; model data views perform later selection and aggregation.
 
+**Replicate index**:
+An index distinguishing physically separate samples whose other attributes apart from readout are identical. It does not imply biological independence.
+
 **Source annotation**:
-The description of one phenotype source’s experimental design, control types and readout meaning, providing context for its measurements.
+The description of one phenotype source’s experimental design, control types and readout meaning, with measurement-specific context when these vary within a source.
 
 **Readout sequence**:
-The numerical source measurements retained by one merged phenotype corpus sample, preferring raw values and retaining author-normalized values separately. A normalized-only source retains its supplied values with that representation identified; per-value assay, unit, experiment and source references remain recoverable.
+The collection of source measurement values retained together under the historical merged-sample design of ADRs 0039–0040. The current corpus preserves physically separate samples rather than merging them into such a sequence (ADR 0043).
 
 **Phenotype fold change**:
 The ratio of a treated-group mean to the mean of its matched control on a compatible measurement scale, requiring a positive, valid denominator. It describes an experimental phenotype contrast rather than a transcriptomic fold change.
