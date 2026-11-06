@@ -76,8 +76,7 @@ def evaluate_benchmark(output, prepared_path=None, require_complete=False):
     _write(output/'benchmark.json', ledger)
     summary = summarize(prepared, ledger['runs'], require_complete=require_complete)
     summary['benchmark_mode'] = ledger['mode']
-    summary['formal_benchmark_complete'] = ledger['mode'] == 'formal' and all(
-        entry['status'] == 'completed' for entry in ledger['runs'])
+    summary['formal_benchmark_complete'] = ledger['mode'] == 'formal' and summary.get('complete', False)
     _write(output/'summary.json', summary)
     (output/'report.md').write_text(render_report(summary))
     return summary
@@ -201,4 +200,4 @@ def benchmark(prepared_path, output, smoke_epochs=None, snapshot_fn=None, interv
             _write(ledger_path, ledger)
             raise ValueError(f'Benchmark stopped; failed run {identity}: {error}') from error
         _write(ledger_path, ledger)
-    return evaluate_benchmark(output, prepared_path, require_complete=mode == 'formal')
+    return evaluate_benchmark(output, prepared_path)

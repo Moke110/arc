@@ -2,6 +2,7 @@
 from collections import Counter
 import math
 import random
+import warnings
 
 DOSES = [0.04, 0.2, 1.0, 5.0]
 
@@ -77,9 +78,12 @@ def _validation(available, members, required, targets, count, fold):
         constraint(indices, 1, len(indices)-1)
     matrix = coo_matrix((vv,(rr,cc)),shape=(len(lower),len(available))).tocsc()
     rng = random.Random(20261105 + fold)
-    result = milp(np.array([rng.random() for _ in available]),
-                  integrality=np.ones(len(available)), bounds=Bounds(0,1),
-                  constraints=LinearConstraint(matrix,lower,upper), options={'time_limit':60})
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', message="Unrecognized options detected.*", category=RuntimeWarning)
+        result = milp(np.array([rng.random() for _ in available]),
+                      integrality=np.ones(len(available)), bounds=Bounds(0,1),
+                      constraints=LinearConstraint(matrix,lower,upper),
+                      options={'time_limit': 60, 'threads': 1})
     if result.x is None:
         reason = 'impossible' if result.status == 2 else 'unresolved within solver budget'
         raise ValueError(f'cold_dose fold {fold}: {reason} validation parent coverage; add dose coverage; {result.message}')

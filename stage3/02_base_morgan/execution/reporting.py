@@ -107,7 +107,14 @@ def summarize(prepared, runs, require_complete=False):
     outcomes.extend(dict(identity=i, status='pending') for k, i in expected.items() if k not in seen)
     outcomes.sort(key=lambda x: _key(x['identity']))
     formal = sum(x.get('mode') == 'formal' for x in outcomes)
-    complete = formal == len(expected) and bool(expected)
+    requested_scope_complete = bool(expected) and all(x['status'] == 'completed' for x in outcomes)
+    formal_scope_complete = formal == len(expected) and bool(expected)
+    # ADR 0045 defines the full benchmark independently of a prepared subset.
+    canonical = {(condition, 'cell_viability', setting, fold, seed)
+                 for condition in ('baseline', 'H-R')
+                 for setting, folds in (('cold_drug', 3), ('cold_dose', 4), ('warm_start', 3))
+                 for fold in range(folds) for seed in (17, 42, 2026)}
+    complete = formal_scope_complete and set(expected) == canonical
     if require_complete and not complete:
         raise ValueError('Incomplete formal run coverage')
     targets = []
@@ -143,7 +150,8 @@ def summarize(prepared, runs, require_complete=False):
         items = [x['metrics'] for x in pooled if (x['condition'], x['phenotype'], x['setting'], x['mode']) == (condition, phenotype, setting, mode)]
         if items:
             pooled_aggregates.append(dict(condition=condition, phenotype=phenotype, setting=setting, mode=mode, **_aggregate(items, ['seed; each metric pools three outer folds'])))
-    return dict(schema_version=1, complete=complete, expected_runs=len(expected), completed_formal=formal,
+    return dict(schema_version=1, complete=complete, requested_scope_complete=requested_scope_complete,
+                formal_scope_complete=formal_scope_complete, expected_runs=len(expected), completed_formal=formal,
                 status_counts={s: sum(x['status'] == s for x in outcomes) for s in ('completed', 'pending', 'failed')},
                 metric_convention=METRIC_CONVENTION, targets=targets, runs=outcomes, aggregates=aggregates,
                 cold_drug_pooled_oof=pooled, cold_drug_pooled_oof_aggregates=pooled_aggregates,
@@ -154,6 +162,8 @@ def render_report(summary):
     """Render compact scientific tables; JSON artifacts retain exhaustive detail."""
     lines = ['# Morgan direction benchmark', '',
              'Status: ' + ('complete formal benchmark' if summary['complete'] else 'INCOMPLETE formal benchmark'), '',
+             'Requested scope: ' + ('complete' if summary.get('requested_scope_complete') else 'incomplete')
+             + '; formal scope: ' + ('complete' if summary.get('formal_scope_complete') else 'incomplete') + '.', '',
              'Machine-readable detail: [summary.json](summary.json) and [run ledger](benchmark.json).', '']
 
     def table(title, headers, rows):

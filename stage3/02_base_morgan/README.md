@@ -29,6 +29,11 @@ preparation; choose fresh locations for incompatible artifacts.
 Preparation defaults to `--settings cold_drug`; select any combination of
 `cold_drug cold_dose warm_start` explicitly to freeze the desired run scope.
 Settings are stored in canonical order, independently of CLI argument order.
+Completing a selected scope sets `requested_scope_complete`; all-formal outcomes
+within that scope also set `formal_scope_complete`. Full `complete` and
+`formal_benchmark_complete` require the canonical 60 formal fits across both
+current targets, all three settings and seeds. `--require-complete` enforces
+that full matrix, even when the prepared scope contains only cold-drug runs.
 
 The split seed is 20261105. Three cold-drug outer folds test each parent once; validation
 holds out the ceiling of 20% of each remaining parent pool (at least one parent).

@@ -31,8 +31,9 @@ class ReportingTests(unittest.TestCase):
     def test_absent_class_pooling_and_report(self):
         with tempfile.TemporaryDirectory() as tmp:
             prepared, paths = self.fixture(Path(tmp))
-            result = summarize(prepared, paths, require_complete=True)
-            self.assertTrue(result['complete'])
+            result = summarize(prepared, paths)
+            self.assertFalse(result['complete'])
+            self.assertTrue(result['formal_scope_complete'])
             self.assertAlmostEqual(result['aggregates'][0]['macro_f1']['mean'], 2/9)
             self.assertAlmostEqual(result['cold_drug_pooled_oof'][0]['metrics']['macro_f1'], 2/9)
             # Loss weighs the two-error fold twice when measurements are pooled.
@@ -87,6 +88,53 @@ class ReportingTests(unittest.TestCase):
             self.assertNotIn('```json', report)
             self.assertIn('not biological replication', report)
             self.assertIn('training-only', report)
+
+    def test_canonical_full_matrix_and_partial_formal_scope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            prepared, _ = self.fixture(root)
+            baseline = prepared['rows']
+            prepared['rows'] += [dict(r, condition='H-R', measurement_id='hr-' + r['measurement_id']) for r in baseline]
+            prepared['splits'] = [dict(setting=setting, fold=fold,
+                                      roles=['test' if (i % 4 if i % 4 < 2 else 2) == fold else 'train' for i in range(8)])
+                                  for setting, n in [('cold_drug', 3), ('cold_dose', 4), ('warm_start', 3)]
+                                  for fold in range(n)]
+            # Cold-dose fold 3 needs test records but has no pooled-OOF requirement.
+            prepared['splits'][6]['roles'] = ['test'] * 8
+            identities = [dict(condition=c, phenotype='cell_viability', setting=s['setting'], fold=s['fold'], seed=seed)
+                          for c in ['baseline', 'H-R'] for s in prepared['splits'] for seed in [17, 42, 2026]]
+            prepared.update(expected_runs=identities, input_fingerprint=_digest(prepared['rows']), split_fingerprint=_digest(prepared['splits']))
+            paths = []
+            for number, identity in enumerate(identities):
+                path = root / ('full-' + str(number)); path.mkdir()
+                split = next(s for s in prepared['splits'] if (s['setting'], s['fold']) == (identity['setting'], identity['fold']))
+                records = [dict(r, run_identity=identity, probabilities=[1, 0, 0], prediction=-1)
+                           for r, role in zip(prepared['rows'], split['roles']) if role == 'test' and r['condition'] == identity['condition']]
+                (path / 'predictions.json').write_text(json.dumps(records))
+                manifest = dict(identity=identity, status='completed', mode='formal', smoke_epochs=None,
+                                features={}, input_fingerprint=prepared['input_fingerprint'], split_fingerprint=prepared['split_fingerprint'],
+                                artifact_hashes={'predictions.json': hashlib.sha256((path / 'predictions.json').read_bytes()).hexdigest()})
+                (path / 'run.json').write_text(json.dumps(manifest)); paths.append(path)
+            self.assertTrue(summarize(prepared, paths, require_complete=True)['complete'])
+            partial = dict(prepared, expected_runs=[i for i in identities if i['setting'] == 'cold_drug'])
+            partial_paths = [p for p, i in zip(paths, identities) if i['setting'] == 'cold_drug']
+            self.assertEqual(len(partial_paths), 18)
+            summary = summarize(partial, partial_paths)
+            self.assertTrue(summary['requested_scope_complete'])
+            self.assertTrue(summary['formal_scope_complete'])
+            self.assertFalse(summary['complete'])
+            self.assertIn('Requested scope: complete; formal scope: complete', render_report(summary))
+            self.assertIn('INCOMPLETE formal benchmark', render_report(summary))
+            with self.assertRaisesRegex(ValueError, 'Incomplete'):
+                summarize(partial, partial_paths, require_complete=True)
+            for path in paths:
+                manifest_path = path / 'run.json'
+                manifest = json.loads(manifest_path.read_text()); manifest.update(mode='smoke', smoke_epochs=1)
+                manifest_path.write_text(json.dumps(manifest))
+            smoke = summarize(prepared, paths)
+            self.assertTrue(smoke['requested_scope_complete'])
+            self.assertFalse(smoke['formal_scope_complete'])
+            self.assertFalse(smoke['complete'])
 
     def test_corruption_and_provenance(self):
         with tempfile.TemporaryDirectory() as tmp:

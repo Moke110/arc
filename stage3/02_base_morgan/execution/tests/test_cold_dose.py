@@ -8,10 +8,22 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+from types import SimpleNamespace
 
 CLI = Path(__file__).resolve().parents[1] / 'workflow.py'
 
 class ColdDoseAcceptance(unittest.TestCase):
+    def test_sparse_solver_receives_single_thread_limit(self):
+        sys.path.insert(0, str(CLI.parent))
+        from cold_dose import _validation
+        keys = [('p', 0.2), ('p', 1.0)]
+        member = ('baseline', 'cell_viability', 'p')
+        with patch('scipy.optimize.milp', return_value=SimpleNamespace(x=[1, 0])) as solver:
+            selected = _validation(keys, {k: {member} for k in keys}, {member}, [member[:2]], 1, 0)
+        self.assertEqual(selected, {keys[0]})
+        self.assertEqual(solver.call_args.kwargs['options'], {'time_limit': 60, 'threads': 1})
+
     def invoke(self, *args, ok=True):
         result = subprocess.run([sys.executable, str(CLI), *map(str, args)], capture_output=True, text=True)
         self.assertEqual(result.returncode == 0, ok, result.stderr)

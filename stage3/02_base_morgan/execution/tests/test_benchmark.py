@@ -62,6 +62,10 @@ class BenchmarkAcceptance(unittest.TestCase):
             summary_path = output/'summary.json'
             summary = summary_path.read_bytes()
             self.assertFalse(json.loads(summary)['formal_benchmark_complete'])
+            self.assertTrue(json.loads(summary)['requested_scope_complete'])
+            self.assertFalse(json.loads(summary)['formal_scope_complete'])
+            with self.assertRaisesRegex(ValueError, 'Incomplete'):
+                benchmark.evaluate_benchmark(output, require_complete=True)
             summary_path.unlink()
             (output/'report.md').unlink()
             with patch.object(training, 'train', side_effect=AssertionError('evaluation must not fit')):
