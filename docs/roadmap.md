@@ -87,33 +87,17 @@ recorded in [ADR 0034](adr/0034-stage3-phenotype-data-boundary.md).
 
 The canonical decision index is the
 [Stage 3 phenotype-database wayfinder map](https://github.com/Moke110/arc/issues/21).
-The source-feasibility research and all four design decisions are complete. Exact
-MTT/CCK8 sources form figure-level pilots; Sirenko 24 h beat count is the preferred
-third-category curation target; Heliste CTG stays in an isolated HR extension.
-Retention, qualified counting and reliable direction labels have distinct gates.
+The current source-first strategy ([ADR 0044](adr/0044-stage3-source-first-corpora.md))
+selects Heliste 2021 for separate baseline and H-R chemical-perturbation CTG
+`cell_viability` corpora at `stage3/01_corpus/output/`. The public
+[build/verify workflow](../stage3/01_corpus/README.md) preserves supplied normalized
+values, all four doses and source-cell identity. Chemical structures require
+frozen resolution evidence; unresolved treatments remain in coverage reports.
+Statistics and endpoint labels are outside this corpus contract.
 
-The subsequent grill-with-docs interview replaced specified wayfinder design
-choices with the agreed [formal corpus design](research/stage3-formal-corpus-design.md)
-and ADRs [0038](adr/0038-dedicated-phenotype-data-and-stage3-corpus.md)–
-[0041](adr/0041-formal-corpus-statistics-export-and-coverage.md).
-Phenotype originals belong to the new `pheno_data` category; the first step
-is `stage3/01_data_corpus/`. Each fine condition/phenotype has one Parquet file;
-MTT/CCK8 share `cell_viability`. Samples retain source, drug, dose, numeric endpoint
-and measurement sequences. Endpoint uses FC ≥1.2 / ≤0.8 and BH-adjusted p <0.05,
-with explicit exclusion of required evidence that cannot be evaluated.
-
-The corpus retains small files and reports source/endpoint-independent coverage;
-the third-category 500 target is assessed in later model-view selection rather
-than enforced per corpus file. The first-wave build has now archived five sources
-and published an offline-verified local `v2`: 6,096 original comparison units,
-6,610 finite readouts and nine recognized typed partitions, with zero admitted
-samples. Identity, dose, matched-vehicle and statistical gaps remain explicit;
-this is an audited empty-after-QC corpus, not evidence of absent biological effects.
-See the [implementation handoff](../stage3/01_data_corpus/execution/handoff.md)
-and [source coverage](../stage3/01_data_corpus/source_coverage.csv).
-The [implementation specification](https://github.com/Moke110/arc/issues/29)
-and its ten child tickets track the implementation and actual acceptance evidence.
-Data views, the 500-observation model-view assessment and training remain not run.
-The earlier
-[wayfinder curation contract](research/stage3-curation-contract.md) remains historical
-where it conflicts with the formal design.
+The earlier endpoint-gated first wave is superseded. Its unchanged
+[handoff](../stage3/01_corpus/execution/historical/handoff.md) and coverage evidence
+remain under `execution/historical/`; the retired implementation remains in Git.
+Current implementation is tracked by [spec #52](https://github.com/Moke110/arc/issues/52)
+and [ticket #53](https://github.com/Moke110/arc/issues/53). Model views and training
+remain later work.

@@ -11,5 +11,5 @@ before source acquisition or curation. Active items must verify offline.
 - Acquisition state in `registry.json` is distinct from corpus admission.
   Originals stay in `source/`; declare each local addition in its author log.
 
-Consumer: `stage3/01_data_corpus/`. Build inputs are frozen; network belongs only
-in item acquisition scripts. See ADRs 0038–0041 for corpus scope.
+Consumer: `stage3/01_corpus/`. Build inputs are frozen; network belongs only
+in item acquisition scripts. See ADR 0044 for the current source-first corpus scope.

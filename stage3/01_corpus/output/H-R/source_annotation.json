@@ -1,0 +1,38 @@
+{
+  "absent_evidence": [
+    "raw RLU",
+    "vehicle measurements",
+    "replicate identities",
+    "SD",
+    "n",
+    "p-values",
+    "endpoint labels"
+  ],
+  "admission": "resolved chemical identity; no endpoint or significance gate",
+  "assay": "CellTiter-Glo (CTG), ATP-dependent luminescence",
+  "canonicalization": "preserves reference chemical form; no inferred parent or salt stripping",
+  "cell_model": "HL-1 mouse immortalized atrial cardiomyocytes",
+  "condition": "H-R",
+  "doi": "10.1038/s41598-021-96033-z",
+  "dose_unit": "micromolar",
+  "drug_persistence": "unresolved",
+  "elapsed_hours_approximately": 96,
+  "evidence": [
+    "PMC8371130.1.xml",
+    "41598_2021_96033_MOESM1_ESM.pdf",
+    "41598_2021_96033_MOESM2_ESM.xlsx"
+  ],
+  "hypoxia_hours": 48,
+  "measurement_semantics": "source_reported; individual versus group mean unknown",
+  "normalization_denominator": "exact oxygen-specific denominator unresolved",
+  "normoxia": null,
+  "phenotype": "cell_viability",
+  "pretreatment_hours": 24,
+  "reoxygenation_hours": 24,
+  "replicate_identity": null,
+  "scale": "author-supplied normalized relative viability; preserved exactly",
+  "source": "Heliste 2021 Dataset S1",
+  "source_arm": "HYP",
+  "source_asset": "pheno_data/Heliste-2021/source/41598_2021_96033_MOESM2_ESM.xlsx",
+  "vehicle": "0.01% DMSO"
+}

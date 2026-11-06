@@ -1,0 +1,52 @@
+{
+  "code": {
+    "pheno_data/Heliste-2021/script/resolve_chemicals.py": "b8a5ba105e9a3abbb958579fc15b76ea0e1fe6e576443262926784dc7303aab0",
+    "stage3/01_corpus/execution/corpus.py": "125bf3d15eedc7ca946e357d57943abb9024feadeeeab09cab758f9d147940e5"
+  },
+  "coverage": {
+    "H-R": {
+      "admitted_values": 2732,
+      "pending_values": 24,
+      "resolved_labels": 683,
+      "source_label_rows": 689,
+      "source_values": 2756,
+      "unique_canonical_structures": 682
+    },
+    "baseline": {
+      "admitted_values": 2732,
+      "pending_values": 24,
+      "resolved_labels": 683,
+      "source_label_rows": 689,
+      "source_values": 2756,
+      "unique_canonical_structures": 682
+    }
+  },
+  "files": {
+    "H-R/chemical_resolution_report.json": "d720cf199b08b3f9bb17e5d6d99a688344d740b5c4168c82cba19f92019585e1",
+    "H-R/corpus.csv": "f6fe0f53e7e220994a604c993b706540ac81abc75d8248145d36429fe5634317",
+    "H-R/corpus.parquet": "812cf3cc78606421bb22b86c8a33517082591579bfa00c3ac0017d61a64f8397",
+    "H-R/source_annotation.json": "45e4908ae4ea565cfbfdac27debb6c59fc4a6c1b37afaaf12239e2e13970ee60",
+    "baseline/chemical_resolution_report.json": "9545b1e83c63478291b911306e7903ce3b8f49fb6f79a42342366fc1590d0e17",
+    "baseline/corpus.csv": "95d622b10288456721b84a43ba03327f8c7dafafffc34f50df8d081994454fc1",
+    "baseline/corpus.parquet": "f19899edfea1bf8a05070ce802585e174af79872a2c2a9d14c157afb947c79a6",
+    "baseline/source_annotation.json": "9851735c14a938c5f3670b14a8ccb5ef2229794a239c50c54d0ae0296e1dc033"
+  },
+  "inputs": {
+    "pheno_data/Heliste-2021/author_log.json": "7df00aec61edfa8428e86236120031dda66e40ee4f2cda8f876bb36413006b11",
+    "pheno_data/Heliste-2021/local/assessment_v1.json": "86666ae49578a4f7ddf7fcadd01dc0dd01453792a3b07d62fdd67bd6a854d9e9",
+    "pheno_data/Heliste-2021/local/chemical_resolution_v1.json": "f0c010b3b63a2b1e23bcf0e077aa74f72286c8ed5b0717f1677b5e64311208c7",
+    "pheno_data/Heliste-2021/manifest.sha256": "036c663ae37b8131f84010abf9654de1945740e7a06c8346d782bfe210f95782",
+    "pheno_data/Heliste-2021/source/41598_2021_96033_MOESM1_ESM.pdf": "f2e059ae55611c3def411b26430cdb9b733b39c23d0e39707f1e44b4e25a6daf",
+    "pheno_data/Heliste-2021/source/41598_2021_96033_MOESM2_ESM.xlsx": "e3bce1a6b017d1d71a2033e89986b462a294fdf576bfeff16f9b75fe60c73aac",
+    "pheno_data/Heliste-2021/source/41598_2021_96033_MOESM4_ESM.xlsx": "181119aaec3d8221317fc150a34ae62d8b436a60d4ddc547e33a0f1387beb2e3",
+    "pheno_data/Heliste-2021/source/PMC8371130.1.json": "981f8541014dd5403b9481827abc74bf03bbe477dd147145ee663de225522edc",
+    "pheno_data/Heliste-2021/source/PMC8371130.1.xml": "c384bee618cceedd60a96db5776f30b2d2b93afb1cf93ce767beae0f017250ad",
+    "pheno_data/registry.json": "aa3259907ddc8948c3d909b88116470e21ea0b26554b938cf37591d67e79aff6"
+  },
+  "schema_version": 1,
+  "software": {
+    "openpyxl": "3.1.5",
+    "pyarrow": "25.0.1",
+    "rdkit": "2026.03.2"
+  }
+}

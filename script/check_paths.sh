@@ -247,7 +247,10 @@ main() {
     stage2_status=1
   fi
 
-  if [ "$occ_unresolved" -eq 0 ] && [ "$stage2_status" -eq 0 ]; then
+  local stage3_status=0
+  bash "$repo_root/script/check_stage3_paths.sh" || stage3_status=$?
+
+  if [ "$occ_unresolved" -eq 0 ] && [ "$stage2_status" -eq 0 ] && [ "$stage3_status" -eq 0 ]; then
     echo
     echo "RESULT: PASS — every extracted path literal resolves"
     echo "stage2 retired-step-path audit: PASS"
@@ -260,6 +263,9 @@ main() {
   fi
   if [ "$stage2_status" -ne 0 ]; then
     echo "RESULT: FAIL — the stage2 retired-step-path audit is red (see above)"
+  fi
+  if [ "$stage3_status" -ne 0 ]; then
+    echo "RESULT: FAIL — the stage3 source-first path audit is red"
   fi
   echo "hint: add the owning files to script/path_whitelist.txt only for frozen evidence;"
   echo "      otherwise fix the literal or the path."

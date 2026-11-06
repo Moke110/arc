@@ -1,9 +1,6 @@
 # AGENTS.md — stage3
 
-- `01_data_corpus/` — frozen phenotype evidence to condition/phenotype Parquet;
-  read its `AGENTS.md` and `README.md` before changing build or release behavior.
-- `../pheno_data/` — acquisition and immutable original phenotype sources;
-  read that category's routing before changing sources.
-- Design authority: ADR 0038–0041 and `../GLOSSARY.md`.
-- Data loading or full integrity sweeps: read
-  `../docs/agents/execution-environment.md` and enforce its resource limits.
+- `01_corpus/` — separate Heliste baseline and H-R cell-viability corpora; read its `AGENTS.md` and `README.md` before changing builds.
+- `../pheno_data/` — source acquisition and immutable originals; read that category routing before source changes.
+- Design authority: ADR 0044 and `../GLOSSARY.md`.
+- Before data loading or full integrity sweeps, read `../docs/agents/execution-environment.md` and enforce its limits.

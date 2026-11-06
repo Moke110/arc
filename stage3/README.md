@@ -1,11 +1,7 @@
-# Stage 3 — phenotype direction corpus
+# Stage 3 — source-first phenotype corpora
 
-Stage 3 consumes separately archived experimental phenotype sources from
-[`pheno_data`](../pheno_data/README.md). Its first step,
-[`01_data_corpus`](01_data_corpus/README.md), builds one typed Parquet partition
-per complete condition and phenotype, retaining source-specific measurements,
-comparison evidence and numeric endpoint labels under ADR 0038–0041.
-
-Source acquisition, numerical corpus validity, subsequent model-view coverage and
-training readiness are separate outcomes. Model views, Stage 2 prediction
-matching and model training belong to later work.
+[`01_corpus`](01_corpus/README.md) builds separate Heliste 2021 baseline and
+hypoxia–reoxygenation cardiomyocyte `cell_viability` corpora from frozen
+[`pheno_data`](../pheno_data/README.md) sources and chemical-resolution evidence.
+The source-first contract is [ADR 0044](../docs/adr/0044-stage3-source-first-corpora.md).
+Model views, prediction matching and training belong to later work.

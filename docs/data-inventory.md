@@ -202,10 +202,12 @@ retrieval is not a redistribution license. These originals support the Stage 3
 training eligibility. Run `bash pheno_data/Sirenko-2013/script/verify.sh` offline.
 
 The remaining active phenotype items are `pheno_data/Heliste-2021/`,
-`pheno_data/Linn-2024/`, `pheno_data/Liu-2021/` and `pheno_data/Duan-2013/`.
-Together with the 27 legacy items, the inventory has 32 mandatory acquired items.
+`pheno_data/Linn-2024/`, `pheno_data/Liu-2021/`, `pheno_data/Duan-2013/` and
+`pheno_data/Huang-2022/`. The phenotype registry determines the mandatory acquired
+items; Huang contains public evidence, with its full numerical screen unavailable.
 Original images/tables remain ignored; small declared curation snapshots and
 download/verification code provide reconstruction evidence. The immutable local
-corpus release and its ledgers live in `stage3/01_data_corpus/output/corpus/`;
-tracked coverage and handoff records describe actual admission separately from
-source availability. No model view or training result is implied by the archive.
+Heliste source-first corpora live in `stage3/01_corpus/output/baseline/` and
+`stage3/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
+pending values separately from source availability. Historical endpoint-gated
+evidence is retained under `stage3/01_corpus/execution/historical/`. No model view or training result is implied by the archive.

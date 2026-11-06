@@ -60,6 +60,13 @@
       "version": "v1",
       "bytes": 1505,
       "sha256": "86666ae49578a4f7ddf7fcadd01dc0dd01453792a3b07d62fdd67bd6a854d9e9"
+    },
+    {
+      "path": "local/chemical_resolution_v1.json",
+      "origin": "PubChem PUG REST exact-name/alias identity evidence, complete raw property and synonym responses; script/resolve_chemicals.py",
+      "version": "v1",
+      "bytes": 6239675,
+      "sha256": "f0c010b3b63a2b1e23bcf0e077aa74f72286c8ed5b0717f1677b5e64311208c7"
     }
   ],
   "source_tree": {
