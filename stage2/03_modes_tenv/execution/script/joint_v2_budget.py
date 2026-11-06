@@ -203,7 +203,9 @@ def supervise(account, request_path, command):
                 if not matches(identity):
                     raise ValueError('worker process identity changed')
                 os.killpg(worker.pid, signal.SIGKILL)
-                kill_scope()
+            # The launcher may have exited while setsid descendants still own
+            # the scope. Verify scope termination before publishing/refunding.
+            kill_scope()
             returncode = worker.wait()
             elapsed = time.monotonic() - start
             # A timeout remains terminal even if an adapter emitted artifacts.
@@ -213,10 +215,14 @@ def supervise(account, request_path, command):
             write(account / 'account.json', state)
             return 124 if timed_out else returncode
         except BaseException:
-            # Reservation remains spent on any ambiguous outcome; kill only owned child.
-            if worker is not None and worker.poll() is None:
-                os.killpg(worker.pid, signal.SIGKILL)
+            # Reservation remains spent on any ambiguous outcome. Even an exited
+            # launcher can leave live descendants in our owned systemd scope.
+            try:
+                if worker is not None and worker.poll() is None:
+                    os.killpg(worker.pid, signal.SIGKILL)
+            finally:
                 kill_scope()
+            if worker is not None:
                 worker.wait()
             raise
 
