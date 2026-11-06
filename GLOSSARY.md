@@ -26,7 +26,7 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 ### Stage 3 phenotype data
 
 **Stage 3 Morgan baseline**:
-A structure-based predictor of cardiomyocyte phenotype direction, serving as the comparator for a future predictor using drug-induced transcriptomic perturbation Δ. Both predictors target the same declared phenotype contrasts.
+A structure-based predictor of cardiomyocyte phenotype direction, serving as the comparator for a future predictor using drug-induced transcriptomic perturbation Δ. Both predictors target the same declared phenotype contrasts, with a separate predictor for each experimental-condition–phenotype pair.
 
 **Phenotype**:
 The biological indicator represented by a Stage 3 corpus target. MTT, CCK8, CellTiter-Glo (CTG) and imaging-based viability measurements belong to `cell_viability`; their assay methods and source measurement scales remain identifiable.
