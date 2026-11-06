@@ -31,6 +31,13 @@ and split fingerprint
 Training configuration, features and the first nineteen completed artifacts were
 unchanged; the execution record preserves this code revision boundary.
 
+Commit `a33ffe1` refined resource classification after a small Stage 2 maintenance
+script caused a conservative pause. Training/model entry points remain immediate
+blockers; other Python jobs at or above 1 GiB RSS block formal work. Tiny
+maintenance jobs no longer block solely because their path contains a stage name.
+All six resource tests and the capped-child regression passed. RAM/GPU visibility,
+the 12 GiB floor, owned-process termination and all memory limits are unchanged.
+
 Real frozen-input preparation for all three settings passed in 5.33 seconds,
 maximum RSS 242,092 KiB. It preserved 5,488 admitted measurements, 663 parents,
 ten splits and 60 expected identities. This preparation check performed no fits.
