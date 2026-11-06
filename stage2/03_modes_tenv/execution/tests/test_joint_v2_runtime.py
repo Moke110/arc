@@ -15,6 +15,60 @@ from joint_v2_budget import initialize, write
 
 
 class Runtime(unittest.TestCase):
+    def test_failed_launch_reports_pending_and_preserves_account(self):
+        for reserved, delayed in ((False, False), (True, False), (False, True), ('charged', False)):
+            with self.subTest(reserved=reserved, delayed=delayed), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp); formal = root / 'formal'; formal.mkdir()
+                output = root / 'output'; (output / 'scheduling').mkdir(parents=True)
+                account = root / 'account'
+                job = dict(model='cmonge', fold=0, seed=17, command=['fake_adapter'])
+                ledger = dict(schema='joint-v2-migration-budget-v1', boundary_verified=True,
+                    ledger={runtime.key(job): dict(consumed_seconds=12000, cap_seconds=14400,
+                    account_path=str(account), identity=job, reconciliation_required=False,
+                    evidence=['reviewed debit'])})
+                (formal / 'budget-ledger.json').write_text(json.dumps(ledger))
+                genes = root / 'genes.csv'; genes.write_text('gene_id\ngene1\n')
+                queue = dict(input_root=str(root / 'input'), output_root=str(output))
+                def fail_launch(*args, **kwargs):
+                    directory = runtime.run_directory(output, job['model'], job['fold'], job['seed'])
+                    self.assertEqual(json.loads((directory / 'run.json').read_text())['status'], 'pending')
+                    if reserved:
+                        state = runtime.load_account(account)
+                        state['attempts'] = [dict(prior_training_seconds=12000, status='reserved')]
+                        state['consumed_seconds'] = 14400
+                        if reserved == 'charged':
+                            state['attempts'][0].update(status='exited', wall_seconds=7, returncode=5)
+                            state['consumed_seconds'] = 12007
+                        write(account / 'account.json', state)
+                    if not delayed:
+                        raise OSError('fixture launch failure')
+                with patch('schedule.process_snapshot', return_value={}), patch('schedule.admit', return_value={'admit': True}), patch.object(runtime, 'preflight'), patch('artifacts.verify_input_files'), patch('benchmark.predictor_files', return_value={'genes': str(genes)}), patch('artifacts.command_evidence', return_value={}), patch.object(runtime.subprocess, 'run', side_effect=fail_launch) as launch, patch.object(runtime.time, 'monotonic', side_effect=iter([0, 0, 1, 31] * 2)), patch.object(runtime.time, 'sleep'):
+                    with self.assertRaisesRegex(ValueError if delayed else OSError, 'watchdog launch not confirmed' if delayed else 'fixture launch failure'):
+                        runtime.run_v2(formal, 'reviewed', queue, job, job)
+                    directory = runtime.run_directory(output, job['model'], job['fold'], job['seed'])
+                    for path in (directory / 'run.json', output / 'scheduling' / (runtime.key(job) + '.json')):
+                        state = json.loads(path.read_text())
+                        self.assertEqual(state['status'], 'pending')
+                        self.assertEqual(state['stop_reason'], 'launch_error')
+                        self.assertEqual(state['training_seconds'], 12007 if reserved == 'charged' else (14400 if reserved else 12000))
+                        self.assertEqual(len(state['attempts']), int(bool(reserved)))
+                    protected = runtime.load_account(account)
+                    self.assertEqual(protected['consumed_seconds'], 12007 if reserved == 'charged' else (14400 if reserved else 12000))
+                    if reserved == 'charged':
+                        runtime.run_v2(formal, 'reviewed', queue, job, job)
+                        terminal = json.loads((directory / 'run.json').read_text())
+                        self.assertEqual(terminal['status'], 'failed')
+                        self.assertEqual(terminal['training_seconds'], 12007)
+                        self.assertEqual(launch.call_count, 1)
+                    elif reserved:
+                        with self.assertRaisesRegex(ValueError, 'outstanding watchdog reservation'):
+                            runtime.run_v2(formal, 'reviewed', queue, job, job)
+                        self.assertEqual(launch.call_count, 1)
+                    else:
+                        with self.assertRaisesRegex(ValueError if delayed else OSError, 'watchdog launch not confirmed' if delayed else 'fixture launch failure'):
+                            runtime.run_v2(formal, 'reviewed', queue, job, job)
+                        self.assertEqual(launch.call_count, 2)
+
     def test_foreign_account_refuses_before_reuse_or_dispatch(self):
         for mismatch in ('ledger', 'key'):
             for previous_status in (None, 'completed', 'timeout'):

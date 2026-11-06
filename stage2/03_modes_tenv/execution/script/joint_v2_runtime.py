@@ -163,32 +163,50 @@ def run_v2(formal, reviewed, queue, job, identity):
                    command_evidence=command_evidence(job['command']),
                    inference_timeout_seconds=job.get('inference_timeout_seconds', 1800))
     publish(directory / 'request.json', request)
-    publish(directory / 'run.json', dict(status='running', identity=identity))
+    def report_dispatch(account_state, launch_error=False):
+        reserved = bool(account_state['attempts'])
+        state = dict(status='running' if reserved and not launch_error else 'pending',
+                     identity=identity, training_seconds=account_state['consumed_seconds'],
+                     accounting=account_state['accounting'], account=str(account),
+                     attempts=account_state['attempts'],
+                     dispatch_status='launch_error' if launch_error else
+                         ('reserved' if reserved else 'awaiting_reservation'))
+        if launch_error:
+            state['stop_reason'] = 'launch_error'
+        publish(directory / 'run.json', state)
+        publish(state_path, state)
+
+    report_dispatch(account_state)
     # The short-lived launch CLI exits before polling. Its watchdog session survives
     # scheduler death; an outstanding reservation can never dispatch another worker.
     scope = 'arc-tenv-v2-' + key(job).replace('_','-') + '-' + uuid.uuid4().hex + '.scope'
     command = ['systemd-run', '--user', '--scope', '--unit=' + scope, '-p', 'MemoryMax=10G', '-p',
                'MemorySwapMax=8G', '--', '/usr/bin/time', '-v', *job['command'], '--request', '{request}']
     env = dict(os.environ, OMP_NUM_THREADS='2', MKL_NUM_THREADS='2', OPENBLAS_NUM_THREADS='2', NUMEXPR_NUM_THREADS='2')
-    subprocess.run([sys.executable, str(SCRIPT / 'joint_v2_budget.py'), 'launch',
-                    '--account', str(account), '--request', str(directory / 'request.json'),
-                    '--formal', str(Path(formal).resolve()), '--reviewed-stage-sha256', reviewed, '--', *command],
-                   check=True, env=env)
-    launch_deadline = time.monotonic() + 30
-    while True:
-        status, account_state = outcome(account, ledger_path, job)
-        if status is not None:
-            finish(queue, job, identity, account, ledger_path)
-            return
-        if not account_state['attempts'] and time.monotonic() > launch_deadline:
-            raise ValueError('watchdog launch not confirmed')
-        snapshot = process_snapshot()
-        with (record / 'telemetry.jsonl').open('a') as stream:
-            stream.write(json.dumps(dict(snapshot, timestamp=time.time())) + '\n')
-        state = dict(status='running', identity=identity, training_seconds=account_state['consumed_seconds'],
-                     accounting='remaining cap reserved; terminal debit pending', account=str(account))
-        publish(state_path, state)
-        time.sleep(5)
+    try:
+        subprocess.run([sys.executable, str(SCRIPT / 'joint_v2_budget.py'), 'launch',
+                        '--account', str(account), '--request', str(directory / 'request.json'),
+                        '--formal', str(Path(formal).resolve()), '--reviewed-stage-sha256', reviewed, '--', *command],
+                       check=True, env=env)
+        launch_deadline = time.monotonic() + 30
+        while True:
+            status, account_state = outcome(account, ledger_path, job)
+            if status is not None:
+                finish(queue, job, identity, account, ledger_path)
+                return
+            if not account_state['attempts'] and time.monotonic() > launch_deadline:
+                raise ValueError('watchdog launch not confirmed')
+            snapshot = process_snapshot()
+            with (record / 'telemetry.jsonl').open('a') as stream:
+                stream.write(json.dumps(dict(snapshot, timestamp=time.time())) + '\n')
+            report_dispatch(account_state)
+            time.sleep(5)
+    except (OSError, subprocess.SubprocessError, ValueError):
+        # Reporting never creates a terminal outcome or rewrites protected credit.
+        # A failed launch may already have reserved credit: reload, never roll back.
+        _, account_state = outcome(account, ledger_path, job)
+        report_dispatch(account_state, launch_error=True)
+        raise
 
 
 def run(formal, reviewed):
