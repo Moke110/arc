@@ -47,7 +47,9 @@ class BenchmarkAcceptance(unittest.TestCase):
                                args['--setting'], int(args['--fold']), int(args['--seed']), int(args['--smoke-epochs']))
                 (log/'time.txt').write_text('Maximum resident set size (kbytes): 1\n')
                 return dict(exit_code=0, stop_reason=None, peak_tree_rss_bytes=0, formal=False)
-            with patch('resources.run_guarded', side_effect=inline_guard):
+            safe = dict(memory_available_bytes=20*1024**3, host_processes_observable=True,
+                        gpu_observable=True, peers=[], processes=[])
+            with patch('resources.run_guarded', side_effect=inline_guard), patch('resources.collect_snapshot', return_value=safe):
                 self.invoke('benchmark', '--prepared', prepared, '--output', output, '--smoke-epochs', 1)
                 self.assertEqual(len(calls), 60)
                 self.invoke('benchmark', '--prepared', prepared, '--output', output, '--smoke-epochs', 1)
@@ -81,6 +83,79 @@ class BenchmarkAcceptance(unittest.TestCase):
             prediction.write_text('[]')
             with self.assertRaisesRegex(ValueError, 'hash mismatch'):
                 benchmark.evaluate_benchmark(output)
+
+    def test_resource_deferral_failure_and_explicit_retry_preserve_evidence(self):
+        import resources
+        safe = dict(memory_available_bytes=20*1024**3, host_processes_observable=True,
+                    gpu_observable=True, peers=[], processes=[])
+        prepared = dict(expected_runs=[dict(condition='baseline', phenotype='cell_viability',
+                        setting='cold_drug', fold=0, seed=17)], input_fingerprint='input', split_fingerprint='split')
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = root/'benchmark'
+            ledger_path = output/'benchmark.json'
+            def ledger():
+                return json.loads(ledger_path.read_text())
+            def fail(command, log, **kwargs):
+                entry = ledger()['runs'][0]
+                run = Path(entry['run_path'])
+                run.mkdir(parents=True)
+                (run/'partial').write_text('failed checkpoint evidence')
+                (log/'time.txt').write_text('failed measurement evidence')
+                return dict(exit_code=1, stop_reason='monitor_abort', peak_tree_rss_bytes=123)
+            with patch.object(training, '_prepared', return_value=prepared), \
+                    patch.object(benchmark, 'evaluate_benchmark', return_value={'incomplete': True}), \
+                    patch('resources.run_guarded', side_effect=fail) as launch:
+                result = benchmark.benchmark(root/'prepared.json', output, smoke_epochs=1,
+                    snapshot_fn=lambda **kw: dict(safe, memory_available_bytes=0))
+                self.assertEqual(result, {'incomplete': True})
+                launch.assert_not_called()
+                entry = ledger()['runs'][0]
+                self.assertEqual(entry['status'], 'pending')
+                self.assertEqual(entry['blocked_reason'], 'available_ram_below_12_gib')
+                self.assertFalse((output/'resources').exists())
+                with self.assertRaisesRegex(ValueError, 'failed run'):
+                    benchmark.benchmark(root/'prepared.json', output, smoke_epochs=1, snapshot_fn=lambda **kw: safe)
+                entry = ledger()['runs'][0]
+                self.assertEqual(entry['status'], 'failed')
+                self.assertEqual(entry['resource_summary']['stop_reason'], 'monitor_abort')
+                with self.assertRaisesRegex(ValueError, 'explicit retry'):
+                    benchmark.benchmark(root/'prepared.json', output, smoke_epochs=1, snapshot_fn=lambda **kw: safe)
+                self.assertEqual(launch.call_count, 1)
+                with self.assertRaisesRegex(ValueError, 'failed run'):
+                    benchmark.benchmark(root/'prepared.json', output, smoke_epochs=1,
+                        snapshot_fn=lambda **kw: safe, retry_failed=True)
+                archived = ledger()['runs'][0]['failed_attempts'][0]
+                archive = Path(archived['archive_path'])
+                self.assertEqual((archive/'run/partial').read_text(), 'failed checkpoint evidence')
+                self.assertEqual((archive/'resources/time.txt').read_text(), 'failed measurement evidence')
+                self.assertEqual(json.loads((archive/'attempt.json').read_text())['status'], 'failed')
+                self.assertEqual(launch.call_count, 2)
+                # A second guard preflight can refuse a launch after the first passes.
+                launch.side_effect = resources.ResourceError('external_long_training')
+                benchmark.benchmark(root/'prepared.json', output, smoke_epochs=1,
+                    snapshot_fn=lambda **kw: safe, retry_failed=True)
+                entry = ledger()['runs'][0]
+                self.assertEqual(entry['status'], 'pending')
+                self.assertEqual(entry['blocked_reason'], 'external_long_training')
+                self.assertEqual(len(entry['failed_attempts']), 2)
+            # Reporting preserves partial failed evidence and labels interrupted attempts explicitly.
+            state = ledger()
+            state['runs'][0]['status'] = 'running'
+            run = Path(state['runs'][0]['run_path'])
+            run.mkdir(parents=True, exist_ok=True)
+            (run/'partial').write_text('interrupted evidence')
+            ledger_path.write_text(json.dumps(state))
+            with patch.object(training, '_prepared', return_value=prepared), \
+                    patch('reporting.summarize', return_value={}) as summarize, \
+                    patch('reporting.render_report', return_value='incomplete'):
+                summary = benchmark.evaluate_benchmark(output)
+                reported = summarize.call_args.args[1][0]
+                self.assertEqual(reported['status'], 'failed')
+                self.assertEqual(reported['error'], 'interrupted_run')
+                self.assertFalse(summary['formal_benchmark_complete'])
+                self.assertTrue((run/'partial').exists())
+                self.assertEqual(ledger()['runs'][0]['status'], 'failed')
 
     def test_guarded_child_has_real_cap_threads_measurement_and_preflight_failure(self):
         # One genuine child validates the wrapper without loading any modeling dataset.
