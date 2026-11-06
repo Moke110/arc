@@ -62,3 +62,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0042](0042-tenv-model-benchmark-redesign.md) | Tenv model comparison with shared Morgan inputs, trainable adapters and three-fold three-seed evaluation |
 | [0043](0043-stage3-source-measurement-corpus.md) | Source-measurement samples without significance/endpoint admission gates, revised key and source annotations |
 | [0044](0044-stage3-source-first-corpora.md) | Select the best source per condition/phenotype, build its corpus, then convert compatible additions |
+| [0045](0045-stage3-morgan-direction-baseline.md) | Morgan baseline and shared shallow-MLP comparison with future transcriptomic Δ phenotype predictors |
