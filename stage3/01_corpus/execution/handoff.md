@@ -35,8 +35,10 @@ tampering and rehashed raw identity-provenance tampering. Tests were first red
 before the builder existed. The final measured peak RSS is 208,340 KiB for build,
 256,088 KiB for verify and 259,816 KiB for the test command. Heliste source
 verification and repository path/tracking checks pass. The full repository
-integrity sweep is an integration-run responsibility because unrelated training
-may still be active; no whole-repository integrity success is implied here.
+integrity sweep was not run: integration checked the active user scopes and
+confirmed a Stage 2 PerturbDiff fold0/seed42 training worker was running. The
+execution-environment rule prohibits the ~9.7 GiB full sweep alongside training;
+no whole-repository integrity success is implied here.
 
 Run commands from the repository root with the `arc` Python environment:
 
@@ -50,5 +52,9 @@ bash script/check_tracked.sh
 ```
 
 The unchanged prior release evidence lives under `execution/historical/`;
-retired code is recoverable at commit `74f7e7a`. Standards/Spec review and tracker
-resolution are recorded by the integration run after this implementation commit.
+retired code is recoverable at commit `74f7e7a`. Independent Standards and Spec review of `74f7e7a...ca73f1b` completed with zero
+remaining findings on each axis. A duplicated canonicalization check was removed
+and the acceptance seam rerun. The Spec reviewer independently matched all 5,512
+source cells and validated all 689 frozen identity records. Original source
+checksums were independently rechecked and unchanged. No worktrees were created;
+all changes were made on `dev`, with no push. Tracker resolution: #52 and #53.
