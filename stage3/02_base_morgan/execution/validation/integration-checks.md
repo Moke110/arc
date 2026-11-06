@@ -19,6 +19,18 @@ took 6.941 seconds (7.39 seconds wall), maximum RSS 841,784 KiB, with the portab
 smoke fits with explicitly simulated host telemetry, plus a genuinely capped
 lightweight child. Production commands expose no telemetry bypass.
 
+Pre-review identified an uncapped cold-dose sparse solver and a completion label
+that could confuse a selected 18-fit scope with the full 60-fit protocol. Commit
+`ae2426a` bounds the solver to one thread and separates requested-scope completion
+from full formal completion. All eleven affected tests passed: reporting five,
+cold-dose three, benchmark three; maximum RSS 859,840 KiB. Canonical reconstruction
+of the actual formal preparation still yields the unchanged input fingerprint
+`add497518b1f99418c5127fc31147a2864e59be13126a3fdd2c0f2de4cc32e3f`
+and split fingerprint
+`ba45b77aa83810b957e855fab7dfd72691b962f179b45ab4347fa55775e0d075`.
+Training configuration, features and the first nineteen completed artifacts were
+unchanged; the execution record preserves this code revision boundary.
+
 Real frozen-input preparation for all three settings passed in 5.33 seconds,
 maximum RSS 242,092 KiB. It preserved 5,488 admitted measurements, 663 parents,
 ten splits and 60 expected identities. This preparation check performed no fits.
