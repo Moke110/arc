@@ -70,6 +70,10 @@ is_expected_ignored() {
     # (.gitignore: "Frozen pre-refactor MIRI pipeline snapshots ...").
     stage1/xpert-fda-miri-v0/*)
       return 0 ;;
+    # ADR 0042 joint v2 atomic exchange retains the exact old generation for
+    # recovery. These are immutable duplicate audit copies, not active sources.
+    stage2/03_modes_tenv/execution/.formal-v2-generation/*)
+      return 0 ;;
   esac
   return 1
 }
@@ -182,7 +186,7 @@ main() {
     echo "EXPECTED-IGNORED TREES (documented; reported, not failed)"
     sed -E 's|^(pert_model/[^/]+)/.*|\1|; s|^(stage1/[^/]+)/.*|\1|' "$exp_rows" \
       | LC_ALL=C sort | uniq -c | awk '{ printf "  %6d  %s\n", $1, $2 }'
-    echo "  rationale: the frozen v0 snapshot is deliberately out of git. External items"
+    echo "  rationale: frozen v0 and ADR 0042 old formal recovery copies stay out of git. External items"
     echo "  (source/ and local/) are pruned by the scan itself, not listed here. Remove an"
     echo "  entry from EXPECTED_IGNORED when its tree retires."
     echo

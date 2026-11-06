@@ -1,818 +1,818 @@
 {
-  "input_root": "/home/chang/arc/stage2/03_modes_tenv/output/input",
-  "output_root": "/home/chang/arc/stage2/03_modes_tenv/output/formal",
-  "max_active_jobs": 1,
   "admission_timeout_seconds": 300,
+  "input_root": "/home/chang/arc/stage2/03_modes_tenv/output/input",
   "jobs": [
     {
-      "model": "no_change",
       "fold": 0,
+      "model": "no_change",
       "seed": 17
     },
     {
-      "model": "no_change",
       "fold": 0,
+      "model": "no_change",
       "seed": 42
     },
     {
-      "model": "no_change",
       "fold": 0,
+      "model": "no_change",
       "seed": 2026
     },
     {
-      "model": "no_change",
       "fold": 1,
+      "model": "no_change",
       "seed": 17
     },
     {
-      "model": "no_change",
       "fold": 1,
+      "model": "no_change",
       "seed": 42
     },
     {
-      "model": "no_change",
       "fold": 1,
+      "model": "no_change",
       "seed": 2026
     },
     {
-      "model": "no_change",
       "fold": 2,
+      "model": "no_change",
       "seed": 17
     },
     {
+      "fold": 2,
       "model": "no_change",
-      "fold": 2,
       "seed": 42
     },
     {
+      "fold": 2,
       "model": "no_change",
-      "fold": 2,
       "seed": 2026
     },
     {
-      "model": "delta_mean",
       "fold": 0,
+      "model": "delta_mean",
       "seed": 17
     },
     {
-      "model": "delta_mean",
       "fold": 0,
+      "model": "delta_mean",
       "seed": 42
     },
     {
-      "model": "delta_mean",
       "fold": 0,
+      "model": "delta_mean",
       "seed": 2026
     },
     {
-      "model": "delta_mean",
       "fold": 1,
+      "model": "delta_mean",
       "seed": 17
     },
     {
-      "model": "delta_mean",
       "fold": 1,
+      "model": "delta_mean",
       "seed": 42
     },
     {
-      "model": "delta_mean",
       "fold": 1,
+      "model": "delta_mean",
       "seed": 2026
     },
     {
-      "model": "delta_mean",
       "fold": 2,
+      "model": "delta_mean",
       "seed": 17
     },
     {
-      "model": "delta_mean",
       "fold": 2,
+      "model": "delta_mean",
       "seed": 42
     },
     {
-      "model": "delta_mean",
       "fold": 2,
+      "model": "delta_mean",
       "seed": 2026
     },
     {
-      "model": "prnet",
-      "fold": 0,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "prnet",
-      "fold": 0,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "prnet",
-      "fold": 0,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "prnet",
-      "fold": 1,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "prnet",
-      "fold": 1,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "prnet",
-      "fold": 1,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "prnet",
-      "fold": 2,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "prnet",
-      "fold": 2,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "prnet",
-      "fold": 2,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "prnet",
       "profile": {
-        "host_peak_gib": 1.3577423095703125,
-        "gpu_peak_gib": 0.8046875
+        "gpu_peak_gib": 0.8046875,
+        "host_peak_gib": 1.3577423095703125
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "cpa",
-      "fold": 0,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "cpa",
-      "fold": 0,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "cpa",
-      "fold": 0,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "cpa",
-      "fold": 1,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "cpa",
-      "fold": 1,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "cpa",
-      "fold": 1,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "cpa",
-      "fold": 2,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "cpa",
-      "fold": 2,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "cpa",
-      "fold": 2,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "cpa",
       "profile": {
-        "host_peak_gib": 1.7894859313964844,
-        "gpu_peak_gib": 1.400390625
+        "gpu_peak_gib": 1.400390625,
+        "host_peak_gib": 1.7894859313964844
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "chemcpa",
-      "fold": 0,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "chemcpa",
-      "fold": 0,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "chemcpa",
-      "fold": 0,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "chemcpa",
-      "fold": 1,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "chemcpa",
-      "fold": 1,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "chemcpa",
-      "fold": 1,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "chemcpa",
-      "fold": 2,
-      "seed": 17,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "chemcpa",
-      "fold": 2,
-      "seed": 42,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "chemcpa",
-      "fold": 2,
-      "seed": 2026,
       "command": [
         "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
         "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
         "--config",
         "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
       ],
-      "profile": {
-        "host_peak_gib": 1.9371147155761719,
-        "gpu_peak_gib": 0.69921875
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 0,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "cmonge",
-      "fold": 0,
-      "seed": 42,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
-      "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
-      },
-      "inference_timeout_seconds": 1800
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 0,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 0,
-      "seed": 42,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 0,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 1,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 1,
-      "seed": 42,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 1,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
       "fold": 2,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
+      "inference_timeout_seconds": 1800,
+      "model": "chemcpa",
       "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
+        "gpu_peak_gib": 0.69921875,
+        "host_peak_gib": 1.9371147155761719
       },
-      "inference_timeout_seconds": 3600
+      "seed": 2026
     },
     {
-      "model": "perturbdiff",
-      "fold": 2,
-      "seed": 42,
       "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
         "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
       ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "perturbdiff",
-      "fold": 2,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
-      ],
-      "profile": {
-        "host_peak_gib": 2.4606552124023438,
-        "gpu_peak_gib": 7.2705078125
-      },
-      "inference_timeout_seconds": 3600
-    },
-    {
-      "model": "cmonge",
       "fold": 0,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
       "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 42
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
+      "fold": 0,
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
+      "profile": {
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
+      },
+      "seed": 17
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
+      "fold": 0,
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
+      "profile": {
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
+      },
+      "seed": 42
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
+      "fold": 0,
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
+      "profile": {
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
+      },
+      "seed": 2026
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
       "fold": 1,
-      "seed": 17,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "cmonge",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
       "fold": 1,
-      "seed": 42,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "cmonge",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
       "fold": 1,
-      "seed": 2026,
-      "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
-        "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
-      ],
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
     },
     {
-      "model": "cmonge",
-      "fold": 2,
-      "seed": 17,
       "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
         "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
       },
-      "inference_timeout_seconds": 1800
+      "seed": 17
     },
     {
-      "model": "cmonge",
-      "fold": 2,
-      "seed": 42,
       "command": [
-        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
         "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
       ],
+      "fold": 2,
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
       },
-      "inference_timeout_seconds": 1800
+      "seed": 42
     },
     {
-      "model": "cmonge",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+      ],
       "fold": 2,
-      "seed": 2026,
+      "inference_timeout_seconds": 3600,
+      "model": "perturbdiff",
+      "profile": {
+        "gpu_peak_gib": 7.2705078125,
+        "host_peak_gib": 2.4606552124023438
+      },
+      "seed": 2026
+    },
+    {
       "command": [
         "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
         "--config",
-        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
       ],
+      "fold": 0,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
       "profile": {
-        "host_peak_gib": 1.7112617492675781,
-        "gpu_peak_gib": 3.31640625
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
       },
-      "inference_timeout_seconds": 1800
+      "seed": 2026
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 17
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 42
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 1,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 2026
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 17
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 42
+    },
+    {
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+      ],
+      "fold": 2,
+      "inference_timeout_seconds": 1800,
+      "model": "cmonge",
+      "profile": {
+        "gpu_peak_gib": 3.31640625,
+        "host_peak_gib": 1.7112617492675781
+      },
+      "seed": 2026
     }
-  ]
+  ],
+  "max_active_jobs": 1,
+  "output_root": "/home/chang/arc/stage2/03_modes_tenv/output/formal"
 }

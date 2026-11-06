@@ -299,13 +299,38 @@ wall-deadline supervisor that terminates the owned process group; cooperative
 between-group checks alone cannot enforce the cap. Exhaustion yields an honest
 terminal timeout, never successful adoption of a partial fit.
 
-**Execution status at this amendment:** production remains **STOPPED**, joint
-migration **NOT APPLIED**, and no restart has occurred. The earlier production
-apply was rejected by automatic approval review before execution for lack of
-trusted explicit user authorization. The user has since explicitly supplied
-that authorization for archival, joint migration and resume after checks.
-Independent joint integration, ledger/deadline and migration review remain
-pending; authorization does not constitute those technical checks passing.
+**Execution status after independent review:** joint migration is **APPLIED**.
+The protected atomic exchange committed after actual-host stopped-state guards
+and independent integration, ledger/deadline and renderer-barrier review passed.
+The reviewed stage inventory SHA256 is
+`73fb21036a2d04a12c5d8d9ce712ed544b1c38eb70fbfff884dc6753c8b60028`;
+`output/formal/joint-v2-apply.json` has SHA256
+`09a5d90779a8e2dfafee58b6f2274b090ac3bb9b3d1ff9e307b632156cd6d547`.
+Post-apply verification derived all 63 identities: 18 changed and 45 unchanged,
+with those 45 queue records unchanged. All 22 archive operations and complete
+old/new formal inventories matched their journal hashes. The 18 ledger rows
+retain the original 14,400-second caps without a reset. The five formal JSON
+records are tracked; the retained `execution/.formal-v2-generation/` recovery
+generation and native legacy binaries remain local and untouched.
+
+At the 2026-11-06 23:29:54 actual-host check, the owned scheduler service
+was **ACTIVE** (MainPID 1487683, `Restart=no`) in startup validation. Host RAM
+available was ~40 GiB and GPU usage was 1,431 MiB. Runtime hashing/validation
+was in progress; first-worker dispatch and its budget account/telemetry had not
+yet been verified. The committed journal's `restart_authorized: false` records
+that APPLY itself did not restart training; the separately owned launch follows
+the user's explicit authorization. The earlier approval rejection preceded
+that confirmation; the joint APPLY passed automatic review. Neither APPLIED nor
+service activation establishes a completed v2 fit.
+
+The initial startup subsequently failed closed before worker dispatch because
+`nvidia-smi` was absent from the service PATH. Its first budget account had no
+attempts and retained the historical debit unchanged. The launch owner verified
+the old service inactive/MainPID 0 and lock free, then restarted the same owned
+unit with `/usr/lib/wsl/lib` on PATH (invocation
+`9cc05786bff54bb3a037840a21316c30`). Integrity checks were running again;
+first-worker/account/telemetry proof remained pending at this documentation
+snapshot. No protocol, formal identity or cumulative cap changed for that fix.
 
 Final delivery after all 63 outcomes settle must regenerate learning curves
 alongside metrics/PR figures and after every replay. Both models' formal v2 and

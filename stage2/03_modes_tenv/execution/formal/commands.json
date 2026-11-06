@@ -1,16 +1,4 @@
 {
-  "prnet": [
-    "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
-    "--config",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
-  ],
-  "cpa": [
-    "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
-    "--config",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
-  ],
   "chemcpa": [
     "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
     "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
@@ -19,14 +7,26 @@
   ],
   "cmonge": [
     "/home/chang/arc/stage2/_envs/cmonge/bin/python",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
     "--config",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+  ],
+  "cpa": [
+    "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+    "--config",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
   ],
   "perturbdiff": [
     "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
     "--config",
-    "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json"
+  ],
+  "prnet": [
+    "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+    "--config",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
   ]
 }

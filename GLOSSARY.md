@@ -388,7 +388,10 @@ _Avoid_: exact native recipe, resumed v1
 **Joint tenv v2 migration**:
 Replacement of all nine CMonge and all nine PerturbDiff formal identities as one
 reviewed transition, preserving the other 45 identities and separate legacy
-evidence. The formal matrix still expects 63 outcomes.
+evidence. The formal matrix still expects 63 outcomes. The protected transition
+was applied and independently verified: 18 changed identities, 45 unchanged,
+22 verified archive operations and no reset of the cumulative allowance.
+Application alone does not establish runtime activation or v2 completion.
 
 **Cumulative fold/seed training allowance**:
 The original 14,400-second cap shared by all protocol versions and retries of

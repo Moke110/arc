@@ -74,8 +74,8 @@ The native measured recipes imply roughly two days of serial work for CMonge
 and PerturbDiff alone. These projections are estimates; actual terminal statuses
 and telemetry determine completion.
 
-Historical v1 dispatch command (production is currently stopped; the v2
-migration and independently cleared runtime must precede any restart):
+Historical v1 dispatch command (joint v2 migration is now applied; use the
+reviewed joint runtime for the next dispatch, after its separate preflight):
 
 ```bash
 /home/chang/miniconda3/envs/arc/bin/python \
@@ -162,13 +162,30 @@ local; the pause record describes the stopped state before this continuation.
 
 CMonge and PerturbDiff are each assigned nine formal v2 slots under the
 [ADR 0042 joint amendment](../../docs/adr/0042-tenv-model-benchmark-redesign.md#amendment-2026-11-06-joint-cmonge-and-perturbdiff-v2-protocols).
-Production remains **STOPPED**; joint 18-identity migration is **NOT APPLIED** and
-restart has not occurred. The user explicitly authorized archival, joint migration
-and resume after checks; independent joint integration, ledger/deadline and
-migration review are still pending. The earlier automatic approval rejection
-preceded that explicit confirmation. The other 45 identities/artifacts remain
-byte-identical. Preserve four completed legacy outcomes and the interrupted
-PerturbDiff outcome separately; none supplies formal v2 completion credit.
+The joint 18-identity migration is **APPLIED** after independent review and
+protected atomic exchange. Fresh postproof verified all 63 identities (18 changed,
+45 unchanged), the unchanged 45 queue records, all 22 archive operations and both
+formal inventories. The original 14,400-second cumulative caps survive in the
+tracked `execution/formal/budget-ledger.json`; the tracked migration plan records
+the reviewed exchange. Retained `execution/.formal-v2-generation/` recovery bytes
+and native legacy binaries remain local. Four completed legacy outcomes and the
+interrupted PerturbDiff outcome supply no formal v2 completion credit.
+
+At the 2026-11-06 23:29:54 actual-host check, the owned scheduler service was
+**ACTIVE** (MainPID 1487683, `Restart=no`) in runtime startup validation; first-worker
+dispatch/account/telemetry proof remained pending. This is service activation,
+not v2 completion. The earlier automatic approval rejection preceded explicit
+user confirmation; the joint APPLY passed automatic review. The journal and
+reviewed inventory hashes are recorded in ADR 0042.
+
+The initial startup subsequently failed closed before worker dispatch because
+`nvidia-smi` was absent from the service PATH. Its first budget account had no
+attempts and retained the historical debit unchanged. The launch owner verified
+the old service inactive/MainPID 0 and lock free, then restarted the same owned
+unit with `/usr/lib/wsl/lib` on PATH (invocation
+`9cc05786bff54bb3a037840a21316c30`). Integrity checks were running again;
+first-worker/account/telemetry proof remained pending at this documentation
+snapshot. No protocol, formal identity or cumulative cap changed for that fix.
 
 CMonge validates all 138 equal-weight conditions with fixed draws and saves
 latest/best prediction-only checkpoints and event history every 50 iterations.

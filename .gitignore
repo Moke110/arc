@@ -169,3 +169,7 @@ stage2/06_prnet_transfer/06.8_baselines/output/*
 # Phenotype external sources (ADR 0038); scripts and provenance stay tracked.
 /pheno_data/*/source/
 /pheno_data/*/local/
+
+# Retained old formal generation from the reviewed joint v2 atomic exchange.
+# Keep recovery bytes local; track only the canonical formal JSON records.
+/stage2/03_modes_tenv/execution/.formal-v2-generation/
