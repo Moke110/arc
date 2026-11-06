@@ -139,6 +139,8 @@ def main():
          original_scheduler_stopped=True,next_dispatch_model='perturbdiff',test_scoring=False))
     assert hashlib.sha256(QUEUE.read_bytes()).hexdigest() == audit['after_sha256']
     fcntl.flock(lock.fileno(),fcntl.LOCK_UN); lock.close()
+    # WSL's GPU utility is outside the user service manager's default PATH.
+    os.environ['PATH'] = '/home/chang/miniconda3/envs/arc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/wsl/lib'
     os.execv(sys.executable,[sys.executable,str(SCRIPT/'schedule.py'),'run',str(QUEUE)])
 
 

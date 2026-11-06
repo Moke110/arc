@@ -1,0 +1,36 @@
+{
+  "timestamp": 1793947428.9084284,
+  "cause": "Durable user service PATH omitted /usr/lib/wsl/lib; process_snapshot returned [Errno 2] No such file or directory: 'nvidia-smi'",
+  "boundary_validation_returncode": 0,
+  "completed_before_fix": 47,
+  "running_workers_before_fix": 0,
+  "preflight_corrected_PATH": {
+    "observable": true,
+    "available_gib": 40.197853088378906,
+    "gpu_used_gib": 2.248046875,
+    "external_heavy": 0
+  },
+  "corrected_PATH": "/home/chang/miniconda3/envs/arc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/wsl/lib",
+  "action": "stop idle boundary service; start original scheduler directly as durable arc-tenv-formal-scheduler.service",
+  "test_scoring": false,
+  "service_main_pid": 1028020,
+  "service_invocation_id": "aa315186696f4201b0db222fb9bd64e2",
+  "old_service_verified_inactive": true,
+  "review": "review_priority_boundary independent PASS before idle service stop/relaunch",
+  "verified_first_active_run": "perturbdiff_fold0_seed17.json",
+  "verified_first_worker_pid": 1028362,
+  "verified_fresh_telemetry": {
+    "observable": true,
+    "available_gib": 38.55183792114258,
+    "owned_rss_gib": {
+      "1028362": 2.30499267578125
+    },
+    "gpu_used_gib": 6.322265625,
+    "gpu_free_gib": 9.669921875,
+    "external_heavy": 0,
+    "external_peak_gib": 0,
+    "external_pids": [],
+    "idle_pids": [],
+    "timestamp": 1793947521.8024135
+  }
+}

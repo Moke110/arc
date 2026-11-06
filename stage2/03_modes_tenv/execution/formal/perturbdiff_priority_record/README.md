@@ -25,3 +25,11 @@ accounting before executing the original scheduler against the reordered queue.
 It performs no test scoring. Runtime JSON evidence records readiness and the
 actual natural boundary. The finalizer/scheduler runs as a durable user service,
 `arc-tenv-priority-boundary.service`, independent of tool-session retirement.
+
+The boundary completed successfully (47 total completed). Its first scheduler
+service could not find `nvidia-smi` because the user service manager's PATH
+omitted `/usr/lib/wsl/lib`; admission correctly withheld dispatch. After
+independent review, the idle service was stopped and the original scheduler
+started directly as `arc-tenv-formal-scheduler.service` with the explicit WSL
+PATH and thread caps. `service_path_fix.json` records this correction. The
+archived boundary controller now also sets that PATH before its scheduler exec.
