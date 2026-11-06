@@ -1,0 +1,24 @@
+Running as unit: run-r5303e773b03d46c4b44a6e08c599b24a.scope; invocation ID: e503a3dfd2c04ecbb8b43e7398906e2a
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python stage2/03_modes_tenv/execution/script/partial_benchmark.py --input stage2/03_modes_tenv/output/input --source stage2/03_modes_tenv/output/formal --output stage2/03_modes_tenv/output/partial_finished/20261106_snapshot --expected stage2/03_modes_tenv/execution/formal/expected_identities.json --commands stage2/03_modes_tenv/execution/formal/commands.json --workers 2"
+	User time (seconds): 223.84
+	System time (seconds): 34.34
+	Percent of CPU this job got: 152%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:49.58
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 477680
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 34
+	Minor (reclaiming a frame) page faults: 1745535
+	Voluntary context switches: 293672
+	Involuntary context switches: 2157
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

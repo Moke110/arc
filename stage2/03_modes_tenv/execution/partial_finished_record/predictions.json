@@ -1,0 +1,1534 @@
+{
+  "scope": "partial_finished_models",
+  "sealed": false,
+  "final_barrier_passed": false,
+  "captured_at_utc": "2026-11-06T08:31:44.370120+00:00",
+  "warning": "PARTIAL finished-run snapshot \u2014 training ongoing; not final 63-run results",
+  "use_policy": "Descriptive test scores only. Never use these results for training, checkpoint selection, hyperparameters, retries, scheduling or entrant changes. Nine-run completed entries are primary; incomplete entries are descriptive only. Best-run curves are post-hoc test-selected and may use different folds.",
+  "source_root": "/home/chang/arc/stage2/03_modes_tenv/output/formal",
+  "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+  "expected_identities_sha256": "85938bf9881c6eec80f62e993bcdc91d783a2c1e10f8f51310707c3fd648a757",
+  "models": [
+    "no_change",
+    "delta_mean",
+    "prnet",
+    "cpa",
+    "chemcpa",
+    "cmonge",
+    "perturbdiff"
+  ],
+  "runs": [
+    {
+      "model": "no_change",
+      "fold": 0,
+      "seed": 17,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 0,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "27f8b83dd9d3d278763ce76558063baf0b333e5283e06bf1a0b5f2a04e7f42e6",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "6ea062505ef6d42a6a6bbe0192261f035e2d611229932edc142f973ae7dfb8c7",
+        "request.json": "867c07314dd983a7cdf0bbe18b3b07b070f7be6ac7cdb3ccab7b20f14ea22597"
+      },
+      "run_sha256": "8e0f48c76d01b9042f7093170455fc8496c77401c3d266e05b1a604048ea8ca7"
+    },
+    {
+      "model": "no_change",
+      "fold": 0,
+      "seed": 42,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 0,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "27f8b83dd9d3d278763ce76558063baf0b333e5283e06bf1a0b5f2a04e7f42e6",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "598591103ccdb969fada6774d6f91d14d9267c5a280114c0b5010270a611f753",
+        "request.json": "fb3a9472f107527011c0b506772c3a7074cdd58d3a9179dba0509cacfab921e0"
+      },
+      "run_sha256": "d3baccbe86e82ecfacfd68b0933808238d1d1fdfb00e6764f9e32a53eec5cd5a"
+    },
+    {
+      "model": "no_change",
+      "fold": 0,
+      "seed": 2026,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 0,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "27f8b83dd9d3d278763ce76558063baf0b333e5283e06bf1a0b5f2a04e7f42e6",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "ca51134b3f0a30f7d8d88f289e2d9699736eb501d57c0f9d8113fdeeef9aebc5",
+        "request.json": "ebce276398a514531792d271e468247503235380f5a0254716965ed927c71ee1"
+      },
+      "run_sha256": "37751eea3831e87a23a797c8975369b9a2847e4a4146d126199d57d1eea6ded1"
+    },
+    {
+      "model": "no_change",
+      "fold": 1,
+      "seed": 17,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 1,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "45c36886e72cb072a9e8e2b3a5f494022d648fb054b5ec48df014fad1bd8f20d",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "a1a375b32118e98723dd594c8ecbcf0f301bef78aad4d30cd30e6128adcd890d",
+        "request.json": "d78586b560f16e81f248ec5948949fe6ea8c5e4726785eac4720edda14b29687"
+      },
+      "run_sha256": "c469520a2a78505fd0e975b814e7c74296b1a30ea43813d8e87ba75ffdcfa765"
+    },
+    {
+      "model": "no_change",
+      "fold": 1,
+      "seed": 42,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 1,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "45c36886e72cb072a9e8e2b3a5f494022d648fb054b5ec48df014fad1bd8f20d",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "7f0af3158fb190c6cc0c8ca68725a9b1079ca97efc5940aac666c5b4f3afd97e",
+        "request.json": "5f834c9d5b01d0ab314cd4b2b8630789e94b25358cd6616f41142e64d45ec1e0"
+      },
+      "run_sha256": "684a279c723a04173bc03bc57e3ef124d273ca031f7a8f3fd174ae5cb5310fd7"
+    },
+    {
+      "model": "no_change",
+      "fold": 1,
+      "seed": 2026,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 1,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "45c36886e72cb072a9e8e2b3a5f494022d648fb054b5ec48df014fad1bd8f20d",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "41702a576dd8b49bb0185a73f1d8c8587275d08747dede9aaa870726d4eb9a82",
+        "request.json": "c5d82ace87aad396d0da9a97c56442100d997d16eaaa635f950a2b2ae01125f2"
+      },
+      "run_sha256": "2a409c4b3eaf436571e93e6ae9c4311205f8091fbe6f29d910c1245c6a08926d"
+    },
+    {
+      "model": "no_change",
+      "fold": 2,
+      "seed": 17,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 2,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "0393deb8ff738584b6e804bd23996fb05caaf47a765e4345b99d56824465d80b",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "f061c4278d1467f06297360decea13f38fb6a36f3b8b497814023f21d997e081",
+        "request.json": "89e54449b46e598a5c72ffa49feab0604aae02073bc84adc1882a749037362ac"
+      },
+      "run_sha256": "76cd8daa074f10212473b86be56bb8e523684758a8124bcef344bfb57a5342c8"
+    },
+    {
+      "model": "no_change",
+      "fold": 2,
+      "seed": 42,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 2,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "0393deb8ff738584b6e804bd23996fb05caaf47a765e4345b99d56824465d80b",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "fe3e45e925a461254ae65be769b623a4de261fbfa98b95b680b26b6d8785ca9f",
+        "request.json": "123bc02952b16b32b219d5f5a9971e7c6552a2124a556317e4264274bfa71bdf"
+      },
+      "run_sha256": "d6b1b3d103606293589dcac4ef76ace7752cf6f3ccc7a594e2108e225338cf19"
+    },
+    {
+      "model": "no_change",
+      "fold": 2,
+      "seed": 2026,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "no_change",
+        "fold": 2,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df"
+      },
+      "artifacts": {
+        "prediction.npy": "0393deb8ff738584b6e804bd23996fb05caaf47a765e4345b99d56824465d80b",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "a0d26c3302320c98f3095e3217bc257a83192d7e72b84a3e2212073f9da54611",
+        "request.json": "decbbe1ad1ea2a5bafd95157e084bf643ac9a4a4ae2c79dd7a3984cd0c278dac"
+      },
+      "run_sha256": "edca8cf211fcff19a650d70c019437afd09eb4350a0d7ec18cf256733c210af6"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 0,
+      "seed": 17,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 0,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "647e032cf966afa8949c9d284c4a23a5f0cc47ba6f5bc2e8821cc0099f338a7e",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "edafb04327af7fcd58591b54b4d9dd281356243ed2285119498015b5010c11cd",
+        "request.json": "94b9bede1c91a03b22fa6ec20a4b85f1747352a1813feb80d21bdb45ada9ec46"
+      },
+      "run_sha256": "925911ebb861fed6fea3f59d084d3caf7eb9c9c7edd2f462332b65fef0d76572"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 0,
+      "seed": 42,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 0,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "647e032cf966afa8949c9d284c4a23a5f0cc47ba6f5bc2e8821cc0099f338a7e",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "c32a726daa438a83fe55e670d6c2699af18281e8381929b117be0d13b50cc797",
+        "request.json": "e1360879c492fc2860fa8d97115b92191efa9302a8de28afdbf150ef5a40c229"
+      },
+      "run_sha256": "5b4ff239f0f812ceb3fee24262d6a9326ece0a838db4aae0bdb375a9d6fb88e8"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 0,
+      "seed": 2026,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 0,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "647e032cf966afa8949c9d284c4a23a5f0cc47ba6f5bc2e8821cc0099f338a7e",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "5d7fd1fb2fe106ef649357c91b0d40609501ecaaa0b15650c78086e9eda17163",
+        "request.json": "c18d62a8ea3cc02b8c58a61323812454ef3430c788e5674d0e5ff2a807bfcd71"
+      },
+      "run_sha256": "dd418e36144d40b4d1fb099a9575d866f3ae09bbcc1443a33fdad8ff5ea8f8b7"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 1,
+      "seed": 17,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 1,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "74ae8152d1797f8a95eb2cbfe9dce7f0608195b4e6bb547669d42f2b6322045e",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "d13b218c62d654b8476f2c96241b4ad01c67d7df3365fb4449d9772cf3afbb10",
+        "request.json": "69c8de564912e08f56502aae3c82848ec541701c767672ce7eb4772bb9698ecd"
+      },
+      "run_sha256": "0ce5a919c99fd8ccc8a54ede825149075be96bdb8f47de1ca6374052416d6085"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 1,
+      "seed": 42,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 1,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "74ae8152d1797f8a95eb2cbfe9dce7f0608195b4e6bb547669d42f2b6322045e",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "3def32dddc714c21eab0633233fd2b8b7027de6ffa4aa3afaca2337f62dd10d8",
+        "request.json": "fec1fbf017ed79349197dc950925aa4c4c4b277a6e41071fdfd8620e9cc95234"
+      },
+      "run_sha256": "3c7771513b9f0350234515207ac5344f8aefe4dc7b09ea535af1ec63f2d88118"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 1,
+      "seed": 2026,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 1,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "74ae8152d1797f8a95eb2cbfe9dce7f0608195b4e6bb547669d42f2b6322045e",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "0dd6e0cf693f3f0109ffe2d4fba47e7124a478adad1544f6bc5a428a1592adb8",
+        "request.json": "1d9505d11aac58c882e943d6ecd9f29acd4d50a9f85a3b534e6a016503ac9985"
+      },
+      "run_sha256": "d18a6d2d084d465804554175d2f3504d061d7bf3f93d7a86a1b16460a9cac758"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 2,
+      "seed": 17,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 2,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "d9a7dcd868a9526870932ce0a152f783a0a43aff5fa7547af5a42aae36e05d64",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "d315396063f107ecb84033c1d2fa5a57f914329dc4f25e0b59ce0aaa7c266015",
+        "request.json": "d41129e7a090f9a4fae5c55771b8e548cacf85aa7222d01249b0df98b7b48092"
+      },
+      "run_sha256": "7e36ca6f2190495f9b9832c4f7e6413ef3ecd9159fb3b930a486e86d68b05baa"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 2,
+      "seed": 42,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 2,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "d9a7dcd868a9526870932ce0a152f783a0a43aff5fa7547af5a42aae36e05d64",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "2b6b77c8431ffb3b4e57b597bc4202e4bd8988331d7219ee4c8a77dbfa14fc60",
+        "request.json": "d3718f694162e1a5639f536215a7124abc0a84e3b74caf758fd4498c6677decd"
+      },
+      "run_sha256": "fc382d58dcc78729ef51d6ff04aca62f590124aaea602bc47e056a9b93246d7c"
+    },
+    {
+      "model": "delta_mean",
+      "fold": 2,
+      "seed": 2026,
+      "status": "completed",
+      "command": null,
+      "identity": {
+        "model": "delta_mean",
+        "fold": 2,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5"
+      },
+      "artifacts": {
+        "prediction.npy": "d9a7dcd868a9526870932ce0a152f783a0a43aff5fa7547af5a42aae36e05d64",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "69ad522905f73d72193ad7cc312b345067853ad1aba16b17785b0f75d112ea45",
+        "request.json": "91afbe3695707232765286f8f27bf43ec369bb28868cbf625947d67ee17c29a4"
+      },
+      "run_sha256": "7d108044763dca90f57dc0568d3b1d7f8b211ce311de30264478463a0afa0b4d"
+    },
+    {
+      "model": "prnet",
+      "fold": 0,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 0,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "87c7f222db4ff6bda9c72e501f430d84de2034b560edbfdf700fc5795886604b",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "88afdfdfe781d1d350f65505c95800bf3c85d13dc67c275b0f6fbd33c80eaf96",
+        "request.json": "c58a66006af512c6bcdf4c838a2c917e638ed1fb5f07fb2cf0e171c89c6c77e5"
+      },
+      "run_sha256": "07b930ab94b3dbf5449944d12cd5b5e8f443ec284ab7f19b481f7123647fca32"
+    },
+    {
+      "model": "prnet",
+      "fold": 0,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 0,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "69f361a330dc5badecd2741826122da5301e0200023602610c0b3dab869a1cf2",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "8cce9b8f03df39b50ed73b88624bd8db082fb8623a077b58fc76d6db4f840206",
+        "request.json": "59660e4eb928b4ebc3b27cfd777308f03d97ec9a8a768f714ccc713ece6db6a2"
+      },
+      "run_sha256": "3f97f5782b708e74ab4c3f395c62a9cafbab9996e80b521c4ddcc034013a39bf"
+    },
+    {
+      "model": "prnet",
+      "fold": 0,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 0,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "de9b9c3428ece98362f151e33fdb478769026fa4cec6c25b8bad962cf84ffb59",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "a5a49bba6c395944ef52f4added1039582ccb1bdb10941ec19a01c2212daeebf",
+        "request.json": "bff13df8584aeda0c04b13d55fd45e6557034b288f3f3a270479e3dc517b823d"
+      },
+      "run_sha256": "8210cf38bde408f12ca86cfff2b43002f91437b11b860481baf969215cf25f59"
+    },
+    {
+      "model": "prnet",
+      "fold": 1,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 1,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "4ff775e0893375542682a120b9a92273568daf6e0459012b0ecb15f9b9d02a74",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "346d242f3bf6d9bf36115c755feeac9b002f08704da09956a0bb9edd6b2f1746",
+        "request.json": "0c64d866726119e8e57ce90dddbf089672128e406c7ffe5c5adc24d9ca4482e3"
+      },
+      "run_sha256": "dd17ed56a0eb2a17bbea0b9354e8c226f0743878c12709bcfa2d445f99596327"
+    },
+    {
+      "model": "prnet",
+      "fold": 1,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 1,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "c8617feb79bf0aac02a35ff930d484d7a7bdb94d53defc575d126b09f73c946f",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "56d48925f7babd976f4e9798d4e73266aab81e7064a1397804c72f56c39655f7",
+        "request.json": "0b5b6f4bb436fda3d4af0d5d893409ee360cccec3d299d46421edd7e988b64d2"
+      },
+      "run_sha256": "0b3a7e88ad5f2b594df6e597d9315ce76b8ca135e5fd50e42bcf79ce2cbb57e5"
+    },
+    {
+      "model": "prnet",
+      "fold": 1,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 1,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "39461408db22e9d1f6b063890777d8cd130fabfb652ed877e20e6347f726e610",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "ee474b7ef69bf248362906997d2fbb0ee0a7ee739062876dedbde4361df6fd44",
+        "request.json": "37c1c19d0e689deb950affd019f57a66c377a362cbe9f5b9df6c663a0e9aa174"
+      },
+      "run_sha256": "d63326c697d4a24cad440232dbe6fd51ab04d59a6be705339968dacec78acbb2"
+    },
+    {
+      "model": "prnet",
+      "fold": 2,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 2,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "485ee4727e18a725891fe56cea68ac66bc09436fd32104af3c8133e4789949e7",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "3c7384dd560dea90c3361ee91a06918a865347a3381b8b3751bfd2c94505c18a",
+        "request.json": "7930a666571a37a9cf3505d4bbd84517c1e4f44623e7e4cca30d2e07e9abc752"
+      },
+      "run_sha256": "65d095f721d20fff22c24f6e4e748f4f504d9a0089a1c7c54c2a7a116cb7a028"
+    },
+    {
+      "model": "prnet",
+      "fold": 2,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 2,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "ba598ac5efa64c37fce93ab22c36695fc99d2729311cfbec39d5eb2e37db17af",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "e7b0e7c2d47779d7b5d04c817de0dd8823a5e3782db060afd7ec87822b0b68f1",
+        "request.json": "8cabb6decba182460948a1255af937fef77d998bd84068efb2fe66985a82f39d"
+      },
+      "run_sha256": "fe1a3e43c256fedc6c924b0013b925948bab71ba211fd34161bf994ba760ff69"
+    },
+    {
+      "model": "prnet",
+      "fold": 2,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/prnet_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/prnet/config.json"
+      ],
+      "identity": {
+        "model": "prnet",
+        "fold": 2,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62"
+      },
+      "artifacts": {
+        "prediction.npy": "57c59856a320402f60d3245d099debad2d865cce7ce878d8ad8120dcc47f93dd",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "09ddaabb4ff087c7c211062cf92bc14ecc8c96aeefbea68da6f921203b48213e",
+        "request.json": "d11937e0b4311bdba31a65e2d7f7e721830e376403e87601297ea916e0a4dbd6"
+      },
+      "run_sha256": "16013c4d85c88513d54c123a63362ba044afe53b8ae8b37d6f69c0a8b8bee20c"
+    },
+    {
+      "model": "cpa",
+      "fold": 0,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 0,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "f5d3c256568ee85b60c87d4bdb2d15f477d1937f1ce06d9e4f950aa12185cb58",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "908379a21883bc1cbe1ae044032b11a7ba5e8349e0b6bdcfadcfc6ccc2355bf6",
+        "request.json": "2865068272d05f321a6ac9944990fa50617f55f5978d120c70a376e3b14e4cb1"
+      },
+      "run_sha256": "0203499e92db43406a562602d7ba6422d6b207f7ac0ad48ba65716339c5eaf5e"
+    },
+    {
+      "model": "cpa",
+      "fold": 0,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 0,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "1861e5774dfdd22d926906d09d95782537194862dc94bb4a80654c84ba4eaa73",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "67fc48a670052827d7cdeb424d9370b440320ba9ae619bec7b4f4ad01514064c",
+        "request.json": "c940876024f36576be848effdfd1a1b97d3e9c68bcc09127f316663704b22f6a"
+      },
+      "run_sha256": "6483a790637afdb9b894df8b3700fd861ecdd8a3c5ab14d96a185f2421153538"
+    },
+    {
+      "model": "cpa",
+      "fold": 0,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 0,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "e7aeaef624fc7320528f34515c1d404adabdb4509b3a5292d8d80e984c6a3e5e",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "772eb9651cf081930eee07df87d176883e894e164434cbd561c432e08eb6cc95",
+        "request.json": "7a3a6b9c01173378d0ce1d2bbe3cd43789cbf8640f52257d0b6e4b457d6c22ce"
+      },
+      "run_sha256": "3ef57a84c125fd8847b67f75a92701eba2ec01420ed6fcd627be2379f9465b62"
+    },
+    {
+      "model": "cpa",
+      "fold": 1,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 1,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "25f1bd9f98612e217b257d7ecb902c4e4c8b4b9e854bd6297c01fae20b806087",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "f3a60ae42884e08e356b3c718e5149de02627f93a3e3dc8efb147e204efc19c7",
+        "request.json": "5c44c166b10aa3a47041ed7fc4f10dccaefd219e37eab04182dc1a8e3bb0b587"
+      },
+      "run_sha256": "2fb724e65e53166c4c2c555ebb298f8ec907cfc897ef1076c5dddfea8bc395a3"
+    },
+    {
+      "model": "cpa",
+      "fold": 1,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 1,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "f0f81bd739215ef1004c84cad0e881f6e3b2a4184b1bdb28fba0539e82a34da3",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "10bc969a8131d8fd55ab3d717ad2fc9643df8e67f85c3927f6814c4e8dd89503",
+        "request.json": "cff1f3667533a632e70d1583220e4802337f989ad2bce569e9e6e0de4c00cdab"
+      },
+      "run_sha256": "78f0df127dcd3d16d199173341bc5141f6658f6301aafe226654834ed9df6432"
+    },
+    {
+      "model": "cpa",
+      "fold": 1,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 1,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "f5797991c4d50634a99cf6ae5500f66d0f1829851a789934cab33688f435291c",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "cd3370b55dbc5d7e8a57bf7178a14448ac9b5a5699c89b43fc26d384dcd3a612",
+        "request.json": "d2c44574ba369e430152f32adaa8e78e65ee9912a2d62b298e9d2566d0719842"
+      },
+      "run_sha256": "ee577d37e3442530e37e0f74ad5168364ac419786dcea73013d61f7b519c91fa"
+    },
+    {
+      "model": "cpa",
+      "fold": 2,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 2,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "82c10fc881d9a37e4920f2479f0e5861375012e5cc6bd98dbf22a3eda6ee27bc",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "ce025f7f57c41a959d08825a76bd3d3e95d6b4fdb0a48fb51eac069d7d0efe09",
+        "request.json": "da521db69ae3b717b536feae50b2b2d78e82e9ef0b87b5fa0f550e444dee50ca"
+      },
+      "run_sha256": "4cd11b1136efaa6c61e433db53dcfc11b29502ad6fa63c3b822a1778ab65374e"
+    },
+    {
+      "model": "cpa",
+      "fold": 2,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 2,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "dbb693c06498de63926dc8c169477a1b89a51980ded0bf5b41c5573fb176fc51",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "f7a6ea993fdf0ce76a1a208014e84366f29c2b674ae753996b2972337b77cbdb",
+        "request.json": "ba2fad83f8f31ff1f2733e0588713d05c21c01e448ec94be133dfb76aa06011f"
+      },
+      "run_sha256": "da8968be99e537c0c988f6039a37dcbcce755dc6ef1f04d31ecc50deba4f020b"
+    },
+    {
+      "model": "cpa",
+      "fold": 2,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-cpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cpa/config.json"
+      ],
+      "identity": {
+        "model": "cpa",
+        "fold": 2,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c"
+      },
+      "artifacts": {
+        "prediction.npy": "be57c3db6db98ce3a2c767a87f12a3d22c9bf3be6402af577d7dc06e4cb3c09d",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "5e4f154bb821e611faff645558944ee6e04a90242f4a009a49a968b3e807168f",
+        "request.json": "d2db29b1ef3093668b3c2433e81bb08d0b9808535629830be8872dbe9e3f8349"
+      },
+      "run_sha256": "a0fc4f3eb9e06f590762a748a7eea6954fbdd404833dfdb27fb096667314aa43"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 0,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 0,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "72d6987d4c4cb27d116f6f97ab587800856e18c7fdc347f6d8c167c18a3370cb",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "595757227d4a6a974be75518cc907f3b2eae7ceea4e3e78b3ad9bcbc4dd404a7",
+        "request.json": "fe2005e33004e4f0ac6a68e28311cdd52d299c89b7307c94440fdaefd57c3812"
+      },
+      "run_sha256": "c5dadd504720be40cb97524b3300eacd9c8aec89e47542b44b0ba6ebdef7ba74"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 0,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 0,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "7aca2d99820b80c3e0bf326b5f56c2b6527afccd35b878f207b8d9bbdef91886",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "c539747b423500a260eaa70b19f7b0cb8342f9250c4209e2ef8613c19eb71e08",
+        "request.json": "e46470f66031c9b640d3749ec63a8368c075fd483f182fe8c1b39146ad6d0127"
+      },
+      "run_sha256": "13cd82068fb5fd33fd05c8aabe72d8d7d1b9b6fa605e88eb2822514cd29bedcf"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 0,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 0,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "e89e1312b3a8b1e41c74998d43f803a538e181e498f7465530dfcf6a0f3e7464",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "4f951f71c8a745fffed56c47d2e18f3a2eea37f55a4274e28fe65b3251591fba",
+        "request.json": "15aeaf6efd75e16614a9f2ebd653d70becf726f991e9dd9590f32a1b8f9d86de"
+      },
+      "run_sha256": "d771aac409eeceb6eb37116714baba2f5c5b63a224d31365da3a80a707339358"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 1,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 1,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "d1396696ffae8e42b0f8bde85c4f5d5afbfc43b42e43d399b76df7cae11ffe90",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "7de7f30afa317138db8245317da67cd66184473eb40c2d45df5f328305f9d80c",
+        "request.json": "a086e118c01561b43d884de845eae084cbfc860718ac45107fc2e47194a17803"
+      },
+      "run_sha256": "855dddc5ab86e808a883b3d0fe74fa1bb9464f45e30e55f46efa7c462f871499"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 1,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 1,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "e7497144f38184da3627dd88a46c35a3bd628e9ad8a2433c7950eab8d53a69fe",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "017a645d4b04aa2adf983b538d78cb4c847dec2c7c986433276bb71a7dc2cc1b",
+        "request.json": "8ab6f6d2a85da9c33d7f05d35a532b5e095cab985c3b36d6a966b199f199f247"
+      },
+      "run_sha256": "1c98579d4c4a5ce8855efcc50eef1ba8b44bf8e2128cc330bd6eff88392e6e78"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 1,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 1,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "f11735b6a7cbfb74299c5f03ed5605a1fe36eeddd0e27e0d069d85a6880a120b",
+        "case_ids.json": "53f62816f25524b1bc03b6bf903cfb66cea55e9f21b2b3f44d30b5338d3d8baf",
+        "checkpoint.json": "8e48f963970dea59f62fa6465bca7e2ef58f7c77432bc401be60afd9973f3343",
+        "request.json": "5774507b77a92159a0ff29bdf707665209cec92a1f634677eae488efd2fbfb96"
+      },
+      "run_sha256": "0cc31af663b0d0c1f19e448cb1d54aa2b8d3b7ecbc2198c0a2e956387a221632"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 2,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 2,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "5d195a120ef0f28bb89159888c0a92f573564775c5abc4991b499854ae54c439",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "bfd11b4f978ecfbf141350282390d00b78ade7b8578499a356638dbca8776e89",
+        "request.json": "8c702f3e863abe1cfb9e314753683e21d446b39d897a153ec17b224d8ec682f7"
+      },
+      "run_sha256": "5f436068f63d318a68546297ccda270a641dea5ef9585b7a698017ec481abfab"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 2,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 2,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "89064d7452590a3c09016456e0e9fd7457dbdbcf1dd9bf6269b4f2b4dc3d1705",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "d0a2f5428aef71713e917c90f724b035bf5053ef69af1e9c17f062d951547969",
+        "request.json": "68d77a16f542eec8dc2143560b8f755ae6c4fbbea430b1ba5cc881306d176912"
+      },
+      "run_sha256": "f5f1ef30cc86f9998265f3528cdd502b57246d0e3468d8c89e4814774f473334"
+    },
+    {
+      "model": "chemcpa",
+      "fold": 2,
+      "seed": 2026,
+      "status": "completed",
+      "command": [
+        "/home/chang/miniconda3/envs/arc-stage2-bench-chemcpa/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/chemcpa_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/chemcpa/config.json"
+      ],
+      "identity": {
+        "model": "chemcpa",
+        "fold": 2,
+        "seed": 2026,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29"
+      },
+      "artifacts": {
+        "prediction.npy": "e7da2af15d000d795e575482df1774eaffaf95001faaddd3f8fe9a8a9214cd65",
+        "case_ids.json": "6b360080b7a03758c06fa2ab7a1fd130d1805f89824b8d8f34c0cb4be471a93f",
+        "checkpoint.json": "4704c93043e0132675ac2ec077bfc8b9c29d92ad49c3b7162b7a50b0750a1bc5",
+        "request.json": "69fcb50bdd2dcd82eca55d279d55830e50caecfc74e9108af8c5944921388fa4"
+      },
+      "run_sha256": "ec0d07bed535435213d33753fef2bd717f31b032f3a977321cbd18e5c6ac2659"
+    },
+    {
+      "model": "cmonge",
+      "fold": 0,
+      "seed": 17,
+      "status": "completed",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "identity": {
+        "model": "cmonge",
+        "fold": 0,
+        "seed": 17,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "77a68d2f8b6d0ca858786e6963cd200cfa297635483e5c39b6b5ebeed29da5e1"
+      },
+      "artifacts": {
+        "prediction.npy": "f340cfba9495531ad26d6dee003ed7883a040238d7d19aac568782250b6ebcd2",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "c5905e84a3e52116372edfa7aa122ca3a22b8c2aaa041bdd05b5be047400a034",
+        "request.json": "9d2c3a79425c6f7b24bea26cf81c40a059bc28e2e7c7b48e2873180a6678fc7a"
+      },
+      "run_sha256": "fa51ebdfc09d7a954a4d518285536824a38df4f4452cce57484c13e9b44a6ec9"
+    },
+    {
+      "model": "cmonge",
+      "fold": 0,
+      "seed": 42,
+      "status": "completed",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ],
+      "identity": {
+        "model": "cmonge",
+        "fold": 0,
+        "seed": 42,
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "config_sha256": "77a68d2f8b6d0ca858786e6963cd200cfa297635483e5c39b6b5ebeed29da5e1"
+      },
+      "artifacts": {
+        "prediction.npy": "dde40c4ad10156389c080f8cf8d251df470f98d498a6b1df77ee181a58438145",
+        "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+        "checkpoint.json": "1dac4da05466fcc52c2ca8c8997db67ec547bd8800f7e148592c34bd2a8e9b0f",
+        "request.json": "75183c882c2b3735ff3873527b1039e560e970e70af595eacf03ea50c8fa58d3"
+      },
+      "run_sha256": "8d12f0b936ecb4ea46d76ba0a02fedc8ce778a9c3942ce8e2aa427b6f82cc900"
+    },
+    {
+      "model": "cmonge",
+      "fold": 0,
+      "seed": 2026,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "cmonge",
+      "fold": 1,
+      "seed": 17,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "cmonge",
+      "fold": 1,
+      "seed": 42,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "cmonge",
+      "fold": 1,
+      "seed": 2026,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "cmonge",
+      "fold": 2,
+      "seed": 17,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "cmonge",
+      "fold": 2,
+      "seed": 42,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "cmonge",
+      "fold": 2,
+      "seed": 2026,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 0,
+      "seed": 17,
+      "status": "running",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 0,
+      "seed": 42,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 0,
+      "seed": 2026,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 1,
+      "seed": 17,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 1,
+      "seed": 42,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 1,
+      "seed": 2026,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 2,
+      "seed": 17,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 2,
+      "seed": 42,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    },
+    {
+      "model": "perturbdiff",
+      "fold": 2,
+      "seed": 2026,
+      "status": "not_dispatched",
+      "command": [
+        "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/config.json"
+      ]
+    }
+  ]
+}

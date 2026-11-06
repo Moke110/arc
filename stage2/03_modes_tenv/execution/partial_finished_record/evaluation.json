@@ -1,0 +1,26 @@
+{
+  "artifacts": {
+    "per_group.csv": "4a3594557a7768ddff03c7d862c0655501468a8bd6cf2f301c810357170d6b01",
+    "per_run.csv": "e57663d2dd721b6b23481eab26739f812f1fdd37c20105c924ee17cb7e39ebef",
+    "summary.csv": "3e7d5120a0562d2b4b9f2ef9f725774b8cfce6b4d79015fb09524dd50146ff78",
+    "best_runs.csv": "bb72b11c5892bc594aef06c72ff28a830733ed13d3f8ae6a1694c463136fb413",
+    "pr_bands.csv": "7666bb2c0d452d73997a8ccd8f311ff2b47c2818538174803cbd4ca94054921d",
+    "pr_sources.npz": "208005308df2a5ecb3f6585356aa5a441678639e830694da9c57f9017680c0e9",
+    "predictions.json": "9035b4357b209760cc6ced381d598546d6a870148a7f4a19a992f700d6539d74"
+  },
+  "curve_convention": "Nonempty tied-score thresholds only; at grid recall r use precision of first threshold attaining r (right step); no synthetic (0,1) endpoint. Macro-average eligible groups within run before run mean/min/max.",
+  "workers": 2,
+  "truth_cache": "once per fold, shared immutable mmap",
+  "scope": "partial_finished_models",
+  "sealed": false,
+  "final_barrier_passed": false,
+  "warning": "PARTIAL finished-run snapshot \u2014 training ongoing; not final 63-run results",
+  "use_policy": "Descriptive test scores only. Never use these results for training, checkpoint selection, hyperparameters, retries, scheduling or entrant changes. Nine-run completed entries are primary; incomplete entries are descriptive only. Best-run curves are post-hoc test-selected and may use different folds.",
+  "sources": {
+    "partial_benchmark.py": "2eb58a5003327c2f0f2fe6909bc9598c4856a37dfd248f47601cd669544b0c91",
+    "benchmark.py": "00380d809422ac3fd1848755eb054d00d3fc710e124cd9da494414b6fbd04177",
+    "artifacts.py": "cfcdc539b78ed779ad19205ccca5f78c2f9fef1cec57c4a5e77bd5cc7cf4d82a",
+    "metrics.py": "82ba0a65ca527457ca16c768b6eadc0c2773d208b975c372f12304adca051b13",
+    "plots.py": "f7b65032110966f53b797122c8590ae42800d214a8e5d63a46031cebb38038ad"
+  }
+}
