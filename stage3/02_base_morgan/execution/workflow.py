@@ -125,6 +125,14 @@ def prepare(source, output, settings=None):
                                  effective_configuration=dict(countSimulation=False, useBondTypes=True,
                                      onlyNonzeroInvariants=False, includeRingMembership=True,
                                      includeRedundantEnvironments=False)))
+    if source.is_dir():
+        manifest_path = source / 'manifest.json'
+        manifest = json.loads(manifest_path.read_text())
+        payload['provenance_metadata'] = dict(source='frozen Heliste', authenticated=True,
+            manifest_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            coverage=manifest.get('coverage', {}))
+    else:
+        payload['provenance_metadata'] = dict(source='synthetic CSV fixture', authenticated=False)
     payload['split_fingerprint'] = digest(splits)
     target = output / 'prepared.json'
     if output.exists():
@@ -151,15 +159,29 @@ def main():
     command.add_argument('--fold', type=int, required=True)
     command.add_argument('--seed', type=int, choices=TRAINING_SEEDS, required=True)
     command.add_argument('--smoke-epochs', type=int)
+    command = commands.add_parser('benchmark')
+    command.add_argument('--prepared', type=Path, required=True)
+    command.add_argument('--output', type=Path, required=True)
+    command.add_argument('--smoke-epochs', type=int)
     for name in ['evaluate', 'verify']:
         command = commands.add_parser(name)
-        command.add_argument('--run', type=Path, required=True)
-        if name == 'verify':
-            command.add_argument('--prepared', type=Path)
+        group = command.add_mutually_exclusive_group(required=True)
+        group.add_argument('--run', type=Path)
+        group.add_argument('--benchmark', type=Path)
+        command.add_argument('--prepared', type=Path)
+        command.add_argument('--require-complete', action='store_true')
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
             prepare(args.input, args.output, args.settings)
+        elif args.command == 'benchmark':
+            from benchmark import benchmark
+            result = benchmark(args.prepared, args.output, args.smoke_epochs)
+            print(json.dumps(result, sort_keys=True, allow_nan=False))
+        elif args.command in ['evaluate', 'verify'] and args.benchmark:
+            from benchmark import evaluate_benchmark
+            result = evaluate_benchmark(args.benchmark, args.prepared, args.require_complete)
+            print(json.dumps(result, sort_keys=True, allow_nan=False))
         else:
             from training import train, evaluate, verify
             if args.command == 'train':

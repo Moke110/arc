@@ -2,8 +2,8 @@
 
 This step consumes the frozen [01_corpus](../01_corpus/README.md) release under
 [ADR 0045](../../docs/adr/0045-stage3-morgan-direction-baseline.md). The public workflow implements cold-drug, cold-dose and warm-start preparation
-and individual run training, evaluation and verification. The complete 60-fit
-benchmark remains subsequent work; smoke runs are explicitly marked.
+and individual or complete matrix training, evaluation and verification.
+Smoke runs are explicitly marked.
 
 ```bash
 python stage3/02_base_morgan/execution/workflow.py prepare --input stage3/01_corpus/output --output /tmp/morgan-prepared
@@ -58,4 +58,39 @@ both conditions, four doses and all three classes:
 
 ```bash
 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s stage3/02_base_morgan/execution/tests -p test_workflow.py -v
+```
+
+Run the complete frozen matrix sequentially (60 fits for the current two targets):
+
+```bash
+python stage3/02_base_morgan/execution/workflow.py prepare --input stage3/01_corpus/output --output /tmp/morgan-all --settings cold_drug cold_dose warm_start
+python stage3/02_base_morgan/execution/workflow.py benchmark --prepared /tmp/morgan-all/prepared.json --output /tmp/morgan-benchmark
+python stage3/02_base_morgan/execution/workflow.py evaluate --benchmark /tmp/morgan-benchmark --require-complete
+python stage3/02_base_morgan/execution/workflow.py verify --benchmark /tmp/morgan-benchmark --prepared /tmp/morgan-all/prepared.json --require-complete
+```
+
+`benchmark.json` records every expected identity and its pending, running,
+completed or failed status. Compatible completed runs are verified and reused;
+incompatible scope, inputs, schedules and run artifacts are rejected. A failed
+run with partial artifacts requires investigation and a fresh benchmark output;
+outputs are never silently overwritten. Evaluation regenerates `summary.json`
+and `report.md` from persisted predictions and checks checkpoint integrity without
+refitting. Missing, duplicate or unexpected run identities fail verification.
+
+The runner launches one CPU child at a time with a 10 GiB `RLIMIT_AS` hard cap,
+two library threads and CUDA hidden. Every child records `/usr/bin/time -v`
+maximum RSS and monitored resource snapshots. Launches require at least 12 GiB
+available RAM, observable host process and GPU telemetry, and no external long
+trainer. Unknown telemetry fails closed. Do not run the formal benchmark while
+another training job is active. A monitoring violation stops only the runner's
+owned child process group and persists failure accounting.
+
+For synthetic acceptance only, add `--smoke-epochs 1` to `benchmark`; its artifacts
+are explicitly smoke and cannot complete a formal benchmark. The full synthetic
+60-fit test substitutes the child launcher in a test harness, runs real tiny
+models, and labels resource measurements as simulated. Production CLI commands
+have no telemetry bypass. Run the narrow acceptance test with:
+
+```bash
+OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -m unittest discover -s stage3/02_base_morgan/execution/tests -p test_benchmark.py -v
 ```
