@@ -91,7 +91,10 @@ The runner launches one CPU child at a time with a 10 GiB `RLIMIT_AS` hard cap,
 two library threads and CUDA hidden. Every child records `/usr/bin/time -v`
 maximum RSS and monitored resource snapshots. Launches require at least 12 GiB
 available RAM, observable host process and GPU telemetry, and no external long
-trainer. Unknown telemetry fails closed. Do not run the formal benchmark while
+trainer or other heavy Python process. Model training, worker, adapter and launcher
+entry points block immediately; other Python jobs count as heavy at 1 GiB RSS,
+independent of their repository location. Small maintenance scripts can coexist.
+Unknown telemetry fails closed. Do not run the formal benchmark while
 another training job is active. A monitoring violation stops only the runner's
 owned child process group and persists failure accounting.
 

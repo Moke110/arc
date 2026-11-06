@@ -25,7 +25,14 @@ class ResourceTest(unittest.TestCase):
             ('python3.11\0-m\0package.trainer\0--token\0SECRET', True),
             ('python\0-X\0dev\0/other/train.py', True),
             ('python\0/other/worker.py', True),
+            ('python\0/other/cmonge_v2_gpu_adapter.py', True),
+            ('python\0/other/workflow.py\0fit', True),
+            ('python\0/other/workflow.py\0train', True),
+            ('python\0/other/workflow.py\0benchmark', True),
+            ('python\0/other/pretrain.py', True),
             ('torchrun\0--nnodes\0' + '1\0--token\0SECRET', True),
+            ('accelerate\0launch\0/other/job.py', True),
+            ('deepspeed\0/other/job.py', True),
             ('python\0/other/monitor.py\0--label\0train\0--token\0SECRET', False),
             ('python\0-c\0print("SECRET stage3/train.py")', False),
             ('bash\0-c\0python /other/train.py SECRET', False),
@@ -51,6 +58,44 @@ class ResourceTest(unittest.TestCase):
                     if expected:
                         with self.assertRaisesRegex(resources.ResourceError, 'external_long_training'):
                             resources.preflight(value)
+                    else:
+                        resources.preflight(value)
+
+    def test_heavy_python_rss_threshold_is_independent_of_repository_location(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root/'meminfo').write_text('MemAvailable: 20971520 kB\n')
+            for pid, parent in [(1, 0), (12, 1)]:
+                process = root/str(pid)
+                process.mkdir()
+                (process/'comm').write_text('systemd' if pid == 1 else 'python')
+                (process/'cmdline').write_bytes(b'init')
+                (process/'status').write_text(f'PPid:\t{parent}\n')
+            process = root/'12'
+            result = subprocess.CompletedProcess([], 0, '0, 100, 16000, 4\n', '')
+            cases = [
+                ('python\0/home/arc/stage2/joint_v2_migration.py', 40 * 1024, False),
+                ('python\0/home/arc/stage3/joint_v2_apply.py', 40 * 1024, False),
+                ('python\0/other/job.py', 1024 * 1024 - 1, False),
+                ('python\0/other/job.py', 1024 * 1024, True),
+                ('python\0-c\0print("SECRET")', 1024 * 1024 + 1, True),
+                ('python\0-m\0other.job', 1024 * 1024, True),
+            ]
+            for command, rss_kib, expected in cases:
+                with self.subTest(command=command, rss_kib=rss_kib), patch.object(
+                        resources.subprocess, 'run', return_value=result):
+                    (process/'cmdline').write_bytes(command.encode())
+                    (process/'status').write_text(f'PPid:\t1\nVmRSS:\t{rss_kib} kB\n')
+                    value = resources.collect_snapshot(proc_root=root)
+                    self.assertEqual(bool(value['peers']), expected)
+                    self.assertNotIn('SECRET', json.dumps(value))
+                    if expected:
+                        self.assertFalse(value['peers'][0]['long_training'])
+                        with self.assertRaisesRegex(resources.ResourceError, 'serial_execution'):
+                            resources.preflight(value)
+                        resources.preflight(value, formal=False)
+                        self.assertEqual(resources.collect_snapshot(
+                            exclude_pids=(12,), proc_root=root)['peers'], [])
                     else:
                         resources.preflight(value)
 

@@ -19,15 +19,16 @@ class ResourceError(RuntimeError):
     """Resource policy or visibility prevents a safe launch."""
 
 
-def _workload(args):
+def _workload(args, rss_bytes=0):
     """Inspect entry points, never inline code or arbitrary option values."""
     if not args:
         return None, False, False
     safe_path = re.compile(r'[A-Za-z0-9_./+-]+\.py')
     executable = Path(args[0]).name.lower()
+    python = bool(re.fullmatch(r'python(?:\d+(?:\.\d+)*)?', executable))
     entry = None
     remaining = []
-    if re.fullmatch(r'python(?:\d+(?:\.\d+)*)?', executable):
+    if python:
         skip_value = False
         for index, token in enumerate(args[1:], 1):
             if skip_value:
@@ -54,12 +55,14 @@ def _workload(args):
     elif executable in ('torchrun', 'accelerate', 'deepspeed'):
         return None, True, True
     if entry is None:
-        return None, False, False
-    training = bool(re.search(r'(^|[/_.-])(train(?:er|ing)?|fit|worker|pretrain)([._/-]|$)', entry.lower()))
+        return None, python and rss_bytes >= GIB, False
+    training = bool(re.search(r'(^|[/_.-])(train(?:er|ing)?|fit|worker|pretrain|adapter)([._/-]|$)', entry.lower()))
     # Public workflows use an immediate subcommand. Do not inspect option values.
     training |= bool(remaining and remaining[0] in ('train', 'fit', 'pretrain', 'benchmark'))
-    repository_job = 'stage2/' in entry or 'stage3/' in entry
-    return entry, repository_job or training, training
+    # Model entry points block immediately, before allocations grow. Other Python
+    # jobs count at 1 GiB RSS, regardless of repository location; small maintenance
+    # scripts do not become heavy solely because they live under a stage directory.
+    return entry, training or rss_bytes >= GIB, training
 
 
 def _processes(proc_root):
@@ -73,9 +76,10 @@ def _processes(proc_root):
             status = directory.joinpath('status').read_text()
             rss = re.search(r'^VmRSS:\s+(\d+)', status, re.M)
             parent = re.search(r'^PPid:\s+(\d+)', status, re.M)
-            code, heavy, training = _workload(args)
+            rss_bytes = int(rss[1]) * 1024 if rss else 0
+            code, heavy, training = _workload(args, rss_bytes)
             records.append(dict(pid=int(directory.name), ppid=int(parent[1]) if parent else 0,
-                                code_path=code, rss_bytes=int(rss[1]) * 1024 if rss else 0,
+                                code_path=code, rss_bytes=rss_bytes,
                                 heavy=heavy, long_training=training))
         except FileNotFoundError:
             continue  # Process exited during the scan.
