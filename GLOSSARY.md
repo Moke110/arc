@@ -25,6 +25,15 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 
 ### Stage 3 phenotype data
 
+**Stage 3 cold-drug evaluation**:
+Evaluation on desalted drug parents absent from training, keeping all aliases and doses of each parent together.
+
+**Stage 3 cold-dose evaluation**:
+Evaluation at a dose level absent from training, for drugs observed at other training doses; interior held doses assess interpolation and boundary held doses assess extrapolation.
+
+**Stage 3 warm-start evaluation**:
+Evaluation on unseen drug-parent–dose combinations for which the parent and dose each occur in training. All source records for the same combination share one partition.
+
 **Stage 3 Morgan baseline**:
 A structure-based predictor of cardiomyocyte phenotype direction, serving as the comparator for a future predictor using drug-induced transcriptomic perturbation Δ. Both predictors target the same declared phenotype contrasts, with a separate predictor for each experimental-condition–phenotype pair.
 
