@@ -4,4 +4,6 @@
 hypoxia–reoxygenation cardiomyocyte `cell_viability` corpora from frozen
 [`pheno_data`](../pheno_data/README.md) sources and chemical-resolution evidence.
 The source-first contract is [ADR 0044](../docs/adr/0044-stage3-source-first-corpora.md).
-Model views, prediction matching and training belong to later work.
+The corpus includes derived ±20% magnitude direction labels under an explicit
+same-arm vehicle=100 assumption. Model views, prediction matching and training
+belong to later work.

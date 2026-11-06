@@ -1,5 +1,8 @@
 """Public offline Heliste build/verify acceptance seam (spec #52)."""
 import csv
+from collections import Counter
+import importlib.util
+import math
 import json
 import hashlib
 import shutil
@@ -8,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import pyarrow as pa
 import pyarrow.parquet as pq
 
 ROOT = next(p for p in Path(__file__).resolve().parents if (p/'.git').exists())
@@ -46,8 +50,9 @@ class CorpusWorkflow(unittest.TestCase):
                 for parquet_row,csv_row in zip(rows,csv_rows):
                     self.assertEqual(parquet_row['readout'],json.loads(csv_row.pop('readout')))
                     self.assertEqual(parquet_row['dose_um'],float(csv_row.pop('dose_um')))
+                    self.assertEqual(parquet_row['direction'],int(csv_row.pop('direction')))
                     self.assertEqual(csv_row.pop('rep'),'')
-                    self.assertEqual({k:v for k,v in parquet_row.items() if k not in {'readout','dose_um','rep'}},csv_row)
+                    self.assertEqual({k:v for k,v in parquet_row.items() if k not in {'readout','dose_um','rep','direction'}},csv_row)
                 self.assertEqual(len({r['source_cell'] for r in rows}),len(rows))
                 # Every resolved label has all four cells, even shared structures.
                 self.assertEqual(len(rows),report['resolved_labels']*4)
@@ -63,6 +68,60 @@ class CorpusWorkflow(unittest.TestCase):
             manifest['files']['baseline/corpus.csv'] = hashlib.sha256(path.read_bytes()).hexdigest()
             manifest_path.write_text(json.dumps(manifest))
             self.command('verify','--output',output,succeeds=False)
+
+    def test_magnitude_direction_boundaries(self):
+        spec = importlib.util.spec_from_file_location('heliste_corpus', COMMAND)
+        corpus = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(corpus)
+        for value,expected in [(math.nextafter(80,-math.inf),-1),(80,0),
+                               (100,0),(120,0),(math.nextafter(120,math.inf),1)]:
+            with self.subTest(value=value):
+                self.assertEqual(corpus.direction_from_readout(value),expected)
+
+    def test_direction_exports_and_rehashed_false_label_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp)/'release'
+            self.command('build','--output',output)
+            self.command('verify','--output',output)
+            manifest_path = output/'manifest.json'
+            manifest = json.loads(manifest_path.read_text())
+            self.assertEqual(manifest['schema_version'],2)
+            for condition,expected in [('baseline',{-1:194,0:2490,1:60}),
+                                       ('H-R',{-1:178,0:2539,1:27})]:
+                table = pq.read_table(output/condition/'corpus.parquet')
+                self.assertEqual(table.schema.field('direction').type,pa.int8())
+                self.assertEqual(Counter(table.column('direction').to_pylist()),expected)
+                annotation = json.loads((output/condition/'source_annotation.json').read_text())
+                policy = annotation['direction_policy']
+                self.assertEqual(policy['version'],1)
+                self.assertEqual(policy['reference_value'],100)
+                self.assertEqual(policy['threshold_percent'],20)
+                self.assertEqual(policy['zero_interval'],[80,120])
+                self.assertTrue(policy['zero_interval_inclusive'])
+                self.assertEqual(policy['normalization_status'],'working_assumption')
+                self.assertFalse(policy['statistical_significance_claim'])
+            # Change both exports consistently and recompute their checksums:
+            # verification must still reconstruct the correct source-derived label.
+            directory = output/'baseline'
+            table = pq.read_table(directory/'corpus.parquet')
+            values = table.to_pylist()
+            values[0]['direction'] = 1
+            pq.write_table(pa.Table.from_pylist(values,schema=table.schema),directory/'corpus.parquet')
+            csv_path = directory/'corpus.csv'
+            with csv_path.open() as stream:
+                reader = csv.DictReader(stream)
+                fields = reader.fieldnames
+                rows = list(reader)
+            rows[0]['direction'] = '1'
+            with csv_path.open('w',newline='') as stream:
+                writer = csv.DictWriter(stream,fieldnames=fields,lineterminator='\n')
+                writer.writeheader()
+                writer.writerows(rows)
+            for name in ['baseline/corpus.csv','baseline/corpus.parquet']:
+                manifest['files'][name] = hashlib.sha256((output/name).read_bytes()).hexdigest()
+            manifest_path.write_text(json.dumps(manifest))
+            result = self.command('verify','--output',output,succeeds=False)
+            self.assertIn('release differs from offline rebuild',result.stderr)
 
     def test_desalted_parents_preserve_source_rows_and_permanent_charge(self):
         with tempfile.TemporaryDirectory() as temp:

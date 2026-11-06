@@ -3,7 +3,7 @@
 This step builds separate `output/baseline/` and `output/H-R/` corpora from
 unchanged Heliste 2021 Dataset S1 and frozen PubChem chemical evidence in
 [`pheno_data/Heliste-2021`](../../pheno_data/README.md), under
-[ADR 0044](../../docs/adr/0044-stage3-source-first-corpora.md) and specs #52 and #54 (desalted-parent amendment).
+[ADR 0044](../../docs/adr/0044-stage3-source-first-corpora.md) and specs #52, #54 (desalted-parent amendment), and #56 (magnitude direction labels).
 
 Use the `arc` environment (Python with `openpyxl`, `pyarrow`, RDKit; frozen RDKit
 version is recorded in the identity evidence):
@@ -43,7 +43,15 @@ parent. No tautomer or stereoisomer is selected.
 Original salt/form structures remain in the frozen reference evidence. `dose_um` is micromolar, `condition` is `baseline` or
 `H-R`, and `phenotype` is `cell_viability`. `source_asset` and `source_cell` identify
 the workbook cell. `rep` is null; `readout` is `{"source_reported": value}` (a typed
-struct in Parquet, JSON in CSV). Distinct source labels are retained even when
+struct in Parquet, JSON in CSV). `direction` is a derived integer: -1 below 80, 0 from 80 through 120 inclusive,
+and +1 above 120. This is the user-selected ±20% magnitude rule, assuming each
+arm's own 0.01% DMSO vehicle reference equals 100. The assumption is not an
+explicitly confirmed source formula. Class 0 means within the magnitude band,
+not statistical equivalence; these labels make no significance claim. The
+versioned rule and normalization assumption are recorded in each source annotation.
+Schema version 2 adds this column without changing the source readout.
+
+Distinct source labels are retained even when
 they resolve to the same structure. Attribute combinations are not uniqueness keys.
 
 Dataset S1 has 689 source-label rows, four doses (0.04, 0.2, 1 and 5 µM), and
@@ -62,9 +70,10 @@ cardiomyocytes: 24 h pretreatment, 48 h hypoxia and 24 h reoxygenation, with par
 duration-matched normoxia, approximately 96 h elapsed and 0.01% DMSO controls.
 Drug persistence and the exact normalization denominator remain unresolved.
 Supplied values do not establish physical replicates or group-mean semantics;
-vehicle measurements, SD, n, p-values, raw RLU and endpoint labels are absent.
-These limitations do not exclude resolved chemical measurements. This corpus
-makes no training or model-view readiness claim.
+vehicle measurements, SD, n, p-values, raw RLU and source-provided endpoint labels
+are absent. Derived magnitude directions are supplied under the assumption above.
+These limitations do not exclude resolved chemical measurements. The direction column supplies a magnitude target; train/test splitting and model
+views remain downstream work.
 
 `execution/historical/` retains unchanged endpoint-gated release evidence. Its
 path strings and scientific exclusions describe the superseded workflow; the old

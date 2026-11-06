@@ -94,6 +94,9 @@ The wayfinder evidence-counting unit: one drug under one exact condition measure
 The increase, non-change, or decrease classification relative to a specified control under the declared endpoint rule. Whether that direction implies benefit depends on the phenotype and condition.
 _Avoid_: efficacy label (when only a measurement direction is known)
 
+**Magnitude-based direction**:
+A decrease (-1), within-band (0), or increase (+1) label based on a declared effect-size band around a reference. It does not establish statistical significance or equivalence; a reference adopted as a working assumption remains explicit.
+
 **Label-ready phenotype observation**:
 A phenotype observation admitted as a numerically labeled corpus record under the frozen magnitude-and-significance rule, with its input and processing evidence retained. Point estimates or source-table coverage alone do not establish this status.
 

@@ -55,3 +55,21 @@ counts separately. Freeze new identity evidence as a new declared local addition
 retain the previous snapshot and immutable source bytes. Rebuild both condition
 exports through the existing offline build/verify seam and retain complete
 5,512-cell accounting.
+
+## Magnitude direction labels amendment (2026-11-06)
+
+After comparing both arm distributions, the user adopted the working assumption
+that each arm is normalized to its own 0.01% DMSO vehicle control at 100. The
+paper confirms DMSO normalization but does not explicitly confirm this exact
+formula; retain the assumption as such. See the
+[normalization audit](../research/stage3-heliste-normalization-label-audit.md).
+
+The user selected a ±20% magnitude threshold for a derived `direction` on every
+admitted Heliste measurement: below 80 is -1, 80–120 inclusive is 0, above 120
+is +1. Class 0 means within this magnitude band, not demonstrated equivalence.
+These are magnitude-only labels, with no significance test or missing-statistics
+exclusion. This replaces the earlier deferral of direction labeling for this
+source and does not reinstate historical significance-gated admission rules.
+Preserve the original readout, source-cell identity, pending-chemical accounting
+and separate oxygen arms. Record the label policy and normalization assumption
+with the corpus; offline rebuilding must reproduce the labels.

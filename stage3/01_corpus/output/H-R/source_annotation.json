@@ -6,13 +6,33 @@
     "SD",
     "n",
     "p-values",
-    "endpoint labels"
+    "source endpoint labels"
   ],
   "admission": "resolved chemical identity; no endpoint or significance gate",
   "assay": "CellTiter-Glo (CTG), ATP-dependent luminescence",
   "canonicalization": "RDKit LargestFragmentChooser(preferOrganic=True), Uncharger(canonicalOrder=True), canonical isomeric SMILES; active coordination-metal drugs retain all coordination components and charges, removing only water and alkali counterions; Bacitracin zinc requires matching Bacitracin parent evidence before zinc removal; preserve permanent charges, isotopes and stereochemistry; no tautomer or stereoisomer selection",
   "cell_model": "HL-1 mouse immortalized atrial cardiomyocytes",
   "condition": "H-R",
+  "direction_policy": {
+    "labels": {
+      "-1": "below lower boundary",
+      "0": "within magnitude band, not demonstrated equivalence",
+      "1": "above upper boundary"
+    },
+    "method": "magnitude_only",
+    "normalization_evidence": "Paper confirms DMSO normalization; same-arm reference at 100 adopted by user, not explicitly confirmed in paper",
+    "normalization_status": "working_assumption",
+    "reference": "same-arm 0.01% DMSO vehicle",
+    "reference_value": 100,
+    "statistical_significance_claim": false,
+    "threshold_percent": 20,
+    "version": 1,
+    "zero_interval": [
+      80,
+      120
+    ],
+    "zero_interval_inclusive": true
+  },
   "doi": "10.1038/s41598-021-96033-z",
   "dose_unit": "micromolar",
   "drug_persistence": "unresolved",
