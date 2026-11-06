@@ -1,0 +1,94 @@
+[
+  {
+    "kind": "first_group_logdose_offset",
+    "offset": 2.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "first_group_logdose_offset",
+    "offset": 10.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "first_group_logdose_offset",
+    "offset": -1.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "first_group_logdose_offset",
+    "offset": -10.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "00c9a86f0916ce6e2cd960c6",
+    "dose_um": 10.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "159b0c07e4e19334b8ee8ddc",
+    "dose_um": 1.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "2d81ef98f7b7a4b2937bef9e",
+    "dose_um": 1.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "42d973d6faa184578dec063a",
+    "dose_um": 0.2,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "5907744229b5c77fbd53fe27",
+    "dose_um": 0.2,
+    "max_absolute_change": 5.125999450683594e-06
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "7195d7a8bc56685131ad093c",
+    "dose_um": 1.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "8a4d300c94876e566646c2cd",
+    "dose_um": 10.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "a121bae9ba25b07025f5a8c3",
+    "dose_um": 10.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "b6740bbf0f4033f29440eed4",
+    "dose_um": 1.0,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "d1f57f15647dc3513ae7641b",
+    "dose_um": 0.2,
+    "max_absolute_change": 0.0
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "e7e413b2dc192e1638a33093",
+    "dose_um": 1.0,
+    "max_absolute_change": 1.0728836059570312e-05
+  },
+  {
+    "kind": "other_training_group_logdose_plus1",
+    "group": "ffee69401dbb9de3463e7289",
+    "dose_um": 0.2,
+    "max_absolute_change": 1.5459954738616943e-05
+  }
+]

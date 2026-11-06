@@ -1,0 +1,18 @@
+import os
+os.environ['OPENBLAS_NUM_THREADS']='2'
+os.environ['OMP_NUM_THREADS']='2'
+os.environ['MKL_NUM_THREADS']='2'
+import json,csv
+from pathlib import Path
+from flax import serialization
+import numpy as np
+run=Path('/home/chang/arc/stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17')
+r=json.loads((run/'request.json').read_text());f=r['predictor_files'];p=serialization.msgpack_restore((run/'best.msgpack').read_bytes())
+def rows(path):
+ with open(path) as stream:return list(csv.DictReader(stream))
+cases=rows(f['train_cases']); groups=sorted({x['group_id'] for x in cases}); first={}
+for case in cases:first.setdefault(case['group_id'],case)
+mi={x['drug_key']:int(x['morgan_index']) for x in rows(f['drugs'])};m=np.load(f['morgan'],mmap_mode='r');adapter=p['morgan_adapter'];cond=p['native_transport']['Dense_1'];out=[]
+for index in np.linspace(0,len(groups)-1,12,dtype=int):
+ case=first[groups[index]];chem=m[mi[case['drug_key']]]@adapter['kernel']+adapter['bias'];context=np.concatenate((chem,np.array([np.log(float(case['dose_um']))],dtype='float32')));pre=float((context@cond['kernel']+cond['bias'])[0]);out.append({'group':groups[index],'context_preactivation':pre,'preactivation_logdose_plus1':pre+float(cond['kernel'][-1,0])})
+record={'dose_kernel':float(cond['kernel'][-1,0]),'groups':out};print(json.dumps(record,indent=2));Path('/tmp/tenv_cmonge_context_probe.json').write_text(json.dumps(record,indent=2)+'\n')

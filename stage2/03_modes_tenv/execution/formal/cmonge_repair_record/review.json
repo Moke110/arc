@@ -1,0 +1,14 @@
+{
+  "scope": "Narrow independent read-only repair audit; not final full-spec review",
+  "actionable_P1_P2_findings": 0,
+  "checks": [
+    "Production diff restricted to post-fit acceptance and metadata",
+    "Native architecture/objective/selection/RNG/training recipe unchanged",
+    "Actual native artifact CLI regressions, including 18164-gene formal zero and qualification rejection",
+    "Migration preserves54 non-CMonge identities, old attempts and cumulative training/retry counts"
+  ],
+  "limitations": [
+    "Static audit only; runtime tests and migration are recorded separately",
+    "Final two-axis review against f022b1b remains pending"
+  ]
+}

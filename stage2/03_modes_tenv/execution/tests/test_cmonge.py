@@ -1,5 +1,6 @@
 """CMonge adapter checked at the shared subprocess/artifact seam."""
 import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,6 +15,68 @@ ENV=ROOT/'stage2/_envs/cmonge/bin/python'
 ADAPTER=ROOT/'stage2/03_modes_tenv/execution/script/cmonge_adapter.py'
 
 class CMongeRuntime(unittest.TestCase):
+    @unittest.skipUnless(ENV.exists(),'isolated CMonge environment required')
+    def test_formal_zero_local_dose_response_is_reported_not_censored(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary); fixture(root/'input')
+            # A finite extreme dose makes the native dose-context GELU locally
+            # flat; training still updates the independent chemical pathway.
+            genes=18164
+            write_csv(root/'input/genes.csv',[{'gene':f'g{i}'} for i in range(genes)])
+            np.save(root/'input/controls.npy',np.zeros((1,genes),dtype='float32'))
+            fingerprints=np.zeros((6,2048),dtype='uint8'); fingerprints[:,0]=1
+            np.save(root/'input/morgan.npy',fingerprints)
+            for name in ('train.csv','validation.csv','test_cases.csv'):
+                cases=rows(root/'input/fold_0'/name)
+                for case in cases:
+                    case['dose_um']=1e-30
+                    if name=='train.csv':case['group_id']='single_training_condition'
+                write_csv(root/'input/fold_0'/name,cases)
+            target=np.tile(np.array([4,2,-2,-4],dtype='float32'),genes//4)
+            np.save(root/'input/fold_0/train_expression.npy',np.tile(target,(3,1)))
+            np.save(root/'input/fold_0/validation_expression.npy',target[None,:])
+            config=root/'config.json'
+            write_json(config,{'iterations':1,'batch_size':2,'eval_every':1,'qualification':False})
+            command=[str(ENV),str(ADAPTER),'--config',str(config)]
+            try:
+                run_one(root/'input',root/'output','cmonge',0,17,command)
+            except Exception:
+                log=root/'output/runs/cmonge/fold_0/seed_17/adapter.log'
+                if log.exists():print(log.read_text(),file=sys.stderr)
+                raise
+            checkpoint=read_json(root/'output/runs/cmonge/fold_0/seed_17/checkpoint.json')
+            self.assertEqual(checkpoint['dose_sensitivity'],0)
+            self.assertGreater(checkpoint['adapter_parameter_change'],0)
+            self.assertEqual(checkpoint['reload_max_absolute_error'],0)
+            self.assertFalse(checkpoint['qualification_only'])
+            self.assertEqual(checkpoint['input_sensitivity_check'],'formal single-condition diagnostic; zero retained')
+            self.assertEqual(validate_run(root/'input',root/'output','cmonge',0,17,command)['status'],'completed')
+            predictions=np.load(root/'output/runs/cmonge/fold_0/seed_17/prediction.npy')
+            self.assertEqual(predictions.shape,(2,genes))
+            self.assertTrue(np.isfinite(predictions).all())
+
+    @unittest.skipUnless(ENV.exists(),'isolated CMonge environment required')
+    def test_qualification_still_rejects_zero_local_dose_response(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary); fixture(root/'input')
+            fingerprints=np.zeros((6,2048),dtype='uint8'); fingerprints[:,0]=1
+            np.save(root/'input/morgan.npy',fingerprints)
+            for name in ('train.csv','validation.csv','test_cases.csv'):
+                cases=rows(root/'input/fold_0'/name)
+                for case in cases:
+                    case['dose_um']=1e-30
+                    if name=='train.csv':case['group_id']='single_training_condition'
+                write_csv(root/'input/fold_0'/name,cases)
+            np.save(root/'input/fold_0/train_expression.npy',np.tile(np.array([4,2,-2,-4],dtype='float32'),(3,1)))
+            config=root/'config.json'
+            write_json(config,{'iterations':1,'batch_size':2,'eval_every':1,'qualification':True})
+            with self.assertRaises(subprocess.CalledProcessError):
+                run_one(root/'input',root/'output','cmonge',0,17,[str(ENV),str(ADAPTER),'--config',str(config)])
+            directory=root/'output/runs/cmonge/fold_0/seed_17'
+            self.assertIn('qualification baseline/dose behavior check failed',(directory/'adapter.log').read_text())
+            self.assertEqual(read_json(directory/'run.json')['status'],'failed')
+            self.assertFalse((directory/'prediction.npy').exists())
+
     @unittest.skipUnless(ENV.exists(),'isolated CMonge environment required')
     def test_joint_adapter_author_loss_reload_and_input_participation(self):
         with tempfile.TemporaryDirectory() as temporary:

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+    "--config",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/formal.json"
+  ],
+  "fold": 0,
+  "id": "cmonge_fold0_seed17",
+  "inference_timeout_seconds": 1800,
+  "input_root": "/home/chang/arc/stage2/03_modes_tenv/output/input",
+  "model": "cmonge",
+  "output_root": "/home/chang/arc/stage2/03_modes_tenv/output/formal",
+  "profile": {
+    "gpu_peak_gib": 3.31640625,
+    "host_peak_gib": 1.7112617492675781
+  },
+  "seed": 17
+}

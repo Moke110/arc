@@ -1,0 +1,5 @@
+{
+  "phase": "training",
+  "training_seconds": 1335.8593665069784,
+  "stop_reason": "SIGTERM checkpoint saved"
+}

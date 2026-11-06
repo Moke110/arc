@@ -1,0 +1,25 @@
+Running as unit: run-rc091b03aa00c45d19ed1a3de6c53037b.scope; invocation ID: 97d999b9f990434abc91b5af9e8e2fea
+MIGRATED ONLY TWO ATTEMPT STATES AND NINE CMONGE EXPECTED IDENTITIES; NO DISPATCH
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python /tmp/tenv_migrate_cmonge_repair.py --approved-adapter-sha256 99c71c28a6c47149b493c6c0c7aa5981c6ffd38de5dc4e5945c87e45ed7685eb --execute"
+	User time (seconds): 18.46
+	System time (seconds): 4.08
+	Percent of CPU this job got: 97%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:23.01
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 73624
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 336212
+	Voluntary context switches: 196
+	Involuntary context switches: 163
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

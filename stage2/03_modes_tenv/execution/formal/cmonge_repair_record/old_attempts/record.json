@@ -1,0 +1,53 @@
+{
+  "timestamp": 1793931416.3040824,
+  "reason": "parent-directed graceful stop for post-training behavior-gate defect diagnosis; no identities or retry state migrated",
+  "dispatcher_pid": 848065,
+  "dispatcher_status": "SIGSTOP remains",
+  "adapter_pid_signalled_SIGTERM": 898989,
+  "worker_pid": 898970,
+  "wrapper_returncode": 1,
+  "adapter_returncode": 143,
+  "native_training_seconds": 1335.8593665069784,
+  "last_guardian_accounted_training_seconds": 1357.1806161131244,
+  "guard_sampling_tail_note": "last sample precedes worker natural exit by5.06s; migrate conservatively with final elapsed gap charged",
+  "worker_time_v_wall_seconds": 1467.71,
+  "worker_time_v_peak_rss_kib": 1788404,
+  "files": {
+    "stage2/03_modes_tenv/execution/formal/commands.json": "03aaf4a4c75636f75f67af26497257da570c2bff4e74dcf6d005e74388fa277e",
+    "stage2/03_modes_tenv/execution/formal/expected_identities.json": "b6b2b20689400eb8f5c60b89ae3753d4a43ee3e52ca41f651067586becdbbcf5",
+    "stage2/03_modes_tenv/execution/formal/queue.json": "be01ad7864723bcfd5e43c526e289c8dd48fe9c2d6db2523123db75c8e6e371e",
+    "stage2/03_modes_tenv/execution/models/cmonge/formal.json": "4ed77584baf9d63d44b14f31eb2a2f9a2e502c831c82eb77ab79904500836b31",
+    "stage2/03_modes_tenv/execution/script/cmonge_adapter.py": "e5a88ca6188908cbdecdc67559351ef87526792b613273a474b7a23dfb2dbb3c",
+    "stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py": "8b28f71d1ba2715b63df09905818534000755f6c73d510eb591c490c8127fc37",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17/run.json": "62f61451e0ff83071a8d3fc2e5b653326000953f1465990ebaa6bcd370e044a3",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17/progress.json": "d64c8fc1dcc712134ed6e5acb6bd5164101ca181e75e6b6251eb3bbbc9bad153",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17/request.json": "ab825ecc146ef5f031538ce4e49ca24dfe46654a6807d7f95b2768e2717eb7df",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17/adapter.log": "70eff088aa7e7ff48230093d3ea691fa7b8fa4e0b0e05f6ab162f3acba6ad3e7",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.attempt0.log": "bb730fa53e1b0572e152659aa0cb72ccf6d5a3b7bb18625fa7b333d2ee66b26c",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.json": "ed5194e7a5796730f4e661768ba7a5ce27d94b107784b00da64672b1bc921c20",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.job.json": "48c65babdc08ff73af809a552a505f47d1530c8b12b9a0729de2e14539091e14",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.attempt0.journal.log": "d369b323f6ad2721c02c0c05cb1b95dc1aba8aecf3f02fae8ba99cb279c2c69b",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_42/run.json": "259b6d48462b1f7f3a21c87125f314dff668a20498bf38b31b23b68824bcf823",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_42/progress.json": "bbd0a511af9d22dd62afb7dae94356c863d8ad4dc0cdbad499ec08c7f44743a4",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_42/request.json": "2e79ba6a52c5a8da07451cfb0fe2f533e0c8ce52d8080555b1eb68b4afdb3cbf",
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_42/adapter.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed42.job.json": "1bc8ef024b2d8c24edd0115a018e0a25a588db78708a57da231f9e3c3d748e31",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed42.json": "0de36c35505e58ce47d182386544a57229182c1a6532b8c1182f85069680f0de",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed42.attempt0.log": "dffdf8c310de4765acfc4e7dc26fdf896f0af8af69da9a66289c59dca9a28d6b",
+    "stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed42.guardian.jsonl": "5c01c6b9af8e87e07ee3ef710d868f68498bc1306c2934fe9ac2b5fd5a87c297"
+  },
+  "local_only_checkpoint_blobs": {
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17/best.msgpack": {
+      "sha256": "fb8178d9a0ac4864bac7b56a7570d93c4e24cbae8e167b7cc89c71eaf1a49a2a",
+      "size_bytes": 9856570
+    },
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_42/best.msgpack": {
+      "sha256": "eea5055b855a57cd7fe693bfa4b1d4987431806e4cbe1f705aa2d896ca6acd74",
+      "size_bytes": 9856570
+    },
+    "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_42/interrupted.msgpack": {
+      "sha256": "90eeb0a177b04db5dce2a2ab5c99c3e32f0f33d1ffce24dd1ab72799196e1f7a",
+      "size_bytes": 29569812
+    }
+  }
+}

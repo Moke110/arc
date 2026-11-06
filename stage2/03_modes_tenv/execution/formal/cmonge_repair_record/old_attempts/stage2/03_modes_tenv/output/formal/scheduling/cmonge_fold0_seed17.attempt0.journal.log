@@ -1,0 +1,2 @@
+Nov 06 07:49:05 DESKTOP-ADOFOQR systemd[278]: Started run-re7f4004a17d24a73ad90d7f5dc61ce2c.scope - /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python /home/chang/arc/stage2/03_modes_tenv/execution/script/schedule.py worker /home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.job.json.
+Nov 06 09:51:57 DESKTOP-ADOFOQR systemd[278]: run-re7f4004a17d24a73ad90d7f5dc61ce2c.scope: Consumed 1h 20min 568ms CPU time, 1.2G memory peak, 0B memory swap peak.

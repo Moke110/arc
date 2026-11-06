@@ -5,6 +5,10 @@ the frozen tenv full 18,164-gene contract. The final 100-step native batch512 pr
 produced finite 1401 × 18164 predictions, exact checkpoint reload, trained Morgan
 adapter parameters, and nonzero baseline/dose sensitivity. No test score was
 computed. See `admission.json` and `profile_gpu512_*` evidence.
+Qualification retains strict input-participation checks. Formal trained
+checkpoints report single-condition baseline/dose sensitivities as diagnostics,
+including exact zeros; adapter change, exact reload and valid finite predictions
+remain mandatory. See `FIDELITY.md` for this distinction.
 
 The native objective is Sinkhorn divergence plus Euclidean Monge gap. Validation
 samples one held-out condition every 100 iterations using an independent per-run
@@ -18,6 +22,23 @@ pool peak 1 GiB. Workstation GPU total peaked 3.316 GiB, including background us
 the scheduling profile conservatively uses that total. Linear extrapolation is
 2.010 h per 10,000-step run, within the enforced four-hour training allowance;
 this remains an estimate. Nine formal runs remain separate.
+
+The first formal run exposed a post-training validation bug: its selected
+checkpoint was numerically insensitive to dose on the single fixed probe
+condition, although other training conditions responded to dose. Exact reload,
+adapter updates and baseline response passed. Qualification still requires
+nonzero input sensitivity; formal runs record these local sensitivities as
+diagnostics, including zero, rather than rejecting a fitted predictor on that
+basis. Finite diagnostics, adapter updates, exact reload and prediction integrity
+remain required. Architecture, native objective, checkpoint selection, random
+draws, dose conditioning and training settings are unchanged.
+
+The original failed attempt and the gracefully interrupted second attempt are
+preserved under the formal repair record. Corrected fits carry their elapsed
+training time into the same four-hour cumulative budgets. Only CMonge's nine
+expected code identities are revised; the entrant set and all other identities
+remain fixed. See `../../formal/cmonge_repair_record/` for diagnosis, old
+identities, checkpoints' hashes and migration evidence.
 
 The CPU native 100-step profile took 787.053 s, projecting 21.86 h; its batch 512 OOM
 and unique batch-256 retry remain preserved. GPU batch 512 was separately measured with further

@@ -1,0 +1,9 @@
+{
+  "timestamp": 1793931462.4325204,
+  "pid": 848065,
+  "verified_cmdline": "/home/chang/miniconda3/envs/arc/bin/python stage2/03_modes_tenv/execution/script/schedule.py run stage2/03_modes_tenv/execution/formal/queue.json ",
+  "verified_state_before": "T",
+  "signal": "SIGKILL dispatcher only after sole owned worker naturally exited; no further dispatch",
+  "worker_pid": 898970,
+  "worker_verified_state": "Z"
+}

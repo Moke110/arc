@@ -1,0 +1,44 @@
+Running as unit: run-r2994ce1fd35b4731909003f228b5f9b7.scope; invocation ID: 73c5f8e9ac894430a1aea6439eca6f66
+{
+  "backend": "gpu",
+  "adapter_parameter_change": 1.0975415706634521,
+  "baseline_sensitivity": 0.10001790523529053,
+  "dose_sensitivity": 0.0,
+  "reload_max_absolute_error": 0.0,
+  "prediction_min": -0.04271228611469269,
+  "prediction_max": 6.675058364868164,
+  "prediction_finite": true,
+  "first_group": "00c9a86f0916ce6e2cd960c6",
+  "first_group_wells": 3,
+  "batch_size": 512,
+  "gate_pass": false
+}
+Traceback (most recent call last):
+  File "/tmp/tenv_cmonge_gate_probe_gpu.py", line 27, in <module>
+    assert values['gate_pass'],'adapter/baseline/dose/reload behavior check failed'
+           ~~~~~~^^^^^^^^^^^^^
+AssertionError: adapter/baseline/dose/reload behavior check failed
+Command exited with non-zero status 1
+	Command being timed: "stage2/_envs/cmonge/bin/python /tmp/tenv_cmonge_gate_probe_gpu.py"
+	User time (seconds): 3.60
+	System time (seconds): 1.33
+	Percent of CPU this job got: 117%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.22
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1559656
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 5
+	Minor (reclaiming a frame) page faults: 377275
+	Voluntary context switches: 14976
+	Involuntary context switches: 66
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

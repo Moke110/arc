@@ -1,0 +1,54 @@
+{
+  "finding": "Formal post-fit gate incorrectly censored a valid selected checkpoint for exact zero local dose sensitivity on one condition; dose wiring is present and other training conditions respond.",
+  "production_change": "cmonge_adapter.py only: finite diagnostics, positive adapter change and exact reload remain strict; qualification alone requires positive baseline/dose sensitivity; formal zeros remain explicit diagnostics.",
+  "regression_seam": "Actual isolated native CMonge subprocess through run_one/validate_run artifact CLI; no model mocks or test hooks.",
+  "formal_fixture": {
+    "genes": 18164,
+    "iterations": 1,
+    "batch_size": 2,
+    "dose_um": 1e-30,
+    "qualification": false,
+    "expected_dose_sensitivity": 0
+  },
+  "red": {
+    "tests": 1,
+    "outcome": "same adapter/baseline/dose/reload gate failure",
+    "test_seconds": 3.893,
+    "wall_seconds": 4.36,
+    "peak_rss_kib": 720868,
+    "log": "/tmp/tenv_cmonge_formal_zero_red.log"
+  },
+  "green": {
+    "tests": 1,
+    "outcome": "completed, exact zero sensitivity retained; changed adapter, exact reload, finite 2x18164 predictions",
+    "test_seconds": 4.002,
+    "wall_seconds": 4.46,
+    "peak_rss_kib": 723320,
+    "log": "/tmp/tenv_cmonge_formal_zero_green.log"
+  },
+  "full_cmonge_regression": {
+    "tests": 3,
+    "outcome": "all pass, including strict qualification rejection and existing native fidelity integration",
+    "test_seconds": 15.997,
+    "wall_seconds": 19.11,
+    "peak_rss_kib": 721376,
+    "log": "/tmp/tenv_cmonge_gate_tests_green.log"
+  },
+  "scope": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8
+  },
+  "no_formal_rerun_or_identity_changes": true,
+  "staged_or_committed": false,
+  "cuda_regression": {
+    "tests": 2,
+    "entrypoint": "stage2/03_modes_tenv/execution/script/cmonge_gpu_adapter.py",
+    "outcome": "formal full-axis exactzero retained and strict qualification rejection both pass on original failure backend",
+    "test_seconds": 25.132,
+    "wall_seconds": 28.19,
+    "peak_rss_kib": 1362648,
+    "log": "tenv_cmonge_cuda_gate_regression.log",
+    "driver": "tenv_cmonge_cuda_gate_regression.py.txt",
+    "production_sha256": "99c71c28a6c47149b493c6c0c7aa5981c6ffd38de5dc4e5945c87e45ed7685eb"
+  }
+}

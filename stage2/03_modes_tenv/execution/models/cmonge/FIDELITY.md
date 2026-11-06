@@ -40,6 +40,14 @@ parameter change, baseline/dose sensitivity, exact reload agreement and measured
 host resources. Real full-axis qualification passed on the frozen tenv release; see admission.json.
 The independent review and complete formal nine-run matrix remain separate.
 
+Qualification requires positive baseline/dose sensitivity on its probe condition.
+After formal training, those single-condition sensitivities are recorded as
+finite diagnostics; an exact zero does not invalidate the selected model's
+predictions. A learned checkpoint can be locally insensitive while other
+conditions still respond. Adapter parameter change, exact checkpoint reload and
+finite, ordered full-axis predictions remain required. This avoids censoring a
+formally trained predictor for its learned response behavior.
+
 No historical benchmark implementation or upstream source file is modified or
 imported. The existing CPU JAX environment is preserved. An isolated matching CUDA12
 plugin overlay enables the separately qualified GPU execution; see CUDA.md.

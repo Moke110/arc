@@ -1,0 +1,65 @@
+{
+  "dose_kernel": 0.171584814786911,
+  "groups": [
+    {
+      "group": "00c9a86f0916ce6e2cd960c6",
+      "context_preactivation": 0.3328849971294403,
+      "preactivation_logdose_plus1": 0.5044698119163513
+    },
+    {
+      "group": "159b0c07e4e19334b8ee8ddc",
+      "context_preactivation": 0.225469172000885,
+      "preactivation_logdose_plus1": 0.397053986787796
+    },
+    {
+      "group": "2d81ef98f7b7a4b2937bef9e",
+      "context_preactivation": -0.18783441185951233,
+      "preactivation_logdose_plus1": -0.01624959707260132
+    },
+    {
+      "group": "42d973d6faa184578dec063a",
+      "context_preactivation": -0.06535018235445023,
+      "preactivation_logdose_plus1": 0.10623463243246078
+    },
+    {
+      "group": "5907744229b5c77fbd53fe27",
+      "context_preactivation": -0.4151059687137604,
+      "preactivation_logdose_plus1": -0.24352115392684937
+    },
+    {
+      "group": "7195d7a8bc56685131ad093c",
+      "context_preactivation": 0.0013286855537444353,
+      "preactivation_logdose_plus1": 0.17291350034065545
+    },
+    {
+      "group": "8a4d300c94876e566646c2cd",
+      "context_preactivation": 0.2986569404602051,
+      "preactivation_logdose_plus1": 0.4702417552471161
+    },
+    {
+      "group": "a121bae9ba25b07025f5a8c3",
+      "context_preactivation": 0.2919752895832062,
+      "preactivation_logdose_plus1": 0.4635601043701172
+    },
+    {
+      "group": "b6740bbf0f4033f29440eed4",
+      "context_preactivation": -0.04504827782511711,
+      "preactivation_logdose_plus1": 0.1265365369617939
+    },
+    {
+      "group": "d1f57f15647dc3513ae7641b",
+      "context_preactivation": -0.258552610874176,
+      "preactivation_logdose_plus1": -0.08696779608726501
+    },
+    {
+      "group": "e7e413b2dc192e1638a33093",
+      "context_preactivation": -0.03583814576268196,
+      "preactivation_logdose_plus1": 0.13574666902422905
+    },
+    {
+      "group": "ffee69401dbb9de3463e7289",
+      "context_preactivation": -0.3332427442073822,
+      "preactivation_logdose_plus1": -0.1616579294204712
+    }
+  ]
+}
