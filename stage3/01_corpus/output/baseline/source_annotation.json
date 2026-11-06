@@ -10,7 +10,7 @@
   ],
   "admission": "resolved chemical identity; no endpoint or significance gate",
   "assay": "CellTiter-Glo (CTG), ATP-dependent luminescence",
-  "canonicalization": "preserves reference chemical form; no inferred parent or salt stripping",
+  "canonicalization": "RDKit LargestFragmentChooser(preferOrganic=True), Uncharger(canonicalOrder=True), canonical isomeric SMILES; active coordination-metal drugs retain all coordination components and charges, removing only water and alkali counterions; Bacitracin zinc requires matching Bacitracin parent evidence before zinc removal; preserve permanent charges, isotopes and stereochemistry; no tautomer or stereoisomer selection",
   "cell_model": "HL-1 mouse immortalized atrial cardiomyocytes",
   "condition": "baseline",
   "doi": "10.1038/s41598-021-96033-z",

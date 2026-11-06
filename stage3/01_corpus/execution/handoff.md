@@ -1,60 +1,57 @@
-# Heliste source-first corpus implementation — #52 / #53
+# Heliste desalted-parent corpus — #54 / #55
 
-The current step replaces the endpoint-gated workflow under ADR 0044. Baseline and
-H-R each contain 2,732 admitted source values and 24 pending values: all 5,512
-numerical Dataset S1 cells are accounted for. There are 689 source-label rows,
-683 resolved labels and 682 unique reference canonical structures. Both Amiloride
-hydrochloride labels remain separate despite resolving to one reference structure.
+The user requested desalted forms for every chemical, including the six previously
+pending labels. Both conditions now have 2,744 admitted values and 12 pending values.
+All 689 source labels and 5,512 numerical cells remain accounted for; 686 labels
+resolve to 663 unique desalted parent structures. 264 previously admitted reference structures changed representation after
+desalting; 23 excess label identities now share parent structures without row
+merging. Source labels/cells, doses,
+measurements, null replicates and condition mapping are unchanged, with no merging
+of rows that now share a parent. Prior reference-form outputs remain in Git.
 
-Pending chemical identities are Verteporfin (Visudyne), Sevelamer HCl, Quinine
-hydrochloride dihydrate, Methscopolamine (Pamine), Formoterol hemifumarate and
-Vitamin D2. The reports retain statuses, reasons, original cells/values and raw
-lookup evidence. Sevelamer has no confirmed unique structure; the other five have
-ambiguous reference results. No structure was fabricated to admit these values.
+The immutable chemical_resolution_v1.json and original downloaded bytes remain
+unchanged. The declared chemical_resolution_v2.json freezes their hash, original
+reference records, the parent policy, extra raw PubChem evidence and deterministic
+RDKit 2026.03.2 derivation. Ordinary drugs use the largest organic fragment and
+removable-proton uncharging; stereochemistry, isotopes and permanent charges remain.
+Eight active metal compounds preserve their full coordination components and
+charges, removing only water and alkali counterions. This avoids replacing B12 or
+platinum drugs with their isolated organic ligand. Bacitracin zinc is desalted only
+after an independent exact Bacitracin parent query matches the complete original
+ligand stereochemistry. No tautomer or stereoisomer selection is performed.
 
-Chemical acquisition is separate from the offline corpus command. The declared
-`pheno_data/Heliste-2021/local/chemical_resolution_v1.json` freezes raw PubChem
-property/synonym responses, URLs, CIDs, retrieval times and deterministic RDKit
-2026.03.2 canonicalization. Validation requires one CID, exact supplied primary
-name/synonym confirmation and preservation of explicitly supplied salt and
-stereochemistry. A full-label lookup for Sulindac initially returned an impurity;
-the primary-name guard rejected it and the final lookup uses the confirmed
-Sulindac reference. Author-supplied labels remain unchanged in the corpus.
+Three newly resolved source labels are Quinine hydrochloride dihydrate (candidate
+hydrates converge), Methscopolamine (Pamine) (cation/bromide converge, retaining
+permanent positive charge), and Vitamin D2 (independent Ergocalciferol evidence
+identifies the ordinary parent rather than a mislabeled deuterated reference).
+Pending labels are Verteporfin (Visudyne), Formoterol hemifumarate and Sevelamer HCl.
+The former two retain competing stereochemical specifications; Sevelamer is a
+polymer without a supported single finite structure. Salt removal cannot justify
+choosing an arbitrary isomer or inventing a polymer structure.
 
-Source limitations persist: author-normalized CTG is not raw RLU; the exact
-normalization denominator, drug persistence and physical replicate identity are
-unknown. The endpoint follows approximately 96 h elapsed, including 24 h
-pretreatment, 48 h hypoxia and 24 h reoxygenation; normoxia is duration matched.
-No vehicle values, replicate indices, SD, n, p-values or endpoint labels were
-invented. These are source-measurement corpora, with no training readiness claim.
+Public build/verify and all three acceptance tests pass. The desalting test first
+failed against reference-form outputs. Tests retain source fidelity, complete
+accounting, CSV/Parquet equivalence, idempotence, rehashed tampering rejection and
+now assert desalted Amiloride, permanent Methscopolamine charge, metal retention,
+new admissions and continued Formoterol ambiguity. Heliste source integrity, path
+and tracking gates are recorded in validation/desalt-*.log. Full verify_all.sh is
+not run alongside the active Stage2 training worker, per repository resource rules.
 
-Validation evidence is in `validation/`: public build and offline reconstructive
-verify pass; two public acceptance tests pass, including literal source-cell
-values, CSV/Parquet equivalence, complete accounting, idempotence, rehashed output
-tampering and rehashed raw identity-provenance tampering. Tests were first red
-before the builder existed. The final measured peak RSS is 208,340 KiB for build,
-256,088 KiB for verify and 259,816 KiB for the test command. Heliste source
-verification and repository path/tracking checks pass. The full repository
-integrity sweep was not run: integration checked the active user scopes and
-confirmed a Stage 2 PerturbDiff fold0/seed42 training worker was running. The
-execution-environment rule prohibits the ~9.7 GiB full sweep alongside training;
-no whole-repository integrity success is implied here.
-
-Run commands from the repository root with the `arc` Python environment:
+Reproduce with the arc Python environment:
 
 ```bash
 python stage3/01_corpus/execution/corpus.py build
 python stage3/01_corpus/execution/corpus.py verify
-python -m unittest discover -s stage3/01_corpus/execution/tests -v
+python -m unittest discover -s stage3/01_corpus/execution/tests -p test_corpus.py -v
 bash pheno_data/Heliste-2021/script/verify.sh
 bash script/check_paths.sh
 bash script/check_tracked.sh
 ```
 
-The unchanged prior release evidence lives under `execution/historical/`;
-retired code is recoverable at commit `74f7e7a`. Independent Standards and Spec review of `74f7e7a...ca73f1b` completed with zero
-remaining findings on each axis. A duplicated canonicalization check was removed
-and the acceptance seam rerun. The Spec reviewer independently matched all 5,512
-source cells and validated all 689 frozen identity records. Original source
-checksums were independently rechecked and unchanged. No worktrees were created;
-all changes were made on `dev`, with no push. Tracker resolution: #52 and #53.
+Canonical acquisition is separate: `python pheno_data/Heliste-2021/script/desalt_chemicals.py --acquire`.
+It uses the immutable v1 snapshot and only targeted pending/parent reference queries.
+Source CTG normalization denominator, drug persistence and physical-replicate
+semantics remain unresolved. The corpus contains no inferred controls or statistics.
+Measured peak RSS: build 223,580 KiB, offline verify 240,020 KiB, final tests
+240,360 KiB. Independent integration review and tracker closure are recorded after
+implementation.

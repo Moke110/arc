@@ -67,6 +67,13 @@
       "version": "v1",
       "bytes": 6239675,
       "sha256": "f0c010b3b63a2b1e23bcf0e077aa74f72286c8ed5b0717f1677b5e64311208c7"
+    },
+    {
+      "path": "local/chemical_resolution_v2.json",
+      "origin": "User-authorized desalted parents, deterministic RDKit transformation of immutable v1 evidence plus targeted raw PubChem property/synonym responses; script/desalt_chemicals.py",
+      "version": "v2",
+      "bytes": 6734409,
+      "sha256": "3c101c8015db1e27132390cfaa4de923d91e664ea6c9e2cd5f967a37b1ad5326"
     }
   ],
   "source_tree": {

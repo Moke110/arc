@@ -37,7 +37,11 @@ previously pending labels. This replaces the first implementation's preservation
 of reference salts in corpus canonical SMILES. Apply a deterministic, versioned
 parent transformation to every resolved reference: remove counterions and
 solvates, normalize removable protonation, retain stereochemistry and permanent
-charges. Keep original labels, reference structures and resolution evidence so
+charges. Active metal coordination centers and their ligands remain part of the
+parent even when a reference SMILES encodes them as disconnected components;
+a largest-fragment rule must not turn a coordination drug into an isolated ligand.
+Separate genuine metal counterions require supported parent evidence.
+Keep original labels, reference structures and resolution evidence so
 the administered form remains auditable. Supplied molar doses remain unchanged;
 parent mapping does not authorize an inferred dose or potency conversion.
 

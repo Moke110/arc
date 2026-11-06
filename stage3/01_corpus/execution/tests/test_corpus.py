@@ -64,6 +64,31 @@ class CorpusWorkflow(unittest.TestCase):
             manifest_path.write_text(json.dumps(manifest))
             self.command('verify','--output',output,succeeds=False)
 
+    def test_desalted_parents_preserve_source_rows_and_permanent_charge(self):
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp)/'release'
+            self.command('build','--output',output)
+            self.command('verify','--output',output)
+            rows = pq.read_table(output/'baseline/corpus.parquet').to_pylist()
+            coordination = {'Gadodiamide (Omniscan)','Sodium orthovanadate','Bismuth Subsalicylate','Vitamin B12','Cisplatin','Carboplatin','Oxaliplatin (Eloxatin)','Sodium Nitroprusside'}
+            self.assertTrue(all('.' not in r['canonical_smiles'] for r in rows if r['source_label'] not in coordination))
+            for label,metal in [('Vitamin B12','Co'),('Oxaliplatin (Eloxatin)','Pt'),('Sodium Nitroprusside','Fe')]:
+                drug = next(r for r in rows if r['source_label']==label)
+                self.assertIn(metal,drug['canonical_smiles'])
+                self.assertNotIn('Na',drug['canonical_smiles'])
+            amiloride = [r for r in rows if r['source_label'] in {'Amiloride hydrochloride (Midamor)','Amiloride hydrochloride dihydrate'}]
+            self.assertEqual(len(amiloride),8)
+            self.assertEqual(len({r['canonical_smiles'] for r in amiloride}),1)
+            self.assertEqual(amiloride[0]['canonical_smiles'],'NC(N)=NC(=O)c1nc(Cl)c(N)nc1N')
+            meth = [r for r in rows if r['source_label']=='Methscopolamine (Pamine)']
+            self.assertEqual(len(meth),4)
+            self.assertIn('[N+]',meth[0]['canonical_smiles'])
+            self.assertNotIn('Br',meth[0]['canonical_smiles'])
+            self.assertEqual(len([r for r in rows if r['source_label']=='Quinine hydrochloride dihydrate']),4)
+            self.assertEqual(len([r for r in rows if r['source_label']=='Formoterol hemifumarate']),0)
+            vitamin = next(r for r in rows if r['source_label']=='Vitamin D2')
+            self.assertNotIn('[2H]',vitamin['canonical_smiles'])
+
     def test_rehashed_false_identity_evidence_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             clone = Path(temp)/'repo'
@@ -74,19 +99,28 @@ class CorpusWorkflow(unittest.TestCase):
             script = clone/'stage3/01_corpus/execution/corpus.py'
             script.parent.mkdir(parents=True)
             shutil.copy(COMMAND,script)
-            evidence_path = clone/'pheno_data/Heliste-2021/local/chemical_resolution_v1.json'
+            evidence_path = clone/'pheno_data/Heliste-2021/local/chemical_resolution_v2.json'
             evidence = json.loads(evidence_path.read_text())
             record = next(r for r in evidence['records'] if r['status']=='resolved')
-            attempt = next(a for a in record['attempts'] if a['query']==record['evidence']['query'])
+            attempt = next(a for a in record['original_reference']['attempts'] if a['query']==record['original_reference']['evidence']['query'])
             attempt['response']['PropertyTable']['Properties'][0]['CID'] = -1
             evidence_path.write_text(json.dumps(evidence))
             log_path = clone/'pheno_data/Heliste-2021/author_log.json'
             log = json.loads(log_path.read_text())
-            addition = next(a for a in log['local_additions'] if a['path']=='local/chemical_resolution_v1.json')
+            addition = next(a for a in log['local_additions'] if a['path']=='local/chemical_resolution_v2.json')
             addition.update(bytes=evidence_path.stat().st_size,sha256=hashlib.sha256(evidence_path.read_bytes()).hexdigest())
             log_path.write_text(json.dumps(log))
             result = self.command('build','--output',clone/'release',script=script,succeeds=False)
             self.assertIn('Identity property evidence is not unique or differs',result.stderr)
+            evidence = json.loads((ROOT/'pheno_data/Heliste-2021/local/chemical_resolution_v2.json').read_text())
+            quinine = next(r for r in evidence['records'] if r['source_label']=='Quinine hydrochloride dihydrate')
+            quinine['parent_attempts'].pop(0)
+            evidence_path.write_text(json.dumps(evidence))
+            addition.update(bytes=evidence_path.stat().st_size,sha256=hashlib.sha256(evidence_path.read_bytes()).hexdigest())
+            log_path.write_text(json.dumps(log))
+            result = self.command('build','--output',clone/'release',script=script,succeeds=False)
+            self.assertIn('Missing candidate synonym evidence',result.stderr)
+
 
 if __name__ == '__main__':
     unittest.main()

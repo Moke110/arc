@@ -3,7 +3,7 @@
 This step builds separate `output/baseline/` and `output/H-R/` corpora from
 unchanged Heliste 2021 Dataset S1 and frozen PubChem chemical evidence in
 [`pheno_data/Heliste-2021`](../../pheno_data/README.md), under
-[ADR 0044](../../docs/adr/0044-stage3-source-first-corpora.md) and spec #52.
+[ADR 0044](../../docs/adr/0044-stage3-source-first-corpora.md) and specs #52 and #54 (desalted-parent amendment).
 
 Use the `arc` environment (Python with `openpyxl`, `pyarrow`, RDKit; frozen RDKit
 version is recorded in the identity evidence):
@@ -17,8 +17,9 @@ python -m unittest discover -s stage3/01_corpus/execution/tests -v
 A fresh checkout first acquires originals with
 `python pheno_data/Heliste-2021/script/download.py`. The tracked local identity
 snapshot is sufficient for offline building; only an intentional identity refresh
-runs `python pheno_data/Heliste-2021/script/resolve_chemicals.py` with network
-access. New reference evidence may change coverage and must be reviewed.
+runs `python pheno_data/Heliste-2021/script/desalt_chemicals.py --acquire`
+with network access. The immutable v1 reference snapshot is retained; v2 freezes
+the desalted parents and additional reference evidence. New reference evidence may change coverage and must be reviewed.
 `--output /tmp/heliste-corpus` builds an alternate output. Existing output is
 verified and never silently overwritten. Remove or choose a new directory after
 an intentional input/software change.
@@ -32,8 +33,14 @@ It rejects changed output even if its checksum is recomputed.
 
 One record is one supplied numerical cell. `source_label` preserves the exact
 original name; `canonical_smiles` is a deterministic isomeric RDKit representation
-of the reference chemical form, preserving salts and stereochemistry without
-inventing an active parent. `dose_um` is micromolar, `condition` is `baseline` or
+of the desalted parent: RDKit selects the largest organic fragment, removes
+counterions and solvates, and uncharges removable protonation. Stereochemistry,
+isotopes and permanent charges remain. Active coordination-metal drugs retain
+their metal and ligand components (even when the reference SMILES is disconnected),
+removing only water and alkali counterions; their charges are preserved. Bacitracin
+zinc instead uses an independently confirmed, stereochemically matching Bacitracin
+parent. No tautomer or stereoisomer is selected.
+Original salt/form structures remain in the frozen reference evidence. `dose_um` is micromolar, `condition` is `baseline` or
 `H-R`, and `phenotype` is `cell_viability`. `source_asset` and `source_cell` identify
 the workbook cell. `rep` is null; `readout` is `{"source_reported": value}` (a typed
 struct in Parquet, JSON in CSV). Distinct source labels are retained even when
@@ -43,7 +50,11 @@ Dataset S1 has 689 source-label rows, four doses (0.04, 0.2, 1 and 5 µM), and
 5,512 numerical cells, 2,756 per condition. CTRL denotes chemically treated
 normoxia and HYP denotes hypoxia followed by reoxygenation. Every cell is admitted
 with a resolved structure or accounted for in the pending-resolution report.
-Chemical labels and unique structures are counted separately. No statistical or
+Chemical labels and unique structures are counted separately. Current coverage is
+686 resolved labels and 663 unique desalted parents, with 2,744 admitted values
+and 12 pending values per condition. Verteporfin and Formoterol hemifumarate have
+unresolved stereochemical reference ambiguity; Sevelamer is a polymer without a
+supported single finite structure. Desalting does not resolve these identities. No statistical or
 endpoint admission filter is applied.
 
 The assay is normalized CTG ATP-dependent luminescence in HL-1 mouse atrial

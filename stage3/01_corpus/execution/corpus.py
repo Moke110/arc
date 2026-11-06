@@ -16,7 +16,7 @@ from rdkit import rdBase
 ROOT = next(p for p in Path(__file__).resolve().parents if (p/'.git').exists())
 ITEM = ROOT/'pheno_data/Heliste-2021'
 sys.path.insert(0, str(ITEM/'script'))
-from resolve_chemicals import validate_record
+from desalt_chemicals import validate_record, POLICY
 
 S1 = '41598_2021_96033_MOESM2_ESM.xlsx'
 SOURCE_SHA = 'e3bce1a6b017d1d71a2033e89986b462a294fdf576bfeff16f9b75fe60c73aac'
@@ -56,7 +56,7 @@ def frozen_inputs():
     existing_local = {str(p.relative_to(ITEM)) for p in (ITEM/'local').rglob('*') if p.is_file()}
     if len(additions)!=len(log['local_additions']) or set(additions)!=existing_local:
         raise ValueError('undeclared or duplicate local evidence')
-    identity_path = 'local/chemical_resolution_v1.json'
+    identity_path = 'local/chemical_resolution_v2.json'
     if identity_path not in additions:
         raise ValueError('identity evidence must be declared in author_log')
     for name, entry in additions.items():
@@ -69,6 +69,10 @@ def frozen_inputs():
     for path in [ITEM/'author_log.json',ITEM/'manifest.sha256']:
         inputs[str(path.relative_to(ROOT))] = digest(path)
     resolution = json.loads((ITEM/identity_path).read_text())
+    if resolution['original_snapshot_sha256'] != digest(ITEM/'local/chemical_resolution_v1.json'):
+        raise ValueError('Original chemical reference snapshot mismatch')
+    if resolution['canonicalization']['options'] != POLICY:
+        raise ValueError('Unsupported desalted parent policy')
     if resolution['canonicalization']['version'] != rdBase.rdkitVersion:
         raise ValueError('RDKit version differs from frozen canonicalization')
     return resolution, inputs
@@ -87,8 +91,11 @@ def materialize(output):
     by_label = {r['source_label']:r for r in identities}
     if len(by_label)!=len(identities) or set(by_label)!=set(labels):
         raise ValueError('identity evidence does not exactly cover source labels')
+    originals = {r['source_label']:r for r in json.loads((ITEM/'local/chemical_resolution_v1.json').read_text())['records']}
     for label, identity in by_label.items():
         validate_record(identity)
+        if identity['original_reference'] != originals[label]:
+            raise ValueError('Parent evidence differs from original frozen reference')
         if identity['status'] not in {'resolved','unresolved','ambiguous'}:
             raise ValueError('unknown resolution status')
         if identity['status']!='resolved' and not identity.get('reason'):
@@ -121,11 +128,11 @@ def materialize(output):
             for record in records:
                 writer.writerow({**record,'rep':'','readout':json.dumps(record['readout'],sort_keys=True,allow_nan=False)})
         report = dict(source_label_rows=689,distinct_source_labels=len(set(labels)),resolved_labels=sum(r['status']=='resolved' for r in identities),unique_canonical_structures=len({r['canonical_smiles'] for r in identities if r['status']=='resolved'}),source_values=2756,admitted_values=len(records),pending_values=len(pending)*4,pending=pending,chemical_resolution=identities,canonicalization=resolution['canonicalization'])
-        annotation = dict(source='Heliste 2021 Dataset S1',doi='10.1038/s41598-021-96033-z',source_asset=source_asset,condition=condition,source_arm='CTRL' if condition=='baseline' else 'HYP',phenotype='cell_viability',assay='CellTiter-Glo (CTG), ATP-dependent luminescence',cell_model='HL-1 mouse immortalized atrial cardiomyocytes',pretreatment_hours=24,hypoxia_hours=0 if condition=='baseline' else 48,reoxygenation_hours=0 if condition=='baseline' else 24,elapsed_hours_approximately=96,normoxia='duration-matched parallel normoxia' if condition=='baseline' else None,vehicle='0.01% DMSO',scale='author-supplied normalized relative viability; preserved exactly',normalization_denominator='exact oxygen-specific denominator unresolved',drug_persistence='unresolved',replicate_identity=None,measurement_semantics='source_reported; individual versus group mean unknown',absent_evidence=['raw RLU','vehicle measurements','replicate identities','SD','n','p-values','endpoint labels'],admission='resolved chemical identity; no endpoint or significance gate',dose_unit='micromolar',canonicalization='preserves reference chemical form; no inferred parent or salt stripping',evidence=['PMC8371130.1.xml','41598_2021_96033_MOESM1_ESM.pdf',S1])
+        annotation = dict(source='Heliste 2021 Dataset S1',doi='10.1038/s41598-021-96033-z',source_asset=source_asset,condition=condition,source_arm='CTRL' if condition=='baseline' else 'HYP',phenotype='cell_viability',assay='CellTiter-Glo (CTG), ATP-dependent luminescence',cell_model='HL-1 mouse immortalized atrial cardiomyocytes',pretreatment_hours=24,hypoxia_hours=0 if condition=='baseline' else 48,reoxygenation_hours=0 if condition=='baseline' else 24,elapsed_hours_approximately=96,normoxia='duration-matched parallel normoxia' if condition=='baseline' else None,vehicle='0.01% DMSO',scale='author-supplied normalized relative viability; preserved exactly',normalization_denominator='exact oxygen-specific denominator unresolved',drug_persistence='unresolved',replicate_identity=None,measurement_semantics='source_reported; individual versus group mean unknown',absent_evidence=['raw RLU','vehicle measurements','replicate identities','SD','n','p-values','endpoint labels'],admission='resolved chemical identity; no endpoint or significance gate',dose_unit='micromolar',canonicalization=POLICY,evidence=['PMC8371130.1.xml','41598_2021_96033_MOESM1_ESM.pdf',S1])
         (directory/'chemical_resolution_report.json').write_bytes(json_bytes(report))
         (directory/'source_annotation.json').write_bytes(json_bytes(annotation))
         coverage[condition] = {k:report[k] for k in ['source_label_rows','resolved_labels','unique_canonical_structures','source_values','admitted_values','pending_values']}
-    manifest = dict(schema_version=1,inputs=inputs,coverage=coverage,code={str(p.relative_to(ROOT)):digest(p) for p in [Path(__file__).resolve(),ITEM/'script/resolve_chemicals.py']},software={'pyarrow':pa.__version__,'rdkit':rdBase.rdkitVersion,'openpyxl':openpyxl.__version__},files={str(p.relative_to(output)):digest(p) for p in sorted(output.rglob('*')) if p.is_file()})
+    manifest = dict(schema_version=1,inputs=inputs,coverage=coverage,code={str(p.relative_to(ROOT)):digest(p) for p in [Path(__file__).resolve(),ITEM/'script/resolve_chemicals.py',ITEM/'script/desalt_chemicals.py']},software={'pyarrow':pa.__version__,'rdkit':rdBase.rdkitVersion,'openpyxl':openpyxl.__version__},files={str(p.relative_to(output)):digest(p) for p in sorted(output.rglob('*')) if p.is_file()})
     (output/'manifest.json').write_bytes(json_bytes(manifest))
     return manifest
 
