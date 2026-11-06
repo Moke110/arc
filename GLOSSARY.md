@@ -26,7 +26,7 @@ The AICM stage that predicts the direction of change of one cardiomyocyte phenot
 ### Stage 3 phenotype data
 
 **Phenotype**:
-The biological indicator represented by a Stage 3 corpus target. MTT, CCK8 and CellTiter-Glo (CTG) measurements belong to `cell_viability`; their assay methods and source measurement scales remain identifiable.
+The biological indicator represented by a Stage 3 corpus target. MTT, CCK8, CellTiter-Glo (CTG) and imaging-based viability measurements belong to `cell_viability`; their assay methods and source measurement scales remain identifiable.
 
 **Condition**:
 The experimental state of a Stage 3 phenotype measurement, such as baseline or hypoxia–reoxygenation. Detailed context, including cell type and treatment, hypoxia and reoxygenation timings, further describes that state.

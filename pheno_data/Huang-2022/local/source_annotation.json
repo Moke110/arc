@@ -1,0 +1,36 @@
+{
+  "source": "huang_2022",
+  "publication_doi": "10.1016/j.celrep.2022.110643",
+  "condition": "baseline",
+  "phenotype": "cell_viability",
+  "assay": "Hoechst33342/propidium-iodide whole-well imaging",
+  "cell_type": "human iPSC-derived cardiomyocyte",
+  "donor_lines": 13,
+  "cell_age": "day44 replated and recovered3days before24h treatment",
+  "treatment_duration_h": 24,
+  "screen_dose_uM": 100,
+  "chemical_count_reported": {
+    "methods": 2374,
+    "results": 2375
+  },
+  "readout_meaning": "Whole-well total nuclei and PI-positive dead cells yield live/dead percentage; full numerical export not obtained",
+  "controls": {
+    "negative": "DMSO vehicle",
+    "positive": "doxorubicin30uM",
+    "solvent_note": "Methods literally state DMSO10%; unresolved, not corrected by inference"
+  },
+  "primary_screen_replicates": "Not established from public evidence; do not invent",
+  "available_evidence": "Combined article/supplement including16-hit boolean classification tableS3 and15-hit CTG validation figures",
+  "full_screen_acquired": false,
+  "corpus_build_ready": false,
+  "missing": [
+    "full compound manifest and structure mapping",
+    "continuous all-compound per-well readouts including nonhits",
+    "donor/plate/well and real replicate identifiers",
+    "control values and normalization",
+    "failure/missing flags",
+    "compound count and DMSO clarification"
+  ],
+  "erratum_doi": "10.1016/j.celrep.2024.114748",
+  "erratum_scope": "Duplicate neuronal calcium panelS4, not full viability dataset"
+}

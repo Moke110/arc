@@ -44,3 +44,9 @@ Use `python pheno_data/<Item>/script/download.py` for acquisition and
 record use of original primary bytes acquired earlier in the run, rather
 than claiming a later refetch succeeded. Figure-derived values retain their
 extraction precision and independent review; summary n never expands into wells.
+
+## Huang 2022 — public evidence archive, full screen pending
+
+`Huang-2022` archives the public combined article and supplement, not the full numerical screen. Acquire with `python pheno_data/Huang-2022/script/download.py` (requires `curl` and Python `pymupdf`); verify with `bash pheno_data/Huang-2022/script/verify.sh`. Active registry status means the archived evidence is hash-verified, not that the full dataset or corpus is available.
+
+The eligible baseline imaging design is 24 h at 100 µM in 13 human iPSC-CM donor lines, with Hoechst/PI whole-well live/dead quantification. Public Table S3 supplies selected-hit flags, not continuous full-library values. Full screen acquisition needs an author request; the source's 2,374/2,375 compound discrepancy and reported 10% DMSO remain unresolved. See the [access audit](../docs/research/stage3-huang-2022-access-audit.md), source annotation and unsent request in the item's declared `local/` additions. No baseline release was built.
