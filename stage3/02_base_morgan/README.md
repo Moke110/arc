@@ -71,9 +71,12 @@ python stage3/02_base_morgan/execution/workflow.py verify --benchmark /tmp/morga
 
 `benchmark.json` records every expected identity and its pending, running,
 completed or failed status. Compatible completed runs are verified and reused;
-incompatible scope, inputs, schedules and run artifacts are rejected. A failed
-run with partial artifacts requires investigation and a fresh benchmark output;
-outputs are never silently overwritten. Evaluation regenerates `summary.json`
+incompatible scope, inputs, schedules and run artifacts are rejected. Resource
+preflight blocking leaves unstarted runs pending and stops dispatch. After
+investigating a failed or interrupted run, use `benchmark --retry-failed` with
+the same arguments to archive its partial artifacts and resource logs before
+starting a fresh attempt. Completed runs remain verified and reused; failed
+attempts remain under `failed_attempts/`. Evaluation regenerates `summary.json`
 and `report.md` from persisted predictions and checks checkpoint integrity without
 refitting. Missing, duplicate or unexpected run identities fail verification.
 

@@ -163,6 +163,7 @@ def main():
     command.add_argument('--prepared', type=Path, required=True)
     command.add_argument('--output', type=Path, required=True)
     command.add_argument('--smoke-epochs', type=int)
+    command.add_argument('--retry-failed', action='store_true')
     for name in ['evaluate', 'verify']:
         command = commands.add_parser(name)
         group = command.add_mutually_exclusive_group(required=True)
@@ -176,7 +177,8 @@ def main():
             prepare(args.input, args.output, args.settings)
         elif args.command == 'benchmark':
             from benchmark import benchmark
-            result = benchmark(args.prepared, args.output, args.smoke_epochs)
+            result = benchmark(args.prepared, args.output, args.smoke_epochs,
+                               retry_failed=args.retry_failed)
             print(json.dumps(result, sort_keys=True, allow_nan=False))
         elif args.command in ['evaluate', 'verify'] and args.benchmark:
             from benchmark import evaluate_benchmark
