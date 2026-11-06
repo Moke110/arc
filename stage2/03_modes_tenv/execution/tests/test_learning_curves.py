@@ -114,6 +114,48 @@ class HistoryMappingTests(unittest.TestCase):
             self.assertEqual(formal[0]['status'], 'legacy_v1_only')
             self.assertEqual(len([r for r in curves.collect_legacy(root) if r['model']=='cmonge']), 1)
 
+    def test_final_render_rejects_legacy_statuses_after_archiving(self):
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            for model in curves.V2_MODELS:
+                (root / 'legacy' / f'{model}-v1/runs').mkdir(parents=True)
+            for model in curves.MODELS:
+                for fold in range(3):
+                    for seed in curves.SEEDS:
+                        directory = root / 'runs' / model / f'fold_{fold}' / f'seed_{seed}'
+                        directory.mkdir(parents=True)
+                        (directory / 'run.json').write_text(json.dumps({
+                            'status': 'timeout' if seed == 2026 else 'completed'}))
+            with self.assertRaisesRegex(ValueError, '63 terminal outcomes, found 45'):
+                curves.render(root, root / 'publish', final=True)
+            formal = [r for r in curves.collect(root) if r['model'] in curves.V2_MODELS]
+            self.assertTrue(all(r['status'] == 'legacy_v1_only' for r in formal))
+            self.assertTrue(all(r['history_status'] == 'missing' for r in formal))
+            self.assertFalse((root / 'publish').exists())
+
+    def test_final_render_accepts_protocol_tagged_v2_terminal_statuses_without_history(self):
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            for model in curves.V2_MODELS:
+                (root / 'legacy' / f'{model}-v1/runs').mkdir(parents=True)
+            for model in curves.MODELS:
+                for fold in range(3):
+                    for seed in curves.SEEDS:
+                        directory = root / 'runs' / model / f'fold_{fold}' / f'seed_{seed}'
+                        directory.mkdir(parents=True)
+                        run = {'status': ('completed', 'failed', 'timeout')[fold]}
+                        if model in curves.V2_MODELS:
+                            run['protocol'] = curves.V2_MODELS[model]
+                        (directory / 'run.json').write_text(json.dumps(run))
+            result = curves.render(root, root / 'publish', final=True)
+            self.assertTrue(result['final'])
+            self.assertEqual(result['terminal_outcomes'], 63)
+            self.assertEqual(result['legacy_records'], [])
+            for model in curves.V2_MODELS:
+                self.assertEqual(result[f'{model}_v2']['missing_histories'], 9)
+            for extension in ('png', 'svg', 'json'):
+                self.assertTrue((root / 'publish' / f'learning_curves.{extension}').is_file())
+
     def test_no_fabricated_coordinates_or_nonfinite_values(self):
         for history in ([{'step': 3, 'loss': 1}, {'step': 2, 'loss': 1}],
                         [{'step': 3, 'loss': float('nan')}]):

@@ -83,7 +83,7 @@ def collect(output, *, legacy=False):
                     if legacy and (is_v2 or (data is None and not run_path.exists())):
                         continue
                     if not legacy and not is_v2:
-                        if data is not None or (run_path.exists() and not migrated):
+                        if data is not None or run_path.exists():
                             record['status'] = 'legacy_v1_only'
                         records.append(record)
                         continue
