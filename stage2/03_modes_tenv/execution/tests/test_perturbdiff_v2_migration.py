@@ -43,6 +43,12 @@ class Reconciliation(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'contradicted'):
                 migration.reconcile(queue, stopped, output)
             orphan.unlink()
+            for prefix in ('', str(output) + '/'):
+                orphan.write_text(json.dumps({'status': 'failed', 'run_dir': prefix +
+                    'runs/perturbdiff/fold_1/seed_17', 'training_seconds': 500}))
+                with self.assertRaisesRegex(ValueError, 'contradicted'):
+                    migration.reconcile(queue, stopped, output)
+                orphan.unlink()
             run = output / 'runs/perturbdiff/fold_1/seed_17'
             run.mkdir(parents=True)
             with self.assertRaisesRegex(ValueError, 'contradicted'):

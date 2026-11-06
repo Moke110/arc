@@ -56,7 +56,10 @@ def reconcile(queue, stopped, output):
             return any(mentions(v, job) for v in value.values())
         if isinstance(value, list):
             return any(mentions(v, job) for v in value)
-        return isinstance(value, str) and key(job) in value
+        if not isinstance(value, str):
+            return False
+        run_suffix = f"runs/perturbdiff/fold_{job['fold']}/seed_{job['seed']}"
+        return key(job) in value or run_suffix in value
 
     result = {}
     for job in selected:
