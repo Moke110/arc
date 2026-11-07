@@ -1,0 +1,305 @@
+{
+  "schema": "tenv-cmonge-supplement-evaluation-v1",
+  "selection_sha256": "e2bc2ea2414e52a905c405d37f7ff58acab48e6c56211fd0f4c9d1269bbbae56",
+  "original_timeout": {
+    "model": "cmonge",
+    "fold": 0,
+    "seed": 17,
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "status": "timeout",
+    "command": [
+      "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+      "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+      "--config",
+      "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json"
+    ],
+    "stop_reason": "timeout",
+    "directory": "/home/chang/arc/stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17",
+    "files": {
+      "best.msgpack": "467767c28864e521d467e78adc73026c517c48dae54afd0b038431330bf2d901",
+      "history.json": "afe9145d6faa365f024d8065e3f6b3178e4ee3fde70ff5f9e06f4a1dc69666e3",
+      "latest.msgpack": "467767c28864e521d467e78adc73026c517c48dae54afd0b038431330bf2d901",
+      "progress.json": "7ec48055cbd37dbb1fd76a608e5131b5503f2cedcfce38b3748c1ee41b45be26",
+      "request.json": "06f349a6d2dc4a62f2bf9a2f9a23f65b8d56082fc0f8b8c5e2b3ffc3cae45020",
+      "run.json": "9a3d879192edb395bb9f82b0db65515cf22fdd0003cd9f63e282e7ae029265c4"
+    },
+    "scheduler_sha256": "ac109721dd3bc22be2ce2179d9e75bb3bbcaca3ff434b43b1d0cec0c8dec9647",
+    "account_files": {
+      "account.json": "aa824d9a0a52a1cd167284d460ddf311b112b7c90b4b546d6f79f2bb80e9f5fd",
+      "migration.json": "64a7179d664bf7a29cbbb99edae722cab82b058e700be52f0ee4f0a47fc0d463"
+    },
+    "budget": {
+      "cap_seconds": 14400,
+      "prior_debit_seconds": 13975.509756658023,
+      "remaining_at_launch_seconds": 424.4902433419775,
+      "cumulative_debit_seconds": 14400,
+      "attempt_wall_seconds": 424.6088756209938,
+      "peak_host_rss_gib": null
+    }
+  },
+  "selected_attempt": {
+    "account": {
+      "admission": {
+        "available_gib": 41.09659957885742,
+        "external_heavy": 0,
+        "external_peak_gib": 0,
+        "external_pids": [],
+        "gpu_free_gib": 14.4208984375,
+        "gpu_used_gib": 1.5712890625,
+        "idle_pids": [],
+        "observable": true,
+        "owned_rss_gib": {}
+      },
+      "attempt_id": "cmonge-v2-fold0-seed17-supplement-1",
+      "caps": {
+        "inference_seconds": 1800,
+        "training_seconds": 14400
+      },
+      "cleanup": {
+        "active_state": "inactive",
+        "load_state": "loaded",
+        "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope"
+      },
+      "credit_available_seconds": 0,
+      "executed_argv": [
+        "/usr/bin/time",
+        "-v",
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+        "--request",
+        "/home/chang/arc/stage2/03_modes_tenv/output/supplement-cmonge-v2-fold0-seed17/account/request-0.json"
+      ],
+      "identity": {
+        "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+        "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+        "fold": 0,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "model": "cmonge",
+        "seed": 17,
+        "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+      },
+      "injected_request_sha256": "970b9cf55eb198981dca02c4ff7c6cd93daba1938120a01d7bbe42faf2e21e7e",
+      "lock_fd": 3,
+      "observed_resource_pressure": false,
+      "observed_returncode": 0,
+      "peak_host_rss_gib": 1.6758956909179688,
+      "peak_workstation_gpu_used_gib": 2.8046875,
+      "policy_path": "/tmp/tenv-cmonge-supplement-policy.27hztO/policy.json",
+      "policy_sha256": "3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db",
+      "prior_training_seconds": 0,
+      "process": {
+        "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+        "pid": 1906332,
+        "start_ticks": 24927972
+      },
+      "request_sha256": "b5f77a4d78dee8e46774aa723f3f3ce0aeafb92d5d10ba7fdc975abab484a58f",
+      "reservation_count": 1,
+      "returncode": 0,
+      "sampled_peak_host_rss_gib": 1.6386604309082031,
+      "schema": "tenv-cmonge-supplement-account-v1",
+      "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+      "scope_command": [
+        "/usr/bin/systemd-run",
+        "--user",
+        "--scope",
+        "--slice=app.slice",
+        "--unit=arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+        "-p",
+        "MemoryMax=10737418240",
+        "-p",
+        "MemorySwapMax=8589934592",
+        "-p",
+        "RuntimeMaxSec=16200",
+        "-p",
+        "KillSignal=SIGKILL",
+        "-p",
+        "KillMode=control-group",
+        "-p",
+        "TimeoutStopSec=1",
+        "-p",
+        "BindsTo=arc-tenv-cmonge-supplement.service",
+        "-p",
+        "After=arc-tenv-cmonge-supplement.service",
+        "--",
+        "/home/chang/miniconda3/envs/arc/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_supplement.py",
+        "worker",
+        "3",
+        "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+        "/usr/bin/time",
+        "-v",
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+        "--request",
+        "/home/chang/arc/stage2/03_modes_tenv/output/supplement-cmonge-v2-fold0-seed17/account/request-0.json"
+      ],
+      "service": {
+        "ActiveState": "active",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/arc-tenv-cmonge-supplement.service",
+        "ExitType": "main",
+        "InvocationID": "8cf44e44411b4047871d8128e72435d7",
+        "MainPID": "1906197",
+        "MemoryMax": "10737418240",
+        "MemorySwapMax": "8589934592",
+        "Restart": "no",
+        "Type": "exec",
+        "WorkingDirectory": "/home/chang/arc"
+      },
+      "started_usec": 249279693156,
+      "status": "completed",
+      "stop_reason": "worker_zero_exit",
+      "supervisor": {
+        "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+        "pid": 1906198,
+        "start_ticks": 24925720
+      },
+      "time_peak_rss_gib": 1.6758956909179688,
+      "timing": {
+        "adapter_inference_seconds": 0.7194369419885334,
+        "adapter_training_seconds": 4228.002521563001,
+        "observed_inference_seconds": 1.1851010460231919,
+        "pre_inference_watchdog_seconds": 4253.633386686997,
+        "worker_wall_seconds": 4254.81848773302
+      },
+      "training_cutoff": {
+        "deadline_usec": 263679693156,
+        "service": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.service",
+        "timer": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.timer"
+      },
+      "worker": {
+        "claim_sha256": "8b1bd293bfb930e1179ce710e99a722e51f8a776e1d5ab7daa99e7e10e629bb2",
+        "guard": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1906529,
+          "start_ticks": 24930197
+        },
+        "injected_request_sha256": "970b9cf55eb198981dca02c4ff7c6cd93daba1938120a01d7bbe42faf2e21e7e",
+        "invocation": "8cf44e44411b4047871d8128e72435d7",
+        "policy_sha256": "3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db",
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1906332,
+          "start_ticks": 24927972
+        },
+        "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+        "scope_state": {
+          "after": "arc-tenv-cmonge-supplement.service",
+          "binds_to": "arc-tenv-cmonge-supplement.service",
+          "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+          "invocation": "c508bf9be8c34430862cbc78a25baa09",
+          "kill_mode": "control-group",
+          "kill_signal": 9,
+          "memory_max": 10737418240,
+          "runtime_usec": 16200000000,
+          "swap_max": 8589934592,
+          "timeout_stop_usec": 1000000
+        },
+        "supervisor": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1906198,
+          "start_ticks": 24925720
+        },
+        "training_cutoff": {
+          "deadline_usec": 263679693156,
+          "service": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.service",
+          "timer": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.timer"
+        }
+      }
+    },
+    "account_files": {
+      "account.json": "22cb03e2d724e5c3ecf30165c4397daccb686f5d1cae949a7b96b6a488e2e196",
+      "inference-transition.json": "136895467e3f96f749b500f64c9edefb09b639fdad994eb2192020ff30a96187",
+      "lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "policy.json": "f280cc72a685861e64a724559c4e0a45b89f55e615bbfd27b7383cae749c0997",
+      "request-0.json": "970b9cf55eb198981dca02c4ff7c6cd93daba1938120a01d7bbe42faf2e21e7e",
+      "telemetry.jsonl": "10d300c3a1d1c37a82797911d8950b4cd2eed0483adff74c3e6479f54b5b3322",
+      "watchdog.log": "c12f2a90ca8580850001ea901ea0fa85311cd9ee4220e9f754be511c2b6f5ca9",
+      "worker-start.json": "7a20f205118dadac72f7c51630b2ad972f62d92db90c9bf8c451cfbcc9cab353"
+    },
+    "attempt_id": "cmonge-v2-fold0-seed17-supplement-1",
+    "claim_sha256": "8b1bd293bfb930e1179ce710e99a722e51f8a776e1d5ab7daa99e7e10e629bb2",
+    "files": {
+      "best.msgpack": "5caf14da7ac0b2b9ac75eeedfe079a8d0c65825fee48d88e787eae87b668fbf2",
+      "case_ids.json": "3acccf51c941ab58f7ba35de0cb1fe42134766cdca4116644ac0179c20372c00",
+      "checkpoint.json": "3fe0c64bbe0a03c423424cd67a82fb1192b9a29ad88202018c93f2d482cf5dd8",
+      "history.json": "4d02793d5e6f064e9aa1645e49304edf5fad44a66760f568a55293b15b321a80",
+      "latest.msgpack": "5caf14da7ac0b2b9ac75eeedfe079a8d0c65825fee48d88e787eae87b668fbf2",
+      "prediction.npy": "9418b6b0b06d0bc2108bf76e30c0fc11ed94d1e80bc3c6c2e1cf7e9fb66c6ff4",
+      "progress.json": "d81130a2683e22235992865f62b8b66768a915a74e9cb405254776b197f0de66",
+      "request.json": "b5f77a4d78dee8e46774aa723f3f3ce0aeafb92d5d10ba7fdc975abab484a58f",
+      "run.json": "fbe29f35778550e0ae84f0cc7e3083d6f33f86c36d49be3b006f01ef8ed02f48"
+    },
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "original": {
+      "account": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed17",
+      "account_files": {
+        "account.json": "aa824d9a0a52a1cd167284d460ddf311b112b7c90b4b546d6f79f2bb80e9f5fd",
+        "lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "migration.json": "64a7179d664bf7a29cbbb99edae722cab82b058e700be52f0ee4f0a47fc0d463",
+        "request-0.json": "7b528b54661f9ea2c3b973c24b14b68f4eedb681168766781e6dd02467ddfc9c",
+        "watchdog.log": "13a07710a3ce2380f8a36b3c8a746aa6c56602836e323165cb65de8474fa0089"
+      },
+      "cap_seconds": 14400,
+      "consumed_seconds": 14400,
+      "ledger_sha256": "64a7179d664bf7a29cbbb99edae722cab82b058e700be52f0ee4f0a47fc0d463",
+      "prior_training_seconds": 13975.509756658023,
+      "remaining_seconds": 424.4902433419775,
+      "run_directory": "/home/chang/arc/stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17",
+      "run_files": {
+        "best.msgpack": "467767c28864e521d467e78adc73026c517c48dae54afd0b038431330bf2d901",
+        "history.json": "afe9145d6faa365f024d8065e3f6b3178e4ee3fde70ff5f9e06f4a1dc69666e3",
+        "latest.msgpack": "467767c28864e521d467e78adc73026c517c48dae54afd0b038431330bf2d901",
+        "progress.json": "7ec48055cbd37dbb1fd76a608e5131b5503f2cedcfce38b3748c1ee41b45be26",
+        "request.json": "06f349a6d2dc4a62f2bf9a2f9a23f65b8d56082fc0f8b8c5e2b3ffc3cae45020",
+        "run.json": "9a3d879192edb395bb9f82b0db65515cf22fdd0003cd9f63e282e7ae029265c4"
+      },
+      "scheduler_sha256": "ac109721dd3bc22be2ce2179d9e75bb3bbcaca3ff434b43b1d0cec0c8dec9647",
+      "status": "timeout",
+      "stop_reason": "timeout",
+      "summary_sha256": "8aac4c9a244a44b01694219cf3223364147e4aaac5fb9d5acf72f9b163b60a16",
+      "worker_wall_seconds": 424.6088756209938
+    },
+    "policy_sha256": "3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db",
+    "run_directory": "/home/chang/arc/stage2/03_modes_tenv/output/supplement-cmonge-v2-fold0-seed17/runs/cmonge/fold_0/seed_17",
+    "run_sha256": "fbe29f35778550e0ae84f0cc7e3083d6f33f86c36d49be3b006f01ef8ed02f48",
+    "schema": "tenv-cmonge-supplement-terminal-v1",
+    "status": "completed"
+  },
+  "evaluation_sha256": "b7cc2d8e1279dea5c75cdf2f69474910e69dd91e69529c3c30f99df50e09a429",
+  "seal_sha256": "a7e3d166872b0cb72b5fa3efa723507298b2c7a7ed39fcdcd02adc84b94673ef",
+  "artifacts": {
+    "per_group.csv": "edc8c323b3c6089bbc15a8a8d677b078d09ce030cf3c039e76275128ddf16b73",
+    "per_run.csv": "344a0e26faa3d66a4013a6bfade29e096f15e163c6380fe1af5b8852cc899719",
+    "summary.csv": "aa37f884ab9e87fc4d790b19b971a9d4891c80401e338698a14d3b1755f0906c",
+    "best_runs.csv": "0d23007e15367b3114d1f39c23cda6c5c508877a28484c3d650cdac0edd20310",
+    "pr_bands.csv": "fcbcaaa1441380521e6801c632f9f2c167140703fa23fff6b5116282cd8b6255",
+    "pr_sources.npz": "a3c43ac6c931b2e97baa4e23123885f83f73f0d039bb71eae7e1ec4913771498",
+    "predictions.json": "a7e3d166872b0cb72b5fa3efa723507298b2c7a7ed39fcdcd02adc84b94673ef"
+  }
+}

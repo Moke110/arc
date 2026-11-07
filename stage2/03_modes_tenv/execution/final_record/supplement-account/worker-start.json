@@ -1,0 +1,39 @@
+{
+  "claim_sha256": "8b1bd293bfb930e1179ce710e99a722e51f8a776e1d5ab7daa99e7e10e629bb2",
+  "guard": {
+    "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+    "pid": 1906529,
+    "start_ticks": 24930197
+  },
+  "injected_request_sha256": "970b9cf55eb198981dca02c4ff7c6cd93daba1938120a01d7bbe42faf2e21e7e",
+  "invocation": "8cf44e44411b4047871d8128e72435d7",
+  "policy_sha256": "3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db",
+  "process": {
+    "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+    "pid": 1906332,
+    "start_ticks": 24927972
+  },
+  "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+  "scope_state": {
+    "after": "arc-tenv-cmonge-supplement.service",
+    "binds_to": "arc-tenv-cmonge-supplement.service",
+    "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+    "invocation": "c508bf9be8c34430862cbc78a25baa09",
+    "kill_mode": "control-group",
+    "kill_signal": 9,
+    "memory_max": 10737418240,
+    "runtime_usec": 16200000000,
+    "swap_max": 8589934592,
+    "timeout_stop_usec": 1000000
+  },
+  "supervisor": {
+    "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+    "pid": 1906198,
+    "start_ticks": 24925720
+  },
+  "training_cutoff": {
+    "deadline_usec": 263679693156,
+    "service": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.service",
+    "timer": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.timer"
+  }
+}

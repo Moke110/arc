@@ -1,0 +1,44 @@
+{
+  "accounting": "conservative full worker wall; includes setup and inference",
+  "attempts": [
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=arc-tenv-v2-cmonge-fold0-seed17-2528830c0a8d442da4ad814a0009d048.scope",
+        "-p",
+        "MemoryMax=10G",
+        "-p",
+        "MemorySwapMax=8G",
+        "--",
+        "/usr/bin/time",
+        "-v",
+        "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+        "--config",
+        "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+        "--request",
+        "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed17/request-0.json"
+      ],
+      "prior_training_seconds": 13975.509756658023,
+      "process": {
+        "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+        "pid": 1725813,
+        "start_ticks": 21058294
+      },
+      "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed17/request-0.json",
+      "reserved_seconds": 424.4902433419775,
+      "returncode": -9,
+      "scope_kill_returncode": 0,
+      "status": "timeout",
+      "stop_reason": "timeout",
+      "wall_seconds": 424.6088756209938
+    }
+  ],
+  "cap_seconds": 14400,
+  "consumed_seconds": 14400,
+  "key": "cmonge_fold0_seed17",
+  "migration_sha256": "64a7179d664bf7a29cbbb99edae722cab82b058e700be52f0ee4f0a47fc0d463",
+  "schema": "joint-v2-account-v1"
+}

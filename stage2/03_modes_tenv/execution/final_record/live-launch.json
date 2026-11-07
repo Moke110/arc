@@ -1,0 +1,101 @@
+{
+  "service": {
+    "Restart": "no",
+    "MainPID": "1906197",
+    "MemoryMax": "10737418240",
+    "MemorySwapMax": "8589934592",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "8cf44e44411b4047871d8128e72435d7"
+  },
+  "supervisor": {
+    "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+    "pid": 1906198,
+    "start_ticks": 24925720
+  },
+  "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+  "worker": {
+    "claim_sha256": "8b1bd293bfb930e1179ce710e99a722e51f8a776e1d5ab7daa99e7e10e629bb2",
+    "guard": {
+      "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+      "pid": 1906529,
+      "start_ticks": 24930197
+    },
+    "injected_request_sha256": "970b9cf55eb198981dca02c4ff7c6cd93daba1938120a01d7bbe42faf2e21e7e",
+    "invocation": "8cf44e44411b4047871d8128e72435d7",
+    "policy_sha256": "3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db",
+    "process": {
+      "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+      "pid": 1906332,
+      "start_ticks": 24927972
+    },
+    "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+    "scope_state": {
+      "after": "arc-tenv-cmonge-supplement.service",
+      "binds_to": "arc-tenv-cmonge-supplement.service",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+      "invocation": "c508bf9be8c34430862cbc78a25baa09",
+      "kill_mode": "control-group",
+      "kill_signal": 9,
+      "memory_max": 10737418240,
+      "runtime_usec": 16200000000,
+      "swap_max": 8589934592,
+      "timeout_stop_usec": 1000000
+    },
+    "supervisor": {
+      "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+      "pid": 1906198,
+      "start_ticks": 24925720
+    },
+    "training_cutoff": {
+      "deadline_usec": 263679693156,
+      "service": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.service",
+      "timer": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-training.timer"
+    }
+  },
+  "scope_state": {
+    "TimeoutStopUSec": "1s",
+    "RuntimeMaxUSec": "4h 30min",
+    "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+    "MemoryMax": "10737418240",
+    "MemorySwapMax": "8589934592",
+    "KillMode": "control-group",
+    "KillSignal": "9",
+    "BindsTo": "arc-tenv-cmonge-supplement.service",
+    "After": "arc-tenv-cmonge-supplement.service app.slice",
+    "ActiveState": "active",
+    "InvocationID": "c508bf9be8c34430862cbc78a25baa09"
+  },
+  "training_cutoff": {
+    "NextElapseUSecMonotonic": "3d 1h 14min 39.693156s",
+    "ActiveState": "active",
+    "SubState": "waiting"
+  },
+  "native_pid": 1906530,
+  "progress": {
+    "phase": "training",
+    "training_seconds": 12.488440169981914,
+    "iteration": 16,
+    "author_training_loss": 23.466699600219727
+  },
+  "latest_telemetry": {
+    "observable": true,
+    "available_gib": 40.04746627807617,
+    "owned_rss_gib": {
+      "1906332": 1.4096870422363281,
+      "1906529": 0.0724334716796875,
+      "1906530": 1.3358345031738281
+    },
+    "gpu_used_gib": 2.7890625,
+    "gpu_free_gib": 13.203125,
+    "external_heavy": 0,
+    "external_peak_gib": 0,
+    "external_pids": [],
+    "idle_pids": [],
+    "scope": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8.scope",
+    "timestamp": 1794038617.5870926,
+    "sampled_owned_rss_gib": 1.4096870422363281
+  },
+  "original_target_hashes_preserved": true,
+  "original_summary_preserved": true
+}

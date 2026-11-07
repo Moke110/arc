@@ -294,9 +294,8 @@ def render(output, publish, final=False, *, supplement=None):
             count_label = f'Original attempt histories: train {counts[0]}/1 · validation {counts[1]}/1'
             note = 'Separate original v2 attempt; validation averages all 138 conditions.'
         if supplement and model == 'cmonge' and not (is_original or is_legacy):
-            note = (f"Fold 0 seed 17 selected supplement ({selected['status']}): "
-                    'fresh 14,400 s training + 1,800 s inference from seed initialization.\n'
-                    'Original cumulative-budget timeout shown separately.')
+            note = (f"Selected supplement ({selected['status']}): fresh 14,400 s training + 1,800 s inference.\n"
+                    'Fold 0 seed 17 restarted from initialization. Original timeout shown separately.')
         invalid = sum(r['history_status'] == 'invalid' for r in subset)
         if invalid:
             count_label += f' · invalid histories {invalid}'
@@ -305,7 +304,7 @@ def render(output, publish, final=False, *, supplement=None):
         ax.text(.02, .98, count_label + '\n' + status_label,
                 transform=ax.transAxes, va='top', fontsize=10,
                 bbox=dict(facecolor='white', alpha=.85, edgecolor='none'))
-        ax.text(0, -.23, note, transform=ax.transAxes, fontsize=9, wrap=True)
+        ax.text(0, -.23, note, transform=ax.transAxes, fontsize=9, va='top', wrap=True)
     axes.flat[-1].set_axis_off()
     axes.flat[-1].text(0, .85,
         '3 folds × 3 seeds = 9 expected formal histories per fitted model\n\n'

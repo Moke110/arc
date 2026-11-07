@@ -1,0 +1,23 @@
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python /home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_supplement.py preflight --formal /home/chang/arc/stage2/03_modes_tenv/execution/formal --reviewed-stage-sha256 73fb21036a2d04a12c5d8d9ce712ed544b1c38eb70fbfff884dc6753c8b60028 --policy /tmp/tenv-cmonge-supplement-policy.27hztO/policy.json --reviewed-policy-sha256 3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db"
+	User time (seconds): 19.48
+	System time (seconds): 4.67
+	Percent of CPU this job got: 97%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:24.86
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 114288
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 115
+	Minor (reclaiming a frame) page faults: 369092
+	Voluntary context switches: 719
+	Involuntary context switches: 148
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

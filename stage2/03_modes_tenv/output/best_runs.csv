@@ -1,0 +1,8 @@
+model,fold,seed,selection_score,label,cmonge_budget_exception,selected_attempt_id,original_attempt_status,supplement_attempt_status
+no_change,1,17,0.005505395287381633,post-hoc best test; fixed fold/seed tie order,,,,
+delta_mean,0,17,0.18893400036864305,post-hoc best test; fixed fold/seed tie order,,,,
+prnet,0,2026,0.18415776676694445,post-hoc best test; fixed fold/seed tie order,,,,
+cpa,1,2026,0.09338915317582597,post-hoc best test; fixed fold/seed tie order,,,,
+chemcpa,1,17,0.05378583206279583,post-hoc best test; fixed fold/seed tie order,,,,
+cmonge,0,17,0.19496376182559377,post-hoc best test; fixed fold/seed tie order,"CMonge v2 fold 0 seed 17 · original cumulative-budget timeout (424.49 s left of 14,400 s; 14,400 s debited). One fresh 14,400 s training authorization from seed initialization + 1,800 s inference. Selected attempt: completed. Original prior debit 13,975.51 s · original worker wall 424.61 s · original host peak RSS unavailable. Selected watchdog setup/training 4,253.63 s · observed inference 1.19 s. Selected host peak RSS 1.68 GiB (maximum of available owned-process samples and GNU time peak). Owned-process RSS samples 1.64 GiB · GNU time peak RSS 1.68 GiB.",cmonge-v2-fold0-seed17-supplement-1,timeout,completed
+perturbdiff,2,17,0.24865978175861317,post-hoc best test; fixed fold/seed tie order,,,,

@@ -1,0 +1,11 @@
+{
+  "adapter_training_seconds": 4228.002521563001,
+  "manager_cutoff": {
+    "deadline_usec": 255333326543,
+    "service": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-inference.service",
+    "timer": "arc-tenv-v2-cmonge-supplement-936ed800809f4aa3b08e7a013c7071d8-inference.timer"
+  },
+  "observed_inference_seconds": 0.0,
+  "pre_inference_watchdog_seconds": 4253.633386686997,
+  "worker_wall_seconds": 4253.633386686997
+}

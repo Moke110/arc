@@ -1,0 +1,2372 @@
+{
+  "chemcpa_fold0_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold0_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.35520241301856
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.38720471897977404,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9270401000976562,
+    "peak_workstation_gpu_used_gib": 2.8984375,
+    "pid": 865600,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 20.552370577002876
+  },
+  "chemcpa_fold0_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold0_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.335277548991144
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.42110204699565656,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9264030456542969,
+    "peak_workstation_gpu_used_gib": 2.8994140625,
+    "pid": 865881,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 20.94180069200229
+  },
+  "chemcpa_fold0_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold0_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.322664817009354
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.46016222701291554,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9319343566894531,
+    "peak_workstation_gpu_used_gib": 2.8994140625,
+    "pid": 865723,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 20.66455240600044
+  },
+  "chemcpa_fold1_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold1_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.325284211023245
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.44682978600030765,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9266777038574219,
+    "peak_workstation_gpu_used_gib": 2.8974609375,
+    "pid": 866001,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 19.27713533199858
+  },
+  "chemcpa_fold1_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold1_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.350367811974138
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.43285169897717424,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9286308288574219,
+    "peak_workstation_gpu_used_gib": 2.8984375,
+    "pid": 866309,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 21.187307127023814
+  },
+  "chemcpa_fold1_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold1_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.319548877014313
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.41375962799065746,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9295806884765625,
+    "peak_workstation_gpu_used_gib": 2.8984375,
+    "pid": 866188,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 21.053796642983798
+  },
+  "chemcpa_fold2_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold2_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.334749747999012
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.5814630659879185,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9270896911621094,
+    "peak_workstation_gpu_used_gib": 2.90625,
+    "pid": 866467,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 20.14056674198946
+  },
+  "chemcpa_fold2_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold2_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.31899498801795
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.415146931016352,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9465217590332031,
+    "peak_workstation_gpu_used_gib": 2.8994140625,
+    "pid": 866737,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 19.865810179995606
+  },
+  "chemcpa_fold2_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/chemcpa_fold2_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.309233130014036
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "8191c9ae31f077fffbd34ace5babb030a4c1642bd963d66c036ff78d25bfee29",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "chemcpa",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.4610332440061029,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.9388961791992188,
+    "peak_workstation_gpu_used_gib": 2.8984375,
+    "pid": 866620,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 21.125181090988917
+  },
+  "cmonge_fold0_seed17": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold0-seed17-2528830c0a8d442da4ad814a0009d048.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed17/request-0.json"
+        ],
+        "prior_training_seconds": 13975.509756658023,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1725813,
+          "start_ticks": 21058294
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed17/request-0.json",
+        "reserved_seconds": 424.4902433419775,
+        "returncode": -9,
+        "scope_kill_returncode": 0,
+        "status": "timeout",
+        "stop_reason": "timeout",
+        "wall_seconds": 424.6088756209938
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "status": "timeout",
+    "stop_reason": "timeout",
+    "training_seconds": 14400
+  },
+  "cmonge_fold0_seed2026": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold0-seed2026-cdebdd776aab483b8613759f127b85d2.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed2026/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1748226,
+          "start_ticks": 21567363
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed2026/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 4423.807833842991
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6787452697753906,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 4423.807833842991
+  },
+  "cmonge_fold0_seed42": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold0-seed42-8790206b91664d96b4a3daf88f387915.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed42/request-0.json"
+        ],
+        "prior_training_seconds": 9056.932746226994,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1728040,
+          "start_ticks": 21105380
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold0_seed42/request-0.json",
+        "reserved_seconds": 5343.067253773006,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 4570.442190709
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6750602722167969,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 13627.374936935994
+  },
+  "cmonge_fold1_seed17": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold1-seed17-83f05e950b944d53bbb4c485ba76d3f2.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold1_seed17/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1774538,
+          "start_ticks": 22014335
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold1_seed17/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 5210.137566452002
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6751327514648438,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 5210.137566452002
+  },
+  "cmonge_fold1_seed2026": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold1-seed2026-59329788a5764df0bd5051f4752a95a6.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold1_seed2026/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1820431,
+          "start_ticks": 23060851
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold1_seed2026/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 4920.712717409013
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6755561828613281,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 4920.712717409013
+  },
+  "cmonge_fold1_seed42": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold1-seed42-104db53738254e409fb0db84b419c02a.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold1_seed42/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1797574,
+          "start_ticks": 22539896
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold1_seed42/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 5163.6319102150155
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6790962219238281,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 5163.6319102150155
+  },
+  "cmonge_fold2_seed17": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold2-seed17-d9756238fe0d4814a7b501b6c668ebc7.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold2_seed17/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1841903,
+          "start_ticks": 23557746
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold2_seed17/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 4877.942892369989
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6753883361816406,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 4877.942892369989
+  },
+  "cmonge_fold2_seed2026": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold2-seed2026-7f5581b0a58a4a7495524a8dca4d0626.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold2_seed2026/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1888032,
+          "start_ticks": 24482485
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold2_seed2026/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 4269.851289771992
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6767501831054688,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 4269.851289771992
+  },
+  "cmonge_fold2_seed42": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-cmonge-fold2-seed42-f67531d5ba6043eab5477662a8d5e3f3.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/cmonge/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/cmonge_v2_gpu_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/cmonge/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold2_seed42/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1863724,
+          "start_ticks": 24050276
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/cmonge_fold2_seed42/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 4268.292849564983
+      }
+    ],
+    "identity": {
+      "config_sha256": "4da99527b5d71a2bba7f2ba69906529744520b80db18cf3fd3c94d200d4040d6",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 1.6782913208007812,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 4268.292849564983
+  },
+  "cpa_fold0_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold0_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 263.48747740399267
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.8361806180037092,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.781524658203125,
+    "peak_workstation_gpu_used_gib": 3.2861328125,
+    "pid": 738681,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 256.81961474700074
+  },
+  "cpa_fold0_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold0_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 207.71629447799933
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.7008924689871492,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7856330871582031,
+    "peak_workstation_gpu_used_gib": 3.287109375,
+    "pid": 742413,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 201.94003382600204
+  },
+  "cpa_fold0_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold0_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 410.31755215600424
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.823655382002471,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7870254516601562,
+    "peak_workstation_gpu_used_gib": 3.7216796875,
+    "pid": 740128,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 400.89268278300005
+  },
+  "cpa_fold1_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold1_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 258.36221898200165
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.7339435169997159,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7857131958007812,
+    "peak_workstation_gpu_used_gib": 3.3037109375,
+    "pid": 743492,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 252.8895692530059
+  },
+  "cpa_fold1_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold1_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 228.24977980500262
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.6814422430034028,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7799911499023438,
+    "peak_workstation_gpu_used_gib": 3.3193359375,
+    "pid": 746150,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 222.50794011099788
+  },
+  "cpa_fold1_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold1_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 243.24933792299998
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.6577719300112221,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7815093994140625,
+    "peak_workstation_gpu_used_gib": 3.7548828125,
+    "pid": 744858,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 234.01664434401027
+  },
+  "cpa_fold2_seed17": {
+    "attempts": [
+      {
+        "finalized_after_requested_pause": true,
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold2_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 237.09
+      }
+    ],
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.7329116500040982,
+    "pause_drain": {
+      "accounting": "successful native checkpoint times and time-v peak RSS, same completion policy as scheduler; no retry or training interruption",
+      "dispatcher_removed_only_after_worker_exit": true,
+      "dispatcher_suspended_to_prevent_new_dispatch": true,
+      "worker_natural_exit": 0
+    },
+    "peak_host_rss_gib": 1.7849464416503906,
+    "peak_workstation_gpu_used_gib": 3.2177734375,
+    "pid": 747319,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 216.39288484600547
+  },
+  "cpa_fold2_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold2_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 263.2749029219849
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.670702984003583,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7864265441894531,
+    "peak_workstation_gpu_used_gib": 3.75,
+    "pid": 850384,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 253.5299752500141
+  },
+  "cpa_fold2_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cpa_fold2_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 298.9672885730106
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "3fbeca9f14ea5ccc3f54bc518319b6e7064783dc7cd306e77d92a2afedc6a07c",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cpa",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.6848096610046923,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7819709777832031,
+    "peak_workstation_gpu_used_gib": 3.314453125,
+    "pid": 848357,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 293.57609345400124
+  },
+  "delta_mean_fold0_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold0_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.1051450919912895
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.069785044004675,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.2914161682128906,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736783,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold0_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold0_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.094196506004664
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.07403830499970354,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.29144287109375,
+    "peak_workstation_gpu_used_gib": 2.0654296875,
+    "pid": 736842,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold0_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold0_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.088385509996442
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.05970558398985304,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.29138946533203125,
+    "peak_workstation_gpu_used_gib": 2.0732421875,
+    "pid": 736812,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold1_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold1_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.084865177006577
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.061963254993315786,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.29097747802734375,
+    "peak_workstation_gpu_used_gib": 2.0654296875,
+    "pid": 736906,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold1_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold1_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.097556067004916
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.07960703400021885,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.2910652160644531,
+    "peak_workstation_gpu_used_gib": 2.0634765625,
+    "pid": 736974,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold1_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold1_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.089123345998814
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.07842619299481157,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.2910957336425781,
+    "peak_workstation_gpu_used_gib": 2.0595703125,
+    "pid": 736946,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold2_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold2_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.092297187002259
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.10292840799957048,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.29097747802734375,
+    "peak_workstation_gpu_used_gib": 2.0634765625,
+    "pid": 737005,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold2_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold2_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.09746441700554
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.11361540701182093,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.2908592224121094,
+    "peak_workstation_gpu_used_gib": 2.072265625,
+    "pid": 737065,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "delta_mean_fold2_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/delta_mean_fold2_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.09300632099621
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "743c9b37ae214e870423776d6bcb36f669a53ad653912cd50d151274e3ba7ba5",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "delta_mean",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.10860824499104638,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.2909507751464844,
+    "peak_workstation_gpu_used_gib": 2.05859375,
+    "pid": 737035,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold0_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold0_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.098723921997589
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.08662000299955253,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19689178466796875,
+    "peak_workstation_gpu_used_gib": 2.072265625,
+    "pid": 736501,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold0_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold0_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.103691847994924
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.1189790150092449,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19729232788085938,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736569,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold0_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold0_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.096317960007582
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.07411406400206033,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19727706909179688,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736530,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold1_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold1_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.099225974001456
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.05762819999654312,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19755935668945312,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736600,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold1_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold1_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.1013431059982395
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.06999514700146392,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19722747802734375,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736663,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold1_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold1_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.089171558996895
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.06838962700567208,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19702911376953125,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736634,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold2_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold2_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.091262647998519
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.07925811200402677,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.196929931640625,
+    "peak_workstation_gpu_used_gib": 2.072265625,
+    "pid": 736692,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold2_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold2_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.091211639009998
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.06128642499970738,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19655990600585938,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736752,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "no_change_fold2_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/no_change_fold2_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.099154044990428
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "955949946c7dc8e7334a6c697191f7f92770e4546f6ecac20af8ce3ebd9818df",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "no_change",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.08168591400317382,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 0.19684219360351562,
+    "peak_workstation_gpu_used_gib": 2.064453125,
+    "pid": 736724,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 0.0
+  },
+  "perturbdiff_fold0_seed17": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold0-seed17-0a6f964a25c24e508a8c552e85c899ba.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold0_seed17/request-0.json"
+        ],
+        "prior_training_seconds": 12591.858767883998,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1651471,
+          "start_ticks": 19437922
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold0_seed17/request-0.json",
+        "reserved_seconds": 1808.1412321160024,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1802.7725542449916
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.3922119140625,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 14394.63132212899
+  },
+  "perturbdiff_fold0_seed2026": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold0-seed2026-5d5ac46816a14a83ae530fca2d57aa93.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold0_seed2026/request-0.json"
+        ],
+        "prior_training_seconds": 3310.704234578996,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1669265,
+          "start_ticks": 19804023
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold0_seed2026/request-0.json",
+        "reserved_seconds": 11089.295765421004,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1753.4336693460064
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.4085159301757812,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 5064.137903925002
+  },
+  "perturbdiff_fold0_seed42": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold0-seed42-b0cce3cb45854fa79b99542d80708685.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold0_seed42/request-0.json"
+        ],
+        "prior_training_seconds": 12103.388635904004,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1661206,
+          "start_ticks": 19622998
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold0_seed42/request-0.json",
+        "reserved_seconds": 2296.6113640959957,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1760.8241113969998
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.4086227416992188,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 13864.212747301004
+  },
+  "perturbdiff_fold1_seed17": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold1-seed17-57ea6e9e917842ae955df6a6e5bc2498.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold1_seed17/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1677618,
+          "start_ticks": 19984042
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold1_seed17/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1749.2677396249783
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.4081497192382812,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 1749.2677396249783
+  },
+  "perturbdiff_fold1_seed2026": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold1-seed2026-1a67d2b2f7124ac3b558d4b989f5d355.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold1_seed2026/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1694112,
+          "start_ticks": 20343440
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold1_seed2026/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1749.6950762320193
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.4062461853027344,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 1749.6950762320193
+  },
+  "perturbdiff_fold1_seed42": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold1-seed42-23a05cc7cecc4bc6933c3b849e7e9cad.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold1_seed42/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1685817,
+          "start_ticks": 20163511
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold1_seed42/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1752.089429492975
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.405651092529297,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 1752.089429492975
+  },
+  "perturbdiff_fold2_seed17": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold2-seed17-2b63c9dbeb6c4547baf2ee60cf8525ad.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold2_seed17/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1702096,
+          "start_ticks": 20523336
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold2_seed17/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1727.5491478340118
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.4038047790527344,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 1727.5491478340118
+  },
+  "perturbdiff_fold2_seed2026": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold2-seed2026-dcc929bf3329469bbc1bd73a3ee3615c.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold2_seed2026/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1718141,
+          "start_ticks": 20879750
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold2_seed2026/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1737.0119002530118
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.409027099609375,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 1737.0119002530118
+  },
+  "perturbdiff_fold2_seed42": {
+    "accounting": "conservative full worker wall; includes setup and inference",
+    "attempts": [
+      {
+        "command": [
+          "systemd-run",
+          "--user",
+          "--scope",
+          "--unit=arc-tenv-v2-perturbdiff-fold2-seed42-82e138ebc2924c73bca34d1587c31542.scope",
+          "-p",
+          "MemoryMax=10G",
+          "-p",
+          "MemorySwapMax=8G",
+          "--",
+          "/usr/bin/time",
+          "-v",
+          "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py",
+          "--config",
+          "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json",
+          "--request",
+          "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold2_seed42/request-0.json"
+        ],
+        "prior_training_seconds": 0.0,
+        "process": {
+          "boot_id": "b3e9e049-0a1d-420b-9eb7-0e6c56e65a00",
+          "pid": 1710161,
+          "start_ticks": 20700852
+        },
+        "request": "/home/chang/arc/stage2/03_modes_tenv/output/formal/joint_v2_budget/perturbdiff_fold2_seed42/request-0.json",
+        "reserved_seconds": 14400.0,
+        "returncode": 0,
+        "scope_kill_returncode": 1,
+        "status": "exited",
+        "stop_reason": "process_exit",
+        "wall_seconds": 1740.1597694490047
+      }
+    ],
+    "identity": {
+      "config_sha256": "52d2a4a670ec3afade000227c9c00afe7d9ddc97a3facf477d0d7cfc0aa5977e",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "perturbdiff",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "peak_host_rss_gib": 2.4071083068847656,
+    "status": "completed",
+    "stop_reason": "process_exit",
+    "training_seconds": 1740.1597694490047
+  },
+  "prnet_fold0_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold0_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 35.42606902398984
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.3000213639897993,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.357330322265625,
+    "peak_workstation_gpu_used_gib": 3.0498046875,
+    "pid": 737098,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 27.83169676300895
+  },
+  "prnet_fold0_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold0_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 35.45710745100223
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.27715552400331944,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3568611145019531,
+    "peak_workstation_gpu_used_gib": 3.1240234375,
+    "pid": 737527,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 27.930662234997726
+  },
+  "prnet_fold0_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold0_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 30.35330413200427
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.34992168100143317,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3573112487792969,
+    "peak_workstation_gpu_used_gib": 3.0498046875,
+    "pid": 737312,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 25.890220917004626
+  },
+  "prnet_fold1_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold1_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.31861510699673
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.24875113600865006,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3577766418457031,
+    "peak_workstation_gpu_used_gib": 3.0576171875,
+    "pid": 737748,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 19.99766379799985
+  },
+  "prnet_fold1_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold1_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 20.29030009500275
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.23695415999100078,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3576087951660156,
+    "peak_workstation_gpu_used_gib": 3.0576171875,
+    "pid": 738088,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 15.191248925999389
+  },
+  "prnet_fold1_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold1_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.331684205986676
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 1,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.28642105899052694,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3570632934570312,
+    "peak_workstation_gpu_used_gib": 3.0498046875,
+    "pid": 737907,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 20.55635203899874
+  },
+  "prnet_fold2_seed17": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold2_seed17.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 30.37459422099346
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.2546887240023352,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3581085205078125,
+    "peak_workstation_gpu_used_gib": 3.0576171875,
+    "pid": 738205,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 26.394092558999546
+  },
+  "prnet_fold2_seed2026": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold2_seed2026.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.344872098998167
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 2026,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.28633571999671403,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3575325012207031,
+    "peak_workstation_gpu_used_gib": 3.0576171875,
+    "pid": 738513,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 18.838173652009573
+  },
+  "prnet_fold2_seed42": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/prnet_fold2_seed42.attempt0.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 25.30508438599645
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "7b7a33a7288d07bb14b7f384039c1c0e3e99313bdbec3cfc574f97169fedfd62",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 2,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "prnet",
+      "seed": 42,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 0.32707456199568696,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.3573112487792969,
+    "peak_workstation_gpu_used_gib": 3.0498046875,
+    "pid": 738366,
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 18.837910276008188
+  }
+}

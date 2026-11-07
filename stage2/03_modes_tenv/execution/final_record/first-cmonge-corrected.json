@@ -1,0 +1,132 @@
+{
+  "validation": "passed artifacts.validate_run; identity/prediction/cases/checkpoint/blob hashes verified",
+  "run": "stage2/03_modes_tenv/output/formal/runs/cmonge/fold_0/seed_17",
+  "identity": {
+    "model": "cmonge",
+    "fold": 0,
+    "seed": 17,
+    "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+    "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+    "config_sha256": "77a68d2f8b6d0ca858786e6963cd200cfa297635483e5c39b6b5ebeed29da5e1"
+  },
+  "status": "completed",
+  "checkpoint": {
+    "iterations": 10000,
+    "batch_size": 512,
+    "backend": "gpu",
+    "device_kind": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "gene_count": 18164,
+    "qualification_only": false,
+    "adapter_parameter_change": 1.0975415706634521,
+    "baseline_sensitivity": 0.10001790523529053,
+    "dose_sensitivity": 0.0,
+    "input_sensitivity_check": "formal single-condition diagnostic; zero retained",
+    "reload_max_absolute_error": 0.0,
+    "training_seconds": 7148.326305555005,
+    "inference_seconds": 0.7579365580168087,
+    "blobs": {
+      "best.msgpack": "fb8178d9a0ac4864bac7b56a7570d93c4e24cbae8e167b7cc89c71eaf1a49a2a"
+    },
+    "best_validation_loss": 10.630008697509766,
+    "device_memory_stats": {
+      "num_allocs": 602272,
+      "bytes_in_use": 254118400,
+      "peak_bytes_in_use": 696879616,
+      "largest_alloc_size": 355993600,
+      "bytes_limit": 12878217216,
+      "bytes_reserved": 0,
+      "peak_bytes_reserved": 0,
+      "largest_free_block_bytes": 0,
+      "pool_bytes": 1073741824,
+      "peak_pool_bytes": 1073741824
+    }
+  },
+  "training_budget": {
+    "carry_seconds": 6810.677218487021,
+    "fresh_training_seconds": 7148.326305555005,
+    "scheduler_cumulative_seconds": 13959.003524042026,
+    "remaining_seconds": 440.9964759579743,
+    "partial_checkpoint_reuse": false,
+    "retries_reset": false
+  },
+  "prediction_sha256": "f340cfba9495531ad26d6dee003ed7883a040238d7d19aac568782250b6ebcd2",
+  "scheduler": {
+    "attempts": [
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.attempt0.log",
+        "reason": "process_exit_1",
+        "returncode": 1,
+        "wall_seconds": 6815.7714955970005
+      },
+      {
+        "log": "/home/chang/arc/stage2/03_modes_tenv/output/formal/scheduling/cmonge_fold0_seed17.attempt1.log",
+        "reason": "completed",
+        "returncode": 0,
+        "wall_seconds": 7159.738261061022
+      }
+    ],
+    "batch_scale": 1.0,
+    "environment_retries": 0,
+    "identity": {
+      "config_sha256": "77a68d2f8b6d0ca858786e6963cd200cfa297635483e5c39b6b5ebeed29da5e1",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "inference_seconds": 5.852213667996693,
+    "oom_retries": 0,
+    "peak_host_rss_gib": 1.7460403442382812,
+    "peak_workstation_gpu_used_gib": 3.5849609375,
+    "pid": 939075,
+    "repair_evidence": "stage2/03_modes_tenv/execution/formal/cmonge_repair_record/old_attempts",
+    "repair_old_identity": {
+      "config_sha256": "b2d76eca5312187c95597fe7200e842c506f68e871d80e43e13b13dcc29d9b84",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "repair_revision": "cmonge_behavior_gate_v2",
+    "status": "completed",
+    "stop_reason": "completed",
+    "training_seconds": 13959.003524042026
+  },
+  "old_attempt": {
+    "identity": {
+      "config_sha256": "b2d76eca5312187c95597fe7200e842c506f68e871d80e43e13b13dcc29d9b84",
+      "environment_sha256": "22ad89d1bfa1e9a2792746b639abd09ce9f6b2842d3f74a271fd15f8f39de38a",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "model": "cmonge",
+      "seed": 17,
+      "source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+    },
+    "status": "failed",
+    "stop_reason": "process_exit_1",
+    "training_seconds": 6810.677218487021
+  },
+  "fresh_refit_note": "New 10000-iteration history and separately timed successful attempt; identical deterministic best.msgpack hash to old failed attempt is retained evidence, not evidence of partial checkpoint reuse.",
+  "training_time_v_peak_rss_kib": 1814608,
+  "test_scoring_performed": false,
+  "truth_arrays_loaded": false,
+  "input_verification_note": "Standard validator reads manifest-declared files only as opaque bytes for SHA256; prediction array validated against test case IDs and gene count.",
+  "validation_resources": {
+    "systemd_memory_max": "10G",
+    "systemd_memory_swap_max": "8G",
+    "time_v": "\tCommand being timed: \"env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 /home/chang/miniconda3/envs/arc/bin/python /tmp/tenv-verify-first-cmonge.py\"\n\tUser time (seconds): 2.17\n\tSystem time (seconds): 0.48\n\tPercent of CPU this job got: 102%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:02.58\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 134984\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 37254\n\tVoluntary context switches: 9\n\tInvoluntary context switches: 13\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "evaluation_sha256": "b7cc2d8e1279dea5c75cdf2f69474910e69dd91e69529c3c30f99df50e09a429",
+  "source_artifacts": {
+    "per_group.csv": "edc8c323b3c6089bbc15a8a8d677b078d09ce030cf3c039e76275128ddf16b73",
+    "per_run.csv": "344a0e26faa3d66a4013a6bfade29e096f15e163c6380fe1af5b8852cc899719",
+    "summary.csv": "aa37f884ab9e87fc4d790b19b971a9d4891c80401e338698a14d3b1755f0906c",
+    "best_runs.csv": "0d23007e15367b3114d1f39c23cda6c5c508877a28484c3d650cdac0edd20310",
+    "pr_bands.csv": "fcbcaaa1441380521e6801c632f9f2c167140703fa23fff6b5116282cd8b6255",
+    "pr_sources.npz": "a3c43ac6c931b2e97baa4e23123885f83f73f0d039bb71eae7e1ec4913771498",
+    "predictions.json": "a7e3d166872b0cb72b5fa3efa723507298b2c7a7ed39fcdcd02adc84b94673ef"
+  },
+  "selection_sha256": "e2bc2ea2414e52a905c405d37f7ff58acab48e6c56211fd0f4c9d1269bbbae56",
+  "evaluation_provenance_sha256": "839045cc974386d1c6d21c61753ede02e92a0b208845816f090a94e903f6a918",
+  "presentation": "Frozen artifact-only replay with supplemental budget disclosures.",
+  "rendering_sources": {
+    "plots.py": "f7b65032110966f53b797122c8590ae42800d214a8e5d63a46031cebb38038ad",
+    "deliver.py": "8345318ccc6adb5c1827d6332359a056baf1396f2a494db51fd169f9f572a65f",
+    "learning_curves.py": "ffc4cee69a2bf2bd7a3142263cf19903c89586036aa15872750a9cc2d71cc2e9",
+    "supplement_overlay.py": "615744f1d1a86366e148dbd5a5af485cab70460f61c32e6a6e499a2ccd7f46c1"
+  },
+  "artifacts": {
+    "per_group.csv": "1b9899f977db13b027a2aacee57862833d5a42f03fd41763f9e34d94206e776c",
+    "per_run.csv": "7562ce23c2120cd673a7b20f071804ab17e3eb4bd5fdef806c3ab5b12d33b805",
+    "summary.csv": "0899fd85515176b448736de0fd7666950f204b03d7a71071123d9181c59e23cf",
+    "best_runs.csv": "f8c20e6ea8f29a8e758959ed9769580b3c950e8c99fa153f7b6e73edd2e92a84",
+    "pr_bands.csv": "393d0dd5cbeffa8bdf30fe43a804918a25c4e2d873f4c0ac7c7b8bc95953b0ce",
+    "metrics.png": "35407598c0009732da7b07776310c92dcd014d2fddc7c45711c1bdb0c9155e20",
+    "metrics.svg": "b49cbc8d20a7494ebbd52fc636b880af07928df317b556ec042d616fa22cdb27",
+    "pr_panels.png": "fa5f75a2d708298eead2489c822dd8544a63066ecff2c1810047ab5902a6c0e6",
+    "pr_panels.svg": "b4d9cb7f16e42f3b09ae8413026cd2b092d397ffa6db50e75a438b4cb9a93c01",
+    "best_run.png": "6f920c3b448ef274a2f3f68675cba93ea7eb7402f086902e91cc4076f796b51c",
+    "best_run.svg": "341719ccdfdf7aa8fe1cc8d5f204ab3a34715d4e2d7f48c8d89abdcf30bf6b38",
+    "slot_provenance.json": "839045cc974386d1c6d21c61753ede02e92a0b208845816f090a94e903f6a918",
+    "learning_curves.png": "5d063cf6bbda17f3fc31031f4c7bb0007cce096d148423c082679ea0191f65c5",
+    "learning_curves.svg": "ba7cbb8b20fe8f67649245075bd9f4c409a87dfda705c4780b08316d6de1a2a4",
+    "learning_curves.json": "99d6206d4185f3805a22760290c986aeb737d12aeee60c7cc22510684bd8f939"
+  }
+}

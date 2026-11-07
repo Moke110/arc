@@ -1,0 +1,14 @@
+{
+  "artifacts": {
+    "per_group.csv": "edc8c323b3c6089bbc15a8a8d677b078d09ce030cf3c039e76275128ddf16b73",
+    "per_run.csv": "344a0e26faa3d66a4013a6bfade29e096f15e163c6380fe1af5b8852cc899719",
+    "summary.csv": "aa37f884ab9e87fc4d790b19b971a9d4891c80401e338698a14d3b1755f0906c",
+    "best_runs.csv": "0d23007e15367b3114d1f39c23cda6c5c508877a28484c3d650cdac0edd20310",
+    "pr_bands.csv": "fcbcaaa1441380521e6801c632f9f2c167140703fa23fff6b5116282cd8b6255",
+    "pr_sources.npz": "a3c43ac6c931b2e97baa4e23123885f83f73f0d039bb71eae7e1ec4913771498",
+    "predictions.json": "a7e3d166872b0cb72b5fa3efa723507298b2c7a7ed39fcdcd02adc84b94673ef"
+  },
+  "curve_convention": "Nonempty tied-score thresholds only; at grid recall r use precision of first threshold attaining r (right step); no synthetic (0,1) endpoint. Macro-average eligible groups within run before run mean/min/max.",
+  "workers": 2,
+  "truth_cache": "once per fold, shared immutable mmap"
+}
