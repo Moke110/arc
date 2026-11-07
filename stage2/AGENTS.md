@@ -11,8 +11,8 @@ Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
   crosswalk tables + coverage README, `--verify` G1–G6 PASS (ADR 0033, amends 0026).
 - [`03_modes_tenv/`](03_modes_tenv/README.md) — completed shared-Morgan tenv
   comparison on the 18,164-gene CM axis (ADR 0042).
-- **`04` is a deliberate gap** — the retired Tahoe data step was folded into
-  `02_dataset_corpus/` (ADR 0033).
+- `04_pdiff_tahoe` and `05_pdiff_tenv` — planned standalone PerturbDiff
+  training studies. See ADR 0046 for the agreed scope.
 - [`_envs/`](_envs/README.md) — non-step: shared per-model environments + locks.
 - [`audit/`](audit/README.md) — non-step: entrant/fairness audit, 2026-10-26
   selection decisions.

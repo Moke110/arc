@@ -370,6 +370,11 @@ yield nine run samples per model; these are not nine independent biological
 samples.
 _Avoid_: well, drug–dose group, independent replicate
 
+**Standalone training study**:
+A study that trains a model from random initialization and uses a single
+source dataset for training, validation and held-out testing. Its validation
+and test results describe performance within that source dataset.
+
 **PerturbDiff v2 protocol**:
 The uniform nine-slot tenv recipe `perturbdiff-v2-all-validation-ema` defined in
 ADR 0042: all-138-group deterministic EMA validation and checkpoint eligibility

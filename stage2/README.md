@@ -15,10 +15,15 @@ the second under ADR 0042.
 | [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | final 63-slot comparison across five predictors and two references. PerturbDiff led seven of eight nine-run metric means, including positive/negative AP@100 of 0.23914/0.23463. The training-group mean reference led mean R² | ADR 0042 |
 
 The retired Tahoe data step was folded into `02_dataset_corpus/` (ADR 0033).
-`04` is a deliberate gap. The old CM benchmark and PRnet steps 05 and 06
-were removed on 2026-11-07. Their tracked records are available in Git at
+The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their tracked records are available in Git at
 `f95fe1e`. The retained v1 CM views and identity tables live in
 [`_frozen/cm-data-v1/`](_frozen/cm-data-v1/README.md).
+
+## Next studies under design
+
+`04_pdiff_tahoe` and `05_pdiff_tenv` are separate PerturbDiff training studies.
+Their scope and step names are recorded in
+[ADR 0046](../docs/adr/0046-perturbdiff-standalone-training.md).
 
 ## Selection constraints in force
 
@@ -85,7 +90,7 @@ gitignored (multi-GB, interpreter-specific); rebuild recipes are in
 - ADR [0028](../docs/adr/0028-stage2-5k-hvg-benchmark.md) — the 5,000-gene HVG sensitivity fork.
 - ADR [0029](../docs/adr/0029-tahoe-pseudobulk-pretrain-corpus.md) — the Tahoe-100M pseudobulk corpus.
 - ADR [0031](../docs/adr/0031-tahoe-cm-schema-view-and-prnet-pretrain.md) — the CM-schema Tahoe pretrain view and the PRnet pretrain bring-up.
-- ADR [0033](../docs/adr/0033-stage2-dataset-corpus.md) — one dataset-corpus layer, views downstream; the Tahoe data step is folded in and `04` is a gap.
+- ADR [0033](../docs/adr/0033-stage2-dataset-corpus.md) — one dataset-corpus layer, views downstream; the old Tahoe data step is folded in.
 - [`audit/model_selection_decisions.md`](audit/model_selection_decisions.md) — the earlier CM study's selection decisions.
 - ADR [0042](../docs/adr/0042-tenv-model-benchmark-redesign.md) — the completed tenv comparison.
 - [`_archive/PLAN.md`](_archive/PLAN.md) — the superseded plan, archived as-is; this page carries its live content.

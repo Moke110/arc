@@ -13,6 +13,9 @@ step shipped the substrate but only for one dataset. Every adaptation decision
 (pharmacology tier, gene-space projection, author shims) therefore lived in a
 data step instead of with the model that needed it.
 
+**Numbering update (2026-11-07):** ADR 0046 assigns the former gap to
+`04_pdiff_tahoe`. The Tahoe corpus stays in `02_dataset_corpus/`.
+
 **Decisions.**
 
 1. **One corpus step.** `stage2/02_dataset_corpus/` owns every source dataset as
