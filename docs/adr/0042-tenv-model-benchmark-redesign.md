@@ -341,3 +341,31 @@ The standalone renderer implements both v2 schemas (commit `d03f44a`); this is
 presentation support, not production activation or convergence evidence.
 Issues **#40, #46 and #47 remain open** pending formal outcomes, final evaluation,
 replay, delivery and review. This amendment is not closure.
+
+## Amendment (2026-11-07) — CMonge v2 fold 0 seed 17 supplemental attempt
+
+The user authorized one supplemental attempt for **CMonge v2, fold 0, seed 17**
+after the original scheduler exits cleanly. This attempt starts from seed
+initialization with the frozen recipe, validation population, inputs and
+scientific run identity. Its separate authorization allows **14,400 seconds
+for training, including watchdog setup, and 1,800 seconds for inference**.
+The original cumulative-budget timeout, its ledger and its artifacts remain
+separate evidence. The original attempt had **424.49 seconds** available and
+exhausted the original **14,400-second** cumulative allowance.
+
+Review and pin the one-shot policy against the settled original run records,
+then dispatch under the shared scheduler lock and the dedicated scope's
+resource and wall-time limits. A durable reservation spends this authorization.
+Before final scoring, independently review the terminal evidence and select
+this attempt for the existing slot. Completion contributes one scored run.
+An authenticated failure or timeout occupies the slot without a score.
+Missing, invalid or mismatched evidence blocks final scoring. Selection is
+fixed by the authorization before test metrics are computed.
+
+Final evaluation uses a separate materialized overlay with the selected
+attempt and the other 62 original outcomes. Keep both attempts' native
+histories separate from one another and from legacy v1. Disclose the unequal
+budget, both statuses, measured phase timings and host RSS in the final
+tables and figures and on each replay. Production launch is pending the
+original scheduler's clean exit, the reviewed policy digest and live resource
+admission.

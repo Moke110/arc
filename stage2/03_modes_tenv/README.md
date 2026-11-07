@@ -204,3 +204,23 @@ separate legacy panels (commit `d03f44a`); its existing curve contract above
 applies. Missing histories stay explicit and legacy trajectories are never
 spliced into formal v2 slots. Pre-migration legacy statuses do not satisfy the
 final 63-outcome barrier. #40/#46/#47 stay open through formal delivery/review.
+
+## CMonge v2 fold 0 seed 17 supplemental attempt
+
+The [ADR 0042 supplemental amendment](../../docs/adr/0042-tenv-model-benchmark-redesign.md#amendment-2026-11-07--cmonge-v2-fold-0-seed-17-supplemental-attempt)
+authorizes a single fresh **14,400-second training allowance** and a separate
+**1,800-second inference allowance**, using the same CMonge v2 recipe from
+seed initialization. The original cumulative-budget timeout and its artifacts
+remain in `output/formal/`. The supplemental runner
+[`cmonge_supplement.py`](execution/script/cmonge_supplement.py) uses a separate
+attempt directory and durable claim. Production launch is pending the original
+scheduler's clean exit, policy review and live resource admission.
+
+[`supplement_overlay.py`](execution/script/supplement_overlay.py) binds the
+reviewed supplemental outcome to the existing fold/seed slot and the other
+62 original outcomes. An authenticated timeout or failure occupies the slot
+without a score. Invalid evidence blocks final evaluation. Run supplement-aware
+publication after scoring and on every replay to retain the budget exception,
+measured phase times and host RSS in the final tables and figures. The
+learning curves display the original timeout separately from the selected
+supplement and the legacy histories.
