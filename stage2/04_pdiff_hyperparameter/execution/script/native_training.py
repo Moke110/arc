@@ -73,9 +73,11 @@ def predict_probe(model, inputs, groups, config, device):
     """Exercise the native predictor with the first frozen validation group."""
     batch, indices = model.batch(inputs, 'validation', groups[:1], device)
     batch.pop('pert_emb', None)
-    generator = torch.Generator(device=device).manual_seed(config['seed'] + 200000)
+    probe_seed = config['seed'] + 200000
+    generator = torch.Generator(device=device).manual_seed(probe_seed)
     noise = torch.randn(batch['cont_emb'].shape, device=device, generator=generator)
-    with torch.no_grad():
+    # DDIM draws from the global RNG even at eta=0. Isolate those draws from training.
+    with torch.no_grad(), validation_random_stream(probe_seed, device):
         delta = (model.sample(batch, config, noise) - batch['cont_emb']) * config['expression_scale']
     if not torch.isfinite(delta).all():
         raise ValueError('nonfinite native prediction')
