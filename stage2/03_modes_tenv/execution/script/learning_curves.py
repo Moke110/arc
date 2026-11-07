@@ -164,6 +164,7 @@ def render(output, publish, final=False, *, supplement=None):
     fig, axes = plt.subplots(6 if supplement else 5, 2, figsize=(16, 27 if supplement else 23), layout='constrained')
     if supplement:
         panels += ('cmonge_original',)
+        axes.flat[len(panels)].set_axis_off()
     for ax, model in zip(axes.flat, panels):
         is_legacy = model.endswith('_legacy')
         is_original = model.endswith('_original')
