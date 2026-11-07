@@ -73,8 +73,9 @@ def disclosure_lines(proof):
         f"original worker wall {original['attempt_wall_seconds']:,.2f} s · "
         f"original host peak RSS {measured(original['peak_host_rss_gib'], 'GiB')}.",
         f"Selected watchdog setup/training {measured(timing['pre_inference_watchdog_seconds'], 's')} · "
-        f"observed inference {measured(timing['observed_inference_seconds'], 's')} · "
-        f"sampled host peak RSS {measured(account['peak_host_rss_gib'], 'GiB')}.",
+        f"observed inference {measured(timing['observed_inference_seconds'], 's')}.",
+        f"Selected host peak RSS {measured(account['peak_host_rss_gib'], 'GiB')} "
+        "(maximum of available owned-process samples and GNU time peak).",
     )
 
 

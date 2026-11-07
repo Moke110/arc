@@ -145,6 +145,8 @@ def selection(formal, reviewed_stage, policy_path, reviewed_policy, reviewed_ter
     selected_root = checked_path(policy['output_root'], directory=True)
     directory = run_directory(selected_root, *TARGET)
     run = read_json(checked_path(directory / 'run.json'))
+    if run.get('stop_reason') == 'invalid_native_artifacts':
+        raise ValueError('invalid native artifacts cannot settle the supplemental slot')
     selected_files = run_files(directory, run, previous['command'])
     original_proof = terminal['original']
     if (original_proof['run_files'] != previous['files']
@@ -166,6 +168,7 @@ def selection(formal, reviewed_stage, policy_path, reviewed_policy, reviewed_ter
                     files=selected_files, attempt_id=ATTEMPT)
     return dict(schema='tenv-cmonge-supplement-overlay-v1', reviewed_stage_sha256=reviewed_stage,
                 reviewed_policy_sha256=reviewed_policy, reviewed_terminal_sha256=reviewed_terminal,
+                migration_journal_sha256=policy['journal_sha256'],
                 original_output=queue['output_root'], input_root=queue['input_root'],
                 input_sha256=digest(Path(queue['input_root']) / 'manifest.json'),
                 scheduler_summary_sha256=summary_sha, original=original, terminal=terminal,
@@ -204,14 +207,23 @@ def materialize(record):
     return output
 
 
-def verify_copy(output, record):
-    actual = set()
-    for model_dir in checked_path(output / 'runs', directory=True).iterdir():
-        for fold_dir in checked_path(model_dir, directory=True).iterdir():
-            for run_dir in checked_path(fold_dir, directory=True).iterdir():
-                actual.add(run_dir)
+def verify_copy(output, record, *, fresh=False):
+    output = checked_path(output, directory=True)
+    checked_path(output / 'selection.json')
+    if fresh and {path.name for path in output.iterdir()} != {'selection.json', 'runs'}:
+        raise ValueError('unexpected evaluation overlay entries; preserve them for review')
     expected = {run_directory(output, *slot_key(row)): row['files'] for row in record['selected']}
-    if actual != set(expected) or any(files(path) != hashes for path, hashes in expected.items()):
+    runs = output / 'runs'
+    hierarchy = {runs: set()}
+    for run in expected:
+        fold = run.parent
+        model = fold.parent
+        hierarchy[runs].add(model)
+        hierarchy.setdefault(model, set()).add(fold)
+        hierarchy.setdefault(fold, set()).add(run)
+    if (any(set(checked_path(parent, directory=True).iterdir()) != children
+            for parent, children in hierarchy.items())
+            or any(files(path) != hashes for path, hashes in expected.items())):
         raise ValueError('private overlay slot/file mismatch')
 
 
@@ -245,11 +257,9 @@ def scheduler_idle(formal):
 
 
 def evaluate(output, record, selection_sha):
-    from deliver import FIGURES
-
-    if any(os.path.lexists(output / name) for name in (*EVALUATION_FILES, *FIGURES, 'evaluation.json',
-                                                       'evaluation-provenance.json')):
-        raise ValueError('evaluation files already exist; preserve them for review')
+    verify_copy(output, record, fresh=True)
+    if pinned_json(output / 'selection.json', selection_sha) != record:
+        raise ValueError('selection evidence changed before evaluation')
     commands = {row['model']: row['command'] for row in record['selected'] if row['command'] is not None}
     benchmark.freeze_predictions(record['input_root'], output, list(MODELS), commands)
     verify_seal(output, record)
@@ -287,17 +297,18 @@ def main():
             return
         if pinned_json(selection_path, args.reviewed_selection_sha256) != record:
             raise ValueError('selection evidence changed since review')
-        verify_copy(output, record)
         if args.action == 'evaluate':
             evaluate(output, record, args.reviewed_selection_sha256)
             print(json.dumps(dict(evaluation_provenance_sha256=digest(proof_path))))
         elif args.action == 'publish':
             from deliver import publish
+            verify_copy(output, record)
             proof = pinned_json(proof_path, args.reviewed_evaluation_sha256)
             if proof != evaluation_proof(output, record, args.reviewed_selection_sha256):
                 raise ValueError('evaluation evidence changed since review')
             publish(output, output.parent, supplement=(record, proof, args.reviewed_evaluation_sha256))
         else:
+            verify_copy(output, record, fresh=not os.path.lexists(proof_path))
             verify_input_files(record['input_root'])
             if os.path.lexists(output / 'predictions.json'):
                 verify_seal(output, record)

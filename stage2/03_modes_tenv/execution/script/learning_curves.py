@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 
 V2_PROTOCOL = 'perturbdiff-v2-all-validation-ema'
@@ -37,10 +38,6 @@ MODELS = (*MAPPINGS, 'no_change', 'delta_mean')
 TITLES = dict(zip(MODELS, ('PRnet', 'CPA', 'chemCPA', 'CMonge', 'PerturbDiff', 'no_change', 'delta_mean')))
 
 
-def read(path):
-    return json.loads(path.read_text())
-
-
 def points(history, xkey, ykey):
     """Preserve actual native coordinates; reject malformed/nonfinite history."""
     result = [(float(row[xkey]), float(row[ykey])) for row in history]
@@ -51,7 +48,60 @@ def points(history, xkey, ykey):
     return result
 
 
-def collect(output, *, legacy=False, authenticated_v2=(), only=None):
+def curve_file(path, hashes):
+    if hashes is None:
+        return (path.read_bytes(), None) if path.exists() else (None, None)
+    from supplement_overlay import checked_path
+
+    if path.name not in hashes:
+        if os.path.lexists(path):
+            raise ValueError(f'unreviewed curve source: {path}')
+        return None, None
+    raw = checked_path(path).read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    if digest != hashes[path.name]:
+        raise ValueError(f'history or status changed since authentication: {path}')
+    return raw, digest
+
+
+def curve_data(raw, slot, source):
+    data = json.loads(raw)
+    if not isinstance(data, dict):
+        raise ValueError(f'expected native history object: {source}')
+    identity = data.get('identity')
+    if not isinstance(identity, dict) or any(identity.get(k) != v for k, v in zip(('model', 'fold', 'seed'), slot)):
+        raise ValueError(f'checkpoint identity mismatch: {source}')
+    return data
+
+
+def curve_points(data, model, protocol, source, *, authenticated=False):
+    history = data['history'] if authenticated else data.get('history', [])
+    if not isinstance(history, list) or any(not isinstance(row, dict) for row in history):
+        raise ValueError(f'invalid native history events: {source}')
+    result = {}
+    if model in V2_MODELS and protocol == V2_MODELS[model]:
+        if model == 'perturbdiff' and data.get('validation_group_count') != 138:
+            raise ValueError(f'v2 validation population mismatch: {source}')
+        if model == 'cmonge':
+            if any(row.get('validation_conditions_evaluated') != 138 for row in history):
+                raise ValueError(f'v2 validation population mismatch: {source}')
+            if history:
+                result['validation_condition_count'] = 138
+        result['validation_events'] = len(history)
+        for key in ('validation_group_count', 'validation_group_ids', 'validation_group_ids_sha256',
+                    'best_iteration', 'best_step', 'stop_reason'):
+            if key in data:
+                result[key] = data[key]
+    x, train, validation, _, _ = MAPPINGS[model]
+    if authenticated and any(type(row[key]) not in (int, float)
+                             for row in history for key in (x, train, validation)):
+        raise ValueError(f'expected numeric native history events: {source}')
+    result.update(train=points(history, x, train), validation=points(history, x, validation))
+    result['history_status'] = 'available' if result['train'] else 'empty'
+    return result
+
+
+def collect(output, *, legacy=False, authenticated_v2=(), only=None, inventories=None, tolerate_invalid=()):
     records = []
     for model in (V2_MODELS if legacy else MODELS):
         for fold in range(3):
@@ -60,75 +110,102 @@ def collect(output, *, legacy=False, authenticated_v2=(), only=None):
                 if only is not None and slot != only:
                     continue
                 live = output / 'runs' / model / f'fold_{fold}' / f'seed_{seed}'
-                archived = output / 'legacy' / f'{model}-v1/runs' / f'fold_{fold}' / f'seed_{seed}'
-                migrated = (output / 'legacy' / f'{model}-v1/runs').exists()
-                directory = archived if legacy and migrated else live
-                run_path = directory / 'run.json'
-                run = read(run_path) if run_path.exists() else {}
+                archive = output / 'legacy' / f'{model}-v1/runs'
+                archived = legacy and (inventories is not None or archive.exists())
+                directory = archive / f'fold_{fold}' / f'seed_{seed}' if archived else live
+                hashes = inventories[slot] if inventories is not None else None
+                run_raw, run_sha = curve_file(directory / 'run.json', hashes)
+                run = json.loads(run_raw) if run_raw is not None else {}
                 record = dict(model=model, fold=fold, seed=seed, status=run.get('status', 'not_dispatched'),
                               train=[], validation=[], history_status='not applicable' if model not in MAPPINGS else 'missing')
+                if legacy and run_sha is not None:
+                    record['run_sha256'] = run_sha
+                if model not in MAPPINGS:
+                    records.append(record)
+                    continue
                 checkpoint = directory / 'checkpoint.json'
                 # CMonge publishes durable events before final checkpoint/inference.
-                use_checkpoint = checkpoint.exists()
-                if slot in authenticated_v2 and run.get('status') != 'completed':
+                use_checkpoint = (checkpoint.exists() if hashes is None else 'checkpoint.json' in hashes)
+                if slot in authenticated_v2 and record['status'] != 'completed':
                     use_checkpoint = False
                 source = checkpoint if use_checkpoint else directory / 'history.json'
-                data = read(source) if model in MAPPINGS and source.exists() else None
-                if data is not None:
-                    identity = data.get('identity', {})
-                    if any(identity.get(k) != v for k, v in [('model', model), ('fold', fold), ('seed', seed)]):
-                        raise ValueError(f'checkpoint identity mismatch: {source}')
+                raw, digest = curve_file(source, hashes)
+                if hashes is not None:
+                    # Also reject unreviewed competing inputs and changed archived JSON.
+                    alternate = directory / ('history.json' if use_checkpoint else 'checkpoint.json')
+                    curve_file(alternate, hashes)
                 if model in V2_MODELS:
                     v2 = V2_MODELS[model]
-                    protocol = data.get('protocol', f'{model}-v1-legacy') if data else run.get('protocol')
-                    if data is None and slot in authenticated_v2:
-                        protocol = v2
-                    if protocol and protocol not in (v2, f'{model}-v1-legacy'):
-                        raise ValueError(f'unknown {model} protocol: {source}')
-                    is_v2 = protocol == v2
-                    record.update(protocol=f'{model}-v1-legacy' if legacy else v2,
+                    v1 = f'{model}-v1-legacy'
+                    record.update(protocol=v1 if legacy else v2,
                                   validation_population=LEGACY_POPULATIONS[model] if legacy else 'all 138 groups / 46 drugs')
-                    if legacy and (is_v2 or (data is None and not run_path.exists())):
-                        continue
-                    if not legacy and not is_v2:
-                        if data is not None or run_path.exists():
-                            record['status'] = 'legacy_v1_only'
-                        records.append(record)
-                        continue
-                    if is_v2 and data is not None:
-                        history = data.get('history', [])
-                        if model == 'perturbdiff' and data.get('validation_group_count') != 138:
-                            raise ValueError(f'v2 validation population mismatch: {source}')
-                        if model == 'cmonge':
-                            if any(row.get('validation_conditions_evaluated') != 138 for row in history):
-                                raise ValueError(f'v2 validation population mismatch: {source}')
-                            if history:
-                                record['validation_condition_count'] = 138
-                        record['validation_events'] = len(history)
-                        for key in ('validation_group_count', 'validation_group_ids', 'validation_group_ids_sha256', 'best_iteration', 'best_step', 'stop_reason'):
-                            if key in data:
-                                record[key] = data[key]
-                if data is not None:
-                    x, train, validation, _, _ = MAPPINGS[model]
-                    record.update(train=points(data.get('history', []), x, train),
-                                  validation=points(data.get('history', []), x, validation),
-                                  source=str(source), sha256=hashlib.sha256(source.read_bytes()).hexdigest())
-                    record['history_status'] = 'available' if record['train'] else 'empty'
+                try:
+                    data = curve_data(raw, slot, source) if raw is not None else None
+                    protocol = None
+                    if model in V2_MODELS:
+                        protocol = data.get('protocol', v1) if data else run.get('protocol')
+                        if data is None and slot in authenticated_v2:
+                            protocol = v2
+                        if protocol and protocol not in (v2, v1):
+                            raise ValueError(f'unknown {model} protocol: {source}')
+                        if slot in authenticated_v2 and protocol != v2:
+                            raise ValueError(f'expected authenticated {model} v2 history: {source}')
+                        if legacy and hashes is not None and protocol == v2:
+                            raise ValueError(f'unexpected v2 history in the legacy archive: {source}')
+                        if legacy and (protocol == v2 or (data is None and run_raw is None)):
+                            continue
+                        if not legacy and protocol != v2:
+                            if data is not None or run_raw is not None:
+                                record['status'] = 'legacy_v1_only'
+                            records.append(record)
+                            continue
+                    if data is not None:
+                        record.update(curve_points(data, model, protocol, source, authenticated=digest is not None),
+                                      source=str(source),
+                                      sha256=digest or hashlib.sha256(raw).hexdigest())
+                except (ValueError, KeyError, TypeError, OverflowError):
+                    if (slot not in tolerate_invalid or digest is None
+                            or record['status'] not in ('failed', 'timeout')):
+                        raise
+                    record.update(history_status='invalid', source=str(source), sha256=digest, validation_events=0)
                 records.append(record)
     return records
 
 
-def collect_legacy(output):
-    return collect(output, legacy=True)
+def collect_legacy(output, *, journal_sha256=None):
+    if journal_sha256 is None:
+        return collect(output, legacy=True)
+    from supplement_overlay import checked_path, pinned_json
+
+    journal = pinned_json(output / 'joint-v2-apply.json', journal_sha256)
+    if journal['schema'] != 'joint-v2-apply-v1' or journal['status'] != 'committed':
+        raise ValueError('expected the committed legacy migration journal')
+    inventories = {}
+    for model in V2_MODELS:
+        archive = checked_path(output / 'legacy' / f'{model}-v1/runs', directory=True)
+        matches = [move for move in journal['moves'] if move['destination'] == str(archive)]
+        if len(matches) != 1 or matches[0]['source'] != str(output / 'runs' / model):
+            raise ValueError(f'legacy archive is missing its reviewed move: {archive}')
+        inventory = matches[0]['inventory']
+        for fold in range(3):
+            for seed in SEEDS:
+                relative = Path(f'fold_{fold}') / f'seed_{seed}'
+                for directory in (relative.parent, relative):
+                    if str(directory) in inventory:
+                        checked_path(archive / directory, directory=True)
+                inventories[model, fold, seed] = {
+                    name: inventory[str(relative / name)] for name in ('run.json', 'history.json', 'checkpoint.json')
+                    if str(relative / name) in inventory
+                }
+    return collect(output, legacy=True, inventories=inventories)
 
 
 def bind_attempt(record, hashes, attempt_id, status):
     if record['status'] != status:
         raise ValueError(f'inconsistent attempt status: {attempt_id}')
-    if 'source' in record and record['sha256'] != hashes.get(Path(record['source']).name):
-        raise ValueError(f'history changed since authentication: {attempt_id}')
     record.update(attempt_id=attempt_id, run_sha256=hashes['run.json'],
                   validation_events=len(record['validation']))
+
 
 def render(output, publish, final=False, *, supplement=None):
     import matplotlib
@@ -138,25 +215,28 @@ def render(output, publish, final=False, *, supplement=None):
     plt.rcParams['svg.fonttype'] = 'none'
     if supplement is None and (output / 'selection.json').exists():
         raise ValueError('use the authenticated supplement overlay publication command')
-    authenticated_v2 = ()
     original_records = []
     if supplement:
         from supplement_overlay import TARGET, slot_key
         selection, proof, _ = supplement
-        authenticated_v2 = {slot_key(row) for row in selection['selected'] if row['model'] in V2_MODELS}
         original_output = Path(selection['original_output'])
-        original_records = collect(original_output, authenticated_v2={TARGET}, only=TARGET)
-        bind_attempt(original_records[0], proof['original_timeout']['files'],
-                     'original-cumulative-budget', 'timeout')
-    else:
-        original_output = output
-    records = collect(output, authenticated_v2=authenticated_v2)
-    if supplement:
-        selected = next(row for row in records if slot_key(row) == TARGET)
+        original_files = proof['original_timeout']['files']
+        original_records = collect(original_output, authenticated_v2={TARGET}, only=TARGET,
+                                   inventories={TARGET: original_files}, tolerate_invalid={TARGET})
+        bind_attempt(original_records[0], original_files, 'original-cumulative-budget', 'timeout')
+        inventories = {slot_key(row): row['files'] for row in selection['selected']}
+        authenticated_v2 = {slot for slot in inventories if slot[0] in V2_MODELS}
         selected_attempt = proof['selected_attempt']
-        selected_files = next(row['files'] for row in selection['selected'] if slot_key(row) == TARGET)
-        bind_attempt(selected, selected_files, selected_attempt['attempt_id'], selected_attempt['status'])
-    legacy_records = collect_legacy(original_output)
+        if selected_attempt['account'].get('stop_reason') == 'invalid_native_artifacts':
+            raise ValueError('invalid native artifacts cannot settle the supplemental slot')
+        records = collect(output, authenticated_v2=authenticated_v2, inventories=inventories,
+                          tolerate_invalid={TARGET})
+        selected = next(row for row in records if slot_key(row) == TARGET)
+        bind_attempt(selected, inventories[TARGET], selected_attempt['attempt_id'], selected_attempt['status'])
+        legacy_records = collect_legacy(original_output, journal_sha256=selection['migration_journal_sha256'])
+    else:
+        records = collect(output)
+        legacy_records = collect_legacy(output)
     terminal = sum(r['status'] in TERMINAL for r in records)
     if final and terminal != 63:
         raise ValueError(f'final learning curves require 63 terminal outcomes, found {terminal}')
@@ -217,6 +297,9 @@ def render(output, publish, final=False, *, supplement=None):
             note = (f"Fold 0 seed 17 selected supplement ({selected['status']}): "
                     'fresh 14,400 s training + 1,800 s inference from seed initialization.\n'
                     'Original cumulative-budget timeout shown separately.')
+        invalid = sum(r['history_status'] == 'invalid' for r in subset)
+        if invalid:
+            count_label += f' · invalid histories {invalid}'
         status_counts = {status: sum(r['status'] == status for r in subset) for status in sorted({r['status'] for r in subset})}
         status_label = ' · '.join(f'{status}: {count}' for status, count in status_counts.items())
         ax.text(.02, .98, count_label + '\n' + status_label,
