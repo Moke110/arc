@@ -119,7 +119,7 @@ def load_array(path, shape, dtype='float32'):
     return array
 
 
-def prediction(root, outcome, fold, stage):
+def prediction(root, outcome, fold, stage, producer_plan_sha=None):
     path = verify_file(relative_path(root, outcome['prediction']), outcome['prediction_manifest_sha256'])
     manifest = load_schema(path, 'step04-heldout-prediction-v1')
     seed = outcome['seed']
@@ -146,6 +146,14 @@ def prediction(root, outcome, fold, stage):
     if (run['best_step'], run['best_validation_loss']) != (best['step'], best['validation_loss']):
         raise ValueError('prediction checkpoint differs from the strict validation minimum')
     verify_file(relative_path(path.parent, 'best.pt'), run['checkpoint_sha256'])
+    if producer_plan_sha is not None:
+        replay = read_json(verify_file(relative_path(path.parent, 'replay.json'), manifest['replay_sha256']))
+        if (manifest['plan_sha256'] != producer_plan_sha
+                or replay != {**run['reload'], **{key: run[key] for key in checkpoint_keys},
+                              'plan_sha256': producer_plan_sha}
+                or replay['validation_loss'] != best['validation_loss']
+                or replay['prediction_max_abs_error'] != 0):
+            raise ValueError('prediction replay does not match the frozen plan and EMA selection')
     cases = read_json(verify_file(relative_path(path.parent, 'cases.json'), manifest['cases_sha256']))
     if cases != [[case['case_id'], case['group_id']] for case in fold['cases']]:
         raise ValueError('prediction case and group identities differ from frozen order')
@@ -268,11 +276,20 @@ def write_results(output, folds, outcomes, predictions, audit):
     write_json(output / 'evaluation.json', audit)
 
 
-def evaluate(plan_path, outcomes_path, output):
+def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None):
+    plan_sha = sha256(plan_path)
+    if expected_plan_sha is not None and expected_plan_sha != plan_sha:
+        raise ValueError('frozen plan hash mismatch')
     plan = load_schema(plan_path, 'step04-evaluation-plan-v1')
     stage = plan['stage']
     if stage not in ('fixture', 'formal'):
         raise ValueError('expected fixture or formal inventory')
+    scope = DATASETS
+    if 'dataset' in plan:
+        if stage != 'formal' or plan['dataset'] not in DATASETS or expected_plan_sha is None:
+            raise ValueError('dataset-scoped formal evaluation requires a valid dataset and frozen plan hash')
+        scope = (plan['dataset'],)
+    producer_plan_sha = plan_sha if 'launch_files' in plan else None
     folds = {}
     for entry in plan['folds']:
         fold = fold_inputs(plan_path.parent, entry, stage)
@@ -281,7 +298,7 @@ def evaluate(plan_path, outcomes_path, output):
         if key in folds:
             raise ValueError('duplicate expected dataset/fold')
         folds[key] = fold
-    if (not folds or (stage == 'formal' and folds.keys() != {(d, f) for d in DATASETS for f in range(3)})
+    if (not folds or (stage == 'formal' and folds.keys() != {(d, f) for d in scope for f in range(3)})
             or len({fold['identity']['gene_sha256'] for fold in folds.values()}) != 1):
         raise ValueError('expected dataset/fold inventory or shared gene axis mismatch')
     for dataset in DATASETS:
@@ -291,21 +308,25 @@ def evaluate(plan_path, outcomes_path, output):
     expected = {(dataset, fold, seed) for (dataset, fold), inputs in folds.items()
                 for seed in inputs['recipes']}
     outcomes, predictions = {}, {}
-    for entry in load_schema(outcomes_path, 'step04-evaluation-outcomes-v1')['outcomes']:
+    inventory = load_schema(outcomes_path, 'step04-evaluation-outcomes-v1')
+    if producer_plan_sha is not None and inventory.get('plan_sha256') != producer_plan_sha:
+        raise ValueError('outcomes do not match the frozen producer plan')
+    for entry in inventory['outcomes']:
         key = (entry['dataset'], entry['fold'], entry['seed'])
         if type(entry['fold']) is not int or type(entry['seed']) is not int or key not in expected or key in outcomes:
             raise ValueError('unexpected or duplicate outcome slot')
         outcomes[key] = entry
         if entry['status'] == 'completed':
-            predictions[key] = prediction(outcomes_path.parent, entry, folds[key[:2]], stage)
+            predictions[key] = prediction(outcomes_path.parent, entry, folds[key[:2]], stage, producer_plan_sha)
         elif entry['status'] not in TERMINAL_FAILURES or not entry.get('reason') or 'prediction' in entry:
             raise ValueError('outcome requires a completed prediction or explicit terminal failure')
     if output.exists() or output.is_symlink():
         raise ValueError('evaluation requires a fresh output directory')
     output.parent.mkdir(parents=True, exist_ok=True)
     audit = {'schema': 'step04-evaluation-v1', 'stage': stage,
-             'plan_sha256': sha256(plan_path), 'outcomes_sha256': sha256(outcomes_path),
-             'tenv_test_memberships_previously_scored_in_step03': stage == 'formal'}
+             'plan_sha256': plan_sha, 'outcomes_sha256': sha256(outcomes_path),
+             'datasets': sorted({dataset for dataset, _ in folds}),
+             'tenv_test_memberships_previously_scored_in_step03': stage == 'formal' and 'tenv' in scope}
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         pending = Path(temporary) / 'evaluation'
         pending.mkdir()
@@ -318,9 +339,10 @@ def main():
     parser.add_argument('plan', type=Path)
     parser.add_argument('outcomes', type=Path)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--plan-sha256', help='required hash for a dataset-scoped formal plan')
     args = parser.parse_args()
     try:
-        evaluate(args.plan.resolve(), args.outcomes.resolve(), args.output.absolute())
+        evaluate(args.plan.resolve(), args.outcomes.resolve(), args.output.absolute(), args.plan_sha256)
     except (ValueError, TypeError, KeyError, OSError, EOFError) as error:
         parser.exit(1, f'evaluation rejected: {error}\n')
 

@@ -1,0 +1,25 @@
+{
+  "schema": "step04-evaluation-v1",
+  "stage": "formal",
+  "plan_sha256": "ce2694c575bf5e15f237fb4e7a3605a23858940b4e4c704771b883b49be1708c",
+  "outcomes_sha256": "a523a0848ee2bc0507a7f3e6809ecd942db86ef5f6c471a1d58fe2edd4855c3b",
+  "datasets": [
+    "tenv"
+  ],
+  "tenv_test_memberships_previously_scored_in_step03": true,
+  "complete": true,
+  "files": {
+    "per_group.csv": "7b66f8f5731fc465c02d1794a8ce30cf01580c1e035d1e76b4a8ca68d5d5be17",
+    "per_run.csv": "5221105226e5b794e785a0a2a7b0d44c0fbcd4bd193ac965db8464948da5f95d",
+    "references/tenv_fold_0/delta_mean.npy": "93d61c8d4c07865bd0a87cf85fbdee1a641aee7ba657b18d24ba708ac60b23ef",
+    "references/tenv_fold_0/group_ids.json": "88534759dbb93fe31bd498e2f192915738971897f07c76facba135e8d9fc9a75",
+    "references/tenv_fold_0/no_change.npy": "7261427bdf00c906fa2f1c58f90902166cb7866ef2dd63aaabff7b8079ccd129",
+    "references/tenv_fold_1/delta_mean.npy": "093e810b4e0fe2f6f21a3787598231986494f263e98e674479158cd107ad7980",
+    "references/tenv_fold_1/group_ids.json": "64455d4f1097972a8ac5a964b4ef7ae2fef64b332f289d020121d6fe8b14f57b",
+    "references/tenv_fold_1/no_change.npy": "7261427bdf00c906fa2f1c58f90902166cb7866ef2dd63aaabff7b8079ccd129",
+    "references/tenv_fold_2/delta_mean.npy": "9bb74947d2efc8c9a710c20631e61dc9e8cd3f0dafe0c82a4857c61c80d5d9cf",
+    "references/tenv_fold_2/group_ids.json": "a1efb01495d1f35e3021a1e5ece134d5036b887b0a94cf703acc4e4b202488d3",
+    "references/tenv_fold_2/no_change.npy": "7261427bdf00c906fa2f1c58f90902166cb7866ef2dd63aaabff7b8079ccd129",
+    "summary.csv": "cba84f54c43303b3ac91197b8424947f42357c423a7f47005eae5e6721a9b9d4"
+  }
+}

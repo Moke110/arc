@@ -185,3 +185,74 @@ three folds. Validation and checkpoint overhead was 47.71–50.76% of
 optimizer time at 500 steps and 94.83–97.83% at 250 steps. The frozen
 recipes use 2,000-step patience in fold 0 and 1,000-step patience in folds
 1 and 2, with fold-specific improvement thresholds. See [the Tahoe pilot outcome](execution/tahoe_pilot_record/README.md).
+
+## Formal fits and held-out scoring
+
+The [tenv formal record](execution/formal_record/tenv/README.md) reports
+the completed matrix, matched references and checkpoint handoff.
+
+Use one formal plan per dataset. Freeze it from the verified compact pilot
+record and the matching predictor requests in fold order. The freeze command
+prints the plan's SHA-256 and creates separate nine-slot queues for fits and
+predictions. Keep that hash with the scheduler records. The plan pins the
+requests, raw and normalized recipes, pilot selection, execution code and
+runtime identities. Use a stable checkout for the duration of the queues.
+
+```bash
+step=stage2/04_pdiff_hyperparameter
+execution="$step/execution"
+cli="$execution/script/formal.py"
+pdiff=stage2/_envs/perturbdiff/bin/python
+formal="$execution/output/tenv-formal-replay"
+requests="$execution/output/tenv-pilot-ticket70/requests"
+"$pdiff" "$cli" freeze "$execution/pilot_record/tenv" "$formal" \
+  "$requests/fold-0.json" "$requests/fold-1.json" "$requests/fold-2.json"
+```
+
+The dedicated scheduler runs `fit-queue.json` to its terminal outcomes,
+then runs `predict-queue.json`. If needed, use the scheduler's retry command
+on the relevant queue and slot ID, such as `fold-0-seed-17`. An interrupted
+fit restarts from random initialization in a fresh attempt directory. A
+prediction retry can reuse the sealed fit. A completed prediction is published
+only after the worker reproduces the native validation loss and prediction
+probe exactly, samples all held-out groups, verifies case coverage and
+flushes the float32 prediction. Inference keeps each group together and
+uses at most 24 profiles across groups in a batch. A group larger than that
+runs as a single group. Failed attempts retain their evidence.
+
+After both phases reach terminal outcomes, collect the slot inventory
+and run the evaluator with the `arc` interpreter. Give full-size scoring
+and checkpoint release to the dedicated scheduler. Use the SHA-256 printed
+by the freeze command for `plan_sha`.
+
+```bash
+python "$execution/script/formal_outcomes.py" "$formal/plan.json" "$plan_sha" "$formal/outcomes.json"
+python "$execution/script/evaluate.py" "$formal/plan.json" "$formal/outcomes.json" "$formal/evaluation" \
+  --plan-sha256 "$plan_sha"
+python "$execution/script/formal_outcomes.py" "$formal/plan.json" "$plan_sha" "$formal/outcomes.json" \
+  --publish-checkpoints "$formal/evaluation" "$step/output/checkpoints/tenv"
+```
+
+The [evaluation contract](execution/evaluation_contract.md) describes the
+score tables and provenance. The standalone tenv evaluation uses the
+held-out memberships previously scored in 03. The checkpoint release
+requires all nine tenv slots to be scored and uses hard links on the same
+filesystem for the large `best.pt` files.
+
+### Select a downstream tenv checkpoint
+
+Read `output/checkpoints/tenv/checkpoints.json` and select the exact
+`identity.fold` and `identity.seed` for the intended split and initialization.
+Each entry names a relative directory and records the frozen request,
+recipe, checkpoint and model state hashes. The directory contains the
+checkpoint, request, recipe, training record and exact EMA replay evidence.
+To verify a selected checkpoint against its frozen validation input, give
+this command to the dedicated scheduler with `slot` set to that directory.
+
+```bash
+"$pdiff" "$execution/script/train.py" reload "$slot/request.json" "$slot" "$fresh_replay_record"
+```
+
+The request retains the absolute path to the local tenv release and verifies
+its allowlisted files before loading the model. The replay validates the
+selected loss and prediction probe using the saved EMA weights.

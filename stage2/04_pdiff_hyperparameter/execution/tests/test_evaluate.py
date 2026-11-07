@@ -3,6 +3,7 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -171,6 +172,57 @@ class EvaluatorReplay(unittest.TestCase):
                          ('3', '1', '1'))
         audit = json.loads((output / 'evaluation.json').read_text())
         self.assertFalse(audit['complete'])
+
+    def test_scoped_formal_plan_scores_only_its_dataset_and_all_references(self):
+        dataset = 'tahoe'
+        first, _ = release(self.root / 'scoped', dataset)
+        source = first.parent
+        original = json.loads(first.read_text())
+        folds = []
+        for fold in range(3):
+            target = source / f'fold_{fold}'
+            if fold:
+                shutil.copytree(source / 'fold_0', target)
+            for path in target.rglob('*.npy'):
+                values = np.load(path)
+                np.save(path, np.pad(values, ((0, 0), (0, 18164 - values.shape[1]))))
+        files = {str(path.relative_to(source)): digest(path) for path in source.rglob('*')
+                 if path.is_file() and path.name not in ('manifest.json', 'request.json')}
+        manifest = write(source / 'manifest.json', {'schema': 'tahoe-input-v1', 'target_kind': 'delta',
+                                                    'gene_count': 18164, 'files': files})
+        for fold in range(3):
+            paths = {key: name.replace('fold_0/', f'fold_{fold}/')
+                     for key, name in original['input']['predictor_files'].items()}
+            consumer = {**original['input'], 'fold': fold, 'n_genes': 18164,
+                        'source_input_sha256': digest(manifest), 'predictor_files': paths,
+                        'file_sha256': {key: files[name] for key, name in paths.items()}}
+            identity = {**original['identity'], 'fold': fold,
+                        'source_input_sha256': digest(manifest), 'input_sha256': json_hash(consumer)}
+            request = write(self.root / f'scoped-fold-{fold}.json', {
+                **original, 'identity': identity, 'input': consumer, 'n_genes': 18164,
+                'predictor_files': {key: str(source / name) for key, name in paths.items()},
+                'file_sha256': consumer['file_sha256'],
+            })
+            folds.append({'request': request.name, 'request_sha256': digest(request),
+                          'recipe_sha256_by_seed': {str(seed): 'a' * 64 for seed in (17, 42, 2026)}})
+        plan = write(self.root / 'scoped-plan.json', {'schema': 'step04-evaluation-plan-v1',
+                                                      'stage': 'formal', 'dataset': dataset, 'folds': folds})
+        outcomes = write(self.root / 'empty.json', {'schema': 'step04-evaluation-outcomes-v1',
+                                                    'outcomes': []})
+        output = self.root / 'scoped-scores'
+        command = [sys.executable, str(CLI), str(plan), str(outcomes), str(output), '--plan-sha256']
+        result = subprocess.run([*command, '0' * 64], capture_output=True, text=True, timeout=30)
+        self.assertIn('frozen plan hash mismatch', result.stderr)
+        self.assertFalse(output.exists())
+        result = subprocess.run([*command, digest(plan)], capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        runs = csv_rows(output / 'per_run.csv')
+        self.assertEqual({row['dataset'] for row in runs}, {dataset})
+        self.assertEqual(sum(row['model'] == 'perturbdiff' and row['status'] == 'missing' for row in runs), 9)
+        self.assertEqual(sum(row['model'] != 'perturbdiff' and row['status'] == 'completed' for row in runs), 6)
+        audit = json.loads((output / 'evaluation.json').read_text())
+        self.assertFalse(audit['tenv_test_memberships_previously_scored_in_step03'])
+        self.assertEqual(audit['datasets'], [dataset])
 
     def test_rejects_duplicate_slot(self):
         self.outcomes.append(self.outcomes[0].copy())

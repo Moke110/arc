@@ -22,6 +22,13 @@ predictor files, fold membership and shared gene axis. Both release manifests
 pin training Δ, the ordered held-out cases, and evaluator-only group truth
 and directional labels.
 
+For an independent formal dataset evaluation, add `dataset: "tenv"` or
+`dataset: "tahoe"`, keep exactly that dataset's three folds and all three
+seeds, and supply the frozen plan digest with `--plan-sha256`. The default
+formal plan covers both datasets. Plans written by `formal.py freeze` also
+bind the selected recipe files, inference batching and runtime identities.
+The worker requires that same plan hash before accessing predictor inputs.
+
 ## Record the outcome of each planned slot
 
 Use schema `step04-evaluation-outcomes-v1` with an `outcomes` array. Each
@@ -45,6 +52,10 @@ A completed slot's directory contains the following files.
   `best_validation_loss`, and `model_state_sha256` from `run.json`.
   Include `run_sha256`, `cases_sha256`, and `prediction_sha256` for the
   respective files.
+- For plans from the formal producer, `prediction.json` also includes
+  `plan_sha256` and `replay_sha256`. The replay file `replay.json` binds
+  the exact validation loss and probe result to the same plan and EMA state.
+  The outcomes inventory carries that plan hash too.
 
 The evaluator verifies the checkpoint bytes against the training record,
 matches the selected recipe and exact case/group order, and checks the
@@ -68,4 +79,4 @@ Reference rows have a blank seed and contribute one result per fold.
 
 `evaluation.json` binds the plan, outcomes and output hashes, records
 whether every expected result is complete, and discloses the prior Step 03
-scoring of the formal tenv test memberships.
+scoring of the formal tenv test memberships when tenv is in scope.

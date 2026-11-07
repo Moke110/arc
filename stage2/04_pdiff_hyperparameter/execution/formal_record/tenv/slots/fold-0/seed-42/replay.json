@@ -1,0 +1,30 @@
+{
+  "validation_loss": 0.8498567342758179,
+  "prediction_sha256": "2fd64f2eb77c3a8f8c311a97e814367f12842a56b757d47e98b94ffae9c77ba3",
+  "prediction_max_abs_error": 0.0,
+  "case_ids": [
+    "temp_env::Plate1-C07",
+    "temp_env::Plate1-F07",
+    "temp_env::Plate1-I07"
+  ],
+  "prediction_shape": [
+    3,
+    18164
+  ],
+  "identity": {
+    "dataset": "tenv",
+    "fold": 0,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511",
+    "seed": 42,
+    "stage": "formal"
+  },
+  "recipe_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4",
+  "checkpoint_sha256": "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b",
+  "best_step": 6500,
+  "best_validation_loss": 0.8498567342758179,
+  "model_state_sha256": "55845fe8f1c43d1dc7628daf162b4da5acff34d3c53d93b2ec8d96463927f37c",
+  "plan_sha256": "ce2694c575bf5e15f237fb4e7a3605a23858940b4e4c704771b883b49be1708c"
+}

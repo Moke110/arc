@@ -1,0 +1,32 @@
+{
+  "schema": "step04-heldout-prediction-v1",
+  "plan_sha256": "ce2694c575bf5e15f237fb4e7a3605a23858940b4e4c704771b883b49be1708c",
+  "identity": {
+    "dataset": "tenv",
+    "fold": 0,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511",
+    "seed": 42,
+    "stage": "formal"
+  },
+  "recipe_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4",
+  "checkpoint_sha256": "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b",
+  "best_step": 6500,
+  "best_validation_loss": 0.8498567342758179,
+  "model_state_sha256": "55845fe8f1c43d1dc7628daf162b4da5acff34d3c53d93b2ec8d96463927f37c",
+  "run_sha256": "bf07176df3a2811b8c1a1ed8f3d0f3e1c01ea480a211f1ed030c094fd0e47643",
+  "cases_sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a",
+  "prediction_sha256": "4f5037966ab77ec19399fcd3beac8ab0f8feb66c8cb091052e23bb9ad2f74737",
+  "replay_sha256": "f9d790f7f5b38e8eee30d2ca54979701eb48a8d57bdd933cf34624f8146af4a2",
+  "case_count": 1401,
+  "group_count": 462,
+  "maximum_population": 4,
+  "wall_seconds": 87.20836697798222,
+  "resources": {
+    "peak_rss_kib": 2597556,
+    "peak_gpu_allocated_bytes": 743699968,
+    "peak_gpu_reserved_bytes": 780140544
+  }
+}

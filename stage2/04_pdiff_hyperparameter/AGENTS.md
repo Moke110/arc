@@ -5,6 +5,8 @@ Follow the repository's [execution limits](../../docs/agents/execution-environme
 Only the dedicated scheduling subagent may launch or restart Step 04 heavy work.
 
 - `execution/script/schedule.py` owns resource admission, worker monitoring and recovery.
+- `execution/script/formal.py` freezes the formal plan and runs separate fit and held-out prediction jobs.
+- `execution/script/formal_outcomes.py` collects terminal outcomes and publishes the complete tenv checkpoint release.
 - `execution/tests/test_schedule.py` exercises the scheduler CLI with bounded fixtures.
 - `execution/scheduler_record/` preserves the bounded queue rehearsal.
 - `execution/script/train.py` builds and verifies the Tahoe release, prepares frozen tenv and Tahoe requests, trains, and replays EMA checkpoints.
