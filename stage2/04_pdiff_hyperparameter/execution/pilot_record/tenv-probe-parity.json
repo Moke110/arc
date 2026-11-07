@@ -1,0 +1,107 @@
+{
+  "cause": "native DDIM calls global CUDA randn_like even at eta zero",
+  "original": {
+    "disposition": "invalid for cadence selection",
+    "cadences": [
+      250,
+      500
+    ],
+    "run_paths": [
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-pilot-ticket70/profile/runs/fold-0-v250/run.json",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-pilot-ticket70/profile/runs/fold-0-v500/run.json"
+    ],
+    "matched_steps": [
+      {
+        "step": 500,
+        "validation_loss": [
+          5.828218936920166,
+          5.826172351837158
+        ],
+        "training_loss": [
+          1.3919634819030762,
+          1.4627811908721924
+        ]
+      },
+      {
+        "step": 1000,
+        "validation_loss": [
+          2.9309945106506348,
+          2.9038288593292236
+        ],
+        "training_loss": [
+          0.9427170753479004,
+          0.9681445956230164
+        ]
+      },
+      {
+        "step": 1500,
+        "validation_loss": [
+          1.702459454536438,
+          1.686464548110962
+        ],
+        "training_loss": [
+          1.0065611600875854,
+          0.9530511498451233
+        ]
+      },
+      {
+        "step": 2000,
+        "validation_loss": [
+          1.2261284589767456,
+          1.2391314506530762
+        ],
+        "training_loss": [
+          1.1180421113967896,
+          1.1798946857452393
+        ]
+      }
+    ],
+    "selected_model_state_sha256": [
+      "9ad032486ba05d9cc3fa3f920d641124ec242d7ca722ab9a9aaa1c7550fe267f",
+      "354e8cc3abeb02d788cdc70541716714525096fd384b41a687a352dd3d70614b"
+    ]
+  },
+  "corrected": {
+    "disposition": "bounded cadence parity passed",
+    "cadences": [
+      5,
+      10
+    ],
+    "run_paths": [
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-pilot-ticket70/cadence-parity/run-5/run.json",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-pilot-ticket70/cadence-parity/run-10/run.json"
+    ],
+    "matched_steps": [
+      {
+        "step": 10,
+        "validation_loss": [
+          14.88697624206543,
+          14.88697624206543
+        ],
+        "training_loss": [
+          14.047517776489258,
+          14.047517776489258
+        ]
+      },
+      {
+        "step": 20,
+        "validation_loss": [
+          14.874241828918457,
+          14.874241828918457
+        ],
+        "training_loss": [
+          11.116751670837402,
+          11.116751670837402
+        ]
+      }
+    ],
+    "selected_model_state_sha256": [
+      "bfc207a1a1b56964c1662a393ae7657955a4f68d69736b3d0f6a4237042e73da",
+      "bfc207a1a1b56964c1662a393ae7657955a4f68d69736b3d0f6a4237042e73da"
+    ]
+  },
+  "original_scheduler": "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-pilot-ticket70/profile/scheduler/status.json",
+  "corrected_scheduler": "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-pilot-ticket70/cadence-parity/scheduling/status.json",
+  "original_source_sha256": "010e0ffba4199c82b1dfd45ea6be31a478c6d556c4146ccc05fa266f6fba23c0",
+  "corrected_source_sha256": "2f699efb0decaac93236ce4bc9133d94dab01f11ff5fc568529d1e7aeb9b6030"
+}

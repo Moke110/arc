@@ -13,3 +13,5 @@ Only the dedicated scheduling subagent may launch or restart Step 04 heavy work.
 - `execution/script/tahoe_inputs.py` owns the Tahoe projection, controls and cold-drug folds.
 - `execution/tests/test_tahoe.py` checks the Tahoe release and predictor boundaries through the CLI.
 - `execution/tahoe_smoke_record/` preserves the full-axis Tahoe fit and reload evidence.
+- `execution/script/pilot.py` plans paired cadence profiles and freezes per-fold formal recipes.
+- `execution/pilot_record/` preserves the pilot protocol and tenv outcome.

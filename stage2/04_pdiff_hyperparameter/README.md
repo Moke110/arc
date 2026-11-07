@@ -169,3 +169,11 @@ to the checkpoint, and the
 the original telemetry. The original checkpoint and full group IDs live
 under `execution/output/tahoe-smoke-ticket68/`. This smoke is outside the
 formal matrix.
+
+## Tenv validation pilot
+
+The validation-only tenv pilot chose a 500-step interval in all three folds.
+Validation and checkpoint overhead was 10.81–11.34% of optimizer time at 500
+steps and 21.56–22.98% at 250 steps. The frozen per-fold recipes use a
+4,000-step minimum, 1,000-step patience and fold-specific improvement
+thresholds. See [the pilot outcome](execution/pilot_record/tenv/README.md).

@@ -1,0 +1,12 @@
+{
+  "stage": "formal",
+  "fold": 0,
+  "seed": 42,
+  "device": "cuda",
+  "max_steps": 30000,
+  "validation_interval": 500,
+  "max_training_seconds": 14400,
+  "minimum_steps": 4000,
+  "patience_steps": 1000,
+  "min_delta": 0.0058261723518371585
+}
