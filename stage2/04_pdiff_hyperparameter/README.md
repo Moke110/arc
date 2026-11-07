@@ -50,7 +50,9 @@ process have exited before changing the outcome. A live orphan blocks recovery
 and must drain before retry. Keep one immutable queue per record directory.
 
 `status.json` records worker identity, attempt outcomes and peaks.
-`telemetry.jsonl` records live decisions' input samples. Worker logs retain
+`telemetry.jsonl` records live decisions' input samples. Use `observed_monotonic`
+for elapsed intervals within the same workstation boot. Wall timestamps remain
+for correlation with the system journal. Worker logs retain
 `/usr/bin/time -v` peak RSS on normal exit. RSS sampled across the owned process
 tree and GPU use sampled across the workstation are recorded separately from
 the resource caps. A completed scheduler worker means its command exited

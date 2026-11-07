@@ -92,6 +92,7 @@ def live_sample(record, pids):
 
 def snapshot(record, fixture=None, pids=()):
     started = time.time()
+    started_monotonic = time.monotonic()
     try:
         if fixture:
             sample = read(fixture)
@@ -101,19 +102,26 @@ def snapshot(record, fixture=None, pids=()):
                 [sys.executable, __file__, '_sample', str(record), *map(str, pids)],
                 text=True, timeout=2.5)
             sample = json.loads(result)
-        sample.setdefault('timestamp', started - sample.pop('age_seconds', 0))
+        age = sample.pop('age_seconds', None)
+        if age is None:
+            age = started - sample.get('timestamp', started) if fixture else 0
+        sample.setdefault('timestamp', started - age)
+        sample['sample_started_monotonic'] = started_monotonic - age
     except (OSError, ValueError, TypeError, subprocess.SubprocessError) as exc:
-        sample = dict(observable=False, error=str(exc), timestamp=started)
+        sample = dict(observable=False, error=str(exc), timestamp=started,
+                      sample_started_monotonic=started_monotonic)
     sample['observed_at'] = time.time()
+    sample['observed_monotonic'] = time.monotonic()
     return sample
 
 
 def unsafe(sample):
     required = ('available_gib', 'gpu_free_gib', 'gpu_used_gib', 'gpu_utilization_percent',
-                'disk_free_gib', 'external_heavy', 'external_peak_gib', 'timestamp')
+                'disk_free_gib', 'external_heavy', 'external_peak_gib', 'timestamp',
+                'sample_started_monotonic', 'observed_monotonic')
     if not sample.get('observable') or any(not number(sample.get(key)) for key in required):
         return 'missing telemetry'
-    if not 0 <= sample['observed_at'] - sample['timestamp'] <= 5:
+    if not 0 <= sample['observed_monotonic'] - sample['sample_started_monotonic'] <= 5:
         return 'stale telemetry'
     if sample['available_gib'] < 12:
         return 'less than 12 GiB available RAM'

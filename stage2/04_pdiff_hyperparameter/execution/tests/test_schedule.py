@@ -143,6 +143,14 @@ class SchedulerCLI(unittest.TestCase):
         self.assertEqual(attempt['reason'], 'scheduler interrupted')
         self.assertEqual(worker.wait(timeout=10), 130)
 
+    def test_preflight_uses_elapsed_age_when_wall_clock_jumps(self):
+        self.sample(age_seconds=0.5, timestamp=time.time() - 60)
+        result = self.invoke('preflight', '--fixture', str(self.fixture))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        evidence = json.loads(result.stdout)['sample']
+        self.assertGreater(evidence['observed_at'] - evidence['timestamp'], 59)
+        self.assertLess(evidence['observed_monotonic'] - evidence['sample_started_monotonic'], 5)
+
     def test_preflight_gates_on_live_resources(self):
         for changes, reason in [
             ({}, 'resource budgets satisfied'),
