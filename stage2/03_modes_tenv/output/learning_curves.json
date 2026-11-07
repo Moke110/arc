@@ -2,7 +2,7 @@
   "schema": "native-learning-curves-v2",
   "final": true,
   "terminal_outcomes": 63,
-  "renderer_sha256": "ffc4cee69a2bf2bd7a3142263cf19903c89586036aa15872750a9cc2d71cc2e9",
+  "renderer_sha256": "c8d182645df47581fd2f94f5a399f0813b0b8c52e98943de240d15499072be88",
   "records": [
     {
       "model": "prnet",
@@ -55768,6 +55768,7 @@
       "run_sha256": "9a3d879192edb395bb9f82b0db65515cf22fdd0003cd9f63e282e7ae029265c4"
     }
   ],
+  "original_v2_plotted": false,
   "selection_sha256": "e2bc2ea2414e52a905c405d37f7ff58acab48e6c56211fd0f4c9d1269bbbae56",
   "evaluation_provenance_sha256": "839045cc974386d1c6d21c61753ede02e92a0b208845816f090a94e903f6a918",
   "budget_exception": {

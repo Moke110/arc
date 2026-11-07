@@ -8,7 +8,6 @@ restore the delivery labels; publication.json records both rendering sources.
 """
 import argparse
 import csv
-import os
 import re
 from pathlib import Path
 import shutil
@@ -92,15 +91,25 @@ def add_figure_disclosure(directory, name, lines):
     with Image.open(png) as source:
         original = source.convert('RGB')
     margin = 18
-    font = ImageFont.truetype(font_manager.findfont('DejaVu Sans'), size=21)
-    if max(font.getlength(line) for line in lines) > original.width - 2 * margin:
-        raise ValueError('figure is too narrow for the budget disclosure')
-    strip = 2 * margin + 27 * len(lines)
+    font_size, line_height = 38, 48
+    font = ImageFont.truetype(font_manager.findfont('DejaVu Sans'), size=font_size)
+    wrapped = []
+    for line in lines:
+        words = line.split()
+        current = words[0]
+        for word in words[1:]:
+            if font.getlength(f'{current} {word}') > original.width - 2 * margin - 16:
+                wrapped.append(current)
+                current = word
+            else:
+                current = f'{current} {word}'
+        wrapped.append(current)
+    strip = 2 * margin + line_height * len(wrapped)
     image = Image.new('RGB', (original.width, original.height + strip), '#fff2db')
     image.paste(original, (0, 0))
     draw = ImageDraw.Draw(image)
-    for i, line in enumerate(lines):
-        draw.text((margin, original.height + margin + 27 * i), line, font=font, fill='#532908')
+    for i, line in enumerate(wrapped):
+        draw.text((margin, original.height + margin + line_height * i), line, font=font, fill='#532908')
     image.save(png, dpi=(150, 150))
 
     svg = directory / f'{name}.svg'
@@ -112,15 +121,16 @@ def add_figure_disclosure(directory, name, lines):
     if not viewbox:
         raise ValueError('expected a zero-origin SVG viewBox')
     width, height = map(float, viewbox.groups())
-    if max(font.getlength(line) for line in lines) * .5 > width - 20:
-        raise ValueError('SVG is too narrow for the budget disclosure')
-    extra = 20 + 15 * len(lines)
+    points_per_pixel = width / original.width
+    extra = strip * points_per_pixel
     header = re.sub(r'height="[0-9.]+pt"', f'height="{height + extra}pt"', root[0])
     header = header.replace(viewbox[0], f'viewBox="0 0 {width} {height + extra}"')
     annotation = f'<rect x="0" y="{height}" width="{width}" height="{extra}" fill="#fff2db"/>\n'
-    for i, line in enumerate(lines):
-        annotation += (f'<text x="10" y="{height + 18 + 15 * i}" fill="#532908" '
-                       f'font-family="DejaVu Sans, sans-serif" font-size="10.5">{escape(line)}</text>\n')
+    for i, line in enumerate(wrapped):
+        baseline = height + (margin + font_size + line_height * i) * points_per_pixel
+        annotation += (f'<text x="{margin * points_per_pixel}" y="{baseline}" fill="#532908" '
+                       f'font-family="DejaVu Sans, sans-serif" font-size="{font_size * points_per_pixel}">'
+                       f'{escape(line)}</text>\n')
     svg.write_text(text[:root.start()] + header + text[root.end():].replace('</svg>', annotation + '</svg>'))
 
 
@@ -177,23 +187,18 @@ def publish(output, destination, *, supplement=None):
 
 def publish_supplement(output, destination, supplement):
     from learning_curves import render
-    from supplement_overlay import checked_path, evaluation_proof
+    from publication_plots import render as render_scores
+    from supplement_overlay import evaluation_proof
 
     record, proof, evaluation_pin = supplement
     if proof != evaluation_proof(output, record, proof['selection_sha256']):
         raise ValueError('evaluation evidence changed before replay')
-    for name in FIGURES:
-        if os.path.lexists(output / name):
-            checked_path(output / name)
-    replay(output)
     names = TABLES + FIGURES + ('slot_provenance.json', 'learning_curves.png',
                                'learning_curves.svg', 'learning_curves.json')
     destination.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.cmonge-publish-', dir=destination) as temporary:
         staged = Path(temporary)
-        for name in FIGURES:
-            shutil.copyfile(output / name, staged / name)
-        label_best_run(output, staged)
+        render_scores(output, staged)
         for name in ('metrics', 'pr_panels', 'best_run'):
             add_figure_disclosure(staged, name, disclosure_lines(proof))
         publish_supplement_tables(output, staged, proof)
@@ -204,9 +209,10 @@ def publish_supplement(output, destination, supplement):
         manifest = dict(evaluation_sha256=proof['evaluation_sha256'],
                         source_artifacts=proof['artifacts'], selection_sha256=proof['selection_sha256'],
                         evaluation_provenance_sha256=evaluation_pin,
-                        presentation='Frozen artifact-only replay with supplemental budget disclosures.',
+                        presentation='Verified artifact-only rendering with supplemental budget disclosures. The original timeout history is excluded from the figure.',
                         rendering_sources={name: sha256(script.with_name(name)) for name in
-                                           ('plots.py', 'deliver.py', 'learning_curves.py', 'supplement_overlay.py')},
+                                           ('publication_plots.py', 'plots.py', 'deliver.py',
+                                            'learning_curves.py', 'supplement_overlay.py')},
                         artifacts={name: sha256(staged / name) for name in names})
         write_json(staged / 'publication.json', manifest)
         for name in (*names, 'publication.json'):

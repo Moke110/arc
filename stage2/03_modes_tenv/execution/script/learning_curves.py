@@ -6,6 +6,7 @@ import json
 import math
 import os
 from pathlib import Path
+from textwrap import fill
 
 V2_PROTOCOL = 'perturbdiff-v2-all-validation-ema'
 V1_PROTOCOL = 'perturbdiff-v1-legacy'
@@ -240,41 +241,25 @@ def render(output, publish, final=False, *, supplement=None):
     terminal = sum(r['status'] in TERMINAL for r in records)
     if final and terminal != 63:
         raise ValueError(f'final learning curves require 63 terminal outcomes, found {terminal}')
-    panels = (*MODELS, 'perturbdiff_legacy', 'cmonge_legacy')
-    fig, axes = plt.subplots(6 if supplement else 5, 2, figsize=(16, 27 if supplement else 23), layout='constrained')
-    if supplement:
-        panels += ('cmonge_original',)
-        axes.flat[len(panels)].set_axis_off()
+    panels = (*MAPPINGS, 'perturbdiff_legacy', 'cmonge_legacy')
+    fig, axes = plt.subplots(4, 2, figsize=(24, 25), layout='constrained')
     for ax, model in zip(axes.flat, panels):
         is_legacy = model.endswith('_legacy')
-        is_original = model.endswith('_original')
-        base_model = model.removesuffix('_legacy').removesuffix('_original')
-        source_records = original_records if is_original else legacy_records if is_legacy else records
-        subset = [r for r in source_records if r['model'] == base_model]
-        model = base_model
+        model = model.removesuffix('_legacy')
+        subset = [r for r in (legacy_records if is_legacy else records) if r['model'] == model]
         protocol = f'{model}-v1-legacy' if is_legacy else V2_MODELS.get(model, model)
         title = TITLES[model]
         if model in V2_MODELS:
-            if is_original:
-                title += ' — original v2 timeout, fold 0 seed 17 (excluded)'
-            elif is_legacy:
-                title += ' — legacy v1 (excluded)'
-            else:
-                title += ' — formal v2'
-                if supplement and model == 'cmonge':
-                    title += f" · supplemental slot {selected['status']}"
+            title += ' — legacy v1 (excluded)' if is_legacy else ' — formal v2'
 
-        ax.set_title(title, fontweight='bold')
-        if model not in MAPPINGS:
-            ax.text(.5, .55, 'Not applicable', ha='center', transform=ax.transAxes, fontsize=16)
-            ax.text(.5, .40, 'Deterministic reference; no fitted training objective', ha='center', transform=ax.transAxes)
-            ax.set_axis_off()
-            continue
         x, _, _, ylabel, note = MAPPINGS[model]
         if model in V2_MODELS:
             note = ('Validation: ' + (LEGACY_POPULATIONS[model] if is_legacy else 'all 138 groups / 46 drugs') + '. ' +
                     ('Historical operational context; excluded from formal slots.' if is_legacy else
                      'Seed restart; deterministic group-weighted validation.'))
+        if supplement and model == 'cmonge' and not is_legacy:
+            note = (f"Selected supplement ({selected['status']}): fold 0 seed 17 restarted from initialization. "
+                    'Validation averages all 138 groups.')
         counts = []
         for key, color in [('train', '#1565c0'), ('validation', '#228b22')]:
             counts.append(sum(bool(r[key]) for r in subset))
@@ -285,46 +270,40 @@ def render(output, publish, final=False, *, supplement=None):
                                     linestyle=('-', '--', ':')[SEEDS.index(record['seed'])], marker='.' if len(xs) == 1 else None)
                     attempt = record.get('attempt_id', protocol)
                     line.set_gid(f'{attempt}-fold-{record["fold"]}-seed-{record["seed"]}-{key}')
-        ax.set_xlabel(x.capitalize() + ' (actual native coordinate)')
-        ax.set_ylabel(ylabel, fontsize=9)
-        ax.grid(alpha=.18)
         count_label = (f'Legacy histories: train {counts[0]} · validation {counts[1]}' if is_legacy else
-                       f'Train {counts[0]}/9 · validation {counts[1]}/9 histories; missing {9-counts[0]}/{9-counts[1]}')
-        if is_original:
-            count_label = f'Original attempt histories: train {counts[0]}/1 · validation {counts[1]}/1'
-            note = 'Separate original v2 attempt; validation averages all 138 conditions.'
-        if supplement and model == 'cmonge' and not (is_original or is_legacy):
-            note = (f"Selected supplement ({selected['status']}): fresh 14,400 s training + 1,800 s inference.\n"
-                    'Fold 0 seed 17 restarted from initialization. Original timeout shown separately.')
+                       f'Train {counts[0]}/9 · validation {counts[1]}/9 histories')
         invalid = sum(r['history_status'] == 'invalid' for r in subset)
         if invalid:
             count_label += f' · invalid histories {invalid}'
         status_counts = {status: sum(r['status'] == status for r in subset) for status in sorted({r['status'] for r in subset})}
         status_label = ' · '.join(f'{status}: {count}' for status, count in status_counts.items())
-        ax.text(.02, .98, count_label + '\n' + status_label,
-                transform=ax.transAxes, va='top', fontsize=10,
-                bbox=dict(facecolor='white', alpha=.85, edgecolor='none'))
-        ax.text(0, -.23, note, transform=ax.transAxes, fontsize=9, va='top', wrap=True)
+        heading = title + '\n' + count_label
+        if status_label:
+            heading += ' · ' + status_label
+        ax.set_title(heading, fontsize=21)
+        ax.set_xlabel(x.capitalize() + ' (native coordinate)\n' + fill(note, 82), fontsize=17)
+        ax.set_ylabel(fill(ylabel, 36), fontsize=17)
+        ax.tick_params(labelsize=18)
+        ax.yaxis.get_offset_text().set_fontsize(18)
+        ax.xaxis.get_offset_text().set_fontsize(18)
+        ax.grid(alpha=.18)
     axes.flat[-1].set_axis_off()
-    axes.flat[-1].text(0, .85,
-        '3 folds × 3 seeds = 9 expected formal histories per fitted model\n\n'
-        'Both models’ v1 is separate and never counts toward nine v2 slots.\n'
-        'Different validation populations; no v1/v2 history splicing.\n\n'
-        'Missing / unfinished histories are omitted, never reconstructed.\n'
-        'CMonge v2 durable events may precede final inference.\n'
-        'Line styles: solid / dashed / dotted = seeds 17 / 42 / 2026.\n'
-        'Opacity: light / medium / dark = folds 0 / 1 / 2.\n'
-        'Exact fold × seed identities also appear in SVG IDs and JSON.\n\n'
-        'Native objectives and reductions differ across panels.\n'
-        'No smoothing, normalization, extrapolation or test-truth access.',
-        transform=axes.flat[-1].transAxes, va='top', fontsize=12, linespacing=1.6)
+    axes.flat[-1].text(.03, .95,
+        'Formal histories · 3 folds × 3 seeds per fitted model\n\n'
+        'Line style · solid / dashed / dotted = seeds 17 / 42 / 2026\n'
+        'Opacity · light / medium / dark = folds 0 / 1 / 2\n'
+        'Exact fold and seed identities appear in SVG and JSON.\n\n'
+        'Legacy v1 uses a separate validation population.\n'
+        'Missing histories are omitted. Native objectives differ.\n'
+        'Curves show the saved values at their native coordinates.',
+        transform=axes.flat[-1].transAxes, va='top', fontsize=21, linespacing=1.5)
     title = f'Native learning curves — {"final" if final else "interim snapshot"} ({terminal}/63 terminal outcomes)'
     if supplement:
         from deliver import disclosure_lines
         title += '\n' + '\n'.join(disclosure_lines(proof))
-    fig.suptitle(title, fontsize=15 if supplement else 19)
+    fig.suptitle(title, fontsize=28 if supplement else 34)
     fig.legend(handles=[Line2D([0], [0], color='#1565c0', label='Training'),
-                        Line2D([0], [0], color='#228b22', label='Validation')], loc='outside lower center', ncol=2)
+                        Line2D([0], [0], color='#228b22', label='Validation')], loc='outside lower center', ncol=2, fontsize=18)
     publish.mkdir(parents=True, exist_ok=True)
     for ext in ('png', 'svg'):
         fig.savefig(publish / f'learning_curves.{ext}', dpi=160)
@@ -337,7 +316,7 @@ def render(output, publish, final=False, *, supplement=None):
                           missing_histories=sum(not r['train'] for r in records if r['model']=='perturbdiff')))
     provenance['cmonge_v2'] = dict(expected_slots=9, available_histories=sum(bool(r['train']) for r in records if r['model']=='cmonge'), missing_histories=sum(not r['train'] for r in records if r['model']=='cmonge'))
     if supplement:
-        provenance.update(original_v2_records=original_records, selection_sha256=proof['selection_sha256'],
+        provenance.update(original_v2_records=original_records, original_v2_plotted=False, selection_sha256=proof['selection_sha256'],
                           evaluation_provenance_sha256=supplement[2], budget_exception=proof)
     (publish / 'learning_curves.json').write_text(json.dumps(provenance, indent=2) + '\n')
     return provenance

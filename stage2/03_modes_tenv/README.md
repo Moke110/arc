@@ -146,8 +146,8 @@ v1 covers the first 40 groups. Both models have separate legacy panels excluded
 from their nine formal slots. CMonge durable `history.json` can show events before
 final checkpoint/inference; source hashes and native coordinates remain explicit. Histories can remain unavailable until an
 adapter completes training and inference. Missing/unfinished histories are
-omitted without smoothing or reconstruction. `no_change` and `delta_mean` have
-explicit “not applicable” panels because deterministic references do not fit.
+omitted without smoothing or reconstruction. The learning figure includes only
+fitted models and their available legacy histories.
 
 
 Historical continuation **resumed at the user's request on 2026-11-06** from the verified
@@ -222,8 +222,9 @@ reviewed supplemental outcome to the existing fold/seed slot and the other
 without a score. Invalid evidence blocks final evaluation. Run supplement-aware
 publication after scoring and on every replay to retain the budget exception,
 measured phase times and host RSS in the final tables and figures. The
-learning curves display the original timeout separately from the selected
-supplement and the legacy histories.
+learning figure plots the selected supplemental history alongside the other
+formal histories and retains separate legacy panels. The original timeout
+history remains in the JSON evidence and is omitted from the figure.
 
 ### Final results
 
@@ -233,8 +234,8 @@ iteration 2,150 after 43 validation events with 138 conditions per event.
 Watchdog setup and training took 4,253.63 s, including 4,228.00 s of native
 training. Observed inference took 1.19 s, including 0.72 s of native inference.
 Peak host RSS was 1.68 GiB and sampled peak workstation GPU usage was 2.80 GiB.
-The original timeout's host RSS is unavailable. Its history has four validation
-events and is shown separately in the learning curves.
+The original timeout's host RSS is unavailable. Its four validation events
+remain in the learning-curve JSON evidence.
 
 The selected matrix completed **63/63** slots across five admitted predictors
 and two deterministic references. The candidate registry records eleven

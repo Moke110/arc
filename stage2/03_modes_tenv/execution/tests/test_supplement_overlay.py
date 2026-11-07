@@ -11,6 +11,7 @@ from xml.etree import ElementTree as ET
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'script'))
 from artifacts import read_json, rows, run_directory, sha256, write_csv, write_json
 from deliver import disclosure_lines, publish
+from metrics import METRICS
 from learning_curves import V2_MODELS, collect, collect_legacy, render
 from supplement_overlay import (ATTEMPT, EVALUATION_FILES, MODELS, SLOTS, TARGET,
                                 evaluate, evaluation_proof, files, materialize,
@@ -355,7 +356,19 @@ class SupplementOverlayTests(unittest.TestCase):
             for name in ('metrics', 'pr_panels', 'best_run', 'learning_curves'):
                 root_svg = ET.parse(destination / f'{name}.svg')
                 self.assertIn('14,400 s', ' '.join(root_svg.getroot().itertext()))
+            learning = ET.parse(destination / 'learning_curves.svg')
+            panels = ' '.join(''.join(node.itertext()) for node in learning.iter() if node.tag.endswith('}text'))
+            self.assertNotIn('Not applicable', panels)
+            self.assertFalse(any(node.get('id', '').startswith('original-cumulative-budget-fold-')
+                                 for node in learning.iter()))
+            metrics = ET.parse(destination / 'metrics.svg')
+            labels = [''.join(node.itertext()) for node in metrics.iter() if node.tag.endswith('}text')]
+            self.assertEqual(labels.count('No Change'), len(METRICS))
+            self.assertEqual(labels.count('Delta Mean'), len(METRICS))
+            self.assertEqual(labels.count('CMonge'), len(METRICS))
+            self.assertEqual(labels.count('Undefined'), len(METRICS))
             data = read_json(destination / 'learning_curves.json')
+            self.assertFalse(data['original_v2_plotted'])
             self.assertEqual(data['terminal_outcomes'], 63)
             self.assertEqual(data['original_v2_records'][0]['validation'], [[50, 1]])
             selected = next(row for row in data['records'] if slot_key(row) == TARGET)
