@@ -64,7 +64,7 @@ def disclosure_lines(proof):
     def measured(value, unit):
         return 'unavailable' if value is None else f'{value:,.2f} {unit}'
 
-    return (
+    lines = (
         f"CMonge v2 fold 0 seed 17 · original cumulative-budget timeout "
         f"({original['remaining_at_launch_seconds']:,.2f} s left of 14,400 s; 14,400 s debited).",
         f"One fresh 14,400 s training authorization from seed initialization + 1,800 s inference. "
@@ -77,6 +77,10 @@ def disclosure_lines(proof):
         f"Selected host peak RSS {measured(account['peak_host_rss_gib'], 'GiB')} "
         "(maximum of available owned-process samples and GNU time peak).",
     )
+    if 'sampled_peak_host_rss_gib' in account:
+        lines += (f"Owned-process RSS samples {measured(account['sampled_peak_host_rss_gib'], 'GiB')} · "
+                  f"GNU time peak RSS {measured(account['time_peak_rss_gib'], 'GiB')}.",)
+    return lines
 
 
 def add_figure_disclosure(directory, name, lines):

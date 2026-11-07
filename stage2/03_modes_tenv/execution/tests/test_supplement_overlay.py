@@ -72,7 +72,8 @@ def fixture(root, status='completed', original_history=True):
     terminal = dict(status=status, attempt_id=ATTEMPT, run_sha256=selected['files']['run.json'],
                     account=dict(timing=dict(pre_inference_watchdog_seconds=800, adapter_training_seconds=770,
                                             observed_inference_seconds=40, adapter_inference_seconds=39),
-                                 peak_host_rss_gib=2.2, time_peak_rss_gib=2.1, stop_reason=reason))
+                                 peak_host_rss_gib=2.2, sampled_peak_host_rss_gib=2.2,
+                                 time_peak_rss_gib=2.1, stop_reason=reason))
     return dict(original_output=str(source), input_sha256='fixture', input_root=str(root / 'input'),
                 migration_journal_sha256=legacy_fixture(source),
                 original=original, terminal=terminal,
@@ -293,6 +294,11 @@ class SupplementOverlayTests(unittest.TestCase):
             self.assertEqual(attempt['sha256'], selected['files']['history.json'])
             self.assertIn('maximum of available owned-process samples and GNU time peak',
                           ' '.join(disclosure_lines(proof)))
+            with patch.dict(proof['selected_attempt']['account'],
+                            sampled_peak_host_rss_gib=None, peak_host_rss_gib=2.1):
+                disclosure = ' '.join(disclosure_lines(proof))
+                self.assertIn('Selected host peak RSS 2.10 GiB', disclosure)
+                self.assertIn('Owned-process RSS samples unavailable · GNU time peak RSS 2.10 GiB', disclosure)
             with patch.dict(proof['selected_attempt']['account'], stop_reason='invalid_native_artifacts'):
                 with self.assertRaisesRegex(ValueError, 'invalid native artifacts'):
                     render(output, root / 'presentation', final=True, supplement=(record, proof, 'fixture'))
