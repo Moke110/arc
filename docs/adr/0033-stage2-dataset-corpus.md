@@ -14,7 +14,7 @@ step shipped the substrate but only for one dataset. Every adaptation decision
 data step instead of with the model that needed it.
 
 **Numbering update (2026-11-07):** ADR 0046 assigns the former gap to
-`04_pdiff_tahoe`. The Tahoe corpus stays in `02_dataset_corpus/`.
+`04_pdiff_hyperparameter`. The Tahoe corpus stays in `02_dataset_corpus/`.
 
 **Decisions.**
 

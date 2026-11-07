@@ -21,9 +21,10 @@ The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their
 
 ## Next studies under design
 
-`04_pdiff_tahoe` and `05_pdiff_tenv` are separate PerturbDiff training studies.
-Their scope and step names are recorded in
-[ADR 0046](../docs/adr/0046-perturbdiff-standalone-training.md).
+`04_pdiff_hyperparameter` will tune PerturbDiff separately on Tahoe and tenv,
+publish learning curves and held-out metrics, and retain all formal tenv
+checkpoints selected by validation.
+[ADR 0046](../docs/adr/0046-perturbdiff-standalone-training.md) records the scope.
 
 ## Selection constraints in force
 
