@@ -19,7 +19,7 @@ The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their
 `f95fe1e`. The retained v1 CM views and identity tables live in
 [`_frozen/cm-data-v1/`](_frozen/cm-data-v1/README.md).
 
-## Next studies under design
+## Next planned step
 
 `04_pdiff_hyperparameter` will tune PerturbDiff separately on Tahoe and tenv,
 publish learning curves and held-out metrics, and retain all formal tenv
