@@ -1,0 +1,122 @@
+{
+  "ticket": 67,
+  "kind": "bounded full-axis smoke",
+  "local_artifacts": "stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/",
+  "initial_fit": {
+    "queue_command": [
+      "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+      "/tmp/arc-67/stage2/04_pdiff_hyperparameter/execution/script/train.py",
+      "--runtime-root",
+      "/home/chang/arc",
+      "fit",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/train-request.json",
+      "/tmp/arc-67/stage2/04_pdiff_hyperparameter/execution/smoke_record/recipe.json",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/run"
+    ],
+    "status": "completed",
+    "attempt": {
+      "scope": "arc-step04-2d914ac149b34b46861d8f455f143b46.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "returncode": 0,
+      "peak_host_rss_gib": 2.9081459045410156,
+      "peak_workstation_gpu_used_gib": 5.7744140625,
+      "peak_gpu_utilization_percent": 80
+    },
+    "worker_time_v": {
+      "wall_clock": "0:32.66",
+      "peak_rss_kib": 3049412
+    },
+    "status_sha256": "69e47549958186a564f9c8d66b03f012ca2b763f7b3a3cd495720859f75caa2f",
+    "telemetry_sha256": "ba9a31b71c35f1a3981654eb8409c296ad8698e959ca2bf45cd4357c745bfdaf",
+    "telemetry_samples": 16,
+    "log_sha256": "81c722cbb541bad36053d9d8f8d8eb34bca62d6dd5b74c912cd05b23e29442ce"
+  },
+  "initial_detached_reload": {
+    "queue_command": [
+      "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+      "/tmp/arc-67/stage2/04_pdiff_hyperparameter/execution/script/train.py",
+      "--runtime-root",
+      "/home/chang/arc",
+      "reload",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/train-request.json",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/run",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/replay.json"
+    ],
+    "status": "completed",
+    "attempt": {
+      "scope": "arc-step04-a2bc74851ce14d30b4f40ae6eca155c7.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "returncode": 0,
+      "peak_host_rss_gib": 2.456981658935547,
+      "peak_workstation_gpu_used_gib": 2.66015625,
+      "peak_gpu_utilization_percent": 50
+    },
+    "worker_time_v": {
+      "wall_clock": "0:11.33",
+      "peak_rss_kib": 2576332
+    },
+    "status_sha256": "7b24fba380a05fcf3f3e29e5f3f48e1256b36d20b16f9142178361304e583ec7",
+    "telemetry_sha256": "d48af069efe0dbac05bcb3ed1a24f8df05ffe356b2f5e3a2aecf4dfa8162c643",
+    "telemetry_samples": 6,
+    "log_sha256": "f9f4f39168455e072c569ecb54f377244823bafed406ad2bfd8183d8e1886587"
+  },
+  "verified_detached_reload": {
+    "queue_command": [
+      "/home/chang/arc/stage2/_envs/perturbdiff/bin/python",
+      "/tmp/arc-67/stage2/04_pdiff_hyperparameter/execution/script/train.py",
+      "--runtime-root",
+      "/home/chang/arc",
+      "reload",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/train-request.json",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/run",
+      "/home/chang/arc/stage2/04_pdiff_hyperparameter/execution/output/tenv-smoke-ticket67/replay-verified.json"
+    ],
+    "status": "completed",
+    "attempt": {
+      "scope": "arc-step04-02f78f4fe3bc408c9043ee63ea3078a3.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "returncode": 0,
+      "peak_host_rss_gib": 2.457134246826172,
+      "peak_workstation_gpu_used_gib": 2.6552734375,
+      "peak_gpu_utilization_percent": 44
+    },
+    "worker_time_v": {
+      "wall_clock": "0:08.49",
+      "peak_rss_kib": 2576492
+    },
+    "status_sha256": "d59c7128500d70541f05aef1cd6099fa6f8d921bd8d9f8d2ea5b1f3a0255b71d",
+    "telemetry_sha256": "f8bd2e97cabb56bfb94779802320672ad64f23ad08160a1077cf3703f5e7320d",
+    "telemetry_samples": 6,
+    "log_sha256": "aff7eee85d2fbe762d29733c1ffd3d3779d01c8027d8b35accacb71c93c0c523"
+  },
+  "fit_source_sha256": {
+    "script/train.py": "cf5253f699c73a7a6ed22d039d6b9f11203f6dd197caaac4871355ac04231e39",
+    "script/native_training.py": "010e0ffba4199c82b1dfd45ea6be31a478c6d556c4146ccc05fa266f6fba23c0",
+    "script/training_inputs.py": "1e9731c0ac4461cfc5c8e9b57cb34935e512b8be3af8d6bb3550ac024ea32afa",
+    "script/training_policy.py": "8c63e9a65601c3f36d1128b58f8f3d00228b09b88be4f805f4186bae2348ae8a"
+  },
+  "verified_reload_source_sha256": {
+    "script/train.py": "cf5253f699c73a7a6ed22d039d6b9f11203f6dd197caaac4871355ac04231e39",
+    "script/native_training.py": "010e0ffba4199c82b1dfd45ea6be31a478c6d556c4146ccc05fa266f6fba23c0",
+    "script/training_inputs.py": "23f56df15dc1a007d71f863c4426c515c6aac9b48f6cf6391ba4b873a031fb6a",
+    "script/training_policy.py": "8c63e9a65601c3f36d1128b58f8f3d00228b09b88be4f805f4186bae2348ae8a"
+  },
+  "frozen_dependency_sha256": {
+    "pert_model/PerturbDiff/manifest.sha256": "3416b2737c53166fe4a8e62b34e9efcfa708c3e9942e68a417beca447959a074",
+    "stage2/03_modes_tenv/execution/models/perturbdiff/env.actual.lock": "219aeda958642c3d5aca4f3858e9fca5094f3a1b4a43841867251eaa4239904c",
+    "stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json": "bd7fbbeeab090a2da390aa8d39c81c528be0a68f098a218bb751d6cd086d610d",
+    "stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py": "4dbd8e0dbc0233de30cdc9a95ab07a045a74187a87f0079aa30bf25370f2afbb",
+    "stage2/03_modes_tenv/execution/script/perturbdiff_v2_protocol.py": "0ba10beb34ff2b81ce4287ca2a260ce32d4a41fcc1b39d34595f0c763087289f",
+    "stage2/03_modes_tenv/execution/script/predictor_inputs.py": "14ec30b818d8e698b4b438c52ceaccc3c6af4a4d081a64282c84c94690ab135c",
+    "stage2/03_modes_tenv/execution/script/artifacts.py": "cfcdc539b78ed779ad19205ccca5f78c2f9fef1cec57c4a5e77bd5cc7cf4d82a"
+  },
+  "vendor_manifest_verified_files": 117,
+  "requests": {
+    "fit_sha256": "a5e11f658da4871fd00df99afd1b839df79e4bcedbdf6cad32bfc1154b54d5b6",
+    "verified_reload_sha256": "0cba6809413e5e83cf5affedf5f1a223beaea8d622664a7758f6008f3d717075",
+    "change": "Embedded the original hashed consumer manifest for request verification. All original request fields, including input identity, are identical."
+  }
+}

@@ -56,3 +56,55 @@ tree and GPU use sampled across the workstation are recorded separately from
 the resource caps. A completed scheduler worker means its command exited
 successfully. Its experiment artifacts still go through the corresponding
 artifact verifier.
+
+## Full-axis tenv smoke
+
+The bounded Step 04 smoke uses fold 0, seed 17 and the frozen Step 03 tenv
+release. The preparation command pins the release to the Step 03 verification
+record and verifies the ordered gene axis, split and predictor files by hash.
+The resulting request binds the consumer manifest and allowlisted files.
+Predictors receive held-out covariates for the frozen drug and dose vocabulary.
+The smoke uses a validation group for its prediction probe. Test-treated
+expression and labels remain in the evaluator directory.
+
+From the repository root, prepare the smoke request in a fresh scratch
+directory under the step. Give the GPU commands to the dedicated scheduler as
+separate queue jobs.
+
+```bash
+step=stage2/04_pdiff_hyperparameter
+cli="$step/execution/script/train.py"
+pdiff=stage2/_envs/perturbdiff/bin/python
+smoke="$step/execution/output/tenv-smoke-replay"
+mkdir -p "$smoke"
+"$pdiff" "$cli" prepare-tenv stage2/03_modes_tenv/output/input "$smoke/request.json" --fold 0
+"$pdiff" "$cli" verify-request "$smoke/request.json"
+
+# First scheduler job.
+"$pdiff" "$cli" fit "$smoke/request.json" "$step/execution/smoke_record/recipe.json" "$smoke/run"
+
+# Follow-up scheduler job after the fit exits successfully.
+"$pdiff" "$cli" reload "$smoke/request.json" "$smoke/run" "$smoke/replay.json"
+```
+
+`fit` requires a fresh run directory. It records the actual fixed model
+recipe and validation batching in `run.json`. Every validation event ranks the
+current EMA state by strict minimum of the native monitor. Patience measures
+optimizer steps since the most recent improvement strictly greater than
+`min_delta`. A budget or signal interrupt leaves an incomplete run record
+when the worker can exit gracefully. `best.pt` stores the selected EMA
+prediction state. The checkpoint timing includes producing the validation
+prediction probe and writing and hashing the checkpoint. `reload` verifies
+the checkpoint and model state hashes, recomputes the selected validation
+loss and runs the same native predictor with identical probe noise.
+
+The smoke kept all 138 validation groups, with 16 full batches of eight
+groups and one final batch of two. It validated and saved at steps 6 and 12,
+ending at its planned 12-step cap. The selected validation loss was
+14.8742036819458. The isolated reload reproduced the loss and the
+3 × 18,164 prediction exactly. The worker's peak RSS was 3,049,412 KiB.
+See [the run record](execution/smoke_record/run.json) and
+[scheduler evidence](execution/smoke_record/execution.json). The original
+checkpoint and raw scheduler telemetry are local under
+`execution/output/tenv-smoke-ticket67/`. The smoke is outside the formal
+matrix.
