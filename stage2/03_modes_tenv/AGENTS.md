@@ -12,4 +12,3 @@ Read `README.md` for the contract and reproduction commands.
 
 Training uses `docs/agents/execution-environment.md` limits and scheduler-owned
 telemetry. New code depends on this step and corpus inputs, never archived code.
-The historical benchmark is sealed at `stage2/_archive/03_models_cmbench/`.

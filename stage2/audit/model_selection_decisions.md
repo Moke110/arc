@@ -4,6 +4,8 @@ This record governs follow-up model selection. Historical benchmark registries,
 leaderboards, and entrant audits describe the experiments actually performed;
 they do not override the decisions below.
 
+The tracked reports cited below are available at Git revision `f95fe1e`.
+
 ## 2026-10-26 — exclude Squidiff from further selection
 
 **Status: accepted by the user.** The delivery requirement remains prediction
@@ -35,6 +37,6 @@ reproduction. New comparison queues must use the six candidates above.
 Evidence:
 
 - [Fairness and resource audit](benchmark_fairness_2026-10-26.md)
-- [18k report](../03_models_cmbench/03.1_cold_drug_18k/README.md)
-- [5k report](../03_models_cmbench/03.2_hvg_sensitivity_5k/README.md)
-- [18k Squidiff run card](../03_models_cmbench/03.1_cold_drug_18k/execution/models/squidiff/README.md)
+- 18k report (`stage2/_archive/03_models_cmbench/03.1_cold_drug_18k/README.md` at that revision)
+- 5k report (`stage2/_archive/03_models_cmbench/03.2_hvg_sensitivity_5k/README.md` at that revision)
+- 18k Squidiff run card (`stage2/_archive/03_models_cmbench/03.1_cold_drug_18k/execution/models/squidiff/README.md` at that revision)

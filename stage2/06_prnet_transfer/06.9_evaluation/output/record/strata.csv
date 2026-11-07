@@ -1,8 +1,0 @@
-stratum_type,stratum_value,label_known,n_conditions,n_drugs,n_seeds,random_auprc_200,tahoe_auprc_200,delta_mean_auprc_200,gain_tahoe_minus_random,gain_tahoe_minus_random_ci_low,gain_tahoe_minus_random_ci_high,gain_tahoe_minus_delta_mean,n_bootstrap,note
-dose,0.2,True,116,116,3,0.0823563726,0.07589810877,0.1638599872,-0.006223606157,-0.007401321231,-0.005082729409,-0.08171696346,10000,pre-registered dose stratum (measured temp_env doses)
-dose,1,True,114,114,3,0.08677821769,0.08099653802,0.165480232,-0.006449090913,-0.007580657047,-0.005334672464,-0.08349169742,10000,pre-registered dose stratum (measured temp_env doses)
-dose,10,True,117,117,3,0.09665480642,0.08999137999,0.1633500626,-0.006249219572,-0.007438791738,-0.005098613579,-0.08091797133,10000,pre-registered dose stratum (measured temp_env doses)
-tahoe_seen,True,True,45,15,3,0.08851481291,0.08157689266,0.1271668085,-0.006937920251,-0.0100698316,-0.003920663563,-0.0455899158,10000,drug_key observed in Tahoe treated rows (structure seen; no CM label)
-tahoe_seen,False,True,302,103,3,0.08862575748,0.0824117817,0.1672362219,-0.006161228249,-0.007389330429,-0.004948414666,-0.08505241073,10000,drug_key never observed in Tahoe treated rows
-response_label,unknown,False,347,118,3,,,,,,,,0,UNKNOWN by pre-registered criterion: no per-well response/toxicity readout exists (06.2 §6) and it is never inferred from transcriptomic magnitude; no labelled stratum is claimed this round
-toxicity_label,unknown,False,347,118,3,,,,,,,,0,UNKNOWN by pre-registered criterion: no per-well response/toxicity readout exists (06.2 §6) and it is never inferred from transcriptomic magnitude; no labelled stratum is claimed this round

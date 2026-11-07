@@ -2,9 +2,9 @@
 
 This step implements [specification #40](https://github.com/Moke110/arc/issues/40)
 under [ADR 0042](../../docs/adr/0042-tenv-model-benchmark-redesign.md).
-The requested spelling `03_modes_tenv` is intentional. Historical benchmark
-artifacts are sealed under `stage2/_archive/03_models_cmbench/`; their evidence
-and the `_frozen/cm-data-v1/` bridge are retained.
+The requested spelling `03_modes_tenv` is intentional. The prior benchmark's
+tracked records are available in Git at `f95fe1e`. Its archival manifest remains
+in `execution/input_record/archive.json`.
 
 The input release projects tenv raw counts to the ordered CM gene axis before
 CP10K/log1p normalization. Same-plate DMSO means are allowed baseline inputs.
@@ -28,8 +28,7 @@ python -m unittest discover -s stage2/03_modes_tenv/execution/tests -p test_inpu
 
 `output/input/manifest.json` records exact membership counts, source/config hashes,
 RDKit version, structure normalization and all release file hashes. Arrays use
-float32 `.npy` files for bounded memory mapping. Source corpora and concluded
-pretraining/transfer results remain owned by their existing steps.
+float32 `.npy` files for bounded memory mapping. Source corpora remain owned by `02_dataset_corpus/`.
 
 Frozen input evidence (#42): **460 drugs, 4,206 treated wells, 1,380 drug–dose
 groups and 18,164 genes**. Controls separate into 192 DMSO, 80 media and 32
@@ -266,8 +265,8 @@ The original watchdog charged full worker wall, including inference, against
 the remaining training allowance while also applying an inference sublimit.
 Its terminal `training_seconds` is the cumulative debit. Per-attempt GPU peaks
 are absent from those terminal records. The supplement has separate phase
-deadlines and resource evidence. The preserved original account, run records,
-legacy archive and corpus release are read-only inputs to final delivery.
+deadlines and resource evidence. The preserved original account, run records
+and corpus release are read-only inputs to final delivery.
 Scoring and replay write into the private overlay and presentation paths.
 The reviewed supplemental runner derives the repository root from the fixed
 step depth. Replay uses the reviewed source bytes and workstation layout

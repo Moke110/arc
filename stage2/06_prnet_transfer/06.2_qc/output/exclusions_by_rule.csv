@@ -1,9 +1,0 @@
-source,rule_id,rule,reason_code,label,observations_flagged,physical_wells_flagged,observations_total,share_of_source
-tahoe,H1,min_cells_per_profile,project_min_cells_per_profile,H1 fewer cells than the 100-cell profile floor,5251,1344,67018,0.078352
-tahoe,H2,cell_line_excluded_by_source,src_cell_line_excluded,H2 cell line excluded by the source study,3995,1334,67018,0.059611
-tahoe,H3a,mito_fraction_ceiling,src_mito_fraction_ceiling,H3a per-well mitochondrial fraction above 20%,0,0,67018,0
-tahoe,H3b,min_genes_per_cell,src_min_genes_per_cell,H3b per-well mean detected genes below 250,0,0,67018,0
-tahoe,H4,plate_depth_outlier,derived_plate_depth_outlier,H4 per-plate well depth outlier (|z| > 3),490,10,67018,0.007311
-temp_env,T1,sample_expression_floor,src_sample_expression_floor,T1 source sample expression floor (mean count/gene < 15),17,17,4558,0.00373
-temp_env,T2,vehicle_reproducibility,src_vehicle_reproducibility,T2 source vehicle-control mean correlation (r < 0.85),41,41,4558,0.008995
-temp_env,T3,blank_separation_floor,derived_blank_separation_floor,T3 technical-blank detection floor,499,499,4558,0.109478

@@ -34,6 +34,5 @@ Each item's `author_log.json` carries its provenance; each `local/` file is decl
 log's `local_additions[]`. The downstream corpus built from these sources lives in
 `stage2/02_dataset_corpus/` — five native-axis raw-count corpora under `output/corpus/v2/`
 (ADR 0033, amending ADR 0026). The `Tahoe-100M/` item is consumed by that same step: its
-pseudobulk corpus is `stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`, which
-`stage2/05_prnet_pretrain/` projects into the CM-schema view it trains on (ADR 0029,
-ADR 0031).
+pseudobulk corpus is `stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`
+(ADR 0029, ADR 0033).

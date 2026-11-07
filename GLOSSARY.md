@@ -14,8 +14,7 @@ _Avoid_: phase, milestone, step
 The completed AICM stage that established XPert+DToxS MIRI drug repositioning: the four MIRI screens v1 (frozen baseline), v1.1 (DToxS-LINCS testbed), v2 (primary+iPSC), and v3 (all-CM, current frontier). "DToxS" names their shared primary-arm test-set anchor, not their only corpus.
 
 **Stage 2**:
-The AICM stage that selects the open-source whole-transcriptome drug-perturbation model that should feed future MIRI perturbome prediction. Setup (`stage2/01_setup/`) proved nine deployed non-preprint models load or train in their own environments; `stage2/02_dataset_corpus/` owns the five source-dataset corpora and their crosswalk tables (ADR 0033, amending ADR 0026); the cold-drug benchmark that compares the seven capable models is `stage2/03_models_cmbench/` (frozen pending a redo on the merged corpus; ADR 0027); `stage2/05_prnet_pretrain/` owns the CM-schema Tahoe view and the pretrain run on it (executed 2026-11-01; ADR 0031); `stage2/06_prnet_transfer/` is the concluded transfer study (ADR 0032). `04` is a deliberate gap: the retired Tahoe data step was folded into `02_dataset_corpus/`. Stage 2 evaluation excludes 978-landmark artifacts; PRnet's 978 demo is setup-only.
-_Avoid_: phase; Stage 2 v1/v2 (the old versioned benchmark plan is archived)
+The AICM stage that selects an open-source whole-transcriptome drug-perturbation model for MIRI perturbome prediction. It separates model setup, the source-dataset corpus, and model comparison on held-out perturbations.
 
 **Stage 2 tree**:
 The top-level `stage2/` directory that runs model setup and, later, model selection. It is distinct from a Stage 1 *repositioning workflow*; it produces no MIRI drug ranking in the setup stage. Preprint models are excluded from its setup set.
@@ -311,7 +310,7 @@ A derived, model-facing h5ad that a consuming step builds from one or more corpo
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
-A view that projects one corpus's gene axis and column conventions onto another corpus's (today: `tahoe` onto the CM gene axis), so a model pretrained on the source can be adapted to the target without a gene-space remap. Produced by the pretraining step that consumes it (`stage2/05_prnet_pretrain/`), not by the corpus step.
+A view that projects one corpus's gene axis and column conventions onto another corpus's (today: `tahoe` onto the CM gene axis), so a model pretrained on the source can be adapted to the target without a gene-space remap. The pretraining step that consumes the view owns it.
 _Avoid_: pretrain corpus (for a view — the corpus is the source, never the projection), pretrain dataset, projection (unqualified)
 
 **Dataset bundle** (retired 2026-11-04):
@@ -454,7 +453,7 @@ The `ideal_fit` report column: `full` (author architecture is used as intended u
 _Avoid_: ideal model, tier
 
 **Benchmark run**:
-One `(model, fold)` unit in `stage2/03_models_cmbench/03.1_cold_drug_18k/output/units/`: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
+One `(model, fold)` unit in the historical ADR 0027 benchmark: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
 _Avoid_: experiment, trial
 
 

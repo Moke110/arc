@@ -1,8 +1,7 @@
 # stage2/_envs — shared per-model benchmark environments
 
-Non-step directory: it holds the per-model environments the benchmark step
-(`stage2/03_models_cmbench/`) runs in, kept here so later stages can reuse them.
-They originally lived under the benchmark step's `envs/` directory, before that
+Non-step directory: it holds shared per-model environments for benchmark runs.
+They originally lived under the prior CM benchmark's `envs/` directory, before that
 step was split into two substeps. The `biolord` and `cmonge` venvs moved with
 this directory; their recorded paths were rewritten to `stage2/_envs/`, while the
 four `arc-stage2-bench-*` conda envs remain in the conda root and are referenced

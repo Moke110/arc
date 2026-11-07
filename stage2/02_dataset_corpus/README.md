@@ -3,8 +3,8 @@
 **Status:** the five corpora (four CM + `tahoe.h5ad`), the seven crosswalk tables
 and the coverage README are built (tickets #14–#16), and the `--verify` gate suite
 **G1–G6 PASS** — including G4, which reproduces 5/5 frozen v1 view content hashes
-(ticket #17; `execution/build_record/verify.json`). The CM-schema view is owned by
-`05_prnet_pretrain/` (ticket #18), and the docs/ADR sweep is ticket #20. The
+(ticket #17; `execution/build_record/verify.json`). Ticket #18 moved the CM-schema
+view to the former PRnet pretraining step, which was removed on 2026-11-07. The
 governing decision is [ADR 0033](../../docs/adr/0033-stage2-dataset-corpus.md); the
 artifact record (coverage, provenance, renames, schemas, gates) is
 [`output/corpus/v2/README.md`](output/corpus/v2/README.md).

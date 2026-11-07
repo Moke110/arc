@@ -2,15 +2,13 @@
 
 Non-step directory: these are the selection and fairness **records**, not a
 runnable step. The stage overview is [`../README.md`](../README.md); the
-benchmark that produced the evidence is
-[`../03_models_cmbench/`](../03_models_cmbench/README.md).
+tracked ADR 0027/0028 benchmark evidence is available in Git at `f95fe1e`.
 
-## Current follow-up selection
+## Historical follow-up selection
 
-- [Model-selection decisions](model_selection_decisions.md) govern subsequent
-  runs. On 2026-10-26, the user excluded Squidiff after convergence failures on
-  both 18k and 5k; further debugging investment has uncertain benefit. Six
-  candidates remain; historical experiment artifacts are preserved.
+- [Model-selection decisions](model_selection_decisions.md) records the
+  2026-10-26 decision to exclude Squidiff after convergence failures on both
+  18k and 5k. ADR 0042 records the active tenv comparison's admission policy.
 - [Benchmark fairness audit](benchmark_fairness_2026-10-26.md) records the
   implementation, evaluation, recipe, and resource findings.
 

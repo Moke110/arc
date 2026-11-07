@@ -1,11 +1,9 @@
 # `_frozen/cm-data-v1/` — frozen v1 CM evidence (TEMPORARY BRIDGE / 临时设施)
 
 > **Temporary bridge. 临时设施。**
-> This directory exists only because the frozen `03_models_cmbench` benchmark and
-> the concluded `06_prnet_transfer` study still name the retired v1 CM bundle as
-> their input evidence, while `02_cm_data` no longer produces it (ADR 0033
-> decision 8). It is **deleted once `03` / `05` / `06` are redone** — it is a
-> bridge, not an archive.
+> This bundle held the input evidence for the old CM benchmark and PRnet
+> transfer study (ADR 0033 decision 8). Those steps were removed on 2026-11-07.
+> The v1 bundle remains here for the corpus reconstruction gate.
 >
 > **Read-only. Nothing new may be built here.** No build writes into this tree,
 > no new artifact may be derived from it, and it must not grow. The data and

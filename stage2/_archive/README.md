@@ -11,9 +11,6 @@ current selection decision, 978 quarantine, environments, and what each step
 produced) lives in [`../README.md`](../README.md). Do not edit an archived file
 to match the current tree: it is the record of what was decided at the time.
 
-`03_models_cmbench/` is the sealed ADR 0027/0028 two-substep comparison, moved
-byte-for-byte under ADR 0042. Its old internal path strings and documents remain
-historical evidence. To inspect its scripts use this archival prefix; active tenv
-work lives at [`../03_modes_tenv/`](../03_modes_tenv/README.md) and imports no
-archived code. Preservation hashes are recorded in the active step
-`execution/input_record/archive.json`.
+The later ADR 0027/0028 benchmark was removed on 2026-11-07. Its tracked
+records are in Git at `f95fe1e`. Active tenv work lives at
+[`../03_modes_tenv/`](../03_modes_tenv/README.md).

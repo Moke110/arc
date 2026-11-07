@@ -1,6 +1,0 @@
-fold,selected_lr,selected_lr_label,selected_mean_auprc,tie_break_applied,complete,n_seeds,note,candidates_ok,candidates_capped,candidates_failed
-0,0.001,1e-3,0.099018028968675,0,1,3,single highest three-seed mean,9,0,0
-1,0.001,1e-3,0.10301241907779668,0,1,3,single highest three-seed mean,8,1,0
-2,0.001,1e-3,0.07535167165904193,0,1,3,single highest three-seed mean,7,2,0
-3,0.001,1e-3,0.0826019104299675,0,1,3,single highest three-seed mean,7,2,0
-4,0.001,1e-3,0.08970473139870815,0,1,3,single highest three-seed mean,9,0,0

@@ -4,6 +4,11 @@
 design, exact Morgan parameters and the artifact-CLI testing boundary.
 Research and admission evidence remain required before formal execution.
 
+**Update (2026-11-07):** The user retired the archived CM comparison and the
+former PRnet steps 05 and 06. Their tracked records are in Git at `f95fe1e`.
+The frozen v1 CM bundle is retained for the corpus verification gates. This
+updates the archive retention decision below.
+
 **Spec:** [GitHub issue #40](https://github.com/Moke110/arc/issues/40), published
 with ready-for-agent. The user approved the ticket breakdown; seven fixed
 implementation tickets [#41](https://github.com/Moke110/arc/issues/41) through
