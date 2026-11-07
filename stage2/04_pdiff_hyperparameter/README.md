@@ -110,3 +110,62 @@ See [the run record](execution/smoke_record/run.json) and
 checkpoint and raw scheduler telemetry are local under
 `execution/output/tenv-smoke-ticket67/`. The smoke is outside the formal
 matrix.
+
+## Full-axis Tahoe smoke
+
+The Tahoe release projects the corpus v2 native `log1p_cp10k` layer by Ensembl
+identity onto the ordered CM axis. The historical FAM153B slot is zero.
+Each treated profile's target subtracts the mean of the declared `DMSO_TF`
+profiles for its plate and cell line. The release records all eligible case
+IDs, matched control indices and stratum membership hashes, case-level
+exclusions, source hashes and the split assignments. Each outer fold holds
+out entire normalized parent-connectivity blocks. The training and
+evaluation group is drug × dose × cell line.
+
+From the repository root, give each command to the dedicated scheduler in
+order. Use a fresh release and run directory.
+
+```bash
+step=stage2/04_pdiff_hyperparameter
+cli="$step/execution/script/train.py"
+pdiff=stage2/_envs/perturbdiff/bin/python
+smoke="$step/execution/output/tahoe-smoke-replay"
+release="$smoke/release"
+"$pdiff" "$cli" build-tahoe "$release"
+"$pdiff" "$cli" verify-tahoe "$release"
+"$pdiff" "$cli" prepare-tahoe "$release" "$smoke/request.json" --fold 0
+"$pdiff" "$cli" fit "$smoke/request.json" "$step/execution/tahoe_smoke_record/recipe.json" "$smoke/run"
+"$pdiff" "$cli" reload "$smoke/request.json" "$smoke/run" "$smoke/replay.json"
+```
+
+Reserve 25 GiB for the build's bounded CSR projection and temporary memmap.
+The verifier checks the pinned source hashes, ordered genes, source-derived
+control pairing, split memberships, file inventory and all-zero slot.
+Request preparation uses the predictor file allowlist. Per-fold test group
+means and their directional labels live in `fold_N/evaluator/`.
+
+The smoke covers fold 0 and seed 17. Its full validation order is first
+appearance in the frozen validation case CSV. Eight groups per batch and
+three profiles per group reproduce the fixed native recipe. Sampling is
+without replacement where possible, and the final short batch contributes
+one scalar to the native monitor.
+
+The real release kept 65,318 of 65,618 treated profiles across 377 drugs.
+Missing structures excluded 150 profiles each for Sacubitril/Valsartan and
+Verteporfin. All 1,400 DMSO_TF profiles contributed to 700 control strata.
+The build took 128 seconds and peaked at 7,848,152 KiB RSS. See the
+[release manifest](execution/tahoe_smoke_record/input.json) for coverage by
+fold and source and file identities.
+
+The fit validated at steps 6 and 12 on 712 full batches and one final batch
+of three groups. Step 12 had the lower native loss, 15.660353660583496.
+The isolated GPU reload reproduced that loss and the 1 × 18,164 validation
+prediction exactly. The fit worker peaked at 3,582,104 KiB RSS.
+The [run record](execution/tahoe_smoke_record/run.json) retains the loss
+history and validation group order hash, the
+[reload record](execution/tahoe_smoke_record/replay.json) binds the prediction
+to the checkpoint, and the
+[scheduler record](execution/tahoe_smoke_record/execution.json) identifies
+the original telemetry. The original checkpoint and full group IDs live
+under `execution/output/tahoe-smoke-ticket68/`. This smoke is outside the
+formal matrix.

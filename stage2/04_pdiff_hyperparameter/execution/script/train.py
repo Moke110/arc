@@ -39,10 +39,13 @@ def main():
     trace = commands.add_parser('replay-monitor')
     trace.add_argument('trace', type=Path)
     trace.add_argument('output', type=Path)
-    prepare = commands.add_parser('prepare-tenv')
-    prepare.add_argument('input_root', type=Path)
-    prepare.add_argument('request', type=Path)
-    prepare.add_argument('--fold', type=int, required=True)
+    for name in ('prepare-tenv', 'prepare-tahoe'):
+        prepare = commands.add_parser(name)
+        prepare.add_argument('input_root', type=Path)
+        prepare.add_argument('request', type=Path)
+        prepare.add_argument('--fold', type=int, required=True)
+    for name in ('build-tahoe', 'verify-tahoe'):
+        commands.add_parser(name).add_argument('input_root', type=Path)
     verify = commands.add_parser('verify-request')
     verify.add_argument('request', type=Path)
     fit = commands.add_parser('fit')
@@ -65,6 +68,14 @@ def main():
     elif args.command == 'prepare-tenv':
         from training_inputs import prepare_tenv
         prepare_tenv(runtime, args.input_root, args.request, args.fold)
+    elif args.command in ('build-tahoe', 'verify-tahoe', 'prepare-tahoe'):
+        from tahoe_inputs import build_tahoe, verify_tahoe, prepare_tahoe
+        if args.command == 'build-tahoe':
+            build_tahoe(runtime, args.input_root)
+        elif args.command == 'verify-tahoe':
+            verify_tahoe(runtime, args.input_root)
+        else:
+            prepare_tahoe(args.input_root, args.request, args.fold)
     else:
         from artifacts import read_json
         from training_inputs import verify_request

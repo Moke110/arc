@@ -1,0 +1,24 @@
+{
+  "identity": {
+    "dataset": "tahoe",
+    "fold": 0,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "004cae2492e18770aed06ae30c4236cc2ea61cba6adf95b077bedc88300f396b",
+    "source_input_sha256": "a985b2eb400b4e819b73cf209b6c8dd3b596e39df9224cd8c15bad1f758c2c24",
+    "input_sha256": "93e72ed7b0281757f7f46207530b1fc027826c7b10d695e5b044926025712720",
+    "seed": 17,
+    "stage": "smoke"
+  },
+  "best_step": 12,
+  "checkpoint_sha256": "af01ce57fa5d328b435cdee2a846065e9aa912f5ab11540625122ffe18abcc7f",
+  "validation_loss": 15.660353660583496,
+  "prediction_sha256": "a8e0824b41b0986672273e1edf615db1ffc13646b6b99d2202c8ac4b72da0e14",
+  "prediction_max_abs_error": 0.0,
+  "case_ids": [
+    "plate1:smp_1503:CVCL_0399"
+  ],
+  "prediction_shape": [
+    1,
+    18164
+  ]
+}

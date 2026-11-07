@@ -3,7 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from artifacts import read_json, sha256, write_json
+from artifacts import read_json, rows, sha256, write_json
 
 STEP03 = Path('stage2/03_modes_tenv')
 REQUEST_SCHEMA = 'step04-predictor-v1'
@@ -16,15 +16,19 @@ def json_hash(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
-def tenv_paths(fold):
+def predictor_paths(fold):
     if type(fold) is not int or fold not in range(3):
-        raise ValueError('unknown tenv fold')
+        raise ValueError('unknown outer fold')
     prefix = f'fold_{fold}/'
     return {'genes': 'genes.csv', 'drugs': 'drugs.csv', 'morgan': 'morgan.npy',
             'controls': 'controls.npy', 'train_cases': prefix + 'train.csv',
             'validation_cases': prefix + 'validation.csv', 'test_cases': prefix + 'test_cases.csv',
             'train_expression': prefix + 'train_expression.npy',
             'validation_expression': prefix + 'validation_expression.npy'}
+
+
+# Step 04 evaluation originally imported the tenv name.
+tenv_paths = predictor_paths
 
 
 def verify_files(root, paths, hashes):
@@ -43,7 +47,7 @@ def prepare_tenv(runtime_root, input_root, output, fold):
     source = read_json(manifest_path)
     if (source['schema'], source['target_kind'], source['gene_count']) != ('tenv-input-v1', 'delta', 18164):
         raise ValueError('unexpected tenv release contract')
-    paths = tenv_paths(fold)
+    paths = predictor_paths(fold)
     hashes = {key: source['files'][relative] for key, relative in paths.items()}
     split_hash = source['files']['folds.csv']
     verify_files(root, {**paths, 'split': 'folds.csv'}, {**hashes, 'split': split_hash})
@@ -73,11 +77,25 @@ def verify_request(request):
         raise ValueError('unexpected predictor request contract')
     if request != request_for(root, consumer):
         raise ValueError('request input identity does not match the consumer manifest')
-    if consumer['dataset'] != 'tenv':
+    if consumer['dataset'] not in ('tenv', 'tahoe'):
         raise ValueError('unsupported predictor dataset')
-    paths = tenv_paths(consumer['fold'])
+    paths = predictor_paths(consumer['fold'])
     hashes = consumer['file_sha256']
     if (consumer['predictor_files'] != paths or hashes.keys() != paths.keys()
             or hashes['genes'] != consumer['gene_sha256']):
         raise ValueError('unexpected predictor file allowlist')
     verify_files(root, paths, hashes)
+    if consumer['dataset'] == 'tahoe':
+        verify_tahoe_roles(root, paths)
+
+
+def verify_tahoe_roles(root, paths):
+    drugs = {row['drug_key']: row['parent_connectivity'] for row in rows(root / paths['drugs'])}
+    assigned = {}
+    for role in ('train', 'validation', 'test'):
+        for case in rows(root / paths[f'{role}_cases']):
+            parent = drugs.get(case['drug_key'])
+            if not parent:
+                raise ValueError('Tahoe predictor case has no parent-connectivity block')
+            if assigned.setdefault(parent, role) != role:
+                raise ValueError('Tahoe parent-connectivity block crosses predictor roles')
