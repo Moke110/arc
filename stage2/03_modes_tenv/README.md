@@ -268,6 +268,9 @@ are absent from those terminal records. The supplement has separate phase
 deadlines and resource evidence. The preserved original account, run records,
 legacy archive and corpus release are read-only inputs to final delivery.
 Scoring and replay write into the private overlay and presentation paths.
+The reviewed supplemental runner derives the repository root from the fixed
+step depth. Replay uses the reviewed source bytes and workstation layout
+recorded in its policy.
 
 ### Replay the published figures
 

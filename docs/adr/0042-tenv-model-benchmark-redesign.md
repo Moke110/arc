@@ -377,4 +377,7 @@ history remain in the evidence. The committed [final prediction manifest](../../
 and [evaluation provenance](../../stage2/03_modes_tenv/execution/final_record/evaluation-provenance.json)
 bind that decision to the final scores. The [step results and replay command](../../stage2/03_modes_tenv/README.md#final-results)
 record the resource measurements, historical scheduler limits, defined-run
-counts and final figure locations.
+counts and final figure locations. The user-selected fixed figure paths under
+`output/` are an intentional exception to the step-root presentation default
+in [ADR 0030](0030-external-data-provenance-and-step-layout.md). The companion
+tables and presentation provenance are published alongside the figures.
