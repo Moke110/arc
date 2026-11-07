@@ -177,3 +177,11 @@ Validation and checkpoint overhead was 10.81–11.34% of optimizer time at 500
 steps and 21.56–22.98% at 250 steps. The frozen per-fold recipes use a
 4,000-step minimum, 1,000-step patience and fold-specific improvement
 thresholds. See [the pilot outcome](execution/pilot_record/tenv/README.md).
+
+## Tahoe validation pilot
+
+The Tahoe pilot chose a 500-step interval and a 4,000-step minimum in all
+three folds. Validation and checkpoint overhead was 47.71–50.76% of
+optimizer time at 500 steps and 94.83–97.83% at 250 steps. The frozen
+recipes use 2,000-step patience in fold 0 and 1,000-step patience in folds
+1 and 2, with fold-specific improvement thresholds. See [the Tahoe pilot outcome](execution/tahoe_pilot_record/README.md).
