@@ -366,6 +366,15 @@ Final evaluation uses a separate materialized overlay with the selected
 attempt and the other 62 original outcomes. Keep both attempts' native
 histories separate from one another and from legacy v1. Disclose the unequal
 budget, both statuses, measured phase timings and host RSS in the final
-tables and figures and on each replay. Production launch is pending the
-original scheduler's clean exit, the reviewed policy digest and live resource
-admission.
+tables and figures and on each replay.
+
+**Executed 2026-11-07.** The original scheduler settled 62 completions and
+the target timeout and exited cleanly. Independent reviewers authenticated the
+policy, terminal outcome, 63-slot selection and evaluation before publication.
+The supplemental run completed by validation patience and supplies exactly one
+of the 63 scored slots. The original timeout, original budget and separate
+history remain in the evidence. The committed [final prediction manifest](../../stage2/03_modes_tenv/execution/final_record/predictions.json)
+and [evaluation provenance](../../stage2/03_modes_tenv/execution/final_record/evaluation-provenance.json)
+bind that decision to the final scores. The [step results and replay command](../../stage2/03_modes_tenv/README.md#final-results)
+record the resource measurements, historical scheduler limits, defined-run
+counts and final figure locations.

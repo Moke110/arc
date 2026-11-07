@@ -93,8 +93,8 @@ text-preserving SVG, with metric-defined counts distinguished from completed
 runs.
 
 
-After evaluation, publish the verified CSV tables and three PNG/SVG figures to
-the step output directory (user-selected display location):
+For an unsupplemented evaluation, publish the verified CSV tables and three
+PNG/SVG figures to the step output directory:
 
 ```bash
 /home/chang/miniconda3/envs/arc/bin/python \
@@ -123,10 +123,11 @@ interim figure without loading models, datasets, prediction arrays or test truth
   stage2/03_modes_tenv/execution/script/learning_curves.py
 ```
 
-After all 63 outcomes are terminal, final delivery and every subsequent replay
-must also run that command with `--final`. It checks the terminal barrier and
-overwrites `output/learning_curves.png` and the text-preserving SVG companion at
-the same display paths. `output/learning_curves.json` records source checkpoint
+For unsupplemented final delivery and replay, run that command with `--final`
+after all 63 outcomes are terminal. The supplement-aware replay below refreshes
+the final learning curves alongside the other figures. The renderer checks the
+terminal barrier and writes `output/learning_curves.png` and its text-preserving
+SVG companion at the same display paths. `output/learning_curves.json` records source checkpoint
 hashes, actual plotted coordinates, available/missing histories, run statuses and
 the renderer hash. These files are presentation artifacts, not formal scores.
 The renderer is standalone and outside the frozen common-source and adapter
@@ -213,8 +214,7 @@ authorizes a single fresh **14,400-second training allowance** and a separate
 seed initialization. The original cumulative-budget timeout and its artifacts
 remain in `output/formal/`. The supplemental runner
 [`cmonge_supplement.py`](execution/script/cmonge_supplement.py) uses a separate
-attempt directory and durable claim. Production launch is pending the original
-scheduler's clean exit, policy review and live resource admission.
+attempt directory and durable claim.
 
 [`supplement_overlay.py`](execution/script/supplement_overlay.py) binds the
 reviewed supplemental outcome to the existing fold/seed slot and the other
@@ -224,3 +224,75 @@ publication after scoring and on every replay to retain the budget exception,
 measured phase times and host RSS in the final tables and figures. The
 learning curves display the original timeout separately from the selected
 supplement and the legacy histories.
+
+### Final results
+
+The original scheduler exited cleanly with 62 completions and the CMonge
+timeout. The supplemental attempt then stopped by validation patience at
+iteration 2,150 after 43 validation events with 138 conditions per event.
+Watchdog setup and training took 4,253.63 s, including 4,228.00 s of native
+training. Observed inference took 1.19 s, including 0.72 s of native inference.
+Peak host RSS was 1.68 GiB and sampled peak workstation GPU usage was 2.80 GiB.
+The original timeout's host RSS is unavailable. Its history has four validation
+events and is shown separately in the learning curves.
+
+The selected matrix completed **63/63** slots across five admitted predictors
+and two deterministic references. The candidate registry records eleven
+excluded and four unresolved candidates. The evaluator produced 28,980
+drug–dose group rows and 63 run-level PR sources. Every model–metric pair has
+nine defined runs except `no_change` PCC and Spearman, which are undefined in
+all nine runs because its predictions are constant. Each reference has three
+folds with deterministic seed copies.
+
+PerturbDiff led seven of the eight nine-run metric means, including positive
+and negative AP@100 of 0.23914 and 0.23463 and RMSE of 0.13172. The training
+group mean reference led mean R² at 0.02252. CMonge's directional AP@100 means
+were 0.18588 and 0.18040 under the disclosed supplemental budget. The best-run
+figure is a post-hoc view. The summary describes held-out performance on the
+frozen tenv release, with variability across folds and seeds.
+
+- Metrics [PNG](output/metrics.png) and [SVG](output/metrics.svg)
+- Directional PR panels [PNG](output/pr_panels.png) and [SVG](output/pr_panels.svg)
+- Best-run PR [PNG](output/best_run.png) and [SVG](output/best_run.svg)
+- Native learning curves [PNG](output/learning_curves.png), [SVG](output/learning_curves.svg) and [coordinates](output/learning_curves.json)
+- Tables for [groups](output/per_group.csv), [runs](output/per_run.csv), [summaries](output/summary.csv), [PR bands](output/pr_bands.csv) and [best runs](output/best_runs.csv)
+- [Publication hashes](output/publication.json), [slot provenance](output/slot_provenance.json) and [sealed prediction manifest](execution/final_record/predictions.json)
+
+The original joint v2 scheduler sampled host pressure and the read-only watcher
+monitored it. Automatic in-flight pressure stops were unavailable in that
+scheduler, and its resource admission check preceded input verification.
+The original watchdog charged full worker wall, including inference, against
+the remaining training allowance while also applying an inference sublimit.
+Its terminal `training_seconds` is the cumulative debit. Per-attempt GPU peaks
+are absent from those terminal records. The supplement has separate phase
+deadlines and resource evidence. The preserved original account, run records,
+legacy archive and corpus release are read-only inputs to final delivery.
+Scoring and replay write into the private overlay and presentation paths.
+
+### Replay the published figures
+
+Use the preserved workstation artifacts, with the scheduler idle and at least
+12 GiB available RAM. Run from the repo root. The pinned publication command
+uses the saved evaluator results and refreshes all four figure pairs and their
+provenance. The initial run used `prepare`, `verify` and `evaluate` in order,
+with independent review of the emitted selection and evaluation digests.
+
+```bash
+step=/home/chang/arc/stage2/03_modes_tenv
+systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
+  env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 \
+  /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python \
+  "$step/execution/script/supplement_overlay.py" publish \
+  --formal "$step/execution/formal" \
+  --reviewed-stage-sha256 73fb21036a2d04a12c5d8d9ce712ed544b1c38eb70fbfff884dc6753c8b60028 \
+  --policy "$step/execution/final_record/policy.json" \
+  --reviewed-policy-sha256 3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db \
+  --reviewed-terminal-sha256 591872e3aca0a6fba30b0b308381a8569b62c24b1a6ade07a7289c69f0eefb67 \
+  --reviewed-selection-sha256 e2bc2ea2414e52a905c405d37f7ff58acab48e6c56211fd0f4c9d1269bbbae56 \
+  --reviewed-evaluation-sha256 839045cc974386d1c6d21c61753ede02e92a0b208845816f090a94e903f6a918
+```
+
+Preparation, two-worker evaluation and publication peaked at 210,896,
+422,864 and 259,312 KiB RSS, respectively. The [final evidence index](execution/final_record/evidence.sha256)
+binds the compact audit records and resource logs. The live prediction arrays,
+model weights and PR source array remain local.
