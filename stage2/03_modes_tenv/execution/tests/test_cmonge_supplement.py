@@ -89,18 +89,25 @@ class AccountTests(unittest.TestCase):
         self.request = dict(identity=self.policy['identity'], output_directory=str(self.directory),
                             predictor_files={'test_cases': str(self.cases)})
         self.digest = 'a' * 64
+        self.policy_path = self.root / 'policy.json'
 
     def reserve(self):
         fd = runtime.lock_fd()
         self.addCleanup(os.close, fd)
-        return runtime.reserve(self.policy, self.digest, self.request, fd, {}, {})
+        service = dict(MainPID='111', InvocationID='a' * 32, ActiveState='active', Type='exec',
+                       ExitType='main', Restart='no', MemoryMax=str(runtime.MEMORY_MAX),
+                       MemorySwapMax=str(runtime.SWAP_MAX), WorkingDirectory=str(runtime.ROOT),
+                       ControlGroup='/app.slice/' + runtime.SUPPLEMENT_UNIT)
+        return runtime.reserve(self.policy, self.policy_path, self.digest, self.request, fd, service,
+                               dict(observable=True))
 
     def test_canonical_lock_and_permanent_one_shot(self):
         state = self.reserve()
         self.assertEqual(state['reservation_count'], 1)
         self.assertEqual(state['credit_available_seconds'], 0)
-        self.assertIn('MemoryMax=10G', state['scope_command'])
-        self.assertIn('MemorySwapMax=8G', state['scope_command'])
+        self.assertIn(f'MemoryMax={runtime.MEMORY_MAX}', state['scope_command'])
+        self.assertIn(f'MemorySwapMax={runtime.SWAP_MAX}', state['scope_command'])
+        self.assertIn('KillSignal=SIGKILL', state['scope_command'])
         self.assertIn('RuntimeMaxSec=16200', state['scope_command'])
         self.assertEqual(state['executed_argv'][-2:], ['--request', str(self.account / 'request-0.json')])
         self.assertEqual(runtime.read_json(self.account / 'request-0.json'),
@@ -109,6 +116,13 @@ class AccountTests(unittest.TestCase):
             runtime.lock_fd()
         with self.assertRaisesRegex(ValueError, 'already claimed'):
             runtime.untouched()
+        borrowed = os.open(self.lock, os.O_RDONLY)
+        self.addCleanup(os.close, borrowed)
+        with self.assertRaisesRegex(ValueError, 'does not own'):
+            runtime.check_lock(borrowed)
+        inherited = os.dup(state['lock_fd'])
+        self.addCleanup(os.close, inherited)
+        runtime.check_lock(inherited)
 
     def test_symlink_and_hardlink_refused(self):
         self.output.symlink_to(self.root / 'absent')
@@ -151,6 +165,40 @@ class AccountTests(unittest.TestCase):
                     iterations=1000, best_iteration=50, best_validation_loss=1.,
                     stop_reason='validation_patience')
 
+    def execution_evidence(self, state):
+        scope = state['scope']
+        invocation = 'b' * 32
+        process = dict(state['supervisor'], pid=state['supervisor']['pid'] + 1)
+        scope_state = runtime.scope_record('/app.slice/' + scope, invocation)
+        worker = dict(process=process, guard=dict(process, pid=process['pid'] + 1),
+                      scope=scope, scope_state=scope_state,
+                      supervisor=state['supervisor'], invocation=state['service']['InvocationID'],
+                      claim_sha256=runtime.sha256(self.record / 'launch-claim.json'),
+                      policy_sha256=self.digest, training_cutoff=state['training_cutoff'],
+                      injected_request_sha256=state['injected_request_sha256'])
+        runtime.write(self.account / 'worker-start.json', worker)
+        log = f'Running as unit: {scope}; invocation ID: {invocation}\n'
+        if state['status'] == 'completed':
+            log += 'Maximum resident set size (kbytes): 1048576\n'
+        (self.account / 'watchdog.log').write_text(log)
+        sample = dict(scope=scope, observable=True, external_heavy=0, timestamp=10,
+                      gpu_used_gib=2, gpu_free_gib=14, available_gib=40,
+                      sampled_owned_rss_gib=0.75, owned_rss_gib={'1': 5, '2': 4})
+        (self.account / 'telemetry.jsonl').write_text(json.dumps(sample) + '\n')
+        state.update(worker=worker, process=process, observed_returncode=state['returncode'],
+                     **runtime.resource_evidence(self.account, scope, invocation))
+        timing = state['timing']
+        if timing['observed_inference_seconds'] is not None:
+            pre = timing['pre_inference_watchdog_seconds']
+            start = state['started_usec'] / 1e6
+            runtime.write(self.account / 'inference-transition.json',
+                          dict(timing, worker_wall_seconds=pre, observed_inference_seconds=0,
+                               manager_cutoff=runtime.cutoff_record(scope, 'inference',
+                                                                   start + pre + runtime.INFERENCE)))
+        elif timing['adapter_training_seconds'] is not None:
+            runtime.write(self.directory / 'progress.json',
+                          dict(phase='training', training_seconds=timing['adapter_training_seconds']))
+
     def test_completed_proof_and_tampering(self):
         state = self.reserve()
         checkpoint = self.complete_checkpoint()
@@ -159,13 +207,21 @@ class AccountTests(unittest.TestCase):
                      timing=dict(adapter_training_seconds=15, worker_wall_seconds=20,
                                  pre_inference_watchdog_seconds=18, observed_inference_seconds=2),
                      cleanup=dict(scope=state['scope'], active_state='inactive'))
+        self.execution_evidence(state)
         terminal = runtime.publish_terminal(self.policy, self.digest, state, self.request)
         self.assertEqual(terminal['status'], 'completed')
+        self.assertEqual(state['sampled_peak_host_rss_gib'], 0.75)
+        self.assertEqual(state['peak_host_rss_gib'], 1)
         with patch.object(runtime, 'checked_policy', return_value=self.policy), \
              patch.object(runtime, 'request_for', return_value=self.request):
             terminal_sha = runtime.sha256(self.record / 'terminal.json')
             args = (None, None, None, self.digest, terminal_sha)
             self.assertEqual(runtime.verify_terminal(*args)[1], terminal)
+            (self.account / 'inference-transition.json').unlink()
+            terminal['account_files'] = runtime.files_at(self.account)
+            runtime.write(self.record / 'terminal.json', terminal)
+            with self.assertRaises(FileNotFoundError):
+                runtime.verify_terminal(*args[:-1], runtime.sha256(self.record / 'terminal.json'))
             (self.directory / 'best.msgpack').write_bytes(b'different')
             with self.assertRaises(ValueError):
                 runtime.verify_terminal(*args)
@@ -177,10 +233,37 @@ class AccountTests(unittest.TestCase):
                                  pre_inference_watchdog_seconds=14400, observed_inference_seconds=None),
                      cleanup=dict(scope=state['scope'], active_state='inactive'))
         (self.directory / 'best.msgpack').write_bytes(b'partial')
+        self.execution_evidence(state)
         terminal = runtime.publish_terminal(self.policy, self.digest, state, self.request)
         self.assertEqual(terminal['status'], 'timeout')
         self.assertIn('best.msgpack', terminal['files'])
         self.assertNotIn('artifacts', runtime.read_json(self.directory / 'run.json'))
+        self.assertIsNone(state['time_peak_rss_gib'])
+
+    def test_missing_execution_evidence_or_early_timeout_cannot_publish(self):
+        state = self.reserve()
+        state.update(status='timeout', stop_reason='training_timeout', returncode=-9,
+                     timing=dict(adapter_training_seconds=2, worker_wall_seconds=3,
+                                 pre_inference_watchdog_seconds=3, observed_inference_seconds=None),
+                     cleanup=dict(scope=state['scope'], active_state='inactive'))
+        with self.assertRaises(FileNotFoundError):
+            runtime.publish_terminal(self.policy, self.digest, state, self.request)
+        self.execution_evidence(state)
+        with self.assertRaisesRegex(ValueError, 'ineligible'):
+            runtime.publish_terminal(self.policy, self.digest, state, self.request)
+        self.assertFalse((self.record / 'terminal.json').exists())
+
+    def test_invalid_success_cannot_be_rewritten_as_failure(self):
+        state = self.reserve()
+        state.update(status='completed', stop_reason='worker_zero_exit', returncode=0,
+                     timing=dict(adapter_training_seconds=15, worker_wall_seconds=20,
+                                 pre_inference_watchdog_seconds=18, observed_inference_seconds=2),
+                     cleanup=dict(scope=state['scope'], active_state='inactive'))
+        self.execution_evidence(state)
+        with self.assertRaises(FileNotFoundError):
+            runtime.publish_terminal(self.policy, self.digest, state, self.request)
+        self.assertEqual(state['status'], 'completed')
+        self.assertFalse((self.record / 'terminal.json').exists())
 
     def test_bad_validation_count_rejected(self):
         self.reserve()
