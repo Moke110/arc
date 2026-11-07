@@ -1,0 +1,283 @@
+{
+  "scope": "bounded live WSL scheduler rehearsal with a 32 MiB allocation and a 12-second sleep",
+  "preflight_sample": {
+    "observable": true,
+    "available_gib": 40.49394607543945,
+    "owned_rss_gib": {},
+    "gpu_used_gib": 1.6787109375,
+    "gpu_free_gib": 14.3134765625,
+    "external_heavy": 0,
+    "external_peak_gib": 0,
+    "external_pids": [],
+    "idle_pids": [],
+    "gpu_utilization_percent": 57,
+    "host_total_gib": 47.04848098754883,
+    "swap_total_gib": 64.0,
+    "swap_free_gib": 63.7722053527832,
+    "disk_free_gib": 213.83518600463867,
+    "timestamp": 1794054603.676003,
+    "observed_at": 1794054603.8649554
+  },
+  "preflight_decisions": {
+    "bounded_cpu": {
+      "admit": true,
+      "reason": "resource budgets satisfied"
+    },
+    "queued_training_fixture": {
+      "admit": true,
+      "reason": "resource budgets satisfied"
+    }
+  },
+  "queue": [
+    {
+      "id": "bounded_cpu",
+      "command": [
+        "/usr/bin/python3",
+        "-c",
+        "import time; data = bytearray(32 * 1024 * 1024); time.sleep(12)"
+      ],
+      "kind": "cpu",
+      "disk_gib": 0.01,
+      "profile": {
+        "host_peak_gib": 0.1,
+        "gpu_peak_gib": 0
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "id": "queued_training_fixture",
+      "command": [
+        "/usr/bin/true"
+      ],
+      "kind": "training",
+      "disk_gib": 0.01,
+      "profile": {
+        "host_peak_gib": 0.1,
+        "gpu_peak_gib": 0
+      },
+      "timeout_seconds": 30
+    }
+  ],
+  "observations": [
+    {
+      "observable": true,
+      "available_gib": 40.44207000732422,
+      "owned_rss_gib": {},
+      "gpu_used_gib": 1.6787109375,
+      "gpu_free_gib": 14.3134765625,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 58,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83514785766602,
+      "timestamp": 1794054603.8890724,
+      "observed_at": 1794054604.064487,
+      "active": []
+    },
+    {
+      "observable": true,
+      "available_gib": 40.383304595947266,
+      "owned_rss_gib": {
+        "2124431": 0.04250335693359375
+      },
+      "gpu_used_gib": 1.6904296875,
+      "gpu_free_gib": 14.3017578125,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 35,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83512496948242,
+      "timestamp": 1794054605.8891816,
+      "observed_at": 1794054606.079707,
+      "active": [
+        "bounded_cpu"
+      ]
+    },
+    {
+      "observable": true,
+      "available_gib": 40.495338439941406,
+      "owned_rss_gib": {
+        "2124431": 0.04250335693359375
+      },
+      "gpu_used_gib": 1.685546875,
+      "gpu_free_gib": 14.306640625,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 44,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83511352539062,
+      "timestamp": 1794054607.889253,
+      "observed_at": 1794054608.085816,
+      "active": [
+        "bounded_cpu"
+      ]
+    },
+    {
+      "observable": true,
+      "available_gib": 40.437782287597656,
+      "owned_rss_gib": {
+        "2124431": 0.04250335693359375
+      },
+      "gpu_used_gib": 1.6826171875,
+      "gpu_free_gib": 14.3095703125,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 35,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83509826660156,
+      "timestamp": 1794054609.8892927,
+      "observed_at": 1794054610.0963202,
+      "active": [
+        "bounded_cpu"
+      ]
+    },
+    {
+      "observable": true,
+      "available_gib": 40.38931655883789,
+      "owned_rss_gib": {
+        "2124431": 0.04250335693359375
+      },
+      "gpu_used_gib": 1.7080078125,
+      "gpu_free_gib": 14.2841796875,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 28,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.8350944519043,
+      "timestamp": 1794054611.8893669,
+      "observed_at": 1794054612.1017601,
+      "active": [
+        "bounded_cpu"
+      ]
+    },
+    {
+      "observable": true,
+      "available_gib": 40.415531158447266,
+      "owned_rss_gib": {
+        "2124431": 0.04250335693359375
+      },
+      "gpu_used_gib": 1.70703125,
+      "gpu_free_gib": 14.28515625,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 37,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83509063720703,
+      "timestamp": 1794054613.889419,
+      "observed_at": 1794054614.067047,
+      "active": [
+        "bounded_cpu"
+      ]
+    },
+    {
+      "observable": true,
+      "available_gib": 40.46915817260742,
+      "owned_rss_gib": {
+        "2124431": 0.04250335693359375
+      },
+      "gpu_used_gib": 1.7060546875,
+      "gpu_free_gib": 14.2861328125,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 30,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83508682250977,
+      "timestamp": 1794054615.8895106,
+      "observed_at": 1794054616.0708418,
+      "active": [
+        "bounded_cpu"
+      ]
+    },
+    {
+      "observable": true,
+      "available_gib": 40.51561737060547,
+      "owned_rss_gib": {
+        "2124431": 0.0
+      },
+      "gpu_used_gib": 1.6796875,
+      "gpu_free_gib": 14.3125,
+      "external_heavy": 0,
+      "external_peak_gib": 0,
+      "external_pids": [],
+      "idle_pids": [],
+      "gpu_utilization_percent": 35,
+      "host_total_gib": 47.04848098754883,
+      "swap_total_gib": 64.0,
+      "swap_free_gib": 63.7722053527832,
+      "disk_free_gib": 213.83508682250977,
+      "timestamp": 1794054617.8895772,
+      "observed_at": 1794054618.084151,
+      "active": [
+        "bounded_cpu"
+      ]
+    }
+  ],
+  "maximum_observation_gap_seconds": 2.0152199268341064,
+  "applied_scope_limits": {
+    "unit": "arc-step04-1eb24df1b00e4c33b2e57a761c9074fd.scope",
+    "active_state": "active",
+    "memory_max_bytes": 10737418240,
+    "memory_swap_max_bytes": 8589934592
+  },
+  "pause_active_slots": [
+    "bounded_cpu"
+  ],
+  "pause_queued_slots": [
+    "queued_training_fixture"
+  ],
+  "drained_paused": true,
+  "drained_active_slots": [],
+  "drained_queued_slots": [
+    "queued_training_fixture"
+  ],
+  "drained_last_decision": {
+    "admit": false,
+    "job": "queued_training_fixture",
+    "reason": "paused",
+    "timestamp": 1794054618.0844257
+  },
+  "completed_attempt": {
+    "finished_at": 1794054618.084406,
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "outcome": "completed",
+    "peak_gpu_utilization_percent": 44,
+    "peak_host_rss_gib": 0.04250335693359375,
+    "peak_workstation_gpu_used_gib": 1.7080078125,
+    "pid": 2124431,
+    "process_start": "26408908",
+    "reason": "process exit 0",
+    "returncode": 0,
+    "scope": "arc-step04-1eb24df1b00e4c33b2e57a761c9074fd.scope",
+    "started_at": 1794054604.064685
+  },
+  "gnu_time_maximum_resident_set_size_kib": 42984
+}
