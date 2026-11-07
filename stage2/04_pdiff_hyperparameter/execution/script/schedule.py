@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import fcntl
+import hashlib
 import importlib.util
 import json
 import math
@@ -73,6 +74,60 @@ def load_queue(path):
     return record, jobs
 
 
+def load_admission_profiles(queue, record, jobs, path):
+    """Bind a measured GPU admission profile without changing any worker identity."""
+    if path is None:
+        return {}, None
+    data = path.read_bytes()
+    policy = json.loads(data)
+    if (not isinstance(policy, dict)
+            or policy.keys() != {'schema', 'queue_sha256', 'source', 'jobs', 'profile'}
+            or policy['schema'] != 'step04-admission-profiles-v1'):
+        raise ValueError('unexpected admission sidecar schema')
+    if policy['queue_sha256'] != hashlib.sha256(queue.read_bytes()).hexdigest():
+        raise ValueError('admission sidecar queue hash mismatch')
+    source = policy['source']
+    if (not isinstance(source, dict) or source.keys() != {'status_file', 'sha256', 'job_id'}
+            or not isinstance(source['status_file'], str)
+            or not re.fullmatch(r'[A-Za-z0-9_.-]+\.json', source['status_file'])):
+        raise ValueError('unexpected admission profile source')
+    snapshot_path = path.parent / source['status_file']
+    if snapshot_path.is_symlink():
+        raise ValueError('admission profile source must be a local status snapshot')
+    snapshot_bytes = snapshot_path.read_bytes()
+    if source['sha256'] != hashlib.sha256(snapshot_bytes).hexdigest():
+        raise ValueError('admission profile source hash mismatch')
+    rows = {job['id']: job for job in jobs}
+    source_job = rows[source['job_id']]
+    row = json.loads(snapshot_bytes)['jobs'][source['job_id']]
+    current = load_status(record, jobs)['jobs'][source['job_id']]
+    if (row != current or row['identity'] != source_job or row['status'] != 'completed'
+            or source_job['kind'] != 'gpu' or not row['attempts']):
+        raise ValueError('admission profile requires a completed GPU job from the same queue')
+    attempt = row['attempts'][-1]
+    profile = policy['profile']
+    if (not isinstance(profile, dict) or profile.keys() != {'host_peak_gib', 'gpu_peak_gib'}
+            or not number(attempt['peak_host_rss_gib'], 0.001)
+            or not number(attempt['peak_workstation_gpu_used_gib'], 0.001)
+            or not number(profile['host_peak_gib'], attempt['peak_host_rss_gib'])
+            or not number(profile['gpu_peak_gib'], attempt['peak_workstation_gpu_used_gib'])
+            or profile['gpu_peak_gib'] > 16):
+        raise ValueError('admission profile must cover the measured worker and workstation peaks')
+    targets = policy['jobs']
+    if (not isinstance(targets, list) or not targets or not all(isinstance(key, str) for key in targets)
+            or len(set(targets)) != len(targets)):
+        raise ValueError('admission sidecar requires unique target job ids')
+    for key in targets:
+        job = rows[key]
+        if (key == source['job_id'] or job['kind'] != 'gpu' or job.get('profile') is not None
+                or len(job['command']) < 3 or job['command'][:-2] != source_job['command'][:-2]
+                or job['cwd'] != source_job['cwd'] or job['memory_gib'] != source_job['memory_gib']
+                or profile['host_peak_gib'] > job['memory_gib']):
+            raise ValueError('admission profile target differs from the measured GPU command: ' + key)
+    evidence = dict(policy, sha256=hashlib.sha256(data).hexdigest(), path=str(path))
+    return {key: profile for key in targets}, evidence
+
+
 def live_sample(record, pids):
     snapshot = step03.process_snapshot(pids)
     if not snapshot['observable']:
@@ -132,7 +187,7 @@ def unsafe(sample):
     return None
 
 
-def decision(sample, job, active=()):
+def decision(sample, job, active=(), reserve_active_gpu=False):
     reason = unsafe(sample)
     if reason is None and sample['external_heavy']:
         reason = 'unprofiled external heavy job'
@@ -153,7 +208,13 @@ def decision(sample, job, active=()):
         gpu_reserve = 0 if job['kind'] == 'cpu' else 4
         return step03.admit(sample, dict(host_peak_gib=job['memory_gib'],
                                          gpu_peak_gib=gpu_reserve))
-    return step03.admit(sample, job['profile'], active)
+    verdict = step03.admit(sample, job['profile'], active)
+    if verdict['admit'] and reserve_active_gpu and active:
+        gpu_peaks = job['profile']['gpu_peak_gib'] + sum(
+            entry['profile']['gpu_peak_gib'] for entry in active)
+        if 1.2 * gpu_peaks + 1 > sample['gpu_free_gib']:
+            return dict(admit=False, reason='combined GPU reservations exceed free memory')
+    return verdict
 
 
 @contextmanager
@@ -282,10 +343,13 @@ def finalize(row, returncode):
     row['status'] = outcome
 
 
-def run(record, jobs, fixture):
+def run(record, jobs, fixture, profiles, profile_evidence):
     with workstation_lock():
         status = load_status(record, jobs)
         rows = status['jobs']
+        effective_jobs = {key: dict(row['identity'], profile=profiles[key]) if key in profiles
+                          else row['identity'] for key, row in rows.items()}
+        status['admission_profiles'] = profile_evidence
         recover(record, status)
         active = {}
         pressure_streak = 0
@@ -352,21 +416,25 @@ def run(record, jobs, fixture):
                 paused = (record / 'pause').exists()
                 pending = [key for key, row in rows.items() if row['status'] == 'pending']
                 for key in pending:
-                    job = rows[key]['identity']
+                    job = effective_jobs[key]
                     paused = (record / 'pause').exists()
                     if paused or interrupted:
                         verdict = dict(admit=False, reason='paused' if paused else 'scheduler interrupted')
                     elif pressure:
                         verdict = dict(admit=False, reason=pressure)
                     else:
-                        verdict = decision(sample, job, [rows[name]['identity'] for name in active])
+                        verdict = decision(sample, job, [effective_jobs[name] for name in active],
+                                           reserve_active_gpu=bool(profiles))
                     status['last_decision'] = dict(verdict, job=key, timestamp=time.time())
                     if not verdict['admit']:
                         continue
                     attempt = prepare(record, rows[key])
+                    if key in profiles:
+                        attempt.update(admission_profile=profiles[key],
+                                       admission_profile_sha256=profile_evidence['sha256'])
                     publish(record, status)
                     try:
-                        active[key] = launch(job, attempt)
+                        active[key] = launch(rows[key]['identity'], attempt)
                     except OSError as exc:
                         attempt['launch_error'] = str(exc)
                         finalize(rows[key], 126)
@@ -415,18 +483,25 @@ def main():
         command.add_argument('queue', type=Path)
         if name in ('preflight', 'run'):
             command.add_argument('--fixture', type=Path, help=argparse.SUPPRESS)
+            command.add_argument('--admission-profiles', type=Path)
         if name == 'retry':
             command.add_argument('job_id')
     args = parser.parse_args()
     try:
-        record, jobs = load_queue(args.queue.resolve())
+        queue = args.queue.resolve()
+        record, jobs = load_queue(queue)
+        if args.action in ('preflight', 'run'):
+            path = args.admission_profiles
+            profiles, evidence = load_admission_profiles(queue, record, jobs, path.absolute() if path else None)
         if args.action == 'preflight':
             sample = snapshot(record, args.fixture)
-            decisions = {job['id']: decision(sample, job) for job in jobs}
-            print(json.dumps(dict(sample=sample, decisions=decisions, jobs=jobs), indent=2))
+            decisions = {job['id']: decision(sample, dict(job, profile=profiles[job['id']])
+                                            if job['id'] in profiles else job) for job in jobs}
+            print(json.dumps(dict(sample=sample, decisions=decisions, jobs=jobs,
+                                  admission_profiles=evidence), indent=2))
             return 0 if any(item['admit'] for item in decisions.values()) else 2
         if args.action == 'run':
-            return run(record, jobs, args.fixture)
+            return run(record, jobs, args.fixture, profiles, evidence)
         status = load_status(record, jobs)
         if args.action == 'pause':
             record.mkdir(parents=True, exist_ok=True)

@@ -1,4 +1,5 @@
 """Exercise scheduler admission through the CLI and emitted records."""
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -54,10 +55,10 @@ class SchedulerCLI(unittest.TestCase):
             executable.chmod(0o755)
         return dict(os.environ, PATH=str(self.root) + ':' + os.environ['PATH'])
 
-    def start(self):
+    def start(self, *args):
         self.process = subprocess.Popen(
             [sys.executable, str(SCRIPT), 'run', str(self.queue),
-             '--fixture', str(self.fixture)], env=self.fake_scopes(),
+             '--fixture', str(self.fixture), *args], env=self.fake_scopes(),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self.addCleanup(self.finish, self.process)
         return self.process
@@ -142,6 +143,55 @@ class SchedulerCLI(unittest.TestCase):
         attempt, = stopped['jobs']['profile']['attempts']
         self.assertEqual(attempt['reason'], 'scheduler interrupted')
         self.assertEqual(worker.wait(timeout=10), 130)
+
+    def test_measured_sidecar_profiles_admit_overlap_without_rebinding_queue(self):
+        self.sample(gpu_used_gib=0.5)
+        # Same executable and behavior across measured/pending workers. The
+        # fixture length is keyed by the fold argument.
+        command = [sys.executable, '-c', 'import sys,time; time.sleep(0.2 if sys.argv[1]=="0" else 8)']
+        first = dict(self.job, id='basis', command=command + ['0', '17'], profile=None)
+        jobs = [first, first | dict(id='second', command=command + ['1', '17']),
+                first | dict(id='third', command=command + ['2', '17'])]
+        self.queue.write_text(json.dumps(dict(record_dir='record', jobs=jobs)))
+        self.start()
+        self.wait_status(lambda status: status['jobs']['basis']['status'] == 'running')
+        self.assertEqual(self.invoke('pause').returncode, 0)
+        status = self.wait_status(lambda status: status['jobs']['basis']['status'] == 'completed'
+                                  and not status['scheduler_pid'])
+        source = self.root / 'basis-status.json'
+        source.write_bytes((self.record / 'status.json').read_bytes())
+        sidecar = self.root / 'admission-profiles.json'
+        queue_bytes = self.queue.read_bytes()
+        profile = dict(host_peak_gib=2, gpu_peak_gib=1)
+        value = dict(schema='step04-admission-profiles-v1',
+                     queue_sha256=hashlib.sha256(queue_bytes).hexdigest(),
+                     source=dict(status_file=source.name, sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+                                 job_id='basis'),
+                     jobs=['second', 'third'], profile=profile)
+        sidecar.write_text(json.dumps(value | dict(queue_sha256='0' * 64)))
+        rejected = self.invoke('preflight', '--fixture', str(self.fixture),
+                               '--admission-profiles', str(sidecar))
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn('queue hash mismatch', rejected.stderr)
+        sidecar.write_text(json.dumps(value | dict(profile=dict(host_peak_gib=2, gpu_peak_gib=0.1))))
+        undersized = self.invoke('preflight', '--fixture', str(self.fixture),
+                                 '--admission-profiles', str(sidecar))
+        self.assertIn('must cover the measured worker and workstation peaks', undersized.stderr)
+        sidecar.write_text(json.dumps(value))
+        self.sample(gpu_used_gib=0.5, gpu_free_gib=3)
+        self.assertEqual(self.invoke('resume').returncode, 0)
+        self.start('--admission-profiles', str(sidecar))
+        held = self.wait_status(lambda current: current['last_decision'].get('reason')
+                                == 'combined GPU reservations exceed free memory')
+        self.assertEqual(held['active'], ['second'])
+        self.sample(gpu_used_gib=0.5)
+        updated = self.wait_status(lambda current: current['active'] == ['second', 'third'])
+        self.assertEqual(self.queue.read_bytes(), queue_bytes)
+        for key in ('basis', 'second', 'third'):
+            self.assertEqual(updated['jobs'][key]['identity'], status['jobs'][key]['identity'])
+        self.assertEqual(updated['jobs']['third']['attempts'][-1]['admission_profile'], profile)
+        self.assertEqual(updated['admission_profiles']['sha256'],
+                         hashlib.sha256(sidecar.read_bytes()).hexdigest())
 
     def test_preflight_uses_elapsed_age_when_wall_clock_jumps(self):
         self.sample(age_seconds=0.5, timestamp=time.time() - 60)

@@ -49,6 +49,14 @@ When a previous scheduler died, run or retry verifies that its named scope and
 process have exited before changing the outcome. A live orphan blocks recovery
 and must drain before retry. Keep one immutable queue per record directory.
 
+A paused GPU prediction queue can resume with `--admission-profiles` on
+preflight and run. The JSON sidecar binds the original queue hash, a hashed
+local snapshot of a completed comparable worker, and conservative measured
+host and GPU peaks for named, otherwise unprofiled GPU jobs. It changes only
+resource decisions. Commands, scope limits and job identities come from the
+original queue. The scheduler records the sidecar and each affected attempt's
+profile. Combined GPU reservations must fit before an overlap is admitted.
+
 `status.json` records worker identity, attempt outcomes and peaks.
 `telemetry.jsonl` records live decisions' input samples. Use `observed_monotonic`
 for elapsed intervals within the same workstation boot. Wall timestamps remain
