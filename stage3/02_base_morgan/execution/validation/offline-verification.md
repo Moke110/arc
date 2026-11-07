@@ -1,5 +1,29 @@
 # Repository offline checks — #64
 
+## Completed rerun — 2026-11-07, Asia/Shanghai
+
+`script/verify_all.sh` passed **34/34** offline provenance checks at `def5434`.
+The rerun started at 17:20 and finished at 17:26 with exit code 0. It used the
+`arc` environment, two library threads, hidden CUDA devices, and the existing
+five-second resource guardian in formal mode. The guarded command was equivalent
+to the following, with the scope's `memory.peak` read before it exited:
+
+```bash
+systemd-run --user --scope --collect -p MemoryMax=10G -p MemorySwapMax=8G -- /usr/bin/time -v bash script/verify_all.sh
+```
+
+GNU time recorded 5:08.95 wall time and maximum RSS of 79,436 KiB. The scope's
+cgroup memory peak, including file cache, was 8,456,503,296 bytes (7.88 GiB).
+Across 59 guardian snapshots, minimum available host RAM was 44,145,680,384
+bytes and maximum GPU occupancy was 1,617 MiB. No competing heavy process or
+telemetry error appeared in those snapshots. The guardian reported no stop reason.
+
+Local evidence is in `/tmp/arc-morgan-verify-all-20261107-1621.log` and
+`/tmp/arc-morgan-offline-verification-20261107-1621/`. This pass resolves the
+remaining provenance gate described in the original handoff below.
+
+## Original handoff — interrupted attempt
+
 Both release-time routing/tracking checks passed after the tracked release
 metadata was added:
 

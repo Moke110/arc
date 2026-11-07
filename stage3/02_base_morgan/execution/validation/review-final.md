@@ -38,6 +38,6 @@ was refined in `a33ffe1` after a small maintenance job caused a conservative
 pause. Training code, data, partitions and model configuration remained frozen.
 
 Final findings: Standards 0; Spec 0. The independently verified formal data record
-is [formal-data-audit.md](formal-data-audit.md). Repository-wide provenance
-verification is a separate **unfinished external-resource gate**, recorded in
-[offline-verification.md](offline-verification.md); it is not claimed to pass.
+is [formal-data-audit.md](formal-data-audit.md). The repository-wide provenance
+sweep was pending at review time. Its guarded rerun passed 34/34 checks on
+2026-11-07. See [offline-verification.md](offline-verification.md).

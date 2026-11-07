@@ -114,6 +114,5 @@ The recorded Heliste release completed all 60 formal fits. See the local
 [independent numerical audit](execution/validation/formal-data-audit.md) and
 [final two-axis review](execution/validation/review-final.md). Checkpoints and
 predictions remain ignored; tracked release and split manifests bind their
-identities and hashes. The repository-wide source sweep was safely interrupted
-by another session's formal trainer and remains an
-[explicit unfinished gate](execution/validation/offline-verification.md).
+identities and hashes. The repository-wide source sweep subsequently passed all
+34 checks. See the [offline verification record](execution/validation/offline-verification.md).
