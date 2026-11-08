@@ -12,6 +12,8 @@ Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
 - [`03_modes_tenv/`](03_modes_tenv/README.md) — completed shared-Morgan tenv
   comparison on the 18,164-gene CM axis (ADR 0042).
 - [`04_pdiff_hyperparameter/`](04_pdiff_hyperparameter/README.md) — completed standalone PerturbDiff studies on Tahoe and tenv, with figures, checkpoint handoff and Tahoe recovery evidence (ADR 0046).
+- [`05_pdiff_transfer/`](05_pdiff_transfer/README.md) — Tahoe training strategies
+  on warm-start and cold tenv splits (ADR 0047).
 - [`_envs/`](_envs/README.md) — non-step: shared per-model environments + locks.
 - [`audit/`](audit/README.md) — non-step: entrant/fairness audit, 2026-10-26
   selection decisions.

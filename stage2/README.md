@@ -14,6 +14,7 @@ the second under ADR 0042.
 | [`02_dataset_corpus/`](02_dataset_corpus/README.md) | what data substrate do we build on? | **five source-dataset corpora** — four CM native-axis + `tahoe.h5ad`, 67,018 × 62,710, 25.8 GB — raw counts, every raw well (controls + blanks), no pharmacology filter and no Δ; **seven crosswalk tables** + coverage README (18,164-gene CM axis as `tables/genes.csv`); `--verify` **G1–G6 PASS**, with G4 reproducing 5/5 frozen v1 view content hashes | ADR 0033 (amends ADR 0026) |
 | [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | final 63-slot comparison across five predictors and two references. PerturbDiff led seven of eight nine-run metric means, including positive/negative AP@100 of 0.23914/0.23463. The training-group mean reference led mean R² | ADR 0042 |
 | [`04_pdiff_hyperparameter/`](04_pdiff_hyperparameter/README.md) | how does standalone PerturbDiff train and score on Tahoe and tenv? | complete nine-fit matrices for both datasets, learning curves, eight held-out metrics with matched references, and nine verified tenv EMA checkpoints for handoff | ADR 0046 |
+| [`05_pdiff_transfer/`](05_pdiff_transfer/README.md) | does Tahoe training improve tenv prediction? | verified common cold tenv fold with reused CM checkpoints and deterministic references | ADR 0047 |
 
 The retired Tahoe data step was folded into `02_dataset_corpus/` (ADR 0033).
 The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their tracked records are available in Git at
@@ -96,6 +97,7 @@ gitignored (multi-GB, interpreter-specific); rebuild recipes are in
 - [`audit/model_selection_decisions.md`](audit/model_selection_decisions.md) — the earlier CM study's selection decisions.
 - ADR [0042](../docs/adr/0042-tenv-model-benchmark-redesign.md) — the completed tenv comparison.
 - ADR [0046](../docs/adr/0046-perturbdiff-standalone-training.md) — the standalone Tahoe and tenv PerturbDiff studies.
+- ADR [0047](../docs/adr/0047-perturbdiff-tahoe-transfer-to-tenv.md) — Tahoe training strategies across three tenv split regimes.
 - [`_archive/PLAN.md`](_archive/PLAN.md) — the superseded plan, archived as-is; this page carries its live content.
 
 Stage 1 (`stage1/`) produces the MIRI disease inputs and DEG lists Stage 2's

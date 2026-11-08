@@ -1,0 +1,79 @@
+{
+  "schema": "step05-cold-tenv-replay-record-v1",
+  "regimes": [
+    "cold-cm-drug",
+    "cold-drug"
+  ],
+  "split_identity": {
+    "dataset": "tenv",
+    "fold": 0,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+    "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511"
+  },
+  "n_genes": 18164,
+  "roles": {
+    "train": {
+      "case_count": 2388,
+      "group_count": 780,
+      "parent_connectivity_count": 259
+    },
+    "validation": {
+      "case_count": 417,
+      "group_count": 138,
+      "parent_connectivity_count": 45
+    },
+    "test": {
+      "case_count": 1401,
+      "group_count": 462,
+      "parent_connectivity_count": 153
+    }
+  },
+  "cm_seeds": [
+    17,
+    42,
+    2026
+  ],
+  "seedless_references": [
+    "no_change",
+    "delta_mean"
+  ],
+  "step04_score_and_pr_replay": "exact",
+  "step04_evidence": {
+    "step04_plan_sha256": "ce2694c575bf5e15f237fb4e7a3605a23858940b4e4c704771b883b49be1708c",
+    "step04_outcomes_sha256": "a523a0848ee2bc0507a7f3e6809ecd942db86ef5f6c471a1d58fe2edd4855c3b",
+    "step04_checkpoint_index_sha256": "66d5b20707990e92f4b9f98d6ed1460a7df0e0b58594e312fb24df8c8ad13c1b",
+    "step04_evaluation_sha256": "eb91dd43fd5fa6c188bd036a28fd52b417c610b9900e19ba7d2c2e30aefb7db3"
+  },
+  "cli_sha256": "8af95ef0436e435da8f8e8d1119036ea5675266105c70d5fa51b61d2764cd887",
+  "local_artifact_sha256": {
+    "cold-tenv-ticket76/comparison.json": "9ac2ca28f420c8800b61ec7a6dd4193ece1df13419c38dab138cb957325176ae",
+    "cold-tenv-ticket76/split.json": "b8cc980317694125054af5d7b86536864672545ef853342fafab2d4559766430",
+    "cold-tenv-ticket76/per_run.csv": "c06bf14355cfad9422875e9928dad27a7ea651096114de9c7cf729f65126b0b2",
+    "cold-tenv-ticket76/tenv/pr_curves.json": "63be0786a5bd980ba78ff15f589153d486c7420ac7d3413e301c6ee4bff95d86",
+    "ticket76-queue/queue.json": "f7e7bc929eef1f8f1f9f077ef14451784e375505827d3fcee2d330fa72f7f5d4",
+    "ticket76-queue/scheduler/status.json": "269bf5523e7ba2ba1dfde59fd1283a6728df16fb6bd821f4a6fcc0087c13e848",
+    "ticket76-queue/scheduler/telemetry.jsonl": "193134933cda6d346a590a85af421604ddd8477540998394557a9769d5b5a89d",
+    "ticket76-queue/scheduler/cold-tenv-replay.attempt1.log": "0d9932be88e9ecbce68f60487e19e1c2432439c242a8c955fd0f45f9f366a902"
+  },
+  "scheduler": {
+    "kind": "cpu",
+    "attempt": 1,
+    "preflight": {
+      "available_ram_gib": 41.96521,
+      "free_vram_gib": 14.93457,
+      "gpu_utilization_percent": 8,
+      "available_disk_gib": 158.917,
+      "external_heavy_jobs": 0
+    },
+    "outcome": "completed",
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "peak_host_rss_gib": 0.43991851806640625,
+    "peak_workstation_gpu_used_gib": 1.0244140625,
+    "peak_gpu_utilization_percent": 67,
+    "elapsed_seconds": 14.5,
+    "maximum_rss_kib": 459572
+  }
+}
