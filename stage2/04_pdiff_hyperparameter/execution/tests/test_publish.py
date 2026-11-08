@@ -1,9 +1,12 @@
 """Publication CLI tests against the persisted compact formal evidence."""
+import hashlib
 import json
 from pathlib import Path
 import shutil
 import subprocess
 import sys
+
+import pytest
 
 STEP = Path(__file__).resolve().parents[2]
 RECORD = STEP / 'execution/formal_record'
@@ -81,3 +84,57 @@ def test_rejects_duplicate_checkpoint_identity_before_rendering(tmp_path):
     assert run.returncode != 0
     assert 'nine unique checkpoint identities' in run.stderr
     assert not (target / 'output').exists()
+
+
+def test_local_checkpoint_rejects_in_place_change_to_the_formal_hard_link(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(CLI.parent))
+    from publish import verify_local_release
+
+    release = tmp_path / 'release'
+    slot = release / 'fold-0/seed-17'
+    slot.mkdir(parents=True)
+    index = release / 'checkpoints.json'
+    index.write_text('{}')
+    entry = {'directory': 'fold-0/seed-17', 'identity': {'fold': 0, 'seed': 17}}
+    for filename, key in [('run.json', 'run_sha256'), ('replay.json', 'replay_sha256'),
+                          ('request.json', 'request_sha256'), ('recipe.json', 'raw_recipe_sha256'),
+                          ('best.pt', 'checkpoint_sha256')]:
+        content = filename.encode()
+        (slot / filename).write_bytes(content)
+        entry[key] = hashlib.sha256(content).hexdigest()
+    formal = tmp_path / 'formal'
+    fit = formal / 'slots/fold-0-seed-17/fit'
+    fit.mkdir(parents=True)
+    (fit / 'best.pt').hardlink_to(slot / 'best.pt')
+    verify_local_release(release, formal, index, [entry])
+
+    (fit / 'best.pt').write_bytes(b'altered')
+    assert (slot / 'best.pt').samefile(fit / 'best.pt')
+    with pytest.raises(ValueError, match='best.pt.*hash mismatch'):
+        verify_local_release(release, formal, index, [entry])
+
+
+def test_rejects_fractional_history_step_in_rehashed_formal_record(tmp_path):
+    dataset = shutil.copytree(RECORD / 'tahoe', tmp_path / 'record/tahoe')
+    slot = dataset / 'slots/fold-0/seed-17'
+
+    def update(path, change):
+        value = json.loads(path.read_text())
+        change(value)
+        data = json.dumps(value).encode()
+        path.write_bytes(data)
+        return hashlib.sha256(data).hexdigest()
+
+    def fractional_step(run):
+        run['history'][0]['step'] -= 0.5
+
+    run_sha = update(slot / 'run.json', fractional_step)
+    prediction_sha = update(slot / 'prediction.json', lambda prediction: prediction.update(run_sha256=run_sha))
+    outcomes_sha = update(dataset / 'outcomes.json', lambda inventory: next(
+        row for row in inventory['outcomes'] if (row['fold'], row['seed']) == (0, 17)
+    ).update(prediction_manifest_sha256=prediction_sha))
+    update(dataset / 'evaluation.json', lambda report: report.update(outcomes_sha256=outcomes_sha))
+
+    result = publish(dataset.parent, tmp_path / 'target')
+    assert result.returncode != 0
+    assert 'invalid tahoe/slots/fold-0/seed-17 validation history' in result.stderr

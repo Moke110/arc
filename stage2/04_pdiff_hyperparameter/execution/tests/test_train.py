@@ -1,6 +1,7 @@
 """Step 04 artifact CLI monitor, stopping, and input boundary checks."""
 import hashlib
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -70,6 +71,23 @@ class TrainingArtifactsTest(unittest.TestCase):
             self.assertEqual(request['identity']['split_sha256'], hashes['folds.csv'])
             verified = subprocess.run(cli + ['verify-request', str(request_path)], capture_output=True, text=True)
             self.assertEqual(verified.returncode, 0, verified.stderr)
+            vendor = runtime / 'pert_model/PerturbDiff'
+            (vendor / 'source').mkdir(parents=True)
+            (vendor / 'script').mkdir()
+            verifier = CLI.parents[4] / 'pert_model/PerturbDiff/script/verify.sh'
+            shutil.copyfile(verifier, vendor / 'script/verify.sh')
+            adapter = pin.parent.parent / 'script/perturbdiff_v2_adapter.py'
+            adapter.parent.mkdir()
+            adapter.write_text("raise RuntimeError('native adapter imported before verification')")
+            (runtime / '.git').touch()
+            (vendor / 'source/model.py').write_bytes(b'altered')
+            pinned = hashlib.sha256(b'original').hexdigest()
+            (vendor / 'manifest.sha256').write_text(f'{pinned}  model.py\n')
+            fit = subprocess.run(cli + ['fit', str(request_path), 'unused-recipe', 'unused-output'],
+                                 capture_output=True, text=True)
+            self.assertNotEqual(fit.returncode, 0)
+            self.assertIn('vendored PerturbDiff source checksum mismatch', fit.stderr)
+            self.assertNotIn('native adapter imported before verification', fit.stderr)
             request['identity']['input_sha256'] = '0' * 64
             bad_request = runtime / 'unbound.json'
             bad_request.write_text(json.dumps(request))
@@ -80,6 +98,17 @@ class TrainingArtifactsTest(unittest.TestCase):
             changed = subprocess.run(cli + ['verify-request', str(request_path)], capture_output=True, text=True)
             self.assertNotEqual(changed.returncode, 0)
             self.assertIn('genes', changed.stderr)
+            consumer = request['input']
+            new_genes = hashlib.sha256((release / 'genes.csv').read_bytes()).hexdigest()
+            consumer['gene_sha256'] = request['identity']['gene_sha256'] = new_genes
+            consumer['file_sha256']['genes'] = request['file_sha256']['genes'] = new_genes
+            request['identity']['input_sha256'] = hashlib.sha256(
+                json.dumps(consumer, sort_keys=True, separators=(',', ':')).encode()
+            ).hexdigest()
+            bad_request.write_text(json.dumps(request))
+            forged = subprocess.run(cli + ['verify-request', str(bad_request)], capture_output=True, text=True)
+            self.assertNotEqual(forged.returncode, 0)
+            self.assertIn('tenv request differs from the frozen Step 03 identity', forged.stderr)
 
 
 if __name__ == '__main__':

@@ -3,7 +3,6 @@
 import argparse
 from contextlib import contextmanager
 import fcntl
-import math
 import os
 from pathlib import Path
 import shutil
@@ -22,7 +21,7 @@ sys.path.insert(0, str(REPO / STEP03 / 'execution/script'))
 from artifacts import SEEDS, read_json, sha256, write_json
 from pilot import queue_job, trainer_identity, training_command, verify_selection
 from training_inputs import json_hash, verify_request
-from training_policy import MONITOR
+from training_policy import MONITOR, verify_best_checkpoint
 
 SCRIPT = Path(__file__).resolve()
 DATASETS = ('tahoe', 'tenv')
@@ -86,7 +85,7 @@ def freeze(runtime, pilot_root, requests, output):
             raise ValueError('expected three frozen pilot folds')
         for fold, request_path in enumerate(requests):
             request = read_json(request_path)
-            verify_request(request)
+            verify_request(request, runtime)
             identity = request['identity']
             choice = selection_folds[fold]
             if identity != choice['identity'] or (identity['dataset'], identity['fold']) != (dataset, fold):
@@ -154,7 +153,7 @@ def slot_inputs(path, plan, fold, seed):
     pinned(root, 'selection.json', plan['selection_sha256'])
     entry = plan['folds'][fold]
     request = read_json(pinned(root, entry['request'], entry['request_sha256']))
-    verify_request(request)
+    verify_request(request, runtime)
     identity = {**request['identity'], 'seed': seed, 'stage': 'formal'}
     if (identity['dataset'], identity['fold']) != (plan['dataset'], fold):
         raise ValueError('formal slot request identity mismatch')
@@ -182,15 +181,7 @@ def completed_fit(run, identity, config):
             or metadata['identity'] != identity or metadata['recipe'] != config
             or metadata['recipe_sha256'] != json_hash(config)):
         raise ValueError('completed fit differs from formal identity or recipe')
-    events = metadata['history']
-    steps = [event['step'] for event in events]
-    if (not steps or any(type(step) is not int or step < 1 for step in steps)
-            or sorted(set(steps)) != steps
-            or not all(math.isfinite(event['validation_loss']) for event in events)):
-        raise ValueError('invalid fit validation history')
-    best = min(events, key=lambda event: event['validation_loss'])
-    if (metadata['best_step'], metadata['best_validation_loss']) != (best['step'], best['validation_loss']):
-        raise ValueError('fit checkpoint differs from strict validation minimum')
+    best = verify_best_checkpoint(metadata, 'fit')
     if (metadata['reload']['validation_loss'] != best['validation_loss']
             or metadata['reload']['prediction_max_abs_error'] != 0):
         raise ValueError('completed fit lacks an exact EMA replay')

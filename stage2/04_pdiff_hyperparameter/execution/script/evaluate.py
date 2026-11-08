@@ -21,7 +21,7 @@ import numpy as np
 from artifacts import SEEDS, read_json, rows, sha256, write_csv, write_json
 from metrics import METRICS, score_group, truth_labels
 from training_inputs import INPUT_FIELDS, STEP03, json_hash, request_for, tenv_paths
-from training_policy import MONITOR
+from training_policy import MONITOR, verify_best_checkpoint
 
 DATASETS = ('tahoe', 'tenv')
 REFERENCES = ('no_change', 'delta_mean')
@@ -132,19 +132,10 @@ def prediction(root, outcome, fold, stage, producer_plan_sha=None):
             or run['identity'] != identity or run['recipe_sha256'] != recipe_hash
             or json_hash(run['recipe']) != recipe_hash
             or any(run['recipe'][key] != identity[key] for key in ('seed', 'fold', 'stage'))
-            or type(run['best_step']) is not int
             or any(run[key] != manifest[key] for key in checkpoint_keys)
             or not valid_hash(run['model_state_sha256'])):
         raise ValueError('prediction checkpoint identity or frozen recipe mismatch')
-    events = run['history']
-    steps = [event['step'] for event in events]
-    if (not steps or any(type(step) is not int or step < 1 for step in steps)
-            or sorted(set(steps)) != steps
-            or not all(math.isfinite(event['validation_loss']) for event in events)):
-        raise ValueError('invalid checkpoint validation history')
-    best = min(events, key=lambda event: event['validation_loss'])
-    if (run['best_step'], run['best_validation_loss']) != (best['step'], best['validation_loss']):
-        raise ValueError('prediction checkpoint differs from the strict validation minimum')
+    best = verify_best_checkpoint(run, 'prediction')
     verify_file(relative_path(path.parent, 'best.pt'), run['checkpoint_sha256'])
     if producer_plan_sha is not None:
         replay = read_json(verify_file(relative_path(path.parent, 'replay.json'), manifest['replay_sha256']))
@@ -284,12 +275,17 @@ def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None):
     stage = plan['stage']
     if stage not in ('fixture', 'formal'):
         raise ValueError('expected fixture or formal inventory')
+    if stage == 'formal' and expected_plan_sha is None:
+        raise ValueError('formal evaluation requires a frozen plan hash')
     scope = DATASETS
     if 'dataset' in plan:
-        if stage != 'formal' or plan['dataset'] not in DATASETS or expected_plan_sha is None:
-            raise ValueError('dataset-scoped formal evaluation requires a valid dataset and frozen plan hash')
+        if stage != 'formal' or plan['dataset'] not in DATASETS:
+            raise ValueError('dataset-scoped evaluation requires a valid formal dataset')
         scope = (plan['dataset'],)
-    producer_plan_sha = plan_sha if 'launch_files' in plan else None
+    producer_plan_sha = plan_sha if stage == 'formal' or 'launch_files' in plan else None
+    inventory = load_schema(outcomes_path, 'step04-evaluation-outcomes-v1')
+    if producer_plan_sha is not None and inventory.get('plan_sha256') != producer_plan_sha:
+        raise ValueError('outcomes do not match the frozen producer plan')
     folds = {}
     for entry in plan['folds']:
         fold = fold_inputs(plan_path.parent, entry, stage)
@@ -308,9 +304,6 @@ def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None):
     expected = {(dataset, fold, seed) for (dataset, fold), inputs in folds.items()
                 for seed in inputs['recipes']}
     outcomes, predictions = {}, {}
-    inventory = load_schema(outcomes_path, 'step04-evaluation-outcomes-v1')
-    if producer_plan_sha is not None and inventory.get('plan_sha256') != producer_plan_sha:
-        raise ValueError('outcomes do not match the frozen producer plan')
     for entry in inventory['outcomes']:
         key = (entry['dataset'], entry['fold'], entry['seed'])
         if type(entry['fold']) is not int or type(entry['seed']) is not int or key not in expected or key in outcomes:
@@ -339,7 +332,7 @@ def main():
     parser.add_argument('plan', type=Path)
     parser.add_argument('outcomes', type=Path)
     parser.add_argument('output', type=Path)
-    parser.add_argument('--plan-sha256', help='required hash for a dataset-scoped formal plan')
+    parser.add_argument('--plan-sha256', help='required frozen hash for any formal plan')
     args = parser.parse_args()
     try:
         evaluate(args.plan.resolve(), args.outcomes.resolve(), args.output.absolute(), args.plan_sha256)

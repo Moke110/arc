@@ -28,7 +28,7 @@ EXPRESSION = 'project native log1p_cp10k onto the CM axis; subtract same-plate, 
 CASE_METADATA = [*CASE_COLUMNS, 'plate', 'well', 'cell_line_id']
 
 
-def source_files(runtime):
+def source_files(runtime, *, verify_corpus=True):
     reference = runtime / STEP03 / 'output/input/manifest.json'
     reference_pin = read_json(runtime / STEP03 / 'execution/input_record/verification.json')['manifest_sha256']
     if sha256(reference) != reference_pin:
@@ -41,7 +41,7 @@ def source_files(runtime):
     drug_pin = dict(line.split(maxsplit=1)[::-1] for line in vendor_manifest.read_text().splitlines())[
         'metadata/drug_metadata.parquet']
     pins = {str(CORPUS): corpus_pin, str(GENES): genes_pin, str(DRUGS): drug_pin}
-    for relative in (CORPUS, DRUGS):
+    for relative in ((CORPUS, DRUGS) if verify_corpus else (DRUGS,)):
         if sha256(runtime / relative) != pins[str(relative)]:
             raise ValueError(f'Tahoe source hash mismatch: {relative}')
     return {'corpus_version': 'v2', 'sha256': pins, 'step03_manifest_sha256': reference_pin}
@@ -168,6 +168,13 @@ def projected_rows(layer, native_shape, source_rows, present, native_cols):
         yield part, values
 
 
+def fold_cases(cases, split, fold):
+    membership = split[split.fold.eq(fold)].set_index('drug_key').role
+    roles = cases.drug_key.map(membership)
+    for role in ROLES:
+        yield role, cases[roles.eq(role)]
+
+
 def save_folds(root, cases, drugs, delta):
     folds = split_drugs(drugs)
     folds.to_csv(root / 'folds.csv', index=False)
@@ -176,10 +183,8 @@ def save_folds(root, cases, drugs, delta):
         base = root / f'fold_{fold}'
         (base / 'evaluator').mkdir(parents=True)
         paths = predictor_paths(fold)
-        membership = folds[folds.fold.eq(fold)].set_index('drug_key').role
         fold_counts = {'fold': fold}
-        for role in ROLES:
-            selected = cases[cases.drug_key.map(membership).eq(role)]
+        for role, selected in fold_cases(cases, folds, fold):
             if selected.empty:
                 raise ValueError(f'empty Tahoe fold {fold} {role}')
             selected[CASE_COLUMNS].to_csv(root / paths[f'{role}_cases'], index=False)
@@ -290,7 +295,7 @@ def release_manifest(root):
     return manifest
 
 
-def prepare_tahoe(input_root, output, fold):
+def prepare_tahoe(runtime, input_root, output, fold):
     root = input_root.resolve()
     manifest = release_manifest(root)
     paths = predictor_paths(fold)
@@ -302,7 +307,7 @@ def prepare_tahoe(input_root, output, fold):
                 'predictor_files': paths, 'file_sha256': hashes}
     request = request_for(root, consumer)
     from training_inputs import verify_request
-    verify_request(request)
+    verify_request(request, runtime)
     write_json(output.with_suffix('.input.json'), consumer)
     write_json(output, request)
 
@@ -310,6 +315,35 @@ def prepare_tahoe(input_root, output, fold):
 def verify_table(path, expected, description):
     if path.read_text() != expected.to_csv(index=False):
         raise ValueError(f'Tahoe {description} differs from the frozen rule')
+
+
+def verify_predictor_metadata(runtime, root, consumer):
+    sources = source_files(runtime, verify_corpus=False)
+    if consumer['gene_sha256'] != sources['sha256'][str(GENES)]:
+        raise ValueError('Tahoe gene axis differs from the frozen ordered CM axis')
+    paths, hashes = consumer['predictor_files'], consumer['file_sha256']
+    verify_files(root, {'manifest': 'manifest.json', 'split': 'folds.csv'},
+                 {'manifest': consumer['source_input_sha256'], 'split': consumer['split_sha256']})
+    manifest = release_manifest(root)
+    if (manifest['sources'] != sources
+            or manifest['source_sha256'] != sources['sha256'][str(CORPUS)]
+            or consumer['corpus_sha256'] != manifest['source_sha256']
+            or consumer['preprocessing'] != EXPRESSION or manifest['expression'] != EXPRESSION
+            or consumer['split_sha256'] != manifest['files']['folds.csv']
+            or any(hashes[key] != manifest['files'][name] for key, name in paths.items())):
+        raise ValueError('Tahoe request differs from frozen source and release identities')
+    # Only the pseudobulk observation metadata is needed to reconstruct the
+    # pairing and fold. Full corpus hashing belongs to build and verify-tahoe.
+    with h5py.File(runtime / CORPUS, 'r') as source:
+        obs = read_elem(source['obs'])
+    drug_metadata = pd.read_parquet(runtime / DRUGS, columns=['drug', 'canonical_smiles'])
+    cases, controls, _, drugs, _, _, _ = source_metadata(obs, drug_metadata)
+    split = split_drugs(drugs)
+    verify_table(root / 'controls.csv', controls, 'matched control metadata')
+    verify_table(root / paths['drugs'], drugs, 'drug identities')
+    verify_table(root / 'folds.csv', split, 'parent-connectivity block membership')
+    for role, selected in fold_cases(cases, split, consumer['fold']):
+        verify_table(root / paths[f'{role}_cases'], selected[CASE_COLUMNS], 'case membership or control pairing')
 
 
 def verify_matrix(path, shape, dtype, zero_index):
@@ -356,10 +390,8 @@ def verify_tahoe(runtime, release):
     expected_counts = []
     for fold in range(3):
         paths = predictor_paths(fold)
-        members = split[split.fold.eq(fold)].set_index('drug_key').role
         fold_counts = {'fold': fold}
-        for role in ROLES:
-            selected = cases[cases.drug_key.map(members).eq(role)]
+        for role, selected in fold_cases(cases, split, fold):
             verify_table(root / paths[f'{role}_cases'], selected[CASE_COLUMNS], 'case membership or control pairing')
             fold_counts[role] = {'drugs': int(selected.drug_key.nunique()),
                                  'wells': len(selected), 'groups': int(selected.group_id.nunique())}

@@ -31,8 +31,10 @@ identifies the preserved attempts and [the scoring audit](execution/formal_recor
 records exact replay of the completed evaluation.
 
 ADR 0046 specifies the two figure destinations under `output/` for this
-step. To regenerate them from the tracked compact records, use the `arc`
-interpreter with Matplotlib 3.10.9 and fresh destination paths.
+step. The compact score tables under `execution/formal_record/` are
+machine-readable replay inputs. The two figures under `output/` are the
+published visual results. To regenerate them, use the `arc` interpreter with
+Matplotlib 3.10.9 and fresh destination paths.
 
 ```bash
 step=stage2/04_pdiff_hyperparameter
@@ -45,11 +47,9 @@ cmp "$step/output/metrics.png" "$replay/output/metrics.png"
 
 Add `--local-checkpoints "$step/output/checkpoints/tenv" "$step/execution/output/tenv-formal-ticket72"`
 to include the local checkpoint audit in the publication record. It checks
-the lightweight request, recipe, run and replay metadata by hash, and
-checks the checkpoint hard links against the existing formal fits. The
-original checkpoint hash and exact model reload are bound by the formal
-prediction and release records. The publication command with the local
-audit took 0.88 s and peaked at 158,188 KiB RSS.
+the request, recipe, run and replay metadata by hash. It also streams the
+checkpoint hashes and checks the hard links against the formal fits.
+The formal prediction and release records bind the exact model reload.
 
 ## Queue operation
 
@@ -196,8 +196,10 @@ release="$smoke/release"
 Reserve 25 GiB for the build's bounded CSR projection and temporary memmap.
 The verifier checks the pinned source hashes, ordered genes, source-derived
 control pairing, split memberships, file inventory and all-zero slot.
-Request preparation uses the predictor file allowlist. Per-fold test group
-means and their directional labels live in `fold_N/evaluator/`.
+Request preparation and worker verification check the frozen CM gene hash,
+derive the fold memberships and matched control indices from source metadata,
+and verify the predictor file allowlist. Per-fold test group means and their
+directional labels live in `fold_N/evaluator/`.
 
 The smoke covers fold 0 and seed 17. Its full validation order is first
 appearance in the frozen validation case CSV. Eight groups per batch and

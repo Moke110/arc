@@ -343,7 +343,7 @@ def finalize(row, returncode):
     row['status'] = outcome
 
 
-def run(record, jobs, fixture, profiles, profile_evidence):
+def run(record, jobs, profiles, profile_evidence):
     with workstation_lock():
         status = load_status(record, jobs)
         rows = status['jobs']
@@ -366,8 +366,7 @@ def run(record, jobs, fixture, profiles, profile_evidence):
         try:
             while True:
                 tick = time.monotonic()
-                sample = snapshot(record, fixture,
-                                  [entry['process'].pid for entry in active.values()])
+                sample = snapshot(record, pids=[entry['process'].pid for entry in active.values()])
                 sample['active'] = list(active)
                 with (record / 'telemetry.jsonl').open('a') as stream:
                     stream.write(json.dumps(sample) + '\n')
@@ -481,8 +480,9 @@ def main():
     for name in ('preflight', 'run', 'status', 'pause', 'resume', 'retry'):
         command = sub.add_parser(name)
         command.add_argument('queue', type=Path)
-        if name in ('preflight', 'run'):
+        if name == 'preflight':
             command.add_argument('--fixture', type=Path, help=argparse.SUPPRESS)
+        if name in ('preflight', 'run'):
             command.add_argument('--admission-profiles', type=Path)
         if name == 'retry':
             command.add_argument('job_id')
@@ -501,7 +501,7 @@ def main():
                                   admission_profiles=evidence), indent=2))
             return 0 if any(item['admit'] for item in decisions.values()) else 2
         if args.action == 'run':
-            return run(record, jobs, args.fixture, profiles, evidence)
+            return run(record, jobs, profiles, evidence)
         status = load_status(record, jobs)
         if args.action == 'pause':
             record.mkdir(parents=True, exist_ok=True)

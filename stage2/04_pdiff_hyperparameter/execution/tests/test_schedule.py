@@ -10,6 +10,7 @@ import time
 import unittest
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'script' / 'schedule.py'
+SIMULATOR = Path(__file__).with_name('simulate_schedule.py')
 
 
 class SchedulerCLI(unittest.TestCase):
@@ -24,9 +25,12 @@ class SchedulerCLI(unittest.TestCase):
                         profile=dict(host_peak_gib=3, gpu_peak_gib=2), disk_gib=2)
         self.queue.write_text(json.dumps(dict(record_dir='record', jobs=[self.job])))
 
-    def invoke(self, *args, env=None):
+    def invoke(self, *args):
         return subprocess.run([sys.executable, str(SCRIPT), args[0], str(self.queue), *args[1:]],
-                              capture_output=True, text=True, timeout=10, env=env)
+                              capture_output=True, text=True, timeout=10)
+
+    def simulator_command(self, action, *args):
+        return [sys.executable, str(SIMULATOR), str(self.fixture), action, str(self.queue), *args]
 
     def sample(self, **changes):
         sample = dict(observable=True, age_seconds=0, available_gib=32, gpu_free_gib=12,
@@ -57,8 +61,7 @@ class SchedulerCLI(unittest.TestCase):
 
     def start(self, *args):
         self.process = subprocess.Popen(
-            [sys.executable, str(SCRIPT), 'run', str(self.queue),
-             '--fixture', str(self.fixture), *args], env=self.fake_scopes(),
+            self.simulator_command('run', *args), env=self.fake_scopes(),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self.addCleanup(self.finish, self.process)
         return self.process
@@ -67,6 +70,12 @@ class SchedulerCLI(unittest.TestCase):
         if process.poll() is None:
             process.terminate()
         process.communicate(timeout=20)
+
+    def test_live_run_rejects_fixture_telemetry(self):
+        self.sample()
+        result = self.invoke('run', '--fixture', str(self.fixture))
+        self.assertIn('unrecognized arguments: --fixture', result.stderr)
+        self.assertFalse(self.record.exists())
 
     def test_pause_drains_and_resume_runs_only_the_remaining_queue(self):
         self.sample()
@@ -104,7 +113,8 @@ class SchedulerCLI(unittest.TestCase):
         self.assertEqual(attempt['reason'], 'less than 12 GiB available RAM')
         self.assertIsNone(unrelated.poll())
         self.assertEqual(worker.wait(timeout=10), 0)
-        retry = self.invoke('retry', 'profile', env=self.fake_scopes())
+        retry = subprocess.run(self.simulator_command('retry', 'profile'),
+                               env=self.fake_scopes(), capture_output=True, text=True, timeout=10)
         self.assertEqual(retry.returncode, 0, retry.stderr)
         self.assertEqual(json.loads(retry.stdout)['queue'], ['profile'])
 

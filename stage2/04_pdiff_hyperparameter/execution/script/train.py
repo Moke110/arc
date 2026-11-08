@@ -75,12 +75,12 @@ def main():
         elif args.command == 'verify-tahoe':
             verify_tahoe(runtime, args.input_root)
         else:
-            prepare_tahoe(args.input_root, args.request, args.fold)
+            prepare_tahoe(runtime, args.input_root, args.request, args.fold)
     else:
         from artifacts import read_json
         from training_inputs import verify_request
         request = read_json(args.request)
-        verify_request(request)
+        verify_request(request, runtime)
         if args.command == 'fit':
             from native_training import fit
             fit(runtime, request, args.recipe, args.output)

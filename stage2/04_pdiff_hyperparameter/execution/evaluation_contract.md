@@ -6,7 +6,7 @@ Use the scheduling rules in the step README for full-size work.
 
 ```bash
 python stage2/04_pdiff_hyperparameter/execution/script/evaluate.py \
-  <plan.json> <outcomes.json> <fresh-output-dir>
+  <plan.json> <outcomes.json> <fresh-output-dir> --plan-sha256 "$plan_sha"
 ```
 
 ## Freeze the plan before test inference
@@ -24,10 +24,11 @@ and directional labels.
 
 For an independent formal dataset evaluation, add `dataset: "tenv"` or
 `dataset: "tahoe"`, keep exactly that dataset's three folds and all three
-seeds, and supply the frozen plan digest with `--plan-sha256`. The default
-formal plan covers both datasets. Plans written by `formal.py freeze` also
-bind the selected recipe files, inference batching and runtime identities.
-The worker requires that same plan hash before accessing predictor inputs.
+seeds. The default formal plan covers both datasets. Every formal evaluation
+requires the externally recorded plan digest in `--plan-sha256`. Plans written
+by `formal.py freeze` also bind the selected recipe files, inference batching
+and runtime identities. The worker requires that same plan hash before
+accessing predictor inputs.
 
 ## Record the outcome of each planned slot
 
@@ -52,10 +53,11 @@ A completed slot's directory contains the following files.
   `best_validation_loss`, and `model_state_sha256` from `run.json`.
   Include `run_sha256`, `cases_sha256`, and `prediction_sha256` for the
   respective files.
-- For plans from the formal producer, `prediction.json` also includes
-  `plan_sha256` and `replay_sha256`. The replay file `replay.json` binds
-  the exact validation loss and probe result to the same plan and EMA state.
-  The outcomes inventory carries that plan hash too.
+- For every formal plan, `prediction.json` also includes `plan_sha256`
+  and `replay_sha256`. The replay file `replay.json` binds the exact
+  validation loss and probe result to the same plan and EMA state. The
+  outcomes inventory carries that plan hash too. The evaluator verifies
+  these bindings before opening any held-out truth or labels.
 
 The evaluator verifies the checkpoint bytes against the training record,
 matches the selected recipe and exact case/group order, and checks the

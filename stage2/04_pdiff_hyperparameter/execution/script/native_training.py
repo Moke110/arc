@@ -1,13 +1,29 @@
 """Random-init training, EMA checkpoint selection and native prediction replay."""
+from importlib.util import find_spec
 import math
 from pathlib import Path
 import random
 import resource
 import signal
+import subprocess
 import sys
 import tempfile
 import time
 from types import SimpleNamespace
+
+
+def verify_native_source():
+    # The Step 03 adapter resolves its vendor tree relative to its own file.
+    adapter = Path(find_spec('perturbdiff_v2_adapter').origin).resolve()
+    checkout = next(path for path in adapter.parents if (path / '.git').exists())
+    verifier = checkout / 'pert_model/PerturbDiff/script/verify.sh'
+    try:
+        subprocess.run(['bash', str(verifier)], check=True, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as error:
+        raise ValueError('vendored PerturbDiff source checksum mismatch') from error
+
+
+verify_native_source()
 
 import numpy as np
 import torch

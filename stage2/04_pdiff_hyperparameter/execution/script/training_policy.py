@@ -13,6 +13,20 @@ def native_epoch_mean(batch_scalars, stack):
     return float(stack(batch_scalars).mean())
 
 
+def verify_best_checkpoint(run, subject):
+    history = run['history']
+    steps = [event['step'] for event in history]
+    if (not steps or any(type(step) is not int or step < 1 for step in steps)
+            or steps != sorted(set(steps))
+            or not all(math.isfinite(event['validation_loss']) for event in history)):
+        raise ValueError(f'invalid {subject} validation history')
+    best = min(history, key=lambda event: event['validation_loss'])
+    if (type(run['best_step']) is not int
+            or (run['best_step'], run['best_validation_loss']) != (best['step'], best['validation_loss'])):
+        raise ValueError(f'{subject} checkpoint differs from the strict validation minimum')
+    return best
+
+
 @dataclass
 class Selection:
     minimum_steps: int

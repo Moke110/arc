@@ -148,6 +148,54 @@ class TahoeArtifactsTest(unittest.TestCase):
                     manifest['files'][name] = old_hash
                     manifest_path.write_text(json.dumps(manifest))
 
+    def test_predictor_rejects_rehashed_gene_order_and_in_range_control(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.fixture(root)
+            release = root / 'release'
+            self.command(root, 'build-tahoe', release)
+            request_path = root / 'request.json'
+            self.command(root, 'prepare-tahoe', release, request_path, '--fold', 0)
+            request = json.loads(request_path.read_text())
+            manifest_path = release / 'manifest.json'
+            manifest = json.loads(manifest_path.read_text())
+            cases_key = next(
+                f'{role}_cases' for role in ('train', 'validation', 'test')
+                if 'p1:0:A' in pd.read_csv(request['predictor_files'][f'{role}_cases']).case_id.values
+            )
+            for key, error in [('genes', 'frozen ordered CM axis'),
+                               (cases_key, 'case membership or control pairing')]:
+                with self.subTest(key=key):
+                    consumer = request['input']
+                    relative = consumer['predictor_files'][key]
+                    path = release / relative
+                    before = path.read_bytes()
+                    frame = pd.read_csv(path)
+                    if key == 'genes':
+                        frame = frame.iloc[::-1]
+                    else:
+                        frame.loc[frame.case_id.eq('p1:0:A'), 'control_index'] = 1
+                    frame.to_csv(path, index=False)
+                    manifest['files'][relative] = sha(path)
+                    manifest_path.write_text(json.dumps(manifest))
+                    consumer['source_input_sha256'] = request['identity']['source_input_sha256'] = sha(manifest_path)
+                    consumer['file_sha256'][key] = request['file_sha256'][key] = sha(path)
+                    if key == 'genes':
+                        consumer['gene_sha256'] = request['identity']['gene_sha256'] = sha(path)
+                    request['identity']['input_sha256'] = hashlib.sha256(
+                        json.dumps(consumer, sort_keys=True, separators=(',', ':')).encode()
+                    ).hexdigest()
+                    forged = root / 'forged.json'
+                    forged.write_text(json.dumps(request))
+                    self.command(root, 'prepare-tahoe', release, root / 'bad.json', '--fold', 0,
+                                 expected_error=error)
+                    self.command(root, 'verify-request', forged, expected_error=error)
+                    self.command(root, 'fit', forged, root / 'unused-recipe', root / 'unused-output',
+                                 expected_error=error)
+                    path.write_bytes(before)
+                    manifest['files'][relative] = consumer['file_sha256'][key] = request['file_sha256'][key] = sha(path)
+                    consumer['gene_sha256'] = request['identity']['gene_sha256'] = manifest['files']['genes.csv']
+
     def test_predictor_rejects_parent_leak_from_distinct_drugs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -171,7 +219,7 @@ class TahoeArtifactsTest(unittest.TestCase):
             manifest['files'][relative] = sha(path)
             manifest_path.write_text(json.dumps(manifest))
             self.command(root, 'prepare-tahoe', release, root / 'request.json', '--fold', 0,
-                         expected_error='parent-connectivity block crosses predictor roles')
+                         expected_error='case membership or control pairing')
 
 
 if __name__ == '__main__':

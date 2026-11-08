@@ -7,7 +7,7 @@ import sys
 import tempfile
 
 from train import REPO, STEP03
-from training_policy import MONITOR
+from training_policy import MONITOR, verify_best_checkpoint
 
 sys.path.insert(0, str(REPO / STEP03 / 'execution/script'))
 from artifacts import SEEDS, read_json, rows, sha256, write_json
@@ -91,17 +91,12 @@ def verify_dataset(root, dataset, hashes):
                 and replay['prediction_max_abs_error'] == 0
                 and replay['prediction_shape'][1] == 18164,
                 f'{dataset}/{slot} exact EMA replay mismatch')
+        verify_best_checkpoint(run, f'{dataset}/{slot}')
         history = run['history']
-        steps = [event['step'] for event in history]
-        require(steps and steps == sorted(set(steps)) and 0 < steps[0]
-                and steps[-1] <= run['optimizer_steps']
-                and all(math.isfinite(event[key]) and event[key] > 0 for event in history
-                        for key in ('training_loss', 'validation_loss')),
+        require(history[-1]['step'] <= run['optimizer_steps']
+                and all(math.isfinite(event['training_loss']) and event['training_loss'] > 0
+                        and event['validation_loss'] > 0 for event in history),
                 f'{dataset}/{slot} invalid history')
-        best = min(history, key=lambda event: event['validation_loss'])
-        require((best['step'], best['validation_loss'])
-                == (run['best_step'], run['best_validation_loss']),
-                f'{dataset}/{slot} checkpoint must be the strict validation minimum')
         runs.append(run)
         manifests[fold, seed] = prediction
 
@@ -194,9 +189,10 @@ def verify_local_release(root, formal_root, index_path, checkpoints):
         require(checkpoint.is_file() and not checkpoint.is_symlink()
                 and checkpoint.samefile(fitted) and checkpoint.stat().st_size > 0,
                 f'{checkpoint} must hard-link to the verified formal fit')
+        require(sha256(checkpoint) == row['checkpoint_sha256'], f'local {checkpoint} hash mismatch')
         evidence[row['directory']] = {
             'bytes': checkpoint.stat().st_size, 'same_file_as_formal_fit': True,
-            'metadata_hashes_verified': True,
+            'metadata_hashes_verified': True, 'checkpoint_hash_verified': True,
         }
     return evidence
 
@@ -340,7 +336,7 @@ def main():
     parser.add_argument('output', type=Path)
     parser.add_argument('evidence', type=Path)
     parser.add_argument('--local-checkpoints', type=Path, nargs=2, metavar=('RELEASE', 'FORMAL_ROOT'),
-                        help='verify local release metadata and hard links to the fitted files')
+                        help='verify local metadata, checkpoint hashes and hard links')
     args = parser.parse_args()
     try:
         publish(args.formal_record, args.output, args.evidence, args.local_checkpoints)

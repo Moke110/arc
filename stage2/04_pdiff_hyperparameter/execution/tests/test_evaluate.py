@@ -73,10 +73,10 @@ def release(root, dataset):
     return request, identity
 
 
-def prediction(directory, identity, seed):
+def prediction(directory, identity, seed, stage='fixture', plan_sha=None):
     directory.mkdir()
-    identity = {**identity, 'seed': seed, 'stage': 'fixture'}
-    recipe = {'stage': 'fixture', 'seed': seed, 'fold': identity['fold']}
+    identity = {**identity, 'seed': seed, 'stage': stage}
+    recipe = {'stage': stage, 'seed': seed, 'fold': identity['fold']}
     recipe_sha = json_hash(recipe)
     # Freeze opaque bytes representing the trainer's persisted checkpoint.
     checkpoint = directory / 'best.pt'
@@ -84,15 +84,21 @@ def prediction(directory, identity, seed):
     contract = {'identity': identity, 'recipe_sha256': recipe_sha, 'best_step': 2,
                 'checkpoint_sha256': digest(checkpoint), 'best_validation_loss': .5,
                 'model_state_sha256': hashlib.sha256(b'fixture weights').hexdigest()}
+    replay = {'validation_loss': .5, 'prediction_max_abs_error': 0}
     run = write(directory / 'run.json', {**contract, 'recipe': recipe, 'status': 'completed',
+                                         **({'reload': replay} if plan_sha else {}),
                                          'monitor': 'validation_validation_loss_epoch',
                                          'history': [{'step': 1, 'validation_loss': 1.0},
                                                      {'step': 2, 'validation_loss': .5}]})
     np.save(directory / 'prediction.npy', np.array([[4, 2, -2, -4], [1, 1, 1, 1], [0, 0, 0, 0]],
                                                     dtype='float32'))
     cases = write(directory / 'cases.json', [['x1', 'x'], ['y1', 'y'], ['x2', 'x']])
+    binding = {}
+    if plan_sha:
+        path = write(directory / 'replay.json', {**replay, **contract, 'plan_sha256': plan_sha})
+        binding = {'plan_sha256': plan_sha, 'replay_sha256': digest(path)}
     manifest = write(directory / 'prediction.json', {
-        'schema': 'step04-heldout-prediction-v1', **contract,
+        **binding, 'schema': 'step04-heldout-prediction-v1', **contract,
         'run_sha256': digest(run), 'cases_sha256': digest(cases),
         'prediction_sha256': digest(directory / 'prediction.npy'),
     })
@@ -204,7 +210,8 @@ class EvaluatorReplay(unittest.TestCase):
                 'file_sha256': consumer['file_sha256'],
             })
             folds.append({'request': request.name, 'request_sha256': digest(request),
-                          'recipe_sha256_by_seed': {str(seed): 'a' * 64 for seed in (17, 42, 2026)}})
+                          'recipe_sha256_by_seed': {str(seed): json_hash({'stage': 'formal', 'seed': seed, 'fold': fold})
+                                                    for seed in (17, 42, 2026)}})
         plan = write(self.root / 'scoped-plan.json', {'schema': 'step04-evaluation-plan-v1',
                                                       'stage': 'formal', 'dataset': dataset, 'folds': folds})
         outcomes = write(self.root / 'empty.json', {'schema': 'step04-evaluation-outcomes-v1',
@@ -214,15 +221,53 @@ class EvaluatorReplay(unittest.TestCase):
         result = subprocess.run([*command, '0' * 64], capture_output=True, text=True, timeout=30)
         self.assertIn('frozen plan hash mismatch', result.stderr)
         self.assertFalse(output.exists())
-        result = subprocess.run([*command, digest(plan)], capture_output=True, text=True, timeout=30)
+        plan_sha = digest(plan)
+        result = subprocess.run([*command, plan_sha], capture_output=True, text=True, timeout=30)
+        self.assertIn('outcomes do not match the frozen producer plan', result.stderr)
+        self.assertFalse(output.exists())
+        first_fold = json.loads((self.root / folds[0]['request']).read_text())
+        _, prediction_path = prediction(self.root / 'scoped-prediction', first_fold['identity'], 17, 'formal', plan_sha)
+        array_path = prediction_path.parent / 'prediction.npy'
+        values = np.load(array_path)
+        np.save(array_path, np.pad(values, ((0, 0), (0, 18164 - values.shape[1]))))
+        manifest = json.loads(prediction_path.read_text())
+        manifest['prediction_sha256'] = digest(array_path)
+        replay_path = prediction_path.parent / 'replay.json'
+        replay = json.loads(replay_path.read_text())
+        inventory = {'schema': 'step04-evaluation-outcomes-v1', 'plan_sha256': plan_sha, 'outcomes': [
+            {'dataset': dataset, 'fold': 0, 'seed': 17, 'status': 'completed',
+             'prediction': str(prediction_path.relative_to(self.root))},
+        ]}
+        truth = source / 'fold_0/evaluator/truth.npy'
+        hidden_truth = truth.rename(truth.with_suffix('.hidden'))
+        for replay_plan in ('0' * 64, plan_sha):
+            write(replay_path, {**replay, 'plan_sha256': replay_plan})
+            manifest['replay_sha256'] = digest(replay_path)
+            write(prediction_path, manifest)
+            inventory['outcomes'][0]['prediction_manifest_sha256'] = digest(prediction_path)
+            write(outcomes, inventory)
+            result = subprocess.run([*command, plan_sha], capture_output=True, text=True, timeout=30)
+            if replay_plan != plan_sha:
+                self.assertIn('prediction replay does not match the frozen plan', result.stderr)
+                self.assertFalse(output.exists())
+                hidden_truth.rename(truth)
         self.assertEqual(result.returncode, 0, result.stderr)
         runs = csv_rows(output / 'per_run.csv')
         self.assertEqual({row['dataset'] for row in runs}, {dataset})
-        self.assertEqual(sum(row['model'] == 'perturbdiff' and row['status'] == 'missing' for row in runs), 9)
+        self.assertEqual(sum(row['model'] == 'perturbdiff' and row['status'] == 'missing' for row in runs), 8)
         self.assertEqual(sum(row['model'] != 'perturbdiff' and row['status'] == 'completed' for row in runs), 6)
         audit = json.loads((output / 'evaluation.json').read_text())
         self.assertFalse(audit['tenv_test_memberships_previously_scored_in_step03'])
         self.assertEqual(audit['datasets'], [dataset])
+
+    def test_combined_formal_plan_requires_external_hash(self):
+        plan = write(self.root / 'plan.json', {'schema': 'step04-evaluation-plan-v1',
+                                               'stage': 'formal', 'folds': []})
+        output = self.root / 'scores'
+        result = subprocess.run([sys.executable, str(CLI), str(plan), str(self.root / 'outcomes.json'),
+                                 str(output)], capture_output=True, text=True, timeout=30)
+        self.assertIn('formal evaluation requires a frozen plan hash', result.stderr)
+        self.assertFalse(output.exists())
 
     def test_rejects_duplicate_slot(self):
         self.outcomes.append(self.outcomes[0].copy())
