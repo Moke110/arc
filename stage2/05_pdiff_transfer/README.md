@@ -50,3 +50,46 @@ The frozen train, validation and test roles contain 2,388, 417 and 1,401
 cases, respectively. The CPU replay finished in 14.50 seconds and peaked
 at 459,572 KiB RSS. The replay record binds the local comparison and raw
 scheduler evidence by SHA-256.
+
+## Globally cold Tahoe source release
+
+The cold-drug source release removes the tenv fold 0 validation and test
+parent-connectivity blocks from Tahoe fold 0 training and validation.
+The release retains the original order of eligible Tahoe wells, their
+matched-control indices, and their float32 expression deltas on the ordered
+18,164-gene axis. Tahoe test case metadata retains the frozen membership and
+supports the native conditioning vocabulary. Only the filtered training and
+validation partitions carry expression targets.
+
+Submit the build, smoke fit and reload as separate jobs to the dedicated
+scheduler. These commands use the Step 04 Tahoe formal fold 0 source request
+and the verified Step 05 cold tenv split.
+
+```bash
+step05=stage2/05_pdiff_transfer
+pdiff=stage2/_envs/perturbdiff/bin/python
+cli="$step05/execution/script/cold_tahoe.py"
+output="$step05/execution/output"
+release="$output/cold-tahoe-ticket79"
+smoke="$output/cold-tahoe-smoke-ticket79"
+"$pdiff" "$cli" build "$release"
+"$pdiff" "$cli" smoke-fit "$release" "$smoke"
+"$pdiff" "$cli" reload "$release" "$smoke" "$output/cold-tahoe-smoke-replay-ticket79.json"
+```
+
+`release.json` records the frozen identities, forbidden blocks, retained and
+excluded counts and the parent overlap with each tenv role before and after
+filtering. `verify` reconstructs the expected Tahoe membership and checks
+the request, predictor files and all three unchanged Step 04 formal recipe
+files. Cold-drug Mix can use the verified request's training files, preserving
+Tahoe groups and control pairing. `formal-fit` takes the same release and a
+fresh run directory plus `--seed 17`, `--seed 42` or `--seed 2026`.
+
+The [qualification record](execution/cold_tahoe_record/qualification.json)
+covers 198 forbidden tenv parent blocks. Filtering removed 500 training wells
+and 450 training groups across three Tahoe parent blocks. Validation already
+had zero overlap. The release retains 35,936 training wells and 6,389
+validation wells. The 12-step smoke selected step 12 and independently
+reloaded its EMA checkpoint with zero prediction difference on the full
+gene axis. The verifier rejected an injected forbidden case in each fitted
+role after the case file checksum was recomputed.
