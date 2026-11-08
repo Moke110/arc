@@ -64,4 +64,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0044](0044-stage3-source-first-corpora.md) | Select the best source per condition/phenotype, build its corpus, then convert compatible additions |
 | [0045](0045-stage3-morgan-direction-baseline.md) | Morgan baseline and shared shallow-MLP comparison with future transcriptomic Δ phenotype predictors |
 | [0046](0046-perturbdiff-standalone-training.md) | One PerturbDiff hyperparameter step with separate Tahoe and tenv studies |
-| [0047](0047-perturbdiff-tahoe-transfer-to-tenv.md) | Proposed Tahoe transfer comparison on one shared tenv cold-drug split |
+| [0047](0047-perturbdiff-tahoe-transfer-to-tenv.md) | Proposed Tahoe transfer comparison across three tenv split regimes |

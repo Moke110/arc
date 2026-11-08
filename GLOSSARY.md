@@ -436,6 +436,14 @@ _Avoid_: cold-start split, holdout (unqualified)
 A drug whose cardiomyocyte perturbation observations are withheld from model fitting across all CM sources used for adaptation. The drug may have been observed in non-CM pretraining, including Tahoe; this is the prediction setting for drugs without available CM wet-lab responses.
 _Avoid_: globally unseen drug, unseen drug (without specifying the CM scope)
 
+**Step 05 cold-cm-drug split**:
+A tenv cold-drug split that allows the held-out drug blocks to appear in
+Tahoe.
+
+**Step 05 cold-drug split**:
+A tenv cold-drug split that also withholds its tenv validation and test drug
+blocks from Tahoe training and validation.
+
 **Δ space**:
 The CM benchmark target: `log1p_cp10k(treated) − mean(log1p_cp10k(same-plate DMSO))`,
 on the ordered 18,164-gene CM axis. It expresses a treated well's change from its
