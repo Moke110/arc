@@ -42,6 +42,19 @@ The design-to-delivery chain is fixed; each skill consumes the previous step's o
 
 Execution rules:
 
+- **Keep the `implement-spec` main session available.** Start one dedicated
+  scheduling subagent before dispatching any ticket. The main session stays
+  idle in interruptible waits between updates, receives user adjustments,
+  pause and resume instructions, and relays them to the scheduler. The
+  scheduler owns the ticket frontier, subagent dispatch and job queue. On
+  pause it stops new dispatch and reports how active work is draining or
+  being stopped safely. Resume requires the user's instruction.
+- **Monitor resources throughout the run.** The scheduler samples WSL
+  available RAM and GPU utilization and free VRAM before dispatch and while
+  jobs run. Use measured peaks and headroom to fill safe capacity within the
+  execution limits above. Under pressure, hold new dispatch, then safely
+  stop owned work if pressure persists. Leave unrelated processes alone and
+  record measurements and admission decisions with the run evidence.
 - **Subagent context budget: under 20% per agent.** Dispatch tickets to fresh-context subagents, one ticket (or one narrow prefactor scope) per implementer, with separate exploration and integration subagents. Pass context pointers (spec path, issue number, research-note path, commit SHA), not conversation history or pasted documents. Before reaching 20% context usage, save a concise handoff and continue with a fresh subagent.
 - **Close the tracker at the end: no open issue survives the run.** Resolve every ticket: completed work closes with its evidence; unfinished work is recorded as a comment on the owning ticket (what remains and why) and the ticket is then closed. Report the `dev` state and the closed-ticket list.
 
