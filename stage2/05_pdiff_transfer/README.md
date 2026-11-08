@@ -93,3 +93,51 @@ validation wells. The 12-step smoke selected step 12 and independently
 reloaded its EMA checkpoint with zero prediction difference on the full
 gene axis. The verifier rejected an injected forbidden case in each fitted
 role after the case file checksum was recomputed.
+
+## Warm-start tenv comparison
+
+`warm_tenv.py prepare` uses split seed 20261105 to assign each parent one
+test dose and to balance the number of test parent–dose combinations
+across doses. It assigns approximately 15% of the remaining combinations
+to validation, up to one per parent, and keeps a training combination for
+each parent. All aliases and repeat wells stay with their parent–dose
+combination. The manifest records the complete assignment. Prediction and
+scoring retain the frozen drug–dose groups, case order, matched controls,
+Morgan fingerprints and 18,164-gene axis.
+
+Run the following commands from the repository root through the dedicated
+scheduling subagent. Use the `arc` interpreter for prepare and score. Use
+the isolated PerturbDiff interpreter for fit and predict. The following
+replays the bounded check with 12 optimizer steps and seed 17.
+
+```bash
+step04=stage2/04_pdiff_hyperparameter
+step05=stage2/05_pdiff_transfer
+warm="$step05/execution/script/warm_tenv.py"
+gpu=stage2/_envs/perturbdiff/bin/python
+out="$step05/execution/output/warm-tenv-smoke"
+python "$warm" prepare "$step04/execution/output/tenv-formal-ticket72" "$out" --smoke
+digest=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+"$gpu" "$warm" fit "$out" 17 --plan-sha256 "$digest"
+"$gpu" "$warm" predict "$out" 17 --plan-sha256 "$digest"
+python "$warm" score "$out" "${out}-scores" --plan-sha256 "$digest"
+```
+
+For a formal run, prepare a fresh output without `--smoke` and complete the
+fit and prediction phases for seeds 17, 42 and 2026 before scoring. The
+three byte-identical Step 04 fold 0 recipes are frozen in both modes.
+`verify` takes the same output and plan digest as the workers and checks the
+recipe, canonical membership and predictor allowlist. Fit and prediction
+seal separate outputs and reproduce the validation-selected EMA loss and
+probe. Only the scorer reconstructs warm-start held-out treated expression,
+after verifying the prediction and checkpoint evidence. Score outputs use
+the Step 04 format and include all eight metrics, directional PR curves,
+and the seedless `no_change` and training-group `delta_mean` references.
+
+The [scheduled smoke record](execution/warm_record/replay.json) binds the
+split, recipe, fit, predictions, scores and resource telemetry by SHA-256.
+The split holds out 153 parent–dose combinations at 0.2 µM and 152 at
+each of 1 and 10 µM. Train, validation and test contain 2,387, 417 and
+1,402 wells. The seed 17 fit selected step 12 and reproduced the validation
+loss and the full-axis prediction probe exactly on reload. Peak host RSS
+was 3,155,924 KiB during fitting and 2,597,812 KiB during held-out prediction.

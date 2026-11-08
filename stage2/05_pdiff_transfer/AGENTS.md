@@ -10,3 +10,6 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
 - `execution/script/cold_tahoe.py` builds and verifies the globally cold
   Tahoe fold 0 source release, then runs the bounded fit and EMA replay.
 - `execution/tests/test_cold_tahoe.py` checks the source exclusion rule.
+- `execution/script/warm_tenv.py` freezes the warm-start tenv split and Step 04
+  recipes, then verifies, fits, predicts and scores through separate commands.
+- `execution/tests/test_warm_tenv.py` exercises the warm-start artifact CLI.

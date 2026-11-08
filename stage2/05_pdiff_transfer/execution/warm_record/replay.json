@@ -1,0 +1,231 @@
+{
+  "schema": "step05-warm-tenv-replay-record-v1",
+  "regime": "warm-start",
+  "split_seed": 20261105,
+  "split_identity": {
+    "dataset": "tenv",
+    "fold": 0,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+    "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "input_sha256": "57ef0725403730468a49ff9251fdd97c7e1967bf2300bb4e55fc8e9f6e983215"
+  },
+  "n_genes": 18164,
+  "roles": {
+    "train": {
+      "case_count": 2387,
+      "group_count": 782,
+      "parent_dose_combinations": 777,
+      "combinations_by_dose_um": {
+        "0.2": 257,
+        "1": 262,
+        "10": 258
+      }
+    },
+    "validation": {
+      "case_count": 417,
+      "group_count": 138,
+      "parent_dose_combinations": 137,
+      "combinations_by_dose_um": {
+        "0.2": 47,
+        "1": 43,
+        "10": 47
+      }
+    },
+    "test": {
+      "case_count": 1402,
+      "group_count": 460,
+      "parent_dose_combinations": 457,
+      "combinations_by_dose_um": {
+        "0.2": 153,
+        "1": 152,
+        "10": 152
+      }
+    }
+  },
+  "step04_tenv_formal_recipes": {
+    "17": {
+      "path": "recipes/seed-17.json",
+      "sha256": "7c4574a21cde26ca61b9cf6ca60ee04acd35e63520d74f4dcde3e87b16d112e3",
+      "config_sha256": "c05aec1ccb08d4c581bfbebb7b211eebe15612c8fbab302a259dcb7b8c5f9373"
+    },
+    "42": {
+      "path": "recipes/seed-42.json",
+      "sha256": "5202788b286a5b8066f5f5a9fb877e028dede2c8c7c61230db7f07cbb3f3145d",
+      "config_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4"
+    },
+    "2026": {
+      "path": "recipes/seed-2026.json",
+      "sha256": "ba7e1a7a26aa6ca191c3eb21b5b3468981f17e948b098adab329da9a899c8bae",
+      "config_sha256": "e2758891df500d6cd5c56e95d7bd1cc5d8611310583f90db87ddab41baf2878b"
+    }
+  },
+  "bounded_fit": {
+    "identity": {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "57ef0725403730468a49ff9251fdd97c7e1967bf2300bb4e55fc8e9f6e983215",
+      "seed": 17,
+      "stage": "smoke"
+    },
+    "optimizer_steps": 12,
+    "best_step": 12,
+    "best_validation_loss": 14.7711763381958,
+    "checkpoint_sha256": "67343504af88e771063acfde67fdc510a424f19068598186a1551eaa9041a01a",
+    "model_state_sha256": "86da84a84b618de055ef20c5c0994bd4849303557443d14b7d45cc78166a7115",
+    "reload": {
+      "validation_loss": 14.7711763381958,
+      "prediction_sha256": "8bb334f7157309961e9453eb4750db0548d3189457963bc397052696eaa2ebaa",
+      "prediction_max_abs_error": 0.0,
+      "case_ids": [
+        "temp_env::Plate1-C13",
+        "temp_env::Plate1-F13",
+        "temp_env::Plate1-I13"
+      ],
+      "prediction_shape": [
+        3,
+        18164
+      ]
+    },
+    "resources": {
+      "peak_rss_kib": 3155924,
+      "peak_gpu_allocated_bytes": 3904403456,
+      "peak_gpu_reserved_bytes": 4097835008
+    }
+  },
+  "heldout_prediction": {
+    "case_count": 1402,
+    "group_count": 460,
+    "prediction_sha256": "d584fccba9ed5235805401cf669baf2a3a92936f8c92cfbe05e1c485994397d4",
+    "cases_sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed",
+    "resources": {
+      "peak_rss_kib": 2597812,
+      "peak_gpu_allocated_bytes": 743699968,
+      "peak_gpu_reserved_bytes": 780140544
+    }
+  },
+  "scored_models": [
+    "perturbdiff",
+    "no_change",
+    "delta_mean"
+  ],
+  "cli_files": {
+    "execution/script/warm_tenv.py": "388f4fe0ac5afccb733f541dd91e4ad4f27f4f8e08395e31e5993fd0c16748e4",
+    "execution/script/warm_inputs.py": "eb8576bc01e66658ae5bc63e370e4479c41a014388dcacb074c5379ea8a9ad36"
+  },
+  "local_artifact_sha256": {
+    "warm-tenv-ticket77/plan.json": "4538b47c50e700f7b85840885f4e350b245e93aa650be307639424b384a1d812",
+    "warm-tenv-ticket77/request.json": "e4845f9301229a6d462f9d49a40a214d6a480dd47f946518cb3c017c6725b912",
+    "warm-tenv-ticket77/split.json": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+    "warm-tenv-ticket77/smoke.json": "d7403aae5dbea41fcc282b9e032d3fde32ebae08315d630b8a57a385dbbb8564",
+    "warm-tenv-ticket77/slots/seed-17/fit/fit.json": "1af0aa443af7ce5f4d254bcbd5764f8230c0c5d8b9feb6b8421b1794ca1b79ae",
+    "warm-tenv-ticket77/slots/seed-17/fit/run.json": "f2eff30179984bc034ea000c099c5455fcc461071582c3a368ba75c82aa00f4a",
+    "warm-tenv-ticket77/slots/seed-17/prediction/prediction.json": "1c0a7e6186c2375b28aca828f2908d30b81f01d3cb5bcd0c645a3b947145d05e",
+    "warm-tenv-ticket77/slots/seed-17/prediction/replay.json": "5bb0024d1dc588de05e488d99ecc4d95a8993b6607661649502806250ba907a2",
+    "warm-tenv-score-ticket77/evaluation.json": "5f00001a414108b047742ff00819780fdd376864b8c00d88d588505d83468775",
+    "warm-tenv-score-ticket77/per_run.csv": "9b78f79c93efad89a9f1bf122d149ffddb6bcab85d695d43f522bd6bedea3a29",
+    "warm-tenv-score-ticket77/per_group.csv": "09666f684faa782bb1de31a2ddd49e6e83eefd668678ce746afa09132e5317d3",
+    "warm-tenv-score-ticket77/tenv/pr_curves.json": "a6d9f04b74a8a59daf1848007e8c8571c0ea34a55fcd89a7e3d1c6397284b42b",
+    "ticket77-queue/prepare.json": "69a0789c96b8c8f353aeb7a30d9f3a1fb66b2787b035c7659f55db9c3b88aa05",
+    "ticket77-queue/prepare.preflight.json": "67995c49fa2a3e128348954365c7b79f94a7f9cc76456b73af2e17fcafcc74e2",
+    "ticket77-queue/prepare-scheduler/status.json": "f3e4eb796eb39dedd0392e3ac20e21a1d8e8ce7609190c9d46c62f2ba8c17d62",
+    "ticket77-queue/prepare-scheduler/telemetry.jsonl": "611adfa57c9add98a199974ba426b2b800370564db2a482c5b67c5aa557bc3d6",
+    "ticket77-queue/prepare-scheduler/warm-tenv-prepare.attempt1.log": "3c432544e87e752299079233ef0c8a27e7fd8c305786aa4004cc4869c1684c55",
+    "ticket77-queue/fit.json": "ebd2b00c9e9253c411128cd27d4cc4c92a295365ae89b2d43d7c0fc586e83db9",
+    "ticket77-queue/fit.preflight.json": "d0b07c4f45a419946a9a7a4357b95c0a4d15e867194bef22e11860bfefc71361",
+    "ticket77-queue/fit-scheduler/status.json": "4123b071357be1960473009fa197761fa8bdb3c150f4bd26d373c4a8e499ff70",
+    "ticket77-queue/fit-scheduler/telemetry.jsonl": "ae1ce5147048cc050e2970f248cb70cde2c3e3a4f2a3edf40e7de76210adfc88",
+    "ticket77-queue/fit-scheduler/warm-tenv-fit.attempt1.log": "e50f4a68fa9d7813e22b3a72a96549ddff89c62492e6d8a676ee316d4f438a02",
+    "ticket77-queue/predict.json": "f0e866beef0b025cbe66d31d6ed08968355c0ec66f775f4a0d73af90c9856289",
+    "ticket77-queue/predict.preflight.json": "5facba028f9dffbc5d4814d8d567142224ea015f289bb673a6d2b967b98622a7",
+    "ticket77-queue/predict-scheduler/status.json": "55608db446cc28ad4bc8f8e85f2ed759231da7023b1c104a1a6a1efe54fb609f",
+    "ticket77-queue/predict-scheduler/telemetry.jsonl": "48399f25e289bdf8526ceae4d3890e3e6a74249306b96aa32c60bc63cdf4a314",
+    "ticket77-queue/predict-scheduler/warm-tenv-predict.attempt1.log": "7f1e518a0f3c34ad6d347e336ccf6de8f5e131527fc01530a12d2fd698fae727",
+    "ticket77-queue/score.json": "e5ac6fb1002e8096861b87c2ab183d12a5bfe92e8dc309ec984abd9e82f2adc3",
+    "ticket77-queue/score.preflight.json": "967dbdb6ff272d82cc5a685819283c7da6b0cefb6aae6b01b41e708ab245d757",
+    "ticket77-queue/score-scheduler/status.json": "efde639b4d0ab73c252ce7d8bdf6b5e6b35bed7da759eb925ba9a31b9086c4ba",
+    "ticket77-queue/score-scheduler/telemetry.jsonl": "e5c08990b203f3abeba0df94fd8c49eb29469c84dec82ce813d6118850007f1c",
+    "ticket77-queue/score-scheduler/warm-tenv-score.attempt1.log": "ff169f9f086f3645375bae91bce52f959e213103f21900e59eb4cbcddb0e1ac5"
+  },
+  "scheduler": {
+    "prepare": {
+      "kind": "cpu",
+      "preflight": {
+        "available_gib": 41.79543685913086,
+        "gpu_free_gib": 14.771484375,
+        "gpu_utilization_percent": 31,
+        "disk_free_gib": 154.8596649169922,
+        "external_heavy": 0
+      },
+      "outcome": "completed",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "peak_host_rss_gib": 0.6131706237792969,
+      "peak_workstation_gpu_used_gib": 1.2197265625,
+      "peak_gpu_utilization_percent": 5,
+      "elapsed_seconds": 0.99,
+      "maximum_rss_kib": 642956,
+      "attempt": 1
+    },
+    "fit": {
+      "kind": "training",
+      "preflight": {
+        "available_gib": 41.73671340942383,
+        "gpu_free_gib": 14.78125,
+        "gpu_utilization_percent": 27,
+        "disk_free_gib": 154.66619873046875,
+        "external_heavy": 0
+      },
+      "outcome": "completed",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "peak_host_rss_gib": 3.009723663330078,
+      "peak_workstation_gpu_used_gib": 5.2822265625,
+      "peak_gpu_utilization_percent": 61,
+      "elapsed_seconds": 22.9,
+      "maximum_rss_kib": 3155924,
+      "attempt": 1
+    },
+    "predict": {
+      "kind": "gpu",
+      "preflight": {
+        "available_gib": 41.8143424987793,
+        "gpu_free_gib": 14.7841796875,
+        "gpu_utilization_percent": 10,
+        "disk_free_gib": 154.0204963684082,
+        "external_heavy": 0
+      },
+      "outcome": "completed",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "peak_host_rss_gib": 2.477466583251953,
+      "peak_workstation_gpu_used_gib": 2.2490234375,
+      "peak_gpu_utilization_percent": 64,
+      "elapsed_seconds": 114.01,
+      "maximum_rss_kib": 2597812,
+      "attempt": 1
+    },
+    "score": {
+      "kind": "cpu",
+      "preflight": {
+        "available_gib": 41.733036041259766,
+        "gpu_free_gib": 14.7900390625,
+        "gpu_utilization_percent": 34,
+        "disk_free_gib": 153.9226951599121,
+        "external_heavy": 0
+      },
+      "outcome": "completed",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "peak_host_rss_gib": 0.7372169494628906,
+      "peak_workstation_gpu_used_gib": 1.2021484375,
+      "peak_gpu_utilization_percent": 31,
+      "elapsed_seconds": 6.55,
+      "maximum_rss_kib": 773028,
+      "attempt": 1
+    }
+  }
+}
