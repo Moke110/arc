@@ -185,3 +185,65 @@ The [qualification record](execution/mix_record/qualification.json) binds the
 plan, checkpoint, predictions, score outputs and scheduler evidence.
 Independent scoring reproduced every metric, both directional PR curves and
 the evaluation manifest byte-for-byte.
+
+## Tahoe zero-shot on tenv
+
+Tahoe reuses the validation-selected Step 04 Tahoe fold 0 EMA checkpoint
+for each seed. The source verifier checks the historical producer revision,
+the exact source requests and recipes, the train and validation memberships,
+and the original checkpoint and replay evidence. Each prediction records
+parent-connectivity overlap between every Tahoe role and every tenv role.
+For interpretation of source exposure, consult the Tahoe training and
+validation rows separately.
+
+Run the source check, prediction and score as separate scheduled jobs.
+The example qualifies seed 17 on the full tenv gene axis for both regimes.
+
+```bash
+step04=stage2/04_pdiff_hyperparameter
+step05=stage2/05_pdiff_transfer
+cli="$step05/execution/script/tahoe_zero_shot.py"
+pdiff=stage2/_envs/perturbdiff/bin/python
+out="$step05/execution/output/tahoe-zero-shot"
+python "$cli" verify-source "$step04/execution/output/tahoe-formal-ticket73" "$out/source.json"
+source_sha=$(sha256sum "$out/source.json" | cut -d ' ' -f 1)
+
+for regime in warm-start cold-cm-drug; do
+  if [ "$regime" = warm-start ]; then
+    recipient="$step05/execution/output/warm-tenv-ticket77"
+    plan=plan.json
+  else
+    recipient="$step05/execution/output/cold-tenv-ticket76"
+    plan=split.json
+  fi
+  recipient_sha=$(sha256sum "$recipient/$plan" | cut -d ' ' -f 1)
+  "$pdiff" "$cli" predict "$out/source.json" "$recipient" "$regime" 17 "$out/$regime/seed-17" \
+    --source-sha256 "$source_sha" --recipient-sha256 "$recipient_sha"
+  python "$cli" score "$out/source.json" "$recipient" "$regime" "$out/$regime" "$out/$regime-scores" \
+    --source-sha256 "$source_sha" --recipient-sha256 "$recipient_sha" --seed 17
+done
+```
+
+For the complete score output, predict seeds 17, 42 and 2026 and omit the
+scorer's `--seed` argument. The scorer verifies each prediction seal and
+case order before opening the test truth. It emits all eight group-weighted
+metrics and both directional PR curves.
+
+Each prediction directory contains `bridge.json`, the initialization
+record used by Tahoe and Transfer. The record pins the historical EMA
+checkpoint and the verified recipient request. It preserves the zero-dose
+row and learned non-dose weights, remaps positive doses in log(µM), and
+rebuilds the chemical fingerprint lookup and dose indices from tenv.
+The loader checks the complete mapped state hash after loading it.
+The source checkpoint stays in its original location and the bridge
+stores the mapping and hashes needed to reconstruct the initialization.
+
+The [scheduled qualification record](execution/tahoe_zero_shot_record/qualification.json)
+verifies all three source checkpoints, each selected at step 8,000. The seed
+17 prediction preserved 1,402 warm-start wells in 460 groups and 1,401
+cold-cm-drug wells in 462 groups. All eight metrics were defined for every
+group in both runs. Nine warm-start and two cold-cm-drug test parent blocks
+appeared in Tahoe training. Tahoe validation included three warm-start test
+parent blocks and zero cold-cm-drug test parent blocks. Both predictions
+completed concurrently with a workstation VRAM peak of 3.30 GiB. Maximum
+host RSS was 2,445,856 KiB for warm-start and 2,446,240 KiB for cold-cm-drug.

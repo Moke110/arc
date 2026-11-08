@@ -17,3 +17,8 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
   verifies, fits, predicts and scores each regime. `mix_inputs.py` dispatches
   native minibatches to each source's matched-control inputs.
 - `execution/tests/test_mix.py` checks the pooled predictor and batch inputs.
+- `execution/script/tahoe_zero_shot.py` verifies the historical Tahoe fold 0
+  states and predicts and scores their zero-shot tenv responses.
+- `execution/script/tahoe_bridge.py` seals and loads the shared initialization
+  for Tahoe and Transfer. `execution/tests/test_tahoe_bridge.py` covers the
+  shared loader, remapped dose rows and rebuilt recipient lookups.
