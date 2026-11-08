@@ -19,6 +19,13 @@ held-out memberships already scored in Step 03.
   Spearman means are undefined because the prediction is constant. The
   [publication record](execution/formal_record/publication.json) preserves
   all valid run and group counts and the plotted coordinates.
+- [Held-out PR curves](output/pr_curves.png) show positive and negative gene
+  retrieval in separate panels. Blue represents PerturbDiff and gray represents
+  `delta_mean`. Solid lines represent Tahoe and dashed lines represent tenv.
+  At each recall point, the line shows the median precision across runs and
+  the band spans the minimum and maximum. Each run curve gives equal weight
+  to held-out groups with labels in that direction. The labels are the top
+  100 observed genes in the direction, or all eligible genes if fewer qualify.
 - The [tenv checkpoint index](execution/formal_record/tenv/checkpoints.json)
   identifies the nine local checkpoints. The release metadata hashes matched
   the tracked index, all nine files shared hard links with the verified
@@ -30,10 +37,11 @@ Both retried from their sealed fits. The [recovery record](execution/formal_reco
 identifies the preserved attempts and [the scoring audit](execution/formal_record/tahoe/audit.json)
 records exact replay of the completed evaluation.
 
-ADR 0046 specifies the two figure destinations under `output/` for this
-step. The compact score tables under `execution/formal_record/` are
-machine-readable replay inputs. The two figures under `output/` are the
-published visual results. To regenerate them, use the `arc` interpreter with
+ADR 0046 specifies the three figure destinations under `output/`.
+The score tables and per-run PR sources for
+[Tahoe](execution/formal_record/tahoe/pr_curves.json) and
+[tenv](execution/formal_record/tenv/pr_curves.json) are the compact replay
+inputs. To regenerate the figures, use the `arc` interpreter with
 Matplotlib 3.10.9 and fresh destination paths.
 
 ```bash
@@ -43,6 +51,7 @@ python "$step/execution/script/publish.py" "$step/execution/formal_record" \
   "$replay/output" "$replay/publication.json"
 cmp "$step/output/learning_curve.png" "$replay/output/learning_curve.png"
 cmp "$step/output/metrics.png" "$replay/output/metrics.png"
+cmp "$step/output/pr_curves.png" "$replay/output/pr_curves.png"
 ```
 
 Add `--local-checkpoints "$step/output/checkpoints/tenv" "$step/execution/output/tenv-formal-ticket72"`
@@ -50,6 +59,27 @@ to include the local checkpoint audit in the publication record. It checks
 the request, recipe, run and replay metadata by hash. It also streams the
 checkpoint hashes and checks the hard links against the formal fits.
 The formal prediction and release records bind the exact model reload.
+
+To rebuild the compact PR sources from saved predictions, run the held-out
+evaluator with `--include-pr-curves` and a fresh evaluation directory.
+Use the frozen plan and outcomes for each dataset. The optional output
+`<dataset>/pr_curves.json` contains the positive and negative precision
+arrays on the shared 101-point recall grid. It records the hashes of the
+frozen plan, outcomes and per-run scores. The renderer reads it from
+`execution/formal_record/<dataset>/` and records its hash and the plotted
+coordinates in the publication record.
+
+```bash
+formal="$step/execution/output/tenv-formal-ticket72"
+plan_sha=$(sha256sum "$step/execution/formal_record/tenv/plan.json" | cut -d ' ' -f 1)
+python "$step/execution/script/evaluate.py" "$formal/plan.json" "$formal/outcomes.json" \
+  "$replay/tenv-evaluation" --plan-sha256 "$plan_sha" \
+  --include-pr-curves
+cmp "$step/execution/formal_record/tenv/pr_curves.json" "$replay/tenv-evaluation/tenv/pr_curves.json"
+```
+
+For Tahoe, use `tahoe-formal-ticket73` and the `tahoe` output paths.
+The Step 04 scheduler and resource rules apply to these evaluation replays.
 
 ## Queue operation
 

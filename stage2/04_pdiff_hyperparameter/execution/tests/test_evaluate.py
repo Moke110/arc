@@ -121,12 +121,12 @@ class EvaluatorReplay(unittest.TestCase):
                                   'prediction': str(manifest.relative_to(self.root)),
                                   'prediction_manifest_sha256': digest(manifest)})
 
-    def evaluate(self, destination):
+    def evaluate(self, destination, *options):
         plan = write(self.root / 'plan.json', {'schema': 'step04-evaluation-plan-v1',
                                                'stage': 'fixture', 'folds': self.folds})
         outcomes = write(self.root / 'outcomes.json', {'schema': 'step04-evaluation-outcomes-v1',
                                                        'outcomes': self.outcomes})
-        return subprocess.run([sys.executable, str(CLI), str(plan), str(outcomes), str(destination)],
+        return subprocess.run([sys.executable, str(CLI), str(plan), str(outcomes), str(destination), *options],
                               capture_output=True, text=True, timeout=30)
 
     def test_matches_references_and_replays_all_eight_metrics(self):
@@ -156,6 +156,20 @@ class EvaluatorReplay(unittest.TestCase):
         self.assertEqual({path.relative_to(output): digest(path) for path in output.rglob('*') if path.is_file()},
                          {path.relative_to(replay): digest(path) for path in replay.rglob('*') if path.is_file()})
 
+        with_pr = self.root / 'with-pr'
+        result = self.evaluate(with_pr, '--include-pr-curves')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(digest(output / 'per_run.csv'), digest(with_pr / 'per_run.csv'))
+        audit = json.loads((with_pr / 'evaluation.json').read_text())
+        for dataset in ('tahoe', 'tenv'):
+            relative = f'{dataset}/pr_curves.json'
+            source = json.loads((with_pr / relative).read_text())
+            self.assertEqual(audit['files'][relative], digest(with_pr / relative))
+            self.assertEqual(source['per_run_sha256'], audit['files']['per_run.csv'])
+            self.assertEqual([row['model'] for row in source['runs']], ['perturbdiff', 'delta_mean'])
+            np.testing.assert_array_equal(source['recall'], np.linspace(0, 1, 101))
+            np.testing.assert_array_equal(source['runs'][0]['precision'],
+                                          np.ones((2, 101)))
 
     def test_preserves_missing_and_failed_slots_without_reference_seed_copies(self):
         self.folds[0]['recipe_sha256_by_seed'].update({'42': 'a' * 64, '2026': 'b' * 64})

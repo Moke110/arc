@@ -19,13 +19,16 @@ sys.path.insert(0, str(REPO / 'stage2/03_modes_tenv/execution/script'))
 import numpy as np
 
 from artifacts import SEEDS, read_json, rows, sha256, write_csv, write_json
-from metrics import METRICS, score_group, truth_labels
+from metrics import METRICS, RECALL_GRID, score_group, truth_labels
 from training_inputs import INPUT_FIELDS, STEP03, json_hash, request_for, tenv_paths
 from training_policy import MONITOR, verify_best_checkpoint
 
 DATASETS = ('tahoe', 'tenv')
 REFERENCES = ('no_change', 'delta_mean')
 MODEL = 'perturbdiff'
+PR_MODELS = (MODEL, 'delta_mean')
+PR_FILENAME = 'pr_curves.json'
+PR_SCHEMA = 'step04-pr-curves-v1'
 SLOT_FIELDS = ('dataset', 'fold', 'seed', 'model')
 GROUP_FIELDS = (*SLOT_FIELDS, 'group_id', 'n_wells', *METRICS,
                 *(f'{metric}_reason' for metric in METRICS))
@@ -202,15 +205,20 @@ def evaluator_inputs(fold):
     return groups, truth, labels, {'no_change': np.zeros(n_genes), 'delta_mean': delta_mean}
 
 
-def run_scores(writer, slot, status, reason, groups, truth, labels, indices, delta):
+def run_scores(writer, slot, status, reason, groups, truth, labels, indices, delta, pr_runs=None):
     row = {**slot, 'status': status, 'reason': reason, 'group_count': 0}
     scores = {metric: [] for metric in METRICS}
+    curve_sum = np.zeros((2, len(RECALL_GRID))) if pr_runs is not None else None
     if status == 'completed':
         row['group_count'] = len(groups)
         for index, group in enumerate(groups):
             group_id = group['group_id']
             predicted = delta if delta.ndim == 1 else mean_delta(delta, indices[group_id])
-            values, reasons, _ = score_group(truth[index], predicted, [label[index] for label in labels])
+            values, reasons, curve = score_group(truth[index], predicted, [label[index] for label in labels])
+            if curve_sum is not None:
+                for direction, metric in enumerate(METRICS[:2]):
+                    if math.isfinite(values[metric]):
+                        curve_sum[direction] += curve[direction]
             group_row = {**slot, 'group_id': group_id, 'n_wells': group['n_wells']}
             for metric, value in values.items():
                 if math.isfinite(value):
@@ -221,6 +229,12 @@ def run_scores(writer, slot, status, reason, groups, truth, labels, indices, del
     for metric, values in scores.items():
         row[metric] = float(np.mean(values)) if values else None
         row[f'{metric}_valid_groups'] = len(values)
+    if curve_sum is not None:
+        pr_runs.append({
+            **slot,
+            'precision': [(total / len(scores[metric])).tolist() if scores[metric] else None
+                          for metric, total in zip(METRICS[:2], curve_sum)],
+        })
     return row
 
 
@@ -240,8 +254,9 @@ def summaries(runs):
         yield row
 
 
-def write_results(output, folds, outcomes, predictions, audit):
+def write_results(output, folds, outcomes, predictions, audit, include_pr):
     runs = []
+    pr_runs = defaultdict(list)
     with (output / 'per_group.csv').open('w', newline='') as stream:
         writer = csv.DictWriter(stream, fieldnames=GROUP_FIELDS)
         writer.writeheader()
@@ -258,16 +273,25 @@ def write_results(output, folds, outcomes, predictions, audit):
                 status, reason = (outcome['status'], outcome.get('reason', '')) if seed else ('completed', '')
                 delta = predictions.get(key) if seed else references[model]
                 slot = {'dataset': dataset, 'fold': fold_number, 'model': model, 'seed': seed}
-                runs.append(run_scores(writer, slot, status, reason, groups, truth, labels, fold['groups'], delta))
+                curves = pr_runs[dataset] if include_pr and model in PR_MODELS else None
+                runs.append(run_scores(writer, slot, status, reason, groups, truth, labels,
+                                       fold['groups'], delta, curves))
     write_csv(output / 'per_run.csv', runs, RUN_FIELDS)
     write_csv(output / 'summary.csv', summaries(runs))
+    if include_pr:
+        for dataset, curves in pr_runs.items():
+            write_json(output / dataset / PR_FILENAME, {
+                'schema': PR_SCHEMA, 'dataset': dataset, 'recall': RECALL_GRID.tolist(),
+                'plan_sha256': audit['plan_sha256'], 'outcomes_sha256': audit['outcomes_sha256'],
+                'per_run_sha256': sha256(output / 'per_run.csv'), 'runs': curves,
+            })
     audit['complete'] = all(run['status'] == 'completed' for run in runs)
     audit['files'] = {str(path.relative_to(output)): sha256(path)
                       for path in sorted(output.rglob('*')) if path.is_file()}
     write_json(output / 'evaluation.json', audit)
 
 
-def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None):
+def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None, include_pr=False):
     plan_sha = sha256(plan_path)
     if expected_plan_sha is not None and expected_plan_sha != plan_sha:
         raise ValueError('frozen plan hash mismatch')
@@ -323,7 +347,7 @@ def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None):
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         pending = Path(temporary) / 'evaluation'
         pending.mkdir()
-        write_results(pending, folds, outcomes, predictions, audit)
+        write_results(pending, folds, outcomes, predictions, audit, include_pr)
         pending.rename(output)
 
 
@@ -333,9 +357,12 @@ def main():
     parser.add_argument('outcomes', type=Path)
     parser.add_argument('output', type=Path)
     parser.add_argument('--plan-sha256', help='required frozen hash for any formal plan')
+    parser.add_argument('--include-pr-curves', action='store_true',
+                        help='also save the run-level directional PR curves for publication')
     args = parser.parse_args()
     try:
-        evaluate(args.plan.resolve(), args.outcomes.resolve(), args.output.absolute(), args.plan_sha256)
+        evaluate(args.plan.resolve(), args.outcomes.resolve(), args.output.absolute(),
+                 args.plan_sha256, args.include_pr_curves)
     except (ValueError, TypeError, KeyError, OSError, EOFError) as error:
         parser.exit(1, f'evaluation rejected: {error}\n')
 

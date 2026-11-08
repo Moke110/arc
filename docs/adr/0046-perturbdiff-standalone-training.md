@@ -67,5 +67,10 @@ step remains folded into the corpus layer.
   03. Tahoe PerturbDiff is blue, tenv PerturbDiff is green, and the
   `no_change` and `delta_mean` references are gray. Score each reference on
   the same held-out groups as PerturbDiff for its dataset.
+- `output/pr_curves.png` shows separate positive and negative held-out PR
+  panels. Plot PerturbDiff in blue and `delta_mean` in gray, with solid Tahoe
+  lines and dashed tenv lines. For each model and dataset, plot the pointwise
+  median and minimum–maximum range across the group-averaged run curves.
+  Retain the compact per-run curves with the formal records for replay.
 - `output/` retains the validation-selected checkpoint of every formal tenv
   run for downstream use.

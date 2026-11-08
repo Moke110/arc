@@ -27,7 +27,7 @@ def test_replays_original_histories_and_scores(tmp_path):
         assert run.returncode == 0, run.stderr
     first, second = (tmp_path / name for name in ('first', 'second'))
     assert (first / 'publication.json').read_bytes() == (second / 'publication.json').read_bytes()
-    for name in ('learning_curve.png', 'metrics.png'):
+    for name in ('learning_curve.png', 'metrics.png', 'pr_curves.png'):
         left = (first / 'output' / name).read_bytes()
         assert left.startswith(b'\x89PNG\r\n\x1a\n')
         assert left == (second / 'output' / name).read_bytes()
@@ -60,6 +60,20 @@ def test_replays_original_histories_and_scores(tmp_path):
         ]
     assert scores['Recall_positive@P80'][1]['height'] == 0.0
     assert scores['R2'][4]['height'] == -0.019548444264354092
+    pr = report['pr_curves']
+    assert len(pr['recall']) == 101
+    for direction in ('positive', 'negative'):
+        assert [(row['dataset'], row['model'], row['color'], row['linestyle'], row['valid_runs'])
+                for row in pr[direction]] == [
+            ('tahoe', 'perturbdiff', '#2166ac', '-', 9),
+            ('tenv', 'perturbdiff', '#2166ac', '--', 9),
+            ('tahoe', 'delta_mean', '#606771', '-', 3),
+            ('tenv', 'delta_mean', '#606771', '--', 3),
+        ]
+        assert all(0 <= lo <= mid <= hi <= 1 for row in pr[direction]
+                   for lo, mid, hi in zip(row['min'], row['median'], row['max'], strict=True))
+    assert report['figures_sha256']['pr_curves.png'] == hashlib.sha256(
+        (first / 'output/pr_curves.png').read_bytes()).hexdigest()
     assert len(report['checkpoint_index']) == 9
 
 
@@ -83,6 +97,19 @@ def test_rejects_duplicate_checkpoint_identity_before_rendering(tmp_path):
     run = publish(record, target)
     assert run.returncode != 0
     assert 'nine unique checkpoint identities' in run.stderr
+    assert not (target / 'output').exists()
+
+
+def test_rejects_pr_source_from_a_different_evaluation(tmp_path):
+    record = shutil.copytree(RECORD, tmp_path / 'record')
+    path = record / 'tenv/pr_curves.json'
+    source = json.loads(path.read_text())
+    source['per_run_sha256'] = '0' * 64
+    path.write_text(json.dumps(source))
+    target = tmp_path / 'target'
+    run = publish(record, target)
+    assert run.returncode != 0
+    assert 'tenv PR source does not match the formal evaluation' in run.stderr
     assert not (target / 'output').exists()
 
 

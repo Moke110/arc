@@ -6,12 +6,15 @@ from pathlib import Path
 import sys
 import tempfile
 
+import numpy as np
+
+from evaluate import PR_FILENAME, PR_MODELS, PR_SCHEMA
 from train import REPO, STEP03
 from training_policy import MONITOR, verify_best_checkpoint
 
 sys.path.insert(0, str(REPO / STEP03 / 'execution/script'))
 from artifacts import SEEDS, read_json, rows, sha256, write_json
-from metrics import METRICS
+from metrics import METRICS, RECALL_GRID
 
 import matplotlib
 
@@ -30,7 +33,9 @@ TRAINING, VALIDATION, BEST = '#2166ac', '#24804b', '#bd252d'
 REFERENCE_COLORS = {'no_change': '#a5aab1', 'delta_mean': '#636c77'}
 METRIC_TITLES = ('Positive AP@100', 'Negative AP@100', 'Positive recall at P80',
                  'Negative recall at P80', 'PCC', 'Spearman', 'RMSE', 'R²')
-FIGURES = ('learning_curve.png', 'metrics.png')
+FIGURES = ('learning_curve.png', 'metrics.png', 'pr_curves.png')
+PR_COLORS = {'perturbdiff': (TRAINING, '#8bb9e6'), 'delta_mean': ('#606771', '#b8bfc8')}
+PR_STYLES = {'tahoe': '-', 'tenv': '--'}
 
 
 def require(condition, message):
@@ -100,10 +105,11 @@ def verify_dataset(root, dataset, hashes):
         runs.append(run)
         manifests[fold, seed] = prediction
 
-    scores = read_scores(
-        dataset, rows(tracked('per_run.csv', evaluation['files']['per_run.csv'])),
-        rows(tracked('summary.csv', evaluation['files']['summary.csv'])), manifests,
-    )
+    per_run = rows(tracked('per_run.csv', evaluation['files']['per_run.csv']))
+    scores = read_scores(dataset, per_run,
+                         rows(tracked('summary.csv', evaluation['files']['summary.csv'])), manifests)
+    pr_path = tracked(PR_FILENAME, evaluation['files'].get(f'{dataset}/{PR_FILENAME}'))
+    pr = read_pr_curves(read_json(pr_path), dataset, evaluation, per_run)
     checkpoints = []
     if dataset == 'tenv':
         index = read_json(tracked('checkpoints.json'))
@@ -114,7 +120,36 @@ def verify_dataset(root, dataset, hashes):
                 and index['selection_sha256'] == plan['selection_sha256'],
                 'tenv checkpoint release identity mismatch')
         checkpoints = verify_checkpoint_index(index['checkpoints'], folds, manifests)
-    return runs, scores, checkpoints
+    return runs, scores, pr, checkpoints
+
+
+def read_pr_curves(source, dataset, evaluation, per_run):
+    require(source['schema'] == PR_SCHEMA and source['dataset'] == dataset
+            and source['plan_sha256'] == evaluation['plan_sha256']
+            and source['outcomes_sha256'] == evaluation['outcomes_sha256']
+            and source['per_run_sha256'] == evaluation['files']['per_run.csv']
+            and np.array_equal(source['recall'], RECALL_GRID),
+            f'{dataset} PR source does not match the formal evaluation')
+    expected = {(row['model'], int(row['fold']), row['seed']): row for row in per_run
+                if row['model'] in PR_MODELS}
+    slots = {(row['model'], row['fold'], '' if row['seed'] is None else str(row['seed'])): row
+             for row in source['runs']}
+    require(slots.keys() == expected.keys() and len(source['runs']) == len(expected),
+            f'{dataset} PR source run inventory mismatch')
+    curves = {model: [[], []] for model in PR_MODELS}
+    for slot, row in slots.items():
+        require(row['dataset'] == dataset and type(row['fold']) is int
+                and len(row['precision']) == 2, f'{dataset}/{slot} invalid PR run')
+        for direction, (metric, values) in enumerate(zip(METRICS[:2], row['precision'])):
+            if int(expected[slot][f'{metric}_valid_groups']) == 0:
+                require(values is None, f'{dataset}/{slot}/{metric} PR curve must be undefined')
+                continue
+            points = np.asarray(values)
+            require(points.shape == RECALL_GRID.shape and points.dtype.kind in 'iuf'
+                    and np.all((0 <= points) & (points <= 1)),
+                    f'{dataset}/{slot}/{metric} invalid PR precision')
+            curves[slot[0]][direction].append(points)
+    return curves
 
 
 def read_scores(dataset, per_run, summary, manifests):
@@ -295,11 +330,84 @@ def draw_metrics(scores, destination):
     return report
 
 
+def draw_pr_curves(pr, destination, hashes):
+    layers = [('tahoe', 'perturbdiff', 8), ('tenv', 'perturbdiff', 6),
+              ('tahoe', 'delta_mean', 4), ('tenv', 'delta_mean', 4)]
+    report = {'recall': RECALL_GRID.tolist()}
+    dark = '#18212c'
+    muted = '#45525f'
+    fig, axes = plt.subplots(1, 2, figsize=(11.2, 5.85), sharey=True, sharex=True)
+    fig.subplots_adjust(left=.078, right=.974, top=.702, bottom=.19, wspace=.12)
+    fig.suptitle('Held-out precision–recall curves', x=.078, y=.966, ha='left',
+                 fontsize=20, fontweight='bold', color=dark)
+    subtitle = 'PerturbDiff and delta_mean  •  Top 100 genes per direction'
+    fig.text(.078, .861, subtitle, fontsize=10.5, color=muted)
+    model_handles = [
+        Line2D([], [], color=PR_COLORS['perturbdiff'][0], linewidth=2.5, label='PerturbDiff'),
+        Line2D([], [], color=PR_COLORS['delta_mean'][0], linewidth=2.5, label='delta_mean'),
+    ]
+    dataset_handles = [
+        Line2D([], [], color=dark, linewidth=1.8, linestyle=PR_STYLES[dataset], label=label)
+        for dataset, label in DATASETS.items()
+    ]
+    for title, handles, anchor in [('Model', model_handles, .072),
+                                   ('Dataset', dataset_handles, .36)]:
+        legend = fig.legend(handles=handles, title=title, loc='upper left',
+                            bbox_to_anchor=(anchor, .85), ncol=2, frameon=False,
+                            fontsize=9, title_fontsize=9, handlelength=2.5,
+                            columnspacing=1.5, alignment='left')
+        legend.get_title().set_fontweight('bold')
+
+    for direction, (ax, name) in enumerate(zip(axes, ('positive', 'negative'))):
+        title = f'PR {name.capitalize()}'
+        panel = []
+        ax.set_title(title, loc='left', fontweight='bold', fontsize=12, color=dark, pad=9)
+        ax.set(xlim=(0, 1), ylim=(-.015, 1.025), xlabel='Recall')
+        ax.set_xticks(np.linspace(0, 1, 6))
+        ax.set_yticks(np.linspace(0, 1, 6))
+        ax.set_axisbelow(True)
+        ax.grid(axis='y', color='#e4e8ed')
+        ax.tick_params(colors=muted, length=3)
+        ax.spines[['top', 'right']].set_visible(False)
+        ax.spines[['bottom', 'left']].set_color('#b0b7bf')
+        for dataset, model, layer in reversed(layers):
+            curves = pr[dataset][model][direction]
+            if not curves:
+                continue
+            color, fill = PR_COLORS[model]
+            style = PR_STYLES[dataset]
+            low, high = np.min(curves, axis=0), np.max(curves, axis=0)
+            median = np.median(curves, axis=0)
+            ax.fill_between(RECALL_GRID, low, high, step='pre', color=fill, alpha=.34,
+                            linewidth=0, zorder=layer)
+            ax.step(RECALL_GRID, median, where='pre', color=color, linestyle=style, linewidth=1.9,
+                    zorder=layer + 1)
+            panel.append({'dataset': dataset, 'model': model, 'color': color,
+                          'linestyle': style, 'valid_runs': len(curves),
+                          'min': low.tolist(), 'median': median.tolist(), 'max': high.tolist()})
+        report[name] = list(reversed(panel))
+
+    axes[0].set_ylabel('Precision')
+    count_text = 'Per dataset: 9 PerturbDiff runs and 3 delta_mean folds.'
+    fig.text(.078, .082, 'Dark lines show pointwise medians. Shaded bands span pointwise minima and maxima.',
+             color=muted, fontsize=9)
+    fig.text(.078, .043, count_text, color=muted, fontsize=9)
+    description = (f'{subtitle}. {count_text} Blue PerturbDiff; gray delta_mean. Solid Tahoe; dashed tenv. '
+                   'Pointwise median and min–max of group-macro-averaged run curves. ')
+    evidence = [f'{dataset} evaluation SHA-256 {hashes[f"{dataset}/evaluation.json"]}' for dataset in DATASETS]
+    fig.savefig(destination, dpi=180, facecolor='white', metadata={
+        'Title': 'Step 04 held-out precision–recall curves',
+        'Description': description + ' '.join(evidence),
+    })
+    plt.close(fig)
+    return report
+
+
 def publish(record, output, evidence, local):
     hashes = {}
-    runs, scores = {}, {}
+    runs, scores, pr = {}, {}, {}
     for dataset in DATASETS:
-        runs[dataset], scores[dataset], checkpoints = verify_dataset(record / dataset, dataset, hashes)
+        runs[dataset], scores[dataset], pr[dataset], checkpoints = verify_dataset(record / dataset, dataset, hashes)
     require(len({run['identity']['gene_sha256'] for panel in runs.values() for run in panel}) == 1,
             'formal runs require one shared gene axis')
     report = {'schema': 'step04-publication-v1', 'matplotlib': matplotlib.__version__,
@@ -318,14 +426,16 @@ def publish(record, output, evidence, local):
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         staging = Path(temporary)
-        curve, metrics = (staging / name for name in FIGURES)
+        figures = [staging / name for name in FIGURES]
+        curve, metrics, pr_figure = figures
         with plt.rc_context({'font.family': 'DejaVu Sans', 'text.color': '#18212c',
                              'axes.labelcolor': '#18212c', 'axes.titlecolor': '#18212c'}):
             report['learning_curve'] = draw_curves(runs, curve)
             report['metrics'] = draw_metrics(scores, metrics)
-        report['figures_sha256'] = {path.name: sha256(path) for path in (curve, metrics)}
+        report['pr_curves'] = draw_pr_curves(pr, pr_figure, hashes)
+        report['figures_sha256'] = {path.name: sha256(path) for path in figures}
         output.mkdir(parents=True, exist_ok=True)
-        for path in (curve, metrics):
+        for path in figures:
             path.rename(output / path.name)
         write_json(evidence, report)
 
