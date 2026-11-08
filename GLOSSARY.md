@@ -377,7 +377,7 @@ and test results describe performance within that source dataset.
 
 **Mix**:
 The Step 05 PerturbDiff comparison arm that pools eligible Tahoe and tenv
-training data in one fit.
+training data in one fit without balancing the sources.
 _Avoid_: Tahoe+CM
 
 **PerturbDiff v2 protocol**:
@@ -443,6 +443,10 @@ Tahoe.
 **Step 05 cold-drug split**:
 A tenv cold-drug split that also withholds its tenv validation and test drug
 blocks from Tahoe training and validation.
+
+**Step 05 warm-start split**:
+A tenv split that holds out complete parent–dose combinations and retains
+other doses of each held-out parent in training.
 
 **Δ space**:
 The CM benchmark target: `log1p_cp10k(treated) − mean(log1p_cp10k(same-plate DMSO))`,
