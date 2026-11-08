@@ -7,18 +7,20 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
-STEP05 = Path(__file__).resolve().parents[2]
-STAGE2 = STEP05.parent
+STAGE2 = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists()) / 'stage2'
+STEP05 = STAGE2 / '05_pdiff_transfer'
 STEP04 = STAGE2 / '04_pdiff_hyperparameter'
 STEP03 = STAGE2 / '03_modes_tenv'
-sys.path.insert(0, str(STEP04 / 'execution/tests'))
 sys.path.insert(0, str(STEP04 / 'execution/script'))
 sys.path.insert(0, str(STEP03 / 'execution/script'))
 
-from test_evaluate import csv_rows, digest, json_hash, prediction, write
+with patch.object(sys, 'path', [str(STEP04 / 'execution/tests'), *sys.path]):
+    from test_evaluate import csv_rows, digest, json_hash, prediction, write
+
 from evaluate import write_results
 from training_inputs import predictor_paths, request_for
 

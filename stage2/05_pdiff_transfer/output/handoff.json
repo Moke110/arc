@@ -1,0 +1,793 @@
+{
+  "schema": "step05-output-handoff-v1",
+  "path_base": "repository root",
+  "plan": {
+    "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/plan.json",
+    "sha256": "c770c08340fa45e01ce2014015fb7dda5da66f311be940054baee94c105badf7"
+  },
+  "prediction_inventory": {
+    "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/prediction_inventory.json",
+    "sha256": "55e7f677818e7fc355acb6d057fc740d0475998d9d8ba7330b01c0d5d5e85be8"
+  },
+  "checkpoint_index": {
+    "path": "stage2/05_pdiff_transfer/execution/formal_record/checkpoints.json",
+    "sha256": "33284706dbc0cae3a5e3227fb1027233b846bc71b5733000052f89edf9a365db"
+  },
+  "slots": {
+    "warm-start-cm-17": {
+      "status": "completed",
+      "target_checkpoint_sha256": "003245435730da842fb459adc914daa888bbd314f3cb0d955cb4fda02a64b34b",
+      "prediction_manifest_sha256": "8dbf27c9f7aae567d45539b87b21b13c3d4f92aba39cbb3cef3e23cc633f0c0b"
+    },
+    "warm-start-cm-42": {
+      "status": "completed",
+      "target_checkpoint_sha256": "5edc6633566acdba8c411bafcbf7913014315ce8e709a7de2f15bbc2efccd59b",
+      "prediction_manifest_sha256": "022f779545b2761d413a7158c1e347ecf1b7e9b9172920a5692c545f65d630b3"
+    },
+    "warm-start-cm-2026": {
+      "status": "completed",
+      "target_checkpoint_sha256": "115e7ea4a2416a1d8efde8ddc3968d7c00e1fc9de994ba01b3d1498bc544e074",
+      "prediction_manifest_sha256": "5582451cd61ba3e8578edcdf7a9febc47468c9fc8b2baff6c4a566b529e32ac7"
+    },
+    "warm-start-tahoe-17": {
+      "status": "completed",
+      "source_checkpoint_sha256": "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204",
+      "prediction_manifest_sha256": "01fb1817a4f362285c7263c62b33bda4f9f527d44f7c50fea1ab0a1f3c95899c"
+    },
+    "warm-start-tahoe-42": {
+      "status": "completed",
+      "source_checkpoint_sha256": "616e47744ae00fbd28833c6872b7c5fe25892b3baae9632826557c8d7fa3efeb",
+      "prediction_manifest_sha256": "8469f90d9ba6b5a2a4d99c1cf78dc59f4343f1676e083a2c4c21ea4ad61f1770"
+    },
+    "warm-start-tahoe-2026": {
+      "status": "completed",
+      "source_checkpoint_sha256": "5419c440c3be0dedd486a1d15316f261967feaf0b0dcc46501d675fecc490d08",
+      "prediction_manifest_sha256": "c645e6245aded4e67bf1dbe83eafa45f1ecbcd07e0f057b580b04086703f93bf"
+    },
+    "warm-start-transfer-17": {
+      "status": "completed",
+      "source_checkpoint_sha256": "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204",
+      "target_checkpoint_sha256": "eb86dc6bbc3aff5d1407e55ab44c090eb13ebf660e5554ae54ae3f2b0dd2a7bc",
+      "prediction_manifest_sha256": "dbc66b7ba38cde0119a28c46d4434145016bd17811566a5f7d86bc3d87c79b6c"
+    },
+    "warm-start-transfer-42": {
+      "status": "completed",
+      "source_checkpoint_sha256": "616e47744ae00fbd28833c6872b7c5fe25892b3baae9632826557c8d7fa3efeb",
+      "target_checkpoint_sha256": "d7bcb4aff4d70090f5c5adc2c54c7fc863e10100fd338d2969f6c192e8c20869",
+      "prediction_manifest_sha256": "1b98f1669419adc5726e86f4bfb7c256d256e3b378601226cc1b38354732c44b"
+    },
+    "warm-start-transfer-2026": {
+      "status": "completed",
+      "source_checkpoint_sha256": "5419c440c3be0dedd486a1d15316f261967feaf0b0dcc46501d675fecc490d08",
+      "target_checkpoint_sha256": "8cd2f3ff87a35abe3e485ddb12e741ae6318fb1ea9e2f14fcf3846cb8f64a4ad",
+      "prediction_manifest_sha256": "4db5b5c168ae08159e148c8b3dc9f7e985c7f812f7394538732b7353ad578df0"
+    },
+    "warm-start-mix-17": {
+      "status": "completed",
+      "target_checkpoint_sha256": "291f23d58e814a18bcf4e75bc6e546bd226488b9159d9c3807a2d18bf9b24747",
+      "prediction_manifest_sha256": "15cbd87ed1abd4369316c710d9b931f06f8d7f39c3b242c887c2a3dc758db73f"
+    },
+    "warm-start-mix-42": {
+      "status": "completed",
+      "target_checkpoint_sha256": "64514b3be7fe804da47d568b4fe26d3609384bcd13c72b45aee88ecb9b7ae312",
+      "prediction_manifest_sha256": "3e2f2b3e420ce8a8dc58ceff45c3631857ca591b986890d9726bcd7512dc585d"
+    },
+    "warm-start-mix-2026": {
+      "status": "completed",
+      "target_checkpoint_sha256": "b6d7051c012810da5908d4f89c5cec0093c3a3ceb24b747f38f8c7c09d5ef539",
+      "prediction_manifest_sha256": "329c272528472bc4432192fe2cabd52eacfb5ff7fe0069ba1e9f4091ee6bda4d"
+    },
+    "cold-cm-drug-cm-17": {
+      "status": "reused",
+      "target_checkpoint_sha256": "1d90ddcf1618dbe5f3851a6a9614a5866189380e8b4be733a13ca7327648fa42",
+      "prediction_manifest_sha256": "6e3819a185d027517cebbfb341880180a09d94cd471ff76e0c56f49966086d86"
+    },
+    "cold-cm-drug-cm-42": {
+      "status": "reused",
+      "target_checkpoint_sha256": "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b",
+      "prediction_manifest_sha256": "f449b38b9fcefb79a0c8e9d8d1173ef80bcadd5a3cd02f69c3b052908a6cc384"
+    },
+    "cold-cm-drug-cm-2026": {
+      "status": "reused",
+      "target_checkpoint_sha256": "01ae70f60e5a5284eaf8457b2865776a624150134ebac6e1d7798a997180c840",
+      "prediction_manifest_sha256": "d3d60512aed839020009e4fbdb67066c73d3b33e8d6e0343c56b390917272cdc"
+    },
+    "cold-cm-drug-tahoe-17": {
+      "status": "completed",
+      "source_checkpoint_sha256": "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204",
+      "prediction_manifest_sha256": "a5664d2164230ee86401dee3862961cb7939cb9c8e955d5dd5c36b6f3b00c7f9"
+    },
+    "cold-cm-drug-tahoe-42": {
+      "status": "completed",
+      "source_checkpoint_sha256": "616e47744ae00fbd28833c6872b7c5fe25892b3baae9632826557c8d7fa3efeb",
+      "prediction_manifest_sha256": "48609e1cb226a40d63a2b2d7b3705faeab0817a00ab48ba5da2363f3b41eef85"
+    },
+    "cold-cm-drug-tahoe-2026": {
+      "status": "completed",
+      "source_checkpoint_sha256": "5419c440c3be0dedd486a1d15316f261967feaf0b0dcc46501d675fecc490d08",
+      "prediction_manifest_sha256": "b2df125a459c4fcf821f1f64a4194cc922f29de4241912965e77089436f51642"
+    },
+    "cold-cm-drug-transfer-17": {
+      "status": "completed",
+      "source_checkpoint_sha256": "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204",
+      "target_checkpoint_sha256": "9a1e533b0c826b1395729aa18785f661a4165849352fd72d4f2b4d0c8f6cacc4",
+      "prediction_manifest_sha256": "529c1930c3d8837e57efabd3edc599198f3ea346ed67c42b2f00fb32e6e658bc"
+    },
+    "cold-cm-drug-transfer-42": {
+      "status": "completed",
+      "source_checkpoint_sha256": "616e47744ae00fbd28833c6872b7c5fe25892b3baae9632826557c8d7fa3efeb",
+      "target_checkpoint_sha256": "231c41344f7621000cf748381aefc054709eace671d84e8ba6850509f9ce74cf",
+      "prediction_manifest_sha256": "0c9a925bf61fd01fad1923585aeb493614b1fdb832c27e237d2468e317359351"
+    },
+    "cold-cm-drug-transfer-2026": {
+      "status": "completed",
+      "source_checkpoint_sha256": "5419c440c3be0dedd486a1d15316f261967feaf0b0dcc46501d675fecc490d08",
+      "target_checkpoint_sha256": "d85b3b4191a5a0878cdeb0aee4f7691f918d6280f9f8f2be50725a955f390019",
+      "prediction_manifest_sha256": "a5d0915e76658d224c23012fedaad4ea438ac348fe6fe8199f04d30eea01f60a"
+    },
+    "cold-cm-drug-mix-17": {
+      "status": "completed",
+      "target_checkpoint_sha256": "285be6f5ebcc29c377f0bc28fbc4dde4e44f43adb067d66ad55050a78880893b",
+      "prediction_manifest_sha256": "0a220f2052c30cc368a58083e50b6fc0628aba975822250ad27ab1b07f63e4b2"
+    },
+    "cold-cm-drug-mix-42": {
+      "status": "completed",
+      "target_checkpoint_sha256": "682178ff25900172daa11a4bd7ef4f5db0c9668bee89d5d2ceedab4a022300a0",
+      "prediction_manifest_sha256": "92390851fd3c1b995c53ab7c2da6fce89a8d8132cba34f52134c27a20396b1bc"
+    },
+    "cold-cm-drug-mix-2026": {
+      "status": "completed",
+      "target_checkpoint_sha256": "7ab2fb67b83559cf329c7c6d49077f95ce57bcd4b6cb67116ff802f64fca7424",
+      "prediction_manifest_sha256": "459f32fc60504e6d2a86a4d2ba48c71a15e488e3440afe922c7abec83c9c9baf"
+    },
+    "cold-drug-cm-17": {
+      "status": "reused",
+      "target_checkpoint_sha256": "1d90ddcf1618dbe5f3851a6a9614a5866189380e8b4be733a13ca7327648fa42",
+      "prediction_manifest_sha256": "6e3819a185d027517cebbfb341880180a09d94cd471ff76e0c56f49966086d86"
+    },
+    "cold-drug-cm-42": {
+      "status": "reused",
+      "target_checkpoint_sha256": "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b",
+      "prediction_manifest_sha256": "f449b38b9fcefb79a0c8e9d8d1173ef80bcadd5a3cd02f69c3b052908a6cc384"
+    },
+    "cold-drug-cm-2026": {
+      "status": "reused",
+      "target_checkpoint_sha256": "01ae70f60e5a5284eaf8457b2865776a624150134ebac6e1d7798a997180c840",
+      "prediction_manifest_sha256": "d3d60512aed839020009e4fbdb67066c73d3b33e8d6e0343c56b390917272cdc"
+    },
+    "cold-drug-tahoe-17": {
+      "status": "completed",
+      "source_checkpoint_sha256": "8c5063e8cdae431b2dbc9fbd180401d8cb143467e188d4fa863af62861dd5ca1",
+      "prediction_manifest_sha256": "4e86bb072d5634fd6e19469fcecb51a8c432620cdef832db2ecc568f0417c6dd"
+    },
+    "cold-drug-tahoe-42": {
+      "status": "completed",
+      "source_checkpoint_sha256": "cfbf53ab94b745d9c3ea754a63da2055eda6f4cd76da3d2d3da4472f47a8f104",
+      "prediction_manifest_sha256": "c8b7e0020f6171760e1e1fadd4926366bd69683ecfa9e6b914620848be309627"
+    },
+    "cold-drug-tahoe-2026": {
+      "status": "completed",
+      "source_checkpoint_sha256": "577bbf227db3dd202cfb18379705c5c94421dff85684ce30f64967a39a517d6e",
+      "prediction_manifest_sha256": "d61693a0c6f3681356292dd61f3fd475f98b66850ae0b94b51b6339ba4230235"
+    },
+    "cold-drug-transfer-17": {
+      "status": "completed",
+      "source_checkpoint_sha256": "8c5063e8cdae431b2dbc9fbd180401d8cb143467e188d4fa863af62861dd5ca1",
+      "target_checkpoint_sha256": "0c248a1f9631060c4c4fa49e12fd9ead00c479b74e82a0ee5d36993b1c3e2a3f",
+      "prediction_manifest_sha256": "50fcc6d058ecf01b051da5fb4dcf7a291468444911589bff5ad64eb737e2ddc2"
+    },
+    "cold-drug-transfer-42": {
+      "status": "completed",
+      "source_checkpoint_sha256": "cfbf53ab94b745d9c3ea754a63da2055eda6f4cd76da3d2d3da4472f47a8f104",
+      "target_checkpoint_sha256": "4c21f81f83cf0010ecbc0b42b0bea0ac10cfa5fedd76dfccde1f2406ab1c6113",
+      "prediction_manifest_sha256": "8c3814ab12d9ed4f920ac449508ed3939214f6c456a1d738ef7c9d00591776f6"
+    },
+    "cold-drug-transfer-2026": {
+      "status": "completed",
+      "source_checkpoint_sha256": "577bbf227db3dd202cfb18379705c5c94421dff85684ce30f64967a39a517d6e",
+      "target_checkpoint_sha256": "4e9a6859ac5329f087bd37a6d2b6d08e678b6095ec4720400c27ecca578a0b89",
+      "prediction_manifest_sha256": "233fad65df9c75196bc866d9a6ada57640f8ce4ab33e93da3ee93ed6b06746b6"
+    },
+    "cold-drug-mix-17": {
+      "status": "completed",
+      "target_checkpoint_sha256": "c53c29cbc5a9d8b0bdd5c3fd4f90e3cc2320c1f2f143d6f1e06b25478a69deb4",
+      "prediction_manifest_sha256": "ff1cad50f3af2cd4bf2d3dcfc0841a5be8986a6be83a1317b300e5b5f6de947b"
+    },
+    "cold-drug-mix-42": {
+      "status": "completed",
+      "target_checkpoint_sha256": "b6d88054cce31dd37c0160d04bc27877ed12a07850ffee2f5169a9cad9e1c4c1",
+      "prediction_manifest_sha256": "e404016abb303f4486a2f9e39602040990c2a7a02a3582cef0980a9313e52a76"
+    },
+    "cold-drug-mix-2026": {
+      "status": "completed",
+      "target_checkpoint_sha256": "747fed6724fdf7c5b88123281ed574f1543677773e5aa46b706b96d881ecfe40",
+      "prediction_manifest_sha256": "bdb0240b775a5152ae0ed9638c21dc5683a1dcb3e50fb9323452c20687cd1026"
+    }
+  },
+  "predictions": {
+    "8dbf27c9f7aae567d45539b87b21b13c3d4f92aba39cbb3cef3e23cc633f0c0b": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-17/prediction/prediction.json",
+        "sha256": "8dbf27c9f7aae567d45539b87b21b13c3d4f92aba39cbb3cef3e23cc633f0c0b"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-17/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-17/prediction/prediction.npy",
+        "sha256": "27e73ffa5ba2bdc5b4c5d7d4a63f8961bfb6b18181cce5fdd62d08cba579d21c"
+      }
+    },
+    "022f779545b2761d413a7158c1e347ecf1b7e9b9172920a5692c545f65d630b3": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-42/prediction/prediction.json",
+        "sha256": "022f779545b2761d413a7158c1e347ecf1b7e9b9172920a5692c545f65d630b3"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-42/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-42/prediction/prediction.npy",
+        "sha256": "99ffe8ed61c495341bb37c636314c12ba20a5c7deea9f3efffae5c6877332a26"
+      }
+    },
+    "5582451cd61ba3e8578edcdf7a9febc47468c9fc8b2baff6c4a566b529e32ac7": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-2026/prediction/prediction.json",
+        "sha256": "5582451cd61ba3e8578edcdf7a9febc47468c9fc8b2baff6c4a566b529e32ac7"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-2026/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-2026/prediction/prediction.npy",
+        "sha256": "062e194d2337d133eee711778aa7b9491cbdfa89f6d81e05354831f300cf6894"
+      }
+    },
+    "01fb1817a4f362285c7263c62b33bda4f9f527d44f7c50fea1ab0a1f3c95899c": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-17/prediction.json",
+        "sha256": "01fb1817a4f362285c7263c62b33bda4f9f527d44f7c50fea1ab0a1f3c95899c"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-17/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-17/prediction.npy",
+        "sha256": "43badae1e5b975e354567f114508299b4134066557288ee5229207fdaacdb3b0"
+      }
+    },
+    "8469f90d9ba6b5a2a4d99c1cf78dc59f4343f1676e083a2c4c21ea4ad61f1770": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-42/prediction.json",
+        "sha256": "8469f90d9ba6b5a2a4d99c1cf78dc59f4343f1676e083a2c4c21ea4ad61f1770"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-42/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-42/prediction.npy",
+        "sha256": "a8b6f5ad9a2ad49dece1cac1f97d9f34be6d71ebed17b3d6192ea8821a9984b9"
+      }
+    },
+    "c645e6245aded4e67bf1dbe83eafa45f1ecbcd07e0f057b580b04086703f93bf": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-2026/prediction.json",
+        "sha256": "c645e6245aded4e67bf1dbe83eafa45f1ecbcd07e0f057b580b04086703f93bf"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-2026/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/warm-start/seed-2026/prediction.npy",
+        "sha256": "31fd117f3155d17a67c959f933f7f6e5e50a2b8232494dc79c40677015e731a7"
+      }
+    },
+    "dbc66b7ba38cde0119a28c46d4434145016bd17811566a5f7d86bc3d87c79b6c": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-17/prediction/prediction.json",
+        "sha256": "dbc66b7ba38cde0119a28c46d4434145016bd17811566a5f7d86bc3d87c79b6c"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-17/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-17/prediction/prediction.npy",
+        "sha256": "2d920f8989517c9459aa835ec9b69e91f0cdae7fd40efde89439e3c000b22db7"
+      }
+    },
+    "1b98f1669419adc5726e86f4bfb7c256d256e3b378601226cc1b38354732c44b": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-42/prediction/prediction.json",
+        "sha256": "1b98f1669419adc5726e86f4bfb7c256d256e3b378601226cc1b38354732c44b"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-42/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-42/prediction/prediction.npy",
+        "sha256": "6a7e6c0baddf99ff2ae97d24e2ffeb814cfd9c6818b8bd8a8f39b55981dcc028"
+      }
+    },
+    "4db5b5c168ae08159e148c8b3dc9f7e985c7f812f7394538732b7353ad578df0": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-2026/prediction/prediction.json",
+        "sha256": "4db5b5c168ae08159e148c8b3dc9f7e985c7f812f7394538732b7353ad578df0"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-2026/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-2026/prediction/prediction.npy",
+        "sha256": "10ec2fc16b585411be05858fc4c945809a53425c13ab530afe3393c2fe199fc1"
+      }
+    },
+    "15cbd87ed1abd4369316c710d9b931f06f8d7f39c3b242c887c2a3dc758db73f": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-17/prediction/prediction.json",
+        "sha256": "15cbd87ed1abd4369316c710d9b931f06f8d7f39c3b242c887c2a3dc758db73f"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-17/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-17/prediction/prediction.npy",
+        "sha256": "9ae08488eda6482208780e764d547c18f2220185760d251a8547d5a314b914c8"
+      }
+    },
+    "3e2f2b3e420ce8a8dc58ceff45c3631857ca591b986890d9726bcd7512dc585d": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-42/prediction/prediction.json",
+        "sha256": "3e2f2b3e420ce8a8dc58ceff45c3631857ca591b986890d9726bcd7512dc585d"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-42/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-42/prediction/prediction.npy",
+        "sha256": "378885f0ded1aee1196a53376e6690c1df6dc31c91407aa0f0b54baf3f8a94c6"
+      }
+    },
+    "329c272528472bc4432192fe2cabd52eacfb5ff7fe0069ba1e9f4091ee6bda4d": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-2026/prediction/prediction.json",
+        "sha256": "329c272528472bc4432192fe2cabd52eacfb5ff7fe0069ba1e9f4091ee6bda4d"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-2026/prediction/cases.json",
+        "sha256": "945f3ffd58d70aa0fa99b44d6b599c84f08a79e5841f6afd093c5d57849995ed"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-2026/prediction/prediction.npy",
+        "sha256": "1c4e28e05e0814d29a274eafa38144012e9e230b14888ec2c6503b300fb7cec6"
+      }
+    },
+    "6e3819a185d027517cebbfb341880180a09d94cd471ff76e0c56f49966086d86": {
+      "manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/prediction.json",
+        "sha256": "6e3819a185d027517cebbfb341880180a09d94cd471ff76e0c56f49966086d86"
+      },
+      "cases": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/prediction.npy",
+        "sha256": "f58b411134d00102241133cc9a1302cb1e3d2993d3598649d41c932fb3d1bce7"
+      }
+    },
+    "f449b38b9fcefb79a0c8e9d8d1173ef80bcadd5a3cd02f69c3b052908a6cc384": {
+      "manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/prediction.json",
+        "sha256": "f449b38b9fcefb79a0c8e9d8d1173ef80bcadd5a3cd02f69c3b052908a6cc384"
+      },
+      "cases": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/prediction.npy",
+        "sha256": "4f5037966ab77ec19399fcd3beac8ab0f8feb66c8cb091052e23bb9ad2f74737"
+      }
+    },
+    "d3d60512aed839020009e4fbdb67066c73d3b33e8d6e0343c56b390917272cdc": {
+      "manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/prediction.json",
+        "sha256": "d3d60512aed839020009e4fbdb67066c73d3b33e8d6e0343c56b390917272cdc"
+      },
+      "cases": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/prediction.npy",
+        "sha256": "b40d6c4de0722d954d10d180f0846080fdc7c7ab0cb09b1b2ac0f36958b56872"
+      }
+    },
+    "a5664d2164230ee86401dee3862961cb7939cb9c8e955d5dd5c36b6f3b00c7f9": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-17/prediction.json",
+        "sha256": "a5664d2164230ee86401dee3862961cb7939cb9c8e955d5dd5c36b6f3b00c7f9"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-17/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-17/prediction.npy",
+        "sha256": "caa358d0af434befd2cabe840c8ba7f9c9f93526acaed36c606201b414280094"
+      }
+    },
+    "48609e1cb226a40d63a2b2d7b3705faeab0817a00ab48ba5da2363f3b41eef85": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-42/prediction.json",
+        "sha256": "48609e1cb226a40d63a2b2d7b3705faeab0817a00ab48ba5da2363f3b41eef85"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-42/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-42/prediction.npy",
+        "sha256": "3220967f0f4a1ec6a41b7617740c77dade0ea5f1d75f1efbc464b0c27d1fbb12"
+      }
+    },
+    "b2df125a459c4fcf821f1f64a4194cc922f29de4241912965e77089436f51642": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-2026/prediction.json",
+        "sha256": "b2df125a459c4fcf821f1f64a4194cc922f29de4241912965e77089436f51642"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-2026/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-cm-drug/seed-2026/prediction.npy",
+        "sha256": "2c77111be87c59cd34d5e66cff7756ff90133dbb470e419c0889521e414a1a9f"
+      }
+    },
+    "529c1930c3d8837e57efabd3edc599198f3ea346ed67c42b2f00fb32e6e658bc": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-17/prediction/prediction.json",
+        "sha256": "529c1930c3d8837e57efabd3edc599198f3ea346ed67c42b2f00fb32e6e658bc"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-17/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-17/prediction/prediction.npy",
+        "sha256": "95ff5c9ec3b0c7a6005d7d8aa747c63adc56dd01bb4de186b96368287db80fce"
+      }
+    },
+    "0c9a925bf61fd01fad1923585aeb493614b1fdb832c27e237d2468e317359351": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-42/prediction/prediction.json",
+        "sha256": "0c9a925bf61fd01fad1923585aeb493614b1fdb832c27e237d2468e317359351"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-42/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-42/prediction/prediction.npy",
+        "sha256": "4122a298d9f721f7d838bbd732f2e68314fbe03a0ff4218fca5e27b3a06dacdf"
+      }
+    },
+    "a5d0915e76658d224c23012fedaad4ea438ac348fe6fe8199f04d30eea01f60a": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-2026/prediction/prediction.json",
+        "sha256": "a5d0915e76658d224c23012fedaad4ea438ac348fe6fe8199f04d30eea01f60a"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-2026/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-2026/prediction/prediction.npy",
+        "sha256": "286ce06e84563ba3b5dfc84173c9c2fe4532aae8639a71b6f01c372162257c7f"
+      }
+    },
+    "0a220f2052c30cc368a58083e50b6fc0628aba975822250ad27ab1b07f63e4b2": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-17/prediction/prediction.json",
+        "sha256": "0a220f2052c30cc368a58083e50b6fc0628aba975822250ad27ab1b07f63e4b2"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-17/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-17/prediction/prediction.npy",
+        "sha256": "06add61911acedeb75817f1e6fd879298eb30ed510097c1dd37c87b019f5b7ee"
+      }
+    },
+    "92390851fd3c1b995c53ab7c2da6fce89a8d8132cba34f52134c27a20396b1bc": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-42/prediction/prediction.json",
+        "sha256": "92390851fd3c1b995c53ab7c2da6fce89a8d8132cba34f52134c27a20396b1bc"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-42/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-42/prediction/prediction.npy",
+        "sha256": "c84b64d7adaa847914ced533d2a70b2adcd6a449b607eeda19a778b336458987"
+      }
+    },
+    "459f32fc60504e6d2a86a4d2ba48c71a15e488e3440afe922c7abec83c9c9baf": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-2026/prediction/prediction.json",
+        "sha256": "459f32fc60504e6d2a86a4d2ba48c71a15e488e3440afe922c7abec83c9c9baf"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-2026/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-2026/prediction/prediction.npy",
+        "sha256": "a3514a91671f161bd7dddfcefab6ebfa7fe035097d636de570a7460717ba501e"
+      }
+    },
+    "4e86bb072d5634fd6e19469fcecb51a8c432620cdef832db2ecc568f0417c6dd": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-17/prediction.json",
+        "sha256": "4e86bb072d5634fd6e19469fcecb51a8c432620cdef832db2ecc568f0417c6dd"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-17/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-17/prediction.npy",
+        "sha256": "2cd56c696b523140172b76f5932c3336211295963dce2eacafb011780a367ef6"
+      }
+    },
+    "c8b7e0020f6171760e1e1fadd4926366bd69683ecfa9e6b914620848be309627": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-42/prediction.json",
+        "sha256": "c8b7e0020f6171760e1e1fadd4926366bd69683ecfa9e6b914620848be309627"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-42/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-42/prediction.npy",
+        "sha256": "025c041f6e8e2cabce5e22050bd5961141eb98c98fca3313174fc2aa37689b46"
+      }
+    },
+    "d61693a0c6f3681356292dd61f3fd475f98b66850ae0b94b51b6339ba4230235": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-2026/prediction.json",
+        "sha256": "d61693a0c6f3681356292dd61f3fd475f98b66850ae0b94b51b6339ba4230235"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-2026/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/tahoe/cold-drug/seed-2026/prediction.npy",
+        "sha256": "31e46912bd7161de409f413ebcf0a2cfafad72fd604129a87bf1fb7305dcdb0e"
+      }
+    },
+    "50fcc6d058ecf01b051da5fb4dcf7a291468444911589bff5ad64eb737e2ddc2": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-17/prediction/prediction.json",
+        "sha256": "50fcc6d058ecf01b051da5fb4dcf7a291468444911589bff5ad64eb737e2ddc2"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-17/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-17/prediction/prediction.npy",
+        "sha256": "2378b1d5d319acb183a8704cb10a4c80c2129a0bf149f370ad70ac7cc416e995"
+      }
+    },
+    "8c3814ab12d9ed4f920ac449508ed3939214f6c456a1d738ef7c9d00591776f6": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-42/prediction/prediction.json",
+        "sha256": "8c3814ab12d9ed4f920ac449508ed3939214f6c456a1d738ef7c9d00591776f6"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-42/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-42/prediction/prediction.npy",
+        "sha256": "7eb3794c9c83e1f0246f6b2eccfaa0876fe98bf31d0c4133db77fc18d0267d91"
+      }
+    },
+    "233fad65df9c75196bc866d9a6ada57640f8ce4ab33e93da3ee93ed6b06746b6": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-2026/prediction/prediction.json",
+        "sha256": "233fad65df9c75196bc866d9a6ada57640f8ce4ab33e93da3ee93ed6b06746b6"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-2026/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-2026/prediction/prediction.npy",
+        "sha256": "0667458d3e00d1cbafa5c048ffda06eac771ec328d41c4e393615070ed97a559"
+      }
+    },
+    "ff1cad50f3af2cd4bf2d3dcfc0841a5be8986a6be83a1317b300e5b5f6de947b": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-17/prediction/prediction.json",
+        "sha256": "ff1cad50f3af2cd4bf2d3dcfc0841a5be8986a6be83a1317b300e5b5f6de947b"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-17/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-17/prediction/prediction.npy",
+        "sha256": "67ac238e8b75643bcfb07dce0782d27f51c76bddd25dc95539b44deac3b0b632"
+      }
+    },
+    "e404016abb303f4486a2f9e39602040990c2a7a02a3582cef0980a9313e52a76": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-42/prediction/prediction.json",
+        "sha256": "e404016abb303f4486a2f9e39602040990c2a7a02a3582cef0980a9313e52a76"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-42/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-42/prediction/prediction.npy",
+        "sha256": "3ab5aa1538dde3cf7ac05f3ebd90fb00ab8e997cd703c70dc7c10fc45295cadd"
+      }
+    },
+    "bdb0240b775a5152ae0ed9638c21dc5683a1dcb3e50fb9323452c20687cd1026": {
+      "manifest": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-2026/prediction/prediction.json",
+        "sha256": "bdb0240b775a5152ae0ed9638c21dc5683a1dcb3e50fb9323452c20687cd1026"
+      },
+      "cases": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-2026/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "values": {
+        "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-2026/prediction/prediction.npy",
+        "sha256": "54440cb4309a8de48c297b4b082ebebddeb718f8923857da530b69c69aaf9272"
+      }
+    }
+  },
+  "checkpoints": {
+    "003245435730da842fb459adc914daa888bbd314f3cb0d955cb4fda02a64b34b": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-17/fit/best.pt",
+      "sha256": "003245435730da842fb459adc914daa888bbd314f3cb0d955cb4fda02a64b34b"
+    },
+    "5edc6633566acdba8c411bafcbf7913014315ce8e709a7de2f15bbc2efccd59b": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-42/fit/best.pt",
+      "sha256": "5edc6633566acdba8c411bafcbf7913014315ce8e709a7de2f15bbc2efccd59b"
+    },
+    "115e7ea4a2416a1d8efde8ddc3968d7c00e1fc9de994ba01b3d1498bc544e074": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/warm/slots/seed-2026/fit/best.pt",
+      "sha256": "115e7ea4a2416a1d8efde8ddc3968d7c00e1fc9de994ba01b3d1498bc544e074"
+    },
+    "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204": {
+      "path": "stage2/04_pdiff_hyperparameter/execution/output/tahoe-formal-ticket73/slots/fold-0-seed-17/fit/best.pt",
+      "sha256": "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204"
+    },
+    "616e47744ae00fbd28833c6872b7c5fe25892b3baae9632826557c8d7fa3efeb": {
+      "path": "stage2/04_pdiff_hyperparameter/execution/output/tahoe-formal-ticket73/slots/fold-0-seed-42/fit/best.pt",
+      "sha256": "616e47744ae00fbd28833c6872b7c5fe25892b3baae9632826557c8d7fa3efeb"
+    },
+    "5419c440c3be0dedd486a1d15316f261967feaf0b0dcc46501d675fecc490d08": {
+      "path": "stage2/04_pdiff_hyperparameter/execution/output/tahoe-formal-ticket73/slots/fold-0-seed-2026/fit/best.pt",
+      "sha256": "5419c440c3be0dedd486a1d15316f261967feaf0b0dcc46501d675fecc490d08"
+    },
+    "eb86dc6bbc3aff5d1407e55ab44c090eb13ebf660e5554ae54ae3f2b0dd2a7bc": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-17/fit/best.pt",
+      "sha256": "eb86dc6bbc3aff5d1407e55ab44c090eb13ebf660e5554ae54ae3f2b0dd2a7bc"
+    },
+    "d7bcb4aff4d70090f5c5adc2c54c7fc863e10100fd338d2969f6c192e8c20869": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-42/fit/best.pt",
+      "sha256": "d7bcb4aff4d70090f5c5adc2c54c7fc863e10100fd338d2969f6c192e8c20869"
+    },
+    "8cd2f3ff87a35abe3e485ddb12e741ae6318fb1ea9e2f14fcf3846cb8f64a4ad": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/warm-start/seed-2026/fit/best.pt",
+      "sha256": "8cd2f3ff87a35abe3e485ddb12e741ae6318fb1ea9e2f14fcf3846cb8f64a4ad"
+    },
+    "291f23d58e814a18bcf4e75bc6e546bd226488b9159d9c3807a2d18bf9b24747": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-17/fit/best.pt",
+      "sha256": "291f23d58e814a18bcf4e75bc6e546bd226488b9159d9c3807a2d18bf9b24747"
+    },
+    "64514b3be7fe804da47d568b4fe26d3609384bcd13c72b45aee88ecb9b7ae312": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-42/fit/best.pt",
+      "sha256": "64514b3be7fe804da47d568b4fe26d3609384bcd13c72b45aee88ecb9b7ae312"
+    },
+    "b6d7051c012810da5908d4f89c5cec0093c3a3ceb24b747f38f8c7c09d5ef539": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/warm-start/seed-2026/fit/best.pt",
+      "sha256": "b6d7051c012810da5908d4f89c5cec0093c3a3ceb24b747f38f8c7c09d5ef539"
+    },
+    "1d90ddcf1618dbe5f3851a6a9614a5866189380e8b4be733a13ca7327648fa42": {
+      "path": "stage2/04_pdiff_hyperparameter/output/checkpoints/tenv/fold-0/seed-17/best.pt",
+      "sha256": "1d90ddcf1618dbe5f3851a6a9614a5866189380e8b4be733a13ca7327648fa42"
+    },
+    "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b": {
+      "path": "stage2/04_pdiff_hyperparameter/output/checkpoints/tenv/fold-0/seed-42/best.pt",
+      "sha256": "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b"
+    },
+    "01ae70f60e5a5284eaf8457b2865776a624150134ebac6e1d7798a997180c840": {
+      "path": "stage2/04_pdiff_hyperparameter/output/checkpoints/tenv/fold-0/seed-2026/best.pt",
+      "sha256": "01ae70f60e5a5284eaf8457b2865776a624150134ebac6e1d7798a997180c840"
+    },
+    "9a1e533b0c826b1395729aa18785f661a4165849352fd72d4f2b4d0c8f6cacc4": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-17/fit/best.pt",
+      "sha256": "9a1e533b0c826b1395729aa18785f661a4165849352fd72d4f2b4d0c8f6cacc4"
+    },
+    "231c41344f7621000cf748381aefc054709eace671d84e8ba6850509f9ce74cf": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-42/fit/best.pt",
+      "sha256": "231c41344f7621000cf748381aefc054709eace671d84e8ba6850509f9ce74cf"
+    },
+    "d85b3b4191a5a0878cdeb0aee4f7691f918d6280f9f8f2be50725a955f390019": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-cm-drug/seed-2026/fit/best.pt",
+      "sha256": "d85b3b4191a5a0878cdeb0aee4f7691f918d6280f9f8f2be50725a955f390019"
+    },
+    "285be6f5ebcc29c377f0bc28fbc4dde4e44f43adb067d66ad55050a78880893b": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-17/fit/best.pt",
+      "sha256": "285be6f5ebcc29c377f0bc28fbc4dde4e44f43adb067d66ad55050a78880893b"
+    },
+    "682178ff25900172daa11a4bd7ef4f5db0c9668bee89d5d2ceedab4a022300a0": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-42/fit/best.pt",
+      "sha256": "682178ff25900172daa11a4bd7ef4f5db0c9668bee89d5d2ceedab4a022300a0"
+    },
+    "7ab2fb67b83559cf329c7c6d49077f95ce57bcd4b6cb67116ff802f64fca7424": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-cm-drug/seed-2026/fit/best.pt",
+      "sha256": "7ab2fb67b83559cf329c7c6d49077f95ce57bcd4b6cb67116ff802f64fca7424"
+    },
+    "8c5063e8cdae431b2dbc9fbd180401d8cb143467e188d4fa863af62861dd5ca1": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/source/seed-17/fit/best.pt",
+      "sha256": "8c5063e8cdae431b2dbc9fbd180401d8cb143467e188d4fa863af62861dd5ca1"
+    },
+    "cfbf53ab94b745d9c3ea754a63da2055eda6f4cd76da3d2d3da4472f47a8f104": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/source/seed-42/fit/best.pt",
+      "sha256": "cfbf53ab94b745d9c3ea754a63da2055eda6f4cd76da3d2d3da4472f47a8f104"
+    },
+    "577bbf227db3dd202cfb18379705c5c94421dff85684ce30f64967a39a517d6e": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/source/seed-2026/fit/best.pt",
+      "sha256": "577bbf227db3dd202cfb18379705c5c94421dff85684ce30f64967a39a517d6e"
+    },
+    "0c248a1f9631060c4c4fa49e12fd9ead00c479b74e82a0ee5d36993b1c3e2a3f": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-17/fit/best.pt",
+      "sha256": "0c248a1f9631060c4c4fa49e12fd9ead00c479b74e82a0ee5d36993b1c3e2a3f"
+    },
+    "4c21f81f83cf0010ecbc0b42b0bea0ac10cfa5fedd76dfccde1f2406ab1c6113": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-42/fit/best.pt",
+      "sha256": "4c21f81f83cf0010ecbc0b42b0bea0ac10cfa5fedd76dfccde1f2406ab1c6113"
+    },
+    "4e9a6859ac5329f087bd37a6d2b6d08e678b6095ec4720400c27ecca578a0b89": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/transfer/slots/cold-drug/seed-2026/fit/best.pt",
+      "sha256": "4e9a6859ac5329f087bd37a6d2b6d08e678b6095ec4720400c27ecca578a0b89"
+    },
+    "c53c29cbc5a9d8b0bdd5c3fd4f90e3cc2320c1f2f143d6f1e06b25478a69deb4": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-17/fit/best.pt",
+      "sha256": "c53c29cbc5a9d8b0bdd5c3fd4f90e3cc2320c1f2f143d6f1e06b25478a69deb4"
+    },
+    "b6d88054cce31dd37c0160d04bc27877ed12a07850ffee2f5169a9cad9e1c4c1": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-42/fit/best.pt",
+      "sha256": "b6d88054cce31dd37c0160d04bc27877ed12a07850ffee2f5169a9cad9e1c4c1"
+    },
+    "747fed6724fdf7c5b88123281ed574f1543677773e5aa46b706b96d881ecfe40": {
+      "path": "stage2/05_pdiff_transfer/execution/output/formal-ticket82/mix/slots/cold-drug/seed-2026/fit/best.pt",
+      "sha256": "747fed6724fdf7c5b88123281ed574f1543677773e5aa46b706b96d881ecfe40"
+    }
+  }
+}

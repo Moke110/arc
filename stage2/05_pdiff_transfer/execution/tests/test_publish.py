@@ -3,6 +3,7 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -88,6 +89,21 @@ class PublicationTest(unittest.TestCase):
             self.assertEqual(len(cold_refs), 2)
             publication = digest(release / 'publication.json')
             self.cli('verify-replay', scores, release, '--publication-sha256', publication)
+            step = root / 'step'
+            record = step / 'execution/formal_record'
+            record.mkdir(parents=True)
+            paths = {}
+            for source in release.iterdir():
+                name = 'results.md' if source.name == 'README.md' else source.name
+                destination = (step if source.suffix in ('.png', '.csv') else record) / name
+                shutil.copyfile(source, destination)
+                paths[source.name] = destination.relative_to(step).as_posix()
+            run = {'publication': {'manifest': {'sha256': publication}, 'tracked_artifact_paths': paths}}
+            (record / 'run.json').write_text(json.dumps(run))
+            self.cli('verify-release', step)
+            self.cli('verify-release', step, '--scores', scores)
+            (record / 'results.md').write_bytes(b'tampered')
+            self.cli('verify-release', step, success=False)
             (release / 'pr_curves.png').write_bytes(b'tampered')
             self.cli('verify-replay', scores, release, '--publication-sha256', publication, success=False)
 

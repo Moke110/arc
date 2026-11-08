@@ -10,12 +10,14 @@ import shutil
 import tempfile
 
 import formal_matrix as matrix
+import tahoe_zero_shot as tahoe
 from artifacts import SEEDS, read_json, rows, sha256, write_csv, write_json
 from evaluate import (GROUP_FIELDS, METRICS, RECALL_GRID, REFERENCES, RUN_FIELDS, evaluator_inputs,
                       grouped_cases, load_array, mean_delta, np, run_scores, summaries, verify_file)
 from tahoe_bridge import LIMITATION
 from training_inputs import json_hash
 from training_policy import verify_best_checkpoint
+from transfer import RECORD, REPO
 
 SHARED = 'cold-shared'
 SCORE_SCHEMA = 'step05-scores-v1'
@@ -42,15 +44,27 @@ def hashes(root):
             for path in sorted(root.rglob('*')) if path.is_file()}
 
 
-def sealed_record(root, name, digest, schema):
-    record = read_json(verify_file(root / name, digest))
+def sealed_record(root, name, digest, schema, *, paths=None):
+    files = None if paths is None else set(paths) - {name}
+    if paths is not None and (name not in paths or len(set(paths.values())) != len(paths)):
+        raise ValueError('invalid tracked publication paths')
+
+    def resolve(relative):
+        mapped = relative if paths is None else paths[relative]
+        if Path(mapped).is_absolute():
+            raise ValueError(f'artifact path must be relative: {mapped}')
+        path = (root / mapped).resolve()
+        if not path.is_relative_to(root.resolve()):
+            raise ValueError(f'artifact is outside the record: {mapped}')
+        return path
+
+    record = read_json(verify_file(resolve(name), digest))
     if record['schema'] != schema:
         raise ValueError(f'unexpected record schema: {name}')
+    if files is not None and files != set(record['files']):
+        raise ValueError('tracked publication paths differ from the sealed file inventory')
     for relative, checksum in record['files'].items():
-        path = (root / relative).resolve()
-        if not path.is_relative_to(root.resolve()):
-            raise ValueError(f'artifact is outside the record: {relative}')
-        verify_file(path, checksum)
+        verify_file(resolve(relative), checksum)
     return record
 
 
@@ -124,7 +138,6 @@ def checkpoint_index(plan, inventory):
 
 
 def parent_overlap(plan, regime, target_request):
-    tahoe = matrix.transfer.tahoe
     source = next(row['source'] for row in plan['slots']
                   if row['regime'] == regime and row['arm'] == 'Tahoe')
     source_request = read_json(source['request']['path'])
@@ -178,7 +191,7 @@ def failure_reason(row):
 
 def verify_cold_reuse(directory, runs, curves):
     """Compare the replayed shared scores with the independently qualified Step 04 replay."""
-    record = matrix.transfer.RECORD / 'cold_record/replay.json'
+    record = RECORD / 'cold_record/replay.json'
     pin = read_json(record)['local_artifact_sha256']
     historical_runs = rows(verify_file(directory / 'per_run.csv', pin[f'{directory.name}/per_run.csv']))
     historical_curves = read_json(verify_file(directory / 'tenv/pr_curves.json',
@@ -215,6 +228,18 @@ def undefined_reasons(path):
             for (scope, model, seed), counts in reasons.items()]
 
 
+def verify_tahoe_membership(entries, request, overlap):
+    """Check the recipient and exact overlap fields against verified membership."""
+    for row in entries:
+        if row['arm'] != 'Tahoe' or row['status'] != 'completed':
+            continue
+        evidence = row['prediction']['artifacts']['prediction']
+        manifest = read_json(evidence['path'])
+        if (manifest['recipient_identity'] != request['identity']
+                or manifest['source_parent_overlap'] != overlap['Tahoe_and_Transfer_source_roles']):
+            raise ValueError(f'{row["id"]} Tahoe prediction differs from the verified recipient or source overlap')
+
+
 def score(runtime, formal, output, plan_digest, inventory_digest):
     verify_file(formal / 'prediction_inventory.json', inventory_digest)
     plan = matrix.read_plan(formal, plan_digest)
@@ -224,6 +249,16 @@ def score(runtime, formal, output, plan_digest, inventory_digest):
     inventory = matrix.verify_inventory(formal, plan_digest, plan)
     learning = checkpoint_index(plan, inventory)
     runs, curves, overlap, coverage, sources = [], [], {}, {}, {}
+    entries = {regime: [row for row in inventory['slots'] if row['regime'] == regime]
+               for regime in matrix.REGIMES}
+    recipients = {}
+    for regime in matrix.REGIMES:
+        recipient = plan['targets'][regime]['recipient_plan']
+        directory = Path(recipient['path']).parent
+        request, _, fold, warm_source = tahoe.recipient(runtime, directory, regime, recipient['sha256'])
+        overlap[regime] = parent_overlap(plan, regime, request)
+        verify_tahoe_membership(entries[regime], request, overlap[regime])
+        recipients[regime] = request, fold, warm_source, directory
     case_orders = {
         regime: [[row['case_id'], row['group_id']] for row in rows(target['cases']['test']['path'])]
         for regime, target in plan['targets'].items()
@@ -238,11 +273,7 @@ def score(runtime, formal, output, plan_digest, inventory_digest):
             writer = csv.DictWriter(stream, fieldnames=('scope', *GROUP_FIELDS))
             writer.writeheader()
             for regime in matrix.REGIMES:
-                recipient = plan['targets'][regime]['recipient_plan']
-                directory = Path(recipient['path']).parent
-                request, _, fold, warm_source = matrix.transfer.tahoe.recipient(
-                    runtime, directory, regime, recipient['sha256'])
-                overlap[regime] = parent_overlap(plan, regime, request)
+                request, fold, warm_source, directory = recipients[regime]
                 cases = rows(request['predictor_files']['test_cases'])
                 order = [[row['case_id'], row['group_id']] for row in cases]
                 target = plan['targets'][regime]
@@ -251,7 +282,7 @@ def score(runtime, formal, output, plan_digest, inventory_digest):
                     raise ValueError(f'{regime} differs from the frozen tenv test membership')
                 indices, _ = grouped_cases(cases)
                 if regime == 'warm-start':
-                    with matrix.transfer.tahoe.score_truth(runtime, request, fold, warm_source, scratch) as inputs:
+                    with tahoe.score_truth(runtime, request, fold, warm_source, scratch) as inputs:
                         warm_inputs = inputs
                     training = rows(target['predictor_files']['train_cases']['path'])
                     train_groups, _ = grouped_cases(training)
@@ -265,13 +296,12 @@ def score(runtime, formal, output, plan_digest, inventory_digest):
                 elif regime == 'cold-cm-drug':
                     groups, truth, labels, references = evaluator_inputs(fold)
                 # Both cold regimes use the same evaluator inputs. Score shared rows in the first.
-                entries = [row for row in inventory['slots'] if row['regime'] == regime]
                 coverage[regime] = {
-                    'expected_learned_slots': len(entries),
-                    'completed_learned_slots': sum(row['status'] in COMPLETE for row in entries),
-                    'reused_cm_slots': sum(row['status'] == 'reused' for row in entries),
+                    'expected_learned_slots': len(entries[regime]),
+                    'completed_learned_slots': sum(row['status'] in COMPLETE for row in entries[regime]),
+                    'reused_cm_slots': sum(row['status'] == 'reused' for row in entries[regime]),
                 }
-                for row in entries:
+                for row in entries[regime]:
                     values, evidence = predictions.pop(row['id'])
                     sources[row['id']] = evidence
                     if row['status'] == 'reused' and regime == 'cold-drug':
@@ -573,8 +603,10 @@ def render(scores, output, digest):
         })
 
 
-def verify_replay(scores, output, digest):
-    record = sealed_record(output, 'publication.json', digest, PUBLICATION_SCHEMA)
+def verify_replay(scores, output, digest, *, paths=None):
+    record = sealed_record(output, 'publication.json', digest, PUBLICATION_SCHEMA, paths=paths)
+    if scores is None:
+        return
     with tempfile.TemporaryDirectory() as temporary:
         replay = Path(temporary) / 'publication'
         render(scores, replay, record['scores_sha256'])
@@ -583,7 +615,7 @@ def verify_replay(scores, output, digest):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--runtime', type=Path, default=matrix.transfer.REPO)
+    parser.add_argument('--runtime', type=Path, default=REPO)
     commands = parser.add_subparsers(dest='command', required=True)
     scorer = commands.add_parser('score')
     scorer.add_argument('formal', type=Path)
@@ -598,6 +630,9 @@ def main():
     verifier.add_argument('scores', type=Path)
     verifier.add_argument('output', type=Path)
     verifier.add_argument('--publication-sha256', required=True)
+    release = commands.add_parser('verify-release', help='verify the tracked Step 05 publication')
+    release.add_argument('step', type=Path)
+    release.add_argument('--scores', type=Path, help='also reproduce the seal from this scoring output')
     args = parser.parse_args()
     try:
         if args.command == 'score':
@@ -605,8 +640,12 @@ def main():
                   args.plan_sha256, args.inventory_sha256)
         elif args.command == 'render':
             render(args.scores, args.output, args.scores_sha256)
-        else:
+        elif args.command == 'verify-replay':
             verify_replay(args.scores, args.output, args.publication_sha256)
+        else:
+            publication = read_json(args.step / 'execution/formal_record/run.json')['publication']
+            verify_replay(args.scores, args.step, publication['manifest']['sha256'],
+                          paths=publication['tracked_artifact_paths'])
     except (OSError, ValueError, KeyError) as error:
         parser.exit(1, f'{error}\n')
 

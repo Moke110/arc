@@ -40,6 +40,7 @@ Transfer use the source training and validation memberships.
 - [Directional precision–recall curves](pr_curves.png) and [plotted points](execution/formal_record/pr_points.json).
 - [Learning curves](learning_curves.png), [plotted points](execution/formal_record/learning_points.json), and [selected checkpoint index](execution/formal_record/checkpoints.json).
 - [Publication checksums](execution/formal_record/publication.json) and [execution and replay evidence](execution/formal_record/run.json).
+- [Output handoff](output/handoff.json) maps all 36 logical slots to the sealed prediction values, case order and selected source and target checkpoints. Paths start at the repository root. Both cold regimes point to the same three historical CM predictions. The handoff references the original local files in place and retains their SHA-256 digests.
 
 ## Shared cold tenv comparison
 
@@ -420,3 +421,19 @@ and validation points, and checkpoint hashes and paths. The checkpoint index
 links each logical slot to its source and target fits by digest. Tahoe and
 Transfer link to the same source fit for a given regime and seed. The two
 historically sourced regimes also share those source records.
+
+To verify the tracked release from a checkout, run the command below. It
+uses the publication checksum and path map in
+[run.json](execution/formal_record/run.json). The map includes the sealed
+[generated report](execution/formal_record/results.md) under its original
+logical name, `README.md`.
+
+```bash
+step=stage2/05_pdiff_transfer
+python "$step/execution/script/publish.py" verify-release "$step"
+```
+
+Add `--scores "$step/execution/output/ticket83-scores"` to render a
+temporary publication from the original local score record and compare
+the resulting seal with the tracked release. An independently rescored
+directory can be supplied the same way.

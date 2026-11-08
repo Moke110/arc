@@ -11,9 +11,10 @@ from collections import Counter
 
 import numpy as np
 
-STEP05 = Path(__file__).resolve().parents[2]
-STEP03 = STEP05.parent / '03_modes_tenv'
-STEP04 = STEP05.parent / '04_pdiff_hyperparameter'
+STAGE2 = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists()) / 'stage2'
+STEP05 = STAGE2 / '05_pdiff_transfer'
+STEP03 = STAGE2 / '03_modes_tenv'
+STEP04 = STAGE2 / '04_pdiff_hyperparameter'
 
 
 def sha(path):

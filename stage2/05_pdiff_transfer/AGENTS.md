@@ -4,9 +4,8 @@ Read [README.md](README.md), [ADR 0047](../../docs/adr/0047-perturbdiff-tahoe-tr
 and the repository [execution limits](../../docs/agents/execution-environment.md).
 Only the dedicated scheduling subagent admits or restarts heavy work.
 
-- `execution/script/cold_tenv.py` verifies the shared frozen tenv fold, reuses
-  the Step 04 CM predictions and scores both deterministic references once.
-- `execution/tests/test_cold_tenv.py` checks the cold comparison CLI.
+- `execution/script/cold_tenv.py` verifies and scores shared cold tenv inputs.
+  `execution/tests/test_cold_tenv.py` checks the comparison CLI.
 - `execution/script/cold_tahoe.py` builds and verifies the globally cold
   Tahoe fold 0 source release, then runs the bounded fit and EMA replay.
 - `execution/tests/test_cold_tahoe.py` checks the source exclusion rule.
@@ -22,9 +21,10 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
 - `execution/script/tahoe_bridge.py` seals and loads the shared initialization
   for Tahoe and Transfer. `execution/tests/test_tahoe_bridge.py` covers the
   shared loader, remapped dose rows and rebuilt recipient lookups.
-- `execution/script/transfer.py` freezes the nine formal Transfer slots,
-  verifies or fits each globally cold source, shares the Tahoe prediction
-  bridge with the target fit, and replays and scores both arms.
+- `execution/script/transfer.py` fits globally cold sources and Transfer
+  recipients using the Tahoe prediction bridge, then replays both arms.
+- `execution/script/formal_matrix.py` freezes and schedules the formal matrix.
+  `execution/tests/test_formal_matrix.py` checks orchestration and seals.
 - `execution/script/publish.py` verifies and scores the terminal inventory and
   renders the compact results. `execution/tests/test_publish.py` checks paired
   scoring coverage and offline figure replay on an incomplete fixture.

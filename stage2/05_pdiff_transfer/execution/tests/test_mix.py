@@ -6,9 +6,10 @@ import sys
 import unittest
 
 sys.dont_write_bytecode = True
-STEP = Path(__file__).resolve().parents[2]
+STAGE2 = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists()) / 'stage2'
+STEP = STAGE2 / '05_pdiff_transfer'
 sys.path[:0] = [str(STEP / 'execution/script'),
-                str(STEP.parent / '03_modes_tenv/execution/script')]
+                str(STAGE2 / '03_modes_tenv/execution/script')]
 
 import numpy as np
 

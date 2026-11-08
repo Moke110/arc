@@ -127,7 +127,8 @@
       "learning_points.json": "execution/formal_record/learning_points.json",
       "checkpoints.json": "execution/formal_record/checkpoints.json",
       "pr_points.json": "execution/formal_record/pr_points.json",
-      "undefined_reasons.json": "execution/formal_record/undefined_reasons.json"
+      "undefined_reasons.json": "execution/formal_record/undefined_reasons.json",
+      "README.md": "execution/formal_record/results.md"
     },
     "generated_report": {
       "path": "execution/output/ticket83-release/README.md",
