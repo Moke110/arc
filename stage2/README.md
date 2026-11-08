@@ -6,25 +6,19 @@ model run in its own environment?") is deliberately separate from selection
 ("which model is best?"): `01_setup/` answers the first; the active `03_modes_tenv/` comparison answers
 the second under ADR 0042.
 
-## Current state (2026-11-07)
+## Current state (2026-11-08)
 
 | step | question | what it produced | record |
 |---|---|---|---|
 | [`01_setup/`](01_setup/README.md) | does each model run? | nine historical run cards plus the separately dated PerturbDiff native setup addition; one pinned environment per model; setup remains separate from whole-gene runtime admission | ADR 0021, ADR 0024 |
 | [`02_dataset_corpus/`](02_dataset_corpus/README.md) | what data substrate do we build on? | **five source-dataset corpora** — four CM native-axis + `tahoe.h5ad`, 67,018 × 62,710, 25.8 GB — raw counts, every raw well (controls + blanks), no pharmacology filter and no Δ; **seven crosswalk tables** + coverage README (18,164-gene CM axis as `tables/genes.csv`); `--verify` **G1–G6 PASS**, with G4 reproducing 5/5 frozen v1 view content hashes | ADR 0033 (amends ADR 0026) |
 | [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | final 63-slot comparison across five predictors and two references. PerturbDiff led seven of eight nine-run metric means, including positive/negative AP@100 of 0.23914/0.23463. The training-group mean reference led mean R² | ADR 0042 |
+| [`04_pdiff_hyperparameter/`](04_pdiff_hyperparameter/README.md) | how does standalone PerturbDiff train and score on Tahoe and tenv? | complete nine-fit matrices for both datasets, learning curves, eight held-out metrics with matched references, and nine verified tenv EMA checkpoints for handoff | ADR 0046 |
 
 The retired Tahoe data step was folded into `02_dataset_corpus/` (ADR 0033).
 The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their tracked records are available in Git at
 `f95fe1e`. The retained v1 CM views and identity tables live in
 [`_frozen/cm-data-v1/`](_frozen/cm-data-v1/README.md).
-
-## Next planned step
-
-`04_pdiff_hyperparameter` will tune PerturbDiff separately on Tahoe and tenv,
-publish learning curves and held-out metrics, and retain all formal tenv
-checkpoints selected by validation.
-[ADR 0046](../docs/adr/0046-perturbdiff-standalone-training.md) records the scope.
 
 ## Selection constraints in force
 
@@ -61,6 +55,13 @@ checkpoints selected by validation.
   three cold-drug folds and three training seeds. The step owns the frozen
   18,164-gene tenv input release, model adapters and evaluation artifacts.
 
+- **`04_pdiff_hyperparameter/`** — the two standalone PerturbDiff studies
+  selected EMA checkpoints using each fold's validation loss. Both
+  datasets have complete held-out scoring. Tenv reused the frozen Step 03
+  test memberships. Two Tahoe predictions interrupted by a power cut
+  recovered from their sealed fits, and the completed Tahoe evaluation
+  replayed byte-for-byte. [Results and recovery](04_pdiff_hyperparameter/README.md#published-results)
+
 ## Deployed vs reference-only models
 
 Nine models are deployed in Stage 2 setup (PRnet, CPA, chemCPA, biolord,
@@ -94,6 +95,7 @@ gitignored (multi-GB, interpreter-specific); rebuild recipes are in
 - ADR [0033](../docs/adr/0033-stage2-dataset-corpus.md) — one dataset-corpus layer, views downstream; the old Tahoe data step is folded in.
 - [`audit/model_selection_decisions.md`](audit/model_selection_decisions.md) — the earlier CM study's selection decisions.
 - ADR [0042](../docs/adr/0042-tenv-model-benchmark-redesign.md) — the completed tenv comparison.
+- ADR [0046](../docs/adr/0046-perturbdiff-standalone-training.md) — the standalone Tahoe and tenv PerturbDiff studies.
 - [`_archive/PLAN.md`](_archive/PLAN.md) — the superseded plan, archived as-is; this page carries its live content.
 
 Stage 1 (`stage1/`) produces the MIRI disease inputs and DEG lists Stage 2's

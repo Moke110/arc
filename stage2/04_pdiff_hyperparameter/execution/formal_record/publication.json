@@ -1,0 +1,3487 @@
+{
+  "schema": "step04-publication-v1",
+  "matplotlib": "3.10.9",
+  "renderer_sha256": "9984522aa7eecf3aa1f5cb2d88ff139856b68867a3c2393ac05f4c4f8ff44371",
+  "inputs_sha256": {
+    "tahoe/evaluation.json": "20937d1c58cb77acf493167f55bbb9477fd4a666a3d5ad915db96ff4bcca79e6",
+    "tahoe/plan.json": "5148ddcd1f6df7da8b17265ccba0fad9cfe1831adcb8970d2fb0bf665354d556",
+    "tahoe/outcomes.json": "6de76e4ac24bd125a020b6bf35912112b8b375aecb413d4d41bc7bf4dd98e4a2",
+    "tahoe/slots/fold-0/seed-17/prediction.json": "7c6eac455b71acd0fab0beec5ec36e4fb3171b9083dfb26bb06e7b831f99dc17",
+    "tahoe/slots/fold-0/seed-17/run.json": "a997bbdbda487b96b5e443e22989be2792b9f336d7287cb6fd234214f7c9d849",
+    "tahoe/slots/fold-0/seed-17/replay.json": "983de4a85942d276303c1b9411c399dd87b00673756679bde8dbb2a83652013f",
+    "tahoe/slots/fold-0/seed-42/prediction.json": "924373e5b0817481e67a1d84215fec7fd98852b4c7e0d45a9cd888c98a5f1b0d",
+    "tahoe/slots/fold-0/seed-42/run.json": "6a3ee7c88ef3696e87a39fef247dfba0c096b1c162673bb985f92fd424333aa2",
+    "tahoe/slots/fold-0/seed-42/replay.json": "0427a181d4344a6ab503b92013cf8767e5396550d78a9c139f8f3f70d028bf6c",
+    "tahoe/slots/fold-0/seed-2026/prediction.json": "ea1b514c1e3242d65175c5b22a1f3b34aca6403e7aaa1e5c85d074830a70187e",
+    "tahoe/slots/fold-0/seed-2026/run.json": "762c1f5f80e9c48c0f08816d079bd5dbb0074295ea164c7dc97dd034f01a057a",
+    "tahoe/slots/fold-0/seed-2026/replay.json": "a3e8143bc7deccb5bb5c8fddc7ac59623c0fb2efcb4d94db5ffe38c49a48f369",
+    "tahoe/slots/fold-1/seed-17/prediction.json": "b8473092875b3ef0f348cefca857cf75c3e364fa6d5e4d9db416c8098a5175bd",
+    "tahoe/slots/fold-1/seed-17/run.json": "90c77459121c4f9008f5db4cc1e8c773eccd41bf0294dcee0dc2424c5a255285",
+    "tahoe/slots/fold-1/seed-17/replay.json": "3a559f85f812d4d5134e8d4878d98f680b40e58ad669b1ddac0b3983838bd79d",
+    "tahoe/slots/fold-1/seed-42/prediction.json": "4c25b8a8faf6942607d9d9c1bfe4ca3e7869d5d600fb70a7fdbceae469746814",
+    "tahoe/slots/fold-1/seed-42/run.json": "afc33436be5b857e9bd797537097232774cdca70c7da8b3b9a776898c03eb21b",
+    "tahoe/slots/fold-1/seed-42/replay.json": "5063887500b3fea0de77c8e78d51b25c09efdbd328d4488f68863e945aabab1a",
+    "tahoe/slots/fold-1/seed-2026/prediction.json": "01817f81dd47d2e58d41582189a132264033a196f4e53e8b074757dd5f7f069a",
+    "tahoe/slots/fold-1/seed-2026/run.json": "2dd8162d8eb94ecf5653f79a1673878d6ad7f746d736780d84681f76b2d47f8a",
+    "tahoe/slots/fold-1/seed-2026/replay.json": "04b961623d66e5554fe8b721e6b13d1e93d7dfbce8e6777adc00b0148ce81b98",
+    "tahoe/slots/fold-2/seed-17/prediction.json": "897160d6e4e6dbad13f4d7f372aa95ae54013a091777c9cadc4317564c4f7f91",
+    "tahoe/slots/fold-2/seed-17/run.json": "c283d961dbeda51301549506e15203d76fee2d780df1960b6144c672f4d21d26",
+    "tahoe/slots/fold-2/seed-17/replay.json": "1f76cc4e7fb9bf9ffbdd520a2dd8203e3b52f9bfb419b6290ffef824252f793c",
+    "tahoe/slots/fold-2/seed-42/prediction.json": "c43a3273963c3af9f3da1111a23ca2947b273559ed79c842ffdf8d58c03e1227",
+    "tahoe/slots/fold-2/seed-42/run.json": "a2c19a1332c37b2db625d92e675844c0bc2ee233c0db9cfcd42f82a178aa4be0",
+    "tahoe/slots/fold-2/seed-42/replay.json": "8f8e69bab51803b90e316c203d3d47d1f34cb387af3429f6904fd1372c36f0d5",
+    "tahoe/slots/fold-2/seed-2026/prediction.json": "d65f7311b20ada4ec2bc502f641a258aeba28e6decec320ef51bc7d70ede3c73",
+    "tahoe/slots/fold-2/seed-2026/run.json": "720deaa9fcd3aa0fb1f8f0eebf03f277f4e0e97ad5de1912a267b1d2a7f258d7",
+    "tahoe/slots/fold-2/seed-2026/replay.json": "2e472f6464d63a788173826ac148b3703c7188ab60f9476b540ba1a9f803a8b3",
+    "tahoe/per_run.csv": "d0dce1c9c5d8e96d90d6623a7f100fe6a6775766f53d786536b5cd68c744d9f0",
+    "tahoe/summary.csv": "1c8e746013967134ac8835f41078d6d93ebc733aac5c381b149af6327d028663",
+    "tenv/evaluation.json": "eb91dd43fd5fa6c188bd036a28fd52b417c610b9900e19ba7d2c2e30aefb7db3",
+    "tenv/plan.json": "ce2694c575bf5e15f237fb4e7a3605a23858940b4e4c704771b883b49be1708c",
+    "tenv/outcomes.json": "a523a0848ee2bc0507a7f3e6809ecd942db86ef5f6c471a1d58fe2edd4855c3b",
+    "tenv/slots/fold-0/seed-17/prediction.json": "6e3819a185d027517cebbfb341880180a09d94cd471ff76e0c56f49966086d86",
+    "tenv/slots/fold-0/seed-17/run.json": "b59b2e290941590f1b2d58ebb36e32a9f0511f4e388778902e1da323d617968e",
+    "tenv/slots/fold-0/seed-17/replay.json": "a15bb64de33bb333a36c67a3e20d8c8e7df50c8f0b17b14ba5d27b0ae3f7bf76",
+    "tenv/slots/fold-0/seed-42/prediction.json": "f449b38b9fcefb79a0c8e9d8d1173ef80bcadd5a3cd02f69c3b052908a6cc384",
+    "tenv/slots/fold-0/seed-42/run.json": "bf07176df3a2811b8c1a1ed8f3d0f3e1c01ea480a211f1ed030c094fd0e47643",
+    "tenv/slots/fold-0/seed-42/replay.json": "f9d790f7f5b38e8eee30d2ca54979701eb48a8d57bdd933cf34624f8146af4a2",
+    "tenv/slots/fold-0/seed-2026/prediction.json": "d3d60512aed839020009e4fbdb67066c73d3b33e8d6e0343c56b390917272cdc",
+    "tenv/slots/fold-0/seed-2026/run.json": "9591967401a605e0d7e8b5d7a6b089e52b2df105045d2762aa4cdefcc772d7ec",
+    "tenv/slots/fold-0/seed-2026/replay.json": "4e122b768d47cf61e5ada8cd4862465ba72613582b2e1ff3d32ecda04fef1dda",
+    "tenv/slots/fold-1/seed-17/prediction.json": "bd5267e62924699dffa0c5b1f8cd04e7f7060d37d5ede1ee9db9f1f1e6127c7e",
+    "tenv/slots/fold-1/seed-17/run.json": "74d9354e9a740dde1d76bb8465ecb40f8418d93d437e65cbeb3afb2557337fd4",
+    "tenv/slots/fold-1/seed-17/replay.json": "d28c2e736b1d9b532579b8ff413a897602375a24ee2b052cd5fb7bb23ee402eb",
+    "tenv/slots/fold-1/seed-42/prediction.json": "4128bb745e6ec78099bd30be6b2fb0e77fbdef382d76bed8f07286fcb1d37f8c",
+    "tenv/slots/fold-1/seed-42/run.json": "f34fbe36c2586ffe26d81e3ad7d19831f46eb5e72f49c48084a27cb826d2c092",
+    "tenv/slots/fold-1/seed-42/replay.json": "30dda0920d045a55cf2a88ec2b9c0b7511c92ecbfdba8398a0565edd873a49dc",
+    "tenv/slots/fold-1/seed-2026/prediction.json": "06d8cf36f818f82c23680cda1939b0b44878fdda2488b4d91389b3a1c6b51aee",
+    "tenv/slots/fold-1/seed-2026/run.json": "71040bde6a2f9024f2c160d04e997b9d9ba7959143b15a573568801cbf09869f",
+    "tenv/slots/fold-1/seed-2026/replay.json": "5a0049ff1aae628e6e9e50756b81e376aead2f762b914f581030055562acb7f0",
+    "tenv/slots/fold-2/seed-17/prediction.json": "ab6f27ff1f3b8e05aa06a7302fd096748c4bce29143e575d85ff53903fc5edc3",
+    "tenv/slots/fold-2/seed-17/run.json": "cd930f629bfa0054d729dee92651a350b003e4da4177991727b823e20a368cf4",
+    "tenv/slots/fold-2/seed-17/replay.json": "efe39f69f06061370a5fbf53c25e9e509c3c868acc003176ae00c9148403cd2c",
+    "tenv/slots/fold-2/seed-42/prediction.json": "a93409f01c0ed2d17c4b29f61322394aa9906be78217abdf1beecff1fe731496",
+    "tenv/slots/fold-2/seed-42/run.json": "1482c58a020221c5496684e85c9e8b3a6b10953906aefc4712560bd8dee97db2",
+    "tenv/slots/fold-2/seed-42/replay.json": "022bb20d10a98e33493664e31374a897146fa6158ad3995cacf37e88db7eb2d3",
+    "tenv/slots/fold-2/seed-2026/prediction.json": "023dd4bad9c0b689033ae861bb584eefef187d56edf5f8aa59ef9fdf7f178717",
+    "tenv/slots/fold-2/seed-2026/run.json": "44957a2a6aa79e0403006cd5c665890b94ae3ffc0b512e150c6961aa66e7abc1",
+    "tenv/slots/fold-2/seed-2026/replay.json": "1eb686879dc94781f8b65fcd7ba761434532090c75e9d489dbfcf89d76f93bb4",
+    "tenv/per_run.csv": "5221105226e5b794e785a0a2a7b0d44c0fbcd4bd193ac965db8464948da5f95d",
+    "tenv/summary.csv": "cba84f54c43303b3ac91197b8424947f42357c423a7f47005eae5e6721a9b9d4",
+    "tenv/checkpoints.json": "66d5b20707990e92f4b9f98d6ed1460a7df0e0b58594e312fb24df8c8ad13c1b"
+  },
+  "checkpoint_index": [
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 0,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511",
+        "seed": 17,
+        "stage": "formal"
+      },
+      "recipe_sha256": "c05aec1ccb08d4c581bfbebb7b211eebe15612c8fbab302a259dcb7b8c5f9373",
+      "checkpoint_sha256": "1d90ddcf1618dbe5f3851a6a9614a5866189380e8b4be733a13ca7327648fa42",
+      "best_step": 6500,
+      "best_validation_loss": 0.8688014149665833,
+      "model_state_sha256": "c140b7cdf7b23b3f558e15467ae9148513844735abad41a47d0e458bb9d6efa3",
+      "directory": "fold-0/seed-17",
+      "policy_sha256": "2f20be2adc42121aea86df20407499c7fbb19fec12ac553b0d954e76a7f4cee6",
+      "request_sha256": "0cba6809413e5e83cf5affedf5f1a223beaea8d622664a7758f6008f3d717075",
+      "raw_recipe_sha256": "7c4574a21cde26ca61b9cf6ca60ee04acd35e63520d74f4dcde3e87b16d112e3",
+      "run_sha256": "b59b2e290941590f1b2d58ebb36e32a9f0511f4e388778902e1da323d617968e",
+      "replay_sha256": "a15bb64de33bb333a36c67a3e20d8c8e7df50c8f0b17b14ba5d27b0ae3f7bf76",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 0,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511",
+        "seed": 42,
+        "stage": "formal"
+      },
+      "recipe_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4",
+      "checkpoint_sha256": "1d0e35a70e84013ed228bc91361e7ce3965871c0f1f0cc3f9ec7eb2509071e4b",
+      "best_step": 6500,
+      "best_validation_loss": 0.8498567342758179,
+      "model_state_sha256": "55845fe8f1c43d1dc7628daf162b4da5acff34d3c53d93b2ec8d96463927f37c",
+      "directory": "fold-0/seed-42",
+      "policy_sha256": "2f20be2adc42121aea86df20407499c7fbb19fec12ac553b0d954e76a7f4cee6",
+      "request_sha256": "0cba6809413e5e83cf5affedf5f1a223beaea8d622664a7758f6008f3d717075",
+      "raw_recipe_sha256": "5202788b286a5b8066f5f5a9fb877e028dede2c8c7c61230db7f07cbb3f3145d",
+      "run_sha256": "bf07176df3a2811b8c1a1ed8f3d0f3e1c01ea480a211f1ed030c094fd0e47643",
+      "replay_sha256": "f9d790f7f5b38e8eee30d2ca54979701eb48a8d57bdd933cf34624f8146af4a2",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 0,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511",
+        "seed": 2026,
+        "stage": "formal"
+      },
+      "recipe_sha256": "e2758891df500d6cd5c56e95d7bd1cc5d8611310583f90db87ddab41baf2878b",
+      "checkpoint_sha256": "01ae70f60e5a5284eaf8457b2865776a624150134ebac6e1d7798a997180c840",
+      "best_step": 6000,
+      "best_validation_loss": 0.8243218064308167,
+      "model_state_sha256": "1b8f3618dad5e2d7afdd72e304c9d7bc20130e717420218235c45c10d192dfe2",
+      "directory": "fold-0/seed-2026",
+      "policy_sha256": "2f20be2adc42121aea86df20407499c7fbb19fec12ac553b0d954e76a7f4cee6",
+      "request_sha256": "0cba6809413e5e83cf5affedf5f1a223beaea8d622664a7758f6008f3d717075",
+      "raw_recipe_sha256": "ba7e1a7a26aa6ca191c3eb21b5b3468981f17e948b098adab329da9a899c8bae",
+      "run_sha256": "9591967401a605e0d7e8b5d7a6b089e52b2df105045d2762aa4cdefcc772d7ec",
+      "replay_sha256": "4e122b768d47cf61e5ada8cd4862465ba72613582b2e1ff3d32ecda04fef1dda",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 1,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "8830646f49e7664efd859c38271230e3ae6340fae9d9bffce6fda4f7ae4812e6",
+        "seed": 17,
+        "stage": "formal"
+      },
+      "recipe_sha256": "978d58d4e480377a60713054c492ee253dce18987c86fb9e861c3c0d9e16e8be",
+      "checkpoint_sha256": "3b4a8acadc0f5899f95efb1bbc253025e51971c87e7beb6064850c65e1b4ee4f",
+      "best_step": 5000,
+      "best_validation_loss": 0.8663920760154724,
+      "model_state_sha256": "54a420eb590d1f4dcea509cf70830d7dda0c5f6a8029bec4aa06846f441c7b06",
+      "directory": "fold-1/seed-17",
+      "policy_sha256": "2e905e8042745c7a34281fed483163edeead56bccba2627b54a6426830efd782",
+      "request_sha256": "8898ec44b98d11e70c600a18df182bced1ed810cac027ac258aa7078bb11ef24",
+      "raw_recipe_sha256": "e3dcf2accfb011ecb8d7cc7c3b3de8359e02ab16fec9218b443dfd7cb2831a0c",
+      "run_sha256": "74d9354e9a740dde1d76bb8465ecb40f8418d93d437e65cbeb3afb2557337fd4",
+      "replay_sha256": "d28c2e736b1d9b532579b8ff413a897602375a24ee2b052cd5fb7bb23ee402eb",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 1,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "8830646f49e7664efd859c38271230e3ae6340fae9d9bffce6fda4f7ae4812e6",
+        "seed": 42,
+        "stage": "formal"
+      },
+      "recipe_sha256": "d7b52faab43312d58215d62b9dceb0e1b82ec343b79cc347cdb426d7926e02ac",
+      "checkpoint_sha256": "8f2b954b51ab42d6c43f2bd54861379402fe3dd5fd7435d28b08717692de455e",
+      "best_step": 5500,
+      "best_validation_loss": 0.8495966196060181,
+      "model_state_sha256": "2ad103afb76f1af3635fbc1160a7a1a325aaa86036f881a7c0a77ba72c108ae0",
+      "directory": "fold-1/seed-42",
+      "policy_sha256": "2e905e8042745c7a34281fed483163edeead56bccba2627b54a6426830efd782",
+      "request_sha256": "8898ec44b98d11e70c600a18df182bced1ed810cac027ac258aa7078bb11ef24",
+      "raw_recipe_sha256": "25ad80027525088ea76ed8678aec961c78c4df856b4dfef8b9613643e194a3c4",
+      "run_sha256": "f34fbe36c2586ffe26d81e3ad7d19831f46eb5e72f49c48084a27cb826d2c092",
+      "replay_sha256": "30dda0920d045a55cf2a88ec2b9c0b7511c92ecbfdba8398a0565edd873a49dc",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 1,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "8830646f49e7664efd859c38271230e3ae6340fae9d9bffce6fda4f7ae4812e6",
+        "seed": 2026,
+        "stage": "formal"
+      },
+      "recipe_sha256": "538fa324d8072142455e2324157a72e9781b82b6bf086f7f32dd55442adb5712",
+      "checkpoint_sha256": "5c926dab35af4362edc3298a7be914b7c31bca0c9ec4e27e49b50c3ee3187256",
+      "best_step": 5500,
+      "best_validation_loss": 0.8461637496948242,
+      "model_state_sha256": "86c647686413a5ff6b6941b09920046f2a8cf84a219e7887b5f792f5674d91fc",
+      "directory": "fold-1/seed-2026",
+      "policy_sha256": "2e905e8042745c7a34281fed483163edeead56bccba2627b54a6426830efd782",
+      "request_sha256": "8898ec44b98d11e70c600a18df182bced1ed810cac027ac258aa7078bb11ef24",
+      "raw_recipe_sha256": "cc6dff68787fd118e63ca30fbcc6dbd481752b3ab41110dc1de6aee334fe0371",
+      "run_sha256": "71040bde6a2f9024f2c160d04e997b9d9ba7959143b15a573568801cbf09869f",
+      "replay_sha256": "5a0049ff1aae628e6e9e50756b81e376aead2f762b914f581030055562acb7f0",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 2,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "c6f887cbedcc0807a89bf2b9c949ef991c042bcc079b120319adf71d15df2263",
+        "seed": 17,
+        "stage": "formal"
+      },
+      "recipe_sha256": "c4cfd01519a18c840c0963322890739210383e12b4e51cdf6be114e56d14afa1",
+      "checkpoint_sha256": "0254475aafba3ba683abd81b2e62f68060128ea5023623140107b17f3b42278b",
+      "best_step": 6500,
+      "best_validation_loss": 0.832902729511261,
+      "model_state_sha256": "093440fef18390745d56165646f5f614a36d88d451a39891924d4d3d03670bfd",
+      "directory": "fold-2/seed-17",
+      "policy_sha256": "a57ca9a0fa0c022805e8625f7944643871002fdd247489e39b74d01d500f0033",
+      "request_sha256": "63f66fdfbd0aed2564fd0ed03bd235a8e59a5260b96a33e58faa88029c0e7028",
+      "raw_recipe_sha256": "fb45e2734eb403b335c8f11245a7be6045fb2643891e07a958f54d88a7b8fb84",
+      "run_sha256": "cd930f629bfa0054d729dee92651a350b003e4da4177991727b823e20a368cf4",
+      "replay_sha256": "efe39f69f06061370a5fbf53c25e9e509c3c868acc003176ae00c9148403cd2c",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 2,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "c6f887cbedcc0807a89bf2b9c949ef991c042bcc079b120319adf71d15df2263",
+        "seed": 42,
+        "stage": "formal"
+      },
+      "recipe_sha256": "ce2cde60596c3760899e3a3f142acbb8b4f02a1ceaa257f5390aee39b3ed69d8",
+      "checkpoint_sha256": "fb3b355a5c02e87742f51bb24b312b04fcab9e883467cb79ef64fd10a5ae91c4",
+      "best_step": 7500,
+      "best_validation_loss": 0.8316137194633484,
+      "model_state_sha256": "26a56ca1d60c309e69b133c5aa7bb64eab586c74187918cd21957257b4445974",
+      "directory": "fold-2/seed-42",
+      "policy_sha256": "a57ca9a0fa0c022805e8625f7944643871002fdd247489e39b74d01d500f0033",
+      "request_sha256": "63f66fdfbd0aed2564fd0ed03bd235a8e59a5260b96a33e58faa88029c0e7028",
+      "raw_recipe_sha256": "395d04a2fb31abf1d4d894a021f7a06ef7d14805ad1f77cd33b8536673f1d380",
+      "run_sha256": "1482c58a020221c5496684e85c9e8b3a6b10953906aefc4712560bd8dee97db2",
+      "replay_sha256": "022bb20d10a98e33493664e31374a897146fa6158ad3995cacf37e88db7eb2d3",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    },
+    {
+      "identity": {
+        "dataset": "tenv",
+        "fold": 2,
+        "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+        "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+        "input_sha256": "c6f887cbedcc0807a89bf2b9c949ef991c042bcc079b120319adf71d15df2263",
+        "seed": 2026,
+        "stage": "formal"
+      },
+      "recipe_sha256": "fd93c4571cba4db9f8e392a0ee828ec592e6e91d7e76b6ecd13d4b8b50d9ecee",
+      "checkpoint_sha256": "7541e23738957b9bb810ea0f7fc698c20759675a0e0757dcdd441784fd6fa419",
+      "best_step": 7000,
+      "best_validation_loss": 0.7943069934844971,
+      "model_state_sha256": "84353969cf213162a3b07be9dce165e3f9cd009b9ec4528e27b408eac59e5188",
+      "directory": "fold-2/seed-2026",
+      "policy_sha256": "a57ca9a0fa0c022805e8625f7944643871002fdd247489e39b74d01d500f0033",
+      "request_sha256": "63f66fdfbd0aed2564fd0ed03bd235a8e59a5260b96a33e58faa88029c0e7028",
+      "raw_recipe_sha256": "65da843b5514c459e9da3f50d211fcf5209dae7c13d088826e7b207c281385cd",
+      "run_sha256": "44957a2a6aa79e0403006cd5c665890b94ae3ffc0b512e150c6961aa66e7abc1",
+      "replay_sha256": "1eb686879dc94781f8b65fcd7ba761434532090c75e9d489dbfcf89d76f93bb4",
+      "upstream_commit": "31be89cb8cce5dddef0782bac29d5c748ce55931",
+      "environment": {
+        "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]",
+        "torch": "2.12.0+cu130",
+        "numpy": "2.4.6",
+        "cuda": "13.0"
+      }
+    }
+  ],
+  "local_checkpoint_release": {
+    "fold-0/seed-17": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-0/seed-42": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-0/seed-2026": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-1/seed-17": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-1/seed-42": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-1/seed-2026": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-2/seed-17": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-2/seed-42": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    },
+    "fold-2/seed-2026": {
+      "bytes": 692705945,
+      "same_file_as_formal_fit": true,
+      "metadata_hashes_verified": true
+    }
+  },
+  "learning_curve": {
+    "tahoe": [
+      {
+        "fold": 0,
+        "seed": 17,
+        "stop_step": 8000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.1802873611450195
+            ],
+            [
+              1000.0,
+              1.0309710502624512
+            ],
+            [
+              1500.0,
+              0.6925644278526306
+            ],
+            [
+              2000.0,
+              0.6977641582489014
+            ],
+            [
+              2500.0,
+              0.6099541187286377
+            ],
+            [
+              3000.0,
+              1.3771443367004395
+            ],
+            [
+              3500.0,
+              0.9687486886978149
+            ],
+            [
+              4000.0,
+              0.9777609705924988
+            ],
+            [
+              4500.0,
+              0.49978333711624146
+            ],
+            [
+              5000.0,
+              0.5155038237571716
+            ],
+            [
+              5500.0,
+              0.4791293442249298
+            ],
+            [
+              6000.0,
+              1.2623913288116455
+            ],
+            [
+              6500.0,
+              0.7032269835472107
+            ],
+            [
+              7000.0,
+              0.5997470617294312
+            ],
+            [
+              7500.0,
+              0.4591792821884155
+            ],
+            [
+              8000.0,
+              0.43902456760406494
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              6.984105110168457
+            ],
+            [
+              1000.0,
+              4.53076696395874
+            ],
+            [
+              1500.0,
+              3.2028825283050537
+            ],
+            [
+              2000.0,
+              1.936997652053833
+            ],
+            [
+              2500.0,
+              1.3575102090835571
+            ],
+            [
+              3000.0,
+              1.054488182067871
+            ],
+            [
+              3500.0,
+              0.8997169137001038
+            ],
+            [
+              4000.0,
+              0.8166191577911377
+            ],
+            [
+              4500.0,
+              0.7750836610794067
+            ],
+            [
+              5000.0,
+              0.7542073726654053
+            ],
+            [
+              5500.0,
+              0.7441866993904114
+            ],
+            [
+              6000.0,
+              0.7340630292892456
+            ],
+            [
+              6500.0,
+              0.7287578582763672
+            ],
+            [
+              7000.0,
+              0.7301023602485657
+            ],
+            [
+              7500.0,
+              0.7241405844688416
+            ],
+            [
+              8000.0,
+              0.7216801047325134
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            8000.0,
+            0.7216801047325134
+          ]
+        }
+      },
+      {
+        "fold": 0,
+        "seed": 42,
+        "stop_step": 8000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.4318792819976807
+            ],
+            [
+              1000.0,
+              1.062140703201294
+            ],
+            [
+              1500.0,
+              1.3148953914642334
+            ],
+            [
+              2000.0,
+              0.5938152074813843
+            ],
+            [
+              2500.0,
+              0.8886561989784241
+            ],
+            [
+              3000.0,
+              0.5205038785934448
+            ],
+            [
+              3500.0,
+              0.6238398551940918
+            ],
+            [
+              4000.0,
+              0.5439767837524414
+            ],
+            [
+              4500.0,
+              0.5434296727180481
+            ],
+            [
+              5000.0,
+              0.49363964796066284
+            ],
+            [
+              5500.0,
+              0.47883325815200806
+            ],
+            [
+              6000.0,
+              0.4632631540298462
+            ],
+            [
+              6500.0,
+              0.46465152502059937
+            ],
+            [
+              7000.0,
+              0.4535791873931885
+            ],
+            [
+              7500.0,
+              0.5497176647186279
+            ],
+            [
+              8000.0,
+              0.3714976906776428
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              7.2820963859558105
+            ],
+            [
+              1000.0,
+              4.538050651550293
+            ],
+            [
+              1500.0,
+              3.2360897064208984
+            ],
+            [
+              2000.0,
+              2.0597760677337646
+            ],
+            [
+              2500.0,
+              1.4449540376663208
+            ],
+            [
+              3000.0,
+              1.1070399284362793
+            ],
+            [
+              3500.0,
+              0.9285491108894348
+            ],
+            [
+              4000.0,
+              0.8283002972602844
+            ],
+            [
+              4500.0,
+              0.7820773720741272
+            ],
+            [
+              5000.0,
+              0.7568479180335999
+            ],
+            [
+              5500.0,
+              0.744382381439209
+            ],
+            [
+              6000.0,
+              0.7377116680145264
+            ],
+            [
+              6500.0,
+              0.7323585152626038
+            ],
+            [
+              7000.0,
+              0.7297202348709106
+            ],
+            [
+              7500.0,
+              0.7278843522071838
+            ],
+            [
+              8000.0,
+              0.7263230681419373
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            8000.0,
+            0.7263230681419373
+          ]
+        }
+      },
+      {
+        "fold": 0,
+        "seed": 2026,
+        "stop_step": 8000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.2604138851165771
+            ],
+            [
+              1000.0,
+              0.8305429220199585
+            ],
+            [
+              1500.0,
+              0.6526950597763062
+            ],
+            [
+              2000.0,
+              0.5927428007125854
+            ],
+            [
+              2500.0,
+              0.9988588690757751
+            ],
+            [
+              3000.0,
+              0.6339302062988281
+            ],
+            [
+              3500.0,
+              0.8017888069152832
+            ],
+            [
+              4000.0,
+              0.6359188556671143
+            ],
+            [
+              4500.0,
+              0.8540842533111572
+            ],
+            [
+              5000.0,
+              0.9219248294830322
+            ],
+            [
+              5500.0,
+              0.521149754524231
+            ],
+            [
+              6000.0,
+              0.9913374781608582
+            ],
+            [
+              6500.0,
+              0.6815990805625916
+            ],
+            [
+              7000.0,
+              0.519461989402771
+            ],
+            [
+              7500.0,
+              0.5571098327636719
+            ],
+            [
+              8000.0,
+              0.9070475101470947
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              7.034846782684326
+            ],
+            [
+              1000.0,
+              4.575438499450684
+            ],
+            [
+              1500.0,
+              3.235264301300049
+            ],
+            [
+              2000.0,
+              2.000148057937622
+            ],
+            [
+              2500.0,
+              1.3735235929489136
+            ],
+            [
+              3000.0,
+              1.074509620666504
+            ],
+            [
+              3500.0,
+              0.9265829920768738
+            ],
+            [
+              4000.0,
+              0.8346575498580933
+            ],
+            [
+              4500.0,
+              0.7867139577865601
+            ],
+            [
+              5000.0,
+              0.7588282823562622
+            ],
+            [
+              5500.0,
+              0.7452414631843567
+            ],
+            [
+              6000.0,
+              0.7360608577728271
+            ],
+            [
+              6500.0,
+              0.7311986088752747
+            ],
+            [
+              7000.0,
+              0.7283923625946045
+            ],
+            [
+              7500.0,
+              0.726265549659729
+            ],
+            [
+              8000.0,
+              0.7243297100067139
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            8000.0,
+            0.7243297100067139
+          ]
+        }
+      },
+      {
+        "fold": 1,
+        "seed": 17,
+        "stop_step": 7500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.185683250427246
+            ],
+            [
+              1000.0,
+              0.7678622007369995
+            ],
+            [
+              1500.0,
+              0.6129961013793945
+            ],
+            [
+              2000.0,
+              0.7912743091583252
+            ],
+            [
+              2500.0,
+              0.7380161285400391
+            ],
+            [
+              3000.0,
+              0.8387628793716431
+            ],
+            [
+              3500.0,
+              0.7520368099212646
+            ],
+            [
+              4000.0,
+              0.5567641854286194
+            ],
+            [
+              4500.0,
+              0.49130383133888245
+            ],
+            [
+              5000.0,
+              0.41801777482032776
+            ],
+            [
+              5500.0,
+              0.5686740875244141
+            ],
+            [
+              6000.0,
+              0.8125060796737671
+            ],
+            [
+              6500.0,
+              0.6554402112960815
+            ],
+            [
+              7000.0,
+              1.2164244651794434
+            ],
+            [
+              7500.0,
+              0.45596009492874146
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              6.955847263336182
+            ],
+            [
+              1000.0,
+              4.518877029418945
+            ],
+            [
+              1500.0,
+              3.1455888748168945
+            ],
+            [
+              2000.0,
+              1.9224693775177002
+            ],
+            [
+              2500.0,
+              1.383468508720398
+            ],
+            [
+              3000.0,
+              1.029179573059082
+            ],
+            [
+              3500.0,
+              0.873194694519043
+            ],
+            [
+              4000.0,
+              0.7994266748428345
+            ],
+            [
+              4500.0,
+              0.752569317817688
+            ],
+            [
+              5000.0,
+              0.7268192768096924
+            ],
+            [
+              5500.0,
+              0.7128143310546875
+            ],
+            [
+              6000.0,
+              0.703677773475647
+            ],
+            [
+              6500.0,
+              0.6982071399688721
+            ],
+            [
+              7000.0,
+              0.6953944563865662
+            ],
+            [
+              7500.0,
+              0.6931506395339966
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            7500.0,
+            0.6931506395339966
+          ]
+        }
+      },
+      {
+        "fold": 1,
+        "seed": 42,
+        "stop_step": 7500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.650214672088623
+            ],
+            [
+              1000.0,
+              1.2907676696777344
+            ],
+            [
+              1500.0,
+              0.9095568060874939
+            ],
+            [
+              2000.0,
+              0.8063799142837524
+            ],
+            [
+              2500.0,
+              0.9115694761276245
+            ],
+            [
+              3000.0,
+              0.5382577180862427
+            ],
+            [
+              3500.0,
+              0.5999062061309814
+            ],
+            [
+              4000.0,
+              0.6108167767524719
+            ],
+            [
+              4500.0,
+              0.6283336281776428
+            ],
+            [
+              5000.0,
+              0.661381721496582
+            ],
+            [
+              5500.0,
+              0.43491554260253906
+            ],
+            [
+              6000.0,
+              0.7489590048789978
+            ],
+            [
+              6500.0,
+              0.8553696870803833
+            ],
+            [
+              7000.0,
+              0.6847265362739563
+            ],
+            [
+              7500.0,
+              0.4243021607398987
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              7.272644519805908
+            ],
+            [
+              1000.0,
+              4.517609119415283
+            ],
+            [
+              1500.0,
+              3.5157175064086914
+            ],
+            [
+              2000.0,
+              2.290158748626709
+            ],
+            [
+              2500.0,
+              1.447452187538147
+            ],
+            [
+              3000.0,
+              1.108943223953247
+            ],
+            [
+              3500.0,
+              0.9183220267295837
+            ],
+            [
+              4000.0,
+              0.8236796855926514
+            ],
+            [
+              4500.0,
+              0.7774282097816467
+            ],
+            [
+              5000.0,
+              0.7483370900154114
+            ],
+            [
+              5500.0,
+              0.7316142916679382
+            ],
+            [
+              6000.0,
+              0.7233752012252808
+            ],
+            [
+              6500.0,
+              0.7161446809768677
+            ],
+            [
+              7000.0,
+              0.7096169590950012
+            ],
+            [
+              7500.0,
+              0.7053882479667664
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            7500.0,
+            0.7053882479667664
+          ]
+        }
+      },
+      {
+        "fold": 1,
+        "seed": 2026,
+        "stop_step": 7000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.1447057723999023
+            ],
+            [
+              1000.0,
+              0.7949427962303162
+            ],
+            [
+              1500.0,
+              0.6707578897476196
+            ],
+            [
+              2000.0,
+              0.8218463063240051
+            ],
+            [
+              2500.0,
+              1.2008049488067627
+            ],
+            [
+              3000.0,
+              0.9608449935913086
+            ],
+            [
+              3500.0,
+              0.48192787170410156
+            ],
+            [
+              4000.0,
+              0.7862451076507568
+            ],
+            [
+              4500.0,
+              0.7315585613250732
+            ],
+            [
+              5000.0,
+              0.5622149705886841
+            ],
+            [
+              5500.0,
+              0.7323562502861023
+            ],
+            [
+              6000.0,
+              0.8408679962158203
+            ],
+            [
+              6500.0,
+              0.5555866956710815
+            ],
+            [
+              7000.0,
+              0.4218922555446625
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              6.999734401702881
+            ],
+            [
+              1000.0,
+              4.4731268882751465
+            ],
+            [
+              1500.0,
+              3.016838788986206
+            ],
+            [
+              2000.0,
+              1.9198552370071411
+            ],
+            [
+              2500.0,
+              1.3133387565612793
+            ],
+            [
+              3000.0,
+              1.028295636177063
+            ],
+            [
+              3500.0,
+              0.8882458806037903
+            ],
+            [
+              4000.0,
+              0.8076364994049072
+            ],
+            [
+              4500.0,
+              0.7628499865531921
+            ],
+            [
+              5000.0,
+              0.7384266257286072
+            ],
+            [
+              5500.0,
+              0.7251873016357422
+            ],
+            [
+              6000.0,
+              0.7166723012924194
+            ],
+            [
+              6500.0,
+              0.7112427353858948
+            ],
+            [
+              7000.0,
+              0.7073275446891785
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            7000.0,
+            0.7073275446891785
+          ]
+        }
+      },
+      {
+        "fold": 2,
+        "seed": 17,
+        "stop_step": 8000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.0670392513275146
+            ],
+            [
+              1000.0,
+              0.8048041462898254
+            ],
+            [
+              1500.0,
+              0.7206214666366577
+            ],
+            [
+              2000.0,
+              0.5039279460906982
+            ],
+            [
+              2500.0,
+              0.7115240097045898
+            ],
+            [
+              3000.0,
+              0.7412054538726807
+            ],
+            [
+              3500.0,
+              0.5865426063537598
+            ],
+            [
+              4000.0,
+              0.4583930969238281
+            ],
+            [
+              4500.0,
+              0.5102897882461548
+            ],
+            [
+              5000.0,
+              0.4454597234725952
+            ],
+            [
+              5500.0,
+              0.47649794816970825
+            ],
+            [
+              6000.0,
+              1.0568280220031738
+            ],
+            [
+              6500.0,
+              0.8632339835166931
+            ],
+            [
+              7000.0,
+              0.733252227306366
+            ],
+            [
+              7500.0,
+              0.4849849343299866
+            ],
+            [
+              8000.0,
+              0.5493267774581909
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              6.8909406661987305
+            ],
+            [
+              1000.0,
+              4.421935081481934
+            ],
+            [
+              1500.0,
+              3.192692995071411
+            ],
+            [
+              2000.0,
+              1.8955683708190918
+            ],
+            [
+              2500.0,
+              1.29297935962677
+            ],
+            [
+              3000.0,
+              0.9842145442962646
+            ],
+            [
+              3500.0,
+              0.8362336754798889
+            ],
+            [
+              4000.0,
+              0.7583115696907043
+            ],
+            [
+              4500.0,
+              0.7157771587371826
+            ],
+            [
+              5000.0,
+              0.6949083805084229
+            ],
+            [
+              5500.0,
+              0.6820479035377502
+            ],
+            [
+              6000.0,
+              0.6756560206413269
+            ],
+            [
+              6500.0,
+              0.6725075840950012
+            ],
+            [
+              7000.0,
+              0.6714431047439575
+            ],
+            [
+              7500.0,
+              0.6701304912567139
+            ],
+            [
+              8000.0,
+              0.6685647368431091
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            8000.0,
+            0.6685647368431091
+          ]
+        }
+      },
+      {
+        "fold": 2,
+        "seed": 42,
+        "stop_step": 8000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.5329087972640991
+            ],
+            [
+              1000.0,
+              0.7130255699157715
+            ],
+            [
+              1500.0,
+              0.7749319076538086
+            ],
+            [
+              2000.0,
+              0.5692135095596313
+            ],
+            [
+              2500.0,
+              0.8719795942306519
+            ],
+            [
+              3000.0,
+              0.5768067836761475
+            ],
+            [
+              3500.0,
+              1.0000064373016357
+            ],
+            [
+              4000.0,
+              0.9095295667648315
+            ],
+            [
+              4500.0,
+              0.7775989770889282
+            ],
+            [
+              5000.0,
+              0.4484574794769287
+            ],
+            [
+              5500.0,
+              0.4395650327205658
+            ],
+            [
+              6000.0,
+              0.589681088924408
+            ],
+            [
+              6500.0,
+              0.5673640370368958
+            ],
+            [
+              7000.0,
+              0.7672594785690308
+            ],
+            [
+              7500.0,
+              0.5541147589683533
+            ],
+            [
+              8000.0,
+              1.0008630752563477
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              7.33218240737915
+            ],
+            [
+              1000.0,
+              4.595930576324463
+            ],
+            [
+              1500.0,
+              3.2009923458099365
+            ],
+            [
+              2000.0,
+              2.044494152069092
+            ],
+            [
+              2500.0,
+              1.4335752725601196
+            ],
+            [
+              3000.0,
+              1.058340311050415
+            ],
+            [
+              3500.0,
+              0.8874691128730774
+            ],
+            [
+              4000.0,
+              0.7901171445846558
+            ],
+            [
+              4500.0,
+              0.7377071976661682
+            ],
+            [
+              5000.0,
+              0.7075972557067871
+            ],
+            [
+              5500.0,
+              0.6918380856513977
+            ],
+            [
+              6000.0,
+              0.6852056980133057
+            ],
+            [
+              6500.0,
+              0.6792060732841492
+            ],
+            [
+              7000.0,
+              0.6740224361419678
+            ],
+            [
+              7500.0,
+              0.6718969941139221
+            ],
+            [
+              8000.0,
+              0.6713115572929382
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            8000.0,
+            0.6713115572929382
+          ]
+        }
+      },
+      {
+        "fold": 2,
+        "seed": 2026,
+        "stop_step": 9000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.1416122913360596
+            ],
+            [
+              1000.0,
+              0.9167786240577698
+            ],
+            [
+              1500.0,
+              0.5722702145576477
+            ],
+            [
+              2000.0,
+              0.5940244197845459
+            ],
+            [
+              2500.0,
+              0.7704457640647888
+            ],
+            [
+              3000.0,
+              0.7846117615699768
+            ],
+            [
+              3500.0,
+              0.5391614437103271
+            ],
+            [
+              4000.0,
+              0.8153910636901855
+            ],
+            [
+              4500.0,
+              0.687625527381897
+            ],
+            [
+              5000.0,
+              0.7657519578933716
+            ],
+            [
+              5500.0,
+              1.0274138450622559
+            ],
+            [
+              6000.0,
+              0.6077433824539185
+            ],
+            [
+              6500.0,
+              0.5964637398719788
+            ],
+            [
+              7000.0,
+              0.5028209686279297
+            ],
+            [
+              7500.0,
+              0.7077646255493164
+            ],
+            [
+              8000.0,
+              0.8539397716522217
+            ],
+            [
+              8500.0,
+              0.4944400191307068
+            ],
+            [
+              9000.0,
+              1.01205313205719
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              6.988187313079834
+            ],
+            [
+              1000.0,
+              4.343575954437256
+            ],
+            [
+              1500.0,
+              3.0445444583892822
+            ],
+            [
+              2000.0,
+              1.9682276248931885
+            ],
+            [
+              2500.0,
+              1.3294566869735718
+            ],
+            [
+              3000.0,
+              1.022618055343628
+            ],
+            [
+              3500.0,
+              0.8646159768104553
+            ],
+            [
+              4000.0,
+              0.7815620303153992
+            ],
+            [
+              4500.0,
+              0.7348469495773315
+            ],
+            [
+              5000.0,
+              0.712128758430481
+            ],
+            [
+              5500.0,
+              0.6958387494087219
+            ],
+            [
+              6000.0,
+              0.6869469285011292
+            ],
+            [
+              6500.0,
+              0.6809539198875427
+            ],
+            [
+              7000.0,
+              0.6767847537994385
+            ],
+            [
+              7500.0,
+              0.673745334148407
+            ],
+            [
+              8000.0,
+              0.6719158291816711
+            ],
+            [
+              8500.0,
+              0.6696667075157166
+            ],
+            [
+              9000.0,
+              0.6685981154441833
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            9000.0,
+            0.6685981154441833
+          ]
+        }
+      }
+    ],
+    "tenv": [
+      {
+        "fold": 0,
+        "seed": 17,
+        "stop_step": 6500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.4627811908721924
+            ],
+            [
+              1000.0,
+              0.9570767283439636
+            ],
+            [
+              1500.0,
+              1.115473985671997
+            ],
+            [
+              2000.0,
+              1.1306346654891968
+            ],
+            [
+              2500.0,
+              0.943575918674469
+            ],
+            [
+              3000.0,
+              1.138169288635254
+            ],
+            [
+              3500.0,
+              0.8677148818969727
+            ],
+            [
+              4000.0,
+              1.0333951711654663
+            ],
+            [
+              4500.0,
+              1.040956974029541
+            ],
+            [
+              5000.0,
+              0.7028577923774719
+            ],
+            [
+              5500.0,
+              0.758167028427124
+            ],
+            [
+              6000.0,
+              1.0841262340545654
+            ],
+            [
+              6500.0,
+              1.0356090068817139
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.826172351837158
+            ],
+            [
+              1000.0,
+              2.8635647296905518
+            ],
+            [
+              1500.0,
+              1.7153445482254028
+            ],
+            [
+              2000.0,
+              1.2422518730163574
+            ],
+            [
+              2500.0,
+              1.0570752620697021
+            ],
+            [
+              3000.0,
+              0.9697608947753906
+            ],
+            [
+              3500.0,
+              0.9206566214561462
+            ],
+            [
+              4000.0,
+              0.9010890126228333
+            ],
+            [
+              4500.0,
+              0.8862165212631226
+            ],
+            [
+              5000.0,
+              0.8798514604568481
+            ],
+            [
+              5500.0,
+              0.8719472885131836
+            ],
+            [
+              6000.0,
+              0.8711077570915222
+            ],
+            [
+              6500.0,
+              0.8688014149665833
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            6500.0,
+            0.8688014149665833
+          ]
+        }
+      },
+      {
+        "fold": 0,
+        "seed": 42,
+        "stop_step": 6500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.015795111656189
+            ],
+            [
+              1000.0,
+              1.0324397087097168
+            ],
+            [
+              1500.0,
+              0.903376042842865
+            ],
+            [
+              2000.0,
+              0.8384259939193726
+            ],
+            [
+              2500.0,
+              0.8843346834182739
+            ],
+            [
+              3000.0,
+              1.0209693908691406
+            ],
+            [
+              3500.0,
+              0.9425959587097168
+            ],
+            [
+              4000.0,
+              0.8435600996017456
+            ],
+            [
+              4500.0,
+              0.8353177905082703
+            ],
+            [
+              5000.0,
+              0.9803510904312134
+            ],
+            [
+              5500.0,
+              0.8659976124763489
+            ],
+            [
+              6000.0,
+              0.8124818205833435
+            ],
+            [
+              6500.0,
+              0.763701856136322
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.731019020080566
+            ],
+            [
+              1000.0,
+              2.7554194927215576
+            ],
+            [
+              1500.0,
+              1.7296701669692993
+            ],
+            [
+              2000.0,
+              1.255441427230835
+            ],
+            [
+              2500.0,
+              1.0275782346725464
+            ],
+            [
+              3000.0,
+              0.9388423562049866
+            ],
+            [
+              3500.0,
+              0.8967283964157104
+            ],
+            [
+              4000.0,
+              0.8712568283081055
+            ],
+            [
+              4500.0,
+              0.8637939691543579
+            ],
+            [
+              5000.0,
+              0.8630496859550476
+            ],
+            [
+              5500.0,
+              0.8515205383300781
+            ],
+            [
+              6000.0,
+              0.8537273406982422
+            ],
+            [
+              6500.0,
+              0.8498567342758179
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            6500.0,
+            0.8498567342758179
+          ]
+        }
+      },
+      {
+        "fold": 0,
+        "seed": 2026,
+        "stop_step": 6000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.2507753372192383
+            ],
+            [
+              1000.0,
+              1.0181856155395508
+            ],
+            [
+              1500.0,
+              0.9303619265556335
+            ],
+            [
+              2000.0,
+              1.1372865438461304
+            ],
+            [
+              2500.0,
+              0.7300461530685425
+            ],
+            [
+              3000.0,
+              0.8663771152496338
+            ],
+            [
+              3500.0,
+              0.7853087186813354
+            ],
+            [
+              4000.0,
+              0.6315011978149414
+            ],
+            [
+              4500.0,
+              0.7881726026535034
+            ],
+            [
+              5000.0,
+              0.9407835006713867
+            ],
+            [
+              5500.0,
+              0.7524805665016174
+            ],
+            [
+              6000.0,
+              0.9131398797035217
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.824800968170166
+            ],
+            [
+              1000.0,
+              2.8772997856140137
+            ],
+            [
+              1500.0,
+              1.7178086042404175
+            ],
+            [
+              2000.0,
+              1.2405411005020142
+            ],
+            [
+              2500.0,
+              1.0186798572540283
+            ],
+            [
+              3000.0,
+              0.9225341081619263
+            ],
+            [
+              3500.0,
+              0.8772290349006653
+            ],
+            [
+              4000.0,
+              0.8552289605140686
+            ],
+            [
+              4500.0,
+              0.8424588441848755
+            ],
+            [
+              5000.0,
+              0.8291777968406677
+            ],
+            [
+              5500.0,
+              0.8286563158035278
+            ],
+            [
+              6000.0,
+              0.8243218064308167
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            6000.0,
+            0.8243218064308167
+          ]
+        }
+      },
+      {
+        "fold": 1,
+        "seed": 17,
+        "stop_step": 5500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.47406005859375
+            ],
+            [
+              1000.0,
+              1.103299856185913
+            ],
+            [
+              1500.0,
+              1.1183011531829834
+            ],
+            [
+              2000.0,
+              0.9194137454032898
+            ],
+            [
+              2500.0,
+              1.0508968830108643
+            ],
+            [
+              3000.0,
+              0.92240971326828
+            ],
+            [
+              3500.0,
+              0.7989444732666016
+            ],
+            [
+              4000.0,
+              0.9274590611457825
+            ],
+            [
+              4500.0,
+              0.8353369235992432
+            ],
+            [
+              5000.0,
+              0.8818188905715942
+            ],
+            [
+              5500.0,
+              0.6650563478469849
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.903126239776611
+            ],
+            [
+              1000.0,
+              2.9661569595336914
+            ],
+            [
+              1500.0,
+              1.808268666267395
+            ],
+            [
+              2000.0,
+              1.2911440134048462
+            ],
+            [
+              2500.0,
+              1.0507309436798096
+            ],
+            [
+              3000.0,
+              0.9463546872138977
+            ],
+            [
+              3500.0,
+              0.9033033847808838
+            ],
+            [
+              4000.0,
+              0.8834145665168762
+            ],
+            [
+              4500.0,
+              0.8717246651649475
+            ],
+            [
+              5000.0,
+              0.8663920760154724
+            ],
+            [
+              5500.0,
+              0.8710221648216248
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            5000.0,
+            0.8663920760154724
+          ]
+        }
+      },
+      {
+        "fold": 1,
+        "seed": 42,
+        "stop_step": 6500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.1051898002624512
+            ],
+            [
+              1000.0,
+              0.9961631298065186
+            ],
+            [
+              1500.0,
+              0.9319337606430054
+            ],
+            [
+              2000.0,
+              0.9598935842514038
+            ],
+            [
+              2500.0,
+              0.8624240159988403
+            ],
+            [
+              3000.0,
+              1.0007960796356201
+            ],
+            [
+              3500.0,
+              0.8771281838417053
+            ],
+            [
+              4000.0,
+              1.085952877998352
+            ],
+            [
+              4500.0,
+              0.917339026927948
+            ],
+            [
+              5000.0,
+              0.7968182563781738
+            ],
+            [
+              5500.0,
+              0.8597692251205444
+            ],
+            [
+              6000.0,
+              0.8074525594711304
+            ],
+            [
+              6500.0,
+              0.7855422496795654
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.672252655029297
+            ],
+            [
+              1000.0,
+              2.8224029541015625
+            ],
+            [
+              1500.0,
+              1.74122154712677
+            ],
+            [
+              2000.0,
+              1.2590328454971313
+            ],
+            [
+              2500.0,
+              1.0307843685150146
+            ],
+            [
+              3000.0,
+              0.9431892037391663
+            ],
+            [
+              3500.0,
+              0.8916246891021729
+            ],
+            [
+              4000.0,
+              0.8694797158241272
+            ],
+            [
+              4500.0,
+              0.8583459258079529
+            ],
+            [
+              5000.0,
+              0.8553643822669983
+            ],
+            [
+              5500.0,
+              0.8495966196060181
+            ],
+            [
+              6000.0,
+              0.8526103496551514
+            ],
+            [
+              6500.0,
+              0.8508890271186829
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            5500.0,
+            0.8495966196060181
+          ]
+        }
+      },
+      {
+        "fold": 1,
+        "seed": 2026,
+        "stop_step": 6500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.0799663066864014
+            ],
+            [
+              1000.0,
+              1.0152833461761475
+            ],
+            [
+              1500.0,
+              0.8521536588668823
+            ],
+            [
+              2000.0,
+              1.1786787509918213
+            ],
+            [
+              2500.0,
+              0.7651902437210083
+            ],
+            [
+              3000.0,
+              0.9871460199356079
+            ],
+            [
+              3500.0,
+              0.8718725442886353
+            ],
+            [
+              4000.0,
+              0.8789393901824951
+            ],
+            [
+              4500.0,
+              0.7608599662780762
+            ],
+            [
+              5000.0,
+              0.8143095970153809
+            ],
+            [
+              5500.0,
+              0.9358353018760681
+            ],
+            [
+              6000.0,
+              0.7869948148727417
+            ],
+            [
+              6500.0,
+              1.3112711906433105
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              6.006930828094482
+            ],
+            [
+              1000.0,
+              2.734247922897339
+            ],
+            [
+              1500.0,
+              1.6430047750473022
+            ],
+            [
+              2000.0,
+              1.2273603677749634
+            ],
+            [
+              2500.0,
+              1.0455032587051392
+            ],
+            [
+              3000.0,
+              0.9374215006828308
+            ],
+            [
+              3500.0,
+              0.8859720230102539
+            ],
+            [
+              4000.0,
+              0.865138590335846
+            ],
+            [
+              4500.0,
+              0.8528451919555664
+            ],
+            [
+              5000.0,
+              0.8506568074226379
+            ],
+            [
+              5500.0,
+              0.8461637496948242
+            ],
+            [
+              6000.0,
+              0.8475507497787476
+            ],
+            [
+              6500.0,
+              0.8483689427375793
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            5500.0,
+            0.8461637496948242
+          ]
+        }
+      },
+      {
+        "fold": 2,
+        "seed": 17,
+        "stop_step": 7000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.2362236976623535
+            ],
+            [
+              1000.0,
+              1.1049435138702393
+            ],
+            [
+              1500.0,
+              1.024754524230957
+            ],
+            [
+              2000.0,
+              0.9001040458679199
+            ],
+            [
+              2500.0,
+              1.1385376453399658
+            ],
+            [
+              3000.0,
+              1.0944088697433472
+            ],
+            [
+              3500.0,
+              0.803098201751709
+            ],
+            [
+              4000.0,
+              0.8703346848487854
+            ],
+            [
+              4500.0,
+              0.864983856678009
+            ],
+            [
+              5000.0,
+              0.7147508859634399
+            ],
+            [
+              5500.0,
+              0.9806548357009888
+            ],
+            [
+              6000.0,
+              1.0102628469467163
+            ],
+            [
+              6500.0,
+              0.7453062534332275
+            ],
+            [
+              7000.0,
+              0.7410048246383667
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.7750349044799805
+            ],
+            [
+              1000.0,
+              2.923041820526123
+            ],
+            [
+              1500.0,
+              1.7269679307937622
+            ],
+            [
+              2000.0,
+              1.2606004476547241
+            ],
+            [
+              2500.0,
+              1.0270631313323975
+            ],
+            [
+              3000.0,
+              0.9316919445991516
+            ],
+            [
+              3500.0,
+              0.8822782635688782
+            ],
+            [
+              4000.0,
+              0.8551478385925293
+            ],
+            [
+              4500.0,
+              0.8457112312316895
+            ],
+            [
+              5000.0,
+              0.837940514087677
+            ],
+            [
+              5500.0,
+              0.837701141834259
+            ],
+            [
+              6000.0,
+              0.8349963426589966
+            ],
+            [
+              6500.0,
+              0.832902729511261
+            ],
+            [
+              7000.0,
+              0.8333715200424194
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            6500.0,
+            0.832902729511261
+          ]
+        }
+      },
+      {
+        "fold": 2,
+        "seed": 42,
+        "stop_step": 8000,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.0836153030395508
+            ],
+            [
+              1000.0,
+              1.2115497589111328
+            ],
+            [
+              1500.0,
+              0.8658044338226318
+            ],
+            [
+              2000.0,
+              1.0422176122665405
+            ],
+            [
+              2500.0,
+              1.0458507537841797
+            ],
+            [
+              3000.0,
+              1.0096160173416138
+            ],
+            [
+              3500.0,
+              1.1273784637451172
+            ],
+            [
+              4000.0,
+              0.9745233654975891
+            ],
+            [
+              4500.0,
+              0.8493146896362305
+            ],
+            [
+              5000.0,
+              0.8630309700965881
+            ],
+            [
+              5500.0,
+              0.870671272277832
+            ],
+            [
+              6000.0,
+              0.7423661947250366
+            ],
+            [
+              6500.0,
+              0.8882323503494263
+            ],
+            [
+              7000.0,
+              0.8701275587081909
+            ],
+            [
+              7500.0,
+              1.0326671600341797
+            ],
+            [
+              8000.0,
+              0.9011498093605042
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.6507954597473145
+            ],
+            [
+              1000.0,
+              2.9258601665496826
+            ],
+            [
+              1500.0,
+              1.7976536750793457
+            ],
+            [
+              2000.0,
+              1.245613694190979
+            ],
+            [
+              2500.0,
+              1.0165369510650635
+            ],
+            [
+              3000.0,
+              0.9276037216186523
+            ],
+            [
+              3500.0,
+              0.8850081562995911
+            ],
+            [
+              4000.0,
+              0.8665492534637451
+            ],
+            [
+              4500.0,
+              0.8520302772521973
+            ],
+            [
+              5000.0,
+              0.8480244278907776
+            ],
+            [
+              5500.0,
+              0.8396744132041931
+            ],
+            [
+              6000.0,
+              0.8367486596107483
+            ],
+            [
+              6500.0,
+              0.8365278244018555
+            ],
+            [
+              7000.0,
+              0.8327089548110962
+            ],
+            [
+              7500.0,
+              0.8316137194633484
+            ],
+            [
+              8000.0,
+              0.832457959651947
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            7500.0,
+            0.8316137194633484
+          ]
+        }
+      },
+      {
+        "fold": 2,
+        "seed": 2026,
+        "stop_step": 7500,
+        "training": {
+          "color": "#2166ac",
+          "points": [
+            [
+              500.0,
+              1.4527437686920166
+            ],
+            [
+              1000.0,
+              1.1134626865386963
+            ],
+            [
+              1500.0,
+              0.9999656081199646
+            ],
+            [
+              2000.0,
+              0.9353895783424377
+            ],
+            [
+              2500.0,
+              1.2188739776611328
+            ],
+            [
+              3000.0,
+              0.8070521354675293
+            ],
+            [
+              3500.0,
+              0.9005758762359619
+            ],
+            [
+              4000.0,
+              0.8609744906425476
+            ],
+            [
+              4500.0,
+              0.671323299407959
+            ],
+            [
+              5000.0,
+              1.0149229764938354
+            ],
+            [
+              5500.0,
+              0.7782925367355347
+            ],
+            [
+              6000.0,
+              0.9391460418701172
+            ],
+            [
+              6500.0,
+              1.2012550830841064
+            ],
+            [
+              7000.0,
+              0.7087676525115967
+            ],
+            [
+              7500.0,
+              0.7939040064811707
+            ]
+          ]
+        },
+        "validation": {
+          "color": "#24804b",
+          "points": [
+            [
+              500.0,
+              5.7745490074157715
+            ],
+            [
+              1000.0,
+              2.861588716506958
+            ],
+            [
+              1500.0,
+              1.6916974782943726
+            ],
+            [
+              2000.0,
+              1.1908527612686157
+            ],
+            [
+              2500.0,
+              0.9847431182861328
+            ],
+            [
+              3000.0,
+              0.8921170830726624
+            ],
+            [
+              3500.0,
+              0.846426784992218
+            ],
+            [
+              4000.0,
+              0.8222389817237854
+            ],
+            [
+              4500.0,
+              0.8126697540283203
+            ],
+            [
+              5000.0,
+              0.806086540222168
+            ],
+            [
+              5500.0,
+              0.8040993213653564
+            ],
+            [
+              6000.0,
+              0.8020907044410706
+            ],
+            [
+              6500.0,
+              0.7970086336135864
+            ],
+            [
+              7000.0,
+              0.7943069934844971
+            ],
+            [
+              7500.0,
+              0.7951149344444275
+            ]
+          ]
+        },
+        "best": {
+          "color": "#bd252d",
+          "point": [
+            7000.0,
+            0.7943069934844971
+          ]
+        }
+      }
+    ]
+  },
+  "metrics": {
+    "AUPRC_positive@100": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.23151512421724288,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": 0.005505395287381636,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.16784785614393893,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.24159517754580775,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": 0.005505395287381632,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.18954264830049894,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "AUPRC_negative@100": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.23493180819722945,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": 0.005505395287381636,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.15423598836839716,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.24017672831727635,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": 0.005505395287381632,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.17367002502696657,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "Recall_positive@P80": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.06628445829735748,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": 0.0,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.046739825937804534,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.11444782402298742,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": 0.0,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.05621848739495799,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "Recall_negative@P80": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.044980963763197414,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": 0.0,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.021142441783306553,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.10011993574085078,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": 0.0,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.07358699035169623,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "PCC": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.5197055987640198,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": null,
+        "status": "undefined",
+        "valid_runs": 0,
+        "expected_runs": 3,
+        "valid_groups": 0,
+        "total_groups": 56527,
+        "x": 0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.3509338333663446,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.4353371752098884,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": null,
+        "status": "undefined",
+        "valid_runs": 0,
+        "expected_runs": 3,
+        "valid_groups": 0,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.22955268280734656,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "Spearman": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.4481494559772645,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": null,
+        "status": "undefined",
+        "valid_runs": 0,
+        "expected_runs": 3,
+        "valid_groups": 0,
+        "total_groups": 56527,
+        "x": 0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.26514517724897324,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.42613951905075964,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": null,
+        "status": "undefined",
+        "valid_runs": 0,
+        "expected_runs": 3,
+        "valid_groups": 0,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.18935319383928265,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "RMSE": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.06422780845457397,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": 0.07256116231504185,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.06893275455269117,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.13031433815481058,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": 0.14444969408359384,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.14061374222701425,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ],
+    "R2": [
+      {
+        "dataset": "tahoe",
+        "model": "perturbdiff",
+        "height": 0.13803462220537666,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 169581,
+        "total_groups": 169581,
+        "x": -0.43,
+        "color": "#2166ac"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "no_change",
+        "height": -0.005900643830447958,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.0,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tahoe",
+        "model": "delta_mean",
+        "height": 0.11887046736935407,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 56527,
+        "total_groups": 56527,
+        "x": 0.43,
+        "color": "#636c77"
+      },
+      {
+        "dataset": "tenv",
+        "model": "perturbdiff",
+        "height": 0.022905630214668002,
+        "status": "defined",
+        "valid_runs": 9,
+        "expected_runs": 9,
+        "valid_groups": 4140,
+        "total_groups": 4140,
+        "x": 1.1700000000000002,
+        "color": "#24804b"
+      },
+      {
+        "dataset": "tenv",
+        "model": "no_change",
+        "height": -0.019548444264354092,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 1.6,
+        "color": "#a5aab1"
+      },
+      {
+        "dataset": "tenv",
+        "model": "delta_mean",
+        "height": 0.022523256985656853,
+        "status": "defined",
+        "valid_runs": 3,
+        "expected_runs": 3,
+        "valid_groups": 1380,
+        "total_groups": 1380,
+        "x": 2.0300000000000002,
+        "color": "#636c77"
+      }
+    ]
+  },
+  "figures_sha256": {
+    "learning_curve.png": "dbbe144e4d36d84380079580a7b2e3f23f1dc2d8a6e5bd75579294b9497f5a09",
+    "metrics.png": "cc168123f659e033972888bccea703231f3ed0ca279c08bdb6090638c2f3daab"
+  }
+}

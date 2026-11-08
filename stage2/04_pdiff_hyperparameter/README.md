@@ -4,6 +4,53 @@ Step 04 studies standalone PerturbDiff training on Tahoe and tenv on the
 18,164-gene CM axis. [ADR 0046](../../docs/adr/0046-perturbdiff-standalone-training.md)
 defines the validation, checkpoint and reporting contract.
 
+## Published results
+
+Each dataset completed nine random-init fits and nine held-out predictions
+on folds 0–2 with seeds 17, 42 and 2026. Both deterministic references were
+scored once per fold on the matching held-out groups. Tenv reuses the
+held-out memberships already scored in Step 03.
+
+- [Learning curves](output/learning_curve.png) show all 18 original loss
+  histories and each validation-selected EMA checkpoint. Fold 0 uses solid
+  lines, fold 1 dashed lines and fold 2 dotted lines.
+- [Held-out metrics](output/metrics.png) show eight metric means, with each
+  model grouped with its dataset's references. Both `no_change` PCC and
+  Spearman means are undefined because the prediction is constant. The
+  [publication record](execution/formal_record/publication.json) preserves
+  all valid run and group counts and the plotted coordinates.
+- The [tenv checkpoint index](execution/formal_record/tenv/checkpoints.json)
+  identifies the nine local checkpoints. The release metadata hashes matched
+  the tracked index, all nine files shared hard links with the verified
+  formal fits, and the recorded held-out workers reproduced each selected
+  EMA validation loss and prediction probe exactly.
+
+A workstation power cut interrupted two Tahoe held-out predictions.
+Both retried from their sealed fits. The [recovery record](execution/formal_record/tahoe/recovery.json)
+identifies the preserved attempts and [the scoring audit](execution/formal_record/tahoe/audit.json)
+records exact replay of the completed evaluation.
+
+ADR 0046 specifies the two figure destinations under `output/` for this
+step. To regenerate them from the tracked compact records, use the `arc`
+interpreter with Matplotlib 3.10.9 and fresh destination paths.
+
+```bash
+step=stage2/04_pdiff_hyperparameter
+replay=$(mktemp -d)
+python "$step/execution/script/publish.py" "$step/execution/formal_record" \
+  "$replay/output" "$replay/publication.json"
+cmp "$step/output/learning_curve.png" "$replay/output/learning_curve.png"
+cmp "$step/output/metrics.png" "$replay/output/metrics.png"
+```
+
+Add `--local-checkpoints "$step/output/checkpoints/tenv" "$step/execution/output/tenv-formal-ticket72"`
+to include the local checkpoint audit in the publication record. It checks
+the lightweight request, recipe, run and replay metadata by hash, and
+checks the checkpoint hard links against the existing formal fits. The
+original checkpoint hash and exact model reload are bound by the formal
+prediction and release records. The publication command with the local
+audit took 0.88 s and peaked at 158,188 KiB RSS.
+
 ## Queue operation
 
 The dedicated scheduling subagent runs the queue from the repository. The main

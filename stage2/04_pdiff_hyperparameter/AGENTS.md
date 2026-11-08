@@ -17,3 +17,6 @@ Only the dedicated scheduling subagent may launch or restart Step 04 heavy work.
 - `execution/tahoe_smoke_record/` preserves the full-axis Tahoe fit and reload evidence.
 - `execution/script/pilot.py` plans paired cadence profiles and freezes per-fold formal recipes.
 - `execution/pilot_record/` preserves the pilot protocol and tenv outcome.
+- `execution/script/publish.py` renders the ADR 0046 figures and verifies the compact formal records.
+- `execution/tests/test_publish.py` checks replay and incomplete publication evidence through the CLI.
+- `execution/formal_record/publication.json` binds both figures and the tenv checkpoint handoff.
