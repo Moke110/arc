@@ -375,6 +375,11 @@ A study that trains a model from random initialization and uses a single
 source dataset for training, validation and held-out testing. Its validation
 and test results describe performance within that source dataset.
 
+**Mix**:
+The Step 05 PerturbDiff comparison arm that pools eligible Tahoe and tenv
+training data in one fit.
+_Avoid_: Tahoe+CM
+
 **PerturbDiff v2 protocol**:
 The uniform nine-slot tenv recipe `perturbdiff-v2-all-validation-ema` defined in
 ADR 0042: all-138-group deterministic EMA validation and checkpoint eligibility
