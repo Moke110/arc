@@ -1,7 +1,7 @@
 {
   "schema": "step04-publication-v1",
   "matplotlib": "3.10.9",
-  "renderer_sha256": "9984522aa7eecf3aa1f5cb2d88ff139856b68867a3c2393ac05f4c4f8ff44371",
+  "renderer_sha256": "53514285b79b9c22905f4029c524c04f7dafd1f9a222e21ca5d5d749a44e50a8",
   "inputs_sha256": {
     "tahoe/evaluation.json": "20937d1c58cb77acf493167f55bbb9477fd4a666a3d5ad915db96ff4bcca79e6",
     "tahoe/plan.json": "5148ddcd1f6df7da8b17265ccba0fad9cfe1831adcb8970d2fb0bf665354d556",
@@ -345,47 +345,56 @@
     "fold-0/seed-17": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-0/seed-42": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-0/seed-2026": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-1/seed-17": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-1/seed-42": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-1/seed-2026": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-2/seed-17": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-2/seed-42": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     },
     "fold-2/seed-2026": {
       "bytes": 692705945,
       "same_file_as_formal_fit": true,
-      "metadata_hashes_verified": true
+      "metadata_hashes_verified": true,
+      "checkpoint_hash_verified": true
     }
   },
   "learning_curve": {
