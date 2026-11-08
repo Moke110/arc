@@ -198,6 +198,8 @@ recipes use 2,000-step patience in fold 0 and 1,000-step patience in folds
 
 The [tenv formal record](execution/formal_record/tenv/README.md) reports
 the completed matrix, matched references and checkpoint handoff.
+The [Tahoe formal record](execution/formal_record/tahoe/README.md) reports
+the nine completed fits, matched references and exact scoring replay.
 
 Use one formal plan per dataset. Freeze it from the verified compact pilot
 record and the matching predictor requests in fold order. The freeze command

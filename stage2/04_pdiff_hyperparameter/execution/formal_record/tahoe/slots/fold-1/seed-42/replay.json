@@ -1,0 +1,28 @@
+{
+  "validation_loss": 0.7053882479667664,
+  "prediction_sha256": "55193bf1fd236cbe0cec9538a65bfffe59ea5b3ab3ebe0190d0775a874b55c9a",
+  "prediction_max_abs_error": 0.0,
+  "case_ids": [
+    "plate1:smp_1500:CVCL_0399"
+  ],
+  "prediction_shape": [
+    1,
+    18164
+  ],
+  "identity": {
+    "dataset": "tahoe",
+    "fold": 1,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "004cae2492e18770aed06ae30c4236cc2ea61cba6adf95b077bedc88300f396b",
+    "source_input_sha256": "a985b2eb400b4e819b73cf209b6c8dd3b596e39df9224cd8c15bad1f758c2c24",
+    "input_sha256": "39ab5b7a137f73f039a695ad7bc5e39ad2dc38dffc4c56d2987545fa5f7614e2",
+    "seed": 42,
+    "stage": "formal"
+  },
+  "recipe_sha256": "336c1db99347cae0405684e8d4dc417ee7fbc0d2f40a32675dc4e6709a63829c",
+  "checkpoint_sha256": "a4eaf2ac18d62f19d3c0ea799eca73fd5e73b2b214ad0da72aceb775fb7218c5",
+  "best_step": 7500,
+  "best_validation_loss": 0.7053882479667664,
+  "model_state_sha256": "0828c4c401873c4fc0649de17bb3a93a81bad6d35bfb52db1fc4016fd84b56b3",
+  "plan_sha256": "5148ddcd1f6df7da8b17265ccba0fad9cfe1831adcb8970d2fb0bf665354d556"
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "step04-evaluation-plan-v1",
+  "stage": "formal",
+  "dataset": "tahoe",
+  "runtime_root": "/home/chang/arc",
+  "launch_files": {
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/train.py": "c8a61c2c6bb47b75ae19f7589dbf1da14399168dee9a73cef19b5d2f45c8b7a8",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/native_training.py": "2f699efb0decaac93236ce4bc9133d94dab01f11ff5fc568529d1e7aeb9b6030",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/training_inputs.py": "803232e52dc55580214c224ff90031d9a4e5bd9c57af39e4e94a175565ca37fa",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/training_policy.py": "8c63e9a65601c3f36d1128b58f8f3d00228b09b88be4f805f4186bae2348ae8a",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/tahoe_inputs.py": "0847762f33a1a8a4fb842de09ad8b052c3de63da85297377c4ae84c919bae13e",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/v2.config.json": "bd7fbbeeab090a2da390aa8d39c81c528be0a68f098a218bb751d6cd086d610d",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/models/perturbdiff/env.actual.lock": "219aeda958642c3d5aca4f3858e9fca5094f3a1b4a43841867251eaa4239904c",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_adapter.py": "4dbd8e0dbc0233de30cdc9a95ab07a045a74187a87f0079aa30bf25370f2afbb",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/perturbdiff_v2_protocol.py": "0ba10beb34ff2b81ce4287ca2a260ce32d4a41fcc1b39d34595f0c763087289f",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/predictor_inputs.py": "14ec30b818d8e698b4b438c52ceaccc3c6af4a4d081a64282c84c94690ab135c",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/script/artifacts.py": "cfcdc539b78ed779ad19205ccca5f78c2f9fef1cec57c4a5e77bd5cc7cf4d82a",
+    "/home/chang/arc/pert_model/PerturbDiff/manifest.sha256": "3416b2737c53166fe4a8e62b34e9efcfa708c3e9942e68a417beca447959a074",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/formal.py": "eb9103c715413c30bd132ad89c7d38c5d0470130ead14641e22d664b04dc6a5c",
+    "/home/chang/arc/stage2/_envs/perturbdiff/bin/python": "c4657024a8de1684f692351aa1ad5838b8dd3481ec314686f9139aab0073008c",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/pilot.py": "82b4beebab2149cca5372bfa4742cb5c0740cd4e8ddf6b883bc93effbf5bb049",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/pilot_evidence.py": "9eafa756b5507c8a09783a0630b1a65edd9314ec790225b3664b41e424129ca6",
+    "/tmp/arc-step04.CNQdf5/wt73/stage2/04_pdiff_hyperparameter/execution/script/schedule.py": "2891a6280c58445c93b8c3eb49b041fcdd19d1ca02967a6deb0a60943491feee",
+    "/home/chang/arc/stage2/03_modes_tenv/execution/input_record/verification.json": "d075ebf2de8c0c44701b82a49ed8b0ad8b9b6bbe8e3d442d9f8305b9968d3b29"
+  },
+  "selection_sha256": "2a2b313e4cef969b600f04227c1af352a1f1145b713b1488b038cfb13c79f9c7",
+  "folds": [
+    {
+      "request": "requests/fold-0.json",
+      "request_sha256": "0197a609294207c997731c5e024d493977ccade40a36b13ef34e2a9a3ed8a28d",
+      "policy_sha256": "da0e5f599f31bc8c64ac607bfbf2fe17cb16914b22129ab202e700eb7833b570",
+      "recipes": {
+        "17": {
+          "path": "recipes/fold-0/seed-17.json",
+          "sha256": "002e0e84c5e13736b83ec42fdad39a7cfa34e4af05579e388f9857de648045f7"
+        },
+        "42": {
+          "path": "recipes/fold-0/seed-42.json",
+          "sha256": "acf0fc82439ac80b35adf030321fc2fc44bd51c9eaf188a5c5d5c7184607d2e8"
+        },
+        "2026": {
+          "path": "recipes/fold-0/seed-2026.json",
+          "sha256": "bc23affaca1960ad907a64af1bd92758fd063c680cc97076e96ba7491b5cd62e"
+        }
+      },
+      "recipe_sha256_by_seed": {
+        "17": "288a986dcac0273549ab782486af65cc4b092c91615ed8122776268347405adc",
+        "42": "6048548574687b35ad76d530452d908b6c6e4110b1f2f0c1a68459c9b4c3f27e",
+        "2026": "3ba9181802c2f39440398e63b438b16133278232eea3fbe9e30ba1d636615a3b"
+      }
+    },
+    {
+      "request": "requests/fold-1.json",
+      "request_sha256": "bd2860ad97de891d9a28bd5405adeb30c8b7f756cbb3f27c8e68640d1df83950",
+      "policy_sha256": "80301556ecf49d8a69aceab0177444ec5f804687f3e69a3c88741645440d0bb4",
+      "recipes": {
+        "17": {
+          "path": "recipes/fold-1/seed-17.json",
+          "sha256": "a4d66544b611a0ad96380539e2d22b47d5fb782b461ffd7a57b7ada7c4028dd1"
+        },
+        "42": {
+          "path": "recipes/fold-1/seed-42.json",
+          "sha256": "12d84b8ddda0d6ea30e580602c2c8c20509122edc8ee84d812c0715409a27fcd"
+        },
+        "2026": {
+          "path": "recipes/fold-1/seed-2026.json",
+          "sha256": "346322860407d122d904ddcf5a3d9595c52fc2a5d7905e2b6c33c94ffee36d0c"
+        }
+      },
+      "recipe_sha256_by_seed": {
+        "17": "7673bda3e577898ca722dcc9b10171b98418df380c159b4552ccb4e7a4bb221b",
+        "42": "336c1db99347cae0405684e8d4dc417ee7fbc0d2f40a32675dc4e6709a63829c",
+        "2026": "08235265a2fb520f21dc1e8f950acd4f27063cfdb63d8f5f6e70f809f66a576a"
+      }
+    },
+    {
+      "request": "requests/fold-2.json",
+      "request_sha256": "1fce53aabba6e95cde6f573ede08df3c7d0082c2798b14a444d513d0f00ddb8e",
+      "policy_sha256": "48c7b64681e607daf4e1b16b84c01a98001d6fda571616efd279453ce1a48df1",
+      "recipes": {
+        "17": {
+          "path": "recipes/fold-2/seed-17.json",
+          "sha256": "135b58bf253b479b507abeccdb8de237e88416ebd0839d20b2c0f60b5cb9fe55"
+        },
+        "42": {
+          "path": "recipes/fold-2/seed-42.json",
+          "sha256": "01bb757512afb6fec66566332aaed6bfdd068bbf458fd18cce0719c16f0bd72a"
+        },
+        "2026": {
+          "path": "recipes/fold-2/seed-2026.json",
+          "sha256": "90cae0ab35c08f95980d6c80ed42bfd7b13ae70c3b5939b59ab5cbeabf05b94a"
+        }
+      },
+      "recipe_sha256_by_seed": {
+        "17": "aa36339d4186b41f0a46909efda659f6077a1bd47029369c3f1bdbbbaf870d59",
+        "42": "db048cc57544beae8a83278c6a376367aa88613e08814a85e7f15c25efb26763",
+        "2026": "b745863e97e6e6f5e8b8c666512eda107a8fe6185de7a9054bf0bb99e11cbe22"
+      }
+    }
+  ],
+  "inference": {
+    "order": "first appearance by population size, then group",
+    "seed_offset": 200000,
+    "max_groups": 8,
+    "max_profiles": 24
+  }
+}

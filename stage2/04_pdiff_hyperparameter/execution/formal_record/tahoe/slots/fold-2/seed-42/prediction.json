@@ -1,0 +1,32 @@
+{
+  "schema": "step04-heldout-prediction-v1",
+  "plan_sha256": "5148ddcd1f6df7da8b17265ccba0fad9cfe1831adcb8970d2fb0bf665354d556",
+  "identity": {
+    "dataset": "tahoe",
+    "fold": 2,
+    "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "split_sha256": "004cae2492e18770aed06ae30c4236cc2ea61cba6adf95b077bedc88300f396b",
+    "source_input_sha256": "a985b2eb400b4e819b73cf209b6c8dd3b596e39df9224cd8c15bad1f758c2c24",
+    "input_sha256": "8305fc2a2c531a294b411fe044882e7a1055721e8ba8ba105b29087563ad6602",
+    "seed": 42,
+    "stage": "formal"
+  },
+  "recipe_sha256": "db048cc57544beae8a83278c6a376367aa88613e08814a85e7f15c25efb26763",
+  "checkpoint_sha256": "8a7168da9cc2b1b387f708cc46c62180736e7af6a1c3f121e6718c6ed9a47d8f",
+  "best_step": 8000,
+  "best_validation_loss": 0.6713115572929382,
+  "model_state_sha256": "2004624f46ffdb774303c7fdb6dadcde4fb763fd8016b15ff334cb17a897780d",
+  "run_sha256": "a2c19a1332c37b2db625d92e675844c0bc2ee233c0db9cfcd42f82a178aa4be0",
+  "cases_sha256": "d994e7545867704ec6203f381226016cae763c06d854fd788b5fd06731ec692c",
+  "prediction_sha256": "1b4c49b3ec9a0174feface1dbdf9f5aaede0e5ca05463f703b9fe34f2eb6b633",
+  "replay_sha256": "8f8e69bab51803b90e316c203d3d47d1f34cb387af3429f6904fd1372c36f0d5",
+  "case_count": 20975,
+  "group_count": 18731,
+  "maximum_population": 2,
+  "wall_seconds": 4481.6389096819985,
+  "resources": {
+    "peak_rss_kib": 4339524,
+    "peak_gpu_allocated_bytes": 738637312,
+    "peak_gpu_reserved_bytes": 773849088
+  }
+}
