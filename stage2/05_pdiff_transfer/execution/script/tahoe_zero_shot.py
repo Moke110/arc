@@ -215,6 +215,10 @@ def sample_cases(model, inputs, config, inference, directory, device):
 def predict(runtime, source, source_sha, root, regime, recipient_sha, seed, destination):
     request, inference, _, _ = recipient(runtime, root, regime, recipient_sha)
     verify_pair(source, request)
+    predict_recipient(runtime, source, source_sha, request, inference, regime, recipient_sha, seed, destination)
+
+
+def predict_recipient(runtime, source, source_sha, request, inference, regime, recipient_sha, seed, destination):
     checkpoint = source['checkpoints'][str(seed)]
     use_runtime(runtime)
     from native_training import JointPerturbDiff, PredictorInputs, resources, seed_randomness, torch
@@ -257,7 +261,7 @@ def predict(runtime, source, source_sha, root, regime, recipient_sha, seed, dest
         staging.rename(destination)
 
 
-def verify_prediction(directory, source, source_sha, request, regime, recipient_sha, seed):
+def verify_prediction(directory, source, source_sha, request, regime, recipient_sha, seed, *, load_values=True):
     manifest = load_schema(directory / 'prediction.json', PREDICTION_SCHEMA)
     bridge = load_schema(pinned(directory, 'bridge.json', manifest['bridge_sha256']), FORMAT)
     cases = rows(request['predictor_files']['test_cases'])
@@ -275,6 +279,8 @@ def verify_prediction(directory, source, source_sha, request, regime, recipient_
     order = read_json(pinned(directory, 'cases.json', manifest['cases_sha256']))
     if order != [[row['case_id'], row['group_id']] for row in cases]:
         raise ValueError('prediction cases differ from frozen tenv case order')
+    if not load_values:
+        return manifest, None
     values = load_array(pinned(directory, 'prediction.npy', manifest['prediction_sha256']),
                         (len(cases), request['n_genes']))
     if any(not np.isfinite(values[start:start + 32]).all() for start in range(0, len(cases), 32)):
@@ -301,12 +307,24 @@ def score_truth(runtime, request, fold, warm_source, scratch):
 def score(runtime, source, source_sha, root, regime, recipient_sha, runs_root, output, seeds):
     request, _, fold, warm_source = recipient(runtime, root, regime, recipient_sha)
     verify_pair(source, request)
-    if output.exists() or output.is_symlink():
-        raise ValueError('score requires a fresh output directory')
-    cases = rows(request['predictor_files']['test_cases'])
-    indices, _ = grouped_cases(cases)
     verified = {seed: verify_prediction(runs_root / f'seed-{seed}', source, source_sha,
                                         request, regime, recipient_sha, seed) for seed in seeds}
+    write_scores(runtime, request, fold, warm_source, output, 'Tahoe',
+                 {seed: values for seed, (_, values) in verified.items()}, {
+                     'schema': 'step05-tahoe-evaluation-v1', 'regime': regime,
+                     'dose_limitation': LIMITATION, 'source_sha256': source_sha,
+                     'recipient_sha256': recipient_sha, 'scored_seeds': list(seeds),
+                     'complete': tuple(seeds) == SEEDS, 'recipient_identity': request['identity'],
+                     'source_parent_overlap': overlap(source, request),
+                     'prediction_manifests': {
+                         str(seed): sha256(runs_root / f'seed-{seed}/prediction.json') for seed in seeds},
+                 })
+
+
+def write_scores(runtime, request, fold, warm_source, output, arm, predictions, evidence):
+    if output.exists() or output.is_symlink():
+        raise ValueError('score requires a fresh output directory')
+    indices, _ = grouped_cases(rows(request['predictor_files']['test_cases']))
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         scratch = Path(temporary)
@@ -317,8 +335,8 @@ def score(runtime, source, source_sha, root, regime, recipient_sha, runs_root, o
             with (pending / 'per_group.csv').open('w', newline='') as stream:
                 writer = csv.DictWriter(stream, fieldnames=GROUP_FIELDS)
                 writer.writeheader()
-                for seed, (_, values) in verified.items():
-                    slot = {'dataset': 'tenv', 'fold': 0, 'model': 'Tahoe', 'seed': seed}
+                for seed, values in predictions.items():
+                    slot = {'dataset': 'tenv', 'fold': 0, 'model': arm, 'seed': seed}
                     run_rows.append(run_scores(writer, slot, 'completed', '', groups, truth, labels,
                                                indices, values, curves))
         write_csv(pending / 'per_run.csv', run_rows, RUN_FIELDS)
@@ -328,11 +346,7 @@ def score(runtime, source, source_sha, root, regime, recipient_sha, runs_root, o
             'per_run_sha256': sha256(pending / 'per_run.csv'), 'runs': curves, 'dose_limitation': LIMITATION,
         })
         write_json(pending / 'evaluation.json', {
-            'schema': 'step05-tahoe-evaluation-v1', 'regime': regime, 'dose_limitation': LIMITATION,
-            'source_sha256': source_sha, 'recipient_sha256': recipient_sha, 'scored_seeds': list(seeds),
-            'complete': tuple(seeds) == SEEDS, 'recipient_identity': request['identity'],
-            'source_parent_overlap': overlap(source, request),
-            'prediction_manifests': {str(seed): sha256(runs_root / f'seed-{seed}/prediction.json') for seed in seeds},
+            **evidence,
             'files': {str(path.relative_to(pending)): sha256(path)
                       for path in sorted(pending.rglob('*')) if path.is_file()},
         })

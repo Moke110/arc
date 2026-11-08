@@ -247,3 +247,64 @@ appeared in Tahoe training. Tahoe validation included three warm-start test
 parent blocks and zero cold-cm-drug test parent blocks. Both predictions
 completed concurrently with a workstation VRAM peak of 3.30 GiB. Maximum
 host RSS was 2,445,856 KiB for warm-start and 2,446,240 KiB for cold-cm-drug.
+
+## Transfer and globally cold Tahoe
+
+The Transfer plan freezes the tenv request and matching CM recipe for each
+regime and seed. Warm-start and cold-cm-drug pin their selected Step 04 Tahoe
+checkpoints. Cold-drug pins the filtered Tahoe request, source recipe and
+per-seed fit location. After that source fit, the native validation replay
+and fit seal establish the exact selected source checkpoint.
+
+Run the following phases under the scheduler. Within each phase, the seed
+slots are independent. The example shows one formal seed.
+
+```bash
+step=stage2/05_pdiff_transfer
+cli="$step/execution/script/transfer.py"
+pdiff=stage2/_envs/perturbdiff/bin/python
+out="$step/execution/output/transfer-formal"
+python "$cli" prepare "$out"
+plan_sha=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+python "$cli" verify "$out" --plan-sha256 "$plan_sha"
+
+# Run only for the globally cold Tahoe source, for seeds 17, 42 and 2026.
+"$pdiff" "$cli" source-fit "$out" 17 --plan-sha256 "$plan_sha"
+
+# Repeat these phases for each regime and seed after its source is ready.
+regime=cold-drug
+"$pdiff" "$cli" tahoe-predict "$out" "$regime" 17 --plan-sha256 "$plan_sha"
+"$pdiff" "$cli" fit "$out" "$regime" 17 --plan-sha256 "$plan_sha"
+"$pdiff" "$cli" predict "$out" "$regime" 17 --plan-sha256 "$plan_sha"
+
+# Score a formal regime after its three predictions per arm are sealed.
+python "$cli" tahoe-score "$out" "$regime" "$out/$regime-tahoe-score" --plan-sha256 "$plan_sha"
+python "$cli" score "$out" "$regime" "$out/$regime-score" --plan-sha256 "$plan_sha"
+```
+
+`prepare --smoke` activates seed 17 with a 12-step target recipe. The
+globally cold smoke route uses the separately qualified filtered Tahoe
+checkpoint from ticket #79. Formal plans require their own filtered source
+fit with the matching formal Tahoe recipe. Both stages can reuse the sealed
+ticket #78 Tahoe predictions for seed 17 in the two historically sourced
+regimes.
+
+Transfer reads the bridge record from the corresponding Tahoe prediction and
+strict-loads its mapped model state before constructing the optimizer,
+scheduler and EMA. The target run records the source and recipient request
+hashes, source checkpoint and history hashes, target recipe hash, bridge and
+mapped-state hashes, fresh training state, and a gradient on the mapped
+positive dose rows. The source and target validation histories remain in
+their separate runs. The Transfer worker verifies case and bridge metadata
+before fitting or predicting. Scoring opens the tenv test truth only after
+checking the selected predictions and their seals.
+
+The formal cold source fits are under `source/seed-*/fit`. New Tahoe
+predictions and their bridge records are under `tahoe/<regime>/seed-*`.
+Transfer fits and predictions are under `slots/<regime>/seed-*`. Successful
+fit and predict commands verify existing sealed outputs on retry. Failed
+attempts stay in their attempt directories.
+
+The [scheduled qualification](execution/transfer_record/qualification.json)
+records the full-axis cold-cm-drug Transfer fit and replay, the globally
+cold Tahoe zero-shot prediction, and the two seed-17 evaluations.

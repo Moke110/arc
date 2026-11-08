@@ -22,3 +22,6 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
 - `execution/script/tahoe_bridge.py` seals and loads the shared initialization
   for Tahoe and Transfer. `execution/tests/test_tahoe_bridge.py` covers the
   shared loader, remapped dose rows and rebuilt recipient lookups.
+- `execution/script/transfer.py` freezes the nine formal Transfer slots,
+  verifies or fits each globally cold source, shares the Tahoe prediction
+  bridge with the target fit, and replays and scores both arms.

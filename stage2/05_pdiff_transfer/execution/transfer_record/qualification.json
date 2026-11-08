@@ -1,0 +1,372 @@
+{
+  "schema": "step05-transfer-qualification-v1",
+  "ticket": 80,
+  "stage": "smoke",
+  "seed": 17,
+  "worker_files": {
+    "transfer.py": "9112d60ae5fca192f819e32851826c3e345c7fd6ac0b234def26b9d8ab79ea62",
+    "tahoe_zero_shot.py": "4f77c68761dd5387366b09217262b2d70b196952c2e935b2bb34256f59ff9093",
+    "test_transfer.py": "ab600bee3926229455c38c1ef4dd2e91dded6feb69d66be1c070674bcefe0f84"
+  },
+  "plan": {
+    "artifact": "transfer-smoke-ticket80/plan.json",
+    "sha256": "9bd2da7094cecf7058535ab03026bccbd00931cc0322509b04da05e426a5f847",
+    "formal_slot_count": 9,
+    "formal_seeds_by_regime": {
+      "warm-start": [
+        17,
+        42,
+        2026
+      ],
+      "cold-cm-drug": [
+        17,
+        42,
+        2026
+      ],
+      "cold-drug": [
+        17,
+        42,
+        2026
+      ]
+    }
+  },
+  "transfer_cold_cm_drug": {
+    "identity": {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511",
+      "arm": "Transfer",
+      "regime": "cold-cm-drug",
+      "seed": 17,
+      "stage": "smoke"
+    },
+    "optimizer_steps": 12,
+    "selected_step": 12,
+    "checkpoint_sha256": "c366b6636a5c34442518a5e28f1d8774fb7ce98747e88c7940771b5a6ddb9a9b",
+    "initialization": {
+      "source_sha256": "b16dc356d543675bda65a879e6b53456ae8d69c7c3997c3c6d4f1fd74b35df83",
+      "source_request_sha256": "0197a609294207c997731c5e024d493977ccade40a36b13ef34e2a9a3ed8a28d",
+      "source_checkpoint_sha256": "44ecc4b9dc07c1709d7ee77545df5edcaad89832e195d3eeeb39e9e81efd0204",
+      "source_recipe_sha256": "288a986dcac0273549ab782486af65cc4b092c91615ed8122776268347405adc",
+      "source_history_sha256": "a997bbdbda487b96b5e443e22989be2792b9f336d7287cb6fd234214f7c9d849",
+      "recipient_request_sha256": "cd0c440c6fd9cdec4d4b8167eb541f64ee5c2505bec0dfafa8eaf90579d2d2f0",
+      "recipient_split_sha256": "b8cc980317694125054af5d7b86536864672545ef853342fafab2d4559766430",
+      "recipe_sha256": "0601536d8664919e529d0c999332e3ec4445f0bbbfd8ba8625341c9ee1558a45",
+      "bridge_sha256": "7c479b9e59421df72380afd0df74661ecb1b3c337b6c41a68d4a432a4421782e",
+      "mapped_state_sha256": "2a50f0072b4d8f85ce7653ecbf41c673a3f3426b4f9d666b98149f3fd91cf161",
+      "dose_limitation": "Tahoe dose embeddings use log-dose interpolation with endpoint clamping. The 10 \u00b5M tenv dose receives the learned 5 \u00b5M Tahoe row."
+    },
+    "training_initial_state": {
+      "mapped_dose_rows_trainable": true,
+      "optimizer_state_entries": 0,
+      "scheduler_start_step": 0,
+      "ema_start_step": 0,
+      "mapped_dose_gradient_observed": true
+    },
+    "fit_resources": {
+      "peak_rss_kib": 3153248,
+      "peak_gpu_allocated_bytes": 3904403456,
+      "peak_gpu_reserved_bytes": 4097835008
+    },
+    "validation_replay": {
+      "validation_loss": 5.57386589050293,
+      "prediction_sha256": "f2128c7f3a909446823804a89648ef4029c2f4b6d84ea462dce93f9f1fdc2972",
+      "prediction_max_abs_error": 0.0,
+      "case_ids": [
+        "temp_env::Plate1-C07",
+        "temp_env::Plate1-F07",
+        "temp_env::Plate1-I07"
+      ],
+      "prediction_shape": [
+        3,
+        18164
+      ]
+    },
+    "case_count": 1401,
+    "group_count": 462,
+    "wall_seconds": 94.03928260199973,
+    "resources": {
+      "peak_rss_kib": 2598672,
+      "peak_gpu_allocated_bytes": 743699968,
+      "peak_gpu_reserved_bytes": 780140544
+    },
+    "prediction_sha256": "535f149d749c9a03a571b0ede5bb0d5473e99c17dac9255ebadc676643a61e6c",
+    "bridge_sha256": "7c479b9e59421df72380afd0df74661ecb1b3c337b6c41a68d4a432a4421782e",
+    "mapped_state_sha256": "2a50f0072b4d8f85ce7653ecbf41c673a3f3426b4f9d666b98149f3fd91cf161",
+    "metrics": {
+      "AUPRC_positive@100": 0.005052250486628178,
+      "AUPRC_negative@100": 0.10627447877882028,
+      "Recall_positive@P80": 0.0005844155844155844,
+      "Recall_negative@P80": 0.004783549783549784,
+      "PCC": 0.05427435339955523,
+      "Spearman": 0.11492087062297587,
+      "RMSE": 0.4896112550555879,
+      "R2": -17.685820828184518,
+      "AUPRC_positive@100_valid_groups": 462.0,
+      "AUPRC_negative@100_valid_groups": 462.0,
+      "Recall_positive@P80_valid_groups": 462.0,
+      "Recall_negative@P80_valid_groups": 462.0,
+      "PCC_valid_groups": 462.0,
+      "Spearman_valid_groups": 462.0,
+      "RMSE_valid_groups": 462.0,
+      "R2_valid_groups": 462.0
+    },
+    "directional_pr_points": 101,
+    "artifacts": {
+      "transfer-smoke-ticket80/slots/cold-cm-drug/seed-17/prediction/cases.json": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a",
+      "transfer-smoke-ticket80/slots/cold-cm-drug/seed-17/prediction/prediction.json": "a1c6ff01c74b4aa99d1c4f2d4b1f23fbd196ded1531222c38ba42579a8581a02",
+      "transfer-smoke-ticket80/cold-cm-drug-score/evaluation.json": "24f9242e907af34b96c20d2677ebc9d8f79ebe3309d3142ff5f21023a5d63d63",
+      "transfer-smoke-ticket80/cold-cm-drug-score/per_group.csv": "e9c792b162de513c27444d8022c9af25304b6c6970ffc9b3c7a3ef702ef857fe",
+      "transfer-smoke-ticket80/cold-cm-drug-score/per_run.csv": "b5cbdb7b10c601cb933c7efe56503bd769548675797df6e1c2732dad689ed2ab",
+      "transfer-smoke-ticket80/cold-cm-drug-score/summary.csv": "299ae5e78a3f9812bd6a679b9eb6d31b3518c02f514d3ce0af0a2fe6e6215503",
+      "transfer-smoke-ticket80/cold-cm-drug-score/tenv/pr_curves.json": "a2e9d20b3ce0d31cc6aae99ad3b3dad665de9f857826783d05d54fd8330a427b"
+    }
+  },
+  "globally_cold_tahoe": {
+    "source_identity": {
+      "dataset": "tahoe",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "5654024f2d916bbe8b15c25762af179e7ba683648c0da7f474a2ba0c17926c5f",
+      "source_input_sha256": "f3cc64a83d9fbffd885b917661752778517cad29fa05cee9da933bafbfd2f7de",
+      "input_sha256": "925bfc1cdd7b34b8da80aca1e15ddda624d4bf4e90a99ed76eff8e8504d14edd",
+      "seed": 17,
+      "stage": "smoke"
+    },
+    "source_checkpoint_sha256": "7b8724b22ecd1e4223bd6a302c0ff66661cbbe63bf7707c50b566c4068688263",
+    "source_parent_overlap_counts": {
+      "train": {
+        "train": 6,
+        "validation": 0,
+        "test": 0
+      },
+      "validation": {
+        "train": 3,
+        "validation": 0,
+        "test": 0
+      },
+      "test": {
+        "train": 5,
+        "validation": 0,
+        "test": 5
+      }
+    },
+    "case_count": 1401,
+    "group_count": 462,
+    "wall_seconds": 91.77295019600206,
+    "resources": {
+      "peak_rss_kib": 2447952,
+      "peak_gpu_allocated_bytes": 743699968,
+      "peak_gpu_reserved_bytes": 780140544
+    },
+    "prediction_sha256": "e4893f6fe5f3bad8687c6e248cf1006444cbb03c5ca231137acd4eaddb3b83d5",
+    "bridge_sha256": "c8bf378cf0f2748540a50275c605af990f721d9bb915b1fd3df6eae72da9ad3b",
+    "mapped_state_sha256": "9c483ce134d6050ee958b559f57cf75c408577976488a013d750f12d8d9fea87",
+    "metrics": {
+      "AUPRC_positive@100": 0.004372566300752593,
+      "AUPRC_negative@100": 0.08354974942793977,
+      "Recall_positive@P80": 6.493506493506494e-05,
+      "Recall_negative@P80": 0.0055194805194805205,
+      "PCC": 0.002865124577859864,
+      "Spearman": 0.047658453903639285,
+      "RMSE": 1.5962632913016532,
+      "R2": -198.1962087167075,
+      "AUPRC_positive@100_valid_groups": 462.0,
+      "AUPRC_negative@100_valid_groups": 462.0,
+      "Recall_positive@P80_valid_groups": 462.0,
+      "Recall_negative@P80_valid_groups": 462.0,
+      "PCC_valid_groups": 462.0,
+      "Spearman_valid_groups": 462.0,
+      "RMSE_valid_groups": 462.0,
+      "R2_valid_groups": 462.0
+    },
+    "directional_pr_points": 101,
+    "artifacts": {
+      "transfer-smoke-ticket80/tahoe/cold-drug/seed-17/cases.json": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a",
+      "transfer-smoke-ticket80/tahoe/cold-drug/seed-17/prediction.json": "b03f4c0ea6c0b00ef78023ce4137022e0960b0365796594c2c8d69cefa264626",
+      "transfer-smoke-ticket80/cold-drug-tahoe-score/evaluation.json": "9a8f88c29f73354d8d112058a0f49b78e9c18c46d1e9d3c599c19996e6e8de0e",
+      "transfer-smoke-ticket80/cold-drug-tahoe-score/per_group.csv": "fb61f4b362fbc1ac3ff98644330b23abb2608eb983a12f0a82efe5d494972f6a",
+      "transfer-smoke-ticket80/cold-drug-tahoe-score/per_run.csv": "5d3de0eb76d2bd3368fc36f106a012dcf48d1f256021a7383d17121a8f597f79",
+      "transfer-smoke-ticket80/cold-drug-tahoe-score/summary.csv": "146a4e92bb2f3adf7113d8d36e3a41d6f5e8510e562ed5b14267906e459dc4e2",
+      "transfer-smoke-ticket80/cold-drug-tahoe-score/tenv/pr_curves.json": "3c5a27c578a8ae946f33412446b3d5cc8e416c3e3831fd807b894a4927ecea2f"
+    }
+  },
+  "negative_checks": {
+    "wrong_seed": "completed fit differs from formal identity or recipe",
+    "wrong_checkpoint": "frozen artifact path/hash mismatch: best.pt",
+    "peak_rss_kib": 103852
+  },
+  "attempt_note": "The first bounded target fit began before the final arm and regime checkpoint identity was saved. The final predictor rejected the superseded identity. The final fit and prediction retry used the pinned worker code and produced the retained slot.",
+  "additional_artifacts": {
+    "transfer-smoke-ticket80/slots/cold-cm-drug/seed-17/fit/run.json": "e896c23c5dc1e416f852ada7a7a45dc11e818523aae81cf791cda16df4434ff0",
+    "transfer-smoke-ticket80/slots/cold-cm-drug/seed-17/fit/fit.json": "0668eb5be2bd3ffbba86ab6db19c7a4e9d53deb52b8ace91f3b63e9fe4f5f272",
+    "transfer-smoke-ticket80/slots/cold-cm-drug/seed-17/prediction/replay.json": "ffac7c164912c2da166a5f0647ca16b4fa9d410cb0bb4075613c9974791e00ef",
+    "transfer-smoke-ticket80/tahoe/cold-drug/seed-17/bridge.json": "c8bf378cf0f2748540a50275c605af990f721d9bb915b1fd3df6eae72da9ad3b",
+    "transfer-smoke-ticket80/qualification-superseded/seed-17/fit/run.json": "b58f01f399696d5cd3b03f6c8965499492f7e01a50faa853b5c345ab782ff0a3",
+    "ticket80-queue/negative-checks.log": "4caa1c7363ec5bae2db21dce99abe197ecc2cd4e76e31154dfeb9448b4e24478",
+    "ticket80-queue/predict-retry-status.json": "77a3877f3bfbdc1964c3e98e70e54411dd0249fb0626b99ef4a96fafe1bf1729"
+  },
+  "scheduler": [
+    {
+      "phase": "fit-final",
+      "attempts": [
+        {
+          "job": "transfer-cold-cm-drug-fit-final",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 20.952,
+          "peak_host_rss_gib": 3.007171630859375,
+          "peak_workstation_gpu_used_gib": 5.349609375
+        }
+      ],
+      "artifacts": {
+        "ticket80-queue/fit-final.json": "4c89a01a00fde0ff673afc31790a818332f4c22f9b2b4abbd6e69e436af280fe",
+        "ticket80-queue/fit-final-scheduler/status.json": "3873c1ffc1a19122981a947c0f573971b7b15bf970fba1025036c9568c6a636f",
+        "ticket80-queue/fit-final-scheduler/telemetry.jsonl": "f9e8b887a2cabdf07d1727d9ec32399ac9958f6f743895acd292b16a95364bb8",
+        "ticket80-queue/fit-final.preflight.json": "d260002f5dec32b1f6cd9539b3da0dbfcec11895c30f864941e20d289b538ee0",
+        "ticket80-queue/fit-final-scheduler/transfer-cold-cm-drug-fit-final.attempt1.log": "3bc5b8f523534e1e880275ad2a7b69fa89a0a3faab37f53b8efbbba96db1d695"
+      }
+    },
+    {
+      "phase": "fit",
+      "attempts": [
+        {
+          "job": "transfer-cold-cm-drug-fit",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 21.994,
+          "peak_host_rss_gib": 3.1034164428710938,
+          "peak_workstation_gpu_used_gib": 5.619140625
+        }
+      ],
+      "artifacts": {
+        "ticket80-queue/fit.json": "9067de8e00a9e55962546f4f7c0a16d1e8bb94cbb710affe43825b956fd1c67e",
+        "ticket80-queue/fit-scheduler/status.json": "7745b58b055c3b9c0702b4d850d8edf2c92a3fa144f783d70979605e423c0819",
+        "ticket80-queue/fit-scheduler/telemetry.jsonl": "4b347ee343dd62b3af40f2ffddbf92f38ed8dac0e01dd5153d78db5ee5f4f0b3",
+        "ticket80-queue/fit.preflight.json": "8432d1bce9c34a6c7e6f7c423de1e21c72c83ad3b79fc91ff51c6f6ba0c4f1c2",
+        "ticket80-queue/fit-scheduler/transfer-cold-cm-drug-fit.attempt1.log": "37af52870db607de1bc36de373f4661d804b92961585b03121b4dc7f119b4ef7"
+      }
+    },
+    {
+      "phase": "legacy-replay",
+      "attempts": [
+        {
+          "job": "legacy-tahoe-score-replay",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 4.005,
+          "peak_host_rss_gib": 0.4105186462402344,
+          "peak_workstation_gpu_used_gib": 1.25390625
+        }
+      ],
+      "artifacts": {
+        "ticket80-queue/legacy-replay.json": "126ec9fe376e4c9219d3cb687376d93172027142e16ccf551357a0b7221e66a7",
+        "ticket80-queue/legacy-replay-scheduler/status.json": "724fdd75d0a00cfe35af30a4a9f64898b5ad8f33dcce7500d1ab3d9abd9bf613",
+        "ticket80-queue/legacy-replay-scheduler/telemetry.jsonl": "14de880c54cdefa1f4d345a41987494454223d2f07c58cfc15c09bc204305de8",
+        "ticket80-queue/legacy-replay.preflight.json": "71d3a77723c69c45b31631f1222ac7733987d8277dc90c29bd4c33b2acf8b8b0",
+        "ticket80-queue/legacy-replay-scheduler/legacy-tahoe-score-replay.attempt1.log": "885a02effda5fda3ff580ce5ab3df313043864139dc69d0f6484ba9ccdee4280"
+      }
+    },
+    {
+      "phase": "predict",
+      "attempts": [
+        {
+          "job": "transfer-cold-cm-drug-predict",
+          "attempt": 1,
+          "outcome": "failed",
+          "wall_seconds": 6.011,
+          "peak_host_rss_gib": 1.1034660339355469,
+          "peak_workstation_gpu_used_gib": 1.3662109375
+        },
+        {
+          "job": "transfer-cold-cm-drug-predict",
+          "attempt": 2,
+          "outcome": "completed",
+          "wall_seconds": 103.253,
+          "peak_host_rss_gib": 2.4782867431640625,
+          "peak_workstation_gpu_used_gib": 2.4130859375
+        },
+        {
+          "job": "transfer-cold-drug-tahoe-predict",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 102.81,
+          "peak_host_rss_gib": 2.3345489501953125,
+          "peak_workstation_gpu_used_gib": 2.251953125
+        }
+      ],
+      "artifacts": {
+        "ticket80-queue/predict.json": "b11dc4abae4e34851e27267afce4a075fdb741ab5a7f107039a85dd8c7ab5cae",
+        "ticket80-queue/predict-scheduler/status.json": "879cc2d2acbef01c0334b91fb039accf3712e9fc087e67a5e7c14405cc6e0a70",
+        "ticket80-queue/predict-scheduler/telemetry.jsonl": "bfd0fd864266a77bdf160f3f9602699e5037cb3bb6cca930fb1e508f78dfc92f",
+        "ticket80-queue/predict.preflight.json": "9cbd57d2acf0ee381923f39cda88cff54901eae7ba24d0c4d9265f2006e45628",
+        "ticket80-queue/predict-scheduler/transfer-cold-cm-drug-predict.attempt1.log": "88e0dfb6f37829b9b0d6e850d081cc867f223f92cc3f92fba3eb195a86981c3e",
+        "ticket80-queue/predict-scheduler/transfer-cold-cm-drug-predict.attempt2.log": "3212ed6ff40f223c18002205f0d1f2b78c1a4f1e25972319fd6a8bf76233ba6c",
+        "ticket80-queue/predict-scheduler/transfer-cold-drug-tahoe-predict.attempt1.log": "a65595a017e2be61d75fcb62c4f0e83015eb91cfe589e45f314cfedea037a9e1"
+      }
+    },
+    {
+      "phase": "prepare",
+      "attempts": [
+        {
+          "job": "transfer-prepare",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 2.039,
+          "peak_host_rss_gib": 0.11721420288085938,
+          "peak_workstation_gpu_used_gib": 1.2578125
+        }
+      ],
+      "artifacts": {
+        "ticket80-queue/prepare.json": "282fdd7f9092d287ce2a617a737c22aaf555ce1b97348d2fbafcf8c8c9f68d9c",
+        "ticket80-queue/prepare-scheduler/status.json": "2dfc6a7f745823bbb2fe546ee04f014f18b15a45a409f43f340ffa987ff49316",
+        "ticket80-queue/prepare-scheduler/telemetry.jsonl": "6525a6e0bd90202afb1db4540d4a28dbce591687c2e6673dfb419270378feda9",
+        "ticket80-queue/prepare.preflight.json": "9e7b71627a5b7aad582a1325018d27adb488fea71f5b7785ea0df67cedab1635",
+        "ticket80-queue/prepare-scheduler/transfer-prepare.attempt1.log": "61b307810ba8bf6f21335d16121e8c0677aa028e5e2b87a5d0953136216aa441"
+      }
+    },
+    {
+      "phase": "score",
+      "attempts": [
+        {
+          "job": "transfer-cold-cm-drug-score",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 4.009,
+          "peak_host_rss_gib": 0.319793701171875,
+          "peak_workstation_gpu_used_gib": 1.25390625
+        },
+        {
+          "job": "transfer-cold-drug-tahoe-score",
+          "attempt": 1,
+          "outcome": "completed",
+          "wall_seconds": 5.996,
+          "peak_host_rss_gib": 0.42627716064453125,
+          "peak_workstation_gpu_used_gib": 1.25390625
+        }
+      ],
+      "artifacts": {
+        "ticket80-queue/score.json": "860879d7bebb4df1d93234299de654f6b143945af7af40c41fd334a4ec990976",
+        "ticket80-queue/score-scheduler/status.json": "e406c32b0b308c04bc087a5523bd57b0262c394b1f23e3a11e1ee7d932f74201",
+        "ticket80-queue/score-scheduler/telemetry.jsonl": "bd63de7bf349f9ab3ebd8aaec5c481cdc6ed17b9e6b7edb694adce51f58a3d68",
+        "ticket80-queue/score.preflight.json": "7e3f8d09eb17563d3162b70f2a1c4d6856705509074aa09b82db2bb1744e182e",
+        "ticket80-queue/score-scheduler/transfer-cold-cm-drug-score.attempt1.log": "1a402813551149bcb00ef67af87b75e3daa7dc7fb0d9a5a0e4c8ce698fc9319a",
+        "ticket80-queue/score-scheduler/transfer-cold-drug-tahoe-score.attempt1.log": "ec90d622abfa4f8bf5716f7b82bf179d4198d29623e20a88e09f479b3c0f19c7"
+      }
+    }
+  ],
+  "legacy_tahoe_score_replay": {
+    "compared_with": "tahoe-zero-shot-ticket78/cold-cm-drug-score",
+    "byte_identical": true,
+    "artifacts": {
+      "tahoe-score-replay-ticket80/evaluation.json": "d997439a7404df6da167c044509256bc04b550040e33f2f7a8d683afacd712ef",
+      "tahoe-score-replay-ticket80/per_group.csv": "339b4b2a099b34fc6341c08482c3d23613fbf3d84958fa54b141fd03d871657d",
+      "tahoe-score-replay-ticket80/per_run.csv": "58f3c8c56c7fccda720d2719b1bf496a5b3b513ff3c5ac888143e5c27f0a182b",
+      "tahoe-score-replay-ticket80/summary.csv": "2499da68d3c9a88db5be03cc38b8249c6f65bfd0a6cb03ec885555783b3da76f",
+      "tahoe-score-replay-ticket80/tenv/pr_curves.json": "97db1229aef6764461d2363cc92c9e8db5f804378aa21addaf6cc3745e29d658"
+    }
+  }
+}
