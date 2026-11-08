@@ -11,6 +11,36 @@
 warm-start, cold-cm-drug and cold-drug comparisons. Each tests tenv responses
 and compares CM, Tahoe, Transfer and Mix with two deterministic references.
 
+## Formal results
+
+All 36 learned-arm slots completed. Transfer scored below CM in all nine
+paired seed comparisons on these fixed splits. Each pair subtracts CM's
+mean of positive and negative AP@100 from Transfer's corresponding mean,
+with equal weight for each direction. Seed variation describes repeated
+fits on each fixed split.
+
+| Regime | Learned slots | Seed 17 | Seed 42 | Seed 2026 | Complete pairs | Mean difference |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| warm-start | 12/12 | -0.01737 | -0.03511 | -0.03219 | 3/3 | -0.02822 |
+| cold-cm-drug | 12/12 | -0.02825 | -0.02096 | -0.01864 | 3/3 | -0.02262 |
+| cold-drug | 12/12 | -0.02966 | -0.02252 | -0.02481 | 3/3 | -0.02566 |
+
+Counts below are shared parent-connectivity blocks in the realized Tahoe
+and tenv memberships. Mix uses Tahoe's training membership. Tahoe and
+Transfer use the source training and validation memberships.
+
+| Regime | Tahoe train ∩ tenv validation | Tahoe train ∩ tenv test | Tahoe validation ∩ tenv validation | Tahoe validation ∩ tenv test |
+| --- | ---: | ---: | ---: | ---: |
+| warm-start | 5 | 9 | 0 | 3 |
+| cold-cm-drug | 1 | 2 | 0 | 0 |
+| cold-drug | 0 | 0 | 0 | 0 |
+
+- [Eight-metric summary](summary.csv), [per-run scores and valid-group counts](per_run.csv), and [metric plots](metrics.png). The cold CM and deterministic references share the `cold-shared` scope.
+- [Full-precision paired contrasts](execution/formal_record/paired_ap100.json) and [undefined metric counts](execution/formal_record/undefined_reasons.json).
+- [Directional precision–recall curves](pr_curves.png) and [plotted points](execution/formal_record/pr_points.json).
+- [Learning curves](learning_curves.png), [plotted points](execution/formal_record/learning_points.json), and [selected checkpoint index](execution/formal_record/checkpoints.json).
+- [Publication checksums](execution/formal_record/publication.json) and [execution and replay evidence](execution/formal_record/run.json).
+
 ## Shared cold tenv comparison
 
 Both cold regimes use the frozen Step 04 tenv fold 0. The comparison CLI

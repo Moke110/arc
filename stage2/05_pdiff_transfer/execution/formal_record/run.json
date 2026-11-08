@@ -1,0 +1,182 @@
+{
+  "schema": "step05-formal-run-v1",
+  "formal": {
+    "ticket": 82,
+    "scheduler_commit": "b7439805cd88a1ca0c3ad9eecc6a7a109d2bb798",
+    "plan": {
+      "path": "execution/output/formal-ticket82/plan.json",
+      "sha256": "c770c08340fa45e01ce2014015fb7dda5da66f311be940054baee94c105badf7"
+    },
+    "prediction_inventory": {
+      "path": "execution/output/formal-ticket82/prediction_inventory.json",
+      "sha256": "55e7f677818e7fc355acb6d057fc740d0475998d9d8ba7330b01c0d5d5e85be8"
+    },
+    "learned_slots": 36,
+    "new_fits": 24,
+    "new_predictions": 30,
+    "reused_cold_cm_slots": 6,
+    "worker_attempts": 54,
+    "failed_attempts": 0,
+    "worker_retries": 0,
+    "max_concurrent_training_workers": 1,
+    "max_concurrent_prediction_workers": 2,
+    "peak_worker_rss_kib": 6069784,
+    "peak_workstation_vram_gib": 6.4755859375,
+    "min_available_ram_gib": 37.89469528198242,
+    "min_free_vram_gib": 9.5166015625,
+    "min_free_disk_gib": 131.93683242797852,
+    "phases": {
+      "initial-fits": {
+        "completed": 15,
+        "outcomes": {
+          "path": "execution/output/formal-ticket82/phases/initial-fits/outcomes.json",
+          "sha256": "895d0eb91d92534d7ed2e98d4c14bfbeea70b4c3529ac492cd7d114915cea0ba"
+        },
+        "admission": {
+          "path": "execution/output/formal-ticket82/phases/initial-fits/scheduler/admission.jsonl",
+          "sha256": "171ffe07cf09043293326192b8faa386792a2a78df7251728fcd5920ed2ba17a"
+        },
+        "telemetry": {
+          "path": "execution/output/formal-ticket82/phases/initial-fits/scheduler/telemetry.jsonl",
+          "sha256": "4f8a837f754e606b65ffaf6d1b95c62ff5d0ebd7c71935cdadfa356bf93f0df9"
+        }
+      },
+      "tahoe-predictions": {
+        "completed": 9,
+        "outcomes": {
+          "path": "execution/output/formal-ticket82/phases/tahoe-predictions/outcomes.json",
+          "sha256": "3afaa73308b710aee6269bd8049fa59f63c5273e99f9225c521ece7d205fc214"
+        },
+        "admission": {
+          "path": "execution/output/formal-ticket82/phases/tahoe-predictions/scheduler/admission.jsonl",
+          "sha256": "fb2822a044d6f31bcb4c6b28b4220e152c82f2b458eabc4fda5fe37841d72853"
+        },
+        "telemetry": {
+          "path": "execution/output/formal-ticket82/phases/tahoe-predictions/scheduler/telemetry.jsonl",
+          "sha256": "d752e237e95ece47e9a40bc7eed1a1809955ba2b4cfa7c06c00e6c175dd93d58"
+        }
+      },
+      "transfer-fits": {
+        "completed": 9,
+        "outcomes": {
+          "path": "execution/output/formal-ticket82/phases/transfer-fits/outcomes.json",
+          "sha256": "03e5a0a86bda0dd55802b27536193f789a54fc6048f382c9416cbab192c408bb"
+        },
+        "admission": {
+          "path": "execution/output/formal-ticket82/phases/transfer-fits/scheduler/admission.jsonl",
+          "sha256": "30b27cacd4f9cf0f12475a6c9847acdc4fdc2d59d97d4cae90c3fe26f62a69e8"
+        },
+        "telemetry": {
+          "path": "execution/output/formal-ticket82/phases/transfer-fits/scheduler/telemetry.jsonl",
+          "sha256": "233572ddb61d7fa7f08491b0dd3e73e32dc55a3a9a0a0ad80892e9f3916e01a1"
+        }
+      },
+      "target-predictions": {
+        "completed": 21,
+        "outcomes": {
+          "path": "execution/output/formal-ticket82/phases/target-predictions/outcomes.json",
+          "sha256": "1752ce277ca41a79918e26c73fa9491adcd84119a4d50c066b0009290babb09d"
+        },
+        "admission": {
+          "path": "execution/output/formal-ticket82/phases/target-predictions/scheduler/admission.jsonl",
+          "sha256": "e5486b5fbfbeb2f50a44df33c0475009243308845a31757859e05e3cd14f55eb"
+        },
+        "telemetry": {
+          "path": "execution/output/formal-ticket82/phases/target-predictions/scheduler/telemetry.jsonl",
+          "sha256": "867f644701e17fabd231134599dff95ab06bb157e684a1e00d84ef25b4bfdab9"
+        }
+      }
+    },
+    "control": {
+      "path": "execution/output/formal-ticket82/control.jsonl",
+      "sha256": "6f95af28ad13d416527e8fa933d9ae01d1906322ec21740ae0d1adba85118d11"
+    },
+    "pause": {
+      "requested_at_epoch": 1794145424.3233523,
+      "drained_worker": "cold-cm-drug-mix-2026-fit",
+      "drained_at_epoch": 1794145782.4734285,
+      "resumed_at_epoch": 1794147179.2044656
+    },
+    "coordinator_log": {
+      "path": "execution/output/formal-ticket82/coordinator.log",
+      "sha256": "348b55deb925b38790113b3125f845f8688f710a3a01b5e070ec74ce920413f0"
+    },
+    "inventory_verification": {
+      "path": "execution/output/formal-ticket82/inventory-verification.log",
+      "sha256": "005e552d0ace70f8301759548ddb5b14f0bef646ef0fb338173650c48b90dcb1",
+      "elapsed_seconds": 15.08,
+      "peak_rss_kib": 111808
+    }
+  },
+  "publication": {
+    "ticket": 83,
+    "publisher_commit": "8c9cb8129a8bae867589d26cdd3ccb8137e38a28",
+    "manifest": {
+      "path": "execution/output/ticket83-release/publication.json",
+      "sha256": "503c58ec87279f097febcf9c810a5ec32c65fea3c7526d8079c64366e3076b4a"
+    },
+    "tracked_manifest_path": "execution/formal_record/publication.json",
+    "tracked_artifact_paths": {
+      "learning_curves.png": "learning_curves.png",
+      "metrics.png": "metrics.png",
+      "pr_curves.png": "pr_curves.png",
+      "per_run.csv": "per_run.csv",
+      "summary.csv": "summary.csv",
+      "publication.json": "execution/formal_record/publication.json",
+      "paired_ap100.json": "execution/formal_record/paired_ap100.json",
+      "learning_points.json": "execution/formal_record/learning_points.json",
+      "checkpoints.json": "execution/formal_record/checkpoints.json",
+      "pr_points.json": "execution/formal_record/pr_points.json",
+      "undefined_reasons.json": "execution/formal_record/undefined_reasons.json"
+    },
+    "generated_report": {
+      "path": "execution/output/ticket83-release/README.md",
+      "sha256": "e956518ce632b43f1c17f2734ff1608d7fc220f0bf2dbaf2db14eabc5be9fd60"
+    },
+    "score_queue_status": {
+      "path": "execution/output/ticket83-score-queue/status.json",
+      "sha256": "3c64ebc35d41f3251406061167bfca87f0947fd5f8538ff8d878ff2e6868e570"
+    },
+    "score_queue_telemetry": {
+      "path": "execution/output/ticket83-score-queue/telemetry.jsonl",
+      "sha256": "3acbf06d5392afc2e728a609649d3f78d1bd19e3a48ca2e41652d6289b851f4d"
+    },
+    "scoring": {
+      "record": {
+        "path": "execution/output/ticket83-scores/scores.json",
+        "sha256": "ad45dfcf501be3bd9d38339e5074cf508ffa0cec05147462827a25c4dceeacb1"
+      },
+      "attempt_log": {
+        "path": "execution/output/ticket83-score-queue/ticket83-scores.attempt1.log",
+        "sha256": "3b0b6362e3b4113269d24e75b4af36a02edd74e76819db8b3ed33916f1713de0",
+        "elapsed_seconds": 89.76,
+        "peak_rss_kib": 494340
+      }
+    },
+    "scoring_replay": {
+      "record": {
+        "path": "execution/output/ticket83-scores-replay/scores.json",
+        "sha256": "ad45dfcf501be3bd9d38339e5074cf508ffa0cec05147462827a25c4dceeacb1"
+      },
+      "attempt_log": {
+        "path": "execution/output/ticket83-score-queue/ticket83-scores-replay.attempt1.log",
+        "sha256": "32902cb798ea0ded539f5042b1c0240edc0090bb02993b5db582121e96ed056c",
+        "elapsed_seconds": 87.64,
+        "peak_rss_kib": 494244
+      }
+    },
+    "render": {
+      "path": "execution/output/ticket83-render.time",
+      "sha256": "64ffac934320c6a82efd0e67fd31dfed056c966f410f35655afffe4adf5efa05",
+      "elapsed_seconds": 2.58,
+      "peak_rss_kib": 193076
+    },
+    "figure_replay": {
+      "path": "execution/output/ticket83-render-replay.time",
+      "sha256": "60397909528c166ac22131efc3475f2a9f0483cc0867729f27515a6b5661ebae",
+      "elapsed_seconds": 2.51,
+      "peak_rss_kib": 193204,
+      "byte_identical": true
+    }
+  }
+}
