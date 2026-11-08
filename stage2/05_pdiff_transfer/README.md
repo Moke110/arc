@@ -349,3 +349,44 @@ Exhausted prerequisites block only dependent jobs. When every slot has a
 terminal outcome, `prediction_inventory.json` binds each prediction and
 checkpoint by path and hash, accounts for failed slots and references reused
 CM evidence. The inventory is the input to publication and scoring.
+
+## Publication replay
+
+The publisher verifies the frozen plan, all terminal outcomes, selected
+checkpoint evidence and held-out prediction files before reading test
+truth. It computes the eight Step 04 metrics on equally weighted tenv
+drug–dose groups. Cold CM and deterministic references are scored once
+under `cold-shared`. The two cold regimes link to those rows and have their
+own Tahoe, Transfer and Mix results. Each seed pair uses the difference
+between the two arms’ equal means of positive and negative AP@100. The
+regime mean requires all three pairs.
+
+Use the `arc` interpreter from the repository root. Submit real scoring
+and replay to the dedicated scheduler. All output directories must be fresh.
+
+```bash
+step=stage2/05_pdiff_transfer
+cli="$step/execution/script/publish.py"
+out="$step/execution/output"
+formal="$out/formal-ticket82"
+plan=$(sha256sum "$formal/plan.json" | cut -d ' ' -f 1)
+inventory=$(sha256sum "$formal/prediction_inventory.json" | cut -d ' ' -f 1)
+
+python "$cli" score "$formal" "$out/scores" --plan-sha256 "$plan" --inventory-sha256 "$inventory"
+scores=$(sha256sum "$out/scores/scores.json" | cut -d ' ' -f 1)
+python "$cli" render "$out/scores" "$out/publication" --scores-sha256 "$scores"
+release=$(sha256sum "$out/publication/publication.json" | cut -d ' ' -f 1)
+
+python "$cli" score "$formal" "$out/scores-replay" --plan-sha256 "$plan" --inventory-sha256 "$inventory"
+python "$cli" verify-replay "$out/scores-replay" "$out/publication" --publication-sha256 "$release"
+```
+
+Use the published plan and inventory digests when verifying a formal run.
+Replay verifies the score record and reproduces the publication checksums,
+including plotted points and PNG bytes. The full scoring output includes
+group-level values and reasons for undefined metrics. The compact records
+include per-run coverage and reasons, both directional PR curves, training
+and validation points, and checkpoint hashes and paths. The checkpoint index
+links each logical slot to its source and target fits by digest. Tahoe and
+Transfer link to the same source fit for a given regime and seed. The two
+historically sourced regimes also share those source records.

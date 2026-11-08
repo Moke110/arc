@@ -25,3 +25,6 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
 - `execution/script/transfer.py` freezes the nine formal Transfer slots,
   verifies or fits each globally cold source, shares the Tahoe prediction
   bridge with the target fit, and replays and scores both arms.
+- `execution/script/publish.py` verifies and scores the terminal inventory and
+  renders the compact results. `execution/tests/test_publish.py` checks paired
+  scoring coverage and offline figure replay on an incomplete fixture.
