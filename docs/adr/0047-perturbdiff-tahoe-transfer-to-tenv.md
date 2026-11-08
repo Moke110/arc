@@ -11,9 +11,7 @@
 > and results. Improving dose encoding across datasets is a priority for
 > follow-up work.
 
-**Status:** proposed (2026-11-08). The three split regimes, training seeds
-and primary comparison are agreed. Warm-start validation membership and the
-Mix training recipe still need to be frozen.
+**Status:** accepted (2026-11-08).
 
 `stage2/05_pdiff_transfer/` asks whether Tahoe pretraining improves
 PerturbDiff predictions of tenv drug responses. All test responses come from
@@ -39,7 +37,10 @@ Tahoe-dependent arms. Use one separate `warm-start` fold, with one held-out
 dose per tenv drug parent and test groups balanced across dose levels. Keep
 all records for a parent–dose combination together, including aliases and
 repeated wells. Every validation and test parent remains represented in
-training at another dose. Fit three new `CM` checkpoints for this fold.
+training at another dose. Use split seed `20261105`. After assigning test
+combinations, assign about 15% of the remainder to validation, with at most
+one validation combination per parent. Freeze the memberships before
+fitting. Fit three new `CM` checkpoints using the Step 04 tenv fold 0 recipe.
 
 ## Training and checkpoint reuse
 
@@ -55,8 +56,11 @@ training at another dose. Fit three new `CM` checkpoints for this fold.
   from the transferred model parameters. The source and target stages use
   their respective validation data and training recipes.
 - `Mix` directly pools the eligible Tahoe and tenv training groups and runs
-  one random-init fit. Apply the existing group sampler to the combined pool
-  with neither source balancing nor source reweighting. Keep each source's
+  one random-init fit with the corresponding `CM` recipe. Build the dose
+  vocabulary from the union of the two sources' training dose levels. Draw
+  Tahoe groups only from its training partition, with the additional drug
+  exclusions for `cold-drug`. Apply the existing group sampler to the combined
+  pool with neither source balancing nor source reweighting. Keep each source's
   group boundaries and matched-control preprocessing. Select the checkpoint
   on the corresponding tenv validation set.
 
