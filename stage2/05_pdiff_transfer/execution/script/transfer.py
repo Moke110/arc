@@ -197,7 +197,9 @@ def cold_source(runtime, root, plan, digest, seed, inputs, fit=False):
     return source, json_hash(source)
 
 
-def tahoe_directory(runtime, root, regime, seed):
+def tahoe_directory(runtime, root, regime, seed, stage):
+    if stage == 'formal':
+        return root / 'tahoe' / regime / f'seed-{seed}'
     output, historical, _ = records(runtime)
     relative = f'tahoe-zero-shot-ticket78/{regime}/seed-{seed}/prediction.json'
     digest = historical['qualification'].get(regime, {}).get('artifacts', {}).get(relative)
@@ -206,8 +208,8 @@ def tahoe_directory(runtime, root, regime, seed):
     return root / 'tahoe' / regime / f'seed-{seed}'
 
 
-def verify_tahoe(runtime, root, regime, seed, request, target, source, source_sha, *, load_values=True):
-    directory = tahoe_directory(runtime, root, regime, seed)
+def verify_tahoe(runtime, root, regime, seed, request, target, source, source_sha, *, stage, load_values=True):
+    directory = tahoe_directory(runtime, root, regime, seed, stage)
     manifest, values = tahoe.verify_prediction(directory, source, source_sha, request, regime,
                                                target['split_sha256'], seed, load_values=load_values)
     return directory, manifest, values
@@ -333,7 +335,8 @@ def score(runtime, root, plan, digest, regime, output, context, sources, arm):
     for seed in map(int, plan['active_recipes']):
         source, source_sha = sources(seed)
         directory, bridge, zero_shot = verify_tahoe(runtime, root, regime, seed, request, target,
-                                                    source, source_sha, load_values=arm == 'Tahoe')
+                                                    source, source_sha, stage=plan['stage'],
+                                                    load_values=arm == 'Tahoe')
         item = plan['active_recipes'][str(seed)]
         lineage = transfer_lineage(source, source_sha, target, item, bridge, seed)
         overlap = bridge['source_parent_overlap']
@@ -422,10 +425,10 @@ def main():
             if args.command == 'tahoe-predict':
                 tahoe.predict_recipient(runtime, source, source_sha, request, target['inference'], regime,
                                         target['split_sha256'], args.seed,
-                                        tahoe_directory(runtime, root, regime, args.seed))
+                                        tahoe_directory(runtime, root, regime, args.seed, plan['stage']))
             else:
                 directory, bridge, _ = verify_tahoe(runtime, root, regime, args.seed, request, target,
-                                                     source, source_sha, load_values=False)
+                                                     source, source_sha, stage=plan['stage'], load_values=False)
                 item = plan['active_recipes'][str(args.seed)]
                 lineage = transfer_lineage(source, source_sha, target, item, bridge, args.seed)
                 transfer_worker(runtime, root, plan, digest, regime, args.seed, args.command, request, directory, lineage)

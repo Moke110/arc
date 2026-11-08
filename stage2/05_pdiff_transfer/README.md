@@ -308,3 +308,44 @@ attempts stay in their attempt directories.
 The [scheduled qualification](execution/transfer_record/qualification.json)
 records the full-axis cold-cm-drug Transfer fit and replay, the globally
 cold Tahoe zero-shot prediction, and the two seed-17 evaluations.
+
+## Fixed formal matrix
+
+The dedicated scheduler uses `formal_matrix.py` from the integrated checkout.
+The plan freezes 36 learned-arm slots on fold 0, with 24 new fits, 30 new
+predictions and six logical references to the three historical cold CM
+predictions. It binds each case and group order, the worker plans and code,
+recipes, predictor files and source lineages before dispatch. Both cold
+regimes share one target membership. Warm CM's independently prepared files
+must match the qualified Transfer and Mix target data byte-for-byte.
+
+```bash
+step=stage2/05_pdiff_transfer
+cli="$step/execution/script/formal_matrix.py"
+out="$step/execution/output/formal-ticket82"
+python "$cli" prepare "$out"
+digest=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+python "$cli" verify "$out" --plan-sha256 "$digest"
+python "$cli" preflight "$out" --plan-sha256 "$digest"
+python "$cli" run "$out" --plan-sha256 "$digest"
+python "$cli" verify-inventory "$out" --plan-sha256 "$digest"
+```
+
+Use the `arc` interpreter for these commands. The coordinator launches workers
+with the pinned PerturbDiff interpreter under the Step 04 scheduler. Start
+with at least 30 GiB free disk and 12 GiB available RAM. Training is serial.
+Up to two predictions may overlap when both resource reservations fit.
+
+During a run, use `status` with the same root and digest. To relay a requested
+pause or resume, use `pause` or `resume` with those arguments and a
+`--reason` describing the instruction. Pause holds dispatch across phases and
+lets active workers drain under the scheduler's pressure limits. After an
+explicit resume, rerun `run` if the coordinator already exited.
+
+`phases/` contains immutable ready queues, scheduler status, telemetry,
+admission decisions and attempt logs. Each failed or interrupted worker may
+retry once with the same command. A prediction retry reads the sealed fit.
+Exhausted prerequisites block only dependent jobs. When every slot has a
+terminal outcome, `prediction_inventory.json` binds each prediction and
+checkpoint by path and hash, accounts for failed slots and references reused
+CM evidence. The inventory is the input to publication and scoring.
