@@ -141,3 +141,47 @@ each of 1 and 10 µM. Train, validation and test contain 2,387, 417 and
 1,402 wells. The seed 17 fit selected step 12 and reproduced the validation
 loss and the full-axis prediction probe exactly on reload. Peak host RSS
 was 3,155,924 KiB during fitting and 2,597,812 KiB during held-out prediction.
+
+## Directly pooled Mix
+
+Mix starts from random initialization and uses the matching CM recipe and
+native group sampler. Training pools the two verified training partitions
+with source-prefixed groups. Each sampled case keeps its original matched
+control and expression delta. The dose vocabulary comes from the union of
+the training doses. Validation and test cases come from tenv. Tahoe
+validation and test files are outside the Mix predictor allowlist. In
+cold-drug, Tahoe training comes from the filtered release above.
+
+Run these commands from the repository root through the dedicated scheduler.
+Prepare and score use the `arc` interpreter. Fit and predict use the pinned
+PerturbDiff interpreter. Prediction independently reloads the selected EMA
+checkpoint and reproduces its tenv validation loss and prediction probe.
+
+```bash
+step05=stage2/05_pdiff_transfer
+cli="$step05/execution/script/mix.py"
+pdiff=stage2/_envs/perturbdiff/bin/python
+out="$step05/execution/output/mix-smoke"
+python "$cli" prepare "$out" --smoke
+digest=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+"$pdiff" "$cli" fit "$out" cold-drug 17 --plan-sha256 "$digest"
+"$pdiff" "$cli" predict "$out" cold-drug 17 --plan-sha256 "$digest"
+python "$cli" score "$out" cold-drug "${out}-scores" --plan-sha256 "$digest"
+```
+
+`plan.json` records all nine formal slot identities, source and case
+inventories, dose categories and CM recipe hashes. For a formal run, prepare a
+fresh directory without `--smoke`, run fit and predict for seeds 17, 42 and
+2026 in each regime, then score each regime separately. `verify` checks
+all three pools against the frozen releases. A score seals all eight metrics,
+both directional PR curves and hashes for the held-out evidence.
+
+The cold-drug qualification used seed 17 and 12 optimizer steps. It selected
+step 12 by native EMA loss on the 138 tenv validation groups and reproduced
+the validation probe exactly on reload. It predicted all 1,401 held-out tenv
+cases across 462 groups. Peak host RSS was 3,300,484 KiB for fitting and
+2,648,996 KiB for held-out prediction.
+The [qualification record](execution/mix_record/qualification.json) binds the
+plan, checkpoint, predictions, score outputs and scheduler evidence.
+Independent scoring reproduced every metric, both directional PR curves and
+the evaluation manifest byte-for-byte.

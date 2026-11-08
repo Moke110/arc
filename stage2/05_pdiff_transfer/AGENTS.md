@@ -13,3 +13,7 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
 - `execution/script/warm_tenv.py` freezes the warm-start tenv split and Step 04
   recipes, then verifies, fits, predicts and scores through separate commands.
 - `execution/tests/test_warm_tenv.py` exercises the warm-start artifact CLI.
+- `execution/script/mix.py` freezes the nine directly pooled Mix slots and
+  verifies, fits, predicts and scores each regime. `mix_inputs.py` dispatches
+  native minibatches to each source's matched-control inputs.
+- `execution/tests/test_mix.py` checks the pooled predictor and batch inputs.

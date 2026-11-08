@@ -1,0 +1,498 @@
+{
+  "schema": "step05-mix-qualification-v1",
+  "ticket": 81,
+  "n_genes": 18164,
+  "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+  "training_pools": {
+    "warm-start": {
+      "source_identities": {
+        "tenv": {
+          "dataset": "tenv",
+          "fold": 0,
+          "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "split_sha256": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+          "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+          "input_sha256": "57ef0725403730468a49ff9251fdd97c7e1967bf2300bb4e55fc8e9f6e983215"
+        },
+        "tahoe": {
+          "dataset": "tahoe",
+          "fold": 0,
+          "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "split_sha256": "004cae2492e18770aed06ae30c4236cc2ea61cba6adf95b077bedc88300f396b",
+          "source_input_sha256": "a985b2eb400b4e819b73cf209b6c8dd3b596e39df9224cd8c15bad1f758c2c24",
+          "input_sha256": "93e72ed7b0281757f7f46207530b1fc027826c7b10d695e5b044926025712720"
+        }
+      },
+      "dose_um": [
+        0.05,
+        0.2,
+        0.5,
+        1.0,
+        5.0,
+        10.0
+      ],
+      "train_inventory": {
+        "tenv": {
+          "train_cases": 2387,
+          "train_groups": 782,
+          "ordered_namespaced_groups_sha256": "3054b924536d772c85203d6fc4cc9b0a940f378bcd3ba01da12e1d264ff8b3c2",
+          "dose_um": [
+            0.2,
+            1.0,
+            10.0
+          ]
+        },
+        "tahoe": {
+          "train_cases": 36436,
+          "train_groups": 31932,
+          "ordered_namespaced_groups_sha256": "469e3532d98f9ac1450f5d5e8e0cc2e2498a88e54dd87684e1af464f59afe71b",
+          "dose_um": [
+            0.05,
+            0.5,
+            5.0
+          ]
+        }
+      }
+    },
+    "cold-cm-drug": {
+      "source_identities": {
+        "tenv": {
+          "dataset": "tenv",
+          "fold": 0,
+          "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+          "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+          "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511"
+        },
+        "tahoe": {
+          "dataset": "tahoe",
+          "fold": 0,
+          "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "split_sha256": "004cae2492e18770aed06ae30c4236cc2ea61cba6adf95b077bedc88300f396b",
+          "source_input_sha256": "a985b2eb400b4e819b73cf209b6c8dd3b596e39df9224cd8c15bad1f758c2c24",
+          "input_sha256": "93e72ed7b0281757f7f46207530b1fc027826c7b10d695e5b044926025712720"
+        }
+      },
+      "dose_um": [
+        0.05,
+        0.2,
+        0.5,
+        1.0,
+        5.0,
+        10.0
+      ],
+      "train_inventory": {
+        "tenv": {
+          "train_cases": 2388,
+          "train_groups": 780,
+          "ordered_namespaced_groups_sha256": "3fa529709c79c652272f803dc26eff6d43443239c8a8876ddfaace2067402c63",
+          "dose_um": [
+            0.2,
+            1.0,
+            10.0
+          ]
+        },
+        "tahoe": {
+          "train_cases": 36436,
+          "train_groups": 31932,
+          "ordered_namespaced_groups_sha256": "469e3532d98f9ac1450f5d5e8e0cc2e2498a88e54dd87684e1af464f59afe71b",
+          "dose_um": [
+            0.05,
+            0.5,
+            5.0
+          ]
+        }
+      }
+    },
+    "cold-drug": {
+      "source_identities": {
+        "tenv": {
+          "dataset": "tenv",
+          "fold": 0,
+          "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+          "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+          "input_sha256": "133aded050b5f28aa063d8906f923b53d1d3f95e3ba4db779314b524019b8511"
+        },
+        "tahoe": {
+          "dataset": "tahoe",
+          "fold": 0,
+          "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "split_sha256": "5654024f2d916bbe8b15c25762af179e7ba683648c0da7f474a2ba0c17926c5f",
+          "source_input_sha256": "f3cc64a83d9fbffd885b917661752778517cad29fa05cee9da933bafbfd2f7de",
+          "input_sha256": "925bfc1cdd7b34b8da80aca1e15ddda624d4bf4e90a99ed76eff8e8504d14edd"
+        }
+      },
+      "dose_um": [
+        0.05,
+        0.2,
+        0.5,
+        1.0,
+        5.0,
+        10.0
+      ],
+      "train_inventory": {
+        "tenv": {
+          "train_cases": 2388,
+          "train_groups": 780,
+          "ordered_namespaced_groups_sha256": "3fa529709c79c652272f803dc26eff6d43443239c8a8876ddfaace2067402c63",
+          "dose_um": [
+            0.2,
+            1.0,
+            10.0
+          ]
+        },
+        "tahoe": {
+          "train_cases": 35936,
+          "train_groups": 31482,
+          "ordered_namespaced_groups_sha256": "6e3887e2cb9636d440899e33f62b016b600234a5b1f7d076d3e1513fdd064b13",
+          "dose_um": [
+            0.05,
+            0.5,
+            5.0
+          ]
+        }
+      }
+    }
+  },
+  "formal_slots": [
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "94707472bb8d98eec16020d6136dbbabc3f20aefa2b762c6636468d1b8c19ef1",
+      "regime": "warm-start",
+      "arm": "Mix",
+      "seed": 17,
+      "stage": "formal",
+      "recipe_sha256": "c05aec1ccb08d4c581bfbebb7b211eebe15612c8fbab302a259dcb7b8c5f9373"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "94707472bb8d98eec16020d6136dbbabc3f20aefa2b762c6636468d1b8c19ef1",
+      "regime": "warm-start",
+      "arm": "Mix",
+      "seed": 42,
+      "stage": "formal",
+      "recipe_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "1e6117e8b8c4f7ffaf6f28838aef23e24fb1bc80de4c5af16ec55767562a3473",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "94707472bb8d98eec16020d6136dbbabc3f20aefa2b762c6636468d1b8c19ef1",
+      "regime": "warm-start",
+      "arm": "Mix",
+      "seed": 2026,
+      "stage": "formal",
+      "recipe_sha256": "e2758891df500d6cd5c56e95d7bd1cc5d8611310583f90db87ddab41baf2878b"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "8855df39d0053c7b2e8b6016b4048635c789e1ea5bb1734690c815f56aa1ef44",
+      "regime": "cold-cm-drug",
+      "arm": "Mix",
+      "seed": 17,
+      "stage": "formal",
+      "recipe_sha256": "c05aec1ccb08d4c581bfbebb7b211eebe15612c8fbab302a259dcb7b8c5f9373"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "8855df39d0053c7b2e8b6016b4048635c789e1ea5bb1734690c815f56aa1ef44",
+      "regime": "cold-cm-drug",
+      "arm": "Mix",
+      "seed": 42,
+      "stage": "formal",
+      "recipe_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "8855df39d0053c7b2e8b6016b4048635c789e1ea5bb1734690c815f56aa1ef44",
+      "regime": "cold-cm-drug",
+      "arm": "Mix",
+      "seed": 2026,
+      "stage": "formal",
+      "recipe_sha256": "e2758891df500d6cd5c56e95d7bd1cc5d8611310583f90db87ddab41baf2878b"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "5e9065987b10102fb8d08276808ed6347edbf3366f1fe766db1d5bbe26ffd4f0",
+      "regime": "cold-drug",
+      "arm": "Mix",
+      "seed": 17,
+      "stage": "formal",
+      "recipe_sha256": "c05aec1ccb08d4c581bfbebb7b211eebe15612c8fbab302a259dcb7b8c5f9373"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "5e9065987b10102fb8d08276808ed6347edbf3366f1fe766db1d5bbe26ffd4f0",
+      "regime": "cold-drug",
+      "arm": "Mix",
+      "seed": 42,
+      "stage": "formal",
+      "recipe_sha256": "d445ac4db81186a65a941e315ad9d66ed4f14f2d3da097688c8338146baa2cb4"
+    },
+    {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "5e9065987b10102fb8d08276808ed6347edbf3366f1fe766db1d5bbe26ffd4f0",
+      "regime": "cold-drug",
+      "arm": "Mix",
+      "seed": 2026,
+      "stage": "formal",
+      "recipe_sha256": "e2758891df500d6cd5c56e95d7bd1cc5d8611310583f90db87ddab41baf2878b"
+    }
+  ],
+  "bounded_fit": {
+    "identity": {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "5e9065987b10102fb8d08276808ed6347edbf3366f1fe766db1d5bbe26ffd4f0",
+      "regime": "cold-drug",
+      "arm": "Mix",
+      "seed": 17,
+      "stage": "smoke"
+    },
+    "optimizer_steps": 12,
+    "monitor": "validation_validation_loss_epoch",
+    "best_step": 12,
+    "best_validation_loss": 14.69023609161377,
+    "checkpoint_sha256": "24cd4f0a8dadfc82a38eebb2a169d19f64ec316e6f29321f9d42b64508c7fc52",
+    "model_state_sha256": "9aa8dab241902f8e38546884d1b87f80aee5a1ab0da20b821c40d0dcbaf76652",
+    "reload": {
+      "validation_loss": 14.69023609161377,
+      "prediction_sha256": "a2b42adff9d5dd8274c9dfd1fe8e0c74dde0237ba05e4a720b480f9f81ff5583",
+      "prediction_max_abs_error": 0.0,
+      "case_ids": [
+        "temp_env::Plate1-C07",
+        "temp_env::Plate1-F07",
+        "temp_env::Plate1-I07"
+      ],
+      "prediction_shape": [
+        3,
+        18164
+      ]
+    },
+    "resources": {
+      "peak_rss_kib": 3300484,
+      "peak_gpu_allocated_bytes": 3915894784,
+      "peak_gpu_reserved_bytes": 4146069504
+    }
+  },
+  "bounded_sampler": {
+    "source_group_counts_from_seeded_first_permutation": {
+      "tenv": 1,
+      "tahoe": 95
+    },
+    "tahoe_allowlist": [
+      "controls",
+      "drugs",
+      "genes",
+      "morgan",
+      "train_cases",
+      "train_expression"
+    ],
+    "validation_source": "tenv",
+    "validation_groups": 138,
+    "validation_group_ids_sha256": "d8bc406025a4755f0e89eebd292ca3886780501ff33d1269e27459082a06e6c3",
+    "target_test_expression_available_to_sampler": false
+  },
+  "heldout_prediction": {
+    "schema": "step04-heldout-prediction-v1",
+    "plan_sha256": "cba93bdbb8edda462f46aa7ec6d6fd57cfffeae2eb595153cca3b80f10e689a7",
+    "identity": {
+      "dataset": "tenv",
+      "fold": 0,
+      "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "split_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853",
+      "source_input_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+      "input_sha256": "5e9065987b10102fb8d08276808ed6347edbf3366f1fe766db1d5bbe26ffd4f0",
+      "regime": "cold-drug",
+      "arm": "Mix",
+      "seed": 17,
+      "stage": "smoke"
+    },
+    "recipe_sha256": "0601536d8664919e529d0c999332e3ec4445f0bbbfd8ba8625341c9ee1558a45",
+    "checkpoint_sha256": "24cd4f0a8dadfc82a38eebb2a169d19f64ec316e6f29321f9d42b64508c7fc52",
+    "best_step": 12,
+    "best_validation_loss": 14.69023609161377,
+    "model_state_sha256": "9aa8dab241902f8e38546884d1b87f80aee5a1ab0da20b821c40d0dcbaf76652",
+    "run_sha256": "836136766c668ac21e38acb2fc58073d5b86135e0edda1a84bd72ccb9a802cdd",
+    "cases_sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a",
+    "prediction_sha256": "22e1e5fb3e529305c66085b43df0585dc980d53f57ef8ab6bea6b6ba7c6a4f86",
+    "replay_sha256": "6b91fdbce9e45658bbe6a5dbc31e461a6e731d35ea3c1564434f71cfe799cfbe",
+    "case_count": 1401,
+    "group_count": 462,
+    "maximum_population": 4,
+    "wall_seconds": 98.11349569500089,
+    "resources": {
+      "peak_rss_kib": 2648996,
+      "peak_gpu_allocated_bytes": 749168128,
+      "peak_gpu_reserved_bytes": 784334848
+    }
+  },
+  "scored_run": {
+    "dataset": "tenv",
+    "fold": "0",
+    "seed": "17",
+    "model": "Mix",
+    "status": "completed",
+    "reason": "",
+    "group_count": "462",
+    "AUPRC_positive@100": "0.004350072786129894",
+    "AUPRC_negative@100": "0.08376180859699023",
+    "Recall_positive@P80": "0.0",
+    "Recall_negative@P80": "0.005043290043290043",
+    "PCC": "0.010289961086568059",
+    "Spearman": "0.05506740946750141",
+    "RMSE": "1.5814289046238892",
+    "R2": "-194.1012115480883",
+    "AUPRC_positive@100_valid_groups": "462",
+    "AUPRC_negative@100_valid_groups": "462",
+    "Recall_positive@P80_valid_groups": "462",
+    "Recall_negative@P80_valid_groups": "462",
+    "PCC_valid_groups": "462",
+    "Spearman_valid_groups": "462",
+    "RMSE_valid_groups": "462",
+    "R2_valid_groups": "462"
+  },
+  "independent_score_replay": "exact",
+  "local_artifact_sha256": {
+    "mix-ticket81/plan.json": "cba93bdbb8edda462f46aa7ec6d6fd57cfffeae2eb595153cca3b80f10e689a7",
+    "mix-ticket81/slots/cold-drug/seed-17/fit/run.json": "836136766c668ac21e38acb2fc58073d5b86135e0edda1a84bd72ccb9a802cdd",
+    "mix-ticket81/slots/cold-drug/seed-17/prediction/prediction.json": "a8302b6fc03950593ef71e3be6b579139dbebb73e7c9f0b6d5b40ae217ad48b5",
+    "mix-ticket81/slots/cold-drug/seed-17/fit/fit.json": "b521121fa50bb9514b20a6bb5bf460afe0d59b3a4dbe503e5de345667e17686d",
+    "mix-ticket81/slots/cold-drug/seed-17/prediction/replay.json": "6b91fdbce9e45658bbe6a5dbc31e461a6e731d35ea3c1564434f71cfe799cfbe",
+    "mix-score-ticket81/per_run.csv": "4cb3c6be5a4967ce879f1d69f83b99a5ee0af440cd5536d4b6e887e7cfcd9b79",
+    "mix-score-ticket81/per_group.csv": "58dc4624a8d1c40a2ef2ed463be03dfcdb4e36db5d76c11d76e7fd4b12b6f89e",
+    "mix-score-ticket81/summary.csv": "cbd28afc7484914e701a5c747ebf126a5c6a9c3326cc56d9f376784c80954f3d",
+    "mix-score-ticket81/tenv/pr_curves.json": "be76ea111c30404c6ccfa38ae3f6519a17503b4a9aea09e60581c87d16307e53",
+    "mix-score-ticket81/evaluation.json": "37e68887fbd2543d9b70eb9674243943e90b662107a145700dc1b55d43fce196",
+    "mix-score-replay-ticket81/per_run.csv": "4cb3c6be5a4967ce879f1d69f83b99a5ee0af440cd5536d4b6e887e7cfcd9b79",
+    "mix-score-replay-ticket81/per_group.csv": "58dc4624a8d1c40a2ef2ed463be03dfcdb4e36db5d76c11d76e7fd4b12b6f89e",
+    "mix-score-replay-ticket81/summary.csv": "cbd28afc7484914e701a5c747ebf126a5c6a9c3326cc56d9f376784c80954f3d",
+    "mix-score-replay-ticket81/tenv/pr_curves.json": "be76ea111c30404c6ccfa38ae3f6519a17503b4a9aea09e60581c87d16307e53",
+    "mix-score-replay-ticket81/evaluation.json": "37e68887fbd2543d9b70eb9674243943e90b662107a145700dc1b55d43fce196"
+  },
+  "code_sha256": {
+    "execution/script/mix.py": "9256053d1d8a463d3c6042447de706d92c6b08003f51b62888661988e3cdaa32",
+    "execution/script/mix_inputs.py": "6902d38d47642cd1444a1c44c9403e277ca90ef2c0cdb5000cb7881cfce8be5f",
+    "execution/tests/test_mix.py": "069e69a3a583c883e3e503cedb0ab166e01b356698889f49e2aad9bebee66074"
+  },
+  "scheduler": {
+    "prepare": {
+      "status": "completed",
+      "scope": "arc-step04-9c4320b37d3a476c8e0bf617e0a18bd1.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "wall_clock": "0:05.22",
+      "peak_rss_kib": 166096,
+      "peak_workstation_gpu_used_gib": 1.189453125,
+      "peak_gpu_utilization_percent": 43,
+      "evidence_sha256": {
+        "ticket81-queue/prepare-scheduler/mix-prepare.attempt1.log": "f00cfcda3696596abeff22557fec0f1be5bcc012623fc60800e9cd5582533827",
+        "ticket81-queue/prepare-scheduler/status.json": "9db740f708bbdce9e369f6d62568d9849fd81cfe8418290b8c1b3c26ca59e8e1",
+        "ticket81-queue/prepare-scheduler/telemetry.jsonl": "52231953f9d2c0f488f56a449a72bbe4d94311a4022c1930dc255f5f3b7cd58e",
+        "ticket81-queue/prepare.preflight.json": "13a42bfff1b9b027913e2a4e23b8cfe681b430f5aad6b32baa57580d9f851092"
+      }
+    },
+    "fit": {
+      "status": "completed",
+      "scope": "arc-step04-8a9a619f2bee4647b9bc898be302d285.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "wall_clock": "0:24.95",
+      "peak_rss_kib": 3300484,
+      "peak_workstation_gpu_used_gib": 5.4755859375,
+      "peak_gpu_utilization_percent": 64,
+      "evidence_sha256": {
+        "ticket81-queue/fit-scheduler/mix-fit.attempt1.log": "2cafa74f53f48085f9c2841cabd552aabe73ae97d5c2599b6e42522a6be75c56",
+        "ticket81-queue/fit-scheduler/status.json": "892fab86a66aed0d8d0a4f729246e7275219ac95c0f1206ef5e72ba8dd683795",
+        "ticket81-queue/fit-scheduler/telemetry.jsonl": "13f58f35689796012a1de5b9b59f841af6653123b835ccb52fd7e8b5deb49677",
+        "ticket81-queue/fit.preflight.json": "8597f825d4219aed57084af93af9ef8a0fdc68323b93a99226bdec8d95f925fb"
+      }
+    },
+    "predict": {
+      "status": "completed",
+      "scope": "arc-step04-6eb4030d4f8a472c92c6ec133df29511.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "wall_clock": "1:47.12",
+      "peak_rss_kib": 2648996,
+      "peak_workstation_gpu_used_gib": 2.359375,
+      "peak_gpu_utilization_percent": 64,
+      "evidence_sha256": {
+        "ticket81-queue/predict-scheduler/mix-predict.attempt1.log": "36b38575eae9888b98e9e655b864a6159b075fb10660c4139c137e5659e69938",
+        "ticket81-queue/predict-scheduler/status.json": "70f0043d1e9299bfe40c6d4b4b2378a369d2416e087028e8a0ea9d1439c51f28",
+        "ticket81-queue/predict-scheduler/telemetry.jsonl": "1368d89b7595f0d8cefe92e334624e5cbb9961fd5873a3db21b7ef19a9350b13",
+        "ticket81-queue/predict.preflight.json": "d7f5b8057364df01b0b404ebd4971c106456e831a9417ecbb87d3f0da0ee324e"
+      }
+    },
+    "score": {
+      "status": "completed",
+      "scope": "arc-step04-81a99b4d131e49168e636b82b8843f75.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "wall_clock": "0:05.01",
+      "peak_rss_kib": 431740,
+      "peak_workstation_gpu_used_gib": 1.091796875,
+      "peak_gpu_utilization_percent": 25,
+      "evidence_sha256": {
+        "ticket81-queue/score-scheduler/mix-score.attempt1.log": "1c0c69afa98fc04b78d77f84c0f4a9b0994a4980f429ac976f6032d6a9e20be2",
+        "ticket81-queue/score-scheduler/status.json": "1050a9e60404880f8e0f31786b641325c86ba48a00a8481c20256243c2af6ba6",
+        "ticket81-queue/score-scheduler/telemetry.jsonl": "0c24f23c594c77548cee2bff2ee1372ff8d72a0335266b8c814dd59f6fe4fa82",
+        "ticket81-queue/score.preflight.json": "7684dc7053abcec018f0475ceee44f9a3985833a8a2159cb47265b6686767362"
+      }
+    },
+    "replay": {
+      "status": "completed",
+      "scope": "arc-step04-7de3841baeeb4e3a9a9635a787c21099.scope",
+      "memory_max_gib": 10,
+      "memory_swap_max_gib": 8,
+      "wall_clock": "0:05.06",
+      "peak_rss_kib": 431300,
+      "peak_workstation_gpu_used_gib": 1.216796875,
+      "peak_gpu_utilization_percent": 36,
+      "evidence_sha256": {
+        "ticket81-queue/replay-scheduler/mix-replay.attempt1.log": "d5330adc649c6d57309b5cb057d0ac459186dea229eb86fb6f9c3c214ae36818",
+        "ticket81-queue/replay-scheduler/status.json": "1c272c06b7299a20de98f713e57b7c788486d148c1b6780328e58dce46ac34f3",
+        "ticket81-queue/replay-scheduler/telemetry.jsonl": "be921bb7d8194160039f6f35cea209e0e727b21c2531ff22a7da64423b0a34a7",
+        "ticket81-queue/replay.preflight.json": "f07540a7cceafdfc7b57f69d0751130d875afd44421d923464caad2a02fef66b"
+      }
+    }
+  }
+}
