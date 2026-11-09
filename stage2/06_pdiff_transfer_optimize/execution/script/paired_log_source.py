@@ -54,10 +54,14 @@ def source_inputs(plan, reference_digest):
     return request, recipe, config, protocol
 
 
+def source_slot(root, seed):
+    return root.parents[2] / 'checkpoints' / f'08-paired-log-tahoe-fold-0-seed-{seed}'
+
+
 def selected_source(root, plan, reference_digest):
     """Verify the source loss minimum and bind its selected checkpoint for tenv."""
     _, _, config, protocol = source_inputs(plan, reference_digest)
-    directory = root / 'source' / 'fit'
+    directory = source_slot(root, plan['seed']) / 'fit'
     digest = json_hash(protocol)
     verify_fit_seal(directory, digest)
     run = completed_fit(directory, protocol['identity'], config)
@@ -94,7 +98,7 @@ def fit_source(runtime, root, plan, reference_digest):
             super().__init__(inputs, recipe, directory)
             install_encoder(self)
 
-    slot = root / 'source'
+    slot = source_slot(root, plan['seed'])
     with slot_lock(slot), patch.object(native, 'JointPerturbDiff', LogTahoe):
         fit_slot(slot, json_hash(protocol), runtime, worker_request, protocol['identity'], recipe, config)
 
