@@ -27,13 +27,17 @@ def main():
     check = subcommands.add_parser("verify", help="verify an existing input release")
     train = subcommands.add_parser("fit", help="run a bounded autoencoder fit")
     replay = subcommands.add_parser("reload", help="independently replay a checkpoint probe")
-    for command in (build, check, train, replay):
+    freeze_plan = subcommands.add_parser("freeze", help="seal the formal training recipe")
+    develop_fit = subcommands.add_parser("develop", help="select duration on held-out plates")
+    refit_model = subcommands.add_parser("refit", help="train and release from fresh initialization")
+    formal = (freeze_plan, develop_fit, refit_model)
+    for command in (build, check, train, replay, *formal):
         command.add_argument("--release", type=Path, default=RELEASE)
     build.add_argument("--corpus-dir", type=Path, default=CORPUS)
     build.add_argument("--seed", type=int, default=20261109, help="development plate split seed")
     build.add_argument("--fixture", action="store_true", help="allow bounded synthetic corpora")
     check.add_argument("--corpus-dir", type=Path, help="also rehash the source files")
-    for command in (train, replay):
+    for command in (train, replay, *formal):
         command.add_argument("--fixture", action="store_true", help="allow a bounded fixture release")
         command.add_argument("--device", choices=("cuda", "cpu"), default="cuda")
     train.add_argument("--output", type=Path, required=True, help="new fit artifact directory")
@@ -41,12 +45,24 @@ def main():
     train.add_argument("--batch-size", type=int, default=16)
     train.add_argument("--seed", type=int, default=20261109)
     replay.add_argument("--checkpoint", type=Path, required=True)
+    for command in formal:
+        command.add_argument("--run-dir", type=Path, required=True, help="formal training run directory")
+    freeze_plan.add_argument("--batch-size", type=int, default=32)
+    freeze_plan.add_argument("--seed", type=int, default=20261109)
+    freeze_plan.add_argument("--max-epochs", type=int, required=True)
+    freeze_plan.add_argument("--max-seconds", type=int, required=True, help="wall time ceiling per fit")
+    refit_model.add_argument("--output", type=Path, required=True, help="new autoencoder release directory")
     args = parser.parse_args()
     try:
         if args.command == "prepare":
             manifest = prepare(args.corpus_dir, args.release, args.seed, args.fixture, source_pins())
         elif args.command == "verify":
             manifest = verify(args.release, args.corpus_dir, source_pins())
+        elif args.command in {"freeze", "develop", "refit"}:
+            from formal_fit import develop, freeze, refit
+
+            operation = {"freeze": freeze, "develop": develop, "refit": refit}[args.command]
+            manifest = operation(args, source_pins())
         else:
             from short_fit import fit, reload
 

@@ -10,3 +10,7 @@
   reconstruction and perturbation smoke boundaries.
 - **Input tests** — `execution/tests/test_inputs.py` exercises the CLI with
   bounded dense and CSR fixtures.
+- **Autoencoder training** — use `fit` and `reload` for the bounded probe.
+  Run `freeze`, `develop`, `refit` and `reload` as separate processes for
+  formal training and release. The [README](README.md) gives commands and
+  artifact paths. Run formal fits serially through the scheduler.

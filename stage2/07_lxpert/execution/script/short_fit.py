@@ -187,6 +187,12 @@ def reload(args, source_pins):
     reference = payload["probe_prediction"]
     if prediction.shape != reference.shape or not torch.allclose(prediction, reference, atol=ATOL, rtol=RTOL):
         raise ValueError("checkpoint probe reconstruction exceeded replay tolerance")
-    return {**release.contract, **execution, **report, **measure(start, args.device),
-            "checkpoint_sha256": sha256(args.checkpoint), "atol": ATOL, "rtol": RTOL,
+    checkpoint_sha = sha256(args.checkpoint)
+    provenance = {}
+    if payload["metadata"].get("fit_stage") == "full_data_refit":
+        from formal_fit import verify_formal_release
+
+        provenance = verify_formal_release(args.checkpoint.parent, payload["metadata"], checkpoint_sha, release)
+    return {**release.contract, **execution, **report, **provenance, **measure(start, args.device),
+            "checkpoint_sha256": checkpoint_sha, "atol": ATOL, "rtol": RTOL,
             "max_abs_error": float((prediction - reference).abs().max())}

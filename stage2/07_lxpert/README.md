@@ -82,3 +82,64 @@ The [verified short fit record](execution/short_fit_record/run.json) covers
 18,164-gene probe predictions exactly. The scheduled fit took 13.51 seconds
 wall time and peaked at 1,971,380 KiB host RSS and 1,707,081,728 bytes of CUDA
 allocator reservation. After the first step, batch-of-32 steps took 43.6–46.3 ms.
+
+## Formal autoencoder training and release
+
+Run the four commands as separate processes under the scheduler, starting from
+the repository root with the `arc` environment. Both fits use CUDA BF16
+FlashAttention and the admitted batch size of 32.
+
+```bash
+cli=stage2/07_lxpert/execution/script/lxpert.py
+run_dir=stage2/07_lxpert/execution/output/formal_fit_run
+autoencoder=stage2/07_lxpert/output/autoencoder
+python "$cli" freeze --run-dir "$run_dir" --batch-size 32 --seed 20261109 \
+  --max-epochs 4 --max-seconds 1800
+python "$cli" develop --run-dir "$run_dir"
+python "$cli" refit --run-dir "$run_dir" --output "$autoencoder"
+python "$cli" reload --checkpoint "$autoencoder/checkpoint.pt"
+```
+
+`freeze` seals the AdamW settings, seed, training limits, plate memberships and
+input and code digests. Each development epoch shuffles the combined training
+population and visits each profile once at the natural source ratio. Its report
+gives equal-profile observed-target reconstruction MSE separately for the
+held-out Tahoe and tenv plates. The minimum tenv validation MSE selects the
+duration, with the earliest epoch breaking ties.
+
+`refit` initializes a new model and optimizer from the frozen seed and uses all
+71,496 released profiles for the selected number of epochs. The resulting
+`output/autoencoder/` release bundles the checkpoint, frozen plan, development
+scores and refit record. `reload` checks their digests and reproduces the
+checkpoint's two full-axis reconstruction probes. Both training commands emit
+one progress record per completed epoch and report elapsed time, peak host RSS,
+and peak CUDA allocated and reserved memory.
+
+Development trained on 57,418 Tahoe and 3,635 tenv profiles per epoch. The
+held-out plates contributed 9,600 Tahoe and 843 tenv profiles to the validation
+scores.
+
+| Development epoch | Tahoe validation MSE | tenv validation MSE |
+| --- | ---: | ---: |
+| 1 | 0.021118 | 0.176949 |
+| 2 | 0.010911 | 0.138069 |
+| 3 | 0.015075 | 0.174446 |
+| 4 (selected) | 0.009845 | 0.126428 |
+
+The [verified formal run record](execution/formal_fit_record/run.json) includes
+the frozen plan, per-epoch scores, sample-order verification, release digests
+and scheduler measurements. The refit ran for four epochs and independent
+reload reproduced both full-axis probe predictions exactly.
+
+| Fit | Process wall time | Peak host RSS | Peak CUDA reserved |
+| --- | ---: | ---: | ---: |
+| Development | 399.67 s | 6,573,888 KiB | 1,709,178,880 bytes |
+| Full-data refit | 444.56 s | 6,623,460 KiB | 1,715,470,336 bytes |
+
+The plate-held-out MSE describes the development fit. The full-data refit
+includes treated tenv expression from the earlier cold-drug test folds. A
+future comparable cold-drug experiment must first refit the autoencoder with
+its held-out treated profiles excluded.
+
+Use `--fixture --device cpu` for the bounded training workflow. Run its CLI tests
+with `python -m unittest discover -s stage2/07_lxpert/execution/tests -p test_formal_fit.py`.
