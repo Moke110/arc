@@ -6,6 +6,49 @@ initialization and target base learning rate in separate paired arms.
 [ADR 0048](../../docs/adr/0048-perturbdiff-transfer-diagnosis.md)
 records the screening, confirmation and attribution rules.
 
+## Results
+
+Cold-drug fold 0 validation, seed 17. Each comparison covers 138 drug–dose
+groups, with 46 at each of 0.2, 1 and 10 µM. Both AP@100 directions receive
+equal weight. CM and original Transfer use the loss-selected step 6500 EMAs.
+
+| Comparison | Intervention EMA step | Mean AP@100 | Gain vs original Transfer | Residual CM gap |
+| --- | ---: | ---: | ---: | ---: |
+| CM | 6500 | 0.25409 | | |
+| Original Transfer | 6500 | 0.23843 | | 0.01566 |
+| Positive-dose reset, loss-selected | 6000 | 0.24691 | +0.00848 | 0.00718 |
+| Half base learning rate, matched step | 6500 | 0.23680 | −0.00163 | 0.01729 |
+| Half base learning rate, loss-selected | 6000 | 0.23376 | −0.00467 | 0.02033 |
+
+The dose reset improved the 0.2 and 1 µM strata by +0.01155 and +0.01470
+respectively, with a −0.00080 change at 10 µM. Neither intervention reached
+the +0.010 pooled promotion threshold. The added screening seeds and the
+fold 1 source fits, target fits and test scoring were skipped. The dose
+reset reduced the seed 17 validation gap by about 54%. The major-contribution
+rule requires independent fold 1 replication and a matched gap comparison
+there, so attribution remains unresolved.
+
+The separate source audit covers nine shared tenv training parents and
+50 Tahoe cell lines. Seven of those parents share identical standardized
+parent SMILES. Historical Tahoe training overlapped one tenv validation
+parent. After global exclusion, both Tahoe fitting roles overlap zero tenv
+validation or test parents. Dose brackets and the assay, time, normalization
+and coverage limitations are documented in the [source audit](execution/source_audit.md).
+
+- [Paired effects figure](output/01-paired-validation-effects.png) and
+  [Tahoe exposure figure](output/02-tahoe-exposure.png)
+- [Paired per-run results](execution/publication_record/per_run.csv),
+  [paired per-dose results](execution/publication_record/per_dose.csv) and
+  [Tahoe fitting exposure](execution/publication_record/source_exposure.csv)
+- [Decision summary](execution/publication_record/decision.json),
+  [artifact hashes](execution/publication_record/evidence.json) and
+  [resource ledger](execution/publication_record/resources.json)
+- [Dose reset commands](execution/dose_reset.md),
+  [learning-rate commands](execution/learning_rate.md),
+  [confirmation source commands](execution/confirmation.md),
+  [replication commands](execution/replication.md) and
+  [publication replay](execution/publication.md)
+
 ## Validation baseline
 
 Use the arc Python interpreter for verification and scoring. Use the pinned
