@@ -460,6 +460,12 @@ of its measured wells. Groups receive equal weight in benchmark metric macro
 averages.
 _Avoid_: condition (unqualified), sample
 
+**Paired Transfer comparison**:
+A Step 06 comparison between original Tahoe-to-tenv Transfer and one
+intervention on the same tenv drug–dose groups. Each arm is evaluated at
+its own author-loss-selected EMA checkpoint.
+_Avoid_: combined optimization arm
+
 **Cold-drug-capable model**:
 A model whose drug input is derived from chemical structure (fingerprint, RDKit descriptor, or a structure encoder), so it can score a drug it never saw in training. Stage 2's admission gate.
 _Avoid_: warm-drug model, structure model
