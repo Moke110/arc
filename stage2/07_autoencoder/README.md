@@ -24,6 +24,53 @@ order, ranks, memberships and full coverage.
 | Tahoe | 10 / 47,822 | 2 / 9,600 | 2 / 9,596 |
 | tenv | 10 / 2,810 | 3 / 843 | 3 / 825 |
 
+## Held-out reconstruction comparison
+
+Each of the eight configurations reconstructed the same 9,596 Tahoe and 825
+tenv test profiles. The [selection seal](output/test_seal.json) was committed
+before scoring. It binds the selected validation scores, fitted manifest and
+payload hashes to the corrected corpus, ordered gene axis and frozen split.
+
+![Test PCC, RMSE and relative squared error for eight reconstruction configurations on Tahoe and tenv](reconstruction_test.png)
+
+`PCA_512` led all three metrics on both sources. Its squared error was 40.9%
+of the training-gene mean's error on Tahoe and 12.1% on tenv. `AAE_512` had
+113.3% of the mean's squared error on Tahoe and 49.6% on tenv.
+
+The [test scores](output/test_scores.json) give full-precision metrics,
+including the number of defined PCCs and the profile count for every source
+and configuration. The dotted line marks the training-gene mean in each panel.
+The [original comparison](../_archive/07_lxpert/README.md) remains in the archive
+with its checkpoint and perturbation smoke.
+
+### Replay the published scores
+
+The [Step 02 shared CM release instructions](../02_dataset_corpus/README.md#shared-cm-expression-release)
+give the build and verification commands for `output/corpus/shared-cm-v1`,
+including `genes.csv` in model order. The release's
+[verification record](../02_dataset_corpus/execution/build_record/shared_cm_v1.json)
+pins its manifest. Step 07 publishes [the frozen split](output/split.json)
+and [the fitted artifacts](output/models/). Fit and validation resource records
+are available for [mean](execution/mean_record/run.json),
+[PCA](execution/pca_record/run.json), [MLP](execution/mlp_record/run.json), and
+[AAE](execution/aae_record/run.json).
+
+From the repository root in the `arc` environment, run replay with fresh
+resource admission as recorded in the [comparison run](execution/comparison_record/run.json).
+Replay verifies the seal, loads all eight published artifacts and checks the
+published scores with relative tolerance `1e-6` and absolute tolerance `1e-8`.
+Mean and PCA score on CPU. MLP and AAE score on CUDA.
+
+```bash
+step=stage2/07_autoencoder
+cli="$step/execution/script/compare.py"
+scores="$step/output/test_scores.json"
+systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
+  /usr/bin/time -v env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 \
+  NUMEXPR_NUM_THREADS=2 python "$cli" reload --allow-test --expected "$scores"
+python "$cli" figure --expected "$scores" --output /tmp/arc-reconstruction-test.png
+```
+
 ## Fit, score and replay
 
 From the repository root in the `arc` environment, schedule real commands
