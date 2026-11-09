@@ -11,22 +11,28 @@ from benchmark import (
     Split, checked_test_role, fit_mean, freeze_split, json_bytes, load_mean, publish_artifact,
     publish_json, score, verify_artifact, verify_replay,
 )
+from mlp import MODEL_IDS as MLP_MODEL_IDS, fit_mlp, mlp_predictor
 from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
 
 
 def fit(args, corpus, split):
+    if args.model in MLP_MODEL_IDS:
+        if args.output is None:
+            raise ValueError("MLP fit requires --output for the new artifact")
+        return fit_mlp(corpus, split, args.output, args.model, args.batch_size, args.device)
+    batch_size = 64 if args.batch_size is None else args.batch_size
     if args.model == "PCA":
         if args.output is None:
             raise ValueError("PCA fit requires --output for the new model set")
-        return fit_pca(corpus, split, args.output, args.batch_size, args.device)
+        return fit_pca(corpus, split, args.output, batch_size, args.device)
     output = args.output or DEFAULT_MEAN
-    mean = fit_mean(corpus, split, args.batch_size)
+    mean = fit_mean(corpus, split, batch_size)
     if not np.isfinite(mean).all():
         raise ValueError("training-gene mean is nonfinite")
     metadata = {
         "fit_role": "train",
         "fit_profiles": {source: len(split.rows[source]["train"]) for source in SOURCES},
-        "batch_size": args.batch_size,
+        "batch_size": batch_size,
         "reduction": "float64 accumulation, float32 inference",
         "latent_tokens": None,
         "latent_scalars": None,
@@ -42,11 +48,14 @@ def score_artifact(args, corpus, split):
     if record["model_id"] == "mean":
         reference, mean = load_mean(args.artifact, corpus, split)
         predict = lambda values: np.broadcast_to(mean, values.shape)
-    elif record["model_id"] in PCA_MODEL_IDS:
-        reference, mean = load_mean(args.mean_artifact, corpus, split)
-        predict = pca_predictor(args.artifact, record)
     else:
-        raise ValueError(f"unsupported model: {record['model_id']}")
+        reference, mean = load_mean(args.mean_artifact, corpus, split)
+        if record["model_id"] in PCA_MODEL_IDS:
+            predict = pca_predictor(args.artifact, record)
+        elif record["model_id"] in MLP_MODEL_IDS:
+            predict = mlp_predictor(args.artifact, record, args.device)
+        else:
+            raise ValueError(f"unsupported model: {record['model_id']}")
     result = score(corpus, split, args.role, predict, mean, args.batch_size,
                    allow_test=args.allow_test)
     return {
@@ -68,10 +77,10 @@ def main():
         command.add_argument("--split", type=Path, default=DEFAULT_SPLIT)
         command.add_argument("--fixture", action="store_true")
         if name != "freeze-split":
-            command.add_argument("--batch-size", type=int, default=64)
-        if name == "fit":
-            command.add_argument("--model", choices=("mean", "PCA"), default="mean")
+            command.add_argument("--batch-size", type=int, default=None if name == "fit" else 64)
             command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
+        if name == "fit":
+            command.add_argument("--model", choices=("mean", "PCA", *MLP_MODEL_IDS), default="mean")
             command.add_argument("--output", type=Path)
         if name in {"score", "reload"}:
             command.add_argument("--artifact", type=Path, default=DEFAULT_MEAN)

@@ -172,6 +172,47 @@ class BenchmarkTest(unittest.TestCase):
                     expected_mse = float(np.square(offsets[rank:]).sum()) * scale ** 2 / genes
                     self.assertAlmostEqual(result["mse"], expected_mse, places=6)
 
+    def test_mlp_reloads_the_tenv_selected_checkpoint_at_each_latent_width(self):
+        for source, values in self.expressions.items():
+            validation_plate = min(self.profile_plates[source], key=lambda plate: hashlib.sha256(
+                json.dumps([20261109, source, plate]).encode()).digest())
+            for index, plate in enumerate(self.profile_plates[source]):
+                # Training moves outputs towards four and away from tenv validation.
+                values[index] = {"tenv": 0, "tahoe": 6}[source] if plate == validation_plate else 4
+            np.save(self.release / f"{source}_expression.npy", values)
+        self.write_manifest()
+        split = self.cli("freeze-split")
+        self.cli("fit", "--output", self.artifact)
+        for width in (32, 128, 512):
+            with self.subTest(width=width):
+                model_id = f"MLP_{width}"
+                artifact = self.root / model_id
+                result = self.cli("fit", "--model", model_id, "--output", artifact)
+                metadata = result["metadata"]
+                self.assertEqual(metadata["latent_scalars"], width)
+                self.assertIsNone(metadata["latent_tokens"])
+                self.assertEqual(metadata["fit_profiles"], {
+                    source: split["sources"][source]["roles"]["train"]["profiles"]
+                    for source in self.expressions
+                })
+                history = json.loads((artifact / "epochs.json").read_text())
+                self.assertEqual(metadata["selected_epoch"], 1)
+                self.assertLess(history[0]["validation_mse"]["tenv"],
+                                history[-1]["validation_mse"]["tenv"])
+                if width == 32:
+                    self.assertGreater(history[0]["validation_mse"]["tahoe"],
+                                       history[-1]["validation_mse"]["tahoe"])
+                expected = self.root / f"{model_id}.json"
+                args = ["--artifact", artifact, "--mean-artifact", self.artifact,
+                        "--role", "validation", "--batch-size", 2]
+                score = self.cli("score", *args, "--output", expected)
+                self.assertEqual(score["provenance"], result["provenance"])
+                for source in self.expressions:
+                    self.assertAlmostEqual(
+                        score["sources"][source]["mse"], history[0]["validation_mse"][source],
+                    )
+                self.assertEqual(score, self.cli("reload", *args, "--expected", expected))
+
     def test_refuses_changed_split_and_release(self):
         self.cli("freeze-split")
         frozen = json.loads(self.split_path.read_text())

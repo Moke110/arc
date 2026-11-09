@@ -101,3 +101,26 @@ The example scores the published artifacts. To validate a new fit, use the
 rank directories written under `/tmp/arc-pca`. CPU scoring and replay use the
 same published training-gene mean reference as the other methods. Use
 `--mean-artifact` if the reference was fitted to a fixture or another release.
+
+### MLP reconstruction
+
+Each `MLP_k` fits a separate fully connected autoencoder with widths
+18,164 → 512 → *k* → 512 → 18,164. GELU follows the two 512-wide hidden
+layers. The bottleneck and output are linear, and *k* counts scalars.
+The frozen recipe uses float32, full-axis MSE, AdamW with learning rate
+0.001 and weight decay 0.01, and 20 epochs of 512-profile batches. A
+PCG64 shuffle seeded by 20261109 and the epoch visits every joint training
+profile once at the natural source ratio. Each fit has a 30-minute ceiling.
+Validation uses 64-profile batches, records MSE separately by source, and
+selects the earliest epoch at the minimum tenv MSE.
+
+```bash
+cli=stage2/07_autoencoder/execution/script/reconstruct.py
+for width in 32 128 512; do
+  artifact="/tmp/arc-MLP_$width"
+  scores="/tmp/arc-MLP_$width-validation.json"
+  python "$cli" fit --model "MLP_$width" --device cuda --output "$artifact"
+  python "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
+  python "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
+done
+```
