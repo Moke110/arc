@@ -28,6 +28,12 @@ reset reduced the seed 17 validation gap by about 54%. The major-contribution
 rule requires independent fold 1 replication and a matched gap comparison
 there, so attribution remains unresolved.
 
+Cross-dataset dose representation is worth further optimization. Replacing
+the Tahoe-mapped positive-dose embeddings with fresh tenv embeddings
+improved validation AP@100 in this screen, with gains concentrated at 0.2
+and 1 µM. This single-seed result motivates further work on dose
+representation and leaves its contribution to the Transfer deficit open.
+
 The separate source audit covers nine shared tenv training parents and
 50 Tahoe cell lines. Seven of those parents share identical standardized
 parent SMILES. Historical Tahoe training overlapped one tenv validation
