@@ -466,6 +466,10 @@ intervention on the same tenv drug–dose groups. Each arm is evaluated at
 its own author-loss-selected EMA checkpoint.
 _Avoid_: combined optimization arm
 
+**Step 07 transfer pair**:
+Two results for the same model and seed on the shared tenv fold, one from
+the Tahoe-pretrained predictor and one from its tenv-fine-tuned descendant.
+
 **Cold-drug-capable model**:
 A model whose drug input is derived from chemical structure (fingerprint, RDKit descriptor, or a structure encoder), so it can score a drug it never saw in training. Stage 2's admission gate.
 _Avoid_: warm-drug model, structure model
