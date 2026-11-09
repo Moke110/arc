@@ -18,10 +18,10 @@ WIDTH = 128
 HEADS = 8
 RECIPE = {
     "seed": SEED,
-    "epochs": 4,
+    "epochs": 20,
     "train_batch_size": 32,
     "validation_batch_size": 32,
-    "max_seconds": 1800,
+    "max_seconds": 3600,
     "optimizer": "AdamW",
     "learning_rate": 0.001,
     "weight_decay": 0.01,
@@ -119,12 +119,16 @@ def fit_aae(corpus, split, output, batch_size, device):
 
 def aae_predictor(path, record, fixture, batch_size, device):
     recipe = recipe_for(fixture, device)
+    replay_recipes = [recipe]
+    if not fixture:
+        # Keep the originally published four-epoch checkpoint replayable.
+        replay_recipes.append({**recipe, "epochs": 4, "max_seconds": 1800})
     metadata = record["metadata"]
     gene_count = record["gene_count"]
     if (metadata["architecture"] != architecture(gene_count)
             or metadata["latent_tokens"] != LATENT_TOKENS
             or metadata["latent_scalars"] != LATENT_TOKENS * WIDTH
-            or metadata["recipe"] != recipe
+            or metadata["recipe"] not in replay_recipes
             or set(record["files"]) != {"weights.pt", "epochs.json"}):
         raise ValueError("invalid AAE artifact or incompatible replay runtime")
     score_batch_size = recipe["validation_batch_size"]
