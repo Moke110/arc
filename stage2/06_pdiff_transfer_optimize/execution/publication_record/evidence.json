@@ -71,11 +71,13 @@
     "output/01-paired-validation-effects.png": "57b93ffd9dfc70879cfd3a0c81426675119e4866f059864476f05465ea446866",
     "output/02-tahoe-exposure.png": "6dda6032070fe51774b20f2a47c8c0955647fb5ecc368b5a4545d407e8dc2dda"
   },
+  "tables": {
+    "per_run.csv": "b165135de0433353d1a4a969193cb87b4fa2c4e84433e06e2f19d1f8e4209648",
+    "per_dose.csv": "bc5e322fcfd815c1a9a77ca8be32d22f1d37d4efd9c4993d8cb2ecf4893b39f4",
+    "source_exposure.csv": "558b0d023fa1fb285d44bf801e7fc6d2f33d9d9a5559ad5e94386a9ca2779c59"
+  },
   "record": {
     "decision.json": "16ae11b68f8b65231b50aa45be432a64b5af774ea86a8442f6d2434e8a3ffb3a",
-    "resources.json": "d84b6fdbf0f1f95c679a13c120a306a757187f0bb3bc75fcb8c26b4912c1c5f6",
-    "per_run.csv": "9f1738cf86696584383dbc7d2b401bd3f18d41bf30616de2338cec0629508f66",
-    "per_dose.csv": "39571aefae75891b0dff6558eb87e63b1189eaac74ceae338d0b1c24df0ac209",
-    "source_exposure.csv": "558b0d023fa1fb285d44bf801e7fc6d2f33d9d9a5559ad5e94386a9ca2779c59"
+    "resources.json": "d84b6fdbf0f1f95c679a13c120a306a757187f0bb3bc75fcb8c26b4912c1c5f6"
   }
 }
