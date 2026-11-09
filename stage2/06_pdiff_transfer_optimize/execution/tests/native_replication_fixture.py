@@ -120,7 +120,7 @@ def fixture(runtime, output):
                 assert [event['step'] for event in history['history']] == [1, 2]
                 assert history['optimizer_steps'] == (2 if arm == 'dose_reset' else 3)
 
-    choices, fits = cli.comparisons_for(output, plan, digest, seed)
+    choices, fits = cli.comparisons_for(output, plan, digest, seed, {})
     assert set(choices) == {'CM/native', 'Transfer/native', 'Transfer/common', 'dose_reset/native',
                             'learning_rate/native', 'learning_rate/common'}
     assert fits['dose_reset']['initialization']['dose_reset']['reset_doses_um'] == [0.2, 1., 10.]
