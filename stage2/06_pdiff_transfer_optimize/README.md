@@ -177,6 +177,17 @@ The dedicated scheduler runs the jobs in order. Source and target fit
 evidence lives under `output/checkpoints/08-paired-log-tahoe-fold-0-seed-$seed/fit/`
 and `output/checkpoints/05-paired-log-fold-0-seed-$seed/fit/`, respectively.
 
+After all three seeds have sealed scores, run the evidence verifier through
+the scheduler with the arc interpreter.
+
+```bash
+python "$step/execution/script/paired_evidence.py" "$step/output/paired-transfer"
+```
+
+The command writes `log/matrix.json` after it verifies each seed's
+loss-selected source and target EMAs, reference pairing, prediction lineage,
+and group-level support for the dose summaries.
+
 ## All-half learning rate
 
 The `all-half` arm loads the original Tahoe bridge and uses a base

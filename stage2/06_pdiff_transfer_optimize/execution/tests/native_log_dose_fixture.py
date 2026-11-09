@@ -109,7 +109,7 @@ def source_release(native, root, config, gene_sha256='fixture'):
     request_identity = {'dataset': 'tahoe', 'fold': 0, 'gene_sha256': gene_sha256}
     request = {'identity': request_identity, 'target_kind': 'delta', 'n_genes': 3, 'predictor_files': files,
                'file_sha256': {key: sha256(path) for key, path in files.items()}}
-    selected = {'identity': {**request_identity, 'seed': 17, 'stage': 'formal'},
+    selected = {'identity': {**request_identity, 'seed': config['seed'], 'stage': 'formal'},
                 'recipe_sha256': json_hash(config), 'best_step': 1, 'best_validation_loss': 0.5,
                 'checkpoint_sha256': 'original-checkpoint', 'model_state_sha256': 'original-state'}
     original = {'roles': roles, 'metadata': selected, 'source_sha256': 'original-release'}

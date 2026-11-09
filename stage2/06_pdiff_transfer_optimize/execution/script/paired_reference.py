@@ -23,6 +23,10 @@ TRANSFER = base.transfer
 
 def score_prediction(request, observed, predicted):
     groups, summaries = base.score_prediction(request, observed, predicted, include_pcc=True)
+    return groups, summarize_doses(groups, summaries)
+
+
+def summarize_doses(groups, summaries):
     doses = []
     for summary in summaries[1:]:
         members = [row for row in groups if row['dose_um'] == float(summary['dose_um'])]
@@ -36,7 +40,7 @@ def score_prediction(request, observed, predicted):
                                                           if row[f'{metric}_reason']))
                for metric in ('positive', 'negative', 'pcc')},
         })
-    return groups, doses
+    return doses
 
 
 def verify_baseline(runtime, seed):
