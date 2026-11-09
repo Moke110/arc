@@ -1,13 +1,12 @@
 # Build a whole-transcriptome Latent XPert predictor
 
-**Status:** proposed (2026-11-09). The gene representation, latent token count, and chemical representation are confirmed. Step numbering, the prediction and training contract, and evaluation scope are under design review.
+**Status:** proposed (2026-11-09). The step path, model separation, latent token count, conditioning inputs, and frozen decoder are confirmed. Training data, supervision, and evaluation are under design review.
 
-Latent XPert uses the ordered 18,164-gene CM axis. Each gene's expression token receives a fixed positional embedding keyed to its index in that axis. The axis order therefore forms part of the model's input and output contract. The first version uses position as the sole gene identity signal and takes its chemical input from the shared Morgan fingerprint with a jointly trained linear adapter.
+`stage2/07_lxpert/` separates transcriptome reconstruction from perturbation prediction. The transcriptome autoencoder learns to reconstruct profiles on the ordered 18,164-gene CM axis. The encoder uses 512 latent queries that cross-attend to expression tokens. The decoder uses gene-position queries that cross-attend to the latent tokens and reconstruct one expression value per gene. Fixed positional embeddings keyed to the frozen axis provide the sole gene identity signal, so axis order forms part of the model contract.
 
-The proposed architecture uses 256 latent cell tokens. Learned queries read the full gene axis through cross-attention and provide a common input to an untreated branch and a drug-conditioned branch. Gene-position queries read the latent representations to produce a full-axis perturbome. This confines dense cell self-attention to the latent sequence while preserving a prediction for each gene in the ordered axis.
+Latent XPert encodes the baseline transcriptome and passes its 512 tokens through an XPert-style treatment branch with block order `CA + SA + SA + CA`. The branch has two condition tokens, a shared Morgan fingerprint projected by a jointly trained linear adapter and a dose embedding. The frozen decoder maps the predicted latent state to post-treatment expression. Subtracting the baseline in expression space yields the full-axis perturbome.
 
 ## See
 
 - [ADR 0030](0030-external-data-provenance-and-step-layout.md) for the Stage 2 step layout.
 - [ADR 0042](0042-tenv-model-benchmark-redesign.md) for the ordered CM gene axis and the shared Morgan representation.
-- [ADR 0050](0050-tahoe-transfer-across-stage2-models.md) for the separate proposed multi-model transfer study at `stage2/07_models_transfer/`.
