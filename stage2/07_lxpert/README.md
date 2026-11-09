@@ -49,3 +49,36 @@ verification.
 
 Run bounded CLI tests with
 `python -m unittest discover -s stage2/07_lxpert/execution/tests -p test_inputs.py`.
+
+## Bounded autoencoder fit and checkpoint replay
+
+```bash
+python stage2/07_lxpert/execution/script/lxpert.py fit \
+  --steps 8 --batch-size 32 --output stage2/07_lxpert/output/short_fit
+python stage2/07_lxpert/execution/script/lxpert.py reload \
+  --checkpoint stage2/07_lxpert/output/short_fit/checkpoint.pt
+```
+
+Both commands verify the input release and use CUDA BF16 fused FlashAttention
+for the full gene axis. The short fit draws distinct development training
+profiles from both sources for each batch and uses AdamW at a learning rate of
+0.001. It averages observed-target MSE per profile, with the Tahoe-specific mask.
+This balanced sample exercises both data paths. The development training recipe
+in ADR 0051 uses the natural source ratio.
+
+The checkpoint binds its weights to the input manifest, ordered gene axis,
+normalization and architecture. It stores a reconstruction probe for one
+validation profile per source. A separate `reload` process recomputes the probe
+using the fit device and precision and checks every output within `atol=1e-6`
+and `rtol=1e-5`. The fit report records source counts, losses, step timings,
+peak RSS and CUDA allocator peaks. `reload` prints its probe and resource report
+as JSON.
+
+Use `--fixture --device cpu` for the bounded fixture. Run its CLI test with
+`python -m unittest discover -s stage2/07_lxpert/execution/tests -p test_autoencoder.py`.
+
+The [verified short fit record](execution/short_fit_record/run.json) covers
+128 Tahoe and 128 tenv profiles. The independent reload reproduced both
+18,164-gene probe predictions exactly. The scheduled fit took 13.51 seconds
+wall time and peaked at 1,971,380 KiB host RSS and 1,707,081,728 bytes of CUDA
+allocator reservation. After the first step, batch-of-32 steps took 43.6–46.3 ms.
