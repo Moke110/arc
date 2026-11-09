@@ -16,7 +16,7 @@ extension. The completed ADR 0048 results remain historical evidence.
 | Arm | Change relative to original Transfer |
 | --- | --- |
 | `random` | Restore the three native, same-seed tenv positive-dose embeddings after loading the original Tahoe bridge. |
-| `log` | Use one continuous log-dose encoder shared across Tahoe and tenv, with a separate 0 µM control branch. Refit Tahoe under the same source data and training recipe, then transfer the loss-selected source EMA into tenv. |
+| `log` | Encode positive dose `d` as `log10(d / 0.05 µM)` and use one trainable linear projection to the original dose embedding dimension. Use a separate trainable vector at 0 µM. Share the encoder across Tahoe and tenv and extrapolate directly at tenv 10 µM. Refit Tahoe under the same source data and training recipe, then transfer the loss-selected source EMA into tenv. |
 | `all-half` | Set the base learning rate of all trainable tenv parameters to `1e-4`. |
 | `main-half` | Set the base learning rate of the Cross-DiT denoiser to `1e-4` and retain `2e-4` for the external conditioning encoder. Keep the full model trainable. |
 | `adaLN-only` | Update only the existing treated and control adaLN modulation projections in all DiT blocks and both output heads at `2e-4`. Freeze the remaining parameters. |
