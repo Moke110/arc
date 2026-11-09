@@ -348,6 +348,9 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 
 ### Stage 2 benchmark
 
+**Latent XPert** (`latent_XPert`):
+The Stage 2 XPert-derived perturbation predictor that models untreated and drug-conditioned cell states in a shared latent token space and predicts a perturbome on the full CM gene axis.
+
 **Tenv model boundary**:
 The parameters updateable together in one backward pass for the tenv prediction
 task. A drug encoder trained independently on non-perturbation data is a separate

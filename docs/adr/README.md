@@ -68,3 +68,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0048](0048-perturbdiff-transfer-diagnosis.md) | Paired controls for the Tahoe transfer gap and Step 06 output placement |
 | [0049](0049-perturbdiff-transfer-optimization-comparisons.md) | Five Step 06 Transfer comparisons on cold-cm-drug with one dose-stratified figure |
 | [0050](0050-tahoe-transfer-across-stage2-models.md) | Proposed Tahoe pretraining and tenv fine-tuning comparison across the Step 03 models |
+| [0051](0051-latent-xpert.md) | Proposed whole-transcriptome Latent XPert model |
