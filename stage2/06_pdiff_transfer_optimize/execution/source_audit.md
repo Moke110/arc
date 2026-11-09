@@ -14,8 +14,9 @@ The command uses the frozen Step 05 tenv cold fold 0 split, the historical
 Step 04 Tahoe fold 0 request, and the pinned Step 05 globally cold Tahoe
 release. It verifies the file hashes of the consumed data, the common
 18,164-gene order and the ordered Tahoe fitting membership after global
-exclusion. It reads tenv and Tahoe Δ from the frozen float32 arrays, one
-selected row at a time.
+exclusion. It joins cell lines to both Tahoe releases by case ID from the
+pinned historical `wells.csv`. It reads tenv and Tahoe Δ from the frozen
+float32 arrays, one selected row at a time.
 
 | File | Contents |
 | --- | --- |

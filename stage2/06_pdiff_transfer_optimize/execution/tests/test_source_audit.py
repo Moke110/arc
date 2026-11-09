@@ -11,24 +11,30 @@ from source_audit import PATHS, Release, read_json, rows, sha256, write_audit, w
 
 
 class SourceAuditTest(unittest.TestCase):
-    def fixture_release(self, root, members, expressions):
+    def fixture_release(self, root, members, expressions, *, tahoe_metadata=False):
         root.mkdir()
         drugs = {}
+        wells = []
         for role, entries in members.items():
             cases = []
             for number, (parent, dose, line, smiles) in enumerate(entries):
                 drugs[parent] = {'drug_key': parent, 'parent_connectivity': parent,
                                  'parent_smiles': smiles}
-                cases.append(dict(case_id=f'{role}-{number}', drug_key=parent,
-                                  dose_um=dose, cell_line_id=line,
-                                  group_id=f'{parent}-{dose}-{line}'))
+                plate, well = role, str(number)
+                case = dict(case_id=f'{plate}:{well}:{line}', drug_key=parent, dose_um=dose,
+                            control_index=number, group_id=f'{parent}-{dose}-{line}')
+                cases.append(case)
+                wells.append(dict(**case, plate=plate, well=well, cell_line_id=line))
             write_csv(root / PATHS[f'{role}_cases'], cases)
         write_csv(root / PATHS['drugs'], drugs.values())
         write_csv(root / PATHS['genes'], [{'symbol': 'A'}, {'symbol': 'B'}, {'symbol': 'C'}])
         for role, values in expressions.items():
             np.save(root / PATHS[f'{role}_expression'], np.asarray(values, dtype=np.float32))
-        return Release(root, {key: sha256(root / path) for key, path in PATHS.items()
-                              if (root / path).exists()})
+        hashes = {key: sha256(root / path) for key, path in PATHS.items() if (root / path).exists()}
+        if tahoe_metadata:
+            write_csv(root / 'wells.csv', wells)
+            hashes['wells'] = sha256(root / 'wells.csv')
+        return Release(root, hashes)
 
     def test_separates_fitting_roles_for_historical_and_cold_exposure(self):
         with TemporaryDirectory() as temporary:
@@ -39,7 +45,8 @@ class SourceAuditTest(unittest.TestCase):
                 {'train': [[1, -1, 0], [1, 1, 0]]})
             a, b, v, t = [(parent, 0.05, 'L1', parent) for parent in 'ABVT']
             historical = self.fixture_release(root / 'historical',
-                                              {'train': [a, v], 'validation': [b, t]}, {})
+                                              {'train': [a, v], 'validation': [b, t]}, {},
+                                              tahoe_metadata=True)
             cold = self.fixture_release(root / 'cold', {'train': [a], 'validation': [b]},
                                         {'train': [[2, -2, 0]], 'validation': [[-1, -1, 0]]})
             output = root / 'audit'
@@ -65,23 +72,32 @@ class SourceAuditTest(unittest.TestCase):
                  'validation': [('V', 0.2, 'CM', 'V')], 'test': [('T', 0.2, 'CM', 'T')]},
                 {'train': [[3, -3, 0]] * 6})
             membership = {
-                'train': [('A', 0.05, 'L1', 'A'), ('A', 0.5, 'L1', 'A'), ('A', 5, 'L1', 'A')],
+                'train': [('A', 0.05, 'L1', 'A'), ('A', 0.5, 'L1', 'A'), ('A', 5, 'L1', 'A'),
+                          ('A', 0.05, 'L3', 'A')],
                 'validation': [('B', 0.5, 'L2', 'B-other')],
             }
-            historical = self.fixture_release(root / 'historical', membership, {})
+            historical = self.fixture_release(root / 'historical', membership, {}, tahoe_metadata=True)
             cold = self.fixture_release(
                 root / 'cold', membership,
-                {'train': [[2, 2, 3], [-2, 2, 0], [2, -2, 0]], 'validation': [[0, 0, 0]]})
+                {'train': [[2, 2, 3], [-2, 2, 0], [2, -2, 0], [-2, 2, 0]],
+                 'validation': [[0, 0, 0]]})
             output = root / 'audit'
             write_audit(output, tenv, historical, cold, 3)
             panel = rows(output / 'delta_panel.csv')
             sensitivity = rows(output / 'exact_smiles_panel.csv')
-            cross = [row for row in panel if row['parent_connectivity'] == 'A' and row['tahoe_role']]
+            cross = [row for row in panel if row['parent_connectivity'] == 'A'
+                     and row['tahoe_cell_line_id'] == 'L1']
+            other_line = [row for row in panel if row['parent_connectivity'] == 'A'
+                          and row['tahoe_cell_line_id'] == 'L3' and row['status'] == 'observed']
+            self.assertEqual(len(other_line), 1)
+            self.assertEqual(other_line[0]['tahoe_profiles'], '1')
+            self.assertEqual(other_line[0]['sign_concordance'], '0.0')
             self.assertEqual([(row['tenv_dose_um'], row['tahoe_dose_um'], row['bracket']) for row in cross],
                              [('0.2', '0.05', 'lower'), ('0.2', '0.5', 'upper'),
                               ('1.0', '0.5', 'lower'), ('1.0', '5.0', 'upper')])
             self.assertTrue(all(row['tahoe_cell_line_id'] == 'L1' and row['tahoe_role'] == 'train'
                                 for row in cross))
+            self.assertEqual(cross[0]['tahoe_profiles'], '1')
             self.assertAlmostEqual(float(cross[0]['tenv_delta_rms']), 6 ** 0.5)
             self.assertEqual(cross[0]['sign_concordance'], '0.5')
             self.assertEqual(cross[0]['joint_nonzero_genes'], '2')
@@ -102,3 +118,5 @@ class SourceAuditTest(unittest.TestCase):
                                 and row['sign_concordance'] == '' for row in ten_only))
             evidence = read_json(output / 'lineage.json')
             self.assertEqual(evidence['outputs']['delta_panel.csv'], sha256(output / 'delta_panel.csv'))
+            self.assertEqual(evidence['inputs']['historical_tahoe']['files']['wells.csv'],
+                             sha256(root / 'historical/wells.csv'))

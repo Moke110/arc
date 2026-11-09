@@ -14,9 +14,10 @@ sys.path.insert(0, str(REPO / STEP05 / 'execution/script'))
 
 import numpy as np
 
-from cold_tahoe import FITTED, PATHS, ROLES, STEP04, frozen_inputs, pin, verify_files
+from cold_tahoe import FITTED, PATHS as PREDICTOR_PATHS, ROLES, STEP04, frozen_inputs, pin, verify_files
 from artifacts import read_json, rows, sha256, write_csv, write_json
 
+PATHS = {**PREDICTOR_PATHS, 'wells': 'wells.csv'}
 BRACKETS = {0.2: (0.05, 0.5), 1.0: (0.5, 5.0)}
 TEN_ONLY = 10.0
 
@@ -31,13 +32,30 @@ class Release:
         return self.root / PATHS[key]
 
 
-def case_tables(release, roles):
+def case_tables(release, roles, tahoe_wells=None):
     drugs = {row['drug_key']: row for row in rows(release.path('drugs'))}
-    return {
-        role: [{**case, **drugs[case['drug_key']]}
-               for case in rows(release.path(f'{role}_cases'))]
-        for role in roles
-    }
+    tables = {}
+    for role in roles:
+        cases = rows(release.path(f'{role}_cases'))
+        if tahoe_wells is not None:
+            for case in cases:
+                well = tahoe_wells.get(case['case_id'])
+                if well is None or any(well[key] != value for key, value in case.items()):
+                    raise ValueError(f'Tahoe {role} case differs from frozen well metadata')
+                case['cell_line_id'] = well['cell_line_id']
+        tables[role] = [{**case, **drugs[case['drug_key']]} for case in cases]
+    return tables
+
+
+def tahoe_well_index(historical):
+    wells = rows(historical.path('wells'))
+    by_id = {well['case_id']: well for well in wells}
+    if len(by_id) != len(wells) or any(
+            not well['cell_line_id']
+            or well['case_id'] != ':'.join(well[key] for key in ('plate', 'well', 'cell_line_id'))
+            for well in wells):
+        raise ValueError('invalid Tahoe well or cell-line identity')
+    return by_id
 
 
 def by_parent(cases):
@@ -162,8 +180,9 @@ def write_audit(output, tenv, historical, cold, n_genes, *, frozen=None, runtime
         raise ValueError('source and target must use the same ordered gene axis')
 
     tenv_cases = case_tables(tenv, ROLES)
-    historical_cases = case_tables(historical, FITTED)
-    cold_cases = case_tables(cold, FITTED)
+    tahoe_wells = tahoe_well_index(historical)
+    historical_cases = case_tables(historical, FITTED, tahoe_wells)
+    cold_cases = case_tables(cold, FITTED, tahoe_wells)
     exposure = exposure_rows(tenv_cases, historical_cases, cold_cases)
     shared = by_parent(tenv_cases['train']).keys() & {
         case['parent_connectivity'] for cases in cold_cases.values() for case in cases
@@ -208,7 +227,7 @@ def write_audit(output, tenv, historical, cold, n_genes, *, frozen=None, runtime
                        'files': {PATHS[key]: release.hashes[key] for key in input_keys}}
                 for (name, release), input_keys in zip(releases.items(), (
                     ['genes', 'drugs', 'train_cases', 'validation_cases', 'test_cases', 'train_expression'],
-                    ['genes', 'drugs', 'train_cases', 'validation_cases'],
+                    ['genes', 'drugs', 'train_cases', 'validation_cases', 'wells'],
                     ['genes', 'drugs', 'train_cases', 'validation_cases', 'train_expression',
                      'validation_expression'],
                 ), strict=True)
@@ -233,7 +252,7 @@ def main():
     tenv = read_json(split)
     if tenv['n_genes'] != historical['n_genes'] or any(
             tenv['predictor_files'][key] != str(Path(tenv['input_root']) / path)
-            for key, path in PATHS.items()):
+            for key, path in PREDICTOR_PATHS.items()):
         raise ValueError('unexpected frozen tenv file contract')
 
     cold_root = step05 / 'output/cold-tahoe-ticket79'
@@ -245,9 +264,11 @@ def main():
             or set(cold['forbidden_parents']) != target['validation'] | target['test']):
         raise ValueError('globally cold release has different predecessor inputs or exclusions')
 
+    historical_manifest = read_json(pin(historical_root, 'manifest.json', historical['source_input_sha256']))
+    historical_hashes = {**historical['file_sha256'], 'wells': historical_manifest['files']['wells.csv']}
     write_audit(
         args.output, Release(Path(tenv['input_root']), tenv['file_sha256']),
-        Release(historical_root, historical['file_sha256']), Release(cold_root, cold['file_sha256']),
+        Release(historical_root, historical_hashes), Release(cold_root, cold['file_sha256']),
         tenv['n_genes'], frozen={
             'tenv_split_sha256': source['tenv_split_sha256'],
             'tenv_split_identity': source['tenv_split_identity'],
