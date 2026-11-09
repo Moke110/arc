@@ -16,7 +16,7 @@ from artifacts import SEEDS, read_json, rows, sha256, write_csv, write_json
 from evaluate import grouped_cases, load_array, mean_delta, np, verify_file
 from formal import completed_fit, slot_lock, use_runtime, verify_fit_seal
 from formal_matrix import bind, check_binding
-from metrics import directional_curve, truth_labels
+from metrics import directional_curve, score_group, truth_labels
 from training_inputs import json_hash
 
 SCHEMA = 'step06-validation-baseline-v1'
@@ -237,7 +237,7 @@ def verify_prediction(request, checkpoint, metadata, destination, lineage):
                       (len(cases), request['n_genes']))
 
 
-def score_prediction(request, observed, predicted):
+def score_prediction(request, observed, predicted, *, include_pcc=False):
     cases = case_rows(request)
     groups, _ = grouped_cases(cases)
     shape = (len(cases), request['n_genes'])
@@ -253,10 +253,18 @@ def score_prediction(request, observed, predicted):
         positive, negative = truth_labels(truth)
         row = {'group_id': group, 'drug_key': case['drug_key'], 'dose_um': float(case['dose_um']),
                'n_wells': len(members)}
-        for name, labels, values in (('positive', positive, delta), ('negative', negative, -delta)):
-            ap, _, _ = directional_curve(labels, values)
-            row[f'{name}_ap100'] = float(ap) if np.isfinite(ap) else None
-            row[f'{name}_reason'] = '' if np.isfinite(ap) else 'empty_direction'
+        if include_pcc:
+            values, reasons, _ = score_group(truth, delta, (positive, negative))
+            for field, metric in (('positive_ap100', 'AUPRC_positive@100'),
+                                  ('negative_ap100', 'AUPRC_negative@100'), ('pcc', 'PCC')):
+                reason = field.replace('_ap100', '') + '_reason'
+                row[field] = values[metric] if metric not in reasons else None
+                row[reason] = reasons.get(metric, '')
+        else:
+            for name, labels, values in (('positive', positive, delta), ('negative', negative, -delta)):
+                ap, _, _ = directional_curve(labels, values)
+                row[f'{name}_ap100'] = float(ap) if np.isfinite(ap) else None
+                row[f'{name}_reason'] = '' if np.isfinite(ap) else 'empty_direction'
         group_rows.append(row)
     return group_rows, summarize_groups(group_rows)
 

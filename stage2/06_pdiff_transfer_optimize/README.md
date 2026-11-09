@@ -84,3 +84,35 @@ per-dose and pooled summaries, and the paired CM minus Transfer gaps. The
 same commands accept seeds 42 and 2026 with their own output directories.
 Use `--runtime /absolute/path/to/arc` to locate predecessor artifacts and the
 pinned interpreter from a separate checkout.
+
+## Paired Transfer reference
+
+[ADR 0049](../../docs/adr/0049-perturbdiff-transfer-optimization-comparisons.md)
+uses the Step 05 cold-cm-drug fold 0 original Transfer as a common reference
+at seeds 17, 42 and 2026. Verify, predict and score each seed as separate jobs
+through the dedicated scheduler. From the runtime checkout, use the arc
+interpreter for verification and scoring and the pinned PerturbDiff
+interpreter for prediction.
+
+```bash
+step=stage2/06_pdiff_transfer_optimize
+cli="$step/execution/script/paired_reference.py"
+pdiff="$PWD/stage2/_envs/perturbdiff/bin/python"
+seed=17  # Repeat for 42 and 2026.
+out="$step/output/paired-transfer/reference/seed-$seed"
+
+python "$cli" verify "$out" --seed "$seed"
+plan=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+"$pdiff" "$cli" predict "$out" --seed "$seed" --plan-sha256 "$plan"
+python "$cli" score "$out" --seed "$seed" --plan-sha256 "$plan"
+```
+
+The plan binds the original Tahoe and tenv EMAs and their author validation
+loss histories. It records Tahoe's original exposure to tenv held-out drug
+parents, along with the validation wells, group order, same-plate controls,
+Morgan fingerprints, gene axis and sampling settings. The replay opens only
+predictor inputs. The scoring job joins the sealed validation truth with the
+sealed prediction and writes `scores/per_group.csv`, `scores/per_dose.csv`
+and `scores/scores.json`. Dose summaries contain AUPRC (mean AP@100), PCC,
+valid group counts and counts by undefined reason. The score record
+distinguishes the selected EMA step from actual optimizer steps.
