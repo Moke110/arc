@@ -11,9 +11,15 @@ from benchmark import (
     Split, checked_test_role, fit_mean, freeze_split, json_bytes, load_mean, publish_artifact,
     publish_json, score, verify_artifact, verify_replay,
 )
+from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
 
 
 def fit(args, corpus, split):
+    if args.model == "PCA":
+        if args.output is None:
+            raise ValueError("PCA fit requires --output for the new model set")
+        return fit_pca(corpus, split, args.output, args.batch_size, args.device)
+    output = args.output or DEFAULT_MEAN
     mean = fit_mean(corpus, split, args.batch_size)
     if not np.isfinite(mean).all():
         raise ValueError("training-gene mean is nonfinite")
@@ -25,21 +31,29 @@ def fit(args, corpus, split):
         "latent_tokens": None,
         "latent_scalars": None,
     }
-    with publish_artifact(args.output, corpus, split, "mean", metadata) as directory:
+    with publish_artifact(output, corpus, split, "mean", metadata) as directory:
         np.save(directory / "mean.npy", mean, allow_pickle=False)
-    return verify_artifact(args.output, corpus, split)
+    return verify_artifact(output, corpus, split)
 
 
 def score_artifact(args, corpus, split):
     checked_test_role(corpus, args.role, args.allow_test)
-    record, mean = load_mean(args.artifact, corpus, split)
-    result = score(corpus, split, args.role, lambda values: np.broadcast_to(mean, values.shape),
-                   mean, args.batch_size, allow_test=args.allow_test)
+    record = verify_artifact(args.artifact, corpus, split)
+    if record["model_id"] == "mean":
+        reference, mean = load_mean(args.artifact, corpus, split)
+        predict = lambda values: np.broadcast_to(mean, values.shape)
+    elif record["model_id"] in PCA_MODEL_IDS:
+        reference, mean = load_mean(args.mean_artifact, corpus, split)
+        predict = pca_predictor(args.artifact, record)
+    else:
+        raise ValueError(f"unsupported model: {record['model_id']}")
+    result = score(corpus, split, args.role, predict, mean, args.batch_size,
+                   allow_test=args.allow_test)
     return {
         **result,
         "model_id": record["model_id"],
         "artifact_manifest_sha256": record["artifact_manifest_sha256"],
-        "reference_manifest_sha256": record["artifact_manifest_sha256"],
+        "reference_manifest_sha256": reference["artifact_manifest_sha256"],
         "provenance": record["provenance"],
         "replay_tolerance": REPLAY_TOLERANCE,
     }
@@ -56,9 +70,12 @@ def main():
         if name != "freeze-split":
             command.add_argument("--batch-size", type=int, default=64)
         if name == "fit":
-            command.add_argument("--output", type=Path, default=DEFAULT_MEAN)
+            command.add_argument("--model", choices=("mean", "PCA"), default="mean")
+            command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
+            command.add_argument("--output", type=Path)
         if name in {"score", "reload"}:
             command.add_argument("--artifact", type=Path, default=DEFAULT_MEAN)
+            command.add_argument("--mean-artifact", type=Path, default=DEFAULT_MEAN)
             command.add_argument("--role", choices=ROLES, default="validation")
             command.add_argument("--allow-test", action="store_true")
         if name == "score":

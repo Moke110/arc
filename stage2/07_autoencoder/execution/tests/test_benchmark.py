@@ -127,6 +127,51 @@ class BenchmarkTest(unittest.TestCase):
         scores = score(corpus, split, role, lambda values: values, np.full(3, 5), 2)
         self.assertIsNone(scores["sources"]["tenv"]["relative_squared_error"])
 
+    def test_pca_fit_and_independent_reload_at_each_rank(self):
+        genes = 577
+        center = np.linspace(2, 3, genes, dtype=np.float32)
+        offsets = np.zeros(genes, dtype=np.float32)
+        offsets[[0, 31, 32, 127, 128, 511, 512]] = [1, 2, 3, 4, 5, 6, 7]
+        (self.release / "genes.csv").write_text(
+            "symbol,hgnc_id\n" + "".join(f"G{i},HGNC:{i + 1}\n" for i in range(genes))
+        )
+        # Diagonal training covariance with eigenvalue gaps at the three cutoffs.
+        axes = np.diag(np.repeat(np.array([1, 0.75, 0.5, 0.25], dtype=np.float32),
+                                 [32, 96, 384, genes - 512]))
+        for source, scale in (("tahoe", 1), ("tenv", 2)):
+            ranked = sorted("ABC", key=lambda plate: hashlib.sha256(
+                json.dumps([20261109, source, plate]).encode()).digest())
+            values = np.vstack((center + scale * offsets, center - offsets,
+                                center + axes, center - axes))
+            self.expressions[source] = values
+            np.save(self.release / f"{source}_expression.npy", values)
+            with (self.release / f"{source}_profiles.csv").open("w", newline="") as handle:
+                writer = csv.writer(handle)
+                writer.writerow(["source_row", "profile_id", "plate", "is_control"])
+                for index in range(len(values)):
+                    writer.writerow([index, f"{source}-{index}", ranked[min(index, 2)], False])
+        self.write_manifest()
+        self.cli("freeze-split")
+        self.cli("fit", "--output", self.artifact)
+        models = self.root / "pca"
+        self.cli("fit", "--model", "PCA", "--output", models)
+        for rank in (32, 128, 512):
+            with self.subTest(rank=rank):
+                model_id = f"PCA_{rank}"
+                artifact = models / model_id
+                self.assertEqual(np.load(artifact / "components.npy").shape, (rank, genes))
+                np.testing.assert_allclose(np.load(artifact / "mean.npy"), center, atol=1e-7)
+                args = ["--artifact", artifact, "--mean-artifact", self.artifact]
+                path = self.root / f"{model_id}.json"
+                scores = self.cli("score", *args, "--output", path)
+                self.assertEqual(scores["model_id"], model_id)
+                self.assertEqual(scores, self.cli("reload", *args, "--expected", path))
+                for source, scale in (("tahoe", 1), ("tenv", 2)):
+                    result = scores["sources"][source]
+                    self.assertEqual(result["profiles"], 1)
+                    expected_mse = float(np.square(offsets[rank:]).sum()) * scale ** 2 / genes
+                    self.assertAlmostEqual(result["mse"], expected_mse, places=6)
+
     def test_refuses_changed_split_and_release(self):
         self.cli("freeze-split")
         frozen = json.loads(self.split_path.read_text())

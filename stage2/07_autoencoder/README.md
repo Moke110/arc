@@ -75,3 +75,29 @@ admission measurements and peak RSS.
 | --- | ---: | ---: | ---: | ---: |
 | Tahoe | 9,600 | 0.978971 | 0.074663 | 1.0 |
 | tenv | 843 | 0.184086 | 0.512094 | 1.0 |
+
+### PCA reconstruction
+
+One joint training fit estimates the per-gene center and a 512-component basis.
+The solver starts with a Gaussian sketch seeded at 20261109, oversamples by 64,
+and applies eight streamed covariance products with reduced QR after each pass.
+Rayleigh–Ritz orders the resulting directions by variance. The covariance
+products use float32 at the highest matmul precision. Each artifact carries
+its exact prefix of the basis and the fitted center. Inference projects the
+centered profile, maps it back into expression space and adds the center.
+
+```bash
+cli=stage2/07_autoencoder/execution/script/reconstruct.py
+python "$cli" fit --model PCA --device cuda --batch-size 512 --output /tmp/arc-pca
+for rank in 32 128 512; do
+  artifact="stage2/07_autoencoder/output/models/PCA_$rank"
+  scores="/tmp/arc-pca-validation-$rank.json"
+  python "$cli" score --artifact "$artifact" --role validation --output "$scores"
+  python "$cli" reload --artifact "$artifact" --role validation --expected "$scores"
+done
+```
+
+The example scores the published artifacts. To validate a new fit, use the
+rank directories written under `/tmp/arc-pca`. CPU scoring and replay use the
+same published training-gene mean reference as the other methods. Use
+`--mean-artifact` if the reference was fitted to a fixture or another release.

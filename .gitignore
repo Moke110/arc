@@ -160,7 +160,7 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 # Keep recovery bytes local; track only the canonical formal JSON records.
 /stage2/03_modes_tenv/execution/.formal-v2-generation/
 
-# Stage 2 Step 07 frozen membership and fitted training-gene mean.
+# Stage 2 Step 07 frozen membership and fitted mean and PCA artifacts.
 !/stage2/07_autoencoder/output/
 /stage2/07_autoencoder/output/*
 !/stage2/07_autoencoder/output/split.json
@@ -170,3 +170,10 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 /stage2/07_autoencoder/output/models/mean/*
 !/stage2/07_autoencoder/output/models/mean/manifest.json
 !/stage2/07_autoencoder/output/models/mean/mean.npy
+!/stage2/07_autoencoder/output/models/PCA_32/
+!/stage2/07_autoencoder/output/models/PCA_128/
+!/stage2/07_autoencoder/output/models/PCA_512/
+/stage2/07_autoencoder/output/models/PCA_*/*
+!/stage2/07_autoencoder/output/models/PCA_*/manifest.json
+!/stage2/07_autoencoder/output/models/PCA_*/mean.npy
+!/stage2/07_autoencoder/output/models/PCA_*/components.npy
