@@ -65,3 +65,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0045](0045-stage3-morgan-direction-baseline.md) | Morgan baseline and shared shallow-MLP comparison with future transcriptomic Δ phenotype predictors |
 | [0046](0046-perturbdiff-standalone-training.md) | One PerturbDiff hyperparameter step with separate Tahoe and tenv studies |
 | [0047](0047-perturbdiff-tahoe-transfer-to-tenv.md) | Tahoe transfer comparison across three tenv split regimes |
+| [0048](0048-perturbdiff-transfer-diagnosis.md) | Paired controls for the Tahoe transfer gap and Step 06 output placement |
