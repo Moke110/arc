@@ -112,8 +112,8 @@
     "ticket": 83,
     "publisher_commit": "8c9cb8129a8bae867589d26cdd3ccb8137e38a28",
     "manifest": {
-      "path": "execution/output/ticket83-release/publication.json",
-      "sha256": "503c58ec87279f097febcf9c810a5ec32c65fea3c7526d8079c64366e3076b4a"
+      "path": "execution/output/figure-labels-release/publication.json",
+      "sha256": "fddfb1e19678bf02e5beddea2816dd23e3b4d04584997d28ed9de0c9f30c3779"
     },
     "tracked_manifest_path": "execution/formal_record/publication.json",
     "tracked_artifact_paths": {
@@ -131,7 +131,7 @@
       "README.md": "execution/formal_record/results.md"
     },
     "generated_report": {
-      "path": "execution/output/ticket83-release/README.md",
+      "path": "execution/output/figure-labels-release/README.md",
       "sha256": "e956518ce632b43f1c17f2734ff1608d7fc220f0bf2dbaf2db14eabc5be9fd60"
     },
     "score_queue_status": {
@@ -167,16 +167,16 @@
       }
     },
     "render": {
-      "path": "execution/output/ticket83-render.time",
-      "sha256": "64ffac934320c6a82efd0e67fd31dfed056c966f410f35655afffe4adf5efa05",
-      "elapsed_seconds": 2.58,
-      "peak_rss_kib": 193076
+      "path": "execution/output/figure-labels-render.time",
+      "sha256": "70884e176c25389229bcc3df405ebd42d6388120bb2e07e7941bd20916adf827",
+      "elapsed_seconds": 5.05,
+      "peak_rss_kib": 193268
     },
     "figure_replay": {
-      "path": "execution/output/ticket83-render-replay.time",
-      "sha256": "60397909528c166ac22131efc3475f2a9f0483cc0867729f27515a6b5661ebae",
-      "elapsed_seconds": 2.51,
-      "peak_rss_kib": 193204,
+      "path": "execution/output/figure-labels-replay.time",
+      "sha256": "2e04ffb2aa5cce9e236d5ff3eb0cdcbcac20a774272e61a63e06e8cd3aeaaa16",
+      "elapsed_seconds": 2.52,
+      "peak_rss_kib": 192984,
       "byte_identical": true
     }
   }

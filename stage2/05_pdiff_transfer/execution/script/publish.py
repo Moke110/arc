@@ -22,7 +22,6 @@ from transfer import RECORD, REPO
 SHARED = 'cold-shared'
 SCORE_SCHEMA = 'step05-scores-v1'
 PUBLICATION_SCHEMA = 'step05-publication-v1'
-MODELS = (*matrix.ARMS, *REFERENCES)
 COPY_FILES = ('per_run.csv', 'learning_points.json', 'pr_points.json', 'undefined_reasons.json')
 COMPLETE = ('completed', 'reused')
 
@@ -395,7 +394,22 @@ def paired_ap100(runs, regime):
             'mean_difference': sum(differences) / len(SEEDS) if len(differences) == len(SEEDS) else None}
 
 
-COLORS = dict(zip(MODELS, ('#2166ac', '#d87a27', '#24804b', '#8255a2', '#8a8e95', '#4d5258')))
+FIGURE_LABELS = {
+    'no_change': 'no-change',
+    'delta_mean': 'delta-mean',
+    'Tahoe': 'Tahoe',
+    'CM': 'CM',
+    'Mix': 'Pooled',
+    'Transfer': 'Transfer',
+}
+COLORS = {
+    'no_change': '#8a8e95',
+    'delta_mean': '#4d5258',
+    'Tahoe': '#d87a27',
+    'CM': '#2166ac',
+    'Mix': '#8255a2',
+    'Transfer': '#24804b',
+}
 SEED_COLORS = dict(zip(SEEDS, ('#2166ac', '#d87a27', '#8255a2')))
 METRIC_TITLES = ('Positive AP@100', 'Negative AP@100', 'Positive recall at P80',
                  'Negative recall at P80', 'PCC', 'Spearman', 'RMSE', 'R²')
@@ -417,13 +431,13 @@ def save_figure(plt, figure, path):
 def draw_learning(plt, data, path):
     figure, axes = plt.subplots(3, 4, figsize=(12.8, 8.7))
     figure.suptitle('Validation selection by regime and training stage', fontsize=15)
-    titles = ('Tahoe source', 'CM target', 'Transfer target', 'Mix · pooled fit')
+    learned_arms = [arm for arm in FIGURE_LABELS if arm in matrix.ARMS]
     for index, regime in enumerate(matrix.REGIMES):
-        for column, (title, arm) in enumerate(zip(titles, ('Tahoe', 'CM', 'Transfer', 'Mix'))):
+        for column, arm in enumerate(learned_arms):
             axis = axes[index, column]
             figure_axis(axis)
             if not index:
-                axis.set_title(title)
+                axis.set_title(FIGURE_LABELS[arm])
             if not column:
                 axis.set_ylabel(f'{regime}\nNative loss')
             if index == len(matrix.REGIMES) - 1:
@@ -464,9 +478,9 @@ def draw_metrics(plt, runs, path):
                 axis.set_title(title, fontsize=10)
             if not column:
                 axis.set_ylabel(regime)
-            axis.set_xlim(-0.5, len(MODELS) - 0.5)
-            axis.set_xticks(range(len(MODELS)), [])
-            for position, arm in enumerate(MODELS):
+            axis.set_xlim(-0.5, len(FIGURE_LABELS) - 0.5)
+            axis.set_xticks(range(len(FIGURE_LABELS)), [])
+            for position, arm in enumerate(FIGURE_LABELS):
                 values = [row[metric] for row in selected if row['model'] == arm and row[metric] is not None]
                 if values:
                     axis.scatter(position + np.linspace(-0.12, 0.12, len(values)) if len(values) > 1 else [position],
@@ -474,8 +488,9 @@ def draw_metrics(plt, runs, path):
                     axis.hlines(np.mean(values), position - 0.27, position + 0.27,
                                 color=COLORS[arm], lw=1.7)
     from matplotlib.lines import Line2D
-    handles = [Line2D([], [], marker='o', color=color, label=arm) for arm, color in COLORS.items()]
-    figure.legend(handles=handles, loc='lower center', ncol=len(MODELS), frameon=False)
+    handles = [Line2D([], [], marker='o', color=COLORS[arm], label=label)
+               for arm, label in FIGURE_LABELS.items()]
+    figure.legend(handles=handles, loc='lower center', ncol=len(handles), frameon=False)
     save_figure(plt, figure, path)
 
 
@@ -493,7 +508,7 @@ def draw_pr(plt, record, path):
                 axis.set_ylabel(f'{regime}\nPrecision')
             if index == len(matrix.REGIMES) - 1:
                 axis.set_xlabel('Recall')
-            for arm in MODELS:
+            for arm in FIGURE_LABELS:
                 curves = [row['precision'][direction] for row in selected
                           if row['model'] == arm and row['precision'][direction] is not None]
                 if len(curves) > 1:
@@ -503,9 +518,9 @@ def draw_pr(plt, record, path):
                     axis.plot(record['recall'], np.mean(curves, axis=0), color=COLORS[arm], lw=1.5,
                               ls='--' if arm in REFERENCES else '-')
     from matplotlib.lines import Line2D
-    handles = [Line2D([], [], color=color, label=arm, ls='--' if arm in REFERENCES else '-')
-               for arm, color in COLORS.items()]
-    figure.legend(handles=handles, loc='lower center', ncol=len(MODELS), frameon=False)
+    handles = [Line2D([], [], color=COLORS[arm], label=label, ls='--' if arm in REFERENCES else '-')
+               for arm, label in FIGURE_LABELS.items()]
+    figure.legend(handles=handles, loc='lower center', ncol=len(handles), frameon=False)
     save_figure(plt, figure, path)
 
 
