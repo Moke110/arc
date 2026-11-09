@@ -186,3 +186,17 @@ Use the target commands above with `--arm all-half` and
 `out="$step/output/paired-transfer/all-half/seed-$seed"`.
 The selected EMA and its fit seal are under
 `output/checkpoints/06-paired-all-half-fold-0-seed-$seed/fit/`.
+
+## AdaLN-only fine-tuning
+
+The `adaLN-only` arm loads the original Tahoe bridge and trains only the
+treated and control adaLN modulation weights and biases in every DiT
+block and both output heads. It uses the original `2e-4` base learning
+rate and native schedule. The fit record names the trainable parameters
+and their optimizer groups. Frozen parameters, including the dose
+embeddings, retain their bridge values in the loss-selected EMA.
+
+Use the target commands above with `--arm adaLN-only` and
+`out="$step/output/paired-transfer/adaLN-only/seed-$seed"`.
+The selected EMA and fit seal are under
+`output/checkpoints/09-paired-adaLN-only-fold-0-seed-$seed/fit/`.

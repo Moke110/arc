@@ -17,7 +17,7 @@ from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-target-v1'
 PAIR_SCHEMA = 'step06-paired-differences-v1'
-CHECKPOINT_NUMBERS = {'random': '04', 'log': '05', 'all-half': '06'}
+CHECKPOINT_NUMBERS = {'random': '04', 'log': '05', 'all-half': '06', 'adaLN-only': '09'}
 ORIGINAL_BASE_LR = 2e-4
 HALF_BASE_LR = 1e-4
 METRICS = ('mean_ap100', 'pcc')
@@ -47,6 +47,8 @@ def target_source(root, arm, original, reference_digest):
 
 
 def resolve_config(arm, original):
+    if arm == 'adaLN-only' and original['learning_rate'] != ORIGINAL_BASE_LR:
+        raise ValueError('adaLN-only requires the original Transfer base learning rate of 2e-4')
     if arm == 'all-half':
         if original['learning_rate'] != ORIGINAL_BASE_LR:
             raise ValueError('all-half requires the original Transfer base learning rate of 2e-4')
@@ -112,6 +114,12 @@ def verify_training(arm, training):
         groups = training['optimizer_groups']
         if not groups or any(group['base_lr'] != HALF_BASE_LR for group in groups):
             raise ValueError('all-half requires a base learning rate of 1e-4 for every optimizer group')
+    if arm == 'adaLN-only':
+        groups = training['optimizer_groups']
+        optimized = sorted(name for group in groups for name in group['parameters'])
+        if (not optimized or optimized != sorted(training['adaln_parameters'])
+                or any(group['base_lr'] != ORIGINAL_BASE_LR for group in groups)):
+            raise ValueError('adaLN-only requires the modulation projections alone at 2e-4')
 
 
 def selected_fit(plan, original, digest):
@@ -130,6 +138,23 @@ def selected_fit(plan, original, digest):
             'metadata': {key: run[key] for key in reference.base.CHECKPOINT_KEYS}}
 
 
+def freeze_for_adaln(model):
+    dit = model.native.model
+    projections = [projection
+                   for layer in dit.blocks
+                   for projection in (layer.block.adaLN_modulation[-1], layer.block.control_adaLN_modulation[-1])]
+    projections.extend((dit.final_layer.adaLN_modulation[-1], dit.control_final_layer.adaLN_modulation[-1]))
+    allowed = {id(parameter) for layer in projections for parameter in (layer.weight, layer.bias)}
+    selected = []
+    for name, parameter in model.named_parameters():
+        parameter.requires_grad_(id(parameter) in allowed)
+        if parameter.requires_grad:
+            selected.append(name)
+    if len(selected) != 2 * len(projections):
+        raise ValueError('each adaLN projection requires its own weight and bias')
+    return selected
+
+
 def initialize(model, plan, recipient, training):
     if plan['arm'] == 'log':
         from log_dose import load_initialization as load_log_initialization
@@ -137,6 +162,10 @@ def initialize(model, plan, recipient, training):
         return load_log_initialization(model, plan['source'], recipient)
     bridge = plan['source']['bridge']
     directory = Path(bridge['path']).parent
+    if plan['arm'] == 'adaLN-only':
+        evidence = load_initialization(model, directory, bridge['sha256'], recipient)
+        training['adaln_parameters'] = freeze_for_adaln(model)
+        return evidence
     if plan['arm'] == 'all-half':
         return load_initialization(model, directory, bridge['sha256'], recipient)
     _, evidence = load_dose_reset(model, directory, bridge['sha256'], recipient)
@@ -215,6 +244,16 @@ def fit(runtime, plan, original, digest):
                         or state_digest(self._average_model.module.state_dict()) != state_digest(model.state_dict())):
                     raise ValueError('fresh EMA must start at the initialized model state')
                 training['ema_start_step'] = trainer.global_step
+
+            def on_validation_epoch_start(self, trainer, model):
+                if plan['arm'] == 'adaLN-only':
+                    # The EMA formula can round a frozen value even when both inputs are identical.
+                    averaged = dict(self._average_model.module.named_parameters())
+                    with native.torch.no_grad():
+                        for name, parameter in model.named_parameters():
+                            if not parameter.requires_grad:
+                                averaged[name].copy_(parameter)
+                return super().on_validation_epoch_start(trainer, model)
 
         def fit_with_initialization(runtime, request, recipe, directory):
             with patch.multiple(native, JointPerturbDiff=model_class(native, plan, init_model),

@@ -16,7 +16,7 @@ from artifacts import read_json, sha256, write_json
 from formal_matrix import bind
 from native_log_dose_fixture import source_release
 from native_replication_fixture import source_checkpoint, target_request
-from tahoe_bridge import (CHEMICAL_LOOKUP, DOSE_LOOKUP, dose_layout, load_initialization,
+from tahoe_bridge import (CHEMICAL_LOOKUP, DOSE_LOOKUP, DOSE_ROWS, dose_layout, load_initialization,
                           seal_initialization, state_digest)
 from training_inputs import json_hash
 
@@ -87,7 +87,40 @@ def fixture(runtime, root, arm='random'):
                     optimizer_updates.extend(current != initial for current, initial
                                              in zip(group_digests(optimizer), before, strict=True))
             optimizer.register_step_post_hook(observe_step)
+        if arm == 'adaLN-only':
+            observe_adaln(optimizer)
         return optimizer
+
+    adaln_parameters, frozen_parameters = {}, {}
+    adaln_initial, adaln_updates = {}, []
+
+    class ObservedTarget(native.JointPerturbDiff):
+        def __init__(self, inputs, config, directory):
+            super().__init__(inputs, config, directory)
+            if arm == 'adaLN-only':
+                modules = [
+                    f'native.model.blocks.{i}.block.{projection}'
+                    for i in range(len(self.native.model.blocks))
+                    for projection in ('adaLN_modulation', 'control_adaLN_modulation')
+                ]
+                modules.extend(('native.model.final_layer.adaLN_modulation',
+                                'native.model.control_final_layer.adaLN_modulation'))
+                names = {f'{module}.1.{parameter}' for module in modules for parameter in ('weight', 'bias')}
+                adaln_parameters.update({name: self.get_parameter(name) for name in sorted(names)})
+                frozen_parameters.update({name: value for name, value in self.named_parameters() if name not in names})
+
+    def observe_adaln(optimizer):
+        assert {id(value) for group in optimizer.param_groups for value in group['params']} == {
+            id(value) for value in adaln_parameters.values()
+        }
+        assert all(not value.requires_grad for value in frozen_parameters.values())
+        adaln_initial.update(trainable=state_digest(adaln_parameters), frozen=state_digest(frozen_parameters))
+
+        def observe_step(_optimizer, _args, _kwargs):
+            assert state_digest(frozen_parameters) == adaln_initial['frozen']
+            adaln_updates.append(state_digest(adaln_parameters) != adaln_initial['trainable'])
+
+        optimizer.register_step_post_hook(observe_step)
 
     cases = ref.base.case_rows(ref.base.inference_request(request))
     frozen = {'request': ref.base.inference_request(request), 'fold': 0, 'regime': ref.REGIME,
@@ -142,7 +175,8 @@ def fixture(runtime, root, arm='random'):
         args.extend(['--plan-sha256', sha256(target_plan)])
         with (patch.object(native, 'validate', side_effect=[(loss, [loss], [1])
                                                             for loss in (.7, .5, .5, .8, .7, .6, .5)]),
-              patch.object(native, 'get_optimizer', target_optimizer)):
+              patch.object(native, 'get_optimizer', target_optimizer),
+              patch.object(native, 'JointPerturbDiff', ObservedTarget)):
             cli.main(['fit', *args])
         for phase in ('fit', 'predict', 'predict', 'score', 'score'):
             cli.main([phase, *args])
@@ -175,6 +209,23 @@ def fixture(runtime, root, arm='random'):
         assert initialization['reset_doses_um'] == [.2, 1., 10.]
         assert initialization['native_positive_rows_sha256'] == initialization['restored_positive_rows_sha256']
         assert initialization['mapped_state_sha256'] != initialization['reset_state_sha256']
+    elif arm == 'adaLN-only':
+        target_plan = read_json(target_root / 'plan.json')
+        assert target_plan['config'] == config
+        assert Path(target_plan['checkpoint_slot']).name == '09-paired-adaLN-only-fold-0-seed-17'
+        assert initialization['mapped_state_sha256'] == read_json(bridge)['mapped_state_sha256']
+        groups = fit['training_initial_state']['optimizer_groups']
+        for group in groups:
+            assert group['base_lr'] == 2e-4
+            assert group['weight_decay'] == (config['weight_decay'] if group['parameters'][0].endswith('.weight') else 0)
+        assert sorted(name for group in groups for name in group['parameters']) == sorted(adaln_parameters)
+        assert len(adaln_updates) == 6 and any(adaln_updates)
+        checkpoint = native.torch.load(scores['selection']['checkpoint']['path'], map_location='cpu',
+                                       weights_only=True, mmap=True)
+        weights = checkpoint['model_state']
+        assert DOSE_ROWS in frozen_parameters
+        assert state_digest({name: weights[name] for name in frozen_parameters}) == adaln_initial['frozen']
+        assert state_digest({name: weights[name] for name in adaln_parameters}) != adaln_initial['trainable']
     else:
         target_plan = read_json(target_root / 'plan.json')
         assert target_plan['config'] == {**config, 'learning_rate': 1e-4}
@@ -199,7 +250,7 @@ def fixture(runtime, root, arm='random'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', required=True, type=Path)
-    parser.add_argument('--arm', choices=('random', 'log', 'all-half'), default='random')
+    parser.add_argument('--arm', choices=('random', 'log', 'all-half', 'adaLN-only'), default='random')
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
         fixture(args.runtime.resolve(), Path(temp), args.arm)
