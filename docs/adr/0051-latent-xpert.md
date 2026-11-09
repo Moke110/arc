@@ -2,6 +2,10 @@
 
 **Status:** accepted (2026-11-09).
 
+The original implementation and its evidence are described below.
+[ADR 0052](0052-stage2-autoencoder-reconstruction-boundary.md) records the revised
+step boundary and reconstruction references.
+
 `stage2/07_lxpert/` separates transcriptome reconstruction from perturbation prediction. The transcriptome autoencoder learns to reconstruct profiles on the ordered 18,164-gene CM axis. The encoder uses 512 latent queries that cross-attend to expression tokens. The decoder uses gene-position queries that cross-attend to the latent tokens and reconstruct one expression value per gene. Fixed positional embeddings keyed to the frozen axis provide the sole gene identity signal, so axis order forms part of the model contract.
 
 Use 128 channels per latent token and eight attention heads. The bottleneck limits the attention sequence to 512 tokens. It contains 65,536 scalar values per profile.

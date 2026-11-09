@@ -348,8 +348,15 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 
 ### Stage 2 benchmark
 
+**Transcriptome autoencoder**:
+The Step 07 model that encodes a measured expression profile and reconstructs that same profile on the frozen CM gene axis.
+
+**Training-gene mean** (`mean`):
+The Step 07 reconstruction reference that returns one mean expression value per gene estimated from training profiles alone.
+_Avoid_: mean Δ, DMSO mean
+
 **Latent XPert** (`latent_XPert`):
-The Stage 2 XPert-derived predictor that transforms a baseline transcriptome in the latent space of a separately trained transcriptome autoencoder and predicts the drug response on the full CM gene axis.
+The XPert-derived predictor considered for Step 08. It transforms a baseline transcriptome in the latent space of a separately trained transcriptome autoencoder and predicts the drug response on the full CM gene axis.
 
 **Tenv model boundary**:
 The parameters updateable together in one backward pass for the tenv prediction
