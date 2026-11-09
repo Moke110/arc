@@ -2,7 +2,8 @@
 
 **Status:** accepted (2026-11-09).
 
-The original implementation and its evidence are described below.
+The [original implementation and evidence](../../stage2/_archive/07_lxpert/README.md)
+are described below.
 [ADR 0052](0052-stage2-autoencoder-reconstruction-boundary.md) records the revised
 step boundary and reconstruction references.
 

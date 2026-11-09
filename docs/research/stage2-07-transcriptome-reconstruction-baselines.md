@@ -6,7 +6,7 @@
 
 Fu 等的 **ReconEval**（2026 年 bioRxiv 预印本）把三个实验分开：完整表达输入的端到端重建、冻结基础模型编码器后训练独立解码器、潜空间经扰动模型变换后再解码。端到端比较 PCA、确定性 AE 和 scVI 类 VAE。冻结编码器比较 State SE、scConcept、scGPT、SCimilarity，分别搭配 MLP、kNN 或 Transformer 解码器，并与相同标量维数的 PCA 对比。指标包括单细胞 MSE、群体均值 R²、能量距离，以及差异表达、共表达和通路信号等。该研究报告低维时确定性 AE 的重建表现较好，PCA 随维数升高变得有竞争力，冻结表示的重建表现依赖解码器。这些结论来自其数据和任务设置。[ReconEval 原文](https://www.biorxiv.org/content/10.64898/2026.06.15.731445v1.full) · [官方实现](https://github.com/theislab/ReconEval)
 
-ReconEval 先归一化到 10,000 再做 log1p，但模型在各数据集自己的筛选基因集训练和测试。Tahoe-100M 是按板选 HVG 加细胞周期标记，共 **6,087** 个基因。PBMC-10M 为 **5,412** 个，LuCA 为 **5,983** 个。因此可借用它的评估设计，Step 07 仍需在自己的 18,164 基因轴验证重建。ReconEval 的 Tahoe 使用单细胞数据，Step 07 使用伪汇总表达谱。[ReconEval Methods](https://www.biorxiv.org/content/10.64898/2026.06.15.731445v1.full) · [Step 07 输入发布](../../stage2/07_lxpert/README.md#expression-input-release)
+ReconEval 先归一化到 10,000 再做 log1p，但模型在各数据集自己的筛选基因集训练和测试。Tahoe-100M 是按板选 HVG 加细胞周期标记，共 **6,087** 个基因。PBMC-10M 为 **5,412** 个，LuCA 为 **5,983** 个。因此可借用它的评估设计，Step 07 仍需在自己的 18,164 基因轴验证重建。ReconEval 的 Tahoe 使用单细胞数据，Step 07 使用伪汇总表达谱。[ReconEval Methods](https://www.biorxiv.org/content/10.64898/2026.06.15.731445v1.full) · [Step 07 输入发布](../../stage2/_archive/07_lxpert/README.md#expression-input-release)
 
 ## 论文中实际用的输入和目标
 
@@ -21,7 +21,7 @@ ReconEval 先归一化到 10,000 再做 log1p，但模型在各数据集自己�
 
 ## Step 07 可比的评估设计
 
-**主实验采用完整输入的独立重建。** 同一条表达谱输入和作为真值，所有可学习方法在同一训练板上拟合，在保留板用同一表达变换和两源共有的基因轴评分。纳入处理谱和对照谱，无需按 DMSO 可匹配性筛选样本。原发布因 Ensembl ID 差异漏掉了 Tahoe 的 FAM153B，下一版按已核实的跨库映射恢复该基因，实测零保留。此前全量 refit 权重已经见过这些板。可用它做样本内诊断，保留板结果则需用排除了这些板的训练权重，额外划出独立测试板可把调参与最终评估分开。[Step 07 输入与训练](../../stage2/07_lxpert/README.md) · [基因轴决定](../adr/0052-stage2-autoencoder-reconstruction-boundary.md) · [ReconEval 划分与评估](https://www.biorxiv.org/content/10.64898/2026.06.15.731445v1.full)
+**主实验采用完整输入的独立重建。** 同一条表达谱输入和作为真值，所有可学习方法在同一训练板上拟合，在保留板用同一表达变换和两源共有的基因轴评分。纳入处理谱和对照谱，无需按 DMSO 可匹配性筛选样本。原发布因 Ensembl ID 差异漏掉了 Tahoe 的 FAM153B，下一版按已核实的跨库映射恢复该基因，实测零保留。此前全量 refit 权重已经见过这些板。可用它做样本内诊断，保留板结果则需用排除了这些板的训练权重，额外划出独立测试板可把调参与最终评估分开。[Step 07 输入与训练](../../stage2/_archive/07_lxpert/README.md) · [基因轴决定](../adr/0052-stage2-autoencoder-reconstruction-boundary.md) · [ReconEval 划分与评估](https://www.biorxiv.org/content/10.64898/2026.06.15.731445v1.full)
 
 | 建议对照 | 拟合和推理口径 | 用途 |
 |---|---|---|
@@ -34,4 +34,4 @@ ReconEval 先归一化到 10,000 再做 log1p，但模型在各数据集自己�
 
 保留逐谱 PCC 和 RMSE，明确按谱等权和恒定向量的处理，并按 Tahoe、tenv 分报。补充跨谱的逐基因 PCC，或相对训练均值的残差误差与重建方差，检查是否只恢复了平均表达轮廓。若另做遮盖，只对共同遮盖的已测位置计分，区分实测零和非零，所有方法看到同一份遮盖输入。该实验可比较逐基因训练均值、带缺失推断的低秩重建和遮盖 AE。若另做读深恢复，固定降深输入与高深真值，单报相应基线。[ReconEval 指标](https://www.biorxiv.org/content/10.64898/2026.06.15.731445v1.full) · [xTrimoGene 遮盖策略](https://proceedings.neurips.cc/paper_files/paper/2023/file/db68f1c25678f72561ab7c97ce15d912-Paper-Conference.pdf) · [scFoundation 增强实验](https://github.com/biomap-research/scFoundation#read-depth-enhancement)
 
-现有图中的 `no_change` 使用同板实测 DMSO，`mean` 使用该 DMSO 加训练平均 Δ。两者都使用了完整表达重建设定之外的样本。它们对应控制到处理的预测问题，不能隔离当前模型的编码解码能力。本地在固定抽取的 96 条 tenv 处理谱上核对过一个更贴近任务的对照。正式 AE 的 PCC/RMSE 为 0.555/0.337，仅使用 3,414 条匹配训练处理谱估计的逐基因均值为 0.825/0.221。这个样本内探针说明，换掉 DMSO 对照后仍有重建差距。正式结论需等同划分、全覆盖的 PCA 和 MLP AE 对照。对架构的优先检验是同数据和同预算的 PCA 与 MLP AE，再决定是否引入可学习基因身份或遮盖训练。[现有图](../../stage2/07_lxpert/output/latent/metrics.png) · [Step 07 的重建与处理分支](../adr/0051-latent-xpert.md)
+现有图中的 `no_change` 使用同板实测 DMSO，`mean` 使用该 DMSO 加训练平均 Δ。两者都使用了完整表达重建设定之外的样本。它们对应控制到处理的预测问题，不能隔离当前模型的编码解码能力。本地在固定抽取的 96 条 tenv 处理谱上核对过一个更贴近任务的对照。正式 AE 的 PCC/RMSE 为 0.555/0.337，仅使用 3,414 条匹配训练处理谱估计的逐基因均值为 0.825/0.221。这个样本内探针说明，换掉 DMSO 对照后仍有重建差距。正式结论需等同划分、全覆盖的 PCA 和 MLP AE 对照。对架构的优先检验是同数据和同预算的 PCA 与 MLP AE，再决定是否引入可学习基因身份或遮盖训练。[现有图](../../stage2/_archive/07_lxpert/output/latent/metrics.png) · [Step 07 的重建与处理分支](../adr/0051-latent-xpert.md)

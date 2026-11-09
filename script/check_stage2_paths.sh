@@ -4,7 +4,8 @@
 # Why this exists
 #   Ticket #15/#14 folded `stage2/02_cm_data/` and `stage2/04_tahoe_data/` into
 #   `stage2/02_dataset_corpus/` (ADR 0033).  A live Python/bash/R file that still
-#   points at either retired step is a dead path waiting to fail at runtime.  The
+#   points at a retired step is a dead path waiting to fail at runtime.
+#   ADR 0052 retired the `stage2/07_lxpert/` runtime.  The
 #   `datasets-1` bundle name is retired too, but only as a *non-frozen* path
 #   component: the frozen v1 evidence under
 #   `stage2/_frozen/cm-data-v1/datasets-1/` keeps its historical name on purpose.
@@ -17,7 +18,7 @@
 #   1. Takes the tracked file list from `git ls-files stage2` and keeps the
 #      executable-code suffixes `*.py`, `*.sh`, `*.R`, excluding the archival
 #      trees `stage2/_frozen/` and `stage2/_archive/`.
-#   2. Flags `stage2/02_cm_data/...` and `stage2/04_tahoe_data/...` literals.
+#   2. Flags retired Step 02, Step 04 and Step 07 path literals.
 #   3. Flags `datasets-1` except when it is bound to the frozen root: either the
 #      literal contains `_frozen/cm-data-v1/datasets-1` or the `datasets-1`
 #      component sits on a `FROZEN...`-rooted expression (e.g.
@@ -117,8 +118,8 @@ main() {
   : >"$stale_rows"
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
-  # The two retired step roots, then the retired bundle name handled per line.
-  local step_pattern='stage2/(02_cm_data|04_tahoe_data)[[:alnum:]_./+@-]*'
+  # The retired step roots, then the retired bundle name handled per line.
+  local step_pattern='stage2/(02_cm_data|04_tahoe_data|07_lxpert)[[:alnum:]_./+@-]*'
 
   # Production scans the tracked tree.  `STAGE2_PATH_AUDIT_FILES` is a
   # newline-separated file list used only by script/tests/ to exercise the
@@ -190,7 +191,7 @@ main() {
   echo "== check_stage2_paths: no retired step paths in tracked stage2 executable code =="
   echo "repo root: $repo_root"
   echo "tracked stage2 executable files scanned: $files_scanned"
-  echo "stage2 path literals: $occurrences occurrences (retired 02/04 step roots + datasets-1)"
+  echo "stage2 path literals: $occurrences occurrences (retired 02/04/07 step roots + datasets-1)"
   echo "whitelisted: $whitelisted occurrences (entries in script/stage2_path_whitelist.txt: $whitelist_entries)"
   echo "stale: $stale occurrences, ${distinct_stale:-0} distinct"
   if [ "$stale" -gt 0 ]; then

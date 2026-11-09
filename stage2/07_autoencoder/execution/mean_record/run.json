@@ -1,0 +1,63 @@
+{
+  "ticket": 113,
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "device": "cpu"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": 2,
+    "MKL_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "batch_size": 64,
+  "phases": {
+    "freeze": {
+      "command": "freeze-split",
+      "scope": "arc-step07-113-freeze-1794248081.scope",
+      "admitted_at": "2026-11-10T02:14:41+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 50,
+      "gpu_free_mib": 14264,
+      "elapsed_wall": "0:05.55",
+      "peak_rss_kib": 81144,
+      "exit_status": 0
+    },
+    "fit": {
+      "command": "fit",
+      "scope": "arc-step07-113-fit-1794248086.scope",
+      "admitted_at": "2026-11-10T02:14:46+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 56,
+      "gpu_free_mib": 14264,
+      "elapsed_wall": "0:02.92",
+      "peak_rss_kib": 3676776,
+      "exit_status": 0
+    },
+    "score": {
+      "command": "score --role validation",
+      "scope": "arc-step07-113-score-1794248089.scope",
+      "admitted_at": "2026-11-10T02:14:49+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 48,
+      "gpu_free_mib": 14259,
+      "elapsed_wall": "0:05.16",
+      "peak_rss_kib": 886740,
+      "exit_status": 0
+    },
+    "reload": {
+      "command": "reload --role validation --expected stage2/07_autoencoder/execution/mean_record/validation.json",
+      "scope": "arc-step07-113-reload-1794248095.scope",
+      "admitted_at": "2026-11-10T02:14:55+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 48,
+      "gpu_free_mib": 14259,
+      "elapsed_wall": "0:05.16",
+      "peak_rss_kib": 886100,
+      "exit_status": 0
+    }
+  },
+  "validation_report": "validation.json",
+  "validation_sha256": "f214f949a562cbf4463a96e921677cd8cb5d01e8312e9a416e887256e5c45180",
+  "independent_reload_sha256": "f214f949a562cbf4463a96e921677cd8cb5d01e8312e9a416e887256e5c45180"
+}

@@ -14,3 +14,9 @@ to match the current tree: it is the record of what was decided at the time.
 The later ADR 0027/0028 benchmark was removed on 2026-11-07. Its tracked
 records are in Git at `f95fe1e`. Active tenv work lives at
 [`../03_modes_tenv/`](../03_modes_tenv/README.md).
+
+[`07_lxpert/`](07_lxpert/README.md) preserves the original ADR 0051 workflow,
+checkpoint, figure and treatment smoke records. The archived files retain
+their original bytes and recorded paths. To replay the original CLI at those
+paths, use Git revision `922db06` with the inputs described in its records.
+Active reconstruction lives in [Step 07](../07_autoencoder/README.md).
