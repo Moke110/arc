@@ -112,7 +112,7 @@ def fixture(runtime, output):
                            '--arm', arm, '--plan-sha256', digest, '--admission', str(admission)]
                 write_json(admission, {'sample': {'fixture': True}, 'decisions': {'fixture': {'admit': True}},
                                        'jobs': [{'id': 'fixture', 'kind': 'training',
-                                                 'memory_gib': 18, 'command': command}]})
+                                                 'memory_gib': 10, 'command': command}]})
                 fit = cli.fit(runtime, output, plan, digest, seed, arm, admission)
                 assert cli.fit(runtime, output, plan, digest, seed, arm, None) == fit
                 assert fit['status'] == 'completed' and fit['reason'] == 'validation_early_stop'

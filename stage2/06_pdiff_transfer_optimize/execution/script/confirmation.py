@@ -51,11 +51,19 @@ def verified_screen(output, root, arm):
             or set(published) != set(report['scores']) | set(unavailable)
             or any(not isinstance(reason, str) or not reason.strip() for reason in unavailable.values())):
         raise ValueError(f'invalid terminal seed evidence for {arm}')
+
+    def score_slot(seed):
+        if arm == 'dose_reset':
+            return dose_reset.run_root(output, seed)
+        return learning_rate.seed_root(root, seed)
+
+    if any((score_slot(int(seed)) / 'scores/scores.json').exists() for seed in unavailable):
+        raise ValueError(f'{arm} has a score seal for an explicitly unavailable seed')
     gains = {int(seed): None for seed in unavailable}
     incomplete = dict(unavailable)
     for key, score in report['scores'].items():
         seed = int(key)
-        slot = dose_reset.run_root(output, seed) if arm == 'dose_reset' else learning_rate.seed_root(root, seed)
+        slot = score_slot(seed)
         path = slot / 'scores/scores.json'
         if score != bind(path, score['sha256']):
             raise ValueError(f'{arm} score is outside its frozen screening slot')
@@ -379,22 +387,28 @@ def checked_fit(output, plan, digest, seed, request):
 
 
 def verify_admission(path, output, digest, seed):
+    return training_admission(path, output, digest, seed, script=__file__, memory_gib=18,
+                              scope='Tahoe source')
+
+
+def training_admission(path, output, digest, seed, *, script, memory_gib, scope, extra_flags=None):
     if path is None:
-        raise ValueError('Tahoe source fitting requires scheduler admission evidence')
+        raise ValueError(f'{scope} fitting requires scheduler admission evidence')
     preflight = read_json(path)
     if not preflight['sample']:
         raise ValueError('scheduler preflight has no resource sample')
-    expected_flags = {'--seed': str(seed), '--plan-sha256': digest, '--admission': str(path)}
+    expected_flags = {'--seed': str(seed), '--plan-sha256': digest, '--admission': str(path),
+                      **(extra_flags or {})}
     for job in preflight['jobs']:
         command = job['command']
-        if (job['kind'] == 'training' and job['memory_gib'] == 18
+        if (job['kind'] == 'training' and job['memory_gib'] == memory_gib
                 and preflight['decisions'][job['id']]['admit'] is True
-                and len(command) > 3 and Path(command[1]).resolve() == Path(__file__).resolve()
+                and len(command) > 3 and Path(command[1]).resolve() == Path(script).resolve()
                 and command[2:4] == ['fit', str(output)]
                 and all(flag in command and command[command.index(flag) + 1:command.index(flag) + 2] == [value]
                         for flag, value in expected_flags.items())):
             return preflight
-    raise ValueError('no admitted formal training job matches this frozen source slot')
+    raise ValueError(f'no admitted {memory_gib} GiB training job matches this frozen {scope}')
 
 
 def fit_source(runtime, output, plan, digest, seed, admission):

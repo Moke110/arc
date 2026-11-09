@@ -15,6 +15,18 @@ from training_policy import MONITOR
 
 
 class LearningRateReplay(unittest.TestCase):
+    def test_failed_seed_without_score_seals_terminal_decision_for_confirmation(self):
+        from confirmation import verified_screen
+
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp)
+            root = output / 'learning-rate'
+            self.cli('decision', root, '--unavailable', 17, 'fit exceeded the resource allowance')
+            verified = verified_screen(output, root, 'learning_rate')
+            self.assertEqual(verified['status'], 'incomplete')
+            self.assertEqual(verified['scores'], {})
+            self.assertEqual(verified['incomplete_seeds'], {'17': 'fit exceeded the resource allowance'})
+
     def test_unavailable_common_step_preserves_native_score_and_seals_incomplete_decision(self):
         with tempfile.TemporaryDirectory() as temp:
             runtime = Path(temp)

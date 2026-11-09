@@ -34,6 +34,22 @@ class PublicationTest(unittest.TestCase):
                 metric.clear()
                 metric.update(metric_before)
 
+    def test_validation_publication_keeps_directional_support(self):
+        original = [
+            {'dose_um': dose, 'group_count': count, 'positive_ap100': .2, 'negative_ap100': .4,
+             'mean_ap100': .3, 'positive_valid_groups': count, 'negative_valid_groups': count}
+            for dose, count in [('pooled', 138), ('0.2', 46), ('1.0', 46), ('10.0', 46)]
+        ]
+        score = {'seed': 17, 'checkpoints': {}, 'overall_gain': 0,
+                 'per_dose': [{'arm': arm, **row} for arm in ('Transfer', 'CM', 'dose_reset')
+                              for row in original]}
+        published = list(publication.validation_pairs('dose_reset', score))
+        for row in published:
+            if row['metric'] in ('positive_ap100', 'negative_ap100'):
+                expected = 138 if row['dose_um'] == 'pooled' else 46
+                self.assertEqual([row[key] for key in ('transfer_valid_groups', 'intervention_valid_groups',
+                                                      'cm_valid_groups')], [expected] * 3)
+
     def test_unpromoted_arms_retain_their_distinct_terminal_reasons(self):
         for gains, status in [
             ({'17': '0.009999'}, 'below_threshold'),
@@ -65,14 +81,18 @@ class PublicationTest(unittest.TestCase):
             pairs = list(publication.pair_rows(0, 17, 'dose_reset', 'loss-selected',
                                                {'status': 'completed'}, original, treatment, cm,
                                                (6500, 6000, 6500)))
+            pairs.extend(publication.pair_rows(0, 17, 'learning_rate', 'common',
+                                               {'status': 'incomplete', 'reason': 'fit unavailable'}))
             summary = {'replication': {'status': 'skipped'}}
             with patch.object(publication, 'collect', return_value=(summary, pairs, {})):
                 publication.write_record(root, output, record, False)
                 self.assertEqual(publication.write_record(root, output, record, True), summary)
-                rows = publication.rows(record / 'per_run.csv')
+                rows = publication.rows(output.parent / 'per_run.csv')
                 self.assertEqual({row['metric'] for row in rows},
                                  {'mean_ap100', 'positive_ap100', 'negative_ap100'})
-                pooled = next(row for row in rows if row['metric'] == 'mean_ap100')
+                unavailable = next(row for row in rows if row['arm'] == 'learning_rate')
+                self.assertEqual((unavailable['status'], unavailable['reason']), ('incomplete', 'fit unavailable'))
+                pooled = next(row for row in rows if row['arm'] == 'dose_reset' and row['metric'] == 'mean_ap100')
                 self.assertEqual((pooled['group_count'], pooled['gain'], pooled['recovery']),
                                  ('1', '0.01', '0.5'))
                 figure = output / publication.FIGURES[0]

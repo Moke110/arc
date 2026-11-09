@@ -57,8 +57,37 @@ class ReplicationTest(unittest.TestCase):
             self.assertEqual(native['matched_cm_seeds'], [17, 42, 2026])
             self.assertEqual(native['recovery'], 1)
 
+    def test_failed_source_keeps_surviving_seed_pairs_but_cannot_replicate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            report = promoted_fixture(Path(tmp), source_unavailable={
+                '2026': ('failed', 'Tahoe source fit exceeded the resource allowance')})
+            arm = report['arms']['learning_rate']
+            self.assertEqual(report['status'], 'incomplete')
+            self.assertIsNone(arm['replicated'])
+            pooled = arm['comparisons']['common']['pooled']['mean_ap100']
+            self.assertEqual(pooled['paired_seeds'], [17, 42])
+            self.assertEqual(pooled['planned_seed_count'], 3)
+            self.assertEqual(report['seed_dispositions']['2026'], {
+                'status': 'failed', 'reason': 'Tahoe source fit exceeded the resource allowance'})
 
-def promoted_fixture(output):
+    def test_failed_target_arm_keeps_other_intervention_pair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            report = promoted_fixture(Path(tmp), arm_unavailable={
+                'dose_reset': ('failed', 'target fit interrupted before sealing')})
+            lr = report['arms']['learning_rate']
+            reset = report['arms']['dose_reset']
+            self.assertEqual(report['status'], 'incomplete')
+            self.assertTrue(lr['replicated'])
+            self.assertEqual(lr['comparisons']['common']['pooled']['mean_ap100']['paired_seeds'],
+                             [17, 42, 2026])
+            self.assertIsNone(reset['replicated'])
+            self.assertEqual(reset['comparisons']['native']['pooled']['mean_ap100']['paired_seeds'],
+                             [42, 2026])
+            pair = reset['comparisons']['native']['per_seed']['17']
+            self.assertIn('target fit interrupted before sealing', pair['reason'])
+
+
+def promoted_fixture(output, source_unavailable=None, arm_unavailable=None):
     from artifacts import SEEDS, write_csv, write_json
     from formal_matrix import bind
     from training_inputs import json_hash
@@ -79,38 +108,50 @@ def promoted_fixture(output):
     inference = {'n_genes': 3}
     target = {'request': request, 'inference': inference, 'producer_request': bind(manifest),
               'fixed_config': bind(manifest), 'roles': {'validation': {'group_order_sha256': 'val'}}}
-    upstream = {'status': 'ready', 'seeds': list(SEEDS), 'promoted_arms': ['learning_rate'], 'recipient': target,
+    arms = ['learning_rate', 'dose_reset'] if arm_unavailable else ['learning_rate']
+    upstream = {'status': 'ready', 'seeds': list(SEEDS), 'promoted_arms': arms, 'recipient': target,
                 'comparison': {'prediction': {}, 'score': 'directional mean AP@100',
                                'common_steps': {str(seed): 3 for seed in SEEDS}},
                 'screens': {'dose_reset': {'status': 'below_threshold'}, 'learning_rate': {'status': 'promoted'}}}
     for seed in SEEDS:
-        write_json(replication.confirmation.source_path(output, seed) / 'source.json', {'seed': seed})
+        if str(seed) not in (source_unavailable or {}):
+            write_json(replication.confirmation.source_path(output, seed) / 'source.json', {'seed': seed})
     original = {'learning_rate': 0.0002}
-    cm = {'config': original, 'metadata': {'best_step': 2, 'identity': {'fold': 1}}}
+    cm = {'config': original, 'metadata': {'best_step': 2, 'identity': {'fold': 1}},
+          **{key: bind(manifest) for key in ('history', 'replay', 'recipe', 'request', 'checkpoint')}}
     with (patch.object(replication.confirmation, 'load_plan', return_value=upstream),
           patch.object(replication.confirmation, 'load_source', return_value={'checkpoint_sha256': 'tahoe'}),
           patch.object(replication, 'historical_scoring', return_value={'step04_checkpoints': bind(manifest)}),
           patch.object(replication, 'matched_cm', return_value=cm),
           patch.object(replication.baseline, 'verify_inference', return_value=cases)):
-        digest = replication.freeze(output, output, 'confirmation-sha')['sha256']
+        digest = (replication.freeze(output, output, 'confirmation-sha', source_unavailable) if source_unavailable
+                  else replication.freeze(output, output, 'confirmation-sha'))['sha256']
         frozen = replication.load_plan(output, output, digest)
         for seed in SEEDS:
+            if str(seed) in (source_unavailable or {}):
+                continue
             item = frozen['seeds'][str(seed)]
             assert item['arms']['learning_rate']['config'] == {'learning_rate': .0001}
             assert item['arms']['Transfer']['config'] == original
             slot = replication.seed_slot(output, seed)
-            chosen, fits = {}, {}
-            for arm in ('CM', 'Transfer', 'learning_rate'):
+            fits = {}
+            available = ['CM', 'Transfer', 'learning_rate']
+            if arm_unavailable and seed != 17:
+                available.append('dose_reset')
+            for arm in available:
                 if arm != 'CM':
                     fit = replication.fit_binding(output, seed, arm) / 'fit.json'
                     write_json(fit, {'fixture': arm})
-                    fits[arm] = {'status': 'completed', 'reason': 'max_steps', 'checkpoints': {}}
+                    fits[arm] = {'status': 'completed', 'reason': 'max_steps', 'checkpoints': {},
+                                 'bridge': bind(manifest)}
                 else:
                     fit = manifest
-                for mode in (('native',) if arm == 'CM' else ('native', 'common')):
+                for mode in (('native',) if arm in ('CM', 'dose_reset') else ('native', 'common')):
                     key = f'{arm}/{mode}'
-                    selection = {'checkpoint': bind(fit), 'metadata': {}, 'fit': bind(fit)}
-                    chosen[key] = selection
+                    metadata = cm['metadata'] if arm == 'CM' else {'best_step': 3}
+                    selection = {'checkpoint': bind(fit), 'metadata': metadata, 'fit': bind(fit)}
+                    if arm != 'CM':
+                        fits[arm]['checkpoints'][mode] = selection
                     dest = slot / 'predictions' / key
                     dest.mkdir(parents=True)
                     prediction = -truth if (arm == 'Transfer') != (seed == 2026) else truth
@@ -120,14 +161,18 @@ def promoted_fixture(output):
                     write_json(dest / 'prediction.json', {
                         'schema': replication.baseline.PREDICTION_SCHEMA,
                         'lineage': replication.prediction_lineage(digest, seed, key, selection),
-                        'checkpoint': selection['checkpoint'], 'metadata': {},
+                        'checkpoint': selection['checkpoint'], 'metadata': metadata,
                         'request_sha256': json_hash(inference), 'case_count': 1, 'group_count': 1,
                         'ordered_case_group_sha256': json_hash(order),
                         'cases_sha256': bind(dest / 'cases.json')['sha256'],
                         'prediction_sha256': bind(dest / 'prediction.npy')['sha256'],
                     })
-            with (patch.object(replication, 'comparisons_for', return_value=(chosen, fits)),
+            with (patch.object(replication, 'fit_selected', side_effect=lambda *args: fits[args[-1]]),
+                  patch.object(replication.baseline, 'predict_checkpoint'),
+                  patch.object(replication, 'use_runtime'),
                   patch.object(replication.baseline, 'case_rows', return_value=cases)):
+                if arm_unavailable and seed == 17:
+                    replication.predict(output, output, frozen, digest, seed, arm_unavailable)
                 prediction = slot / 'predictions/Transfer/common/prediction.npy'
                 saved = prediction.read_bytes()
                 prediction.write_bytes(b'wrong prediction')

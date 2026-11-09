@@ -44,7 +44,10 @@ stream and EMA to the common step under the original wall-time limit. The
 diagnostic observations stay out of the native selection history.
 `diagnostic.json` identifies the fixed-step EMA. `scores/` records both
 comparison modes, directional and pooled AP@100 by dose, and coverage.
-The terminal decision uses only the common-step pooled gain.
+The terminal decision uses only the common-step pooled gain. If an admitted
+seed ends before it can produce a score seal, declare its terminal reason
+with `decision --unavailable SEED 'reason'`. A seed with a score seal uses
+the scored common-step disposition.
 
 The CPU-native fixture compares both native selection scenarios against the
 untouched trainer and checks exact EMA and reload parity. The scheduler

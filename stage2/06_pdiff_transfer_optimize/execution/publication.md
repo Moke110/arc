@@ -6,7 +6,7 @@ Submit these commands to the Step 06 scheduler with the scoring memory cap.
 The publisher streams hashes of local prediction and checkpoint binaries.
 Replay also computes AP@100 from the sealed predictions and frozen truth
 through the original scoring entry points, then verifies the regenerated
-record and figures byte for byte. It needs the same Matplotlib version and
+record, tables and figures byte for byte. It needs the same Matplotlib version and
 fonts for byte-identical PNGs.
 
 ```bash
@@ -19,12 +19,12 @@ python "$cli" publish "$out" --record "$record"
 python "$cli" replay "$out" --record "$record"
 ```
 
-The compact record includes paired rows per run, dose and direction,
-checkpoint steps, directional valid-group counts, gains, original and
+The step root holds the paired per-run and per-dose tables. These include
+directional AP@100, checkpoint steps, valid-group counts, gains, original and
 residual CM gaps, and recovery where the matched original gap is positive.
-It retains terminal seed dispositions, local artifact paths and SHA-256
+The compact JSON record retains terminal seed dispositions, local artifact paths and SHA-256
 digests, and the scheduler records available before publication. The
-source audit exposure table is copied into the record. The [audit
+source audit exposure table is copied to the step root. The [audit
 entry point](source_audit.md) reproduces the full bracket and sensitivity
 panels separately. Prediction arrays, model binaries, and scheduler
 telemetry remain in the local output tree.

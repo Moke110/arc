@@ -258,6 +258,10 @@ def score_prediction(request, observed, predicted):
             row[f'{name}_ap100'] = float(ap) if np.isfinite(ap) else None
             row[f'{name}_reason'] = '' if np.isfinite(ap) else 'empty_direction'
         group_rows.append(row)
+    return group_rows, summarize_groups(group_rows)
+
+
+def summarize_groups(group_rows, *, metric_named_support=False):
     summaries = []
     strata = [('pooled', group_rows)]
     for dose in sorted({row['dose_um'] for row in group_rows}):
@@ -268,12 +272,13 @@ def score_prediction(request, observed, predicted):
             key = f'{direction}_ap100'
             valid = [row[key] for row in members if row[key] is not None]
             summary[key] = float(np.mean(valid)) if valid else None
-            summary[f'{direction}_valid_groups'] = len(valid)
-            summary[f'{direction}_undefined_groups'] = len(members) - len(valid)
+            support = key if metric_named_support else direction
+            summary[f'{support}_valid_groups'] = len(valid)
+            summary[f'{support}_undefined_groups'] = len(members) - len(valid)
         values = [summary[key] for key in ('positive_ap100', 'negative_ap100')]
         summary['mean_ap100'] = None if None in values else float(np.mean(values))
         summaries.append(summary)
-    return group_rows, summaries
+    return summaries
 
 
 def score_baseline(runtime, root, plan, digest):

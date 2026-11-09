@@ -41,8 +41,20 @@ def ensure_no_run(output):
         raise ValueError('skipped replication contains fold 1 fit, prediction or score artifacts')
 
 
-def freeze(runtime, output, confirmation_sha):
+def terminal_dispositions(entries, allowed):
+    if set(entries) - set(allowed):
+        raise ValueError('unavailable evidence is outside the frozen replication')
+    dispositions = {}
+    for key, (status, reason) in entries.items():
+        if status not in ('failed', 'incomplete', 'skipped') or not reason.strip():
+            raise ValueError('unavailable evidence requires a terminal status and reason')
+        dispositions[key] = {'status': status, 'reason': reason}
+    return dispositions
+
+
+def freeze(runtime, output, confirmation_sha, source_unavailable=None):
     upstream = confirmation.load_plan(runtime, output, confirmation_sha)
+    sources = terminal_dispositions(source_unavailable or {}, map(str, upstream['seeds']))
     plan = {'schema': PLAN_SCHEMA, 'fold': FOLD, 'runtime': str(runtime), 'output': str(output),
             'confirmation_sha256': confirmation_sha, 'promoted_arms': upstream['promoted_arms'],
             'screens': upstream['screens'], 'status': upstream['status'], 'seeds': {}}
@@ -63,8 +75,14 @@ def freeze(runtime, output, confirmation_sha):
     cm_index = plan['historical_scoring']['step04_checkpoints']
     for seed in upstream['seeds']:
         key = str(seed)
+        source_path = confirmation.source_path(output, seed) / 'source.json'
+        if key in sources:
+            if source_path.exists():
+                raise ValueError(f'Tahoe source seed {seed} already has a source seal')
+            plan['seeds'][key] = sources[key]
+            continue
         source = confirmation.load_source(runtime, output, confirmation_sha, seed)
-        source_seal = bind(confirmation.source_path(output, seed) / 'source.json')
+        source_seal = bind(source_path)
         cm = matched_cm(runtime, target, seed, cm_index)
         common_step = upstream['comparison']['common_steps'].get(key)
         config = cm['config']
@@ -259,20 +277,8 @@ def native_name(step):
 
 
 def admission_for(path, output, digest, seed, arm):
-    if path is None:
-        raise ValueError('target fitting requires scheduler admission evidence')
-    record = read_json(path)
-    flags = {'--seed': str(seed), '--arm': arm, '--plan-sha256': digest, '--admission': str(path)}
-    for job in record['jobs']:
-        command = job['command']
-        if (record['sample'] and job['kind'] == 'training' and job['memory_gib'] == 18
-                and record['decisions'][job['id']]['admit'] is True and len(command) > 3
-                and Path(command[1]).resolve() == Path(__file__).resolve()
-                and command[2:4] == ['fit', str(output)]
-                and all(flag in command and command[command.index(flag) + 1:command.index(flag) + 2] == [value]
-                        for flag, value in flags.items())):
-            return record
-    raise ValueError('no admitted training job matches this frozen replication arm')
+    return confirmation.training_admission(path, output, digest, seed, script=__file__, memory_gib=10,
+                                           scope='target arm', extra_flags={'--arm': arm})
 
 
 def fit(runtime, output, plan, digest, seed, arm, admission):
@@ -282,6 +288,8 @@ def fit(runtime, output, plan, digest, seed, arm, admission):
     slot = fit_binding(output, seed, arm)
     slot.parent.mkdir(parents=True, exist_ok=True)
     with slot_lock(slot.parent / f'.{slot.name}-lock'):
+        if arm in arm_dispositions(output, plan, digest, seed):
+            raise ValueError(f'target arm {arm} already has a terminal disposition')
         if slot.exists():
             return fit_selected(output, plan, digest, seed, arm)
         preflight = admission_for(admission, output, digest, seed, arm)
@@ -349,11 +357,32 @@ def fit(runtime, output, plan, digest, seed, arm, admission):
         return fit_selected(output, plan, digest, seed, arm)
 
 
-def comparisons_for(output, plan, digest, seed):
+def arm_disposition_path(output, seed):
+    return seed_slot(output, seed) / 'arm_dispositions.json'
+
+
+def arm_dispositions(output, plan, digest, seed):
+    path = arm_disposition_path(output, seed)
+    if not path.exists():
+        return {}
+    record = read_json(path)
+    if (record['plan_sha256'], record['seed']) != (digest, seed):
+        raise ValueError('terminal target dispositions differ from the frozen replication')
+    entries = {arm: (item['status'], item['reason']) for arm, item in record['arms'].items()}
+    return terminal_dispositions(entries, plan['seeds'][str(seed)]['arms'])
+
+
+def comparisons_for(output, plan, digest, seed, unavailable):
     item = plan['seeds'][str(seed)]
     check_binding(item['source_seal'])
-    fits = {arm: fit_selected(output, plan, digest, seed, arm) for arm in item['arms']}
-    if len({fit['bridge']['sha256'] for fit in fits.values()}) != 1:
+    fits = {}
+    for arm in item['arms']:
+        if arm in unavailable:
+            if (fit_binding(output, seed, arm) / 'fit.json').exists():
+                raise ValueError(f'target arm {arm} already has a fit seal')
+        else:
+            fits[arm] = fit_selected(output, plan, digest, seed, arm)
+    if len({fit['bridge']['sha256'] for fit in fits.values()}) > 1:
         raise ValueError('paired fits did not start from the same mapped Tahoe source')
     cm = item['cm']
     for key in ('history', 'replay', 'recipe', 'request', 'checkpoint'):
@@ -370,8 +399,19 @@ def prediction_lineage(digest, seed, key, selected):
     return {'plan_sha256': digest, 'seed': seed, 'arm_mode': key, 'fit': selected['fit']}
 
 
-def predict(runtime, output, plan, digest, seed):
-    choices, _ = comparisons_for(output, plan, digest, seed)
+def predict(runtime, output, plan, digest, seed, unavailable=None):
+    dispositions = arm_dispositions(output, plan, digest, seed)
+    if unavailable:
+        declared = terminal_dispositions(unavailable, plan['seeds'][str(seed)]['arms'])
+        if dispositions and dispositions != declared:
+            raise ValueError('terminal target dispositions are already sealed')
+        dispositions = declared
+    choices, _ = comparisons_for(output, plan, digest, seed, dispositions)
+    if unavailable:
+        if (seed_slot(output, seed) / 'scores.json').exists():
+            raise ValueError(f'seed {seed} already has a score seal')
+        lr.publish(arm_disposition_path(output, seed),
+                   {'plan_sha256': digest, 'seed': seed, 'arms': dispositions})
     use_runtime(runtime)
     for key, selected in choices.items():
         baseline.predict_checkpoint(plan['inference'], selected['config'], plan['prediction'],
@@ -404,30 +444,22 @@ def score_groups(cases, groups, observed, labels, predicted):
             row[f'{name}_ap100'] = float(ap) if np.isfinite(ap) else None
             row[f'{name}_reason'] = '' if np.isfinite(ap) else 'empty_direction'
         group_rows.append(row)
-    strata = [('pooled', group_rows)] + [
-        (str(dose), [row for row in group_rows if row['dose_um'] == dose])
-        for dose in sorted({row['dose_um'] for row in group_rows})]
-    summaries = []
-    for dose, members in strata:
-        summary = {'dose_um': dose, 'group_count': len(members)}
-        for name in lr.METRICS[:2]:
-            values = [row[name] for row in members if row[name] is not None]
-            summary.update({name: float(np.mean(values)) if values else None,
-                            f'{name}_valid_groups': len(values),
-                            f'{name}_undefined_groups': len(members) - len(values)})
-        values = [summary[key] for key in lr.METRICS[:2]]
-        summary['mean_ap100'] = None if None in values else float(np.mean(values))
-        summaries.append(summary)
-    return group_rows, summaries
+    return group_rows, baseline.summarize_groups(group_rows, metric_named_support=True)
 
 
-def compare(summaries, arm, mode, cm_common_available):
+def compare(summaries, arm, mode, cm_common_available, fits=None, unavailable=None):
     left, right = (summaries.get(f'{name}/{mode}') for name in (ORIGINAL, arm))
     cm = summaries['CM/native'] if mode == 'native' or cm_common_available else None
     cm_reason = None if cm is not None else 'matching CM EMA unavailable at the frozen optimizer step'
     if left is None or right is None:
-        return {'status': 'incomplete', 'reason': 'paired target checkpoint or prediction unavailable',
-                'cm_reason': cm_reason, 'contrasts': []}
+        reasons = []
+        for name, rows in ((ORIGINAL, left), (arm, right)):
+            if rows is None:
+                reason = (unavailable or {}).get(name) or (fits or {}).get(name)
+                if reason and reason['reason']:
+                    reasons.append(f"{name} ({reason['status']}): {reason['reason']}")
+        return {'status': 'incomplete', 'reason': '; '.join(reasons) or
+                'paired target checkpoint or prediction unavailable', 'cm_reason': cm_reason, 'contrasts': []}
     rows_by_dose = []
     for index, (original, intervention) in enumerate(zip(left, right, strict=True)):
         comparator = cm[index] if cm is not None else None
@@ -444,7 +476,8 @@ def compare(summaries, arm, mode, cm_common_available):
 
 def score(output, plan, digest, seed):
     item = plan['seeds'][str(seed)]
-    choices, fits = comparisons_for(output, plan, digest, seed)
+    unavailable = arm_dispositions(output, plan, digest, seed)
+    choices, fits = comparisons_for(output, plan, digest, seed, unavailable)
     slot = seed_slot(output, seed)
     values, evidence = {}, {}
     for key, selected in choices.items():
@@ -467,7 +500,7 @@ def score(output, plan, digest, seed):
     results = {key: score_groups(cases, groups, observed, labels, predicted)
                for key, predicted in values.items()}
     summaries = {key: value[1] for key, value in results.items()}
-    comparisons = {arm: {mode: compare(summaries, arm, mode, item['cm_common_available'])
+    comparisons = {arm: {mode: compare(summaries, arm, mode, item['cm_common_available'], fits, unavailable)
                          for mode in (('native', 'common') if arm == 'learning_rate' else ('native',))}
                    for arm in plan['promoted_arms']}
     report = {'schema': SCORE_SCHEMA, 'fold': FOLD, 'seed': seed, 'plan_sha256': digest,
@@ -479,6 +512,8 @@ def score(output, plan, digest, seed):
                        for arm, fit in fits.items()},
               'cm_native_step': item['cm']['metadata']['best_step'], 'summaries': summaries,
               'comparisons': comparisons}
+    if unavailable:
+        report['arm_dispositions'] = bind(arm_disposition_path(output, seed))
     with tempfile.TemporaryDirectory(dir=slot, prefix='.scores-') as temp:
         pending = Path(temp) / 'per_group.csv'
         rows_out = [{'arm_mode': key, **row} for key, value in results.items() for row in value[0]]
@@ -514,16 +549,20 @@ def aggregate(per_seed):
 
 
 def summarize(output, plan, digest, unavailable):
-    if set(unavailable) - plan['seeds'].keys():
-        raise ValueError('unavailable evidence names a seed outside the frozen replication')
+    terminal = terminal_dispositions(unavailable, plan['seeds'])
     score_evidence, scores, dispositions = {}, {}, {}
-    for seed in plan['seeds']:
+    for seed, item in plan['seeds'].items():
         path = seed_slot(output, int(seed)) / 'scores.json'
-        if seed in unavailable:
-            status, reason = unavailable[seed]
-            if path.exists() or status not in ('failed', 'incomplete', 'skipped') or not reason.strip():
-                raise ValueError('explicit unavailable seed requires a terminal disposition and no score seal')
-            dispositions[seed] = {'status': status, 'reason': reason}
+        disposition = terminal.get(seed)
+        if item['status'] != 'planned':
+            frozen = {key: item[key] for key in ('status', 'reason')}
+            if disposition is not None and disposition != frozen:
+                raise ValueError(f'seed {seed} disposition differs from the frozen Tahoe source disposition')
+            disposition = frozen
+        if disposition is not None:
+            if path.exists():
+                raise ValueError(f'seed {seed} already has a score seal')
+            dispositions[seed] = disposition
             continue
         if not path.exists():
             raise ValueError(f'seed {seed} is still planned and requires scores or a terminal disposition')
@@ -535,6 +574,10 @@ def summarize(output, plan, digest, unavailable):
         for evidence in (record['per_group'], *record['truth'].values(), *record['predictions'].values(),
                          *(fit['binding'] for fit in record['fits'].values())):
             check_binding(evidence)
+        if 'arm_dispositions' in record:
+            expected = bind(arm_disposition_path(output, int(seed)))
+            if record['arm_dispositions'] != expected:
+                raise ValueError('terminal target disposition seal changed')
         score_evidence[seed], scores[seed] = binding, record
         missing = [arm for arm in plan['promoted_arms']
                    if record['comparisons'][arm][PRIMARY_MODES[arm]]['status'] != 'completed']
@@ -550,7 +593,7 @@ def summarize(output, plan, digest, unavailable):
                             for seed in plan['seeds']}
             by_mode[mode] = {'per_seed': rows_by_seed, 'pooled': aggregate(rows_by_seed)}
         metric = by_mode[primary]['pooled']['mean_ap100']
-        complete = len(metric['paired_seeds']) == len(plan['seeds'])
+        complete = metric['paired_seeds'] == list(SEEDS)
         arms[arm] = {'primary_mode': primary, 'comparisons': by_mode,
                      'status': 'completed' if complete else 'incomplete',
                      'reason': None if complete else 'one or more frozen seeds lack a paired primary score',
@@ -560,6 +603,13 @@ def summarize(output, plan, digest, unavailable):
     status = 'completed' if complete else 'failed' if states == {'failed'} else 'incomplete'
     return {'status': status, 'reason': None if complete else 'one or more primary comparisons are unavailable',
             'arms': arms, 'scores': score_evidence, 'seed_dispositions': dispositions}
+
+
+def cli_dispositions(parser, entries):
+    unavailable = {key: (status, reason) for key, status, reason in entries}
+    if len(unavailable) != len(entries):
+        parser.error('duplicate unavailable entry')
+    return unavailable
 
 
 def main():
@@ -574,27 +624,38 @@ def main():
     parser.add_argument('--admission', type=Path)
     parser.add_argument('--unavailable', nargs=3, metavar=('SEED', 'STATUS', 'REASON'),
                         action='append', default=[])
+    parser.add_argument('--source-unavailable', nargs=3, metavar=('SEED', 'STATUS', 'REASON'),
+                        action='append', default=[])
+    parser.add_argument('--arm-unavailable', nargs=3, metavar=('ARM', 'STATUS', 'REASON'),
+                        action='append', default=[])
     args = parser.parse_args()
+    if args.arm_unavailable and args.phase != 'predict':
+        parser.error('--arm-unavailable is only accepted by predict')
+    if args.source_unavailable and args.phase != 'freeze':
+        parser.error('--source-unavailable is only accepted by freeze')
+    if args.unavailable and args.phase != 'finalize':
+        parser.error('--unavailable is only accepted by finalize')
     runtime, output = args.runtime.resolve(), args.output.resolve()
     if args.phase == 'freeze':
-        print(f"Frozen replication plan SHA-256 {freeze(runtime, output, args.confirmation_sha256)['sha256']}")
+        unavailable = cli_dispositions(parser, args.source_unavailable)
+        binding = freeze(runtime, output, args.confirmation_sha256, unavailable)
+        print(f"Frozen replication plan SHA-256 {binding['sha256']}")
         return
     digest = args.plan_sha256
     plan = load_plan(runtime, output, digest)
     seed = args.seed
     if args.phase in ('fit', 'predict', 'score'):
-        if str(seed) not in plan['seeds']:
+        if plan['seeds'].get(str(seed), {}).get('status') != 'planned':
             parser.error('phase requires a frozen seed and a promoted intervention')
         if args.phase == 'fit':
             fit(runtime, output, plan, digest, seed, args.arm, args.admission)
         elif args.phase == 'predict':
-            predict(runtime, output, plan, digest, seed)
+            unavailable = cli_dispositions(parser, args.arm_unavailable)
+            predict(runtime, output, plan, digest, seed, unavailable)
         else:
             score(output, plan, digest, seed)
     elif args.phase == 'finalize':
-        unavailable = {key: (status, reason) for key, status, reason in args.unavailable}
-        if len(unavailable) != len(args.unavailable):
-            parser.error('duplicate unavailable seed')
+        unavailable = cli_dispositions(parser, args.unavailable)
         print(finalize(output, plan, digest, unavailable)['status'])
     else:
         result = output / RESULT

@@ -4,7 +4,9 @@ The replication plan requires the frozen confirmation plan. With no promoted
 intervention, freeze and finalize record a skipped disposition and reject any
 fold 1 fit or score artifacts. For promotion, finish the shared Tahoe source
 preparation, native fits, and independent reloads in
-[confirmation.md](confirmation.md) first.
+[confirmation.md](confirmation.md) first. If a source attempt ends without a
+source seal, pass `--source-unavailable SEED STATUS 'reason'` to `freeze` to
+keep that seed's terminal disposition alongside the remaining source plans.
 
 ```bash
 runtime="$PWD"
@@ -20,7 +22,7 @@ python "$cli" status "$output" --runtime "$runtime" --plan-sha256 "$plan"
 ```
 
 Submit real-data verification, fits, prediction, and scoring to the Step 06
-scheduler. A ready plan pins all three Tahoe EMAs, the matching Step 04 CM
+scheduler. A ready plan pins the available Tahoe EMAs, the matching Step 04 CM
 selections, the frozen train and validation recipe, the target-free ordered
 test request, evaluator file hashes, and the per-seed common step. It records
 prior Step 03 and Step 04 scoring and measures overlap with fold 0 roles at
@@ -29,8 +31,8 @@ context.
 
 Fit the original Transfer arm once per seed. Fit each promoted intervention
 for the same seed, using a separate admitted command for each arm. Replace
-`$preflight` with the admission record for the exact command. New checkpoints
-use slots 10–12 under `output/checkpoints/`. Each pair verifies the same
+`$preflight` with the admission record for the exact command and the 10 GiB
+target fitting cap. New checkpoints use slots 10–12 under `output/checkpoints/`. Each pair verifies the same
 source and mapped bridge. Dose reset restores the three native positive-dose
 rows and keeps the original recipe. Learning rate changes only the base
 rate. When learning rate is promoted, the original and halved-rate fits
@@ -47,8 +49,14 @@ arm=Transfer  # or a promoted dose_reset or learning_rate
 python "$cli" score "$output" --runtime "$runtime" --plan-sha256 "$plan" --seed "$seed"
 ```
 
-Repeat for seeds 42 and 2026. Prediction receives only cases, same-plate
-controls, gene order and the released fingerprints. Scoring verifies the
+Repeat for each seed with a sealed source. If a target fit ends without a
+fit seal, pass `--arm-unavailable ARM STATUS 'reason'` to `predict`. The
+disposition is sealed for later scoring and replay, and pairs from the
+remaining fits still score. Each unavailable flag accepts `failed`,
+`incomplete` or `skipped` and can be repeated.
+
+Prediction receives only cases, same-plate controls, gene order and the
+released fingerprints. Scoring verifies the
 prediction seals before opening frozen test truth and directional labels.
 Per-seed scores include native and equal-step contrasts where applicable,
 AP@100 by direction and dose, and the underlying group rows. Equal-step

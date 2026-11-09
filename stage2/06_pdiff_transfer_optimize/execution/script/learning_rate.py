@@ -328,11 +328,19 @@ def primary_gain(report):
     return next((row['mean_ap100'].get('gain_decimal') for row in rows if row['dose_um'] == 'pooled'), None)
 
 
-def decide(root):
+def decide(root, unavailable=None):
+    unavailable = unavailable or {}
+    if set(unavailable) - set(SEEDS) or any(not reason.strip() for reason in unavailable.values()):
+        raise ValueError('unavailable evidence requires a screening seed and a terminal reason')
     gains, evidence = {}, {}
     for seed in SEEDS:
         slot = seed_root(root, seed)
         path = slot / 'scores/scores.json'
+        if seed in unavailable:
+            if path.exists():
+                raise ValueError(f'seed {seed} already has a score seal')
+            gains[seed] = None
+            continue
         if not path.exists():
             continue
         report = read_json(path)
@@ -352,6 +360,8 @@ def decide(root):
     result = {'schema': SCHEMA, 'fold': 0, 'gate_mode': 'common', **decision,
               'common_steps': {str(seed): step for seed, step in COMMON_STEPS.items()},
               'gains': {str(seed): gain for seed, gain in gains.items()}, 'scores': evidence}
+    if unavailable:
+        result['unavailable'] = {str(seed): reason for seed, reason in unavailable.items()}
     if not decision['next_seeds']:
         publish(root / 'decision.json', result)
     return result
@@ -366,11 +376,17 @@ def main():
     parser.add_argument('--baseline-plan', type=Path)
     parser.add_argument('--baseline-plan-sha256')
     parser.add_argument('--plan-sha256')
+    parser.add_argument('--unavailable', nargs=2, metavar=('SEED', 'REASON'), action='append', default=[])
     args = parser.parse_args()
+    if args.unavailable and args.phase != 'decision':
+        parser.error('--unavailable is only accepted by decision')
     root, runtime = args.root.resolve(), args.runtime.resolve()
     slot = seed_root(root, args.seed)
     if args.phase == 'decision':
-        print(decide(root), flush=True)
+        unavailable = {int(seed): reason for seed, reason in args.unavailable}
+        if len(unavailable) != len(args.unavailable):
+            parser.error('duplicate unavailable screening seed')
+        print(decide(root, unavailable), flush=True)
         return
     if args.phase == 'verify':
         if not args.baseline_plan or not args.baseline_plan_sha256:

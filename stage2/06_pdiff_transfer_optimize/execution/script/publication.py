@@ -98,7 +98,8 @@ def pair_rows(fold, seed, arm, mode, result, original=None, treatment=None, cm=N
             raise ValueError('paired dose or group count differs')
         paired = lr.contrast(cm_row, original_row, treatment_row or dict.fromkeys(METRICS))
         for metric in METRICS:
-            support = f'{metric}_valid_groups'
+            support = f'{metric.removesuffix("_ap100")}_valid_groups'
+            legacy_support = f'{metric}_valid_groups'
             row = {'fold': fold, 'seed': seed, 'arm': arm, 'mode': mode, 'dose_um': dose,
                    'group_count': count, 'status': result['status'], 'reason': result.get('reason'),
                    'cm_reason': cm_reason, 'metric': metric, 'transfer_step': steps[0],
@@ -106,7 +107,7 @@ def pair_rows(fold, seed, arm, mode, result, original=None, treatment=None, cm=N
             for key, values in zip(('transfer', 'intervention', 'cm'),
                                    (original_row, treatment_row, cm_row), strict=True):
                 row[key] = values.get(metric) if values else None
-                row[f'{key}_valid_groups'] = values.get(support) if values else None
+                row[f'{key}_valid_groups'] = values.get(support, values.get(legacy_support)) if values else None
             yield {**row, **{key: paired[metric][key]
                              for key in ('gain', 'cm_gap', 'residual_gap', 'recovery')}}
 
@@ -269,7 +270,7 @@ def render(pairs, exposure, destination):
     figure = Figure(figsize=(9, 4.8), layout='constrained')
     FigureCanvasAgg(figure)
     ax = figure.subplots()
-    visible = [row for row in pairs if row['metric'] == 'mean_ap100' and row['gain'] is not None]
+    visible = [row for row in pairs if row['metric'] == 'mean_ap100' and row.get('gain') is not None]
     if visible:
         labels = {'dose_reset': 'Dose reset', 'learning_rate': 'Learning rate'}
         cohorts = {}
@@ -316,8 +317,8 @@ PAIR_FIELDS = (
     'transfer', 'intervention', 'cm', 'transfer_valid_groups', 'intervention_valid_groups',
     'cm_valid_groups', 'gain', 'cm_gap', 'residual_gap', 'recovery',
 )
-RECORD_FILES = ('decision.json', 'evidence.json', 'resources.json', 'per_run.csv', 'per_dose.csv',
-                'source_exposure.csv')
+RECORD_FILES = ('decision.json', 'evidence.json', 'resources.json')
+TABLES = ('per_run.csv', 'per_dose.csv', 'source_exposure.csv')
 
 
 def collect(runtime, output, replay):
@@ -360,6 +361,8 @@ def collect(runtime, output, replay):
                 reason = screen['incomplete_seeds'].get(key)
             elif key in screen['incomplete_seeds']:
                 status, reason = 'incomplete', screen['incomplete_seeds'][key]
+                mode = 'common' if arm == 'learning_rate' else 'loss-selected'
+                pairs.extend(pair_rows(0, seed, arm, mode, {'status': status, 'reason': reason}))
             else:
                 status, reason = 'skipped', screen['reason']
                 if (output / ROOTS[arm] / f'fold-0-seed-{seed}/plan.json').is_file():
@@ -406,13 +409,14 @@ def write_record(runtime, output, record, replay):
         (staging / 'source_exposure.csv').write_bytes((output / 'source-audit/exposure.csv').read_bytes())
         write_json(staging / 'decision.json', summary)
         write_json(staging / 'resources.json', ledger)
-        generated = (*FIGURES, *(name for name in RECORD_FILES if name != 'evidence.json'))
         write_json(staging / 'evidence.json', {
             'inputs': inventory,
             'figures': {f'output/{name}': sha256(staging / name) for name in FIGURES},
-            'record': {name: sha256(staging / name) for name in generated if name not in FIGURES},
+            'tables': {name: sha256(staging / name) for name in TABLES},
+            'record': {name: sha256(staging / name) for name in RECORD_FILES if name != 'evidence.json'},
         })
         destinations = {name: record / name for name in RECORD_FILES}
+        destinations.update({name: output.parent / name for name in TABLES})
         destinations.update({name: output / name for name in FIGURES})
         with slot_lock(output / '.publication-lock'):
             for name, path in destinations.items():

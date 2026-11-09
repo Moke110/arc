@@ -37,9 +37,9 @@ and coverage limitations are documented in the [source audit](execution/source_a
 
 - [Paired effects figure](output/01-paired-validation-effects.png) and
   [Tahoe exposure figure](output/02-tahoe-exposure.png)
-- [Paired per-run results](execution/publication_record/per_run.csv),
-  [paired per-dose results](execution/publication_record/per_dose.csv) and
-  [Tahoe fitting exposure](execution/publication_record/source_exposure.csv)
+- [Paired per-run results](per_run.csv),
+  [paired per-dose results](per_dose.csv) and
+  [Tahoe fitting exposure](source_exposure.csv)
 - [Decision summary](execution/publication_record/decision.json),
   [artifact hashes](execution/publication_record/evidence.json) and
   [resource ledger](execution/publication_record/resources.json)
