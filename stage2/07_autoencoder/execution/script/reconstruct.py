@@ -9,7 +9,7 @@ import numpy as np
 from benchmark import (
     AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, REPLAY_TOLERANCE, ROLES, SOURCES,
     Split, checked_test_role, fit_mean, freeze_split, json_bytes, load_mean, publish_artifact,
-    publish_json, score, verify_artifact, verify_replay,
+    publish_json, score, validate_batch_size, verify_artifact, verify_replay,
 )
 from mlp import MODEL_IDS as MLP_MODEL_IDS, fit_mlp, mlp_predictor
 from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
@@ -99,13 +99,17 @@ def main():
             command.add_argument("--artifact", type=Path, default=DEFAULT_MEAN)
             command.add_argument("--mean-artifact", type=Path, default=DEFAULT_MEAN)
             command.add_argument("--role", choices=ROLES, default="validation")
-            command.add_argument("--allow-test", action="store_true")
+            command.add_argument("--allow-test", action="store_true", help="fixture test scoring only")
         if name == "score":
             command.add_argument("--output", type=Path)
         if name == "reload":
             command.add_argument("--expected", type=Path, required=True)
     args = parser.parse_args()
     try:
+        if args.command in {"score", "reload"} and args.role == "test" and not args.fixture:
+            raise ValueError("real test scoring requires a selection seal through compare.py")
+        if args.command != "freeze-split" and args.batch_size is not None:
+            validate_batch_size(args.batch_size)
         corpus = Corpus(args.release, args.fixture)
         if args.command == "freeze-split":
             result = freeze_split(corpus, args.split)

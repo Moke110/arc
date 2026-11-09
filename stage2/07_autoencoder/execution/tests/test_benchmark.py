@@ -104,6 +104,33 @@ class BenchmarkTest(unittest.TestCase):
             handle.write(b"changed")
         self.assertIn("digest", self.cli("reload", "--artifact", self.artifact, "--expected", path, success=False))
 
+    def test_only_comparison_cli_accepts_real_test_scoring(self):
+        for action, arguments in (("score", []), ("reload", ["--expected", "unused.json"])):
+            with self.subTest(action=action):
+                result = subprocess.run(
+                    [sys.executable, str(SCRIPT / "reconstruct.py"), action, "--role", "test",
+                     "--allow-test", "--release", str(self.root / "absent"), *arguments],
+                    capture_output=True, text=True,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("real test scoring requires a selection seal through compare.py",
+                              result.stderr)
+
+    def test_batch_limit_applies_to_cli_and_corpus_reads(self):
+        from benchmark import Corpus, Split, batches
+
+        self.cli("freeze-split")
+        self.assertIn("between 1 and 1024", self.cli("fit", "--output", self.artifact,
+                                                   "--batch-size", 1025, success=False))
+        corpus = Corpus(self.release, fixture=True)
+        split = Split(corpus, self.split_path)
+        with self.assertRaisesRegex(ValueError, "between 1 and 1024"):
+            list(batches(corpus, split, "tahoe", "train", 1025))
+        np.testing.assert_array_equal(corpus.read("tahoe", np.zeros(1024, dtype=int)),
+                                      np.tile(self.expressions["tahoe"][0], (1024, 1)))
+        with self.assertRaisesRegex(ValueError, "at most 1024 rows"):
+            corpus.read("tahoe", np.zeros(1025, dtype=int))
+
     def test_identity_and_undefined_metrics(self):
         from benchmark import Corpus, Split, score
 

@@ -59,15 +59,28 @@ From the repository root in the `arc` environment, run replay with fresh
 resource admission as recorded in the [comparison run](execution/comparison_record/run.json).
 Replay verifies the seal, loads all eight published artifacts and checks the
 published scores with relative tolerance `1e-6` and absolute tolerance `1e-8`.
-Mean and PCA score on CPU. MLP and AAE score on CUDA.
+Mean and PCA score on CPU. MLP and AAE score on CUDA. Run CUDA jobs serially
+and check free GPU memory with `nvidia-smi` before starting. The replay record
+uses a 5,120 MiB free GPU memory floor. Use `run_step07` from this block for
+the fit and validation examples below in the same shell.
 
 ```bash
+run_step07() {
+  local available
+  available=$(free -g | awk '/^Mem:/ {print $7}')
+  if [ "${available:-0}" -lt 12 ]; then
+    printf 'Step 07 requires at least 12 GiB of available RAM.\n' >&2
+    return 1
+  fi
+  systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
+    /usr/bin/time -v env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 \
+    NUMEXPR_NUM_THREADS=2 python "$@"
+}
+
 step=stage2/07_autoencoder
 cli="$step/execution/script/compare.py"
 scores="$step/output/test_scores.json"
-systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
-  /usr/bin/time -v env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 \
-  NUMEXPR_NUM_THREADS=2 python "$cli" reload --allow-test --expected "$scores"
+run_step07 "$cli" reload --allow-test --expected "$scores"
 python "$cli" figure --expected "$scores" --output /tmp/arc-reconstruction-test.png
 ```
 
@@ -80,10 +93,12 @@ by Step 02. It memory-maps the expression matrices and reads bounded batches.
 
 ```bash
 cli=stage2/07_autoencoder/execution/script/reconstruct.py
-python "$cli" freeze-split --split /tmp/arc-split.json
-python "$cli" fit --split /tmp/arc-split.json --output /tmp/arc-mean
-python "$cli" score --artifact /tmp/arc-mean --role validation --output /tmp/arc-mean-validation.json
-python "$cli" reload --artifact /tmp/arc-mean --role validation --expected /tmp/arc-mean-validation.json
+run_step07 "$cli" freeze-split --split /tmp/arc-split.json
+run_step07 "$cli" fit --split /tmp/arc-split.json --output /tmp/arc-mean
+run_step07 "$cli" score --split /tmp/arc-split.json --artifact /tmp/arc-mean \
+  --role validation --output /tmp/arc-mean-validation.json
+run_step07 "$cli" reload --split /tmp/arc-split.json --artifact /tmp/arc-mean \
+  --role validation --expected /tmp/arc-mean-validation.json
 ```
 
 The published split and [mean artifact](output/models/mean/manifest.json) are
@@ -107,8 +122,11 @@ batch_size)`. Entrants pass a batch prediction function returning an array
 in the same row and gene order. `publish_artifact` provides a staging directory
 for the fitted payloads and publishes them with a manifest as one directory.
 `verify_artifact` checks the binding and digests before reload. Epoch-based
-entrants select fitted artifacts using tenv validation MSE. Real test scoring
-requires `--allow-test` and is reserved for final publication.
+entrants select fitted artifacts using tenv validation MSE. Each corpus read
+and configurable batch is limited to 1,024 profiles. For final publication,
+`compare.py score` and `compare.py reload` require `--allow-test` and verify
+the selection seal before scoring real test profiles. Per-artifact test
+scoring is available for bounded fixtures.
 
 Run bounded fixtures with
 `python -m unittest discover -s stage2/07_autoencoder/execution/tests`.
@@ -135,12 +153,12 @@ centered profile, maps it back into expression space and adds the center.
 
 ```bash
 cli=stage2/07_autoencoder/execution/script/reconstruct.py
-python "$cli" fit --model PCA --device cuda --batch-size 512 --output /tmp/arc-pca
+run_step07 "$cli" fit --model PCA --device cuda --batch-size 512 --output /tmp/arc-pca
 for rank in 32 128 512; do
   artifact="stage2/07_autoencoder/output/models/PCA_$rank"
   scores="/tmp/arc-pca-validation-$rank.json"
-  python "$cli" score --artifact "$artifact" --role validation --output "$scores"
-  python "$cli" reload --artifact "$artifact" --role validation --expected "$scores"
+  run_step07 "$cli" score --artifact "$artifact" --role validation --output "$scores"
+  run_step07 "$cli" reload --artifact "$artifact" --role validation --expected "$scores"
 done
 ```
 
@@ -166,9 +184,9 @@ cli=stage2/07_autoencoder/execution/script/reconstruct.py
 for width in 32 128 512; do
   artifact="/tmp/arc-MLP_$width"
   scores="/tmp/arc-MLP_$width-validation.json"
-  python "$cli" fit --model "MLP_$width" --device cuda --output "$artifact"
-  python "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
-  python "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
+  run_step07 "$cli" fit --model "MLP_$width" --device cuda --output "$artifact"
+  run_step07 "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
+  run_step07 "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
 done
 ```
 
@@ -194,7 +212,7 @@ and two-profile batches.
 cli=stage2/07_autoencoder/execution/script/reconstruct.py
 artifact=/tmp/arc-AAE_512
 scores=/tmp/arc-AAE_512-validation.json
-python "$cli" fit --model AAE_512 --device cuda --output "$artifact"
-python "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
-python "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
+run_step07 "$cli" fit --model AAE_512 --device cuda --output "$artifact"
+run_step07 "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
+run_step07 "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
 ```

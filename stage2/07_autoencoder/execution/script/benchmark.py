@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import csv
 import hashlib
 import json
+from numbers import Integral
 import os
 from pathlib import Path
 import tempfile
@@ -18,6 +19,8 @@ DEFAULT_RELEASE = CORPUS_STEP / "output" / "corpus" / "shared-cm-v1"
 DEFAULT_SPLIT = STEP / "output" / "split.json"
 DEFAULT_MEAN = STEP / "output" / "models" / "mean"
 AAE_MODEL_ID = "AAE_512"
+# A batch at this limit occupies 71 MiB of float32 expression on the real gene axis.
+MAX_BATCH_SIZE = 1024
 SOURCES = ("tahoe", "tenv")
 ROLES = ("train", "validation", "test")
 SEED = 20261109
@@ -108,7 +111,19 @@ class Corpus:
             self._expression[source] = expression
 
     def read(self, source, rows):
-        return self._expression[source][rows]
+        expression = self._expression[source]
+        if isinstance(rows, Integral) and not isinstance(rows, bool):
+            return expression[rows]
+        sliced = isinstance(rows, slice)
+        count = len(range(*rows.indices(len(expression)))) if sliced else len(rows)
+        if count > MAX_BATCH_SIZE:
+            raise ValueError(f"corpus reads are limited to at most {MAX_BATCH_SIZE} rows")
+        if sliced:
+            return expression[rows]
+        indices = np.asarray(rows)
+        if indices.ndim != 1 or (count and indices.dtype.kind not in "biu"):
+            raise ValueError("corpus reads require one-dimensional row indices")
+        return expression[indices if count else []]
 
 
 def plate_rank(source, plate):
@@ -178,9 +193,14 @@ class Split:
         }
 
 
+def validate_batch_size(batch_size):
+    if (not isinstance(batch_size, Integral) or isinstance(batch_size, bool)
+            or not 1 <= batch_size <= MAX_BATCH_SIZE):
+        raise ValueError(f"batch size must be between 1 and {MAX_BATCH_SIZE}")
+
+
 def batches(corpus, split, source, role, batch_size):
-    if batch_size < 1:
-        raise ValueError("batch size must be positive")
+    validate_batch_size(batch_size)
     rows = split.rows[source][role]
     for start in range(0, len(rows), batch_size):
         yield corpus.read(source, rows[start:start + batch_size])
