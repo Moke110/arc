@@ -17,7 +17,7 @@ from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-target-v1'
 PAIR_SCHEMA = 'step06-paired-differences-v1'
-CHECKPOINT_NUMBERS = {'random': '04', 'log': '05', 'all-half': '06'}
+CHECKPOINT_NUMBERS = {'random': '04', 'log': '05', 'all-half': '06', 'main-half': '07'}
 ORIGINAL_BASE_LR = 2e-4
 HALF_BASE_LR = 1e-4
 METRICS = ('mean_ap100', 'pcc')
@@ -47,9 +47,9 @@ def target_source(root, arm, original, reference_digest):
 
 
 def resolve_config(arm, original):
+    if arm in ('all-half', 'main-half') and original['learning_rate'] != ORIGINAL_BASE_LR:
+        raise ValueError(f'{arm} requires the original Transfer base learning rate of 2e-4')
     if arm == 'all-half':
-        if original['learning_rate'] != ORIGINAL_BASE_LR:
-            raise ValueError('all-half requires the original Transfer base learning rate of 2e-4')
         return {**original, 'learning_rate': HALF_BASE_LR}
     return original
 
@@ -103,6 +103,24 @@ def fit_identity(plan, original):
             'seed': plan['seed'], 'stage': plan['config']['stage']}
 
 
+def main_half_groups(model, groups):
+    denoiser = {id(parameter) for parameter in model.native.model.parameters() if parameter.requires_grad}
+    conditioning = {id(parameter) for parameter in model.native.cov_encoder.parameters() if parameter.requires_grad}
+    trainable = {id(parameter) for parameter in model.parameters() if parameter.requires_grad}
+    grouped = [id(parameter) for group in groups for parameter in group['params']]
+    if (not denoiser or not conditioning or denoiser & conditioning or (denoiser | conditioning) != trainable
+            or set(grouped) != trainable or len(grouped) != len(trainable)):
+        raise ValueError('main-half requires a disjoint partition of the native trainable parameters')
+
+    split = []
+    for group in groups:
+        for component, rate in ((denoiser, HALF_BASE_LR), (conditioning, ORIGINAL_BASE_LR)):
+            parameters = [parameter for parameter in group['params'] if id(parameter) in component]
+            if parameters:
+                split.append({**group, 'params': parameters, 'lr': rate})
+    return split
+
+
 def verify_training(arm, training):
     if (training['optimizer_state_entries'], training['scheduler_start_step'], training['ema_start_step']) != (0, 0, 0):
         raise ValueError('target adaptation requires a fresh optimizer, scheduler and EMA')
@@ -112,6 +130,12 @@ def verify_training(arm, training):
         groups = training['optimizer_groups']
         if not groups or any(group['base_lr'] != HALF_BASE_LR for group in groups):
             raise ValueError('all-half requires a base learning rate of 1e-4 for every optimizer group')
+    if arm == 'main-half':
+        groups = training['optimizer_groups']
+        parameters = [name for group in groups for name in group['parameters']]
+        if ({group['base_lr'] for group in groups} != {HALF_BASE_LR, ORIGINAL_BASE_LR}
+                or any(not group['parameters'] for group in groups) or len(parameters) != len(set(parameters))):
+            raise ValueError('main-half requires nonempty, disjoint optimizer groups at 1e-4 and 2e-4')
 
 
 def selected_fit(plan, original, digest):
@@ -137,7 +161,7 @@ def initialize(model, plan, recipient, training):
         return load_log_initialization(model, plan['source'], recipient)
     bridge = plan['source']['bridge']
     directory = Path(bridge['path']).parent
-    if plan['arm'] == 'all-half':
+    if plan['arm'] in ('all-half', 'main-half'):
         return load_initialization(model, directory, bridge['sha256'], recipient)
     _, evidence = load_dose_reset(model, directory, bridge['sha256'], recipient)
     parameter = model.get_parameter(DOSE_ROWS)
@@ -186,15 +210,22 @@ def fit(runtime, plan, original, digest):
             raise ValueError('target recipe differs from the frozen Transfer resolution')
 
         evidence, training = {}, {}
-        parameter_names = {}
+        model_for_optimizer = None
         native_fit, native_optimizer = native.fit, native.get_optimizer
         native_scheduler = native.get_cosine_schedule_with_warmup
 
         def init_model(model):
+            nonlocal model_for_optimizer
             evidence.update(initialize(model, plan, recipient, training))
-            parameter_names.update({id(parameter): name for name, parameter in model.named_parameters()})
+            model_for_optimizer = model
 
         def optimizer(groups, config):
+            nonlocal model_for_optimizer
+            # Native fit moves the initialized model to its device before grouping.
+            model, model_for_optimizer = model_for_optimizer, None
+            parameter_names = {id(parameter): name for name, parameter in model.named_parameters()}
+            if plan['arm'] == 'main-half':
+                groups = main_half_groups(model, groups)
             result = native_optimizer(groups, config)
             training['optimizer_state_entries'] = len(result.state)
             training['optimizer_groups'] = [{

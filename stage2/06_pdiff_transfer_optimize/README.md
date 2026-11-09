@@ -186,3 +186,17 @@ Use the target commands above with `--arm all-half` and
 `out="$step/output/paired-transfer/all-half/seed-$seed"`.
 The selected EMA and its fit seal are under
 `output/checkpoints/06-paired-all-half-fold-0-seed-$seed/fit/`.
+
+## Main-half learning rate
+
+The `main-half` arm loads the original Tahoe bridge and fine-tunes the
+Cross-DiT denoiser at a base learning rate of `1e-4`. The external
+conditioning encoder, including its drug and dose components, uses
+`2e-4`. Each component follows the original warmup and cosine schedule
+with the original weight decay rules. The fit record lists the parameters,
+base learning rate and weight decay of each group.
+
+Use the target commands above with `--arm main-half` and
+`out="$step/output/paired-transfer/main-half/seed-$seed"`.
+The selected EMA and its fit seal are under
+`output/checkpoints/07-paired-main-half-fold-0-seed-$seed/fit/`.
