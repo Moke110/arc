@@ -2,7 +2,7 @@
   "gene_count": 18164,
   "models": {
     "AAE_512": {
-      "artifact_manifest_sha256": "a2368f6abff9e01dee775a1547f7f94af4c2ff9cdad29ec414ca6951aa27921e",
+      "artifact_manifest_sha256": "1d9f7d1653afdab267aec20463f2fa0f3a6743ee37f85a75b59436f4272f378d",
       "latent": {
         "scalars": 65536,
         "tokens": 512
@@ -23,19 +23,19 @@
       "sources": {
         "tahoe": {
           "defined_pcc_profiles": 9596,
-          "mse": 0.01207769899134046,
-          "pcc": 0.9655075228070613,
+          "mse": 0.011493103313454356,
+          "pcc": 0.967926738436176,
           "profiles": 9596,
-          "relative_squared_error": 1.1332831444797342,
-          "rmse": 0.09923752851201106
+          "relative_squared_error": 1.0784289517598264,
+          "rmse": 0.09616685794790401
         },
         "tenv": {
           "defined_pcc_profiles": 825,
-          "mse": 0.13058980154445507,
-          "pcc": 0.4932170241363618,
+          "mse": 0.09363710127776868,
+          "pcc": 0.6710004633027528,
           "profiles": 825,
-          "relative_squared_error": 0.4957586965225967,
-          "rmse": 0.3594771502885864
+          "relative_squared_error": 0.35547498140441164,
+          "rmse": 0.3018044183193649
         }
       }
     },
@@ -318,5 +318,5 @@
   },
   "role": "test",
   "schema_version": 1,
-  "seal_sha256": "49604ff82706b39650f8dc98a59ff76c8533c1f953a48aa931eb38a7c963ff92"
+  "seal_sha256": "64e553b1516e7725d2497ac06e3dbeb6b95d7c059f5d7297d0d13fd79ccd73a5"
 }

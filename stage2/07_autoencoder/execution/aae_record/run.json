@@ -1,78 +1,101 @@
 {
-  "ticket": 116,
-  "training_revision": "563ed961548e03f88311e1835cc488e2c5ec0e2b",
-  "model_id": "AAE_512",
-  "batch_size": 32,
-  "selected_epoch": 4,
-  "selected_validation_mse": {
-    "tahoe": 0.009630260705942313,
-    "tenv": 0.1291145456285123
-  },
-  "sample_order_check": "All epoch order digests matched independent PCG64 permutations of the frozen joint train membership.",
-  "resource_limits": {
-    "memory_max_gib": 10,
-    "memory_swap_max_gib": 8,
-    "device": "cuda"
-  },
-  "threads": {
-    "OMP_NUM_THREADS": 2,
-    "MKL_NUM_THREADS": 2,
-    "OPENBLAS_NUM_THREADS": 2,
-    "NUMEXPR_NUM_THREADS": 2
-  },
-  "phases": {
-    "fit": {
-      "command": "fit --model AAE_512 --device cuda --output ARTIFACT",
-      "scope": "arc-step07-116-fit-1794248834.scope",
-      "admitted_at": "2026-11-10T02:27:14+08:00",
-      "available_ram_gib": 41,
-      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
-      "gpu_total_mib": 16376,
-      "gpu_used_mib": 1799,
-      "gpu_free_mib": 14263,
-      "gpu_utilization_percent": 26,
-      "elapsed_wall": "5:32.22",
-      "peak_rss_kib": 5782960,
-      "exit_status": 0
-    },
-    "score": {
-      "command": "score --artifact ARTIFACT --device cuda --role validation --output VALIDATION",
-      "scope": "arc-step07-116-score-1794249166.scope",
-      "admitted_at": "2026-11-10T02:32:46+08:00",
-      "available_ram_gib": 41,
-      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
-      "gpu_total_mib": 16376,
-      "gpu_used_mib": 1826,
-      "gpu_free_mib": 14236,
-      "gpu_utilization_percent": 6,
-      "elapsed_wall": "0:10.02",
-      "peak_rss_kib": 1899428,
-      "exit_status": 0
-    },
-    "reload": {
-      "command": "reload --artifact ARTIFACT --device cuda --role validation --expected VALIDATION",
-      "scope": "arc-step07-116-reload-1794249176.scope",
-      "admitted_at": "2026-11-10T02:32:56+08:00",
-      "available_ram_gib": 40,
-      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
-      "gpu_total_mib": 16376,
-      "gpu_used_mib": 1803,
-      "gpu_free_mib": 14259,
-      "gpu_utilization_percent": 7,
-      "elapsed_wall": "0:13.66",
-      "peak_rss_kib": 1899384,
-      "exit_status": 0
-    }
-  },
+  "artifact_manifest_sha256": "1d9f7d1653afdab267aec20463f2fa0f3a6743ee37f85a75b59436f4272f378d",
+  "epoch_history_sha256": "e2126075897cc8cec1fe5660a399a111b872aa2098f51db011745b6843527a18",
   "fit_cuda_peak_allocated_bytes": 1612478464,
   "fit_cuda_peak_reserved_bytes": 1715470336,
-  "artifact_manifest_sha256": "a2368f6abff9e01dee775a1547f7f94af4c2ff9cdad29ec414ca6951aa27921e",
-  "validation_report": "AAE_512-validation.json",
-  "validation_sha256": "673965c6a30c927e035a3c1c30ade7012f3a9366a75de8c47aaa5698308d3f10",
-  "independent_reload_sha256": "673965c6a30c927e035a3c1c30ade7012f3a9366a75de8c47aaa5698308d3f10",
+  "independent_reload_byte_identical": true,
+  "independent_reload_sha256": "c742969b550d2ff4c242657c9259e8a5e4ba9b00b35954657e4cf1b81c1e89c8",
+  "loss_figure_sha256": "7deced2c850ae938518c96929c4b3d6c0135266299f855013c4d882f521ef61a",
+  "model_id": "AAE_512",
+  "phases": {
+    "fit": {
+      "admitted_at": "2026-11-10T03:21:04+08:00",
+      "available_ram_gib": 40,
+      "elapsed_wall": "8:38.50",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14292,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1770,
+      "gpu_utilization_percent": 26,
+      "peak_rss_kib": 5788080,
+      "scope": "arc-step07-aae10000-1794252064.scope"
+    },
+    "reload": {
+      "admitted_at": "2026-11-10T03:30:00+08:00",
+      "available_ram_gib": 41,
+      "elapsed_wall": "0:13.28",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14291,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1771,
+      "gpu_utilization_percent": 4,
+      "peak_rss_kib": 1899684,
+      "scope": "arc-step07-aae10000-validation-reload-1794252600.scope"
+    },
+    "score": {
+      "admitted_at": "2026-11-10T03:29:50+08:00",
+      "available_ram_gib": 41,
+      "elapsed_wall": "0:09.80",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14300,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1762,
+      "gpu_utilization_percent": 31,
+      "peak_rss_kib": 1899328,
+      "scope": "arc-step07-aae10000-validation-score-1794252590.scope"
+    }
+  },
+  "recipe": {
+    "attention_backend": "FlashAttention",
+    "learning_rate": 0.001,
+    "max_optimizer_steps": 10000,
+    "max_seconds": 1800,
+    "objective": "full-axis reconstruction MSE",
+    "optimizer": "AdamW",
+    "precision": "bfloat16",
+    "seed": 20261109,
+    "train_batch_size": 32,
+    "train_order": "PCG64(seed, epoch) shuffle of the joint train membership",
+    "validation_batch_size": 32,
+    "validation_patience": 3,
+    "weight_decay": 0.01
+  },
   "replay_tolerance": {
     "atol": 1e-08,
     "rtol": 1e-06
   },
-  "independent_reload_byte_identical": true
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "minimum_available_ram_gib": 12,
+    "minimum_free_vram_mib": 5120
+  },
+  "sample_order_check": "Verified 7 training orders and 10000 optimizer updates.",
+  "selected_epoch": 7,
+  "selected_optimizer_steps": 10000,
+  "selected_validation_mse": {
+    "tahoe": 0.009339205402088963,
+    "tenv": 0.0935970228942359
+  },
+  "stop_reason": "optimizer step limit",
+  "supersedes_snapshot": "5687d5cc8e3e2b1b943f70741208ebda0ba274a2",
+  "threads": {
+    "MKL_NUM_THREADS": 2,
+    "NUMEXPR_NUM_THREADS": 2,
+    "OMP_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "total_optimizer_steps": 10000,
+  "training_monitor": {
+    "minimum_available_ram_gib": 40,
+    "minimum_free_vram_mib": 12387,
+    "samples": 16
+  },
+  "training_revision": "133c0cf4292055dd7baa6dcce53416be8656f717",
+  "validation_checks": 7,
+  "validation_report": "AAE_512-validation.json",
+  "validation_sha256": "c742969b550d2ff4c242657c9259e8a5e4ba9b00b35954657e4cf1b81c1e89c8"
 }

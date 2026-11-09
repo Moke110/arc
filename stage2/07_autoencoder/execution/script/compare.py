@@ -180,6 +180,37 @@ def plot_comparison(report, output):
                 axis.scatter(value, row, color=color, s=25, zorder=3)
                 axis.annotate(f"{value:.4f}", (value, row), xytext=(5, 0),
                               textcoords="offset points", va="center", fontsize=8)
+    save_figure(figure, output)
+
+
+def plot_aae_loss(history, output):
+    from matplotlib.figure import Figure
+    from matplotlib.ticker import MaxNLocator
+
+    x_field = "optimizer_steps" if "optimizer_steps" in history[0] else "epoch"
+    steps = [record[x_field] for record in history]
+    tenv = [record["validation_mse"]["tenv"] for record in history]
+    best_index = tenv.index(min(tenv))
+    figure = Figure(figsize=(8, 4.5), layout="constrained")
+    axis = figure.subplots()
+    axis.set_title("AAE_512 training and validation loss")
+    axis.set_xlabel("Optimizer updates" if x_field == "optimizer_steps" else "Epoch")
+    axis.set_ylabel("Full-transcriptome MSE")
+    axis.set_yscale("log")
+    axis.xaxis.set_major_locator(MaxNLocator(integer=True))
+    axis.grid(alpha=0.25)
+    axis.plot(steps, [record["training_mse"] for record in history],
+              color="#57606a", marker=".", label="Joint training (batch losses)")
+    axis.plot(steps, [record["validation_mse"]["tahoe"] for record in history],
+              color="#00748b", marker=".", label="Tahoe validation")
+    axis.plot(steps, tenv, color="#6336a3", marker=".", label="tenv validation")
+    axis.axvline(steps[best_index], color="#6336a3", linestyle=":", alpha=0.6,
+                 label=f"Selected checkpoint ({steps[best_index]:,})")
+    axis.legend()
+    save_figure(figure, output)
+
+
+def save_figure(figure, output):
     image = BytesIO()
     figure.savefig(image, format="png", dpi=160)
     with output.open("xb") as stream:
@@ -208,10 +239,16 @@ def main():
     figure = commands.add_parser("figure")
     figure.add_argument("--expected", type=Path, required=True, help="published test score report")
     figure.add_argument("--output", type=Path, required=True)
+    loss = commands.add_parser("aae-loss-figure")
+    loss.add_argument("--history", type=Path, required=True, help="AAE epochs.json")
+    loss.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
         if args.command == "figure":
             plot_comparison(json.loads(args.expected.read_text()), args.output)
+            return
+        if args.command == "aae-loss-figure":
+            plot_aae_loss(json.loads(args.history.read_text()), args.output)
             return
         corpus = Corpus(args.release, args.fixture)
         split = Split(corpus, args.split)

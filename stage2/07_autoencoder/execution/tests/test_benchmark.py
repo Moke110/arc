@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -314,6 +315,8 @@ class BenchmarkTest(unittest.TestCase):
             for source in self.expressions
         })
         history = json.loads((artifact / "epochs.json").read_text())
+        self.assertEqual(history[-1]["optimizer_steps"], metadata["recipe"]["max_optimizer_steps"])
+        self.assertEqual(metadata["stop_reason"], "optimizer step limit")
         selected = min(history, key=lambda epoch: (epoch["validation_mse"]["tenv"], epoch["epoch"]))
         self.assertEqual(metadata["selected_epoch"], selected["epoch"])
         expected = self.root / "aae-validation.json"
@@ -325,6 +328,25 @@ class BenchmarkTest(unittest.TestCase):
             self.assertAlmostEqual(score["mse"], selected["validation_mse"][source])
         self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
         self.assertIn("frozen batch size", self.cli("score", *args, "--batch-size", 32, success=False))
+
+    def test_aae_stops_after_consecutive_non_improving_validation_checks(self):
+        from aae import fit_aae, recipe_for
+        from benchmark import Corpus, Split
+
+        self.cli("freeze-split")
+        corpus = Corpus(self.release, fixture=True)
+        split = Split(corpus, self.split_path)
+        artifact = self.root / "AAE_512"
+        recipe = {**recipe_for(True, "cpu"), "max_optimizer_steps": 100}
+        # A new best resets the count. Tied checkpoints keep the earlier epoch.
+        tenv_losses = (4, 5, 5, 3, 3, 4, 5)
+        checks = [{"tahoe": 1.0, "tenv": loss} for loss in tenv_losses]
+        with patch("aae.recipe_for", return_value=recipe), \
+                patch("neural.validation_mse", side_effect=checks) as validate:
+            result = fit_aae(corpus, split, artifact, batch_size=None, device="cpu")
+        self.assertEqual(validate.call_count, len(checks))
+        self.assertEqual(result["metadata"]["stop_reason"], "validation patience")
+        self.assertEqual(result["metadata"]["selected_epoch"], 4)
 
     def test_refuses_changed_split_and_release(self):
         self.cli("freeze-split")

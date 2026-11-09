@@ -1,21 +1,57 @@
 {
-  "ticket": 117,
-  "comparison_code_commit": "1856cc50919766a9d197bd47d4008781c97552ff",
-  "selection_seal_commit": "dc86c8599d858bc04b96672768983b4ba951a325",
-  "published_comparison_code_commit": "6db7776d2f37ed3f46b8bb28dfabdcf0ab42ade1",
-  "published_selection_seal_commit": "8315709a6489541a522994a19fb40b191a17b02e",
-  "selection_seal_sha256": "49604ff82706b39650f8dc98a59ff76c8533c1f953a48aa931eb38a7c963ff92",
-  "scores_sha256": "a621ad995a0348daf278a3e2c9dd98dc13b10210899a867c2e7f57dfc64e8c5d",
-  "independent_reload_sha256": "a621ad995a0348daf278a3e2c9dd98dc13b10210899a867c2e7f57dfc64e8c5d",
   "byte_identical_reload": true,
-  "figure_sha256": "34db249c2010d1b119b04f01794e05198235ca1120574c75f7d390c53e3fd73c",
+  "figure_sha256": "304a978c98bb5ed1d16618c06a75544aecfc0aec8c59dea4937ab395f5dbf50a",
+  "fixture_tests": {
+    "elapsed_wall": "0:54.81",
+    "exit_status": 0,
+    "passed": 10,
+    "peak_rss_kib": 815356
+  },
+  "independent_reload_sha256": "6b0acbe99f1c90f3a025ae13e35972200933e9e054a29b2a1f2f6f21e67f9bef",
+  "phases": {
+    "reload": {
+      "admitted_at": "2026-11-10T03:31:22+08:00",
+      "available_ram_gib": 41,
+      "elapsed_wall": "0:31.20",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14300,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1762,
+      "gpu_utilization_percent": 5,
+      "peak_rss_kib": 2041452,
+      "scope": "arc-step07-aae10000-test-reload-1794252682.scope"
+    },
+    "score": {
+      "admitted_at": "2026-11-10T03:30:50+08:00",
+      "available_ram_gib": 41,
+      "elapsed_wall": "0:32.16",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14300,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1762,
+      "gpu_utilization_percent": 31,
+      "peak_rss_kib": 2042396,
+      "scope": "arc-step07-aae10000-test-score-1794252650.scope"
+    },
+    "seal": {
+      "admitted_at": "2026-11-10T03:30:14+08:00",
+      "available_ram_gib": 41,
+      "elapsed_wall": "0:02.73",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14300,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1762,
+      "gpu_utilization_percent": 5,
+      "peak_rss_kib": 81504,
+      "scope": "arc-step07-aae10000-seal-1794252614.scope"
+    }
+  },
   "replay_tolerance": {
     "atol": 1e-08,
     "rtol": 1e-06
-  },
-  "test_profiles_per_model": {
-    "tahoe": 9596,
-    "tenv": 825
   },
   "resource_limits": {
     "memory_max_gib": 10,
@@ -23,67 +59,27 @@
     "minimum_available_ram_gib": 12,
     "minimum_free_vram_mib": 5120
   },
+  "scores_sha256": "6b0acbe99f1c90f3a025ae13e35972200933e9e054a29b2a1f2f6f21e67f9bef",
+  "selection_seal_commit": "8347ff7436546a834a2b8774c399ca9e739f7560",
+  "selection_seal_sha256": "64e553b1516e7725d2497ac06e3dbeb6b95d7c059f5d7297d0d13fd79ccd73a5",
+  "supersedes_snapshot": "5687d5cc8e3e2b1b943f70741208ebda0ba274a2",
+  "test_profiles_per_model": {
+    "tahoe": 9596,
+    "tenv": 825
+  },
   "threads": {
-    "OMP_NUM_THREADS": 2,
     "MKL_NUM_THREADS": 2,
-    "OPENBLAS_NUM_THREADS": 2,
-    "NUMEXPR_NUM_THREADS": 2
+    "NUMEXPR_NUM_THREADS": 2,
+    "OMP_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
   },
-  "runtime": {
-    "python": "3.13.13",
-    "numpy": "2.4.6",
-    "torch": "2.12.0+cu130",
-    "cuda": "13.0",
-    "matplotlib": "3.10.9"
-  },
-  "figure_render": {
-    "elapsed_wall": "0:00.66",
-    "peak_rss_kib": 83040
-  },
-  "fixture_tests": {
-    "passed": 7,
-    "scope": "run-r3fe646075c834baf8fb693ff3b42d4ab.scope",
-    "elapsed_wall": "1:24.42",
-    "peak_rss_kib": 830092
-  },
-  "repository_checks": {
-    "check_paths": "PASS",
-    "unresolved_path_literals": 0,
-    "stale_stage2_path_literals": 0,
-    "check_tracked": "PASS",
-    "untracked_code_holes": 0,
-    "historical_comparison_bytes_preserved": true
-  },
-  "phases": {
-    "seal": {
-      "scope": "arc-step07-117-seal-1794249246.scope",
-      "admitted_at": "2026-11-10T02:34:06+08:00",
-      "available_ram_gib": 41,
-      "gpu_utilization_percent": 40,
-      "gpu_free_mib": 14279,
-      "elapsed_wall": "0:02.59",
-      "peak_rss_kib": 81344,
-      "exit_status": 0
-    },
-    "score": {
-      "scope": "arc-step07-117-score-1794249268.scope",
-      "admitted_at": "2026-11-10T02:34:28+08:00",
-      "available_ram_gib": 41,
-      "gpu_utilization_percent": 35,
-      "gpu_free_mib": 14279,
-      "elapsed_wall": "0:31.74",
-      "peak_rss_kib": 2041324,
-      "exit_status": 0
-    },
-    "reload": {
-      "scope": "arc-step07-117-reload-1794249312.scope",
-      "admitted_at": "2026-11-10T02:35:12+08:00",
-      "available_ram_gib": 41,
-      "gpu_utilization_percent": 26,
-      "gpu_free_mib": 14261,
-      "elapsed_wall": "0:31.86",
-      "peak_rss_kib": 2042288,
-      "exit_status": 0
-    }
-  }
+  "unchanged_baseline_test_reports": [
+    "MLP_128",
+    "MLP_32",
+    "MLP_512",
+    "PCA_128",
+    "PCA_32",
+    "PCA_512",
+    "mean"
+  ]
 }

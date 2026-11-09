@@ -31,11 +31,13 @@ tenv test profiles. The [selection seal](output/test_seal.json) was committed
 before scoring. It binds the selected validation scores, fitted manifest and
 payload hashes to the corrected corpus, ordered gene axis and frozen split.
 
-![Test PCC, RMSE and relative squared error for eight reconstruction configurations on Tahoe and tenv](reconstruction_test.png)
+![Test PCC, RMSE and relative squared error for eight reconstruction configurations on Tahoe and tenv](output/reconstruction_test.png)
 
 `PCA_512` led all three metrics on both sources. Its squared error was 40.9%
-of the training-gene mean's error on Tahoe and 12.1% on tenv. `AAE_512` had
-113.3% of the mean's squared error on Tahoe and 49.6% on tenv.
+of the training-gene mean's error on Tahoe and 12.1% on tenv. The longer
+`AAE_512` fit reduced relative squared error from 1.1333 to 1.0784 on Tahoe
+and from 0.4958 to 0.3555 on tenv. Mean profile PCC rose from 0.9655 to 0.9679
+on Tahoe and from 0.4932 to 0.6710 on tenv.
 
 The [test scores](output/test_scores.json) give full-precision metrics,
 including the number of defined PCCs and the profile count for every source
@@ -203,15 +205,27 @@ encode the order of the 18,164 genes. The encoder queries all measured
 expression values and the decoder uses the same ordered gene positions to
 reconstruct the full profile.
 
-The frozen recipe uses full-axis MSE, AdamW with learning rate 0.001 and
-weight decay 0.01, and four epochs of 32-profile batches. A PCG64 shuffle
-seeded by 20261109 and the epoch visits every joint training profile once.
-Training has a 30-minute ceiling. The earliest epoch at the minimum tenv
-validation MSE selects the checkpoint, and Tahoe validation MSE is recorded
-separately. Real fitting and scoring require native CUDA BF16 and use
+The frozen recipe uses full-axis MSE, AdamW with learning rate 0.001,
+weight decay 0.01 and batches of 32 profiles. A PCG64 shuffle seeded by
+20261109 and the epoch visits every joint training profile once per full
+epoch. Validation runs after each epoch and at the 10,000-update cap,
+including when the cap falls within an epoch. Training stops after three
+consecutive validation checks without a lower tenv MSE and has a 30-minute
+wall time ceiling. The earliest checkpoint with the lowest tenv validation
+MSE is selected. Tahoe validation MSE is recorded separately.
+Real fitting and scoring require native CUDA BF16 and use
 FlashAttention exclusively. Validation, scoring and replay use the same
-32-profile batch size. The bounded CPU fixture uses float32, three epochs
-and two-profile batches.
+32-profile batch size. The bounded CPU fixture uses float32, a five-update
+cap and two-profile batches.
+
+![AAE joint training MSE and source-specific validation MSE by optimizer updates](output/aae_loss.png)
+
+The [epoch history](output/models/AAE_512/epochs.json) records the joint
+training MSE from the optimizer's batch losses and the two validation MSEs
+at each check. The run reached 10,000 updates after six complete epochs and
+502 batches of the seventh. The selected checkpoint was at the cap, with
+validation MSE of 0.009339 on Tahoe and 0.093597 on tenv. The updated comparison
+evaluates that checkpoint on the same previously reported test plates.
 
 ```bash
 cli=stage2/07_autoencoder/execution/script/reconstruct.py
@@ -220,4 +234,6 @@ scores=/tmp/arc-AAE_512-validation.json
 run_step07 "$cli" fit --model AAE_512 --device cuda --output "$artifact"
 run_step07 "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
 run_step07 "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
+python stage2/07_autoencoder/execution/script/compare.py aae-loss-figure \
+  --history "$artifact/epochs.json" --output /tmp/arc-aae-loss.png
 ```
