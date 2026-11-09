@@ -65,8 +65,10 @@ equally within each source. Report squared reconstruction error relative to
 the training-gene mean on the same test profiles to quantify how much
 profile-specific variation is preserved.
 
-Release the checkpoints actually used for test scoring with their split and
-gene axis. The historical full-data checkpoint remains evidence of the
-earlier fit. Any future Step 08 refit must follow the test exclusions of its
+Retain the exact fitted parameters used for test scoring as local artifacts.
+Publish their manifests and digests with the split, gene axis, and scores in
+Git. Sealed replay requires access to the exact local payloads identified by
+those digests. The historical full-data checkpoint remains local evidence of
+the earlier fit. Any future Step 08 refit must follow the test exclusions of its
 perturbation evaluation. Historical evidence retains its recorded paths under
 [ADR 0030](0030-external-data-provenance-and-step-layout.md).

@@ -6,7 +6,7 @@ with 18,164 ordered genes and measured FAM153B in both Tahoe and tenv.
 [ADR 0052](../../docs/adr/0052-stage2-autoencoder-reconstruction-boundary.md)
 defines the benchmark. Step 08 owns perturbation prediction and its integration
 checks. The [historical Latent XPert workflow](../_archive/07_lxpert/README.md)
-contains the earlier checkpoint, figure and treatment smoke.
+documents the earlier checkpoint, figure and treatment smoke.
 
 ## Frozen split
 
@@ -41,7 +41,7 @@ The [test scores](output/test_scores.json) give full-precision metrics,
 including the number of defined PCCs and the profile count for every source
 and configuration. The dotted line marks the training-gene mean in each panel.
 The [original comparison](../_archive/07_lxpert/README.md) remains in the archive
-with its checkpoint and perturbation smoke.
+with its checkpoint manifest and perturbation smoke.
 
 ### Replay the published scores
 
@@ -50,14 +50,19 @@ give the build and verification commands for `output/corpus/shared-cm-v1`,
 including `genes.csv` in model order. The release's
 [verification record](../02_dataset_corpus/execution/build_record/shared_cm_v1.json)
 pins its manifest. Step 07 publishes [the frozen split](output/split.json)
-and [the fitted artifacts](output/models/). Fit and validation resource records
+and [the fitted artifact manifests](output/models/). The fitted parameters,
+including the mean, PCA arrays and neural checkpoints, stay local. To replay
+the published scores from a fresh checkout, restore the original payloads to
+the paths listed in the manifests and verify their digests against the seal.
+A new fit can be evaluated on validation and may produce different bytes.
+Fit and validation resource records
 are available for [mean](execution/mean_record/run.json),
 [PCA](execution/pca_record/run.json), [MLP](execution/mlp_record/run.json), and
 [AAE](execution/aae_record/run.json).
 
 From the repository root in the `arc` environment, run replay with fresh
 resource admission as recorded in the [comparison run](execution/comparison_record/run.json).
-Replay verifies the seal, loads all eight published artifacts and checks the
+Replay verifies the seal, loads all eight local artifacts and checks the
 published scores with relative tolerance `1e-6` and absolute tolerance `1e-8`.
 Mean and PCA score on CPU. MLP and AAE score on CUDA. Run CUDA jobs serially
 and check free GPU memory with `nvidia-smi` before starting. The replay record
@@ -101,7 +106,7 @@ run_step07 "$cli" reload --split /tmp/arc-split.json --artifact /tmp/arc-mean \
   --role validation --expected /tmp/arc-mean-validation.json
 ```
 
-The published split and [mean artifact](output/models/mean/manifest.json) are
+The published split and [local mean artifact](output/models/mean/manifest.json) are
 the defaults for scoring. The mean reduces all joint training rows in float64,
 casts the result to float32 once and broadcasts the same vector to every
 profile. Each published artifact carries the corpus, ordered gene axis, split
@@ -162,7 +167,7 @@ for rank in 32 128 512; do
 done
 ```
 
-The example scores the published artifacts. To validate a new fit, use the
+The example scores the original local artifacts. To validate a new fit, use the
 rank directories written under `/tmp/arc-pca`. CPU scoring and replay use the
 same published training-gene mean reference as the other methods. Use
 `--mean-artifact` if the reference was fitted to a fixture or another release.
