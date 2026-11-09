@@ -68,3 +68,13 @@ effects, equal-weight means, matching CM coverage, and any residual gaps.
 A promotion replicates when all three primary seed pairs are available and
 their mean intervention gain is positive. Recovery uses the comparable seed
 set and requires a positive mean original CM gap.
+
+The bounded CPU fixture exercises a promoted plan with both interventions.
+It checks native selection, the equal-step EMA, the shared Tahoe bridge,
+the numbered checkpoint inventory, and independent target-free test replay.
+The scheduler ran the fixture at two threads under 10 GiB memory and 8 GiB
+swap limits. It finished in 36.65 seconds and peaked at 4,141,488 KiB RSS.
+
+```bash
+"$pdiff" "$step/execution/tests/native_replication_fixture.py" --runtime "$runtime"
+```
