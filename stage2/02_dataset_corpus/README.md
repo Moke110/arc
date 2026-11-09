@@ -14,7 +14,9 @@ artifact record (coverage, provenance, renames, schemas, gates) is
 One step owns every Stage 2 source dataset as an information-maximal h5ad
 corpus: the substrate between a raw download and a model's training input. Model
 adaptation (pharmacology tiers, gene-space projection, author shims) belongs to
-the consumer that builds a view, not here (ADR 0033 §5). `stage2/04_tahoe_data/`
+the consumer that builds a view (ADR 0033 §5). ADR 0052 assigns the separate
+shared CM expression release to Step 02 for reuse across consumers.
+`stage2/04_tahoe_data/`
 was folded into this step and removed; `05`/`06` keep their numbers, so 04 is a
 gap in the sequence, not a renumber.
 
@@ -41,12 +43,57 @@ strings; ticket #16's README carries the rename table.
 │   └── tests/                        # test_cmdata.py, test_corpus_contract.py,
 │                                     # test_tables_contract.py
 └── output/                           # artifacts a later step reads
-    └── corpus/v2/
-        ├── dtoxs_primary.h5ad  dtoxs_ipsc.h5ad  sctox.h5ad  tenv.h5ad
-        ├── tahoe.h5ad                # 67,018 × 62,710 CSR int32 (25.8 GB, local)
-        ├── README.md                 # coverage + provenance + gates (#16)
-        └── tables/                   # seven crosswalk tables (#16)
+    └── corpus/
+        ├── v2/
+        │   ├── dtoxs_primary.h5ad  dtoxs_ipsc.h5ad  sctox.h5ad  tenv.h5ad
+        │   ├── tahoe.h5ad            # 67,018 × 62,710 CSR int32 (25.8 GB, local)
+        │   ├── README.md             # coverage + provenance + gates (#16)
+        │   └── tables/               # seven crosswalk tables (#16)
+        └── shared-cm-v1/             # Tahoe and tenv expression on the frozen CM axis
 ```
+
+## Shared CM expression release
+
+`output/corpus/shared-cm-v1/` implements [ADR 0052](../../docs/adr/0052-stage2-autoencoder-reconstruction-boundary.md).
+Each source contributes its treated and control profiles in native row order.
+Tahoe contributes 67,018 profiles from 14 plates, and tenv contributes 4,478
+profiles from 16 plates after excluding its 32 technical blanks. Both sources
+use the same 18,164 ordered CM genes. Each profile's raw counts are projected
+first, divided by the sum of counts on that axis, multiplied by 10,000, and
+transformed with natural `log1p`. Observed zeros are retained.
+
+| Release file | Contents |
+|---|---|
+| `genes.csv` | byte-identical copy of `v2/tables/genes.csv` |
+| `{tahoe,tenv}_expression.npy` | row-major float32 expression, memory-mappable with `np.load(path, mmap_mode="r")` |
+| `{tahoe,tenv}_profiles.csv` | zero-based native `source_row`, `profile_id`, `plate`, and `is_control` |
+| `{tahoe,tenv}_mapping.csv` | one row per ordered gene with zero-based native column, native identities, and resolution method |
+| `manifest.json` | input and payload SHA-256 digests, source populations, plate counts, mapping counts, and shapes |
+
+Tenv resolves by HGNC ID. Tahoe uses a consistent exact Ensembl match when
+present, and a unique HGNC crosswalk match otherwise. Eleven exact Tahoe
+matches take precedence over additional crosswalk aliases. For ANKRD11-AS2,
+Tahoe's exact native Ensembl ID `ENSG00000261253` has no Tahoe HGNC annotation.
+The pinned crosswalk corroborates `HGNC:59263` for that Ensembl ID in
+`screen_ctox`. FAM153B resolves to `ENSG00000289731` (token `61482`) in Tahoe
+and `ENSG00000182230` in tenv. The native releases stay at `output/corpus/v2/`.
+
+Run these operations serially with the resource limits in
+[`docs/agents/execution-environment.md`](../../docs/agents/execution-environment.md).
+The build publishes a new directory atomically. Verify runs in a separate
+process and replays the projection and normalization of every retained profile
+from native raw counts, checks metadata and digests, and records FAM153B
+examples against the raw counts in its JSON output.
+
+```bash
+PY=/home/chang/miniconda3/envs/arc/bin/python
+$PY stage2/02_dataset_corpus/execution/build_corpus.py --shared-cm build
+$PY stage2/02_dataset_corpus/execution/build_corpus.py --shared-cm verify
+```
+
+Use `--shared-cm-output /path/to/new-release` with both commands to reproduce
+the release in a separate directory. The real build and verification evidence
+is in [`execution/build_record/shared_cm_v1.json`](execution/build_record/shared_cm_v1.json).
 
 ## Corpus contract (ADR 0033 §2–3, §10)
 

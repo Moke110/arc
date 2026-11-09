@@ -11,6 +11,9 @@ the seven tables + coverage README, #17 `--verify` **G1–G6 PASS** (G4 reproduc
   `--tables` (seven tables + coverage README + `corpus_coverage.json`),
   `--all`, `--verify` (G1–G6, reads only from disk; record in
   `build_record/verify.json`). `.tmp`→rename, `track_times=False`.
+- `--shared-cm build|verify` — ADR 0052 derived corpus at
+  `output/corpus/shared-cm-v1/`; bounded native raw-count projection and replay
+  in `execution/cmdata/shared_cm.py`, CLI fixtures in `execution/tests/test_shared_cm.py`.
 - `execution/cmdata/` — CM library: `paths`, `sources`, `genes`, `drugs`,
   `annotation`, `corpus`, `qa` (G1 + spot check), `corpus_h5ad` (native-axis
   build/digest/write), `tables` (crosswalk/coverage/README, G2/G3). Views are

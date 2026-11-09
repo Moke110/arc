@@ -24,6 +24,8 @@ Other modes:
                     README.md`` and ``build_record/corpus_coverage.json``
                     (ticket #16) from the built corpora + the raw sources
     --all           build the four corpora, then the tables
+    --shared-cm build|verify
+                    publish or replay the separate ADR 0052 shared-axis release
     --verify        G1-G6 executable gates, reading only from disk: corpus
                     structure (G1), README/record/obs counts (G2), crosswalk
                     coverage (G3), v1-view reconstruction equivalence from the
@@ -393,8 +395,34 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--verify", action="store_true",
                         help="run the G1-G6 executable gates (ticket #17); "
                              "writes build_record/verify.json")
+    parser.add_argument("--shared-cm", choices=("build", "verify"),
+                        help="build or independently replay the ADR 0052 release")
+    parser.add_argument("--shared-cm-native", type=Path, default=paths.CORPUS_V2_DIR)
+    parser.add_argument("--shared-cm-output", type=Path,
+                        default=paths.OUTPUT_DIR / "corpus" / "shared-cm-v1")
+    parser.add_argument("--shared-cm-fixture", action="store_true",
+                        help="allow a synthetic input with explicit input/output directories")
     args = parser.parse_args(argv)
 
+    if args.shared_cm:
+        from cmdata import shared_cm
+
+        if args.check or args.verify or args.repeat_check or args.tables or args.all or args.corpus != "all":
+            parser.error("--shared-cm is a separate corpus operation")
+        if args.shared_cm_fixture and (args.shared_cm_native.resolve() == paths.CORPUS_V2_DIR
+                                      or args.shared_cm_output.resolve() == paths.OUTPUT_DIR / "corpus/shared-cm-v1"):
+            parser.error("--shared-cm-fixture requires separate input and output directories")
+        if not args.shared_cm_fixture and _available_gib() < MIN_FREE_GIB:
+            print(f"only {_available_gib():.1f} GiB available; aborting.", file=sys.stderr)
+            return 2
+        operation = shared_cm.build if args.shared_cm == "build" else shared_cm.verify
+        try:
+            result = operation(args.shared_cm_native, args.shared_cm_output, args.shared_cm_fixture)
+        except (ValueError, OSError, KeyError, AttributeError, TypeError) as exc:
+            print(f"SHARED CM {args.shared_cm.upper()} FAILED: {exc}", file=sys.stderr)
+            return 2
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
     if args.check:
         return sources.check_sources()
     if args.verify:
