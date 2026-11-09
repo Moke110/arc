@@ -1,0 +1,78 @@
+{
+  "ticket": 116,
+  "training_revision": "563ed961548e03f88311e1835cc488e2c5ec0e2b",
+  "model_id": "AAE_512",
+  "batch_size": 32,
+  "selected_epoch": 4,
+  "selected_validation_mse": {
+    "tahoe": 0.009630260705942313,
+    "tenv": 0.1291145456285123
+  },
+  "sample_order_check": "All epoch order digests matched independent PCG64 permutations of the frozen joint train membership.",
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "device": "cuda"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": 2,
+    "MKL_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2,
+    "NUMEXPR_NUM_THREADS": 2
+  },
+  "phases": {
+    "fit": {
+      "command": "fit --model AAE_512 --device cuda --output ARTIFACT",
+      "scope": "arc-step07-116-fit-1794248834.scope",
+      "admitted_at": "2026-11-10T02:27:14+08:00",
+      "available_ram_gib": 41,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1799,
+      "gpu_free_mib": 14263,
+      "gpu_utilization_percent": 26,
+      "elapsed_wall": "5:32.22",
+      "peak_rss_kib": 5782960,
+      "exit_status": 0
+    },
+    "score": {
+      "command": "score --artifact ARTIFACT --device cuda --role validation --output VALIDATION",
+      "scope": "arc-step07-116-score-1794249166.scope",
+      "admitted_at": "2026-11-10T02:32:46+08:00",
+      "available_ram_gib": 41,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1826,
+      "gpu_free_mib": 14236,
+      "gpu_utilization_percent": 6,
+      "elapsed_wall": "0:10.02",
+      "peak_rss_kib": 1899428,
+      "exit_status": 0
+    },
+    "reload": {
+      "command": "reload --artifact ARTIFACT --device cuda --role validation --expected VALIDATION",
+      "scope": "arc-step07-116-reload-1794249176.scope",
+      "admitted_at": "2026-11-10T02:32:56+08:00",
+      "available_ram_gib": 40,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1803,
+      "gpu_free_mib": 14259,
+      "gpu_utilization_percent": 7,
+      "elapsed_wall": "0:13.66",
+      "peak_rss_kib": 1899384,
+      "exit_status": 0
+    }
+  },
+  "fit_cuda_peak_allocated_bytes": 1612478464,
+  "fit_cuda_peak_reserved_bytes": 1715470336,
+  "artifact_manifest_sha256": "a2368f6abff9e01dee775a1547f7f94af4c2ff9cdad29ec414ca6951aa27921e",
+  "validation_report": "AAE_512-validation.json",
+  "validation_sha256": "673965c6a30c927e035a3c1c30ade7012f3a9366a75de8c47aaa5698308d3f10",
+  "independent_reload_sha256": "673965c6a30c927e035a3c1c30ade7012f3a9366a75de8c47aaa5698308d3f10",
+  "replay_tolerance": {
+    "atol": 1e-08,
+    "rtol": 1e-06
+  },
+  "independent_reload_byte_identical": true
+}
