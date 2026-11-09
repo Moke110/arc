@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fit, select and pair the random and log dose arms through the ADR 0049 runner on CPU."""
+"""Fit, select and pair target interventions through the ADR 0049 runner on CPU."""
 import argparse
 from pathlib import Path
 import sys
@@ -16,7 +16,8 @@ from artifacts import read_json, sha256, write_json
 from formal_matrix import bind
 from native_log_dose_fixture import source_release
 from native_replication_fixture import source_checkpoint, target_request
-from tahoe_bridge import CHEMICAL_LOOKUP, DOSE_LOOKUP, dose_layout, load_initialization, seal_initialization
+from tahoe_bridge import (CHEMICAL_LOOKUP, DOSE_LOOKUP, dose_layout, load_initialization,
+                          seal_initialization, state_digest)
 from training_inputs import json_hash
 
 
@@ -42,13 +43,51 @@ def fixture(runtime, root, arm='random'):
     bridge_sha = seal_initialization(native.JointPerturbDiff(native.PredictorInputs(request), config, root),
                                      root, source, request)
     reference_root = root / 'output/paired-transfer/reference/seed-17'
-    target_root = root / f'output/paired-transfer/{arm}/seed-17'
+    target_root = root / 'output/paired-transfer' / arm / 'seed-17'
     reference_fit = reference_root / 'fit'
+
+    original_names, original_groups = {}, []
+    original_rates, target_rates, optimizer_updates = [], [], []
 
     class Original(native.JointPerturbDiff):
         def __init__(self, inputs, config, directory):
             super().__init__(inputs, config, directory)
             load_initialization(self, root, bridge_sha, request)
+            if arm == 'all-half':
+                original_names.update({id(parameter): name for name, parameter in self.named_parameters()
+                                       if parameter.requires_grad})
+
+    native_optimizer = native.get_optimizer
+
+    def original_optimizer(groups, config):
+        optimizer = native_optimizer(groups, config)
+        if arm == 'all-half':
+            original_groups.extend({
+                'base_lr': group['lr'], 'weight_decay': group['weight_decay'],
+                'parameters': [original_names[id(parameter)] for parameter in group['params']],
+            } for group in optimizer.param_groups)
+            optimizer.register_step_post_hook(
+                lambda opt, _args, _kwargs: original_rates.append([group['lr'] for group in opt.param_groups])
+            )
+        return optimizer
+
+    def group_digests(optimizer):
+        return [state_digest({str(i): parameter for i, parameter in enumerate(group['params'])})
+                for group in optimizer.param_groups]
+
+    def target_optimizer(groups, config):
+        optimizer = native_optimizer(groups, config)
+        if arm == 'all-half':
+            before = group_digests(optimizer)
+
+            def observe_step(optimizer, _args, _kwargs):
+                rates = [group['lr'] for group in optimizer.param_groups]
+                target_rates.append(rates)
+                if not optimizer_updates and all(rate > 0 for rate in rates):
+                    optimizer_updates.extend(current != initial for current, initial
+                                             in zip(group_digests(optimizer), before, strict=True))
+            optimizer.register_step_post_hook(observe_step)
+        return optimizer
 
     cases = ref.base.case_rows(ref.base.inference_request(request))
     frozen = {'request': ref.base.inference_request(request), 'fold': 0, 'regime': ref.REGIME,
@@ -63,6 +102,7 @@ def fixture(runtime, root, arm='random'):
         # Controlled author losses exercise distinct minima and strict ties while
         # the trainer still performs actual optimizer, EMA and prediction steps.
         with (patch.object(native, 'JointPerturbDiff', Original),
+              patch.object(native, 'get_optimizer', original_optimizer),
               patch.object(native, 'validate', side_effect=[(loss, [loss], [1])
                                                             for loss in (.5, .7, .6, .8, .6, .7, .5)])):
             native.fit(runtime, original_request, recipe, reference_fit)
@@ -100,8 +140,9 @@ def fixture(runtime, root, arm='random'):
                 cli.main(['fit', *args, '--plan-sha256', sha256(target_plan)])
             write_json(target_plan, verified)
         args.extend(['--plan-sha256', sha256(target_plan)])
-        with patch.object(native, 'validate', side_effect=[(loss, [loss], [1])
-                                                            for loss in (.7, .5, .5, .8, .7, .6, .5)]):
+        with (patch.object(native, 'validate', side_effect=[(loss, [loss], [1])
+                                                            for loss in (.7, .5, .5, .8, .7, .6, .5)]),
+              patch.object(native, 'get_optimizer', target_optimizer)):
             cli.main(['fit', *args])
         for phase in ('fit', 'predict', 'predict', 'score', 'score'):
             cli.main([phase, *args])
@@ -130,10 +171,25 @@ def fixture(runtime, root, arm='random'):
             parameter for group in fit['training_initial_state']['optimizer_groups']
             for parameter in group['parameters']
         }
-    else:
+    elif arm == 'random':
         assert initialization['reset_doses_um'] == [.2, 1., 10.]
         assert initialization['native_positive_rows_sha256'] == initialization['restored_positive_rows_sha256']
         assert initialization['mapped_state_sha256'] != initialization['reset_state_sha256']
+    else:
+        target_plan = read_json(target_root / 'plan.json')
+        assert target_plan['config'] == {**config, 'learning_rate': 1e-4}
+        assert Path(target_plan['checkpoint_slot']).name == '06-paired-all-half-fold-0-seed-17'
+        assert fit['initialization']['mapped_state_sha256'] == read_json(bridge)['mapped_state_sha256']
+        assert len(original_groups) == 2
+        assert all(group['base_lr'] == 2e-4 for group in original_groups)
+        groups = fit['training_initial_state']['optimizer_groups']
+        assert groups == [{**group, 'base_lr': 1e-4} for group in original_groups]
+        checkpoint = native.torch.load(scores['selection']['checkpoint']['path'], map_location='cpu',
+                                       weights_only=True, mmap=True)
+        assert checkpoint['recipe'] == target_plan['config']
+        assert len(original_rates) == 6
+        assert target_rates == [[rate / 2 for rate in rates] for rates in original_rates]
+        assert optimizer_updates == [True, True]
     row = paired['per_dose'][0]
     assert (row['step'], row['reference_step']) == (2, 1)
     assert row['pcc_difference'] == row['pcc'] - row['reference_pcc']
@@ -143,7 +199,7 @@ def fixture(runtime, root, arm='random'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', required=True, type=Path)
-    parser.add_argument('--arm', choices=('random', 'log'), default='random')
+    parser.add_argument('--arm', choices=('random', 'log', 'all-half'), default='random')
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
         fixture(args.runtime.resolve(), Path(temp), args.arm)

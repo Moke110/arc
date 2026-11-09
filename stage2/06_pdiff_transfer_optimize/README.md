@@ -176,3 +176,13 @@ python "$target_cli" score "$out" --arm log --seed "$seed" --plan-sha256 "$plan"
 The dedicated scheduler runs the jobs in order. Source and target fit
 evidence lives under `output/checkpoints/08-paired-log-tahoe-fold-0-seed-$seed/fit/`
 and `output/checkpoints/05-paired-log-fold-0-seed-$seed/fit/`, respectively.
+
+## All-half learning rate
+
+The `all-half` arm loads the original Tahoe bridge and uses a base
+learning rate of `1e-4` in every tenv optimizer group. It keeps the
+original group membership, weight decay and warmup and cosine schedule.
+Use the target commands above with `--arm all-half` and
+`out="$step/output/paired-transfer/all-half/seed-$seed"`.
+The selected EMA and its fit seal are under
+`output/checkpoints/06-paired-all-half-fold-0-seed-$seed/fit/`.
