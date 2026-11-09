@@ -1,0 +1,122 @@
+{
+  "ticket": 114,
+  "fit_code_commit": "1e70d3accec8abfe92013d68e232d6fe8492990f",
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "minimum_available_ram_gib": 12
+  },
+  "threads": {
+    "OMP_NUM_THREADS": 2,
+    "MKL_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "fit": {
+    "device": "cuda",
+    "batch_size": 512
+  },
+  "score_and_replay": {
+    "device": "cpu",
+    "batch_size": 64,
+    "numpy_version": "2.4.6"
+  },
+  "role": "validation",
+  "phases": {
+    "fit": {
+      "scope": "arc-step07-114-fit-1794248434.scope",
+      "admitted_at": "2026-11-10T02:20:34+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 40,
+      "gpu_free_mib": 14275,
+      "elapsed_wall": "0:15.34",
+      "peak_rss_kib": 4563760,
+      "exit_status": 0
+    },
+    "score-32": {
+      "scope": "arc-step07-114-score-32-1794248450.scope",
+      "admitted_at": "2026-11-10T02:20:50+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 8,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:04.51",
+      "peak_rss_kib": 894208,
+      "exit_status": 0
+    },
+    "reload-32": {
+      "scope": "arc-step07-114-reload-32-1794248454.scope",
+      "admitted_at": "2026-11-10T02:20:54+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 26,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:04.56",
+      "peak_rss_kib": 894724,
+      "exit_status": 0
+    },
+    "score-128": {
+      "scope": "arc-step07-114-score-128-1794248459.scope",
+      "admitted_at": "2026-11-10T02:20:59+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 32,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:04.92",
+      "peak_rss_kib": 902212,
+      "exit_status": 0
+    },
+    "reload-128": {
+      "scope": "arc-step07-114-reload-128-1794248464.scope",
+      "admitted_at": "2026-11-10T02:21:04+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 53,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:04.91",
+      "peak_rss_kib": 902172,
+      "exit_status": 0
+    },
+    "score-512": {
+      "scope": "arc-step07-114-score-512-1794248469.scope",
+      "admitted_at": "2026-11-10T02:21:09+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 20,
+      "gpu_free_mib": 14275,
+      "elapsed_wall": "0:09.08",
+      "peak_rss_kib": 924408,
+      "exit_status": 0
+    },
+    "reload-512": {
+      "scope": "arc-step07-114-reload-512-1794248478.scope",
+      "admitted_at": "2026-11-10T02:21:18+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 32,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:06.10",
+      "peak_rss_kib": 923496,
+      "exit_status": 0
+    }
+  },
+  "payload_checks": {
+    "center_matches_mean_reference": true,
+    "nested_component_prefixes": true,
+    "max_abs_gram_identity_error": 9.5367431640625e-07,
+    "gram_check_atol": 0.0001
+  },
+  "reports": {
+    "PCA_32": {
+      "validation_report": "PCA_32-validation.json",
+      "validation_sha256": "7ab60abdeabc0ea721f562cf9ce5549232e6ca198d799bfbfe386174ef1c5d2b",
+      "independent_reload_sha256": "7ab60abdeabc0ea721f562cf9ce5549232e6ca198d799bfbfe386174ef1c5d2b",
+      "artifact_manifest_sha256": "4a05a7b5ba83c8978bebe62875a76a04b103d3a2f425a52c4c7a6db4eadc2f93"
+    },
+    "PCA_128": {
+      "validation_report": "PCA_128-validation.json",
+      "validation_sha256": "bb21cee1a625c5e185c8a70bfe7836526a913225144d410e39ddd04d709fdc4e",
+      "independent_reload_sha256": "bb21cee1a625c5e185c8a70bfe7836526a913225144d410e39ddd04d709fdc4e",
+      "artifact_manifest_sha256": "3b9a078adb0bc037bf62dafbd04cf36800383a593271d1904daa5169509845d7"
+    },
+    "PCA_512": {
+      "validation_report": "PCA_512-validation.json",
+      "validation_sha256": "834fafb6872879afa60e58ca1153755e05b23a36021755de357f764e90eab5c2",
+      "independent_reload_sha256": "834fafb6872879afa60e58ca1153755e05b23a36021755de357f764e90eab5c2",
+      "artifact_manifest_sha256": "da993c7f8c0bc3008fb5e15bb9291beb6ac1376183d8d9c63682ae39db866ad4"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "files": {
+    "components.npy": "0db046b389bf543cefc587a4787582476055118e138294ed31db6d524cc2c005",
+    "mean.npy": "1e648ecb1a7dba1fc095b815edf8e85405ed04561c896c5cbacf9609df1fb0de"
+  },
+  "gene_count": 18164,
+  "metadata": {
+    "batch_size": 512,
+    "center_reduction": "float64 accumulation, float32 inference",
+    "cuda_version": "13.0",
+    "fit_device": "cuda",
+    "fit_device_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "fit_profiles": {
+      "tahoe": 47822,
+      "tenv": 2810
+    },
+    "fit_role": "train",
+    "latent_scalars": 32,
+    "latent_tokens": null,
+    "matmul_precision": "highest",
+    "oversample": 64,
+    "power_passes": 8,
+    "seed": 20261109,
+    "sketch_width": 576,
+    "solver": "streamed randomized covariance subspace iteration with Rayleigh\u2013Ritz",
+    "solver_dtype": "float32",
+    "torch_version": "2.12.0+cu130"
+  },
+  "model_id": "PCA_32",
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "schema_version": 1
+}

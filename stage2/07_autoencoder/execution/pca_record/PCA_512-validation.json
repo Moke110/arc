@@ -1,0 +1,34 @@
+{
+  "artifact_manifest_sha256": "da993c7f8c0bc3008fb5e15bb9291beb6ac1376183d8d9c63682ae39db866ad4",
+  "model_id": "PCA_512",
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+  "replay_tolerance": {
+    "atol": 1e-08,
+    "rtol": 1e-06
+  },
+  "role": "validation",
+  "sources": {
+    "tahoe": {
+      "defined_pcc_profiles": 9600,
+      "mse": 0.004165789579612635,
+      "pcc": 0.9894571209262731,
+      "profiles": 9600,
+      "relative_squared_error": 0.4917629435322323,
+      "rmse": 0.039346781269865336
+    },
+    "tenv": {
+      "defined_pcc_profiles": 843,
+      "mse": 0.032816596365042375,
+      "pcc": 0.8915357736247714,
+      "profiles": 843,
+      "relative_squared_error": 0.12497312464283325,
+      "rmse": 0.1653126158161764
+    }
+  }
+}
