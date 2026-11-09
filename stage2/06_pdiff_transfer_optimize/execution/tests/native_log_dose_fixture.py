@@ -144,15 +144,15 @@ def fit_source_fixture(runtime, root):
     write_json(reference / 'plan.json', plan)
     digest = sha256(reference / 'plan.json')
     target = root / 'output' / 'paired-transfer' / 'log' / 'seed-17'
-    args = [str(target), '--runtime', str(runtime), '--reference', str(reference),
+    args = [str(target), '--runtime', str(root), '--reference', str(reference),
             '--seed', '17', '--plan-sha256', digest]
     with patch.multiple(native.torch.cuda, reset_peak_memory_stats=lambda device: None,
                         synchronize=lambda device: None), patch.object(native, 'load_recipe', return_value=config), \
-            patch.object(worker, 'verify_request', return_value=None):
+            patch.multiple(worker, verify_request=lambda *args: None, use_runtime=lambda *args: None):
         worker.main(['fit', *args])
     worker.main(['verify', *args])
-    evidence = worker.selected_source(target, plan, digest)
-    assert Path(evidence['fit_seal']['path']).parent.parent == worker.source_slot(target, 17)
+    evidence = worker.selected_source(root, plan, digest)
+    assert Path(evidence['fit_seal']['path']).parent.parent == worker.source_slot(root, 17)
     run = read_json(evidence['history']['path'])
     assert (run['optimizer_steps'], run['stop_reason']) == (2, 'validation_early_stop')
     assert evidence['metadata']['best_step'] == min(run['history'], key=lambda event: event['validation_loss'])['step']

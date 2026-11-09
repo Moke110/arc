@@ -98,9 +98,9 @@ def fixture_matrix(root):
         original_score = fixture_score(upstream, plan, reference_digest, 'Transfer', original,
                                        [[-1, 1, 0], [0, 0, 0], [-1, 1, 0]])
         _, _, _, source_protocol = source_inputs(plan, reference_digest)
-        fixture_fit(source_slot(out, seed) / 'fit', json_hash(source_protocol),
+        fixture_fit(source_slot(root, seed) / 'fit', json_hash(source_protocol),
                     source_protocol['identity'], config, ['validation'], [.8, .6, .6])
-        target_plan_file = target.freeze(out, 'log', seed, upstream, reference_digest)
+        target_plan_file = target.freeze(out, 'log', seed, upstream, reference_digest, runtime=root)
         digest = target_plan_file['sha256']
         target_plan = read_json(target_plan_file['path'])
         selection = fixture_fit(Path(target_plan['checkpoint_slot']) / 'fit', digest,
@@ -120,7 +120,7 @@ class PairedEvidence(unittest.TestCase):
     def test_matrix_keeps_loss_selections_and_undefined_support_and_requires_all_seeds(self):
         with tempfile.TemporaryDirectory() as temp:
             root = fixture_matrix(Path(temp))
-            result = verify_matrix(root, 'log')
+            result = verify_matrix(root, 'log', runtime=Path(temp))
             self.assertEqual([cell['seed'] for cell in result['cells']], [17, 42, 2026])
             for cell in result['cells']:
                 self.assertEqual(cell['source']['metadata']['best_step'], 2)
@@ -132,11 +132,26 @@ class PairedEvidence(unittest.TestCase):
                 self.assertIsNone(cell['per_dose'][2]['pcc_difference'])
             (root / 'log' / 'seed-2026' / 'paired.json').unlink()
             with self.assertRaisesRegex(FileNotFoundError, 'seed-2026'):
-                verify_matrix(root, 'log')
+                verify_matrix(root, 'log', runtime=Path(temp))
 
     def test_matrix_rejects_a_seal_substituted_from_another_seed(self):
         with tempfile.TemporaryDirectory() as temp:
             root = fixture_matrix(Path(temp))
             shutil.copyfile(root / 'log' / 'seed-17' / 'paired.json', root / 'log' / 'seed-42' / 'paired.json')
             with self.assertRaisesRegex(ValueError, 'paired score lineage'):
-                verify_matrix(root, 'log')
+                verify_matrix(root, 'log', runtime=Path(temp))
+
+    def test_matrix_rejects_scores_from_before_a_prediction_was_rebound(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture_matrix(Path(temp))
+            cell = root / 'log/seed-17'
+            values = cell / 'prediction/prediction.npy'
+            np.save(values, np.array([[-1, 1, 0], [0, 0, 0], [0, 0, 0]], dtype='float32'))
+            prediction = values.with_name('prediction.json')
+            write_json(prediction, {**read_json(prediction), 'prediction_sha256': bind(values)['sha256']})
+            report = cell / 'scores/scores.json'
+            write_json(report, {**read_json(report), 'prediction': bind(prediction)})
+            pair = cell / 'paired.json'
+            write_json(pair, {**read_json(pair), 'scores': bind(report)})
+            with self.assertRaisesRegex(ValueError, 'group scores differ'):
+                verify_matrix(root, 'log', runtime=Path(temp))

@@ -8,7 +8,7 @@ import baseline as base
 from artifacts import SEEDS, read_json
 from formal import completed_fit, fit_slot, slot_lock, use_runtime, verify_fit_seal
 from formal_matrix import bind, check_binding
-from paired_reference import REGIME, TRANSFER, load_plan
+from paired_reference import REGIME, STEP, TRANSFER, load_plan
 from tahoe_bridge import dose_layout
 from training_inputs import json_hash, verify_request
 
@@ -54,14 +54,14 @@ def source_inputs(plan, reference_digest):
     return request, recipe, config, protocol
 
 
-def source_slot(root, seed):
-    return root.parents[2] / 'checkpoints' / f'08-paired-log-tahoe-fold-0-seed-{seed}'
+def source_slot(runtime, seed):
+    return runtime / STEP / 'output/checkpoints' / f'08-paired-log-tahoe-fold-0-seed-{seed}'
 
 
-def selected_source(root, plan, reference_digest):
+def selected_source(runtime, plan, reference_digest):
     """Verify the source loss minimum and bind its selected checkpoint for tenv."""
     _, _, config, protocol = source_inputs(plan, reference_digest)
-    directory = source_slot(root, plan['seed']) / 'fit'
+    directory = source_slot(runtime, plan['seed']) / 'fit'
     digest = json_hash(protocol)
     verify_fit_seal(directory, digest)
     run = completed_fit(directory, protocol['identity'], config)
@@ -82,7 +82,7 @@ def selected_source(root, plan, reference_digest):
     }
 
 
-def fit_source(runtime, root, plan, reference_digest):
+def fit_source(runtime, plan, reference_digest):
     use_runtime(runtime)
     import native_training as native
     from log_dose import install_encoder
@@ -98,7 +98,7 @@ def fit_source(runtime, root, plan, reference_digest):
             super().__init__(inputs, recipe, directory)
             install_encoder(self)
 
-    slot = source_slot(root, plan['seed'])
+    slot = source_slot(runtime, plan['seed'])
     with slot_lock(slot), patch.object(native, 'JointPerturbDiff', LogTahoe):
         fit_slot(slot, json_hash(protocol), runtime, worker_request, protocol['identity'], recipe, config)
 
@@ -106,17 +106,19 @@ def fit_source(runtime, root, plan, reference_digest):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase', choices=('fit', 'verify'))
-    parser.add_argument('root', type=Path)
+    parser.add_argument('root', type=Path, help='log cell under the paired matrix root')
     parser.add_argument('--runtime', type=Path, default=base.REPO)
     parser.add_argument('--reference', type=Path, required=True)
     parser.add_argument('--seed', type=int, choices=SEEDS, required=True)
     parser.add_argument('--plan-sha256', required=True)
     args = parser.parse_args(argv)
-    runtime, root = args.runtime.resolve(), args.root.resolve()
+    if args.root.resolve().parts[-2:] != ('log', f'seed-{args.seed}'):
+        parser.error('use <matrix-root>/log/seed-<seed> for the log cell')
+    runtime = args.runtime.resolve()
     plan = load_plan(args.reference.resolve(), args.seed, args.plan_sha256)
     if args.phase == 'fit':
-        fit_source(runtime, root, plan, args.plan_sha256)
-    evidence = selected_source(root, plan, args.plan_sha256)
+        fit_source(runtime, plan, args.plan_sha256)
+    evidence = selected_source(runtime, plan, args.plan_sha256)
     result = evidence['fit_seal']
     print(f'{result["path"]} SHA-256 {result["sha256"]}', flush=True)
 

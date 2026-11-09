@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Publish verified paired Transfer scores or replay the figure from their numeric record."""
 import argparse
+import importlib.util
 import math
 from pathlib import Path
 from statistics import mean
@@ -11,10 +12,11 @@ from paired_evidence import verify_matrix
 from artifacts import SEEDS, read_json, sha256, write_json
 from formal import slot_lock
 from formal_matrix import bind
+from paired_queue import PHASES, SCRIPT, job_cells, worker
 from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-publication-v1'
-STEP = Path(__file__).resolve().parents[2]
+STEP = reference.STEP
 FIGURE = STEP / 'output/03-paired-transfer-optimizations.png'
 RECORD = STEP / 'execution/paired_publication.json'
 PANELS = (
@@ -107,34 +109,76 @@ def run_record(run, source, seed, runtime):
     }
 
 
+def load_scheduler():
+    # Step 03 also provides schedule.py. Use the Step 04 worker by file identity.
+    path = reference.base.REPO / reference.TRANSFER.STEP04 / SCRIPT / 'schedule.py'
+    spec = importlib.util.spec_from_file_location('step06_step04_scheduler', path)
+    scheduler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(scheduler)
+    return scheduler
+
+
+def verify_job(job, cell, root, runtime, entry, directory, number):
+    script, args, artifact = worker(root, runtime, *cell)
+    python = runtime / 'stage2/_envs/perturbdiff/bin/python'
+    identity = entry['identity']
+    command = identity['command']
+    script_suffix = (STEP / SCRIPT / script).parts
+    if (len(command) < 2 or identity['cwd'] != str(runtime) or command[0] != str(python)
+            or not Path(command[1]).is_absolute()
+            or Path(command[1]).parts[-len(script_suffix):] != script_suffix
+            or command[2:] != args):
+        raise ValueError(f'{job} queued command differs from the expected cell or sealed plan')
+    attempts = entry['attempts']
+    if entry['status'] != 'completed' or not attempts:
+        raise ValueError(f'{job} needs a completed scheduler attempt')
+    attempt = attempts[-1]
+    if (attempt['outcome'] != 'completed' or attempt['returncode'] != 0
+            or any(not number(item['started_at'], 1) or not number(item['finished_at'], item['started_at'])
+                   for item in attempts)):
+        raise ValueError(f'{job} needs a successful final attempt with recorded timing')
+    log = directory / f'{job}.attempt{len(attempts)}.log'
+    if attempt['log'] != str(log):
+        raise ValueError(f'{job} final attempt log differs from the scheduler slot')
+    receipt = f'{artifact} SHA-256 {sha256(artifact)}'
+    with log.open() as stream:
+        if not any(line.rstrip() == receipt for line in stream):
+            raise ValueError(f'{job} completed attempt did not publish the sealed artifact')
+    return relative(bind(log), runtime)
+
+
 def resources(root, runtime):
-    expected = {f'{arm}-{seed}-{phase}' for arm in ARMS[1:] for seed in SEEDS
-                for phase in ('verify', 'fit', 'predict', 'score')}
-    expected.update(f'reference-{seed}-{phase}' for seed in SEEDS for phase in ('verify', 'predict', 'score'))
-    expected.update(f'log-source-{seed}-fit' for seed in SEEDS)
-    expected.update(f'{arm}-matrix-verify' for arm in ARMS[1:])
+    scheduler = load_scheduler()
+    expected = dict(job_cell for arm, phases in PHASES.items() for phase in phases
+                    for job_cell in job_cells(arm, phase, SEEDS))
     files = {}
     ledger = {}
     measurements = ('memory_max_gib', 'memory_swap_max_gib', 'peak_host_rss_gib',
                     'peak_workstation_gpu_used_gib', 'peak_gpu_utilization_percent')
     for status in sorted((root / 'schedule').glob('*/scheduler/status.json')):
         jobs = read_json(status)['jobs']
-        tracked = expected & jobs.keys()
+        tracked = expected.keys() & jobs.keys()
         if not tracked:
             continue
         slot = status.parent.parent
+        queue = slot / 'queue.json'
+        record_dir, queued = scheduler.load_queue(queue)
+        if record_dir != status.parent:
+            raise ValueError(f'{slot.name} scheduler status is outside the queued record directory')
+        jobs = scheduler.load_status(record_dir, queued)['jobs']
         files[slot.name] = [relative(bind(path), runtime) for path in
-                            (slot / 'queue.json', status, status.with_name('telemetry.jsonl'))]
+                            (queue, status, status.with_name('telemetry.jsonl'))]
         for job in sorted(tracked):
             entry = jobs[job]
-            if job in ledger or entry['status'] != 'completed':
+            if job in ledger:
                 raise ValueError(f'{job} needs one completed scheduler record')
-            ledger[job] = {'slot': slot.name, 'attempts': [
+            log = verify_job(job, expected[job], root, runtime, entry, record_dir, scheduler.number)
+            ledger[job] = {'slot': slot.name, 'completed_log': log, 'attempts': [
                 {'outcome': item['outcome'], 'wall_seconds': item['finished_at'] - item['started_at'],
                  **{key: item.get(key) for key in measurements}}
                 for item in entry['attempts']
             ]}
-    if missing := expected - ledger.keys():
+    if missing := expected.keys() - ledger.keys():
         raise ValueError(f'missing scheduler evidence: {", ".join(sorted(missing))}')
     return {'jobs': ledger, 'files': files}
 
@@ -144,7 +188,7 @@ def collect(root, runtime):
     originals = {}
     runs = {arm: [] for arm in ARMS}
     for arm in ARMS[1:]:
-        matrix = verify_matrix(root, arm)
+        matrix = verify_matrix(root, arm, runtime=runtime)
         path = root / arm / 'matrix.json'
         binding = bind(path)
         if matrix != read_json(path):
@@ -212,18 +256,21 @@ def main(argv=None):
     phases = parser.add_subparsers(dest='phase', required=True)
     publisher = phases.add_parser('publish')
     publisher.add_argument('root', type=Path)
-    publisher.add_argument('--runtime', type=Path, default=reference.base.REPO)
-    publisher.add_argument('--record', type=Path, default=RECORD)
+    publisher.add_argument('--record', type=Path)
     replayer = phases.add_parser('replay')
     replayer.add_argument('record', type=Path)
     for phase in (publisher, replayer):
-        phase.add_argument('--figure', type=Path, default=FIGURE)
+        phase.add_argument('--runtime', type=Path, default=reference.base.REPO)
+        phase.add_argument('--figure', type=Path)
     args = parser.parse_args(argv)
+    runtime = args.runtime.resolve()
+    figure = (args.figure or runtime / FIGURE).resolve()
     if args.phase == 'publish':
-        publish(args.root.resolve(), args.runtime.resolve(), args.record.resolve(), args.figure.resolve())
+        record = (args.record or runtime / RECORD).resolve()
+        publish(args.root.resolve(), runtime, record, figure)
     else:
-        replay(args.record.resolve(), args.figure.resolve())
-    print(f'{args.phase}: {args.figure} SHA-256 {sha256(args.figure)}', flush=True)
+        replay(args.record.resolve(), figure)
+    print(f'{args.phase}: {figure} SHA-256 {sha256(figure)}', flush=True)
 
 
 if __name__ == '__main__':

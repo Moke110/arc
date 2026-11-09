@@ -38,11 +38,11 @@ def reference_scores(binding, plan, digest):
     return scores
 
 
-def target_source(root, arm, original, reference_digest):
+def target_source(runtime, arm, original, reference_digest):
     if arm == 'log':
         from paired_log_source import selected_source
 
-        return selected_source(root, original, reference_digest)
+        return selected_source(runtime, original, reference_digest)
     return original['source']
 
 
@@ -54,9 +54,13 @@ def resolve_config(arm, original):
     return original
 
 
-def freeze(root, arm, seed, reference_root, reference_digest):
+def target_slot(runtime, arm, seed):
+    return runtime / reference.STEP / 'output/checkpoints' / f'{CHECKPOINT_NUMBERS[arm]}-paired-{arm}-fold-0-seed-{seed}'
+
+
+def freeze(root, arm, seed, reference_root, reference_digest, *, runtime):
     reference_plan = reference.load_plan(reference_root, seed, reference_digest)
-    source = target_source(root, arm, reference_plan, reference_digest)
+    source = target_source(runtime, arm, reference_plan, reference_digest)
     recipient = read_json(check_binding(reference_plan['recipient_request'])['path'])
     if (reference_plan['config']['seed'] != seed
             or reference.base.inference_request(recipient) != reference_plan['request']):
@@ -74,26 +78,26 @@ def freeze(root, arm, seed, reference_root, reference_digest):
     check_binding(reference_plan['target_recipe'])
     scores = bind(reference_root / 'scores/scores.json')
     reference_scores(scores, reference_plan, reference_digest)
-    slot = root.parents[2] / 'checkpoints' / f'{CHECKPOINT_NUMBERS[arm]}-paired-{arm}-fold-0-seed-{seed}'
     plan = {
         'schema': SCHEMA, 'arm': arm, 'seed': seed, 'fold': 0, 'regime': reference.REGIME,
         'reference': bind(reference_root / 'plan.json', reference_digest), 'reference_scores': scores,
         'protocol_sha256': reference_plan['protocol_sha256'], 'source': source,
-        'config': resolve_config(arm, reference_plan['config']), 'checkpoint_slot': str(slot),
+        'config': resolve_config(arm, reference_plan['config']), 'checkpoint_slot': str(target_slot(runtime, arm, seed)),
     }
     return publish(root / 'plan.json', plan)
 
 
-def load_plan(root, arm, seed, digest):
+def load_plan(root, arm, seed, digest, *, runtime):
     plan = read_json(bind(root / 'plan.json', digest)['path'])
     if (plan['schema'], plan['arm'], plan['seed'], plan['fold'], plan['regime']) != (
             SCHEMA, arm, seed, 0, reference.REGIME):
         raise ValueError('target plan does not match the requested arm, split or seed')
     pinned = plan['reference']
     original = reference.load_plan(Path(pinned['path']).parent, seed, pinned['sha256'])
-    if (plan['protocol_sha256'] != original['protocol_sha256']
+    if (plan['checkpoint_slot'] != str(target_slot(runtime, arm, seed))
+            or plan['protocol_sha256'] != original['protocol_sha256']
             or plan['config'] != resolve_config(arm, original['config'])
-            or plan['source'] != target_source(root, arm, original, pinned['sha256'])):
+            or plan['source'] != target_source(runtime, arm, original, pinned['sha256'])):
         raise ValueError('target plan differs from the frozen Transfer protocol, recipe or source')
     return plan, original
 
@@ -340,13 +344,15 @@ def main(argv=None):
     if args.phase == 'verify':
         if not args.reference_sha256:
             parser.error('verify requires --reference-sha256')
+        if args.reference is None and root.parts[-2:] != (args.arm, f'seed-{args.seed}'):
+            parser.error('use <matrix-root>/<arm>/seed-<seed> or pass --reference explicitly')
         upstream = args.reference or root.parent.parent / 'reference' / f'seed-{args.seed}'
-        result = freeze(root, args.arm, args.seed, upstream.resolve(), args.reference_sha256)
+        result = freeze(root, args.arm, args.seed, upstream.resolve(), args.reference_sha256, runtime=runtime)
     else:
         digest = args.plan_sha256
         if not digest:
             parser.error(f'{args.phase} requires --plan-sha256')
-        plan, original = load_plan(root, args.arm, args.seed, digest)
+        plan, original = load_plan(root, args.arm, args.seed, digest, runtime=runtime)
         if args.phase == 'fit':
             result = fit(runtime, plan, original, digest)['fit_seal']
         else:

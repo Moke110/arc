@@ -2646,6 +2646,10 @@
     "jobs": {
       "adaLN-only-17-fit": {
         "slot": "adaLN-only-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-fit/scheduler/adaLN-only-17-fit.attempt1.log",
+          "sha256": "d617919f106c09ef712898b86ede9840d3362915cb3c6ea7fc8ea4b7507487b6"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2660,6 +2664,10 @@
       },
       "adaLN-only-2026-fit": {
         "slot": "adaLN-only-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-fit/scheduler/adaLN-only-2026-fit.attempt1.log",
+          "sha256": "38b6e0342345eeb3da124a9381a1e4968e2435b04f0a4595433c41f5d9e04cd0"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2674,6 +2682,10 @@
       },
       "adaLN-only-42-fit": {
         "slot": "adaLN-only-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-fit/scheduler/adaLN-only-42-fit.attempt1.log",
+          "sha256": "e792d72dc0920183601291ccfbdd4d3cd8b32617ded98625740465842874f2cc"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2688,6 +2700,10 @@
       },
       "adaLN-only-matrix-verify": {
         "slot": "adaLN-only-matrix-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-matrix-verify/scheduler/adaLN-only-matrix-verify.attempt1.log",
+          "sha256": "7fb6b194b25cf2b923107b2bfe09697f8c4db8b2aff09028b0a291497948644d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2702,6 +2718,10 @@
       },
       "adaLN-only-17-predict": {
         "slot": "adaLN-only-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-predict/scheduler/adaLN-only-17-predict.attempt1.log",
+          "sha256": "13f766d399a7f501dcd5a306e6e171c146611b105bf0f87fc9c504b4b64fe0de"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2716,6 +2736,10 @@
       },
       "adaLN-only-2026-predict": {
         "slot": "adaLN-only-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-predict/scheduler/adaLN-only-2026-predict.attempt1.log",
+          "sha256": "9517cddc9de2a22b4e543dc2149d3aa589572aef630fe78db593ea4495b0f285"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2730,6 +2754,10 @@
       },
       "adaLN-only-42-predict": {
         "slot": "adaLN-only-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-predict/scheduler/adaLN-only-42-predict.attempt1.log",
+          "sha256": "25ba7cf7601c3df0fab6060d8b4e4366f8f6e5c7665c8c88ff8f21474cd17b0d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2744,6 +2772,10 @@
       },
       "adaLN-only-17-score": {
         "slot": "adaLN-only-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-score/scheduler/adaLN-only-17-score.attempt1.log",
+          "sha256": "7bf09cf9ca63aa9372d2f44ae2e11a65b6812cac7c4aa3c153ca17ca77fa7bf7"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2758,6 +2790,10 @@
       },
       "adaLN-only-2026-score": {
         "slot": "adaLN-only-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-score/scheduler/adaLN-only-2026-score.attempt1.log",
+          "sha256": "7a055c7e8657507b11925c8b4ea92defc8d8167c88e6ba352e608f8da8ea61aa"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2772,6 +2808,10 @@
       },
       "adaLN-only-42-score": {
         "slot": "adaLN-only-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-score/scheduler/adaLN-only-42-score.attempt1.log",
+          "sha256": "28831fbe02ff2e0cbed06ec4f0d2b311205dc24520a0eb95944783aff54a3dea"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2786,6 +2826,10 @@
       },
       "adaLN-only-17-verify": {
         "slot": "adaLN-only-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-verify/scheduler/adaLN-only-17-verify.attempt1.log",
+          "sha256": "f0acf74c6082fd99fba0bb8db410f4c665562a3a6bcf1b723ad56977b4e98d58"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2800,6 +2844,10 @@
       },
       "adaLN-only-2026-verify": {
         "slot": "adaLN-only-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-verify/scheduler/adaLN-only-2026-verify.attempt1.log",
+          "sha256": "f706d97ad98a30516889370211312c94e433552d1b260df44a4d8339c8f5b554"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2814,6 +2862,10 @@
       },
       "adaLN-only-42-verify": {
         "slot": "adaLN-only-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/adaLN-only-verify/scheduler/adaLN-only-42-verify.attempt1.log",
+          "sha256": "381f5842f38fde53d3749b1ec733b5f2577a87019b2fbdb29d257e70a5eedd11"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2828,6 +2880,10 @@
       },
       "all-half-17-fit": {
         "slot": "all-half-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-fit/scheduler/all-half-17-fit.attempt1.log",
+          "sha256": "c871a1b2aed9009ba28dd71f41d735244f6ded735784ecf86637cb3a576bb2e3"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2842,6 +2898,10 @@
       },
       "all-half-2026-fit": {
         "slot": "all-half-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-fit/scheduler/all-half-2026-fit.attempt1.log",
+          "sha256": "657ecb4d918e27bb35bc6b64f0b8465b38689230d1c9ce5a75c1f10189c59bef"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2856,6 +2916,10 @@
       },
       "all-half-42-fit": {
         "slot": "all-half-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-fit/scheduler/all-half-42-fit.attempt1.log",
+          "sha256": "aebd0038206e2bdaae281ff8312cac148b0762774eef0dd5427da50a96df5e27"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2870,6 +2934,10 @@
       },
       "all-half-matrix-verify": {
         "slot": "all-half-matrix-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-matrix-verify/scheduler/all-half-matrix-verify.attempt1.log",
+          "sha256": "7563c02de8fa825a8f987a5c9f064a4cf7a6308021ed5fbd77642eae3f04e684"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2884,6 +2952,10 @@
       },
       "all-half-17-predict": {
         "slot": "all-half-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-predict/scheduler/all-half-17-predict.attempt1.log",
+          "sha256": "d50b0ba3d5f3be318d097205cd0d5de90875b63b7f6c57c4f31247827c8f84cb"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2898,6 +2970,10 @@
       },
       "all-half-2026-predict": {
         "slot": "all-half-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-predict/scheduler/all-half-2026-predict.attempt1.log",
+          "sha256": "f23b937916fcb3f0c6cf3bb305a6b5fceed8b7428d69a7595169f39df9e87185"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2912,6 +2988,10 @@
       },
       "all-half-42-predict": {
         "slot": "all-half-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-predict/scheduler/all-half-42-predict.attempt1.log",
+          "sha256": "3e25bbd01f383bb34374fd2dd4989e419bf414cc913825278c27551bcda4ce8a"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2926,6 +3006,10 @@
       },
       "all-half-17-score": {
         "slot": "all-half-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-score/scheduler/all-half-17-score.attempt1.log",
+          "sha256": "125098a39961fc8af13f9105d90d19afa3685c2f09b1148e7ab2ace1de51445b"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2940,6 +3024,10 @@
       },
       "all-half-2026-score": {
         "slot": "all-half-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-score/scheduler/all-half-2026-score.attempt1.log",
+          "sha256": "271b1e19f18cf6df58f5b656f3dcecb5da44bfda53457329db4dbf55470d1662"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2954,6 +3042,10 @@
       },
       "all-half-42-score": {
         "slot": "all-half-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-score/scheduler/all-half-42-score.attempt1.log",
+          "sha256": "f8cc87362b4da147034775d06d949564376478ae42df8a800a0608b9820a8075"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2968,6 +3060,10 @@
       },
       "all-half-17-verify": {
         "slot": "all-half-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-verify/scheduler/all-half-17-verify.attempt1.log",
+          "sha256": "45d3ea99df7b2530b13f201da56346d7dd80c666c509cd2981a250f1f68e41c0"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2982,6 +3078,10 @@
       },
       "all-half-2026-verify": {
         "slot": "all-half-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-verify/scheduler/all-half-2026-verify.attempt1.log",
+          "sha256": "c1a0f9b1485335be487beb8f58e36f33510215241704d7f5aff5faa91b885186"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -2996,6 +3096,10 @@
       },
       "all-half-42-verify": {
         "slot": "all-half-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/all-half-verify/scheduler/all-half-42-verify.attempt1.log",
+          "sha256": "8deb6e99fe21a4a70eebf16d1dd13fb3ed8b3c39e6358e12eb96f71a9f5315fc"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3010,6 +3114,10 @@
       },
       "log-17-fit": {
         "slot": "log-fit-17",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-fit-17/scheduler/log-17-fit.attempt1.log",
+          "sha256": "f6a85fcce399704183323dcdced119db2d996cea5815b42105c0d45a02e6d386"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3024,6 +3132,10 @@
       },
       "log-2026-fit": {
         "slot": "log-fit-2026",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-fit-2026/scheduler/log-2026-fit.attempt1.log",
+          "sha256": "6d0256df8359276ae3890cedbbfd6ac4d319bde1fe9df9c10da52b1e8759c85d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3038,6 +3150,10 @@
       },
       "log-42-fit": {
         "slot": "log-fit-42",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-fit-42/scheduler/log-42-fit.attempt1.log",
+          "sha256": "c6022c68b2f7b09d14f5058d361e1071487c0702d8c6a762e024ab7b1870a911"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3052,6 +3168,10 @@
       },
       "log-matrix-verify": {
         "slot": "log-matrix-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-matrix-verify/scheduler/log-matrix-verify.attempt1.log",
+          "sha256": "4857a11216b05b023ccd43a3935182528f1ded3944bc1de50362fa30c034ec40"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3066,6 +3186,10 @@
       },
       "log-17-predict": {
         "slot": "log-predict-17",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-predict-17/scheduler/log-17-predict.attempt1.log",
+          "sha256": "440e1a3bf67c9f57b7325e378dc8227be06ca33b9d2e41542d266e22fb5956da"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3080,6 +3204,10 @@
       },
       "log-2026-predict": {
         "slot": "log-predict-2026",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-predict-2026/scheduler/log-2026-predict.attempt1.log",
+          "sha256": "0d73e2f5207258bfeb4d8afd63db948bf4a4a7947445b9e76140a8d0aba5a0be"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3094,6 +3222,10 @@
       },
       "log-42-predict": {
         "slot": "log-predict-42",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-predict-42/scheduler/log-42-predict.attempt1.log",
+          "sha256": "0d6c0ac69d3fc6e6b975599255b6e9ae6c6149ae25ed042f1648b3747082ad44"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3108,6 +3240,10 @@
       },
       "log-17-score": {
         "slot": "log-score-17",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-score-17/scheduler/log-17-score.attempt1.log",
+          "sha256": "3ec9621677557408e83ccf8d421a2425261d3cd4e240dd4673c94d6e5e18e081"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3122,6 +3258,10 @@
       },
       "log-2026-score": {
         "slot": "log-score-2026",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-score-2026/scheduler/log-2026-score.attempt1.log",
+          "sha256": "b96d22351dbd9152edb4e082ac86a0c97b4f18757f581b5033d0d891cce8a777"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3136,6 +3276,10 @@
       },
       "log-42-score": {
         "slot": "log-score-42",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-score-42/scheduler/log-42-score.attempt1.log",
+          "sha256": "6299aff8077ec5cda3c8223ba779cdeb94b3c91a07b41481214eb3c1ec00ef69"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3150,6 +3294,10 @@
       },
       "log-source-17-fit": {
         "slot": "log-source-fit-17",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-source-fit-17/scheduler/log-source-17-fit.attempt1.log",
+          "sha256": "36bb9eed6fd241527d84362a05f03e7572c47e4ffd09cd06af1c18155b3a9025"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3164,6 +3312,10 @@
       },
       "log-source-2026-fit": {
         "slot": "log-source-fit-2026",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-source-fit-2026/scheduler/log-source-2026-fit.attempt1.log",
+          "sha256": "fb50c1c7a99d666a585135ea2cc8ec144be77283b6d504fc19b02dc7de81d637"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3178,6 +3330,10 @@
       },
       "log-source-42-fit": {
         "slot": "log-source-fit-42",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-source-fit-42/scheduler/log-source-42-fit.attempt1.log",
+          "sha256": "d6bfdc8165922a599aa2c0974a881f0eb5a20a6dd4cefbf4830119a655efd370"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3192,6 +3348,10 @@
       },
       "log-17-verify": {
         "slot": "log-verify-17",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-verify-17/scheduler/log-17-verify.attempt1.log",
+          "sha256": "838efb1ef556654c59880ba63064ebd4b04feb09869b6e4356cbff4b423efe07"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3206,6 +3366,10 @@
       },
       "log-2026-verify": {
         "slot": "log-verify-2026",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-verify-2026/scheduler/log-2026-verify.attempt1.log",
+          "sha256": "1a62794d2d4281c4deeb36af2e633b521b8179fb3962e3280ce0d90307396b97"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3220,6 +3384,10 @@
       },
       "log-42-verify": {
         "slot": "log-verify-42",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/log-verify-42/scheduler/log-42-verify.attempt1.log",
+          "sha256": "4788fd5996f393db8dab768c5fecba6a8dddc2539527c482544d6825e573d5d4"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3234,6 +3402,10 @@
       },
       "main-half-17-fit": {
         "slot": "main-half-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-fit/scheduler/main-half-17-fit.attempt1.log",
+          "sha256": "9ca294751f1764d27149b3bd4d013db25f9448952c5be861ae568f37369d66fa"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3248,6 +3420,10 @@
       },
       "main-half-2026-fit": {
         "slot": "main-half-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-fit/scheduler/main-half-2026-fit.attempt1.log",
+          "sha256": "0737c5c9f0b5e76ab3e33e5cb9630ab32c794b5e69f1e4ad2ff0802cad34a3bd"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3262,6 +3438,10 @@
       },
       "main-half-42-fit": {
         "slot": "main-half-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-fit/scheduler/main-half-42-fit.attempt1.log",
+          "sha256": "fa0800aab115279bb7e5b193ce933cb92a0f00d0e36792811d188a28bba4d17d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3276,6 +3456,10 @@
       },
       "main-half-matrix-verify": {
         "slot": "main-half-matrix-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-matrix-verify/scheduler/main-half-matrix-verify.attempt1.log",
+          "sha256": "53abd5c401e1b5c7e9cac0286a3c736f7341fe4a0bb5f70a94faab370f6003bb"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3290,6 +3474,10 @@
       },
       "main-half-17-predict": {
         "slot": "main-half-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-predict/scheduler/main-half-17-predict.attempt1.log",
+          "sha256": "7c93cccc87a18404386f4ee71620e7e2f6ad803c09ef9edd2ec51b2ce8600688"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3304,6 +3492,10 @@
       },
       "main-half-2026-predict": {
         "slot": "main-half-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-predict/scheduler/main-half-2026-predict.attempt1.log",
+          "sha256": "30568a9817edb6bd2bc2d381e15a37c83cfb655c3693c18b543d6757f9f601da"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3318,6 +3510,10 @@
       },
       "main-half-42-predict": {
         "slot": "main-half-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-predict/scheduler/main-half-42-predict.attempt1.log",
+          "sha256": "68e25051f299f1113d7f1ab8abfef65c001348a35f2194ba19580b31d9f2e2a7"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3332,6 +3528,10 @@
       },
       "main-half-17-score": {
         "slot": "main-half-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-score/scheduler/main-half-17-score.attempt1.log",
+          "sha256": "cc1b0d7096eee95c623e49dc67a958acbd19f11a7be17382c9688e6affb35e8a"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3346,6 +3546,10 @@
       },
       "main-half-2026-score": {
         "slot": "main-half-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-score/scheduler/main-half-2026-score.attempt1.log",
+          "sha256": "63df3fa6191210052a66227a02b45a626037a8704e97cafa1ca8cc9e4f1785d0"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3360,6 +3564,10 @@
       },
       "main-half-42-score": {
         "slot": "main-half-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-score/scheduler/main-half-42-score.attempt1.log",
+          "sha256": "4625556210e0817b3a3308c87e87e1408f77435b45649ce7869f7fb82e42bdd0"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3374,6 +3582,10 @@
       },
       "main-half-17-verify": {
         "slot": "main-half-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-verify/scheduler/main-half-17-verify.attempt1.log",
+          "sha256": "8e44a23da288cc4beac59634598906aeab6b463ae3993ae51b02818ac366e6fa"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3388,6 +3600,10 @@
       },
       "main-half-2026-verify": {
         "slot": "main-half-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-verify/scheduler/main-half-2026-verify.attempt1.log",
+          "sha256": "3ae7e9dfaad4bd360427d607a130052027b6e4eba4dd3d40058afd1f121ef496"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3402,6 +3618,10 @@
       },
       "main-half-42-verify": {
         "slot": "main-half-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/main-half-verify/scheduler/main-half-42-verify.attempt1.log",
+          "sha256": "4ab5bd34c69a593c15f1b2643b0d2f5ede144af3cbab6dbe81294bea6c17cc32"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3416,6 +3636,10 @@
       },
       "random-17-fit": {
         "slot": "random-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-fit/scheduler/random-17-fit.attempt1.log",
+          "sha256": "7dd192a4f3cbd902cfba071106c2587e4ba3e61de7df4dc3b452ad34975516c7"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3430,6 +3654,10 @@
       },
       "random-2026-fit": {
         "slot": "random-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-fit/scheduler/random-2026-fit.attempt1.log",
+          "sha256": "f4dc03e81bcb9f1c52c4de82ea27df88160b0912a188d44ae4bde2f5fd19e943"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3444,6 +3672,10 @@
       },
       "random-42-fit": {
         "slot": "random-fit",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-fit/scheduler/random-42-fit.attempt1.log",
+          "sha256": "72a6f14551935a15cf20be907d68920681909e117f2172ed1273cfce65eb2a50"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3458,6 +3690,10 @@
       },
       "random-matrix-verify": {
         "slot": "random-matrix-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-matrix-verify/scheduler/random-matrix-verify.attempt1.log",
+          "sha256": "70057afa938d21f5aaaece37afe7dfaf69b05e2d32d3b652d075d7eea8c01edb"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3472,6 +3708,10 @@
       },
       "random-17-predict": {
         "slot": "random-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-predict/scheduler/random-17-predict.attempt1.log",
+          "sha256": "99a723b65987304778ca2c01b77186e47d7a78e7a82c9c1f9ad2bd301ed5ae70"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3486,6 +3726,10 @@
       },
       "random-2026-predict": {
         "slot": "random-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-predict/scheduler/random-2026-predict.attempt1.log",
+          "sha256": "dd7095d814a3f6eab1d260d0774d7a0d445fb77c4b75a6c7c2c4792345097150"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3500,6 +3744,10 @@
       },
       "random-42-predict": {
         "slot": "random-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-predict/scheduler/random-42-predict.attempt1.log",
+          "sha256": "9325f85c1436f1e30ac2188ef93fc507e46e7dfeeee6cd001dc82851ed93943d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3514,6 +3762,10 @@
       },
       "random-17-score": {
         "slot": "random-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-score/scheduler/random-17-score.attempt1.log",
+          "sha256": "75931e0278cde6afd2e1dd56fcd7a597e508342e16775b0ab56ddebbf82fbcdd"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3528,6 +3780,10 @@
       },
       "random-2026-score": {
         "slot": "random-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-score/scheduler/random-2026-score.attempt1.log",
+          "sha256": "8f60abaca247377bd184e89b734c107f05c99c4391fd869314866c2caee6424b"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3542,6 +3798,10 @@
       },
       "random-42-score": {
         "slot": "random-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-score/scheduler/random-42-score.attempt1.log",
+          "sha256": "d4e74f3a62dcf38b3838695bc116080e73bd2d8caa7bb9107391994822784caa"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3556,6 +3816,10 @@
       },
       "random-17-verify": {
         "slot": "random-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-verify/scheduler/random-17-verify.attempt1.log",
+          "sha256": "340b94c84ab03c244e9e42fb47ec33122bca9a47e3e271db88f61cde17b12ed7"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3570,6 +3834,10 @@
       },
       "random-2026-verify": {
         "slot": "random-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-verify/scheduler/random-2026-verify.attempt1.log",
+          "sha256": "ce6eeefe78ba3d5965274e70fe352d2ff245d9aeae9564bfbaff754838ebf37d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3584,6 +3852,10 @@
       },
       "random-42-verify": {
         "slot": "random-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/random-verify/scheduler/random-42-verify.attempt1.log",
+          "sha256": "93421efda4464a2f6ce6a67f1c9ef826ebdd1435b1fd65329eeb7cad93ba3a4c"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3598,6 +3870,10 @@
       },
       "reference-17-predict": {
         "slot": "reference-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-predict/scheduler/reference-17-predict.attempt1.log",
+          "sha256": "02bce31305674808be17ac3d94c860e18f2a302cb2be45cf24484a9079c7d4b9"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3612,6 +3888,10 @@
       },
       "reference-2026-predict": {
         "slot": "reference-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-predict/scheduler/reference-2026-predict.attempt1.log",
+          "sha256": "1732fc0714cb4142f1613664399b05a98cb46091b5b2cb812d638f8e7e25e67d"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3626,6 +3906,10 @@
       },
       "reference-42-predict": {
         "slot": "reference-predict",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-predict/scheduler/reference-42-predict.attempt1.log",
+          "sha256": "639249b0e58e63fadc1d1741795bd74635d3291fd9d5074644c9cbd67916772a"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3640,6 +3924,10 @@
       },
       "reference-17-score": {
         "slot": "reference-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-score/scheduler/reference-17-score.attempt1.log",
+          "sha256": "f074ab28c930df4dae79419093b62f61bbc791766bc2e65a201a47d9d8502ba3"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3654,6 +3942,10 @@
       },
       "reference-2026-score": {
         "slot": "reference-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-score/scheduler/reference-2026-score.attempt1.log",
+          "sha256": "e3fed3f3c56e82677dfbbd58310936991c0902fa12cbba0d3eaef6fe440216ee"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3668,6 +3960,10 @@
       },
       "reference-42-score": {
         "slot": "reference-score",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-score/scheduler/reference-42-score.attempt1.log",
+          "sha256": "2f7266e458292a7c9bd255c0bf40131b7951741cafad9b7ba82e0370925fb34b"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3682,6 +3978,10 @@
       },
       "reference-17-verify": {
         "slot": "reference-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-verify/scheduler/reference-17-verify.attempt1.log",
+          "sha256": "983e8143c25483b5c0be11327a775457388f649a25d2b836f1eb82099e104235"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3696,6 +3996,10 @@
       },
       "reference-2026-verify": {
         "slot": "reference-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-verify/scheduler/reference-2026-verify.attempt1.log",
+          "sha256": "70626749a1e5168bac2ebf57378572b2a6057cf1777fda48b294a7ff12f46354"
+        },
         "attempts": [
           {
             "outcome": "completed",
@@ -3710,6 +4014,10 @@
       },
       "reference-42-verify": {
         "slot": "reference-verify",
+        "completed_log": {
+          "path": "stage2/06_pdiff_transfer_optimize/output/paired-transfer/schedule/reference-verify/scheduler/reference-42-verify.attempt1.log",
+          "sha256": "a910f877ee9aac58ce2ed8967d97f9cc0a0d64d16ca3ba86cccb4eb19190cffa"
+        },
         "attempts": [
           {
             "outcome": "completed",

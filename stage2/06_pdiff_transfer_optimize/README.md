@@ -226,9 +226,10 @@ the scheduler with the arc interpreter.
 python "$step/execution/script/paired_evidence.py" "$step/output/paired-transfer"
 ```
 
-The command writes `log/matrix.json` after it verifies each seed's
-loss-selected source and target EMAs, reference pairing, prediction lineage,
-and group-level support for the dose summaries.
+The command writes `log/matrix.json` after verifying each seed's
+loss-selected source and target EMAs, reference pairing, and prediction
+lineage. It recalculates the group-level metrics from the sealed
+validation truth and prediction arrays.
 
 ## All-half learning rate
 
@@ -267,3 +268,51 @@ Use the target commands above with `--arm adaLN-only` and
 `out="$step/output/paired-transfer/adaLN-only/seed-$seed"`.
 The selected EMA and fit seal are under
 `output/checkpoints/09-paired-adaLN-only-fold-0-seed-$seed/fit/`.
+
+## Reconstruct the paired comparison through the scheduler
+
+Run the commands below from the runtime checkout. The matrix uses
+`<matrix-root>/<arm>/seed-<seed>` for each cell, with `reference` as the
+original Transfer arm. The target verifier finds its same-seed reference
+in this layout. Use `--reference` to point a standalone target verification
+at an explicit reference cell. Fit checkpoints always live in the runtime
+checkout's Step 06 `output/checkpoints/`.
+
+The queue generator pins the worker, cell and available input plan digests
+for each phase. The Step 04 scheduler records attempts and telemetry in a
+`scheduler/` directory alongside each queue. The commands assume a new
+matrix schedule. For a fresh evidence check of a completed matrix, use a
+separate directory for the new queues and leave the historical ledger in place.
+
+```bash
+set -e
+step=stage2/06_pdiff_transfer_optimize
+base="$PWD/$step/output/paired-transfer"
+pdiff="$PWD/stage2/_envs/perturbdiff/bin/python"
+scheduler=stage2/04_pdiff_hyperparameter/execution/script/schedule.py
+
+run_phase() {
+    local arm=$1 phase=$2 queue
+    queue="$base/schedule/$arm-$phase/queue.json"
+    "$pdiff" "$step/execution/script/paired_queue.py" "$base" "$arm" "$phase" --queue "$queue"
+    "$pdiff" "$scheduler" run "$queue"
+}
+
+for phase in verify predict score; do
+    run_phase reference "$phase"
+done
+run_phase log-source fit
+for arm in random log all-half main-half adaLN-only; do
+    for phase in verify fit predict score matrix-verify; do
+        run_phase "$arm" "$phase"
+    done
+done
+```
+
+Each matrix verification writes `<matrix-root>/<arm>/matrix.json`. After
+all five have verified, submit the [publication command](#paired-optimization-results)
+as a CPU job through the same scheduler. The publisher checks the queued
+phase and input digests against the current cells, then verifies each
+successful attempt's log against the corresponding sealed output. For a
+fresh run, use `--record` and `--figure` to write the newly generated
+resource ledger and PNG to separate paths for comparison.

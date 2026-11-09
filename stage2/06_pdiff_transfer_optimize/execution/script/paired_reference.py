@@ -15,6 +15,7 @@ from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-reference-v1'
 SCORE_SCHEMA = 'step06-paired-scores-v1'
+STEP = Path('stage2/06_pdiff_transfer_optimize')
 REGIME = 'cold-cm-drug'
 ARM = 'Transfer'
 DOSES = (0.2, 1.0, 10.0)

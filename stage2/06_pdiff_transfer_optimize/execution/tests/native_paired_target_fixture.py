@@ -133,7 +133,9 @@ def fixture(runtime, root, arm='random'):
     original_request = {**request, 'identity': {**request['identity'], 'arm': ref.ARM, 'regime': ref.REGIME}}
     with (patch.multiple(native.torch.cuda, reset_peak_memory_stats=lambda device: None,
                          synchronize=lambda device: None),
-          patch.object(native, 'load_recipe', return_value=config)):
+          patch.object(native, 'load_recipe', return_value=config),
+          patch.object(cli, 'use_runtime', return_value=None),
+          patch.object(log_source, 'use_runtime', return_value=None)):
         # Controlled author losses exercise distinct minima and strict ties while
         # the trainer still performs actual optimizer, EMA and prediction steps.
         with (patch.object(native, 'JointPerturbDiff', Original),
@@ -159,6 +161,7 @@ def fixture(runtime, root, arm='random'):
         common = ['--seed', '17', '--runtime', str(runtime)]
         for phase in ('predict', 'score'):
             ref.main([phase, str(reference_root), *common, '--plan-sha256', reference_sha])
+        common = ['--seed', '17', '--runtime', str(root)]
         if arm == 'log':
             with (patch.object(native, 'load_recipe', return_value=source_config),
                   patch.object(log_source, 'verify_request', return_value=None)):
@@ -189,7 +192,7 @@ def fixture(runtime, root, arm='random'):
     fit = read_json(scores['selection']['history']['path'])
     initialization = fit['initialization']
     if arm == 'log':
-        source = log_source.selected_source(target_root, plan, reference_sha)
+        source = log_source.selected_source(root, plan, reference_sha)
         assert fit['source'] == source
         assert initialization['source_selection'] == source['metadata']
         assert initialization['recipient_doses_um'] == [.2, 1., 10.]

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Verify sealed Step 06 paired Transfer evidence for all three seeds."""
 import argparse
-import math
 from pathlib import Path
 
 import paired_reference as reference
@@ -13,36 +12,10 @@ from learning_rate import publish
 from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-evidence-v1'
-GROUP_METRICS = {
-    'positive_ap100': ('positive_reason', {'empty_direction'}),
-    'negative_ap100': ('negative_reason', {'empty_direction'}),
-    'pcc': ('pcc_reason', {'constant_truth', 'constant_prediction'}),
-}
 
-
-def verify_group_scores(path, plan, labels):
-    cases = reference.base.case_rows(plan['request'])
-    groups, _ = reference.grouped_cases(cases)
-    records = rows(path)
-    if (len(cases) != plan['case_count'] or len(groups) != plan['group_count']
-            or json_hash(reference.base.case_order(cases)) != plan['ordered_case_group_sha256']
-            or [row['group_id'] for row in records] != list(groups)):
-        raise ValueError('group score membership differs from the frozen protocol')
-    for row in records:
-        members = groups[row['group_id']]
-        case = cases[members[0]]
-        if (any(row[key] != str(value) for key, value in labels.items())
-                or row['drug_key'] != case['drug_key'] or float(row['dose_um']) != float(case['dose_um'])
-                or int(row['n_wells']) != len(members)):
-            raise ValueError('group score identity differs from the frozen protocol or EMA')
-        row['dose_um'] = float(row['dose_um'])
-        for field, (reason, allowed) in GROUP_METRICS.items():
-            value = float(row[field]) if row[field] else None
-            if ((value is None and row[reason] not in allowed)
-                    or (value is not None and (row[reason] or not math.isfinite(value)))):
-                raise ValueError('group score has invalid metric support')
-            row[field] = value
-    return reference.summarize_doses(records, reference.base.summarize_groups(records))
+def csv_records(records, labels):
+    return [{key: '' if value is None else str(value) for key, value in {**labels, **row}.items()}
+            for row in records]
 
 
 def verify_scores(directory, prediction_dir, plan, plan_digest, arm, selection, scores_binding):
@@ -61,14 +34,23 @@ def verify_scores(directory, prediction_dir, plan, plan_digest, arm, selection, 
     prediction = bind(prediction_dir / 'prediction.json', report['prediction']['sha256'])
     if prediction != report['prediction']:
         raise ValueError('score seal points to a different prediction')
-    reference.base.verify_prediction(plan['request'], selection['checkpoint'], selection['metadata'],
-                                     prediction_dir, lineage)
-    check_binding(plan['truth'])
+    request = plan['request']
+    cases = reference.base.case_rows(request)
+    groups, _ = reference.grouped_cases(cases)
+    if (len(cases) != plan['case_count'] or len(groups) != plan['group_count']
+            or json_hash(reference.base.case_order(cases)) != plan['ordered_case_group_sha256']):
+        raise ValueError('group score membership differs from the frozen protocol')
+    predicted = reference.base.verify_prediction(request, selection['checkpoint'], selection['metadata'],
+                                                 prediction_dir, lineage)
+    truth = check_binding(plan['truth'])
+    observed = reference.load_array(Path(truth['path']), (len(cases), request['n_genes']))
+    group_rows, dose_rows = reference.score_prediction(request, observed, predicted)
     files = {name: bind(directory / name, report['files'][name]) for name in ('per_group.csv', 'per_dose.csv')}
     labels = {'seed': plan['seed'], 'arm': arm, 'step': selection['metadata']['best_step']}
-    summaries = [{**labels, **row} for row in verify_group_scores(files['per_group.csv']['path'], plan, labels)]
-    csv_summaries = [{key: '' if value is None else str(value) for key, value in row.items()}
-                     for row in summaries]
+    if csv_records(group_rows, labels) != rows(files['per_group.csv']['path']):
+        raise ValueError('group scores differ from the sealed truth and prediction')
+    summaries = [{**labels, **row} for row in dose_rows]
+    csv_summaries = csv_records(dose_rows, labels)
     if (summaries != report['per_dose'] or csv_summaries != rows(files['per_dose.csv']['path'])
             or {row['dose_um']: row['group_count'] for row in summaries} != plan['dose_group_counts']
             or tuple(float(row['dose_um']) for row in summaries) != reference.DOSES):
@@ -76,7 +58,7 @@ def verify_scores(directory, prediction_dir, plan, plan_digest, arm, selection, 
     return report, files
 
 
-def verify_cell(root, arm, seed):
+def verify_cell(root, arm, seed, *, runtime):
     """Read one intervention and the same-seed reference with their artifact bindings."""
     upstream = root / 'reference' / f'seed-{seed}'
     cell = root / arm / f'seed-{seed}'
@@ -84,7 +66,7 @@ def verify_cell(root, arm, seed):
     pair_binding = bind(cell / 'paired.json')
     pair = read_json(pair_binding['path'])
     plan_digest = plan_binding['sha256']
-    plan, original = target.load_plan(cell, arm, seed, plan_digest)
+    plan, original = target.load_plan(cell, arm, seed, plan_digest, runtime=runtime)
     if (plan['reference'] != bind(upstream / 'plan.json', plan['reference']['sha256'])
             or any(pair[key] != value for key, value in {
                 'schema': target.PAIR_SCHEMA, 'arm': arm, 'seed': seed, 'plan_sha256': plan_digest,
@@ -122,8 +104,8 @@ def verify_cell(root, arm, seed):
     }
 
 
-def verify_matrix(root, arm):
-    cells = [verify_cell(root, arm, seed) for seed in SEEDS]
+def verify_matrix(root, arm, *, runtime):
+    cells = [verify_cell(root, arm, seed, runtime=runtime) for seed in SEEDS]
     protocol = cells[0]['protocol_sha256']
     if any(cell['protocol_sha256'] != protocol for cell in cells):
         raise ValueError('paired seeds do not share the frozen validation protocol')
@@ -134,12 +116,13 @@ def verify_matrix(root, arm):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('root', type=Path, help='paired-transfer output directory')
+    parser.add_argument('--runtime', type=Path, default=reference.base.REPO)
     parser.add_argument('--arm', choices=target.CHECKPOINT_NUMBERS, default='log')
     parser.add_argument('--manifest', type=Path, help='defaults to <root>/<arm>/matrix.json')
     args = parser.parse_args(argv)
     root = args.root.resolve()
     destination = args.manifest or root / args.arm / 'matrix.json'
-    binding = publish(destination.resolve(), verify_matrix(root, args.arm))
+    binding = publish(destination.resolve(), verify_matrix(root, args.arm, runtime=args.runtime.resolve()))
     print(f'{binding["path"]} SHA-256 {binding["sha256"]}', flush=True)
 
 
