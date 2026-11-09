@@ -16,7 +16,7 @@ from artifacts import read_json, sha256, write_json
 from formal_matrix import bind
 from native_log_dose_fixture import source_release
 from native_replication_fixture import source_checkpoint, target_request
-from tahoe_bridge import load_initialization, seal_initialization
+from tahoe_bridge import CHEMICAL_LOOKUP, DOSE_LOOKUP, dose_layout, load_initialization, seal_initialization
 from training_inputs import json_hash
 
 
@@ -30,7 +30,7 @@ def fixture(runtime, root, arm='random'):
               'expression_scale': 1, 'chemical_dimension': 16, 'batch_groups': 1,
               'population_size': 2, 'learning_rate': .0002, 'weight_decay': .001,
               'sampling_start_time': 1, 'warmup_steps': 1, 'schedule_training_steps': 6,
-              'ema_decay': .9, 'ema_update_steps': 1, 'max_steps': 6,
+              'ema_decay': .99 if arm == 'log' else .9, 'ema_update_steps': 1, 'max_steps': 6,
               'validation_interval': 1, 'minimum_steps': 7, 'patience_steps': 7,
               'max_training_seconds': 120, 'min_delta': 0}
     recipient, recipe = root / 'request.json', root / 'recipe.json'
@@ -117,6 +117,15 @@ def fixture(runtime, root, arm='random'):
         assert initialization['source_selection'] == source['metadata']
         assert initialization['recipient_doses_um'] == [.2, 1., 10.]
         assert abs(initialization['recipient_log_features'][-1] - 2.30103) < 1e-6
+        checkpoint = native.torch.load(scores['selection']['checkpoint']['path'],
+                                       map_location='cpu', weights_only=True, mmap=True)['model_state']
+        inputs = native.PredictorInputs(request)
+        keys = ref.TRANSFER.tahoe.key_layout(inputs.cases)
+        _, indices = dose_layout(keys)
+        assert checkpoint[DOSE_LOOKUP].tolist() == indices
+        fingerprints = [inputs.morgan[inputs.drug_index[drug]] for drug, _ in keys]
+        expected = native.np.stack([*fingerprints, native.np.zeros(2048, dtype='float32')])
+        native.np.testing.assert_array_equal(checkpoint[CHEMICAL_LOOKUP].numpy(), expected)
         assert 'native.cov_encoder.dose_encoder.control' in {
             parameter for group in fit['training_initial_state']['optimizer_groups']
             for parameter in group['parameters']

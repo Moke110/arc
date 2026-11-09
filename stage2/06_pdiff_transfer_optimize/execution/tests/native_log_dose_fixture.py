@@ -133,7 +133,7 @@ def fit_source_fixture(runtime, root):
               'expression_scale': 1, 'chemical_dimension': 16, 'batch_groups': 1,
               'population_size': 2, 'learning_rate': 0.0002, 'weight_decay': 0,
               'sampling_start_time': 1, 'warmup_steps': 1, 'schedule_training_steps': 4,
-              'ema_decay': 0.9, 'ema_update_steps': 1, 'max_steps': 4,
+              'ema_decay': 0.99, 'ema_update_steps': 1, 'max_steps': 4,
               'validation_interval': 1, 'minimum_steps': 2, 'patience_steps': 1,
               'max_training_seconds': 120, 'min_delta': 1e6}
     original = source_release(native, root, config)
