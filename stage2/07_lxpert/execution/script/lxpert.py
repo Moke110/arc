@@ -12,6 +12,7 @@ STEP02 = REPO / "stage2/02_dataset_corpus"
 STEP03 = REPO / "stage2/03_modes_tenv"
 CORPUS = STEP02 / "output/corpus/v2"
 RELEASE = STEP / "output/input"
+AUTOENCODER_CHECKPOINT = STEP / "output/autoencoder/checkpoint.pt"
 
 
 def source_pins():
@@ -54,7 +55,8 @@ def main():
     freeze_plan.add_argument("--max-epochs", type=int, required=True)
     freeze_plan.add_argument("--max-seconds", type=int, required=True, help="wall time ceiling per fit")
     refit_model.add_argument("--output", type=Path, required=True, help="new autoencoder release directory")
-    treatment.add_argument("--checkpoint", type=Path, default=STEP / "output/autoencoder/checkpoint.pt")
+    treatment.add_argument("--checkpoint", type=Path, default=AUTOENCODER_CHECKPOINT,
+                           help="full-data refit checkpoint (default: published Step 07 checkpoint)")
     treatment.add_argument("--tenv-input", type=Path, default=STEP03 / "output/input")
     treatment.add_argument("--case-id", default="temp_env::Plate1-C02")
     args = parser.parse_args()
@@ -71,7 +73,7 @@ def main():
         elif args.command == "smoke":
             from treatment_smoke import smoke
 
-            manifest = smoke(args, source_pins(),
+            manifest = smoke(args, source_pins(), AUTOENCODER_CHECKPOINT,
                              STEP / "execution/formal_fit_record/run.json",
                              STEP03 / "execution/input_record/verification.json")
         else:

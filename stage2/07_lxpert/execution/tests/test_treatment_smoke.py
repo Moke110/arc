@@ -3,16 +3,47 @@ import hashlib
 import json
 from math import log10
 import shutil
+import subprocess
+import sys
 import unittest
 
 import numpy as np
 
 import test_formal_fit
+import test_inputs
 
 
 class TreatmentSmokeTest(unittest.TestCase):
     setUp = test_formal_fit.FormalFitTest.setUp
     cli = test_formal_fit.FormalFitTest.cli
+
+    def test_smoke_default_checkpoint_requires_the_canonical_digest(self):
+        repo = self.release.parent / "checkout"
+        step = repo / "stage2/07_lxpert"
+        (repo / ".git").mkdir(parents=True)
+        scripts = step / "execution/script"
+        shutil.copytree(test_inputs.CLI.parent, scripts)
+        records = repo / "stage2/02_dataset_corpus/execution/build_record"
+        records.mkdir(parents=True)
+        (records / "tahoe_corpus_move.json").write_text('{"file_sha256": "unused"}')
+        (records / "corpus_build.json").write_text('{"corpora": {"tenv": {"file_sha256": "unused"}}}')
+        record = step / "execution/formal_fit_record/run.json"
+        record.parent.mkdir(parents=True)
+        record.write_text(json.dumps({"checkpoint_sha256": hashlib.sha256(b"published").hexdigest()}))
+        checkpoint = step / "output/autoencoder/checkpoint.pt"
+        checkpoint.parent.mkdir(parents=True)
+        checkpoint.write_bytes(b"changed")
+
+        for args in ((), ("--checkpoint", str(checkpoint.relative_to(repo)))):
+            with self.subTest(args=args):
+                result = subprocess.run(
+                    [sys.executable, str(scripts / "lxpert.py"), "smoke", "--fixture",
+                     "--device", "cpu", "--release", str(self.release), *args],
+                    cwd=repo, capture_output=True, text=True, check=False,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("checkpoint differs from the verified Step 07 autoencoder release",
+                              result.stderr)
 
     def test_treatment_smoke_uses_measured_inputs_and_frozen_checkpoint(self):
         self.cli("freeze", "--batch-size", "2", "--max-epochs", "1", "--max-seconds", "60")
@@ -66,5 +97,21 @@ class TreatmentSmokeTest(unittest.TestCase):
         for name in ("morgan_adapter", "dose_adapter"):
             self.assertGreater(smoke["gradient_l2"][name], 0.0)
 
-        (tenv / "controls.npy").write_bytes(b"tampered")
+        controls = tenv / "controls.npy"
+        original_controls = controls.read_bytes()
+        controls.write_bytes(b"tampered")
         self.cli("smoke", *args, error="tenv input digest mismatch: controls.npy")
+        controls.write_bytes(original_controls)
+
+        refit_record = output / "refit.json"
+        wrong_mode = json.loads(refit_record.read_text())
+        wrong_mode["earlier_tenv_test_expression_in_refit"] = True
+        refit_record.write_text(json.dumps(wrong_mode))
+        (output / "refit.sha256").write_text(hashlib.sha256(refit_record.read_bytes()).hexdigest())
+        self.cli("smoke", *args, error="formal checkpoint provenance mismatch")
+
+    def test_smoke_rejects_a_short_fit_checkpoint(self):
+        output = self.release.parent / "short_fit"
+        self.cli("fit", "--steps", "1", "--batch-size", "2", "--output", str(output))
+        self.cli("smoke", "--checkpoint", str(output / "checkpoint.pt"),
+                 error="treatment smoke requires a full-data refit checkpoint")

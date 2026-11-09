@@ -159,3 +159,16 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 # Retained old formal generation from the reviewed joint v2 atomic exchange.
 # Keep recovery bytes local; track only the canonical formal JSON records.
 /stage2/03_modes_tenv/execution/.formal-v2-generation/
+
+# Stage 2 Step 07 published autoencoder and its provenance records.
+!/stage2/07_lxpert/output/
+/stage2/07_lxpert/output/*
+!/stage2/07_lxpert/output/autoencoder/
+/stage2/07_lxpert/output/autoencoder/*
+!/stage2/07_lxpert/output/autoencoder/checkpoint.pt
+!/stage2/07_lxpert/output/autoencoder/plan.json
+!/stage2/07_lxpert/output/autoencoder/plan.sha256
+!/stage2/07_lxpert/output/autoencoder/development.json
+!/stage2/07_lxpert/output/autoencoder/development.sha256
+!/stage2/07_lxpert/output/autoencoder/refit.json
+!/stage2/07_lxpert/output/autoencoder/refit.sha256

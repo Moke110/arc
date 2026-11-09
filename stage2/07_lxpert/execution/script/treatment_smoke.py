@@ -168,11 +168,11 @@ def probe_treatment(autoencoder, device, baseline, fingerprint, log_dose):
     }
 
 
-def smoke(args, source_pins, autoencoder_record, tenv_record):
+def smoke(args, source_pins, canonical_checkpoint, autoencoder_record, tenv_record):
     start = time.perf_counter()
     execution = runtime(args.device, args.fixture)
     checkpoint_sha = sha256(args.checkpoint)
-    if not args.fixture:
+    if args.checkpoint.resolve() == canonical_checkpoint.resolve():
         pinned_checkpoint = json.loads(autoencoder_record.read_text())["checkpoint_sha256"]
         if checkpoint_sha != pinned_checkpoint:
             raise ValueError("checkpoint differs from the verified Step 07 autoencoder release")

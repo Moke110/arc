@@ -14,7 +14,9 @@ import torch
 
 from autoencoder import TranscriptomeAutoencoder, reconstruction_mse
 from inputs import SOURCES, sha256
-from short_fit import CHECKPOINT_SCHEMA, ExpressionRelease, attention_runtime, measure, probe, runtime
+from short_fit import (
+    CHECKPOINT_SCHEMA, ExpressionRelease, attention_runtime, measure, probe, runtime, train_batch,
+)
 
 
 RECORD_SCHEMA = 1
@@ -152,14 +154,7 @@ def train_epoch(release, model, optimizer, by_source, recipe, epoch, device, dea
     for members in batches(rows, recipe["batch_size"]):
         check_deadline(deadline)
         expression, observed = release.batch(members, device)
-        optimizer.zero_grad(set_to_none=True)
-        with attention_runtime(device):
-            loss = reconstruction_mse(model(expression), expression, observed).mean()
-        value = float(loss.detach())
-        if not np.isfinite(value):
-            raise ValueError("non-finite reconstruction training loss")
-        loss.backward()
-        optimizer.step()
+        value = train_batch(model, optimizer, expression, observed, device)
         total += value * len(members)
         steps += 1
         for source, _ in members:
@@ -318,8 +313,11 @@ def verify_formal_release(directory, metadata, checkpoint_sha, release):
     refit, refit_sha = read_record(directory / "refit.json")
     check_development(development, plan, plan_sha)
     counts = {source: len(release.profiles[source]) for source in SOURCES}
+    fixture = release.manifest["fixture"]
     if (plan_sha != metadata["plan_sha256"] or development_sha != metadata["development_sha256"]
             or plan["input"] != release.contract
+            or plan["fixture"] is not fixture
+            or refit["earlier_tenv_test_expression_in_refit"] is not (not fixture)
             or development["selected_epochs"] != metadata["selected_epochs"]
             or development["initial_model_sha256"] != metadata["initial_model_sha256"]
             or metadata["training_profiles"] != counts or refit["checkpoint_metadata"] != metadata

@@ -1,0 +1,145 @@
+{
+  "fixture": false,
+  "frozen_at_utc": "2026-11-09T11:55:58.204230+00:00",
+  "input": {
+    "architecture": {
+      "gene_count": 18164,
+      "heads": 8,
+      "latent_tokens": 512,
+      "width": 128
+    },
+    "axis_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "input_manifest_sha256": "11e9e763eb1e3538779a65315911783d4ac48c109e846d7f4d8b18c340d9857b",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)"
+  },
+  "recipe": {
+    "batch_size": 32,
+    "max_epochs": 4,
+    "max_seconds": 1800,
+    "objective": "mean of per-profile observed-target reconstruction MSE",
+    "optimizer": {
+      "amsgrad": false,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "capturable": false,
+      "differentiable": false,
+      "eps": 1e-08,
+      "foreach": false,
+      "fused": false,
+      "lr": 0.001,
+      "maximize": false,
+      "name": "AdamW",
+      "weight_decay": 0.01
+    },
+    "sampler": "NumPy PCG64 permutation of combined rows, keyed by seed and one-based epoch",
+    "seed": 20261109,
+    "selection": "minimum tenv development validation MSE, earliest epoch on ties"
+  },
+  "runtime": {
+    "attention_backend": "flash_attention",
+    "cuda_version": "13.0",
+    "device": "cuda",
+    "numpy_version": "2.4.6",
+    "precision": "bfloat16",
+    "torch_version": "2.12.0+cu130"
+  },
+  "schema_version": 1,
+  "script_sha256": {
+    "autoencoder.py": "669bd342fa1418640c20ca3e103dea0e25401ae070067d5d2c16fbcc234267b5",
+    "formal_fit.py": "8d4040a2b5c0ba46c779b1d66499de3ae2f8cf8515e2f23a0e7141e1d129ac19",
+    "inputs.py": "664a2d0357400531430a6bd70b2e04da8c76c1ec2294605338d979494a2eeef1",
+    "lxpert.py": "02ea3763c519bb3716a0f6cee766bf885e37849f98f439f9b1712cca973a8389",
+    "short_fit.py": "2e1a9ea9d0767912a2dcc570b36805c734566dad1d024d2ca2da413b6803e0f9"
+  },
+  "source_membership": {
+    "tahoe": {
+      "development": {
+        "train": {
+          "membership_sha256": "69a69b32ac37e91d3a3da3cea2457f89bfc407d43cce66bed5c56f8a6816e522",
+          "plates": [
+            "plate1",
+            "plate11",
+            "plate12",
+            "plate13",
+            "plate14",
+            "plate2",
+            "plate3",
+            "plate4",
+            "plate5",
+            "plate6",
+            "plate7",
+            "plate9"
+          ],
+          "profiles": 57418
+        },
+        "validation": {
+          "membership_sha256": "f04cc8d2ea67f94554e86d0dfcc216fb1212321275ad8804b7e51bea986b32ae",
+          "plates": [
+            "plate10",
+            "plate8"
+          ],
+          "profiles": 9600
+        }
+      },
+      "population": {
+        "blank": 0,
+        "control": 1400,
+        "raw": 67018,
+        "treated": 65618
+      },
+      "refit": {
+        "membership_sha256": "374e5c95312967dd81069d4f702e9b4ec56a7d0555f0ccbeb21610769f73599b",
+        "profiles": 67018
+      }
+    },
+    "tenv": {
+      "development": {
+        "train": {
+          "membership_sha256": "d78adacb0e7ea5500c1462be81e8749720a0680397a159a6ed4acdae5d33abbf",
+          "plates": [
+            "Plate10",
+            "Plate11",
+            "Plate12",
+            "Plate13",
+            "Plate14",
+            "Plate16",
+            "Plate3",
+            "Plate4",
+            "Plate5",
+            "Plate6",
+            "Plate7",
+            "Plate8",
+            "Plate9"
+          ],
+          "profiles": 3635
+        },
+        "validation": {
+          "membership_sha256": "37c6c3314c6fc8a337c2ff6b1697c7c55ce461c4c2ce5b6b4dd7e5918fba9095",
+          "plates": [
+            "Plate1",
+            "Plate15",
+            "Plate2"
+          ],
+          "profiles": 843
+        }
+      },
+      "population": {
+        "blank": 32,
+        "control": 272,
+        "raw": 4510,
+        "treated": 4206
+      },
+      "refit": {
+        "membership_sha256": "ea3f3fa081c745e68d0388a15c78b1572b06fb022c09ae7b1d0295277b6e8606",
+        "profiles": 4478
+      }
+    }
+  },
+  "source_sha256": {
+    "tahoe": "300955e0b7739b87960d1056536eb3c14e10f1376792c695a137eed818ed7f45",
+    "tenv": "a3d521f0ca0fbc732f2f6ba5e31ec2f1efb000102c30d64b7c991cc23ed4a886"
+  },
+  "split_seed": 20261109
+}

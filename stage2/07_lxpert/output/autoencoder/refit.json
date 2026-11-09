@@ -1,0 +1,104 @@
+{
+  "checkpoint_metadata": {
+    "architecture": {
+      "gene_count": 18164,
+      "heads": 8,
+      "latent_tokens": 512,
+      "width": 128
+    },
+    "axis_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "development_sha256": "dc9b83c0684e8285fd414fdea928a9d1c68ebdb2189ecf1840bb7d6b18316a6a",
+    "device": "cuda",
+    "fit_stage": "full_data_refit",
+    "initial_model_sha256": "6038ca334f94e27e25196d2bacf61478fa2fc76e0e86ad00d340d708ff5f0835",
+    "input_manifest_sha256": "11e9e763eb1e3538779a65315911783d4ac48c109e846d7f4d8b18c340d9857b",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "plan_sha256": "4a95702b352e70f470d0a855a7243088256fd3349f6cae5178a183db7f5c8f8f",
+    "precision": "bfloat16",
+    "schema_version": 1,
+    "selected_epochs": 4,
+    "training_profiles": {
+      "tahoe": 67018,
+      "tenv": 4478
+    }
+  },
+  "checkpoint_sha256": "fae187bb5de96b2dafb923e1a206d570c96566c8cd51d27f6340a9bd7c5ae3ea",
+  "earlier_tenv_test_expression_in_refit": true,
+  "elapsed_seconds": 406.2059219500079,
+  "epochs": [
+    {
+      "elapsed_seconds": 98.81429338699672,
+      "epoch": 1,
+      "sample_order_sha256": "cbeed41f863e047324dfa9f18aaf9c113f1834c9c252059f9b950511441c38a7",
+      "steps": 2235,
+      "training_mse": 0.07695878723558529,
+      "training_profiles": {
+        "tahoe": 67018,
+        "tenv": 4478
+      }
+    },
+    {
+      "elapsed_seconds": 99.54295285999251,
+      "epoch": 2,
+      "sample_order_sha256": "3c785015e71259e194f4dd2baeb7e44bfe04c6911687c8ebcf14f12b165202b2",
+      "steps": 2235,
+      "training_mse": 0.07344838048434503,
+      "training_profiles": {
+        "tahoe": 67018,
+        "tenv": 4478
+      }
+    },
+    {
+      "elapsed_seconds": 98.60742718400434,
+      "epoch": 3,
+      "sample_order_sha256": "73c1c332112fcd260bd6c34c2ea54df22e992fa75e277a8a7022312afb858c3d",
+      "steps": 2235,
+      "training_mse": 0.06517154554460984,
+      "training_profiles": {
+        "tahoe": 67018,
+        "tenv": 4478
+      }
+    },
+    {
+      "elapsed_seconds": 98.49351342000591,
+      "epoch": 4,
+      "sample_order_sha256": "11c0c00f67c61f06b5ce919c74bc7de654fd1d7ff80b3fff894639f55055f2ea",
+      "steps": 2235,
+      "training_mse": 0.02775545700212393,
+      "training_profiles": {
+        "tahoe": 67018,
+        "tenv": 4478
+      }
+    }
+  ],
+  "peak_cuda_allocated_bytes": 1607714816,
+  "peak_cuda_reserved_bytes": 1715470336,
+  "peak_rss_kib": 6623460,
+  "probe": {
+    "finite": true,
+    "latent_shape": [
+      2,
+      512,
+      128
+    ],
+    "probe_mse": {
+      "tahoe": 0.009455855935811996,
+      "tenv": 0.16307039558887482
+    },
+    "probe_rows": [
+      [
+        "tahoe",
+        33422
+      ],
+      [
+        "tenv",
+        0
+      ]
+    ],
+    "reconstruction_shape": [
+      2,
+      18164
+    ]
+  },
+  "schema_version": 1
+}

@@ -54,9 +54,9 @@ Run bounded CLI tests with
 
 ```bash
 python stage2/07_lxpert/execution/script/lxpert.py fit \
-  --steps 8 --batch-size 32 --output stage2/07_lxpert/output/short_fit
+  --steps 8 --batch-size 32 --output stage2/07_lxpert/execution/output/short_fit
 python stage2/07_lxpert/execution/script/lxpert.py reload \
-  --checkpoint stage2/07_lxpert/output/short_fit/checkpoint.pt
+  --checkpoint stage2/07_lxpert/execution/output/short_fit/checkpoint.pt
 ```
 
 Both commands verify the input release and use CUDA BF16 fused FlashAttention
@@ -92,7 +92,7 @@ FlashAttention and the admitted batch size of 32.
 ```bash
 cli=stage2/07_lxpert/execution/script/lxpert.py
 run_dir=stage2/07_lxpert/execution/output/formal_fit_run
-autoencoder=stage2/07_lxpert/output/autoencoder
+autoencoder=stage2/07_lxpert/execution/output/autoencoder
 python "$cli" freeze --run-dir "$run_dir" --batch-size 32 --seed 20261109 \
   --max-epochs 4 --max-seconds 1800
 python "$cli" develop --run-dir "$run_dir"
@@ -108,12 +108,30 @@ held-out Tahoe and tenv plates. The minimum tenv validation MSE selects the
 duration, with the earliest epoch breaking ties.
 
 `refit` initializes a new model and optimizer from the frozen seed and uses all
-71,496 released profiles for the selected number of epochs. The resulting
-`output/autoencoder/` release bundles the checkpoint, frozen plan, development
-scores and refit record. `reload` checks their digests and reproduces the
-checkpoint's two full-axis reconstruction probes. Both training commands emit
-one progress record per completed epoch and report elapsed time, peak host RSS,
-and peak CUDA allocated and reserved memory.
+71,496 released profiles for the selected number of epochs. `reload` checks
+the checkpoint and provenance digests and reproduces the checkpoint's two
+full-axis reconstruction probes. Both training commands emit one progress
+record per completed epoch and report elapsed time, peak host RSS, and peak
+CUDA allocated and reserved memory.
+
+The Git-tracked release in `output/autoencoder/` contains the 926 KiB
+`checkpoint.pt` and the frozen plan, development scores and refit record with
+their SHA-256 files. To replay it, prepare and verify the pinned expression
+release as described above and use the `arc` environment on CUDA with native
+BF16 support.
+
+```bash
+python stage2/07_lxpert/execution/script/lxpert.py reload \
+  --checkpoint stage2/07_lxpert/output/autoencoder/checkpoint.pt
+```
+
+To reuse the published frozen plan for `develop` or `refit`, use training
+revision `9032f291dac7b4800551f54b2a76bb9faa9f2bfc` and the input and runtime
+recorded in `plan.json`. Copy `plan.json` and `plan.sha256` to a fresh local
+run directory, then run `develop` and `refit` there. The plan verifies the exact
+CLI and training source digests. The current CLI can replay the published
+checkpoint. A fresh `freeze` records a new timestamp, so its refit can have a
+different checkpoint digest.
 
 Development trained on 57,418 Tahoe and 3,635 tenv profiles per epoch. The
 held-out plates contributed 9,600 Tahoe and 843 tenv profiles to the validation
@@ -152,8 +170,12 @@ Run from the repository root with the `arc` environment under the scheduler.
 python stage2/07_lxpert/execution/script/lxpert.py smoke
 ```
 
-The smoke checks the released full-data refit checkpoint and its provenance.
-It uses the verified Step 03 input release to select a measured tenv well,
+The smoke defaults to the Git-tracked full-data refit and verifies its
+published checkpoint digest. Pass `--checkpoint PATH` to smoke-test a new
+full-data refit alongside its own `plan`, `development` and `refit` records
+and digest files. The smoke verifies the provenance of either checkpoint.
+It requires the pinned expression release and the verified Step 03 input
+release. The latter supplies a measured tenv well,
 its same-plate DMSO mean, its shared Morgan-2048 vector, and its measured
 positive dose. The default case is `temp_env::Plate1-C02`. Use `--case-id` to
 select another well. The JSON report identifies the input artifacts and rows.

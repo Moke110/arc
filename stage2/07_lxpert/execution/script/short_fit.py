@@ -116,6 +116,18 @@ def smoke_batches(release, steps, batch_size, seed):
             for step in range(steps)]
 
 
+def train_batch(model, optimizer, expression, observed, device):
+    optimizer.zero_grad(set_to_none=True)
+    with attention_runtime(device):
+        loss = reconstruction_mse(model(expression), expression, observed).mean()
+    value = float(loss.detach())
+    if not np.isfinite(value):
+        raise ValueError("non-finite reconstruction training loss")
+    loss.backward()
+    optimizer.step()
+    return value
+
+
 def fit(args, source_pins):
     start = time.perf_counter()
     if args.output.exists():
@@ -130,14 +142,7 @@ def fit(args, source_pins):
     for rows in batches:
         step_start = time.perf_counter()
         expression, observed = release.batch(rows, args.device)
-        optimizer.zero_grad(set_to_none=True)
-        with attention_runtime(args.device):
-            loss = reconstruction_mse(model(expression), expression, observed).mean()
-        loss_value = float(loss.detach())
-        if not np.isfinite(loss_value):
-            raise ValueError("non-finite reconstruction training loss")
-        loss.backward()
-        optimizer.step()
+        loss_value = train_batch(model, optimizer, expression, observed, args.device)
         if args.device == "cuda":
             torch.cuda.synchronize()
         step_seconds.append(time.perf_counter() - step_start)
