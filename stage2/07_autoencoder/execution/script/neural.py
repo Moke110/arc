@@ -2,6 +2,7 @@
 
 from contextlib import nullcontext
 import hashlib
+from math import ceil
 import os
 from pathlib import Path
 import sys
@@ -49,12 +50,15 @@ def validation_mse(corpus, split, predict, batch_size, deadline):
     return scores
 
 
-def train_epoch(corpus, model, optimizer, train_rows, recipe, epoch, device, context, deadline):
+def train_epoch(corpus, model, optimizer, train_rows, recipe, epoch, device, context, deadline,
+                batch_limit=None):
     order = train_rows.copy()
     np.random.Generator(np.random.PCG64([recipe["seed"], epoch])).shuffle(order)
+    batch_size = recipe["train_batch_size"]
+    if batch_limit is not None:
+        order = order[:batch_limit * batch_size]
     model.train()
     total = torch.zeros((), device=device, dtype=torch.float64)
-    batch_size = recipe["train_batch_size"]
     for start in range(0, len(order), batch_size):
         check_deadline(deadline)
         members = order[start:start + batch_size]
@@ -131,10 +135,22 @@ def fit_neural(corpus, split, output, model_id, build_model, recipe, device, met
         predict = neural_predictor(model, device, context)
         best_mse = float("inf")
         history = []
-        for epoch in range(1, recipe["epochs"] + 1):
+        max_steps = recipe.get("max_optimizer_steps")
+        steps_per_epoch = ceil(len(train_rows) / recipe["train_batch_size"])
+        epochs = recipe["epochs"] if max_steps is None else ceil(max_steps / steps_per_epoch)
+        steps = 0
+        stale_checks = 0
+        for epoch in range(1, epochs + 1):
+            batch_limit = None if max_steps is None else min(steps_per_epoch, max_steps - steps)
             record = train_epoch(
                 corpus, model, optimizer, train_rows, recipe, epoch, device, context, deadline,
+                batch_limit=batch_limit,
             )
+            if batch_limit is not None:
+                steps += batch_limit
+                record["optimizer_steps"] = steps
+                record["training_profiles"] = min(len(train_rows),
+                                                  batch_limit * recipe["train_batch_size"])
             model.eval()
             scores = validation_mse(
                 corpus, split, predict, recipe["validation_batch_size"], deadline,
@@ -143,13 +159,23 @@ def fit_neural(corpus, split, output, model_id, build_model, recipe, device, met
             history.append(record)
             if scores["tenv"] < best_mse:
                 best_mse = scores["tenv"]
+                stale_checks = 0
                 metadata["selected_epoch"] = epoch
                 torch.save(
                     {name: tensor.detach().cpu() for name, tensor in model.state_dict().items()},
                     directory / "weights.pt",
                 )
+            else:
+                stale_checks += 1
             print(json_bytes({"model_id": model_id, **record}).decode(), end="",
                   file=sys.stderr, flush=True)
+            if max_steps is not None:
+                if steps == max_steps:
+                    metadata["stop_reason"] = "optimizer step limit"
+                    break
+                if stale_checks >= recipe["validation_patience"]:
+                    metadata["stop_reason"] = "validation patience"
+                    break
         check_deadline(deadline)
         (directory / "epochs.json").write_bytes(json_bytes(history))
         metadata["selected_validation_mse"] = history[metadata["selected_epoch"] - 1]["validation_mse"]

@@ -18,10 +18,11 @@ WIDTH = 128
 HEADS = 8
 RECIPE = {
     "seed": SEED,
-    "epochs": 20,
+    "max_optimizer_steps": 10_000,
+    "validation_patience": 3,
     "train_batch_size": 32,
     "validation_batch_size": 32,
-    "max_seconds": 3600,
+    "max_seconds": 1800,
     "optimizer": "AdamW",
     "learning_rate": 0.001,
     "weight_decay": 0.01,
@@ -100,7 +101,7 @@ def recipe_for(fixture, device):
     else:
         raise ValueError("full-axis AAE fitting and replay require CUDA")
     if fixture:
-        recipe.update(epochs=3, train_batch_size=2, validation_batch_size=2)
+        recipe.update(max_optimizer_steps=5, train_batch_size=2, validation_batch_size=2)
     return recipe
 
 
@@ -120,9 +121,10 @@ def fit_aae(corpus, split, output, batch_size, device):
 def aae_predictor(path, record, fixture, batch_size, device):
     recipe = recipe_for(fixture, device)
     replay_recipes = [recipe]
-    if not fixture:
-        # Keep the originally published four-epoch checkpoint replayable.
-        replay_recipes.append({**recipe, "epochs": 4, "max_seconds": 1800})
+    # Keep the originally published fixed-epoch checkpoints replayable.
+    legacy_recipe = {**recipe, "epochs": 3 if fixture else 4}
+    del legacy_recipe["max_optimizer_steps"], legacy_recipe["validation_patience"]
+    replay_recipes.append(legacy_recipe)
     metadata = record["metadata"]
     gene_count = record["gene_count"]
     if (metadata["architecture"] != architecture(gene_count)
