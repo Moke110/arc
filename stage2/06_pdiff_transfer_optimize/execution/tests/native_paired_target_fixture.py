@@ -46,6 +46,7 @@ def fixture(runtime, root, arm='random'):
     target_root = root / 'output/paired-transfer' / arm / 'seed-17'
     reference_fit = reference_root / 'fit'
 
+    lr_arm = arm in ('all-half', 'main-half')
     original_names, original_groups = {}, []
     original_rates, target_rates, optimizer_updates = [], [], []
 
@@ -53,7 +54,7 @@ def fixture(runtime, root, arm='random'):
         def __init__(self, inputs, config, directory):
             super().__init__(inputs, config, directory)
             load_initialization(self, root, bridge_sha, request)
-            if arm == 'all-half':
+            if lr_arm:
                 original_names.update({id(parameter): name for name, parameter in self.named_parameters()
                                        if parameter.requires_grad})
 
@@ -61,7 +62,7 @@ def fixture(runtime, root, arm='random'):
 
     def original_optimizer(groups, config):
         optimizer = native_optimizer(groups, config)
-        if arm == 'all-half':
+        if lr_arm:
             original_groups.extend({
                 'base_lr': group['lr'], 'weight_decay': group['weight_decay'],
                 'parameters': [original_names[id(parameter)] for parameter in group['params']],
@@ -77,15 +78,15 @@ def fixture(runtime, root, arm='random'):
 
     def target_optimizer(groups, config):
         optimizer = native_optimizer(groups, config)
-        if arm == 'all-half':
+        if lr_arm:
             before = group_digests(optimizer)
 
             def observe_step(optimizer, _args, _kwargs):
                 rates = [group['lr'] for group in optimizer.param_groups]
                 target_rates.append(rates)
-                if not optimizer_updates and all(rate > 0 for rate in rates):
-                    optimizer_updates.extend(current != initial for current, initial
-                                             in zip(group_digests(optimizer), before, strict=True))
+                if not optimizer_updates or not all(optimizer_updates):
+                    optimizer_updates[:] = [current != initial for current, initial
+                                            in zip(group_digests(optimizer), before, strict=True)]
             optimizer.register_step_post_hook(observe_step)
         if arm == 'adaLN-only':
             observe_adaln(optimizer)
@@ -110,6 +111,7 @@ def fixture(runtime, root, arm='random'):
                 frozen_parameters.update({name: value for name, value in self.named_parameters() if name not in names})
 
     def observe_adaln(optimizer):
+        assert isinstance(optimizer, native.torch.optim.AdamW)
         assert {id(value) for group in optimizer.param_groups for value in group['params']} == {
             id(value) for value in adaln_parameters.values()
         }
@@ -228,19 +230,33 @@ def fixture(runtime, root, arm='random'):
         assert state_digest({name: weights[name] for name in adaln_parameters}) != adaln_initial['trainable']
     else:
         target_plan = read_json(target_root / 'plan.json')
-        assert target_plan['config'] == {**config, 'learning_rate': 1e-4}
-        assert Path(target_plan['checkpoint_slot']).name == '06-paired-all-half-fold-0-seed-17'
+        checkpoint_prefix, recipe_lr = ('06', 1e-4) if arm == 'all-half' else ('07', 2e-4)
+        assert target_plan['config'] == {**config, 'learning_rate': recipe_lr}
+        assert Path(target_plan['checkpoint_slot']).name == f'{checkpoint_prefix}-paired-{arm}-fold-0-seed-17'
         assert fit['initialization']['mapped_state_sha256'] == read_json(bridge)['mapped_state_sha256']
         assert len(original_groups) == 2
         assert all(group['base_lr'] == 2e-4 for group in original_groups)
         groups = fit['training_initial_state']['optimizer_groups']
-        assert groups == [{**group, 'base_lr': 1e-4} for group in original_groups]
+        expected = {}
+        for group in original_groups:
+            for name in group['parameters']:
+                rate = 1e-4 if arm == 'all-half' or name.startswith('native.model.') else 2e-4
+                expected[name] = (rate, group['weight_decay'])
+        actual = {name: (group['base_lr'], group['weight_decay'])
+                  for group in groups for name in group['parameters']}
+        assert actual == expected
+        assert sum(len(group['parameters']) for group in groups) == len(expected)
+        assert len(groups) == (2 if arm == 'all-half' else 4)
         checkpoint = native.torch.load(scores['selection']['checkpoint']['path'], map_location='cpu',
                                        weights_only=True, mmap=True)
         assert checkpoint['recipe'] == target_plan['config']
         assert len(original_rates) == 6
-        assert target_rates == [[rate / 2 for rate in rates] for rates in original_rates]
-        assert optimizer_updates == [True, True]
+        original_by_decay = {group['weight_decay']: i for i, group in enumerate(original_groups)}
+        assert target_rates == [
+            [rates[original_by_decay[group['weight_decay']]] * (group['base_lr'] / 2e-4) for group in groups]
+            for rates in original_rates
+        ]
+        assert optimizer_updates == [True] * len(groups), optimizer_updates
     row = paired['per_dose'][0]
     assert (row['step'], row['reference_step']) == (2, 1)
     assert row['pcc_difference'] == row['pcc'] - row['reference_pcc']
@@ -250,7 +266,7 @@ def fixture(runtime, root, arm='random'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', required=True, type=Path)
-    parser.add_argument('--arm', choices=('random', 'log', 'all-half', 'adaLN-only'), default='random')
+    parser.add_argument('--arm', choices=cli.CHECKPOINT_NUMBERS, default='random')
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
         fixture(args.runtime.resolve(), Path(temp), args.arm)
