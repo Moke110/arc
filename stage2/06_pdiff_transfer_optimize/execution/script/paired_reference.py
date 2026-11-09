@@ -45,7 +45,7 @@ def summarize_doses(groups, summaries):
 
 def verify_baseline(runtime, seed):
     step = runtime / TRANSFER.STEP05
-    record = TRANSFER.RECORD / 'formal_record'
+    record = step / 'execution/formal_record'
     seal = read_json(record / 'run.json')
     publication = read_json(verify_file(record / 'publication.json',
                                         seal['publication']['manifest']['sha256']))

@@ -3,10 +3,52 @@
 Step 05 observed a Tahoe Transfer deficit against the tenv-only CM arm.
 Step 06 establishes a shared validation baseline and tests positive-dose
 initialization and target base learning rate in separate paired arms.
+[ADR 0049](../../docs/adr/0049-perturbdiff-transfer-optimization-comparisons.md)
+extends the study to five optimizations on the Step 05 cold-cm-drug split.
 [ADR 0048](../../docs/adr/0048-perturbdiff-transfer-diagnosis.md)
 records the screening, confirmation and attribution rules.
 
-## Results
+## Paired optimization results
+
+The [AUPRC and PCC figure](output/03-paired-transfer-optimizations.png) shows
+all five interventions and the shared original Transfer reference on
+cold-cm-drug fold 0 validation. Each point gives equal weight to seeds 17,
+42 and 2026, with 46 frozen drug–dose groups per concentration. Each fit
+uses its own EMA selected by the author's validation diffusion loss.
+The three seeds are repeated fits on one split.
+
+Original Transfer had the highest mean PCC at every dose. The random
+reset and log dose encoder each improved mean AUPRC at 1 µM by roughly
+0.0014 and 0.0017, respectively. Halving the denoiser learning rate
+improved mean AUPRC at 10 µM by 0.0013. Fine-tuning only adaLN produced
+the lowest mean AUPRC and PCC at all three doses.
+
+The [numeric record](execution/paired_publication.json) retains the
+per-seed absolute scores, same-seed differences from original Transfer,
+valid-group counts and undefined reasons, selected EMA steps, optimizer
+steps and file digests. Its resource ledger summarizes the scheduler
+attempts and binds their queues, status records and telemetry by digest.
+Paths in the record are relative to the runtime checkout.
+
+Run `publish` through the dedicated scheduler to verify all 18 cells
+against their sealed artifacts and reproduce the publication. From the
+runtime checkout, use the arc interpreter.
+
+```bash
+step=stage2/06_pdiff_transfer_optimize
+python "$step/execution/script/paired_publication.py" publish "$step/output/paired-transfer"
+```
+
+The tracked numeric record also supports a figure-only replay. With the
+arc plotting environment, the command verifies the regenerated PNG
+against its recorded SHA-256. Supply `--figure /path/to/replay.png` to
+write a separate copy.
+
+```bash
+python "$step/execution/script/paired_publication.py" replay "$step/execution/paired_publication.json"
+```
+
+## Historical cold-drug results
 
 Cold-drug fold 0 validation, seed 17. Each comparison covers 138 drug–dose
 groups, with 46 at each of 0.2, 1 and 10 µM. Both AP@100 directions receive
