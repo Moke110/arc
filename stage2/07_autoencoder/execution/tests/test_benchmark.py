@@ -55,9 +55,9 @@ class BenchmarkTest(unittest.TestCase):
         }
         (self.release / "manifest.json").write_text(json.dumps(manifest))
 
-    def cli(self, action, *args, success=True):
+    def cli(self, action, *args, success=True, script="reconstruct.py"):
         result = subprocess.run(
-            [sys.executable, str(SCRIPT / "reconstruct.py"), action, "--fixture",
+            [sys.executable, str(SCRIPT / script), action, "--fixture",
              "--release", str(self.release), "--split", str(self.split_path), *map(str, args)],
             capture_output=True, text=True,
         )
@@ -127,7 +127,7 @@ class BenchmarkTest(unittest.TestCase):
         scores = score(corpus, split, role, lambda values: values, np.full(3, 5), 2)
         self.assertIsNone(scores["sources"]["tenv"]["relative_squared_error"])
 
-    def test_pca_fit_and_independent_reload_at_each_rank(self):
+    def prepare_pca_fixture(self):
         genes = 577
         center = np.linspace(2, 3, genes, dtype=np.float32)
         offsets = np.zeros(genes, dtype=np.float32)
@@ -138,11 +138,12 @@ class BenchmarkTest(unittest.TestCase):
         # Diagonal training covariance with eigenvalue gaps at the three cutoffs.
         axes = np.diag(np.repeat(np.array([1, 0.75, 0.5, 0.25], dtype=np.float32),
                                  [32, 96, 384, genes - 512]))
-        for source, scale in (("tahoe", 1), ("tenv", 2)):
+        half = len(axes) // 2
+        for source, scale, directions in (("tahoe", 1, axes[:half]), ("tenv", 2, axes[half:])):
             ranked = sorted("ABC", key=lambda plate: hashlib.sha256(
                 json.dumps([20261109, source, plate]).encode()).digest())
             values = np.vstack((center + scale * offsets, center - offsets,
-                                center + axes, center - axes))
+                                center + directions, center - directions))
             self.expressions[source] = values
             np.save(self.release / f"{source}_expression.npy", values)
             with (self.release / f"{source}_profiles.csv").open("w", newline="") as handle:
@@ -151,6 +152,11 @@ class BenchmarkTest(unittest.TestCase):
                 for index in range(len(values)):
                     writer.writerow([index, f"{source}-{index}", ranked[min(index, 2)], False])
         self.write_manifest()
+        return center, offsets
+
+    def test_pca_fit_and_independent_reload_at_each_rank(self):
+        center, offsets = self.prepare_pca_fixture()
+        genes = len(center)
         self.cli("freeze-split")
         self.cli("fit", "--output", self.artifact)
         models = self.root / "pca"
@@ -171,6 +177,57 @@ class BenchmarkTest(unittest.TestCase):
                     self.assertEqual(result["profiles"], 1)
                     expected_mse = float(np.square(offsets[rank:]).sum()) * scale ** 2 / genes
                     self.assertAlmostEqual(result["mse"], expected_mse, places=6)
+
+    def test_comparison_seals_validation_and_replays_all_test_models(self):
+        self.prepare_pca_fixture()
+        self.cli("freeze-split")
+        models = self.root / "models"
+        seal_path = self.root / "seal.json"
+        score_path = self.root / "scores.json"
+        args = ("--models", models, "--seal", seal_path)
+        self.assertIn(str(seal_path), self.cli("score", *args, "--output", score_path,
+                                              success=False, script="compare.py"))
+        self.cli("fit", "--model", "PCA", "--output", models)
+        model_ids = ("mean", "PCA_32", "PCA_128", "PCA_512", "MLP_32", "MLP_128", "MLP_512", "AAE_512")
+        for model in model_ids:
+            artifact = models / model
+            if not model.startswith("PCA_"):
+                self.cli("fit", "--model", model, "--output", artifact)
+            self.cli("score", "--artifact", artifact, "--mean-artifact", models / "mean",
+                     "--output", self.root / f"{model}-validation.json")
+
+        validation_path = self.root / "AAE_512-validation.json"
+        validation = validation_path.read_text()
+        validation_path.write_text(validation.replace('"role": "validation"', '"role": "test"'))
+        self.assertIn("validation", self.cli("seal", *args, "--validation-dir", self.root,
+                                             success=False, script="compare.py"))
+        self.assertFalse(seal_path.exists())
+        validation_path.write_text(validation)
+        seal = self.cli("seal", *args, "--validation-dir", self.root, script="compare.py")
+        self.assertEqual(set(seal["models"]), set(model_ids))
+        scores = self.cli("score", *args, "--output", score_path, script="compare.py")
+        self.assertEqual(scores["role"], "test")
+        self.assertEqual(scores["seal_sha256"], hashlib.sha256(seal_path.read_bytes()).hexdigest())
+        self.assertEqual(scores["models"]["AAE_512"]["latent"], {"tokens": 512, "scalars": 65536})
+        self.assertEqual(scores["models"]["PCA_512"]["latent"], {"tokens": None, "scalars": 512})
+        self.assertEqual(set(scores["models"]), set(model_ids))
+        for model in model_ids:
+            for source in ("tahoe", "tenv"):
+                self.assertEqual(scores["models"][model]["sources"][source]["profiles"], 1)
+        self.assertEqual(scores, self.cli("reload", *args, "--expected", score_path, script="compare.py"))
+
+        figure_path = self.root / "comparison.png"
+        figure = subprocess.run(
+            [sys.executable, str(SCRIPT / "compare.py"), "figure", "--expected", str(score_path),
+             "--output", str(figure_path)], capture_output=True, text=True,
+        )
+        self.assertEqual(figure.returncode, 0, figure.stderr)
+        self.assertTrue(figure_path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+
+        manifest_path = models / "mean" / "manifest.json"
+        manifest_path.write_text(manifest_path.read_text() + "\n")
+        self.assertIn("seal", self.cli("reload", *args, "--expected", score_path,
+                                       success=False, script="compare.py"))
 
     def test_mlp_reloads_the_tenv_selected_checkpoint_at_each_latent_width(self):
         for source, values in self.expressions.items():

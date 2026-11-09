@@ -10,4 +10,6 @@
   artifact provenance and the shared scorer. `execution/tests/` exercises the
   workflow on small fixtures.
 - Select fitted artifacts on validation only. Reserve real test scoring for
-  final publication after model selection is frozen.
+  final publication after `execution/script/compare.py seal` binds all selected
+  artifacts to their validation evidence. Commit the seal before test scoring
+  and use `compare.py reload` in a separate process for replay.
