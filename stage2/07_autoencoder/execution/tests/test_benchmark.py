@@ -213,6 +213,35 @@ class BenchmarkTest(unittest.TestCase):
                     )
                 self.assertEqual(score, self.cli("reload", *args, "--expected", expected))
 
+    def test_aae_replays_the_tenv_selected_full_axis_checkpoint(self):
+        split = self.cli("freeze-split")
+        self.cli("fit", "--output", self.artifact)
+        model_id = "AAE_512"
+        artifact = self.root / model_id
+        result = self.cli("fit", "--model", model_id, "--output", artifact)
+        metadata = result["metadata"]
+        self.assertEqual(result["model_id"], model_id)
+        self.assertEqual(metadata["latent_tokens"], 512)
+        self.assertEqual(metadata["latent_scalars"], 65_536)
+        self.assertEqual(metadata["architecture"]["width"], 128)
+        self.assertEqual(metadata["architecture"]["heads"], 8)
+        self.assertEqual(metadata["fit_profiles"], {
+            source: split["sources"][source]["roles"]["train"]["profiles"]
+            for source in self.expressions
+        })
+        history = json.loads((artifact / "epochs.json").read_text())
+        selected = min(history, key=lambda epoch: (epoch["validation_mse"]["tenv"], epoch["epoch"]))
+        self.assertEqual(metadata["selected_epoch"], selected["epoch"])
+        expected = self.root / "aae-validation.json"
+        args = ["--artifact", artifact, "--mean-artifact", self.artifact, "--role", "validation"]
+        scores = self.cli("score", *args, "--output", expected)
+        self.assertEqual(scores["provenance"], result["provenance"])
+        for source, score in scores["sources"].items():
+            self.assertEqual(score["profiles"], split["sources"][source]["roles"]["validation"]["profiles"])
+            self.assertAlmostEqual(score["mse"], selected["validation_mse"][source])
+        self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
+        self.assertIn("frozen batch size", self.cli("score", *args, "--batch-size", 32, success=False))
+
     def test_refuses_changed_split_and_release(self):
         self.cli("freeze-split")
         frozen = json.loads(self.split_path.read_text())

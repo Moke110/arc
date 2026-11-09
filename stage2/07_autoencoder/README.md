@@ -124,3 +124,30 @@ for width in 32 128 512; do
   python "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
 done
 ```
+
+### Attention Autoencoder reconstruction
+
+`AAE_512` uses 512 latent queries, 128 channels per query and eight attention
+heads. It contains 65,536 latent scalars per profile. Fixed sinusoidal positions
+encode the order of the 18,164 genes. The encoder queries all measured
+expression values and the decoder uses the same ordered gene positions to
+reconstruct the full profile.
+
+The frozen recipe uses full-axis MSE, AdamW with learning rate 0.001 and
+weight decay 0.01, and four epochs of 32-profile batches. A PCG64 shuffle
+seeded by 20261109 and the epoch visits every joint training profile once.
+Training has a 30-minute ceiling. The earliest epoch at the minimum tenv
+validation MSE selects the checkpoint, and Tahoe validation MSE is recorded
+separately. Real fitting and scoring require native CUDA BF16 and use
+FlashAttention exclusively. Validation, scoring and replay use the same
+32-profile batch size. The bounded CPU fixture uses float32, three epochs
+and two-profile batches.
+
+```bash
+cli=stage2/07_autoencoder/execution/script/reconstruct.py
+artifact=/tmp/arc-AAE_512
+scores=/tmp/arc-AAE_512-validation.json
+python "$cli" fit --model AAE_512 --device cuda --output "$artifact"
+python "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
+python "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
+```

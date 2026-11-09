@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from benchmark import (
-    Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, REPLAY_TOLERANCE, ROLES, SOURCES,
+    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, REPLAY_TOLERANCE, ROLES, SOURCES,
     Split, checked_test_role, fit_mean, freeze_split, json_bytes, load_mean, publish_artifact,
     publish_json, score, verify_artifact, verify_replay,
 )
@@ -16,6 +16,12 @@ from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
 
 
 def fit(args, corpus, split):
+    if args.model == AAE_MODEL_ID:
+        from aae import fit_aae
+
+        if args.output is None:
+            raise ValueError("AAE fit requires --output for the new artifact")
+        return fit_aae(corpus, split, args.output, args.batch_size, args.device)
     if args.model in MLP_MODEL_IDS:
         if args.output is None:
             raise ValueError("MLP fit requires --output for the new artifact")
@@ -45,6 +51,7 @@ def fit(args, corpus, split):
 def score_artifact(args, corpus, split):
     checked_test_role(corpus, args.role, args.allow_test)
     record = verify_artifact(args.artifact, corpus, split)
+    batch_size = 64 if args.batch_size is None else args.batch_size
     if record["model_id"] == "mean":
         reference, mean = load_mean(args.artifact, corpus, split)
         predict = lambda values: np.broadcast_to(mean, values.shape)
@@ -54,10 +61,15 @@ def score_artifact(args, corpus, split):
             predict = pca_predictor(args.artifact, record)
         elif record["model_id"] in MLP_MODEL_IDS:
             predict = mlp_predictor(args.artifact, record, args.device)
+        elif record["model_id"] == AAE_MODEL_ID:
+            from aae import aae_predictor
+
+            predict, batch_size = aae_predictor(
+                args.artifact, record, corpus.fixture, args.batch_size, args.device,
+            )
         else:
             raise ValueError(f"unsupported model: {record['model_id']}")
-    result = score(corpus, split, args.role, predict, mean, args.batch_size,
-                   allow_test=args.allow_test)
+    result = score(corpus, split, args.role, predict, mean, batch_size, allow_test=args.allow_test)
     return {
         **result,
         "model_id": record["model_id"],
@@ -77,10 +89,11 @@ def main():
         command.add_argument("--split", type=Path, default=DEFAULT_SPLIT)
         command.add_argument("--fixture", action="store_true")
         if name != "freeze-split":
-            command.add_argument("--batch-size", type=int, default=None if name == "fit" else 64)
+            command.add_argument("--batch-size", type=int)
             command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
         if name == "fit":
-            command.add_argument("--model", choices=("mean", "PCA", *MLP_MODEL_IDS), default="mean")
+            command.add_argument("--model", choices=("mean", "PCA", *MLP_MODEL_IDS, AAE_MODEL_ID),
+                                 default="mean")
             command.add_argument("--output", type=Path)
         if name in {"score", "reload"}:
             command.add_argument("--artifact", type=Path, default=DEFAULT_MEAN)

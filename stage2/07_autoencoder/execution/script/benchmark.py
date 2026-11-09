@@ -17,6 +17,7 @@ CORPUS_STEP = ROOT / "stage2" / "02_dataset_corpus"
 DEFAULT_RELEASE = CORPUS_STEP / "output" / "corpus" / "shared-cm-v1"
 DEFAULT_SPLIT = STEP / "output" / "split.json"
 DEFAULT_MEAN = STEP / "output" / "models" / "mean"
+AAE_MODEL_ID = "AAE_512"
 SOURCES = ("tahoe", "tenv")
 ROLES = ("train", "validation", "test")
 SEED = 20261109
