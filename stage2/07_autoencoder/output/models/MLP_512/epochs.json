@@ -1,0 +1,182 @@
+[
+  {
+    "epoch": 1,
+    "sample_order_sha256": "0fc21d832de52f882f4b620646d529689c6670e39709f9b9c9d536485651bf09",
+    "training_mse": 0.037221374564658016,
+    "validation_mse": {
+      "tahoe": 0.00724193811051097,
+      "tenv": 0.051834789622171584
+    }
+  },
+  {
+    "epoch": 2,
+    "sample_order_sha256": "b4417ea4f43e0d07951991f76c0aacaee0c2ae7c7021e8d9cafa9cffafe7aae0",
+    "training_mse": 0.011299583074255782,
+    "validation_mse": {
+      "tahoe": 0.007227614754763987,
+      "tenv": 0.03952973893202846
+    }
+  },
+  {
+    "epoch": 3,
+    "sample_order_sha256": "161271783a05369bc1151cb645f0469d9ea8dd0f264ce9e75dedf10331909010",
+    "training_mse": 0.010545160067967421,
+    "validation_mse": {
+      "tahoe": 0.006596118682904428,
+      "tenv": 0.03885536859440465
+    }
+  },
+  {
+    "epoch": 4,
+    "sample_order_sha256": "9e731fca92c832ec0290d7b7f1bf99b197db8c5ea602f4aa79c58298c113336c",
+    "training_mse": 0.00963152258388073,
+    "validation_mse": {
+      "tahoe": 0.006582690108499061,
+      "tenv": 0.037828955042477914
+    }
+  },
+  {
+    "epoch": 5,
+    "sample_order_sha256": "1132a7aa02e4a1e0edc43f8c87970f43cfafe1c10375b0d0da443e9099c64925",
+    "training_mse": 0.009449557671704542,
+    "validation_mse": {
+      "tahoe": 0.00618468901152412,
+      "tenv": 0.03734343603401587
+    }
+  },
+  {
+    "epoch": 6,
+    "sample_order_sha256": "d136c89b47bf3b3c12718ab725a0f8d2ef5aeaa37b672cd8a749ddb6bd118bfa",
+    "training_mse": 0.009433611020943785,
+    "validation_mse": {
+      "tahoe": 0.006138782751712783,
+      "tenv": 0.03692802027207563
+    }
+  },
+  {
+    "epoch": 7,
+    "sample_order_sha256": "1be06e40ce95a2e7ebb5f499b35fa3495d2f00bf64d14d6f44797ca15f068baa",
+    "training_mse": 0.009189826829824228,
+    "validation_mse": {
+      "tahoe": 0.006029559086866677,
+      "tenv": 0.03640310024059286
+    }
+  },
+  {
+    "epoch": 8,
+    "sample_order_sha256": "665b0c85ac2a202d6d4f3344431831bef27c4bc3cbb296bac38b0924ea00b63f",
+    "training_mse": 0.008961146452100258,
+    "validation_mse": {
+      "tahoe": 0.00592983781102282,
+      "tenv": 0.03612218323806119
+    }
+  },
+  {
+    "epoch": 9,
+    "sample_order_sha256": "21c5fe578f8e4f04e7283de1609e75930f1e6e4362b48af10463103724a69ac0",
+    "training_mse": 0.009218565227490623,
+    "validation_mse": {
+      "tahoe": 0.005900579670530836,
+      "tenv": 0.036070608454510815
+    }
+  },
+  {
+    "epoch": 10,
+    "sample_order_sha256": "e7f05d91aa3c5d2540c5447e3f6abea4086fe8d23de57f0a47b239a4994e8f32",
+    "training_mse": 0.008680150592233177,
+    "validation_mse": {
+      "tahoe": 0.006003666115257623,
+      "tenv": 0.03592292921941986
+    }
+  },
+  {
+    "epoch": 11,
+    "sample_order_sha256": "d1babc58a4167e0d9878f8063576c40329331b267a10d9e08ecff53ec2fcf312",
+    "training_mse": 0.008547691503920216,
+    "validation_mse": {
+      "tahoe": 0.005603294621583547,
+      "tenv": 0.03577327207734777
+    }
+  },
+  {
+    "epoch": 12,
+    "sample_order_sha256": "1c5cba489e6ac15e50d8948520a04167342d9536f412ecb3020fa6d82551f751",
+    "training_mse": 0.008469819265782249,
+    "validation_mse": {
+      "tahoe": 0.005613592594204077,
+      "tenv": 0.035675995136626205
+    }
+  },
+  {
+    "epoch": 13,
+    "sample_order_sha256": "7506d89406e54b12e1789efb88abf6b613154e75d7401fd1032aa3b4ae86ee94",
+    "training_mse": 0.008338397108036057,
+    "validation_mse": {
+      "tahoe": 0.005553621614415432,
+      "tenv": 0.035591506402843046
+    }
+  },
+  {
+    "epoch": 14,
+    "sample_order_sha256": "5508afa7458122a784df3c73e40a3c1367d2eb73547cc53514706ecbc60df478",
+    "training_mse": 0.008306425983469706,
+    "validation_mse": {
+      "tahoe": 0.00547232657155299,
+      "tenv": 0.03530556290742824
+    }
+  },
+  {
+    "epoch": 15,
+    "sample_order_sha256": "564376c74925ab50b84599324daa630a7a5a249e0b22f9e770c36a3f3b0a3ba8",
+    "training_mse": 0.008207783506111047,
+    "validation_mse": {
+      "tahoe": 0.005435367283363386,
+      "tenv": 0.035125308975963075
+    }
+  },
+  {
+    "epoch": 16,
+    "sample_order_sha256": "faebd185bc2fdc2cc3aed09494ff4e8e7f728b7704e844566be309a08686810c",
+    "training_mse": 0.008245420337151832,
+    "validation_mse": {
+      "tahoe": 0.005405208721254331,
+      "tenv": 0.03497243956344642
+    }
+  },
+  {
+    "epoch": 17,
+    "sample_order_sha256": "16c7b274c994d85ca608a7a854602b1e5d590a7d9bd4141bff23dafdc3e54b5d",
+    "training_mse": 0.008096715564143368,
+    "validation_mse": {
+      "tahoe": 0.005371153915371158,
+      "tenv": 0.035032846528850095
+    }
+  },
+  {
+    "epoch": 18,
+    "sample_order_sha256": "bb2383595e6a7e43dd4fc61d878beda654db19365cc9bc23c2c95e31cbf3ea70",
+    "training_mse": 0.008127326873874359,
+    "validation_mse": {
+      "tahoe": 0.005409494727638448,
+      "tenv": 0.03498261774788454
+    }
+  },
+  {
+    "epoch": 19,
+    "sample_order_sha256": "5a28dd27b330d55ca48d90aeb852a7b217cdf727e8d6bd80a05df5a4d6320b39",
+    "training_mse": 0.00800585536191175,
+    "validation_mse": {
+      "tahoe": 0.0053457475005928385,
+      "tenv": 0.034899607656601515
+    }
+  },
+  {
+    "epoch": 20,
+    "sample_order_sha256": "d3d8744885f4e7a970d267334df5edf46b579fb67d79e1dca74433b6cbeed9f1",
+    "training_mse": 0.008076523934934052,
+    "validation_mse": {
+      "tahoe": 0.005332001025310465,
+      "tenv": 0.03495921237107472
+    }
+  }
+]

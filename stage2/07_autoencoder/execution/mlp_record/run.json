@@ -1,0 +1,181 @@
+{
+  "ticket": 115,
+  "fit_code_commit": "28ea0ee73319886585f575cbed6dc1f2ac0c71a9",
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "minimum_available_ram_gib": 12,
+    "minimum_free_vram_mib": 4096,
+    "maximum_fit_seconds_per_model": 1800
+  },
+  "threads": {
+    "OMP_NUM_THREADS": 2,
+    "MKL_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "fit_device": "cuda",
+  "epoch_order_verified_from_frozen_plate_memberships": true,
+  "score_and_replay": {
+    "device": "cuda",
+    "role": "validation",
+    "batch_size": 64
+  },
+  "replay_tolerance": {
+    "rtol": 1e-06,
+    "atol": 1e-08
+  },
+  "models": {
+    "MLP_32": {
+      "artifact": "../../output/models/MLP_32",
+      "artifact_manifest_sha256": "4a8c09c28213ce84f8da5dc309d3a0f75a5065a1c4ec88592e4a60f43e2d5645",
+      "weights_bytes": 74610637,
+      "selected_epoch": 19,
+      "selected_validation_mse": {
+        "tahoe": 0.005433886504992821,
+        "tenv": 0.03514164183629556
+      },
+      "shared_scorer_validation_mse": {
+        "tahoe": 0.00543388650499282,
+        "tenv": 0.03514164183629557
+      },
+      "validation_report": "MLP_32-validation.json",
+      "validation_report_sha256": "0046c1a20d15b8698c1672e0f4286c38acc42172259f3c42e1fffa35a51a8692",
+      "independent_reload_sha256": "0046c1a20d15b8698c1672e0f4286c38acc42172259f3c42e1fffa35a51a8692",
+      "byte_identical_reload": true,
+      "peak_cuda_allocated_bytes": 558884864,
+      "peak_cuda_reserved_bytes": 564133888
+    },
+    "MLP_128": {
+      "artifact": "../../output/models/MLP_128",
+      "artifact_manifest_sha256": "20cc7eaf418f46cdb77a6f6a37def33c5dbd9355f776fd809c2f678aaba11d69",
+      "weights_bytes": 75004237,
+      "selected_epoch": 19,
+      "selected_validation_mse": {
+        "tahoe": 0.005310045766069788,
+        "tenv": 0.03493735490459426
+      },
+      "shared_scorer_validation_mse": {
+        "tahoe": 0.005310045766069787,
+        "tenv": 0.03493735490459426
+      },
+      "validation_report": "MLP_128-validation.json",
+      "validation_report_sha256": "682a10e255ce241ce767a904e6bddad2386d96e9f66382f3a6a10b5de1d50ab6",
+      "independent_reload_sha256": "682a10e255ce241ce767a904e6bddad2386d96e9f66382f3a6a10b5de1d50ab6",
+      "byte_identical_reload": true,
+      "peak_cuda_allocated_bytes": 560850944,
+      "peak_cuda_reserved_bytes": 566231040
+    },
+    "MLP_512": {
+      "artifact": "../../output/models/MLP_512",
+      "artifact_manifest_sha256": "59da5133085f47294177efef5b3b838d058413118808366c59b0abaa88f4cc8d",
+      "weights_bytes": 76578637,
+      "selected_epoch": 19,
+      "selected_validation_mse": {
+        "tahoe": 0.0053457475005928385,
+        "tenv": 0.034899607656601515
+      },
+      "shared_scorer_validation_mse": {
+        "tahoe": 0.0053457475005928385,
+        "tenv": 0.034899607656601515
+      },
+      "validation_report": "MLP_512-validation.json",
+      "validation_report_sha256": "1ef93dbb674e478868776564985a5d8cad7120f71cc205e55ffb784eeb826453",
+      "independent_reload_sha256": "1ef93dbb674e478868776564985a5d8cad7120f71cc205e55ffb784eeb826453",
+      "byte_identical_reload": true,
+      "peak_cuda_allocated_bytes": 568722944,
+      "peak_cuda_reserved_bytes": 572522496
+    }
+  },
+  "phases": {
+    "fit-32": {
+      "scope": "arc-step07-115-fit-32-1794248611.scope",
+      "admitted_at": "2026-11-10T02:23:31+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 62,
+      "gpu_free_mib": 14265,
+      "elapsed_wall": "0:52.49",
+      "peak_rss_kib": 5650728,
+      "exit_status": 0
+    },
+    "score-32": {
+      "scope": "arc-step07-115-score-32-1794248664.scope",
+      "admitted_at": "2026-11-10T02:24:24+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 6,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:06.44",
+      "peak_rss_kib": 1751360,
+      "exit_status": 0
+    },
+    "reload-32": {
+      "scope": "arc-step07-115-reload-32-1794248670.scope",
+      "admitted_at": "2026-11-10T02:24:31+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 6,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:06.41",
+      "peak_rss_kib": 1751348,
+      "exit_status": 0
+    },
+    "fit-128": {
+      "scope": "arc-step07-115-fit-128-1794248677.scope",
+      "admitted_at": "2026-11-10T02:24:37+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 7,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:53.08",
+      "peak_rss_kib": 5650620,
+      "exit_status": 0
+    },
+    "score-128": {
+      "scope": "arc-step07-115-score-128-1794248730.scope",
+      "admitted_at": "2026-11-10T02:25:30+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 6,
+      "gpu_free_mib": 14262,
+      "elapsed_wall": "0:06.47",
+      "peak_rss_kib": 1751128,
+      "exit_status": 0
+    },
+    "reload-128": {
+      "scope": "arc-step07-115-reload-128-1794248737.scope",
+      "admitted_at": "2026-11-10T02:25:37+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 8,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:06.32",
+      "peak_rss_kib": 1750968,
+      "exit_status": 0
+    },
+    "fit-512": {
+      "scope": "arc-step07-115-fit-512-1794248743.scope",
+      "admitted_at": "2026-11-10T02:25:43+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 7,
+      "gpu_free_mib": 14261,
+      "elapsed_wall": "0:52.82",
+      "peak_rss_kib": 5648280,
+      "exit_status": 0
+    },
+    "score-512": {
+      "scope": "arc-step07-115-score-512-1794248796.scope",
+      "admitted_at": "2026-11-10T02:26:36+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 7,
+      "gpu_free_mib": 14248,
+      "elapsed_wall": "0:06.41",
+      "peak_rss_kib": 1749888,
+      "exit_status": 0
+    },
+    "reload-512": {
+      "scope": "arc-step07-115-reload-512-1794248803.scope",
+      "admitted_at": "2026-11-10T02:26:43+08:00",
+      "available_ram_gib": 41,
+      "gpu_utilization_percent": 6,
+      "gpu_free_mib": 14262,
+      "elapsed_wall": "0:06.41",
+      "peak_rss_kib": 1750220,
+      "exit_status": 0
+    }
+  }
+}
