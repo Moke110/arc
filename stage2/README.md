@@ -15,6 +15,7 @@ the second under ADR 0042.
 | [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | final 63-slot comparison across five predictors and two references. PerturbDiff led seven of eight nine-run metric means, including positive/negative AP@100 of 0.23914/0.23463. The training-group mean reference led mean R² | ADR 0042 |
 | [`04_pdiff_hyperparameter/`](04_pdiff_hyperparameter/README.md) | how does standalone PerturbDiff train and score on Tahoe and tenv? | complete nine-fit matrices for both datasets, learning curves, eight held-out metrics with matched references, and nine verified tenv EMA checkpoints for handoff | ADR 0046 |
 | [`05_pdiff_transfer/`](05_pdiff_transfer/README.md) | does Tahoe training improve tenv prediction? | verified common cold tenv fold with reused CM checkpoints and deterministic references | ADR 0047 |
+| [`06_pdiff_transfer_optimize/`](06_pdiff_transfer_optimize/README.md) | what accounts for the Tahoe Transfer deficit? | paired validation replay, independent interventions and source-domain audit | ADR 0048 |
 
 The retired Tahoe data step was folded into `02_dataset_corpus/` (ADR 0033).
 The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their tracked records are available in Git at
