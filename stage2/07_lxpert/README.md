@@ -26,9 +26,12 @@ the original files as well.
 The release includes 67,018 Tahoe and 4,478 tenv profiles. The 32 tenv technical
 blanks are excluded. Raw counts are projected onto the ordered 18,164-gene CM
 axis, then normalized by the projected library size with CP10K and `log1p`.
-Tahoe maps by Ensembl ID and tenv by HGNC ID. Tahoe's unobserved FAM153B is stored
-as zero and masked from the Tahoe reconstruction loss. Tenv keeps the measured
-gene. Both sources use the complete ordered decoder axis.
+The original release maps Tahoe by exact Ensembl ID and tenv by HGNC ID.
+It stores Tahoe FAM153B as zero and masks it from the reconstruction loss.
+The Step 02 crosswalk identifies a measured Tahoe column under a different
+Ensembl ID. [ADR 0052](../../docs/adr/0052-stage2-autoencoder-reconstruction-boundary.md)
+records the corrected mapping for the next release. Both sources in the
+original release use the complete ordered decoder axis.
 
 For each source, `prepare` ranks plate IDs by a hash of the seed, source and
 plate. The first fifth of the plate list, rounded down with a minimum of one

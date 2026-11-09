@@ -20,13 +20,27 @@ prediction evaluation. The rationale and literature are in the
 The primary task reconstructs each complete measured expression profile
 from itself, using the existing cross-attention architecture as the main
 model. It includes treated and control profiles, uses the existing
-`log1p(CP10K)` expression scale, and scores observed genes only. Any future
-masked-expression recovery belongs to a separate experiment.
+`log1p(CP10K)` expression scale, and uses only genes represented in both
+corpora. Any future masked-expression recovery belongs to a separate
+experiment.
+
+Use the frozen CM gene order, verifying both sources' native columns by gene
+identity before projection. Tenv resolves by HGNC ID. For Tahoe, retain the
+exact Ensembl match where it agrees with the identity evidence. If that ID is
+absent, use the unique native column linked to the same HGNC ID by the pinned
+Step 02 crosswalk. Report any missing, conflicting or ambiguous mappings
+before releasing the input. The metadata audit found native columns for all
+18,164 CM genes in both sources. FAM153B (HGNC:27323) maps to
+`ENSG00000182230` in tenv and `ENSG00000289731` (token `61482`) in Tahoe.
+The earlier exact-ID-only projection missed the Tahoe column despite observed
+counts. Rebuild the expression release by projecting raw counts before
+normalization. All methods then use the measured FAM153B values in both
+sources, with observed zero counts retained.
 
 The primary comparison fits each method on the same joint Tahoe and tenv
 training membership and reports each source separately. The `mean` reference
-is a single vector, with each gene averaged over training profiles that
-measure it. Source-specific fits are a separate diagnostic.
+is a single vector, with each gene averaged over all joint training profiles.
+Source-specific fits are a separate diagnostic.
 
 Freeze disjoint training, validation and test plate memberships independently
 within each source. Select epochs and hyperparameters on validation plates
