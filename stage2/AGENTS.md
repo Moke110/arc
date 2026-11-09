@@ -15,6 +15,7 @@ Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
 - [`05_pdiff_transfer/`](05_pdiff_transfer/README.md) — Tahoe training strategies
   on warm-start and cold tenv splits (ADR 0047).
 - [`06_pdiff_transfer_optimize/`](06_pdiff_transfer_optimize/README.md) — paired validation replay and Tahoe Transfer diagnostics (ADR 0048).
+- [`07_lxpert/`](07_lxpert/README.md) — whole-transcriptome autoencoder and Latent XPert integration smoke (ADR 0051).
 - [`_envs/`](_envs/README.md) — non-step: shared per-model environments + locks.
 - [`audit/`](audit/README.md) — non-step: entrant/fairness audit, 2026-10-26
   selection decisions.
