@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
-"""Fit, select and pair the random reset through the ADR 0049 runner on CPU."""
+"""Fit, select and pair the random and log dose arms through the ADR 0049 runner on CPU."""
 import argparse
 from pathlib import Path
 import sys
 import tempfile
+import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'script'))
 
+import paired_log_source as log_source
 import paired_reference as ref
 import paired_target as cli
 from artifacts import read_json, sha256, write_json
 from formal_matrix import bind
+from native_log_dose_fixture import source_release
 from native_replication_fixture import source_checkpoint, target_request
 from tahoe_bridge import load_initialization, seal_initialization
 from training_inputs import json_hash
 
 
-def fixture(runtime, root):
+def fixture(runtime, root, arm='random'):
     ref.use_runtime(runtime)
     import native_training as native
 
@@ -39,7 +42,7 @@ def fixture(runtime, root):
     bridge_sha = seal_initialization(native.JointPerturbDiff(native.PredictorInputs(request), config, root),
                                      root, source, request)
     reference_root = root / 'output/paired-transfer/reference/seed-17'
-    target_root = root / 'output/paired-transfer/random/seed-17'
+    target_root = root / f'output/paired-transfer/{arm}/seed-17'
     reference_fit = reference_root / 'fit'
 
     class Original(native.JointPerturbDiff):
@@ -72,14 +75,31 @@ def fixture(runtime, root):
                     'bridge': bind(bridge), 'checkpoint': {'path': source['path'],
                                                            'sha256': source['checkpoint_sha256']},
                     'metadata': {**source}}, 'release': {'recipient_split_sha256': 'fixture'}}
+        if arm == 'log':
+            source_config = {**config, 'max_steps': 2}
+            plan['source'] = source_release(native, root / 'tahoe-release', source_config,
+                                            request['identity']['gene_sha256'])
         write_json(reference_root / 'plan.json', plan)
         reference_sha = sha256(reference_root / 'plan.json')
         common = ['--seed', '17', '--runtime', str(runtime)]
         for phase in ('predict', 'score'):
             ref.main([phase, str(reference_root), *common, '--plan-sha256', reference_sha])
-        args = [str(target_root), '--arm', 'random', *common]
+        if arm == 'log':
+            with (patch.object(native, 'load_recipe', return_value=source_config),
+                  patch.object(log_source, 'verify_request', return_value=None)):
+                log_source.main(['fit', str(target_root), *common, '--reference', str(reference_root),
+                                 '--plan-sha256', reference_sha])
+        args = [str(target_root), '--arm', arm, *common]
         cli.main(['verify', *args, '--reference-sha256', reference_sha])
-        args.extend(['--plan-sha256', sha256(target_root / 'plan.json')])
+        target_plan = target_root / 'plan.json'
+        if arm == 'log':
+            verified = read_json(target_plan)
+            wrong = {**verified, 'source': {**verified['source'], 'source_plan_sha256': 'other-source'}}
+            write_json(target_plan, wrong)
+            with unittest.TestCase().assertRaisesRegex(ValueError, 'differs from the frozen Transfer'):
+                cli.main(['fit', *args, '--plan-sha256', sha256(target_plan)])
+            write_json(target_plan, verified)
+        args.extend(['--plan-sha256', sha256(target_plan)])
         with patch.object(native, 'validate', side_effect=[(loss, [loss], [1])
                                                             for loss in (.7, .5, .5, .8, .7, .6, .5)]):
             cli.main(['fit', *args])
@@ -90,18 +110,31 @@ def fixture(runtime, root):
     assert scores['optimizer_steps'] == 6
     assert scores['selection']['metadata']['best_step'] == 2
     fit = read_json(scores['selection']['history']['path'])
-    reset = fit['initialization']
-    assert reset['reset_doses_um'] == [.2, 1., 10.]
-    assert reset['native_positive_rows_sha256'] == reset['restored_positive_rows_sha256']
-    assert reset['mapped_state_sha256'] != reset['reset_state_sha256']
+    initialization = fit['initialization']
+    if arm == 'log':
+        source = log_source.selected_source(target_root, plan, reference_sha)
+        assert fit['source'] == source
+        assert initialization['source_selection'] == source['metadata']
+        assert initialization['recipient_doses_um'] == [.2, 1., 10.]
+        assert abs(initialization['recipient_log_features'][-1] - 2.30103) < 1e-6
+        assert 'native.cov_encoder.dose_encoder.control' in {
+            parameter for group in fit['training_initial_state']['optimizer_groups']
+            for parameter in group['parameters']
+        }
+    else:
+        assert initialization['reset_doses_um'] == [.2, 1., 10.]
+        assert initialization['native_positive_rows_sha256'] == initialization['restored_positive_rows_sha256']
+        assert initialization['mapped_state_sha256'] != initialization['reset_state_sha256']
     row = paired['per_dose'][0]
     assert (row['step'], row['reference_step']) == (2, 1)
     assert row['pcc_difference'] == row['pcc'] - row['reference_pcc']
-    print('PASS random fit, strict loss selection, selected EMA replay and same-seed pairing')
+    print(f'PASS {arm} fit, strict loss selection, selected EMA replay and same-seed pairing')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', required=True, type=Path)
+    parser.add_argument('--arm', choices=('random', 'log'), default='random')
+    args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
-        fixture(parser.parse_args().runtime.resolve(), Path(temp))
+        fixture(args.runtime.resolve(), Path(temp), args.arm)

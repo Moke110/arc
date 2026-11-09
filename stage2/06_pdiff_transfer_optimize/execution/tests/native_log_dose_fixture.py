@@ -79,15 +79,9 @@ def fixture(runtime, root):
     print('PASS native log covariates, source transfer, recipient lookups and exact reload', flush=True)
 
 
-
-def fit_source_fixture(runtime, root):
-    from unittest.mock import patch
-
-    import native_training as native
-    import paired_log_source as worker
-    from artifacts import read_json, write_csv, write_json
+def source_release(native, root, config, gene_sha256='fixture'):
+    from artifacts import write_csv, write_json
     from formal_matrix import bind
-    from paired_reference import REGIME, SCHEMA
     from training_inputs import json_hash
 
     root.mkdir()
@@ -112,16 +106,9 @@ def fit_source_fixture(runtime, root):
     write_csv(drugs, [{'drug_key': role, 'parent_connectivity': role, 'morgan_index': i}
                       for i, role in enumerate(roles)])
     files['drugs'] = str(drugs)
-    request_identity = {'dataset': 'tahoe', 'fold': 0, 'gene_sha256': 'fixture'}
+    request_identity = {'dataset': 'tahoe', 'fold': 0, 'gene_sha256': gene_sha256}
     request = {'identity': request_identity, 'target_kind': 'delta', 'n_genes': 3, 'predictor_files': files,
                'file_sha256': {key: sha256(path) for key, path in files.items()}}
-    config = {'stage': 'formal', 'seed': 17, 'fold': 0, 'threads': 2, 'device': 'cpu',
-              'expression_scale': 1, 'chemical_dimension': 16, 'batch_groups': 1,
-              'population_size': 2, 'learning_rate': 0.0002, 'weight_decay': 0,
-              'sampling_start_time': 1, 'warmup_steps': 1, 'schedule_training_steps': 4,
-              'ema_decay': 0.9, 'ema_update_steps': 1, 'max_steps': 4,
-              'validation_interval': 1, 'minimum_steps': 2, 'patience_steps': 1,
-              'max_training_seconds': 120, 'min_delta': 1e6}
     selected = {'identity': {**request_identity, 'seed': 17, 'stage': 'formal'},
                 'recipe_sha256': json_hash(config), 'best_step': 1, 'best_validation_loss': 0.5,
                 'checkpoint_sha256': 'original-checkpoint', 'model_state_sha256': 'original-state'}
@@ -131,6 +118,25 @@ def fit_source_fixture(runtime, root):
         path = root / f'{key}.json'
         write_json(path, value)
         original[key] = bind(path)
+    return original
+
+
+def fit_source_fixture(runtime, root):
+    from unittest.mock import patch
+
+    import native_training as native
+    import paired_log_source as worker
+    from artifacts import read_json, write_json
+    from paired_reference import REGIME, SCHEMA
+
+    config = {'stage': 'formal', 'seed': 17, 'fold': 0, 'threads': 2, 'device': 'cpu',
+              'expression_scale': 1, 'chemical_dimension': 16, 'batch_groups': 1,
+              'population_size': 2, 'learning_rate': 0.0002, 'weight_decay': 0,
+              'sampling_start_time': 1, 'warmup_steps': 1, 'schedule_training_steps': 4,
+              'ema_decay': 0.9, 'ema_update_steps': 1, 'max_steps': 4,
+              'validation_interval': 1, 'minimum_steps': 2, 'patience_steps': 1,
+              'max_training_seconds': 120, 'min_delta': 1e6}
+    original = source_release(native, root, config)
     reference = root / 'reference'
     reference.mkdir()
     plan = {'schema': SCHEMA, 'fold': 0, 'seed': 17, 'regime': REGIME, 'source': original,
@@ -151,7 +157,7 @@ def fit_source_fixture(runtime, root):
     assert (run['optimizer_steps'], run['stop_reason']) == (2, 'validation_early_stop')
     assert evidence['metadata']['best_step'] == min(run['history'], key=lambda event: event['validation_loss'])['step']
     assert run['reload']['prediction_max_abs_error'] == 0
-    assert evidence['metadata']['model_state_sha256'] != selected['model_state_sha256']
+    assert evidence['metadata']['model_state_sha256'] != original['metadata']['model_state_sha256']
     assert evidence['doses_um'] == [0.05, 0.5, 5.]
     print('PASS bounded log Tahoe source fit, author-loss selection and exact prediction reload', flush=True)
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fit and score one Step 06 intervention against same-seed original Transfer."""
 import argparse
+from contextlib import nullcontext
 from pathlib import Path
 from unittest.mock import patch
 
@@ -15,7 +16,7 @@ from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-target-v1'
 PAIR_SCHEMA = 'step06-paired-differences-v1'
-CHECKPOINT_NUMBERS = {'random': '04'}
+CHECKPOINT_NUMBERS = {'random': '04', 'log': '05'}
 METRICS = ('mean_ap100', 'pcc')
 
 
@@ -34,21 +35,31 @@ def reference_scores(binding, plan, digest):
     return scores
 
 
+def target_source(root, arm, original, reference_digest):
+    if arm == 'log':
+        from paired_log_source import selected_source
+
+        return selected_source(root, original, reference_digest)
+    return original['source']
+
+
 def freeze(root, arm, seed, reference_root, reference_digest):
     reference_plan = reference.load_plan(reference_root, seed, reference_digest)
-    source = reference_plan['source']
+    source = target_source(root, arm, reference_plan, reference_digest)
     recipient = read_json(check_binding(reference_plan['recipient_request'])['path'])
-    bridge = read_json(check_binding(source['bridge'])['path'])
-    source_checkpoint = source['checkpoint']
     if (reference_plan['config']['seed'] != seed
-            or reference.base.inference_request(recipient) != reference_plan['request']
-            or bridge['recipient_identity'] != recipient['identity']
-            or bridge['recipient_request_sha256'] != request_digest(recipient)
-            or bridge['source']['path'] != source_checkpoint['path']
-            or bridge['source']['checkpoint_sha256'] != source_checkpoint['sha256']
-            or bridge['source']['identity']['seed'] != seed
-            or any(bridge['source'][key] != source['metadata'][key] for key in CHECKPOINT_FIELDS)):
-        raise ValueError('original Tahoe bridge differs from the same-seed source or recipient')
+            or reference.base.inference_request(recipient) != reference_plan['request']):
+        raise ValueError('recipient or recipe differs from the same-seed Transfer reference')
+    if arm != 'log':
+        bridge = read_json(check_binding(source['bridge'])['path'])
+        source_checkpoint = source['checkpoint']
+        if (bridge['recipient_identity'] != recipient['identity']
+                or bridge['recipient_request_sha256'] != request_digest(recipient)
+                or bridge['source']['path'] != source_checkpoint['path']
+                or bridge['source']['checkpoint_sha256'] != source_checkpoint['sha256']
+                or bridge['source']['identity']['seed'] != seed
+                or any(bridge['source'][key] != source['metadata'][key] for key in CHECKPOINT_FIELDS)):
+            raise ValueError('original Tahoe bridge differs from the same-seed source or recipient')
     check_binding(reference_plan['target_recipe'])
     scores = bind(reference_root / 'scores/scores.json')
     reference_scores(scores, reference_plan, reference_digest)
@@ -70,7 +81,8 @@ def load_plan(root, arm, seed, digest):
     pinned = plan['reference']
     original = reference.load_plan(Path(pinned['path']).parent, seed, pinned['sha256'])
     if (plan['protocol_sha256'] != original['protocol_sha256']
-            or plan['config'] != original['config'] or plan['source'] != original['source']):
+            or plan['config'] != original['config']
+            or plan['source'] != target_source(root, arm, original, pinned['sha256'])):
         raise ValueError('target plan differs from the frozen Transfer protocol, recipe or source')
     return plan, original
 
@@ -104,6 +116,10 @@ def selected_fit(plan, original, digest):
 
 
 def initialize(model, plan, recipient, training):
+    if plan['arm'] == 'log':
+        from log_dose import load_initialization
+
+        return load_initialization(model, plan['source'], recipient)
     bridge = plan['source']['bridge']
     _, evidence = load_dose_reset(model, Path(bridge['path']).parent, bridge['sha256'], recipient)
     parameter = model.get_parameter(DOSE_ROWS)
@@ -121,6 +137,10 @@ def model_class(native, plan, initialize_model=None):
     class PairedModel(native.JointPerturbDiff):
         def __init__(self, inputs, config, directory):
             super().__init__(inputs, config, directory)
+            if plan['arm'] == 'log':
+                from log_dose import install_encoder
+
+                install_encoder(self)
             if initialize_model is not None:
                 initialize_model(self)
 
@@ -208,6 +228,18 @@ def paired_differences(scores, baseline):
     return rows
 
 
+def predict(runtime, plan, original, selected, destination, lineage):
+    use_runtime(runtime)
+    architecture = nullcontext()
+    if plan['arm'] == 'log':
+        import native_training as native
+
+        architecture = patch.object(native, 'JointPerturbDiff', model_class(native, plan))
+    with architecture:
+        reference.base.predict_checkpoint(original['request'], plan['config'], original['inference'],
+                                          selected['checkpoint'], selected['metadata'], destination, lineage)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase', choices=('verify', 'fit', 'predict', 'score'))
@@ -237,9 +269,7 @@ def main(argv=None):
             lineage = {'plan_sha256': digest, 'protocol_sha256': plan['protocol_sha256'], 'arm': args.arm}
             prediction = root / 'prediction'
             if args.phase == 'predict':
-                use_runtime(runtime)
-                reference.base.predict_checkpoint(original['request'], plan['config'], original['inference'],
-                                                  selected['checkpoint'], selected['metadata'], prediction, lineage)
+                predict(runtime, plan, original, selected, prediction, lineage)
                 result = bind(prediction / 'prediction.json')
             else:
                 baseline = reference_scores(plan['reference_scores'], original, plan['reference']['sha256'])

@@ -146,3 +146,33 @@ The fit record includes the restored dose row digests, actual optimizer
 steps and selected EMA step. The replay writes `prediction/`, the common
 validation evaluator writes `scores/`, and `paired.json` records the
 per-dose differences from original Transfer at the same seed.
+
+## Continuous log dose
+
+The `log` arm fits Tahoe on the original fold 0 source memberships and
+recipe. The dose encoder applies a trainable affine map to
+`log10(d / 0.05 µM)` and uses a separate trainable control vector at 0 µM.
+Tenv starts from the same seed's loss-selected log Tahoe EMA and rebuilds
+its own dose and Morgan lookups. The encoder evaluates 10 µM directly.
+
+```bash
+step=stage2/06_pdiff_transfer_optimize
+source_cli="$step/execution/script/paired_log_source.py"
+target_cli="$step/execution/script/paired_target.py"
+pdiff="$PWD/stage2/_envs/perturbdiff/bin/python"
+seed=17  # Repeat for 42 and 2026.
+reference="$step/output/paired-transfer/reference/seed-$seed"
+out="$step/output/paired-transfer/log/seed-$seed"
+reference_plan=$(sha256sum "$reference/plan.json" | cut -d ' ' -f 1)
+
+"$pdiff" "$source_cli" fit "$out" --seed "$seed" --reference "$reference" --plan-sha256 "$reference_plan"
+python "$target_cli" verify "$out" --arm log --seed "$seed" --reference-sha256 "$reference_plan"
+plan=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+"$pdiff" "$target_cli" fit "$out" --arm log --seed "$seed" --plan-sha256 "$plan"
+"$pdiff" "$target_cli" predict "$out" --arm log --seed "$seed" --plan-sha256 "$plan"
+python "$target_cli" score "$out" --arm log --seed "$seed" --plan-sha256 "$plan"
+```
+
+The dedicated scheduler runs the jobs in order. Source and target fit
+evidence lives under `output/checkpoints/08-paired-log-tahoe-fold-0-seed-$seed/fit/`
+and `output/checkpoints/05-paired-log-fold-0-seed-$seed/fit/`, respectively.
