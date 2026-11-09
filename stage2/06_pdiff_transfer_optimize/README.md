@@ -116,3 +116,33 @@ sealed prediction and writes `scores/per_group.csv`, `scores/per_dose.csv`
 and `scores/scores.json`. Dose summaries contain AUPRC (mean AP@100), PCC,
 valid group counts and counts by undefined reason. The score record
 distinguishes the selected EMA step from actual optimizer steps.
+
+## Random positive-dose reset
+
+The `random` arm restores the three native tenv positive-dose embeddings
+after loading the same-seed Tahoe bridge. It then uses the original tenv
+training recipe and selects its own EMA by the author validation diffusion
+loss. Run all three seeds through the dedicated scheduler.
+
+```bash
+step=stage2/06_pdiff_transfer_optimize
+cli="$step/execution/script/paired_target.py"
+pdiff="$PWD/stage2/_envs/perturbdiff/bin/python"
+seed=17  # Repeat for 42 and 2026.
+reference="$step/output/paired-transfer/reference/seed-$seed"
+out="$step/output/paired-transfer/random/seed-$seed"
+reference_plan=$(sha256sum "$reference/plan.json" | cut -d ' ' -f 1)
+
+python "$cli" verify "$out" --arm random --seed "$seed" --reference-sha256 "$reference_plan"
+plan=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
+"$pdiff" "$cli" fit "$out" --arm random --seed "$seed" --plan-sha256 "$plan"
+"$pdiff" "$cli" predict "$out" --arm random --seed "$seed" --plan-sha256 "$plan"
+python "$cli" score "$out" --arm random --seed "$seed" --plan-sha256 "$plan"
+```
+
+The fit seal and selected checkpoint are under
+`output/checkpoints/04-paired-random-fold-0-seed-$seed/fit/`.
+The fit record includes the restored dose row digests, actual optimizer
+steps and selected EMA step. The replay writes `prediction/`, the common
+validation evaluator writes `scores/`, and `paired.json` records the
+per-dose differences from original Transfer at the same seed.
