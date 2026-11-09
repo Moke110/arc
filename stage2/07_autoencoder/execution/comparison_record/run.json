@@ -2,6 +2,8 @@
   "ticket": 117,
   "comparison_code_commit": "1856cc50919766a9d197bd47d4008781c97552ff",
   "selection_seal_commit": "dc86c8599d858bc04b96672768983b4ba951a325",
+  "published_comparison_code_commit": "6db7776d2f37ed3f46b8bb28dfabdcf0ab42ade1",
+  "published_selection_seal_commit": "8315709a6489541a522994a19fb40b191a17b02e",
   "selection_seal_sha256": "49604ff82706b39650f8dc98a59ff76c8533c1f953a48aa931eb38a7c963ff92",
   "scores_sha256": "a621ad995a0348daf278a3e2c9dd98dc13b10210899a867c2e7f57dfc64e8c5d",
   "independent_reload_sha256": "a621ad995a0348daf278a3e2c9dd98dc13b10210899a867c2e7f57dfc64e8c5d",
