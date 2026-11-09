@@ -1,5 +1,5 @@
 {
-  "artifact_manifest_sha256": "a2368f6abff9e01dee775a1547f7f94af4c2ff9cdad29ec414ca6951aa27921e",
+  "artifact_manifest_sha256": "1d9f7d1653afdab267aec20463f2fa0f3a6743ee37f85a75b59436f4272f378d",
   "model_id": "AAE_512",
   "provenance": {
     "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
@@ -16,19 +16,19 @@
   "sources": {
     "tahoe": {
       "defined_pcc_profiles": 9600,
-      "mse": 0.009630260705942313,
-      "pcc": 0.973458341962067,
+      "mse": 0.00933920540208896,
+      "pcc": 0.975047333550298,
       "profiles": 9600,
-      "relative_squared_error": 1.1368325886919497,
-      "rmse": 0.08345901921396012
+      "relative_squared_error": 1.1024741050916085,
+      "rmse": 0.08172451939022232
     },
     "tenv": {
       "defined_pcc_profiles": 843,
-      "mse": 0.1291145456285123,
-      "pcc": 0.4934071146904217,
+      "mse": 0.0935970228942359,
+      "pcc": 0.6670378106432326,
       "profiles": 843,
-      "relative_squared_error": 0.49169779902048094,
-      "rmse": 0.35785662218546554
+      "relative_squared_error": 0.35643892737211835,
+      "rmse": 0.3026591134285923
     }
   }
 }
