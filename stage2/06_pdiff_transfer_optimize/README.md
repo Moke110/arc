@@ -33,6 +33,8 @@ the Tahoe-mapped positive-dose embeddings with fresh tenv embeddings
 improved validation AP@100 in this screen, with gains concentrated at 0.2
 and 1 µM. This single-seed result motivates further work on dose
 representation and leaves its contribution to the Transfer deficit open.
+The [fine-tuning research note](transfer_finetuning_research.md) compares
+published adaptation methods with the original Transfer recipe.
 
 The separate source audit covers nine shared tenv training parents and
 50 Tahoe cell lines. Seven of those parents share identical standardized
