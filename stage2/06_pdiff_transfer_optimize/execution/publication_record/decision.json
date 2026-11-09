@@ -1,0 +1,257 @@
+{
+  "schema": "step06-publication-v1",
+  "promotion_threshold": 0.01,
+  "major_contribution_minimum_recovery": 0.5,
+  "arms": {
+    "dose_reset": {
+      "screen": {
+        "status": "below_threshold",
+        "reason": "seed 17 overall paired effect is below +0.010 AP@100",
+        "next_seeds": [],
+        "decision": {
+          "path": "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/decision.json",
+          "sha256": "22d78df7a946b6fb24c7602a803eda908bf56638ebb90f5e438e97b41ecd520e"
+        },
+        "scores": {
+          "17": {
+            "path": "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/scores/scores.json",
+            "sha256": "631761ba5c6db4df899b107f13c6833923425739bc0e2cb8c69abc08c66cf438"
+          }
+        },
+        "incomplete_seeds": {},
+        "gains": {
+          "17": "0.00848055958229982"
+        }
+      },
+      "confirmation_mode": null,
+      "confirmation": null,
+      "attribution_status": "below_threshold",
+      "major_contribution": false
+    },
+    "learning_rate": {
+      "screen": {
+        "status": "below_threshold",
+        "reason": "seed 17 overall paired effect is below +0.010 AP@100",
+        "next_seeds": [],
+        "decision": {
+          "path": "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/decision.json",
+          "sha256": "c01529717887f9179fdf2d631a9af31671b1906381a76d00ca7b55e4882e459f"
+        },
+        "scores": {
+          "17": {
+            "path": "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/scores/scores.json",
+            "sha256": "bfe8d58ba0c349ed845bddb8665bd379e44a0ed52dd2f17e2d76a73f28e1c033"
+          }
+        },
+        "incomplete_seeds": {},
+        "gains": {
+          "17": "-0.00162953498441087"
+        }
+      },
+      "confirmation_mode": null,
+      "confirmation": null,
+      "attribution_status": "below_threshold",
+      "major_contribution": false
+    }
+  },
+  "replication": {
+    "status": "skipped",
+    "reason": "neither fold 0 intervention qualified for confirmation",
+    "historical_scoring": null
+  },
+  "runs": [
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "baseline",
+      "status": "completed",
+      "reason": null
+    },
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "dose_reset",
+      "status": "completed",
+      "reason": null
+    },
+    {
+      "fold": 0,
+      "seed": 42,
+      "arm": "dose_reset",
+      "status": "skipped",
+      "reason": "seed 17 overall paired effect is below +0.010 AP@100"
+    },
+    {
+      "fold": 0,
+      "seed": 2026,
+      "arm": "dose_reset",
+      "status": "skipped",
+      "reason": "seed 17 overall paired effect is below +0.010 AP@100"
+    },
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "learning_rate",
+      "status": "completed",
+      "reason": null
+    },
+    {
+      "fold": 0,
+      "seed": 42,
+      "arm": "learning_rate",
+      "status": "skipped",
+      "reason": "seed 17 overall paired effect is below +0.010 AP@100"
+    },
+    {
+      "fold": 0,
+      "seed": 2026,
+      "arm": "learning_rate",
+      "status": "skipped",
+      "reason": "seed 17 overall paired effect is below +0.010 AP@100"
+    },
+    {
+      "fold": 1,
+      "seed": 17,
+      "arm": "replication",
+      "status": "skipped",
+      "reason": "neither fold 0 intervention qualified for confirmation"
+    },
+    {
+      "fold": 1,
+      "seed": 42,
+      "arm": "replication",
+      "status": "skipped",
+      "reason": "neither fold 0 intervention qualified for confirmation"
+    },
+    {
+      "fold": 1,
+      "seed": 2026,
+      "arm": "replication",
+      "status": "skipped",
+      "reason": "neither fold 0 intervention qualified for confirmation"
+    }
+  ],
+  "source_audit": {
+    "independent_byte_replay": true,
+    "shared_parents": 9,
+    "exact_smiles_parents": 7,
+    "tahoe_cell_lines": 50,
+    "delta_panel_rows": 1809,
+    "exact_smiles_panel_rows": 1407,
+    "brackets_um": {
+      "0.2": [
+        0.05,
+        0.5
+      ],
+      "1.0": [
+        0.5,
+        5.0
+      ],
+      "10.0": []
+    },
+    "interpretation": "Descriptive panel. Assay, normalization, dose, exposure time, cell background and coverage vary together. Tahoe per-sample exposure time is unavailable."
+  },
+  "pooled_validation": [
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "baseline",
+      "mode": "loss-selected",
+      "dose_um": "pooled",
+      "group_count": 138,
+      "status": "completed",
+      "reason": null,
+      "cm_reason": null,
+      "metric": "mean_ap100",
+      "transfer_step": 6500,
+      "intervention_step": null,
+      "cm_step": 6500,
+      "transfer": 0.23843013574088034,
+      "transfer_valid_groups": null,
+      "intervention": null,
+      "intervention_valid_groups": null,
+      "cm": 0.2540922043438432,
+      "cm_valid_groups": null,
+      "gain": null,
+      "cm_gap": 0.01566206860296286,
+      "residual_gap": null,
+      "recovery": null
+    },
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "dose_reset",
+      "mode": "loss-selected",
+      "dose_um": "pooled",
+      "group_count": 138,
+      "status": "completed",
+      "reason": null,
+      "cm_reason": null,
+      "metric": "mean_ap100",
+      "transfer_step": 6500,
+      "intervention_step": 6000,
+      "cm_step": 6500,
+      "transfer": 0.23843013574088034,
+      "transfer_valid_groups": null,
+      "intervention": 0.24691069532318016,
+      "intervention_valid_groups": null,
+      "cm": 0.2540922043438432,
+      "cm_valid_groups": null,
+      "gain": 0.00848055958229982,
+      "cm_gap": 0.01566206860296286,
+      "residual_gap": 0.00718150902066304,
+      "recovery": 0.541471232011812
+    },
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "learning_rate",
+      "mode": "common",
+      "dose_um": "pooled",
+      "group_count": 138,
+      "status": "completed",
+      "reason": null,
+      "cm_reason": null,
+      "metric": "mean_ap100",
+      "transfer_step": 6500,
+      "intervention_step": 6500,
+      "cm_step": 6500,
+      "transfer": 0.23843013574088034,
+      "transfer_valid_groups": null,
+      "intervention": 0.23680060075646947,
+      "intervention_valid_groups": null,
+      "cm": 0.2540922043438432,
+      "cm_valid_groups": null,
+      "gain": -0.00162953498441087,
+      "cm_gap": 0.01566206860296286,
+      "residual_gap": 0.01729160358737373,
+      "recovery": -0.10404340740166365
+    },
+    {
+      "fold": 0,
+      "seed": 17,
+      "arm": "learning_rate",
+      "mode": "native",
+      "dose_um": "pooled",
+      "group_count": 138,
+      "status": "completed",
+      "reason": null,
+      "cm_reason": null,
+      "metric": "mean_ap100",
+      "transfer_step": 6500,
+      "intervention_step": 6000,
+      "cm_step": 6500,
+      "transfer": 0.23843013574088034,
+      "transfer_valid_groups": null,
+      "intervention": 0.2337608581499004,
+      "intervention_valid_groups": null,
+      "cm": 0.2540922043438432,
+      "cm_valid_groups": null,
+      "gain": -0.00466927759097994,
+      "cm_gap": 0.01566206860296286,
+      "residual_gap": 0.0203313461939428,
+      "recovery": -0.2981264933354099
+    }
+  ],
+  "interpretation": "Residual CM gaps are paired observations. Each intervention was tested separately. The source-domain audit does not enter attribution."
+}
