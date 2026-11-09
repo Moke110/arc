@@ -9,6 +9,7 @@ from inputs import prepare, verify
 REPO = next(path for path in Path(__file__).resolve().parents if (path / ".git").exists())
 STEP = REPO / "stage2/07_lxpert"
 STEP02 = REPO / "stage2/02_dataset_corpus"
+STEP03 = REPO / "stage2/03_modes_tenv"
 CORPUS = STEP02 / "output/corpus/v2"
 RELEASE = STEP / "output/input"
 
@@ -30,14 +31,15 @@ def main():
     freeze_plan = subcommands.add_parser("freeze", help="seal the formal training recipe")
     develop_fit = subcommands.add_parser("develop", help="select duration on held-out plates")
     refit_model = subcommands.add_parser("refit", help="train and release from fresh initialization")
+    treatment = subcommands.add_parser("smoke", help="probe the frozen Latent XPert treatment path")
     formal = (freeze_plan, develop_fit, refit_model)
-    for command in (build, check, train, replay, *formal):
+    for command in (build, check, train, replay, treatment, *formal):
         command.add_argument("--release", type=Path, default=RELEASE)
     build.add_argument("--corpus-dir", type=Path, default=CORPUS)
     build.add_argument("--seed", type=int, default=20261109, help="development plate split seed")
     build.add_argument("--fixture", action="store_true", help="allow bounded synthetic corpora")
     check.add_argument("--corpus-dir", type=Path, help="also rehash the source files")
-    for command in (train, replay, *formal):
+    for command in (train, replay, treatment, *formal):
         command.add_argument("--fixture", action="store_true", help="allow a bounded fixture release")
         command.add_argument("--device", choices=("cuda", "cpu"), default="cuda")
     train.add_argument("--output", type=Path, required=True, help="new fit artifact directory")
@@ -52,6 +54,9 @@ def main():
     freeze_plan.add_argument("--max-epochs", type=int, required=True)
     freeze_plan.add_argument("--max-seconds", type=int, required=True, help="wall time ceiling per fit")
     refit_model.add_argument("--output", type=Path, required=True, help="new autoencoder release directory")
+    treatment.add_argument("--checkpoint", type=Path, default=STEP / "output/autoencoder/checkpoint.pt")
+    treatment.add_argument("--tenv-input", type=Path, default=STEP03 / "output/input")
+    treatment.add_argument("--case-id", default="temp_env::Plate1-C02")
     args = parser.parse_args()
     try:
         if args.command == "prepare":
@@ -63,6 +68,12 @@ def main():
 
             operation = {"freeze": freeze, "develop": develop, "refit": refit}[args.command]
             manifest = operation(args, source_pins())
+        elif args.command == "smoke":
+            from treatment_smoke import smoke
+
+            manifest = smoke(args, source_pins(),
+                             STEP / "execution/formal_fit_record/run.json",
+                             STEP03 / "execution/input_record/verification.json")
         else:
             from short_fit import fit, reload
 

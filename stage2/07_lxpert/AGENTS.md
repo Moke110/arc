@@ -14,3 +14,6 @@
   Run `freeze`, `develop`, `refit` and `reload` as separate processes for
   formal training and release. The [README](README.md) gives commands and
   artifact paths. Run formal fits serially through the scheduler.
+- **Treatment smoke** — run `smoke` against the released refit checkpoint and
+  verified Step 03 inputs. Schedule the real CUDA probe. The bounded CPU test
+  is `execution/tests/test_treatment_smoke.py`.

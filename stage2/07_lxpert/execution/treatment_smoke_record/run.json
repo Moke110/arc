@@ -1,0 +1,164 @@
+{
+  "cpu_fixture_checks": {
+    "passing": [
+      {
+        "file": "test_inputs.py",
+        "peak_rss_kib_time": 162204,
+        "tests": 7,
+        "wall_seconds_time": 6.48
+      },
+      {
+        "file": "test_autoencoder.py",
+        "peak_rss_kib_time": 915956,
+        "tests": 1,
+        "wall_seconds_time": 6.26
+      },
+      {
+        "file": "test_formal_fit.py",
+        "peak_rss_kib_time": 916672,
+        "tests": 3,
+        "wall_seconds_time": 19.79
+      },
+      {
+        "file": "test_treatment_smoke.py",
+        "peak_rss_kib_time": 916660,
+        "tests": 1,
+        "wall_seconds_time": 8.33
+      }
+    ],
+    "red": "test_treatment_smoke.py failed because smoke was an unknown CLI command",
+    "thread_cap": 2
+  },
+  "execution": {
+    "admission": "resource budgets satisfied",
+    "admission_available_ram_gib": 41.5814208984375,
+    "admission_external_heavy_jobs": 0,
+    "admission_free_gpu_memory_gib": 14.2138671875,
+    "admission_gpu_utilization_percent": 19,
+    "command": [
+      "/home/chang/miniconda3/envs/arc/bin/python",
+      "/home/chang/arc/.scratch/worktrees/lxpert-110/stage2/07_lxpert/execution/script/lxpert.py",
+      "smoke",
+      "--release",
+      "stage2/07_lxpert/output/input",
+      "--checkpoint",
+      "stage2/07_lxpert/output/autoencoder/checkpoint.pt",
+      "--tenv-input",
+      "stage2/03_modes_tenv/output/input",
+      "--case-id",
+      "temp_env::Plate1-C02",
+      "--device",
+      "cuda"
+    ],
+    "cwd": "/home/chang/arc",
+    "finished_at_unix": 1794226661.5260015,
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "min_available_ram_gib": 40.58278274536133,
+    "min_free_gpu_memory_gib": 13.873046875,
+    "peak_gpu_utilization_percent": 24,
+    "peak_host_rss_kib_time_v": 1606172,
+    "peak_workstation_gpu_used_gib": 2.119140625,
+    "returncode": 0,
+    "source_sha256": {
+      "autoencoder.py": "669bd342fa1418640c20ca3e103dea0e25401ae070067d5d2c16fbcc234267b5",
+      "formal_fit.py": "8d4040a2b5c0ba46c779b1d66499de3ae2f8cf8515e2f23a0e7141e1d129ac19",
+      "inputs.py": "664a2d0357400531430a6bd70b2e04da8c76c1ec2294605338d979494a2eeef1",
+      "lxpert.py": "5515bd3359a595c5f7f0f80ae59f17dcf70d8859663e9335fa15a09801c7642a",
+      "short_fit.py": "2e1a9ea9d0767912a2dcc570b36805c734566dad1d024d2ca2da413b6803e0f9",
+      "treatment_smoke.py": "8c7181b7600da08ab3898ae9069730966bc6e6946f2b8e20ef37589732cbe892"
+    },
+    "started_at_unix": 1794226647.5332055,
+    "timeout_seconds": 300,
+    "wall_seconds_time_v": 11.94
+  },
+  "schema_version": 1,
+  "smoke": {
+    "architecture": {
+      "gene_count": 18164,
+      "heads": 8,
+      "latent_tokens": 512,
+      "width": 128
+    },
+    "autoencoder_gradients_absent": true,
+    "autoencoder_unchanged": true,
+    "axis_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "block_order": [
+      "CA",
+      "SA",
+      "SA",
+      "CA"
+    ],
+    "case": {
+      "baseline_sha256": "ad20ed0008aaec26df62d112c2bc13be3fc6e9d60df4a65e46a76f7c099e8127",
+      "case_id": "temp_env::Plate1-C02",
+      "control_index": 0,
+      "dmso_wells": 12,
+      "dose_um": 10.0,
+      "drug_key": "QRXWMOHMRWLFEY-UHFFFAOYSA-N",
+      "log10_relative_dose": 2.3010299956639813,
+      "morgan_active_bits": 21,
+      "morgan_index": 283,
+      "plate": "Plate1",
+      "reference_dose_um": 0.05
+    },
+    "checkpoint_sha256": "fae187bb5de96b2dafb923e1a206d570c96566c8cd51d27f6340a9bd7c5ae3ea",
+    "command": "smoke",
+    "condition_shape": [
+      1,
+      2,
+      128
+    ],
+    "delta_max_abs_error": 0.0,
+    "delta_shape": [
+      1,
+      18164
+    ],
+    "development_sha256": "dc9b83c0684e8285fd414fdea928a9d1c68ebdb2189ecf1840bb7d6b18316a6a",
+    "device": "cuda",
+    "elapsed_seconds": 10.647565829989617,
+    "finite": true,
+    "fit_stage": "full_data_refit",
+    "gradient_l2": {
+      "blocks": 1.4045861959457397,
+      "dose_adapter": 0.07550828903913498,
+      "morgan_adapter": 0.16666874289512634
+    },
+    "input_manifest_sha256": "11e9e763eb1e3538779a65315911783d4ac48c109e846d7f4d8b18c340d9857b",
+    "latent_shape": [
+      1,
+      512,
+      128
+    ],
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "peak_cuda_allocated_bytes": 74490880,
+    "peak_cuda_reserved_bytes": 94371840,
+    "peak_rss_kib": 1503600,
+    "plan_sha256": "4a95702b352e70f470d0a855a7243088256fd3349f6cae5178a183db7f5c8f8f",
+    "post_treatment_shape": [
+      1,
+      18164
+    ],
+    "precision": "bfloat16",
+    "probe_loss": 1.4283192157745361,
+    "probe_objective": "full-axis MSE + (1 - Pearson) against a synthetic ramp",
+    "refit_sha256": "323b52c75678d3d80608fe44e792a0c11463798aaa57f7e08913afa443d70f18",
+    "release": "stage2/07_lxpert/output/input",
+    "seed": 20261109,
+    "tenv_files": {
+      "controls.csv": "c7aeffdefa9ebc62667b48ff5b0bf91aafbaae8dc96a1fe93dac132cd4ce9df3",
+      "controls.npy": "9bc1feda4f02264734b2d23bbdb5a73e3efbe40f05690513c89450902392455e",
+      "drugs.csv": "04b893199ea07c76c5a1e869acb41c31220d42a048fd8f42fdedd479286bd257",
+      "genes.csv": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+      "morgan.npy": "35a4d675086f1a67fea1c39b93a5fb31632f81b2273f0b2840c4d6eafee14022",
+      "wells.csv": "307f7d713e917a9bf32bf9ec794f7349315a64cd4d3f4a145c4995e8c7e00d48"
+    },
+    "tenv_manifest_sha256": "23f6bd988fe9474ef1dd17d643166e91996b1f7977f7cce4fbd1874e0d4d19fe",
+    "treated_latent_shape": [
+      1,
+      512,
+      128
+    ]
+  },
+  "ticket": 110
+}

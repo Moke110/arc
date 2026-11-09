@@ -22,7 +22,7 @@ class FormalFitTest(unittest.TestCase):
             sys.executable, str(test_inputs.CLI), action, "--release", str(self.release),
             "--fixture", "--device", "cpu", *args,
         ]
-        if action != "reload":
+        if action in {"freeze", "develop", "refit"}:
             command.extend(("--run-dir", str(self.run_dir)))
         result = subprocess.run(command, capture_output=True, text=True, check=False)
         if error:

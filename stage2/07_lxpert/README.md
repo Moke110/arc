@@ -143,3 +143,42 @@ its held-out treated profiles excluded.
 
 Use `--fixture --device cpu` for the bounded training workflow. Run its CLI tests
 with `python -m unittest discover -s stage2/07_lxpert/execution/tests -p test_formal_fit.py`.
+
+## Latent XPert treatment smoke
+
+Run from the repository root with the `arc` environment under the scheduler.
+
+```bash
+python stage2/07_lxpert/execution/script/lxpert.py smoke
+```
+
+The smoke checks the released full-data refit checkpoint and its provenance.
+It uses the verified Step 03 input release to select a measured tenv well,
+its same-plate DMSO mean, its shared Morgan-2048 vector, and its measured
+positive dose. The default case is `temp_env::Plate1-C02`. Use `--case-id` to
+select another well. The JSON report identifies the input artifacts and rows.
+
+The frozen encoder converts the measured baseline to 512 latent tokens.
+The treatment branch applies cross-attention, two self-attention blocks, and
+a final cross-attention block. The two cross-attention blocks read the same
+two condition tokens. One is a linear projection of the shared fingerprint,
+and the other is an affine projection of `log10(dose / 0.05 µM)`. The frozen
+decoder maps the treated latent to 18,164 expression values. The smoke checks
+that subtracting the measured baseline yields the reported full-axis delta.
+
+A single backward pass against a synthetic target exercises full-axis delta
+MSE and Pearson loss. The report checks finite treatment gradients, including
+both adapters, and unchanged autoencoder parameters with no gradients.
+The command performs no optimizer updates and loads no evaluator truth.
+The synthetic probe loss is an integration diagnostic.
+
+Run the bounded CPU fixture with
+`python -m unittest discover -s stage2/07_lxpert/execution/tests -p test_treatment_smoke.py`.
+
+The [verified smoke record](execution/treatment_smoke_record/run.json) uses
+Plate1's 12 DMSO wells and a 10 µM dose. It produced two 128-wide condition
+tokens and finite post-treatment and delta vectors of length 18,164. Delta
+matched the independent subtraction exactly. The Morgan and dose adapter
+gradient norms were 0.167 and 0.0755. The scheduled run took 11.94 seconds,
+peaked at 1,606,172 KiB host RSS and reserved 94,371,840 bytes in the CUDA
+allocator.
