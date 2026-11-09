@@ -10,12 +10,15 @@ from dose_reset import load_dose_reset
 from formal import completed_fit, fit_slot, slot_lock, use_runtime, verify_fit_seal
 from formal_matrix import bind, check_binding
 from learning_rate import publish
-from tahoe_bridge import CHECKPOINT_FIELDS, DOSE_ROWS, request_digest, state_digest
+from tahoe_bridge import (CHECKPOINT_FIELDS, DOSE_ROWS, load_initialization,
+                          request_digest, state_digest)
 from training_inputs import json_hash
 
 SCHEMA = 'step06-paired-target-v1'
 PAIR_SCHEMA = 'step06-paired-differences-v1'
-CHECKPOINT_NUMBERS = {'random': '04'}
+CHECKPOINT_NUMBERS = {'random': '04', 'all-half': '06'}
+ORIGINAL_BASE_LR = 2e-4
+HALF_BASE_LR = 1e-4
 METRICS = ('mean_ap100', 'pcc')
 
 
@@ -32,6 +35,14 @@ def reference_scores(binding, plan, digest):
             or {row['dose_um']: row['group_count'] for row in scores['per_dose']} != plan['dose_group_counts']):
         raise ValueError('reference scores differ from the same-seed frozen validation protocol')
     return scores
+
+
+def resolve_config(arm, original):
+    if arm == 'all-half':
+        if original['learning_rate'] != ORIGINAL_BASE_LR:
+            raise ValueError('all-half requires the original Transfer base learning rate of 2e-4')
+        return {**original, 'learning_rate': HALF_BASE_LR}
+    return original
 
 
 def freeze(root, arm, seed, reference_root, reference_digest):
@@ -57,7 +68,7 @@ def freeze(root, arm, seed, reference_root, reference_digest):
         'schema': SCHEMA, 'arm': arm, 'seed': seed, 'fold': 0, 'regime': reference.REGIME,
         'reference': bind(reference_root / 'plan.json', reference_digest), 'reference_scores': scores,
         'protocol_sha256': reference_plan['protocol_sha256'], 'source': source,
-        'config': reference_plan['config'], 'checkpoint_slot': str(slot),
+        'config': resolve_config(arm, reference_plan['config']), 'checkpoint_slot': str(slot),
     }
     return publish(root / 'plan.json', plan)
 
@@ -70,7 +81,7 @@ def load_plan(root, arm, seed, digest):
     pinned = plan['reference']
     original = reference.load_plan(Path(pinned['path']).parent, seed, pinned['sha256'])
     if (plan['protocol_sha256'] != original['protocol_sha256']
-            or plan['config'] != original['config'] or plan['source'] != original['source']):
+            or plan['config'] != resolve_config(arm, original['config']) or plan['source'] != original['source']):
         raise ValueError('target plan differs from the frozen Transfer protocol, recipe or source')
     return plan, original
 
@@ -85,6 +96,10 @@ def verify_training(arm, training):
         raise ValueError('target adaptation requires a fresh optimizer, scheduler and EMA')
     if arm == 'random' and not training.get('positive_dose_gradient_observed'):
         raise ValueError('no training gradient reached the restored positive-dose rows')
+    if arm == 'all-half':
+        groups = training['optimizer_groups']
+        if not groups or any(group['base_lr'] != HALF_BASE_LR for group in groups):
+            raise ValueError('all-half requires a base learning rate of 1e-4 for every optimizer group')
 
 
 def selected_fit(plan, original, digest):
@@ -105,7 +120,10 @@ def selected_fit(plan, original, digest):
 
 def initialize(model, plan, recipient, training):
     bridge = plan['source']['bridge']
-    _, evidence = load_dose_reset(model, Path(bridge['path']).parent, bridge['sha256'], recipient)
+    directory = Path(bridge['path']).parent
+    if plan['arm'] == 'all-half':
+        return load_initialization(model, directory, bridge['sha256'], recipient)
+    _, evidence = load_dose_reset(model, directory, bridge['sha256'], recipient)
     parameter = model.get_parameter(DOSE_ROWS)
 
     def observe(gradient):

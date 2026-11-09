@@ -146,3 +146,13 @@ The fit record includes the restored dose row digests, actual optimizer
 steps and selected EMA step. The replay writes `prediction/`, the common
 validation evaluator writes `scores/`, and `paired.json` records the
 per-dose differences from original Transfer at the same seed.
+
+## All-half learning rate
+
+The `all-half` arm loads the original Tahoe bridge and uses a base
+learning rate of `1e-4` in every tenv optimizer group. It keeps the
+original group membership, weight decay and warmup and cosine schedule.
+Use the target commands above with `--arm all-half` and
+`out="$step/output/paired-transfer/all-half/seed-$seed"`.
+The selected EMA and its fit seal are under
+`output/checkpoints/06-paired-all-half-fold-0-seed-$seed/fit/`.
