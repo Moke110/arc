@@ -1,7 +1,6 @@
 # Separate transcriptome reconstruction from perturbation prediction
 
-**Status:** scope, baseline families and evaluation structure agreed
-(2026-11-10). The remaining benchmark settings are under design.
+**Status:** accepted (2026-11-10).
 
 Step 07 becomes `stage2/07_autoencoder/` and owns transcriptome reconstruction
 on the frozen CM gene axis. Step 08 owns perturbation prediction and its
@@ -34,21 +33,40 @@ before releasing the input. The metadata audit found native columns for all
 `ENSG00000182230` in tenv and `ENSG00000289731` (token `61482`) in Tahoe.
 The earlier exact-ID-only projection missed the Tahoe column despite observed
 counts. Rebuild the expression release by projecting raw counts before
-normalization. All methods then use the measured FAM153B values in both
-sources, with observed zero counts retained.
+normalization. For each profile, divide each projected count by the sum
+over the 18,164 shared genes, multiply by 10,000, then apply `log1p`.
+This gives both sources the same denominator gene set and removes a
+per-profile multiplicative count scale. All methods use the measured
+FAM153B values in both sources and retain observed zero counts.
 
 The primary comparison fits each method on the same joint Tahoe and tenv
 training membership and reports each source separately. The `mean` reference
 is a single vector, with each gene averaged over all joint training profiles.
-Source-specific fits are a separate diagnostic.
+Source-specific fits are a separate diagnostic. Compare PCA and MLP AE at
+32, 128 and 512 latent scalars. Report the main model's 512 latent tokens
+with 128 channels each separately so token count is distinguishable from
+latent scalar count.
 
 Freeze disjoint training, validation and test plate memberships independently
-within each source. Select epochs and hyperparameters on validation plates
-and report the final comparison on test plates. Fit the primary model anew
-for this comparison. The historical full-data checkpoint includes the
-profiles eligible for the new test split and remains evidence of the earlier
-fit.
+within each source. Keep the existing validation plates, then use the next
+equally sized block of plates from the existing source-specific hash ordering
+with seed 20261109 as test. The rest form the training split.
 
-This ADR records decisions ahead of the directory migration and benchmark.
-Historical evidence retains its recorded paths under
+| Source | Train plates / profiles | Validation plates / profiles | Test plates / profiles |
+| --- | ---: | ---: | ---: |
+| Tahoe | 10 / 47,822 | 2 / 9,600 | 2 / 9,596 |
+| tenv | 10 / 2,810 | 3 / 843 | 3 / 825 |
+
+Fit all methods anew on the training split. For epoch-based models, visit
+each training profile once per epoch at the natural source ratio. Select
+epochs and configurations by tenv validation MSE, and report Tahoe validation
+scores separately. Report test PCC and RMSE per profile and average them
+equally within each source. Report squared reconstruction error relative to
+the training-gene mean on the same test profiles to quantify how much
+profile-specific variation is preserved.
+
+Release the checkpoints actually used for test scoring with their split and
+gene axis. The historical full-data checkpoint remains evidence of the
+earlier fit. Any future Step 08 refit must follow the test exclusions of its
+perturbation evaluation. Historical evidence retains its recorded paths under
 [ADR 0030](0030-external-data-provenance-and-step-layout.md).
