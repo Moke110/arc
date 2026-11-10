@@ -197,6 +197,22 @@ data. The test release also publishes `xpert_opti_r1_metrics.png` and
 the validation seal, test tables and both figures from frozen inputs and
 checks every output by SHA-256.
 
+## Round 1 results
+
+All nine XPert arms completed the formal fold 0, seed 17 policy and replayed
+their selected checkpoints on tenv validation and test. The validation seal in
+`88b621b` advanced all four G arms and all four MLP arms for confirmation.
+
+On the exploratory test split, `XPert_MLP2048` led the trained arms on
+AUPRC@full at 0.02823, compared with 0.02480 for `XPert_G18164` and 0.02984 for
+`delta_mean`. AUPRC@full was defined for 359 of the 462 drug–dose groups.
+The shared continuous panel contains 73 genes, so its metrics are provisional.
+
+- [Metrics figure](output/round1/xpert_opti_r1_metrics.png)
+- [Precision–recall figure](output/round1/xpert_opti_r1_PR.png)
+- [Test scores and PR data](output/round1/test_scores/)
+- [Acceptance, checkpoint replay and resources](execution/round1_record/acceptance.json)
+
 The work directory holds fits, queue status and per-attempt resource logs.
 Sealing requires a terminal validation outcome for every model. Test scoring
 requires a terminal test outcome for every model whose validation replay

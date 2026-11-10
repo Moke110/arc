@@ -84,6 +84,8 @@ def model_style(model):
 def draw_pr(metrics, curves, path):
     fig, axes = plt.subplots(2, 2, figsize=(14, 8.9), sharex="col",
                              gridspec_kw={"height_ratios": [3.5, 1]})
+    peak_precision = float(curves.precision.max()) if not curves.empty else 1.
+    precision_limit = min(1.04, max(.05, .05 * np.ceil(1.05 * peak_precision / .05)))
     legend = []
     for item in metrics.to_dict("records"):
         model = item["model"]
@@ -107,7 +109,7 @@ def draw_pr(metrics, curves, path):
             panel.step(rows.recall, rows.precision, where="pre", **style)
             support.step(rows.recall, rows.contributing_groups, where="pre", **style)
         panel.set_title(title, fontsize=14, weight="semibold")
-        panel.set_ylim(0, 1.04)
+        panel.set_ylim(0, precision_limit)
         panel.set_ylabel("Macro precision")
         undefined = metrics.loc[metrics.status.eq("complete") & metrics[f"auprc_{metric}"].isna(), "model"]
         if not undefined.empty:
