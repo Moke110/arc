@@ -1,0 +1,17 @@
+{
+  "classification": "bounded evaluation fixtures",
+  "evaluator": {
+    "tests_passed": 6,
+    "peak_rss_kib": 901392,
+    "elapsed_seconds": 14.01,
+    "checks": "Prepare, fit, seal, refuse uncommitted test scoring, commit validation promotion, score and render test, and reproduce tables and figures in a separate process."
+  },
+  "significance": {
+    "tests_passed": 2,
+    "peak_rss_kib": 847760,
+    "elapsed_seconds": 5.80,
+    "r_version": "4.5.3",
+    "deseq2_version": "1.50.2",
+    "checks": "Two-sided multi-plate raw count contrast, complete-family BH including unavailable genes, HDGFL3, explicit untestable zero library, and test gate before native data access."
+  }
+}

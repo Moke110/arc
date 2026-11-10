@@ -2,26 +2,17 @@
 
 import argparse
 import fcntl
-import hashlib
 import json
 from pathlib import Path
 import subprocess
 import sys
 
+from round_contract import read_json, sha256, verify_committed, verify_committed_promotion
+
 
 SCRIPT = Path(__file__).resolve().parent
 STEP = SCRIPT.parents[1]
-REPO = next(path for path in STEP.parents if (path / ".git").exists())
 RECORD = STEP / "execution/round1_record"
-
-
-def sha(path):
-    with path.open("rb") as handle:
-        return hashlib.file_digest(handle, "sha256").hexdigest()
-
-
-def read_json(path):
-    return json.loads(path.read_text())
 
 
 def save_status(path, status):
@@ -31,15 +22,8 @@ def save_status(path, status):
 
 
 def check_digest(path, expected):
-    if sha(path) != expected:
+    if sha256(path) != expected:
         raise ValueError(f"frozen artifact has changed: {path}")
-
-
-def verify_committed(path):
-    relative = path.resolve().relative_to(REPO)
-    committed = subprocess.check_output(["git", "show", f"HEAD:{relative}"], cwd=REPO)
-    if committed != path.read_bytes():
-        raise ValueError(f"working artifact differs from its committed bytes: {relative}")
 
 
 def job(output, model, stage, status, status_path, args):
@@ -68,6 +52,8 @@ def run_model(output, predictor, model, plan, policy, role):
     status_path = output / "status" / f"{model}.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
     status = read_json(status_path) if status_path.exists() else {"model": model, "attempts": {}}
+    if role == "test" and not status.get("validation_replay_sha256"):
+        raise ValueError(f"{model}: test prediction requires a verified validation prediction")
     if role == "validation" and not (fit / "run.json").is_file():
         args = ["fit", "--model", model, "--predictor", predictor, "--policy", policy,
                 "--fold", plan["fold"], "--seed", plan["seed"], "--output", fit]
@@ -76,7 +62,7 @@ def run_model(output, predictor, model, plan, policy, role):
         job(output, model, "fit", status, status_path, args)
     run = read_json(fit / "run.json")
     if (run["status"], run["model"], run["policy_sha256"], run["predictor_sha256"], run["fold"], run["seed"]) != (
-        "complete", model, plan["policy_sha256"], sha(predictor / "manifest.json"), plan["fold"], plan["seed"]
+        "complete", model, plan["policy_sha256"], sha256(predictor / "manifest.json"), plan["fold"], plan["seed"]
     ):
         raise ValueError(f"{model}: fit does not match the frozen Round 1 plan")
     for source in ("tahoe", "tenv"):
@@ -85,7 +71,7 @@ def run_model(output, predictor, model, plan, policy, role):
         job(output, model, f"predict-{role}", status, status_path,
             ["predict", "--predictor", predictor, "--checkpoint", checkpoint,
              "--role", role, "--output", prediction])
-    digest = sha(prediction / "manifest.json")
+    digest = sha256(prediction / "manifest.json")
     for name, expected in read_json(prediction / "manifest.json")["files"].items():
         check_digest(prediction / name, expected)
     replay_key = f"{role}_replay_sha256"
@@ -122,7 +108,9 @@ def main():
     for name, digest in plan["fit_sources"].items():
         check_digest(SCRIPT / name, digest)
     if args.role == "test":
-        verify_committed(args.promotion)
+        promotion = verify_committed_promotion(args.promotion)
+        if promotion["plan_sha256"] != sha256(args.plan):
+            raise ValueError("committed promotion belongs to a different Round 1 plan")
     args.output.mkdir(parents=True, exist_ok=True)
     with (args.output / ".queue.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

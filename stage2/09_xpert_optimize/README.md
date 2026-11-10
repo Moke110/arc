@@ -140,3 +140,55 @@ POLICY="$STEP/execution/compression_record/qualification-policy.json"
 
 [Compression evidence](execution/compression_record/) records all four
 real GPU qualification fits and checkpoint replays.
+
+## Round 1 evaluation and replay
+
+The [frozen plan](execution/round1_record/plan.json) pins the cohort, fit policy,
+and all nine model entries. The two deterministic references use the full CM
+axis and the shared panel. `delta_mean` first averages training wells within
+each tenv drug–dose group, then averages the groups equally. Both references
+use zero training minutes.
+
+The evaluator ranks genes by absolute predicted group Δ. Equal scores enter
+together. `AUPRC@full` ranks covered CM genes against all measured significant
+CM genes. `AUPRC@G` ranks the model axis against significant genes on that axis,
+including HDGFL3 for the landmark reference. A measured, testable group with
+zero significant genes on the relevant axis has undefined AP. Each PR curve
+averages precision over groups that reach each recall and shows the count of
+contributing groups. The reported macro AP averages per-group AP.
+
+Continuous metrics compare group Δ on the shared panel. Per predicted well,
+the evaluator adds predicted native-axis Δ to its matched native-axis control,
+converts to nonnegative expression, and projects and normalizes on the
+shared panel. It subtracts the control independently normalized on that
+panel. Observed shared-panel Δ comes from independently projected raw counts.
+Native-axis continuous scores are reported separately in the tables.
+
+`build_significance.py` builds the two-sided DESeq2 label releases with
+same-plate DMSO and within-contrast BH correction over CM plus HDGFL3. The
+validation seal binds the replayed validation predictions, labels and scores.
+It records each strict `AUPRC@full` improvement against the designated
+control. Test labels and scoring require the seal committed on `dev`.
+
+```bash
+ROUND="$STEP/output/round1"
+PROMOTION="$STEP/execution/round1_record/promotion.json"
+RSCRIPT="$HOME/miniconda3/envs/biomni_e1/bin/Rscript"
+SCORE="$STEP/execution/script/evaluate.py"
+LABELS="$STEP/execution/script/build_significance.py"
+
+"$CAP" "$RECORD/validation-labels" "$PY" "$LABELS" --role validation \
+    --rscript "$RSCRIPT" --output "$ROUND/labels/validation"
+"$CAP" "$RECORD/validation-score" "$PY" "$SCORE" seal
+# Commit the validation promotion on dev before running the test phase.
+"$CAP" "$RECORD/test-labels" "$PY" "$LABELS" --role test \
+    --rscript "$RSCRIPT" --promotion "$PROMOTION" --output "$ROUND/labels/test"
+"$CAP" "$RECORD/test-score" "$PY" "$SCORE" test
+"$CAP" "$RECORD/evaluation-replay" "$PY" "$SCORE" replay
+```
+
+Both score releases include aggregate metrics, per-group scores and PR
+data. The test release also publishes `xpert_opti_r1_metrics.png` and
+`xpert_opti_r1_PR.png` at the Round 1 root. Independent replay recalculates
+the validation seal, test tables and both figures from frozen inputs and
+checks every output by SHA-256.
