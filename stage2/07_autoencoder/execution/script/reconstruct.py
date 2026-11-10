@@ -8,7 +8,7 @@ import numpy as np
 
 from benchmark import (
     AAE_MODEL_IDS, AAE_TRANSFORMER_MODEL_IDS, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT,
-    MATRIX_AE_MODEL_ID,
+    MATRIX_AE_MODEL_ID, MATRIX_MLP_MODEL_ID,
     REPLAY_TOLERANCE, ROLES, SOURCES, Split, checked_test_role, fit_mean, freeze_split, json_bytes,
     load_mean, publish_artifact, publish_json, score, validate_batch_size, validation_mse_matches,
     verify_artifact, verify_replay,
@@ -30,6 +30,12 @@ def fit(args, corpus, split):
         if args.output is None:
             raise ValueError(f"{MATRIX_AE_MODEL_ID} fit requires --output for the new artifact")
         return fit_matrix_ae(corpus, split, args.output, args.batch_size, args.device)
+    if args.model == MATRIX_MLP_MODEL_ID:
+        from matrix_mlp import fit_matrix_mlp
+
+        if args.output is None:
+            raise ValueError(f"{MATRIX_MLP_MODEL_ID} fit requires --output for the new artifact")
+        return fit_matrix_mlp(corpus, split, args.output, args.batch_size, args.device)
     if args.model in MLP_MODEL_IDS:
         if args.output is None:
             raise ValueError("MLP fit requires --output for the new artifact")
@@ -81,10 +87,16 @@ def score_artifact(args, corpus, split):
             predict, batch_size = matrix_ae_predictor(
                 args.artifact, record, corpus.fixture, args.batch_size, args.device,
             )
+        elif record["model_id"] == MATRIX_MLP_MODEL_ID:
+            from matrix_mlp import matrix_mlp_predictor
+
+            predict, batch_size = matrix_mlp_predictor(
+                args.artifact, record, corpus.fixture, args.batch_size, args.device,
+            )
         else:
             raise ValueError(f"unsupported model: {record['model_id']}")
     result = score(corpus, split, args.role, predict, mean, batch_size, allow_test=args.allow_test)
-    if record["model_id"] in AAE_TRANSFORMER_MODEL_IDS and args.role == "validation":
+    if record["model_id"] in (*AAE_TRANSFORMER_MODEL_IDS, MATRIX_MLP_MODEL_ID) and args.role == "validation":
         selected_mse = record["metadata"]["selected_validation_mse"]
         if not validation_mse_matches(result["sources"], selected_mse):
             raise ValueError("validation MSE differs from the selected epoch")
@@ -111,7 +123,8 @@ def main():
             command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
         if name == "fit":
             command.add_argument(
-                "--model", choices=("mean", "PCA", *MLP_MODEL_IDS, *AAE_MODEL_IDS, MATRIX_AE_MODEL_ID),
+                "--model",
+                choices=("mean", "PCA", *MLP_MODEL_IDS, *AAE_MODEL_IDS, MATRIX_AE_MODEL_ID, MATRIX_MLP_MODEL_ID),
                 default="mean",
             )
             command.add_argument("--output", type=Path)

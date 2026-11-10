@@ -194,3 +194,7 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 /stage2/07_autoencoder/output/models/AAE_512+16/*
 !/stage2/07_autoencoder/output/models/AAE_512+16/manifest.json
 !/stage2/07_autoencoder/output/models/AAE_512+16/epochs.json
+!/stage2/07_autoencoder/output/models/MLPm_512/
+/stage2/07_autoencoder/output/models/MLPm_512/*
+!/stage2/07_autoencoder/output/models/MLPm_512/manifest.json
+!/stage2/07_autoencoder/output/models/MLPm_512/epochs.json

@@ -83,13 +83,28 @@ class LatentTransformerBlock(nn.Module):
         return tokens + self.feedforward(self.feedforward_norm(tokens))
 
 
-class TranscriptomeAutoencoder(nn.Module):
+class GenePositionedAutoencoder(nn.Module):
     def __init__(self, gene_count):
         super().__init__()
         frequencies = torch.exp(torch.arange(0, WIDTH, 2) * (-log(10000.0) / WIDTH))
         angles = torch.arange(gene_count)[:, None] * frequencies
         positions = torch.stack((angles.sin(), angles.cos()), dim=-1).flatten(-2)
         self.register_buffer("gene_positions", positions.unsqueeze(0), persistent=False)
+
+    def embed_expression(self, expression):
+        values = self.expression(expression.unsqueeze(-1))
+        return values + self.gene_positions.to(dtype=values.dtype)
+
+    def read_expression_tokens(self, tokens):
+        return self.reconstruct(tokens + self.gene_positions.to(dtype=tokens.dtype)).squeeze(-1)
+
+    def forward(self, expression):
+        return self.decode(self.encode(expression))
+
+
+class TranscriptomeAutoencoder(GenePositionedAutoencoder):
+    def __init__(self, gene_count):
+        super().__init__(gene_count)
         self.latent_queries = nn.Parameter(torch.randn(1, LATENT_TOKENS, WIDTH) / WIDTH**0.5)
         self.expression = nn.Linear(1, WIDTH)
         self.read_expression = CrossAttention()
@@ -98,17 +113,13 @@ class TranscriptomeAutoencoder(nn.Module):
         self.reconstruct = nn.Linear(WIDTH, 1)
 
     def encode(self, expression):
-        values = self.expression(expression.unsqueeze(-1))
-        tokens = values + self.gene_positions.to(dtype=values.dtype)
+        tokens = self.embed_expression(expression)
         return self.latent_norm(self.read_expression(self.latent_queries, tokens)
                                 + self.latent_queries)
 
     def decode(self, latent):
         attended = self.read_latent(self.gene_positions, latent)
-        return self.reconstruct(attended + self.gene_positions.to(dtype=attended.dtype)).squeeze(-1)
-
-    def forward(self, expression):
-        return self.decode(self.encode(expression))
+        return self.read_expression_tokens(attended)
 
 
 class TransformerTranscriptomeAutoencoder(TranscriptomeAutoencoder):

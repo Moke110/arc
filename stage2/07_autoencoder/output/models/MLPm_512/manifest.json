@@ -1,0 +1,70 @@
+{
+  "files": {
+    "epochs.json": "7e669a801b790673dce6898bd41723be2ba97898909182d15f87677cc9fedc8a",
+    "weights.pt": "1e76aa1c5301b5488c964e657dc032c3bf6e36be7ebc97a81ff561d259d1119e"
+  },
+  "gene_count": 18164,
+  "metadata": {
+    "architecture": {
+      "gene_count": 18164,
+      "latent_tokens": 512,
+      "token_mlp_activation": "GELU",
+      "token_mlp_hidden": 128,
+      "width": 128
+    },
+    "fit_elapsed_seconds": 140.26484564999555,
+    "fit_profiles": {
+      "tahoe": 47822,
+      "tenv": 2810
+    },
+    "fit_role": "train",
+    "latent_scalars": 65536,
+    "latent_tokens": 512,
+    "parameter_count": 4800629,
+    "recipe": {
+      "learning_rate": 0.001,
+      "max_optimizer_steps": 10000,
+      "max_seconds": 1800,
+      "objective": "full-axis reconstruction MSE",
+      "optimizer": "AdamW",
+      "precision": "bfloat16",
+      "seed": 20261109,
+      "train_batch_size": 32,
+      "train_order": "PCG64(seed, epoch) shuffle of the joint train membership",
+      "validation_batch_size": 32,
+      "validation_patience": 3,
+      "weight_decay": 0.01
+    },
+    "runtime": {
+      "cublas_workspace_config": null,
+      "cuda_version": "13.0",
+      "deterministic_algorithms": false,
+      "device": "cuda",
+      "float32_matmul_precision": "highest",
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "peak_cuda_allocated_bytes": 729177600,
+      "peak_cuda_reserved_bytes": 838860800,
+      "torch_version": "2.12.0+cu130"
+    },
+    "selected_epoch": 5,
+    "selected_validation_mse": {
+      "tahoe": 0.005241714997488169,
+      "tenv": 0.035747115872010106
+    },
+    "selection_metric": "tenv MSE, earliest epoch on ties",
+    "selection_role": "validation",
+    "stop_reason": "optimizer step limit",
+    "validation_profiles": {
+      "tahoe": 9600,
+      "tenv": 843
+    }
+  },
+  "model_id": "MLPm_512",
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "schema_version": 1
+}

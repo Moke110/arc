@@ -518,6 +518,51 @@ class BenchmarkTest(unittest.TestCase):
             "matrix-ae-loss-figure", "--history", artifact / "epochs.json", self.root / "matrix_ae_loss.png",
         )
 
+    def test_matrix_mlp_encodes_a_matrix_and_decodes_the_full_gene_axis(self):
+        import torch
+        from matrix_mlp import MatrixMLPAutoencoder
+
+        model = MatrixMLPAutoencoder(gene_count=3).eval()
+        profiles = torch.tensor([[8.0, 3.0, 0.0], [0.0, 6.0, 4.0]])
+        with torch.inference_mode():
+            latent = model.encode(profiles)
+            self.assertEqual(latent.shape, (2, 512, 128))
+            reconstruction = model.decode(latent.clone())
+            self.assertEqual(reconstruction.shape, profiles.shape)
+            self.assertTrue(torch.isfinite(reconstruction).all())
+            torch.testing.assert_close(model(profiles), reconstruction)
+            torch.testing.assert_close(model(profiles[:1]), reconstruction[:1])
+
+    def test_matrix_mlp_cli_reloads_the_earliest_tenv_validation_minimum(self):
+        split = self.cli("freeze-split")
+        self.cli("fit", "--output", self.artifact)
+        model_id = "MLPm_512"
+        artifact = self.root / model_id
+        fitted = self.cli("fit", "--model", model_id, "--output", artifact)
+        metadata = fitted["metadata"]
+        self.assertEqual(fitted["model_id"], model_id)
+        self.assertEqual(metadata["latent_tokens"], 512)
+        self.assertEqual(metadata["latent_scalars"], 65_536)
+        self.assertEqual(metadata["architecture"]["width"], 128)
+        self.assertEqual(metadata["parameter_count"], 133_252)
+        self.assertEqual(metadata["fit_profiles"], {
+            source: split["sources"][source]["roles"]["train"]["profiles"]
+            for source in self.expressions
+        })
+        history = json.loads((artifact / "epochs.json").read_text())
+        self.assertEqual(history[-1]["optimizer_steps"], 5)
+        selected = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
+        self.assertEqual(metadata["selected_epoch"], selected["epoch"])
+        expected = self.root / f"{model_id}-validation.json"
+        args = ["--artifact", artifact, "--mean-artifact", self.artifact, "--role", "validation"]
+        scores = self.cli("score", *args, "--output", expected)
+        self.assertEqual(scores["artifact_manifest_sha256"], fitted["artifact_manifest_sha256"])
+        self.assertEqual(scores["provenance"], fitted["provenance"])
+        for source, result in scores["sources"].items():
+            self.assertEqual(result["profiles"], split["sources"][source]["roles"]["validation"]["profiles"])
+            self.assertAlmostEqual(result["mse"], selected["validation_mse"][source])
+        self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
+
     def test_transformer_aae_encodes_reconstruction_tokens_and_decodes_the_full_gene_axis(self):
         import torch
         from aae import TransformerTranscriptomeAutoencoder
