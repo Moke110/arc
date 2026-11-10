@@ -26,6 +26,56 @@ order, ranks, memberships and full coverage.
 
 ## Held-out reconstruction comparison
 
+[ADR 0055](../../docs/adr/0055-step07-matrix-mlp-reconstruction.md) adds the
+channel-shared matrix MLP. The [revised validation seal](output/test_seal_matrix_mlp.json)
+binds eight fitted artifacts to their validation evidence. All eight reconstructed
+9,596 Tahoe and 825 tenv profiles on the same 18,164 ordered genes. Independent
+replay reproduced the [test report](output/test_scores_matrix_mlp.json)
+byte-for-byte. All seven shared entrants reproduced their historical metrics,
+counts and provenance exactly. The [comparison record](execution/mlpm_record/comparison.json)
+records the seal commit, replay and resource measurements.
+
+![Held-out reconstruction metrics for eight configurations on Tahoe and tenv](output/reconstruction_test_aae_ablation.png)
+
+| Display name | Tahoe PCC | Tahoe RMSE | Tahoe relative squared error | tenv PCC | tenv RMSE | tenv relative squared error |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `mean` | 0.97104 | 0.09075 | 1.00000 | 0.18690 | 0.51288 | 1.00000 |
+| `PCA_512` | 0.98860 | 0.04433 | 0.40873 | 0.89545 | 0.15932 | 0.12076 |
+| `MLPv_512` | 0.98480 | 0.05531 | 0.53104 | 0.88818 | 0.16609 | 0.12860 |
+| `MLPm_512` | 0.98503 | 0.05492 | 0.52271 | 0.88593 | 0.16872 | 0.13109 |
+| `AAE_512_SA` | 0.96793 | 0.09617 | 1.07843 | 0.67100 | 0.30180 | 0.35547 |
+| `AAE_512` | 0.94682 | 0.13160 | 1.78404 | 0.55299 | 0.34073 | 0.44497 |
+| `AAE_512+16` | 0.94330 | 0.13257 | 1.80668 | 0.53666 | 0.34637 | 0.45901 |
+| `MatrixAE_64x8` | 0.97252 | 0.08643 | 0.92692 | 0.85712 | 0.19579 | 0.16525 |
+
+`MLPv_512` reuses the fitted `MLP_512` artifact. It has 512 latent scalars,
+as does `PCA_512`. `MLPm_512` and `AAE_512_SA` each have 512 tokens with
+128 channels, for 65,536 latent scalars per profile.
+
+| Model | Latent shape | Trainable parameters | Architecture |
+| --- | ---: | ---: | --- |
+| `MLPv_512` | 512 | 19,143,924 | Fully connected 18,164 → 512 → 512 → 512 → 18,164 |
+| `MLPm_512` | 512 × 128 | 4,800,629 | Two channel-shared token MLPs with separate weights and 128-unit GELU hidden layers |
+| `AAE_512_SA` | 512 × 128 | 198,273 | Two cross-attention layers with eight heads and 512 learned latent queries |
+
+The matrix MLP and cross-attention AAE share the gene-positioned expression
+embedding and readout. At the same latent shape, the matrix MLP scored higher
+PCC and lower RMSE and relative squared error than the cross-attention AAE on
+both sources. The models differ in token mixing and parameter count.
+Compared with the vector MLP, the matrix MLP scored slightly better on all
+three metrics in Tahoe and slightly worse in tenv. `PCA_512` led all three
+metrics on both sources. These results describe one seeded fit per
+configuration on one frozen plate split.
+
+`MLPm_512` reached the 10,000-update cap. The lowest tenv validation MSE
+selected the checkpoint at 7,915 updates. Its validation MSE was 0.005242 on
+Tahoe and 0.035747 on tenv. The [fit record](execution/mlpm_record/run.json),
+[epoch history](output/models/MLPm_512/epochs.json) and
+[validation report](execution/mlpm_record/MLPm_512-validation.json) document the
+frozen recipe, selection and byte-identical validation reload.
+
+### Historical eleven-configuration comparison
+
 The [AAE ablation seal](output/test_seal_aae_ablation.json) binds 11 configurations
 to their selected validation evidence and fitted payloads. All configurations
 reconstructed the same 9,596 Tahoe and 825 tenv test profiles on the 18,164-gene
@@ -35,7 +85,11 @@ records the seal commit, resource measurements and byte-identical independent
 test replay. The nine earlier configurations reproduced their published
 metrics, counts and provenance exactly.
 
-![Held-out reconstruction metrics for eleven configurations on Tahoe and tenv](output/reconstruction_test_aae_ablation.png)
+To retrieve the historical figure, run this command from the repository root.
+
+```bash
+git show 24519832eb37cac6cd34ba97001dd013ac121861:stage2/07_autoencoder/output/reconstruction_test_aae_ablation.png > /tmp/arc-reconstruction-test-aae-historical.png
+```
 
 [ADR 0054](../../docs/adr/0054-step07-separate-reconstruction-and-nuisance-tokens.md)
 labels the published cross-attention model `AAE_512_SA` in this comparison. Its artifact
@@ -141,7 +195,29 @@ run_step07 "$cli" reload --allow-test --expected "$scores"
 python "$cli" figure --expected "$scores" --output /tmp/arc-reconstruction-test.png
 ```
 
-To replay the ablation, restore the fitted payloads for all 11 configurations,
+To replay the revised comparison, restore the fitted payloads for the eight
+entrants, including `output/models/MLPm_512/weights.pt`. Run the seal and GPU
+checks in the same shell as the `run_step07` helper above.
+
+```bash
+(
+  set -euo pipefail
+  step=stage2/07_autoencoder
+  cli="$step/execution/script/compare.py"
+  seal="$step/output/test_seal_matrix_mlp.json"
+  scores="$step/output/test_scores_matrix_mlp.json"
+  seal_commit=a3630d2f7e2f578979312dd7a07f2c172b8d4990
+  git merge-base --is-ancestor "$seal_commit" HEAD
+  git show "$seal_commit:$seal" | cmp - "$seal"
+  git show "HEAD:$seal" | cmp - "$seal"
+  gpu_free=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)
+  test "$gpu_free" -ge 5120
+  run_step07 "$cli" reload --seal "$seal" --allow-test --expected "$scores"
+  python "$cli" figure --expected "$scores" --output /tmp/arc-reconstruction-test-matrix-mlp.png
+)
+```
+
+To replay the historical ablation, restore the fitted payloads for all 11 configurations,
 including the checkpoints under `output/models/AAE_512_Transformer/` and
 `output/models/AAE_512+16/`. Use the same `run_step07` helper in the same
 shell. The checks below verify the committed seal and GPU admission before

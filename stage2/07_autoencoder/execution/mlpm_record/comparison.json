@@ -1,0 +1,269 @@
+{
+  "architecture_comparison": {
+    "AAE_512": {
+      "architecture": {
+        "gene_count": 18164,
+        "heads": 8,
+        "latent_tokens": 512,
+        "width": 128
+      },
+      "display_name": "AAE_512_SA",
+      "latent_scalars": 65536,
+      "latent_shape": [
+        512,
+        128
+      ],
+      "trainable_parameters": 198273
+    },
+    "MLP_512": {
+      "architecture": {
+        "activations": [
+          "GELU",
+          "linear",
+          "GELU",
+          "linear"
+        ],
+        "widths": [
+          18164,
+          512,
+          512,
+          512,
+          18164
+        ]
+      },
+      "display_name": "MLPv_512",
+      "latent_scalars": 512,
+      "latent_shape": [
+        512
+      ],
+      "trainable_parameters": 19143924
+    },
+    "MLPm_512": {
+      "architecture": {
+        "gene_count": 18164,
+        "latent_tokens": 512,
+        "token_mlp_activation": "GELU",
+        "token_mlp_hidden": 128,
+        "width": 128
+      },
+      "display_name": "MLPm_512",
+      "latent_scalars": 65536,
+      "latent_shape": [
+        512,
+        128
+      ],
+      "trainable_parameters": 4800629
+    }
+  },
+  "figure": {
+    "path": "stage2/07_autoencoder/output/reconstruction_test_aae_ablation.png",
+    "sha256": "cc6edfb1ccdf0320dd6c91a1ce61737d5fdef517d4816ce2d92d2f96e68490b0",
+    "visually_checked_sources_and_model_labels": true
+  },
+  "gene_count": 18164,
+  "historical_comparisons": {
+    "test_scores": {
+      "matching_entrants": [
+        "AAE_512",
+        "MLP_512",
+        "MatrixAE_64x8",
+        "PCA_512",
+        "mean"
+      ],
+      "metrics_profiles_and_provenance_exact": true,
+      "path": "stage2/07_autoencoder/output/test_scores.json",
+      "sha256": "14371530180a57cf34a6215f5c6607143643e23366499c8eed8116627d96d176"
+    },
+    "test_scores_aae_ablation": {
+      "matching_entrants": [
+        "AAE_512",
+        "AAE_512+16",
+        "AAE_512_Transformer",
+        "MLP_512",
+        "MatrixAE_64x8",
+        "PCA_512",
+        "mean"
+      ],
+      "metrics_profiles_and_provenance_exact": true,
+      "path": "stage2/07_autoencoder/output/test_scores_aae_ablation.json",
+      "sha256": "2b14e3720199d01eb39f9d518954e8953e7f04e73675957f3d74ecbd25884eb4"
+    }
+  },
+  "historical_figure_revision": "24519832eb37cac6cd34ba97001dd013ac121861",
+  "historical_reference_revision": "e1ac82d2cad3347b49effa666c36a5a8bb07846a",
+  "historical_split_seals_scores_and_tracked_artifacts_byte_identical": true,
+  "independent_reload": {
+    "byte_identical": true,
+    "stdout_sha256": "b0525664625624097a9c1fed241060261eb5eba7fd0a494e62b4fd8479603dd4",
+    "tolerance": {
+      "atol": 1e-08,
+      "rtol": 1e-06
+    }
+  },
+  "matrix_mlp_fit_record": {
+    "path": "stage2/07_autoencoder/execution/mlpm_record/run.json",
+    "sha256": "a20d7e0b62374017521420f71da806bbb48108b0369f77f7679cfd3c7ef4220f"
+  },
+  "phases": {
+    "figure": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T13:45:03+08:00",
+      "available_ram_gib": 41,
+      "command": [
+        "stage2/07_autoencoder/execution/script/compare.py",
+        "figure",
+        "--expected",
+        "stage2/07_autoencoder/output/test_scores_matrix_mlp.json",
+        "--output",
+        "/tmp/arc-128-mlpm/reconstruction_test_aae_ablation.png"
+      ],
+      "elapsed_wall": "0:00.57",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14108,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1954,
+      "gpu_utilization_percent": 40,
+      "maximum_sampled_gpu_utilization_percent": 40,
+      "maximum_sampled_used_vram_mib": 1954,
+      "minimum_sampled_available_ram_gib": 41,
+      "minimum_sampled_free_vram_mib": 14108,
+      "monitor_samples": 1,
+      "peak_rss_kib": 83312,
+      "scope": "arc-128-mlpm-figure.scope"
+    },
+    "reload": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T13:44:13+08:00",
+      "available_ram_gib": 41,
+      "command": [
+        "stage2/07_autoencoder/execution/script/compare.py",
+        "reload",
+        "--seal",
+        "stage2/07_autoencoder/output/test_seal_matrix_mlp.json",
+        "--allow-test",
+        "--expected",
+        "stage2/07_autoencoder/output/test_scores_matrix_mlp.json"
+      ],
+      "elapsed_wall": "0:42.76",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14108,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1954,
+      "gpu_utilization_percent": 27,
+      "maximum_sampled_gpu_utilization_percent": 73,
+      "maximum_sampled_used_vram_mib": 2939,
+      "minimum_sampled_available_ram_gib": 40,
+      "minimum_sampled_free_vram_mib": 13123,
+      "monitor_samples": 8,
+      "peak_rss_kib": 2062512,
+      "scope": "arc-128-mlpm-reload.scope",
+      "seal_gate": {
+        "scoring_revision": "a3630d2f7e2f578979312dd7a07f2c172b8d4990",
+        "seal_commit": "a3630d2f7e2f578979312dd7a07f2c172b8d4990",
+        "seal_commit_is_ancestor": true,
+        "seal_matches_both_git_blobs": true,
+        "seal_sha256": "4536a47803c8206bed2cefbb0eae9e1f2f3e10bb7da8109b16eb20e7a9fd2953",
+        "verified_at": "2026-11-10T13:44:13+08:00"
+      }
+    },
+    "score": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T13:43:20+08:00",
+      "available_ram_gib": 41,
+      "command": [
+        "stage2/07_autoencoder/execution/script/compare.py",
+        "score",
+        "--seal",
+        "stage2/07_autoencoder/output/test_seal_matrix_mlp.json",
+        "--allow-test",
+        "--output",
+        "stage2/07_autoencoder/output/test_scores_matrix_mlp.json"
+      ],
+      "elapsed_wall": "0:42.86",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14108,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1954,
+      "gpu_utilization_percent": 28,
+      "maximum_sampled_gpu_utilization_percent": 74,
+      "maximum_sampled_used_vram_mib": 2939,
+      "minimum_sampled_available_ram_gib": 40,
+      "minimum_sampled_free_vram_mib": 13123,
+      "monitor_samples": 8,
+      "peak_rss_kib": 2062332,
+      "scope": "arc-128-mlpm-score.scope",
+      "seal_gate": {
+        "scoring_revision": "a3630d2f7e2f578979312dd7a07f2c172b8d4990",
+        "seal_commit": "a3630d2f7e2f578979312dd7a07f2c172b8d4990",
+        "seal_commit_is_ancestor": true,
+        "seal_matches_both_git_blobs": true,
+        "seal_sha256": "4536a47803c8206bed2cefbb0eae9e1f2f3e10bb7da8109b16eb20e7a9fd2953",
+        "verified_at": "2026-11-10T13:43:20+08:00"
+      }
+    },
+    "seal": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T13:41:59+08:00",
+      "available_ram_gib": 40,
+      "command": [
+        "stage2/07_autoencoder/execution/script/compare.py",
+        "seal",
+        "--matrix-mlp",
+        "--seal",
+        "stage2/07_autoencoder/output/test_seal_matrix_mlp.json"
+      ],
+      "elapsed_wall": "0:04.08",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14098,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1964,
+      "gpu_utilization_percent": 50,
+      "maximum_sampled_gpu_utilization_percent": 50,
+      "maximum_sampled_used_vram_mib": 1964,
+      "minimum_sampled_available_ram_gib": 40,
+      "minimum_sampled_free_vram_mib": 14098,
+      "monitor_samples": 1,
+      "peak_rss_kib": 798164,
+      "scope": "arc-128-mlpm-seal.scope"
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "minimum_available_ram_gib": 12,
+    "minimum_free_vram_mib_for_cuda": 5120,
+    "sample_interval_seconds": 5,
+    "serial_phases": true
+  },
+  "seal": {
+    "commit": "a3630d2f7e2f578979312dd7a07f2c172b8d4990",
+    "committed_at": "2026-11-10T13:42:58+08:00",
+    "path": "stage2/07_autoencoder/output/test_seal_matrix_mlp.json",
+    "sha256": "4536a47803c8206bed2cefbb0eae9e1f2f3e10bb7da8109b16eb20e7a9fd2953"
+  },
+  "test_profiles": {
+    "tahoe": 9596,
+    "tenv": 825
+  },
+  "test_scores": {
+    "path": "stage2/07_autoencoder/output/test_scores_matrix_mlp.json",
+    "sha256": "b0525664625624097a9c1fed241060261eb5eba7fd0a494e62b4fd8479603dd4"
+  },
+  "threads": {
+    "MKL_NUM_THREADS": 2,
+    "NUMEXPR_NUM_THREADS": 2,
+    "OMP_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "ticket": 128
+}
