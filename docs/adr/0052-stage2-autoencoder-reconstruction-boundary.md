@@ -45,7 +45,8 @@ is a single vector, with each gene averaged over all joint training profiles.
 Source-specific fits are a separate diagnostic. Compare PCA and MLP AE at
 32, 128 and 512 latent scalars. Report the main model's 512 latent tokens
 with 128 channels each separately so token count is distinguishable from
-latent scalar count.
+latent scalar count. [ADR 0055](0055-step07-matrix-mlp-reconstruction.md)
+revises the active comparison roster while preserving the sealed sweep.
 
 Freeze disjoint training, validation and test plate memberships independently
 within each source. Keep the existing validation plates, then use the next
