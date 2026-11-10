@@ -1,0 +1,40 @@
+{
+  "files": {
+    "center.npy": "ab914d03afae1f509d31a04fa917bd09cb8779a3f819c5c8ac1bc0b68840c941",
+    "components.npy": "4911c412c7822bbd3ab3af1ef78f8a2e982aacda3ad09f9edc6da275036bc9e9"
+  },
+  "gene_count": 18164,
+  "metadata": {
+    "batch_size": 32,
+    "center_reduction": "float64 accumulation, float32 center",
+    "compressed_covariance": "float32",
+    "covariance_products": "float16 inputs with float32 output",
+    "fit_device": "cuda",
+    "fit_profiles": {
+      "tahoe": 47822,
+      "tenv": 2810
+    },
+    "fit_role": "train",
+    "fitted_parameters": 23249920,
+    "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+    "latent_shape": [
+      1024,
+      256
+    ],
+    "power_passes": 2,
+    "score_batch_size": 16,
+    "seed": 20261109,
+    "sketch_width": 1088,
+    "solver": "streamed randomized covariance subspace iteration with Rayleigh\u2013Ritz",
+    "torch_version": "2.12.0+cu130",
+    "trainable_parameters": 0
+  },
+  "model_id": "PCA_1024",
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "schema_version": 1
+}

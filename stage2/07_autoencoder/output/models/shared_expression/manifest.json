@@ -1,0 +1,47 @@
+{
+  "files": {
+    "weights.pt": "57557cc9d9f25ba44cc52248e0bf4c1ba5c07445ce296ec0552efa40dcdfdfd1"
+  },
+  "gene_count": 18164,
+  "metadata": {
+    "activation": "GELU",
+    "fit_device": "cuda",
+    "fit_profiles": {
+      "tahoe": 47822,
+      "tenv": 2810
+    },
+    "fit_role": "train",
+    "generator": [
+      1,
+      64,
+      256
+    ],
+    "objective": "scalar round-trip MSE",
+    "optimizer": {
+      "learning_rate": 0.002,
+      "name": "AdamW",
+      "weight_decay": 0.01
+    },
+    "positions": "fixed sinusoidal, in release gene order",
+    "profiles_per_step": 32,
+    "restorer": [
+      256,
+      64,
+      1
+    ],
+    "sampling": "joint train profiles and genes sampled uniformly with replacement",
+    "scalar_batch": 8192,
+    "seed": 20261109,
+    "steps": 1500,
+    "torch_version": "2.12.0+cu130",
+    "trainable_parameters": 33281
+  },
+  "model_id": "shared_expression",
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "schema_version": 1
+}
