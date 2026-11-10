@@ -1,0 +1,372 @@
+{
+  "common_neural_training": {
+    "budget_sha256": "47bd6b64ae2f396cac82ca54db56ddd429c552eb6cfd59fd82100b3e1a2700f6",
+    "recipe": {
+      "attention_backend": "FlashAttention",
+      "learning_rate": 0.001,
+      "max_optimizer_steps": 6329,
+      "max_seconds": 14400,
+      "objective": "full-axis reconstruction MSE",
+      "optimizer": "AdamW",
+      "precision": "float32 interface, CUDA BF16 token maps",
+      "seed": 20261109,
+      "train_batch_size": 8,
+      "train_order": "PCG64(seed, epoch) shuffle of the joint train membership",
+      "validation_batch_size": 8,
+      "validation_interval_steps": 2110,
+      "validation_patience": 6330,
+      "weight_decay": 0.01
+    },
+    "sample_order": [
+      {
+        "batch_offset": 0,
+        "epoch": 1,
+        "optimizer_steps": 2110,
+        "sample_order_sha256": "9419d693376d0c9169a9da513cceae3dd637517fec0b23bba4e83560d7f8977d",
+        "training_epoch": 1
+      },
+      {
+        "batch_offset": 2110,
+        "epoch": 2,
+        "optimizer_steps": 4220,
+        "sample_order_sha256": "d4170a5ce922b7b4514b3d9be1668243ff73cdc900e4eb758ca98b1da392dd1c",
+        "training_epoch": 1
+      },
+      {
+        "batch_offset": 4220,
+        "epoch": 3,
+        "optimizer_steps": 6329,
+        "sample_order_sha256": "04f1f28fda0654d8554bdd174cd7270a3dbbbabcfd7ac8ef33436cfca2e97866",
+        "training_epoch": 1
+      }
+    ]
+  },
+  "fixture": false,
+  "gene_count": 18164,
+  "models": {
+    "AAEc_1024": {
+      "artifact_manifest_sha256": "a00d072216d3be658fe44487cb872470039df4d91fff729a27ab471b8b045755",
+      "display_name": "AAEc_1024",
+      "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "latent": {
+        "channels": 256,
+        "encoder_tokens": 1024,
+        "scalars": 262144,
+        "tokens": 1024
+      },
+      "model_id": "AAEc_1024",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "selected_epoch": 2,
+      "selected_optimizer_steps": 4220,
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.011072663972487698,
+          "pcc": 0.9688519237686953,
+          "profiles": 9596,
+          "relative_squared_error": 1.0389779918762152,
+          "rmse": 0.09381126011936751
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.08206289241375422,
+          "pcc": 0.7093630398000416,
+          "profiles": 825,
+          "relative_squared_error": 0.3115357561981404,
+          "rmse": 0.28142227406142933
+        }
+      },
+      "trainable_parameters": 788992
+    },
+    "AAEcs_1024": {
+      "artifact_manifest_sha256": "ce6b6032c8581005ccc4429fb5aa99eecaf4123f1ee76ff1c5aac869468ed9c3",
+      "display_name": "AAEcs_1024",
+      "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "latent": {
+        "channels": 256,
+        "encoder_tokens": 1024,
+        "scalars": 262144,
+        "tokens": 1024
+      },
+      "model_id": "AAEcs_1024",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "selected_epoch": 1,
+      "selected_optimizer_steps": 2110,
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.012923369341528488,
+          "pcc": 0.9627345492099575,
+          "profiles": 9596,
+          "relative_squared_error": 1.2126346794320033,
+          "rmse": 0.10402458680356871
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.13198680489235068,
+          "pcc": 0.47293176465483405,
+          "profiles": 825,
+          "relative_squared_error": 0.5010621471029598,
+          "rmse": 0.36225174745893074
+        }
+      },
+      "trainable_parameters": 1316352
+    },
+    "AAEcs_1024+64": {
+      "artifact_manifest_sha256": "aa730d565123dc38bba919846f49041f2ca49b601be78e62ada34bf6be9e3684",
+      "display_name": "AAEcs_1024+64",
+      "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "latent": {
+        "channels": 256,
+        "encoder_tokens": 1088,
+        "scalars": 262144,
+        "tokens": 1024
+      },
+      "model_id": "AAEcs_1024+64",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "selected_epoch": 1,
+      "selected_optimizer_steps": 2110,
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.014577154823129724,
+          "pcc": 0.9578153061445768,
+          "profiles": 9596,
+          "relative_squared_error": 1.3678138416406125,
+          "rmse": 0.11226107318954033
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.13510250478191488,
+          "pcc": 0.45063818352112134,
+          "profiles": 825,
+          "relative_squared_error": 0.5128902936943315,
+          "rmse": 0.36660217259144634
+        }
+      },
+      "trainable_parameters": 1332736
+    },
+    "MLP_1024": {
+      "artifact_manifest_sha256": "3dafe1c60c433737f271d0326b607075b6e30f9a5e660060a1a026bef736d80f",
+      "display_name": "MLP_1024",
+      "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "latent": {
+        "channels": 256,
+        "encoder_tokens": 1024,
+        "scalars": 262144,
+        "tokens": 1024
+      },
+      "model_id": "MLP_1024",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "selected_epoch": 2,
+      "selected_optimizer_steps": 4220,
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.006150608902298238,
+          "pcc": 0.983305413566803,
+          "profiles": 9596,
+          "relative_squared_error": 0.5771282594688977,
+          "rmse": 0.05973527496169652
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.03603964379113576,
+          "pcc": 0.880077485141028,
+          "profiles": 825,
+          "relative_squared_error": 0.1368174743948128,
+          "rmse": 0.17325873787680893
+        }
+      },
+      "trainable_parameters": 39318260
+    },
+    "PCA_1024": {
+      "artifact_manifest_sha256": "225b564ec3b1294394c89bc551781cb9655ddc0efc232ca017610710b24c0b05",
+      "display_name": "PCA_1024",
+      "fitted_parameters": 23249920,
+      "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "latent": {
+        "channels": 256,
+        "encoder_tokens": 1024,
+        "scalars": 262144,
+        "tokens": 1024
+      },
+      "model_id": "PCA_1024",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.0040784073886690015,
+          "pcc": 0.9893857215118043,
+          "profiles": 9596,
+          "relative_squared_error": 0.3826879899237501,
+          "rmse": 0.042586380822051066
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.030587729964537066,
+          "pcc": 0.8999239245166751,
+          "profiles": 825,
+          "relative_squared_error": 0.11612034751153158,
+          "rmse": 0.1559519397699312
+        }
+      },
+      "trainable_parameters": 0
+    },
+    "mean": {
+      "artifact_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "display_name": "mean",
+      "latent": {
+        "scalars": null,
+        "tokens": null
+      },
+      "model_id": "mean",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.010657265176996064,
+          "pcc": 0.9710387199313636,
+          "profiles": 9596,
+          "relative_squared_error": 1.0,
+          "rmse": 0.09074864519044258
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.2634140408639362,
+          "pcc": 0.1868980954148612,
+          "profiles": 825,
+          "relative_squared_error": 1.0,
+          "rmse": 0.5128794730577255
+        }
+      },
+      "trainable_parameters": 0
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "replay_tolerance": {
+    "atol": 1e-08,
+    "rtol": 1e-06
+  },
+  "reuses_published_test_plates": true,
+  "role": "test",
+  "schema_version": 4,
+  "seal_sha256": "f4fd691dd12da5681ec9eb84d6bc2931df1511e3c86ea98b4de7edae5b7c6eb2",
+  "shared_expression": {
+    "artifact_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+    "files": {
+      "weights.pt": "57557cc9d9f25ba44cc52248e0bf4c1ba5c07445ce296ec0552efa40dcdfdfd1"
+    },
+    "representation_shape": [
+      18164,
+      256
+    ],
+    "trainable_parameters": 33281,
+    "validation": {
+      "artifact_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "interface_manifest_sha256": "536ea331af0966e73b8cbbccf165ebd3f2877b37c35569e50663db660affdf64",
+      "model_id": "shared_expression",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "validation",
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9600,
+          "mse": 1.0539252298472851e-07,
+          "pcc": 0.99999984583222,
+          "profiles": 9600,
+          "relative_squared_error": 1.244137187891229e-05,
+          "rmse": 0.0003230340970682395
+        },
+        "tenv": {
+          "defined_pcc_profiles": 843,
+          "mse": 4.3701646346024436e-07,
+          "pcc": 0.9999991741453769,
+          "profiles": 843,
+          "relative_squared_error": 1.6642589119073252e-06,
+          "rmse": 0.0006569201407970353
+        }
+      }
+    }
+  }
+}

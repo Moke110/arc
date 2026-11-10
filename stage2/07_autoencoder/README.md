@@ -26,6 +26,97 @@ order, ranks, memberships and full coverage.
 
 ## Held-out reconstruction comparison
 
+[ADR 0056](../../docs/adr/0056-step07-shared-expression-representation.md) compares
+five matrix models through the same frozen expression generator and restorer.
+Each represents a profile as an 18,164 × 256 matrix in CM gene order and
+reconstructs it from 1,024 × 256 decoder tokens. The training-gene mean
+remains the expression-space reference and relative squared error denominator.
+The [validation seal](output/test_seal_shared_expression.json) was committed
+before scoring the 9,596 Tahoe and 825 tenv profiles on the previously reported
+test plates. A separate process reproduced the
+[test report](output/test_scores_shared_expression.json) byte-for-byte.
+
+![Held-out PCC, RMSE and relative squared error for six models on Tahoe and tenv](output/models_metric.png)
+
+| Model | Tahoe PCC | Tahoe RMSE | Tahoe relative squared error | tenv PCC | tenv RMSE | tenv relative squared error |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `mean` | 0.97104 | 0.09075 | 1.00000 | 0.18690 | 0.51288 | 1.00000 |
+| `PCA_1024` | 0.98939 | 0.04259 | 0.38269 | 0.89992 | 0.15595 | 0.11612 |
+| `MLP_1024` | 0.98331 | 0.05974 | 0.57713 | 0.88008 | 0.17326 | 0.13682 |
+| `AAEc_1024` | 0.96885 | 0.09381 | 1.03898 | 0.70936 | 0.28142 | 0.31154 |
+| `AAEcs_1024` | 0.96273 | 0.10402 | 1.21263 | 0.47293 | 0.36225 | 0.50106 |
+| `AAEcs_1024+64` | 0.95782 | 0.11226 | 1.36781 | 0.45064 | 0.36660 | 0.51289 |
+
+`PCA_1024` led all three metrics on both sources. `MLP_1024` led the four
+neural models. Both attention additions increased reconstruction error on
+this split. The 64-query ablation raised relative squared error from 1.213
+to 1.368 on Tahoe and from 0.501 to 0.513 on tenv.
+
+The [shared expression interface](output/models/shared_expression/manifest.json)
+was calibrated on joint training expression values. Its 1 → 64 → 256 GELU
+generator adds a fixed sinusoidal lookup in gene order. The 256 → 64 → 1 GELU
+restorer subtracts the lookup before reading expression. The uncompressed
+validation round-trip MSE was 1.05e-07 on Tahoe and
+4.37e-07 on tenv. The interface has 33,281 frozen parameters.
+
+| Model | Encoder tokens | Decoder tokens | Trainable parameters | Architecture |
+| --- | ---: | ---: | ---: | --- |
+| `PCA_1024` | 1,024 | 1,024 | 0 | One gene-axis basis fitted to centered training channels with a streamed randomized covariance solver |
+| `MLP_1024` | 1,024 | 1,024 | 39,318,260 | Separate channel-shared token MLPs with 1,024-unit GELU hidden layers |
+| `AAEc_1024` | 1,024 | 1,024 | 788,992 | One eight-head cross-attention layer in each direction |
+| `AAEcs_1024` | 1,024 | 1,024 | 1,316,352 | Cross-attention with one latent self-attention layer after encoding and one before decoding |
+| `AAEcs_1024+64` | 1,088 | 1,024 | 1,332,736 | Same attention architecture with 64 additional encoder queries that mix before the decoder slice |
+
+PCA stores 23,249,920 fitted center and basis scalars. Its randomized solver
+uses two covariance passes with FP16 inputs and FP32 outputs, followed by
+an FP32 Rayleigh–Ritz step. Each neural fit used
+the [same frozen budget](execution/shared_expression_record/budget.json)
+of 6,329 AdamW updates at batch size 8 with seed 20261109. This is one pass
+over all 50,632 joint training profiles in the same shuffled order. All four
+fits used full-axis expression MSE and checked validation at 2,110, 4,220
+and 6,329 updates. The lowest tenv validation MSE selected each checkpoint.
+The AAEcs pair began with the same weights and first 1,024 encoder queries.
+
+| Model | Selected update | Tahoe validation MSE | tenv validation MSE |
+| --- | ---: | ---: | ---: |
+| `MLP_1024` | 4,220 | 0.005680 | 0.037275 |
+| `AAEc_1024` | 4,220 | 0.008956 | 0.082568 |
+| `AAEcs_1024` | 2,110 | 0.010749 | 0.130848 |
+| `AAEcs_1024+64` | 2,110 | 0.012385 | 0.134371 |
+
+The [run record](execution/shared_expression_record/run.json) records the
+resource smokes, serial fits, peak RSS, validation checks, seal commit,
+independent test replay and figure digest. This comparison covers one frozen
+plate split and one seeded fit per neural architecture.
+
+### Replay the shared expression comparison
+
+Restore the exact local payloads listed in the [artifact manifests](output/models/),
+including the shared interface weights, PCA center and basis, and the four
+neural checkpoints. The pinned code rebuilds the fixed positions in release
+gene order. From the repository root in the `arc` environment, define
+`run_step07` from the historical replay section below, then run the following.
+
+```bash
+(
+  set -euo pipefail
+  step=stage2/07_autoencoder
+  cli="$step/execution/script/compare.py"
+  seal="$step/output/test_seal_shared_expression.json"
+  scores="$step/output/test_scores_shared_expression.json"
+  seal_commit=d0c149c82ce89fff0871d8946ca53ff6e5c0d269
+  git merge-base --is-ancestor "$seal_commit" HEAD
+  git show "$seal_commit:$seal" | cmp - "$seal"
+  git show "HEAD:$seal" | cmp - "$seal"
+  gpu_free=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)
+  test "$gpu_free" -ge 5120
+  run_step07 "$cli" reload --seal "$seal" --allow-test --expected "$scores"
+  python "$cli" figure --expected "$scores" --output /tmp/arc-models_metric.png
+)
+```
+
+## Historical eight-configuration matrix MLP comparison
+
 [ADR 0055](../../docs/adr/0055-step07-matrix-mlp-reconstruction.md) adds the
 channel-shared matrix MLP. The [revised validation seal](output/test_seal_matrix_mlp.json)
 binds eight fitted artifacts to their validation evidence. All eight reconstructed
@@ -35,7 +126,11 @@ byte-for-byte. All seven shared entrants reproduced their historical metrics,
 counts and provenance exactly. The [comparison record](execution/mlpm_record/comparison.json)
 records the seal commit, replay and resource measurements.
 
-![Held-out reconstruction metrics for eight configurations on Tahoe and tenv](output/reconstruction_test_aae_ablation.png)
+Retrieve the historical matrix MLP figure from Git.
+
+```bash
+git show c56505557b297c6f8b75ce89ca7e7a062e5331af:stage2/07_autoencoder/output/reconstruction_test_aae_ablation.png > /tmp/arc-reconstruction-test-matrix-mlp.png
+```
 
 | Display name | Tahoe PCC | Tahoe RMSE | Tahoe relative squared error | tenv PCC | tenv RMSE | tenv relative squared error |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -74,7 +169,7 @@ Tahoe and 0.035747 on tenv. The [fit record](execution/mlpm_record/run.json),
 [validation report](execution/mlpm_record/MLPm_512-validation.json) document the
 frozen recipe, selection and byte-identical validation reload.
 
-### Historical eleven-configuration comparison
+## Historical eleven-configuration comparison
 
 The [AAE ablation seal](output/test_seal_aae_ablation.json) binds 11 configurations
 to their selected validation evidence and fitted payloads. All configurations
@@ -129,7 +224,7 @@ training seeds and plate splits remains unmeasured. The extra tokens are
 exploratory, and assigning them a biological nuisance role would require
 separate evidence.
 
-### Historical nine-configuration comparison
+## Historical nine-configuration comparison
 
 Each of the nine configurations reconstructed the same 9,596 Tahoe and 825
 tenv test profiles. The [selection seal](output/test_seal.json) was committed
@@ -149,7 +244,7 @@ and configuration. The dotted line marks the training-gene mean in each panel.
 The [original comparison](../_archive/07_lxpert/README.md) remains in the archive
 with its checkpoint manifest and perturbation smoke.
 
-### Replay the published scores
+## Replay the historical scores
 
 The [Step 02 shared CM release instructions](../02_dataset_corpus/README.md#shared-cm-expression-release)
 give the build and verification commands for `output/corpus/shared-cm-v1`,
