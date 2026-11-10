@@ -186,7 +186,7 @@ LABELS="$STEP/execution/script/build_significance.py"
 # Commit the validation promotion on dev before running the test phase.
 "$PY" "$QUEUE" --role test --work-root "$WORK"
 "$CAP" "$RECORD/test-labels" "$PY" "$LABELS" --role test \
-    --rscript "$RSCRIPT" --promotion "$PROMOTION" --output "$ROUND/labels/test"
+    --rscript "$RSCRIPT" --workers 2 --promotion "$PROMOTION" --output "$ROUND/labels/test"
 "$CAP" "$RECORD/test-score" "$PY" "$SCORE" test --work-root "$WORK"
 "$CAP" "$RECORD/evaluation-replay" "$PY" "$SCORE" replay --work-root "$WORK"
 ```

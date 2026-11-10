@@ -39,5 +39,13 @@
       "internal state layout",
       "reject systemic significance failure"
     ]
+  },
+  "deseq2_parallel_equivalence": {
+    "genuine_deseq2": true,
+    "tests_passed": 1,
+    "elapsed_seconds": 10.03,
+    "peak_process_rss_kib": 847636,
+    "sampled_scope_peak_bytes": 1341632512,
+    "checks": "One- and two-worker runs emitted identical ordered genes, groups, sample provenance, p-values, adjusted p-values, effects, and release hashes."
   }
 }

@@ -87,6 +87,46 @@ def write_fixture(root):
 
 
 class SignificanceTest(unittest.TestCase):
+    def test_workers_preserve_contrast_order_and_published_bytes(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            native, axes, landmark = write_fixture(root)
+            worker = root / "recording-rscript"
+            worker.write_text(f"""#!{sys.executable}
+import csv, struct, sys
+from pathlib import Path
+
+shard, n_genes = Path(sys.argv[3]), int(sys.argv[4])
+groups = list(csv.DictReader((shard / "groups.csv").open()))
+print(",".join(row["group_id"] for row in groups))
+with (shard / "counts.bin").open("rb") as source:
+    first_counts = []
+    for group in groups:
+        n_samples = int(group["n_treated"]) + int(group["n_controls"])
+        counts = source.read(n_genes * n_samples * 4)
+        assert len(counts) == n_genes * n_samples * 4
+        first_counts.append(struct.unpack_from("<i", counts, (n_samples - 1) * n_genes * 4)[0])
+    assert not source.read(1)
+for field in ("pvalue", "padj", "log2_fold_change"):
+    (shard / (field + ".bin")).write_bytes(b"".join(
+        struct.pack("<d", count / 1000) * n_genes for count in first_counts
+    ))
+(shard / "results.csv").write_text("status,reason\\n" + "eligible,\\n" * len(groups))
+(shard / "versions.txt").write_text("fixture-R\\nfixture-DESeq2\\n")
+""")
+            worker.chmod(0o755)
+            commands = [sys.executable, SCRIPT, "--role", "validation", "--native", native,
+                        "--gene-axes", axes, "--landmark", landmark, "--rscript", worker]
+            serial, parallel = root / "serial", root / "parallel"
+            subprocess.run([*commands, "--output", serial], check=True, capture_output=True)
+            process = subprocess.run([*commands, "--output", parallel, "--workers", "2"],
+                                     text=True, capture_output=True)
+            self.assertEqual(process.returncode, 0, process.stderr)
+            self.assertEqual(sorted(process.stdout.splitlines()[1:3]), ["a", "b"])
+            for filename in ("manifest.json", "genes.csv", "groups.csv", "contrast_samples.csv",
+                             "pvalue.npy", "padj.npy", "log2_fold_change.npy"):
+                self.assertEqual(sha(serial / filename), sha(parallel / filename), filename)
+
     def test_all_contrasts_failed_systemically_does_not_publish_release(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)
@@ -121,11 +161,9 @@ class SignificanceTest(unittest.TestCase):
             root = Path(directory)
             native, axes, landmark = write_fixture(root)
             output = root / "validation"
-            process = subprocess.run(
-                [sys.executable, SCRIPT, "--role", "validation", "--native", native,
-                 "--gene-axes", axes, "--landmark", landmark, "--rscript", rscript, "--output", output],
-                text=True, capture_output=True,
-            )
+            commands = [sys.executable, SCRIPT, "--role", "validation", "--native", native,
+                        "--gene-axes", axes, "--landmark", landmark, "--rscript", rscript]
+            process = subprocess.run([*commands, "--output", output], text=True, capture_output=True)
             self.assertEqual(process.returncode, 0, process.stderr)
             manifest = json.loads((output / "manifest.json").read_text())
             self.assertEqual((manifest["schema"], manifest["role"], manifest["fold"], manifest["fdr"]),
@@ -154,6 +192,13 @@ class SignificanceTest(unittest.TestCase):
             # complete 64-gene family, including the unexpressed gene.
             idx = np.nanargmin(pvalue[0])
             self.assertAlmostEqual(padj[0, idx] / pvalue[0, idx], 64.0)
+            if os.environ.get("STEP09_VERIFY_PARALLEL") == "1":
+                parallel = root / "parallel"
+                process = subprocess.run([*commands, "--output", parallel, "--workers", "2"],
+                                         text=True, capture_output=True)
+                self.assertEqual(process.returncode, 0, process.stderr)
+                for filename in (*manifest["files"], "manifest.json"):
+                    self.assertEqual(sha(output / filename), sha(parallel / filename), filename)
 
     def test_test_role_requires_committed_promotion_before_reading_native_counts(self):
         with TemporaryDirectory() as directory:

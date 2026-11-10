@@ -3,9 +3,11 @@
 import argparse
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 from anndata.io import read_elem
 import h5py
@@ -115,16 +117,11 @@ def check_native_rows(obs, cases, controls):
         raise ValueError("native control wells do not match same-plate DMSO")
 
 
-def write_contrasts(native, family, cases, controls, fixture, workspace):
+def write_shard(matrix, columns, contrasts, controls, workspace):
     groups, samples = [], []
     matched_plate = controls.drop_duplicates("control_index").set_index("control_index").plate
-    with h5py.File(native, "r") as data, (workspace / "counts.bin").open("wb") as handle:
-        obs = read_elem(data["obs"])
-        check_native_rows(obs, cases, controls)
-        mapping = gene_mapping("tenv", family, read_elem(data["var"]), None, fixture)
-        columns = mapping.native_column.to_numpy()
-        controls = controls.assign(case_id=obs.index[controls.source_row])
-        for group_id, treated in cases.groupby("group_id", sort=True):
+    with (workspace / "counts.bin").open("wb") as handle:
+        for group_id, treated in contrasts:
             plates = sorted(treated.plate.unique())
             matched = controls.loc[controls.control_index.isin(treated.control_index.unique())]
             if (set(plates) != set(matched.plate) or treated.drug_key.nunique() != 1
@@ -140,7 +137,7 @@ def write_contrasts(native, family, cases, controls, fixture, workspace):
                 "design": "~ plate + condition" if len(plates) > 1 else "~ condition",
             })
             samples.append(batch[["case_id", "source_row", "plate", "condition"]].assign(group_id=group_id))
-            for _, counts in raw_batches(data["X"], batch.source_row.to_numpy(), columns):
+            for _, counts in raw_batches(matrix, batch.source_row.to_numpy(), columns):
                 if np.max(counts) > np.iinfo(np.int32).max:
                     raise ValueError("native count is too large for DESeq2 integers")
                 counts.astype("<i4", copy=False).tofile(handle)
@@ -150,17 +147,90 @@ def write_contrasts(native, family, cases, controls, fixture, workspace):
     return groups
 
 
-def write_statistic(source, destination, shape):
-    if source.stat().st_size != np.prod(shape) * 8:
-        raise ValueError(f"invalid DESeq2 result length: {source.name}")
+def write_contrasts(native, family, cases, controls, fixture, workspace, workers):
+    with h5py.File(native, "r") as data:
+        obs = read_elem(data["obs"])
+        check_native_rows(obs, cases, controls)
+        mapping = gene_mapping("tenv", family, read_elem(data["var"]), None, fixture)
+        columns = mapping.native_column.to_numpy()
+        controls = controls.assign(case_id=obs.index[controls.source_row])
+        groups = list(cases.groupby("group_id", sort=True))
+        if workers == 1 or len(groups) == 1:
+            return [(workspace, write_shard(data["X"], columns, groups, controls, workspace))]
+        split = (len(groups) + 1) // 2
+        shards = []
+        for index, part in enumerate((groups[:split], groups[split:])):
+            path = workspace / f"shard-{index}"
+            path.mkdir()
+            shards.append((path, write_shard(data["X"], columns, part, controls, path)))
+        return shards
+
+
+def fit_shards(rscript, shards, n_genes):
+    commands = [[rscript, "--vanilla", str(WORKER), str(path), str(n_genes)] for path, _ in shards]
+    if len(commands) == 1:
+        subprocess.run(commands[0], check=True)
+        return
+    sizes = " + ".join(str(len(groups)) for _, groups in shards)
+    print(f"Starting two DESeq2 workers with {sizes} contrasts", flush=True)
+    workers = []
+    try:
+        for command in commands:
+            workers.append(subprocess.Popen(command))
+        active = workers.copy()
+        while active:
+            for worker in active[:]:
+                code = worker.poll()
+                if code is not None:
+                    if code:
+                        raise subprocess.CalledProcessError(code, worker.args)
+                    active.remove(worker)
+            if active:
+                time.sleep(0.2)
+    finally:
+        for worker in workers:
+            if worker.poll() is None:
+                worker.terminate()
+        for worker in workers:
+            try:
+                worker.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                worker.kill()
+                worker.wait()
+
+
+def merge_samples(shards, destination):
+    with destination.open("wb") as handle:
+        header = None
+        for path, _ in shards:
+            with (path / "samples.csv").open("rb") as source:
+                columns = source.readline()
+                if header is None:
+                    header = columns
+                    handle.write(header)
+                elif header != columns:
+                    raise ValueError("DESeq2 sample columns differ across shards")
+                shutil.copyfileobj(source, handle)
+
+
+def write_statistic(shards, field, destination, n_genes):
+    shape = (sum(len(groups) for _, groups in shards), n_genes)
     result = np.lib.format.open_memmap(destination, mode="w+", dtype="<f8", shape=shape)
-    with source.open("rb") as handle:
-        for row in range(shape[0]):
-            result[row] = np.fromfile(handle, dtype="<f8", count=shape[1])
+    offset = 0
+    for path, groups in shards:
+        source = path / f"{field}.bin"
+        if source.stat().st_size != len(groups) * n_genes * 8:
+            raise ValueError(f"invalid DESeq2 result length: {source}")
+        with source.open("rb") as handle:
+            for row in range(len(groups)):
+                result[offset + row] = np.fromfile(handle, dtype="<f8", count=n_genes)
+        offset += len(groups)
     result.flush()
 
 
-def build(native, axes, landmark, role, output, rscript, promotion=None):
+def build(native, axes, landmark, role, output, rscript, promotion=None, workers=1):
+    if workers not in (1, 2):
+        raise ValueError("DESeq2 requires one or two workers")
     if output.exists():
         raise FileExistsError(output)
     if role == "test":
@@ -178,22 +248,29 @@ def build(native, axes, landmark, role, output, rscript, promotion=None):
         workspace = Path(temporary)
         result = workspace / "release"
         result.mkdir()
-        groups = write_contrasts(native, family, cases, controls, fixture, workspace)
-        subprocess.run([rscript, "--vanilla", str(WORKER), str(workspace), str(len(family))], check=True)
-        metadata = pd.read_csv(workspace / "results.csv", keep_default_na=False)
-        if len(groups) != len(metadata):
-            raise ValueError("DESeq2 did not return every contrast")
+        shards = write_contrasts(native, family, cases, controls, fixture, workspace, workers)
+        fit_shards(rscript, shards, len(family))
+        groups = pd.concat([part for _, part in shards], ignore_index=True)
+        result_tables = []
+        for path, part in shards:
+            table = pd.read_csv(path / "results.csv", keep_default_na=False)
+            if len(part) != len(table):
+                raise ValueError("DESeq2 did not return every contrast")
+            result_tables.append(table)
+        metadata = pd.concat(result_tables, ignore_index=True)
         eligible = int(metadata.status.eq("eligible").sum())
         errors = metadata.reason[metadata.reason.str.startswith("DESeq2: ") | metadata.reason.eq("no_finite_pvalues")]
         if not eligible and not errors.empty:
             raise ValueError(f"DESeq2 produced no eligible contrast. Reasons: {errors.value_counts().to_dict()}")
         pd.concat([groups, metadata], axis=1).to_csv(result / "groups.csv", index=False)
         family[["hgnc_id", "symbol"]].to_csv(result / "genes.csv", index=False)
-        (workspace / "samples.csv").rename(result / "contrast_samples.csv")
+        merge_samples(shards, result / "contrast_samples.csv")
         for field in STATISTICS:
-            write_statistic(workspace / f"{field}.bin", result / f"{field}.npy",
-                            (len(groups), len(family)))
-        r_version, deseq_version = (workspace / "versions.txt").read_text().splitlines()
+            write_statistic(shards, field, result / f"{field}.npy", len(family))
+        versions = {(path / "versions.txt").read_text() for path, _ in shards}
+        if len(versions) != 1:
+            raise ValueError("DESeq2 runtime versions differ across shards")
+        r_version, deseq_version = versions.pop().splitlines()
         write_json(result / "manifest.json", {
             "schema": "step09-significance-v1", "role": role, "fold": FOLD, "fdr": FDR,
             "groups": len(groups), "eligible_groups": eligible,
@@ -215,10 +292,12 @@ def main():
     parser.add_argument("--landmark", type=Path, default=DEFAULT_LANDMARK)
     parser.add_argument("--rscript", default="Rscript")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--workers", type=int, choices=(1, 2), default=1,
+                        help="split into up to two independent DESeq2 processes")
     parser.add_argument("--promotion", type=Path, help="committed validation seal required for test")
     args = parser.parse_args()
     print(build(args.native, args.gene_axes, args.landmark, args.role, args.output, args.rscript,
-                args.promotion),
+                args.promotion, args.workers),
           flush=True)
 
 
