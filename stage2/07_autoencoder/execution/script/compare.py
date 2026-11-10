@@ -8,18 +8,28 @@ from math import isclose
 from pathlib import Path
 
 from benchmark import (
-    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, REPLAY_TOLERANCE,
-    SOURCES, STEP, Split, checked_test_role, json_bytes, publish_json, verify_artifact,
-    verify_replay,
+    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_MODEL_ID,
+    REPLAY_TOLERANCE, SOURCES, STEP, Split, checked_test_role, json_bytes, publish_json,
+    verify_artifact, verify_replay,
 )
 from mlp import MODEL_IDS as MLP_MODEL_IDS
 from pca import MODEL_IDS as PCA_MODEL_IDS
 from reconstruct import score_artifact
 
 
-MODEL_IDS = ("mean", *PCA_MODEL_IDS, *MLP_MODEL_IDS, AAE_MODEL_ID)
+LEGACY_MODEL_IDS = ("mean", *PCA_MODEL_IDS, *MLP_MODEL_IDS, AAE_MODEL_ID)
+MODEL_IDS = (*LEGACY_MODEL_IDS, MATRIX_AE_MODEL_ID)
+NEURAL_MODEL_IDS = (*MLP_MODEL_IDS, AAE_MODEL_ID, MATRIX_AE_MODEL_ID)
 RECORDS = STEP / "execution"
 DEFAULT_SEAL = STEP / "output" / "test_seal.json"
+MATRIX_AE_COLOR = "#287a42"
+
+
+def comparison_model_ids(models):
+    for model_ids in (MODEL_IDS, LEGACY_MODEL_IDS):
+        if models.keys() == set(model_ids):
+            return model_ids
+    raise ValueError("unexpected comparison model set")
 
 
 def latent_units(model_id):
@@ -27,6 +37,8 @@ def latent_units(model_id):
         return {"tokens": None, "scalars": None}
     if model_id == AAE_MODEL_ID:
         return {"tokens": 512, "scalars": 65_536}
+    if model_id == MATRIX_AE_MODEL_ID:
+        return {"tokens": 64, "scalars": 512}
     return {"tokens": None, "scalars": int(model_id.rsplit("_", 1)[1])}
 
 
@@ -50,8 +62,21 @@ def check_score(report, model_id, role, artifact, reference_digest, split):
     json_bytes(report)
 
 
-def selected_models(models_path, corpus, split, validation_reports):
-    artifacts = {model: verify_artifact(models_path / model, corpus, split) for model in MODEL_IDS}
+def check_matrix_checkpoint(path, artifact, device):
+    metadata = artifact["metadata"]
+    if (set(artifact["files"]) != {"weights.pt", "epochs.json"}
+            or metadata["runtime"]["device"] != device):
+        raise ValueError(f"{MATRIX_AE_MODEL_ID}: checkpoint files or fit device differ")
+    history = json.loads((path / "epochs.json").read_text())
+    json_bytes(history)
+    best = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
+    if (metadata["selected_epoch"] != best["epoch"]
+            or metadata["selected_validation_mse"] != best["validation_mse"]):
+        raise ValueError(f"{MATRIX_AE_MODEL_ID}: checkpoint differs from earliest tenv minimum")
+
+
+def selected_models(models_path, corpus, split, validation_reports, model_ids):
+    artifacts = {model: verify_artifact(models_path / model, corpus, split) for model in model_ids}
     reference_digest = artifacts["mean"]["artifact_manifest_sha256"]
     selected = {}
     for model_id, artifact in artifacts.items():
@@ -65,7 +90,7 @@ def selected_models(models_path, corpus, split, validation_reports):
             raise ValueError(f"{model_id}: artifact fit population or latent units differ")
         report = validation_reports[model_id]
         check_score(report, model_id, "validation", artifact, reference_digest, split)
-        neural = model_id in (*MLP_MODEL_IDS, AAE_MODEL_ID)
+        neural = model_id in NEURAL_MODEL_IDS
         if neural and (
             metadata["selection_role"] != "validation"
             or metadata["validation_profiles"] != profile_counts(split, "validation")
@@ -75,12 +100,15 @@ def selected_models(models_path, corpus, split, validation_reports):
                    for source in SOURCES)
         ):
             raise ValueError(f"{model_id}: validation MSE differs from the selected epoch")
+        device = "cuda" if neural and not corpus.fixture else "cpu"
+        if model_id == MATRIX_AE_MODEL_ID:
+            check_matrix_checkpoint(models_path / model_id, artifact, device)
         selected[model_id] = {
             "artifact_manifest_sha256": artifact["artifact_manifest_sha256"],
             "files": artifact["files"],
             "latent": latent,
             "selected_epoch": metadata.get("selected_epoch"),
-            "device": "cuda" if neural and not corpus.fixture else "cpu",
+            "device": device,
             "validation": report,
         }
     return {
@@ -106,9 +134,10 @@ def compare(args, corpus, split):
     checked_test_role(corpus, "test", args.allow_test)
     seal_bytes = args.seal.read_bytes()
     seal = json.loads(seal_bytes)
-    validation_reports = {model: entry["validation"] for model, entry in seal["models"].items()}
     try:
-        selected = selected_models(args.models, corpus, split, validation_reports)
+        model_ids = comparison_model_ids(seal["models"])
+        validation_reports = {model: seal["models"][model]["validation"] for model in model_ids}
+        selected = selected_models(args.models, corpus, split, validation_reports, model_ids)
     except (ValueError, KeyError) as error:
         raise ValueError(f"selection seal verification failed: {error}") from error
     if selected != seal:
@@ -116,7 +145,7 @@ def compare(args, corpus, split):
 
     results = {}
     reference_digest = seal["models"]["mean"]["artifact_manifest_sha256"]
-    for model_id in MODEL_IDS:
+    for model_id in model_ids:
         entry = seal["models"][model_id]
         request = argparse.Namespace(
             artifact=args.models / model_id, mean_artifact=args.models / "mean", role="test",
@@ -139,17 +168,20 @@ def compare(args, corpus, split):
 def plot_comparison(report, output):
     from matplotlib.figure import Figure
 
-    if report["role"] != "test" or set(report["models"]) != set(MODEL_IDS):
+    if report["role"] != "test":
         raise ValueError("figure requires a complete test score report")
     models = report["models"]
+    model_ids = comparison_model_ids(models)
     figure = Figure(figsize=(12, 7), layout="constrained")
     figure.suptitle("Whole-transcriptome reconstruction on held-out plates", fontsize=16)
     metrics = (("pcc", "Mean profile PCC"), ("rmse", "Mean profile RMSE"),
                ("relative_squared_error", "Squared error / training-gene mean"))
-    colors = ("#57606a",) + ("#00748b",) * 3 + ("#9e4813",) * 3 + ("#6336a3",)
+    colors = ("#57606a",) + ("#00748b",) * 3 + ("#9e4813",) * 3 + ("#6336a3", MATRIX_AE_COLOR)
     labels = []
-    for model in MODEL_IDS:
+    for model in model_ids:
         latent = models[model]["latent"]
+        if latent != latent_units(model):
+            raise ValueError(f"{model}: unexpected latent units")
         if latent["tokens"] is not None:
             units = f"{latent['tokens']:,} tokens · {latent['scalars']:,} scalars"
         elif latent["scalars"] is not None:
@@ -158,7 +190,7 @@ def plot_comparison(report, output):
             units = "no latent representation"
         labels.append(f"{model}  ·  {units}")
     for source, name, subfigure in zip(SOURCES, ("Tahoe", "tenv"), figure.subfigures(2, 1)):
-        scores = [models[model]["sources"][source] for model in MODEL_IDS]
+        scores = [models[model]["sources"][source] for model in model_ids]
         subfigure.suptitle(f"{name}  ·  {scores[0]['profiles']:,} profiles", fontsize=12)
         for index, (axis, (field, title)) in enumerate(zip(subfigure.subplots(1, 3), metrics)):
             axis.set_title(title, fontsize=10)
@@ -171,29 +203,34 @@ def plot_comparison(report, output):
             axis.margins(x=0.23)
             if scores[0][field] is not None:
                 axis.axvline(scores[0][field], color="#a0a0a0", linestyle=":", linewidth=1)
-            for row, (score, color) in enumerate(zip(scores, colors)):
+            for row, (model, score, color) in enumerate(zip(model_ids, scores, colors)):
                 value = score[field]
                 if value is None:
                     axis.text(0.05, row, "undefined", transform=axis.get_yaxis_transform(),
                               va="center", fontsize=8)
                     continue
-                axis.scatter(value, row, color=color, s=25, zorder=3)
+                marker = "D" if model == MATRIX_AE_MODEL_ID else "o"
+                axis.scatter(value, row, color=color, marker=marker, s=25, zorder=3)
                 axis.annotate(f"{value:.4f}", (value, row), xytext=(5, 0),
                               textcoords="offset points", va="center", fontsize=8)
     save_figure(figure, output)
 
 
-def plot_aae_loss(history, output):
+def plot_attention_loss(history, output, model_id):
     from matplotlib.figure import Figure
     from matplotlib.ticker import MaxNLocator
 
-    x_field = "optimizer_steps" if "optimizer_steps" in history[0] else "epoch"
+    if not history:
+        raise ValueError("loss figure requires validation history")
+    x_field = "optimizer_steps"
+    if model_id == AAE_MODEL_ID and x_field not in history[0]:
+        x_field = "epoch"
     steps = [record[x_field] for record in history]
     tenv = [record["validation_mse"]["tenv"] for record in history]
     best_index = tenv.index(min(tenv))
     figure = Figure(figsize=(8, 4.5), layout="constrained")
     axis = figure.subplots()
-    axis.set_title("AAE_512 training and validation loss")
+    axis.set_title(f"{model_id} training and validation loss")
     axis.set_xlabel("Optimizer updates" if x_field == "optimizer_steps" else "Epoch")
     axis.set_ylabel("Full-transcriptome MSE")
     axis.set_yscale("log")
@@ -203,8 +240,9 @@ def plot_aae_loss(history, output):
               color="#57606a", marker=".", label="Joint training (batch losses)")
     axis.plot(steps, [record["validation_mse"]["tahoe"] for record in history],
               color="#00748b", marker=".", label="Tahoe validation")
-    axis.plot(steps, tenv, color="#6336a3", marker=".", label="tenv validation")
-    axis.axvline(steps[best_index], color="#6336a3", linestyle=":", alpha=0.6,
+    color = MATRIX_AE_COLOR if model_id == MATRIX_AE_MODEL_ID else "#6336a3"
+    axis.plot(steps, tenv, color=color, marker=".", label="tenv validation")
+    axis.axvline(steps[best_index], color=color, linestyle=":", alpha=0.6,
                  label=f"Selected checkpoint ({steps[best_index]:,})")
     axis.legend()
     save_figure(figure, output)
@@ -239,23 +277,25 @@ def main():
     figure = commands.add_parser("figure")
     figure.add_argument("--expected", type=Path, required=True, help="published test score report")
     figure.add_argument("--output", type=Path, required=True)
-    loss = commands.add_parser("aae-loss-figure")
-    loss.add_argument("--history", type=Path, required=True, help="AAE epochs.json")
-    loss.add_argument("--output", type=Path, required=True)
+    loss_models = {"aae-loss-figure": AAE_MODEL_ID, "matrix-ae-loss-figure": MATRIX_AE_MODEL_ID}
+    for name, model_id in loss_models.items():
+        loss = commands.add_parser(name)
+        loss.add_argument("--history", type=Path, required=True, help=f"{model_id} epochs.json")
+        loss.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
         if args.command == "figure":
             plot_comparison(json.loads(args.expected.read_text()), args.output)
             return
-        if args.command == "aae-loss-figure":
-            plot_aae_loss(json.loads(args.history.read_text()), args.output)
+        if args.command in loss_models:
+            plot_attention_loss(json.loads(args.history.read_text()), args.output, loss_models[args.command])
             return
         corpus = Corpus(args.release, args.fixture)
         split = Split(corpus, args.split)
         if args.command == "seal":
             reports = {model: json.loads(validation_path(model, args.validation_dir).read_text())
                        for model in MODEL_IDS}
-            result = selected_models(args.models, corpus, split, reports)
+            result = selected_models(args.models, corpus, split, reports, MODEL_IDS)
             publish_json(args.seal, result)
         elif args.command == "score":
             if args.output.exists():

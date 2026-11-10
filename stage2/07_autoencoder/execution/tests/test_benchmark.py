@@ -68,6 +68,14 @@ class BenchmarkTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout)
         return result.stderr
 
+    def assert_comparison_png(self, action, input_flag, input_path, output_path):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT / "compare.py"), action, input_flag, str(input_path),
+             "--output", str(output_path)], capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(output_path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+
     def test_mean_fit_and_independent_reload_use_frozen_roles(self):
         from benchmark import Corpus, Split
 
@@ -216,7 +224,8 @@ class BenchmarkTest(unittest.TestCase):
         self.assertIn(str(seal_path), self.cli("score", *args, "--output", score_path,
                                               success=False, script="compare.py"))
         self.cli("fit", "--model", "PCA", "--output", models)
-        model_ids = ("mean", "PCA_32", "PCA_128", "PCA_512", "MLP_32", "MLP_128", "MLP_512", "AAE_512")
+        model_ids = ("mean", "PCA_32", "PCA_128", "PCA_512", "MLP_32", "MLP_128", "MLP_512", "AAE_512",
+                     "MatrixAE_64x8")
         for model in model_ids:
             artifact = models / model
             if not model.startswith("PCA_"):
@@ -224,7 +233,7 @@ class BenchmarkTest(unittest.TestCase):
             self.cli("score", "--artifact", artifact, "--mean-artifact", models / "mean",
                      "--output", self.root / f"{model}-validation.json")
 
-        validation_path = self.root / "AAE_512-validation.json"
+        validation_path = self.root / "MatrixAE_64x8-validation.json"
         validation = validation_path.read_text()
         validation_path.write_text(validation.replace('"role": "validation"', '"role": "test"'))
         self.assertIn("validation", self.cli("seal", *args, "--validation-dir", self.root,
@@ -233,29 +242,54 @@ class BenchmarkTest(unittest.TestCase):
         validation_path.write_text(validation)
         seal = self.cli("seal", *args, "--validation-dir", self.root, script="compare.py")
         self.assertEqual(set(seal["models"]), set(model_ids))
+        matrix = seal["models"]["MatrixAE_64x8"]
+        history = json.loads((models / "MatrixAE_64x8" / "epochs.json").read_text())
+        best = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
+        self.assertEqual(matrix["selected_epoch"], best["epoch"])
+        self.assertEqual(matrix["device"], "cpu")
         scores = self.cli("score", *args, "--output", score_path, script="compare.py")
         self.assertEqual(scores["role"], "test")
         self.assertEqual(scores["seal_sha256"], hashlib.sha256(seal_path.read_bytes()).hexdigest())
         self.assertEqual(scores["models"]["AAE_512"]["latent"], {"tokens": 512, "scalars": 65536})
         self.assertEqual(scores["models"]["PCA_512"]["latent"], {"tokens": None, "scalars": 512})
+        self.assertEqual(scores["models"]["MatrixAE_64x8"]["latent"], {"tokens": 64, "scalars": 512})
         self.assertEqual(set(scores["models"]), set(model_ids))
         for model in model_ids:
             for source in ("tahoe", "tenv"):
                 self.assertEqual(scores["models"][model]["sources"][source]["profiles"], 1)
         self.assertEqual(scores, self.cli("reload", *args, "--expected", score_path, script="compare.py"))
 
-        figure_path = self.root / "comparison.png"
-        figure = subprocess.run(
-            [sys.executable, str(SCRIPT / "compare.py"), "figure", "--expected", str(score_path),
-             "--output", str(figure_path)], capture_output=True, text=True,
+        self.assert_comparison_png("figure", "--expected", score_path, self.root / "comparison.png")
+
+        legacy_seal_path = self.root / "legacy-seal.json"
+        legacy_score_path = self.root / "legacy-scores.json"
+        del seal["models"]["MatrixAE_64x8"]
+        legacy_seal_path.write_text(json.dumps(seal))
+        legacy_args = ("--models", models, "--seal", legacy_seal_path)
+        legacy_scores = self.cli("score", *legacy_args, "--output", legacy_score_path, script="compare.py")
+        self.assertEqual(legacy_scores["models"], {
+            model: scores["models"][model] for model in model_ids[:-1]
+        })
+        self.assertEqual(
+            legacy_scores,
+            self.cli("reload", *legacy_args, "--expected", legacy_score_path, script="compare.py"),
         )
-        self.assertEqual(figure.returncode, 0, figure.stderr)
-        self.assertTrue(figure_path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assert_comparison_png(
+            "figure", "--expected", legacy_score_path, self.root / "legacy-comparison.png",
+        )
 
         manifest_path = models / "mean" / "manifest.json"
         manifest_path.write_text(manifest_path.read_text() + "\n")
         self.assertIn("seal", self.cli("reload", *args, "--expected", score_path,
                                        success=False, script="compare.py"))
+        self.assertIn("seal", self.cli("reload", *legacy_args, "--expected", legacy_score_path,
+                                       success=False, script="compare.py"))
+
+        del seal["models"]["AAE_512"]
+        legacy_seal_path.write_text(json.dumps(seal))
+        self.assertIn("unexpected comparison model set", self.cli(
+            "reload", *legacy_args, "--expected", legacy_score_path, success=False, script="compare.py",
+        ))
 
     def test_mlp_reloads_the_tenv_selected_checkpoint_at_each_latent_width(self):
         for source, values in self.expressions.items():
@@ -342,6 +376,9 @@ class BenchmarkTest(unittest.TestCase):
             self.assertEqual(result["profiles"], split["sources"][source]["roles"]["validation"]["profiles"])
             self.assertAlmostEqual(result["mse"], selected["validation_mse"][source])
         self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
+        self.assert_comparison_png(
+            "matrix-ae-loss-figure", "--history", artifact / "epochs.json", self.root / "matrix_ae_loss.png",
+        )
 
     def test_aae_replays_the_tenv_selected_full_axis_checkpoint(self):
         split = self.cli("freeze-split")
@@ -373,6 +410,9 @@ class BenchmarkTest(unittest.TestCase):
             self.assertAlmostEqual(score["mse"], selected["validation_mse"][source])
         self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
         self.assertIn("frozen batch size", self.cli("score", *args, "--batch-size", 32, success=False))
+        self.assert_comparison_png(
+            "aae-loss-figure", "--history", artifact / "epochs.json", self.root / "aae_loss.png",
+        )
 
     def test_aae_stops_after_consecutive_non_improving_validation_checks(self):
         from aae import fit_aae, recipe_for
