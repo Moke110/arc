@@ -1,0 +1,12 @@
+{
+  "kind": "formal",
+  "device": "cuda",
+  "kernel": "flash",
+  "dtype": "bfloat16",
+  "microbatch": 2,
+  "effective_batch": 8,
+  "phases": {
+    "tahoe": {"updates": 512, "validation_interval": 256, "learning_rate": 0.0001},
+    "tenv": {"updates": 600, "validation_interval": 300, "learning_rate": 0.0001}
+  }
+}
