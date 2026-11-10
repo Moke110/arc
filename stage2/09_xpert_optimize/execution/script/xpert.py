@@ -13,8 +13,8 @@ import numpy as np
 import torch
 from torch.nn.attention import SDPBackend, sdpa_kernel
 
-from model import LOSS_WEIGHTS, XPert, loss_terms
-from predictor import Predictor, sha256
+from model import LOSS_WEIGHTS, MLP_WIDTHS, XPert, loss_terms
+from predictor import AXIS_MODELS, Predictor, sha256
 
 
 PHASES = ("tahoe", "tenv")
@@ -211,8 +211,19 @@ def train_phase(model, source, train, valid, output, run_key, policy, resume):
             "wall_minutes": (elapsed + time.monotonic() - start) / 60}
 
 
-def fit(predictor_path, output, policy_path, fold, seed, resume=False):
+def model_recipe(predictor, name):
+    name = name or predictor.model
+    if name in MLP_WIDTHS:
+        if predictor.model != "XPert_G18164":
+            raise ValueError(f"{name} requires the G18164 predictor")
+    elif name != predictor.model:
+        raise ValueError("selected model does not match its predictor gene axis")
+    return name, MLP_WIDTHS.get(name)
+
+
+def fit(predictor_path, output, policy_path, fold, seed, resume=False, model_name=None):
     predictor = Predictor(predictor_path, fold)
+    name, latent_tokens = model_recipe(predictor, model_name)
     if seed not in predictor.manifest["training_seeds"]:
         raise ValueError("seed is outside the frozen run matrix")
     policy = load_policy(policy_path, predictor.manifest["fixture"])
@@ -220,7 +231,7 @@ def fit(predictor_path, output, policy_path, fold, seed, resume=False):
                         for role in ("train", "validation")]
                for source in PHASES}
     run_key = {"predictor_sha256": predictor.digest, "fold": fold, "seed": seed,
-               "policy": policy, "policy_sha256": sha256(policy_path), "model": predictor.model}
+               "policy": policy, "policy_sha256": sha256(policy_path), "model": name}
     if resume:
         request = json.loads((output / "request.json").read_text())
         if request != run_key:
@@ -232,7 +243,7 @@ def fit(predictor_path, output, policy_path, fold, seed, resume=False):
         write_json(output / "request.json", run_key)
     device = policy["device"]
     torch.manual_seed(seed)
-    model = XPert(predictor.identity()).to(device)
+    model = XPert(predictor.identity(), latent_tokens).to(device)
     if device == "cuda":
         torch.cuda.reset_peak_memory_stats()
     phases = {}
@@ -246,6 +257,7 @@ def fit(predictor_path, output, policy_path, fold, seed, resume=False):
         "peak_vram_allocated_bytes": torch.cuda.max_memory_allocated() if device == "cuda" else 0,
         "peak_vram_reserved_bytes": torch.cuda.max_memory_reserved() if device == "cuda" else 0,
         "torch_version": str(torch.__version__), "numpy_version": np.__version__,
+        "architecture": model.architecture(),
         "architecture_sha256": sha256(Path(__file__).with_name("model.py")),
     }
     write_json(output / "run.json", report)
@@ -258,14 +270,15 @@ def predict(predictor_path, checkpoint, role, output, limit=None):
         raise ValueError("prediction requires a selected tenv checkpoint")
     run_key = saved["run_key"]
     predictor = Predictor(predictor_path, run_key["fold"])
-    if predictor.digest != run_key["predictor_sha256"] or predictor.model != run_key["model"]:
+    if predictor.digest != run_key["predictor_sha256"]:
         raise ValueError("checkpoint and predictor release do not match")
+    _, latent_tokens = model_recipe(predictor, run_key["model"])
     policy = run_key["policy"]
     if limit is not None and (policy["kind"] != "qualification" or type(limit) is not int or limit <= 0):
         raise ValueError("a positive prediction limit is available only for qualification")
     cohort = predictor.dataset("tenv", role, targets=False)
     n_cases = len(cohort) if limit is None else min(len(cohort), limit)
-    model = XPert(predictor.identity()).to(policy["device"])
+    model = XPert(predictor.identity(), latent_tokens).to(policy["device"])
     model.load_state_dict(saved["model"])
     model.eval()
     if output.exists():
@@ -320,6 +333,8 @@ def main():
     fit_parser.add_argument("--fold", type=int, required=True)
     fit_parser.add_argument("--seed", type=int, required=True)
     fit_parser.add_argument("--output", type=Path, required=True)
+    fit_parser.add_argument("--model", choices=(*AXIS_MODELS.values(), *MLP_WIDTHS),
+                            help="select a model on its required predictor axis")
     fit_parser.add_argument("--resume", action="store_true")
     predict_parser = commands.add_parser("predict")
     predict_parser.add_argument("--role", choices=("validation", "test"), required=True)
@@ -333,7 +348,7 @@ def main():
         subparser.add_argument("--checkpoint", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "fit":
-        fit(args.predictor, args.output, args.policy, args.fold, args.seed, args.resume)
+        fit(args.predictor, args.output, args.policy, args.fold, args.seed, args.resume, args.model)
     elif args.command == "predict":
         predict(args.predictor, args.checkpoint, args.role, args.output, args.limit)
     else:

@@ -101,3 +101,42 @@ PREDICTOR="$AXES/views/G18164/predictor"
 
 [Gene-axis evidence](execution/gene_axes_record/) records the frozen views,
 GPU qualification policy and checkpoint replays.
+
+## Matrix MLP compression
+
+All four compression arms read the `G18164` predictor. The encoder maps
+18,164 gene tokens to the chosen latent width once, before the treatment
+and baseline branches. The same decoder restores 18,164 tokens for each
+branch before the three prediction heads. Each map has two linear layers
+with GELU between them, a hidden token count equal to the latent width,
+and weights shared across all 256 channels. The shared XPert parameters
+initialize before the compression maps, so seed 17 gives the same initial
+shared weights as `XPert_G18164`.
+
+| Model | Latent tokens | Compression parameters | Total trainable parameters |
+|---|---:|---:|---:|
+| `XPert_MLP512` | 512 | 19,143,924 | 24,731,511 |
+| `XPert_MLP1024` | 1,024 | 39,318,260 | 44,905,847 |
+| `XPert_MLP2048` | 2,048 | 82,812,660 | 88,400,247 |
+| `XPert_MLP4096` | 4,096 | 182,384,372 | 187,971,959 |
+
+Use the full-axis predictor from the previous section. Choose one
+compression arm per capped fit. Prediction and replay restore the arm
+from its selected checkpoint.
+
+```bash
+ARM=XPert_MLP512
+PREDICTOR="$AXES/views/G18164/predictor"
+POLICY="$STEP/execution/compression_record/qualification-policy.json"
+"$CAP" "$RECORD/$ARM-fit" "$PY" "$CLI" fit --model "$ARM" --predictor "$PREDICTOR" \
+    --fold 0 --seed 17 --policy "$POLICY" --output "$RUN-$ARM"
+"$CAP" "$RECORD/$ARM-predict" "$PY" "$CLI" predict --predictor "$PREDICTOR" \
+    --checkpoint "$RUN-$ARM/tenv.pt" --role validation --limit 4 --output "$RUN-$ARM/validation"
+"$CAP" "$RECORD/$ARM-replay" "$PY" "$CLI" replay --predictor "$PREDICTOR" \
+    --checkpoint "$RUN-$ARM/tenv.pt" --prediction "$RUN-$ARM/validation"
+"$CAP" "$RECORD/compression-fixture" "$PY" -m unittest discover \
+    -s "$STEP/execution/tests" -p test_compression.py -v
+```
+
+[Compression evidence](execution/compression_record/) records all four
+real GPU qualification fits and checkpoint replays.

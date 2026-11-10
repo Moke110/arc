@@ -1,0 +1,737 @@
+{
+  "classification": "bounded real-data GPU qualification",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB",
+  "scope_limits": {
+    "memory_gib": 10,
+    "swap_gib": 8,
+    "minimum_available_gib": 12
+  },
+  "G18164_predictor_manifest_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+  "comparison_control": "XPert_G18164",
+  "arms": {
+    "XPert_MLP512": {
+      "run": {
+        "architecture": {
+          "attention_heads": 8,
+          "attention_tokens": 512,
+          "channels": 256,
+          "compression_parameter_count": 19143924,
+          "gene_count": 18164,
+          "latent_tokens": 512,
+          "parameter_count": 24731511,
+          "token_mlp_activation": "GELU",
+          "token_mlp_hidden": 512
+        },
+        "architecture_sha256": "96cef2bc52bb510b5761726bd16d264be6ede1a77a068945211a1470787f28e9",
+        "fold": 0,
+        "model": "XPert_MLP512",
+        "numpy_version": "2.4.6",
+        "peak_rss_kib": 2001180,
+        "peak_vram_allocated_bytes": 749499392,
+        "peak_vram_reserved_bytes": 830472192,
+        "phases": {
+          "tahoe": {
+            "best_loss": 0.9754339456558228,
+            "best_update": 4,
+            "checkpoint_sha256": "0b1d6b9a9aef4f75ce65e7cabac3fae759f5ee63909a2c1bd729685b0cfe58df",
+            "history": [
+              {
+                "train_seconds": 0.5526228599992464,
+                "train_terms": [
+                  0.2064248025417328,
+                  0.22423715889453888,
+                  0.030884500592947006,
+                  0.9999316930770874
+                ],
+                "update": 2,
+                "validation_loss": 1.0344127416610718,
+                "validation_seconds": 0.04478012999607017,
+                "validation_terms": [
+                  0.1875568926334381,
+                  0.21159464120864868,
+                  0.12228159606456757,
+                  0.9718102812767029
+                ]
+              },
+              {
+                "train_seconds": 0.16363926000485662,
+                "train_terms": [
+                  0.19016659259796143,
+                  0.21755476295948029,
+                  0.07620774209499359,
+                  0.9758750200271606
+                ],
+                "update": 4,
+                "validation_loss": 0.9754339456558228,
+                "validation_seconds": 0.03936266999517102,
+                "validation_terms": [
+                  0.18897175788879395,
+                  0.20579229295253754,
+                  0.04882524907588959,
+                  0.9272571802139282
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.02615119949999401
+          },
+          "tenv": {
+            "best_loss": 0.964379072189331,
+            "best_update": 4,
+            "checkpoint_sha256": "8ff2e3000f29ebf71b75b268e71619057efb50679954a4779a611e7062df4d63",
+            "history": [
+              {
+                "train_seconds": 0.20554065000033006,
+                "train_terms": [
+                  0.18819335103034973,
+                  0.15769390761852264,
+                  0.08465735614299774,
+                  0.9930063486099243
+                ],
+                "update": 2,
+                "validation_loss": 1.0111440420150757,
+                "validation_seconds": 0.040813020001223776,
+                "validation_terms": [
+                  0.16851291060447693,
+                  0.12591050565242767,
+                  0.12965178489685059,
+                  0.9511333703994751
+                ]
+              },
+              {
+                "train_seconds": 0.20685302999481792,
+                "train_terms": [
+                  0.18679454922676086,
+                  0.151633620262146,
+                  0.10117781162261963,
+                  0.9838603734970093
+                ],
+                "update": 4,
+                "validation_loss": 0.964379072189331,
+                "validation_seconds": 0.04283928000222659,
+                "validation_terms": [
+                  0.17207682132720947,
+                  0.12339405715465546,
+                  0.0854758769273758,
+                  0.9124983549118042
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.020435851499981558
+          }
+        },
+        "policy": {
+          "device": "cuda",
+          "dtype": "bfloat16",
+          "effective_batch": 8,
+          "kernel": "flash",
+          "kind": "qualification",
+          "microbatch": 2,
+          "phases": {
+            "tahoe": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            },
+            "tenv": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            }
+          }
+        },
+        "policy_sha256": "c2b90640979e038af663e70bf27f0f778d63ed31360e6501c248316e359d4f9b",
+        "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+        "schema": "step09-xpert-v1",
+        "seed": 17,
+        "status": "complete",
+        "torch_version": "2.12.0+cu130",
+        "training_minutes": 0.046587050999975566
+      },
+      "fit_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py fit --model XPert_MLP512 --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --policy /tmp/arc-r1/g-qualification.json --fold 0 --seed 17 --output /tmp/arc-r1/mlp-qual/XPert_MLP512/fit",
+        "exit_code": 0,
+        "elapsed": "0:07.10",
+        "peak_rss_kib": 2001180,
+        "minimum_available_ram_kib": 40625756,
+        "peak_system_vram_mib": 2941,
+        "sampled_scope_peak_bytes": 2435911680,
+        "sampled_worker_peak_rss_kib": 1974044
+      },
+      "prediction_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py predict --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP512/fit/tenv.pt --role validation --limit 4 --output /tmp/arc-r1/mlp-qual/XPert_MLP512/validation",
+        "exit_code": 0,
+        "elapsed": "0:01.76",
+        "peak_rss_kib": 1343432,
+        "minimum_available_ram_kib": 42266904,
+        "peak_system_vram_mib": 1880,
+        "sampled_scope_peak_bytes": 18247680,
+        "sampled_worker_peak_rss_kib": 34572
+      },
+      "replay_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py replay --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP512/fit/tenv.pt --prediction /tmp/arc-r1/mlp-qual/XPert_MLP512/validation",
+        "exit_code": 0,
+        "elapsed": "0:01.64",
+        "peak_rss_kib": 1343844,
+        "minimum_available_ram_kib": 41514024,
+        "peak_system_vram_mib": 1889,
+        "sampled_scope_peak_bytes": 27947008,
+        "sampled_worker_peak_rss_kib": 67020
+      },
+      "replay": {
+        "status": "verified",
+        "prediction_manifest_sha256": "f7769571940565063d6c90d4d68105320c0e68e8074e99bfdb4f9e580b0ab260"
+      },
+      "validation_prediction_manifest_sha256": "f7769571940565063d6c90d4d68105320c0e68e8074e99bfdb4f9e580b0ab260"
+    },
+    "XPert_MLP1024": {
+      "run": {
+        "architecture": {
+          "attention_heads": 8,
+          "attention_tokens": 1024,
+          "channels": 256,
+          "compression_parameter_count": 39318260,
+          "gene_count": 18164,
+          "latent_tokens": 1024,
+          "parameter_count": 44905847,
+          "token_mlp_activation": "GELU",
+          "token_mlp_hidden": 1024
+        },
+        "architecture_sha256": "96cef2bc52bb510b5761726bd16d264be6ede1a77a068945211a1470787f28e9",
+        "fold": 0,
+        "model": "XPert_MLP1024",
+        "numpy_version": "2.4.6",
+        "peak_rss_kib": 2106944,
+        "peak_vram_allocated_bytes": 1194338816,
+        "peak_vram_reserved_bytes": 1478492160,
+        "phases": {
+          "tahoe": {
+            "best_loss": 0.9122772812843323,
+            "best_update": 4,
+            "checkpoint_sha256": "a40024bf52fdb73f56b3718b642fb3e25ee50b7a425d8939d7f444b68c5c52ee",
+            "history": [
+              {
+                "train_seconds": 0.5833016999968095,
+                "train_terms": [
+                  0.20466312766075134,
+                  0.2244100123643875,
+                  0.03532273322343826,
+                  0.9932283163070679
+                ],
+                "update": 2,
+                "validation_loss": 0.9730688333511353,
+                "validation_seconds": 0.04299965999962296,
+                "validation_terms": [
+                  0.1885644495487213,
+                  0.2150667905807495,
+                  0.07221326231956482,
+                  0.9202680587768555
+                ]
+              },
+              {
+                "train_seconds": 0.17703612000332214,
+                "train_terms": [
+                  0.18912792205810547,
+                  0.2170880287885666,
+                  0.11329971253871918,
+                  0.9382694959640503
+                ],
+                "update": 4,
+                "validation_loss": 0.9122772812843323,
+                "validation_seconds": 0.041181840002536774,
+                "validation_terms": [
+                  0.1863509714603424,
+                  0.2074611634016037,
+                  0.12378965318202972,
+                  0.8496267795562744
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.06974521949996415
+          },
+          "tenv": {
+            "best_loss": 0.9171178936958313,
+            "best_update": 2,
+            "checkpoint_sha256": "b557aeb24073c8c8e7bea4a53d8fb89a6896610f713f11b5d4123973c40cd2e0",
+            "history": [
+              {
+                "train_seconds": 0.23590187999798218,
+                "train_terms": [
+                  0.18588680028915405,
+                  0.15757766366004944,
+                  0.15758316218852997,
+                  0.9888371229171753
+                ],
+                "update": 2,
+                "validation_loss": 0.9171178936958313,
+                "validation_seconds": 0.044045909999113064,
+                "validation_terms": [
+                  0.16613514721393585,
+                  0.12625886499881744,
+                  0.07896893471479416,
+                  0.8677182793617249
+                ]
+              },
+              {
+                "train_seconds": 0.21647043000120902,
+                "train_terms": [
+                  0.1820220798254013,
+                  0.14899179339408875,
+                  0.10041604936122894,
+                  0.9619573950767517
+                ],
+                "update": 4,
+                "validation_loss": 0.9334537982940674,
+                "validation_seconds": 0.04113882000092417,
+                "validation_terms": [
+                  0.16111546754837036,
+                  0.12516118586063385,
+                  0.162991464138031,
+                  0.8682569265365601
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.043310924999968844
+          }
+        },
+        "policy": {
+          "device": "cuda",
+          "dtype": "bfloat16",
+          "effective_batch": 8,
+          "kernel": "flash",
+          "kind": "qualification",
+          "microbatch": 2,
+          "phases": {
+            "tahoe": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            },
+            "tenv": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            }
+          }
+        },
+        "policy_sha256": "c2b90640979e038af663e70bf27f0f778d63ed31360e6501c248316e359d4f9b",
+        "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+        "schema": "step09-xpert-v1",
+        "seed": 17,
+        "status": "complete",
+        "torch_version": "2.12.0+cu130",
+        "training_minutes": 0.113056144499933
+      },
+      "fit_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py fit --model XPert_MLP1024 --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --policy /tmp/arc-r1/g-qualification.json --fold 0 --seed 17 --output /tmp/arc-r1/mlp-qual/XPert_MLP1024/fit",
+        "exit_code": 0,
+        "elapsed": "0:14.74",
+        "peak_rss_kib": 2106944,
+        "minimum_available_ram_kib": 40660328,
+        "peak_system_vram_mib": 3559,
+        "sampled_scope_peak_bytes": 3393400832,
+        "sampled_worker_peak_rss_kib": 2081044
+      },
+      "prediction_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py predict --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP1024/fit/tenv.pt --role validation --limit 4 --output /tmp/arc-r1/mlp-qual/XPert_MLP1024/validation",
+        "exit_code": 0,
+        "elapsed": "0:01.87",
+        "peak_rss_kib": 1371980,
+        "minimum_available_ram_kib": 42077796,
+        "peak_system_vram_mib": 1879,
+        "sampled_scope_peak_bytes": 15093760,
+        "sampled_worker_peak_rss_kib": 28536
+      },
+      "replay_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py replay --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP1024/fit/tenv.pt --prediction /tmp/arc-r1/mlp-qual/XPert_MLP1024/validation",
+        "exit_code": 0,
+        "elapsed": "0:01.84",
+        "peak_rss_kib": 1371592,
+        "minimum_available_ram_kib": 42063536,
+        "peak_system_vram_mib": 1879,
+        "sampled_scope_peak_bytes": 13213696,
+        "sampled_worker_peak_rss_kib": 26296
+      },
+      "replay": {
+        "status": "verified",
+        "prediction_manifest_sha256": "156300a2afd8eb6ea43d744f431fb16b887abbcd6e908ae9b94082f826941fe5"
+      },
+      "validation_prediction_manifest_sha256": "156300a2afd8eb6ea43d744f431fb16b887abbcd6e908ae9b94082f826941fe5"
+    },
+    "XPert_MLP2048": {
+      "run": {
+        "architecture": {
+          "attention_heads": 8,
+          "attention_tokens": 2048,
+          "channels": 256,
+          "compression_parameter_count": 82812660,
+          "gene_count": 18164,
+          "latent_tokens": 2048,
+          "parameter_count": 88400247,
+          "token_mlp_activation": "GELU",
+          "token_mlp_hidden": 2048
+        },
+        "architecture_sha256": "96cef2bc52bb510b5761726bd16d264be6ede1a77a068945211a1470787f28e9",
+        "fold": 0,
+        "model": "XPert_MLP2048",
+        "numpy_version": "2.4.6",
+        "peak_rss_kib": 2283264,
+        "peak_vram_allocated_bytes": 2141995520,
+        "peak_vram_reserved_bytes": 2499805184,
+        "phases": {
+          "tahoe": {
+            "best_loss": 0.8555663228034973,
+            "best_update": 4,
+            "checkpoint_sha256": "4ee2d60b22fe056a4f9998be6a66ff0fb4e8f07a03de6842afecd6a6841b0d59",
+            "history": [
+              {
+                "train_seconds": 0.6092247599954135,
+                "train_terms": [
+                  0.21040910482406616,
+                  0.2351498305797577,
+                  0.08516428619623184,
+                  1.0033247470855713
+                ],
+                "update": 2,
+                "validation_loss": 0.9419747591018677,
+                "validation_seconds": 0.062245350003649946,
+                "validation_terms": [
+                  0.18129384517669678,
+                  0.22004693746566772,
+                  0.037811294198036194,
+                  0.8974936008453369
+                ]
+              },
+              {
+                "train_seconds": 0.22591971000656486,
+                "train_terms": [
+                  0.18755729496479034,
+                  0.2215404212474823,
+                  0.09229875355958939,
+                  0.9177282452583313
+                ],
+                "update": 4,
+                "validation_loss": 0.8555663228034973,
+                "validation_seconds": 0.06936299999506446,
+                "validation_terms": [
+                  0.17903152108192444,
+                  0.2072024643421173,
+                  0.1559874266386032,
+                  0.7879409193992615
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.09337593449999985
+          },
+          "tenv": {
+            "best_loss": 0.826172947883606,
+            "best_update": 4,
+            "checkpoint_sha256": "8777acf354a7f7b5fe79005d7f3cc6257d287688e0c7185292dd7fc96101ae2a",
+            "history": [
+              {
+                "train_seconds": 0.3326386500048102,
+                "train_terms": [
+                  0.1858825534582138,
+                  0.15618227422237396,
+                  0.15787066519260406,
+                  0.9918932914733887
+                ],
+                "update": 2,
+                "validation_loss": 0.9035981893539429,
+                "validation_seconds": 0.05982344999938505,
+                "validation_terms": [
+                  0.16578108072280884,
+                  0.12115240097045898,
+                  0.10618947446346283,
+                  0.848840594291687
+                ]
+              },
+              {
+                "train_seconds": 0.338520420002169,
+                "train_terms": [
+                  0.1811036765575409,
+                  0.14601129293441772,
+                  0.11603355407714844,
+                  0.9438693523406982
+                ],
+                "update": 4,
+                "validation_loss": 0.826172947883606,
+                "validation_seconds": 0.05597270999714965,
+                "validation_terms": [
+                  0.1560518890619278,
+                  0.12408559024333954,
+                  0.1570022702217102,
+                  0.7631898522377014
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.09015634500004428
+          }
+        },
+        "policy": {
+          "device": "cuda",
+          "dtype": "bfloat16",
+          "effective_batch": 8,
+          "kernel": "flash",
+          "kind": "qualification",
+          "microbatch": 2,
+          "phases": {
+            "tahoe": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            },
+            "tenv": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            }
+          }
+        },
+        "policy_sha256": "c2b90640979e038af663e70bf27f0f778d63ed31360e6501c248316e359d4f9b",
+        "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+        "schema": "step09-xpert-v1",
+        "seed": 17,
+        "status": "complete",
+        "torch_version": "2.12.0+cu130",
+        "training_minutes": 0.18353227950004414
+      },
+      "fit_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py fit --model XPert_MLP2048 --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --policy /tmp/arc-r1/g-qualification.json --fold 0 --seed 17 --output /tmp/arc-r1/mlp-qual/XPert_MLP2048/fit",
+        "exit_code": 0,
+        "elapsed": "0:15.57",
+        "peak_rss_kib": 2283264,
+        "minimum_available_ram_kib": 40475180,
+        "peak_system_vram_mib": 4533,
+        "sampled_scope_peak_bytes": 4095578112,
+        "sampled_worker_peak_rss_kib": 2257072
+      },
+      "prediction_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py predict --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP2048/fit/tenv.pt --role validation --limit 4 --output /tmp/arc-r1/mlp-qual/XPert_MLP2048/validation",
+        "exit_code": 0,
+        "elapsed": "0:02.17",
+        "peak_rss_kib": 1525244,
+        "minimum_available_ram_kib": 40571164,
+        "peak_system_vram_mib": 2699,
+        "sampled_scope_peak_bytes": 1288458240,
+        "sampled_worker_peak_rss_kib": 29012
+      },
+      "replay_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py replay --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP2048/fit/tenv.pt --prediction /tmp/arc-r1/mlp-qual/XPert_MLP2048/validation",
+        "exit_code": 0,
+        "elapsed": "0:02.16",
+        "peak_rss_kib": 1525164,
+        "minimum_available_ram_kib": 40460416,
+        "peak_system_vram_mib": 2699,
+        "sampled_scope_peak_bytes": 1272332288,
+        "sampled_worker_peak_rss_kib": 25292
+      },
+      "replay": {
+        "status": "verified",
+        "prediction_manifest_sha256": "bf81c53682926c100531255f403c106ea2986b4ecf9b18aed0ea10453cb72593"
+      },
+      "validation_prediction_manifest_sha256": "bf81c53682926c100531255f403c106ea2986b4ecf9b18aed0ea10453cb72593"
+    },
+    "XPert_MLP4096": {
+      "run": {
+        "architecture": {
+          "attention_heads": 8,
+          "attention_tokens": 4096,
+          "channels": 256,
+          "compression_parameter_count": 182384372,
+          "gene_count": 18164,
+          "latent_tokens": 4096,
+          "parameter_count": 187971959,
+          "token_mlp_activation": "GELU",
+          "token_mlp_hidden": 4096
+        },
+        "architecture_sha256": "96cef2bc52bb510b5761726bd16d264be6ede1a77a068945211a1470787f28e9",
+        "fold": 0,
+        "model": "XPert_MLP4096",
+        "numpy_version": "2.4.6",
+        "peak_rss_kib": 2637572,
+        "peak_vram_allocated_bytes": 4369553408,
+        "peak_vram_reserved_bytes": 5003804672,
+        "phases": {
+          "tahoe": {
+            "best_loss": 0.7648783922195435,
+            "best_update": 4,
+            "checkpoint_sha256": "f195f13a4a56a5a9bd8910051a978be2ec0895596292ff7aaed08257ff9f67a3",
+            "history": [
+              {
+                "train_seconds": 0.7984023300014087,
+                "train_terms": [
+                  0.20456357300281525,
+                  0.23144188523292542,
+                  0.0513707734644413,
+                  1.0043556690216064
+                ],
+                "update": 2,
+                "validation_loss": 1.0387325286865234,
+                "validation_seconds": 0.10603341000387445,
+                "validation_terms": [
+                  0.1863144189119339,
+                  0.2302221953868866,
+                  0.6957842111587524,
+                  0.861622154712677
+                ]
+              },
+              {
+                "train_seconds": 0.6811360200008494,
+                "train_terms": [
+                  0.18536464869976044,
+                  0.2256019562482834,
+                  0.3421046733856201,
+                  0.893386960029602
+                ],
+                "update": 4,
+                "validation_loss": 0.7648783922195435,
+                "validation_seconds": 0.10759941000287654,
+                "validation_terms": [
+                  0.16727587580680847,
+                  0.20706042647361755,
+                  0.15997521579265594,
+                  0.6988070011138916
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.2444674185000622
+          },
+          "tenv": {
+            "best_loss": 0.7906444072723389,
+            "best_update": 2,
+            "checkpoint_sha256": "b8575a706c447b1716f57a9e4952d794ae8bc865ce4e933366134ebacc6cf5e4",
+            "history": [
+              {
+                "train_seconds": 0.6363055800029542,
+                "train_terms": [
+                  0.1908077895641327,
+                  0.174835667014122,
+                  0.24971602857112885,
+                  1.0038871765136719
+                ],
+                "update": 2,
+                "validation_loss": 0.7906444072723389,
+                "validation_seconds": 0.10612160999880871,
+                "validation_terms": [
+                  0.15870991349220276,
+                  0.1351667046546936,
+                  0.1839131861925125,
+                  0.7217143177986145
+                ]
+              },
+              {
+                "train_seconds": 0.6041665800003102,
+                "train_terms": [
+                  0.17727355659008026,
+                  0.16187387704849243,
+                  0.23966534435749054,
+                  0.9023898243904114
+                ],
+                "update": 4,
+                "validation_loss": 0.7997184991836548,
+                "validation_seconds": 0.1099809000006644,
+                "validation_terms": [
+                  0.14854469895362854,
+                  0.12879465520381927,
+                  0.18739870190620422,
+                  0.7321434020996094
+                ]
+              }
+            ],
+            "updates": 4,
+            "wall_minutes": 0.16719166500006394
+          }
+        },
+        "policy": {
+          "device": "cuda",
+          "dtype": "bfloat16",
+          "effective_batch": 8,
+          "kernel": "flash",
+          "kind": "qualification",
+          "microbatch": 2,
+          "phases": {
+            "tahoe": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            },
+            "tenv": {
+              "learning_rate": 0.0001,
+              "updates": 4,
+              "validation_interval": 2,
+              "validation_limit": 16
+            }
+          }
+        },
+        "policy_sha256": "c2b90640979e038af663e70bf27f0f778d63ed31360e6501c248316e359d4f9b",
+        "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+        "schema": "step09-xpert-v1",
+        "seed": 17,
+        "status": "complete",
+        "torch_version": "2.12.0+cu130",
+        "training_minutes": 0.41165908350012614
+      },
+      "fit_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py fit --model XPert_MLP4096 --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --policy /tmp/arc-r1/g-qualification.json --fold 0 --seed 17 --output /tmp/arc-r1/mlp-qual/XPert_MLP4096/fit",
+        "exit_code": 0,
+        "elapsed": "0:33.42",
+        "peak_rss_kib": 2637572,
+        "minimum_available_ram_kib": 40672544,
+        "peak_system_vram_mib": 6921,
+        "sampled_scope_peak_bytes": 5173542912,
+        "sampled_worker_peak_rss_kib": 2610568
+      },
+      "prediction_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py predict --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP4096/fit/tenv.pt --role validation --limit 4 --output /tmp/arc-r1/mlp-qual/XPert_MLP4096/validation",
+        "exit_code": 0,
+        "elapsed": "0:02.71",
+        "peak_rss_kib": 2180360,
+        "minimum_available_ram_kib": 40683080,
+        "peak_system_vram_mib": 3147,
+        "sampled_scope_peak_bytes": 2047295488,
+        "sampled_worker_peak_rss_kib": 2180360
+      },
+      "replay_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py replay --predictor stage2/09_xpert_optimize/output/corpus/gene_axes/views/G18164/predictor --checkpoint /tmp/arc-r1/mlp-qual/XPert_MLP4096/fit/tenv.pt --prediction /tmp/arc-r1/mlp-qual/XPert_MLP4096/validation",
+        "exit_code": 0,
+        "elapsed": "0:02.78",
+        "peak_rss_kib": 2180240,
+        "minimum_available_ram_kib": 40293564,
+        "peak_system_vram_mib": 3147,
+        "sampled_scope_peak_bytes": 1967095808,
+        "sampled_worker_peak_rss_kib": 2180240
+      },
+      "replay": {
+        "status": "verified",
+        "prediction_manifest_sha256": "a5245a3b985539203c6e38976ffac036dad8d62ff58bb097ab386d29ddaf8e7f"
+      },
+      "validation_prediction_manifest_sha256": "a5245a3b985539203c6e38976ffac036dad8d62ff58bb097ab386d29ddaf8e7f"
+    }
+  },
+  "fixture": {
+    "tests_passed": 3,
+    "elapsed_seconds": 9.95,
+    "peak_rss_kib": 1106024,
+    "exit_code": 0
+  },
+  "earlier_fixture": {
+    "status": "interrupted",
+    "reason": "CPU attention backward at all full latent widths was too slow for a bounded fixture",
+    "peak_rss_kib": null,
+    "replacement": "Real-width meta shapes and gradient connectivity, reduced-width finite gradients, and real full-axis GPU fits and replay for each width."
+  }
+}

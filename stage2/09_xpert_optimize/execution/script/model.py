@@ -9,6 +9,7 @@ CHANNELS = 256
 HEADS = 8
 DROPOUT = 0.1
 LOSS_WEIGHTS = (0.2, 0.003, 0.2, 1.0)
+MLP_WIDTHS = {f"XPert_MLP{width}": width for width in (512, 1024, 2048, 4096)}
 
 
 class Attention(nn.Module):
@@ -73,8 +74,20 @@ class CrossBlock(SelfBlock):
         return self.output(genes), drug
 
 
+class TokenMap(nn.Sequential):
+    """Apply the same two-layer map along the token axis of every channel."""
+
+    def __init__(self, input_tokens, hidden_tokens, output_tokens):
+        super().__init__(nn.Linear(input_tokens, hidden_tokens), nn.GELU(),
+                         nn.Linear(hidden_tokens, output_tokens))
+
+    def forward(self, matrix):
+        mapped = super().forward(matrix.transpose(1, 2).contiguous())
+        return mapped.transpose(1, 2).contiguous()
+
+
 class XPert(nn.Module):
-    def __init__(self, identity):
+    def __init__(self, identity, latent_tokens=None):
         super().__init__()
         if identity.ndim != 2 or identity.shape[1] != CHANNELS:
             raise ValueError("identity must have one 256-channel vector per gene")
@@ -94,22 +107,43 @@ class XPert(nn.Module):
         self.baseline_head = self.make_head()
         self.delta_head = self.make_head()
 
+        # Create arm-specific parameters after the shared XPert initialization.
+        self.latent_tokens = latent_tokens
+        genes = len(identity)
+        self.encoder = TokenMap(genes, latent_tokens, latent_tokens) if latent_tokens else nn.Identity()
+        self.decoder = TokenMap(latent_tokens, latent_tokens, genes) if latent_tokens else nn.Identity()
+
     @staticmethod
     def make_head():
         return nn.Sequential(nn.Linear(CHANNELS, 64), nn.ReLU(), nn.Dropout(DROPOUT), nn.Linear(64, 1))
 
     def forward(self, control, morgan, dose):
         cell = self.expression(control.unsqueeze(-1))
-        genes = self.cell_input(cell + self.identity.to(cell.dtype))
+        genes = self.encoder(self.cell_input(cell + self.identity.to(cell.dtype)))
         drug = torch.stack((self.dose(dose), self.time(torch.full_like(dose, 2)), self.morgan(morgan)), dim=1)
         drug = self.drug_input(drug + self.drug_positions)
         treated, drug = self.treatment[0](genes, drug)
         treated = self.treatment[1](treated)
         treated = self.treatment[2](treated)
         treated, _ = self.treatment[3](treated, drug)
-        baseline = self.baseline(genes)
+        treated = self.decoder(treated)
+        baseline = self.decoder(self.baseline(genes))
         return (self.treated_head(treated).squeeze(-1), self.baseline_head(baseline).squeeze(-1),
                 self.delta_head(treated - baseline).squeeze(-1))
+
+    def architecture(self):
+        return {
+            "gene_count": len(self.identity),
+            "channels": CHANNELS,
+            "attention_heads": HEADS,
+            "attention_tokens": self.latent_tokens or len(self.identity),
+            "latent_tokens": self.latent_tokens,
+            "token_mlp_hidden": self.latent_tokens,
+            "token_mlp_activation": "GELU" if self.latent_tokens else None,
+            "parameter_count": sum(p.numel() for p in self.parameters()),
+            "compression_parameter_count": sum(p.numel() for m in (self.encoder, self.decoder)
+                                               for p in m.parameters()),
+        }
 
 
 def loss_terms(prediction, treated, control):
