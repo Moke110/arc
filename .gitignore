@@ -169,6 +169,8 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 !/stage2/07_autoencoder/output/reconstruction_test.png
 !/stage2/07_autoencoder/output/test_seal_aae_ablation.json
 !/stage2/07_autoencoder/output/test_scores_aae_ablation.json
+!/stage2/07_autoencoder/output/test_seal_matrix_mlp.json
+!/stage2/07_autoencoder/output/test_scores_matrix_mlp.json
 !/stage2/07_autoencoder/output/reconstruction_test_aae_ablation.png
 !/stage2/07_autoencoder/output/aae_loss.png
 !/stage2/07_autoencoder/output/matrix_ae_loss.png

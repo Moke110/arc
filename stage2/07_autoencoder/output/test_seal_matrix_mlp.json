@@ -1,0 +1,409 @@
+{
+  "gene_count": 18164,
+  "models": {
+    "AAE_512": {
+      "artifact_manifest_sha256": "1d9f7d1653afdab267aec20463f2fa0f3a6743ee37f85a75b59436f4272f378d",
+      "device": "cuda",
+      "display_name": "AAE_512_SA",
+      "files": {
+        "epochs.json": "e2126075897cc8cec1fe5660a399a111b872aa2098f51db011745b6843527a18",
+        "weights.pt": "dc4bc183059c49557ec2aa2796cfb51a34457a61abcd0976e298b4115a5c44cd"
+      },
+      "latent": {
+        "decoder_scalars": 65536,
+        "decoder_tokens": 512,
+        "scalars": 65536,
+        "tokens": 512
+      },
+      "selected_epoch": 7,
+      "validation": {
+        "artifact_manifest_sha256": "1d9f7d1653afdab267aec20463f2fa0f3a6743ee37f85a75b59436f4272f378d",
+        "model_id": "AAE_512",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.00933920540208896,
+            "pcc": 0.975047333550298,
+            "profiles": 9600,
+            "relative_squared_error": 1.1024741050916085,
+            "rmse": 0.08172451939022232
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.0935970228942359,
+            "pcc": 0.6670378106432326,
+            "profiles": 843,
+            "relative_squared_error": 0.35643892737211835,
+            "rmse": 0.3026591134285923
+          }
+        }
+      }
+    },
+    "AAE_512+16": {
+      "artifact_manifest_sha256": "82962a96e82c3a7954605d8210bc9dbba5acf8d0e387a909968de5f822c8f018",
+      "device": "cuda",
+      "display_name": "AAE_512+16",
+      "files": {
+        "epochs.json": "1c1e5ace5fc6dae5c7c6ccd8f735f19261dec151a1ecc84bdcd23905b5c0c8dc",
+        "weights.pt": "6703699fa90d35d727e15543dd2a736a9f4716364757c86a7b4bfbe60db2dc1b"
+      },
+      "latent": {
+        "decoder_scalars": 65536,
+        "decoder_tokens": 512,
+        "scalars": 67584,
+        "tokens": 528
+      },
+      "selected_epoch": 3,
+      "validation": {
+        "artifact_manifest_sha256": "82962a96e82c3a7954605d8210bc9dbba5acf8d0e387a909968de5f822c8f018",
+        "model_id": "AAE_512+16",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.01708297996534579,
+            "pcc": 0.9508956311743882,
+            "profiles": 9600,
+            "relative_squared_error": 2.0166108612816096,
+            "rmse": 0.12298538647449102
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.1205123170376156,
+            "pcc": 0.5324163128310124,
+            "profiles": 843,
+            "relative_squared_error": 0.45893853983534916,
+            "rmse": 0.34612242625784323
+          }
+        }
+      }
+    },
+    "AAE_512_Transformer": {
+      "artifact_manifest_sha256": "f841a0651b2886c4a35470196bc7c293b0c26c689f1bec79c15ed622ff60a187",
+      "device": "cuda",
+      "display_name": "AAE_512",
+      "files": {
+        "epochs.json": "825eb6434f8e3a48736a8c2c035da96e4f262825bba3798190f5099b61442dc9",
+        "weights.pt": "2cba287246e3c8337de793c8702ec70111e4db399fe6f72a91f17c29ebf4ea29"
+      },
+      "latent": {
+        "decoder_scalars": 65536,
+        "decoder_tokens": 512,
+        "scalars": 65536,
+        "tokens": 512
+      },
+      "selected_epoch": 4,
+      "validation": {
+        "artifact_manifest_sha256": "f841a0651b2886c4a35470196bc7c293b0c26c689f1bec79c15ed622ff60a187",
+        "model_id": "AAE_512_Transformer",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.01664363417273729,
+            "pcc": 0.9546088140803528,
+            "profiles": 9600,
+            "relative_squared_error": 1.9647469886417082,
+            "rmse": 0.12108001282349373
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.11715733914686319,
+            "pcc": 0.5477019066043604,
+            "profiles": 843,
+            "relative_squared_error": 0.4461620146451381,
+            "rmse": 0.34105230470710807
+          }
+        }
+      }
+    },
+    "MLP_512": {
+      "artifact_manifest_sha256": "59da5133085f47294177efef5b3b838d058413118808366c59b0abaa88f4cc8d",
+      "device": "cuda",
+      "display_name": "MLPv_512",
+      "files": {
+        "epochs.json": "030c99665a2e5dc4def2b7dfebbf63c6ba03d9e2e098e3c91fe946b322a295b1",
+        "weights.pt": "b9b7972ae6da588ba54059e8848d41f54c057d99e572d721116ae033b90be575"
+      },
+      "latent": {
+        "scalars": 512,
+        "tokens": null
+      },
+      "selected_epoch": 19,
+      "validation": {
+        "artifact_manifest_sha256": "59da5133085f47294177efef5b3b838d058413118808366c59b0abaa88f4cc8d",
+        "model_id": "MLP_512",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.0053457475005928385,
+            "pcc": 0.9860756754653056,
+            "profiles": 9600,
+            "relative_squared_error": 0.6310545638543885,
+            "rmse": 0.049396009549558646
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.034899607656601515,
+            "pcc": 0.884171951700971,
+            "profiles": 843,
+            "relative_squared_error": 0.13290570932884763,
+            "rmse": 0.1719291138126885
+          }
+        }
+      }
+    },
+    "MLPm_512": {
+      "artifact_manifest_sha256": "4ddd895493eb0bb53c377ce32b63f93150c74d2812b472f6d3e17b52fc00caeb",
+      "device": "cuda",
+      "display_name": "MLPm_512",
+      "files": {
+        "epochs.json": "7e669a801b790673dce6898bd41723be2ba97898909182d15f87677cc9fedc8a",
+        "weights.pt": "1e76aa1c5301b5488c964e657dc032c3bf6e36be7ebc97a81ff561d259d1119e"
+      },
+      "latent": {
+        "scalars": 65536,
+        "tokens": 512
+      },
+      "selected_epoch": 5,
+      "validation": {
+        "artifact_manifest_sha256": "4ddd895493eb0bb53c377ce32b63f93150c74d2812b472f6d3e17b52fc00caeb",
+        "model_id": "MLPm_512",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.005241714997488169,
+            "pcc": 0.9863563462180526,
+            "profiles": 9600,
+            "relative_squared_error": 0.618773739541957,
+            "rmse": 0.049008114551102905
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.035747115872010106,
+            "pcc": 0.8813759024980142,
+            "profiles": 843,
+            "relative_squared_error": 0.13613321496843034,
+            "rmse": 0.17544752843243716
+          }
+        }
+      }
+    },
+    "MatrixAE_64x8": {
+      "artifact_manifest_sha256": "266c023b008ca60a411c5a06d85407fd1f89ae359e5f1cd5fb41c5ca4af5abaa",
+      "device": "cuda",
+      "display_name": "MatrixAE_64x8",
+      "files": {
+        "epochs.json": "011e192d6cb0f7d6568b3d59f77a74dc25976f356f21fe678132b4d689c32cf0",
+        "weights.pt": "622819bfb3b16fd41328e1fe9479296e9bbb8730b1b45be89700d195331913ad"
+      },
+      "latent": {
+        "scalars": 512,
+        "tokens": 64
+      },
+      "selected_epoch": 4,
+      "validation": {
+        "artifact_manifest_sha256": "266c023b008ca60a411c5a06d85407fd1f89ae359e5f1cd5fb41c5ca4af5abaa",
+        "model_id": "MatrixAE_64x8",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.00742164296108128,
+            "pcc": 0.9804243227538258,
+            "profiles": 9600,
+            "relative_squared_error": 0.8761097791036226,
+            "rmse": 0.06667234115987407
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.04441247101131718,
+            "pcc": 0.8540534764145845,
+            "profiles": 843,
+            "relative_squared_error": 0.16913287452644069,
+            "rmse": 0.20034571387363836
+          }
+        }
+      }
+    },
+    "PCA_512": {
+      "artifact_manifest_sha256": "da993c7f8c0bc3008fb5e15bb9291beb6ac1376183d8d9c63682ae39db866ad4",
+      "device": "cpu",
+      "display_name": "PCA_512",
+      "files": {
+        "components.npy": "91d233b9ed81a2e8e23a3a6541a60c8d4a4b498383b6409cf54e8f5b78744b02",
+        "mean.npy": "1e648ecb1a7dba1fc095b815edf8e85405ed04561c896c5cbacf9609df1fb0de"
+      },
+      "latent": {
+        "scalars": 512,
+        "tokens": null
+      },
+      "selected_epoch": null,
+      "validation": {
+        "artifact_manifest_sha256": "da993c7f8c0bc3008fb5e15bb9291beb6ac1376183d8d9c63682ae39db866ad4",
+        "model_id": "PCA_512",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.004165789579612635,
+            "pcc": 0.9894571209262731,
+            "profiles": 9600,
+            "relative_squared_error": 0.4917629435322323,
+            "rmse": 0.039346781269865336
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.032816596365042375,
+            "pcc": 0.8915357736247714,
+            "profiles": 843,
+            "relative_squared_error": 0.12497312464283325,
+            "rmse": 0.1653126158161764
+          }
+        }
+      }
+    },
+    "mean": {
+      "artifact_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "device": "cpu",
+      "display_name": "mean",
+      "files": {
+        "mean.npy": "1e648ecb1a7dba1fc095b815edf8e85405ed04561c896c5cbacf9609df1fb0de"
+      },
+      "latent": {
+        "scalars": null,
+        "tokens": null
+      },
+      "selected_epoch": null,
+      "validation": {
+        "artifact_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "model_id": "mean",
+        "provenance": {
+          "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+          "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+          "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+          "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+        },
+        "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+        "replay_tolerance": {
+          "atol": 1e-08,
+          "rtol": 1e-06
+        },
+        "role": "validation",
+        "sources": {
+          "tahoe": {
+            "defined_pcc_profiles": 9600,
+            "mse": 0.008471133570355309,
+            "pcc": 0.9789711844019373,
+            "profiles": 9600,
+            "relative_squared_error": 1.0,
+            "rmse": 0.07466315748603805
+          },
+          "tenv": {
+            "defined_pcc_profiles": 843,
+            "mse": 0.26258922835474036,
+            "pcc": 0.18408644241564465,
+            "profiles": 843,
+            "relative_squared_error": 1.0,
+            "rmse": 0.512093792042733
+          }
+        }
+      }
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "replay_tolerance": {
+    "atol": 1e-08,
+    "rtol": 1e-06
+  },
+  "schema_version": 3,
+  "test_profiles": {
+    "tahoe": 9596,
+    "tenv": 825
+  }
+}

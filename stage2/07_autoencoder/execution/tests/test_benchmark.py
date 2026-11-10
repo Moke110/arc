@@ -340,6 +340,7 @@ class BenchmarkTest(unittest.TestCase):
         self.assert_comparison_png(
             "figure", "--expected", score_path, self.root / "expanded-comparison.png",
         )
+        self.assert_matrix_mlp_comparison(models, scores)
 
         seal["models"]["AAE_512+16"]["validation"]["sources"]["tenv"]["mse"] += 1
         corrupt_seal = self.root / "corrupt-seal.json"
@@ -350,6 +351,56 @@ class BenchmarkTest(unittest.TestCase):
             success=False, script="compare.py",
         ))
         self.assertFalse(rejected_scores.exists())
+
+    def assert_matrix_mlp_comparison(self, models, expanded_scores):
+        matrix_id = "MLPm_512"
+        matrix = models / matrix_id
+        validation = self.root / f"{matrix_id}-validation.json"
+        seal_path = self.root / "matrix-mlp-seal.json"
+        score_path = self.root / "matrix-mlp-scores.json"
+        args = ("--models", models, "--seal", seal_path)
+        seal_args = (*args, "--matrix-mlp", "--validation-dir", self.root)
+        self.cli("fit", "--model", matrix_id, "--output", matrix)
+        self.assertIn(validation.name, self.cli("seal", *seal_args, success=False, script="compare.py"))
+        report = self.cli("score", "--artifact", matrix, "--mean-artifact", models / "mean",
+                          "--output", validation)
+        invalid_report = json.loads(validation.read_bytes())
+        invalid_report["sources"]["tenv"]["mse"] += 1
+        validation.write_text(json.dumps(invalid_report))
+        self.assertIn("validation MSE differs", self.cli("seal", *seal_args, success=False, script="compare.py"))
+        self.assertFalse(seal_path.exists())
+        validation.write_text(json.dumps(report))
+        seal = self.cli("seal", *seal_args, script="compare.py")
+        seal_bytes = seal_path.read_bytes()
+        self.assertIn("File exists", self.cli("seal", *seal_args, success=False, script="compare.py"))
+        self.assertEqual(seal_path.read_bytes(), seal_bytes)
+
+        scores = self.cli("score", *args, "--output", score_path, script="compare.py")
+        names = {"mean": "mean", "PCA_512": "PCA_512", "MLP_512": "MLPv_512", matrix_id: matrix_id,
+                 "AAE_512": "AAE_512_SA", "AAE_512_Transformer": "AAE_512", "AAE_512+16": "AAE_512+16",
+                 "MatrixAE_64x8": "MatrixAE_64x8"}
+        self.assertEqual(seal["schema_version"], 3)
+        self.assertEqual(scores["schema_version"], 3)
+        self.assertEqual(scores["seal_sha256"], hashlib.sha256(seal_bytes).hexdigest())
+        self.assertEqual(set(seal["models"]), set(names))
+        self.assertEqual(set(scores["models"]), set(names))
+        self.assertEqual(seal["models"][matrix_id]["validation"], report)
+        self.assertEqual(scores["models"][matrix_id]["latent"], {"tokens": 512, "scalars": 65_536})
+        for model_id, name in names.items():
+            result = scores["models"][model_id]
+            self.assertEqual(result["model_id"], model_id)
+            self.assertEqual(result["display_name"], name)
+            self.assertEqual(result["provenance"], expanded_scores["provenance"])
+            self.assertEqual(result["artifact_manifest_sha256"], seal["models"][model_id]["artifact_manifest_sha256"])
+            if model_id != matrix_id:
+                self.assertEqual(result["sources"], expanded_scores["models"][model_id]["sources"])
+            for metrics in result["sources"].values():
+                self.assertEqual(metrics["profiles"], 1)
+                self.assertTrue({"pcc", "rmse", "relative_squared_error"}.issubset(metrics))
+        self.assertEqual(scores, self.cli("reload", *args, "--expected", score_path, script="compare.py"))
+        self.assert_comparison_png(
+            "figure", "--expected", score_path, self.root / "matrix-mlp-comparison.png",
+        )
 
     def assert_invalid_expanded_selection(self, models, seal_path, seal_args):
         variant = "AAE_512+16"
