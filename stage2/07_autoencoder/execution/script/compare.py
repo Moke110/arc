@@ -4,14 +4,14 @@ import argparse
 from hashlib import sha256
 from io import BytesIO
 import json
-from math import isclose
 from pathlib import Path
 
 from benchmark import (
-    AAE_MODEL_ID, AAE_MODEL_IDS, AAE_NUISANCE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID,
-    AAE_TRANSFORMER_MODEL_IDS, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_CHANNELS,
-    MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS, REPLAY_TOLERANCE, SOURCES, STEP, Split, checked_test_role,
-    json_bytes, publish_json, verify_artifact, verify_replay,
+    AAE_MODEL_ID, AAE_MODEL_IDS, AAE_RECONSTRUCTION_TOKENS,
+    AAE_TRANSFORMER_MODEL_ID, AAE_TRANSFORMER_MODEL_IDS, AAE_WIDTH, Corpus, DEFAULT_MEAN,
+    DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_CHANNELS, MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS,
+    REPLAY_TOLERANCE, SOURCES, STEP, Split, aae_encoder_tokens, check_checkpoint_selection,
+    checked_test_role, json_bytes, publish_json, validation_mse_matches, verify_artifact, verify_replay,
 )
 from mlp import MODEL_IDS as MLP_MODEL_IDS
 from pca import MODEL_IDS as PCA_MODEL_IDS
@@ -39,10 +39,11 @@ def latent_units(model_id, expanded):
     if model_id == "mean":
         return {"tokens": None, "scalars": None}
     if model_id in AAE_MODEL_IDS:
-        tokens = 528 if model_id == AAE_NUISANCE_MODEL_ID else 512
-        latent = {"tokens": tokens, "scalars": tokens * 128}
+        tokens = aae_encoder_tokens(model_id)
+        latent = {"tokens": tokens, "scalars": tokens * AAE_WIDTH}
         if expanded:
-            latent.update(decoder_tokens=512, decoder_scalars=65_536)
+            latent.update(decoder_tokens=AAE_RECONSTRUCTION_TOKENS,
+                          decoder_scalars=AAE_RECONSTRUCTION_TOKENS * AAE_WIDTH)
         return latent
     if model_id == MATRIX_AE_MODEL_ID:
         return {"tokens": MATRIX_AE_TOKENS, "scalars": MATRIX_AE_TOKENS * MATRIX_AE_CHANNELS}
@@ -75,11 +76,7 @@ def check_matrix_checkpoint(path, artifact, device):
             or metadata["runtime"]["device"] != device):
         raise ValueError(f"{MATRIX_AE_MODEL_ID}: checkpoint files or fit device differ")
     history = json.loads((path / "epochs.json").read_text())
-    json_bytes(history)
-    best = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
-    if (metadata["selected_epoch"] != best["epoch"]
-            or metadata["selected_validation_mse"] != best["validation_mse"]):
-        raise ValueError(f"{MATRIX_AE_MODEL_ID}: checkpoint differs from earliest tenv minimum")
+    check_checkpoint_selection(history, metadata, MATRIX_AE_MODEL_ID)
 
 
 def selected_models(models_path, corpus, split, validation_reports, model_ids):
@@ -102,10 +99,7 @@ def selected_models(models_path, corpus, split, validation_reports, model_ids):
         if neural and (
             metadata["selection_role"] != "validation"
             or metadata["validation_profiles"] != profile_counts(split, "validation")
-            or any(not isclose(report["sources"][source]["mse"],
-                               metadata["selected_validation_mse"][source],
-                               rel_tol=REPLAY_TOLERANCE["rtol"], abs_tol=REPLAY_TOLERANCE["atol"])
-                   for source in SOURCES)
+            or not validation_mse_matches(report["sources"], metadata["selected_validation_mse"])
         ):
             raise ValueError(f"{model_id}: validation MSE differs from the selected epoch")
         device = "cuda" if neural and not corpus.fixture else "cpu"

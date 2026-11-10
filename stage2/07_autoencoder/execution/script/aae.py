@@ -10,14 +10,15 @@ from torch.nn import functional as F
 from torch.nn.attention import SDPBackend, sdpa_kernel
 
 from benchmark import (
-    AAE_MODEL_ID, AAE_NUISANCE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID, AAE_TRANSFORMER_MODEL_IDS, SEED,
+    AAE_MODEL_ID, AAE_NUISANCE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID, AAE_TRANSFORMER_MODEL_IDS,
+    SEED, aae_encoder_tokens,
 )
+from benchmark import AAE_NUISANCE_TOKENS as NUISANCE_TOKENS
+from benchmark import AAE_RECONSTRUCTION_TOKENS as LATENT_TOKENS
+from benchmark import AAE_WIDTH as WIDTH
 from neural import check_selected_checkpoint, fit_neural, load_neural
 
 
-LATENT_TOKENS = 512
-NUISANCE_TOKENS = 16
-WIDTH = 128
 HEADS = 8
 LATENT_BLOCKS = 2
 FEEDFORWARD_WIDTH = 4 * WIDTH
@@ -38,13 +39,12 @@ RECIPE = {
 
 def architecture(gene_count, model_id=AAE_MODEL_ID):
     result = {
-        "gene_count": gene_count, "latent_tokens": LATENT_TOKENS, "width": WIDTH, "heads": HEADS,
+        "gene_count": gene_count, "latent_tokens": aae_encoder_tokens(model_id),
+        "width": WIDTH, "heads": HEADS,
     }
     if model_id in AAE_TRANSFORMER_MODEL_IDS:
         result.update(encoder_blocks=LATENT_BLOCKS, feedforward_width=FEEDFORWARD_WIDTH,
                       decoder_tokens=LATENT_TOKENS)
-    if model_id == AAE_NUISANCE_MODEL_ID:
-        result["latent_tokens"] += NUISANCE_TOKENS
     return result
 
 

@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import csv
 import hashlib
 import json
+from math import isclose
 from numbers import Integral
 import os
 from pathlib import Path
@@ -23,6 +24,9 @@ AAE_TRANSFORMER_MODEL_ID = "AAE_512_Transformer"
 AAE_NUISANCE_MODEL_ID = "AAE_512+16"
 AAE_TRANSFORMER_MODEL_IDS = (AAE_TRANSFORMER_MODEL_ID, AAE_NUISANCE_MODEL_ID)
 AAE_MODEL_IDS = (AAE_MODEL_ID, *AAE_TRANSFORMER_MODEL_IDS)
+AAE_RECONSTRUCTION_TOKENS = 512
+AAE_NUISANCE_TOKENS = 16
+AAE_WIDTH = 128
 MATRIX_AE_MODEL_ID = "MatrixAE_64x8"
 MATRIX_AE_TOKENS = 64
 MATRIX_AE_CHANNELS = 8
@@ -38,6 +42,12 @@ EXPECTED_COUNTS = {
 REPLAY_TOLERANCE = {"rtol": 1e-6, "atol": 1e-8}
 
 
+def aae_encoder_tokens(model_id):
+    if model_id == AAE_NUISANCE_MODEL_ID:
+        return AAE_RECONSTRUCTION_TOKENS + AAE_NUISANCE_TOKENS
+    return AAE_RECONSTRUCTION_TOKENS
+
+
 def file_sha256(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
@@ -45,6 +55,22 @@ def file_sha256(path):
 
 def json_bytes(value):
     return (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
+
+
+def check_checkpoint_selection(history, metadata, model_id):
+    json_bytes(history)
+    best = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
+    if (metadata["selected_epoch"] != best["epoch"]
+            or metadata["selected_validation_mse"] != best["validation_mse"]):
+        raise ValueError(f"{model_id}: checkpoint differs from earliest tenv minimum")
+
+
+def validation_mse_matches(sources, selected_mse):
+    return all(
+        isclose(sources[source]["mse"], selected_mse[source],
+                rel_tol=REPLAY_TOLERANCE["rtol"], abs_tol=REPLAY_TOLERANCE["atol"])
+        for source in SOURCES
+    )
 
 
 def digest(value):

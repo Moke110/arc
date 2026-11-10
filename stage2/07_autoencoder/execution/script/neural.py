@@ -13,7 +13,9 @@ import numpy as np
 import torch
 from torch.nn import functional as F
 
-from benchmark import SOURCES, batches, json_bytes, publish_artifact, verify_artifact
+from benchmark import (
+    SOURCES, batches, check_checkpoint_selection, json_bytes, publish_artifact, verify_artifact,
+)
 
 
 def check_deadline(deadline):
@@ -193,11 +195,7 @@ def check_selected_checkpoint(path, metadata, model_id, device):
             or metadata["selection_metric"] != "tenv MSE, earliest epoch on ties"):
         raise ValueError(f"{model_id}: incompatible checkpoint selection or fit device")
     history = json.loads((Path(path) / "epochs.json").read_text())
-    json_bytes(history)
-    best = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
-    if (metadata["selected_epoch"] != best["epoch"]
-            or metadata["selected_validation_mse"] != best["validation_mse"]):
-        raise ValueError(f"{model_id}: checkpoint differs from earliest tenv minimum")
+    check_checkpoint_selection(history, metadata, model_id)
 
 
 def load_neural(path, model, device, *, context=nullcontext, deterministic=True):
