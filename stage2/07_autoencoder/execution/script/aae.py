@@ -91,15 +91,15 @@ def attention_context(device):
         yield
 
 
-def recipe_for(fixture, device):
+def recipe_for(fixture, device, *, model_name="AAE"):
     if device == "cuda":
         if not torch.cuda.is_bf16_supported(including_emulation=False):
-            raise ValueError("AAE requires CUDA with native BF16 support")
+            raise ValueError(f"{model_name} requires CUDA with native BF16 support")
         recipe = {**RECIPE, "precision": "bfloat16", "attention_backend": "FlashAttention"}
     elif fixture:
         recipe = {**RECIPE, "precision": "float32", "attention_backend": "PyTorch CPU SDPA"}
     else:
-        raise ValueError("full-axis AAE fitting and replay require CUDA")
+        raise ValueError(f"full-axis {model_name} fitting and replay require CUDA")
     if fixture:
         recipe.update(max_optimizer_steps=5, train_batch_size=2, validation_batch_size=2)
     return recipe

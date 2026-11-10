@@ -19,6 +19,7 @@ DEFAULT_RELEASE = CORPUS_STEP / "output" / "corpus" / "shared-cm-v1"
 DEFAULT_SPLIT = STEP / "output" / "split.json"
 DEFAULT_MEAN = STEP / "output" / "models" / "mean"
 AAE_MODEL_ID = "AAE_512"
+MATRIX_AE_MODEL_ID = "MatrixAE_64x8"
 # A batch at this limit occupies 71 MiB of float32 expression on the real gene axis.
 MAX_BATCH_SIZE = 1024
 SOURCES = ("tahoe", "tenv")

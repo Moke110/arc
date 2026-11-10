@@ -7,9 +7,10 @@ from pathlib import Path
 import numpy as np
 
 from benchmark import (
-    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, REPLAY_TOLERANCE, ROLES, SOURCES,
-    Split, checked_test_role, fit_mean, freeze_split, json_bytes, load_mean, publish_artifact,
-    publish_json, score, validate_batch_size, verify_artifact, verify_replay,
+    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_MODEL_ID,
+    REPLAY_TOLERANCE, ROLES, SOURCES, Split, checked_test_role, fit_mean, freeze_split, json_bytes,
+    load_mean, publish_artifact, publish_json, score, validate_batch_size, verify_artifact,
+    verify_replay,
 )
 from mlp import MODEL_IDS as MLP_MODEL_IDS, fit_mlp, mlp_predictor
 from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
@@ -22,6 +23,12 @@ def fit(args, corpus, split):
         if args.output is None:
             raise ValueError("AAE fit requires --output for the new artifact")
         return fit_aae(corpus, split, args.output, args.batch_size, args.device)
+    if args.model == MATRIX_AE_MODEL_ID:
+        from matrix_ae import fit_matrix_ae
+
+        if args.output is None:
+            raise ValueError(f"{MATRIX_AE_MODEL_ID} fit requires --output for the new artifact")
+        return fit_matrix_ae(corpus, split, args.output, args.batch_size, args.device)
     if args.model in MLP_MODEL_IDS:
         if args.output is None:
             raise ValueError("MLP fit requires --output for the new artifact")
@@ -67,6 +74,12 @@ def score_artifact(args, corpus, split):
             predict, batch_size = aae_predictor(
                 args.artifact, record, corpus.fixture, args.batch_size, args.device,
             )
+        elif record["model_id"] == MATRIX_AE_MODEL_ID:
+            from matrix_ae import matrix_ae_predictor
+
+            predict, batch_size = matrix_ae_predictor(
+                args.artifact, record, corpus.fixture, args.batch_size, args.device,
+            )
         else:
             raise ValueError(f"unsupported model: {record['model_id']}")
     result = score(corpus, split, args.role, predict, mean, batch_size, allow_test=args.allow_test)
@@ -92,8 +105,10 @@ def main():
             command.add_argument("--batch-size", type=int)
             command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
         if name == "fit":
-            command.add_argument("--model", choices=("mean", "PCA", *MLP_MODEL_IDS, AAE_MODEL_ID),
-                                 default="mean")
+            command.add_argument(
+                "--model", choices=("mean", "PCA", *MLP_MODEL_IDS, AAE_MODEL_ID, MATRIX_AE_MODEL_ID),
+                default="mean",
+            )
             command.add_argument("--output", type=Path)
         if name in {"score", "reload"}:
             command.add_argument("--artifact", type=Path, default=DEFAULT_MEAN)
