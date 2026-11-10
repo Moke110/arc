@@ -87,6 +87,27 @@ def write_fixture(root):
 
 
 class SignificanceTest(unittest.TestCase):
+    def test_all_contrasts_failed_systemically_does_not_publish_release(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            native, axes, landmark = write_fixture(root)
+            worker = root / "failed-rscript"
+            worker.write_text(f"#!{sys.executable}\n"
+                              "import pathlib, sys\n"
+                              "path = pathlib.Path(sys.argv[3]) / 'results.csv'\n"
+                              "path.write_text('status,reason\\nuntestable,DESeq2: configuration error\\n'"
+                              " 'untestable,zero_library\\n')\n")
+            worker.chmod(0o755)
+            output = root / "validation"
+            process = subprocess.run(
+                [sys.executable, SCRIPT, "--role", "validation", "--native", native,
+                 "--gene-axes", axes, "--landmark", landmark, "--rscript", worker, "--output", output],
+                text=True, capture_output=True,
+            )
+            self.assertNotEqual(process.returncode, 0)
+            self.assertIn("DESeq2 produced no eligible contrast", process.stderr)
+            self.assertFalse(output.exists())
+
     def test_multiplate_wald_contrast_and_untestable_group(self):
         rscript = os.environ.get("STEP09_RSCRIPT")
         if not rscript:

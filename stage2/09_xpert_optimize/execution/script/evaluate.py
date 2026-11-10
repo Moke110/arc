@@ -7,7 +7,7 @@ import tempfile
 import numpy as np
 import pandas as pd
 
-from round_contract import PROMOTION_SCHEMA, checked_payload, read_json, sha256, verify_committed_promotion, write_json
+from round_contract import DEFAULT_WORK, PROMOTION_SCHEMA, checked_payload, read_json, sha256, verify_committed_promotion, write_json
 from round_inputs import CASE_COLUMNS, FULL_VIEW, MODEL_VIEWS, REFERENCES, SHARED_VIEW, STEP, RoundInputs, Significance
 from round_metrics import CONTINUOUS, PR_FIELDS, average_precision, continuous, macro_pr, paired_promotions, project_delta
 
@@ -145,6 +145,7 @@ def unavailable(model, native, shared, groups, full_genes, reason, run):
 
 
 def score(inputs, role, destination, promotion_sha=None):
+    statuses = inputs.statuses(role)
     destination.mkdir()
     shared = inputs.cohort(SHARED_VIEW, role)
     full = inputs.cohort(FULL_VIEW, role)
@@ -181,22 +182,27 @@ def score(inputs, role, destination, promotion_sha=None):
         shared_values = np.zeros(len(shared.genes)) if reference == "no_change" else reference_delta(inputs, SHARED_VIEW)
         record(reference, full, full_observed, np.broadcast_to(native_values, full_observed.shape),
                np.broadcast_to(shared_values, shared_observed.shape), 0.)
+        reports[-1].update(fit_attempt_wall_minutes=0., fit_attempts=0, timed_fit_attempts=0)
 
     for model, view in MODEL_VIEWS.items():
         native = full if view == FULL_VIEW else inputs.cohort(view, role)
         pd.testing.assert_frame_equal(native.cases[CASE_COLUMNS], full.cases[CASE_COLUMNS])
         evidence["view_evaluators"][view] = native.binding()
-        predictions, run, binding, reason = inputs.prediction(model, role, native)
+        predictions, run, binding, reason = inputs.prediction(model, role, native, statuses[model])
         evidence["fits"][model] = binding
         if predictions is None:
             reports.append(unavailable(model, native, shared, groups, inputs.full_genes, reason, run))
-            continue
-        shared_columns = native.genes.set_index("hgnc_id").index.get_indexer(shared.genes.hgnc_id)
-        if np.any(shared_columns < 0):
-            raise ValueError(f"{model}: native axis misses shared genes")
-        observed = full_observed if view == FULL_VIEW else observed_means(native, groups)
-        predictions, shared_predictions = predicted_means(predictions, native, shared, groups, shared_columns)
-        record(model, native, observed, predictions, shared_predictions, run["training_minutes"])
+        else:
+            shared_columns = native.genes.set_index("hgnc_id").index.get_indexer(shared.genes.hgnc_id)
+            if np.any(shared_columns < 0):
+                raise ValueError(f"{model}: native axis misses shared genes")
+            observed = full_observed if view == FULL_VIEW else observed_means(native, groups)
+            predictions, shared_predictions = predicted_means(predictions, native, shared, groups, shared_columns)
+            record(model, native, observed, predictions, shared_predictions, run["training_minutes"])
+        attempts = binding["fit_attempts"]
+        known = [item["seconds"] for item in attempts if item["seconds"] is not None]
+        reports[-1].update(fit_attempt_wall_minutes=sum(known) / 60 if known else None,
+                           fit_attempts=len(attempts), timed_fit_attempts=len(known))
 
     pd.DataFrame(reports).to_csv(destination / TABLES[0], index=False)
     pd.DataFrame(group_rows).to_csv(destination / TABLES[1], index=False)
@@ -296,11 +302,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("seal", "test", "replay"))
     parser.add_argument("--round-root", type=Path, default=DEFAULT_ROUND)
+    parser.add_argument("--work-root", type=Path, default=DEFAULT_WORK)
     parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
     parser.add_argument("--plan", type=Path, default=RECORD / "plan.json")
     parser.add_argument("--promotion", "--output", type=Path, default=RECORD / "promotion.json")
     args = parser.parse_args()
-    inputs = RoundInputs(args.round_root, args.corpus, args.plan)
+    inputs = RoundInputs(args.round_root, args.work_root, args.corpus, args.plan)
     {"seal": seal, "test": test, "replay": replay}[args.action](inputs, args.promotion)
     print(f"Round 1 {args.action}: verified", flush=True)
 

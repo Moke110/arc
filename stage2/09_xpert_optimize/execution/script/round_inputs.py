@@ -3,11 +3,12 @@
 import hashlib
 import json
 from pathlib import Path
+import re
 
 import numpy as np
 import pandas as pd
 
-from round_contract import checked_payload, read_json, sha256, verify_committed
+from round_contract import checked_payload, read_json, role_result, sha256, verify_committed
 
 
 STEP = Path(__file__).resolve().parents[2]
@@ -37,6 +38,30 @@ def read_manifest(root):
     if path.resolve() != path.absolute():
         raise ValueError(f"manifest is a symlink: {path}")
     return read_json(path), sha256(path)
+
+
+def fit_attempts(work, model):
+    """Measure each launch once, separately from checkpointed phase minutes."""
+    attempts = []
+    for path in sorted((work / "resources" / model).glob("fit-*")):
+        if not path.is_dir() or not re.fullmatch(r"fit-[0-9]+", path.name):
+            continue
+        clock, timing = path / "wall-clock.tsv", path / "time.log"
+        seconds, source = None, None
+        if clock.exists():
+            start, end = map(float, clock.read_text().split())
+            if not (np.isfinite(start) and np.isfinite(end) and end >= start):
+                raise ValueError(f"invalid fit attempt clock: {clock}")
+            seconds, source = end - start, clock
+        elif timing.exists():
+            match = re.search(r"Elapsed \(wall clock\) time \(h:mm:ss or m:ss\):\s*([0-9:.]+)",
+                              timing.read_text(errors="replace"))
+            if match:
+                fields = map(float, reversed(match[1].split(":")))
+                seconds, source = sum(value * 60**i for i, value in enumerate(fields)), timing
+        attempts.append({"attempt": path.name, "seconds": seconds,
+                         "timing_sha256": sha256(source) if source else None})
+    return attempts
 
 
 class Release:
@@ -116,8 +141,9 @@ class Significance:
 
 
 class RoundInputs:
-    def __init__(self, root, corpus, plan_path):
+    def __init__(self, root, work, corpus, plan_path):
         self.root = root
+        self.work = work
         plan_bytes = verify_committed(plan_path)
         self.plan = plan = json.loads(plan_bytes)
         self.plan_sha = hashlib.sha256(plan_bytes).hexdigest()
@@ -168,28 +194,56 @@ class RoundInputs:
     def cohort(self, relative, role):
         return Cohort(self.views[relative], role, self.evaluator_digests.get(relative))
 
-    def prediction(self, model, role, cohort):
+    def statuses(self, role):
+        statuses = {}
+        pending = []
+        for model in MODEL_VIEWS:
+            path = self.work / "status" / f"{model}.json"
+            status = read_json(path) if path.exists() else {}
+            if status and status.get("model") != model:
+                raise ValueError(f"status record belongs to a different model: {path}")
+            statuses[model] = status
+            validation, _ = role_result(status, "validation")
+            current, _ = role_result(status, role)
+            if validation is None or (role == "test" and validation == "complete" and current is None):
+                pending.append(model)
+        if pending and not self.fixture:
+            raise ValueError(f"Round 1 {role} requires terminal model statuses: {', '.join(pending)}")
+        return statuses
+
+    def prediction(self, model, role, cohort, status):
         root = self.root / "predictions" / role / model
-        run_path = self.root / "fits" / model / "run.json"
-        status_path = self.root / "status" / f"{model}.json"
-        status = read_json(status_path) if status_path.exists() else {}
-        run = read_json(run_path) if run_path.exists() else None
+        run_path = self.work / "fits" / model / "run.json"
+        validation, validation_failure = role_result(status, "validation")
+        outcome, failure = role_result(status, role)
+        if role == "test" and validation == "failed":
+            outcome, failure = "failed", validation_failure
         expected = {"model": model, "fold": 0, "seed": 17, "policy_sha256": self.plan["policy_sha256"],
                     "predictor_sha256": self.views[MODEL_VIEWS[model]].digest}
-        binding = {}
-        if run:
-            if (run["status"] != "complete" or any(run[key] != value for key, value in expected.items())
-                    or run["policy"] != self.policy or not np.isfinite(run["training_minutes"])
-                    or run["training_minutes"] < 0
-                    or (not self.fixture and run["architecture_sha256"] != self.plan["fit_sources"]["model.py"])):
-                raise ValueError(f"{model}: fit result differs from the frozen Round 1 plan")
-            binding["run_sha256"] = sha256(run_path)
+        binding = {"fit_attempts": fit_attempts(self.work, model)}
+        run = None
+        if run_path.exists():
+            try:
+                candidate = read_json(run_path)
+                if (candidate["status"] != "complete" or any(candidate[key] != value for key, value in expected.items())
+                        or candidate["policy"] != self.policy or not np.isfinite(candidate["training_minutes"])
+                        or candidate["training_minutes"] < 0
+                        or (not self.fixture and candidate["architecture_sha256"] != self.plan["fit_sources"]["model.py"])):
+                    raise ValueError(f"{model}: fit result differs from the frozen Round 1 plan")
+                run = candidate
+                binding["run_sha256"] = sha256(run_path)
+            except (OSError, ValueError, KeyError, TypeError):
+                if outcome != "failed":
+                    raise
+        if outcome == "failed":
+            binding["failure"] = {key: failure.get(key) for key in ("stage", "exit_code")}
+            reason = f"{failure['stage']} failed (exit {failure.get('exit_code')})"
+            return None, run, binding, reason
         replay = status.get(f"{role}_replay_sha256")
         if not run or not (root / "manifest.json").exists() or (not replay and not self.fixture):
-            stage = status.get("stage", "")
+            if outcome == "complete":
+                raise ValueError(f"{model}: terminal {role} replay is missing its fit or prediction")
             reason = "fit unavailable" if not run else f"{role} prediction or checkpoint replay unavailable"
-            if role == "test" and stage and status.get("status") == "failed":
-                reason = f"{reason} ({stage}, exit {status.get('exit_code')})"
             return None, run, binding, reason
         release = Release(root)
         manifest = release.manifest

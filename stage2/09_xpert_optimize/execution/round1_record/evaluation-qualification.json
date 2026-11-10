@@ -9,9 +9,35 @@
   "significance": {
     "tests_passed": 2,
     "peak_rss_kib": 847760,
-    "elapsed_seconds": 5.80,
+    "elapsed_seconds": 5.8,
     "r_version": "4.5.3",
     "deseq2_version": "1.50.2",
     "checks": "Two-sided multi-plate raw count contrast, complete-family BH including unavailable genes, HDGFL3, explicit untestable zero library, and test gate before native data access."
+  },
+  "review_recheck": {
+    "evaluator": {
+      "tests_passed": 8,
+      "peak_rss_kib": 951836,
+      "elapsed_seconds": 10.59
+    },
+    "log_drain": {
+      "tests_passed": 1,
+      "peak_rss_kib": 16592,
+      "elapsed_seconds": 0.44
+    },
+    "significance_gates": {
+      "tests_passed": 2,
+      "peak_rss_kib": 255292,
+      "elapsed_seconds": 2.28
+    },
+    "review_base": "706b1da",
+    "reviewed_tip": "7856dd3",
+    "closed_findings": [
+      "formal queue order and terminal gates",
+      "attempt time and error records",
+      "wait for replay log writers",
+      "internal state layout",
+      "reject systemic significance failure"
+    ]
   }
 }

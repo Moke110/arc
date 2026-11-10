@@ -7,6 +7,7 @@ import subprocess
 
 
 PROMOTION_SCHEMA = "step09-promotion-v1"
+DEFAULT_WORK = Path(__file__).resolve().parents[2] / "execution/tmp/round1"
 
 
 def sha256(path):
@@ -57,3 +58,21 @@ def verify_committed_promotion(path):
     if not isinstance(promotion.get("comparisons"), list) or len(promotion["comparisons"]) != 8:
         raise ValueError("committed Round 1 promotion must account for all eight paired comparisons")
     return promotion
+
+
+def role_result(status, role):
+    """Return a role's terminal outcome, including records from the original queue."""
+    stage = status.get("stage") or ""
+    stage_role = "validation" if stage == "fit" else next(
+        (name for name in ("validation", "test") if stage.endswith(f"-{name}")), None
+    )
+    if status.get("status") == "active" and status.get("active_role", stage_role) == role:
+        return None, None
+    failure = status.get(f"{role}_failure")
+    if failure:
+        return "failed", failure
+    if status.get("status") == "failed" and stage_role == role:
+        return "failed", {"stage": stage, "exit_code": status.get("exit_code")}
+    if status.get(f"{role}_replay_sha256"):
+        return "complete", None
+    return None, None

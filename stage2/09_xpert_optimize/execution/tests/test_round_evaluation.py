@@ -15,12 +15,54 @@ from test_landmark import make_fixture, run
 
 SCRIPT = Path(__file__).resolve().parents[1] / "script"
 sys.path.insert(0, str(SCRIPT))
-from round_contract import sha256, verify_committed_promotion
-from round_inputs import MODEL_VIEWS
+from round1_fit import run_queue
+from round_contract import role_result, sha256, verify_committed_promotion
+from round_inputs import MODEL_VIEWS, RoundInputs
 from round_metrics import average_precision, continuous, macro_pr, paired_promotions, project_delta
 
 
 class RoundEvaluationTest(unittest.TestCase):
+    def test_nonfixture_gate_requires_both_roles_terminal(self):
+        with TemporaryDirectory() as directory:
+            work = Path(directory)
+            statuses = work / "status"
+            statuses.mkdir()
+            inputs = RoundInputs.__new__(RoundInputs)
+            inputs.work, inputs.fixture = work, False
+            for model in MODEL_VIEWS:
+                (statuses / f"{model}.json").write_text(json.dumps({
+                    "model": model, "status": "complete", "validation_replay_sha256": "a" * 64,
+                }))
+            pending = statuses / "XPert_base.json"
+            pending.write_text(json.dumps({"model": "XPert_base", "status": "active", "stage": "fit"}))
+            with self.assertRaisesRegex(ValueError, "validation requires terminal model statuses: XPert_base"):
+                inputs.statuses("validation")
+            pending.write_text(json.dumps({"model": "XPert_base", "status": "failed", "stage": "fit", "exit_code": 137}))
+            self.assertEqual(len(inputs.statuses("validation")), 9)
+            with self.assertRaisesRegex(ValueError, "test requires terminal model statuses: XPert_G2000"):
+                inputs.statuses("test")
+
+    def test_default_test_queue_skips_validation_failure_and_records_later_proof_failure(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            work = root / "work"
+            statuses = work / "status"
+            statuses.mkdir(parents=True)
+            failed = {"model": "XPert_base", "status": "failed", "stage": "fit", "exit_code": 137}
+            (statuses / "XPert_base.json").write_text(json.dumps(failed))
+            later = statuses / "XPert_G2000.json"
+            later.write_text(json.dumps({"model": "XPert_G2000", "status": "complete", "attempts": {},
+                                         "validation_replay_sha256": "a" * 64}))
+            plan = {"models": [{"name": name, "view": name, "predictor_sha256": "b" * 64}
+                               for name in ("XPert_base", "XPert_G2000")]}
+            self.assertEqual(run_queue(root / "output", work, root / "corpus", plan,
+                                       root / "policy.json", "test"), ["XPert_G2000"])
+            self.assertEqual(json.loads((statuses / "XPert_base.json").read_text()), failed)
+            result = json.loads(later.read_text())
+            self.assertEqual(role_result(result, "validation")[0], "complete")
+            self.assertEqual(role_result(result, "test")[0], "failed")
+            self.assertEqual(result["test_failure"]["stage"], "verify-input-test")
+
     def test_ties_and_uncovered_positives_use_reached_recall_only(self):
         covered_labels = np.array([False, True, False])
         tied = np.array([1., -1., 0.])
@@ -143,22 +185,32 @@ class RoundWorkflowTest(unittest.TestCase):
             commit(root, "plan.json", "policy.json")
             round_root = root / "round1"
             round_root.mkdir()
+            work = root / "work"
             model = "XPert_base"
             predictor = corpus / MODEL_VIEWS[model]
-            fit = round_root / "fits" / model
+            fit = work / "fits" / model
             run("script/xpert.py", "fit", "--predictor", predictor, "--policy", policy, "--fold", 0,
                 "--seed", 17, "--output", fit)
+            first = work / "resources" / model / "fit-1"
+            second = work / "resources" / model / "fit-2"
+            first.mkdir(parents=True)
+            second.mkdir()
+            (first / "time.log").write_text("Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.00\n")
+            (second / "time.log").write_text("Elapsed (wall clock) time (h:mm:ss or m:ss): 0:30.00\n")
+            (second / "wall-clock.tsv").write_text("100\t132\n")
             prediction = round_root / "predictions/validation" / model
             run("script/xpert.py", "predict", "--predictor", predictor, "--checkpoint", fit / "tenv.pt",
                 "--role", "validation", "--output", prediction)
             write_labels(round_root, corpus, "validation")
             promotion = root / "promotion.json"
-            arguments = ("--round-root", round_root, "--corpus", corpus, "--plan", plan,
+            arguments = ("--round-root", round_root, "--work-root", work, "--corpus", corpus, "--plan", plan,
                          "--promotion", promotion)
             run("script/evaluate.py", "seal", *arguments)
             valid = pd.read_csv(round_root / "validation_scores/metrics.csv").set_index("model")
             self.assertTrue(np.isnan(valid.at[model, "auprc_full"]))
             self.assertGreater(valid.at[model, "auprc_g"], 0.)
+            self.assertAlmostEqual(valid.at[model, "fit_attempt_wall_minutes"], 44 / 60)
+            self.assertEqual(valid.at[model, "timed_fit_attempts"], 2)
             rejected = run("script/evaluate.py", "test", *arguments, check=False)
             self.assertNotEqual(rejected.returncode, 0)
             self.assertIn("committed dev bytes", rejected.stderr)

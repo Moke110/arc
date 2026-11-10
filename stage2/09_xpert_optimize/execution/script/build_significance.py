@@ -183,6 +183,10 @@ def build(native, axes, landmark, role, output, rscript, promotion=None):
         metadata = pd.read_csv(workspace / "results.csv", keep_default_na=False)
         if len(groups) != len(metadata):
             raise ValueError("DESeq2 did not return every contrast")
+        eligible = int(metadata.status.eq("eligible").sum())
+        errors = metadata.reason[metadata.reason.str.startswith("DESeq2: ") | metadata.reason.eq("no_finite_pvalues")]
+        if not eligible and not errors.empty:
+            raise ValueError(f"DESeq2 produced no eligible contrast. Reasons: {errors.value_counts().to_dict()}")
         pd.concat([groups, metadata], axis=1).to_csv(result / "groups.csv", index=False)
         family[["hgnc_id", "symbol"]].to_csv(result / "genes.csv", index=False)
         (workspace / "samples.csv").rename(result / "contrast_samples.csv")
@@ -192,7 +196,7 @@ def build(native, axes, landmark, role, output, rscript, promotion=None):
         r_version, deseq_version = (workspace / "versions.txt").read_text().splitlines()
         write_json(result / "manifest.json", {
             "schema": "step09-significance-v1", "role": role, "fold": FOLD, "fdr": FDR,
-            "groups": len(groups), "eligible_groups": int(metadata.status.eq("eligible").sum()),
+            "groups": len(groups), "eligible_groups": eligible,
             "gene_count": len(family), "r_version": r_version, "deseq2_version": deseq_version,
             "method": "two-sided DESeq2 Wald, per-contrast BH over CM genes plus HDGFL3",
             "independent_filtering": False, "size_factor_fallback": "poscounts",

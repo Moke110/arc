@@ -74,10 +74,24 @@ cleanup() {
 trap cleanup EXIT
 
 result=0
+started=$EPOCHREALTIME
+exec {stdout_fd}> >(tee "$record/stdout.log" 9>&-)
+stdout_writer=$!
+exec {stderr_fd}> >(tee "$record/stderr.log" >&2 9>&- {stdout_fd}>&-)
+stderr_writer=$!
 systemd-run --user --scope --unit="$scope" -p MemoryMax=10G -p MemorySwapMax=8G -- \
     /usr/bin/time -v -o "$record/time.log" env \
     OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 "$@" \
-    9>&- > >(tee "$record/stdout.log") 2> >(tee "$record/stderr.log" >&2) || result=$?
+    9>&- 1>&"$stdout_fd" 2>&"$stderr_fd" {stdout_fd}>&- {stderr_fd}>&- || result=$?
+finished=$EPOCHREALTIME
+exec {stdout_fd}>&- {stderr_fd}>&-
+if ! wait "$stdout_writer"; then
+    (( result != 0 )) || result=1
+fi
+if ! wait "$stderr_writer"; then
+    (( result != 0 )) || result=1
+fi
+printf '%s\t%s\n' "$started" "$finished" > "$record/wall-clock.tsv"
 printf '%s exit=%d\n' "$(date -Is)" "$result" >> "$record/status.log"
 free -g > "$record/free-after.log"
 if (( result >= 128 )); then

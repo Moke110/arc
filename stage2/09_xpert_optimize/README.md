@@ -172,19 +172,23 @@ control. Test labels and scoring require the seal committed on `dev`.
 
 ```bash
 ROUND="$STEP/output/round1"
+WORK="$STEP/execution/tmp/round1"
 PROMOTION="$STEP/execution/round1_record/promotion.json"
 RSCRIPT="$HOME/miniconda3/envs/biomni_e1/bin/Rscript"
+QUEUE="$STEP/execution/script/round1_fit.py"
 SCORE="$STEP/execution/script/evaluate.py"
 LABELS="$STEP/execution/script/build_significance.py"
 
+"$PY" "$QUEUE" --role validation --work-root "$WORK"
 "$CAP" "$RECORD/validation-labels" "$PY" "$LABELS" --role validation \
     --rscript "$RSCRIPT" --output "$ROUND/labels/validation"
-"$CAP" "$RECORD/validation-score" "$PY" "$SCORE" seal
+"$CAP" "$RECORD/validation-score" "$PY" "$SCORE" seal --work-root "$WORK"
 # Commit the validation promotion on dev before running the test phase.
+"$PY" "$QUEUE" --role test --work-root "$WORK"
 "$CAP" "$RECORD/test-labels" "$PY" "$LABELS" --role test \
     --rscript "$RSCRIPT" --promotion "$PROMOTION" --output "$ROUND/labels/test"
-"$CAP" "$RECORD/test-score" "$PY" "$SCORE" test
-"$CAP" "$RECORD/evaluation-replay" "$PY" "$SCORE" replay
+"$CAP" "$RECORD/test-score" "$PY" "$SCORE" test --work-root "$WORK"
+"$CAP" "$RECORD/evaluation-replay" "$PY" "$SCORE" replay --work-root "$WORK"
 ```
 
 Both score releases include aggregate metrics, per-group scores and PR
@@ -192,3 +196,10 @@ data. The test release also publishes `xpert_opti_r1_metrics.png` and
 `xpert_opti_r1_PR.png` at the Round 1 root. Independent replay recalculates
 the validation seal, test tables and both figures from frozen inputs and
 checks every output by SHA-256.
+
+The work directory holds fits, queue status and per-attempt resource logs.
+Sealing requires a terminal validation outcome for every model. Test scoring
+requires a terminal test outcome for every model whose validation replay
+succeeded. A terminal failure remains visible in the score release.
+The tables distinguish checkpointed training phase minutes from total known
+fit-attempt wall minutes and list how many attempts have timing evidence.
