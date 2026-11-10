@@ -11,8 +11,9 @@ Stage 2 delivery model.
 Project Tahoe and tenv native counts onto each model's gene axis before
 calculating CP10K and log1p. The complete author landmark panel and every
 reduced HVG panel use their own per-well library sizes. The MLP arms and
-`XPert_G18164` share the full CM axis and its normalization. Freeze one randomly generated identity
-vector per gene on the existing 18,164-gene CM axis. Give HDGFL3, the landmark
+`XPert_G18164` share the full CM axis and its normalization. Freeze one
+randomly generated identity vector per gene on the existing 18,164-gene CM
+axis. Give HDGFL3, the landmark
 outside that axis, a supplemental vector generated under the same fixed
 seed and stored separately.
 
@@ -24,10 +25,10 @@ the final checkpoint during tenv fine-tuning on tenv validation. Retain the
 treated-expression, baseline-reconstruction and separate Δ heads. Train the
 Δ head with MSE and Pearson losses. The first round uses fold 0 and seed 17.
 
-Use the intersection of all planned arms' prediction axes for the primary
-figures. Compare the same genes, tenv drug–dose groups, expression scale
-and direction labels across arms. Report native-axis scores and gene
-coverage separately.
+Use the intersection of all planned arms' prediction axes for the paired
+continuous expression metrics. Compare the same genes, tenv drug–dose
+groups and expression scale across arms. Report native-axis scores and
+gene coverage separately.
 
 Build nested HVG panels per fold using only Tahoe training wells and that
 fold's tenv training wells. Rank normalized dispersions separately by
@@ -41,6 +42,18 @@ the measured shared-panel control. Derive observed treated and control
 profiles on the shared panel directly from native counts. Freeze promotion
 decisions using tenv validation before evaluating the exploratory round-one
 tenv test results.
+
+Replace directional AP@100 and directional PR curves with two
+significance-retrieval measures. Rank every scored gene by the absolute
+predicted group Δ. Use the same measured significance labels in both
+measures. In `AUPRC@full`, the recall denominator is all observed significant
+genes on the 18,164-gene CM axis. Rank only the model's predictions on that
+axis. Genes outside its coverage never enter the predicted set, so its
+curve may stop before recall 1. In `AUPRC@G`, use the model's own gene axis
+for both ranking and the recall denominator. Report eligible-group counts
+and treat AP as undefined for a group with zero significant genes in the
+relevant denominator. Present the two measures as separate PR panels and
+replace the directional AP bars with the two new measures.
 
 The round-one figures live together under Step 09's `output/round1/` as a
 scoped placement exception to [ADR 0030](0030-external-data-provenance-and-step-layout.md).

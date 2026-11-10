@@ -383,7 +383,17 @@ The XPert-derived predictor considered for Step 08. It transforms a baseline tra
 The Step 09 perturbation predictor on the 978 L1000 landmark genes that anchors the gene-space and compression comparisons.
 
 **XPert shared scoring panel**:
-The intersection of the genes predicted by all planned Step 09 arms. Each arm is scored against the same tenv drug–dose responses on this panel.
+The intersection of the genes predicted by all planned Step 09 arms. It
+supplies the same tenv drug–dose responses for paired continuous metrics.
+
+**XPert AUPRC@full**:
+Direction-agnostic significant-gene retrieval against all significant genes
+on the frozen CM axis. Recall includes significant genes outside the
+model's coverage in its denominator.
+
+**XPert AUPRC@G**:
+Direction-agnostic significant-gene retrieval within a model's prediction
+axis. Recall is relative to the significant genes covered by that model.
 
 **Tenv model boundary**:
 The parameters updateable together in one backward pass for the tenv prediction
