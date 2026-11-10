@@ -178,3 +178,7 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 !/stage2/07_autoencoder/output/models/PCA_512/
 /stage2/07_autoencoder/output/models/PCA_*/*
 !/stage2/07_autoencoder/output/models/PCA_*/manifest.json
+!/stage2/07_autoencoder/output/models/MatrixAE_64x8/
+/stage2/07_autoencoder/output/models/MatrixAE_64x8/*
+!/stage2/07_autoencoder/output/models/MatrixAE_64x8/manifest.json
+!/stage2/07_autoencoder/output/models/MatrixAE_64x8/epochs.json

@@ -1,0 +1,79 @@
+[
+  {
+    "epoch": 1,
+    "optimizer_steps": 1583,
+    "sample_order_sha256": "0fc21d832de52f882f4b620646d529689c6670e39709f9b9c9d536485651bf09",
+    "training_mse": 0.02540237879930048,
+    "training_profiles": 50632,
+    "validation_mse": {
+      "tahoe": 0.007827708695080973,
+      "tenv": 0.053677348900789575
+    }
+  },
+  {
+    "epoch": 2,
+    "optimizer_steps": 3166,
+    "sample_order_sha256": "b4417ea4f43e0d07951991f76c0aacaee0c2ae7c7021e8d9cafa9cffafe7aae0",
+    "training_mse": 0.07548989391954712,
+    "training_profiles": 50632,
+    "validation_mse": {
+      "tahoe": 0.010479964330516142,
+      "tenv": 0.09344953278671567
+    }
+  },
+  {
+    "epoch": 3,
+    "optimizer_steps": 4749,
+    "sample_order_sha256": "161271783a05369bc1151cb645f0469d9ea8dd0f264ce9e75dedf10331909010",
+    "training_mse": 0.012886973796890591,
+    "training_profiles": 50632,
+    "validation_mse": {
+      "tahoe": 0.008449877954443958,
+      "tenv": 0.05765948702119611
+    }
+  },
+  {
+    "epoch": 4,
+    "optimizer_steps": 6332,
+    "sample_order_sha256": "9e731fca92c832ec0290d7b7f1bf99b197db8c5ea602f4aa79c58298c113336c",
+    "training_mse": 0.011609407065616946,
+    "training_profiles": 50632,
+    "validation_mse": {
+      "tahoe": 0.00742164296108128,
+      "tenv": 0.04441247101131718
+    }
+  },
+  {
+    "epoch": 5,
+    "optimizer_steps": 7915,
+    "sample_order_sha256": "1132a7aa02e4a1e0edc43f8c87970f43cfafe1c10375b0d0da443e9099c64925",
+    "training_mse": 0.038449953992533675,
+    "training_profiles": 50632,
+    "validation_mse": {
+      "tahoe": 0.008168567941942137,
+      "tenv": 0.053088696633724106
+    }
+  },
+  {
+    "epoch": 6,
+    "optimizer_steps": 9498,
+    "sample_order_sha256": "d136c89b47bf3b3c12718ab725a0f8d2ef5aeaa37b672cd8a749ddb6bd118bfa",
+    "training_mse": 0.012166464206865471,
+    "training_profiles": 50632,
+    "validation_mse": {
+      "tahoe": 0.00794153718185699,
+      "tenv": 0.044544476445306715
+    }
+  },
+  {
+    "epoch": 7,
+    "optimizer_steps": 10000,
+    "sample_order_sha256": "c2f6168d4e1c879f0161c99d85feb383343ae810d61a9361fb69e0579ead7ab3",
+    "training_mse": 0.011446337798142813,
+    "training_profiles": 16064,
+    "validation_mse": {
+      "tahoe": 0.0073887894004949295,
+      "tenv": 0.04590992101160721
+    }
+  }
+]
