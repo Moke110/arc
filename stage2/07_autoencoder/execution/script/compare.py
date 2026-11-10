@@ -164,13 +164,12 @@ def selected_models(models_path, corpus, split, validation_reports, model_ids):
 
 
 def selected_shared_models(models_path, interface_path, corpus, split, validation_reports):
-    from shared_expression import dimensions
     from shared_neural import check_shared_neural_artifact
 
     artifacts = {model: verify_artifact(models_path / model, corpus, split)
                  for model in SHARED_COMPARISON_IDS}
     interface = verify_artifact(interface_path, corpus, split)
-    _, channels = dimensions(corpus)
+    _, channels = shared_matrix_shape(corpus.gene_count, corpus.fixture)
     if (set(interface["files"]) != {"weights.pt"}
             or interface["metadata"]["generator"] != [1, 64, channels]
             or interface["metadata"]["restorer"] != [channels, 64, 1]):

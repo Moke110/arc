@@ -26,6 +26,12 @@ class SharedExpressionTest(unittest.TestCase):
         self.assertEqual(set(validation["sources"]), {"tahoe", "tenv"})
         self.assertIn("validation", fixture.cli("score", *options, "--role", "test",
                                                "--allow-test", success=False))
+        self.assertIn("requires batch size", fixture.cli("score", *options, "--batch-size", 1,
+                                                        success=False))
+        self.assertIn("only to the shared neural models", fixture.cli(
+            "fit", "--model", "PCA_1024", "--smoke", "--output", fixture.root / "unused",
+            success=False,
+        ))
 
     def test_interface_calibration_reads_only_joint_training_membership(self):
         from benchmark import Corpus, Split
