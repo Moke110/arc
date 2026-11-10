@@ -8,9 +8,9 @@ from math import isclose
 from pathlib import Path
 
 from benchmark import (
-    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_MODEL_ID,
-    REPLAY_TOLERANCE, SOURCES, STEP, Split, checked_test_role, json_bytes, publish_json,
-    verify_artifact, verify_replay,
+    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_CHANNELS,
+    MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS, REPLAY_TOLERANCE, SOURCES, STEP, Split, checked_test_role,
+    json_bytes, publish_json, verify_artifact, verify_replay,
 )
 from mlp import MODEL_IDS as MLP_MODEL_IDS
 from pca import MODEL_IDS as PCA_MODEL_IDS
@@ -38,7 +38,7 @@ def latent_units(model_id):
     if model_id == AAE_MODEL_ID:
         return {"tokens": 512, "scalars": 65_536}
     if model_id == MATRIX_AE_MODEL_ID:
-        return {"tokens": 64, "scalars": 512}
+        return {"tokens": MATRIX_AE_TOKENS, "scalars": MATRIX_AE_TOKENS * MATRIX_AE_CHANNELS}
     return {"tokens": None, "scalars": int(model_id.rsplit("_", 1)[1])}
 
 

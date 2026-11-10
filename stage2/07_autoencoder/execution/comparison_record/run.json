@@ -13,6 +13,21 @@
     }
   },
   "figure_sha256": "b5ad2efa587742698555df5e8f6b9c6988a8c0f2c9a907fac5a0067a3a342f3d",
+  "fixture_memory_review": {
+    "baseline": {
+      "passed": 10,
+      "peak_rss_kib": 806308,
+      "revision": "1654ec0"
+    },
+    "current": {
+      "passed": 12,
+      "peak_rss_kib": 813208,
+      "revision": "29e993c"
+    },
+    "peak_rss_delta_kib": 6900,
+    "process_virtual_memory_cap_gib": 10,
+    "threads_per_runtime": 2
+  },
   "fixture_tests": {
     "elapsed_wall": "1:08.93",
     "exit_status": 0,

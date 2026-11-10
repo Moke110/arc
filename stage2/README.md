@@ -16,7 +16,7 @@ the second under ADR 0042.
 | [`04_pdiff_hyperparameter/`](04_pdiff_hyperparameter/README.md) | how does standalone PerturbDiff train and score on Tahoe and tenv? | complete nine-fit matrices for both datasets, learning curves, eight held-out metrics with matched references, and nine verified tenv EMA checkpoints for handoff | ADR 0046 |
 | [`05_pdiff_transfer/`](05_pdiff_transfer/README.md) | does Tahoe training improve tenv prediction? | verified common cold tenv fold with reused CM checkpoints and deterministic references | ADR 0047 |
 | [`06_pdiff_transfer_optimize/`](06_pdiff_transfer_optimize/README.md) | what accounts for the Tahoe Transfer deficit? | paired validation replay, independent interventions and source-domain audit | ADR 0048 |
-| [`07_autoencoder/`](07_autoencoder/README.md) | how well do autoencoders and baselines reconstruct expression on unseen plates? | sealed eight-configuration Tahoe and tenv reconstruction comparison on 18,164 genes, with fitted artifacts and independent replay. Step 08 owns perturbation prediction | ADR 0052 |
+| [`07_autoencoder/`](07_autoencoder/README.md) | how well do autoencoders and baselines reconstruct expression on unseen plates? | sealed nine-configuration Tahoe and tenv reconstruction comparison on 18,164 genes, including `MatrixAE_64x8`, with fitted artifacts and independent replay. Step 08 owns perturbation prediction | [ADR 0052](../docs/adr/0052-stage2-autoencoder-reconstruction-boundary.md), [ADR 0053](../docs/adr/0053-step07-compact-matrix-autoencoder.md) |
 
 The retired Tahoe data step was folded into `02_dataset_corpus/` (ADR 0033).
 The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their tracked records are available in Git at

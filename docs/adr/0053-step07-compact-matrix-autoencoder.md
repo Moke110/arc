@@ -28,6 +28,14 @@ to its validation evidence in a committed seal before test scoring. Replay
 the held-out scores independently and include the new entrant in the
 existing metric figure alongside the previous artifacts.
 
+As a Step 07 exception to [ADR 0030](0030-external-data-provenance-and-step-layout.md),
+keep the published benchmark figures at `07_autoencoder/output/*.png` and
+the fitted artifacts at `07_autoencoder/output/models/`. Each fitted artifact
+directory keeps its tracked manifest and, where applicable, epoch history
+together with the ignored local weights or fitted arrays named in the manifest.
+This preserves the published figure and replay paths. ADR 0030 continues to
+govern the other Stage 2 steps.
+
 ## See
 
 - [ADR 0052](0052-stage2-autoencoder-reconstruction-boundary.md)

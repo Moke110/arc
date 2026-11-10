@@ -6,12 +6,10 @@ import torch
 from torch import nn
 
 from aae import CrossAttention, HEADS, WIDTH, attention_context, recipe_for
-from benchmark import MATRIX_AE_MODEL_ID
+from benchmark import MATRIX_AE_CHANNELS, MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS
 from neural import fit_neural, load_neural
 
 
-LATENT_TOKENS = 64
-LATENT_CHANNELS = 8
 LATENT_BLOCKS = 2
 FEEDFORWARD_WIDTH = 4 * WIDTH
 
@@ -38,12 +36,12 @@ class MatrixAutoencoder(nn.Module):
     def __init__(self, gene_count):
         super().__init__()
         self.gene_identities = nn.Parameter(torch.randn(1, gene_count, WIDTH) / WIDTH**0.5)
-        self.latent_queries = nn.Parameter(torch.randn(1, LATENT_TOKENS, WIDTH) / WIDTH**0.5)
+        self.latent_queries = nn.Parameter(torch.randn(1, MATRIX_AE_TOKENS, WIDTH) / WIDTH**0.5)
         self.expression = nn.Linear(1, WIDTH)
         self.read_expression = CrossAttention()
         self.encoder = nn.Sequential(*(LatentTransformerBlock() for _ in range(LATENT_BLOCKS)))
-        self.compress = nn.Linear(WIDTH, LATENT_CHANNELS)
-        self.expand = nn.Linear(LATENT_CHANNELS, WIDTH)
+        self.compress = nn.Linear(WIDTH, MATRIX_AE_CHANNELS)
+        self.expand = nn.Linear(MATRIX_AE_CHANNELS, WIDTH)
         self.decoder = nn.Sequential(*(LatentTransformerBlock() for _ in range(LATENT_BLOCKS)))
         self.read_latent = CrossAttention()
         self.reconstruct = nn.Linear(WIDTH, 1)
@@ -69,8 +67,8 @@ def architecture(gene_count):
         "gene_count": gene_count,
         "width": WIDTH,
         "heads": HEADS,
-        "latent_tokens": LATENT_TOKENS,
-        "latent_channels": LATENT_CHANNELS,
+        "latent_tokens": MATRIX_AE_TOKENS,
+        "latent_channels": MATRIX_AE_CHANNELS,
         "encoder_blocks": LATENT_BLOCKS,
         "decoder_blocks": LATENT_BLOCKS,
         "feedforward_width": FEEDFORWARD_WIDTH,
@@ -85,8 +83,8 @@ def fit_matrix_ae(corpus, split, output, batch_size, device):
     return fit_neural(
         corpus, split, output, MATRIX_AE_MODEL_ID, lambda: MatrixAutoencoder(corpus.gene_count),
         recipe, device,
-        {"architecture": architecture(corpus.gene_count), "latent_tokens": LATENT_TOKENS,
-         "latent_scalars": LATENT_TOKENS * LATENT_CHANNELS},
+        {"architecture": architecture(corpus.gene_count), "latent_tokens": MATRIX_AE_TOKENS,
+         "latent_scalars": MATRIX_AE_TOKENS * MATRIX_AE_CHANNELS},
         context=partial(attention_context, device), deterministic=device == "cpu",
     )
 
@@ -96,8 +94,8 @@ def matrix_ae_predictor(path, record, fixture, batch_size, device):
     metadata = record["metadata"]
     gene_count = record["gene_count"]
     if (metadata["architecture"] != architecture(gene_count)
-            or metadata["latent_tokens"] != LATENT_TOKENS
-            or metadata["latent_scalars"] != LATENT_TOKENS * LATENT_CHANNELS
+            or metadata["latent_tokens"] != MATRIX_AE_TOKENS
+            or metadata["latent_scalars"] != MATRIX_AE_TOKENS * MATRIX_AE_CHANNELS
             or metadata["recipe"] != recipe
             or set(record["files"]) != {"weights.pt", "epochs.json"}):
         raise ValueError(f"invalid {MATRIX_AE_MODEL_ID} artifact or incompatible replay runtime")
