@@ -1,0 +1,173 @@
+{
+  "contrasts": [
+    {
+      "from_display_name": "AAE_512_SA",
+      "from_model_id": "AAE_512",
+      "source_deltas_after_minus_before": {
+        "tahoe": {
+          "pcc": -0.02110685953836089,
+          "relative_squared_error": 0.7056146660690459,
+          "rmse": 0.03543648283030719
+        },
+        "tenv": {
+          "pcc": -0.11800631403648798,
+          "relative_squared_error": 0.08949238797192077,
+          "rmse": 0.0389293940965067
+        }
+      },
+      "to_display_name": "AAE_512",
+      "to_model_id": "AAE_512_Transformer"
+    },
+    {
+      "from_display_name": "AAE_512",
+      "from_model_id": "AAE_512_Transformer",
+      "source_deltas_after_minus_before": {
+        "tahoe": {
+          "pcc": -0.0035233749449635754,
+          "relative_squared_error": 0.022632812461155227,
+          "rmse": 0.0009618165779256838
+        },
+        "tenv": {
+          "pcc": -0.016331899731774402,
+          "relative_squared_error": 0.014039297484721658,
+          "rmse": 0.005638943436746924
+        }
+      },
+      "to_display_name": "AAE_512+16",
+      "to_model_id": "AAE_512+16"
+    }
+  ],
+  "figure": {
+    "elapsed_wall": "0:00.77",
+    "exit_status": 0,
+    "path": "stage2/07_autoencoder/output/reconstruction_test_aae_ablation.png",
+    "peak_rss_kib": 87020,
+    "sha256": "3c6b319dd9c63caaef156a47a2ee4ea1247cac63de75c9f6c426598d5dfd71a1",
+    "visually_checked_sources_and_model_labels": true
+  },
+  "fit_and_seal_record": {
+    "path": "stage2/07_autoencoder/execution/aae_ablation_record/fit-and-seal.json",
+    "sha256": "e74315ec40a87b614460fa2ae3d772cc5d702f6ab83c4dabfc9f325efe864895"
+  },
+  "historical_comparison": {
+    "metrics_profiles_and_provenance_exact": true,
+    "model_count": 9,
+    "published_files_byte_identical": true,
+    "revision": "a8279f76d6b8cea5af33068f9fd4d814955c77c3"
+  },
+  "independent_reload": {
+    "byte_identical": true,
+    "stdout_sha256": "2b14e3720199d01eb39f9d518954e8953e7f04e73675957f3d74ecbd25884eb4",
+    "tolerance": {
+      "atol": 1e-08,
+      "rtol": 1e-06
+    }
+  },
+  "phases": {
+    "test-reload": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T12:38:13+08:00",
+      "available_ram_gib": 41,
+      "command": [
+        "stage2/07_autoencoder/execution/script/compare.py",
+        "reload",
+        "--seal",
+        "stage2/07_autoencoder/output/test_seal_aae_ablation.json",
+        "--allow-test",
+        "--expected",
+        "stage2/07_autoencoder/output/test_scores_aae_ablation.json"
+      ],
+      "elapsed_wall": "0:45.93",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14188,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1874,
+      "gpu_utilization_percent": 6,
+      "maximum_sampled_gpu_utilization_percent": 54,
+      "maximum_sampled_used_vram_mib": 3173,
+      "minimum_sampled_available_ram_gib": 40,
+      "minimum_sampled_free_vram_mib": 13203,
+      "monitor_samples": 3,
+      "peak_rss_kib": 2057128,
+      "scope": "arc-step07-ablation-test-reload-1794285493.scope",
+      "seal_gate": {
+        "scoring_revision": "657da8d8ba2e4790f692d0bc5c87fcacb282f744",
+        "seal_commit": "657da8d8ba2e4790f692d0bc5c87fcacb282f744",
+        "seal_commit_is_ancestor": true,
+        "seal_matches_both_git_blobs": true,
+        "seal_sha256": "26f5ceccb930105c8e1eb22ade063d09acaa36aa06292441a83e282cafdc739f"
+      }
+    },
+    "test-score": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T12:36:55+08:00",
+      "available_ram_gib": 41,
+      "command": [
+        "stage2/07_autoencoder/execution/script/compare.py",
+        "score",
+        "--seal",
+        "stage2/07_autoencoder/output/test_seal_aae_ablation.json",
+        "--allow-test",
+        "--output",
+        "stage2/07_autoencoder/output/test_scores_aae_ablation.json"
+      ],
+      "elapsed_wall": "0:45.33",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14188,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1874,
+      "gpu_utilization_percent": 6,
+      "maximum_sampled_gpu_utilization_percent": 54,
+      "maximum_sampled_used_vram_mib": 3173,
+      "minimum_sampled_available_ram_gib": 40,
+      "minimum_sampled_free_vram_mib": 13203,
+      "monitor_samples": 3,
+      "peak_rss_kib": 2054904,
+      "scope": "arc-step07-ablation-test-score-1794285415.scope",
+      "seal_gate": {
+        "scoring_revision": "657da8d8ba2e4790f692d0bc5c87fcacb282f744",
+        "seal_commit": "657da8d8ba2e4790f692d0bc5c87fcacb282f744",
+        "seal_commit_is_ancestor": true,
+        "seal_matches_both_git_blobs": true,
+        "seal_sha256": "26f5ceccb930105c8e1eb22ade063d09acaa36aa06292441a83e282cafdc739f"
+      }
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "minimum_available_ram_gib": 12,
+    "minimum_free_vram_mib": 5120,
+    "sample_interval_seconds": 20,
+    "serial_phases": true
+  },
+  "seal": {
+    "commit": "657da8d8ba2e4790f692d0bc5c87fcacb282f744",
+    "committed_at": "2026-11-10T12:36:00+08:00",
+    "path": "stage2/07_autoencoder/output/test_seal_aae_ablation.json",
+    "sha256": "26f5ceccb930105c8e1eb22ade063d09acaa36aa06292441a83e282cafdc739f"
+  },
+  "test_profiles": {
+    "tahoe": 9596,
+    "tenv": 825
+  },
+  "test_scores": {
+    "path": "stage2/07_autoencoder/output/test_scores_aae_ablation.json",
+    "sha256": "2b14e3720199d01eb39f9d518954e8953e7f04e73675957f3d74ecbd25884eb4"
+  },
+  "threads": {
+    "MKL_NUM_THREADS": 2,
+    "NUMEXPR_NUM_THREADS": 2,
+    "OMP_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "ticket": 125
+}

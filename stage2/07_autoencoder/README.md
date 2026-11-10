@@ -26,6 +26,57 @@ order, ranks, memberships and full coverage.
 
 ## Held-out reconstruction comparison
 
+The [AAE ablation seal](output/test_seal_aae_ablation.json) binds 11 configurations
+to their selected validation evidence and fitted payloads. All configurations
+reconstructed the same 9,596 Tahoe and 825 tenv test profiles on the 18,164-gene
+axis. The [test scores](output/test_scores_aae_ablation.json) give full-precision
+metrics, profile counts and provenance. The [comparison record](execution/aae_ablation_record/comparison.json)
+records the seal commit, resource measurements and byte-identical independent
+test replay. The nine earlier configurations reproduced their published
+metrics, counts and provenance exactly.
+
+![Held-out reconstruction metrics for eleven configurations on Tahoe and tenv](output/reconstruction_test_aae_ablation.png)
+
+[ADR 0054](../../docs/adr/0054-step07-separate-reconstruction-and-nuisance-tokens.md)
+labels the published cross-attention model `AAE_512_SA` in this comparison. Its artifact
+ID is `AAE_512`. The new `AAE_512` (artifact ID `AAE_512_Transformer`) adds
+two encoder Transformer blocks to the 512 × 128 representation.
+`AAE_512+16` gives those blocks 16 additional encoder tokens for a 528 × 128
+representation. Both new decoders read the first 512 tokens, or 65,536 scalars.
+
+| Display name | Tahoe PCC | Tahoe RMSE | Tahoe relative squared error | tenv PCC | tenv RMSE | tenv relative squared error |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `AAE_512_SA` | 0.96793 | 0.09617 | 1.07843 | 0.67100 | 0.30180 | 0.35547 |
+| `AAE_512` | 0.94682 | 0.13160 | 1.78404 | 0.55299 | 0.34073 | 0.44497 |
+| `AAE_512+16` | 0.94330 | 0.13257 | 1.80668 | 0.53666 | 0.34637 | 0.45901 |
+
+The signed deltas subtract the first model's score from the second model's
+score using the full-precision values.
+
+| Contrast | Source | Δ PCC | Δ RMSE | Δ relative squared error |
+| --- | --- | ---: | ---: | ---: |
+| `AAE_512_SA` → `AAE_512` (two encoder blocks) | Tahoe | −0.02111 | +0.03544 | +0.70561 |
+| `AAE_512_SA` → `AAE_512` (two encoder blocks) | tenv | −0.11801 | +0.03893 | +0.08949 |
+| `AAE_512` → `AAE_512+16` (16 encoder tokens) | Tahoe | −0.00352 | +0.00096 | +0.02263 |
+| `AAE_512` → `AAE_512+16` (16 encoder tokens) | tenv | −0.01633 | +0.00564 | +0.01404 |
+
+Both changes reduced PCC and increased both error metrics on both sources.
+The added blocks produced the larger deterioration within each source and
+metric. `AAE_512` reached the 10,000-update cap and selected its checkpoint
+at 6,332 updates. `AAE_512+16` stopped at 9,498 updates after three validation
+checks without improvement and selected its checkpoint at 4,749 updates.
+Both selections used tenv validation MSE and reproduced their validation
+reports byte-for-byte. The [fit and seal record](execution/aae_ablation_record/fit-and-seal.json)
+binds the checkpoints to their validation reports and epoch histories.
+
+These are measured-expression `log1p(CP10K)` reconstruction results on one
+frozen plate split with one seeded fit per configuration. Variation across
+training seeds and plate splits remains unmeasured. The extra tokens are
+exploratory, and assigning them a biological nuisance role would require
+separate evidence.
+
+### Historical nine-configuration comparison
+
 Each of the nine configurations reconstructed the same 9,596 Tahoe and 825
 tenv test profiles. The [selection seal](output/test_seal.json) was committed
 before scoring. It binds the selected validation scores, fitted manifest and
@@ -90,6 +141,31 @@ cli="$step/execution/script/compare.py"
 scores="$step/output/test_scores.json"
 run_step07 "$cli" reload --allow-test --expected "$scores"
 python "$cli" figure --expected "$scores" --output /tmp/arc-reconstruction-test.png
+```
+
+To replay the ablation, restore the fitted payloads for all 11 configurations,
+including the checkpoints under `output/models/AAE_512_Transformer/` and
+`output/models/AAE_512+16/`. Use the same `run_step07` helper in the same
+shell. The checks below verify the committed seal and GPU admission before
+test access. Replay checks the published report at the same numerical
+tolerances as the historical comparison.
+
+```bash
+(
+  set -euo pipefail
+  step=stage2/07_autoencoder
+  cli="$step/execution/script/compare.py"
+  seal="$step/output/test_seal_aae_ablation.json"
+  scores="$step/output/test_scores_aae_ablation.json"
+  seal_commit=657da8d8ba2e4790f692d0bc5c87fcacb282f744
+  git merge-base --is-ancestor "$seal_commit" HEAD
+  git show "$seal_commit:$seal" | cmp - "$seal"
+  git show "HEAD:$seal" | cmp - "$seal"
+  gpu_free=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)
+  test "$gpu_free" -ge 5120
+  run_step07 "$cli" reload --seal "$seal" --allow-test --expected "$scores"
+  python "$cli" figure --expected "$scores" --output /tmp/arc-reconstruction-test-aae-ablation.png
+)
 ```
 
 ## Fit, score and replay
@@ -200,10 +276,10 @@ done
 
 ### Attention Autoencoder reconstruction
 
-`AAE_512` uses 512 latent queries, 128 channels per query and eight attention
-heads. It contains 65,536 latent scalars per profile. Fixed sinusoidal positions
-encode the order of the 18,164 genes. The encoder queries all measured
-expression values and the decoder uses the same ordered gene positions to
+`AAE_512_SA` (artifact ID `AAE_512`) uses 512 latent queries, 128 channels per
+query and eight attention heads. It contains 65,536 latent scalars per profile.
+Fixed sinusoidal positions encode the order of the 18,164 genes. The encoder
+queries all measured expression values and the decoder uses the same ordered gene positions to
 reconstruct the full profile.
 
 The frozen recipe uses full-axis MSE, AdamW with learning rate 0.001,
