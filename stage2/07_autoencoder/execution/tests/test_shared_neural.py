@@ -10,7 +10,8 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "script"))
 
-from shared_neural import NEURAL_IDS, build_matrix_model
+from benchmark import SHARED_NEURAL_IDS
+from shared_neural import build_matrix_model
 import test_benchmark
 
 
@@ -56,7 +57,7 @@ class MatrixModelTest(unittest.TestCase):
         interface = fixture.root / "interface"
         interface_record = fixture.cli("fit", "--model", "shared_expression", "--output", interface)
         orders = []
-        for model_id in NEURAL_IDS:
+        for model_id in SHARED_NEURAL_IDS:
             with self.subTest(model=model_id):
                 artifact = fixture.root / model_id
                 record = fixture.cli("fit", "--model", model_id, "--interface", interface,

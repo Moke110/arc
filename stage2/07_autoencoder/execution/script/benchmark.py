@@ -31,6 +31,10 @@ MATRIX_AE_MODEL_ID = "MatrixAE_64x8"
 MATRIX_AE_TOKENS = 64
 MATRIX_AE_CHANNELS = 8
 MATRIX_MLP_MODEL_ID = "MLPm_512"
+INTERFACE_ID = "shared_expression"
+SHARED_PCA_ID = "PCA_1024"
+SHARED_EXTRA_QUERY_ID = "AAEcs_1024+64"
+SHARED_NEURAL_IDS = ("MLP_1024", "AAEc_1024", "AAEcs_1024", SHARED_EXTRA_QUERY_ID)
 # A batch at this limit occupies 71 MiB of float32 expression on the real gene axis.
 MAX_BATCH_SIZE = 1024
 SOURCES = ("tahoe", "tenv")
@@ -41,6 +45,14 @@ EXPECTED_COUNTS = {
     "tenv": ((10, 2810), (3, 843), (3, 825)),
 }
 REPLAY_TOLERANCE = {"rtol": 1e-6, "atol": 1e-8}
+
+
+def shared_matrix_shape(gene_count, fixture):
+    return (min(3, gene_count), 16) if fixture else (1024, 256)
+
+
+def shared_extra_tokens(model_id, fixture):
+    return (2 if fixture else 64) if model_id == SHARED_EXTRA_QUERY_ID else 0
 
 
 def aae_encoder_tokens(model_id):

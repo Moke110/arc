@@ -8,7 +8,7 @@ import numpy as np
 
 from benchmark import (
     AAE_MODEL_IDS, AAE_TRANSFORMER_MODEL_IDS, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT,
-    MATRIX_AE_MODEL_ID, MATRIX_MLP_MODEL_ID,
+    INTERFACE_ID, MATRIX_AE_MODEL_ID, MATRIX_MLP_MODEL_ID, SHARED_NEURAL_IDS, SHARED_PCA_ID,
     REPLAY_TOLERANCE, ROLES, SOURCES, Split, checked_test_role, fit_mean, freeze_split, json_bytes,
     load_mean, publish_artifact, publish_json, score, validate_batch_size, validation_mse_matches,
     verify_artifact, verify_replay,
@@ -16,9 +16,6 @@ from benchmark import (
 from mlp import MODEL_IDS as MLP_MODEL_IDS, fit_mlp, mlp_predictor
 from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
 
-INTERFACE_ID = "shared_expression"
-SHARED_PCA_ID = "PCA_1024"
-SHARED_NEURAL_IDS = ("MLP_1024", "AAEc_1024", "AAEcs_1024", "AAEcs_1024+64")
 DEFAULT_INTERFACE = DEFAULT_MEAN.parent / INTERFACE_ID
 
 
@@ -136,6 +133,9 @@ def score_artifact(args, corpus, split):
             )
         else:
             raise ValueError(f"unsupported model: {record['model_id']}")
+    if (record["model_id"] in (INTERFACE_ID, SHARED_PCA_ID, *SHARED_NEURAL_IDS)
+            and args.batch_size is not None and args.batch_size != batch_size):
+        raise ValueError(f"{record['model_id']} scoring requires batch size {batch_size}")
     result = score(corpus, split, args.role, predict, mean, batch_size, allow_test=args.allow_test)
     if record["model_id"] in (*AAE_TRANSFORMER_MODEL_IDS, MATRIX_MLP_MODEL_ID, *SHARED_NEURAL_IDS) and args.role == "validation":
         selected_mse = record["metadata"]["selected_validation_mse"]
@@ -190,6 +190,9 @@ def main():
     try:
         if args.command in {"score", "reload"} and args.role == "test" and not args.fixture:
             raise ValueError("real test scoring requires a selection seal through compare.py")
+        if (args.command == "fit" and args.model not in SHARED_NEURAL_IDS
+                and (args.smoke or args.budget is not None)):
+            raise ValueError("--smoke and --budget apply only to the shared neural models")
         if args.command != "freeze-split" and args.batch_size is not None:
             validate_batch_size(args.batch_size)
         corpus = Corpus(args.release, args.fixture)

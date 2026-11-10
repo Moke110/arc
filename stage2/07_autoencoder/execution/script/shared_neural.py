@@ -10,7 +10,7 @@ import torch
 from torch import nn
 
 from aae import RECIPE, attention_context
-from benchmark import SOURCES, digest
+from benchmark import SHARED_NEURAL_IDS, SOURCES, digest, shared_extra_tokens, shared_matrix_shape
 from neural import (
     check_selected_checkpoint, configure_runtime, fit_neural, joint_training_rows, load_neural,
     neural_predictor, train_epoch, training_windows,
@@ -18,9 +18,6 @@ from neural import (
 from shared_expression import load_interface
 
 
-NEURAL_IDS = ("MLP_1024", "AAEc_1024", "AAEcs_1024", "AAEcs_1024+64")
-LATENT_TOKENS = 1024
-EXTRA_TOKENS = 64
 HEADS = 8
 MAX_PROFILES_PER_BATCH = 32
 BUDGET_FIELDS = {"train_batch_size", "validation_batch_size", "max_optimizer_steps"}
@@ -28,9 +25,8 @@ FIXTURE_BUDGET = {"train_batch_size": 2, "validation_batch_size": 2, "max_optimi
 
 
 def token_shape(model_id, gene_count, fixture):
-    tokens = min(3, gene_count) if fixture else LATENT_TOKENS
-    extras = (2 if fixture else EXTRA_TOKENS) if model_id == "AAEcs_1024+64" else 0
-    return tokens, extras
+    tokens, _ = shared_matrix_shape(gene_count, fixture)
+    return tokens, shared_extra_tokens(model_id, fixture)
 
 
 def token_map(input_tokens, output_tokens, hidden_tokens):
@@ -97,7 +93,7 @@ class MatrixAttention(nn.Module):
 
 
 def build_matrix_model(model_id, gene_count, channels, *, fixture):
-    if model_id not in NEURAL_IDS:
+    if model_id not in SHARED_NEURAL_IDS:
         raise ValueError(f"unsupported shared neural model {model_id}")
     tokens, extras = token_shape(model_id, gene_count, fixture)
     if model_id == "MLP_1024":
@@ -232,7 +228,8 @@ def check_shared_neural_artifact(path, record, fixture, device):
     metadata = record["metadata"]
     recipe = metadata["recipe"]
     budget = {key: recipe[key] for key in BUDGET_FIELDS}
-    design = design_metadata(model_id, record["gene_count"], 16 if fixture else 256, fixture)
+    _, channels = shared_matrix_shape(record["gene_count"], fixture)
+    design = design_metadata(model_id, record["gene_count"], channels, fixture)
     if (recipe != recipe_for(budget, fixture, device)
             or metadata["budget_sha256"] != digest(budget)
             or any(metadata.get(field) != value for field, value in design.items())

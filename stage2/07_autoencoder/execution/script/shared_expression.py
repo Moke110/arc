@@ -6,10 +6,9 @@ import numpy as np
 import torch
 from torch import nn
 
-from benchmark import SEED, SOURCES, publish_artifact, verify_artifact
+from benchmark import INTERFACE_ID, SEED, SOURCES, publish_artifact, shared_matrix_shape, verify_artifact
 
 
-INTERFACE_ID = "shared_expression"
 SCALAR_BATCH = 8192
 CALIBRATION_STEPS = 1500
 SCORE_BATCH = 16
@@ -40,10 +39,6 @@ class ExpressionInterface(nn.Module):
         return self.readout(representation - self.positions)
 
 
-def dimensions(corpus):
-    return (min(3, corpus.gene_count), 16) if corpus.fixture else (1024, 256)
-
-
 def check_device(corpus, device):
     if not corpus.fixture and device != "cuda":
         raise ValueError("real shared expression commands require --device cuda")
@@ -55,7 +50,7 @@ def fit_interface(corpus, split, output, device):
     check_device(corpus, device)
     if Path(output).exists():
         raise ValueError(f"artifact already exists: {output}")
-    channels = dimensions(corpus)[1]
+    channels = shared_matrix_shape(corpus.gene_count, corpus.fixture)[1]
     torch.set_num_threads(2)
     torch.manual_seed(SEED)
     torch.set_float32_matmul_precision("highest")
@@ -113,7 +108,7 @@ def load_interface(path, corpus, split, device):
     check_device(corpus, device)
     path = Path(path)
     record = verify_artifact(path, corpus, split)
-    channels = dimensions(corpus)[1]
+    channels = shared_matrix_shape(corpus.gene_count, corpus.fixture)[1]
     if (record["model_id"] != INTERFACE_ID or set(record["files"]) != {"weights.pt"}
             or record["metadata"]["generator"] != [1, 64, channels]
             or record["metadata"]["restorer"] != [channels, 64, 1]

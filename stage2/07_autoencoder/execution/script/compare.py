@@ -11,13 +11,14 @@ from benchmark import (
     AAE_MODEL_ID, AAE_MODEL_IDS, AAE_RECONSTRUCTION_TOKENS,
     AAE_TRANSFORMER_MODEL_ID, AAE_TRANSFORMER_MODEL_IDS, AAE_WIDTH, Corpus, DEFAULT_MEAN,
     DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_CHANNELS, MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS,
-    MATRIX_MLP_MODEL_ID,
+    INTERFACE_ID, MATRIX_MLP_MODEL_ID, SHARED_NEURAL_IDS, SHARED_PCA_ID,
     REPLAY_TOLERANCE, ROOT, SOURCES, STEP, Split, aae_encoder_tokens, check_checkpoint_selection,
-    checked_test_role, json_bytes, publish_json, validation_mse_matches, verify_artifact, verify_replay,
+    checked_test_role, json_bytes, publish_json, shared_extra_tokens, shared_matrix_shape,
+    validation_mse_matches, verify_artifact, verify_replay,
 )
 from mlp import MODEL_IDS as MLP_MODEL_IDS
 from pca import MODEL_IDS as PCA_MODEL_IDS
-from reconstruct import INTERFACE_ID, SHARED_NEURAL_IDS, SHARED_PCA_ID, score_artifact
+from reconstruct import score_artifact
 
 
 LEGACY_MODEL_IDS = ("mean", *PCA_MODEL_IDS, *MLP_MODEL_IDS, AAE_MODEL_ID)
@@ -73,8 +74,8 @@ def latent_units(model_id, show_decoder):
 def shared_latent_units(model_id, gene_count, fixture):
     if model_id == "mean":
         return latent_units(model_id, False)
-    tokens, channels = (min(3, gene_count), 16) if fixture else (1024, 256)
-    extra_tokens = (2 if fixture else 64) if model_id == "AAEcs_1024+64" else 0
+    tokens, channels = shared_matrix_shape(gene_count, fixture)
+    extra_tokens = shared_extra_tokens(model_id, fixture)
     return {"tokens": tokens, "scalars": tokens * channels, "channels": channels,
             "encoder_tokens": tokens + extra_tokens}
 
@@ -315,6 +316,10 @@ def compare(args):
         )
         result = score_artifact(request, corpus, split)
         check_score(result, model_id, "test", entry, reference_digest, split)
+        if shared and model_id != "mean" and (
+            result["interface_manifest_sha256"] != seal[INTERFACE_ID]["artifact_manifest_sha256"]
+        ):
+            raise ValueError(f"{model_id}: test score uses a different shared expression interface")
         results[model_id] = {**result, "latent": entry["latent"]}
         if seal["schema_version"] >= 2:
             results[model_id]["display_name"] = entry["display_name"]

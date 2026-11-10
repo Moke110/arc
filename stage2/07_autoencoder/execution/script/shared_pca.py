@@ -6,8 +6,10 @@ import sys
 import numpy as np
 import torch
 
-from benchmark import SEED, SOURCES, batches, publish_artifact, verify_artifact
-from shared_expression import dimensions, load_interface
+from benchmark import (
+    SEED, SHARED_PCA_ID, SOURCES, batches, publish_artifact, shared_matrix_shape, verify_artifact,
+)
+from shared_expression import load_interface
 
 
 FIT_BATCH = 32
@@ -33,7 +35,7 @@ def fit_shared_pca(corpus, split, output, device, interface_path):
     if Path(output).exists():
         raise ValueError(f"artifact already exists: {output}")
     record, interface = load_interface(interface_path, corpus, split, device)
-    rank, channels = dimensions(corpus)
+    rank, channels = shared_matrix_shape(corpus.gene_count, corpus.fixture)
     counts = {source: len(split.rows[source]["train"]) for source in SOURCES}
     genes = corpus.gene_count
     width = min(rank + OVERSAMPLE, genes)
@@ -105,7 +107,7 @@ def fit_shared_pca(corpus, split, output, device, interface_path):
         "fit_device": device,
         "torch_version": str(torch.__version__),
     }
-    with publish_artifact(output, corpus, split, "PCA_1024", metadata) as directory:
+    with publish_artifact(output, corpus, split, SHARED_PCA_ID, metadata) as directory:
         np.save(directory / "center.npy", center.cpu().numpy(), allow_pickle=False)
         np.save(directory / "components.npy", components.cpu().numpy(), allow_pickle=False)
     return verify_artifact(output, corpus, split)
@@ -114,10 +116,10 @@ def fit_shared_pca(corpus, split, output, device, interface_path):
 def shared_pca_predictor(path, record, corpus, split, device, interface_path):
     interface_record, interface = load_interface(interface_path, corpus, split, device)
     metadata = record["metadata"]
-    rank, channels = dimensions(corpus)
+    rank, channels = shared_matrix_shape(corpus.gene_count, corpus.fixture)
     if metadata["interface_manifest_sha256"] != interface_record["artifact_manifest_sha256"]:
         raise ValueError("matrix PCA is bound to a different expression interface")
-    if (record["model_id"] != "PCA_1024" or metadata["latent_shape"] != [rank, channels]
+    if (record["model_id"] != SHARED_PCA_ID or metadata["latent_shape"] != [rank, channels]
             or set(record["files"]) != {"center.npy", "components.npy"}
             or metadata["score_batch_size"] != SCORE_BATCH):
         raise ValueError("invalid matrix PCA artifact")
@@ -130,7 +132,7 @@ def shared_pca_predictor(path, record, corpus, split, device, interface_path):
 
     projection = MatrixPCA(load("center.npy", (corpus.gene_count, channels)),
                            load("components.npy", (rank, corpus.gene_count)))
-    torch.set_float32_matmul_precision("high" if device == "cuda" else "highest")
+    torch.set_float32_matmul_precision("highest")
 
     @torch.inference_mode()
     def predict(values):
