@@ -1,0 +1,67 @@
+{
+  "comparisons": [
+    {
+      "control": "XPert_base",
+      "control_auprc_full": 0.0014228697478008868,
+      "decision": "promoted",
+      "model": "XPert_G2000",
+      "model_auprc_full": 0.00597409708438897
+    },
+    {
+      "control": "XPert_base",
+      "control_auprc_full": 0.0014228697478008868,
+      "decision": "promoted",
+      "model": "XPert_G5000",
+      "model_auprc_full": 0.009809627106902662
+    },
+    {
+      "control": "XPert_base",
+      "control_auprc_full": 0.0014228697478008868,
+      "decision": "promoted",
+      "model": "XPert_G10000",
+      "model_auprc_full": 0.01141670114441494
+    },
+    {
+      "control": "XPert_base",
+      "control_auprc_full": 0.0014228697478008868,
+      "decision": "promoted",
+      "model": "XPert_G18164",
+      "model_auprc_full": 0.012357511024564732
+    },
+    {
+      "control": "XPert_G18164",
+      "control_auprc_full": 0.012357511024564732,
+      "decision": "promoted",
+      "model": "XPert_MLP512",
+      "model_auprc_full": 0.013467075943800581
+    },
+    {
+      "control": "XPert_G18164",
+      "control_auprc_full": 0.012357511024564732,
+      "decision": "promoted",
+      "model": "XPert_MLP1024",
+      "model_auprc_full": 0.01414675593143337
+    },
+    {
+      "control": "XPert_G18164",
+      "control_auprc_full": 0.012357511024564732,
+      "decision": "promoted",
+      "model": "XPert_MLP2048",
+      "model_auprc_full": 0.014791117579214998
+    },
+    {
+      "control": "XPert_G18164",
+      "control_auprc_full": 0.012357511024564732,
+      "decision": "promoted",
+      "model": "XPert_MLP4096",
+      "model_auprc_full": 0.013357414120345546
+    }
+  ],
+  "fold": 0,
+  "plan_sha256": "f9f73da07054055efdc215593b495ddc973169f2a553756a16a18f3b70818c87",
+  "schema": "step09-promotion-v1",
+  "seed": 17,
+  "validation_labels_sha256": "51fad8cfb98a57e0f18d0b43aa238c55efe4f061896a2e4bd71e4337d451b636",
+  "validation_manifest_sha256": "9200e21def974aa64052b579cab962cc0919ac6a9f5f1f9df4182cdfb05ac979",
+  "validation_metrics_sha256": "f7736bbfe4b6a0c4b15f963c26615b8cf318ea2e3548483ebfcf5e6616d8d7c6"
+}
