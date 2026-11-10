@@ -8,7 +8,8 @@ from math import isclose
 from pathlib import Path
 
 from benchmark import (
-    AAE_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_CHANNELS,
+    AAE_MODEL_ID, AAE_MODEL_IDS, AAE_NUISANCE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID,
+    AAE_TRANSFORMER_MODEL_IDS, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT, MATRIX_AE_CHANNELS,
     MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS, REPLAY_TOLERANCE, SOURCES, STEP, Split, checked_test_role,
     json_bytes, publish_json, verify_artifact, verify_replay,
 )
@@ -19,24 +20,30 @@ from reconstruct import score_artifact
 
 LEGACY_MODEL_IDS = ("mean", *PCA_MODEL_IDS, *MLP_MODEL_IDS, AAE_MODEL_ID)
 MODEL_IDS = (*LEGACY_MODEL_IDS, MATRIX_AE_MODEL_ID)
-NEURAL_MODEL_IDS = (*MLP_MODEL_IDS, AAE_MODEL_ID, MATRIX_AE_MODEL_ID)
+EXPANDED_MODEL_IDS = (*LEGACY_MODEL_IDS, *AAE_TRANSFORMER_MODEL_IDS, MATRIX_AE_MODEL_ID)
+NEURAL_MODEL_IDS = (*MLP_MODEL_IDS, *AAE_MODEL_IDS, MATRIX_AE_MODEL_ID)
+EXPANDED_DISPLAY_NAMES = {AAE_MODEL_ID: "AAE_512_SA", AAE_TRANSFORMER_MODEL_ID: "AAE_512"}
 RECORDS = STEP / "execution"
 DEFAULT_SEAL = STEP / "output" / "test_seal.json"
 MATRIX_AE_COLOR = "#287a42"
 
 
 def comparison_model_ids(models):
-    for model_ids in (MODEL_IDS, LEGACY_MODEL_IDS):
+    for model_ids in (EXPANDED_MODEL_IDS, MODEL_IDS, LEGACY_MODEL_IDS):
         if models.keys() == set(model_ids):
             return model_ids
     raise ValueError("unexpected comparison model set")
 
 
-def latent_units(model_id):
+def latent_units(model_id, expanded):
     if model_id == "mean":
         return {"tokens": None, "scalars": None}
-    if model_id == AAE_MODEL_ID:
-        return {"tokens": 512, "scalars": 65_536}
+    if model_id in AAE_MODEL_IDS:
+        tokens = 528 if model_id == AAE_NUISANCE_MODEL_ID else 512
+        latent = {"tokens": tokens, "scalars": tokens * 128}
+        if expanded:
+            latent.update(decoder_tokens=512, decoder_scalars=65_536)
+        return latent
     if model_id == MATRIX_AE_MODEL_ID:
         return {"tokens": MATRIX_AE_TOKENS, "scalars": MATRIX_AE_TOKENS * MATRIX_AE_CHANNELS}
     return {"tokens": None, "scalars": int(model_id.rsplit("_", 1)[1])}
@@ -78,9 +85,10 @@ def check_matrix_checkpoint(path, artifact, device):
 def selected_models(models_path, corpus, split, validation_reports, model_ids):
     artifacts = {model: verify_artifact(models_path / model, corpus, split) for model in model_ids}
     reference_digest = artifacts["mean"]["artifact_manifest_sha256"]
+    expanded = model_ids == EXPANDED_MODEL_IDS
     selected = {}
     for model_id, artifact in artifacts.items():
-        latent = latent_units(model_id)
+        latent = latent_units(model_id, expanded)
         metadata = artifact["metadata"]
         if (artifact["model_id"] != model_id
                 or metadata["fit_role"] != "train"
@@ -103,6 +111,10 @@ def selected_models(models_path, corpus, split, validation_reports, model_ids):
         device = "cuda" if neural and not corpus.fixture else "cpu"
         if model_id == MATRIX_AE_MODEL_ID:
             check_matrix_checkpoint(models_path / model_id, artifact, device)
+        elif model_id in AAE_TRANSFORMER_MODEL_IDS:
+            from aae import check_aae_artifact
+
+            check_aae_artifact(models_path / model_id, artifact, corpus.fixture, device)
         selected[model_id] = {
             "artifact_manifest_sha256": artifact["artifact_manifest_sha256"],
             "files": artifact["files"],
@@ -111,8 +123,10 @@ def selected_models(models_path, corpus, split, validation_reports, model_ids):
             "device": device,
             "validation": report,
         }
+        if expanded:
+            selected[model_id]["display_name"] = EXPANDED_DISPLAY_NAMES.get(model_id, model_id)
     return {
-        "schema_version": 1,
+        "schema_version": 2 if expanded else 1,
         "provenance": split.provenance,
         "gene_count": corpus.gene_count,
         "test_profiles": profile_counts(split, "test"),
@@ -126,6 +140,8 @@ def validation_path(model_id, directory):
         return directory / f"{model_id}-validation.json"
     if model_id == "mean":
         return RECORDS / "mean_record" / "validation.json"
+    if model_id in AAE_TRANSFORMER_MODEL_IDS:
+        return RECORDS / "aae_ablation_record" / f"{model_id}-validation.json"
     family = model_id.split("_")[0].lower()
     return RECORDS / f"{family}_record" / f"{model_id}-validation.json"
 
@@ -154,8 +170,10 @@ def compare(args, corpus, split):
         result = score_artifact(request, corpus, split)
         check_score(result, model_id, "test", entry, reference_digest, split)
         results[model_id] = {**result, "latent": entry["latent"]}
+        if model_ids == EXPANDED_MODEL_IDS:
+            results[model_id]["display_name"] = entry["display_name"]
     return {
-        "schema_version": 1,
+        "schema_version": seal["schema_version"],
         "seal_sha256": sha256(seal_bytes).hexdigest(),
         "provenance": split.provenance,
         "gene_count": corpus.gene_count,
@@ -172,15 +190,21 @@ def plot_comparison(report, output):
         raise ValueError("figure requires a complete test score report")
     models = report["models"]
     model_ids = comparison_model_ids(models)
-    figure = Figure(figsize=(12, 7), layout="constrained")
+    expanded = model_ids == EXPANDED_MODEL_IDS
+    if report.get("schema_version", 1) != (2 if expanded else 1):
+        raise ValueError("test score report schema version does not match its model set")
+    figure = Figure(figsize=(12, 9 if expanded else 7), layout="constrained")
     figure.suptitle("Whole-transcriptome reconstruction on held-out plates", fontsize=16)
     metrics = (("pcc", "Mean profile PCC"), ("rmse", "Mean profile RMSE"),
                ("relative_squared_error", "Squared error / training-gene mean"))
-    colors = ("#57606a",) + ("#00748b",) * 3 + ("#9e4813",) * 3 + ("#6336a3", MATRIX_AE_COLOR)
+    colors = ("#57606a",) + ("#00748b",) * 3 + ("#9e4813",) * 3 + ("#6336a3",)
+    if expanded:
+        colors += ("#a23d86", "#4359a7")
+    colors += (MATRIX_AE_COLOR,)
     labels = []
     for model in model_ids:
         latent = models[model]["latent"]
-        if latent != latent_units(model):
+        if latent != latent_units(model, expanded):
             raise ValueError(f"{model}: unexpected latent units")
         if latent["tokens"] is not None:
             units = f"{latent['tokens']:,} tokens · {latent['scalars']:,} scalars"
@@ -188,7 +212,12 @@ def plot_comparison(report, output):
             units = f"{latent['scalars']:,} scalars"
         else:
             units = "no latent representation"
-        labels.append(f"{model}  ·  {units}")
+        name = model
+        if expanded:
+            name = EXPANDED_DISPLAY_NAMES.get(model, model)
+            if models[model]["display_name"] != name:
+                raise ValueError(f"{model}: unexpected display name")
+        labels.append(f"{name}  ·  {units}")
     for source, name, subfigure in zip(SOURCES, ("Tahoe", "tenv"), figure.subfigures(2, 1)):
         scores = [models[model]["sources"][source] for model in model_ids]
         subfigure.suptitle(f"{name}  ·  {scores[0]['profiles']:,} profiles", fontsize=12)
@@ -266,6 +295,8 @@ def main():
         command.add_argument("--seal", type=Path, default=DEFAULT_SEAL)
         command.add_argument("--fixture", action="store_true")
         if name == "seal":
+            command.add_argument("--expanded-aae", action="store_true",
+                                 help="include both AAE ablation variants in a new comparison")
             command.add_argument("--validation-dir", type=Path,
                                  help="directory of <model>-validation.json reports")
         else:
@@ -290,12 +321,16 @@ def main():
         if args.command in loss_models:
             plot_attention_loss(json.loads(args.history.read_text()), args.output, loss_models[args.command])
             return
+        if (args.command == "seal" and args.expanded_aae
+                and args.seal.resolve() == DEFAULT_SEAL.resolve()):
+            raise ValueError("expanded comparison requires a separate --seal path")
         corpus = Corpus(args.release, args.fixture)
         split = Split(corpus, args.split)
         if args.command == "seal":
+            model_ids = EXPANDED_MODEL_IDS if args.expanded_aae else MODEL_IDS
             reports = {model: json.loads(validation_path(model, args.validation_dir).read_text())
-                       for model in MODEL_IDS}
-            result = selected_models(args.models, corpus, split, reports, MODEL_IDS)
+                       for model in model_ids}
+            result = selected_models(args.models, corpus, split, reports, model_ids)
             publish_json(args.seal, result)
         elif args.command == "score":
             if args.output.exists():

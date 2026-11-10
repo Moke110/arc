@@ -214,6 +214,10 @@ class BenchmarkTest(unittest.TestCase):
                     expected_mse = float(np.square(offsets[rank:]).sum()) * scale ** 2 / genes
                     self.assertAlmostEqual(result["mse"], expected_mse, places=6)
 
+    def test_expanded_comparison_requires_a_separate_seal_path(self):
+        error = self.cli("seal", "--expanded-aae", success=False, script="compare.py")
+        self.assertIn("expanded comparison requires a separate --seal path", error)
+
     def test_comparison_seals_validation_and_replays_all_test_models(self):
         self.prepare_pca_fixture()
         self.cli("freeze-split")
@@ -278,6 +282,11 @@ class BenchmarkTest(unittest.TestCase):
             "figure", "--expected", legacy_score_path, self.root / "legacy-comparison.png",
         )
 
+        self.assertEqual(seal["schema_version"], 1)
+        self.assertEqual(scores["schema_version"], 1)
+        self.assertNotIn("display_name", scores["models"]["AAE_512"])
+        self.assert_expanded_comparison(models, scores)
+
         manifest_path = models / "mean" / "manifest.json"
         manifest_path.write_text(manifest_path.read_text() + "\n")
         self.assertIn("seal", self.cli("reload", *args, "--expected", score_path,
@@ -290,6 +299,135 @@ class BenchmarkTest(unittest.TestCase):
         self.assertIn("unexpected comparison model set", self.cli(
             "reload", *legacy_args, "--expected", legacy_score_path, success=False, script="compare.py",
         ))
+
+    def assert_expanded_comparison(self, models, historical_scores):
+        seal_path = self.root / "expanded-seal.json"
+        score_path = self.root / "expanded-scores.json"
+        args = ("--models", models, "--seal", seal_path)
+        seal_args = (*args, "--expanded-aae", "--validation-dir", self.root)
+        variants = ("AAE_512_Transformer", "AAE_512+16")
+        for model in variants:
+            artifact = models / model
+            self.cli("fit", "--model", model, "--output", artifact)
+            self.cli("score", "--artifact", artifact, "--mean-artifact", models / "mean",
+                     "--output", self.root / f"{model}-validation.json")
+
+        self.assertIn(str(seal_path), self.cli(
+            "score", *args, "--output", score_path, success=False, script="compare.py",
+        ))
+        self.assertFalse(score_path.exists())
+        self.assert_invalid_expanded_selection(models, seal_path, seal_args)
+        seal = self.cli("seal", *seal_args, script="compare.py")
+        scores = self.cli("score", *args, "--output", score_path, script="compare.py")
+        self.assertEqual(seal["schema_version"], 2)
+        self.assertEqual(scores["schema_version"], 2)
+        self.assertEqual(set(scores["models"]), {*historical_scores["models"], *variants})
+        for artifact_id, display_name, tokens, scalars in (
+            ("AAE_512", "AAE_512_SA", 512, 65_536),
+            ("AAE_512_Transformer", "AAE_512", 512, 65_536),
+            ("AAE_512+16", "AAE_512+16", 528, 67_584),
+        ):
+            entry = scores["models"][artifact_id]
+            self.assertEqual(entry["model_id"], artifact_id)
+            self.assertEqual(entry["display_name"], display_name)
+            self.assertEqual(seal["models"][artifact_id]["display_name"], display_name)
+            self.assertEqual(entry["latent"], {
+                "tokens": tokens, "scalars": scalars, "decoder_tokens": 512, "decoder_scalars": 65_536,
+            })
+        for model, historical in historical_scores["models"].items():
+            self.assertEqual(scores["models"][model]["sources"], historical["sources"])
+        self.assertEqual(scores, self.cli("reload", *args, "--expected", score_path, script="compare.py"))
+        self.assert_comparison_png(
+            "figure", "--expected", score_path, self.root / "expanded-comparison.png",
+        )
+
+        seal["models"]["AAE_512+16"]["validation"]["sources"]["tenv"]["mse"] += 1
+        corrupt_seal = self.root / "corrupt-seal.json"
+        corrupt_seal.write_text(json.dumps(seal))
+        rejected_scores = self.root / "rejected-scores.json"
+        self.assertIn("selection seal verification failed", self.cli(
+            "score", "--models", models, "--seal", corrupt_seal, "--output", rejected_scores,
+            success=False, script="compare.py",
+        ))
+        self.assertFalse(rejected_scores.exists())
+
+    def assert_invalid_expanded_selection(self, models, seal_path, seal_args):
+        variant = "AAE_512+16"
+        manifest_path = models / variant / "manifest.json"
+        report_path = self.root / f"{variant}-validation.json"
+        original_manifest = manifest_path.read_bytes()
+        original_report = report_path.read_bytes()
+        for field, replacement, error in (
+            ("architecture", {}, "invalid AAE artifact"),
+            ("recipe", {}, "invalid AAE artifact"),
+            ("selected_epoch", 0, "checkpoint differs from earliest tenv minimum"),
+        ):
+            with self.subTest(field=field):
+                manifest = json.loads(original_manifest)
+                manifest["metadata"][field] = replacement
+                manifest_path.write_text(json.dumps(manifest))
+                report = json.loads(original_report)
+                report["artifact_manifest_sha256"] = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+                report_path.write_text(json.dumps(report))
+                self.assertIn(error, self.cli("seal", *seal_args, success=False, script="compare.py"))
+                self.assertFalse(seal_path.exists())
+        manifest_path.write_bytes(original_manifest)
+        for field, replacement, error in (
+            ("reference_manifest_sha256", "wrong-mean", "does not match the artifact, reference and split"),
+            ("provenance", {}, "does not match the artifact, reference and split"),
+        ):
+            with self.subTest(field=field):
+                report = json.loads(original_report)
+                report[field] = replacement
+                report_path.write_text(json.dumps(report))
+                self.assertIn(error, self.cli("seal", *seal_args, success=False, script="compare.py"))
+                self.assertFalse(seal_path.exists())
+        report = json.loads(original_report)
+        report["sources"]["tenv"]["mse"] += 1
+        report_path.write_text(json.dumps(report))
+        self.assertIn("validation MSE differs", self.cli("seal", *seal_args, success=False, script="compare.py"))
+        self.assertFalse(seal_path.exists())
+        report_path.write_bytes(original_report)
+
+    def test_expanded_figure_labels_each_attention_autoencoder(self):
+        from matplotlib.figure import Figure
+
+        from compare import plot_comparison
+
+        metrics = {"profiles": 1, "pcc": 0.5, "rmse": 0.1, "relative_squared_error": 0.8}
+        models = {}
+        for artifact_id, display_name, tokens, scalars in (
+            ("mean", "mean", None, None),
+            ("PCA_32", "PCA_32", None, 32),
+            ("PCA_128", "PCA_128", None, 128),
+            ("PCA_512", "PCA_512", None, 512),
+            ("MLP_32", "MLP_32", None, 32),
+            ("MLP_128", "MLP_128", None, 128),
+            ("MLP_512", "MLP_512", None, 512),
+            ("AAE_512", "AAE_512_SA", 512, 65_536),
+            ("AAE_512_Transformer", "AAE_512", 512, 65_536),
+            ("AAE_512+16", "AAE_512+16", 528, 67_584),
+            ("MatrixAE_64x8", "MatrixAE_64x8", 64, 512),
+        ):
+            latent = {"tokens": tokens, "scalars": scalars}
+            if artifact_id.startswith("AAE_"):
+                latent.update(decoder_tokens=512, decoder_scalars=65_536)
+            models[artifact_id] = {
+                "display_name": display_name, "latent": latent,
+                "sources": {source: metrics for source in ("tahoe", "tenv")},
+            }
+        report = {"schema_version": 2, "role": "test", "models": models}
+        with patch.object(Figure, "savefig", autospec=True) as savefig:
+            plot_comparison(report, self.root / "comparison.png")
+        figure = savefig.call_args.args[0]
+        for subfigure in figure.subfigs:
+            labels = [tick.get_text() for tick in subfigure.axes[0].get_yticklabels()]
+            self.assertEqual(len(labels), 11)
+            self.assertEqual([label for label in labels if label.startswith("AAE_")], [
+                "AAE_512_SA  ·  512 tokens · 65,536 scalars",
+                "AAE_512  ·  512 tokens · 65,536 scalars",
+                "AAE_512+16  ·  528 tokens · 67,584 scalars",
+            ])
 
     def test_mlp_reloads_the_tenv_selected_checkpoint_at_each_latent_width(self):
         for source, values in self.expressions.items():

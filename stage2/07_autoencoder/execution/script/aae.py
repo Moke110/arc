@@ -146,9 +146,9 @@ def attention_context(device):
         yield
 
 
-def recipe_for(fixture, device, *, model_name="AAE"):
+def recipe_for(fixture, device, *, model_name="AAE", check_device=True):
     if device == "cuda":
-        if not torch.cuda.is_bf16_supported(including_emulation=False):
+        if check_device and not torch.cuda.is_bf16_supported(including_emulation=False):
             raise ValueError(f"{model_name} requires CUDA with native BF16 support")
         recipe = {**RECIPE, "precision": "bfloat16", "attention_backend": "FlashAttention"}
     elif fixture:
@@ -175,8 +175,9 @@ def fit_aae(corpus, split, output, batch_size, device, model_id=AAE_MODEL_ID):
     )
 
 
-def aae_predictor(path, record, fixture, batch_size, device):
-    recipe = recipe_for(fixture, device)
+def check_aae_artifact(path, record, fixture, device, *, check_device=False):
+    """Check the fitted recipe and selection evidence before loading weights."""
+    recipe = recipe_for(fixture, device, check_device=check_device)
     replay_recipes = [recipe]
     model_id = record["model_id"]
     if model_id == AAE_MODEL_ID:
@@ -193,14 +194,18 @@ def aae_predictor(path, record, fixture, batch_size, device):
             or metadata["latent_scalars"] != latent_tokens * WIDTH
             or metadata["recipe"] not in replay_recipes
             or set(record["files"]) != {"weights.pt", "epochs.json"}):
-        raise ValueError("invalid AAE artifact or incompatible replay runtime")
-    score_batch_size = recipe["validation_batch_size"]
-    if batch_size is not None and batch_size != score_batch_size:
-        raise ValueError(f"AAE replay requires the frozen batch size {score_batch_size}")
+        raise ValueError(f"{model_id}: invalid AAE artifact or incompatible replay runtime")
     if model_id in AAE_TRANSFORMER_MODEL_IDS:
         check_selected_checkpoint(path, metadata, model_id, device)
+    return recipe["validation_batch_size"]
+
+
+def aae_predictor(path, record, fixture, batch_size, device):
+    score_batch_size = check_aae_artifact(path, record, fixture, device, check_device=True)
+    if batch_size is not None and batch_size != score_batch_size:
+        raise ValueError(f"AAE replay requires the frozen batch size {score_batch_size}")
     predict = load_neural(
-        path, MODEL_CLASSES[model_id](gene_count), device,
+        path, MODEL_CLASSES[record["model_id"]](record["gene_count"]), device,
         context=partial(attention_context, device), deterministic=device == "cpu",
     )
     return predict, score_batch_size
