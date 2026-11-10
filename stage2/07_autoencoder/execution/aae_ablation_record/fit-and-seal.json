@@ -1,0 +1,282 @@
+{
+  "memberships": {
+    "train": {
+      "tahoe": 47822,
+      "tenv": 2810
+    },
+    "validation": {
+      "tahoe": 9600,
+      "tenv": 843
+    }
+  },
+  "models": {
+    "AAE_512+16": {
+      "architecture": {
+        "decoder_tokens": 512,
+        "encoder_blocks": 2,
+        "feedforward_width": 512,
+        "gene_count": 18164,
+        "heads": 8,
+        "latent_tokens": 528,
+        "width": 128
+      },
+      "artifact_manifest_sha256": "82962a96e82c3a7954605d8210bc9dbba5acf8d0e387a909968de5f822c8f018",
+      "epoch_history_sha256": "1c1e5ace5fc6dae5c7c6ccd8f735f19261dec151a1ecc84bdcd23905b5c0c8dc",
+      "fit_elapsed_seconds": 484.8228152439988,
+      "independent_reload_byte_identical": true,
+      "independent_reload_sha256": "95cfc2d43364a56556e6c1a7cb6d183f2cef3ca528707f3a723c93ce902a2823",
+      "phases": {
+        "fit-528": {
+          "admission_decision": "admit",
+          "admitted_at": "2026-11-10T12:23:43+08:00",
+          "available_ram_gib": 41,
+          "elapsed_wall": "9:02.04",
+          "exit_status": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "gpu_free_mib": 14192,
+          "gpu_total_mib": 16376,
+          "gpu_used_mib": 1870,
+          "gpu_utilization_percent": 6,
+          "maximum_sampled_gpu_utilization_percent": 99,
+          "maximum_sampled_used_vram_mib": 4225,
+          "minimum_sampled_available_ram_gib": 40,
+          "minimum_sampled_free_vram_mib": 12151,
+          "monitor_samples": 25,
+          "peak_rss_kib": 5802488,
+          "scope": "arc-step07-ablation-fit-528-1794284623.scope"
+        },
+        "validation-528": {
+          "admission_decision": "admit",
+          "admitted_at": "2026-11-10T12:33:39+08:00",
+          "available_ram_gib": 41,
+          "elapsed_wall": "0:13.69",
+          "exit_status": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "gpu_free_mib": 14192,
+          "gpu_total_mib": 16376,
+          "gpu_used_mib": 1870,
+          "gpu_utilization_percent": 6,
+          "maximum_sampled_gpu_utilization_percent": 6,
+          "maximum_sampled_used_vram_mib": 2184,
+          "minimum_sampled_available_ram_gib": 41,
+          "minimum_sampled_free_vram_mib": 14192,
+          "monitor_samples": 1,
+          "peak_rss_kib": 1912876,
+          "scope": "arc-step07-ablation-validation-528-1794285219.scope"
+        },
+        "validation-reload-528": {
+          "admission_decision": "admit",
+          "admitted_at": "2026-11-10T12:34:02+08:00",
+          "available_ram_gib": 41,
+          "elapsed_wall": "0:10.14",
+          "exit_status": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "gpu_free_mib": 14192,
+          "gpu_total_mib": 16376,
+          "gpu_used_mib": 1870,
+          "gpu_utilization_percent": 6,
+          "maximum_sampled_gpu_utilization_percent": 6,
+          "maximum_sampled_used_vram_mib": 2184,
+          "minimum_sampled_available_ram_gib": 41,
+          "minimum_sampled_free_vram_mib": 14192,
+          "monitor_samples": 1,
+          "peak_rss_kib": 1912512,
+          "scope": "arc-step07-ablation-validation-reload-528-1794285242.scope"
+        }
+      },
+      "runtime": {
+        "cublas_workspace_config": null,
+        "cuda_version": "13.0",
+        "deterministic_algorithms": false,
+        "device": "cuda",
+        "float32_matmul_precision": "highest",
+        "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+        "peak_cuda_allocated_bytes": 1794858496,
+        "peak_cuda_reserved_bytes": 1849688064,
+        "torch_version": "2.12.0+cu130"
+      },
+      "sample_order_check": {
+        "verified_frozen_train_validation_memberships": true,
+        "verified_training_orders": 6
+      },
+      "selected_epoch": 3,
+      "selected_optimizer_steps": 4749,
+      "selected_validation_mse": {
+        "tahoe": 0.01708297996534579,
+        "tenv": 0.1205123170376156
+      },
+      "stop_reason": "validation patience",
+      "total_optimizer_steps": 9498,
+      "validation_report": "AAE_512+16-validation.json",
+      "validation_sha256": "95cfc2d43364a56556e6c1a7cb6d183f2cef3ca528707f3a723c93ce902a2823",
+      "weights_sha256": "6703699fa90d35d727e15543dd2a736a9f4716364757c86a7b4bfbe60db2dc1b"
+    },
+    "AAE_512_Transformer": {
+      "architecture": {
+        "decoder_tokens": 512,
+        "encoder_blocks": 2,
+        "feedforward_width": 512,
+        "gene_count": 18164,
+        "heads": 8,
+        "latent_tokens": 512,
+        "width": 128
+      },
+      "artifact_manifest_sha256": "f841a0651b2886c4a35470196bc7c293b0c26c689f1bec79c15ed622ff60a187",
+      "epoch_history_sha256": "825eb6434f8e3a48736a8c2c035da96e4f262825bba3798190f5099b61442dc9",
+      "fit_elapsed_seconds": 476.38885914200364,
+      "independent_reload_byte_identical": true,
+      "independent_reload_sha256": "35d31031d69b5a9c66d69d4b3a1ba42a4de1a535e94ea4540c132571fab36b53",
+      "phases": {
+        "fit-512": {
+          "admission_decision": "admit",
+          "admitted_at": "2026-11-10T12:14:28+08:00",
+          "available_ram_gib": 41,
+          "elapsed_wall": "9:02.87",
+          "exit_status": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "gpu_free_mib": 14211,
+          "gpu_total_mib": 16376,
+          "gpu_used_mib": 1851,
+          "gpu_utilization_percent": 8,
+          "maximum_sampled_gpu_utilization_percent": 99,
+          "maximum_sampled_used_vram_mib": 4574,
+          "minimum_sampled_available_ram_gib": 40,
+          "minimum_sampled_free_vram_mib": 11802,
+          "monitor_samples": 25,
+          "peak_rss_kib": 5801716,
+          "scope": "arc-step07-ablation-fit-512-1794284068.scope"
+        },
+        "validation-512": {
+          "admission_decision": "admit",
+          "admitted_at": "2026-11-10T12:33:00+08:00",
+          "available_ram_gib": 41,
+          "elapsed_wall": "0:09.88",
+          "exit_status": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "gpu_free_mib": 14192,
+          "gpu_total_mib": 16376,
+          "gpu_used_mib": 1870,
+          "gpu_utilization_percent": 6,
+          "maximum_sampled_gpu_utilization_percent": 6,
+          "maximum_sampled_used_vram_mib": 2184,
+          "minimum_sampled_available_ram_gib": 41,
+          "minimum_sampled_free_vram_mib": 14192,
+          "monitor_samples": 1,
+          "peak_rss_kib": 1912104,
+          "scope": "arc-step07-ablation-validation-512-1794285180.scope"
+        },
+        "validation-reload-512": {
+          "admission_decision": "admit",
+          "admitted_at": "2026-11-10T12:33:22+08:00",
+          "available_ram_gib": 41,
+          "elapsed_wall": "0:09.80",
+          "exit_status": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+          "gpu_free_mib": 14192,
+          "gpu_total_mib": 16376,
+          "gpu_used_mib": 1870,
+          "gpu_utilization_percent": 7,
+          "maximum_sampled_gpu_utilization_percent": 7,
+          "maximum_sampled_used_vram_mib": 2184,
+          "minimum_sampled_available_ram_gib": 41,
+          "minimum_sampled_free_vram_mib": 14192,
+          "monitor_samples": 1,
+          "peak_rss_kib": 1912524,
+          "scope": "arc-step07-ablation-validation-reload-512-1794285202.scope"
+        }
+      },
+      "runtime": {
+        "cublas_workspace_config": null,
+        "cuda_version": "13.0",
+        "deterministic_algorithms": false,
+        "device": "cuda",
+        "float32_matmul_precision": "highest",
+        "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+        "peak_cuda_allocated_bytes": 1787381760,
+        "peak_cuda_reserved_bytes": 1866465280,
+        "torch_version": "2.12.0+cu130"
+      },
+      "sample_order_check": {
+        "verified_frozen_train_validation_memberships": true,
+        "verified_training_orders": 7
+      },
+      "selected_epoch": 4,
+      "selected_optimizer_steps": 6332,
+      "selected_validation_mse": {
+        "tahoe": 0.01664363417273729,
+        "tenv": 0.11715733914686319
+      },
+      "stop_reason": "optimizer step limit",
+      "total_optimizer_steps": 10000,
+      "validation_report": "AAE_512_Transformer-validation.json",
+      "validation_sha256": "35d31031d69b5a9c66d69d4b3a1ba42a4de1a535e94ea4540c132571fab36b53",
+      "weights_sha256": "2cba287246e3c8337de793c8702ec70111e4db399fe6f72a91f17c29ebf4ea29"
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+    "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+    "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+  },
+  "recipe": {
+    "attention_backend": "FlashAttention",
+    "learning_rate": 0.001,
+    "max_optimizer_steps": 10000,
+    "max_seconds": 1800,
+    "objective": "full-axis reconstruction MSE",
+    "optimizer": "AdamW",
+    "precision": "bfloat16",
+    "seed": 20261109,
+    "train_batch_size": 32,
+    "train_order": "PCG64(seed, epoch) shuffle of the joint train membership",
+    "validation_batch_size": 32,
+    "validation_patience": 3,
+    "weight_decay": 0.01
+  },
+  "resource_limits": {
+    "memory_max_gib": 10,
+    "memory_swap_max_gib": 8,
+    "minimum_available_ram_gib": 12,
+    "minimum_free_vram_mib": 5120,
+    "sample_interval_seconds": 20,
+    "serial_phases": true
+  },
+  "seal": {
+    "historical_selection_records_preserved": true,
+    "model_count": 11,
+    "path": "stage2/07_autoencoder/output/test_seal_aae_ablation.json",
+    "phase": {
+      "admission_decision": "admit",
+      "admitted_at": "2026-11-10T12:34:41+08:00",
+      "available_ram_gib": 41,
+      "elapsed_wall": "0:03.64",
+      "exit_status": 0,
+      "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "gpu_free_mib": 14192,
+      "gpu_total_mib": 16376,
+      "gpu_used_mib": 1870,
+      "gpu_utilization_percent": 6,
+      "maximum_sampled_gpu_utilization_percent": 6,
+      "maximum_sampled_used_vram_mib": 2184,
+      "minimum_sampled_available_ram_gib": 41,
+      "minimum_sampled_free_vram_mib": 14192,
+      "monitor_samples": 1,
+      "peak_rss_kib": 652788,
+      "scope": "arc-step07-ablation-seal-1794285281.scope"
+    },
+    "sha256": "26f5ceccb930105c8e1eb22ade063d09acaa36aa06292441a83e282cafdc739f",
+    "test_profiles": {
+      "tahoe": 9596,
+      "tenv": 825
+    }
+  },
+  "threads": {
+    "MKL_NUM_THREADS": 2,
+    "NUMEXPR_NUM_THREADS": 2,
+    "OMP_NUM_THREADS": 2,
+    "OPENBLAS_NUM_THREADS": 2
+  },
+  "ticket": 125,
+  "training_revision": "50ef03906316a140c262f227c2435cb25705739b"
+}
