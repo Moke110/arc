@@ -2,6 +2,7 @@
 
 from contextlib import nullcontext
 import hashlib
+import json
 from math import ceil
 import os
 from pathlib import Path
@@ -184,6 +185,19 @@ def fit_neural(corpus, split, output, model_id, build_model, recipe, device, met
             metadata["runtime"]["peak_cuda_allocated_bytes"] = torch.cuda.max_memory_allocated()
             metadata["runtime"]["peak_cuda_reserved_bytes"] = torch.cuda.max_memory_reserved()
     return verify_artifact(output, corpus, split)
+
+
+def check_selected_checkpoint(path, metadata, model_id, device):
+    if (metadata["runtime"]["device"] != device
+            or metadata["selection_role"] != "validation"
+            or metadata["selection_metric"] != "tenv MSE, earliest epoch on ties"):
+        raise ValueError(f"{model_id}: incompatible checkpoint selection or fit device")
+    history = json.loads((Path(path) / "epochs.json").read_text())
+    json_bytes(history)
+    best = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
+    if (metadata["selected_epoch"] != best["epoch"]
+            or metadata["selected_validation_mse"] != best["validation_mse"]):
+        raise ValueError(f"{model_id}: checkpoint differs from earliest tenv minimum")
 
 
 def load_neural(path, model, device, *, context=nullcontext, deterministic=True):

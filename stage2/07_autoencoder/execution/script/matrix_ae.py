@@ -5,31 +5,12 @@ from functools import partial
 import torch
 from torch import nn
 
-from aae import CrossAttention, HEADS, WIDTH, attention_context, recipe_for
+from aae import (
+    CrossAttention, FEEDFORWARD_WIDTH, HEADS, LATENT_BLOCKS, WIDTH, LatentTransformerBlock,
+    attention_context, recipe_for,
+)
 from benchmark import MATRIX_AE_CHANNELS, MATRIX_AE_MODEL_ID, MATRIX_AE_TOKENS
 from neural import fit_neural, load_neural
-
-
-LATENT_BLOCKS = 2
-FEEDFORWARD_WIDTH = 4 * WIDTH
-
-
-class LatentTransformerBlock(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.attention_norm = nn.LayerNorm(WIDTH)
-        self.attention = CrossAttention()
-        self.feedforward_norm = nn.LayerNorm(WIDTH)
-        self.feedforward = nn.Sequential(
-            nn.Linear(WIDTH, FEEDFORWARD_WIDTH),
-            nn.GELU(),
-            nn.Linear(FEEDFORWARD_WIDTH, WIDTH),
-        )
-
-    def forward(self, tokens):
-        normalized = self.attention_norm(tokens)
-        tokens = tokens + self.attention(normalized, normalized)
-        return tokens + self.feedforward(self.feedforward_norm(tokens))
 
 
 class MatrixAutoencoder(nn.Module):

@@ -9,13 +9,15 @@ from torch import nn
 from torch.nn import functional as F
 from torch.nn.attention import SDPBackend, sdpa_kernel
 
-from benchmark import AAE_MODEL_ID, SEED
-from neural import fit_neural, load_neural
+from benchmark import AAE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID, SEED
+from neural import check_selected_checkpoint, fit_neural, load_neural
 
 
 LATENT_TOKENS = 512
 WIDTH = 128
 HEADS = 8
+LATENT_BLOCKS = 2
+FEEDFORWARD_WIDTH = 4 * WIDTH
 RECIPE = {
     "seed": SEED,
     "max_optimizer_steps": 10_000,
@@ -31,9 +33,14 @@ RECIPE = {
 }
 
 
-def architecture(gene_count):
-    return {"gene_count": gene_count, "latent_tokens": LATENT_TOKENS,
-            "width": WIDTH, "heads": HEADS}
+def architecture(gene_count, model_id=AAE_MODEL_ID):
+    result = {
+        "gene_count": gene_count, "latent_tokens": LATENT_TOKENS, "width": WIDTH, "heads": HEADS,
+    }
+    if model_id == AAE_TRANSFORMER_MODEL_ID:
+        result.update(encoder_blocks=LATENT_BLOCKS, feedforward_width=FEEDFORWARD_WIDTH,
+                      decoder_tokens=LATENT_TOKENS)
+    return result
 
 
 class CrossAttention(nn.Module):
@@ -51,6 +58,24 @@ class CrossAttention(nn.Module):
         v = self.value(tokens).unflatten(-1, (HEADS, WIDTH // HEADS)).transpose(1, 2)
         attended = F.scaled_dot_product_attention(q.expand(batch, -1, -1, -1), k, v)
         return self.output(attended.transpose(1, 2).flatten(-2))
+
+
+class LatentTransformerBlock(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.attention_norm = nn.LayerNorm(WIDTH)
+        self.attention = CrossAttention()
+        self.feedforward_norm = nn.LayerNorm(WIDTH)
+        self.feedforward = nn.Sequential(
+            nn.Linear(WIDTH, FEEDFORWARD_WIDTH),
+            nn.GELU(),
+            nn.Linear(FEEDFORWARD_WIDTH, WIDTH),
+        )
+
+    def forward(self, tokens):
+        normalized = self.attention_norm(tokens)
+        tokens = tokens + self.attention(normalized, normalized)
+        return tokens + self.feedforward(self.feedforward_norm(tokens))
 
 
 class TranscriptomeAutoencoder(nn.Module):
@@ -81,6 +106,24 @@ class TranscriptomeAutoencoder(nn.Module):
         return self.decode(self.encode(expression))
 
 
+class TransformerTranscriptomeAutoencoder(TranscriptomeAutoencoder):
+    def __init__(self, gene_count):
+        super().__init__(gene_count)
+        self.encoder = nn.Sequential(*(LatentTransformerBlock() for _ in range(LATENT_BLOCKS)))
+
+    def encode(self, expression):
+        return self.encoder(super().encode(expression))
+
+    def decode(self, latent):
+        return super().decode(latent[:, :LATENT_TOKENS])
+
+
+MODEL_CLASSES = {
+    AAE_MODEL_ID: TranscriptomeAutoencoder,
+    AAE_TRANSFORMER_MODEL_ID: TransformerTranscriptomeAutoencoder,
+}
+
+
 @contextmanager
 def attention_context(device):
     if device == "cuda":
@@ -105,14 +148,15 @@ def recipe_for(fixture, device, *, model_name="AAE"):
     return recipe
 
 
-def fit_aae(corpus, split, output, batch_size, device):
+def fit_aae(corpus, split, output, batch_size, device, model_id=AAE_MODEL_ID):
     recipe = recipe_for(corpus.fixture, device)
+    model_class = MODEL_CLASSES[model_id]
     if batch_size is not None and batch_size != recipe["train_batch_size"]:
         raise ValueError(f"AAE fit requires the frozen batch size {recipe['train_batch_size']}")
     return fit_neural(
-        corpus, split, output, AAE_MODEL_ID, lambda: TranscriptomeAutoencoder(corpus.gene_count),
+        corpus, split, output, model_id, lambda: model_class(corpus.gene_count),
         recipe, device,
-        {"architecture": architecture(corpus.gene_count), "latent_tokens": LATENT_TOKENS,
+        {"architecture": architecture(corpus.gene_count, model_id), "latent_tokens": LATENT_TOKENS,
          "latent_scalars": LATENT_TOKENS * WIDTH},
         context=partial(attention_context, device), deterministic=device == "cpu",
     )
@@ -121,13 +165,15 @@ def fit_aae(corpus, split, output, batch_size, device):
 def aae_predictor(path, record, fixture, batch_size, device):
     recipe = recipe_for(fixture, device)
     replay_recipes = [recipe]
-    # Keep the originally published fixed-epoch checkpoints replayable.
-    legacy_recipe = {**recipe, "epochs": 3 if fixture else 4}
-    del legacy_recipe["max_optimizer_steps"], legacy_recipe["validation_patience"]
-    replay_recipes.append(legacy_recipe)
+    model_id = record["model_id"]
+    if model_id == AAE_MODEL_ID:
+        # Keep the originally published fixed-epoch checkpoints replayable.
+        legacy_recipe = {**recipe, "epochs": 3 if fixture else 4}
+        del legacy_recipe["max_optimizer_steps"], legacy_recipe["validation_patience"]
+        replay_recipes.append(legacy_recipe)
     metadata = record["metadata"]
     gene_count = record["gene_count"]
-    if (metadata["architecture"] != architecture(gene_count)
+    if (metadata["architecture"] != architecture(gene_count, model_id)
             or metadata["latent_tokens"] != LATENT_TOKENS
             or metadata["latent_scalars"] != LATENT_TOKENS * WIDTH
             or metadata["recipe"] not in replay_recipes
@@ -136,8 +182,10 @@ def aae_predictor(path, record, fixture, batch_size, device):
     score_batch_size = recipe["validation_batch_size"]
     if batch_size is not None and batch_size != score_batch_size:
         raise ValueError(f"AAE replay requires the frozen batch size {score_batch_size}")
+    if model_id == AAE_TRANSFORMER_MODEL_ID:
+        check_selected_checkpoint(path, metadata, model_id, device)
     predict = load_neural(
-        path, TranscriptomeAutoencoder(gene_count), device,
+        path, MODEL_CLASSES[model_id](gene_count), device,
         context=partial(attention_context, device), deterministic=device == "cpu",
     )
     return predict, score_batch_size
