@@ -153,6 +153,44 @@
         }
       }
     },
+    "MatrixAE_64x8": {
+      "artifact_manifest_sha256": "266c023b008ca60a411c5a06d85407fd1f89ae359e5f1cd5fb41c5ca4af5abaa",
+      "latent": {
+        "scalars": 512,
+        "tokens": 64
+      },
+      "model_id": "MatrixAE_64x8",
+      "provenance": {
+        "corpus_manifest_sha256": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "gene_order_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+        "normalization": "log1p(CP10K of raw counts projected to the ordered CM axis)",
+        "split_sha256": "5d2a3dbf2f7d8279f38f88f80f9d494476d81e6addb140c4a55dc006c1c778e2"
+      },
+      "reference_manifest_sha256": "8e7dcc47e8b99c901ba38464bb700dd485900b540ff360070732002a66412b4a",
+      "replay_tolerance": {
+        "atol": 1e-08,
+        "rtol": 1e-06
+      },
+      "role": "test",
+      "sources": {
+        "tahoe": {
+          "defined_pcc_profiles": 9596,
+          "mse": 0.009878439844765299,
+          "pcc": 0.9725176806076297,
+          "profiles": 9596,
+          "relative_squared_error": 0.926920713776376,
+          "rmse": 0.08642823383993975
+        },
+        "tenv": {
+          "defined_pcc_profiles": 825,
+          "mse": 0.043529535346987336,
+          "pcc": 0.8571151850307145,
+          "profiles": 825,
+          "relative_squared_error": 0.1652513860089639,
+          "rmse": 0.19579079549882683
+        }
+      }
+    },
     "PCA_128": {
       "artifact_manifest_sha256": "3b9a078adb0bc037bf62dafbd04cf36800383a593271d1904daa5169509845d7",
       "latent": {
@@ -318,5 +356,5 @@
   },
   "role": "test",
   "schema_version": 1,
-  "seal_sha256": "64e553b1516e7725d2497ac06e3dbeb6b95d7c059f5d7297d0d13fd79ccd73a5"
+  "seal_sha256": "67d9aef48a44a3c0c7525ae26a36a77d107c0793615f82b969d973f5efa2042d"
 }

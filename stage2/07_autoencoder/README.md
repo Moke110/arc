@@ -26,18 +26,19 @@ order, ranks, memberships and full coverage.
 
 ## Held-out reconstruction comparison
 
-Each of the eight configurations reconstructed the same 9,596 Tahoe and 825
+Each of the nine configurations reconstructed the same 9,596 Tahoe and 825
 tenv test profiles. The [selection seal](output/test_seal.json) was committed
 before scoring. It binds the selected validation scores, fitted manifest and
 payload hashes to the corrected corpus, ordered gene axis and frozen split.
 
-![Test PCC, RMSE and relative squared error for eight reconstruction configurations on Tahoe and tenv](output/reconstruction_test.png)
+![Test PCC, RMSE and relative squared error for nine reconstruction configurations on Tahoe and tenv](output/reconstruction_test.png)
 
-`PCA_512` led all three metrics on both sources. Its squared error was 40.9%
-of the training-gene mean's error on Tahoe and 12.1% on tenv. The longer
-`AAE_512` fit reduced relative squared error from 1.1333 to 1.0784 on Tahoe
-and from 0.4958 to 0.3555 on tenv. Mean profile PCC rose from 0.9655 to 0.9679
-on Tahoe and from 0.4932 to 0.6710 on tenv.
+`MatrixAE_64x8` improved on `AAE_512` across all three metrics on both
+sources. The relative squared error fell from 1.0784 to 0.9269 on Tahoe and
+from 0.3555 to 0.1653 on tenv. Mean profile PCC rose from 0.9679 to 0.9725 on
+Tahoe and from 0.6710 to 0.8571 on tenv. `PCA_512` led all three metrics on
+both sources, with relative squared errors of 0.4087 and 0.1208.
+The eight prior score reports match the previous comparison at `1654ec0`.
 
 The [test scores](output/test_scores.json) give full-precision metrics,
 including the number of defined PCCs and the profile count for every source
@@ -59,14 +60,14 @@ the paths listed in the manifests and verify their digests against the seal.
 A new fit can be evaluated on validation and may produce different bytes.
 Fit and validation resource records
 are available for [mean](execution/mean_record/run.json),
-[PCA](execution/pca_record/run.json), [MLP](execution/mlp_record/run.json), and
-[AAE](execution/aae_record/run.json).
+[PCA](execution/pca_record/run.json), [MLP](execution/mlp_record/run.json),
+[AAE](execution/aae_record/run.json), and [MatrixAE](execution/matrixae_record/run.json).
 
 From the repository root in the `arc` environment, run replay with fresh
 resource admission as recorded in the [comparison run](execution/comparison_record/run.json).
-Replay verifies the seal, loads all eight local artifacts and checks the
+Replay verifies the seal, loads all nine local artifacts and checks the
 published scores with relative tolerance `1e-6` and absolute tolerance `1e-8`.
-Mean and PCA score on CPU. MLP and AAE score on CUDA. Run CUDA jobs serially
+Mean and PCA score on CPU. MLP, AAE and MatrixAE score on CUDA. Run CUDA jobs serially
 and check free GPU memory with `nvidia-smi` before starting. The replay record
 uses a 5,120 MiB free GPU memory floor. Use `run_step07` from this block for
 the fit and validation examples below in the same shell.
@@ -236,4 +237,35 @@ run_step07 "$cli" score --artifact "$artifact" --device cuda --role validation -
 run_step07 "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
 python stage2/07_autoencoder/execution/script/compare.py aae-loss-figure \
   --history "$artifact/epochs.json" --output /tmp/arc-aae-loss.png
+```
+
+### Compact matrix autoencoder reconstruction
+
+`MatrixAE_64x8` uses 64 learned latent queries and eight bottleneck channels
+per query. Its 512 latent scalars match the budget of `PCA_512` and
+`MLP_512`. Learned gene identities and projected measured expression feed
+the encoder, and gene identity queries read the latent tokens to reconstruct
+the full axis. Two latent Transformer blocks on either side of the
+bottleneck use 128 internal channels. The model adapts the deterministic
+autoencoder path of [scLDM](https://arxiv.org/html/2511.02986v2) to the
+full measured Step 07 input and MSE objective. [ADR 0053](../../docs/adr/0053-step07-compact-matrix-autoencoder.md)
+records the design.
+
+The fit uses the AAE optimizer, batch size, early stopping and update cap.
+It reached 10,000 updates and selected the checkpoint at 6,332 updates,
+with validation MSE of 0.007422 on Tahoe and 0.044412 on tenv.
+The [epoch history](output/models/MatrixAE_64x8/epochs.json) records the
+joint training batch losses and both validation losses.
+
+![MatrixAE joint training MSE and source-specific validation MSE by optimizer updates](output/matrix_ae_loss.png)
+
+```bash
+cli=stage2/07_autoencoder/execution/script/reconstruct.py
+artifact=/tmp/arc-MatrixAE_64x8
+scores=/tmp/arc-MatrixAE_64x8-validation.json
+run_step07 "$cli" fit --model MatrixAE_64x8 --device cuda --output "$artifact"
+run_step07 "$cli" score --artifact "$artifact" --device cuda --role validation --output "$scores"
+run_step07 "$cli" reload --artifact "$artifact" --device cuda --role validation --expected "$scores"
+python stage2/07_autoencoder/execution/script/compare.py matrix-ae-loss-figure \
+  --history "$artifact/epochs.json" --output /tmp/arc-matrix-ae-loss.png
 ```
