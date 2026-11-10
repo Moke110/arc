@@ -82,8 +82,6 @@ tenv test profiles. The [selection seal](output/test_seal.json) was committed
 before scoring. It binds the selected validation scores, fitted manifest and
 payload hashes to the corrected corpus, ordered gene axis and frozen split.
 
-![Test PCC, RMSE and relative squared error for nine reconstruction configurations on Tahoe and tenv](output/reconstruction_test.png)
-
 `MatrixAE_64x8` improved on `AAE_512` across all three metrics on both
 sources. The relative squared error fell from 1.0784 to 0.9269 on Tahoe and
 from 0.3555 to 0.1653 on tenv. Mean profile PCC rose from 0.9679 to 0.9725 on
