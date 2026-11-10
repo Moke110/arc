@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from benchmark import (
-    AAE_MODEL_IDS, AAE_TRANSFORMER_MODEL_ID, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT,
+    AAE_MODEL_IDS, AAE_TRANSFORMER_MODEL_IDS, Corpus, DEFAULT_MEAN, DEFAULT_RELEASE, DEFAULT_SPLIT,
     MATRIX_AE_MODEL_ID,
     REPLAY_TOLERANCE, ROLES, SOURCES, Split, checked_test_role, fit_mean, freeze_split, json_bytes,
     load_mean, publish_artifact, publish_json, score, validate_batch_size, verify_artifact,
@@ -85,7 +85,7 @@ def score_artifact(args, corpus, split):
         else:
             raise ValueError(f"unsupported model: {record['model_id']}")
     result = score(corpus, split, args.role, predict, mean, batch_size, allow_test=args.allow_test)
-    if record["model_id"] == AAE_TRANSFORMER_MODEL_ID and args.role == "validation":
+    if record["model_id"] in AAE_TRANSFORMER_MODEL_IDS and args.role == "validation":
         selected_mse = record["metadata"]["selected_validation_mse"]
         if any(not isclose(result["sources"][source]["mse"], selected_mse[source],
                            rel_tol=REPLAY_TOLERANCE["rtol"], abs_tol=REPLAY_TOLERANCE["atol"])

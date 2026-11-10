@@ -9,11 +9,14 @@ from torch import nn
 from torch.nn import functional as F
 from torch.nn.attention import SDPBackend, sdpa_kernel
 
-from benchmark import AAE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID, SEED
+from benchmark import (
+    AAE_MODEL_ID, AAE_NUISANCE_MODEL_ID, AAE_TRANSFORMER_MODEL_ID, AAE_TRANSFORMER_MODEL_IDS, SEED,
+)
 from neural import check_selected_checkpoint, fit_neural, load_neural
 
 
 LATENT_TOKENS = 512
+NUISANCE_TOKENS = 16
 WIDTH = 128
 HEADS = 8
 LATENT_BLOCKS = 2
@@ -37,9 +40,11 @@ def architecture(gene_count, model_id=AAE_MODEL_ID):
     result = {
         "gene_count": gene_count, "latent_tokens": LATENT_TOKENS, "width": WIDTH, "heads": HEADS,
     }
-    if model_id == AAE_TRANSFORMER_MODEL_ID:
+    if model_id in AAE_TRANSFORMER_MODEL_IDS:
         result.update(encoder_blocks=LATENT_BLOCKS, feedforward_width=FEEDFORWARD_WIDTH,
                       decoder_tokens=LATENT_TOKENS)
+    if model_id == AAE_NUISANCE_MODEL_ID:
+        result["latent_tokens"] += NUISANCE_TOKENS
     return result
 
 
@@ -107,9 +112,15 @@ class TranscriptomeAutoencoder(nn.Module):
 
 
 class TransformerTranscriptomeAutoencoder(TranscriptomeAutoencoder):
-    def __init__(self, gene_count):
+    def __init__(self, gene_count, *, nuisance_tokens=0):
         super().__init__(gene_count)
         self.encoder = nn.Sequential(*(LatentTransformerBlock() for _ in range(LATENT_BLOCKS)))
+        if nuisance_tokens:
+            # Draw extra queries last to preserve every shared parameter at the same seed.
+            extra_queries = torch.randn(1, nuisance_tokens, WIDTH) / WIDTH**0.5
+            self.latent_queries = nn.Parameter(
+                torch.cat((self.latent_queries.detach(), extra_queries), dim=1),
+            )
 
     def encode(self, expression):
         return self.encoder(super().encode(expression))
@@ -121,6 +132,7 @@ class TransformerTranscriptomeAutoencoder(TranscriptomeAutoencoder):
 MODEL_CLASSES = {
     AAE_MODEL_ID: TranscriptomeAutoencoder,
     AAE_TRANSFORMER_MODEL_ID: TransformerTranscriptomeAutoencoder,
+    AAE_NUISANCE_MODEL_ID: partial(TransformerTranscriptomeAutoencoder, nuisance_tokens=NUISANCE_TOKENS),
 }
 
 
@@ -151,13 +163,14 @@ def recipe_for(fixture, device, *, model_name="AAE"):
 def fit_aae(corpus, split, output, batch_size, device, model_id=AAE_MODEL_ID):
     recipe = recipe_for(corpus.fixture, device)
     model_class = MODEL_CLASSES[model_id]
+    design = architecture(corpus.gene_count, model_id)
+    latent_tokens = design["latent_tokens"]
     if batch_size is not None and batch_size != recipe["train_batch_size"]:
         raise ValueError(f"AAE fit requires the frozen batch size {recipe['train_batch_size']}")
     return fit_neural(
         corpus, split, output, model_id, lambda: model_class(corpus.gene_count),
         recipe, device,
-        {"architecture": architecture(corpus.gene_count, model_id), "latent_tokens": LATENT_TOKENS,
-         "latent_scalars": LATENT_TOKENS * WIDTH},
+        {"architecture": design, "latent_tokens": latent_tokens, "latent_scalars": latent_tokens * WIDTH},
         context=partial(attention_context, device), deterministic=device == "cpu",
     )
 
@@ -173,16 +186,18 @@ def aae_predictor(path, record, fixture, batch_size, device):
         replay_recipes.append(legacy_recipe)
     metadata = record["metadata"]
     gene_count = record["gene_count"]
-    if (metadata["architecture"] != architecture(gene_count, model_id)
-            or metadata["latent_tokens"] != LATENT_TOKENS
-            or metadata["latent_scalars"] != LATENT_TOKENS * WIDTH
+    design = architecture(gene_count, model_id)
+    latent_tokens = design["latent_tokens"]
+    if (metadata["architecture"] != design
+            or metadata["latent_tokens"] != latent_tokens
+            or metadata["latent_scalars"] != latent_tokens * WIDTH
             or metadata["recipe"] not in replay_recipes
             or set(record["files"]) != {"weights.pt", "epochs.json"}):
         raise ValueError("invalid AAE artifact or incompatible replay runtime")
     score_batch_size = recipe["validation_batch_size"]
     if batch_size is not None and batch_size != score_batch_size:
         raise ValueError(f"AAE replay requires the frozen batch size {score_batch_size}")
-    if model_id == AAE_TRANSFORMER_MODEL_ID:
+    if model_id in AAE_TRANSFORMER_MODEL_IDS:
         check_selected_checkpoint(path, metadata, model_id, device)
     predict = load_neural(
         path, MODEL_CLASSES[model_id](gene_count), device,

@@ -394,34 +394,66 @@ class BenchmarkTest(unittest.TestCase):
             self.assertTrue(torch.isfinite(reconstruction).all())
             torch.testing.assert_close(model(profiles), reconstruction)
 
+    def test_nuisance_queries_affect_reconstruction_through_the_encoder(self):
+        import torch
+        from aae import TransformerTranscriptomeAutoencoder
+
+        with torch.random.fork_rng(devices=[]):
+            torch.manual_seed(20261109)
+            model = TransformerTranscriptomeAutoencoder(gene_count=3, nuisance_tokens=16).eval()
+        profiles = torch.tensor([[8.0, 3.0, 0.0], [0.0, 6.0, 4.0]])
+        latent = model.encode(profiles)
+        self.assertEqual(latent.shape, (2, 528, 128))
+        reconstruction = model.decode(latent)
+        self.assertEqual(reconstruction.shape, profiles.shape)
+        torch.testing.assert_close(model(profiles), reconstruction)
+
+        query_gradient, = torch.autograd.grad(reconstruction.square().sum(), model.latent_queries)
+        self.assertTrue(torch.isfinite(query_gradient).all())
+        self.assertTrue((query_gradient[:, 512:].norm(dim=-1) > 0).all())
+
+        changed_latent = latent.detach().clone()
+        changed_latent[:, 512:] = -changed_latent[:, 512:]
+        torch.testing.assert_close(model.decode(changed_latent), reconstruction, rtol=0, atol=0)
+
     def test_transformer_aae_cli_reloads_the_earliest_tenv_validation_minimum(self):
         split = self.cli("freeze-split")
         self.cli("fit", "--output", self.artifact)
-        model_id = "AAE_512_Transformer"
-        artifact = self.root / model_id
-        fitted = self.cli("fit", "--model", model_id, "--output", artifact)
-        metadata = fitted["metadata"]
-        self.assertEqual(fitted["model_id"], model_id)
-        self.assertEqual(metadata["latent_tokens"], 512)
-        self.assertEqual(metadata["latent_scalars"], 65_536)
-        self.assertEqual(metadata["architecture"]["encoder_blocks"], 2)
-        self.assertEqual(metadata["fit_profiles"], {
-            source: split["sources"][source]["roles"]["train"]["profiles"]
-            for source in self.expressions
-        })
-        history = json.loads((artifact / "epochs.json").read_text())
-        self.assertEqual(history[-1]["optimizer_steps"], 5)
-        selected = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
-        self.assertEqual(metadata["selected_epoch"], selected["epoch"])
-        expected = self.root / "transformer-aae-validation.json"
-        args = ["--artifact", artifact, "--mean-artifact", self.artifact, "--role", "validation"]
-        scores = self.cli("score", *args, "--output", expected)
-        self.assertEqual(scores["artifact_manifest_sha256"], fitted["artifact_manifest_sha256"])
-        self.assertEqual(scores["provenance"], fitted["provenance"])
-        for source, result in scores["sources"].items():
-            self.assertEqual(result["profiles"], split["sources"][source]["roles"]["validation"]["profiles"])
-            self.assertAlmostEqual(result["mse"], selected["validation_mse"][source])
-        self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
+        recipes = []
+        for model_id, tokens, scalars in (
+            ("AAE_512_Transformer", 512, 65_536),
+            ("AAE_512+16", 528, 67_584),
+        ):
+            artifact = self.root / model_id
+            fitted = self.cli("fit", "--model", model_id, "--output", artifact)
+            metadata = fitted["metadata"]
+            self.assertEqual(fitted["model_id"], model_id)
+            self.assertEqual(metadata["latent_tokens"], tokens)
+            self.assertEqual(metadata["latent_scalars"], scalars)
+            self.assertEqual(metadata["architecture"]["latent_tokens"], tokens)
+            self.assertEqual(metadata["architecture"]["decoder_tokens"], 512)
+            self.assertEqual(metadata["architecture"]["encoder_blocks"], 2)
+            self.assertEqual(metadata["fit_profiles"], {
+                source: split["sources"][source]["roles"]["train"]["profiles"]
+                for source in self.expressions
+            })
+            recipes.append(metadata["recipe"])
+            history = json.loads((artifact / "epochs.json").read_text())
+            self.assertEqual(history[-1]["optimizer_steps"], 5)
+            selected = min(history, key=lambda check: (check["validation_mse"]["tenv"], check["epoch"]))
+            self.assertEqual(metadata["selected_epoch"], selected["epoch"])
+            expected = self.root / f"{model_id}-validation.json"
+            args = ["--artifact", artifact, "--mean-artifact", self.artifact, "--role", "validation"]
+            scores = self.cli("score", *args, "--output", expected)
+            self.assertEqual(scores["artifact_manifest_sha256"], fitted["artifact_manifest_sha256"])
+            self.assertEqual(scores["provenance"], fitted["provenance"])
+            for source, result in scores["sources"].items():
+                expected_profiles = split["sources"][source]["roles"]["validation"]["profiles"]
+                self.assertEqual(result["profiles"], expected_profiles)
+                self.assertAlmostEqual(result["mse"], selected["validation_mse"][source])
+            self.assertEqual(scores, self.cli("reload", *args, "--expected", expected))
+        self.assertEqual(recipes[0]["objective"], "full-axis reconstruction MSE")
+        self.assertEqual(recipes[0], recipes[1])
 
     def test_transformer_aae_rejects_incompatible_checkpoint_metadata(self):
         self.cli("freeze-split")
@@ -455,6 +487,30 @@ class BenchmarkTest(unittest.TestCase):
         manifest_path.write_text(json.dumps(manifest))
         self.assertIn("validation MSE differs from the selected epoch",
                       self.cli("score", *args, success=False))
+
+    def test_nuisance_aae_rejects_512_token_metadata_and_weights(self):
+        self.cli("freeze-split")
+        self.cli("fit", "--output", self.artifact)
+        artifact = self.root / "AAE_512+16"
+        self.cli("fit", "--model", "AAE_512+16", "--output", artifact)
+        control = self.root / "AAE_512_Transformer"
+        fitted_control = self.cli("fit", "--model", "AAE_512_Transformer", "--output", control)
+        args = ["--artifact", artifact, "--mean-artifact", self.artifact]
+        manifest_path = artifact / "manifest.json"
+        manifest_bytes = manifest_path.read_bytes()
+        for field in ("architecture", "latent_tokens", "latent_scalars"):
+            with self.subTest(field=field):
+                manifest = json.loads(manifest_bytes)
+                manifest["metadata"][field] = fitted_control["metadata"][field]
+                manifest_path.write_text(json.dumps(manifest))
+                self.assertIn("invalid AAE artifact", self.cli("score", *args, success=False))
+
+        manifest = json.loads(manifest_bytes)
+        weights = (control / "weights.pt").read_bytes()
+        (artifact / "weights.pt").write_bytes(weights)
+        manifest["files"]["weights.pt"] = hashlib.sha256(weights).hexdigest()
+        manifest_path.write_text(json.dumps(manifest))
+        self.assertIn("size mismatch for latent_queries", self.cli("score", *args, success=False))
 
     def test_aae_replays_the_tenv_selected_full_axis_checkpoint(self):
         split = self.cli("freeze-split")
