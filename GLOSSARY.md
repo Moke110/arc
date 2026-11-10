@@ -351,6 +351,12 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 **Transcriptome autoencoder**:
 A Step 07 model that encodes a measured expression profile and reconstructs that same profile on the frozen CM gene axis.
 
+**Transcriptome representation matrix (转录组表示矩阵)**:
+A representation of one measured expression profile with one token per gene in frozen CM gene order. Each token combines the gene's position and its measured expression.
+
+**Shared expression representation interface (共享表达表示接口)**:
+The representation generator and restorer used by the Step 07 matrix reconstruction models. The generator maps a profile to its transcriptome representation matrix, and the restorer maps a reconstructed matrix back to expression on the same gene axis.
+
 **Matrix latent representation**:
 A fixed number of latent tokens, each with the same number of channels, for one measured expression profile. Its scalar budget is the token count multiplied by the channel count.
 
@@ -364,7 +370,7 @@ The Step 07 multilayer perceptron autoencoder with a matrix latent representatio
 The part of the Step 07 matrix latent representation available to the expression decoder.
 
 **Nuisance tokens**:
-The part of the Step 07 matrix latent representation designated to capture variation outside the biological signal of interest.
+Extra encoder tokens that can interact with the expression reconstruction tokens but are withheld from the expression decoder. Their role in capturing biological or technical variation remains an experimental hypothesis.
 
 **Training-gene mean** (`mean`):
 The Step 07 reconstruction reference that returns one mean expression value per gene estimated from training profiles alone.

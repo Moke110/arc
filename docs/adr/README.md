@@ -72,3 +72,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0053](0053-step07-compact-matrix-autoencoder.md) | Compare a 64 × 8 matrix latent representation with the Step 07 reconstruction baselines |
 | [0054](0054-step07-separate-reconstruction-and-nuisance-tokens.md) | Separate expression reconstruction and nuisance tokens in a Step 07 attention autoencoder |
 | [0055](0055-step07-matrix-mlp-reconstruction.md) | Compare the vector MLP and an AAE-shaped matrix MLP in Step 07 |
+| [0056](0056-step07-shared-expression-representation.md) | Compare five matrix reconstruction models with a shared frozen expression representation interface |
