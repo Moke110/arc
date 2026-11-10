@@ -354,6 +354,12 @@ A Step 07 model that encodes a measured expression profile and reconstructs that
 **Matrix latent representation**:
 A fixed number of latent tokens, each with the same number of channels, for one measured expression profile. Its scalar budget is the token count multiplied by the channel count.
 
+**MLPv**:
+The Step 07 multilayer perceptron autoencoder with a vector latent representation. In `MLPv_512`, the vector has 512 scalars.
+
+**MLPm**:
+The Step 07 multilayer perceptron autoencoder with a matrix latent representation. In `MLPm_512`, the matrix has 512 tokens and 128 channels per token, matching the standard AAE reconstruction latent shape.
+
 **Expression reconstruction tokens**:
 The part of the Step 07 matrix latent representation available to the expression decoder.
 
