@@ -354,6 +354,12 @@ A Step 07 model that encodes a measured expression profile and reconstructs that
 **Matrix latent representation**:
 A fixed number of latent tokens, each with the same number of channels, for one measured expression profile. Its scalar budget is the token count multiplied by the channel count.
 
+**Expression reconstruction tokens**:
+The part of the Step 07 matrix latent representation available to the expression decoder.
+
+**Nuisance tokens**:
+The part of the Step 07 matrix latent representation designated to capture variation outside the biological signal of interest.
+
 **Training-gene mean** (`mean`):
 The Step 07 reconstruction reference that returns one mean expression value per gene estimated from training profiles alone.
 _Avoid_: mean Δ, DMSO mean
