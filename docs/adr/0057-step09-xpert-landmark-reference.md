@@ -55,5 +55,17 @@ and treat AP as undefined for a group with zero significant genes in the
 relevant denominator. Present the two measures as separate PR panels and
 replace the directional AP bars with the two new measures.
 
+Define significant genes from two-sided contrasts of measured tenv raw
+counts against same-plate DMSO at each drug–dose group. Apply Benjamini–Hochberg
+correction within each contrast and use FDR below 0.05. Use one test family
+over the CM axis plus HDGFL3 so that the landmark reference can count HDGFL3
+in `AUPRC@G`. Restrict the `AUPRC@full` denominator to the CM axis. Use
+tenv validation `AUPRC@full` for promotion. Keep `AUPRC@G` as an axis-specific
+score and report the number of groups with a defined score.
+
+Keep projected zero-library wells as zero profiles and record their
+counts. Report the shared panel size before fitting. Flag continuous
+metrics as provisional for a shared panel with fewer than 200 genes.
+
 The round-one figures live together under Step 09's `output/round1/` as a
 scoped placement exception to [ADR 0030](0030-external-data-provenance-and-step-layout.md).
