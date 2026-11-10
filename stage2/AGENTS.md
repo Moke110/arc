@@ -16,6 +16,7 @@ Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
   on warm-start and cold tenv splits (ADR 0047).
 - [`06_pdiff_transfer_optimize/`](06_pdiff_transfer_optimize/README.md) — paired validation replay and Tahoe Transfer diagnostics (ADR 0048).
 - [`07_autoencoder/`](07_autoencoder/README.md) — Tahoe and tenv transcriptome reconstruction on held-out plates (ADR 0052).
+- [`09_xpert_optimize/`](09_xpert_optimize/README.md) — cold-cm-drug XPert gene-axis and token-compression ablation (ADR 0057).
 - [`_envs/`](_envs/README.md) — non-step: shared per-model environments + locks.
 - [`audit/`](audit/README.md) — non-step: entrant/fairness audit, 2026-10-26
   selection decisions.

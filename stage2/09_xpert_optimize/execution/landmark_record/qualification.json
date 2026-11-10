@@ -1,0 +1,254 @@
+{
+  "classification": "bounded real-data GPU qualification",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB",
+  "attempts": [
+    {
+      "run": {
+        "architecture_sha256": "3d4d9a962a3ea79007f62e555ba6e22cd03b98b6341896ccb1cd89182ed313a3",
+        "fold": 0,
+        "model": "XPert_base",
+        "numpy_version": "2.4.6",
+        "peak_rss_kib": 1813312,
+        "peak_vram_allocated_bytes": 160320512,
+        "peak_vram_reserved_bytes": 188743680,
+        "phases": {
+          "tahoe": {
+            "best_loss": 1.8782869577407837,
+            "best_update": 1,
+            "checkpoint_sha256": "4b7404587c3315a27b3611d0155c6d8d8310b33628a01e0193fe6d9a0a0e4004",
+            "history": [
+              {
+                "train_seconds": 0.9922485599963693,
+                "train_terms": [
+                  3.1906533241271973,
+                  3.8667678833007812,
+                  0.4494088888168335,
+                  0.99044269323349
+                ],
+                "update": 1,
+                "validation_loss": 1.8782869577407837,
+                "validation_seconds": 0.019896480000170413,
+                "validation_terms": [
+                  2.3875489234924316,
+                  2.8657727241516113,
+                  2.3121352195739746,
+                  0.9297528266906738
+                ]
+              }
+            ],
+            "updates": 1,
+            "wall_minutes": 0.019240658999963973
+          },
+          "tenv": {
+            "best_loss": 1.757744550704956,
+            "best_update": 1,
+            "checkpoint_sha256": "fd1c09bf9577a988653f33e2f9c2f26b9f4f87c17bb16e523e5b55bdcee7bc76",
+            "history": [
+              {
+                "train_seconds": 0.09889478999684798,
+                "train_terms": [
+                  4.32021427154541,
+                  1.5761730670928955,
+                  2.774766206741333,
+                  1.0012931823730469
+                ],
+                "update": 1,
+                "validation_loss": 1.757744550704956,
+                "validation_seconds": 0.041650740000477526,
+                "validation_terms": [
+                  1.7664920091629028,
+                  1.3325512409210205,
+                  1.8919929265975952,
+                  1.022049903869629
+                ]
+              }
+            ],
+            "updates": 1,
+            "wall_minutes": 0.004531626000001173
+          }
+        },
+        "policy": {
+          "device": "cuda",
+          "dtype": "bfloat16",
+          "effective_batch": 4,
+          "kernel": "flash",
+          "kind": "qualification",
+          "microbatch": 1,
+          "phases": {
+            "tahoe": {
+              "learning_rate": 0.0001,
+              "updates": 1,
+              "validation_interval": 1,
+              "validation_limit": 4
+            },
+            "tenv": {
+              "learning_rate": 0.0001,
+              "updates": 1,
+              "validation_interval": 1,
+              "validation_limit": 4
+            }
+          }
+        },
+        "policy_sha256": "94a089bc3b2a71b454ea4876ee8604ed3c0bd873a9a11976c3af29d190481340",
+        "predictor_sha256": "085dd04a932d7b3f975a55c6be665204a76ea898a732e7894824ee1ad95316c8",
+        "schema": "step09-xpert-v1",
+        "seed": 17,
+        "status": "complete",
+        "torch_version": "2.12.0+cu130",
+        "training_minutes": 0.023772284999965147
+      },
+      "fit_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py fit --predictor stage2/09_xpert_optimize/output/corpus/tahoe_tenv_bulk_l1000/predictor --policy /tmp/arc-r1/landmark-qualification.json --fold 0 --seed 17 --output /tmp/arc-r1/landmark-fit",
+        "exit_code": 0,
+        "elapsed": "0:03.53",
+        "peak_rss_kib": 1922300,
+        "minimum_available_ram_kib": 42115944,
+        "peak_system_vram_mib": 2273
+      },
+      "validation_prediction_manifest_sha256": "cdeb278662863293830b12081f2ec9a3bde46976082b7a95bc1731c84011184c",
+      "prediction_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py predict --predictor stage2/09_xpert_optimize/output/corpus/tahoe_tenv_bulk_l1000/predictor --checkpoint /tmp/arc-r1/landmark-fit/tenv.pt --role validation --output /tmp/arc-r1/landmark-validation",
+        "exit_code": 0,
+        "elapsed": "0:04.06",
+        "peak_rss_kib": 1329068,
+        "minimum_available_ram_kib": 42051820,
+        "peak_system_vram_mib": 2183
+      },
+      "replay_resources": null,
+      "replay": {
+        "status": "A Step 09 job already holds the heavy-job lock"
+      }
+    },
+    {
+      "run": {
+        "architecture_sha256": "3d4d9a962a3ea79007f62e555ba6e22cd03b98b6341896ccb1cd89182ed313a3",
+        "fold": 0,
+        "model": "XPert_base",
+        "numpy_version": "2.4.6",
+        "peak_rss_kib": 1813356,
+        "peak_vram_allocated_bytes": 160320512,
+        "peak_vram_reserved_bytes": 188743680,
+        "phases": {
+          "tahoe": {
+            "best_loss": 1.877305030822754,
+            "best_update": 1,
+            "checkpoint_sha256": "add525f64bf552ace3ff24c0c296f2416d95e568c4b3606f57013fdd097322e9",
+            "history": [
+              {
+                "train_seconds": 0.5542489799991017,
+                "train_terms": [
+                  3.1906533241271973,
+                  3.8667678833007812,
+                  0.4494088888168335,
+                  0.99044269323349
+                ],
+                "update": 1,
+                "validation_loss": 1.877305030822754,
+                "validation_seconds": 0.01968551999743795,
+                "validation_terms": [
+                  2.3840725421905518,
+                  2.865931987762451,
+                  2.3085784912109375,
+                  0.9301770925521851
+                ]
+              }
+            ],
+            "updates": 1,
+            "wall_minutes": 0.012033188999945802
+          },
+          "tenv": {
+            "best_loss": 1.7581071853637695,
+            "best_update": 1,
+            "checkpoint_sha256": "3c945a1a23bff41012d9620142a9da0a2e44c895744666a537fdd50f6271255e",
+            "history": [
+              {
+                "train_seconds": 0.09286793999490328,
+                "train_terms": [
+                  4.318300724029541,
+                  1.576178789138794,
+                  2.7734732627868652,
+                  1.0013092756271362
+                ],
+                "update": 1,
+                "validation_loss": 1.7581071853637695,
+                "validation_seconds": 0.04303539000102319,
+                "validation_terms": [
+                  1.7654204368591309,
+                  1.333621621131897,
+                  1.8929991722106934,
+                  1.0224223136901855
+                ]
+              }
+            ],
+            "updates": 1,
+            "wall_minutes": 0.00477074249999229
+          }
+        },
+        "policy": {
+          "device": "cuda",
+          "dtype": "bfloat16",
+          "effective_batch": 4,
+          "kernel": "flash",
+          "kind": "qualification",
+          "microbatch": 1,
+          "phases": {
+            "tahoe": {
+              "learning_rate": 0.0001,
+              "updates": 1,
+              "validation_interval": 1,
+              "validation_limit": 4
+            },
+            "tenv": {
+              "learning_rate": 0.0001,
+              "updates": 1,
+              "validation_interval": 1,
+              "validation_limit": 4
+            }
+          }
+        },
+        "policy_sha256": "94a089bc3b2a71b454ea4876ee8604ed3c0bd873a9a11976c3af29d190481340",
+        "predictor_sha256": "085dd04a932d7b3f975a55c6be665204a76ea898a732e7894824ee1ad95316c8",
+        "schema": "step09-xpert-v1",
+        "seed": 17,
+        "status": "complete",
+        "torch_version": "2.12.0+cu130",
+        "training_minutes": 0.016803931499938092
+      },
+      "fit_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py fit --predictor stage2/09_xpert_optimize/output/corpus/tahoe_tenv_bulk_l1000/predictor --policy stage2/09_xpert_optimize/execution/landmark_record/qualification-policy.json --fold 0 --seed 17 --output /tmp/arc-r1/landmark-fit-final",
+        "exit_code": 0,
+        "elapsed": "0:03.17",
+        "peak_rss_kib": 1917948,
+        "minimum_available_ram_kib": 41662244,
+        "peak_system_vram_mib": 2324
+      },
+      "validation_prediction_manifest_sha256": "a1daf5c4c14eb99961d93aaf6918d18fea6dafd33a5b2b535ec0dc8b094722eb",
+      "prediction_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py predict --predictor stage2/09_xpert_optimize/output/corpus/tahoe_tenv_bulk_l1000/predictor --checkpoint /tmp/arc-r1/landmark-fit-final/tenv.pt --role validation --output /tmp/arc-r1/landmark-validation-final",
+        "exit_code": 0,
+        "elapsed": "0:07.07",
+        "peak_rss_kib": 1329400,
+        "minimum_available_ram_kib": 41790332,
+        "peak_system_vram_mib": 2184
+      },
+      "replay_resources": {
+        "command": "python stage2/09_xpert_optimize/execution/script/xpert.py replay --predictor stage2/09_xpert_optimize/output/corpus/tahoe_tenv_bulk_l1000/predictor --checkpoint /tmp/arc-r1/landmark-fit-final/tenv.pt --prediction /tmp/arc-r1/landmark-validation-final",
+        "exit_code": 0,
+        "elapsed": "0:03.29",
+        "peak_rss_kib": 1329144,
+        "minimum_available_ram_kib": 41656736,
+        "peak_system_vram_mib": 2184
+      },
+      "replay": {
+        "status": "verified",
+        "prediction_manifest_sha256": "a1daf5c4c14eb99961d93aaf6918d18fea6dafd33a5b2b535ec0dc8b094722eb"
+      }
+    }
+  ],
+  "fixture": {
+    "command": "python -m unittest discover -s stage2/09_xpert_optimize/execution/tests -p test_landmark.py -v",
+    "tests_passed": 3,
+    "peak_rss_kib": 910276,
+    "elapsed_seconds": 15.18
+  }
+}
