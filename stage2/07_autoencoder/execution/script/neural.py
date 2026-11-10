@@ -54,12 +54,12 @@ def validation_mse(corpus, split, predict, batch_size, deadline):
 
 
 def train_epoch(corpus, model, optimizer, train_rows, recipe, epoch, device, context, deadline,
-                batch_limit=None):
+                batch_limit=None, *, batch_offset=0):
     order = train_rows.copy()
     np.random.Generator(np.random.PCG64([recipe["seed"], epoch])).shuffle(order)
     batch_size = recipe["train_batch_size"]
     if batch_limit is not None:
-        order = order[:batch_limit * batch_size]
+        order = order[batch_offset * batch_size:(batch_offset + batch_limit) * batch_size]
     model.train()
     total = torch.zeros((), device=device, dtype=torch.float64)
     for start in range(0, len(order), batch_size):
@@ -88,6 +88,24 @@ def train_epoch(corpus, model, optimizer, train_rows, recipe, epoch, device, con
     }
 
 
+def joint_training_rows(split):
+    return np.concatenate([
+        np.column_stack((np.full(len(split.rows[source]["train"]), index),
+                         split.rows[source]["train"]))
+        for index, source in enumerate(SOURCES)
+    ])
+
+
+def training_windows(steps_per_epoch, max_steps, interval):
+    """Yield contiguous windows, stopping at epoch boundaries and validation checks."""
+    steps = 0
+    while steps < max_steps:
+        epoch, offset = divmod(steps, steps_per_epoch)
+        size = min(steps_per_epoch - offset, interval - steps % interval, max_steps - steps)
+        yield epoch + 1, offset, size
+        steps += size
+
+
 def configure_runtime(device, deterministic):
     if deterministic:
         os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
@@ -104,11 +122,7 @@ def fit_neural(corpus, split, output, model_id, build_model, recipe, device, met
     start = time.perf_counter()
     deadline = start + recipe["max_seconds"]
     torch.manual_seed(recipe["seed"])
-    train_rows = np.concatenate([
-        np.column_stack((np.full(len(split.rows[source]["train"]), index),
-                         split.rows[source]["train"]))
-        for index, source in enumerate(SOURCES)
-    ])
+    train_rows = joint_training_rows(split)
     metadata = {
         **metadata,
         "fit_role": "train",
@@ -141,19 +155,30 @@ def fit_neural(corpus, split, output, model_id, build_model, recipe, device, met
         max_steps = recipe.get("max_optimizer_steps")
         steps_per_epoch = ceil(len(train_rows) / recipe["train_batch_size"])
         epochs = recipe["epochs"] if max_steps is None else ceil(max_steps / steps_per_epoch)
+        interval = recipe.get("validation_interval_steps")
+        if interval is None:
+            windows = (
+                (epoch, 0, None if max_steps is None
+                 else min(steps_per_epoch, max_steps - (epoch - 1) * steps_per_epoch))
+                for epoch in range(1, epochs + 1)
+            )
+        else:
+            windows = training_windows(steps_per_epoch, max_steps, interval)
         steps = 0
         stale_checks = 0
-        for epoch in range(1, epochs + 1):
-            batch_limit = None if max_steps is None else min(steps_per_epoch, max_steps - steps)
+        for check, (epoch, offset, batch_limit) in enumerate(windows, 1):
             record = train_epoch(
                 corpus, model, optimizer, train_rows, recipe, epoch, device, context, deadline,
-                batch_limit=batch_limit,
+                batch_limit=batch_limit, batch_offset=offset,
             )
             if batch_limit is not None:
                 steps += batch_limit
                 record["optimizer_steps"] = steps
                 record["training_profiles"] = min(len(train_rows),
-                                                  batch_limit * recipe["train_batch_size"])
+                                                  (offset + batch_limit) * recipe["train_batch_size"])
+                record["training_profiles"] -= offset * recipe["train_batch_size"]
+            if interval is not None:
+                record.update(epoch=check, training_epoch=epoch, batch_offset=offset)
             model.eval()
             scores = validation_mse(
                 corpus, split, predict, recipe["validation_batch_size"], deadline,
@@ -163,7 +188,7 @@ def fit_neural(corpus, split, output, model_id, build_model, recipe, device, met
             if scores["tenv"] < best_mse:
                 best_mse = scores["tenv"]
                 stale_checks = 0
-                metadata["selected_epoch"] = epoch
+                metadata["selected_epoch"] = check
                 torch.save(
                     {name: tensor.detach().cpu() for name, tensor in model.state_dict().items()},
                     directory / "weights.pt",

@@ -16,8 +16,30 @@ from benchmark import (
 from mlp import MODEL_IDS as MLP_MODEL_IDS, fit_mlp, mlp_predictor
 from pca import MODEL_IDS as PCA_MODEL_IDS, fit_pca, pca_predictor
 
+INTERFACE_ID = "shared_expression"
+SHARED_PCA_ID = "PCA_1024"
+SHARED_NEURAL_IDS = ("MLP_1024", "AAEc_1024", "AAEcs_1024", "AAEcs_1024+64")
+DEFAULT_INTERFACE = DEFAULT_MEAN.parent / INTERFACE_ID
+
 
 def fit(args, corpus, split):
+    if args.model in (INTERFACE_ID, SHARED_PCA_ID, *SHARED_NEURAL_IDS):
+        if args.output is None:
+            raise ValueError(f"{args.model} fit requires --output")
+        if args.batch_size is not None:
+            raise ValueError("shared expression fits use the recorded recipe")
+        if args.model == INTERFACE_ID:
+            from shared_expression import fit_interface
+
+            return fit_interface(corpus, split, args.output, args.device)
+        if args.model == SHARED_PCA_ID:
+            from shared_pca import fit_shared_pca
+
+            return fit_shared_pca(corpus, split, args.output, args.device, args.interface)
+        from shared_neural import fit_shared_neural
+
+        return fit_shared_neural(corpus, split, args.output, args.model, args.device,
+                                 args.interface, args.budget, smoke=args.smoke)
     if args.model in AAE_MODEL_IDS:
         from aae import fit_aae
 
@@ -71,7 +93,26 @@ def score_artifact(args, corpus, split):
         predict = lambda values: np.broadcast_to(mean, values.shape)
     else:
         reference, mean = load_mean(args.mean_artifact, corpus, split)
-        if record["model_id"] in PCA_MODEL_IDS:
+        if record["model_id"] == INTERFACE_ID:
+            from shared_expression import interface_predictor, load_interface
+
+            if args.role != "validation":
+                raise ValueError("shared expression round-trip diagnostics are validation only")
+            _, interface = load_interface(args.artifact, corpus, split, args.device)
+            predict, batch_size = interface_predictor(interface, args.device)
+        elif record["model_id"] == SHARED_PCA_ID:
+            from shared_pca import shared_pca_predictor
+
+            predict, batch_size = shared_pca_predictor(
+                args.artifact, record, corpus, split, args.device, args.interface,
+            )
+        elif record["model_id"] in SHARED_NEURAL_IDS:
+            from shared_neural import shared_neural_predictor
+
+            predict, batch_size = shared_neural_predictor(
+                args.artifact, record, corpus, split, args.device, args.interface,
+            )
+        elif record["model_id"] in PCA_MODEL_IDS:
             predict = pca_predictor(args.artifact, record)
         elif record["model_id"] in MLP_MODEL_IDS:
             predict = mlp_predictor(args.artifact, record, args.device)
@@ -96,12 +137,16 @@ def score_artifact(args, corpus, split):
         else:
             raise ValueError(f"unsupported model: {record['model_id']}")
     result = score(corpus, split, args.role, predict, mean, batch_size, allow_test=args.allow_test)
-    if record["model_id"] in (*AAE_TRANSFORMER_MODEL_IDS, MATRIX_MLP_MODEL_ID) and args.role == "validation":
+    if record["model_id"] in (*AAE_TRANSFORMER_MODEL_IDS, MATRIX_MLP_MODEL_ID, *SHARED_NEURAL_IDS) and args.role == "validation":
         selected_mse = record["metadata"]["selected_validation_mse"]
         if not validation_mse_matches(result["sources"], selected_mse):
             raise ValueError("validation MSE differs from the selected epoch")
+    interface_digest = record["metadata"].get("interface_manifest_sha256")
+    if record["model_id"] == INTERFACE_ID:
+        interface_digest = record["artifact_manifest_sha256"]
     return {
         **result,
+        **({"interface_manifest_sha256": interface_digest} if interface_digest else {}),
         "model_id": record["model_id"],
         "artifact_manifest_sha256": record["artifact_manifest_sha256"],
         "reference_manifest_sha256": reference["artifact_manifest_sha256"],
@@ -121,13 +166,17 @@ def main():
         if name != "freeze-split":
             command.add_argument("--batch-size", type=int)
             command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
+            command.add_argument("--interface", type=Path, default=DEFAULT_INTERFACE)
         if name == "fit":
             command.add_argument(
                 "--model",
-                choices=("mean", "PCA", *MLP_MODEL_IDS, *AAE_MODEL_IDS, MATRIX_AE_MODEL_ID, MATRIX_MLP_MODEL_ID),
+                choices=("mean", "PCA", *MLP_MODEL_IDS, *AAE_MODEL_IDS, MATRIX_AE_MODEL_ID,
+                         MATRIX_MLP_MODEL_ID, INTERFACE_ID, SHARED_PCA_ID, *SHARED_NEURAL_IDS),
                 default="mean",
             )
             command.add_argument("--output", type=Path)
+            command.add_argument("--budget", type=Path)
+            command.add_argument("--smoke", action="store_true")
         if name in {"score", "reload"}:
             command.add_argument("--artifact", type=Path, default=DEFAULT_MEAN)
             command.add_argument("--mean-artifact", type=Path, default=DEFAULT_MEAN)
