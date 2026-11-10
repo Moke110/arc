@@ -69,3 +69,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0049](0049-perturbdiff-transfer-optimization-comparisons.md) | Five Step 06 Transfer comparisons on cold-cm-drug with one dose-stratified figure |
 | [0051](0051-latent-xpert.md) | Latent XPert autoencoder and latent perturbation predictor |
 | [0052](0052-stage2-autoencoder-reconstruction-boundary.md) | Step 07 owns transcriptome reconstruction, and Step 08 owns perturbation prediction |
+| [0053](0053-step07-compact-matrix-autoencoder.md) | Compare a 64 × 8 matrix latent representation with the Step 07 reconstruction baselines |

@@ -349,7 +349,10 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 ### Stage 2 benchmark
 
 **Transcriptome autoencoder**:
-The Step 07 model that encodes a measured expression profile and reconstructs that same profile on the frozen CM gene axis.
+A Step 07 model that encodes a measured expression profile and reconstructs that same profile on the frozen CM gene axis.
+
+**Matrix latent representation**:
+A fixed number of latent tokens, each with the same number of channels, for one measured expression profile. Its scalar budget is the token count multiplied by the channel count.
 
 **Training-gene mean** (`mean`):
 The Step 07 reconstruction reference that returns one mean expression value per gene estimated from training profiles alone.
