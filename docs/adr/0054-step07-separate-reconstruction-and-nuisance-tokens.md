@@ -1,6 +1,6 @@
 # Separate expression reconstruction and nuisance tokens in Step 07
 
-**Status:** proposed (2026-11-10).
+**Status:** accepted (2026-11-10).
 
 Use one gene-to-latent cross-attention layer followed by two latent
 self-attention layers. Retain the fixed gene positions, 128 channels per
@@ -13,16 +13,27 @@ Compare two variants using the existing gene-query decoder design:
 - `AAE_512+16` uses a 528 × 128 matrix latent representation. The decoder
   reads the first 512 rows. The final 16 are exploratory nuisance tokens.
 
-Both variants reconstruct the measured expression profile on the frozen CM
-axis using full-axis MSE as in ADR 0052. The first experiment leaves the
-specific sources of nuisance variation unspecified. Reconstruction scores
-measure the effect of the additional tokens on reconstruction quality.
+Both variants use the two pre-normalized Transformer blocks from `MatrixAE`
+in the encoder, with residual self-attention and a residual GELU feedforward
+network. Each block attends across every latent token, including both token
+groups in `AAE_512+16`. The extra queries can learn through their effect on
+the reconstruction tokens, which the decoder reads.
 
-If the encoder allows the first 512 rows to attend to the last 16 rows,
-the nuisance token states can affect reconstruction through encoder
-self-attention. Attention connectivity, the self-attention block design,
-and how to distinguish the new `AAE_512` from the published artifact of the
-same name remain open.
+Both variants reconstruct the measured expression profile on the frozen CM
+axis using full-axis MSE as the sole training objective. Use the existing AAE
+fit recipe and ADR 0052's frozen split and source-specific scoring. The first
+experiment leaves the specific sources of nuisance variation unspecified.
+Reconstruction scores measure the effect of the additional tokens on
+reconstruction quality. Their biological interpretation requires separate
+evidence.
+
+Label the published cross-attention baseline `AAE_512_SA` in the new
+comparison. Its encoder uses one cross-attention layer and zero
+self-attention layers. Retain its historical `AAE_512` artifact identifier
+for sealed replay. Give the new `AAE_512` variant a distinct artifact
+identifier so both can appear in one comparison. Compare the baseline with
+the new `AAE_512` to measure the effect of adding the two Transformer blocks.
+Compare the two new variants to measure the effect of the extra 16 tokens.
 
 ## See
 
