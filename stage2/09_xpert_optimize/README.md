@@ -63,3 +63,41 @@ from the selected checkpoint and compares the artifact hashes.
 
 [Landmark evidence](execution/landmark_record/) contains the input manifests,
 qualification policy and measured resource and replay records.
+
+## Gene-axis release
+
+`execution/01_corpus/gene_axes.py` reproduces the Step 09 cohort from the
+landmark manifest and freezes panels for all three tenv folds. It projects
+eligible Tahoe training wells and the fold-local tenv training wells onto
+the CM axis. Each source ranks genes by Seurat normalized dispersion of
+linear CP10K, using 20 equal-width bins over log mean expression. The sum of
+the two ranks gives both sources equal weight. Frozen CM order breaks ties
+and orders the selected genes within each panel.
+
+The release materializes the four model views for fold 0. Each view uses the
+same rows, controls, conditioning and identity lookup. Expression is
+normalized after raw-count projection to that view. The shared panel is the
+intersection of the landmark and smallest G axis. Its view contains tenv
+expression for scoring. The frozen shared-panel sizes are 73, 72 and 71
+genes for folds 0, 1 and 2. Continuous metrics on these panels are provisional.
+
+Use the landmark commands above with the new release and its view predictor
+path. The fit CLI derives the uncompressed model from the predictor manifest.
+The qualification-only prediction limit keeps GPU checkpoint replays bounded.
+
+```bash
+AXES="$STEP/output/corpus/gene_axes"
+POLICY="$STEP/execution/gene_axes_record/qualification-policy.json"
+"$CAP" "$RECORD/gene-axes-build" "$PY" "$STEP/execution/01_corpus/gene_axes.py"
+PREDICTOR="$AXES/views/G18164/predictor"
+"$CAP" "$RECORD/full-axis-fit" "$PY" "$CLI" fit --predictor "$PREDICTOR" \
+    --fold 0 --seed 17 --policy "$POLICY" --output "$RUN-full"
+"$CAP" "$RECORD/full-axis-predict" "$PY" "$CLI" predict --predictor "$PREDICTOR" \
+    --checkpoint "$RUN-full/tenv.pt" --role validation --limit 4 --output "$RUN-full/validation"
+"$CAP" "$RECORD/full-axis-replay" "$PY" "$CLI" replay --predictor "$PREDICTOR" \
+    --checkpoint "$RUN-full/tenv.pt" --prediction "$RUN-full/validation"
+"$PY" -m unittest discover -s "$STEP/execution/tests" -p test_gene_axes.py -v
+```
+
+[Gene-axis evidence](execution/gene_axes_record/) records the frozen views,
+GPU qualification policy and checkpoint replays.

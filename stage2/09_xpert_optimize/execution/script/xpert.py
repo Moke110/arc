@@ -220,7 +220,7 @@ def fit(predictor_path, output, policy_path, fold, seed, resume=False):
                         for role in ("train", "validation")]
                for source in PHASES}
     run_key = {"predictor_sha256": predictor.digest, "fold": fold, "seed": seed,
-               "policy": policy, "policy_sha256": sha256(policy_path), "model": "XPert_base"}
+               "policy": policy, "policy_sha256": sha256(policy_path), "model": predictor.model}
     if resume:
         request = json.loads((output / "request.json").read_text())
         if request != run_key:
@@ -252,16 +252,19 @@ def fit(predictor_path, output, policy_path, fold, seed, resume=False):
     return report
 
 
-def predict(predictor_path, checkpoint, role, output):
+def predict(predictor_path, checkpoint, role, output, limit=None):
     saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
     if saved["schema"] != RUN_SCHEMA or saved["source"] != "tenv":
         raise ValueError("prediction requires a selected tenv checkpoint")
     run_key = saved["run_key"]
     predictor = Predictor(predictor_path, run_key["fold"])
-    if predictor.digest != run_key["predictor_sha256"]:
+    if predictor.digest != run_key["predictor_sha256"] or predictor.model != run_key["model"]:
         raise ValueError("checkpoint and predictor release do not match")
     policy = run_key["policy"]
+    if limit is not None and (policy["kind"] != "qualification" or type(limit) is not int or limit <= 0):
+        raise ValueError("a positive prediction limit is available only for qualification")
     cohort = predictor.dataset("tenv", role, targets=False)
+    n_cases = len(cohort) if limit is None else min(len(cohort), limit)
     model = XPert(predictor.identity()).to(policy["device"])
     model.load_state_dict(saved["model"])
     model.eval()
@@ -272,9 +275,9 @@ def predict(predictor_path, checkpoint, role, output):
         directory = Path(temporary) / "prediction"
         directory.mkdir()
         values = np.lib.format.open_memmap(directory / "delta.npy", mode="w+", dtype=np.float32,
-                                           shape=(len(cohort), len(predictor.genes)))
+                                           shape=(n_cases, len(predictor.genes)))
         with torch.inference_mode(), precision(policy):
-            for rows in batches(np.arange(len(cohort)), policy["microbatch"]):
+            for rows in batches(np.arange(n_cases), policy["microbatch"]):
                 inputs, _ = cohort.batch(rows, policy["device"])
                 delta = model(*inputs)[2].float().cpu().numpy()
                 if not np.isfinite(delta).all():
@@ -282,15 +285,18 @@ def predict(predictor_path, checkpoint, role, output):
                 values[rows] = delta
         values.flush()
         del values
-        cohort.cases[["case_id", "group_id", "drug_key", "dose_um", "control_index"]].to_csv(
+        cohort.cases.iloc[:n_cases][["case_id", "group_id", "drug_key", "dose_um", "control_index"]].to_csv(
             directory / "cases.csv", index=False
         )
         predictor.genes[["symbol", "hgnc_id"]].to_csv(directory / "genes.csv", index=False)
-        write_json(directory / "manifest.json", {
+        manifest = {
             "schema": RUN_SCHEMA, "role": role, "run_key": run_key,
             "checkpoint_sha256": sha256(checkpoint),
             "files": {name: sha256(directory / name) for name in ("delta.npy", "genes.csv", "cases.csv")},
-        })
+        }
+        if limit is not None:
+            manifest["qualification_limit"] = limit
+        write_json(directory / "manifest.json", manifest)
         directory.rename(output)
 
 
@@ -298,7 +304,7 @@ def replay(predictor, checkpoint, prediction):
     manifest = json.loads((prediction / "manifest.json").read_text())
     with tempfile.TemporaryDirectory(dir=prediction.parent, prefix=".replay-") as temporary:
         regenerated = Path(temporary) / "prediction"
-        predict(predictor, checkpoint, manifest["role"], regenerated)
+        predict(predictor, checkpoint, manifest["role"], regenerated, manifest.get("qualification_limit"))
         for name in ("manifest.json", "delta.npy", "cases.csv", "genes.csv"):
             if sha256(prediction / name) != sha256(regenerated / name):
                 raise ValueError(f"checkpoint replay differs: {name}")
@@ -318,6 +324,7 @@ def main():
     predict_parser = commands.add_parser("predict")
     predict_parser.add_argument("--role", choices=("validation", "test"), required=True)
     predict_parser.add_argument("--output", type=Path, required=True)
+    predict_parser.add_argument("--limit", type=int, help="limit prediction rows in qualification runs")
     replay_parser = commands.add_parser("replay")
     replay_parser.add_argument("--prediction", type=Path, required=True)
     for subparser in (fit_parser, predict_parser, replay_parser):
@@ -328,7 +335,7 @@ def main():
     if args.command == "fit":
         fit(args.predictor, args.output, args.policy, args.fold, args.seed, args.resume)
     elif args.command == "predict":
-        predict(args.predictor, args.checkpoint, args.role, args.output)
+        predict(args.predictor, args.checkpoint, args.role, args.output, args.limit)
     else:
         replay(args.predictor, args.checkpoint, args.prediction)
 

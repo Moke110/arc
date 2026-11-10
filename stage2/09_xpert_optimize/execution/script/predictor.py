@@ -12,6 +12,13 @@ import torch
 DOSE_BOUNDARIES = np.array([.21, .41, .71, 1.01, 1.51, 3.1, 4.1, 7.1, 12.1], dtype=np.float32)
 FIT_ROLES = ("train", "validation")
 SOURCES = ("tahoe", "tenv")
+AXIS_MODELS = {
+    "landmark": "XPert_base",
+    "G2000": "XPert_G2000",
+    "G5000": "XPert_G5000",
+    "G10000": "XPert_G10000",
+    "G18164": "XPert_G18164",
+}
 
 
 def sha256(path):
@@ -35,6 +42,11 @@ class Predictor:
         self.verified = set()
         if self.manifest["schema"] != "step09-predictor-v1":
             raise ValueError("unsupported Step 09 predictor")
+        if fold not in self.manifest.get("ready_folds", (0, 1, 2)):
+            raise ValueError("requested fold is not materialized for this gene axis")
+        self.model = AXIS_MODELS.get(self.manifest["axis"])
+        if self.model is None:
+            raise ValueError("gene axis is evaluator-only or has no XPert model")
         self.genes = self.table("genes.csv")
         if (len(self.genes) != self.manifest["gene_count"] or self.genes.hgnc_id.duplicated().any()
                 or self.genes.identity_index.duplicated().any()):

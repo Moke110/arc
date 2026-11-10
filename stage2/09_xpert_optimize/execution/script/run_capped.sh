@@ -30,13 +30,30 @@ fi
 printf '%q ' "$@" > "$record/command"
 printf '\n' >> "$record/command"
 scope="arc-step09-$$.scope"
-printf 'timestamp\tavailable_kib\tgpu_used_mib_total_mib_utilization_pct\n' > "$record/resources.tsv"
+printf 'timestamp\tavailable_kib\tgpu_used_mib_total_mib_utilization_pct\tscope_peak_bytes\tworker_peak_rss_kib\n' \
+    > "$record/resources.tsv"
 (
+    cgroup=""
     while :; do
         available=$(available_kib)
         gpu=$(timeout 2 nvidia-smi --query-gpu=memory.used,memory.total,utilization.gpu \
             --format=csv,noheader,nounits 2>> "$record/monitor-errors.log" || true)
-        printf '%s\t%s\t%s\n' "$(date -Is)" "$available" "$gpu" >> "$record/resources.tsv"
+        if [[ -z "$cgroup" ]]; then
+            cgroup=$(systemctl --user show "$scope" --property=ControlGroup --value 2>/dev/null || true)
+        fi
+        scope_peak=""
+        worker_peak=""
+        if [[ -n "$cgroup" && -d "/sys/fs/cgroup$cgroup" ]]; then
+            scope_peak=$(cat "/sys/fs/cgroup$cgroup/memory.peak" 2>/dev/null || true)
+            worker_peak=$(
+                while read -r pid; do
+                    awk '/^VmHWM:/ {print $2}' "/proc/$pid/status" 2>/dev/null || true
+                done < "/sys/fs/cgroup$cgroup/cgroup.procs" 2>/dev/null |
+                    awk '$1 > maximum {maximum=$1} END {print maximum}'
+            )
+        fi
+        printf '%s\t%s\t%s\t%s\t%s\n' "$(date -Is)" "$available" "$gpu" "$scope_peak" "$worker_peak" \
+            >> "$record/resources.tsv"
         if (( available < minimum_kib )) && systemctl --user is-active --quiet "$scope"; then
             printf '%s Available RAM below 12 GiB. Interrupting the job.\n' "$(date -Is)" >> "$record/status.log"
             systemctl --user kill --signal=SIGINT "$scope" || true

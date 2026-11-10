@@ -1,0 +1,116 @@
+{
+  "axis_sizes": {
+    "G10000": 10000,
+    "G18164": 18164,
+    "G2000": 2000,
+    "G5000": 5000
+  },
+  "builder_sha256": "6bad8e0bc5180c0121a12ca19e1399f85786fdad75a8e80e5bd85c377507b0cc",
+  "fixture": false,
+  "folds": {
+    "0": {
+      "shared_continuous_provisional": true,
+      "shared_gene_count": 73,
+      "train_rank_cohorts": {
+        "tahoe": {
+          "train_wells": 56039,
+          "zero_libraries": 0
+        },
+        "tenv": {
+          "train_wells": 2388,
+          "zero_libraries": 0
+        }
+      }
+    },
+    "1": {
+      "shared_continuous_provisional": true,
+      "shared_gene_count": 72,
+      "train_rank_cohorts": {
+        "tahoe": {
+          "train_wells": 56039,
+          "zero_libraries": 0
+        },
+        "tenv": {
+          "train_wells": 2379,
+          "zero_libraries": 0
+        }
+      }
+    },
+    "2": {
+      "shared_continuous_provisional": true,
+      "shared_gene_count": 71,
+      "train_rank_cohorts": {
+        "tahoe": {
+          "train_wells": 56039,
+          "zero_libraries": 0
+        },
+        "tenv": {
+          "train_wells": 2388,
+          "zero_libraries": 0
+        }
+      }
+    }
+  },
+  "landmark_predictor_sha256": "085dd04a932d7b3f975a55c6be665204a76ea898a732e7894824ee1ad95316c8",
+  "panels_sha256": {
+    "fold_0/G10000.csv": "e76c72bb892c7d6bbe03d99651e8b28c788d8f59cbf491d8ae59205773e84f72",
+    "fold_0/G18164.csv": "dbbfe1d86a2071b63c682f084ff71cc811eef24e2a5ba353f8f0a208f5a10664",
+    "fold_0/G2000.csv": "33bcae44497637d7538665985928d3e60871f100f50be80b2bb0fbea277042ea",
+    "fold_0/G5000.csv": "f0c0401a12a0ca069739dc8bfae94994e584b7bd567cfbdafe62f1c5258aaec7",
+    "fold_0/ranks.csv": "81f1cea473e6e13147d0108fc33334c8fb00769f1c7ac7eb54501645ea16bac2",
+    "fold_0/shared.csv": "2d307ce70d321f05a024d536c1fc7d44d221a50aa0076b7116774700eecae73c",
+    "fold_1/G10000.csv": "fe388aa7ff82bf2f15c1a014d86df700e60f6077322f8cec9be133b3f183b0fe",
+    "fold_1/G18164.csv": "dbbfe1d86a2071b63c682f084ff71cc811eef24e2a5ba353f8f0a208f5a10664",
+    "fold_1/G2000.csv": "e60e208f4ecf3a26ee65d33a41048cd7bb656769f5a7486f6e6a04b4f61f7dd2",
+    "fold_1/G5000.csv": "2ed08ac9f161fe8fd6096980f437133a3255d1fc110c0087c4aba7206ec157a3",
+    "fold_1/ranks.csv": "c354d54559762d67eda9082decea81b4b39ce516d40e0d96b98c937966b7fd06",
+    "fold_1/shared.csv": "34063fc1cba9ff1d6301515475f06d070dd52b176d6c3f5e822b692f24e7665c",
+    "fold_2/G10000.csv": "eb6a31b320d913bcea5bbb968dc8420806e1ccc4e149cacc177fe933525b5129",
+    "fold_2/G18164.csv": "dbbfe1d86a2071b63c682f084ff71cc811eef24e2a5ba353f8f0a208f5a10664",
+    "fold_2/G2000.csv": "c0d063e130ff29b28988315a2ef351dc84154a03c7758b39850509594c5f10ad",
+    "fold_2/G5000.csv": "4fee84d0f2f6fc6d7ccaf5246f79539b26ede245ce5386845cf9416788aa3d77",
+    "fold_2/ranks.csv": "2cc17e7b76c488e6849de7fac2144962e26339e868663615efc6eb6251d56e5a",
+    "fold_2/shared.csv": "880858848b5ff58ad57d5c38bd0c3dbc245a3e59375ceb5ec6cd2b8cd85740b0"
+  },
+  "rank_recipe": {
+    "mean_bins": 20,
+    "source": "Seurat normalized dispersion on train-only linear CP10K",
+    "source_weights": {
+      "tahoe": 0.5,
+      "tenv": 0.5
+    },
+    "tie_break": "frozen CM order"
+  },
+  "ready_folds": [
+    0
+  ],
+  "schema": "step09-gene-axes-v1",
+  "source_hashes": {
+    "gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544",
+    "genes.csv": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "tahoe.h5ad": "300955e0b7739b87960d1056536eb3c14e10f1376792c695a137eed818ed7f45",
+    "tenv.h5ad": "a3d521f0ca0fbc732f2f6ba5e31ec2f1efb000102c30d64b7c991cc23ed4a886"
+  },
+  "views": {
+    "G10000": {
+      "evaluator": "ea9628011061b574dd6fc449dcf454707febacb0f040d408b1fb4b4454b29297",
+      "predictor": "f344e9f68c5ade38f58520ce83a458cf3a9cca951ef46c4b6c10408c25ca408c"
+    },
+    "G18164": {
+      "evaluator": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "predictor": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713"
+    },
+    "G2000": {
+      "evaluator": "da7d565061efe8d2b252fc5d77ad47450aad40ca3824f9ff75f3761dfb68bcf5",
+      "predictor": "793cf50246b449cdb7aab08e06a99f789d152a7e450f72289943c12d93fdb5a3"
+    },
+    "G5000": {
+      "evaluator": "2dc095face9cbb3ee8a3fbc08eee167f5d1ad128753392fae4c2c89bee6c9f3f",
+      "predictor": "fa3b4f556df8a637e3274b63f3eaab80e82c1a2fdb8fc9246794e4fa201553e9"
+    },
+    "shared": {
+      "evaluator": "f55245c0c1d8d5f5572ca4535c053fafb34edbec9982ea23d60209d3ede7320b",
+      "predictor": "a29a018feaab6c303d786d22605cd15daf4bc856be161bd1637139071ca945d5"
+    }
+  }
+}

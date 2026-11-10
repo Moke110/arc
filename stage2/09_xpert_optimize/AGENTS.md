@@ -5,6 +5,8 @@
   gene axes, XPert arms, or the validation and test boundary.
 - Prepare landmark inputs with `execution/01_corpus/build.py`. Raw test row joins
   and test expression stay under the evaluator release.
+- Prepare the three fold-local HVG panels and the Round 1 G-axis views with
+  `execution/01_corpus/gene_axes.py`. Freeze the shared panel before fitting.
 - Fit and replay with `execution/script/xpert.py`. Give workers the predictor
   directory and selected checkpoint.
 - Before real-data jobs, read the [WSL resource rules](../../docs/agents/execution-environment.md)
