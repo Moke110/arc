@@ -29,8 +29,9 @@ The old CM benchmark and PRnet steps 05 and 06 were removed on 2026-11-07. Their
   whole-transcriptome, so a 978-landmark model cannot be the delivery model.
 - **978 quarantine.** PRnet's native demo is the 978-gene LINCS matrix; it is
   allowed only inside `01_setup/execution/prnet/` and its outputs are labelled
-  *setup-only*. No later Stage 2 evaluation, metric, fold or comparison may read
-  a 978 artifact (ADR 0024). The whole-transcriptome guard still governs selection.
+  *setup-only*. [ADR 0057](../docs/adr/0057-step09-xpert-landmark-reference.md)
+  permits a separate 978-gene reference and shared-panel scoring within the
+  Step 09 XPert ablation. The whole-transcriptome guard governs selection.
 - The tenv run uses the shared chemical inputs, runtime admission gates and
   frozen cold-drug folds documented in [ADR 0042](../docs/adr/0042-tenv-model-benchmark-redesign.md).
   [The 2026-10-26 audit](audit/model_selection_decisions.md) records the

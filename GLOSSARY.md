@@ -379,6 +379,12 @@ _Avoid_: mean Δ, DMSO mean
 **Latent XPert** (`latent_XPert`):
 The XPert-derived predictor considered for Step 08. It transforms a baseline transcriptome in the latent space of a separately trained transcriptome autoencoder and predicts the drug response on the full CM gene axis.
 
+**XPert landmark reference** (`XPert_base`):
+The Step 09 perturbation predictor on the 978 L1000 landmark genes that anchors the gene-space and compression comparisons.
+
+**XPert shared scoring panel**:
+The intersection of the genes predicted by all planned Step 09 arms. Each arm is scored against the same tenv drug–dose responses on this panel.
+
 **Tenv model boundary**:
 The parameters updateable together in one backward pass for the tenv prediction
 task. A drug encoder trained independently on non-perturbation data is a separate
@@ -470,6 +476,10 @@ _Avoid_: globally unseen drug, unseen drug (without specifying the CM scope)
 **Step 05 cold-cm-drug split**:
 A tenv cold-drug split that allows the held-out drug blocks to appear in
 Tahoe.
+
+**Step 09 cold-cm-drug fold**:
+One of the frozen tenv cold-drug folds paired with the shared Tahoe training
+and validation partitions. Tenv test drug blocks can appear in Tahoe.
 
 **Step 05 cold-drug split**:
 A tenv cold-drug split that also withholds its tenv validation and test drug

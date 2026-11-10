@@ -73,3 +73,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0054](0054-step07-separate-reconstruction-and-nuisance-tokens.md) | Separate expression reconstruction and nuisance tokens in a Step 07 attention autoencoder |
 | [0055](0055-step07-matrix-mlp-reconstruction.md) | Compare the vector MLP and an AAE-shaped matrix MLP in Step 07 |
 | [0056](0056-step07-shared-expression-representation.md) | Compare five matrix reconstruction models with a shared frozen expression representation interface |
+| [0057](0057-step09-xpert-landmark-reference.md) | Use an internal landmark reference and a shared scoring panel for the Step 09 XPert ablation |
