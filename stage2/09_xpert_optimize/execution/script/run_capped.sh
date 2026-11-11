@@ -2,6 +2,13 @@
 # Run a Step 09 job serially with a bounded WSL scope and resource evidence.
 set -euo pipefail
 
+# Bash otherwise resumes reading this file after the worker returns. A live
+# rewrite can shift that offset backwards and launch the same worker twice.
+# Execute an immutable in-memory snapshot before opening logs or starting work.
+if [[ -z ${BASH_EXECUTION_STRING:-} ]]; then
+    exec /bin/bash -c "$(cat -- "$0")" "$0" "$@"
+fi
+
 if (( $# < 2 )); then
     printf 'Usage: %s RECORD_DIR COMMAND [ARGS...]\n' "$0" >&2
     exit 2

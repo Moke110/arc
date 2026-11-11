@@ -1,0 +1,29 @@
+{
+  "schema": "step09-rerun-recovery-v1",
+  "recorded_at": "2026-11-11T14:35:21.071830+08:00",
+  "incident": "live in-place run_capped.sh rewrite caused Bash to re-read worker launch after valid first run completed",
+  "proof": "test_run_capped.py live-script-rewrite regression reproduced two launches before snapshot fix, one launch after",
+  "completed_run_preserved": "XPert_G512-fold-0-seed-17",
+  "run_sha256": "6a4176f58eca2ca7b3486ec014a64139b440c597a6ccc148b7a820338d4326e0",
+  "checkpoint_sha256": "2f8e63a5d567630c8826de739944cc7737c0616139f386ccb33215112e230183",
+  "completed_validation": "rerun_queue.completed passed",
+  "training_minutes": 20.88067692300004,
+  "phases": {
+    "tahoe": {
+      "updates": 3650,
+      "passes": 1.042131372793947,
+      "best_update": 3150,
+      "stop_reason": "ten_strict_above_best"
+    },
+    "tenv": {
+      "updates": 320,
+      "passes": 2.1440536013400333,
+      "best_update": 270,
+      "stop_reason": "three_strict_increases"
+    }
+  },
+  "resource_caveat": "time.log/stdout.log/stderr.log were truncated by duplicate worker launch. time.log measures the rejected duplicate, not original fit. Original run.json training_minutes/peak_rss_kib/GPU peaks, histories, full pipeline log and resources.tsv are retained. wall-clock.tsv spans the full launcher including duplicate.",
+  "retained_attempt_snapshot": "stage2/09_xpert_optimize/execution/tmp/rerun/formal/resources/XPert_G512-fold-0-seed-17/duplicate-launch-incident",
+  "repair": "launcher executes immutable in-memory snapshot before opening logs; regression passes; restart verifies and skips completed first run, runs remaining 23 without retraining it",
+  "status": "ready_to_resume"
+}
