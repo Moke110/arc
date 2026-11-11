@@ -83,7 +83,7 @@ def source_provenance(files, sources, fixture=False):
     evidence = {}
     for source in sources:
         raw = files[f"{source}.h5ad"]
-        manifest = raw.parent / "manifest.json"
+        manifest = raw.parent / ("tenv_manifest.json" if source == "tenv" else "manifest.json")
         if not fixture and not manifest.is_file():
             raise ValueError(f"{source}: raw release manifest is missing: {manifest}")
         evidence[source] = {"raw_file": str(raw.resolve()),
