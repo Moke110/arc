@@ -80,6 +80,34 @@ class CorpusReleaseTest(unittest.TestCase):
         )
         return native, root / "shared", drugs, root / "release"
 
+    def test_source_replay_follows_ids_across_training_and_raw_row_permutations(self):
+        native, shared, drugs, release = self.fixture()
+        for source in ("tenv", "tahoe"):
+            path = native / f"{source}.h5ad"
+            data = ad.read_h5ad(path)
+            # Each treated well has a distinct plate/control expression.
+            data.obs["plate"] = data.obs.plate.astype(str)
+            data.obs.loc[["c2", "t2"], "plate"] = "Q"
+            data.write_h5ad(path)
+        publish(native, shared, drugs, release, fixture=True)
+        for source, name in (("tenv", "tenv"), ("tahoe", "tahoe_bulk")):
+            training_path = release / f"{name}.h5ad"
+            raw_path = native / f"{source}.h5ad"
+            training_data = ad.read_h5ad(training_path)
+            raw_data = ad.read_h5ad(raw_path)
+            for reverse_training, reverse_raw in ((False, False), (True, False),
+                                                  (False, True), (True, True)):
+                with self.subTest(source=source, reverse_training=reverse_training,
+                                  reverse_raw=reverse_raw):
+                    (training_data[::-1].copy() if reverse_training else
+                     training_data).write_h5ad(training_path)
+                    (raw_data[::-1].copy() if reverse_raw else raw_data).write_h5ad(raw_path)
+                    check = verify_training_source(native, release, source,
+                                                   native / "tables", drugs, fixture=True)
+                    self.assertEqual(check["rows_replayed"], 2)
+                    self.assertEqual(check["control_profiles_replayed"], 2)
+                    self.assertEqual(check["max_abs_error"], 0.)
+
     def test_separate_raw_locations_and_table_binding(self):
         from bases import raw
         native, shared, drugs, release = self.fixture()
