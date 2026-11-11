@@ -4,7 +4,7 @@ Drug-perturbation model code and weights as external 项 (ADR 0030):
 each has tracked `script/` + `author_log.json`, and gitignored `source/`
 (upstream clone + downloaded assets) and `local/` (declared local additions).
 
-Deployed (run cards in `../stage2/01_setup/`):
+Historically set up (run cards are retained in Git history):
 
 - `PRnet/` — PRnet (Apache-2.0); 978 LINCS + 5,000 Sci-Plex checkpoints.
 - `CPA/` — CPA (BSD-3-Clause); Kang + Norman2019 checkpoints, 5,000 genes.
@@ -15,9 +15,9 @@ Deployed (run cards in `../stage2/01_setup/`):
 - `Squidiff/` — Squidiff (BSD-3-Clause); configurable genes, rFCFP × dose scaling.
 - `CMonge/` — Conditional Monge Gap (MIT); RDKit structure + categorical `drug-dose`, bundled demo data.
 - `DECANT/` — DECANT (MIT); configurable genes, dose context, no data/weights.
-- `PerturbDiff/` — native setup: `../stage2/01_setup/execution/perturbdiff/`; tenv admission: `../stage2/03_modes_tenv/`.
+- `PerturbDiff/` — native setup and tenv admission evidence are retained in Git history.
 
-Reference-only (not deployed):
+Reference-only:
 
 - `WAVE/` — WAVE (MIT); 978 default, **no dose input** → fails revised G2.
 - `ExPO/` — ExPO (MIT); **978 only** in published scope → fails revised G1.
@@ -28,3 +28,5 @@ Reference-only (not deployed):
 Layout: ADR 0030. Category overview, exclusion table and the manual-download
 procedure: `README.md`. Every item carries `manifest.sha256` (453.0 GB hashed,
 27/27 verified); `script/verify.sh` checks it offline.
+
+Current Stage 2 retains only [`01_bases`](../stage2/01_bases/README.md). Model setup and benchmark runners were removed; verify retained external sources with each item’s `script/verify.sh`.
