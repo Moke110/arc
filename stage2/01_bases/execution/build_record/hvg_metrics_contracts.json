@@ -1,0 +1,42 @@
+{
+  "actual_data_hvg": {
+    "expected_peak_rss": "under 1 GiB; must measure actual build/replay",
+    "planned_output": "stage2/01_bases/output/hvg-tenv-v1",
+    "planned_training": "stage2/01_bases/output/training-v2/tenv.h5ad",
+    "reason": "Two capped real-source jobs are running; no third dataset job allowed",
+    "started": false
+  },
+  "base_commit": "a0db2033514aa3294316070b7b422e0b4b244b42",
+  "files": {
+    "bases/hvg.py": "4bc62ac8f87155ad31d38fa537a7478fa37f4dcc41b0adaeecca75f14802df67",
+    "bases/metrics.py": "f9278dc6aa31e3a2d32a534303d4a8051bc6ec89fdd858b6ec9c49960ee541d8",
+    "bases/plots.py": "64634fcff1a197831bd42ca90fb4a99bede6efee5abfa81c8b7feb87d2f3596f",
+    "build_hvg.py": "17804b18bbf831eb1ec65cd41f6a290088f0b083ecbe9283d2643a2bbfb322d7",
+    "evaluate_predictions.py": "fab8f442f189bf76b294b32e64f1e63f1bf020bbb2026a5892fd8b3c299453b6",
+    "hvg_metrics.md": "a689b29f405fa172da4413e36c715455ec67cd22dc6bbd56550ec7d16bfc8218",
+    "replay_pr.py": "8aa4aec2a3e9b95729279d6f084bfe303b4782ad041c89b1f16b5efc43e4e3ba"
+  },
+  "interfaces": [
+    "bases.hvg.build_hvg/HVGRelease.select/verify_hvg/make_cohorts",
+    "bases.metrics.retrieval/score_groups/summarize_runs/continuous",
+    "bases.plots.render_retrieval/replay_retrieval"
+  ],
+  "provenance": {
+    "continuous": "Numeric definitions recovered from aca92c2:stage2/evaluation/continuous.py; no historical caches or consumer restored",
+    "hvg": "Seurat normalized-dispersion recipe from aca92c2:stage2/09_xpert_optimize/execution/01_corpus/gene_axes.py source_dispersion; now reads bounded published log1p X and records expm1 float32 recipe",
+    "metrics": "Recovered numeric algorithm from aca92c2:stage2/evaluation/metrics.py; integer coverage validation strengthened; no old runtime imports"
+  },
+  "scope": "standalone 01_bases HVG, indexed metrics and plots",
+  "status": "code-and-synthetic-contracts-accepted; actual tenv HVG release pending resource window",
+  "tests": {
+    "result": "PASS",
+    "test_hvg.py": 2,
+    "test_metrics.py": 10,
+    "test_plots.py": 1
+  },
+  "visual_qa": {
+    "artifact": "/home/chang/arc/.scratch/stage2-bases/runtime/hvg-metrics/revised.png",
+    "result": "PASS; three readable panels, legend outside curves, no clipping; sealed CSV replays identical PNG bytes",
+    "synthetic": true
+  }
+}
