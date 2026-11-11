@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'script'))
-from rerun_queue import MODELS, verify_plan, completed
+from rerun_queue import MODELS, verify_plan, completed, execute
 from round_contract import sha256
 
 
@@ -35,6 +35,17 @@ class QueueTest(unittest.TestCase):
             unwanted = dict(runs[0], model='XPert_G1024', id='excluded')
             with self.assertRaises(ValueError):
                 verify_plan(dict(plan, runs=runs + [unwanted]))
+
+    def test_persistent_user_cancellation_prevents_any_queue_launch(self):
+        with TemporaryDirectory() as temp:
+            work = Path(temp)
+            (work / 'cancel-pending.json').write_text('{"status":"finish_current_then_stop"}')
+            with self.assertRaises(SystemExit) as stopped:
+                execute(work / 'unused-plan.json', work / 'unused-policy.json', work)
+            self.assertEqual(stopped.exception.code, 75)
+            self.assertEqual(json.loads((work / 'queue-status.json').read_text())['status'],
+                             'cancelled_by_user')
+            self.assertFalse((work / 'fits').exists())
 
     def test_completed_fit_requires_selected_checkpoint_identity(self):
         with TemporaryDirectory() as temp:

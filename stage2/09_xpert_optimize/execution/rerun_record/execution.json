@@ -1,6 +1,6 @@
 {
   "schema": "step09-rerun-execution-v1",
-  "status": "running",
+  "status": "finishing_current_then_stop",
   "service": "arc-step09-round1-rerun.service",
   "started_at": "2026-11-11T14:07:09+08:00",
   "integration_branch": "dev",
@@ -41,5 +41,7 @@
     "excluded_training_records": "execution/tmp/rerun/superseded-six-model",
     "reason": "Explicit user request on2026-11-11"
   },
-  "scope_amendment_resumed_at": "2026-11-11T15:33:27.580877+08:00"
+  "scope_amendment_resumed_at": "2026-11-11T15:33:27.580877+08:00",
+  "cancelled_run_count": 5,
+  "cancellation_record": "execution/rerun_record/cancellation.json"
 }

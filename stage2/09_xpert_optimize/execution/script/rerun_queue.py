@@ -39,7 +39,18 @@ def completed(run, fit, policy):
     return report
 
 
+def stop_if_cancelled(work):
+    marker = work / 'cancel-pending.json'
+    if marker.exists():
+        request = read_json(marker)
+        write_json(work / 'queue-status.json', {'status': 'cancelled_by_user',
+                   'cancellation': request, 'exit_code': 75})
+        print('Pending jobs cancelled by user; no further training or evaluation.', flush=True)
+        raise SystemExit(75)
+
+
 def execute(plan_path, policy, work, selected=None, smoke=False):
+    stop_if_cancelled(work)
     plan = read_json(plan_path)
     verify_plan(plan)
     recipe = read_json(policy)
@@ -57,6 +68,7 @@ def execute(plan_path, policy, work, selected=None, smoke=False):
     with (work / '.queue.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         for run in plan['runs']:
+            stop_if_cancelled(work)
             if selected and run['id'] not in selected:
                 continue
             fit = work / 'fits' / run['id']
@@ -81,6 +93,7 @@ def execute(plan_path, policy, work, selected=None, smoke=False):
 
 def evaluate(plan_path, policy, work):
     """Predict, independently replay and measure the selected native test loss."""
+    stop_if_cancelled(work)
     plan = read_json(plan_path)
     verify_plan(plan)
     for run in plan['runs']:

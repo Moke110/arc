@@ -15,6 +15,15 @@ if (( $# < 2 )); then
 fi
 record=$1
 shift
+# A running worker executes an immutable snapshot. Subsequent launches consult
+# this persistent user cancellation before creating logs or starting a worker.
+if [[ "$record" == */formal/resources/* ]]; then
+    cancellation="${record%%/resources/*}/cancel-pending.json"
+    if [[ -f "$cancellation" ]]; then
+        printf 'New job cancelled by user; current training may finish. See %s\n' "$cancellation" >&2
+        exit 75
+    fi
+fi
 mkdir -p "$(dirname -- "$record")"
 mkdir -- "$record"
 exec 9>"${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/arc-step09-heavy.lock"

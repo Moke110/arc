@@ -1,0 +1,20 @@
+{
+  "schema": "step09-user-cancellation-v1",
+  "requested_at": "2026-11-11T15:53:32.697344+08:00",
+  "status": "finish_current_then_stop",
+  "allow_current_run": "XPert_MLP512-fold-0-seed-17",
+  "completed_runs": [
+    "XPert_G512-fold-0-seed-17",
+    "XPert_G512-fold-0-seed-42"
+  ],
+  "cancelled_runs": [
+    "XPert_MLP512-fold-0-seed-42",
+    "XPert_G512-fold-1-seed-17",
+    "XPert_G512-fold-1-seed-42",
+    "XPert_MLP512-fold-1-seed-17",
+    "XPert_MLP512-fold-1-seed-42"
+  ],
+  "cancel_after_training": true,
+  "run_test_or_publication": false,
+  "reason": "User cancelled every unstarted run and requested stop after current training completes."
+}

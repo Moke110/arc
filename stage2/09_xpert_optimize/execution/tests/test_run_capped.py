@@ -12,6 +12,21 @@ LAUNCHER = Path(__file__).resolve().parents[1] / "script" / "run_capped.sh"
 
 
 class CappedLauncherTest(unittest.TestCase):
+    def test_cancel_pending_blocks_new_worker_without_creating_run_logs(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            work = root / 'formal'
+            work.mkdir()
+            (work / 'cancel-pending.json').write_text('{"status":"finish_current_then_stop"}')
+            logs = work / 'resources' / 'pending-model'
+            called = root / 'worker-called'
+            result = subprocess.run([LAUNCHER, logs, '/usr/bin/touch', called],
+                                    capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 75)
+            self.assertFalse(called.exists())
+            self.assertFalse(logs.exists())
+            self.assertIn('cancelled', result.stderr)
+
     def test_live_script_rewrite_does_not_launch_worker_twice(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)

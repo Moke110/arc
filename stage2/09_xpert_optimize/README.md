@@ -9,6 +9,12 @@ on 2026-11-11 to use only G512 and MLP512, each on folds 0/1 and seeds 17/42
 plan and excluded-model records are retained as historical evidence. The
 sections below describe the previous exploratory study.
 
+On 2026-11-11 the user cancelled the five unstarted runs and requested that
+MLP512/fold 0/seed 17 finish both training phases before the queue stops.
+[Cancellation record](execution/rerun_record/cancellation.json) preserves this
+instruction. The runtime `cancel-pending.json` marker blocks subsequent launches
+and evaluation; an incomplete matrix must not publish final figures or close #144.
+
 The [verified plan](execution/rerun_record/plan.json) binds all eight input
 identities. [Formal policy](execution/rerun_record/policy.json) fixes effective
 batch 16, validation cadence, exposure budgets and early stopping. The
