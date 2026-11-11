@@ -11,6 +11,7 @@ import h5py
 from anndata.io import read_elem
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.corpora import publish, verify_training_source
 
 
@@ -111,7 +112,7 @@ class CorpusReleaseTest(unittest.TestCase):
     def test_separate_raw_locations_and_table_binding(self):
         from bases import raw
         native, shared, drugs, release = self.fixture()
-        tahoe = native.parent / "tahoe-counts-v1"
+        tahoe = native.parent / "tahoe-raw-counts"
         tahoe.mkdir()
         (native / "tahoe.h5ad").rename(tahoe / "tahoe.h5ad")
         tables = native.parent / "identity-tables"

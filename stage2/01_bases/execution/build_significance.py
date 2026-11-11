@@ -2,16 +2,17 @@
 import argparse
 import json
 from pathlib import Path
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.truth_build import build, verify, smoke
 
 
 def main():
     root = next(path for path in Path(__file__).resolve().parents if (path / '.git').exists())
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--training', type=Path, default=root / 'stage2/01_bases/output/training-v1')
+    parser.add_argument('--training', type=Path, default=root / 'stage2/01_bases/output/historical-training-release')
     parser.add_argument('--native', type=Path, required=True,
                         help='explicit bases-native raw integer count corpus; never normalized training expression')
-    parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/truth-tenv-v1')
+    parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/tenv-truth')
     parser.add_argument('--rscript', type=Path, default=Path('/home/chang/miniconda3/envs/biomni_e1/bin/Rscript'))
     parser.add_argument('--batch-size', type=int, default=25)
     parser.add_argument('--workers', type=int, choices=(1, 2), default=2)

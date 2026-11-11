@@ -51,3 +51,7 @@ stage2/_archive/cm_bench_v1/03_state/entry.py
 # Frozen bytecode cleanup evidence records the original locations of four
 # unmanifested interpreter caches relocated out of immutable CMonge source.
 stage2/03_modes_tenv/execution/models/cmonge/native_bytecode_cleanup.json
+# --- ticket #156: frozen repo-health evidence moved to log/health ----------------
+# The captured #155 audit output quotes a fixture literal that never existed in the
+# repository; the file is frozen evidence and keeps its bytes when it moves.
+^stage2/01_bases/log/health/final_health/check_paths_corrected\.stdout\.log$

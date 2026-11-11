@@ -2,6 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.identity import GeneIdentity, IdentityError
 
 class IdentityContract(unittest.TestCase):

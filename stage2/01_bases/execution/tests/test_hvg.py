@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from anndata.io import write_elem
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.hvg import build_hvg, HVGRelease, verify_hvg, make_cohorts
 from bases.hvg_qa import verify_population_isolation
 

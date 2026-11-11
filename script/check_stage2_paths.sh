@@ -101,7 +101,9 @@ main() {
     git ls-files -z stage2 >"$files_list" || exit 2
     local entry
     for entry in stage2/* stage2/.[!.]* stage2/..?*; do
-      [ -e "$entry" ] || continue
+      # The retired-step rule constrains step *directories*; the Stage 2 routing
+      # document stage2/AGENTS.md and other files are not step entries.
+      [ -d "$entry" ] || continue
       if [ "$entry" != "stage2/01_bases" ]; then
         echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
         return 1

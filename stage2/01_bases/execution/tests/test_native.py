@@ -7,6 +7,7 @@ import pandas as pd
 import h5py
 from anndata.io import read_elem
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.native import build_tenv, verify_tenv
 
 class NativePreparationTest(unittest.TestCase):

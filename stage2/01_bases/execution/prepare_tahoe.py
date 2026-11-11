@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.tahoe import build_tahoe, verify_tahoe
 from bases.identity import AXIS_SHA256
 import hashlib
@@ -22,9 +23,9 @@ def main():
     parser.add_argument('action', choices=('build', 'verify'))
     parser.add_argument('--source', type=Path, default=root / 'pert_data/Tahoe-100M/source')
     parser.add_argument('--source-manifest', type=Path, default=root / 'pert_data/Tahoe-100M/manifest.sha256')
-    parser.add_argument('--axis', type=Path, default=root / 'stage2/01_bases/output/native-v1/tables/genes.csv')
-    parser.add_argument('--crosswalk', type=Path, default=root / 'stage2/01_bases/output/native-v1/tables/gene_crosswalk.csv')
-    parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/tahoe-counts-v1')
+    parser.add_argument('--axis', type=Path, default=root / 'stage2/01_bases/output/gene-identity/tables/genes.csv')
+    parser.add_argument('--crosswalk', type=Path, default=root / 'stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv')
+    parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/tahoe-raw-counts')
     parser.add_argument('--batch-size', type=int, default=1024)
     args = parser.parse_args()
     if args.batch_size <= 0:

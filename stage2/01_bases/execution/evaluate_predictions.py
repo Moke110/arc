@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.hvg import sha256
 from bases.metrics import score_groups
 from bases.plots import render_retrieval
