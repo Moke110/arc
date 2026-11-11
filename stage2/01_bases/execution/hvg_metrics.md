@@ -1,11 +1,12 @@
 # HVG and shared indexed evaluation
 
 These interfaces belong to 01_bases and require no deleted Stage 2 consumer.
-Add this directory (execution) to the Python import path.
+Add `output/api` (the single published implementation) to the Python import
+path; execution commands bind it through `execution/public_api.py`.
 
 ## HVG release
 
-build_hvg.py defaults to output/training-v2/tenv.h5ad and seals that exact
+build_hvg.py defaults to output/training-corpora/tenv.h5ad and seals that exact
 file hash in its release. It reads only the selected training h5ad's small metadata and X
 in 64-row windows. It never discovers or opens significance files. Its recipe
 recovers linear CP10K with expm1 from the published float32 natural-log1p
@@ -30,7 +31,7 @@ The descriptive full-tenv population is for inspection only. Model selection
 must declare the exact training population:
 
     from bases.hvg import HVGRelease
-    release = HVGRelease("stage2/01_bases/output/hvg-tenv-v1")
+    release = HVGRelease("stage2/01_bases/output/tenv-hvg")
     selected_gene_indices = release.select(
         "fold_0", 2000, training_sample_ids=train_sample_ids
     )
@@ -65,8 +66,8 @@ The standalone evaluator reads prediction .npy arrays through a memory map:
     python stage2/01_bases/execution/evaluate_predictions.py \
       --predictions predictions.npy --samples prediction_samples.csv \
       --genes prediction_genes.csv \
-      --truth stage2/01_bases/output/truth-tenv-v1 \
-      --assignments stage2/01_bases/output/hvg-tenv-v1/cohorts.csv \
+      --truth stage2/01_bases/output/tenv-truth \
+      --assignments stage2/01_bases/output/tenv-hvg/cohorts.csv \
       --fold 0 --role test --label Model --output evaluation-output
 
 The samples CSV gives sample_id, drug_parent, dose_um in prediction row
@@ -77,8 +78,8 @@ and samples from another role are rejected before scoring. The evaluator publish
 per-group AP, macro summaries, input seals and the plotted numeric source.
 It does not train a model or restore historical predictions.
 
-Current selection, scoring and diagnostics use training-v2 and the accepted
-truth-tenv-v2 successor envelope. That envelope proves the same tenv raw counts,
+Current selection, scoring and diagnostics use `output/training-corpora` and the
+re-issued `output/tenv-truth-successor` envelope. That envelope proves the same tenv raw counts,
 exact treated/control identities, parent-dose membership and normalization as
 the original frozen v1 tenv truth input. The original truth manifest is not
 rewritten. Historical v1 Tahoe failed source replay and is rejected/superseded;
@@ -101,13 +102,13 @@ Actual model reports require real predictions and an accepted truth release.
 
 ## Actual-data diagnostic acceptance
 
-After training-v2, the complete truth release and its accepted successor
+After the current training release, the complete truth release and its accepted successor
 envelope exist, the following commands replay actual HVG populations and
 export a diagnostic panel:
 
     python stage2/01_bases/execution/build_hvg.py
     python stage2/01_bases/execution/build_hvg.py --verify
-    python stage2/01_bases/execution/verify_hvg_metrics.py       --training stage2/01_bases/output/training-v2       --hvg stage2/01_bases/output/hvg-tenv-v1       --successor stage2/01_bases/output/truth-tenv-v2       --output stage2/01_bases/output/hvg-metrics-diagnostic-v1
+    python stage2/01_bases/execution/verify_hvg_metrics.py       --training stage2/01_bases/output/training-corpora       --hvg stage2/01_bases/output/tenv-hvg       --successor stage2/01_bases/output/tenv-truth-successor       --output stage2/01_bases/execution/diagnostic-candidate
 
 Run these only in an approved dataset slot, with the documented memory and
 thread caps. The isolation verifier uses temporary HDF5 virtual datasets:
@@ -124,14 +125,23 @@ all 4206 wells and 1377 parent-dose groups exactly once. Each fold rejects
 truth access for a training-role group. Exported per-group CSV, fixed-group
 PR source, PNG and replay are marked diagnostic; the title explicitly says
 not model performance. These numbers are mechanical acceptance evidence,
-not a trained model result. Numeric success remains
-NUMERIC_PASS_VISUAL_PENDING until the rendered PNG is inspected and that
-separate visual QA is recorded.
+not a trained model result. The export itself reports
+NUMERIC_PASS_VISUAL_PENDING; the accepted run's separate visual QA is
+`log/diagnostic/visual_qa.json` (result PASS, PNG sha256 `35d14266…`). A fresh
+candidate goes to a new empty directory outside `output/`, and the accepted
+evidence in `log/diagnostic/` is never overwritten.
 
 The generic evaluator also supports an accepted successor:
 
-    python stage2/01_bases/execution/evaluate_predictions.py       --predictions diagnostic.npy --samples samples.csv --genes genes.csv       --successor stage2/01_bases/output/truth-tenv-v2       --training stage2/01_bases/output/training-v2       --assignments stage2/01_bases/output/hvg-tenv-v1/cohorts.csv       --fold 0 --role test --label "Measured delta" --diagnostic       --output diagnostic-output
+    python stage2/01_bases/execution/evaluate_predictions.py       --predictions diagnostic.npy --samples samples.csv --genes genes.csv       --successor stage2/01_bases/output/tenv-truth-successor       --training stage2/01_bases/output/training-corpora       --assignments stage2/01_bases/output/tenv-hvg/cohorts.csv       --fold 0 --role test --label "Measured delta" --diagnostic       --output diagnostic-output
 
 The --diagnostic flag sets both report metadata and the visible title.
 Ordinary model prediction evaluation omits that flag; neither mode trains
 a model or alters any significance release.
+
+The accepted publication is the report triple under `figure/`: the PNG, the
+complete plotted values in `figure/data/diagnostic_tenv_pr.csv` (curve
+coordinates, fixed group counts, displayed macro AP, fixed-group definition and
+the uncertainty/reference statement) and the CSV-only renderer
+`figure/script/render_diagnostic_tenv_pr.py`. It reproduces the accepted PNG
+byte for byte without reading `output/` or recomputing any metric.
