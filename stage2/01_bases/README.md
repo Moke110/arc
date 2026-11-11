@@ -145,3 +145,9 @@ explicit `--training` and `--native` and has its own independent verification.
 HVG selection, retrieval metrics and PR report commands are documented in
 [`execution/hvg_metrics.md`](execution/hvg_metrics.md). Model selection uses
 training-only rankings; full-tenv descriptive ranks are not model inputs.
+
+The exact successor envelope, partition reader and full1377/three-R-refit
+acceptance commands are documented in
+[`execution/truth_successor.md`](execution/truth_successor.md). Its production
+publisher rejects incomplete/fixture reports and requires exact integer
+contrasts plus bit-exact finite X/control/delta equivalence.
