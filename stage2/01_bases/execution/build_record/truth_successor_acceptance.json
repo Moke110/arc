@@ -1,0 +1,50 @@
+{
+  "R_and_DESeq2_runtime": {
+    "deseq2_version": "1.50.2",
+    "r_version": "4.5.3",
+    "rscript_path": "/home/chang/miniconda3/envs/biomni_e1/bin/Rscript",
+    "rscript_sha256": "4b08b95ace573bf0f61bc86db407a08c020369e16eee277ab55d57a21cdf0b81"
+  },
+  "accepted_R_refit_verification": {
+    "path": "/home/chang/arc/stage2/01_bases/execution/build_record/truth_complete_verify.json",
+    "sha256": "5ad43891a3c6cccbc5cd7397a74c55129b2745b2a37785fb5c7f930291e5b7fd"
+  },
+  "completeproof_create_and_replay": true,
+  "exact_layer_digests": {
+    "X": "bb89c5ff07673e986df3ced776f7814c39c2db72506a9b19a8c56d6db9827ab6",
+    "control": "b4b3e07b53caf25c22f73362188396c214a6155f80c5572bbb0d76038aa2740f",
+    "delta": "5ee96cbcdff68387f923ec582e74356a2a93ca592c7af234ccccd2749c9ca194"
+  },
+  "gene_count": 18164,
+  "immutable_Tahoe_source_scans": 0,
+  "integer_contrasts_exact": 1377,
+  "layer_comparison": "np.array_equal finite values with independent raw normalization/control/delta replay; no tolerance",
+  "manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+  "new_R_fits": 0,
+  "new_training_bindings": {
+    "native": {
+      "path": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad",
+      "sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502"
+    },
+    "native_manifest": {
+      "path": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv_manifest.json",
+      "sha256": "e0941b240985ed0c77687d363c8e2ba1b069d86f1227b1d512afad6c4897aa5b"
+    },
+    "training_manifest": {
+      "path": "/home/chang/arc/stage2/01_bases/output/training-v2/manifest.json",
+      "sha256": "aac36d2d8306c234da581ae2763b8703a323db89870c7db42a15fe0fd5be564b"
+    },
+    "training_tenv": {
+      "path": "/home/chang/arc/stage2/01_bases/output/training-v2/tenv.h5ad",
+      "sha256": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830"
+    }
+  },
+  "original_statistics_unchanged": true,
+  "original_truth_manifest": {
+    "path": "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1/manifest.json",
+    "sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f"
+  },
+  "result": "PASS",
+  "samples_exact": 4206,
+  "schema": "stage2-real-truth-successor-acceptance-v1"
+}

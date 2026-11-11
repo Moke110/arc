@@ -1,0 +1,97 @@
+{
+  "acceptance_pending": [
+    "final whole-bases independent source verification/review and deployment"
+  ],
+  "actual_fit_peak_rss_kib": 1113656,
+  "actual_fit_wall_time": "2:54:36",
+  "batch_size": 25,
+  "checkpoints": "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1.building/parts",
+  "command": [
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/chang/arc/.scratch/stage2-bases/runtime/truth/full.resources.txt",
+    "/home/chang/miniconda3/envs/arc/bin/python",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-final/stage2/01_bases/execution/build_significance.py",
+    "--native",
+    "/home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad",
+    "--training",
+    "/home/chang/arc/stage2/01_bases/output/training-v1",
+    "--output",
+    "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1",
+    "--workers",
+    "2",
+    "--batch-size",
+    "25",
+    "--record",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-final/stage2/01_bases/execution/build_record/truth_complete_build.json"
+  ],
+  "complete_groups": 1377,
+  "complete_verification_record": "truth_complete_verify.json",
+  "environment": {
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2"
+  },
+  "expected_axis_size": 18164,
+  "expected_groups": 1377,
+  "final_release": "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1",
+  "first_checkpoints_verified_at": "2026-11-11T18:35:47.165999+08:00",
+  "group_roles": "no historical partitions restored; evaluator accepts explicit coherent cohort assignments",
+  "implementation_commit": "2fb4d54",
+  "invocation_id": "401c7ef7174a49a28e94d74207ac0f71",
+  "log": "/home/chang/arc/.scratch/stage2-bases/runtime/truth/full.log",
+  "memory_max_bytes": 10737418240,
+  "memory_swap_max_bytes": 8589934592,
+  "native_sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+  "resources": "/home/chang/arc/.scratch/stage2-bases/runtime/truth/full.resources.txt",
+  "schema": "stage2-bases-truth-launch-v1",
+  "sealed_contrasts_at_handoff": 50,
+  "source_hashes": {
+    "bases/deseq2_contrasts.R": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c",
+    "bases/significance.py": "727e5f01343773f4480c428015469e19d8f128f991aba3ef0ce53a85d0cc0c50",
+    "bases/truth_build.py": "d9bf8d9dad9505821b213cf780f3f77d863095bd83d3332651efafa7ba4fe484",
+    "build_significance.py": "daf98d70c3f47c7ffe9ff03b7f63fc9ecc3cf33c774309ad422e256b80906ae6"
+  },
+  "started_at": "2026-11-11T18:29:18.738408+08:00",
+  "status": "complete-v1-source-and-independent-refit-accepted",
+  "successor_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+  "tenv_training_sha256": "a95bba66bd44781d517c219a358ea4a0364f833cb54ae7b12f2e6950ddee517b",
+  "threads_per_worker": 2,
+  "training_manifest_sha256": "3543df76e728b3d25d63cda20e3187e96fbca96ac370d38e634e25405835a1a4",
+  "truth_manifest_sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
+  "unit": "arc-bases-truth-1377.service",
+  "verified_checkpoint_records": [
+    {
+      "groups": 25,
+      "independent_BH_and_ranking": "PASS",
+      "manifest_sha256": "7b5c933008f5f85943179a8148f4573efd2c84676087a33d0dad20e9a404d375",
+      "part": "00000",
+      "statuses": {
+        "eligible": 25
+      },
+      "tested_empty": 7,
+      "versions": [
+        "4.5.3",
+        "1.50.2"
+      ]
+    },
+    {
+      "groups": 25,
+      "independent_BH_and_ranking": "PASS",
+      "manifest_sha256": "cb2a544e1ed1351dcccc78772ca2530a74fee035b241999b11395b58d106fb28",
+      "part": "00001",
+      "statuses": {
+        "eligible": 25
+      },
+      "tested_empty": 1,
+      "versions": [
+        "4.5.3",
+        "1.50.2"
+      ]
+    }
+  ],
+  "workers": 2,
+  "workspace": "/home/chang/arc/.worktrees/stage2-bases-truth-final"
+}

@@ -1,0 +1,50 @@
+{
+  "accepted_evidence": {
+    "path": "stage2/01_bases/execution/build_record/hvg_metrics_actual_acceptance.json",
+    "sha256": "5d76402644614cc3c02aea37c4a9c83a69e30eaa05774c3892b2fd8ab7c73651"
+  },
+  "diagnostic": true,
+  "generation_code_commit": "34eeda86a15fb59fb8028ed8c09197e5d495b8f0",
+  "internal_source_file_seals": {
+    "acceptance.json": "86ee519b0ed0bbb447c2b88afb529d3a49924c500b6164e8fb2dd6308bad90bc",
+    "cohorts.csv": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc",
+    "diagnostic_pr.csv": "eaad870b346ead01f08bb4af17565e8f62a250168dbc70c4e0d984b52281ac1a",
+    "diagnostic_pr.json": "fb364f051eb17925e95a45348f37714a4b6abdce48aab991211b71ca3f300b4e",
+    "diagnostic_pr.png": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f",
+    "diagnostic_pr_replayed.csv": "0314c7556e20eb484e7987f0e2fdab06ed8bec07b8869a57de0ed6ca8384147f",
+    "diagnostic_pr_replayed.json": "6cf46a861671e2ade3d4327a1cfc7fa2d92a06dc4dc2b2f6d3b2bb332f56c5fe",
+    "diagnostic_pr_replayed.png": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f",
+    "fold_0_groups.csv": "7a5431492d50f029bc2830913afa18a1dd3c55e1b52353b5873746db3b27ab77",
+    "fold_1_groups.csv": "dae8b0b715bc83c5ede48e2c8728ed351c28ea31ea181acf31541d3c1ac804c1",
+    "fold_2_groups.csv": "e635c406d55ce0c5723329130f9aa644e73e3fb19af378c5894959bc7325be64",
+    "visual_qa.json": "85a1612e5478a6c9d23f795354cda3c5469a7afbf7632b495f884f670d4dc9fb"
+  },
+  "internal_source_files_unchanged": true,
+  "interpretation": "Measurement-derived mechanical QA only; no model evaluated and no model performance claim",
+  "layout": "ADR0030 section3: human-facing PNG and CSV published directly at step root",
+  "publication_base_commit": "2f54b21a714d9603907b00409b11ee8eda84c1a5",
+  "publications": [
+    {
+      "byte_identical": true,
+      "destination": "stage2/01_bases/diagnostic_tenv_pr.png",
+      "destination_bytes": 132026,
+      "sha256": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f",
+      "source": "stage2/01_bases/output/hvg-metrics-diagnostic-v1/diagnostic_pr.png",
+      "source_bytes": 132026
+    },
+    {
+      "byte_identical": true,
+      "destination": "stage2/01_bases/diagnostic_tenv_pr.csv",
+      "destination_bytes": 484988,
+      "sha256": "eaad870b346ead01f08bb4af17565e8f62a250168dbc70c4e0d984b52281ac1a",
+      "source": "stage2/01_bases/output/hvg-metrics-diagnostic-v1/diagnostic_pr.csv",
+      "source_bytes": 484988
+    }
+  ],
+  "publisher_code": "for original, published in publications:\n    content = original.read_bytes()\n    published.write_bytes(content)\n    if published.read_bytes() != content:\n        raise ValueError('diagnostic publication bytes differ')\n",
+  "publisher_code_sha256": "7622469d8f44e5bbbc405df3297368bdc0d32815ef051c63d0e974736e9f0b97",
+  "result": "PASS",
+  "schema": "stage2-diagnostic-human-publication-v1",
+  "tracking": "PNG tracked normally; the exact root CSV is exempted from the global *.csv ignore rule",
+  "visual_qa": "Byte-identical to the already inspected accepted diagnostic panel; no render or computation performed"
+}

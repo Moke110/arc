@@ -27,3 +27,7 @@ term for this decision.
 
 **Update (2026-10-30, ADR 0030).** Paths in this record were rewritten by the
 external-data / step-layout restructure; the decision itself is unchanged.
+
+**Step 09 amendment (2026-11-10).** [ADR 0057](0057-step09-xpert-landmark-reference.md)
+allows the landmark reference and shared-panel scoring for the internal
+XPert ablation. The whole-transcriptome delivery requirement remains in force.

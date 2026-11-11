@@ -1,0 +1,23 @@
+{
+  "native_sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+  "native_source_acceptance": "PASS:4510 raw rows,19613 genes, all probes replayed",
+  "remaining": "Tahoe projected raw source aggregation/replay and full label fits are independent work. Existing training manifest retains original build inputs; per-source new seals/equivalence are recorded separately.",
+  "resources": {
+    "combined_native_verify_and_training_replay_seconds": 27.93,
+    "combined_peak_rss_kib": 734208,
+    "final_build_peak_rss_kib": 443656,
+    "final_build_seconds": 12.23,
+    "scope_memory_max": "10GiB"
+  },
+  "scope": "bases-only; other Stage2 user deletions retained",
+  "structure_serialization_change_entries": 27,
+  "structure_serialization_changed_samples": 9,
+  "tests": {
+    "corpora": 6,
+    "identity": 5,
+    "native": 1,
+    "significance": 3
+  },
+  "training_sha256": "a95bba66bd44781d517c219a358ea4a0364f833cb54ae7b12f2e6950ddee517b",
+  "training_tenv_source_acceptance": "PASS:4206 treated rows,192 DMSO controls, max_abs_error 0.0"
+}

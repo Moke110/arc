@@ -73,3 +73,9 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0054](0054-step07-separate-reconstruction-and-nuisance-tokens.md) | Separate expression reconstruction and nuisance tokens in a Step 07 attention autoencoder |
 | [0055](0055-step07-matrix-mlp-reconstruction.md) | Compare the vector MLP and an AAE-shaped matrix MLP in Step 07 |
 | [0056](0056-step07-shared-expression-representation.md) | Compare five matrix reconstruction models with a shared frozen expression representation interface |
+| [0057](0057-step09-xpert-landmark-reference.md) | Use an internal landmark reference and a shared scoring panel for the Step 09 XPert ablation |
+| [0058](0058-step09-direction-matched-pr.md) | Direction-matched significance retrieval and fixed-group pooled PR ending at attainable recall |
+| [0059](0059-stage2-significance-retrieval.md) | Three full-CM, significance-and-direction matched retrieval metrics and one shared Stage 2 evaluator |
+
+| [0060](0060-step09-round1-rerun.md) | Rerun Step 09 Round 1 with two models, four runs per model and validation early stopping |
+| [0061](0061-stage2-shared-bases-and-indexed-corpora.md) | Shared Stage 2 bases, indexed gene identity and separate Tahoe/tenv training corpora |

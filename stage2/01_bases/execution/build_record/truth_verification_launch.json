@@ -1,0 +1,69 @@
+{
+  "actual_peak_rss_kib": 1052500,
+  "actual_wall_time": "2:36.27",
+  "argv": [
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/chang/arc/.scratch/stage2-bases/runtime/truth/verify.resources.txt",
+    "/home/chang/miniconda3/envs/arc/bin/python",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/build_significance.py",
+    "--native",
+    "/home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad",
+    "--training",
+    "/home/chang/arc/stage2/01_bases/output/training-v1",
+    "--output",
+    "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1",
+    "--verify",
+    "--replay-groups",
+    "3",
+    "--record",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/build_record/truth_complete_verify.json"
+  ],
+  "branch": "codex/stage2-bases-truth-acceptance",
+  "checks": [
+    "all files and all1377 raw contrast hashes",
+    "full-axis BH/status/order",
+    "ordinary nonempty,multi-plate,tested-empty independent R fits",
+    "R/DESeq2 versions equal original",
+    "source/schema/covariate and control membership"
+  ],
+  "code_commit": "40b2646",
+  "code_sha256": {
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/bases/corpora.py": "96954a4244eebb2d8a0f22a376200fbc2b9502c80fc161baa88d3fb2ceef231d",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/bases/deseq2_contrasts.R": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/bases/significance.py": "727e5f01343773f4480c428015469e19d8f128f991aba3ef0ce53a85d0cc0c50",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/bases/truth_build.py": "888c39c92e018c4e06f8f6b65f5b709ed6f2730d91820af63dd5b6a76d49a5c2",
+    "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/build_significance.py": "daf98d70c3f47c7ffe9ff03b7f63fc9ecc3cf33c774309ad422e256b80906ae6"
+  },
+  "exec_main_pid": 1719590,
+  "exec_main_status": 0,
+  "expected": {
+    "gene_count": 18164,
+    "groups_replayed": 1377,
+    "independent_refits": 3,
+    "native_sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+    "tenv_training_sha256": "a95bba66bd44781d517c219a358ea4a0364f833cb54ae7b12f2e6950ddee517b",
+    "training_manifest_sha256": "3543df76e728b3d25d63cda20e3187e96fbca96ac370d38e634e25405835a1a4",
+    "treated_samples": 4206
+  },
+  "finished_observed_at": "2026-11-11T21:30:55.927287+08:00",
+  "gates": [
+    "coordinator heavy slot grant",
+    "producer service active/exited status0",
+    "complete truth manifest and1377 groups",
+    "code hashes unchanged",
+    "training-v1 frozen input checks by verifier"
+  ],
+  "invocation_id": "968feff3206f431c8f3faa871b9c223f",
+  "memory_max": 10737418240,
+  "memory_swap_max": 8589934592,
+  "record": "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance/stage2/01_bases/execution/build_record/truth_complete_verify.json",
+  "record_schema": "stage2-parent-dose-truth-verification-v1",
+  "runtime_log": "/home/chang/arc/.scratch/stage2-bases/runtime/truth/verify.log",
+  "started_at": "2026-11-11T21:25:16.656292+08:00",
+  "status": "completed-exit0-and-accepted",
+  "unit": "arc-bases-truth-verify.service",
+  "verification_report_sha256": "5ad43891a3c6cccbc5cd7397a74c55129b2745b2a37785fb5c7f930291e5b7fd",
+  "workspace": "/home/chang/arc/.worktrees/stage2-bases-truth-acceptance"
+}

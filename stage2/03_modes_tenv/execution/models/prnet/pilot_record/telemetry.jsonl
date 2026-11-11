@@ -1,2 +1,0 @@
-{"observable": true, "available_gib": 42.20087814331055, "owned_rss_gib": {}, "gpu_used_gib": 2.2802734375, "gpu_free_gib": 13.7119140625, "external_heavy": 0, "external_peak_gib": 0, "external_pids": [], "idle_pids": [5561], "timestamp": 1793888248.2483327}
-{"observable": true, "available_gib": 42.18352508544922, "owned_rss_gib": {"664146": 0.0}, "gpu_used_gib": 2.3037109375, "gpu_free_gib": 13.6884765625, "external_heavy": 0, "external_peak_gib": 0, "external_pids": [], "idle_pids": [5561], "timestamp": 1793888253.3420992}

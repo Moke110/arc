@@ -66,11 +66,16 @@ Record: `docs/wetlab-validation-stage1.md`; raw data `wet_data/` (gitignored).
   candidates, so the screen still lacks a systematic experimental ground truth.
 - Cardiotoxicity scoring is deferred (`GLOSSARY.md` → Cardiotoxicity score).
 
-## Stage 2 — model setup and selection (active)
+## Stage 2 — shared foundations
 
-Stage 2's current state, benchmark results, and selection constraints are written up in
-`stage2/README.md` (agent routing: `stage2/AGENTS.md`); its plan and the `cm_bench_v1`
-benchmark are archived under `stage2/_archive/`, so this roadmap no longer duplicates them.
+Stage 2 retains only `stage2/01_bases/`: shared gene identity, separate Tahoe
+and tenv training corpora, tenv measured truth, training-only HVG selection,
+and shared retrieval metrics/reporting. Build and acceptance commands are in
+`stage2/01_bases/README.md` (agent routing: its `AGENTS.md`). The other Stage 2
+steps and their local assets were deleted at the user's request on 2026-11-11.
+Prior benchmark records can be inspected in Git; their ignored predictions and
+checkpoints are no longer local inputs. The original consumer-migration scope
+is not an acceptance claim for this retained foundation.
 
 ## Stage 3 — cardiomyocyte phenotype direction prediction (first-wave corpus audited)
 

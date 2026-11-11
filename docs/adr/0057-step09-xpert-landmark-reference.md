@@ -1,0 +1,71 @@
+# Use a landmark reference for the Step 09 XPert ablation
+
+**Status:** accepted (2026-11-10).
+
+Allow the 978-gene `XPert_base` and shared-panel scoring within the internal
+Step 09 cold-cm-drug ablation. This scoped exception to
+[ADR 0024](0024-stage2-bringup-978-quarantine.md) anchors the gene-space and
+compression comparisons while retaining the 15,000-gene minimum for the
+Stage 2 delivery model.
+
+Project Tahoe and tenv native counts onto each model's gene axis before
+calculating CP10K and log1p. The complete author landmark panel and every
+reduced HVG panel use their own per-well library sizes. The MLP arms and
+`XPert_G18164` share the full CM axis and its normalization. Freeze one
+randomly generated identity vector per gene on the existing 18,164-gene CM
+axis. Give HDGFL3, the landmark
+outside that axis, a supplemental vector generated under the same fixed
+seed and stored separately.
+
+Reuse the three tenv folds and training seeds 17, 42 and 2026 from
+[ADR 0042](0042-tenv-model-benchmark-redesign.md). Use one Tahoe plate-based
+training and validation split across folds. Initialize each model from
+scratch, select a pretraining checkpoint on Tahoe validation, then select
+the final checkpoint during tenv fine-tuning on tenv validation. Retain the
+treated-expression, baseline-reconstruction and separate Δ heads. Train the
+Δ head with MSE and Pearson losses. The first round uses fold 0 and seed 17.
+
+Use the intersection of all planned arms' prediction axes for the paired
+continuous expression metrics. Compare the same genes, tenv drug–dose
+groups and expression scale across arms. Report native-axis scores and
+gene coverage separately.
+
+Build nested HVG panels per fold using only Tahoe training wells and that
+fold's tenv training wells. Rank normalized dispersions separately by
+source and combine the ranks with equal source weight. Compare each MLP arm
+with the uncompressed `XPert_G18164` on the same input and output genes.
+
+For shared-panel scoring, add the predicted Δ to the measured matched
+control on the model's own axis to recover the predicted treated profile.
+Project and normalize this prediction on the shared panel, then subtract
+the measured shared-panel control. Derive observed treated and control
+profiles on the shared panel directly from native counts. Freeze promotion
+decisions using tenv validation before evaluating the exploratory round-one
+tenv test results.
+
+Replace directional AP@100 and directional PR curves with two
+significance-retrieval measures. Rank every scored gene by the absolute
+predicted group Δ. Use the same measured significance labels in both
+measures. In `AUPRC@full`, the recall denominator is all observed significant
+genes on the 18,164-gene CM axis. Rank only the model's predictions on that
+axis. Genes outside its coverage never enter the predicted set, so its
+curve may stop before recall 1. In `AUPRC@G`, use the model's own gene axis
+for both ranking and the recall denominator. Report eligible-group counts
+and treat AP as undefined for a group with zero significant genes in the
+relevant denominator. Present the two measures as separate PR panels and
+replace the directional AP bars with the two new measures.
+
+Define significant genes from two-sided contrasts of measured tenv raw
+counts against same-plate DMSO at each drug–dose group. Apply Benjamini–Hochberg
+correction within each contrast and use FDR below 0.05. Use one test family
+over the CM axis plus HDGFL3 so that the landmark reference can count HDGFL3
+in `AUPRC@G`. Restrict the `AUPRC@full` denominator to the CM axis. Use
+tenv validation `AUPRC@full` for promotion. Keep `AUPRC@G` as an axis-specific
+score and report the number of groups with a defined score.
+
+Keep projected zero-library wells as zero profiles and record their
+counts. Report the shared panel size before fitting. Flag continuous
+metrics as provisional for a shared panel with fewer than 200 genes.
+
+The round-one figures live together under Step 09's `output/round1/` as a
+scoped placement exception to [ADR 0030](0030-external-data-provenance-and-step-layout.md).

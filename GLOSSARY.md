@@ -268,29 +268,40 @@ The DEG list derived from a single GEO study, kept alongside its acquisition dat
 The agentic bilingual (EN/CN) per-drug fact-sheet report, driven by `prompt.md` and assembled from resumable per-drug agent JSONs. Exists only in v1 as an **archived, non-numbered `report/` stage**; the rebuilt workflows (v1.1/v2/v3) have **no report stage** — they end at integrate.
 _Avoid_: drug research report
 
-### Stage 2 setup
+### Historical Stage 2 setup
 
 **Setup stage**:
-The current Stage 2 stage: each deployed non-preprint model is loaded or trained on its native asset and produces one prediction artifact, a run log, and a run card. It answers "can this model run here?" and deliberately does not compare models or compute a benchmark metric.
+The retired Stage 2 setup stage: each admitted non-preprint model is loaded or trained on its native asset and produces one prediction artifact, a run log, and a run card. It answers "can this model run here?" and deliberately does not compare models or compute a benchmark metric.
 _Avoid_: Phase 0 (plan shorthand only), smoke test (when meaning the whole stage)
 
 **Run card**:
-The one-page record for a model's setup: source commit, weights, data, pinned environment, command, expected artifact, and caveats. Lives at `stage2/01_setup/execution/<model>/README.md`.
+The one-page record for a model's setup: source commit, weights, data, pinned environment, command, expected artifact, and caveats. Historical run cards from the removed setup tree are retained in Git history.
 _Avoid_: model README, config
 
 **Native asset**:
 The checkpoint and dataset a model's authors ship or document for that model. A native-asset run may use a non-chemical dataset (CPA/Kang) or a landmark subset (PRnet/LINCS); that limitation is recorded on the run card.
 
 **Setup-only artifact**:
-An output permitted only to prove that a model runs, not to support a Stage 2 claim. PRnet's 978-gene LINCS demo is the canonical example; it is quarantined under `stage2/01_setup/execution/prnet/` and never read by Stage 2 evaluation.
+An output permitted only to prove that a model runs, not to support a Stage 2 claim. PRnet's 978-gene LINCS demo is the canonical example; its historical setup evidence is retained in Git history and is outside the current bases boundary.
 
 **Selection stage**:
-The deferred Stage 2 stage after setup: choose which model(s) to adapt to CM data and define the evaluation. Its metric, folds, and gene space are not fixed by the setup plan.
+The historical proposal for a Stage 2 stage after setup: choose which model(s) to adapt to CM data and define the evaluation. Its metric, folds, and gene space are not fixed by the setup plan.
 
 ### Stage 2 dataset corpus
 
+**Bases**:
+The retained Stage 2 foundation for shared gene identity, raw preparation, separate training corpora, measured tenv truth, training-only HVG selection and common evaluation semantics. Model setup and benchmark experiments are outside its current scope.
+
+**Raw-count preparation**:
+Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
+
+**Training corpus**:
+One of the separate tenv and Tahoe treated-well collections on the fixed CM gene axis, carrying normalized treated expression, matched-control expression and delta. Statistical significance labels remain separate from these corpora.
+
+The former five-source native corpus release is historical.
+
 **Dataset corpus**:
-The information-maximal h5ad substrate between a raw downloaded dataset and a model's training input: one file per source dataset, raw counts in `X`, the source's **native** gene axis, every raw well including vehicle controls and technical blanks, and no model-facing filter, no integer encoding and no Δ. Lives in `stage2/02_dataset_corpus/output/corpus/<version>/`; the five corpora are `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv` and `tahoe`.
+The information-maximal h5ad substrate between a raw downloaded dataset and a model's training input: one file per source dataset, raw counts in `X`, the source's **native** gene axis, every raw well including vehicle controls and technical blanks, and no model-facing filter, no integer encoding and no Δ. The historical five-source release comprised `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv` and `tahoe`; its tracked evidence is retained in Git history.
 _Avoid_: CM perturbation corpus (retired name for the matrix-free gene/drug universe), union finetune data, finetune corpus, training set, dataset bundle
 
 **Corpus coverage**:
@@ -348,6 +359,12 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 
 ### Stage 2 benchmark
 
+**Tenv highly variable genes (tenv HVG)**:
+Genes on the full CM gene axis ranked by expression variability in a declared tenv population. This ranking has no upregulation or downregulation direction; perturbation direction belongs to a measured contrast.
+
+**Stage 2 sample identity**:
+The stable identity of one retained perturbation observation, distinguishing separate source wells and, for Tahoe pseudobulk, the cell line within a well. Tenv significance labels describe a drug-parent–dose group rather than an individual sample.
+
 **Transcriptome autoencoder**:
 A Step 07 model that encodes a measured expression profile and reconstructs that same profile on the frozen CM gene axis.
 
@@ -378,6 +395,22 @@ _Avoid_: mean Δ, DMSO mean
 
 **Latent XPert** (`latent_XPert`):
 The XPert-derived predictor considered for Step 08. It transforms a baseline transcriptome in the latent space of a separately trained transcriptome autoencoder and predicts the drug response on the full CM gene axis.
+
+**XPert landmark reference** (`XPert_base`):
+The Step 09 perturbation predictor on the 978 L1000 landmark genes that anchors the gene-space and compression comparisons.
+
+**XPert shared scoring panel**:
+The intersection of the genes predicted by all planned Step 09 arms. It
+supplies the same tenv drug–dose responses for paired continuous metrics.
+
+**XPert AUPRC@full**:
+Direction-agnostic significant-gene retrieval against all significant genes
+on the frozen CM axis. Recall includes significant genes outside the
+model's coverage in its denominator.
+
+**XPert AUPRC@G**:
+Direction-agnostic significant-gene retrieval within a model's prediction
+axis. Recall is relative to the significant genes covered by that model.
 
 **Tenv model boundary**:
 The parameters updateable together in one backward pass for the tenv prediction
@@ -444,17 +477,10 @@ A preserved pre-v2 binary/history/status with its original identity and hashes.
 It supplies audit and budget evidence, and cannot fill a formal v2 outcome slot
 or establish exact training continuation.
 
-**Tenv directional truth set**:
-The at-most-100 genes with the largest strictly positive true Δ, or the
-at-most-100 with the smallest strictly negative true Δ, for a tenv drug–dose
-group. The labels depend on observed responses and are shared across models
-and training seeds.
-_Avoid_: significant DEG set, predicted top-100 set
-
-**Tenv Recall@P80**:
-The greatest recall attainable with a nonempty prediction set at precision
-at least 0.8 for one tenv directional truth set; zero when no such set is
-attainable.
+**Tenv significance truth set**:
+Genes significant in the measured treatment-versus-matched-control drug–dose
+contrast on the full CM axis, retaining their measured up- or downregulation.
+This is a statistical significance set rather than a fixed-size response rank.
 
 **Cold-drug fold**:
 One Stage 2 benchmark split whose test drugs are absent from its training and
@@ -470,6 +496,33 @@ _Avoid_: globally unseen drug, unseen drug (without specifying the CM scope)
 **Step 05 cold-cm-drug split**:
 A tenv cold-drug split that allows the held-out drug blocks to appear in
 Tahoe.
+
+**Cold-cm-fold**:
+The Step 09 shorthand for a cold-cm-drug fold: CM test drugs are excluded
+from tenv training and validation, while Tahoe may contain those drugs.
+
+**Step 09 cold-cm-drug fold**:
+One of the frozen tenv cold-drug folds paired with the shared Tahoe training
+and validation partitions. Tenv test drug blocks can appear in Tahoe.
+
+**Stage 2 direction-matched hit**:
+A predicted up- or downregulated CM gene that is significant in the measured
+drug–dose contrast and has the same direction as its measured log2 fold change.
+
+**Stage 2 AUPRC**:
+The macro mean of exact group average precision for combined direction-matched
+retrieval, with every measured significant gene on the 18,164-gene CM axis in
+the recall denominator, including genes outside prediction coverage.
+
+**Stage 2 directional AUPRC**:
+`AUPRC_positive` retrieves significant upregulated CM genes using positive
+predictions; `AUPRC_negative` retrieves significant downregulated CM genes using
+negative predictions. Each uses its full-CM directional truth denominator.
+
+**Stage 2 pooled PR curve**:
+Precision and recall of pooled gene–group predictions across a fixed eligible
+group population at common prediction-magnitude thresholds. Its endpoint is
+the attainable pooled recall; its area differs from macro AUPRC.
 
 **Step 05 cold-drug split**:
 A tenv cold-drug split that also withholds its tenv validation and test drug
@@ -526,7 +579,7 @@ _Avoid_: experiment, trial
 The ground-truth label convention of the Stage 1 XPert benchmark — the step-05 official folds and the `warmstart_pr/` PR/AUPRC analysis: per sample, the true set is the top-k up genes and the bottom-k down genes of that sample's true Δ (k = 100 in the 978-landmark space), every other gene being a negative in both directions. A fixed-truncation (ranking) definition with no significance test, so each direction's prevalence is exactly k/978 and that prevalence is the random AUPRC baseline.
 _Avoid_: DEG set (unqualified), differential set
 
-Historical Stage 2 v1 benchmarking terms (direction-aware AUPRC, unified test set, data-ablation benchmark, dtoxs-primary benchmark) are archived with `stage2/_archive/cm_bench_v1/` and are not active vocabulary.
+Historical Stage 2 v1 benchmarking terms (direction-aware AUPRC, unified test set, data-ablation benchmark, dtoxs-primary benchmark) are retained in Git history with the former `stage2/_archive/cm_bench_v1/` and are not active vocabulary.
 
 ### Experimental validation
 

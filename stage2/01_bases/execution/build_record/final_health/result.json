@@ -1,0 +1,70 @@
+{
+  "canonical_status": "",
+  "checked_commit": "7a75525ccf1ba8a91339d4f81b10a34af5db1ce6",
+  "checks": [
+    {
+      "argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths.time.txt",
+        "/bin/bash",
+        "/home/chang/arc/script/check_paths.sh"
+      ],
+      "elapsed_seconds": 9.402739579993067,
+      "exit_code": 0,
+      "finished_at": "2026-11-11T22:49:40.113562+08:00",
+      "log": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths.log",
+      "log_sha256": "f9a8eec36981752a032f0e6191806da1de802c5cae73196bbd26b60ba03150be",
+      "name": "check_paths",
+      "started_at": "2026-11-11T22:49:30.710828+08:00",
+      "time_record": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths.time.txt",
+      "time_record_sha256": "886d26d3cdc8b0b10979ba4badbba55d36d41dd682f4a8e8430ed5c1ac1e8376"
+    },
+    {
+      "argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked.time.txt",
+        "/bin/bash",
+        "/home/chang/arc/script/check_tracked.sh"
+      ],
+      "elapsed_seconds": 0.040805384021950886,
+      "exit_code": 1,
+      "finished_at": "2026-11-11T22:49:40.154613+08:00",
+      "log": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked.log",
+      "log_sha256": "ab66535748288ba70cc2b3122ebabc7cbaf0fc4db6f2a311cb1f06b3930050cf",
+      "name": "check_tracked",
+      "started_at": "2026-11-11T22:49:40.113816+08:00",
+      "time_record": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked.time.txt",
+      "time_record_sha256": "7668c6d921da5b6094b97cfd58fe837bcac189e39b3bd61a7427b5460b27027b"
+    },
+    {
+      "argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/verify_all.time.txt",
+        "/bin/bash",
+        "/home/chang/arc/script/verify_all.sh"
+      ],
+      "elapsed_seconds": 299.93272411599173,
+      "exit_code": 1,
+      "finished_at": "2026-11-11T22:54:40.087622+08:00",
+      "log": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/verify_all.log",
+      "log_sha256": "0f0e6e2e86da3913f344aba7b7cfdce6457077c2b3381742e36001ad58433c01",
+      "name": "verify_all",
+      "started_at": "2026-11-11T22:49:40.154916+08:00",
+      "time_record": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/verify_all.time.txt",
+      "time_record_sha256": "9e76084b1fc3a2ce7dc7967180973d9895ea1a43ebdebf8723a95c6a2b2f1753"
+    }
+  ],
+  "cwd": "/home/chang/arc",
+  "finished_at": "2026-11-11T22:54:40.091971+08:00",
+  "launch_plan_sha256": "af62fa5c6da4557df59c12f7fd49d23bf35c827a74f90539826bf3ffb33b1360",
+  "schema": "stage2-bases-final-original-health-v1",
+  "scripts_unchanged": true,
+  "started_at": "2026-11-11T22:49:30.709987+08:00",
+  "status": "FAIL"
+}

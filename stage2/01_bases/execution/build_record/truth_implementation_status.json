@@ -1,0 +1,38 @@
+{
+  "accepted_manifest_sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
+  "future_execution": {
+    "acceptance": "complete source/count membership and BH/ranking replay plus representative independent raw-count DESeq2 refits, under resource monitoring",
+    "checkpoint_contrasts": 25,
+    "estimated_refit_duration": "hours; old 50-contrast batch was about652s, hardware/runtime dependent",
+    "estimated_truth_storage_gib": "about2 including checkpoint arrays and release",
+    "memory_cap_gib": 10,
+    "requires_bases_native_count_rebuild": false,
+    "restore_old_step_paths": false,
+    "worker_count_max": 2
+  },
+  "lightweight_real_preflight_before_deletion": {
+    "axis_size": 18164,
+    "contrast_sample_rows_including_reused_controls": 20802,
+    "multi_plate_groups": 6,
+    "native_smiles_parent_recalculation": "all retained wells matched final proposed training release",
+    "new_parent_dose_groups": 1377,
+    "retained_tenv_wells": 4206,
+    "seven_historical_partitions": "new-parent-dose groups did not cross roles; historical consumer migration is no longer in scope"
+  },
+  "missing_required_input": {
+    "bases_corpora_dependency": "Resolved in standalone core cebb38f",
+    "native_raw_counts": "Resolved by bases-owned native-v1/tenv.h5ad, SHA256 efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+    "partition_assignments": "Caller must supply a coherent bases cohort. Old historical partition files are not required to build global truth; do not claim a new cohort is the historical experiment."
+  },
+  "reason": "Full1377 source/count/BH/ranking replay and three independent actualR representative refits passed within bases-only scope; no deleted consumer or historical partition restored.",
+  "schema": "stage2-bases-truth-implementation-status-v1",
+  "status": "complete-v1-truth-and-exact-v2-successor-accepted",
+  "successor": "actual create and completeproof replay PASS; all1377integer contrasts and4206finite X/control/delta sample profiles exactly equal, no new fit",
+  "successor_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+  "tests": {
+    "public_contract_tests_passed": 3,
+    "real_DESeq2_release": "PASS18164genes/4206treated/1377eligible/273testedempty/6multiplate; complete raw replay and3Rrefits",
+    "real_R_integration_test": "PASS real R insufficient-replication build and verify",
+    "real_partition_isolation": "PASS newly defined cold-parent3folds,1377testgroups, all three negative guards"
+  }
+}

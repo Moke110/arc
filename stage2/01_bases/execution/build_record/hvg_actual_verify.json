@@ -1,0 +1,11 @@
+{
+  "gene_count": 18164,
+  "manifest_sha256": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6",
+  "populations": {
+    "descriptive": 4206,
+    "fold_0": 2508,
+    "fold_1": 2508,
+    "fold_2": 2535
+  },
+  "result": "PASS"
+}

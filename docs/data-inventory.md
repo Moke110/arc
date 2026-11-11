@@ -108,34 +108,27 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — 120.3 GB
+## Stage 2 — bases only (2026-11-11)
 
-Active steps are `01_setup/`, `02_dataset_corpus/` and `03_modes_tenv/`.
-The old benchmark and PRnet steps 05 and 06 were removed on 2026-11-07.
-Their tracked records are available in Git at `f95fe1e`. The retired v1 CM
-views and identity tables remain available to the corpus verification gate.
+Only `stage2/01_bases/` remains. Other Stage 2 directories, including ignored
+checkpoints and historical predictions, were deleted at the user's request.
+Tracked historical code and records remain in Git. Recovering deleted ignored
+model fits would require retraining; no current build depends on them.
 
-Stage 2 directory sizes are apparent sizes measured with `du -sb` on 2026-11-07,
-including ignored payload. Step 01 and 02 output subdirectory measurements
-below are from 2026-11-04.
+| output under `stage2/01_bases/output/` | contents | reconstruction |
+|---|---|---|
+| `native-v1/` | tenv integer counts, 4510 wells × 19613 native genes; compact frozen axis/crosswalk tables | immutable GSE262419 source and annotation, `build_native.py` |
+| `tahoe-counts-v1/` | projected 18164-gene Tahoe integer pseudobulk counts, original token evidence, bounded per-plate checkpoints | immutable Tahoe source, `prepare_tahoe.py`; full build/source verification has a separate acceptance record |
+| `identity-v1/` | indexed identity and source namespace evidence | compact native tables, mapping evidence and HGNC annotation |
+| `shared-v1/` | surviving mapping CSVs only; deleted expression payloads are absent | historical mapping evidence, not a complete current expression release |
+| `training-v1/` | surviving separate Tahoe and tenv normalized training h5ads and historical build seal | replay every value against rebuilt raw counts; retain the original seal as historical evidence |
+| `shared-v2/`, `training-v2/` | new build destinations using explicit per-source raw inputs and current provenance | `build_shared.py` then `build_corpora.py`; existence and acceptance must be established by their actual build/verify records |
+| `truth-tenv-v1/` | independently fitted 1377 parent–dose tenv contrasts, exactly 18164-gene BH family | bounded raw-count DESeq2 worker; truth acceptance and any successor binding to training-v2 require explicit records |
 
-| tree | `du -sb` bytes | ≈ | what | reconstructible? | backup |
-|---|---:|---:|---|---|---|
-| `stage2/01_setup/` | 6,678,425,340 | 6.7 GB | nine deployed models' run cards + surviving smoke evidence + the biolord `.venv` | yes — rerun the run cards; the `.venv` is rebuilt from `requirements.txt`/lock | no backup needed (execution evidence is tiny; the venv is rebuildable) |
-| `stage2/02_dataset_corpus/` | 30,737,216,585 | 30.7 GB | five corpus h5ads (`output/corpus/v2/`: `tahoe.h5ad` 25.8 GB + four CM native-axis corpora), seven crosswalk tables + coverage README, build records, per-plate pseudobulk parts (`execution/_parts/`, local) | yes — rebuild the four CM corpora and tables with `execution/build_corpus.py --all` (minutes; ~7.7 GiB peak RSS); `tahoe.h5ad` is the moved pseudobulk artifact, hours to rebuild | no backup needed; the 25.8 GB h5ad is rebuildable from `pert_data/Tahoe-100M/source/` |
-| `stage2/03_modes_tenv/` | 79,886,485,653 | 79.9 GB | completed tenv comparison, frozen input and local predictions/checkpoints, published result tables and figures | yes — replay inputs and run the recorded model and evaluation commands | published results and compact evidence tracked |
-| `stage2/_frozen/cm-data-v1/` | 880,256,393 | 880.3 MB | **temporary bridge**: the retired v1 CM evidence (five 18,164-gene views + identity tables), read-only reference for corpus verification (ADR 0033) | yes in principle — the corpus `--verify` G4 gate reproduces all five views from the v2 corpora; nothing here is regenerated | no backup needed; reconstructible from `02_dataset_corpus` |
-| `stage2/_envs/` | 1,953,696,448 | 2.0 GB | shared per-model benchmark environments (`biolord`/`cmonge` venvs + tracked conda locks) | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
-| `stage2/_archive/` | 160,641,498 | 160.6 MB | superseded `cm_bench_v1` benchmark (tracked) + archived plan | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
-| `stage2/audit/` | 88,429 | 88.4 kB | non-computational audit records (tracked) | yes — the venvs rebuild from the tracked locks; `_archive` and `audit` are tracked | no backup needed |
-
-### Step output trees
-
-| output tree | `du -sb` bytes | ≈ | contents |
-|---|---:|---:|---|
-| `stage2/01_setup/execution/` | 6,678,278,497 | 6.7 GB | run cards + `output/{run.log,meta.json}`; the biolord `.venv` dominates this number |
-| `stage2/02_dataset_corpus/output/` | 26,323,831,515 | 26.3 GB | `corpus/v2/` five h5ad corpora (25.8 GB `tahoe.h5ad` + four CM) + `tables/` seven CSVs + coverage `README.md` |
-| `stage2/03_modes_tenv/output/` | 68,908,705,859 | 68.9 GB | frozen tenv input, local model outputs, evaluation payload and published results |
+No final aggregate size is stated while release builds/checkpoints are active.
+Large h5ads, arrays and fit/checkpoint shards are ignored; compact input tables
+and execution records remain tracked. See `stage2/01_bases/README.md` for the
+current commands and historical-versus-current provenance boundary.
 
 ## Archived, literature, wet-lab, logs
 
@@ -197,3 +190,13 @@ Heliste source-first corpora live in `stage3/01_corpus/output/baseline/` and
 `stage3/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
 pending values separately from source availability. Historical endpoint-gated
 evidence is retained under `stage3/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
+
+## Shared Stage 2 tenv significance labels
+
+Measured truth is owned by `stage2/01_bases/`, separately from training h5ads.
+The current parent-normalized design has 1377 contrasts and a BH family of
+exactly 18164 genes, with tested-empty distinct from untestable. Raw well joins,
+contrast membership, worker/runtime seals and truth arrays must pass the
+independent truth verifier before acceptance. The deleted historical 1380-group,
+18165-gene `stage2/evaluation` release is not a current dependency. Tahoe has no
+significance-label build. Training readers never load truth labels.

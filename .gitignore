@@ -126,26 +126,6 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # Downloaded weights/datasets used by Stage 2 setup (not repo artifacts)
 /download/
 
-# Stage 2 setup outputs and the biolord venv overlay. Ticket 06 moved the run
-# cards one level down into `execution/`; the global `output/` rule excludes the
-# directory, so it is re-included first (a negative rule cannot re-include a file
-# whose parent directory is excluded), then only the textual evidence — run logs
-# and meta.json — stays trackable.
-!stage2/01_setup/execution/*/output/
-stage2/01_setup/execution/*/output/*
-!stage2/01_setup/execution/*/output/*.json
-!stage2/01_setup/execution/*/output/*.log
-stage2/01_setup/execution/biolord/.venv/
-
-# Stage 2 shared environments: venv trees are local-only (locks are tracked)
-stage2/_envs/biolord/
-stage2/_envs/cmonge/
-
-# Stage 2 · 02_dataset_corpus: the 14 per-plate pseudobulk `_parts/*.npz` are
-# already covered by the global `*.npz` rule; this one rule keeps their scan
-# bookkeeping (`_parts/_state/shard_plate.json`) out of git too.
-stage2/02_dataset_corpus/execution/_parts/_state/
-
 # Orphaned HG FDA-extension archive (large data/weights, provenance only)
 /archived/
 
@@ -156,74 +136,11 @@ stage2/02_dataset_corpus/execution/_parts/_state/
 /pheno_data/*/source/
 /pheno_data/*/local/
 
-# Retained old formal generation from the reviewed joint v2 atomic exchange.
-# Keep recovery bytes local; track only the canonical formal JSON records.
-/stage2/03_modes_tenv/execution/.formal-v2-generation/
+# Independent linked checkouts have their own Git indexes and are not repo content.
+/.worktrees/
 
-# Stage 2 Step 07 frozen membership, comparison and fitted artifact manifests.
-!/stage2/07_autoencoder/output/
-/stage2/07_autoencoder/output/*
-!/stage2/07_autoencoder/output/split.json
-!/stage2/07_autoencoder/output/test_seal.json
-!/stage2/07_autoencoder/output/test_scores.json
-!/stage2/07_autoencoder/output/reconstruction_test.png
-!/stage2/07_autoencoder/output/test_seal_aae_ablation.json
-!/stage2/07_autoencoder/output/test_scores_aae_ablation.json
-!/stage2/07_autoencoder/output/test_seal_matrix_mlp.json
-!/stage2/07_autoencoder/output/test_scores_matrix_mlp.json
-!/stage2/07_autoencoder/output/reconstruction_test_aae_ablation.png
-!/stage2/07_autoencoder/output/aae_loss.png
-!/stage2/07_autoencoder/output/matrix_ae_loss.png
-!/stage2/07_autoencoder/output/models/
-/stage2/07_autoencoder/output/models/*
-!/stage2/07_autoencoder/output/models/mean/
-/stage2/07_autoencoder/output/models/mean/*
-!/stage2/07_autoencoder/output/models/mean/manifest.json
-!/stage2/07_autoencoder/output/models/PCA_32/
-!/stage2/07_autoencoder/output/models/PCA_128/
-!/stage2/07_autoencoder/output/models/PCA_512/
-/stage2/07_autoencoder/output/models/PCA_*/*
-!/stage2/07_autoencoder/output/models/PCA_*/manifest.json
-!/stage2/07_autoencoder/output/models/MatrixAE_64x8/
-/stage2/07_autoencoder/output/models/MatrixAE_64x8/*
-!/stage2/07_autoencoder/output/models/MatrixAE_64x8/manifest.json
-!/stage2/07_autoencoder/output/models/MatrixAE_64x8/epochs.json
-!/stage2/07_autoencoder/output/models/AAE_512_Transformer/
-/stage2/07_autoencoder/output/models/AAE_512_Transformer/*
-!/stage2/07_autoencoder/output/models/AAE_512_Transformer/manifest.json
-!/stage2/07_autoencoder/output/models/AAE_512_Transformer/epochs.json
-!/stage2/07_autoencoder/output/models/AAE_512+16/
-/stage2/07_autoencoder/output/models/AAE_512+16/*
-!/stage2/07_autoencoder/output/models/AAE_512+16/manifest.json
-!/stage2/07_autoencoder/output/models/AAE_512+16/epochs.json
-!/stage2/07_autoencoder/output/models/MLPm_512/
-/stage2/07_autoencoder/output/models/MLPm_512/*
-!/stage2/07_autoencoder/output/models/MLPm_512/manifest.json
-!/stage2/07_autoencoder/output/models/MLPm_512/epochs.json
+# Bases payloads/checkpoints stay local; required compact evidence is force-added.
+/stage2/01_bases/output/
 
-# Step 07 shared expression interface and comparison evidence
-!/stage2/07_autoencoder/output/models_metric.png
-!/stage2/07_autoencoder/output/test_seal_shared_expression.json
-!/stage2/07_autoencoder/output/test_scores_shared_expression.json
-!/stage2/07_autoencoder/output/models/shared_expression/
-!/stage2/07_autoencoder/output/models/PCA_1024/
-!/stage2/07_autoencoder/output/models/MLP_1024/
-!/stage2/07_autoencoder/output/models/AAEc_1024/
-!/stage2/07_autoencoder/output/models/AAEcs_1024/
-!/stage2/07_autoencoder/output/models/AAEcs_1024+64/
-/stage2/07_autoencoder/output/models/shared_expression/*
-/stage2/07_autoencoder/output/models/PCA_1024/*
-/stage2/07_autoencoder/output/models/MLP_1024/*
-/stage2/07_autoencoder/output/models/AAEc_1024/*
-/stage2/07_autoencoder/output/models/AAEcs_1024/*
-/stage2/07_autoencoder/output/models/AAEcs_1024+64/*
-!/stage2/07_autoencoder/output/models/shared_expression/manifest.json
-!/stage2/07_autoencoder/output/models/PCA_1024/manifest.json
-!/stage2/07_autoencoder/output/models/MLP_1024/manifest.json
-!/stage2/07_autoencoder/output/models/AAEc_1024/manifest.json
-!/stage2/07_autoencoder/output/models/AAEcs_1024/manifest.json
-!/stage2/07_autoencoder/output/models/AAEcs_1024+64/manifest.json
-!/stage2/07_autoencoder/output/models/MLP_1024/epochs.json
-!/stage2/07_autoencoder/output/models/AAEc_1024/epochs.json
-!/stage2/07_autoencoder/output/models/AAEcs_1024/epochs.json
-!/stage2/07_autoencoder/output/models/AAEcs_1024+64/epochs.json
+# ADR 0030 human-facing bases diagnostic numeric companion.
+!/stage2/01_bases/diagnostic_tenv_pr.csv
