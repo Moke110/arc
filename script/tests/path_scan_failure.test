@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Public CLI boundary: path scanning cannot pass when its source inventory fails.
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+tmp="$(mktemp -d)"
+trap 'rm -rf -- "$tmp"' EXIT
+mkdir -p "$tmp/repo/script" "$tmp/repo/pert_data/Test/source" "$tmp/bin"
+cp "$root/script/check_paths.sh" "$tmp/repo/script/"
+for name in check_stage2_paths check_stage3_paths; do
+  printf '#!/bin/bash\nexit 0\n' > "$tmp/repo/script/$name.sh"
+done
+printf 'pert_data/Test/source/\n' > "$tmp/repo/README.md"
+git -C "$tmp/repo" init -q
+git -C "$tmp/repo" add README.md
+out="$(PATH=/usr/bin:/bin bash "$tmp/repo/script/check_paths.sh")"
+printf '%s\n' "$out" | grep -q 'RESULT: PASS' || {
+  echo 'FAIL: the readable tracked fixture must pass' >&2; exit 1;
+}
+cat > "$tmp/bin/git" <<'GIT'
+#!/bin/bash
+if [ "${1:-}" = 'ls-files' ]; then
+  echo 'injected tracked-source inventory failure' >&2
+  exit 2
+fi
+exec /usr/bin/git "$@"
+GIT
+chmod +x "$tmp/bin/git"
+if out="$(PATH="$tmp/bin:/usr/bin:/bin" bash "$tmp/repo/script/check_paths.sh" 2>&1)"; then
+  echo 'FAIL: unreadable tracked-source inventory returned success' >&2
+  printf '%s\n' "$out" >&2
+  exit 1
+fi
+if printf '%s\n' "$out" | grep -q 'RESULT: PASS'; then
+  echo 'FAIL: a failed path inventory must not print PASS' >&2; exit 1
+fi
+echo 'PASS: path inventory fails closed'
+rm "$tmp/bin/git"
+cat > "$tmp/bin/sed" <<'SED'
+#!/bin/bash
+if [ "${1:-}" = '-E' ]; then
+  echo 'injected path literal filter failure' >&2
+  exit 2
+fi
+exec /usr/bin/sed "$@"
+SED
+chmod +x "$tmp/bin/sed"
+if out="$(PATH="$tmp/bin:/usr/bin:/bin" bash "$tmp/repo/script/check_paths.sh" 2>&1)"; then
+  echo 'FAIL: a broken path literal filter returned success' >&2
+  printf '%s\n' "$out" >&2
+  exit 1
+fi
+if printf '%s\n' "$out" | grep -q 'RESULT: PASS'; then
+  echo 'FAIL: a failed path filter must not print PASS' >&2; exit 1
+fi
+echo 'PASS: path literal filtering fails closed'
