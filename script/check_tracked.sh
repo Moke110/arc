@@ -23,7 +23,7 @@
 #          download and the declared local additions are not repository content
 #          (ADR 0030)
 #        - workspace/archive trees that are not repository content:
-#          .scratch/, tmp/, reference/, wet_data/, .uploads/
+#          .scratch/, .worktrees/ (separate Git checkouts), tmp/, reference/, wet_data/, .uploads/
 #   2. Compares that list with `git ls-files`.
 #   3. Groups every untracked file by the .gitignore rule that hides it, flags any
 #      file hidden by an over-broad `data/` rule explicitly, and reports trees that
@@ -70,10 +70,6 @@ is_expected_ignored() {
     # (.gitignore: "Frozen pre-refactor MIRI pipeline snapshots ...").
     stage1/xpert-fda-miri-v0/*)
       return 0 ;;
-    # ADR 0042 joint v2 atomic exchange retains the exact old generation for
-    # recovery. These are immutable duplicate audit copies, not active sources.
-    stage2/03_modes_tenv/execution/.formal-v2-generation/*)
-      return 0 ;;
   esac
   return 1
 }
@@ -110,7 +106,7 @@ main() {
 
   # 1. Code files on disk (find prunes, NUL-safe for odd path names).
   find . \
-    \( -path './.git' -o -path './.scratch' -o -path './tmp' -o -path './reference' \
+    \( -path './.git' -o -path './.worktrees' -o -path './.scratch' -o -path './tmp' -o -path './reference' \
        -o -path './wet_data' -o -path './.uploads' \
        -o -name '_envs' -o -name '.venv' -o -name 'venv' -o -name 'source' \
        -o -name 'local' -o -name '__pycache__' \) -prune \

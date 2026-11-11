@@ -1,42 +1,12 @@
 #!/usr/bin/env bash
 # check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
 #
-# Why this exists
-#   Ticket #15/#14 folded `stage2/02_cm_data/` and `stage2/04_tahoe_data/` into
-#   `stage2/02_dataset_corpus/` (ADR 0033).  A live Python/bash/R file that still
-#   points at a retired step is a dead path waiting to fail at runtime.
-#   ADR 0052 retired the `stage2/07_lxpert/` runtime.  The
-#   `datasets-1` bundle name is retired too, but only as a *non-frozen* path
-#   component: the frozen v1 evidence under
-#   `stage2/_frozen/cm-data-v1/datasets-1/` keeps its historical name on purpose.
-#
-# Usage
-#   script/check_stage2_paths.sh          scan and report
-#   script/check_stage2_paths.sh --help   print this text
-#
-# What it does
-#   1. Takes the tracked file list from `git ls-files stage2` and keeps the
-#      executable-code suffixes `*.py`, `*.sh`, `*.R`, excluding the archival
-#      trees `stage2/_frozen/` and `stage2/_archive/`.
-#   2. Flags retired Step 02, Step 04 and Step 07 path literals.
-#   3. Flags `datasets-1` except when it is bound to the frozen root: either the
-#      literal contains `_frozen/cm-data-v1/datasets-1` or the `datasets-1`
-#      component sits on a `FROZEN...`-rooted expression (e.g.
-#      `FROZEN / "datasets-1/..."`).
-#   4. Exempts recorded-evidence payload strings via
-#      `script/stage2_path_whitelist.txt`: one `<file-glob>:<literal-ERE>` pair
-#      (or a bare `<file-glob>`) per line, `#` comments.  An entry matches only
-#      the named file and the exact literal; it is not a blanket file skip.
-#   5. Reports counts and the location of every stale literal.
-#
-# Exit status
-#   0  no stale literal
-#   1  at least one stale literal outside the whitelist
-#   2  the script could not locate the repository root
-#
-# The repository root is found by walking up from this script until a directory
-# containing .git is found — never by counting `../..` segments (ADR 0030 §4).
-# No network. Read-only; idempotent: repeated runs give identical results.
+# Stage 2 currently contains only 01_bases (user scope, 2026-11-11).
+# Scan tracked active executable code for references to any other Stage 2 root.
+# Historical payload literals require exact file/literal whitelist entries.
+# Production also rejects any other immediate on-disk Stage 2 entry and checks
+# its owning AGENTS.md/README.md. Fixture file lists skip only that layout check.
+# No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
 
 set -uo pipefail
 
@@ -119,7 +89,7 @@ main() {
   local files_scanned=0 occurrences=0 whitelisted=0 stale=0
 
   # The retired step roots, then the retired bundle name handled per line.
-  local step_pattern='stage2/(02_cm_data|04_tahoe_data|07_lxpert)[[:alnum:]_./+@-]*'
+  local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
   # Production scans the tracked tree.  `STAGE2_PATH_AUDIT_FILES` is a
   # newline-separated file list used only by script/tests/ to exercise the
@@ -129,12 +99,25 @@ main() {
     tr '\n' '\0' <"$STAGE2_PATH_AUDIT_FILES" >"$files_list" || exit 2
   else
     git ls-files -z stage2 >"$files_list" || exit 2
+    local entry
+    for entry in stage2/* stage2/.[!.]* stage2/..?*; do
+      [ -e "$entry" ] || continue
+      if [ "$entry" != "stage2/01_bases" ]; then
+        echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
+        return 1
+      fi
+    done
+    for entry in stage2/01_bases/AGENTS.md stage2/01_bases/README.md; do
+      if [ ! -f "$entry" ]; then
+        echo "RESULT: FAIL — missing bases routing: $entry" >&2
+        return 1
+      fi
+    done
   fi
 
   local f
   while IFS= read -r -d '' f; do
     case "$f" in
-      stage2/_frozen/* | stage2/_archive/*) continue ;;
       *.py | *.sh | *.R) ;;
       *) continue ;;
     esac
@@ -147,6 +130,7 @@ main() {
       [ -n "$hit" ] || continue
       lineno="${hit%%:*}"
       literal="${hit#*:}"
+      case "$literal" in stage2/01_bases | stage2/01_bases/*) continue ;; esac
       occurrences=$((occurrences + 1))
       if is_whitelisted "$f" "$literal"; then
         whitelisted=$((whitelisted + 1))
@@ -163,12 +147,8 @@ main() {
       lineno="${line%%:*}"
       line="${line#*:}"
       local stripped
-      stripped="$(printf '%s' "$line" | sed -E 's#_frozen/cm-data-v1/datasets-1##g')"
+      stripped="$line"
       printf '%s' "$stripped" | grep -q 'datasets-1' || continue
-      # `<FROZEN...> / "datasets-1..."` is a legitimate frozen-root binding.
-      if printf '%s' "$stripped" | grep -qE 'FROZEN[A-Za-z0-9_]*[[:space:]]*/[[:space:]]*"[^"]*datasets-1'; then
-        continue
-      fi
       literal="$(printf '%s' "$line" | grep -oE '[[:alnum:]_./+@-]*datasets-1[[:alnum:]_./+@-]*' | head -n 1)"
       [ -n "$literal" ] || literal="datasets-1"
       occurrences=$((occurrences + 1))
@@ -191,7 +171,7 @@ main() {
   echo "== check_stage2_paths: no retired step paths in tracked stage2 executable code =="
   echo "repo root: $repo_root"
   echo "tracked stage2 executable files scanned: $files_scanned"
-  echo "stage2 path literals: $occurrences occurrences (retired 02/04/07 step roots + datasets-1)"
+  echo "stage2 path literals: $occurrences occurrences (non-bases roots + datasets-1)"
   echo "whitelisted: $whitelisted occurrences (entries in script/stage2_path_whitelist.txt: $whitelist_entries)"
   echo "stale: $stale occurrences, ${distinct_stale:-0} distinct"
   if [ "$stale" -gt 0 ]; then

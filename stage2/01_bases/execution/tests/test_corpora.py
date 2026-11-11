@@ -80,6 +80,27 @@ class CorpusReleaseTest(unittest.TestCase):
         )
         return native, root / "shared", drugs, root / "release"
 
+    def test_separate_raw_locations_and_table_binding(self):
+        from bases import raw
+        native, shared, drugs, release = self.fixture()
+        tahoe = native.parent / "tahoe-counts-v1"
+        tahoe.mkdir()
+        (native / "tahoe.h5ad").rename(tahoe / "tahoe.h5ad")
+        tables = native.parent / "identity-tables"
+        (native / "tables").rename(tables)
+        bindings = {"tenv.h5ad": native / "tenv.h5ad",
+                    "tahoe.h5ad": tahoe / "tahoe.h5ad",
+                    "genes.csv": tables / "genes.csv",
+                    "gene_crosswalk.csv": tables / "gene_crosswalk.csv"}
+        raw.build(bindings, shared, fixture=True)
+        publish(bindings, shared, drugs, release, fixture=True)
+        self.assertEqual(publish(bindings, shared, drugs, release,
+                                 fixture=True, verify=True)["result"], "PASS")
+        for source in ("tenv", "tahoe"):
+            check = verify_training_source(bindings, release, source, tables,
+                                           drugs, fixture=True)
+            self.assertEqual(check["result"], "PASS")
+
     def test_per_well_projection_control_mean_and_label_isolation(self):
         native, shared, drugs, release = self.fixture()
         result = publish(native, shared, drugs, release, fixture=True)

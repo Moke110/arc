@@ -88,3 +88,60 @@ a successful training build alone does not establish either result.
 
 Run heavy commands serially under the repository memory caps. Tests are
 individual `unittest discover` files under `execution/tests/`.
+
+## Rebuild from the retained immutable inputs
+
+The current raw inputs have separate owners: tenv is
+`native-v1/tenv.h5ad`, Tahoe is `tahoe-counts-v1/tahoe.h5ad`, and the frozen
+axis/crosswalk live under `native-v1/tables/`. `--tenv`, `--tahoe` and `--tables`
+override each binding independently. The legacy `--native DIR` option selects
+both h5ads plus `DIR/tables`; it is useful for small fixtures. Files are read in
+place, without copying large raw payloads into a common directory.
+
+The build order below uses new `shared-v2` and `training-v2` destinations;
+build commands refuse existing destinations. Run each heavy command under the
+repository memory/thread caps, after obtaining a resource slot. These commands
+form the supported dependency order, not evidence that a pending full build
+has passed:
+
+```bash
+python stage2/01_bases/execution/build_native.py
+python stage2/01_bases/execution/build_native.py --verify
+python stage2/01_bases/execution/prepare_tahoe.py build
+python stage2/01_bases/execution/prepare_tahoe.py verify
+python stage2/01_bases/execution/build_shared.py
+python stage2/01_bases/execution/build_shared.py --verify
+python stage2/01_bases/execution/build_corpora.py
+python stage2/01_bases/execution/build_corpora.py --verify
+python stage2/01_bases/execution/verify_training_source.py --source tenv
+python stage2/01_bases/execution/verify_training_source.py --source tahoe
+```
+
+Existing accepted native releases can be verified and reused rather than
+rebuilt. For an independent worktree, use explicit canonical paths for raw
+sources, tables, shared release, training release and drug metadata: defaults
+resolve to that checkout, which does not contain the large immutable inputs.
+The identity release uses surviving `shared-v1` **mapping CSVs**, independent
+of its absent expression payloads; `--shared .../shared-v2` selects new mappings
+once prepared. `shared-v1` is not a complete expression release.
+
+The historical `training-v1/manifest.json` seals its original build. It does
+not describe a current shared-expression payload, which was deleted. A new
+shared manifest seals the actual raw files and their release manifests;
+`training-v2` binds that shared manifest. Separate replay records bind raw SHA,
+axis SHA, training SHA and the selected training manifest without rewriting
+historical bytes. To establish equivalence to surviving v1 expression, run
+both source replay commands with
+`--training stage2/01_bases/output/training-v1 --record <new-record.json>`.
+
+The running truth-v1 release retains its original v1 input seals. Linking it
+to a successor training release requires exact gene order, integer contrast
+counts, treated/control memberships and statistical recipe equality, plus
+worker/runtime/statistic seals and a versioned successor record. Matching raw
+paths or approximate normalized expression alone is insufficient. A changed
+contrast, count, axis or recipe requires a new fit. Truth fitting accepts
+explicit `--training` and `--native` and has its own independent verification.
+
+HVG selection, retrieval metrics and PR report commands are documented in
+[`execution/hvg_metrics.md`](execution/hvg_metrics.md). Model selection uses
+training-only rankings; full-tenv descriptive ranks are not model inputs.

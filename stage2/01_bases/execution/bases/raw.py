@@ -25,7 +25,7 @@ POPULATIONS = {
 AXIS_SIZE = 18164
 FAM153B = "HGNC:27323"
 ROW_BATCH = 64
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 NORMALIZATION = "log1p(CP10K of raw counts projected to the ordered CM axis)"
 INPUT_NAMES = ("genes.csv", "gene_crosswalk.csv", "tahoe.h5ad", "tenv.h5ad")
 PAYLOAD_NAMES = (
@@ -45,8 +45,51 @@ def frozen_digests():
 
 
 def input_files(native, sources=SOURCES):
+    """Resolve explicit per-source files, retaining the legacy directory interface."""
+    names = ("genes.csv", "gene_crosswalk.csv", *[f"{source}.h5ad" for source in sources])
+    if isinstance(native, dict):
+        return {name: Path(native[name]) for name in names}
+    native = Path(native)
     return {name: native / ("tables" if name.endswith(".csv") else "") / name
-            for name in ("genes.csv", "gene_crosswalk.csv", *[f"{source}.h5ad" for source in sources])}
+            for name in names}
+
+
+def default_bindings(root, *, native=None, tables=None, tenv=None, tahoe=None):
+    """Bind independently owned raw releases without copying their payloads."""
+    output = Path(root) / "stage2/01_bases/output"
+    legacy = Path(native) if native is not None else output / "native-v1"
+    tables = Path(tables) if tables is not None else legacy / "tables"
+    return {"genes.csv": tables / "genes.csv",
+            "gene_crosswalk.csv": tables / "gene_crosswalk.csv",
+            "tenv.h5ad": Path(tenv) if tenv is not None else legacy / "tenv.h5ad",
+            "tahoe.h5ad": Path(tahoe) if tahoe is not None else
+                (legacy / "tahoe.h5ad" if native is not None else
+                 output / "tahoe-counts-v1/tahoe.h5ad")}
+
+
+def add_binding_arguments(parser):
+    parser.add_argument("--native", type=Path, help="legacy directory containing both raw h5ads and tables")
+    parser.add_argument("--tables", type=Path, help="independently owned genes/crosswalk directory")
+    parser.add_argument("--tenv", type=Path, help="raw tenv h5ad")
+    parser.add_argument("--tahoe", type=Path, help="raw projected Tahoe h5ad")
+
+
+def cli_bindings(args, root):
+    return default_bindings(root, native=args.native, tables=args.tables,
+                            tenv=args.tenv, tahoe=args.tahoe)
+
+
+def source_provenance(files, sources, fixture=False):
+    evidence = {}
+    for source in sources:
+        raw = files[f"{source}.h5ad"]
+        manifest = raw.parent / "manifest.json"
+        if not fixture and not manifest.is_file():
+            raise ValueError(f"{source}: raw release manifest is missing: {manifest}")
+        evidence[source] = {"raw_file": str(raw.resolve()),
+                            "release_manifest": str(manifest.resolve()),
+                            "release_manifest_sha256": file_sha256(manifest) if manifest.is_file() else None}
+    return evidence
 
 
 def fingerprint(files):
@@ -286,6 +329,7 @@ def build(native, release, fixture=False, sources=SOURCES):
             "fixture": fixture,
             "normalization": NORMALIZATION,
             "inputs": digests,
+            "raw_provenance": source_provenance(files, sources, fixture),
             "files": {name: file_sha256(directory / name) for name in ("genes.csv", *[f"{source}_{suffix}" for source in sources for suffix in ("expression.npy", "profiles.csv", "mapping.csv")])},
             "sources": sources,
         }
@@ -363,6 +407,11 @@ def verify(native, release, fixture=False):
     digests, axis, crosswalk = read_inputs(files, fixture)
     if manifest["inputs"] != digests:
         raise ValueError("release input digests differ from native corpora and crosswalk")
+    current_provenance = source_provenance(files, sources, fixture)
+    for source, evidence in current_provenance.items():
+        if (manifest["raw_provenance"][source]["release_manifest_sha256"] !=
+                evidence["release_manifest_sha256"]):
+            raise ValueError(f"{source}: raw release provenance changed")
     for name, digest in manifest["files"].items():
         if file_sha256(release / name) != digest:
             raise ValueError(f"release file digest mismatch: {name}")
