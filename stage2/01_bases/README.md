@@ -151,3 +151,19 @@ acceptance commands are documented in
 [`execution/truth_successor.md`](execution/truth_successor.md). Its production
 publisher rejects incomplete/fixture reports and requires exact integer
 contrasts plus bit-exact finite X/control/delta equivalence.
+
+## Diagnostic QA publication
+
+The human-facing [diagnostic PR panel](diagnostic_tenv_pr.png) and its
+[plotted numeric source](diagnostic_tenv_pr.csv) are published directly at
+this step root, following ADR 0030. They cover the three test folds,
+4206 measured wells and 1377 parent–dose groups. The visible title and
+metadata explicitly identify this as measurement-derived diagnostic QA,
+not trained-model performance.
+
+These are byte-identical copies of the accepted internal artifacts under
+output/hvg-metrics-diagnostic-v1/; no values or rendering were recomputed.
+The internal cohort, group tables, source records and acceptance evidence
+remain unchanged. Publication hashes, generation code, byte-copy code and
+source/destination bindings are recorded in
+[execution/build_record/diagnostic_publication.json](execution/build_record/diagnostic_publication.json).
