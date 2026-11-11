@@ -103,9 +103,15 @@
     {
       "detail": {
         "digest": "6e3ac2ec880974fe1da69d522eb1e8007a2851b2886510e040719002e4fe548e",
-        "verdict": "REJECTED_SUPERSEDED; never an input and never opened by this audit"
+        "removal_record": "log/157-removals.json",
+        "removed": true,
+        "retained_evidence": [
+          "log/records/tahoe_training_v1_rejection.json",
+          "log/records/tahoe_historical_raw_diagnosis.json"
+        ],
+        "verdict": "REJECTED_SUPERSEDED; the declared digest and the rejection evidence survive, the payload is never an input and is never opened by this audit"
       },
-      "name": "historical-training-release: rejected Tahoe payload still present",
+      "name": "historical-training-release: rejected Tahoe payload removed under the #157 removal record",
       "status": "PASS"
     },
     {
@@ -577,18 +583,18 @@
     },
     {
       "detail": {
-        "checked_in": "/home/chang/arc/.scratch/worktrees/stage2-bases-156-fix/stage2/01_bases",
+        "checked_in": "/home/chang/arc/stage2/01_bases",
         "duplicates": {
           "diagnostic_tenv_pr.csv": {
             "code_root": false,
-            "step_root": true
+            "step_root": false
           },
           "diagnostic_tenv_pr.png": {
             "code_root": false,
-            "step_root": true
+            "step_root": false
           }
         },
-        "renderer": "/home/chang/arc/.scratch/worktrees/stage2-bases-156-fix/stage2/01_bases/figure/script/render_diagnostic_tenv_pr.py",
+        "renderer": "figure/script/render_diagnostic_tenv_pr.py",
         "rule": "publishing is judged on the code root; a split payload root may still carry dev's restored copies of the two superseded placements"
       },
       "name": "figure: a renderer exists and the step root no longer publishes duplicates",
@@ -596,7 +602,7 @@
     },
     {
       "detail": {
-        "checked_in": "/home/chang/arc/.scratch/worktrees/stage2-bases-156-fix/stage2/01_bases",
+        "checked_in": "/home/chang/arc/stage2/01_bases",
         "extra": [],
         "missing": [],
         "public_api": true
