@@ -71,6 +71,30 @@ def execute(plan_path, policy, work, selected=None, smoke=False):
             completed(run, fit, policy)
 
 
+def evaluate(plan_path, policy, work):
+    """Predict, independently replay and measure the selected native test loss."""
+    plan = read_json(plan_path)
+    verify_plan(plan)
+    for run in plan['runs']:
+        fit = work / 'fits' / run['id']
+        completed(run, fit, policy)
+        prediction = work / 'predictions' / run['id']
+        checkpoint = fit / 'best.pt'
+        base = ['--predictor', run['predictor'], '--checkpoint', str(checkpoint)]
+        commands = []
+        if not prediction.exists():
+            commands.append(('predict-test', ['predict', *base, '--role', 'test', '--output', str(prediction)]))
+        commands.append(('replay-test', ['replay', *base, '--prediction', str(prediction)]))
+        loss = work / 'test_loss' / f"{run['id']}.json"
+        commands.append(('test-loss', ['evaluate-loss', *base, '--evaluator', run['evaluator'], '--output', str(loss)]))
+        for stage, args in commands:
+            resource = work / 'resources' / run['id'] / stage
+            if resource.exists():
+                raise ValueError(f'resource attempt already exists; inspect before retry: {resource}')
+            subprocess.run([str(SCRIPT / 'run_capped.sh'), str(resource), sys.executable,
+                            str(SCRIPT / 'xpert.py'), *args], check=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--plan', type=Path, required=True)
@@ -78,8 +102,12 @@ def main():
     parser.add_argument('--work', type=Path, required=True)
     parser.add_argument('--runs', nargs='+')
     parser.add_argument('--smoke', action='store_true')
+    parser.add_argument('--evaluate', action='store_true')
     args = parser.parse_args()
-    execute(args.plan, args.policy, args.work, args.runs, args.smoke)
+    if args.evaluate:
+        evaluate(args.plan, args.policy, args.work)
+    else:
+        execute(args.plan, args.policy, args.work, args.runs, args.smoke)
 
 
 if __name__ == '__main__':
