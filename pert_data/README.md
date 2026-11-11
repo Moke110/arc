@@ -31,8 +31,9 @@ every item.
 | `Annotation/` | Pinned HGNC complete set (download) + the public-registry compound snapshot and CM drug-audit report (local additions). |
 
 Each item's `author_log.json` carries its provenance; each `local/` file is declared in that
-log's `local_additions[]`. The downstream corpus built from these sources lives in
-`stage2/02_dataset_corpus/` — five native-axis raw-count corpora under `output/corpus/v2/`
-(ADR 0033, amending ADR 0026). The `Tahoe-100M/` item is consumed by that same step: its
-pseudobulk corpus is `stage2/02_dataset_corpus/output/corpus/v2/tahoe.h5ad`
-(ADR 0029, ADR 0033).
+log's `local_additions[]`. Current downstream preparation belongs to
+[Stage 2 bases](../stage2/01_bases/README.md): tenv native raw counts and Tahoe
+raw counts projected onto the frozen shared axis feed two separate training
+corpora. The former five-source native-axis corpus release described by ADR 0033
+was removed with the other Stage 2 steps; its tracked build evidence remains in
+Git history. The immutable downloaded sources listed above remain in this category.

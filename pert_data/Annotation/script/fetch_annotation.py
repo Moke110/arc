@@ -116,7 +116,7 @@ def write_manifest(hgnc_extra: dict | None = None,
     header = [
         "# Stage 2 CM corpus — pinned annotation assets",
         "",
-        "These files are read-only inputs of `stage2/02_cm_data/build_cm_datasets.py`.",
+        "These files are read-only annotation inputs for Stage 2 bases gene identity.",
         "They are produced by `fetch_annotation.py`; the build never makes a",
         "network call.",
         "",
