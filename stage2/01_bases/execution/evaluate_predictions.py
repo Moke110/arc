@@ -28,9 +28,10 @@ def main():
             parser.error('--fold is required for a multi-fold assignment file')
         assignments=assignments[assignments.fold.eq(args.fold)]
     samples=pd.read_csv(args.samples,keep_default_na=False,dtype={'sample_id':str,'drug_parent':str})
-    mapping=assignments.set_index('sample_id').role
-    if not samples.sample_id.map(mapping).eq(args.role).all():
-        raise ValueError('prediction samples are outside the requested evaluator role')
+    expected=assignments.loc[assignments.role.eq(args.role), 'sample_id']
+    if (assignments.sample_id.duplicated().any() or samples.sample_id.duplicated().any()
+            or expected.empty or set(samples.sample_id) != set(expected)):
+        raise ValueError('prediction samples must exactly cover the requested evaluator role once')
     truth=PartitionTruth(args.truth,assignments,args.role)
     predictions=np.load(args.predictions,mmap_mode='r',allow_pickle=False)
     columns=pd.read_csv(args.genes).gene_index.to_numpy()
