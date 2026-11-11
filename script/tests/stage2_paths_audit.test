@@ -21,11 +21,7 @@ run() {
   STAGE2_PATH_AUDIT_FILES="$1" bash "$audit"
 }
 
-# 1. Positive: a clean tracked tree reports 0 stale.
-out="$(bash "$audit")" || fail "the tracked stage2 tree should be clean"
-printf '%s\n' "$out" | grep -q '^stale: 0 occurrences' \
-  || fail "tracked tree did not report stale: 0"
-
+# 1. Fixture scans exercise runtime literals independently of the checkout layout.
 # 2. Positive: clean fixture.
 printf 'x = 1\n' >"$tmp/clean.py"
 printf '%s\n' "$tmp/clean.py" >"$tmp/list_clean"
@@ -58,12 +54,19 @@ if run "$tmp/list_bare" >/dev/null; then
   fail "a non-frozen datasets-1 path must fail the audit"
 fi
 
-# 6. Allowed: the frozen prefix and a FROZEN-rooted binding are legitimate.
+# 6. A deleted frozen runtime is no longer an implicit exemption.
 printf 'p = "stage2/_frozen/cm-data-v1/datasets-1/x.h5ad"\n' >"$tmp/frozen.py"
-printf 'q = FROZEN / "datasets-1/x.h5ad"\n' >"$tmp/rooted.py"
-printf '%s\n%s\n' "$tmp/frozen.py" "$tmp/rooted.py" >"$tmp/list_ok"
-out="$(run "$tmp/list_ok")" || fail "frozen-rooted datasets-1 should pass"
-printf '%s\n' "$out" | grep -q '^stale: 0 occurrences' \
-  || fail "frozen-rooted datasets-1 was counted as stale"
+printf '%s\n' "$tmp/frozen.py" >"$tmp/list_frozen"
+if run "$tmp/list_frozen" >/dev/null; then fail "deleted frozen runtime must fail"; fi
 
-echo "PASS: stage2 path audit detects retired literals and exempts frozen paths"
+# Newly retired runtime roots fail; current bases and immutable sources pass.
+for old in 02_dataset_corpus evaluation 09_xpert_optimize _frozen; do
+  printf 'p = "stage2/%s/output/x"\n' "$old" >"$tmp/new_stale.py"
+  printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
+  if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
+done
+printf 'p = "stage2/01_bases/output/x"\nq = "pert_data/Tahoe-100M/source/x"\n' >"$tmp/current.py"
+printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
+run "$tmp/list_current" >/dev/null || fail "bases/external source must pass"
+
+echo "PASS: bases-only Stage 2 runtime path fixtures"

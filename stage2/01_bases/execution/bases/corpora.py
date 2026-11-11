@@ -339,7 +339,7 @@ def replay_source(native, release, source, frame, controls, axis, crosswalk, fix
     sums = {key: np.zeros(len(axis), dtype="float64") for key in controls}
     control_key = {row: key for key, rows in controls.items() for row in rows}
     counts_per = defaultdict(int)
-    with h5py.File(native / f"{source}.h5ad") as raw:
+    with h5py.File(library.input_files(native, (source,))[f"{source}.h5ad"]) as raw:
         profiles, mapping, shape, _ = library.source_contract(
             raw, source, axis, crosswalk, fixture
         )
@@ -442,13 +442,14 @@ def publish(native, shared, drug_metadata, output, *, fixture=False, verify=Fals
         library.build(native, shared, True)
     # Real native bytes and every shared payload are pinned before reuse.
     shared_check = library.verify(native, shared, fixture)
-    axis = library.read_csv(native / "tables/genes.csv")
-    crosswalk = library.read_csv(native / "tables/gene_crosswalk.csv")
+    files = library.input_files(native)
+    axis = library.read_csv(files["genes.csv"])
+    crosswalk = library.read_csv(files["gene_crosswalk.csv"])
     drugs = pd.read_parquet(drug_metadata)
     prepared = {}
     summaries = {}
     for source in ("tahoe", "tenv"):
-        with h5py.File(native / f"{source}.h5ad", "r") as file:
+        with h5py.File(files[f"{source}.h5ad"], "r") as file:
             obs = read_elem(file["obs"])
         profiles = library.read_csv(shared / f"{source}_profiles.csv")
         profiles["source_row"] = profiles.source_row.astype(int)
@@ -470,7 +471,7 @@ def publish(native, shared, drug_metadata, output, *, fixture=False, verify=Fals
         "inputs": inputs,
         "rdkit_version": rdBase.rdkitVersion,
         "sources": summaries,
-        "historical_inputs": "unchanged; native sources and prior experiments retain original semantics",
+        "input_provenance": "rebuilt raw counts and independent source bindings sealed by the shared manifest",
     }
     if verify:
         stored = json.loads((output / "manifest.json").read_text())
@@ -548,15 +549,16 @@ def verify_training_source(native, training, source, tables, drug_metadata=None,
     Semantic equality is checked through immutable profile/control identities.
     """
     library = shared_library()
-    native, training, tables = Path(native), Path(training), Path(tables)
+    training, tables = Path(training), Path(tables)
+    source_file = library.input_files(native, (source,))[f"{source}.h5ad"]
     axis = library.read_csv(tables / "genes.csv")
     crosswalk = library.read_csv(tables / "gene_crosswalk.csv")
     drugs = pd.read_parquet(drug_metadata) if source == "tahoe" else pd.DataFrame()
     serialization_changes = []
     with tempfile.TemporaryDirectory(prefix=".source-replay-", dir=training.parent) as tmp:
         directory = Path(tmp)
-        library.write_source(native / f"{source}.h5ad", directory, source, axis, crosswalk, fixture)
-        with h5py.File(native / f"{source}.h5ad") as file:
+        library.write_source(source_file, directory, source, axis, crosswalk, fixture)
+        with h5py.File(source_file) as file:
             obs = read_elem(file["obs"])
         profiles = library.read_csv(directory / f"{source}_profiles.csv")
         profiles["source_row"] = profiles.source_row.astype(int)
@@ -581,7 +583,10 @@ def verify_training_source(native, training, source, tables, drug_metadata=None,
         check = replay_source(native, training / f"{name}.h5ad", source, frame,
                               controls, axis, crosswalk, fixture)
     return {"result": "PASS", "source": source, "summary": summary, **check,
-            "native_sha256": sha256(native / f"{source}.h5ad"),
+            "native_sha256": sha256(source_file),
+            "native_file": str(source_file.resolve()),
+            "training_manifest_sha256": sha256(training / "manifest.json"),
+            "provenance": "independent raw-source replay; selected training build seal retained",
             "training_sha256": sha256(training / f"{name}.h5ad"),
             "axis_sha256": sha256(tables / "genes.csv"),
             "structure_serialization_changes": serialization_changes}

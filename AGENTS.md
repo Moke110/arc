@@ -30,7 +30,7 @@ Before loading datasets or training, read [`docs/agents/execution-environment.md
 - `docs/data-inventory.md` — inventory of ignored large assets.
 - `docs/roadmap.md` — program-level roadmap.
 - `docs/wetlab-validation-stage1.md` — wet-lab validation record.
-- Routing indexes: `stage1/AGENTS.md`, `stage2/AGENTS.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`, `disease_data/AGENTS.md`, `drug_emb_model/AGENTS.md`; each Stage 2 step has its own `AGENTS.md` + `README.md`.
+- Routing indexes: `stage1/AGENTS.md`, `stage2/01_bases/AGENTS.md`, `pert_data/AGENTS.md`, `pert_model/AGENTS.md`, `disease_data/AGENTS.md`, `drug_emb_model/AGENTS.md`; each Stage 2 step has its own `AGENTS.md` + `README.md`.
 - `environment.yml` — shared conda environment `arc`; `skills-lock.json` — pinned agent-skills lockfile.
 
 ## Skills

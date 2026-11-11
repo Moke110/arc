@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Public health-check seam: independent checkouts are excluded, active code is not.
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+tmp="$(mktemp -d)"
+trap 'rm -rf -- "$tmp"' EXIT
+mkdir -p "$tmp/script" "$tmp/stage2/01_bases" "$tmp/.worktrees/worker"
+cp "$root/script/check_stage2_paths.sh" "$root/script/check_tracked.sh" "$tmp/script/"
+printf 'bases\n' > "$tmp/stage2/01_bases/AGENTS.md"
+printf 'bases\n' > "$tmp/stage2/01_bases/README.md"
+printf 'x = 1\n' > "$tmp/stage2/01_bases/run.py"
+printf 'x = 1\n' > "$tmp/.worktrees/worker/run.py"
+git -C "$tmp" init -q
+git -C "$tmp" add script stage2
+bash "$tmp/script/check_stage2_paths.sh" >/dev/null
+bash "$tmp/script/check_tracked.sh" >/dev/null
+mkdir "$tmp/stage2/evaluation"
+if bash "$tmp/script/check_stage2_paths.sh" >/dev/null 2>&1; then
+  echo 'FAIL: an extra Stage 2 entry must fail' >&2; exit 1
+fi
+rmdir "$tmp/stage2/evaluation"
+printf 'x = 1\n' > "$tmp/stage2/01_bases/untracked.py"
+if bash "$tmp/script/check_tracked.sh" >/dev/null 2>&1; then
+  echo 'FAIL: active untracked executable must fail' >&2; exit 1
+fi
+echo 'PASS: bases layout and separate-checkout tracking boundaries'
