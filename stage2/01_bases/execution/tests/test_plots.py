@@ -15,9 +15,12 @@ class PlotContractTests(unittest.TestCase):
                'curves':{name:pooled_pr([result[name]]) for name in METRICS}}]
         with tempfile.TemporaryDirectory() as tmp:
             target=Path(tmp)/'panel.png'
-            report=render_retrieval(runs,target,source='tenv')
+            report=render_retrieval(runs,target,source='tenv',diagnostic=True)
             self.assertTrue(target.exists())
             self.assertEqual(report['source'],'tenv')
+            self.assertTrue(report['diagnostic'])
+            self.assertIn('Diagnostic',report['title'])
+            self.assertIn('not model performance',report['title'])
             self.assertTrue(target.with_suffix('.json').exists())
             self.assertTrue(target.with_suffix('.csv').exists())
             replay=Path(tmp)/'replay.png'

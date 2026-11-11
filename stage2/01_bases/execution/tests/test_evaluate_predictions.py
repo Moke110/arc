@@ -48,12 +48,16 @@ class EvaluatorPopulationContract(unittest.TestCase):
                         '--predictions', str(root/'predictions.npy'), '--samples', str(root/'samples.csv'),
                         '--genes', str(root/'genes.csv'), '--truth', str(root/'truth'),
                         '--assignments', str(root/'assignments.csv'), '--fold', '0', '--role', 'test',
-                        '--label', 'Contract example', '--output', str(output)], capture_output=True, text=True)
+                        '--label', 'Contract example', '--diagnostic', '--output', str(output)], capture_output=True, text=True)
                     if ids == ['b','a']:
                         self.assertEqual(result.returncode, 0, result.stderr)
                         report = json.loads((output/'report.json').read_text())
                         self.assertEqual(report['summary']['groups'], 2)
                         self.assertEqual(report['summary']['AUPRC'], 1.)
+                        self.assertTrue(report['diagnostic'])
+                        self.assertIn('no model evaluated',report['interpretation'])
+                        panel=json.loads((output/'pr.json').read_text())
+                        self.assertIn('Diagnostic',panel['title'])
                     else:
                         self.assertNotEqual(result.returncode, 0)
                         self.assertIn('exactly cover', result.stderr)

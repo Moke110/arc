@@ -8,7 +8,7 @@ import pandas as pd
 from .metrics import METRICS, PR_FIELDS
 
 
-def render_retrieval(runs, output, *, source='tenv'):
+def render_retrieval(runs, output, *, source='tenv', diagnostic=False):
     """Write a three-direction PR panel and replayable CSV/JSON.
 
     Each run supplies label, equal-group macro summary and fixed-group pooled
@@ -17,6 +17,8 @@ def render_retrieval(runs, output, *, source='tenv'):
     """
     if source != 'tenv':
         raise ValueError('significance retrieval panels are tenv-only')
+    panel_title = ('Diagnostic · measured delta vs tenv truth (not model performance)' if diagnostic
+             else 'Tenv · fixed-group pooled precision–recall')
     import matplotlib
     matplotlib.use('Agg')
     from matplotlib import pyplot as plt
@@ -63,13 +65,13 @@ def render_retrieval(runs, output, *, source='tenv'):
             else:
                 ax.text(.5,.5,'No eligible measured groups',ha='center',va='center',transform=ax.transAxes)
         axes[0].set_ylabel('Precision')
-        fig.suptitle('Tenv · fixed-group pooled precision–recall',fontsize=13)
+        fig.suptitle(panel_title,fontsize=13)
         fig.savefig(output,dpi=160)
     finally:
         plt.close(fig)
     frame = pd.concat(rows,ignore_index=True) if rows else pd.DataFrame(columns=[*PR_FIELDS,'label','metric'])
     frame.to_csv(output.with_suffix('.csv'),index=False)
-    report = {'schema':'stage2-indexed-pr-panel-v1','source':source,'summaries':summaries,
+    report = {'schema':'stage2-indexed-pr-panel-v1','source':source,'diagnostic':bool(diagnostic),'title':panel_title,'summaries':summaries,
               'curve_semantics':'fixed eligible groups pooled at shared magnitude thresholds; displayed AP is exact equal-group macro',
               'files':{output.name:hashlib.sha256(output.read_bytes()).hexdigest(),
                        output.with_suffix('.csv').name:hashlib.sha256(output.with_suffix('.csv').read_bytes()).hexdigest()}}
@@ -92,4 +94,4 @@ def replay_retrieval(report, output):
         label = summary['label']
         curves = {name:frame.loc[frame.label.eq(label)&frame.metric.eq(name),list(PR_FIELDS)] for name in METRICS}
         runs.append({'label':label,'summary':summary,'curves':curves})
-    return render_retrieval(runs,output,source=value['source'])
+    return render_retrieval(runs,output,source=value['source'],diagnostic=value.get('diagnostic',False))
