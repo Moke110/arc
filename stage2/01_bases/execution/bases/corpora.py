@@ -34,11 +34,8 @@ def sha256(path):
 
 
 def shared_library():
-    root = next(p for p in Path(__file__).resolve().parents if (p / ".git").exists())
-    sys.path.insert(0, str(root / "stage2/02_dataset_corpus/execution"))
-    from cmdata import shared_cm
-
-    return shared_cm
+    from . import raw
+    return raw
 
 
 @lru_cache(maxsize=4096)
@@ -364,9 +361,26 @@ def replay_source(native, release, source, frame, controls, axis, crosswalk, fix
         max_error = 0.0
         with h5py.File(release, "r") as output:
             actual_obs, actual_var = training_header(release)
-            pd.testing.assert_frame_equal(
-                actual_obs, frame, check_dtype=False, check_categorical=False
-            )
+            if set(actual_obs.source_profile_id) != set(frame.source_profile_id):
+                raise ValueError("training source profile coverage differs")
+            # Raw rebuild row order is not an identity. Bind by immutable profile IDs.
+            expected_by_id = frame.set_index("source_profile_id", drop=False)
+            aligned = expected_by_id.loc[actual_obs.source_profile_id].copy()
+            aligned.index = actual_obs.index
+            # Frozen registry lookup may serialize equivalent tautomers differently
+            # from the old multi-source compound table. Exact InChIKey and the
+            # stereo-aware parent key remain mandatory comparison fields.
+            positional = {"source_row", "expression_row", "matched_control_rows",
+                          "smiles", "source_smiles", "parent_smiles"}
+            fields = [c for c in aligned.columns if c not in positional]
+            actual_fields = actual_obs[fields].copy()
+            expected_fields = aligned[fields].copy()
+            for values in (actual_fields, expected_fields):
+                values["matched_control_ids"] = values.matched_control_ids.map(
+                    lambda value: json.dumps(sorted(json.loads(value))))
+            pd.testing.assert_frame_equal(actual_fields, expected_fields,
+                                          check_dtype=False, check_categorical=False)
+            target_positions = {int(row): i for i, row in enumerate(aligned.source_row)}
             if list(actual_var.gene_index) != list(range(len(axis))) or list(
                 actual_var.hgnc_id
             ) != list(axis.hgnc_id):
@@ -404,9 +418,9 @@ def replay_source(native, release, source, frame, controls, axis, crosswalk, fix
                     ("layers/control", control),
                     ("layers/delta", expected[local] - control),
                 ]:
-                    actual = output[name][positions[0] : positions[-1] + 1]
-                    if len(actual) != len(positions):
-                        raise ValueError("source order is not contiguous")
+                    order = np.argsort(positions)
+                    actual_sorted = output[name][positions[order]]
+                    actual = actual_sorted[np.argsort(order)]
                     max_error = max(
                         max_error, float(np.max(np.abs(actual - reference)))
                     )
@@ -525,3 +539,49 @@ def publish(native, shared, drug_metadata, output, *, fixture=False, verify=Fals
         )
         os.rename(stage, output)
     return manifest
+
+
+def verify_training_source(native, training, source, tables, drug_metadata=None, *, fixture=False):
+    """Replay one surviving training payload against newly sealed raw counts.
+
+    Returns new source evidence without rewriting the historical build manifest.
+    Semantic equality is checked through immutable profile/control identities.
+    """
+    library = shared_library()
+    native, training, tables = Path(native), Path(training), Path(tables)
+    axis = library.read_csv(tables / "genes.csv")
+    crosswalk = library.read_csv(tables / "gene_crosswalk.csv")
+    drugs = pd.read_parquet(drug_metadata) if source == "tahoe" else pd.DataFrame()
+    serialization_changes = []
+    with tempfile.TemporaryDirectory(prefix=".source-replay-", dir=training.parent) as tmp:
+        directory = Path(tmp)
+        library.write_source(native / f"{source}.h5ad", directory, source, axis, crosswalk, fixture)
+        with h5py.File(native / f"{source}.h5ad") as file:
+            obs = read_elem(file["obs"])
+        profiles = library.read_csv(directory / f"{source}_profiles.csv")
+        profiles["source_row"] = profiles.source_row.astype(int)
+        expression = np.load(directory / f"{source}_expression.npy", mmap_mode="r")
+        frame, excluded, controls, summary = metadata(source, obs, profiles, expression, drugs)
+        name = "tahoe_bulk" if source == "tahoe" else "tenv"
+        actual, _ = training_header(training / f"{name}.h5ad")
+        expected = frame.set_index("source_profile_id").loc[actual.source_profile_id]
+        for field in ("smiles", "source_smiles", "parent_smiles"):
+            if field in actual:
+                for i in np.flatnonzero(actual[field].to_numpy() != expected[field].to_numpy()):
+                    serialization_changes.append({"sample_id": str(actual.sample_id.iloc[i]),
+                        "field": field, "training": str(actual[field].iloc[i]),
+                        "rebuilt_native": str(expected[field].iloc[i]),
+                        "proof": "exact source InChIKey and stereochemistry-aware parent InChIKey equal"})
+        if (training / f"{name}_exclusions.csv").read_text() != excluded.to_csv(index=False):
+            # Source row order can change; compare reasons by stable source IDs instead.
+            previous = pd.read_csv(training / f"{name}_exclusions.csv", keep_default_na=False)
+            columns = ["source_profile_id", "reason"]
+            pd.testing.assert_frame_equal(previous[columns].sort_values(columns).reset_index(drop=True),
+                excluded[columns].sort_values(columns).reset_index(drop=True), check_dtype=False)
+        check = replay_source(native, training / f"{name}.h5ad", source, frame,
+                              controls, axis, crosswalk, fixture)
+    return {"result": "PASS", "source": source, "summary": summary, **check,
+            "native_sha256": sha256(native / f"{source}.h5ad"),
+            "training_sha256": sha256(training / f"{name}.h5ad"),
+            "axis_sha256": sha256(tables / "genes.csv"),
+            "structure_serialization_changes": serialization_changes}

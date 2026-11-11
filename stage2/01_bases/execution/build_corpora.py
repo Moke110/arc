@@ -8,12 +8,12 @@ from bases.corpora import publish
 root = next(p for p in Path(__file__).resolve().parents if (p / ".git").exists())
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument(
-    "--native", type=Path, default=root / "stage2/02_dataset_corpus/output/corpus/v2"
+    "--native", type=Path, default=root / "stage2/01_bases/output/native-v1"
 )
 p.add_argument(
     "--shared",
     type=Path,
-    default=root / "stage2/02_dataset_corpus/output/corpus/shared-cm-v1",
+    default=root / "stage2/01_bases/output/shared-v1",
 )
 p.add_argument(
     "--drugs",

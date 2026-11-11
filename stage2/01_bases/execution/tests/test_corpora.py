@@ -11,7 +11,7 @@ import h5py
 from anndata.io import read_elem
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from bases.corpora import publish
+from bases.corpora import publish, verify_training_source
 
 
 class CorpusReleaseTest(unittest.TestCase):
@@ -146,3 +146,13 @@ class CorpusReleaseTest(unittest.TestCase):
             self.assertEqual(obs.drug_parent.nunique(), 1)
             self.assertEqual(obs.source_parent_key.nunique(), 2)
             self.assertIn("[Na+]", obs.source_smiles.iloc[1])
+
+    def test_source_replay_joins_stable_profiles_after_raw_row_reordering(self):
+        native, shared, drugs, release = self.fixture()
+        publish(native, shared, drugs, release, fixture=True)
+        raw = ad.read_h5ad(native / "tenv.h5ad")  # tiny fixture only
+        raw = raw[[3, 1, 4, 0, 2]].copy()
+        raw.write_h5ad(native / "tenv.h5ad")
+        result = verify_training_source(native, release, "tenv", native / "tables", fixture=True)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["rows_replayed"], 2)

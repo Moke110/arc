@@ -1,119 +1,90 @@
 # Stage 2 shared foundations
 
-ADR 0061 assigns shared gene identity, training corpora, HVG, metrics and report
-rendering to this boundary. The identity release is the first implemented
-interface; existing consumers remain operational while the later tickets migrate.
+This is the standalone foundation retained after the user removed the other
+Stage 2 steps. Its public code and required identity tables live inside this
+step. Immutable raw inputs remain under `pert_data/`. Deleted historical
+experiments and their checkpoints are outside this build.
 
-`output/identity-v1/genes.csv` adds `gene_index` 0–18163 to the exact frozen
-four-CM-source axis, without sorting. Its manifest pins the original axis,
-source crosswalk, HGNC aliases and independently replayed native mappings.
-FAM153B has index 5091: tenv ENSG00000182230 and Tahoe ENSG00000289731/token
-61482 retain their own source evidence.
+## Identity
 
-## Identity interface
+`output/identity-v1/genes.csv` fixes `gene_index` 0–18163 in the original
+four-CM-source order. `output/native-v1/tables/genes.csv` retains the exact
+original axis bytes; the crosswalk retains source evidence. FAM153B is index
+5091: tenv ENSG00000182230 and Tahoe ENSG00000289731/token61482.
 
-Add `execution/` to the caller's import path and import `GeneIdentity` and
-`native_mapping_rows` from `bases.identity`. `GeneIdentity.load(axis, crosswalk,
-annotation, native_mappings=native_mapping_rows(shared))` validates the pinned
-axis bytes and size. `indices(ids)` resolves global HGNC/canonical/alias IDs;
-`indices(ids, source=...)` resolves native IDs only within that source.
-`labels(indices, field='symbol')` converts integers for display or HGNC-native
-boundaries; `native_ids(index, source)` returns all evidenced source identities.
-`temp_env` and `screen_ctox` evidence is exposed as the corpus names `tenv` and
-`sctox`; original evidence records retain their source names. Unknown, off-axis
-and ambiguous identities raise `IdentityError`. Duplicate corroborating evidence
-is safe; competing identities, including off-axis candidates, fail explicitly.
-
-Build and replay from the repository root:
+Add `execution/` to the import path and use `bases.identity.GeneIdentity`.
+`indices(ids, source=...)` resolves native namespaces with explicit ambiguity
+errors; `labels` and `native_ids` cross the human/native boundary. The shared
+mapping files are derived solely from raw gene metadata and pinned HGNC evidence.
 
 ```bash
 python stage2/01_bases/execution/build_identity.py
 python stage2/01_bases/execution/build_identity.py --verify
-python -m unittest discover -s stage2/01_bases/execution/tests -p test_identity.py
 ```
 
-The builder accepts explicit `--native`, `--annotation`, `--shared` and `--output`
-locations for isolated worktrees. It loads only annotation/crosswalk tables,
-never expression matrices. The output stores the indexed axis and hashes rather
-than duplicate source data.
+## Native raw counts
 
-## Compatibility locations
-
-- Native model setup and pinned environments: [01_setup](../01_setup/README.md)
-  and [_envs](../_envs/README.md).
-- Native corpora and bounded shared expression build/replay:
-  [02_dataset_corpus](../02_dataset_corpus/README.md),
-  `execution/cmdata/shared_cm.py` and `execution/build_corpus.py --shared-cm`.
-- Existing significance/retrieval public entry points:
-  [evaluation](../evaluation/README.md). Its old labels remain historical;
-  this identity ticket does not assert they satisfy the new axis-only family.
-
-These are live compatibility entry points, with their original code and seals
-unchanged. New training corpora, new true labels and consumer migration are
-separate acceptance boundaries under #145.
-
-## Indexed training corpora
-
-`output/training-v1/{tahoe_bulk,tenv}.h5ad` are separate treated-well
-releases. `X` contains full-axis treated expression; `layers/control` is the
-mean of independently normalized matched controls, and `layers/delta` is
-`X - control`. `var/gene_index` is the fixed 0-based axis. No statistical
-truth or significance labels are present. Tahoe rows are well-by-cell-line
-pseudobulks; tenv's `cell_identity` is `hiPSC-CM`.
-
-`obs/sample_id` is stable and source-prefixed. Source row/profile, plate, well,
-administered compound name/structure, full stereochemistry-retaining desalted
-parent InChIKey, micromolar dose, native dose value/unit and conversion evidence
-are retained. Parent identity uses RDKit Cleanup, FragmentParent and Uncharger,
-with stereochemistry retained. `drug_parent` is the normalized identity;
-`source_parent_key` and the original `drug_key` retain the native identity,
-including its original protonation state. A resolvable identity conversion is
-recorded rather than excluding the treatment. `dose_original_value` refers to the pinned native corpus input;
-its upstream `dose_source` is retained when available. Native corpora and their
-raw-source provenance remain unchanged. Unknown Tahoe time/vehicle metadata is
-not invented. Tenv parent–dose keys with missing or incompatible time/vehicle
-conditions fail before publication. `group_id` hashes parent and dose, and is
-not a partition assignment: membership belongs to an explicit partition/cohort.
-
-`matched_control_rows` and `matched_control_ids` are exact JSON lists in native
-row space. Tenv uses same-plate **DMSO** (Media controls are excluded); Tahoe
-uses same-plate, same-cell-line **DMSO_TF**. The exclusion CSVs account for
-technical blanks and excluded treatments with explicit reasons. Source control
-profiles stay in the native corpus and are referenced rather than published as
-training observations.
-
-Run serially under the execution-environment memory caps:
+`build_native.py` streams the 16 GSE262419 plate files one plate at a time,
+sums duplicate probes by HGNC, and writes `output/native-v1/tenv.h5ad` with
+4510 raw wells and 19613 native genes. It retains controls and blanks and has
+no normalized expression or significance layers. The manifest seals every
+immutable plate, hash table, HGNC table, compound registry and output file.
+Independent verification sums the source probes directly for every raw well.
 
 ```bash
-python stage2/01_bases/execution/build_corpora.py --record stage2/01_bases/execution/build_record/training_v1_build.json
-python stage2/01_bases/execution/build_corpora.py --verify --record stage2/01_bases/execution/build_record/training_v1_verify.json
-python -m unittest discover -s stage2/01_bases/execution/tests -p test_corpora.py
+python stage2/01_bases/execution/build_native.py
+python stage2/01_bases/execution/build_native.py --verify
 ```
 
-The CLI accepts explicit `--native`, `--shared`, `--drugs` and `--output` paths
-for worktrees. It verifies the compatible `shared-cm-v1` input/payload hashes
-and completely replays its raw-count projection before reuse. The independent
-release verifier recomputes every included treated profile and matched-control
-mean from native raw counts, then checks all three output arrays. Bounded
-64-row windows avoid loading the full observation-by-axis matrix. The native
-expression layers are never used. The manifest binds source evidence, metadata,
-exclusions and output file hashes. `bases.corpora.training_header` reads small
-training metadata using h5py; it does not discover or open a labels release.
+The CLI accepts `--data-root`, `--output` and `--record` for worktrees.
+`bases.raw.tahoe_axis_mapping(axis, crosswalk, gene_metadata)` exposes the
+original token-to-index evidence without loading expression. Tahoe's new raw
+preparation boundary projects directly onto the frozen 18164 genes; it does
+not require recreating the deleted 62710-gene derived matrix.
 
-Historical inputs/results retain their existing normalization semantics; this
-release does not retrain or retroactively relabel them.
+## Training files and source replay
 
-The real build (not yet accepted) retains 65,318 Tahoe treated pseudobulks and all 4,206 tenv
-treated wells. Tahoe excludes 300 wells without resolvable source structures;
-tenv excludes its 32 technical blanks. All 1,400 Tahoe DMSO_TF controls and 192
-tenv DMSO controls contribute to matched means (80 tenv Media controls do not).
-The final tenv parent normalization records 81 native-key conversions and 1,377
-parent–dose groups. The conversion table is
-`execution/build_record/tenv_parent_identity.csv`; each h5ad also preserves the
-per-well source and conversion evidence.
+`output/training-v1/{tahoe_bulk,tenv}.h5ad` keep separate treated wells. `X`
+is natural log1p of raw counts projected onto the full fixed axis and scaled
+to 10000. `layers/control` averages independently normalized controls;
+`layers/delta` is treated minus control. Tenv uses same-plate DMSO, excludes
+Media controls and has cell identity `hiPSC-CM`. Tahoe uses same-plate,
+same-cell-line DMSO_TF. Training files contain no truth labels.
 
-Acceptance is blocked: a subsequent user instruction removed the native/shared
-Stage 2 inputs during the final source replay. The build completed, but no
-full-release PASS is claimed. See
-`execution/build_record/training_v1_acceptance_blocked.json` and the exact
-verification failure record. Deleted resources have not been restored.
+Samples retain stable source profile IDs, source salt structures/keys,
+stereochemistry-aware normalized parent keys, micromolar doses and exact
+matched-control IDs. Parent identity uses RDKit Cleanup, FragmentParent and
+Uncharger. The tenv release contains 4206 wells and 1377 parent–dose groups;
+81 source-key conversions are explicit. Blank and missing-structure exclusions
+are recorded. Group IDs are independent of partition membership.
+
+```bash
+python stage2/01_bases/execution/verify_training_source.py --source tenv
+python stage2/01_bases/execution/verify_training_source.py --source tahoe
+```
+
+Replay joins immutable profile/control IDs, so rebuilding a raw matrix in a
+different row order cannot change identity. Every treated/control/delta value
+is recomputed from raw counts in bounded windows. Equivalent tautomer SMILES
+serializations are audited with mandatory exact InChIKey and stereo-aware
+parent-key equality; original training strings remain unchanged. New raw
+files have new byte seals and are not claimed byte-identical to deleted files.
+
+`build_corpora.py` builds the pair after both bases-native inputs and the
+bounded shared expression release exist. `bases.raw.build`/`verify` own the
+shared projection/normalization; explicit source subsets support incremental
+preparation. All defaults point inside this step. `training_header` opens
+small h5ad metadata only, never truth files.
+
+## Measured truth
+
+`build_significance.py --native <bases-native-tenv.h5ad>` builds separate
+parent–dose truth from raw counts on exactly 18164 genes. The bases-owned
+DESeq2 worker uses a two-sided Wald test, plate effects for multi-plate
+contrasts and within-contrast BH. The partition-authorized reader exposes
+only requested groups. Untestable and tested-empty are different states.
+Truth fitting and full dual-corpus source acceptance have their own records;
+a successful training build alone does not establish either result.
+
+Run heavy commands serially under the repository memory caps. Tests are
+individual `unittest discover` files under `execution/tests/`.
