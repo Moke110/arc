@@ -480,6 +480,10 @@ _Avoid_: globally unseen drug, unseen drug (without specifying the CM scope)
 A tenv cold-drug split that allows the held-out drug blocks to appear in
 Tahoe.
 
+**Cold-cm-fold**:
+The Step 09 shorthand for a cold-cm-drug fold: CM test drugs are excluded
+from tenv training and validation, while Tahoe may contain those drugs.
+
 **Step 09 cold-cm-drug fold**:
 One of the frozen tenv cold-drug folds paired with the shared Tahoe training
 and validation partitions. Tenv test drug blocks can appear in Tahoe.
