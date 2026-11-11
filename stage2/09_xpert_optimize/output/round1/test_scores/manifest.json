@@ -1,12 +1,14 @@
 {
+  "ap_aggregation": "macro of exact per-group AP",
+  "direction_match": "DESeq2 log2 fold change",
   "figures": {
-    "xpert_opti_r1_PR.png": "54114ff3820aec43b0c999059f6e3d9c4c580e2f8d7851cc6890f99f740e5574",
-    "xpert_opti_r1_metrics.png": "42fce7378e09a7fe47c6c27c18c049aca79eed9fd23234e91562a2d409e25161"
+    "xpert_opti_r1_PR.png": "12a67d8fd3a6e10f34b16c4761bca1073b258eb0f2bb95f4182542133153c6ff",
+    "xpert_opti_r1_metrics.png": "88b48c3b3566e12d69b434775efa7ff2f3b105fce37c395ba7c08c51540b0f9b"
   },
   "files": {
-    "metrics.csv": "85a89b034dead079a014386748a1c2c124648e227d2ff7cc769717d4fe62307f",
-    "per_group.csv": "13d2f6014e1d9cabe450e5308e184d6e93b9543a74e139080cafa97c116e0dec",
-    "pr.csv": "63da60bbb709374c30de90fe5862cb9868bf7da02a8cebf84e8aa4a74cc71ec1"
+    "metrics.csv": "064c26b6f5326866e96b8206e841e9dc2a33b54cf0e184f7fb5a381725a0f73b",
+    "per_group.csv": "0939607213874f0621d2f1d613f839a5a6c4e8ef3351de3442c15e33788aefa8",
+    "pr.csv": "e6e0f62bbc3e1b7b815abf7cb5f2808d048241d133d391aa558d79e103942d33"
   },
   "fits": {
     "XPert_G10000": {
@@ -120,11 +122,13 @@
   },
   "fold": 0,
   "gene_axes_manifest_sha256": "da8f4079eed5ae2cf8318445021cbd51e39dc89a51a9c9cc62aaf9c01eba0518",
+  "historical_promotion_sha256": "cab44394de57533d953d4f6df8ad51adaff932d53bc11863057a96f4f3681866",
   "labels_sha256": "a2fe18d9179937e6b3ba1269be2cc5289e31b7299611833c97d226f4024371d4",
   "plan_sha256": "f9f73da07054055efdc215593b495ddc973169f2a553756a16a18f3b70818c87",
+  "pr_aggregation": "fixed-group micro at common absolute-delta thresholds",
   "promotion_sha256": "cab44394de57533d953d4f6df8ad51adaff932d53bc11863057a96f4f3681866",
   "role": "test",
-  "schema": "step09-round1-score-v1",
+  "schema": "step09-round1-score-v2",
   "seed": 17,
   "view_evaluators": {
     "gene_axes/views/G10000/predictor": "ea9628011061b574dd6fc449dcf454707febacb0f040d408b1fb4b4454b29297",

@@ -74,3 +74,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0055](0055-step07-matrix-mlp-reconstruction.md) | Compare the vector MLP and an AAE-shaped matrix MLP in Step 07 |
 | [0056](0056-step07-shared-expression-representation.md) | Compare five matrix reconstruction models with a shared frozen expression representation interface |
 | [0057](0057-step09-xpert-landmark-reference.md) | Use an internal landmark reference and a shared scoring panel for the Step 09 XPert ablation |
+| [0058](0058-step09-direction-matched-pr.md) | Direction-matched significance retrieval and fixed-group pooled PR ending at attainable recall |

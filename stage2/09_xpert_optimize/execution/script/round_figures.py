@@ -96,9 +96,15 @@ def draw_pr(metrics, curves, path):
             label += " (undefined)"
         legend.append(Line2D([], [], label=label, **model_style(model)))
 
-    for index, (metric, title) in enumerate((("full", "AUPRC@full"), ("g", "AUPRC@G"))):
+    for index, (metric, title) in enumerate((("full", "PR@full (pooled)"), ("g", "PR@G (pooled)"))):
         panel, support = axes[:, index]
         subset = curves[curves.metric.eq(metric)]
+        zoom = panel.inset_axes([.20, .34, .75, .56])
+        zoom.set_xlim(0, 1)
+        zoom.set_ylim(0, .06)
+        zoom.set_title("Precision 0–0.06", fontsize=9)
+        zoom.tick_params(labelsize=8)
+        zoom.grid(alpha=.22)
         for model in metrics.model:
             rows = subset[subset.model.eq(model)]
             if rows.empty:
@@ -108,15 +114,24 @@ def draw_pr(metrics, curves, path):
                 style = {**style, "marker": ".", "markersize": 5}
             panel.step(rows.recall, rows.precision, where="pre", **style)
             support.step(rows.recall, rows.contributing_groups, where="pre", **style)
+            zoom.step(rows.recall, rows.precision, where="pre", **style)
+            if model == "XPert_base":
+                endpoint = rows.iloc[-1]
+                zoom.plot(endpoint.recall, endpoint.precision, "o", color="#333333", markersize=4)
+                if metric == "full":
+                    zoom.annotate(f"base max recall = {endpoint.recall:.4f}",
+                                  xy=(endpoint.recall, endpoint.precision), xytext=(.12, .75),
+                                  textcoords="axes fraction", fontsize=8,
+                                  arrowprops={"arrowstyle": "->", "color": "#333333"})
         panel.set_title(title, fontsize=14, weight="semibold")
         panel.set_ylim(0, precision_limit)
-        panel.set_ylabel("Macro precision")
+        panel.set_ylabel("Pooled precision")
         undefined = metrics.loc[metrics.status.eq("complete") & metrics[f"auprc_{metric}"].isna(), "model"]
         if not undefined.empty:
             names = ", ".join(undefined.map(display_name))
             panel.text(.98, .98, f"Undefined for {names}", ha="right", va="top",
                        transform=panel.transAxes, fontsize=8, wrap=True)
-        support.set_ylabel("Groups at recall")
+        support.set_ylabel("Evaluated groups")
         support.set_xlabel("Recall")
         support.set_xlim(0, 1)
         support.set_ylim(bottom=0)
@@ -128,7 +143,7 @@ def draw_pr(metrics, curves, path):
     fig.suptitle(TITLE, fontsize=17, weight="semibold", y=.98)
     fig.legend(handles=legend, loc="lower center", ncol=6, bbox_to_anchor=(.5, .038), frameon=False)
     fig.text(.5, .015,
-             "Precision at each recall averages only the eligible groups that reach that recall.",
+             "Direction-matched pooled PR; fixed groups, no extrapolation beyond attainable recall. Bars report macro AP.",
              ha="center", fontsize=9)
     fig.subplots_adjust(left=.08, right=.98, top=.91, bottom=.18, wspace=.24, hspace=.16)
     fig.savefig(path, dpi=160, metadata={"Software": "Stage 2 Step 09"})

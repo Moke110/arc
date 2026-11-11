@@ -153,9 +153,16 @@ The evaluator ranks genes by absolute predicted group Δ. Equal scores enter
 together. `AUPRC@full` ranks covered CM genes against all measured significant
 CM genes. `AUPRC@G` ranks the model axis against significant genes on that axis,
 including HDGFL3 for the landmark reference. A measured, testable group with
-zero significant genes on the relevant axis has undefined AP. Each PR curve
-averages precision over groups that reach each recall and shows the count of
-contributing groups. The reported macro AP averages per-group AP.
+zero significant genes on the relevant axis has undefined AP. A true positive
+must also match the sign of the measured DESeq2 log2 fold
+change. Wrong directions count as false positives and missed true responses;
+zero predictions abstain. The displayed PR pools gene–group predictions at a
+common absolute-Δ threshold over a fixed group population. Recall divides
+pooled correct hits by all significant genes in those groups; precision divides
+by all selected predictions. Every curve stops at its attainable recall,
+including full-axis curves with direction errors. The reported macro AP still
+averages exact per-group AP and differs from the area of the pooled display.
+[ADR 0058](../../docs/adr/0058-step09-direction-matched-pr.md) records the revision.
 
 Continuous metrics compare group Δ on the shared panel. Per predicted well,
 the evaluator adds predicted native-axis Δ to its matched native-axis control,
@@ -203,9 +210,26 @@ All nine XPert arms completed the formal fold 0, seed 17 policy and replayed
 their selected checkpoints on tenv validation and test. The validation seal in
 `88b621b` advanced all four G arms and all four MLP arms for confirmation.
 
-On the exploratory test split, `XPert_MLP2048` led the trained arms on
-AUPRC@full at 0.02823, compared with 0.02480 for `XPert_G18164` and 0.02984 for
-`delta_mean`. AUPRC@full was defined for 359 of the 462 drug–dose groups.
+Under the revised direction-matched metric, `XPert_MLP2048` led the trained
+arms on exploratory test AUPRC@full at 0.02216, compared with 0.01933 for
+`XPert_G18164` and 0.02241 for `delta_mean`. AUPRC@full was defined for 359 of
+the 462 drug–dose groups. The pooled base curve ends at recall 0.03976 with
+all 359 groups retained. Zero-change predictions have AP zero.
+
+The original unsigned validation/test tables and figures are preserved in
+`output/round1/legacy_unsigned/`. The original committed promotion is unchanged;
+revised validation scores are in `output/round1/validation_scores_directional/`.
+These are retrospective metric corrections, not new pre-test promotions.
+The original acceptance record describes the historical unsigned release;
+`execution/round1_record/directional-pr.json` binds the revised release.
+To perform this migration once on an original release, use `evaluate.py revise`;
+verify the published revision with `evaluate.py replay-revision`. Both reuse
+frozen labels and predictions without retraining:
+
+```bash
+"$CAP" "$RECORD/directional-replay" "$PY" "$SCORE" replay-revision --work-root "$WORK"
+```
+
 The shared continuous panel contains 73 genes, so its metrics are provisional.
 
 - [Metrics figure](output/round1/xpert_opti_r1_metrics.png)

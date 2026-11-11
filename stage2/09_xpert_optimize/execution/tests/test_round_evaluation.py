@@ -18,7 +18,7 @@ sys.path.insert(0, str(SCRIPT))
 from round1_fit import run_queue
 from round_contract import role_result, sha256, verify_committed_promotion
 from round_inputs import MODEL_VIEWS, RoundInputs
-from round_metrics import average_precision, continuous, macro_pr, paired_promotions, project_delta
+from round_metrics import average_precision, continuous, pooled_pr, paired_promotions, project_delta
 
 
 class RoundEvaluationTest(unittest.TestCase):
@@ -63,17 +63,18 @@ class RoundEvaluationTest(unittest.TestCase):
             self.assertEqual(role_result(result, "test")[0], "failed")
             self.assertEqual(result["test_failure"]["stage"], "verify-input-test")
 
-    def test_ties_and_uncovered_positives_use_reached_recall_only(self):
-        covered_labels = np.array([False, True, False])
+    def test_ties_and_uncovered_positives_keep_fixed_pooled_population(self):
+        covered_labels = np.array([0, -1, 0])
         tied = np.array([1., -1., 0.])
         full = average_precision(tied, covered_labels, positives=2)
         model = average_precision(tied, covered_labels, positives=1)
         self.assertEqual((full.ap, model.ap), (.25, .5))
         self.assertEqual((full.recall[-1], model.recall[-1]), (.5, 1.))
-        curve = macro_pr([full, model])
-        self.assertEqual(curve.loc[curve.recall.eq(.5), "contributing_groups"].item(), 2)
-        self.assertEqual(curve.loc[curve.recall.eq(.51), "contributing_groups"].item(), 1)
-        self.assertEqual(macro_pr([full]).recall.iloc[-1], .5)
+        curve = pooled_pr([full, model])
+        self.assertTrue(curve.contributing_groups.eq(2).all())
+        self.assertAlmostEqual(curve.recall.iloc[-1], 2 / 3)
+        self.assertEqual(curve.precision.iloc[-1], .5)
+        self.assertEqual(pooled_pr([full]).recall.iloc[-1], .5)
 
     def test_hdgfl3_and_zero_positives(self):
         self.assertIsNone(average_precision(np.array([0., 0.]), np.zeros(2, dtype=bool), 0))
@@ -81,7 +82,20 @@ class RoundEvaluationTest(unittest.TestCase):
         self.assertEqual(average_precision(np.array([0., 2.]), np.array([False, True]), 1).ap, 1.)
         no_hits = average_precision(np.array([2.]), np.array([False]), 1)
         self.assertEqual((no_hits.ap, no_hits.recall[-1]), (0., 0.))
-        self.assertEqual(macro_pr([no_hits]).recall.tolist(), [0.])
+        self.assertEqual(pooled_pr([no_hits]).recall.tolist(), [0.])
+
+    def test_wrong_direction_and_zero_prediction_cannot_hit(self):
+        curve = average_precision(np.array([4., -3., 0., 1.]),
+                                  np.array([-1, -1, 1, 0]), 3)
+        self.assertAlmostEqual(curve.ap, 1 / 6)
+        self.assertAlmostEqual(curve.recall[-1], 1 / 3)
+        self.assertEqual(curve.precision[-1], 1 / 3)
+        silent = average_precision(np.zeros(3), np.ones(3), 3)
+        self.assertEqual(silent.ap, 0.)
+        self.assertEqual(pooled_pr([silent]).recall.iloc[-1], 0.)
+        pooled = pooled_pr([curve, silent])
+        self.assertAlmostEqual(pooled.recall.iloc[-1], 1 / 6)
+        self.assertTrue(pooled.contributing_groups.eq(2).all())
 
     def test_shared_projection_uses_log_scale_and_independent_control(self):
         native_control = np.log1p(np.array([[10., 90., 30.], [0., 0., 0.]]))
@@ -140,7 +154,7 @@ def write_labels(round_root, corpus, role, promotion=None):
     (labels / "contrast_samples.csv").write_text("group_id\n")
     padj = np.ones((len(groups), len(genes) + 1))
     padj[:, -1] = .001  # HDGFL3 alone is significant.
-    for name, data in (("padj", padj), ("pvalue", padj), ("log2_fold_change", np.zeros_like(padj))):
+    for name, data in (("padj", padj), ("pvalue", padj), ("log2_fold_change", np.full_like(padj, -1.))):
         np.save(labels / f"{name}.npy", data)
     manifest = {"schema": "step09-significance-v1", "role": role, "fold": 0, "fdr": .05,
                 "gene_axes_manifest_sha256": sha256(corpus / "gene_axes/manifest.json"),
@@ -208,7 +222,7 @@ class RoundWorkflowTest(unittest.TestCase):
             run("script/evaluate.py", "seal", *arguments)
             valid = pd.read_csv(round_root / "validation_scores/metrics.csv").set_index("model")
             self.assertTrue(np.isnan(valid.at[model, "auprc_full"]))
-            self.assertGreater(valid.at[model, "auprc_g"], 0.)
+            self.assertGreaterEqual(valid.at[model, "auprc_g"], 0.)
             self.assertAlmostEqual(valid.at[model, "fit_attempt_wall_minutes"], 44 / 60)
             self.assertEqual(valid.at[model, "timed_fit_attempts"], 2)
             rejected = run("script/evaluate.py", "test", *arguments, check=False)
@@ -221,6 +235,13 @@ class RoundWorkflowTest(unittest.TestCase):
                 "--role", "test", "--output", prediction)
             run("script/evaluate.py", "test", *arguments)
             run("script/evaluate.py", "replay", *arguments)
+            original_seal = sha256(promotion)
+            original_validation = sha256(round_root / "validation_scores/manifest.json")
+            run("script/evaluate.py", "revise", *arguments)
+            run("script/evaluate.py", "replay-revision", *arguments)
+            self.assertEqual(sha256(promotion), original_seal)
+            self.assertEqual(sha256(round_root / "legacy_unsigned/validation_scores/manifest.json"),
+                             original_validation)
             results = pd.read_csv(round_root / "test_scores/metrics.csv").set_index("model")
             self.assertEqual(results.index.tolist(), ["no_change", "delta_mean", *MODEL_VIEWS])
             self.assertEqual(results.at["XPert_G18164", "status"], "incomplete")

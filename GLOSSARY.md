@@ -491,6 +491,20 @@ Tahoe.
 One of the frozen tenv cold-drug folds paired with the shared Tahoe training
 and validation partitions. Tenv test drug blocks can appear in Tahoe.
 
+**Step 09 direction-matched hit**:
+A predicted up- or downregulated gene that is significant in the measured
+drug–dose contrast and has the same direction as its measured log2 fold change.
+
+**Step 09 AUPRC@full**:
+The macro mean of per-group direction-matched average precision, with every
+measured significant gene on the 18,164-gene CM axis in the recall denominator,
+including significant genes outside the model's coverage.
+
+**Step 09 pooled PR**:
+Precision and recall of pooled gene–group predictions across a fixed eligible
+group population at a common prediction-magnitude threshold. Its endpoint is
+the attainable pooled recall; its area differs from macro AUPRC.
+
 **Step 05 cold-drug split**:
 A tenv cold-drug split that also withholds its tenv validation and test drug
 blocks from Tahoe training and validation.

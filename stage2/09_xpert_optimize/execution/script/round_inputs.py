@@ -124,6 +124,9 @@ class Significance:
         self.groups = groups.set_index("group_id")
         self.index = {name: i for i, name in enumerate(groups.group_id)}
         self.padj = self.release.matrix("padj.npy")
+        self.log2_fold_change = self.release.matrix("log2_fold_change.npy")
+        if self.log2_fold_change.shape != self.padj.shape:
+            raise ValueError("significance direction table has wrong shape")
         if self.padj.shape != (len(groups), len(self.genes)):
             raise ValueError("significance table has wrong shape")
         for name in ("pvalue.npy", "log2_fold_change.npy", "contrast_samples.csv"):

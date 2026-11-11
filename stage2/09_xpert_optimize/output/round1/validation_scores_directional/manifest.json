@@ -1,0 +1,136 @@
+{
+  "ap_aggregation": "macro of exact per-group AP",
+  "direction_match": "DESeq2 log2 fold change",
+  "files": {
+    "metrics.csv": "8d5668d39753d95af9fc95f8da9d96ee3cb51a3949fbdc3a172dbb66107fc8ea",
+    "per_group.csv": "eb5490cad8ec5f798a7cc2df866f88bbb8270763a0b474853430e4c345e9812a",
+    "pr.csv": "21ce031d007961ca0e49f570c3b59ab5e0fbd9a78206ca1f3a47aaff9d357409"
+  },
+  "fits": {
+    "XPert_G10000": {
+      "checkpoint_replay_sha256": "b5eb8e9611f85ab59fa50a661c10019ce300693308f424b990f6f0f97382095e",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 865.8964190483093,
+          "timing_sha256": "39ac4f06404a3b9c9991855d453fe766ff28db83823c221b7757c3d73ecce8ec"
+        }
+      ],
+      "prediction_manifest_sha256": "b5eb8e9611f85ab59fa50a661c10019ce300693308f424b990f6f0f97382095e",
+      "run_sha256": "633b23a9296ba4667e9df26344061076a22800ba12f5479f5cb9e8f073f1d267"
+    },
+    "XPert_G18164": {
+      "checkpoint_replay_sha256": "956b5ad4b5df4d280017eda5a9176a388a1ac4dd610fc3571cfe1a8320c93404",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 2457.26,
+          "timing_sha256": "fb4381d5354f627bac5b01d99bafa59551103c8e9b6234f6a16187f86edcfbca"
+        }
+      ],
+      "prediction_manifest_sha256": "956b5ad4b5df4d280017eda5a9176a388a1ac4dd610fc3571cfe1a8320c93404",
+      "run_sha256": "87b91d8dfb50238ee0f61c6a7c3f1ab56cb30b34c049666cb1997e70023c9fe3"
+    },
+    "XPert_G2000": {
+      "checkpoint_replay_sha256": "12b96e222852e7665788fd71d3d9a6b2f4c029e53b6eb34626bffc0703bb234f",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 180.62929701805115,
+          "timing_sha256": "3bc9e5046d0fb75db3b1cfc995252d5b9437d8c0504794c6b08e430eac632e57"
+        }
+      ],
+      "prediction_manifest_sha256": "12b96e222852e7665788fd71d3d9a6b2f4c029e53b6eb34626bffc0703bb234f",
+      "run_sha256": "fedec1a2c6affc0079ae97f340d596fa43e4b3fe8b4488ee619627cac88391ff"
+    },
+    "XPert_G5000": {
+      "checkpoint_replay_sha256": "a1ce04ffd434b528ef2782ae0303e76df09476b9ab1a06ef2c0cd1c2146a4f1a",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 293.8573989868164,
+          "timing_sha256": "d563d39bc0f61d5966d1b3f96303603e3cade2c292c87c5c46260669ae0b2bd0"
+        }
+      ],
+      "prediction_manifest_sha256": "a1ce04ffd434b528ef2782ae0303e76df09476b9ab1a06ef2c0cd1c2146a4f1a",
+      "run_sha256": "76a364c664dccaa7e1b6ef1d728aa68013a4d2a47e6ea5b6f5fdb5976d880be5"
+    },
+    "XPert_MLP1024": {
+      "checkpoint_replay_sha256": "b4814d426c5dc34613596dc4a0c5ee9e9833d49743408fcb28e34d82e64de917",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 218.62008786201477,
+          "timing_sha256": "105423072e3c62d2292709a5b4a99b06237bc324a99f24faabe76c29256098d2"
+        }
+      ],
+      "prediction_manifest_sha256": "b4814d426c5dc34613596dc4a0c5ee9e9833d49743408fcb28e34d82e64de917",
+      "run_sha256": "2707be58fee15373147cd5cd5241d60a0d124514824a946d7221cd769ec94872"
+    },
+    "XPert_MLP2048": {
+      "checkpoint_replay_sha256": "12c4ce8b29f11fff953568cd6944c13e60f3185d8ba890edd5f935b4faa8d43b",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 250.70660495758057,
+          "timing_sha256": "9874b82fa919a7c3bf1e0a9b48de11c3066cb3ea02141b085b9201e606eb9f11"
+        }
+      ],
+      "prediction_manifest_sha256": "12c4ce8b29f11fff953568cd6944c13e60f3185d8ba890edd5f935b4faa8d43b",
+      "run_sha256": "4e11ec19a0417ba2b1d98475e58c5b3372a0f8677357e026a6d57917141abc65"
+    },
+    "XPert_MLP4096": {
+      "checkpoint_replay_sha256": "746378961125109b025b51010c0090ba8d5bed8ff60c842264d8eb4fcc35498d",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 432.46591782569885,
+          "timing_sha256": "6fdd625e03f88d303e8947c2c6d7eab6061b1b291c49aed5e5c127ef20ca1e38"
+        }
+      ],
+      "prediction_manifest_sha256": "746378961125109b025b51010c0090ba8d5bed8ff60c842264d8eb4fcc35498d",
+      "run_sha256": "d188fba8bef677d17f73bc4c8b82db5714f3da3721c0a6014b7ae76945e9f8d6"
+    },
+    "XPert_MLP512": {
+      "checkpoint_replay_sha256": "d5253308ba7fac21a80f2a45d0471d9b1dd2334c8d4329e1e16aab2e4b8af967",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 206.91938281059265,
+          "timing_sha256": "01b00fa2517efca66b4f11d0a4413fcb9355b4986719a746a34aa234a916460d"
+        }
+      ],
+      "prediction_manifest_sha256": "d5253308ba7fac21a80f2a45d0471d9b1dd2334c8d4329e1e16aab2e4b8af967",
+      "run_sha256": "6d9d46b1f5f493bdab8e60d97bb5e1058431d6ab0ed042c41ed4ae0f391ba821"
+    },
+    "XPert_base": {
+      "checkpoint_replay_sha256": "e83566c3a074575ed29ca710256c41baffc51b87fcbf70d9f8eaf69d3dbb41c7",
+      "fit_attempts": [
+        {
+          "attempt": "fit-1",
+          "seconds": 175.57210111618042,
+          "timing_sha256": "9d2d7e16015266f65ae65b28f9491456d62d186aba29952de725ed7fbe953748"
+        }
+      ],
+      "prediction_manifest_sha256": "e83566c3a074575ed29ca710256c41baffc51b87fcbf70d9f8eaf69d3dbb41c7",
+      "run_sha256": "6d2b819ea981367f945775593bf83846418e831f06a9d2fccb3bbd1eff4f42b5"
+    }
+  },
+  "fold": 0,
+  "gene_axes_manifest_sha256": "da8f4079eed5ae2cf8318445021cbd51e39dc89a51a9c9cc62aaf9c01eba0518",
+  "labels_sha256": "51fad8cfb98a57e0f18d0b43aa238c55efe4f061896a2e4bd71e4337d451b636",
+  "plan_sha256": "f9f73da07054055efdc215593b495ddc973169f2a553756a16a18f3b70818c87",
+  "pr_aggregation": "fixed-group micro at common absolute-delta thresholds",
+  "promotion_sha256": null,
+  "role": "validation",
+  "schema": "step09-round1-score-v2",
+  "seed": 17,
+  "view_evaluators": {
+    "gene_axes/views/G10000/predictor": null,
+    "gene_axes/views/G18164/predictor": null,
+    "gene_axes/views/G2000/predictor": null,
+    "gene_axes/views/G5000/predictor": null,
+    "gene_axes/views/shared/predictor": null,
+    "tahoe_tenv_bulk_l1000/predictor": null
+  }
+}

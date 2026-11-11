@@ -9,7 +9,7 @@ import pandas as pd
 
 from round_contract import DEFAULT_WORK, PROMOTION_SCHEMA, checked_payload, read_json, sha256, verify_committed_promotion, write_json
 from round_inputs import CASE_COLUMNS, FULL_VIEW, MODEL_VIEWS, REFERENCES, SHARED_VIEW, STEP, RoundInputs, Significance
-from round_metrics import CONTINUOUS, PR_FIELDS, average_precision, continuous, macro_pr, paired_promotions, project_delta
+from round_metrics import CONTINUOUS, PR_FIELDS, average_precision, continuous, pooled_pr, paired_promotions, project_delta
 
 
 RECORD = STEP / "execution/round1_record"
@@ -100,12 +100,16 @@ def score_model(model, native, shared, groups, labels, obs_native, pred_native, 
         row = {"model": model, "group_id": group, "wells": int(groups.counts[i]),
                "significance_status": metadata.status, "significance_reason": metadata.get("reason", ""),
                "untestable_family_genes": int((~testable).sum())}
+        direction = labels.log2_fold_change[labels.index[group]]
+        if np.any(significant & (~np.isfinite(direction) | (direction == 0))):
+            raise ValueError(f"invalid significant direction for {group}")
         native_truth = significant[label_indices]
+        signed_truth = np.where(native_truth, np.sign(direction[label_indices]), 0)
         for name, columns, positive, n_genes in (
             ("full", full_columns, significant[:full_count].sum(), full_count),
             ("g", slice(None), native_truth.sum(), len(native.genes)),
         ):
-            result = pr_fields(name, pred_native[i, columns], native_truth[columns], positive,
+            result = pr_fields(name, pred_native[i, columns], signed_truth[columns], positive,
                                n_genes, group_eligible, row)
             if result:
                 curves[name].append(result)
@@ -123,7 +127,7 @@ def score_model(model, native, shared, groups, labels, obs_native, pred_native, 
         summary[f"{key}_undefined_groups"] = len(rows) - summary[f"{key}_defined_groups"]
     pr = []
     for name, group_curves in curves.items():
-        frame = macro_pr(group_curves)
+        frame = pooled_pr(group_curves)
         if not frame.empty:
             frame.insert(0, "metric", name)
             frame.insert(0, "model", model)
@@ -208,7 +212,9 @@ def score(inputs, role, destination, promotion_sha=None):
     pd.DataFrame(group_rows).to_csv(destination / TABLES[1], index=False)
     curve = pd.concat(pr, ignore_index=True) if pr else pd.DataFrame(columns=("model", "metric", *PR_FIELDS))
     curve.to_csv(destination / TABLES[2], index=False)
-    manifest = {"schema": "step09-round1-score-v1", "role": role, "fold": 0, "seed": 17,
+    manifest = {"schema": "step09-round1-score-v2", "direction_match": "DESeq2 log2 fold change",
+                "pr_aggregation": "fixed-group micro at common absolute-delta thresholds",
+                "ap_aggregation": "macro of exact per-group AP", "role": role, "fold": 0, "seed": 17,
                 "plan_sha256": inputs.plan_sha, "gene_axes_manifest_sha256": inputs.axis_sha,
                 "labels_sha256": labels.release.digest, "promotion_sha256": promotion_sha, **evidence,
                 "files": {name: sha256(destination / name) for name in TABLES}}
@@ -298,9 +304,54 @@ def replay(inputs, promotion_path):
         require_same_release(inputs.root, path, FIGURES)
 
 
+def revision_release(inputs, promotion_path, destination):
+    """Rescore frozen predictions without retroactively changing promotion."""
+    promotion = verify_committed_promotion(promotion_path)
+    if promotion["plan_sha256"] != inputs.plan_sha:
+        raise ValueError("historical promotion belongs to a different plan")
+    legacy = inputs.root / "legacy_unsigned"
+    validation = legacy / "validation_scores" if legacy.exists() else inputs.root / "validation_scores"
+    if sha256(validation / "manifest.json") != promotion["validation_manifest_sha256"]:
+        raise ValueError("historical validation seal changed")
+    old_manifest = read_json(validation / "manifest.json")
+    for name in TABLES:
+        checked_payload(validation, old_manifest, name)
+    promotion_sha = sha256(promotion_path)
+    score(inputs, "validation", destination / "validation_scores_directional")
+    _, manifest = score(inputs, "test", destination / "test_scores", promotion_sha)
+    from round_figures import render
+    render(destination / "test_scores", destination, FIGURES)
+    manifest["figures"] = {name: sha256(destination / name) for name in FIGURES}
+    manifest["historical_promotion_sha256"] = promotion_sha
+    write_json(destination / "test_scores/manifest.json", manifest)
+
+
+def revise(inputs, promotion_path):
+    legacy = inputs.root / "legacy_unsigned"
+    if legacy.exists():
+        raise FileExistsError("directional revision already published; use replay-revision")
+    with tempfile.TemporaryDirectory(dir=inputs.root, prefix=".directional-revision-") as directory:
+        path = Path(directory)
+        revision_release(inputs, promotion_path, path)
+        legacy.mkdir()
+        for name in ("validation_scores", "test_scores", *FIGURES):
+            (inputs.root / name).rename(legacy / name)
+        for name in ("validation_scores_directional", "test_scores", *FIGURES):
+            (path / name).rename(inputs.root / name)
+
+
+def replay_revision(inputs, promotion_path):
+    with tempfile.TemporaryDirectory(dir=inputs.root, prefix=".directional-replay-") as directory:
+        path = Path(directory)
+        revision_release(inputs, promotion_path, path)
+        for name in ("validation_scores_directional", "test_scores"):
+            require_same_release(inputs.root / name, path / name, (*TABLES, "manifest.json"))
+        require_same_release(inputs.root, path, FIGURES)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("seal", "test", "replay"))
+    parser.add_argument("action", choices=("seal", "test", "replay", "revise", "replay-revision"))
     parser.add_argument("--round-root", type=Path, default=DEFAULT_ROUND)
     parser.add_argument("--work-root", type=Path, default=DEFAULT_WORK)
     parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
@@ -308,7 +359,8 @@ def main():
     parser.add_argument("--promotion", "--output", type=Path, default=RECORD / "promotion.json")
     args = parser.parse_args()
     inputs = RoundInputs(args.round_root, args.work_root, args.corpus, args.plan)
-    {"seal": seal, "test": test, "replay": replay}[args.action](inputs, args.promotion)
+    {"seal": seal, "test": test, "replay": replay,
+     "revise": revise, "replay-revision": replay_revision}[args.action](inputs, args.promotion)
     print(f"Round 1 {args.action}: verified", flush=True)
 
 

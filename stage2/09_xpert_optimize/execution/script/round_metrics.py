@@ -16,39 +16,58 @@ class PR:
     ap: float
     recall: np.ndarray
     precision: np.ndarray
+    thresholds: np.ndarray
+    selected: np.ndarray
+    hits: np.ndarray
+    positives: int
 
 
 def average_precision(delta, significant, positives):
-    """Advance one threshold for all tied scores and retain only attained recall."""
+    """Signed truth: -1/down, +1/up, 0/nonsignificant; zero predictions abstain."""
     if positives == 0:
         return None
-    scores = np.abs(delta)
-    if len(scores) == 0:
-        return PR(0., np.array([0.]), np.array([0.]))
-    ranked = np.argsort(-scores, kind="stable")
-    end = np.r_[np.flatnonzero(np.diff(scores[ranked])), len(ranked) - 1]
-    tp = np.cumsum(significant[ranked], dtype=np.int64)[end]
+    active = np.flatnonzero(np.abs(delta) > 0)
+    ranked = active[np.argsort(-np.abs(delta[active]), kind="stable")]
+    scores = np.abs(delta[ranked])
+    if not len(ranked):
+        empty = np.array([], dtype=float)
+        return PR(0., np.array([0.]), np.array([0.]), empty, empty, empty, int(positives))
+    end = np.r_[np.flatnonzero(np.diff(scores)), len(ranked) - 1]
+    truth = np.asarray(significant, dtype=np.float64)[ranked]
+    correct = (truth != 0) & (np.sign(delta[ranked]) == np.sign(truth))
+    tp = np.cumsum(correct, dtype=np.int64)[end]
+    selected = end + 1
     recall = tp / positives
-    precision = tp / (end + 1)
-    return PR(float(np.dot(np.diff(np.r_[0., recall]), precision)), recall, precision)
+    precision = tp / selected
+    return PR(float(np.dot(np.diff(np.r_[0., recall]), precision)), recall, precision,
+              scores[end], selected, tp, int(positives))
 
 
-def macro_pr(curves):
-    """Average precision at each recall only over groups reaching that recall."""
+def pooled_pr(curves):
+    """Pool threshold events across a fixed group population (micro PR).
+
+    Macro AP remains the mean of exact per-group AP; it is not the area
+    of this pooled display curve.
+    """
     if not curves:
         return pd.DataFrame(columns=PR_FIELDS)
-    terminal = np.array([curve.recall[-1] for curve in curves])
-    grid = np.unique(np.r_[np.linspace(0, 1, 101), terminal])
-    grid = grid[grid <= terminal.max()]
-    count = np.zeros(len(grid), dtype=np.int64)
-    total = np.zeros(len(grid))
-    for curve, limit in zip(curves, terminal, strict=True):
-        supported = grid <= limit
-        take = curve.recall.searchsorted(grid[supported], side="left")
-        total[supported] += curve.precision[take]
-        count[supported] += 1
-    return pd.DataFrame({"recall": grid, "precision": total / count, "contributing_groups": count,
-                         "eligible_groups": len(curves)}, columns=PR_FIELDS)
+    count = len(curves)
+    active = [c for c in curves if len(c.thresholds)]
+    if not active:
+        return pd.DataFrame([[0., 0., count, count]], columns=PR_FIELDS)
+    thresholds = np.concatenate([c.thresholds for c in active])
+    selected = np.concatenate([np.diff(np.r_[0, c.selected]) for c in active])
+    hits = np.concatenate([np.diff(np.r_[0, c.hits]) for c in active])
+    order = np.argsort(-thresholds, kind="stable")
+    end = np.r_[np.flatnonzero(np.diff(thresholds[order])), len(order) - 1]
+    tp = np.cumsum(hits[order], dtype=np.int64)[end]
+    retrieved = np.cumsum(selected[order], dtype=np.int64)[end]
+    recall = tp / sum(c.positives for c in curves)
+    precision = tp / retrieved
+    # Bound published curve size, retaining actual thresholds and the endpoint.
+    keep = np.unique(np.r_[0, np.linspace(0, len(end) - 1, min(2001, len(end))).astype(int), len(end) - 1])
+    return pd.DataFrame({"recall": recall[keep], "precision": precision[keep],
+                         "contributing_groups": count, "eligible_groups": count}, columns=PR_FIELDS)
 
 
 def correlation(pred, obs):
