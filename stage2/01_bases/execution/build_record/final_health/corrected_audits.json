@@ -1,0 +1,66 @@
+{
+  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+  "canonical_status": "",
+  "checked_commit": "aaa48b58d4f0f378677acfc405d1b19e08627c15",
+  "checks": [
+    {
+      "argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths_corrected.time.txt",
+        "/bin/bash",
+        "/home/chang/arc/script/check_paths.sh"
+      ],
+      "elapsed_seconds": 10.39992151298793,
+      "exit_code": 1,
+      "finished_at": "2026-11-11T23:08:11.416392+08:00",
+      "name": "check_paths",
+      "resources": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths_corrected.time.txt",
+      "resources_sha256": "39c7fa5b22652cd21601655afbe75e9a4496adef4e6b81e59f1cddc418b82fe8",
+      "scan_files": 757,
+      "started_at": "2026-11-11T23:08:01.016473+08:00",
+      "stderr": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths_corrected.stderr.log",
+      "stderr_bytes": 685,
+      "stderr_sha256": "c216c8bf356688966b48556515a0cafb0357fd36edf1d56a9154630a6758c5e9",
+      "stdout": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_paths_corrected.stdout.log",
+      "stdout_sha256": "0bdfb59e690d0f8d8117f6dfd1eff61eebe3663b24cade85c2490fa5d76a14a8",
+      "valid": false
+    },
+    {
+      "argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked_corrected.time.txt",
+        "/bin/bash",
+        "/home/chang/arc/script/check_tracked.sh"
+      ],
+      "elapsed_seconds": 0.041798604012001306,
+      "exit_code": 0,
+      "finished_at": "2026-11-11T23:08:11.458412+08:00",
+      "name": "check_tracked",
+      "resources": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked_corrected.time.txt",
+      "resources_sha256": "5824e6c67797a82fe1becc67e1c34ccd43b76b310a36c96e252e988df30f2d11",
+      "scan_files": 244,
+      "started_at": "2026-11-11T23:08:11.416620+08:00",
+      "stderr": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked_corrected.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/check_tracked_corrected.stdout.log",
+      "stdout_sha256": "52e116c5cb12e1a5924fa3d5ea712604660ce6acf1398c4c628dd6a2b6749fde",
+      "valid": true
+    }
+  ],
+  "cwd": "/home/chang/arc",
+  "finished_at": "2026-11-11T23:08:11.458624+08:00",
+  "schema": "stage2-failclosed-real-canonical-audits-v1",
+  "script_pins": {
+    "check_paths": "37e76871b8db58f1ed7d3e0fcb57250bc0aed3ae38ef879f69b6fed4adb8e1cf",
+    "check_tracked": "e24a0f59e73ffad60e31517f97babe5aea3e702f15b370f6f6dbc5479f7082f7"
+  },
+  "script_pins_unchanged": true,
+  "started_at": "2026-11-11T23:08:01.015547+08:00",
+  "status": "FAIL",
+  "verify_all_repeated": false
+}

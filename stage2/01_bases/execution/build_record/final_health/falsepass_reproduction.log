@@ -1,0 +1,10 @@
+/home/chang/arc/script/check_tracked.sh: line 77:    10 Broken pipe             find . \( -path './.git' -o -path './.worktrees' -o -path './.scratch' -o -path './tmp' -o -path './reference' -o -path './wet_data' -o -path './.uploads' -o -name '_envs' -o -name '.venv' -o -name 'venv' -o -name 'source' -o -name 'local' -o -name '__pycache__' \) -prune -o -type f \( -name '*.py' -o -name '*.sh' -o -name '*.R' \) -print0
+        11 Segmentation fault      (core dumped) | sed -z 's|^\./||'
+        12 Done                    | LC_ALL=C sort -z > "$disk_list"
+== check_tracked: every executable file must be tracked by git ==
+repo root: /home/chang/arc
+scan: 0 code files on disk (excluding virtualenvs, source/, __pycache__/, .git/, workspace archives); 273 tracked by git
+untracked: 0  (documented expected-ignored: 0, holes: 0)
+
+RESULT: PASS — all scanned executable files are tracked (or documented expected-ignored)
+exit: 0

@@ -1,0 +1,32 @@
+import datetime,hashlib,json,os,pathlib,subprocess,sys,time
+root=pathlib.Path('/home/chang/arc')
+runtime=root/'.scratch/stage2-bases/runtime/final-health'
+plan=json.loads((runtime/'launch-plan.json').read_text())
+def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+def now():return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat()
+def store(value):(runtime/'result.json').write_text(json.dumps(value,indent=2,sort_keys=True)+'\n')
+if sys.argv[1:] != ['--authorized-exclusive-slot']:
+    raise SystemExit('Explicit coordinator exclusive-slot launch argument required')
+if (runtime/'result.json').exists():raise SystemExit('Existing execution record: do not repeat original checks automatically')
+if int(next(x.split()[1] for x in pathlib.Path('/proc/meminfo').read_text().splitlines() if x.startswith('MemAvailable:')))<12*1024**2:
+    raise SystemExit('Available RAM below12GiB; do not start')
+for relative,pin in plan['scripts'].items():
+    if sha(root/relative)!=pin:raise SystemExit('Pinned check/dependency changed: '+relative)
+if subprocess.check_output(['git','status','--porcelain'],cwd=root):raise SystemExit('Canonical root is not clean')
+state={'schema':'stage2-bases-final-original-health-v1','status':'running','started_at':now(),'cwd':str(root),'checked_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'launch_plan_sha256':sha(runtime/'launch-plan.json'),'checks':[]}
+store(state)
+for name in ['check_paths','check_tracked','verify_all']:
+    started=now();clock=time.monotonic()
+    log=runtime/(name+'.log');resources=runtime/(name+'.time.txt')
+    argv=['/usr/bin/time','-v','-o',str(resources),'/bin/bash',str(root/'script'/f'{name}.sh')]
+    print('Starting '+name+' at '+started,flush=True)
+    with log.open('wb') as output:
+        result=subprocess.run(argv,cwd=root,stdout=output,stderr=subprocess.STDOUT)
+    state['checks'].append({'name':name,'argv':argv,'started_at':started,'finished_at':now(),'elapsed_seconds':time.monotonic()-clock,'exit_code':result.returncode,'log':str(log),'log_sha256':sha(log),'time_record':str(resources),'time_record_sha256':sha(resources)})
+    store(state);print('Finished '+name+' exit='+str(result.returncode),flush=True)
+state['scripts_unchanged']=all(sha(root/p)==pin for p,pin in plan['scripts'].items())
+state['canonical_status']=subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True)
+state['finished_at']=now()
+state['status']='PASS' if all(r['exit_code']==0 for r in state['checks']) and state['scripts_unchanged'] and not state['canonical_status'] else 'FAIL'
+store(state);print('Final original health '+state['status'],flush=True)
+sys.exit(0 if state['status']=='PASS' else 1)

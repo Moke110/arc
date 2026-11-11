@@ -1,0 +1,217 @@
+{
+  "authorization": "root22:04 explicitly requires complete original verify_all once including entire Tahoe manifest; coordinator must grant sole-heavy slot after Tahoeverify andv1replay",
+  "canonical_cwd": "/home/chang/arc",
+  "check_arguments": [],
+  "environment": {
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2"
+  },
+  "execution_order": [
+    "script/check_paths.sh",
+    "script/check_tracked.sh",
+    "script/verify_all.sh"
+  ],
+  "input_manifest_state": {
+    "disease_data/GSE108940/manifest.sha256": {
+      "entries": 1,
+      "sha256": "ccb2bfe57cda7a4292e536f0660bab58b86558c1cc739b7a330f90e9667a4a2c"
+    },
+    "disease_data/GSE137293/manifest.sha256": {
+      "entries": 2,
+      "sha256": "04cbc953c179cbc2cf468208de325bb19db621adcd0a0e8f74b831e9d21039bc"
+    },
+    "disease_data/GSE160516/manifest.sha256": {
+      "entries": 1,
+      "sha256": "9e3605a410b9ffd2e317e3613556904935a1be43085f58a1f5b3aed908998eef"
+    },
+    "drug_emb_model/HG/manifest.sha256": {
+      "entries": 12,
+      "sha256": "d0232d68189484b1e7110e089a87731e36cd00e439a5be26975c651dd8d36d50"
+    },
+    "drug_emb_model/KPGT/manifest.sha256": {
+      "entries": 44,
+      "sha256": "82e055f6a4e350539f467344745fb729555f374a723f297833ceae0a50d5d49f"
+    },
+    "pert_data/Annotation/manifest.sha256": {
+      "entries": 1,
+      "sha256": "711927b3efc4df9b9138d717700ae7f77174feaf0f1021267844b42f0e156d16"
+    },
+    "pert_data/DToxS-iPSC/manifest.sha256": {
+      "entries": 17,
+      "sha256": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515"
+    },
+    "pert_data/GSE244740/manifest.sha256": {
+      "entries": 2,
+      "sha256": "9df77e3e2fd35a89108e23b3fa616665d2ba31f74a77d59dcb0610939037a9da"
+    },
+    "pert_data/GSE247541/manifest.sha256": {
+      "entries": 2,
+      "sha256": "0a6971a13ecec4b72a3d4ca25792fd263480c1ab0e33475455ccb257c264c1e7"
+    },
+    "pert_data/GSE262419/manifest.sha256": {
+      "entries": 18,
+      "sha256": "9f57a8d25562332ebf69d80d89dd3eabd7ab7ca55abdbd842469fe3a0293540a"
+    },
+    "pert_data/LINCS-LDS-1593/manifest.sha256": {
+      "entries": 213,
+      "sha256": "a9243ebb9e0c303d64142294ab1e946614438279ee567f86719ff4eeedb8d4d2"
+    },
+    "pert_data/Tahoe-100M/manifest.sha256": {
+      "entries": 4430,
+      "sha256": "de9e3c36908cf5d15400b64f67ed55ecca0343157040b8e93cbb5a97b02fa353"
+    },
+    "pert_data/XPert-L1000/manifest.sha256": {
+      "entries": 3,
+      "sha256": "61f6ff15e5335b09a26690ee70d1e4f56bc6e46ee0242edaee8ab91e56246ba2"
+    },
+    "pert_model/CMonge/manifest.sha256": {
+      "entries": 85,
+      "sha256": "ac75d569c7cad04e0d534a8f8c94c46d07f680aa1ccc9e580b6784fc5f3033a6"
+    },
+    "pert_model/CPA/manifest.sha256": {
+      "entries": 50,
+      "sha256": "7f03ae76b7ae07bef58d9c116199a45a82967b2032f73e6d8dffe193bfe6e6c3"
+    },
+    "pert_model/DECANT/manifest.sha256": {
+      "entries": 17,
+      "sha256": "e1df67ac84f3b23dfff80b06f3d095f3112508a89e58ccd95d001557e875e245"
+    },
+    "pert_model/ExPO/manifest.sha256": {
+      "entries": 83,
+      "sha256": "2896dda89e00df9a31340711525ec0b3cafa0e810082cfa3a58dde53c2243bec"
+    },
+    "pert_model/PRnet/manifest.sha256": {
+      "entries": 28,
+      "sha256": "8574cc07f39b7a36351f2f34dfd13b69b63625b19aec43c3847ac269c8d81198"
+    },
+    "pert_model/PerturbDiff/manifest.sha256": {
+      "entries": 117,
+      "sha256": "3416b2737c53166fe4a8e62b34e9efcfa708c3e9942e68a417beca447959a074"
+    },
+    "pert_model/PerturbNet/manifest.sha256": {
+      "entries": 138,
+      "sha256": "ed6d41c5a570b3e4e566988fb4a35a76e3eab89ac9b79bf72243bce327861e8e"
+    },
+    "pert_model/Squidiff/manifest.sha256": {
+      "entries": 26,
+      "sha256": "8bb53c3eaf3030fc29608e60803a4bb40a5cee9ea5cafdbcf0972092ce703c06"
+    },
+    "pert_model/State/manifest.sha256": {
+      "entries": 162,
+      "sha256": "7eb3b1bdd18961600b0bb45540388f4df6c93bdea680998c2036167dbad75535"
+    },
+    "pert_model/TranSiGen/manifest.sha256": {
+      "entries": 45,
+      "sha256": "31b6604a6ab6c3b1c9578ff65fb5517b8845af87228eabdb2dc2682bdb780f3d"
+    },
+    "pert_model/WAVE/manifest.sha256": {
+      "entries": 24,
+      "sha256": "25d25e0af6baf9e3bac4438dd1c4dc2c156b8e8dbe804297a8b65217cb8ae17d"
+    },
+    "pert_model/XPert/manifest.sha256": {
+      "entries": 14,
+      "sha256": "d9d6dc3b3dfd4b1e7c89d1850bbd282834d55b82d3ae42b2e6c1445020dea39d"
+    },
+    "pert_model/biolord/manifest.sha256": {
+      "entries": 43,
+      "sha256": "d4b240fd631157453dc4680c67590e78bc371b107c6d06bbf2e07d67f0038046"
+    },
+    "pert_model/chemCPA/manifest.sha256": {
+      "entries": 271,
+      "sha256": "66ce48a72a37fd03857497953b6761ac4c52a006a0bf47576693ffdd0d12f22a"
+    },
+    "pert_model/scVIDR/manifest.sha256": {
+      "entries": 273,
+      "sha256": "2e9c97d33bceff0ddcda50b97290e5eece6cc79a394afce45794cc6ff530c5e8"
+    },
+    "pheno_data/Duan-2013/manifest.sha256": {
+      "entries": 2,
+      "sha256": "f9aeaafc70e9f472dc21e089016f51b10c55a2262f1bdf6f90d85024985cf85a"
+    },
+    "pheno_data/Heliste-2021/manifest.sha256": {
+      "entries": 5,
+      "sha256": "036c663ae37b8131f84010abf9654de1945740e7a06c8346d782bfe210f95782"
+    },
+    "pheno_data/Huang-2022/manifest.sha256": {
+      "entries": 1,
+      "sha256": "9c959400b0a1b5f5a2705a22b6c6d5f7b8c15fbd6aa3a275642330a5aaa4d984"
+    },
+    "pheno_data/Linn-2024/manifest.sha256": {
+      "entries": 3,
+      "sha256": "fa3cc65730e6c4ee3631a75da17b8578443171e004e298ad2b50cce317cfb493"
+    },
+    "pheno_data/Liu-2021/manifest.sha256": {
+      "entries": 2,
+      "sha256": "0c611f15fce4f005f53992befbf27496f59a5bc0a0990cee65c4b9c06dfa52c0"
+    },
+    "pheno_data/Sirenko-2013/manifest.sha256": {
+      "entries": 3,
+      "sha256": "3a3050582e5f17b59d7be8649b6a87efb6853dc9be20e95feec555626b763c98"
+    }
+  },
+  "memory_max_bytes": 10737418240,
+  "memory_swap_max_bytes": 8589934592,
+  "monitor_service": "arc-bases-resource-monitor.service",
+  "outputs": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health",
+  "prepared_at": "2026-11-11T22:19:43.984148+08:00",
+  "prepared_commit": "7a75525ccf1ba8a91339d4f81b10a34af5db1ce6",
+  "prepared_data_access": "Only tracked scripts, external manifests and registry read; no source payload hashes/data opened; no health checks launched.",
+  "runner": "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/run.py",
+  "runner_argv": [
+    "/usr/bin/python3",
+    "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/run.py",
+    "--authorized-exclusive-slot"
+  ],
+  "runner_sha256": "fcba6a89e93477b7da5d0b930d2424027c211466fe238b95e46890fdc3725491",
+  "schema": "stage2-bases-original-health-launch-plan-v1",
+  "scripts": {
+    "disease_data/GSE108940/script/verify.sh": "ab9bc1f62908b3078e3ff5c21252401554cd73e94507aab78c321d3e0bd9c743",
+    "disease_data/GSE137293/script/verify.sh": "514e6f44014187a9f056283f04d535d154181a2c26dae829cb0243a3b34aaad2",
+    "disease_data/GSE160516/script/verify.sh": "a74771ac90e36554f84c710c85944a70ba6a96b8ed8e14eac29ea32bcc557008",
+    "drug_emb_model/HG/script/verify.sh": "e9a2992236a2121692140d6e42f110d666559703e891c2d106a64dd977d913e1",
+    "drug_emb_model/KPGT/script/verify.sh": "9b7eef9e2e5ee88df4def6f7f0941580c5e28b80d3573752c48782ade621eed0",
+    "pert_data/Annotation/script/verify.sh": "6a67133be54a47f877bae79c23d91a48f9776c8195a74034634b023b13014069",
+    "pert_data/DToxS-iPSC/script/verify.sh": "55a0b6b9e9869a0ff6d67b1c826b2e58c0f28f01a59123c8c494f6eaec05327e",
+    "pert_data/GSE244740/script/verify.sh": "60eebd42a024fc81eac9664a8085b49e95d71ea852849d1c4a02e871cd541711",
+    "pert_data/GSE247541/script/verify.sh": "2f30c2e510444ed174fbb4a7cbce07b89f5cf3e4568a9da237d518132e55b760",
+    "pert_data/GSE262419/script/verify.sh": "48acb092fa6c622008f0dfbec628df8a2fa2fe018a2d383106f19b352883aa3e",
+    "pert_data/LINCS-LDS-1593/script/verify.sh": "08213b3569ac6f5f5331046873bc0b74984e3c193cf8f28db4dd6639bfc356b2",
+    "pert_data/Tahoe-100M/script/verify.sh": "5ed42da07c6d41343278f32d8815bcd930c295228faf259044ab9163ea7f0981",
+    "pert_data/XPert-L1000/script/verify.sh": "79710f0748bcb0d054b266317c1619bb9586d690b62a342fefaaab011334bb99",
+    "pert_model/CMonge/script/verify.sh": "529067c2317d4d41359cdf56d30b7bd68617dd257d7bdc2b1496a32ebc4a6dba",
+    "pert_model/CPA/script/verify.sh": "61383eadabf557d950ae19af767370b024a274b28c3326c0cd2dd2badacbe85b",
+    "pert_model/DECANT/script/verify.sh": "f926c993542b0d64ca17a9d15fc91adbad3663d7f4c48b0f2feacd8569d6dea0",
+    "pert_model/ExPO/script/verify.sh": "91701e93d5cc5bca4a76a44d06a6db0878f7f93fc32bceac162f7c24d45ee812",
+    "pert_model/PRnet/script/verify.sh": "782cb3186e76bd9926326464b323eb47e5d6df28adca8351a246f0435b0749b6",
+    "pert_model/PerturbDiff/script/verify.sh": "a93cd3c9830e979b0f4e59dbaf1fbb695ad56c8ea5a923d967a544de6feff95f",
+    "pert_model/PerturbNet/script/verify.sh": "d070ac3a67cd4cb1b46ee2ec24253243a76bd4aa4812c9d2baa20f21262ff829",
+    "pert_model/Squidiff/script/verify.sh": "fe1e6b9c315f5e2bc4e7c4bfe381986d697cb81ea919d8ad3ea43f7dd2221f73",
+    "pert_model/State/script/verify.sh": "b64b04305e3774839cf7f3bd4c38b17fb2006073613c9bd2e8b4b6f8c29e9eeb",
+    "pert_model/TranSiGen/script/verify.sh": "0037addf09dd1ab0d3fd5a97b118cfc626e4c364f12a81833d2be40392b7e6ed",
+    "pert_model/WAVE/script/verify.sh": "d7968bd8b1d618dd6f6e7d57f70b97274cfa8afbb49439bfadd20daaf4e6640a",
+    "pert_model/XPert/script/verify.sh": "f9d5cbe61784e20d44ad24e5d8395f5f5fbadb836125e4c4c558a9af0aa6ed57",
+    "pert_model/biolord/script/verify.sh": "9375557346120c0945e609c6faf26827ff23185123ccb75f60034ac3cbc9a325",
+    "pert_model/chemCPA/script/verify.sh": "557389e999ca6a7a1a800c53a83e1b32015ba67c3b5ce75373b82ca1504059ba",
+    "pert_model/scVIDR/script/verify.sh": "4e8c8f8df20130ebbad79e0615c32a876d455a20aba394e866730b7cb9fdc3ee",
+    "pheno_data/Duan-2013/script/verify.sh": "64956de9a3bed001a777347817ee40734aff7c8b3563652668a130ddb11e3e99",
+    "pheno_data/Heliste-2021/script/verify.sh": "efae17a229812a1be52189c4d57fa40ffc078915f2853a072d080f0407438522",
+    "pheno_data/Huang-2022/script/verify.sh": "c24cb79e1b82666f68bd916e36c06545343761dec2a1b4364bf5107f1d9a3cef",
+    "pheno_data/Linn-2024/script/verify.sh": "64956de9a3bed001a777347817ee40734aff7c8b3563652668a130ddb11e3e99",
+    "pheno_data/Liu-2021/script/verify.sh": "64956de9a3bed001a777347817ee40734aff7c8b3563652668a130ddb11e3e99",
+    "pheno_data/Sirenko-2013/script/verify.sh": "3d08c6e50c85a846e2795cecc8ecb891aae0032177eb67c61b9ddb2b656b9dc7",
+    "pheno_data/registry.json": "aa3259907ddc8948c3d909b88116470e21ea0b26554b938cf37591d67e79aff6",
+    "script/check_paths.sh": "656812d883e113fe111dc8f343be9466f2c4a43d14986daf5747555a8fae7afb",
+    "script/check_stage2_paths.sh": "931e06677861d6fa71d813e89c2fab77c97722b44b87fdf1eb62b7ac059be086",
+    "script/check_stage3_paths.sh": "706ad1eca0f3e0dee1a8d0238d1672a04c7a9573f0f219f19c93586fa8d5836e",
+    "script/check_tracked.sh": "8d0d3b6380ccd6842d2dd203cc1573b32c8e380dc6a994cdba7cd7e6bbca3d00",
+    "script/path_whitelist.txt": "4e5af8722728feb725497717f2a9eb0cc0e5d914f47438a064b7c4b7150177ff",
+    "script/stage2_path_whitelist.txt": "88ac45fc0817c23498d3a2db41fe3e8385ae0adc282ea7729f25bc953383f990",
+    "script/verify_all.sh": "1f320119341fdcacbbb35d56cc3528b8cd4ec947fc3183a7dc74375ae5b7e658"
+  },
+  "service": "arc-bases-final-original-health.service",
+  "skip_or_reuse": false,
+  "status": "PREPARED_NOT_STARTED_WAITING_EXCLUSIVE_SLOT",
+  "unchanged_original_checks": true
+}

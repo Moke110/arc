@@ -1,0 +1,3 @@
+check_paths exit=1 actualscan=757 valid=False
+check_tracked exit=0 actualscan=244 valid=True
+Corrected canonical audits FAIL
