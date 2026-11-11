@@ -189,7 +189,20 @@ Machine-readable per-claim ledger: [`156-evidence-ledger.json`](156-evidence-led
 5. **No stochastic tolerance is claimed**: all replays here are deterministic and
    reproduced bytes exactly; file integrity is reported as sha256, separate from
    metric values.
-6. `log/records/truth_successor_acceptance.json` and
+6. **Main-checkout state after the migration.** The main checkout must stay on
+   `dev`, so its dev-tracked compact files at the old paths (140 paths: the
+   step-root diagnostic pair, `execution/build_record/**` and the force-tracked
+   files inside the moved products) were restored from `dev` HEAD after the
+   migration to leave `git status` with no tracked changes. Those restored
+   copies are `dev`'s state, not this branch's layout; the branch tracks the new
+   stable paths only. The only remaining untracked entries in the main checkout
+   are the new data directories `figure/`, `log/{diagnostic,health,historical,records}`
+   and `execution/checkpoints/` (the last becomes ignored by this branch's
+   `.gitignore`). The acceptance audit recorded above was executed against the
+   migrated layout **before** that restore; re-run it from the branch checkout,
+   or after this branch lands on `dev`, where the tracked tree has neither old
+   paths nor step-root duplicates.
+7. `log/records/truth_successor_acceptance.json` and
    `log/records/hvg_metrics_actual_acceptance.json` keep their original bytes and
    therefore name the *superseded* envelope digest (`24b65aee…`); the audit
    binds them to the preserved envelope bytes at
