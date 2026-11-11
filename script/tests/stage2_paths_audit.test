@@ -69,4 +69,33 @@ printf 'p = "stage2/01_bases/output/x"\nq = "pert_data/Tahoe-100M/source/"\n' >"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "bases/external source must pass"
 
+# 7. Layout guard (#157 review S2): a stray regular file at the Stage 2 root
+#    must fail, while the routing document stage2/AGENTS.md must pass.  The
+#    guard runs in fixture mode too, so a throwaway root can exercise both
+#    directions without touching the checkout.
+run_root() {
+  STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
+}
+fixture_root="$tmp/layout/stage2"
+mkdir -p "$fixture_root/01_bases"
+printf 'bases\n' >"$fixture_root/AGENTS.md"
+printf 'bases\n' >"$fixture_root/01_bases/AGENTS.md"
+printf 'bases\n' >"$fixture_root/01_bases/README.md"
+run_root "$fixture_root" "$tmp/list_clean" >/dev/null \
+  || fail "stage2/AGENTS.md plus the 01_bases step must pass the layout guard"
+printf 'notes\n' >"$fixture_root/notes.md"
+if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
+  fail "a stray regular file at the Stage 2 root must fail the layout guard"
+fi
+printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*notes.md' \
+  || fail "the stray file must be named in the failure"
+rm -f "$fixture_root/notes.md"
+ln -s AGENTS.md "$fixture_root/link.md"
+if run_root "$fixture_root" "$tmp/list_clean" >/dev/null; then
+  fail "a symlink-to-file at the Stage 2 root must fail the layout guard"
+fi
+rm -f "$fixture_root/link.md"
+# The real root carries the routing document and must keep passing.
+run "$tmp/list_clean" >/dev/null || fail "the real stage2/AGENTS.md must pass"
+
 echo "PASS: bases-only Stage 2 runtime path fixtures"
