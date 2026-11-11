@@ -6,6 +6,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.raw import default_bindings, input_files, source_provenance
 
 

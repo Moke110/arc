@@ -57,14 +57,19 @@ def input_files(native, sources=SOURCES):
 def default_bindings(root, *, native=None, tables=None, tenv=None, tahoe=None):
     """Bind independently owned raw releases without copying their payloads."""
     output = Path(root) / "stage2/01_bases/output"
-    legacy = Path(native) if native is not None else output / "native-v1"
-    tables = Path(tables) if tables is not None else legacy / "tables"
+    legacy = Path(native) if native is not None else output / "tenv-raw-counts"
+    if tables is not None:
+        tables = Path(tables)
+    elif native is not None:
+        tables = legacy / "tables"
+    else:
+        tables = output / "gene-identity/tables"
     return {"genes.csv": tables / "genes.csv",
             "gene_crosswalk.csv": tables / "gene_crosswalk.csv",
             "tenv.h5ad": Path(tenv) if tenv is not None else legacy / "tenv.h5ad",
             "tahoe.h5ad": Path(tahoe) if tahoe is not None else
                 (legacy / "tahoe.h5ad" if native is not None else
-                 output / "tahoe-counts-v1/tahoe.h5ad")}
+                 output / "tahoe-raw-counts/tahoe.h5ad")}
 
 
 def add_binding_arguments(parser):

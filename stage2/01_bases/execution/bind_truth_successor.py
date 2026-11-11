@@ -2,6 +2,7 @@
 import argparse
 import json
 from pathlib import Path
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.truth_successor import create_successor, verify_successor, DEFAULT_RSCRIPT
 
 
@@ -9,14 +10,15 @@ def main():
     root = next(path for path in Path(__file__).resolve().parents if (path / '.git').exists())
     output = root / 'stage2/01_bases/output'
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--truth', type=Path, default=output / 'truth-tenv-v1')
-    parser.add_argument('--original-training', type=Path, default=output / 'training-v1')
-    parser.add_argument('--training', type=Path, default=output / 'training-v2')
-    parser.add_argument('--original-native', type=Path, default=output / 'native-v1/tenv.h5ad')
-    parser.add_argument('--native', type=Path, default=output / 'native-v1/tenv.h5ad')
+    parser.add_argument('--truth', type=Path, default=output / 'tenv-truth')
+    parser.add_argument('--original-training', type=Path, default=output / 'historical-training-release')
+    parser.add_argument('--training', type=Path, default=output / 'training-corpora')
+    parser.add_argument('--original-native', type=Path, default=output / 'tenv-raw-counts/tenv.h5ad')
+    parser.add_argument('--native', type=Path, default=output / 'tenv-raw-counts/tenv.h5ad')
     parser.add_argument('--accepted-verification', type=Path,
+                        default=root / 'stage2/01_bases/log/records/truth_complete_verify.json',
                         help='complete v1 verification report with three representative raw R refits')
-    parser.add_argument('--output', type=Path, default=output / 'truth-tenv-v2')
+    parser.add_argument('--output', type=Path, default=output / 'tenv-truth-successor')
     parser.add_argument('--rscript', type=Path, default=DEFAULT_RSCRIPT)
     parser.add_argument('--verify', action='store_true')
     parser.add_argument('--record', type=Path)

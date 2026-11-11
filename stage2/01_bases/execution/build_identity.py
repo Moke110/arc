@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.identity import GeneIdentity, native_mapping_rows
 
 

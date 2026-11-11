@@ -12,6 +12,7 @@ import pandas as pd
 
 EXECUTION = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(EXECUTION))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.significance import group_key, publish_statistics
 
 

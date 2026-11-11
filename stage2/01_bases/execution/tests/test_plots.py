@@ -5,6 +5,7 @@ import unittest
 import numpy as np
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.metrics import retrieval, pooled_pr, METRICS
 from bases.plots import render_retrieval, replay_retrieval
 

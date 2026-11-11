@@ -14,6 +14,7 @@ from anndata.io import read_elem
 from scipy.sparse import csr_matrix
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.tahoe import build_tahoe, verify_tahoe
 
 

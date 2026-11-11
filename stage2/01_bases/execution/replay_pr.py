@@ -2,6 +2,7 @@
 """Replay a standalone tenv PR panel from its sealed numeric source."""
 import argparse
 from pathlib import Path
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.plots import replay_retrieval
 
 if __name__=='__main__':

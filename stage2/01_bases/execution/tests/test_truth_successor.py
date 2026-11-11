@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.corpora import NORMALIZATION, parent_structure
 from bases.significance import contrast_plan, publish_statistics, sha256, write_json
 from bases.truth_build import WORKER, verify, write_part_inputs
