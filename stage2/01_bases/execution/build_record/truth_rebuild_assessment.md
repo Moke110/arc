@@ -1,5 +1,12 @@
 # Bases-only tenv truth input assessment
 
+This records the earlier scope-change interruption. Work subsequently resumed
+within bases only using the independently rebuilt `output/native-v1/tenv.h5ad`
+(SHA256 `efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502`).
+Actual ordinary and multi-plate R smoke now passes; see
+`truth_real_smoke.json` and `truth_implementation_status.json` for current status.
+The paragraphs below preserve the original missing-input assessment.
+
 The user deleted other Stage 2 trees during #148 and then limited work to
 `01_bases`. This branch preserves new bases code only. It does not restore any
 deleted step, historical output, native corpus or independent experiment.

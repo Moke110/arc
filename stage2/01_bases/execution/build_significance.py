@@ -2,7 +2,7 @@
 import argparse
 import json
 from pathlib import Path
-from bases.truth_build import build, verify
+from bases.truth_build import build, verify, smoke
 
 
 def main():
@@ -16,10 +16,13 @@ def main():
     parser.add_argument('--batch-size', type=int, default=25)
     parser.add_argument('--workers', type=int, choices=(1, 2), default=2)
     parser.add_argument('--verify', action='store_true')
+    parser.add_argument('--smoke', action='store_true', help='actual ordinary/multi-plate R preflight only')
     parser.add_argument('--replay-groups', type=int, default=3)
     parser.add_argument('--record', type=Path)
     args = parser.parse_args()
-    if args.verify:
+    if args.smoke:
+        result = smoke(args.training, args.native, args.output, args.rscript)
+    elif args.verify:
         result = verify(args.training, args.native, args.output, args.rscript,
                         replay_groups=args.replay_groups)
     else:

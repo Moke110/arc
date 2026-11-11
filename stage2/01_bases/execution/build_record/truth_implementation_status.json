@@ -1,34 +1,34 @@
 {
-  "schema": "stage2-bases-truth-implementation-status-v1",
-  "status": "implementation-preserved-real-refit-not-started",
-  "reason": "User changed scope to bases only and deleted other Stage 2 trees during implementation. No deleted path was restored and no R fit was started.",
-  "tests": {
-    "public_contract_tests_passed": 3,
-    "real_R_integration_test": "written, not executed; requires explicit capped resource slot",
-    "real_DESeq2_release": "not built or accepted"
-  },
-  "lightweight_real_preflight_before_deletion": {
-    "axis_size": 18164,
-    "retained_tenv_wells": 4206,
-    "new_parent_dose_groups": 1377,
-    "contrast_sample_rows_including_reused_controls": 20802,
-    "multi_plate_groups": 6,
-    "native_smiles_parent_recalculation": "all retained wells matched final proposed training release",
-    "seven_historical_partitions": "new-parent-dose groups did not cross roles; historical consumer migration is no longer in scope"
-  },
-  "missing_required_input": {
-    "native_raw_counts": "Deleted ignored stage2/02_dataset_corpus/output/corpus/v2/tenv.h5ad. Normalized training expression cannot replace DESeq2 integer raw counts.",
-    "bases_corpora_dependency": "Depends on unmerged ticket147 bases.corpora for training_header and independent parent_structure; preserve ticket147 separately.",
-    "partition_assignments": "Caller must supply a coherent bases cohort. Old historical partition files are not required to build global truth; do not claim a new cohort is the historical experiment."
-  },
   "future_execution": {
-    "restore_old_step_paths": false,
-    "requires_bases_native_count_rebuild": true,
-    "worker_count_max": 2,
-    "memory_cap_gib": 10,
+    "acceptance": "complete source/count membership and BH/ranking replay plus representative independent raw-count DESeq2 refits, under resource monitoring",
     "checkpoint_contrasts": 25,
     "estimated_refit_duration": "hours; old 50-contrast batch was about652s, hardware/runtime dependent",
     "estimated_truth_storage_gib": "about2 including checkpoint arrays and release",
-    "acceptance": "complete source/count membership and BH/ranking replay plus representative independent raw-count DESeq2 refits, under resource monitoring"
+    "memory_cap_gib": 10,
+    "requires_bases_native_count_rebuild": false,
+    "restore_old_step_paths": false,
+    "worker_count_max": 2
+  },
+  "lightweight_real_preflight_before_deletion": {
+    "axis_size": 18164,
+    "contrast_sample_rows_including_reused_controls": 20802,
+    "multi_plate_groups": 6,
+    "native_smiles_parent_recalculation": "all retained wells matched final proposed training release",
+    "new_parent_dose_groups": 1377,
+    "retained_tenv_wells": 4206,
+    "seven_historical_partitions": "new-parent-dose groups did not cross roles; historical consumer migration is no longer in scope"
+  },
+  "missing_required_input": {
+    "bases_corpora_dependency": "Resolved in standalone core cebb38f",
+    "native_raw_counts": "Resolved by bases-owned native-v1/tenv.h5ad, SHA256 efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+    "partition_assignments": "Caller must supply a coherent bases cohort. Old historical partition files are not required to build global truth; do not claim a new cohort is the historical experiment."
+  },
+  "reason": "User resumed bases-only truth work using newly rebuilt bases-native raw counts; no deleted step or historical split was restored.",
+  "schema": "stage2-bases-truth-implementation-status-v1",
+  "status": "actual-smoke-passed-full-refit-starting",
+  "tests": {
+    "public_contract_tests_passed": 3,
+    "real_DESeq2_release": "actual ordinary and multi-plate smoke PASS; complete release not yet built or accepted",
+    "real_R_integration_test": "PASS real R insufficient-replication build and verify"
   }
 }

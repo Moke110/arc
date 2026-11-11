@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
+import threading
 
 import h5py
 from anndata.io import read_elem
@@ -136,7 +137,11 @@ def build(training, native, output, rscript, *, batch_size=25, workers=2, fixtur
     samples.to_csv(checkpoint / 'planned_samples.csv', index=False)
     genes.to_csv(checkpoint / 'genes.csv', index=False)
 
+    completed_count = 0
+    completed_lock = threading.Lock()
+
     def process(start):
+        nonlocal completed_count
         part = checkpoint / 'parts' / f'{start // batch_size:05d}'
         seal = part / 'manifest.json'
         expected = groups.iloc[start:start + batch_size]
@@ -155,7 +160,9 @@ def build(training, native, output, rscript, *, batch_size=25, workers=2, fixtur
             raise ValueError('checkpoint group order differs')
         for name, digest in pin['files'].items():
             checked_file(part, name, digest)
-        print(f'Completed contrasts {start + len(expected)}/{len(groups)}', flush=True)
+        with completed_lock:
+            completed_count += len(expected)
+            print(f'Completed contrasts {completed_count}/{len(groups)}; batch {start // batch_size:05d}', flush=True)
         return part, pd.read_csv(part / 'metadata.csv', keep_default_na=False)
 
     with ThreadPoolExecutor(max_workers=workers) as executor:
@@ -263,3 +270,34 @@ def verify(training, native, output, rscript, *, replay_groups=3, fixture=False)
             'statuses': groups.status.value_counts().to_dict(),
             'tested_empty': int((groups.status.eq('eligible') & groups.n_significant.eq(0)).sum()),
             'multiplate_groups': int(groups.n_plates.gt(1).sum())}
+
+
+def smoke(training, native, workspace, rscript):
+    """Fit actual ordinary and multi-plate representatives before a full launch."""
+    workspace = Path(workspace)
+    if workspace.exists():
+        raise FileExistsError(workspace)
+    genes, groups, samples, columns = source_plan(Path(training), Path(native))
+    chosen = [groups.index[groups.n_plates.eq(1)][0]]
+    if groups.n_plates.gt(1).any():
+        chosen.append(groups.index[groups.n_plates.gt(1)][0])
+    selected = groups.loc[chosen].reset_index(drop=True)
+    metadata = write_part_inputs(workspace, native, selected, samples, columns)
+    run_worker(workspace, rscript, len(genes))
+    results = pd.read_csv(workspace / 'results.csv', keep_default_na=False)
+    details = []
+    for index, row in enumerate(metadata.itertuples(index=False)):
+        values = {field: np.memmap(workspace / f'{field}.bin', dtype='<f8', mode='r',
+                                   shape=(len(metadata), len(genes)))[index] for field in FIELDS}
+        if not np.allclose(values['padj'], bh_adjust(values['pvalue']), rtol=1e-12,
+                           atol=1e-15, equal_nan=True):
+            raise ValueError('actual R smoke failed independent full-axis BH')
+        up, down = ranked_indices(values['padj'], values['log2_fold_change'])
+        if results.iloc[index].status != 'eligible':
+            raise ValueError(f'actual R smoke was not testable: {results.iloc[index].reason}')
+        details.append({'group_id': row.group_id, 'design': row.design,
+                        'n_treated': row.n_treated, 'n_controls': row.n_controls,
+                        'up': len(up), 'down': len(down), 'raw_counts_sha256': row.counts_sha256})
+    return {'result': 'PASS', 'gene_count': len(genes), 'contrasts': details,
+            'versions': (workspace / 'versions.txt').read_text().splitlines(),
+            'worker_sha256': sha256(WORKER), 'native_sha256': sha256(native)}
