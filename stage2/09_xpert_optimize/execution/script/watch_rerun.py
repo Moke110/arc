@@ -49,7 +49,7 @@ def main():
         # Sleeping does not read training progress; the OS process keeps this
         # deadline even while the agent is waiting for a tool result.
         while due.timestamp() > time.time():
-            time.sleep(min(30, due.timestamp() - time.time()))
+            time.sleep(max(0, min(30, due.timestamp() - time.time())))
         result = snapshot(args.work, plan)
         result['scheduled_at'] = due.isoformat()
         with (args.work / 'monitor-snapshots.jsonl').open('a') as stream:
