@@ -1,0 +1,559 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "genes_sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
+      },
+      "name": "identity-v1: genes_sha256",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 0,
+        "matched": 2,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "tables: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 0,
+        "matched": 2,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "shared-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "path": "/home/chang/arc/pert_data/Annotation/source/hgnc_complete_set.txt"
+      },
+      "name": "identity-v1: HGNC annotation input seal",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 1,
+        "matched": 1,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "native-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 2,
+        "matched": 5,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "shared-v2: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 0,
+        "matched": 2,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "tables: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "mapping_sha256": "05da6449520c7735eecf2f03d8c947f99e3771262e30c31c74c94fcb78b4ed35",
+        "source_shard_rehash": "not run (immutable external source)",
+        "source_shards_declared": 3393
+      },
+      "name": "tahoe-counts-v1: mapping_sha256 -> token_mapping.csv",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 2,
+        "matched": 2,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "training-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 2,
+        "matched": 2,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "training-v2: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 3,
+        "matched": 1380,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "truth-tenv-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 3,
+        "matched": 1380,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "truth-tenv-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "worker_sha256": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
+      },
+      "name": "truth-tenv-v2: worker_sha256 -> deseq2_contrasts.R",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 0,
+        "matched": 5,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "hvg-tenv-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "declared": "8ac09bcbc33f8c4fce090aee9be4063bee8756c187f04a0142d36091cf97df89",
+        "detail": "shared-v1 has no manifest.json: its expression payload and seal were deleted with the historical release; training-v1 stays a historical seal, not a reconstruction input"
+      },
+      "name": "cross: training-v1.inputs.shared_manifest -> shared-v1 manifest seal",
+      "status": "EXPECTED_GAP"
+    },
+    {
+      "detail": {
+        "actual": "fb352f2be2c93408b58daddf5f0ed9d2972b97c0f9a5f16b187316c6245987c3",
+        "expected": "fb352f2be2c93408b58daddf5f0ed9d2972b97c0f9a5f16b187316c6245987c3"
+      },
+      "name": "cross: training-v2.inputs.shared_manifest -> shared-v2/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "3543df76e728b3d25d63cda20e3187e96fbca96ac370d38e634e25405835a1a4",
+        "expected": "3543df76e728b3d25d63cda20e3187e96fbca96ac370d38e634e25405835a1a4"
+      },
+      "name": "cross: truth-v1.provenance.training_manifest_sha256 -> training-v1/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+        "expected": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502"
+      },
+      "name": "cross: truth-v1.provenance.native_counts_sha256 -> native manifest tenv.h5ad",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "a95bba66bd44781d517c219a358ea4a0364f833cb54ae7b12f2e6950ddee517b",
+        "expected": "a95bba66bd44781d517c219a358ea4a0364f833cb54ae7b12f2e6950ddee517b"
+      },
+      "name": "cross: truth-v1.provenance.tenv_training_sha256 -> training-v1 manifest tenv.h5ad",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c",
+        "expected": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
+      },
+      "name": "cross: truth-v1.provenance.worker_sha256 -> truth-v2 deseq2_contrasts.R",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": 1377,
+        "expected": 1377
+      },
+      "name": "cross: truth-v1 manifest group_count -> groups.csv CSV records",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
+        "expected": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f"
+      },
+      "name": "cross: truth-complete-verify.manifest_sha256 -> truth-v1/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+        "expected": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7"
+      },
+      "name": "cross: truth-successor-acceptance.manifest_sha256 -> truth-v2/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830",
+        "expected": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830"
+      },
+      "name": "cross: hvg manifest training_sha256 -> training-v2 tenv.h5ad (manifest-to-manifest)",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc",
+        "expected": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc"
+      },
+      "name": "cross: hvg manifest cohorts sha -> diagnostic cohorts.csv",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6",
+        "expected": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6"
+      },
+      "name": "cross: hvg acceptance.hvg_manifest_sha256 -> hvg-tenv-v1/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+        "expected": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7"
+      },
+      "name": "cross: hvg acceptance.successor_manifest_sha256 -> truth-v2/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
+        "expected": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f"
+      },
+      "name": "cross: hvg acceptance.truth_manifest_sha256 -> truth-v1/manifest.json",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830",
+        "expected": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830"
+      },
+      "name": "cross: hvg acceptance.training_sha256 -> training-v2 manifest tenv.h5ad",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "absent": 0,
+        "expression_skipped": 0,
+        "matched": 10,
+        "mismatched": 0,
+        "problems": []
+      },
+      "name": "hvg-metrics-diagnostic-v1: declared non-expression digests",
+      "status": "PASS"
+    },
+    {
+      "detail": [
+        {
+          "binding": "accepted_verification",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/execution/build_record/truth_complete_verify.json",
+          "suffix": ".json"
+        },
+        {
+          "binding": "native",
+          "digest_matches": "not rehashed (expression payload)",
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad",
+          "suffix": ".h5ad"
+        },
+        {
+          "binding": "native_manifest",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv_manifest.json",
+          "suffix": ".json"
+        },
+        {
+          "binding": "original_native",
+          "digest_matches": "not rehashed (expression payload)",
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad",
+          "suffix": ".h5ad"
+        },
+        {
+          "binding": "original_native_manifest",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv_manifest.json",
+          "suffix": ".json"
+        },
+        {
+          "binding": "original_training_manifest",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/training-v1/manifest.json",
+          "suffix": ".json"
+        },
+        {
+          "binding": "original_training_tenv",
+          "digest_matches": "not rehashed (expression payload)",
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/training-v1/tenv.h5ad",
+          "suffix": ".h5ad"
+        },
+        {
+          "binding": "rscript",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/miniconda3/envs/biomni_e1/bin/Rscript",
+          "suffix": ""
+        },
+        {
+          "binding": "training_manifest",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/training-v2/manifest.json",
+          "suffix": ".json"
+        },
+        {
+          "binding": "training_tenv",
+          "digest_matches": "not rehashed (expression payload)",
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/training-v2/tenv.h5ad",
+          "suffix": ".h5ad"
+        },
+        {
+          "binding": "truth_manifest",
+          "digest_matches": true,
+          "exists": true,
+          "path_is_resolved_absolute": true,
+          "recorded_path": "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1/manifest.json",
+          "suffix": ".json"
+        }
+      ],
+      "name": "truth-tenv-v2: recorded binding paths are live absolute dependencies",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "eaad870b346ead01f08bb4af17565e8f62a250168dbc70c4e0d984b52281ac1a",
+        "expected": "eaad870b346ead01f08bb4af17565e8f62a250168dbc70c4e0d984b52281ac1a"
+      },
+      "name": "cross: step-root diagnostic_tenv_pr.csv byte-identical to hvg-metrics-diagnostic-v1/diagnostic_pr.csv",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "actual": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f",
+        "expected": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f"
+      },
+      "name": "cross: step-root diagnostic_tenv_pr.png byte-identical to hvg-metrics-diagnostic-v1/diagnostic_pr.png",
+      "status": "PASS"
+    }
+  ],
+  "expression_payloads_opened": 0,
+  "manifest_sha256": {
+    "hvg-tenv-v1/manifest.json": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6",
+    "identity-v1/manifest.json": "5f7517c34d7fda2ff61993b625086bd3a5db1de51c097b6cf9f87aec7bf98ade",
+    "native-v1/tenv_manifest.json": "e0941b240985ed0c77687d363c8e2ba1b069d86f1227b1d512afad6c4897aa5b",
+    "shared-v2/manifest.json": "fb352f2be2c93408b58daddf5f0ed9d2972b97c0f9a5f16b187316c6245987c3",
+    "tahoe-counts-v1/manifest.json": "7ea21f45e0a9d79383f243a5dd518a7e2851433da400e06e31e575a53cdada44",
+    "training-v1/manifest.json": "3543df76e728b3d25d63cda20e3187e96fbca96ac370d38e634e25405835a1a4",
+    "training-v2/manifest.json": "aac36d2d8306c234da581ae2763b8703a323db89870c7db42a15fe0fd5be564b",
+    "truth-tenv-v1/manifest.json": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
+    "truth-tenv-v2/manifest.json": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7"
+  },
+  "schema": "bases-155-metadata-binding-audit-v1",
+  "scope": "manifests, non-expression products and existing build records under /home/chang/arc/stage2/01_bases; expression payloads (*.h5ad,*.npy,*.npz,*.bin) never opened",
+  "structure": [
+    {
+      "detail": {
+        "index_5091": "FAM153B",
+        "rows": 18164
+      },
+      "name": "identity axis: 18164 rows, gene_index 0..18163, unique symbol/HGNC",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "native_tables_equals_shared_v2_bytes": true,
+        "rows": 18164
+      },
+      "name": "frozen axis order identical in native tables and identity product",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "multiplate": 6,
+        "rows": 1377,
+        "statuses": [
+          "eligible"
+        ],
+        "sum_controls": 16596,
+        "sum_treated": 4206,
+        "tested_empty": 273
+      },
+      "name": "truth-v1 groups: 1377 unique group ids",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "payloads": 1377
+      },
+      "name": "truth-v1 per-group payloads cover exactly the group table",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "control": 16596,
+        "rows": 20802,
+        "treated": 4206
+      },
+      "name": "truth-v1 contrast membership: 4206 treated wells plus controls",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "per_fold_role": {
+          "0": {
+            "test": 1401,
+            "train": 2508,
+            "validation": 297
+          },
+          "1": {
+            "test": 1416,
+            "train": 2508,
+            "validation": 282
+          },
+          "2": {
+            "test": 1389,
+            "train": 2535,
+            "validation": 282
+          }
+        },
+        "rows": 12618,
+        "samples": 4206
+      },
+      "name": "HVG cohorts: every well in exactly 3 folds with exactly one test role",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "max": 18164,
+        "min": 1,
+        "rows": 18164
+      },
+      "name": "hvg-tenv-v1/descriptive: rank permutation over 18164 genes",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "max": 18164,
+        "min": 1,
+        "rows": 18164
+      },
+      "name": "hvg-tenv-v1/fold_0: rank permutation over 18164 genes",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "max": 18164,
+        "min": 1,
+        "rows": 18164
+      },
+      "name": "hvg-tenv-v1/fold_1: rank permutation over 18164 genes",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "max": 18164,
+        "min": 1,
+        "rows": 18164
+      },
+      "name": "hvg-tenv-v1/fold_2: rank permutation over 18164 genes",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "columns": [
+          "recall",
+          "precision",
+          "contributing_groups",
+          "eligible_groups",
+          "label",
+          "metric"
+        ],
+        "labels": [
+          "Diagnostic fold 0",
+          "Diagnostic fold 1",
+          "Diagnostic fold 2"
+        ],
+        "rows": 7222
+      },
+      "name": "diagnostic PR panel CSV: three fold labels x three metrics",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "example": {
+          "symbol": "ACKR5",
+          "token_id": "11949",
+          "v1_native_symbol": "GPR182",
+          "v2_native_symbol": "ACKR5"
+        },
+        "native_column_redefined": "v1 = deleted 62710-gene matrix column; v2 = projected 18164 axis column",
+        "native_symbol_differences": 229,
+        "native_token_id_differences": 0,
+        "rows": 18164
+      },
+      "name": "shared-v1 vs shared-v2 Tahoe mapping: same tokens, annotated symbol vintage differs",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "rows": 18164
+      },
+      "name": "shared-v1 vs shared-v2 tenv mapping: byte-identical evidence",
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "checks": 33,
+    "expected_gaps": [
+      "cross: training-v1.inputs.shared_manifest -> shared-v1 manifest seal"
+    ],
+    "non_pass": [],
+    "structure": 13
+  }
+}
