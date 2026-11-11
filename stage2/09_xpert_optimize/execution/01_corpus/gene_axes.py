@@ -68,18 +68,18 @@ def source_dispersion(matrix, rows, columns):
             "rank": rank}, {"train_wells": total, "zero_libraries": zeros}
 
 
-def source_metadata(landmark, predictor_manifest, evaluator_manifest, source):
+def source_metadata(landmark, predictor_manifest, evaluator_manifest, source, fold=0):
     predictor, evaluator = landmark / "predictor", landmark / "evaluator"
 
     def read_predictor(relative):
         return pd.read_csv(hashed_payload(predictor, predictor_manifest, relative), keep_default_na=False)
 
-    prefix = "tahoe" if source == "tahoe" else "tenv/fold_0"
+    prefix = "tahoe" if source == "tahoe" else f"tenv/fold_{fold}"
     case_files = {name: f"{prefix}/{name}.csv" for name in ("train", "validation")}
     cases = {name: read_predictor(path) for name, path in case_files.items()}
     if source == "tenv":
         case_files["test"] = f"{prefix}/test.csv"
-        row_file = "tenv/fold_0/test_rows.csv"
+        row_file = f"tenv/fold_{fold}/test_rows.csv"
         test_rows = pd.read_csv(hashed_payload(evaluator, evaluator_manifest, row_file), keep_default_na=False)
         cases["test"] = read_predictor(case_files["test"]).merge(
             test_rows, on="case_id", validate="one_to_one", how="left"
@@ -101,7 +101,7 @@ def source_metadata(landmark, predictor_manifest, evaluator_manifest, source):
     return cases, controls, control_rows, files
 
 
-def panel_tables(directory, cm, landmark_genes, ranked, fold, sizes):
+def panel_tables(directory, cm, landmark_genes, ranked, fold, sizes, axes=AXES):
     directory.mkdir()
     ranks = cm.copy()
     for source, data in ranked.items():
@@ -110,9 +110,9 @@ def panel_tables(directory, cm, landmark_genes, ranked, fold, sizes):
     ranks["rank_sum"] = ranks.tahoe_rank + ranks.tenv_rank
     ordered = ranks.rank_sum.sort_values(kind="stable").index.to_numpy()
     ranks.to_csv(directory / "ranks.csv", index=False)
-    panels = {name: cm.iloc[np.sort(ordered[:size])] for name, size in zip(AXES[:3], sizes, strict=True)}
+    panels = {name: cm.iloc[np.sort(ordered[:size])] for name, size in zip(axes[:3], sizes, strict=True)}
     panels["G18164"] = cm
-    panels["shared"] = panels["G2000"].loc[panels["G2000"].hgnc_id.isin(landmark_genes.hgnc_id)]
+    panels["shared"] = panels[axes[0]].loc[panels[axes[0]].hgnc_id.isin(landmark_genes.hgnc_id)]
     for name, panel in panels.items():
         panel.to_csv(directory / f"{name}.csv", index=False)
     shared_count = len(panels["shared"])
@@ -210,14 +210,14 @@ def manifest_record(root, panels, zeros, landmark_sha, frozen, fold=0):
         predictor_sha = sha256(predictor / "manifest.json")
         write_json(evaluator / "manifest.json", {
             "schema": "step09-evaluator-v1", "predictor_manifest_sha256": predictor_sha,
-            "test_zero_libraries": {"tenv": {"fold_0/test": zeros["tenv"][name]["test"]}},
+            "test_zero_libraries": {"tenv": {f"fold_{fold}/test": zeros["tenv"][name]["test"]}},
             "files": file_hashes(evaluator),
         })
         manifests[name] = {"predictor": predictor_sha, "evaluator": sha256(evaluator / "manifest.json")}
     return manifests
 
 
-def build(native, landmark, output, fixture_sizes):
+def build(native, landmark, output, fixture_sizes, rerun=False, materialized_fold=0):
     if output.exists():
         raise FileExistsError(output)
     manifests = {side: json.loads((landmark / side / "manifest.json").read_text())
@@ -242,13 +242,14 @@ def build(native, landmark, output, fixture_sizes):
             raise ValueError(f"source differs from the landmark release: {name}")
     cm = read_csv(inputs["genes.csv"])
     cm["identity_index"] = np.arange(len(cm))
-    sizes = tuple(fixture_sizes or DEFAULT_SIZES)
+    axes = ("G512", "G1024", "G2048", "G18164") if rerun else AXES
+    sizes = tuple(fixture_sizes or ((512, 1024, 2048) if rerun else DEFAULT_SIZES))
     if not (0 < sizes[0] < sizes[1] < sizes[2] <= len(cm)):
         raise ValueError("invalid nested panel sizes")
     crosswalk = read_csv(inputs["gene_crosswalk.csv"])
     predictor = landmark / "predictor"
     landmarks = read_csv(hashed_payload(predictor, frozen, "genes.csv"))
-    metadata = {source: source_metadata(landmark, frozen, manifests["evaluator"], source)
+    metadata = {source: source_metadata(landmark, frozen, manifests["evaluator"], source, materialized_fold)
                 for source in ("tahoe", "tenv")}
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent, prefix=f".{output.name}-") as temp, ExitStack() as stack:
@@ -268,19 +269,19 @@ def build(native, landmark, output, fixture_sizes):
             train_rows = pd.read_csv(train_path).source_row.to_numpy()
             tenv, tenv_record = source_dispersion(datasets["tenv"]["X"], train_rows,
                                                    mappings["tenv"].native_column.to_numpy())
-            panels = panel_tables(root / f"fold_{fold}", cm, landmarks, {"tahoe": tahoe, "tenv": tenv}, fold, sizes)
+            panels = panel_tables(root / f"fold_{fold}", cm, landmarks, {"tahoe": tahoe, "tenv": tenv}, fold, sizes, axes)
             shared_count = len(panels["shared"])
             folds[str(fold)] = {"shared_gene_count": shared_count,
                                 "shared_continuous_provisional": shared_count < 200,
                                 "train_rank_cohorts": {"tahoe": tahoe_record, "tenv": tenv_record}}
-            if fold == 0:
+            if fold == materialized_fold:
                 fold_0 = panels
 
         view_roots = {name: root / "views" / name for name in fold_0}
         for name, view in view_roots.items():
             view_predictor = view / "predictor"
             view_predictor.mkdir(parents=True)
-            shutil.copyfile(root / f"fold_0/{name}.csv", view_predictor / "genes.csv")
+            shutil.copyfile(root / f"fold_{materialized_fold}/{name}.csv", view_predictor / "genes.csv")
             for relative in ("identity.npy", "identity_hdgfl3.npy", "cm_genes.csv", "tenv_folds.csv"):
                 shutil.copyfile(hashed_payload(predictor, frozen, relative), view_predictor / relative)
         zeros = {}
@@ -288,17 +289,17 @@ def build(native, landmark, output, fixture_sizes):
             roots = {name: view for name, view in view_roots.items() if source == "tenv" or name != "shared"}
             zeros[source] = stream_views(ds["X"], source, mappings[source], roots, fold_0,
                                          metadata[source], landmark, manifests)
-        views = manifest_record(root, fold_0, zeros, landmark_sha, frozen)
+        views = manifest_record(root, fold_0, zeros, landmark_sha, frozen, materialized_fold)
         if starting_stats != fingerprint(inputs):
             raise ValueError("native input changed during panel build")
         write_json(root / "manifest.json", {
-            "schema": "step09-gene-axes-v1", "fixture": frozen["fixture"], "ready_folds": [0],
+            "schema": "step09-gene-axes-v1", "fixture": frozen["fixture"], "ready_folds": [materialized_fold],
             "landmark_predictor_sha256": landmark_sha, "builder_sha256": sha256(Path(__file__)),
             "source_hashes": {name: frozen["source_hashes"][name] for name in inputs},
             "rank_recipe": {"source": "Seurat normalized dispersion on train-only linear CP10K",
                             "mean_bins": N_MEAN_BINS, "source_weights": {"tahoe": .5, "tenv": .5},
                             "tie_break": "frozen CM order"},
-            "axis_sizes": {name: len(fold_0[name]) for name in AXES},
+            "axis_sizes": {name: len(fold_0[name]) for name in axes},
             "folds": folds, "views": views,
             "panels_sha256": {str(path.relative_to(root)): sha256(path)
                               for path in sorted(root.glob("fold_*/*.csv"))},
@@ -313,8 +314,10 @@ def main():
     parser.add_argument("--landmark", type=Path, default=LANDMARK)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--fixture-sizes", type=int, nargs=3)
+    parser.add_argument("--rerun", action="store_true", help="Build the ADR0060 smaller gene axes")
+    parser.add_argument("--fold", type=int, choices=(0, 1, 2), default=0)
     args = parser.parse_args()
-    print(build(args.native, args.landmark, args.output, args.fixture_sizes))
+    print(build(args.native, args.landmark, args.output, args.fixture_sizes, args.rerun, args.fold))
 
 
 if __name__ == "__main__":
