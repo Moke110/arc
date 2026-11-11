@@ -1,6 +1,6 @@
 {
   "bindings": {
-    "accepted_verification": "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records/truth_complete_verify.json",
+    "accepted_verification": "/home/chang/arc/stage2/01_bases/log/records/truth_complete_verify.json",
     "native": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
     "native_manifest": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv_manifest.json",
     "original_native": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
@@ -14,7 +14,7 @@
   },
   "candidate": {
     "create_pass": true,
-    "manifest_sha256": "0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc",
+    "manifest_sha256": "2798e3b8eb32027b221c18634bbb9e1dd4aeed46624786bd8099fc40fc790b6d",
     "path": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/successor-candidate",
     "verify_pass": true
   },
@@ -28,7 +28,9 @@
     "--record",
     "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/156-successor-reissue.json",
     "--records-dir",
-    "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records"
+    "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records",
+    "--accepted-verification",
+    "/home/chang/arc/stage2/01_bases/log/records/truth_complete_verify.json"
   ],
   "commands": [
     {
@@ -46,7 +48,7 @@
         "--native",
         "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
         "--accepted-verification",
-        "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records/truth_complete_verify.json",
+        "/home/chang/arc/stage2/01_bases/log/records/truth_complete_verify.json",
         "--output",
         "/home/chang/arc/.scratch/stage2-bases/runtime/v3/successor-candidate",
         "--rscript",
@@ -54,7 +56,7 @@
       ],
       "label": "create candidate",
       "returncode": 0,
-      "seconds": 243.88,
+      "seconds": 243.42,
       "stderr_tail": [],
       "stdout_tail": [
         "  \"result\": \"PASS\",",
@@ -76,23 +78,23 @@
       ],
       "label": "verify candidate",
       "returncode": 0,
-      "seconds": 248.8,
+      "seconds": 234.63,
       "stderr_tail": [],
       "stdout_tail": [
-        "  \"manifest_sha256\": \"0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc\",",
+        "  \"manifest_sha256\": \"2798e3b8eb32027b221c18634bbb9e1dd4aeed46624786bd8099fc40fc790b6d\",",
         "  \"result\": \"PASS\"",
         "}"
       ]
     }
   ],
-  "finished": 1794417803.280134,
-  "manifest_sha256": "0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc",
+  "finished": 1794418523.1263056,
+  "manifest_sha256": "2798e3b8eb32027b221c18634bbb9e1dd4aeed46624786bd8099fc40fc790b6d",
   "parent": 154,
   "result": "PASS",
   "schema": "bases-156-truth-successor-reissue-v1",
-  "started": 1794417310.0871615,
+  "started": 1794418044.6087747,
   "step_root": "/home/chang/arc/stage2/01_bases",
   "superseded_bytes_preserved_at": "/home/chang/arc/stage2/01_bases/log/historical/seals/truth-successor-envelope-v1",
-  "superseded_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+  "superseded_manifest_sha256": null,
   "ticket": 156
 }

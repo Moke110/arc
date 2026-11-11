@@ -41,6 +41,12 @@ figures and their plotted values go to `figure/`.
 | [`156-metadata-binding-audit.json`](156-metadata-binding-audit.json) | the metadata/structure audit re-run against the stable layout |
 | [`156-figure-reproduction.json`](156-figure-reproduction.json) | gate E4/E6: complete plotted-values schema, CSV digest, rendered PNG digest, byte-identity result |
 | [`156-gates.md`](156-gates.md) | #156 gate outcomes (E1–E5, publication gates, health checks) with commands, environments, resource peaks and the reused-vs-new ledger |
+| [`156-evidence-ledger.json`](156-evidence-ledger.json) | machine-readable per-claim ledger: supporting record, its sha256, whether #156 re-ran it, and the outcome |
+| [`records/156_truth_successor_{build,verify}.json`](records/156_truth_successor_build.json) | create and independent verify outputs for the re-issued envelope |
+| [`records/156_rejected_successor_candidate.json`](records/156_rejected_successor_candidate.json) | the first candidate withdrawn before acceptance (wrong verification-record binding), with its bytes preserved outside `output/` |
+| [`records/156_e3_diagnostic_replay.json`](records/156_e3_diagnostic_replay.json) | HVG/diagnostic replay against the stable paths (E3) |
+| [`records/156_e5_evaluator_report.json`](records/156_e5_evaluator_report.json) | standalone evaluator report through the re-issued successor (E5) |
+| [`health/`](health/) | `156_check_paths.log`, `156_check_tracked.log`, `156_stage2_path_audit.log`, `156_health_script_tests.log` |
 
 ## Reproducing the records
 

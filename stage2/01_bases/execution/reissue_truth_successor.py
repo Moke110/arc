@@ -82,6 +82,9 @@ def main():
     parser.add_argument("--records-dir", type=Path,
                         help="where the create/verify JSON results are recorded "
                              "(defaults to step-root/log/records)")
+    parser.add_argument("--accepted-verification", type=Path,
+                        help="canonical accepted verification record the envelope binds "
+                             "(defaults to step-root/log/records/truth_complete_verify.json)")
     parser.add_argument("--rscript", type=Path,
                         default=Path("/home/chang/miniconda3/envs/biomni_e1/bin/Rscript"))
     args = parser.parse_args()
@@ -89,13 +92,15 @@ def main():
     execution = step / "execution"
     output = step / "output"
     records = (args.records_dir.resolve() if args.records_dir else step / "log/records")
+    accepted = (args.accepted_verification.resolve() if args.accepted_verification
+                else step / "log/records/truth_complete_verify.json")
     seals = step / "log/historical/seals"
     stable = output / "tenv-truth-successor"
     training = output / "training-corpora"
     candidate = args.candidate.resolve()
     record = {"schema": SCHEMA, "ticket": 156, "parent": 154, "step_root": str(step),
               "command": [sys.executable, *sys.argv], "started": time.time()}
-    if not training.is_dir() or not (records / "truth_complete_verify.json").is_file():
+    if not training.is_dir() or not accepted.is_file():
         print("ERROR: the stable training release or accepted verification record is missing",
               file=sys.stderr)
         return 2
@@ -114,7 +119,7 @@ def main():
               "--training", str(training),
               "--original-native", str(output / "tenv-raw-counts/tenv.h5ad"),
               "--native", str(output / "tenv-raw-counts/tenv.h5ad"),
-              "--accepted-verification", str(records / "truth_complete_verify.json"),
+              "--accepted-verification", str(accepted),
               "--output", str(candidate), "--rscript", str(args.rscript)]
     verify = [sys.executable, str(execution / "bind_truth_successor.py"), "--verify",
               "--training", str(training), "--output", str(candidate),
@@ -140,17 +145,21 @@ def main():
     seals.mkdir(parents=True, exist_ok=True)
     preserved = seals / "truth-successor-envelope-v1"
     if preserved.exists():
-        if (digest(preserved / "manifest.json") != old
+        if old is None:
+            print("superseded envelope already preserved; publishing the verified candidate",
+                  file=sys.stderr)
+        elif (digest(preserved / "manifest.json") != old
                 or digest(preserved / "deseq2_contrasts.R")
                 != digest(stable / "deseq2_contrasts.R")):
             print("ERROR: a different superseded envelope is already preserved", file=sys.stderr)
             return 1
-        shutil.rmtree(stable)
     else:
         if old is None:
             print("ERROR: no superseded envelope to preserve", file=sys.stderr)
             return 1
         os.rename(stable, preserved)
+    if stable.exists():
+        shutil.rmtree(stable)
     os.rename(candidate, stable)
     record.update({"result": "PASS", "superseded_manifest_sha256": old,
                    "superseded_bytes_preserved_at": str(preserved),

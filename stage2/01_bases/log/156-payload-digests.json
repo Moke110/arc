@@ -11392,7 +11392,7 @@
       "status": "PASS"
     },
     {
-      "actual": "0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc",
+      "actual": "2798e3b8eb32027b221c18634bbb9e1dd4aeed46624786bd8099fc40fc790b6d",
       "path": "output/tenv-truth-successor/manifest.json",
       "role": "re-issued successor manifest (digest recorded by #156)",
       "status": "RECORDED"
@@ -11410,10 +11410,10 @@
   "failures": [],
   "fast": false,
   "parent": 154,
-  "peak_rss_kib": 22832,
+  "peak_rss_kib": 22968,
   "result": "PASS",
   "schema": "bases-156-payload-digests-v1",
-  "seconds": 13.26,
+  "seconds": 12.17,
   "step_root": "/home/chang/arc/stage2/01_bases",
   "ticket": 156
 }

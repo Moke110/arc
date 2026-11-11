@@ -1,0 +1,12 @@
+{
+  "cohorts": "/home/chang/arc/stage2/01_bases/output/tenv-hvg/cohorts.csv",
+  "columns": 18164,
+  "fold": 0,
+  "predictions": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/e5/predictions/predictions.npy",
+  "role": "test",
+  "rows": 1401,
+  "samples": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/e5/predictions/samples.csv",
+  "schema": "bases-156-diagnostic-predictions-v1",
+  "source": "measured delta layer of the current training release",
+  "training": "/home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad"
+}

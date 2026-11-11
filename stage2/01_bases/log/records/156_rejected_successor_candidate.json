@@ -1,0 +1,13 @@
+{
+  "accepted_products_affected": "none: the accepted historical envelope bytes stay at log/historical/seals/truth-successor-envelope-v1/",
+  "bytes_preserved": true,
+  "defect": "the first re-issued candidate bound the ticket worktree copy of log/records/truth_complete_verify.json (a temporary .scratch path) instead of the canonical step-root record; a worktree removal would break check_successor",
+  "fix": "re-issued with an explicit canonical --accepted-verification path; the final digest is in log/156-successor-reissue.json",
+  "manifest_sha256": "0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc",
+  "parent": 154,
+  "path": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/rejected-envelope-156",
+  "result": "REJECTED_BY_OPERATOR_BEFORE_ACCEPTANCE",
+  "schema": "bases-156-rejected-successor-candidate-v1",
+  "ticket": 156,
+  "worker_sha256": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
+}

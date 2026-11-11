@@ -144,7 +144,7 @@
           "digest_matches": true,
           "exists": true,
           "path_is_resolved_absolute": true,
-          "recorded_path": "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records/truth_complete_verify.json",
+          "recorded_path": "/home/chang/arc/stage2/01_bases/log/records/truth_complete_verify.json",
           "suffix": ".json"
         },
         {
