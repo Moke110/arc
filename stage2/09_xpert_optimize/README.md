@@ -219,3 +219,33 @@ requires a terminal test outcome for every model whose validation replay
 succeeded. A terminal failure remains visible in the score release.
 The tables distinguish checkpointed training phase minutes from total known
 fit-attempt wall minutes and list how many attempts have timing evidence.
+
+## Round 1 learning curves and endpoint convergence check
+
+Each trained arm has its own `output/round1/xpert_opti_r1_learning_XPert_*.png`,
+with separate Tahoe pretraining and tenv fine-tuning panels. Blue is the
+training objective averaged over the preceding validation interval; green is
+the validation objective at the indicated update. Both use the frozen loss
+weights `(0.2, 0.003, 0.2, 1.0)`. Open circles mark the best recorded validation
+point. The deterministic references do not train and have no learning curves.
+
+Reproduce from existing fit JSON logs, without loading data or checkpoints:
+
+```bash
+"$HOME/miniconda3/envs/arc/bin/python" stage2/09_xpert_optimize/execution/script/round1_learning_curves.py
+```
+
+[Curve points](output/round1/learning_curve_points.csv) and
+[endpoint audit](output/round1/learning_curve_convergence.csv) retain the
+numeric evidence. [Source hashes](execution/round1_record/learning-curves.json)
+bind the original fit logs. This audit is separate from held-out score replay.
+The endpoint criterion requires final validation loss to be no lower than the
+previous observation and strictly above its recorded minimum.
+
+**None of the nine arms passes this criterion on tenv:** all improve between
+updates 300 and 600 and reach their recorded minimum at the final update.
+On Tahoe, the four MLP arms pass the endpoint criterion (best at update 256,
+higher loss at 512); the base and four G arms continue improving through 512.
+Only two observations exist per phase, so these are sparse learning curves
+and an endpoint check, not evidence of asymptotic convergence. More updates
+and more frequent validation are needed to establish a plateau on tenv.
