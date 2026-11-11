@@ -54,6 +54,27 @@ class RerunTrainingTest(unittest.TestCase):
         complete.write_bytes(original)
         run('script/xpert.py', 'predict', '--predictor', self.release / 'predictor',
             '--checkpoint', target / 'best.pt', '--role', 'test', '--output', self.tmp_path / 'pred')
+        import shutil
+        publication = self.tmp_path / 'publication'
+        (publication / 'checkpoints').mkdir(parents=True)
+        (publication / 'logs').mkdir()
+        final = publication / 'checkpoints' / 'XPert_base-fold-0-seed-17.pt'
+        shutil.copyfile(target / 'best.pt', final)
+        log = publication / 'logs' / f'{final.stem}.json'
+        log.write_text(json.dumps({'status': 'complete', 'training_record': report,
+                                   'checkpoint_sha256': report['checkpoint_sha256']}))
+        run('script/xpert.py', 'predict', '--predictor', self.release / 'predictor',
+            '--checkpoint', final, '--role', 'test', '--output', self.tmp_path / 'published-pred')
+        self.assertEqual((self.tmp_path / 'pred/delta.npy').read_bytes(),
+                         (self.tmp_path / 'published-pred/delta.npy').read_bytes())
+        payload = json.loads(log.read_text())
+        payload['checkpoint_sha256'] = 'corrupt'
+        log.write_text(json.dumps(payload))
+        rejected = run('script/xpert.py', 'predict', '--predictor', self.release / 'predictor',
+                       '--checkpoint', final, '--role', 'test',
+                       '--output', self.tmp_path / 'bad-published-pred', check=False)
+        self.assertNotEqual(rejected.returncode, 0)
+
 
 
 

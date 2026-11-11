@@ -70,3 +70,17 @@ class PublicationTest(unittest.TestCase):
         self.assertIsNone(result['metrics']['pcc'])
         self.assertIsNone(result['metrics']['r2'])
         self.assertEqual(result['curves']['AUPRC'][-1]['recall'],1/3)
+
+    def test_pr_summary_uses_only_the_shared_measured_recall_domain(self):
+        from rerun_publication import summarize_pr, pr_summary_status
+        curves = [[{'recall': start, 'precision': .8}, {'recall': .75, 'precision': .5}]
+                  for start in (.1, .2, .15, .25)]
+        summary = summarize_pr(curves)
+        self.assertEqual(summary[0]['recall'], .25)
+        self.assertEqual(summary[-1]['recall'], .75)
+        self.assertEqual(pr_summary_status(curves), 'defined')
+        curves[0] = [{'recall': .1, 'precision': .8}, {'recall': .2, 'precision': .5}]
+        self.assertEqual(summarize_pr(curves), [])
+        self.assertEqual(pr_summary_status(curves), 'no_common_recall_domain')
+        curves[0] = []
+        self.assertEqual(pr_summary_status(curves), 'undefined_run')

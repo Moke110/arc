@@ -8,7 +8,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-STEP = Path(__file__).resolve().parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
+STEP = REPO / 'stage2/09_xpert_optimize'
 sys.path.insert(0, str(STEP / 'execution/01_corpus'))
 from build import DEFAULT_NATIVE, normalize_counts, raw_batches
 

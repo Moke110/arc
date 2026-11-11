@@ -78,6 +78,16 @@ def score_run(cases, prediction, observed_delta, covered_columns, truth, well_lo
             'curves': {m: pool.frame().to_dict('records') for m, pool in pools.items()}}
 
 
+
+def pr_summary_status(curves):
+    """Distinguish undefined contributors from disjoint measured recall ranges."""
+    if len(curves) != 4 or any(not curve for curve in curves):
+        return 'undefined_run'
+    lower = max(curve[0]['recall'] for curve in curves)
+    upper = min(curve[-1]['recall'] for curve in curves)
+    return 'defined' if lower <= upper else 'no_common_recall_domain'
+
+
 def summarize_pr(curves):
     """Equal four-run interpolation, bounded by every attained endpoint."""
     if len(curves) != 4 or any(not curve for curve in curves):
@@ -87,8 +97,11 @@ def summarize_pr(curves):
         if (not np.isfinite(values).all() or np.any(np.diff(values[:, 0]) < 0)
                 or np.any(values < 0) or np.any(values > 1)):
             raise ValueError('invalid pooled curve')
+    lower = max(values[0, 0] for values in arrays)
     endpoint = min(values[-1, 0] for values in arrays)
-    grid = np.linspace(0, endpoint, 201) if endpoint else np.array([0.])
+    if lower > endpoint:
+        return []
+    grid = np.linspace(lower, endpoint, 201) if lower < endpoint else np.array([lower])
     samples = []
     for values in arrays:
         # Keep the last precision for each recall coordinate. This convention,
@@ -156,11 +169,12 @@ def render(source, destination):
                 ax.plot(table.recall,table['mean'],color=color,label=metric.removeprefix('AUPRC_'))
                 ax.fill_between(table.recall,table.minimum,table.maximum,color=color,alpha=.17)
             else:
-                ax.text(.05,.9 if color=='royalblue' else .8,f'{metric}: undefined run',transform=ax.transAxes,color=color,fontsize=8)
+                status = source.get('pr_summary_status', {}).get(model, {}).get(metric, 'undefined_run')
+                ax.text(.05,.9 if color=='royalblue' else .8,f'{metric}: {status.replace("_", " ")}',transform=ax.transAxes,color=color,fontsize=8)
         ax.set(title=model.removeprefix('XPert_'),xlabel='Recall on full CM truth',ylabel='Pooled precision',xlim=(0,1),ylim=(0,1.02))
         ax.grid(alpha=.2)
         if ax.lines: ax.legend()
-    fig.suptitle('Four-run pooled PR mean and range; summaries stop at the minimum attained recall.\nPooled displayed area differs from group-macro AUPRC.',fontsize=11)
+    fig.suptitle('Four-run pooled PR mean and range; summaries use only the shared measured recall domain.\nPooled displayed area differs from group-macro AUPRC.',fontsize=11)
     fig.savefig(destination/'r1_PR_curves.png',dpi=160)
     plt.close(fig)
 
@@ -197,6 +211,8 @@ def publish(bundles, destination):
             raise ValueError('selected checkpoint hash differs')
     summaries={m:{metric:summarize_pr([r['curves'].get(metric,[]) for r in runs if r['model']==m])
                   for metric in ('AUPRC_positive','AUPRC_negative')} for m in MODELS}
+    summary_status={m:{metric:pr_summary_status([r['curves'].get(metric,[]) for r in runs if r['model']==m])
+                     for metric in ('AUPRC_positive','AUPRC_negative')} for m in MODELS}
     destination.mkdir(parents=True,exist_ok=False)
     for entry in ('checkpoints','logs','figure_data'): (destination/entry).mkdir()
     stored=[]
@@ -206,14 +222,14 @@ def publish(bundles, destination):
         shutil.copyfile(run['checkpoint'],destination/item['checkpoint'])
         write(destination/f'logs/{name}.json',item)
         stored.append(item)
-    source={'schema':'step09-rerun-publication-v1','runs':stored,'pr_summary':summaries,
+    source={'schema':'step09-rerun-publication-v1','runs':stored,'pr_summary':summaries,'pr_summary_status':summary_status,
             'configuration':{'run_weighting':'equal; four required for mean/range',
                              'continuous_axis':'native model axis; cross-axis values are not paired-gene comparisons',
                              'test_loss_unit':'weighted native well-level author objective',
                              'continuous_unit':'native drug-dose group-mean delta; equal defined groups',
                              'AUPRC_unit':'exact canonical AP per group, equal defined groups on full-CM truth',
-                             'PR_unit':'fixed-group pooled per run; four-run linear interpolation to minimum endpoint',
-                             'recall_zero':'first measured precision; duplicate recall uses last precision',
+                             'PR_unit':'fixed-group pooled per run; four-run linear interpolation only on shared measured recall domain',
+                             'recall_domain':'maximum first measured recall through minimum endpoint; no left or right extrapolation; duplicate recall uses last precision',
                              'curve_coordinates':'raw phase update and exposure in histories; display shifts tenv after Tahoe',
                              'loss_weights':[.2,.003,.2,1.]}}
     write(destination/'figure_data/source.json',source)

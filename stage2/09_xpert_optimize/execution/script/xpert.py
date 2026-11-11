@@ -412,9 +412,20 @@ def require_completed_rerun(checkpoint, saved):
     if saved.get("training_contract") != RERUN_CONTRACT:
         return
     report_path = checkpoint.parent / "run.json"
-    if not report_path.exists():
+    if report_path.exists():
+        report = json.loads(report_path.read_text())
+    elif checkpoint.parent.name == "checkpoints":
+        # Compact publications retain each original training record in logs/.
+        report_path = checkpoint.parent.parent / "logs" / f"{checkpoint.stem}.json"
+        if not report_path.exists() or report_path.resolve() != report_path.absolute():
+            raise ValueError("rerun checkpoint belongs to an incomplete publication")
+        publication = json.loads(report_path.read_text())
+        if (publication.get("status") != "complete"
+                or publication.get("checkpoint_sha256") != sha256(checkpoint)):
+            raise ValueError("published checkpoint does not match its completed log")
+        report = publication.get("training_record", {})
+    else:
         raise ValueError("rerun checkpoint belongs to an incomplete run")
-    report = json.loads(report_path.read_text())
     if (report.get("status") != "complete" or report.get("checkpoint_sha256") != sha256(checkpoint)
             or any(report.get(key) != saved["run_key"].get(key)
                    for key in saved["run_key"])):
