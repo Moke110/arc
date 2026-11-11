@@ -1,5 +1,6 @@
 """Remove superseded retrieval statistics and figures; Git retains history."""
 import argparse
+import csv
 import json
 from pathlib import Path
 import re
@@ -14,7 +15,7 @@ def old_values(value):
         if LEGACY.search(str(value.get('metric', ''))):
             return True
         for key, item in value.items():
-            if (LEGACY.search(key) or 'auprc' in key.lower()) and isinstance(item, (int, float, list, dict)):
+            if (LEGACY.search(key) or 'auprc' in key.lower()) and isinstance(item, (int, float, str, list, dict)):
                 return True
             if old_values(item):
                 return True
@@ -43,6 +44,8 @@ def candidates():
         for path in step.rglob('*'):
             if path in owned or not path.is_file() or any(p in ('source', 'local', '__pycache__', '.git') for p in path.parts):
                 continue
+            if any(part.startswith('.retrieval-') for part in path.parts):
+                continue
             if 'retrieval' in path.parts or 'labels' in path.parts or 'input' in path.parts or 'corpus' in path.parts:
                 continue
             if path.suffix not in ('.json', '.csv', '.tsv', '.npz', '.png', '.svg'):
@@ -70,6 +73,10 @@ def candidates():
                     header = handle.readline()
                 if LEGACY.search(header) or re.search(r'auprc', header, re.I):
                     paths.add(path)
+                elif 'metric' in header.split(','):
+                    with path.open(newline='', errors='replace') as handle:
+                        if any(LEGACY.search(row.get('metric', '')) for row in csv.DictReader(handle)):
+                            paths.add(path)
                 continue
             try:
                 data = json.loads(path.read_text())

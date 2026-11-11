@@ -8,6 +8,7 @@ REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / '
 COMMIT = '301f70d93ce17518fc842009bfbca727aed2ef0c'
 # Only original admission/exposure metadata may use this compatibility path.
 PATHS = {
+    'stage2/05_pdiff_transfer/execution/mix_record/qualification.json',
     'stage2/03_modes_tenv/execution/final_record/evaluation.json',
     'stage2/04_pdiff_hyperparameter/execution/formal_record/tenv/evaluation.json',
     'stage2/04_pdiff_hyperparameter/execution/formal_record/tenv/per_run.csv',

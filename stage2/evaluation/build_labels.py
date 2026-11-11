@@ -13,7 +13,7 @@ from anndata.io import read_elem
 import numpy as np
 import pandas as pd
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = next(path for path in Path(__file__).resolve().parents if (path / '.git').exists())
 STEP09 = REPO / 'stage2/09_xpert_optimize'
 sys.path.insert(0, str(STEP09 / 'execution/script'))
 from build_significance import fit_shards, write_statistic

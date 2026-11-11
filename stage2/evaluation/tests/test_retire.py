@@ -18,8 +18,13 @@ class RetirementTest(unittest.TestCase):
                 (output / name).write_bytes(b'figure')
             (release / 'manifest.json').write_text(json.dumps({'files': {}, 'figures': {
                 name: 'bound-hash' for name in ('PR_curve.png', 'PR_curve.svg', 'AUPRC.png', 'AUPRC.svg')}}))
+            (output / 'old_scores.csv').write_text('metric,value\npositive_ap100,0.3\n')
+            (output / 'old_scores.json').write_text(json.dumps({'AUPRC_positive@100': '0.3'}))
+            staging = output / '.retrieval-in-progress/score'
+            staging.mkdir(parents=True)
+            (staging / 'per_run.csv').write_text('AUPRC\n0.5\n')
             with patch.object(retire, 'ROOT', root):
-                self.assertEqual(retire.candidates(), [output / 'old_PR.png'])
+                self.assertEqual(retire.candidates(), [output / name for name in ('old_PR.png', 'old_scores.csv', 'old_scores.json')])
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ import sys
 import time
 import numpy as np
 from artifacts import (SEEDS, TERMINAL, sha256, read_json, write_json, rows, write_csv,
-                       run_directory, run_identity, validate_prediction, validate_run, command_evidence, checkpoint_artifacts, verify_input_files)
+                       run_directory, run_identity, matching_run_identity, validate_prediction, validate_run, command_evidence, checkpoint_artifacts, verify_input_files)
 from metrics import METRICS, RECALL_GRID, CURVE_CONVENTION, score_group
 
 
@@ -100,7 +100,7 @@ def freeze_predictions(input_root, output_root, models, commands=None):
                 if run.get('status') not in TERMINAL:
                     raise ValueError('prediction barrier: nonterminal run')
                 expected=run_identity(input_root,model,fold,seed,commands.get(model))
-                if run.get('identity')!=expected:
+                if not matching_run_identity(directory / 'run.json', run.get('identity'), expected):
                     raise ValueError('prediction barrier: stale identity')
                 if run['status']=='completed': validate_run(input_root,output_root,model,fold,seed,commands.get(model))
                 runs.append({'model':model,'fold':fold,'seed':seed,'status':run['status'],

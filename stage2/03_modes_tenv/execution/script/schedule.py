@@ -199,7 +199,7 @@ def schedule(queue_path):
 
 def schedule_queue(queue_path):
     """Run a frozen queue, recording telemetry and durable attempt accounting."""
-    from artifacts import run_directory, validate_run, run_identity
+    from artifacts import run_directory, validate_run, run_identity, matching_run_identity
     queue_path = Path(queue_path).resolve()
     queue = json.loads(queue_path.read_text())
     output = Path(queue['output_root']).resolve()
@@ -230,9 +230,13 @@ def schedule_queue(queue_path):
         identity = run_identity(input_root, job['model'], job['fold'], job['seed'], job.get('command'))
         state_path = record / (key + '.json')
         state = json.loads(state_path.read_text()) if state_path.exists() else {}
-        if state and state.get('identity') != identity:
+        compatible_completed = bool(state and state.get('status') == 'completed' and
+            matching_run_identity(run_directory(output, job['model'], job['fold'], job['seed']) / 'run.json',
+                                  state.get('identity'), identity))
+        if state and state.get('identity') != identity and not compatible_completed:
             raise ValueError('stale scheduler identity: ' + key)
-        state['identity'] = identity
+        if not compatible_completed:
+            state['identity'] = identity
         states[key] = state
         if state.get('status') == 'completed':
             validate_run(input_root, output, job['model'], job['fold'], job['seed'], job.get('command'))

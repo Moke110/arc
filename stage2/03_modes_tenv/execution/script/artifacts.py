@@ -203,6 +203,18 @@ def checkpoint_artifacts(directory, checkpoint, require_blobs=False):
     return {name:sha256(directory/name) for name in blobs}
 
 
+def matching_run_identity(path, previous, current):
+    if previous == current:
+        return True
+    if not isinstance(previous, dict):
+        return False
+    repo = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
+    import sys
+    sys.path.insert(0, str(repo))
+    from stage2.evaluation.compatibility import accepts_frozen_run
+    return accepts_frozen_run(path, previous, current)
+
+
 def validate_run(input_root, output_root, model, fold, seed, command=None):
     root = Path(input_root)
     verify_input_files(root)
@@ -210,13 +222,7 @@ def validate_run(input_root, output_root, model, fold, seed, command=None):
     try:
         run = read_json(directory / 'run.json')
         current = run_identity(root,model,fold,seed,command)
-        matching = run['identity'] == current
-        if not matching:
-            repo = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
-            import sys
-            sys.path.insert(0, str(repo))
-            from stage2.evaluation.compatibility import accepts_frozen_run
-            matching = accepts_frozen_run(directory / 'run.json', run['identity'], current)
+        matching = matching_run_identity(directory / 'run.json', run['identity'], current)
         if run['status'] != 'completed' or not matching:
             raise ValueError('stale run identity/status')
         for name in ('prediction.npy','case_ids.json','checkpoint.json','request.json'):

@@ -1,0 +1,31 @@
+{
+  "complete": true,
+  "dataset": "tenv",
+  "expected_groups": 1380,
+  "fdr": 0.05,
+  "files": {
+    "contrast_samples.csv": "e2a80acae53a1a570e766297d60bdb3ab71f9ec4081a168720ac3c726a13c3e4",
+    "genes.csv": "17ad435460bcf31c7e1b8c917ca17e2a101c2d315b97d1e6dc205d4d2b17d2ed",
+    "groups.csv": "ce677626fa08522822c50752184a37f2b346fd5e21f8e250178d42113b13956b",
+    "identity.json": "a4e8cb5dd046a944ca67b731d87fd711661aeee4ba227cf6ea1515be2aa981d6",
+    "log2_fold_change.npy": "81264d82754983ccc2d96adb26557267096df20c052fe430bc9e39d30b423f42",
+    "padj.npy": "33489aaabbb1002c5de62e82f4f251e0c7fbf88d06208888caca4e05b3541748",
+    "previous-identity.json": "f11292df2e67e2287201a2e951555365b8ec40aaedda6b706f7c04f3bea5cbb2",
+    "pvalue.npy": "103678bafb869d58b0f42deda47c7f0a69401c383eb95365b1738150f06e3b5e"
+  },
+  "gene_count": 18165,
+  "identity": {
+    "batch_size": 50,
+    "builder_sha256": "f6fdab717baf1f4c9704574c423dc78aecc47a91209d8e6b75eb707b9d3fbb89",
+    "case_memberships": "b85f00085e3d88bd2d61ae4ba5d90877e0a9743767faa88347056b6456b31df2",
+    "dataset": "tenv",
+    "limit": null,
+    "native_sha256": "a3d521f0ca0fbc732f2f6ba5e31ec2f1efb000102c30d64b7c991cc23ed4a886",
+    "worker_sha256": "0a8b54b40c46188e6e4a4c798dc3551e9c0d296f15b80179f0fa780f4b349af9"
+  },
+  "method": "two-sided DESeq2 Wald; within-contrast BH over CM + HDGFL3",
+  "native_sha256": "a3d521f0ca0fbc732f2f6ba5e31ec2f1efb000102c30d64b7c991cc23ed4a886",
+  "reuse_manifest_sha256": "375e1a862176c1edf8459d02cb16522324bc0bc169e24c9cd3fc7c6ba6663db7",
+  "schema": "stage2-significance-v1",
+  "worker_sha256": "0a8b54b40c46188e6e4a4c798dc3551e9c0d296f15b80179f0fa780f4b349af9"
+}

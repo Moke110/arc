@@ -1,5 +1,5 @@
 {
-  "schema": "step05-mix-qualification-v1",
+  "schema": "step05-mix-training-provenance-v1",
   "ticket": 81,
   "n_genes": 18164,
   "gene_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
@@ -365,48 +365,12 @@
       "peak_gpu_reserved_bytes": 784334848
     }
   },
-  "scored_run": {
-    "dataset": "tenv",
-    "fold": "0",
-    "seed": "17",
-    "model": "Mix",
-    "status": "completed",
-    "reason": "",
-    "group_count": "462",
-    "AUPRC_positive@100": "0.004350072786129894",
-    "AUPRC_negative@100": "0.08376180859699023",
-    "Recall_positive@P80": "0.0",
-    "Recall_negative@P80": "0.005043290043290043",
-    "PCC": "0.010289961086568059",
-    "Spearman": "0.05506740946750141",
-    "RMSE": "1.5814289046238892",
-    "R2": "-194.1012115480883",
-    "AUPRC_positive@100_valid_groups": "462",
-    "AUPRC_negative@100_valid_groups": "462",
-    "Recall_positive@P80_valid_groups": "462",
-    "Recall_negative@P80_valid_groups": "462",
-    "PCC_valid_groups": "462",
-    "Spearman_valid_groups": "462",
-    "RMSE_valid_groups": "462",
-    "R2_valid_groups": "462"
-  },
-  "independent_score_replay": "exact",
   "local_artifact_sha256": {
     "mix-ticket81/plan.json": "cba93bdbb8edda462f46aa7ec6d6fd57cfffeae2eb595153cca3b80f10e689a7",
     "mix-ticket81/slots/cold-drug/seed-17/fit/run.json": "836136766c668ac21e38acb2fc58073d5b86135e0edda1a84bd72ccb9a802cdd",
     "mix-ticket81/slots/cold-drug/seed-17/prediction/prediction.json": "a8302b6fc03950593ef71e3be6b579139dbebb73e7c9f0b6d5b40ae217ad48b5",
     "mix-ticket81/slots/cold-drug/seed-17/fit/fit.json": "b521121fa50bb9514b20a6bb5bf460afe0d59b3a4dbe503e5de345667e17686d",
-    "mix-ticket81/slots/cold-drug/seed-17/prediction/replay.json": "6b91fdbce9e45658bbe6a5dbc31e461a6e731d35ea3c1564434f71cfe799cfbe",
-    "mix-score-ticket81/per_run.csv": "4cb3c6be5a4967ce879f1d69f83b99a5ee0af440cd5536d4b6e887e7cfcd9b79",
-    "mix-score-ticket81/per_group.csv": "58dc4624a8d1c40a2ef2ed463be03dfcdb4e36db5d76c11d76e7fd4b12b6f89e",
-    "mix-score-ticket81/summary.csv": "cbd28afc7484914e701a5c747ebf126a5c6a9c3326cc56d9f376784c80954f3d",
-    "mix-score-ticket81/tenv/pr_curves.json": "be76ea111c30404c6ccfa38ae3f6519a17503b4a9aea09e60581c87d16307e53",
-    "mix-score-ticket81/evaluation.json": "37e68887fbd2543d9b70eb9674243943e90b662107a145700dc1b55d43fce196",
-    "mix-score-replay-ticket81/per_run.csv": "4cb3c6be5a4967ce879f1d69f83b99a5ee0af440cd5536d4b6e887e7cfcd9b79",
-    "mix-score-replay-ticket81/per_group.csv": "58dc4624a8d1c40a2ef2ed463be03dfcdb4e36db5d76c11d76e7fd4b12b6f89e",
-    "mix-score-replay-ticket81/summary.csv": "cbd28afc7484914e701a5c747ebf126a5c6a9c3326cc56d9f376784c80954f3d",
-    "mix-score-replay-ticket81/tenv/pr_curves.json": "be76ea111c30404c6ccfa38ae3f6519a17503b4a9aea09e60581c87d16307e53",
-    "mix-score-replay-ticket81/evaluation.json": "37e68887fbd2543d9b70eb9674243943e90b662107a145700dc1b55d43fce196"
+    "mix-ticket81/slots/cold-drug/seed-17/prediction/replay.json": "6b91fdbce9e45658bbe6a5dbc31e461a6e731d35ea3c1564434f71cfe799cfbe"
   },
   "code_sha256": {
     "execution/script/mix.py": "9256053d1d8a463d3c6042447de706d92c6b08003f51b62888661988e3cdaa32",

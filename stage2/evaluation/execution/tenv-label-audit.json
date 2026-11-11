@@ -1,0 +1,19 @@
+{
+  "actual_producer_sha256": "f6fdab717baf1f4c9704574c423dc78aecc47a91209d8e6b75eb707b9d3fbb89",
+  "all_manifest_payload_hashes_verified": true,
+  "all_treated_memberships_and_control_joins_verified": true,
+  "builder_change": "repository root resolution only; numerical output unchanged",
+  "cached600_exact_all_statistics": true,
+  "current_builder_sha256": "4aa3c8215dc4326cef1ba859e136571ff9b8afd0c115efa49873d83a3e6974e4",
+  "first19_recomputed_overlap_exact": true,
+  "groups": 1380,
+  "manifest_sha256": "49281a84ff7166be71c21bd0989110a12ccbd3622d4d3fe02d1b6faa441a93a5",
+  "peak_rss_kib": 1118416,
+  "schema": "stage2-tenv-label-audit-v1",
+  "status": {
+    "eligible": 1380
+  },
+  "time_log_sha256": "51d3d442c1e5f79becb34c93bf72bca46e0d66b3afd479bba1e82e8b60c2b2b0",
+  "actual_producer_git_commit": "422c08f",
+  "scope_peak_bytes": 2747392000
+}
