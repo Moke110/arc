@@ -29,6 +29,10 @@ fi
 
 printf '%q ' "$@" > "$record/command"
 printf '\n' >> "$record/command"
+gpu_monitor=$(command -v nvidia-smi || true)
+if [[ -z "$gpu_monitor" && -x /usr/lib/wsl/lib/nvidia-smi ]]; then
+    gpu_monitor=/usr/lib/wsl/lib/nvidia-smi
+fi
 scope="arc-step09-$$.scope"
 printf 'timestamp\tavailable_kib\tgpu_used_mib_total_mib_utilization_pct\tscope_peak_bytes\tworker_peak_rss_kib\n' \
     > "$record/resources.tsv"
@@ -36,7 +40,7 @@ printf 'timestamp\tavailable_kib\tgpu_used_mib_total_mib_utilization_pct\tscope_
     cgroup=""
     while :; do
         available=$(available_kib)
-        gpu=$(timeout 2 nvidia-smi --query-gpu=memory.used,memory.total,utilization.gpu \
+        gpu=$(timeout 2 "${gpu_monitor:-nvidia-smi}" --query-gpu=memory.used,memory.total,utilization.gpu \
             --format=csv,noheader,nounits 2>> "$record/monitor-errors.log" || true)
         if [[ -z "$cgroup" ]]; then
             cgroup=$(systemctl --user show "$scope" --property=ControlGroup --value 2>/dev/null || true)
