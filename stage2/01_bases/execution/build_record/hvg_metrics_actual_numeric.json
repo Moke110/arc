@@ -1,0 +1,145 @@
+{
+  "diagnostic": true,
+  "equal_run_macro": {
+    "AUPRC": 0.08683882928055638,
+    "AUPRC_negative": 0.14105964041287017,
+    "AUPRC_positive": 0.3515227721636636
+  },
+  "files": {
+    "cohorts.csv": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc",
+    "diagnostic_pr.csv": "eaad870b346ead01f08bb4af17565e8f62a250168dbc70c4e0d984b52281ac1a",
+    "diagnostic_pr.json": "fb364f051eb17925e95a45348f37714a4b6abdce48aab991211b71ca3f300b4e",
+    "diagnostic_pr.png": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f",
+    "diagnostic_pr_replayed.csv": "0314c7556e20eb484e7987f0e2fdab06ed8bec07b8869a57de0ed6ca8384147f",
+    "diagnostic_pr_replayed.json": "6cf46a861671e2ade3d4327a1cfc7fa2d92a06dc4dc2b2f6d3b2bb332f56c5fe",
+    "diagnostic_pr_replayed.png": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f",
+    "fold_0_groups.csv": "7a5431492d50f029bc2830913afa18a1dd3c55e1b52353b5873746db3b27ab77",
+    "fold_1_groups.csv": "dae8b0b715bc83c5ede48e2c8728ed351c28ea31ea181acf31541d3c1ac804c1",
+    "fold_2_groups.csv": "e635c406d55ce0c5723329130f9aa644e73e3fb19af378c5894959bc7325be64"
+  },
+  "folds": [
+    {
+      "AUPRC": 0.07981072489453635,
+      "AUPRC_negative": 0.13737174931309615,
+      "AUPRC_positive": 0.3349457015461418,
+      "eligible_groups": {
+        "AUPRC": 369,
+        "AUPRC_negative": 366,
+        "AUPRC_positive": 107
+      },
+      "fold": 0,
+      "groups": 459
+    },
+    {
+      "AUPRC": 0.08780864619894788,
+      "AUPRC_negative": 0.14057355398255195,
+      "AUPRC_positive": 0.3673685095005024,
+      "eligible_groups": {
+        "AUPRC": 380,
+        "AUPRC_negative": 373,
+        "AUPRC_positive": 110
+      },
+      "fold": 1,
+      "groups": 459
+    },
+    {
+      "AUPRC": 0.09289711674818489,
+      "AUPRC_negative": 0.1452336179429624,
+      "AUPRC_positive": 0.3522541054443466,
+      "eligible_groups": {
+        "AUPRC": 355,
+        "AUPRC_negative": 349,
+        "AUPRC_positive": 114
+      },
+      "fold": 2,
+      "groups": 459
+    }
+  ],
+  "groups": 1377,
+  "hvg_manifest_sha256": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6",
+  "hvg_replay": {
+    "gene_count": 18164,
+    "manifest_sha256": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6",
+    "populations": {
+      "descriptive": 4206,
+      "fold_0": 2508,
+      "fold_1": 2508,
+      "fold_2": 2535
+    },
+    "result": "PASS"
+  },
+  "interpretation": "Measurement-derived mechanical QA only; no model evaluated and no model performance claim",
+  "numeric_result": "PASS",
+  "panel": {
+    "curve_semantics": "fixed eligible groups pooled at shared magnitude thresholds; displayed AP is exact equal-group macro",
+    "diagnostic": true,
+    "files": {
+      "diagnostic_pr.csv": "eaad870b346ead01f08bb4af17565e8f62a250168dbc70c4e0d984b52281ac1a",
+      "diagnostic_pr.png": "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f"
+    },
+    "schema": "stage2-indexed-pr-panel-v1",
+    "source": "tenv",
+    "summaries": [
+      {
+        "AUPRC": 0.07981072489453635,
+        "AUPRC_negative": 0.13737174931309615,
+        "AUPRC_positive": 0.3349457015461418,
+        "label": "Diagnostic fold 0"
+      },
+      {
+        "AUPRC": 0.08780864619894788,
+        "AUPRC_negative": 0.14057355398255195,
+        "AUPRC_positive": 0.3673685095005024,
+        "label": "Diagnostic fold 1"
+      },
+      {
+        "AUPRC": 0.09289711674818489,
+        "AUPRC_negative": 0.1452336179429624,
+        "AUPRC_positive": 0.3522541054443466,
+        "label": "Diagnostic fold 2"
+      }
+    ],
+    "title": "Diagnostic \u00b7 measured delta vs tenv truth (not model performance)"
+  },
+  "png_byte_replay": true,
+  "population_isolation": {
+    "folds": {
+      "fold_0": {
+        "descriptive_statistics_changed": true,
+        "heldout_wells": 1698,
+        "intervention": "Every held-out X row replaced with single-gene CP10K; exact training X rows referenced through read-only HDF5 VDS",
+        "selector_rejects_descriptive_and_wrong_population": true,
+        "train_population_sha256": "ce5fd147222f1a77d6e462abe90f1759b50b7af6036e449732e8d2f5d56f6ec9",
+        "train_statistics_bit_exact": true,
+        "train_wells": 2508
+      },
+      "fold_1": {
+        "descriptive_statistics_changed": true,
+        "heldout_wells": 1698,
+        "intervention": "Every held-out X row replaced with single-gene CP10K; exact training X rows referenced through read-only HDF5 VDS",
+        "selector_rejects_descriptive_and_wrong_population": true,
+        "train_population_sha256": "d7c77864ac9dda28f07e2b404fd88715862f5d283d4dbf9b3fc8ea07ed2b28ca",
+        "train_statistics_bit_exact": true,
+        "train_wells": 2508
+      },
+      "fold_2": {
+        "descriptive_statistics_changed": true,
+        "heldout_wells": 1671,
+        "intervention": "Every held-out X row replaced with single-gene CP10K; exact training X rows referenced through read-only HDF5 VDS",
+        "selector_rejects_descriptive_and_wrong_population": true,
+        "train_population_sha256": "c8bc6a62bb0cdda5f91d519b5b3c3651947e4588e5077e3bd7d280b9c2710aff",
+        "train_statistics_bit_exact": true,
+        "train_wells": 2535
+      }
+    },
+    "result": "PASS",
+    "training_sha256": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830"
+  },
+  "result": "NUMERIC_PASS_VISUAL_PENDING",
+  "samples": 4206,
+  "schema": "stage2-hvg-metrics-acceptance-v1",
+  "successor_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+  "training_sha256": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830",
+  "truth_manifest_sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
+  "visual_qa": "PENDING manual inspection"
+}
