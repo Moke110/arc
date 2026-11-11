@@ -1,11 +1,10 @@
 {
   "acceptance_pending": [
-    "complete1377fits",
-    "complete raw/source memberships/BH/ranking replay",
-    "representative independent raw refits",
-    "partition isolation reader acceptance",
-    "independent review"
+    "new rebuilt training-v2 actual acceptance and exact successor proof",
+    "final independent new-scope review"
   ],
+  "actual_fit_peak_rss_kib": 1113656,
+  "actual_fit_wall_time": "2:54:36",
   "batch_size": 25,
   "checkpoints": "/home/chang/arc/stage2/01_bases/output/truth-tenv-v1.building/parts",
   "command": [
@@ -28,6 +27,8 @@
     "--record",
     "/home/chang/arc/.worktrees/stage2-bases-truth-final/stage2/01_bases/execution/build_record/truth_complete_build.json"
   ],
+  "complete_groups": 1377,
+  "complete_verification_record": "truth_complete_verify.json",
   "environment": {
     "MKL_NUM_THREADS": "2",
     "NUMEXPR_NUM_THREADS": "2",
@@ -55,10 +56,11 @@
     "build_significance.py": "daf98d70c3f47c7ffe9ff03b7f63fc9ecc3cf33c774309ad422e256b80906ae6"
   },
   "started_at": "2026-11-11T18:29:18.738408+08:00",
-  "status": "running-full-release-not-yet-accepted",
+  "status": "complete-v1-source-and-independent-refit-accepted",
   "tenv_training_sha256": "a95bba66bd44781d517c219a358ea4a0364f833cb54ae7b12f2e6950ddee517b",
   "threads_per_worker": 2,
   "training_manifest_sha256": "3543df76e728b3d25d63cda20e3187e96fbca96ac370d38e634e25405835a1a4",
+  "truth_manifest_sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f",
   "unit": "arc-bases-truth-1377.service",
   "verified_checkpoint_records": [
     {
