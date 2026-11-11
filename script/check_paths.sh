@@ -30,7 +30,7 @@
 # Exit status
 #   0  every extracted literal resolves (or is whitelisted)
 #   1  at least one unresolved literal outside the whitelist
-#   2  the script could not locate the repository root
+#   2  the repository root or path inventory could not be read
 #
 # The repository root is found by walking up from this script until a directory
 # containing .git is found — never by counting `../..` segments.
@@ -128,13 +128,22 @@ main() {
 
   local files_scanned=0
   local f
-  git ls-files -z | LC_ALL=C sort -z >"$files_list"
+  if ! git ls-files -z | LC_ALL=C sort -z >"$files_list"; then
+    echo "ERROR: tracked path-source inventory failed; no path verdict is valid" >&2
+    return 2
+  fi
   while IFS= read -r -d '' f; do
     [ -f "$f" ] || continue
     # text files only: `grep -I` treats binary as non-matching; empty files skip.
     grep -Iq . -- "$f" 2>/dev/null || continue
     files_scanned=$((files_scanned + 1))
-    grep -onE -- "$pattern" "$f" 2>/dev/null | while IFS= read -r hit; do
+    local matches="$tmpdir/path-matches.txt" match_status=0
+    grep -onE -- "$pattern" "$f" >"$matches" 2>/dev/null || match_status=$?
+    if [ "$match_status" -gt 1 ]; then
+      echo "ERROR: path extraction failed: $f" >&2
+      return 2
+    fi
+    while IFS= read -r hit; do
       local lineno="${hit%%:*}"
       local match="${hit#*:}"
       local literal
@@ -142,10 +151,13 @@ main() {
         pert_data/* | pert_model/* | disease_data/* | drug_emb_model/* | pheno_data/*) literal="$match" ;;
         *) literal="${match:1}" ;; # drop the one boundary character grep captured
       esac
-      literal="$(trim_literal "$literal")"
+      literal="$(trim_literal "$literal")" || {
+        echo "ERROR: path literal filtering failed: $f:$lineno" >&2
+        return 2
+      }
       [ -n "$literal" ] || continue
       printf '%s\t%s\t%s\n' "$f" "$lineno" "$literal" >>"$occurrences"
-    done
+    done <"$matches"
   done <"$files_list"
 
   local occ_total=0 occ_resolved=0 occ_whitelisted=0 occ_unresolved=0
