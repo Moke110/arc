@@ -38,7 +38,9 @@ gene and evaluation semantics. Every path below is a stable semantic path.
 - Records: acceptance/execution records in `log/records/`, repo-health records in
   `log/health/`, dissolved and historical audit evidence in `log/historical/` and
   `log/diagnostic/`. Disposable build state lives in `execution/checkpoints/`,
-  never inside `output/`.
+  never inside `output/`; it is now empty — #157 removed the superseded truth-fit
+  build state and the Tahoe per-plate cache, and `log/157-removals.json` holds
+  their digests and resolution proof.
 - Migration: `execution/migrate_products.py` is the one-shot, idempotent rename
   migration that produced this layout; its record is
   `log/156-migration-record.json` and `--rollback RECORD` reverses it.

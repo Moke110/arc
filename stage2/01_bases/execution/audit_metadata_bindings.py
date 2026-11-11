@@ -33,6 +33,9 @@ OLD_NAMES = ("identity-v1", "native-v1", "shared-v1", "shared-v2", "training-v1"
              "hvg-tenv-v1", "hvg-metrics-diagnostic-v1", "build_record")
 DIAGNOSTIC_EVIDENCE = {"cohorts.csv": "tenv-hvg/cohorts.csv"}
 FIGURE_PNG = "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f"
+# Digest of the rejected historical Tahoe payload that the historical manifest still
+# declares and that #157 removed; see ``log/157-removals.json``.
+REJECTED_TAHOE = "6e3ac2ec880974fe1da69d522eb1e8007a2851b2886510e040719002e4fe548e"
 
 parser = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -152,12 +155,33 @@ digest_map(checks, OUT / "training-corpora", dict(tr["files"]))
 h1 = load("historical-training-release/manifest.json")
 digest_map(checks, OUT / "historical-training-release",
            {name: value for name, value in h1["files"].items() if name != "tahoe_bulk.h5ad"})
-add(checks, "historical-training-release: rejected Tahoe payload still present",
-    "PASS" if (OUT / "historical-training-release/tahoe_bulk.h5ad").is_file()
-    and h1["files"]["tahoe_bulk.h5ad"] == "6e3ac2ec880974fe1da69d522eb1e8007a2851b2886510e040719002e4fe548e"
-    else "FAIL",
+# #157 removed the rejected payload (11.20 GB) after proving that no accepted
+# product, envelope or live consumer binds it. The historical manifest keeps its
+# bytes and still declares the digest; the removal record is the documented D6
+# exception that keeps the deletion checkable, so an unrecorded disappearance
+# still fails here. The record travels with the code, so a split checkout that
+# keeps the payload in the main checkout still finds it next to this script.
+removals_record = STEP / "log/157-removals.json"
+if not removals_record.is_file():
+    removals_record = Path(__file__).resolve().parents[1] / "log/157-removals.json"
+removal_entries = (json.loads(removals_record.read_text()).get("removals", [])
+                   if removals_record.is_file() else [])
+rejected_removal = next((item for item in removal_entries
+                         if item.get("old_path") == "output/historical-training-release/tahoe_bulk.h5ad"),
+                        None)
+add(checks, "historical-training-release: rejected Tahoe payload removed under the #157 removal record",
+    "PASS" if not (OUT / "historical-training-release/tahoe_bulk.h5ad").exists()
+    and rejected_removal is not None
+    and rejected_removal.get("sha256") == h1["files"]["tahoe_bulk.h5ad"] == REJECTED_TAHOE
+    and (REC / "tahoe_training_v1_rejection.json").is_file()
+    and (REC / "tahoe_historical_raw_diagnosis.json").is_file() else "FAIL",
     {"digest": h1["files"]["tahoe_bulk.h5ad"],
-     "verdict": "REJECTED_SUPERSEDED; never an input and never opened by this audit"})
+     "removed": rejected_removal is not None,
+     "removal_record": "log/157-removals.json",
+     "retained_evidence": [label(REC / "tahoe_training_v1_rejection.json"),
+                           label(REC / "tahoe_historical_raw_diagnosis.json")],
+     "verdict": "REJECTED_SUPERSEDED; the declared digest and the rejection evidence survive, "
+                "the payload is never an input and is never opened by this audit"})
 
 # --- truth --------------------------------------------------------------------
 truth = load("tenv-truth/manifest.json")

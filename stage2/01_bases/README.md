@@ -17,7 +17,7 @@ tests under `execution/`, and every record under `log/`.
 | `output/tahoe-raw-counts/` | projected Tahoe integer raw counts, token evidence and seal |
 | `output/shared-expression/` | verified CP10K/log1p shared projection (reconstruction intermediate) |
 | `output/training-corpora/` | current separate Tahoe and tenv training releases |
-| `output/historical-training-release/` | historical v1 truth-fit release (includes the rejected Tahoe payload) |
+| `output/historical-training-release/` | historical v1 truth-fit release — tenv h5ad, seal and exclusions; the rejected Tahoe payload was removed by #157 |
 | `output/tenv-truth/` | accepted measured 1377-contrast tenv truth |
 | `output/tenv-truth-successor/` | accepted exact successor envelope for the current training release |
 | `output/tenv-hvg/` | descriptive and three train-only HVG rankings plus partitions |
@@ -156,9 +156,11 @@ groups and is measurement-derived diagnostic QA, not trained-model performance.
 
 ## Accepted results and limitations
 
-Results reused from the accepted records (this ticket re-verified digests and
-path bindings rather than repeating the scientific computation, except where a
-bounded gate is named in [`log/156-gates.md`](log/156-gates.md)):
+Results reused from the accepted records (#156 re-verified digests and path
+bindings rather than repeating the scientific computation, except where a bounded
+gate is named in [`log/156-gates.md`](log/156-gates.md); #157 completed the final
+audit, the removals and a fresh verification pass recorded in
+[`log/157-final-summary.md`](log/157-final-summary.md)):
 
 - Gene identity: 18164 genes, one frozen axis, FAM153B at index 5091; full-axis
   HGNC round trip and both source namespaces verified.
@@ -185,8 +187,11 @@ Limitations and boundaries:
   scope, so these numbers are QA of the measured delta layer.
 - Tahoe has no significance labels or PR and publishes none.
 - Historical v1 **Tahoe** is rejected and superseded, not an accepted training
-  input: its source replay misattributed and dropped counts. Its payload is kept
-  as forensic evidence and is never read.
+  input: its source replay misattributed and dropped counts. #157 removed its
+  11.20 GB payload after proving no accepted product, envelope or live consumer
+  binds it; the historical manifest still declares its digest
+  `6e3ac2ec…`, and the rejection records and compact counterexample remain in
+  [`log/records/`](log/records/) ([`log/157-removals.json`](log/157-removals.json)).
 - The historical v1 **tenv** release remains the original truth-fit input; the
   successor envelope, not a CLI default, authorizes current labels.
 - The sealed identity product keeps the historical v1 mapping vintage: 229 Tahoe
@@ -248,8 +253,11 @@ The two-cell counterexample and actual v1/v2/raw evidence are in
 [`log/records/tahoe_historical_raw_diagnosis.json`](log/records/tahoe_historical_raw_diagnosis.json),
 with the failed replay in
 [`log/records/tahoe_training_v1_rejection.json`](log/records/tahoe_training_v1_rejection.json).
-The sealed v1 payload is retained as forensic evidence; it is not repaired,
-relabeled or claimed equivalent to the current release.
+The v1 Tahoe payload is not repaired, relabeled or claimed equivalent to the
+current release; #157 removed its bytes after the dependency proof, keeping the
+declared digest, the sealed manifest and that counterexample
+([`log/157-removals.json`](log/157-removals.json) R1). The v1 **tenv** h5ad, which
+the truth fit does depend on, is untouched.
 
 The exact successor envelope, partition reader and acceptance commands are
 documented in [`execution/truth_successor.md`](execution/truth_successor.md).
@@ -271,3 +279,12 @@ The metadata binding audit is
 [`execution/audit_metadata_bindings.py`](execution/audit_metadata_bindings.py)
 (successor of the #155 record script); the one-off payload re-hash is
 [`execution/verify_payload_digests.py`](execution/verify_payload_digests.py).
+
+#157 closed the migration: [`log/157-final-summary.md`](log/157-final-summary.md)
+is the final scientific summary, [`log/157-gates.md`](log/157-gates.md) the gate
+and health record, [`log/157-removals.json`](log/157-removals.json) every removed
+payload with its digest and resolution proof, and
+[`log/157-evidence-ledger.json`](log/157-evidence-ledger.json) the reused-vs-new
+ledger. It also regenerated
+[`log/156-metadata-binding-audit.json`](log/156-metadata-binding-audit.json) from
+the single main checkout; that record no longer carries the #156 worktree paths.

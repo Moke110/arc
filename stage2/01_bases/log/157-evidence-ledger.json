@@ -1,0 +1,130 @@
+{
+  "schema": "bases-157-evidence-ledger-v1",
+  "ticket": 157,
+  "parent": 154,
+  "note": "Per-claim ledger for the #157 final audit. `rerun_by_157` is strictly what this ticket executed: 'reused' means #157 only re-read the record and re-checked its digest/binding, never that it re-ran the science.",
+  "claims": [
+    {
+      "claim": "gene identity: 18164 frozen genes, FAM153B at index 5091, full-axis HGNC round trip and both source namespaces",
+      "record": "log/records/selfcontained_core_acceptance.json",
+      "record_sha256": "54ef3f278cc0d62183998ba6e9c9f67419686079ac953bbfbb5c3920bf9b4cf0",
+      "product_binding": "output/gene-identity/manifest.json sha256 5f7517c34d7fda2ff61993b625086bd3a5db1de51c097b6cf9f87aec7bf98ade, genes.csv sha256 5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+      "rerun_by_157": "verified product reproduction",
+      "method": "ran execution/build_identity.py --verify against the accepted product through the corrected F1 defaults; the published genes.csv and manifest.json reproduce byte-identically",
+      "outcome": "PASS"
+    },
+    {
+      "claim": "tenv raw counts: 4510 wells (4206 treated / 272 control / 32 blank), every source probe replayed",
+      "record": "log/records/native_tenv_verify.json",
+      "record_sha256": "0bf5fd1c5567ec3430e509cc09928ed3201ec0d4c4e0e64a7a6b8596277e9188",
+      "rerun_by_157": false,
+      "method": "record unchanged and re-bound by the regenerated metadata audit; no expression replay",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "Tahoe raw counts: 3388 shards, 67018 profiles, 95624334 cells accepted",
+      "record": "log/records/tahoe_counts_source_acceptance.json",
+      "record_sha256": "bc2fe8420aec773e02f068ae1e1628f08369882aad618570ab2104f0e2c105dd",
+      "rerun_by_157": false,
+      "method": "record unchanged; its product manifest 7ea21f45... re-checked by the audit",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "shared expression: 67018 and 4478 rows replay with zero numerical error",
+      "record": "log/records/shared_v2_verify.json",
+      "record_sha256": "9eee39eaf87f12c017d3e51af5e1da193f17bc5f1e30619905fbaafe56808a2f",
+      "rerun_by_157": false,
+      "method": "record and product manifest fb352f2b... unchanged; payload retained (gate D4 not satisfied)",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "training corpora: 65318 Tahoe and 4206 tenv samples; both source replays pass",
+      "record": "log/records/training_v2_verify.json",
+      "record_sha256": "c8351afa7041726e7ae556cbfe62c2db43f50db3b9c339321c46eaccab8a2cfe",
+      "rerun_by_157": false,
+      "method": "record unchanged; product manifest aac36d2d... and both h5ad digests re-checked by the audit; 8 corpora unit tests re-run",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "measured truth: 1377 contrasts on exactly 18164 genes, three independent R refits",
+      "record": "log/records/truth_complete_verify.json",
+      "record_sha256": "5ad43891a3c6cccbc5cd7397a74c55129b2745b2a37785fb5c7f930291e5b7fd",
+      "rerun_by_157": false,
+      "method": "no refit; the accepted product, its manifest ab73b301... and the surviving truth-fit input tenv.h5ad a95bba66... are unchanged and re-bound",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "exact successor equivalence for the current training release, re-issued at the stable path",
+      "record": "log/156-successor-reissue.json",
+      "record_sha256": "50e1e5e435b4ec9d2a43d64b00dbc2a72643f2c8c86eca4f406226e8a9337742",
+      "rerun_by_157": false,
+      "method": "all 11 envelope bindings re-resolved against disk by the audit (11/11 exist, absolute paths, correct suffixes); no new proof",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "HVG: four complete 18164-gene rankings, three group-isolated folds, held-out isolation",
+      "record": "log/records/hvg_actual_verify.json",
+      "record_sha256": "b5c007262a61dbbcb6ebb53df6f1645b55147180a6d6d2f82b5a4292a1a9a3b6",
+      "rerun_by_157": false,
+      "method": "record unchanged; hvg acceptance digests re-checked by the audit; 2 HVG unit tests re-run",
+      "outcome": "REUSED"
+    },
+    {
+      "claim": "diagnostic panel values, macro AP and visual QA",
+      "record": "log/diagnostic/acceptance.json",
+      "record_sha256": "86ee519b0ed0bbb447c2b88afb529d3a49924c500b6164e8fb2dd6308bad90bc",
+      "rerun_by_157": true,
+      "method": "re-rendered the PNG from figure/data/diagnostic_tenv_pr.csv alone: byte-identical 35d14266...",
+      "outcome": "PASS (new run)"
+    },
+    {
+      "claim": "the figure CSV/PNG pair is the accepted one",
+      "record": "log/156-figure-reproduction.json",
+      "record_sha256": "98d025fe3c670f8a3dc9aabc88325ee699b78d79c2a90c68f6c2f49e1469bfaf",
+      "rerun_by_157": true,
+      "method": "the CSV digest ff3a82e8... and PNG digest 35d14266... recorded by #156 are exactly what #157 measured and re-produced",
+      "outcome": "PASS (confirms the #156 record)"
+    },
+    {
+      "claim": "the rejected historical v1 Tahoe payload is rejected and superseded, with a compact counterexample",
+      "record": "log/records/tahoe_training_v1_rejection.json",
+      "record_sha256": "f40b14b9e80440bfbcf7a098b4452da110b8d0bdc0600721531f85f30176cfc7",
+      "companion": {
+        "record": "log/records/tahoe_historical_raw_diagnosis.json",
+        "sha256": "b4ce2c38961b9218ddd5bec369c8d43972ff6121514a445c8d952f0442c36654"
+      },
+      "rerun_by_157": "re-verified, then removed the payload",
+      "method": "measured the payload's sha256 (6e3ac2ec..., equal to the historical manifest's declared digest), enumerated every accepted binding, scanned execution/, output/api/ and figure/ for consumers, and removed only after all three checks were clean",
+      "outcome": "REMOVED under log/157-removals.json R1"
+    },
+    {
+      "claim": "no accepted product's manifest declares an absent file except a recorded removal",
+      "record": "log/157-removals.json",
+      "rerun_by_157": true,
+      "method": "declared-vs-absent scan over all eight accepted product manifests: exactly one absence, output/historical-training-release/tahoe_bulk.h5ad, explained by R1; no unexplained absence",
+      "outcome": "PASS"
+    },
+    {
+      "claim": "metadata/structure integrity of the migrated layout after the removals",
+      "record": "log/156-metadata-binding-audit.json",
+      "record_sha256": "1b5642cba9077fdf04d1173596140bc56d9e5cb4c43fc49c845a72e3389b5344",
+      "rerun_by_157": true,
+      "method": "regenerated from the main checkout with single-checkout roots; two consecutive runs byte-identical; 44 binding + 21 structural checks, non_pass=[], one documented EXPECTED_GAP",
+      "outcome": "PASS (record replaced)"
+    },
+    {
+      "claim": "Stage 1 and the immutable external source trees are unchanged",
+      "record": "log/health/157_check_paths.log",
+      "rerun_by_157": true,
+      "method": "git diff --name-only a53c9ff codex/stage2-bases-157 -- pert_data stage1 -> 0 files; check_paths PASS with 0 unresolved literals",
+      "outcome": "PASS"
+    },
+    {
+      "claim": "repository health: external item manifests and tracked-file holes",
+      "record": "log/health/157_verify_all.log",
+      "rerun_by_157": true,
+      "method": "verify_all.sh once, alone: 34/34 external items PASS; check_tracked 242 on disk / 284 tracked / 0 holes",
+      "outcome": "PASS"
+    }
+  ]
+}

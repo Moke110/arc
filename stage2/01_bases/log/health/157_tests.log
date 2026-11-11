@@ -1,0 +1,30 @@
+# final test record — ticket #157, 2026-11-12
+#
+# Scope: every base unit-test file under stage2/01_bases/execution/tests, run
+# individually (never as one suite) from the branch worktree
+# /home/chang/arc/.scratch/worktrees/stage2-bases-157/stage2/01_bases/execution
+# with OMP/MKL/OPENBLAS/NUMEXPR_NUM_THREADS=2 and the shared arc Python 3.13.13.
+# Command per file:
+#   python3 -m unittest discover -s tests -p '<file>.py'
+# The worktree carries the tracked code only; the 34 GB payload stays in the main
+# checkout, and these tests use small fixtures, exactly as in #156.
+#
+# Result: 13/13 files PASS (46 tests run, 1 opt-in skip), peak RSS 233,960 KiB.
+#
+# file                          rc  result                 wall s  peak KiB
+test_identity                  0  Ran 5 tests  OK           0.03    20844
+test_metrics                   0  Ran 10 tests OK           0.54   170020
+test_plots                     0  Ran 1 test   OK           0.69   150472
+test_raw_provenance            0  Ran 1 test   OK           0.51   162904
+test_native                    0  Ran 1 test   OK           0.57   205732
+test_hvg                       0  Ran 2 tests  OK           0.56   170928
+test_corpora                   0  Ran 8 tests  OK           3.04   233960
+test_significance              0  Ran 3 tests  OK           0.23   114444
+test_evaluate_predictions      0  Ran 1 test   OK           2.99   201216
+test_tahoe                     0  Ran 3 tests  OK           0.59   184960
+test_truth_successor           0  Ran 8 tests  OK           1.38   211980
+test_significance_worker       0  Ran 1 test   OK (skipped=1)  0.49  161656
+test_truth_successor_runtime   0  Ran 2 tests  OK           0.53   202072
+#
+# Counts match the #156 test record exactly (5,10,1,1,1,2,8,3,1,3,8,1-skipped,2);
+# test_significance_worker is the documented opt-in `ARC_DESEQ2_TEST` skip.
