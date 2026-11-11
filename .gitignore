@@ -141,3 +141,6 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 
 # Bases payloads/checkpoints stay local; required compact evidence is force-added.
 /stage2/01_bases/output/
+
+# ADR 0030 human-facing bases diagnostic numeric companion.
+!/stage2/01_bases/diagnostic_tenv_pr.csv
