@@ -73,7 +73,8 @@ def run(command, record, label, output_path=None):
     return result.stdout
 
 
-def main():
+def main(argv=None, runner=run):
+    """Run the re-issue.  ``runner`` and ``argv`` are seams for the tmpdir unit test."""
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--step-root", type=Path, default=STEP_ROOT)
@@ -87,7 +88,7 @@ def main():
                              "(defaults to step-root/log/records/truth_complete_verify.json)")
     parser.add_argument("--rscript", type=Path,
                         default=Path("/home/chang/miniconda3/envs/biomni_e1/bin/Rscript"))
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     step = args.step_root.resolve()
     execution = step / "execution"
     output = step / "output"
@@ -125,10 +126,10 @@ def main():
               "--training", str(training), "--output", str(candidate),
               "--rscript", str(args.rscript)]
     try:
-        run(create, record, "create candidate",
+        runner(create, record, "create candidate",
             records / "156_truth_successor_build.json")
         candidate_manifest = digest(candidate / "manifest.json")
-        run(verify, record, "verify candidate",
+        runner(verify, record, "verify candidate",
             records / "156_truth_successor_verify.json")
         record["candidate"] = {"path": str(candidate), "manifest_sha256": candidate_manifest,
                                "create_pass": True, "verify_pass": True}
