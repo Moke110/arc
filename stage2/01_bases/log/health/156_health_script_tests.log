@@ -1,0 +1,7 @@
+$ bash script/tests/stage2_paths_audit.test
+PASS: bases-only Stage 2 runtime path fixtures
+exit=0
+
+$ bash script/tests/bases_scope_health.test
+PASS: bases layout and separate-checkout tracking boundaries
+exit=0

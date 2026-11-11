@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 @unittest.skipUnless(os.environ.get('ARC_DESEQ2_TEST') == '1', 'explicit capped R integration job')
 class RealWorkerRelease(unittest.TestCase):
     def test_raw_count_release_preserves_untestable_status(self):
+        import public_api  # noqa: F401  (binds the single public implementation in output/api)
         from bases.corpora import parent_structure
         from bases.significance import PartitionTruth
         from bases.truth_build import build, verify

@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.identity import GeneIdentity, native_mapping_rows
 
 
@@ -57,10 +58,13 @@ def publish(native, annotation, output, shared, verify=False):
 if __name__ == '__main__':
     root = repo_root()
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--native', type=Path, default=root / 'stage2/01_bases/output/native-v1')
+    # Stable semantic paths (ADR 0062): the frozen axis/crosswalk live inside the
+    # identity product, and the sealed product binds the surviving historical v1
+    # mapping CSVs, not the current shared-expression mappings (#156 D2).
+    parser.add_argument('--native', type=Path, default=root / 'stage2/01_bases/output/gene-identity')
     parser.add_argument('--annotation', type=Path, default=root / 'pert_data/Annotation/source/hgnc_complete_set.txt')
-    parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/identity-v1')
-    parser.add_argument('--shared', type=Path, default=root / 'stage2/01_bases/output/shared-v1')
+    parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/gene-identity')
+    parser.add_argument('--shared', type=Path, default=root / 'stage2/01_bases/log/historical/shared-v1-mappings')
     parser.add_argument('--verify', action='store_true')
     args = parser.parse_args()
     print(json.dumps(publish(args.native, args.annotation, args.output, args.shared, args.verify), indent=2))

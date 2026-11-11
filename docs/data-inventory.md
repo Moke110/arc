@@ -108,27 +108,41 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — bases only (2026-11-11)
+## Stage 2 — bases only (2026-11-12, ADR 0062 stable layout)
 
 Only `stage2/01_bases/` remains. Other Stage 2 directories, including ignored
 checkpoints and historical predictions, were deleted at the user's request.
 Tracked historical code and records remain in Git. Recovering deleted ignored
 model fits would require retraining; no current build depends on them.
 
-| output under `stage2/01_bases/output/` | contents | reconstruction |
-|---|---|---|
-| `native-v1/` | tenv integer counts, 4510 wells × 19613 native genes; compact frozen axis/crosswalk tables | immutable GSE262419 source and annotation, `build_native.py` |
-| `tahoe-counts-v1/` | projected 18164-gene Tahoe integer pseudobulk counts, original token evidence, bounded per-plate checkpoints | immutable Tahoe source, `prepare_tahoe.py`; full build/source verification has a separate acceptance record |
-| `identity-v1/` | indexed identity and source namespace evidence | compact native tables, mapping evidence and HGNC annotation |
-| `shared-v1/` | surviving mapping CSVs only; deleted expression payloads are absent | historical mapping evidence, not a complete current expression release |
-| `training-v1/` | surviving separate Tahoe and tenv normalized training h5ads and historical build seal | replay every value against rebuilt raw counts; retain the original seal as historical evidence |
-| `shared-v2/`, `training-v2/` | new build destinations using explicit per-source raw inputs and current provenance | `build_shared.py` then `build_corpora.py`; existence and acceptance must be established by their actual build/verify records |
-| `truth-tenv-v1/` | independently fitted 1377 parent–dose tenv contrasts, exactly 18164-gene BH family | bounded raw-count DESeq2 worker; truth acceptance and any successor binding to training-v2 require explicit records |
+Every accepted product now has one stable semantic path (`du -sb`,
+2026-11-12, refreshed after the #157 removals). Payloads total ≈20.9 GB; the
+tracked public implementation, records, figure and evidence add ≈10.6 MB.
+#157 removed 15.27 GB of rejected and disposable payload — the rejected
+historical v1 Tahoe h5ad (11.20 GB) and two superseded build-state directories
+(1.21 GB + 2.83 GB) — after the dependency proof recorded in
+`stage2/01_bases/log/157-removals.json`.
 
-No final aggregate size is stated while release builds/checkpoints are active.
-Large h5ads, arrays and fit/checkpoint shards are ignored; compact input tables
-and execution records remain tracked. See `stage2/01_bases/README.md` for the
-current commands and historical-versus-current provenance boundary.
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/gene-identity/` | 16,638,438 | indexed identity (`genes.csv`, `manifest.json`) and the frozen `tables/` axis/crosswalk | compact source gene metadata, pinned HGNC annotation and the historical v1 mapping evidence |
+| `output/tenv-raw-counts/` | 79,376,992 | tenv integer counts, 4510 wells × 19613 native genes; probe evidence and seal | immutable GSE262419 source and annotation, `build_native.py` |
+| `output/tahoe-raw-counts/` | 2,957,405,982 | projected 18164-gene Tahoe integer pseudobulk counts, original token evidence and seal | immutable Tahoe source, `prepare_tahoe.py`; full build/source verification has its own acceptance record |
+| `output/shared-expression/` | 5,201,458,961 | verified CP10K/log1p shared projection, profiles, mappings and manifest | `build_shared.py` from the sealed raw counts; reconstruction intermediate retained because the training manifest seals it |
+| `output/training-corpora/` | 11,506,981,739 | current separate Tahoe (65318) and tenv (4206) normalized training h5ads, exclusions and seal | `build_corpora.py` from sealed raw counts and the shared release |
+| `output/historical-training-release/` | 486,898,232 | historical v1 truth-fit release: the tenv h5ad the truth fit depends on, its sealed manifest and the exclusion CSVs; the **rejected** v1 Tahoe payload was removed by #157 with its digest and rejection evidence retained | retained bytes; never a current training input |
+| `output/tenv-truth/` | 604,807,845 | independently fitted 1377 parent–dose tenv contrasts on exactly 18164 genes, statistic matrices and per-contrast payloads | bounded raw-count DESeq2 worker; truth acceptance has its own record |
+| `output/tenv-truth-successor/` | 897,211 | accepted exact-equivalence envelope for the current training release, re-issued at this path | `reissue_truth_successor.py`; requires the complete accepted truth verification and runtime seals |
+| `output/tenv-hvg/` | 6,243,580 | descriptive plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` from `training-corpora/tenv.h5ad`; held-out isolation re-checked |
+| `output/api/` | 512,471 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
+| `figure/` | 711,136 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
+| `log/` | 9,440,464 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
+
+Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
+the tracked `output/api` implementation and the records remain tracked. See
+`stage2/01_bases/README.md` for the current commands, accepted results,
+limitations and historical-versus-current provenance boundary, and
+`stage2/01_bases/log/156-migration-record.json` for the old→new binding.
 
 ## Archived, literature, wet-lab, logs
 

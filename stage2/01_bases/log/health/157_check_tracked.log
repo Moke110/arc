@@ -1,0 +1,7 @@
+== check_tracked: every executable file must be tracked by git ==
+repo root: /home/chang/arc/.scratch/worktrees/stage2-bases-157
+scan: 242 code files on disk (excluding virtualenvs, source/, __pycache__/, .git/, workspace archives); 284 tracked by git
+untracked: 0  (documented expected-ignored: 0, holes: 0)
+
+RESULT: PASS — all scanned executable files are tracked (or documented expected-ignored)
+exit: 0

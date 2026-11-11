@@ -3,6 +3,7 @@
 import argparse
 import json
 from pathlib import Path
+import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.corpora import publish
 from bases import raw
 
@@ -12,7 +13,7 @@ raw.add_binding_arguments(p)
 p.add_argument(
     "--shared",
     type=Path,
-    default=root / "stage2/01_bases/output/shared-v2",
+    default=root / "stage2/01_bases/output/shared-expression",
 )
 p.add_argument(
     "--drugs",
@@ -20,7 +21,7 @@ p.add_argument(
     default=root / "pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet",
 )
 p.add_argument(
-    "--output", type=Path, default=root / "stage2/01_bases/output/training-v2"
+    "--output", type=Path, default=root / "stage2/01_bases/output/training-corpora"
 )
 p.add_argument("--verify", action="store_true")
 p.add_argument("--record", type=Path)

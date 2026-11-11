@@ -79,3 +79,5 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 
 | [0060](0060-step09-round1-rerun.md) | Rerun Step 09 Round 1 with two models, four runs per model and validation early stopping |
 | [0061](0061-stage2-shared-bases-and-indexed-corpora.md) | Shared Stage 2 bases, indexed gene identity and separate Tahoe/tenv training corpora |
+
+| [0062](0062-stage2-accepted-products-and-reproducible-figures.md) | Stage 2 stable accepted products, CSV-reproducible figures and separate audit evidence |

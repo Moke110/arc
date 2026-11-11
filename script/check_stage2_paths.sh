@@ -4,8 +4,11 @@
 # Stage 2 currently contains only 01_bases (user scope, 2026-11-11).
 # Scan tracked active executable code for references to any other Stage 2 root.
 # Historical payload literals require exact file/literal whitelist entries.
-# Production also rejects any other immediate on-disk Stage 2 entry and checks
-# its owning AGENTS.md/README.md. Fixture file lists skip only that layout check.
+# Every invocation rejects any other immediate on-disk Stage 2 entry (directories
+# and regular files alike; the routing document stage2/AGENTS.md is the only
+# allowed root file) and checks the owning AGENTS.md/README.md.  The layout check
+# runs in fixture mode too; `STAGE2_PATH_AUDIT_ROOT` overrides the scanned root
+# for script/tests/.
 # No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
 
 set -uo pipefail
@@ -91,6 +94,33 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
+  # Layout guard: fail closed on retired step entries.  Only the 01_bases step
+  # directory and the Stage 2 routing document stage2/AGENTS.md (present at the
+  # review base a53c9ff) may sit at the Stage 2 root; any other regular file,
+  # symlink or directory is a retired-step entry.  The earlier form replaced the
+  # existence test with a bare `-d` test, which silently accepted any stray file
+  # (#157 review S2).  `STAGE2_PATH_AUDIT_ROOT` is a script/tests/ hook;
+  # production uses `stage2`.
+  local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
+  local entry
+  for entry in "$stage2_root"/* "$stage2_root"/.[!.]* "$stage2_root"/..?*; do
+    [ -e "$entry" ] || [ -L "$entry" ] || continue
+    if [ "$entry" = "$stage2_root/01_bases" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
+      continue
+    fi
+    if [ "$entry" = "$stage2_root/AGENTS.md" ] && [ -f "$entry" ] && [ ! -L "$entry" ]; then
+      continue
+    fi
+    echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
+    return 1
+  done
+  for entry in "$stage2_root/01_bases/AGENTS.md" "$stage2_root/01_bases/README.md"; do
+    if [ ! -f "$entry" ]; then
+      echo "RESULT: FAIL — missing bases routing: $entry" >&2
+      return 1
+    fi
+  done
+
   # Production scans the tracked tree.  `STAGE2_PATH_AUDIT_FILES` is a
   # newline-separated file list used only by script/tests/ to exercise the
   # detection logic on fixtures without dirtying the tracked tree.
@@ -99,20 +129,6 @@ main() {
     tr '\n' '\0' <"$STAGE2_PATH_AUDIT_FILES" >"$files_list" || exit 2
   else
     git ls-files -z stage2 >"$files_list" || exit 2
-    local entry
-    for entry in stage2/* stage2/.[!.]* stage2/..?*; do
-      [ -e "$entry" ] || continue
-      if [ "$entry" != "stage2/01_bases" ]; then
-        echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
-        return 1
-      fi
-    done
-    for entry in stage2/01_bases/AGENTS.md stage2/01_bases/README.md; do
-      if [ ! -f "$entry" ]; then
-        echo "RESULT: FAIL — missing bases routing: $entry" >&2
-        return 1
-      fi
-    done
   fi
 
   local f

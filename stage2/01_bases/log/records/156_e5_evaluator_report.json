@@ -1,0 +1,51 @@
+{
+  "diagnostic": true,
+  "fold": 0,
+  "groups_sha256": "7a5431492d50f029bc2830913afa18a1dd3c55e1b52353b5873746db3b27ab77",
+  "inputs": {
+    "assignments": {
+      "path": "/home/chang/arc/stage2/01_bases/output/tenv-hvg/cohorts.csv",
+      "sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc"
+    },
+    "genes": {
+      "path": "/home/chang/arc/stage2/01_bases/output/gene-identity/genes.csv",
+      "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
+    },
+    "predictions": {
+      "path": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/e5/predictions/predictions.npy",
+      "sha256": "f98844f719759e2226bb0e0cfa6409b85ba179b8fc763147ae02d39388f12295"
+    },
+    "samples": {
+      "path": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/e5/predictions/samples.csv",
+      "sha256": "caed06b0d23d1d0b7c5670381b19476c33a08250f70a8f7e3106a376e1eb16af"
+    },
+    "successor_manifest": {
+      "path": "/home/chang/arc/stage2/01_bases/output/tenv-truth-successor/manifest.json",
+      "sha256": "2798e3b8eb32027b221c18634bbb9e1dd4aeed46624786bd8099fc40fc790b6d"
+    },
+    "training_manifest": {
+      "path": "/home/chang/arc/stage2/01_bases/output/training-corpora/manifest.json",
+      "sha256": "aac36d2d8306c234da581ae2763b8703a323db89870c7db42a15fe0fd5be564b"
+    },
+    "truth_manifest": {
+      "path": "/home/chang/arc/stage2/01_bases/output/tenv-truth/manifest.json",
+      "sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f"
+    }
+  },
+  "interpretation": "Measurement-derived QA only; no model evaluated",
+  "label": "Diagnostic: Measured delta",
+  "role": "test",
+  "schema": "stage2-indexed-prediction-evaluation-v1",
+  "source": "tenv",
+  "summary": {
+    "AUPRC": 0.07981072489453635,
+    "AUPRC_negative": 0.13737174931309615,
+    "AUPRC_positive": 0.3349457015461418,
+    "eligible_groups": {
+      "AUPRC": 369,
+      "AUPRC_negative": 366,
+      "AUPRC_positive": 107
+    },
+    "groups": 459
+  }
+}
