@@ -41,7 +41,7 @@ class RerunInputsTest(unittest.TestCase):
                     self.assertEqual(actual.shape[1], count)
             plan = root / 'plan.json'
             run('script/rerun_inputs.py', '--inputs', root, '--landmark', landmark,
-                '--tenv-release', tenv, '--output', plan, '--fixture')
+                '--tenv-release', tenv, '--native', native, '--output', plan, '--fixture')
             payload = json.loads(plan.read_text())
             self.assertEqual(len(payload['runs']), 24)
             self.assertEqual(len({r['id'] for r in payload['runs']}), 24)

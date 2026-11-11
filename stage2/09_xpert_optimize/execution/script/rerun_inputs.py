@@ -2,11 +2,16 @@
 import argparse
 import hashlib
 import json
+import sys
+import h5py
 from pathlib import Path
 import numpy as np
 import pandas as pd
 
 STEP = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(STEP / 'execution/01_corpus'))
+from build import DEFAULT_NATIVE, normalize_counts, raw_batches
+
 MODELS = ('XPert_G512', 'XPert_G1024', 'XPert_G2048',
           'XPert_MLP512', 'XPert_MLP1024', 'XPert_MLP2048')
 
@@ -23,7 +28,7 @@ def checked(root, manifest, relative):
     return path
 
 
-def freeze(inputs, landmark, tenv_release, output, fixture=False):
+def freeze(inputs, landmark, tenv_release, output, fixture=False, native=DEFAULT_NATIVE):
     landmark_manifest = json.loads((landmark / 'predictor/manifest.json').read_text())
     landmark_sha = sha256(landmark / 'predictor/manifest.json')
     if landmark_manifest['fixture'] != fixture:
@@ -92,10 +97,27 @@ def freeze(inputs, landmark, tenv_release, output, fixture=False):
                         membership = folds.loc[folds.fold.eq(fold)].set_index('drug_key').role
                         if not cases.drug_key.map(membership).eq(role).all():
                             raise ValueError('tenv drug partition differs')
+                    if source == 'tenv':
+                        reference_name = 'test_cases' if role == 'test' else role
+                        reference = pd.read_csv(tenv_release / f'fold_{fold}/{reference_name}.csv', keep_default_na=False)
+                        pd.testing.assert_frame_equal(cases[reference.columns], reference)
                     expression = (evaluator if role == 'test' else predictor) / f'{prefix}/{role}_expression.npy'
                     values = np.load(expression, mmap_mode='r', allow_pickle=False)
                     if values.shape != (len(cases), len(genes)) or values.dtype != np.float32:
                         raise ValueError('normalized expression shape/dtype differs')
+                    observed = cases
+                    if role == 'test':
+                        observed = cases.merge(pd.read_csv(evaluator / f'{prefix}/test_rows.csv'),
+                                               on='case_id', validate='one_to_one')
+                    positions = np.unique([0, len(cases) - 1])
+                    mapping = pd.read_csv(predictor / f'{source}/mapping.csv')
+                    rows = observed.source_row.iloc[positions].to_numpy(dtype=int)
+                    if np.any(np.diff(rows) <= 0):
+                        raise ValueError('native row order differs')
+                    with h5py.File(native / f'{source}.h5ad', 'r') as raw:
+                        normalized = np.concatenate([normalize_counts(counts)[0]
+                            for _, counts in raw_batches(raw['X'], rows, mapping.native_column.to_numpy())])
+                    np.testing.assert_allclose(values[positions], normalized, rtol=1e-6, atol=1e-7)
             if list(predictor.rglob('test_expression.npy')) or list(predictor.rglob('test_rows.csv')):
                 raise ValueError('test truth leaked into predictor')
             view_records[axis] = {'predictor': str(predictor.absolute()),
@@ -105,7 +127,7 @@ def freeze(inputs, landmark, tenv_release, output, fixture=False):
                                   'gene_count': len(genes)}
         gates[str(fold)] = {'membership': 'verified', 'parent_drug_exclusion': 'verified',
                             'nested_training_axes': 'verified', 'full_axis_mlp': 'verified',
-                            'predictor_evaluator_separation': 'verified'}
+                            'predictor_evaluator_separation': 'verified', 'normalized_axis_samples': 'verified'}
         for model in MODELS:
             axis = model.removeprefix('XPert_') if '_G' in model else 'G18164'
             for seed in (17, 42):
@@ -121,13 +143,14 @@ def freeze(inputs, landmark, tenv_release, output, fixture=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--native', type=Path, default=DEFAULT_NATIVE)
     parser.add_argument('--inputs', type=Path, required=True)
     parser.add_argument('--landmark', type=Path, default=STEP / 'output/corpus/tahoe_tenv_bulk_l1000')
     parser.add_argument('--tenv-release', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--fixture', action='store_true')
     args = parser.parse_args()
-    freeze(args.inputs, args.landmark, args.tenv_release, args.output, args.fixture)
+    freeze(args.inputs, args.landmark, args.tenv_release, args.output, args.fixture, args.native)
 
 
 if __name__ == '__main__':
