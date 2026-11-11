@@ -348,6 +348,12 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 
 ### Stage 2 benchmark
 
+**Tenv highly variable genes (tenv HVG)**:
+Genes on the full CM gene axis ranked by expression variability in a declared tenv population. This ranking has no upregulation or downregulation direction; perturbation direction belongs to a measured contrast.
+
+**Stage 2 sample identity**:
+The stable identity of one retained perturbation observation, distinguishing separate source wells and, for Tahoe pseudobulk, the cell line within a well. Tenv significance labels describe a drug-parent–dose group rather than an individual sample.
+
 **Transcriptome autoencoder**:
 A Step 07 model that encodes a measured expression profile and reconstructs that same profile on the frozen CM gene axis.
 
