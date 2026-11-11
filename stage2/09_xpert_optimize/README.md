@@ -222,8 +222,11 @@ fit-attempt wall minutes and list how many attempts have timing evidence.
 
 ## Round 1 learning curves and endpoint convergence check
 
-Each trained arm has its own `output/round1/xpert_opti_r1_learning_XPert_*.png`,
-with separate Tahoe pretraining and tenv fine-tuning panels. Blue is the
+The [combined learning-curve figure](output/round1/xpert_opti_r1_learning_curves.png)
+contains a 3 × 3 grid, one subplot per trained arm. Each subplot shows Tahoe
+pretraining and tenv fine-tuning separated by a dashed phase boundary, with
+phase-local update labels. The stages are not connected because fine-tuning
+starts from the selected Tahoe checkpoint. Blue is the
 training objective averaged over the preceding validation interval; green is
 the validation objective at the indicated update. Both use the frozen loss
 weights `(0.2, 0.003, 0.2, 1.0)`. Open circles mark the best recorded validation

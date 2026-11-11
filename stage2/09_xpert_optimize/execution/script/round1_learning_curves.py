@@ -22,7 +22,8 @@ def main():
     policy = json.loads((step / 'execution/round1_record/policy.json').read_text())
     output = step / 'output/round1'
     points, summary, sources = [], [], {}
-    for entry in plan['models']:
+    fig, axes = plt.subplots(3, 3, figsize=(15, 12), constrained_layout=True)
+    for ax, entry in zip(axes.flat, plan['models'], strict=True):
         name = entry['name']
         source = step / 'execution/tmp/round1/fits' / name / 'run.json'
         raw = source.read_bytes()
@@ -32,8 +33,7 @@ def main():
         assert run['fold'] == plan['fold'] and run['seed'] == plan['seed']
         assert run['predictor_sha256'] == entry['predictor_sha256']
         sources[str(source.relative_to(step))] = hashlib.sha256(raw).hexdigest()
-        fig, axes = plt.subplots(1, 2, figsize=(11, 4.8), constrained_layout=True)
-        for ax, phase in zip(axes, ('tahoe', 'tenv'), strict=True):
+        for phase in ('tahoe', 'tenv'):
             result = run['phases'][phase]
             history = result['history']
             updates = [row['update'] for row in history]
@@ -54,22 +54,36 @@ def main():
             for row, loss in zip(history, train, strict=True):
                 points.append(dict(model=name, phase=phase, update=row['update'],
                                    train_loss=loss, valid_loss=row['validation_loss']))
-            ax.plot(updates, train, 'o-', color='blue', label='train', linewidth=2)
-            ax.plot(updates, valid, 'o-', color='green', label='valid', linewidth=2)
+            offset = 0 if phase == 'tahoe' else policy['phases']['tahoe']['updates']
+            positions = [offset + update for update in updates]
+            # Plot stages separately: fine-tuning restarts from the selected Tahoe checkpoint.
+            ax.plot(positions, train, 'o-', color='blue', linewidth=2)
+            ax.plot(positions, valid, 'o-', color='green', linewidth=2)
             best = valid.index(min(valid))
-            ax.scatter(updates[best], valid[best], s=150, facecolors='none', edgecolors='black',
-                       label='best recorded valid', zorder=5)
-            ax.set_title(f'{"Tahoe pretrain" if phase == "tahoe" else "tenv fine-tune"}\n'
-                         f'Endpoint criterion: {"PASS" if passes else "FAIL"}; valid change {100 * delta / valid[-2]:+.2f}%')
-            ax.set(xlabel='Optimizer update (within phase)', ylabel='Weighted objective loss', xticks=updates)
-            ax.grid(alpha=.22)
-            ax.legend(fontsize=8)
-        fig.suptitle(f'{name} | Round 1 | fold 0, seed 17', fontsize=14)
-        fig.supxlabel('Only two recorded points per phase. Train: preceding-window mean; valid: checkpoint evaluation.',
-                      fontsize=9)
-        fig.savefig(output / f'xpert_opti_r1_learning_{name}.png', dpi=160,
-                    metadata={'Software': 'Stage 2 Step 09'})
-        plt.close(fig)
+            ax.scatter(positions[best], valid[best], s=110, facecolors='none',
+                       edgecolors='black', zorder=5)
+        boundary = policy['phases']['tahoe']['updates']
+        ax.axvline(boundary + 150, color='#888888', linestyle='--', linewidth=1)
+        ax.set_title(name, fontsize=12, weight='semibold')
+        ax.set_xticks([256, 512, boundary + 300, boundary + 600],
+                      ['Tahoe\n256', 'Tahoe\n512', 'tenv\n300', 'tenv\n600'])
+        ax.set_ylabel('Weighted objective loss')
+        ax.grid(alpha=.22)
+        ax.tick_params(labelsize=9)
+    from matplotlib.lines import Line2D
+    fig.legend(handles=[Line2D([], [], color='blue', marker='o', label='train'),
+                        Line2D([], [], color='green', marker='o', label='valid'),
+                        Line2D([], [], color='black', marker='o', markerfacecolor='none',
+                               linestyle='none', label='best recorded valid (per phase)')],
+               loc='upper center', bbox_to_anchor=(.5, .965), ncol=3, frameon=False)
+    fig.get_layout_engine().set(rect=(0, 0, 1, .93))
+    fig.suptitle('XPert Round 1 learning curves | fold 0, seed 17', fontsize=17, y=.995)
+    fig.supxlabel('Update labels are phase-local; stages are not connected. Only two recorded points per phase.\n'
+                  'Train: preceding-window mean; valid: checkpoint evaluation. Dashed line: phase boundary.',
+                  fontsize=10)
+    fig.savefig(output / 'xpert_opti_r1_learning_curves.png', dpi=180,
+                metadata={'Software': 'Stage 2 Step 09'})
+    plt.close(fig)
     for filename, rows in [('learning_curve_points.csv', points), ('learning_curve_convergence.csv', summary)]:
         with (output / filename).open('w', newline='') as handle:
             writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
