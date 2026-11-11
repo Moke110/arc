@@ -1,88 +1,27 @@
 # Fold 1 paired test replication
 
-The replication plan requires the frozen confirmation plan. With no promoted
-intervention, freeze and finalize record a skipped disposition and reject any
-fold 1 fit or score artifacts. For promotion, finish the shared Tahoe source
-preparation, native fits, and independent reloads in
-[confirmation.md](confirmation.md) first. If a source attempt ends without a
-source seal, pass `--source-unavailable SEED STATUS 'reason'` to `freeze` to
-keep that seed's terminal disposition alongside the remaining source plans.
+The frozen confirmation plan controls whether replication is authorized.
+A skipped plan rejects fold 1 fitting artifacts. Existing source preparation,
+native fits and independent reloads retain their provenance in
+[confirmation.md](confirmation.md); this reporting migration authorizes no
+additional training.
+
+Each pair shares the same Tahoe source and mapped bridge. Dose reset changes
+only the three native positive-dose rows; learning rate changes only the base
+rate. Native loss selection and frozen equal-step EMA remain separate.
+Prediction receives only ordered cases, same-plate controls, gene order and
+released fingerprints.
+
+The old AP@100 replication scoring, finalization reports and promotion gates
+are retired. Historical retrieval scores remain only in Git. Current reporting
+uses the shared tenv significance evaluator and its three metrics:
 
 ```bash
-runtime="$PWD"
-step="$runtime/stage2/06_pdiff_transfer_optimize"
-output="$step/output"
-cli="$step/execution/script/replication.py"
-pdiff="$runtime/stage2/_envs/perturbdiff/bin/python"
-
-confirmation=$(sha256sum "$output/confirmation/plan.json" | cut -d ' ' -f 1)
-python "$cli" freeze "$output" --runtime "$runtime" --confirmation-sha256 "$confirmation"
-plan=$(sha256sum "$output/replication/plan.json" | cut -d ' ' -f 1)
-python "$cli" status "$output" --runtime "$runtime" --plan-sha256 "$plan"
+python stage2/evaluation/publish.py --step 6
+python stage2/evaluation/evaluate.py replay --step 6
 ```
 
-Submit real-data verification, fits, prediction, and scoring to the Step 06
-scheduler. A ready plan pins the available Tahoe EMAs, the matching Step 04 CM
-selections, the frozen train and validation recipe, the target-free ordered
-test request, evaluator file hashes, and the per-seed common step. It records
-prior Step 03 and Step 04 scoring and measures overlap with fold 0 roles at
-parent, drug, well and group level. The Step 05 fold 0 score is historical
-context.
-
-Fit the original Transfer arm once per seed. Fit each promoted intervention
-for the same seed, using a separate admitted command for each arm. Replace
-`$preflight` with the admission record for the exact command and the 10 GiB
-target fitting cap. New checkpoints use slots 10–12 under `output/checkpoints/`. Each pair verifies the same
-source and mapped bridge. Dose reset restores the three native positive-dose
-rows and keeps the original recipe. Learning rate changes only the base
-rate. When learning rate is promoted, the original and halved-rate fits
-also capture the frozen equal-step EMA from the same live trajectory.
-Native loss selection remains separately available.
-
-```bash
-seed=17
-arm=Transfer  # or a promoted dose_reset or learning_rate
-"$pdiff" "$cli" fit "$output" --runtime "$runtime" --plan-sha256 "$plan" \
-    --seed "$seed" --arm "$arm" --admission "$preflight"
-# Run prediction and scoring after fitting the authorized arms for this seed.
-"$pdiff" "$cli" predict "$output" --runtime "$runtime" --plan-sha256 "$plan" --seed "$seed"
-python "$cli" score "$output" --runtime "$runtime" --plan-sha256 "$plan" --seed "$seed"
-```
-
-Repeat for each seed with a sealed source. If a target fit ends without a
-fit seal, pass `--arm-unavailable ARM STATUS 'reason'` to `predict`. The
-disposition is sealed for later scoring and replay, and pairs from the
-remaining fits still score. Each unavailable flag accepts `failed`,
-`incomplete` or `skipped` and can be repeated.
-
-Prediction receives only cases, same-plate controls, gene order and the
-released fingerprints. Scoring verifies the
-prediction seals before opening frozen test truth and directional labels.
-Per-seed scores include native and equal-step contrasts where applicable,
-AP@100 by direction and dose, and the underlying group rows. Equal-step
-attribution requires a CM snapshot at the same optimizer step. The
-loss-selected CM appears in the native comparison when the equal-step CM is
-unavailable.
-
-```bash
-python "$cli" finalize "$output" --runtime "$runtime" --plan-sha256 "$plan"
-```
-
-Finalize also handles skipped plans. For a seed without a score seal, record
-a terminal disposition with `--unavailable SEED STATUS 'reason'` using
-`failed`, `incomplete` or `skipped`. The final report at
-`output/replication/result.json` retains seed evidence, primary paired
-effects, equal-weight means, matching CM coverage, and any residual gaps.
-A promotion replicates when all three primary seed pairs are available and
-their mean intervention gain is positive. Recovery uses the comparable seed
-set and requires a positive mean original CM gap.
-
-The bounded CPU fixture exercises a promoted plan with both interventions.
-It checks native selection, the equal-step EMA, the shared Tahoe bridge,
-the numbered checkpoint inventory, and independent target-free test replay.
-The scheduler ran the fixture at two threads under 10 GiB memory and 8 GiB
-swap limits. It finished in 36.65 seconds and peaked at 4,141,488 KiB RSS.
-
-```bash
-"$pdiff" "$step/execution/tests/native_replication_fixture.py" --runtime "$runtime"
-```
+The preserved CPU fixture checks native selection, equal-step EMA, shared Tahoe
+bridge, numbered checkpoints and independent target-free prediction replay.
+Its recorded run used two threads, 10 GiB memory and 8 GiB swap, took 36.65
+seconds and peaked at 4,141,488 KiB RSS.

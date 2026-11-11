@@ -140,7 +140,10 @@ def historical_scoring(runtime, target, cases):
     index = bind(step04 / 'checkpoints.json')
     release = read_json(index['path'])
     evaluation = bind(step04 / 'evaluation.json', release['evaluation_sha256'])
-    manifest = read_json(evaluation['path'])
+    import sys
+    sys.path.insert(0, str(runtime))
+    from stage2.evaluation.history import original_json
+    manifest = original_json(evaluation['path'], evaluation['sha256'])
     if (manifest['tenv_test_memberships_previously_scored_in_step03'] is not True
             or manifest['plan_sha256'] != target['producer_plan']['sha256']):
         raise ValueError('historical scoring does not match the fold 1 producer')

@@ -209,7 +209,15 @@ def validate_run(input_root, output_root, model, fold, seed, command=None):
     directory = run_directory(output_root,model,fold,seed)
     try:
         run = read_json(directory / 'run.json')
-        if run['status'] != 'completed' or run['identity'] != run_identity(root,model,fold,seed,command):
+        current = run_identity(root,model,fold,seed,command)
+        matching = run['identity'] == current
+        if not matching:
+            repo = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
+            import sys
+            sys.path.insert(0, str(repo))
+            from stage2.evaluation.compatibility import accepts_frozen_run
+            matching = accepts_frozen_run(directory / 'run.json', run['identity'], current)
+        if run['status'] != 'completed' or not matching:
             raise ValueError('stale run identity/status')
         for name in ('prediction.npy','case_ids.json','checkpoint.json','request.json'):
             if run['artifacts'][name] != sha256(directory / name):

@@ -53,7 +53,12 @@ def fixed_matrix():
 
 def bind(path, expected=None):
     path = Path(path)
-    digest = sha256(path)
+    if path.is_file():
+        digest = sha256(path)
+    else:
+        sys.path.insert(0, str(transfer.REPO))
+        from stage2.evaluation.history import metadata_digest
+        digest = metadata_digest(path)
     if expected is not None and digest != expected:
         raise ValueError(f'frozen artifact hash mismatch: {path}')
     return {'path': str(path), 'sha256': digest}
@@ -297,7 +302,7 @@ def verify_bindings(items):
     for item in items:
         path, digest = item['path'], item['sha256']
         if path not in checked:
-            checked[path] = sha256(path)
+            checked[path] = bind(path)['sha256']
         if checked[path] != digest:
             raise ValueError(f'frozen artifact hash mismatch: {path}')
 

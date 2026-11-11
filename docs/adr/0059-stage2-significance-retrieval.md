@@ -1,7 +1,7 @@
 # Use three full-CM significance retrieval metrics throughout Stage 2
 
 **Status:** accepted (2026-11-11). Amends the retrieval/reporting portions of
-ADRs 0042, 0046–0049, 0057 and 0058 following the user's metric consolidation.
+ADR 0030 §3 (the scoped output placement below), and ADRs 0042, 0046–0049, 0057 and 0058 following the user's metric consolidation.
 
 Evaluate retrieval only on **tenv**, as clarified by the user. Tahoe-trained
 models predicting tenv remain in scope; the Tahoe test set has no PR/AUPRC
@@ -48,3 +48,17 @@ reported as pending, never converted to zero or replaced by rank-defined truth.
 
 - [Earlier direction-matching correction](0058-step09-direction-matched-pr.md)
 - [Shared evaluator](../../stage2/evaluation/README.md)
+
+For these canonical retrieval releases only, amend ADR 0030 §3: Steps 03,
+04, 05 and 09 keep the current generated tables, figures and manifest together
+in `output/retrieval/`. Step 06 keeps PNG/SVG figures directly in `output/`
+and numeric tables plus manifest in `output/retrieval/`. The shared evaluator's
+label matrices remain ignored large assets under `stage2/evaluation/output/labels/`.
+This exception does not change input provenance or other step layouts.
+
+Removed admission and prior-exposure metadata may be read from the pinned Git
+revision through `evaluation/history.py`, without restoring old score files.
+Step 03's original completed run verification has a narrowly authenticated
+compatibility path: committed inventory/run hashes, exact non-source identity,
+and the reviewed current five-file runtime must all match the committed
+compatibility record. Any further predictor code change invalidates this path.

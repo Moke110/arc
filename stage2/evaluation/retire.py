@@ -25,6 +25,15 @@ def old_values(value):
 
 def candidates():
     paths = set()
+    owned = set()
+    # Generated releases name every current figure, including Step 06's root figures.
+    for step in ROOT.iterdir():
+        manifest = step / 'output/retrieval/manifest.json'
+        if manifest.is_file():
+            data = json.loads(manifest.read_text())
+            directory = step / 'output' if step.name.startswith('06_') else manifest.parent
+            owned.update(directory / name for name in data.get('figures', {}))
+            owned.update(manifest.parent / name for name in data.get('files', {}))
     # Fixed workflow areas include ignored old scoring releases as well as tracked ones.
     for step in ROOT.iterdir():
         if not step.is_dir() or step.name.startswith(('_envs', 'evaluation', 'presentation')):
@@ -32,7 +41,7 @@ def candidates():
         if not (step.name[:2].isdigit() or step.name in ('_archive', 'audit')):
             continue
         for path in step.rglob('*'):
-            if not path.is_file() or any(p in ('source', 'local', '__pycache__', '.git') for p in path.parts):
+            if path in owned or not path.is_file() or any(p in ('source', 'local', '__pycache__', '.git') for p in path.parts):
                 continue
             if 'retrieval' in path.parts or 'labels' in path.parts or 'input' in path.parts or 'corpus' in path.parts:
                 continue

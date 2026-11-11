@@ -14,10 +14,7 @@
 - test bundle 不携带 treated expression；CPA 的 test 表达占位为零，注册测试药物结构不等于泄露其扰动表达。未在检查到的适配路径发现直接读取测试 treated truth 来拟合的行为。
 - 实际 basal bundle 是 16 × 12 = **192 个 DMSO wells**。源数据的 272 controls 还包含其他 control 类型，不应把“272 controls”写成“272 DMSO”。同板对照共享是协议允许的信息，不等于测试药物表达泄漏。
 
-| 实验 | PRnet AP@200 | PerturbNet AP@200 | delta_mean AP@200 | 含义 |
-|---|---:|---:|---:|---|
-| 18,164 genes | 0.1643265 | 0.1860556 | 0.1988713 | 没有模型超过均值基线；PerturbNet 为最佳模型行 |
-| 5,000 genes | 0.2734561 | 0.1928778 | 0.2491443 | PRnet 在现有配方下领先；PerturbNet 行有尺度缺陷 |
+历史 PR 图与检索评分表已删除，仅通过 Git 历史保留。当前检索标准见 [ADR 0059](../../docs/adr/0059-stage2-significance-retrieval.md)。
 
 证据：`../03_models_cmbench/03.{1_cold_drug_18k,2_hvg_sensitivity_5k}/execution/script/{metrics,evaluate,cases,build_data}.py`、各自 `README.md`、`output/results/leaderboard.csv`、原始 `output/units/`。
 
@@ -75,7 +72,7 @@ Squidiff 补充核查：作者 [README](https://github.com/siyuh/Squidiff#traini
 
 因此“扩到 15k 必然需要大改架构、参数增加一个数量级、超过既有计算预算”的淘汰前提不成立：现有 18k 配置已经完成运行，参数增长约 3 倍，且在原 16 h/model 预算内。这不证明能够以相同成本修复收敛。
 
-**后续决策（2026-10-26，用户已确认）：** 基于 5k/18k 两轮均未收敛、继续排障收益不明确的机会成本，将 Squidiff 排除出后续选型与训练/排障投入。保留历史代码、环境与全部实验结果，历史注册表不变；未来比较只包含其余六个候选。见[当前选型决策](model_selection_decisions.md)。下文对 Squidiff 的诊断建议仅在用户重新开启该候选时适用。
+**后续决策（2026-10-26，用户已确认）：** 基于 5k/18k 两轮均未收敛、继续排障收益不明确的机会成本，将 Squidiff 排除出后续选型与训练/排障投入。保留历史代码、环境与训练记录；历史检索评分仅通过 Git 保留；未来比较只包含其余六个候选。见[当前选型决策](model_selection_decisions.md)。下文对 Squidiff 的诊断建议仅在用户重新开启该候选时适用。
 
 预算公平不等于 epoch 数相同，也不等于作者超参数原样搬来就适合新域。ADR 0027 明确限定 random init、禁止 HPO、单种子，并删减外部预训练。该合同回答的是“受限资源下的从零训练比较”，不是“各方法在合法资源与充分调优下的最佳表现”。这些约束有可复现性价值，但对依赖预训练的方法影响不对称。
 

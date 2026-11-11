@@ -1,0 +1,13 @@
+{
+  "schema": "stage2-reporting-runtime-compatibility-v1",
+  "reason": "Authenticate unchanged frozen Step03 predictions after evaluator-only migration; input, environment, adapter config and artifact hashes remain exact.",
+  "previous_git_commit": "301f70d93ce17518fc842009bfbca727aed2ef0c",
+  "previous_source_sha256": "98ad7cbc31a557eed7cd1c6a8f5fdd1850fef11402f96b93eb7cf3af88f07efd",
+  "runtime_files": {
+    "stage2/03_modes_tenv/execution/script/artifacts.py": "87721853b9c0ed7871a9772002f423aa8645b544b7bc05f9146fc3452e527a89",
+    "stage2/03_modes_tenv/execution/script/benchmark.py": "c79a296e7d38d20e6e21ea008575e21cf4e026e55e9a5c07e8301be58735c4a1",
+    "stage2/03_modes_tenv/execution/script/baselines.py": "14d507964b85ddf5c21b27812be8603556430194f103bde3f1b1b391da8f9c40",
+    "stage2/03_modes_tenv/execution/script/metrics.py": "d88901207ecfc5a0652e135806e8279706d48fe144a145db86f2c113e2b68b45",
+    "stage2/03_modes_tenv/execution/script/plots.py": "f92599f1c32187c95b76c3d82514a5bc35aa026e537caf956c6f6e2b78d06de2"
+  }
+}

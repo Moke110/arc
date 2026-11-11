@@ -74,8 +74,10 @@ def verify_baseline(runtime, seed):
     step = runtime / transfer.STEP05
     record = transfer.RECORD / 'formal_record'
     seal = read_json(record / 'run.json')
-    publication = read_json(verify_file(record / 'publication.json',
-                                        seal['publication']['manifest']['sha256']))
+    import sys
+    sys.path.insert(0, str(transfer.REPO))
+    from stage2.evaluation.history import original_json
+    publication = original_json(record / 'publication.json', seal['publication']['manifest']['sha256'])
     index_path = verify_file(record / 'checkpoints.json', publication['files']['checkpoints.json'])
     index = read_json(index_path)
     matrix_binding = seal['formal']['plan']
