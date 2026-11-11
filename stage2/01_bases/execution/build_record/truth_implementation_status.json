@@ -26,8 +26,9 @@
   },
   "reason": "Full1377 source/count/BH/ranking replay and three independent actualR representative refits passed within bases-only scope; no deleted consumer or historical partition restored.",
   "schema": "stage2-bases-truth-implementation-status-v1",
-  "status": "complete-v1-truth-and-real-partition-accepted-successor-pending",
-  "successor": "not published; actual training-v2 and exact equivalence still pending",
+  "status": "complete-v1-truth-and-exact-v2-successor-accepted",
+  "successor": "actual create and completeproof replay PASS; all1377integer contrasts and4206finite X/control/delta sample profiles exactly equal, no new fit",
+  "successor_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
   "tests": {
     "public_contract_tests_passed": 3,
     "real_DESeq2_release": "PASS18164genes/4206treated/1377eligible/273testedempty/6multiplate; complete raw replay and3Rrefits",
