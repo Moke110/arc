@@ -1,6 +1,6 @@
 {
   "schema": "step09-rerun-execution-v1",
-  "status": "finishing_current_then_stop",
+  "status": "stopped_after_current",
   "service": "arc-step09-round1-rerun.service",
   "started_at": "2026-11-11T14:07:09+08:00",
   "integration_branch": "dev",
@@ -14,15 +14,9 @@
     "verify_all_resources": "stage2/09_xpert_optimize/execution/tmp/rerun/resources/verify-all"
   },
   "formal_run_count": 8,
-  "completed_runs": 2,
-  "remaining_acceptance": [
-    "8 complete formal two-phase runs",
-    "selected-checkpoint test replay",
-    "real-data three-figure publication and replay",
-    "visual inspection and historical artifact replacement"
-  ],
+  "completed_runs": 3,
   "telemetry_note": "Service PATH lacks nvidia-smi; first fit retains torch GPU peaks and a supplemental live GPU monitor. Subsequent capped jobs resolve WSL nvidia-smi explicitly.",
-  "current_run": "XPert_MLP512-fold-0-seed-17",
+  "current_run": null,
   "recovery_record": "execution/rerun_record/recovery.json",
   "scope_amendment": {
     "models": [
@@ -43,5 +37,16 @@
   },
   "scope_amendment_resumed_at": "2026-11-11T15:33:27.580877+08:00",
   "cancelled_run_count": 5,
-  "cancellation_record": "execution/rerun_record/cancellation.json"
+  "cancellation_record": "execution/rerun_record/cancellation.json",
+  "stopped_at": "2026-11-11T16:02:03+08:00",
+  "study_complete": false,
+  "acceptance_status": "not_attempted_user_cancelled",
+  "cancelled_acceptance": [
+    "8 complete formal two-phase runs",
+    "selected-checkpoint test replay",
+    "real-data three-figure publication and replay",
+    "visual inspection and historical artifact replacement"
+  ],
+  "remaining_acceptance": [],
+  "stop_verification_record": "execution/rerun_record/cancelled-stop-verification.json"
 }
