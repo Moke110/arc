@@ -70,24 +70,25 @@ def declared(step, product):
     if not manifest_path.is_file():
         manifest_path = root / "tenv_manifest.json"
     manifest = json.loads(manifest_path.read_text())
-    pairs = []
+    pairs = []  # (absolute path, declared digest)
     if "genes_sha256" in manifest:
-        pairs.append(("genes.csv", manifest["genes_sha256"]))
+        pairs.append((root / "genes.csv", manifest["genes_sha256"]))
     if "files" in manifest and isinstance(manifest["files"], dict):
         for name, value in manifest["files"].items():
-            pairs.append((name, value))
+            pairs.append((root / name, value))
     if "mapping_sha256" in manifest:
-        pairs.append(("token_mapping.csv", manifest["mapping_sha256"]))
+        pairs.append((root / "token_mapping.csv", manifest["mapping_sha256"]))
     if "h5ad_sha256" in manifest:
-        pairs.append(("tahoe.h5ad", manifest["h5ad_sha256"]))
+        pairs.append((root / "tahoe.h5ad", manifest["h5ad_sha256"]))
     if "cohorts" in manifest:
-        pairs.append((manifest["cohorts"]["file"], manifest["cohorts"]["sha256"]))
+        pairs.append((root / manifest["cohorts"]["file"], manifest["cohorts"]["sha256"]))
     for population in manifest.get("populations", {}).values():
-        pairs.append((population["ranking"], population["sha256"]))
+        if isinstance(population, dict) and "ranking" in population:
+            pairs.append((root / population["ranking"], population["sha256"]))
     if "inputs" in manifest and isinstance(manifest["inputs"], dict) and "genes_sha256" in manifest:
         for name, value in manifest["inputs"].items():
-            pairs.append((name, value["sha256"]))
-    return [(resolve(step, product, name), expected) for name, expected in pairs]
+            pairs.append((resolve(step, product, name), value["sha256"]))
+    return pairs
 
 
 def main():
@@ -136,7 +137,10 @@ def main():
             if str(path) in payloads:
                 continue
             payloads.add(str(path))
-            relative = path.relative_to(step)
+            try:
+                relative = path.relative_to(step)
+            except ValueError:
+                relative = path.relative_to(step.parents[1])
             if str(relative) in SKIP_DECLARED:
                 checks.append({"path": str(relative), "status": "SKIPPED",
                                "reason": "rejected superseded historical Tahoe payload; not an input"})

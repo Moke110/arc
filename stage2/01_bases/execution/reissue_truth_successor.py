@@ -79,13 +79,16 @@ def main():
     parser.add_argument("--step-root", type=Path, default=STEP_ROOT)
     parser.add_argument("--candidate", type=Path, required=True)
     parser.add_argument("--record", type=Path)
+    parser.add_argument("--records-dir", type=Path,
+                        help="where the create/verify JSON results are recorded "
+                             "(defaults to step-root/log/records)")
     parser.add_argument("--rscript", type=Path,
                         default=Path("/home/chang/miniconda3/envs/biomni_e1/bin/Rscript"))
     args = parser.parse_args()
     step = args.step_root.resolve()
     execution = step / "execution"
     output = step / "output"
-    records = step / "log/records"
+    records = (args.records_dir.resolve() if args.records_dir else step / "log/records")
     seals = step / "log/historical/seals"
     stable = output / "tenv-truth-successor"
     training = output / "training-corpora"

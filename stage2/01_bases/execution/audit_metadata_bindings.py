@@ -22,7 +22,7 @@ import sys
 
 SCHEMA = "bases-156-metadata-binding-audit-v1"
 EXPRESSION = {".h5ad", ".npy", ".npz", ".bin"}
-STABLE_DIRS = {"api", "gene-identity", "tenv-raw-counts", "tahoe-raw-counts",
+STABLE_DIRS = {"gene-identity", "tenv-raw-counts", "tahoe-raw-counts",
                "shared-expression", "training-corpora", "tenv-truth",
                "tenv-truth-successor", "tenv-hvg", "historical-training-release"}
 OLD_NAMES = ("identity-v1", "native-v1", "shared-v1", "shared-v2", "training-v1",
@@ -35,6 +35,11 @@ parser = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument("--step-root", type=Path,
                     default=Path(__file__).resolve().parents[1])
+parser.add_argument("--figure", type=Path,
+                    help="figure root; defaults to step-root/figure (a split checkout can "
+                         "carry the tracked code/figure and the payload data in different trees)")
+parser.add_argument("--code-root", type=Path,
+                    help="checkout that carries the published output/api implementation")
 parser.add_argument("--write", type=Path)
 args = parser.parse_args()
 STEP = args.step_root.resolve()
@@ -44,7 +49,8 @@ HEALTH = STEP / "log/health"
 DIAG = STEP / "log/diagnostic"
 HIST = STEP / "log/historical"
 SEALS = HIST / "seals"
-FIG = STEP / "figure"
+FIG = (args.figure or (STEP / "figure")).resolve()
+CODE = (args.code_root or STEP).resolve()
 
 checks, structure = [], []
 manifests = {}
@@ -226,9 +232,11 @@ add(structure, "figure: a renderer exists and the step root no longer publishes 
 
 # --- layout -------------------------------------------------------------------
 stable = {path.name for path in OUT.iterdir() if path.is_dir()}
-add(structure, "layout: output/ holds exactly the stable products plus the public api",
-    "PASS" if stable == STABLE_DIRS else "FAIL",
-    {"missing": sorted(STABLE_DIRS - stable), "extra": sorted(stable - STABLE_DIRS)})
+published_api = (CODE / "output/api/bases").is_dir() or (OUT / "api/bases").is_dir()
+add(structure, "layout: the migrated tree holds exactly the stable products and publishes output/api",
+    "PASS" if stable == STABLE_DIRS and published_api else "FAIL",
+    {"missing": sorted(STABLE_DIRS - stable), "extra": sorted(stable - STABLE_DIRS),
+     "public_api": published_api, "checked_in": str(CODE)})
 preserved = SEALS / "truth-successor-envelope-v1/manifest.json"
 add(structure, "layout: old product/record names survive only under log/historical",
     "PASS" if preserved.is_file() and not (STEP / "execution/build_record").exists() else "FAIL",
