@@ -65,7 +65,7 @@ for old in 02_dataset_corpus evaluation 09_xpert_optimize _frozen; do
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_bases/output/x"\nq = "pert_data/Tahoe-100M/source/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_bases/output/x"\nq = "pert_data/Tahoe-100M/source/"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "bases/external source must pass"
 
