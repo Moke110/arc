@@ -4,7 +4,7 @@ Operating manual for agents in this repository (AI-driven MIRI drug-repositionin
 
 ## Workflow
 
-Before starting software development work in this repository, read and follow Notion’s [软件通用工作流](https://app.notion.com/p/413ab6347e96811b8cd9ecdaf0a972ff). It is the source of truth for the general workflow, including planning, Git, deployment, and resource monitoring. This file contains repository-specific guidance; if it conflicts with the general workflow, follow Notion.
+Before starting software development work in this repository, read and follow Notion’s [General Software Development Workflow](https://app.notion.com/p/413ab6347e96811b8cd9ecdaf0a972ff). It is the source of truth for the general workflow, including planning, Git, deployment, and resource monitoring. This file contains repository-specific guidance; if it conflicts with the general workflow, follow Notion.
 
 ## Execution environment (WSL2)
 
