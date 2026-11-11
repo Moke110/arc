@@ -1,0 +1,1140 @@
+{
+  "figures": {
+    "AUPRC.png": "1459a86bd0f04ac34b302b9bdb7116006633fce8633b4fec116a022715a4651c",
+    "AUPRC.svg": "ba12fab039cd5e6722b24bf39ee2a3da99681b6c03d2700a1cfa7f0303d95fa1",
+    "PR_curve.png": "9cba5ce0768a2bd05da6a2ff1af09cf8e5feb7e0e11ccc0c6269aa2d04a3a89a",
+    "PR_curve.svg": "ad0dfd72ee6335f6ecf1fb5dedf6b8b3469b9c41e1ec3093c90ee79d56e56e59"
+  },
+  "files": {
+    "per_dose.csv": "38064a18065eba2536dc3c24a523189f7aba0a2c10eddff70afc845c105cb0ce",
+    "per_group.csv": "e419ae649d61cc7e59b4a7048b8cf4067664e03324cf93dafa80d021636de9eb",
+    "per_run.csv": "7707ec613ca4e4090d6be2838119fa90201469d279cb88c76ff3fb7e43a0856f",
+    "pr.csv": "9a34bc4bb7fa8ec243c66f1c58d2df975ee7ebe956a5c0760d3c9372b10fe459",
+    "summary.csv": "3d4ee2561feae78aaa68c4e55a79eb26ba26de88d374f392ff40fe0d1afb838d"
+  },
+  "inventory_runs": [
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+        "sha256": "fd988f0bff094a6b1009cb45adcdab1955ed2e75459d230602fe8a70e141e273"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4194135749653148,
+        "R2": -0.0112132805136247,
+        "RMSE": 0.1316591013259596,
+        "Spearman": 0.4138214487679066
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 0,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/prediction.npy",
+        "sha256": "f58b411134d00102241133cc9a1302cb1e3d2993d3598649d41c932fb3d1bce7"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/prediction.json",
+        "sha256": "6e3819a185d027517cebbfb341880180a09d94cd471ff76e0c56f49966086d86"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-17/prediction/run.json",
+        "sha256": "b59b2e290941590f1b2d58ebb36e32a9f0511f4e388778902e1da323d617968e"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+        "sha256": "fd988f0bff094a6b1009cb45adcdab1955ed2e75459d230602fe8a70e141e273"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4188564308067354,
+        "R2": -0.0227538264192698,
+        "RMSE": 0.1321617707908043,
+        "Spearman": 0.4134526940730099
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 0,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/prediction.npy",
+        "sha256": "4f5037966ab77ec19399fcd3beac8ab0f8feb66c8cb091052e23bb9ad2f74737"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/prediction.json",
+        "sha256": "f449b38b9fcefb79a0c8e9d8d1173ef80bcadd5a3cd02f69c3b052908a6cc384"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 42,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-42/prediction/run.json",
+        "sha256": "bf07176df3a2811b8c1a1ed8f3d0f3e1c01ea480a211f1ed030c094fd0e47643"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+        "sha256": "fd988f0bff094a6b1009cb45adcdab1955ed2e75459d230602fe8a70e141e273"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4169873699587718,
+        "R2": -0.0333300120679719,
+        "RMSE": 0.1319531289688538,
+        "Spearman": 0.4132375715555174
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 0,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/prediction.npy",
+        "sha256": "b40d6c4de0722d954d10d180f0846080fdc7c7ab0cb09b1b2ac0f36958b56872"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/prediction.json",
+        "sha256": "d3d60512aed839020009e4fbdb67066c73d3b33e8d6e0343c56b390917272cdc"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/cases.json",
+        "sha256": "1025a0c5e6cd1906e7a6db5199f49f02d08cb936b399c7cab512025498cbf35a"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 2026,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-0-seed-2026/prediction/run.json",
+        "sha256": "9591967401a605e0d7e8b5d7a6b089e52b2df105045d2762aa4cdefcc772d7ec"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/test_cases.csv",
+        "sha256": "180644008d2787bb5f43eab3b6385c3efbb9bcc53c6506c41be36e94f3a66178"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4471246966068902,
+        "R2": 0.0812028015307893,
+        "RMSE": 0.1259930569918732,
+        "Spearman": 0.4330309835543007
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 1,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-17/prediction/prediction.npy",
+        "sha256": "1722ce8ec5cc6737737da566ddf043f43d781ee22fa13b208795e659bf034b71"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-17/prediction/prediction.json",
+        "sha256": "bd5267e62924699dffa0c5b1f8cd04e7f7060d37d5ede1ee9db9f1f1e6127c7e"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-17/prediction/cases.json",
+        "sha256": "9cda594bca1c6505ab30f198849018c925f89fa6135ed43ca7b034c98bed627e"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-17/prediction/run.json",
+        "sha256": "74d9354e9a740dde1d76bb8465ecb40f8418d93d437e65cbeb3afb2557337fd4"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/test_cases.csv",
+        "sha256": "180644008d2787bb5f43eab3b6385c3efbb9bcc53c6506c41be36e94f3a66178"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4326067815700023,
+        "R2": 0.0305146903733495,
+        "RMSE": 0.1279695060563221,
+        "Spearman": 0.4234979819122815
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 1,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-42/prediction/prediction.npy",
+        "sha256": "9f6ebf247477971f38f9ecb249b924459174d1a92325930b516086032ebc5816"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-42/prediction/prediction.json",
+        "sha256": "4128bb745e6ec78099bd30be6b2fb0e77fbdef382d76bed8f07286fcb1d37f8c"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-42/prediction/cases.json",
+        "sha256": "9cda594bca1c6505ab30f198849018c925f89fa6135ed43ca7b034c98bed627e"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 42,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-42/prediction/run.json",
+        "sha256": "f34fbe36c2586ffe26d81e3ad7d19831f46eb5e72f49c48084a27cb826d2c092"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/test_cases.csv",
+        "sha256": "180644008d2787bb5f43eab3b6385c3efbb9bcc53c6506c41be36e94f3a66178"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4396335554400599,
+        "R2": 0.0493174911395088,
+        "RMSE": 0.1268472816482771,
+        "Spearman": 0.4288265801283047
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 1,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-2026/prediction/prediction.npy",
+        "sha256": "d092f2e7e3fe9b8f408fc6e9c81d2779003016e3097b144d0ab35dc2f05d7988"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-2026/prediction/prediction.json",
+        "sha256": "06d8cf36f818f82c23680cda1939b0b44878fdda2488b4d91389b3a1c6b51aee"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-2026/prediction/cases.json",
+        "sha256": "9cda594bca1c6505ab30f198849018c925f89fa6135ed43ca7b034c98bed627e"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 2026,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-1-seed-2026/prediction/run.json",
+        "sha256": "71040bde6a2f9024f2c160d04e997b9d9ba7959143b15a573568801cbf09869f"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/test_cases.csv",
+        "sha256": "0f9667acb9b60846503ae232cdda489ac5aa32ca6fb656ed9a0db7a71c11c521"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4456266927808783,
+        "R2": 0.049565596076852,
+        "RMSE": 0.1313407462590762,
+        "Spearman": 0.4346452019737929
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 2,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-17/prediction/prediction.npy",
+        "sha256": "e14d4f722cb98057cf23cc902e5c1babaa36c20dc79545d1ea053fa4ddbebc63"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-17/prediction/prediction.json",
+        "sha256": "ab6f27ff1f3b8e05aa06a7302fd096748c4bce29143e575d85ff53903fc5edc3"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-17/prediction/cases.json",
+        "sha256": "8192d2c84a6a29949acd5b3214a96a879fc1b6194639d693394de495bfbda0eb"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-17/prediction/run.json",
+        "sha256": "cd930f629bfa0054d729dee92651a350b003e4da4177991727b823e20a368cf4"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/test_cases.csv",
+        "sha256": "0f9667acb9b60846503ae232cdda489ac5aa32ca6fb656ed9a0db7a71c11c521"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.4448699982002758,
+        "R2": 0.0124906771148595,
+        "RMSE": 0.1337351860420351,
+        "Spearman": 0.4350201329721498
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 2,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-42/prediction/prediction.npy",
+        "sha256": "17a592d7bb73f4a1107516fdecab5a12be0479eee6155e4f43ea22e49870d3d5"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-42/prediction/prediction.json",
+        "sha256": "a93409f01c0ed2d17c4b29f61322394aa9906be78217abdf1beecff1fe731496"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-42/prediction/cases.json",
+        "sha256": "8192d2c84a6a29949acd5b3214a96a879fc1b6194639d693394de495bfbda0eb"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 42,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-42/prediction/run.json",
+        "sha256": "1482c58a020221c5496684e85c9e8b3a6b10953906aefc4712560bd8dee97db2"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/test_cases.csv",
+        "sha256": "0f9667acb9b60846503ae232cdda489ac5aa32ca6fb656ed9a0db7a71c11c521"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.452915476560067,
+        "R2": 0.050356534697519,
+        "RMSE": 0.1311692653100934,
+        "Spearman": 0.4397230765195726
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 2,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "perturbdiff",
+      "prediction": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-2026/prediction/prediction.npy",
+        "sha256": "979cff3ac53515b6d88ae176d34de2b2d3fc252295e61914f76394c36d003d19"
+      },
+      "prediction_manifest": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-2026/prediction/prediction.json",
+        "sha256": "023dd4bad9c0b689033ae861bb584eefef187d56edf5f8aa59ef9fdf7f178717"
+      },
+      "prediction_order": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-2026/prediction/cases.json",
+        "sha256": "8192d2c84a6a29949acd5b3214a96a879fc1b6194639d693394de495bfbda0eb"
+      },
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 2026,
+      "selected_run": {
+        "path": "stage2/04_pdiff_hyperparameter/execution/output/tenv-formal-ticket72/slots/fold-2-seed-2026/prediction/run.json",
+        "sha256": "44957a2a6aa79e0403006cd5c665890b94ae3ffc0b512e150c6961aa66e7abc1"
+      },
+      "step": 4
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+        "sha256": "fd988f0bff094a6b1009cb45adcdab1955ed2e75459d230602fe8a70e141e273"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "R2": -0.0195723754463944,
+        "RMSE": 0.1455339043167336
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 0,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "no_change",
+      "reference": "no_change",
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "step": 4,
+      "train_cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/train.csv",
+        "sha256": "576588dc931aad772d894fe1d90a5a3402f64a932f0e9e1a351f4e4ebb56b344"
+      },
+      "train_delta": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/train_expression.npy",
+        "sha256": "5e607ed0a011d518ef21fdf896a6e8a3a1e9dc4230a4f1a8aded1f6b076018a1"
+      }
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/test_cases.csv",
+        "sha256": "fd988f0bff094a6b1009cb45adcdab1955ed2e75459d230602fe8a70e141e273"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.2266037340943071,
+        "R2": 0.0211732404998052,
+        "RMSE": 0.1417654265626706,
+        "Spearman": 0.1885385040398985
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 0,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "delta_mean",
+      "reference": "delta_mean",
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "step": 4,
+      "train_cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/train.csv",
+        "sha256": "576588dc931aad772d894fe1d90a5a3402f64a932f0e9e1a351f4e4ebb56b344"
+      },
+      "train_delta": {
+        "path": "stage2/03_modes_tenv/output/input/fold_0/train_expression.npy",
+        "sha256": "5e607ed0a011d518ef21fdf896a6e8a3a1e9dc4230a4f1a8aded1f6b076018a1"
+      }
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/test_cases.csv",
+        "sha256": "180644008d2787bb5f43eab3b6385c3efbb9bcc53c6506c41be36e94f3a66178"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "R2": -0.0198371949382792,
+        "RMSE": 0.1406793270169671
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 1,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "no_change",
+      "reference": "no_change",
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "step": 4,
+      "train_cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/train.csv",
+        "sha256": "abd216e407e4a11279e2056f4cf5d583943384cd58293384bdb3832f10f930b9"
+      },
+      "train_delta": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/train_expression.npy",
+        "sha256": "86bcc7731b55687979bb1cb7779c0368c91005968a5fefd80ed1f1acdf46989d"
+      }
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/test_cases.csv",
+        "sha256": "180644008d2787bb5f43eab3b6385c3efbb9bcc53c6506c41be36e94f3a66178"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.2309292376092525,
+        "R2": 0.0212836102531048,
+        "RMSE": 0.1368821751701926,
+        "Spearman": 0.186914858297598
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 1,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "delta_mean",
+      "reference": "delta_mean",
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "step": 4,
+      "train_cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/train.csv",
+        "sha256": "abd216e407e4a11279e2056f4cf5d583943384cd58293384bdb3832f10f930b9"
+      },
+      "train_delta": {
+        "path": "stage2/03_modes_tenv/output/input/fold_1/train_expression.npy",
+        "sha256": "86bcc7731b55687979bb1cb7779c0368c91005968a5fefd80ed1f1acdf46989d"
+      }
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/test_cases.csv",
+        "sha256": "0f9667acb9b60846503ae232cdda489ac5aa32ca6fb656ed9a0db7a71c11c521"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "R2": -0.0192357624083885,
+        "RMSE": 0.1471358509170807
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 2,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "no_change",
+      "reference": "no_change",
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "step": 4,
+      "train_cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/train.csv",
+        "sha256": "333a54057e4f1099d045be64c5d269367709588e879692a8c68759739833db16"
+      },
+      "train_delta": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/train_expression.npy",
+        "sha256": "94d7e4f2e8ffd6467a334035ad741a290edd559190b296db4469cdff633b5632"
+      }
+    },
+    {
+      "cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/test_cases.csv",
+        "sha256": "0f9667acb9b60846503ae232cdda489ac5aa32ca6fb656ed9a0db7a71c11c521"
+      },
+      "continuous_axis": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "continuous_gene_count": 18164,
+      "continuous_metrics": {
+        "PCC": 0.2311250767184799,
+        "R2": 0.0251129202040604,
+        "RMSE": 0.1431936249481794,
+        "Spearman": 0.1926062191803514
+      },
+      "continuous_provisional": false,
+      "continuous_truth": [
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/truth.npy",
+            "sha256": "680400be0acd01cc699cadf7ede10afb753b608fbacecdb14e14d97de471f376"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_0/evaluator/groups.csv",
+            "sha256": "6f0ffaef03bfa42fe87efd61372a5fab798118a55857eb6c206ff5d7f1cef551"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/truth.npy",
+            "sha256": "4e0a629f28a3e86f906f66ec1aa0e69628c4694612f06d6ccf931292c77c9792"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_1/evaluator/groups.csv",
+            "sha256": "01c38e476324484aafef3b14a149fba93fb51b4a5315bb4cb42a74cf56d6e349"
+          }
+        },
+        {
+          "delta": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/truth.npy",
+            "sha256": "2ac23d0f4611b487b0d0fb1a57e41004aac478061720df8564eba33a1e187277"
+          },
+          "groups": {
+            "path": "stage2/03_modes_tenv/output/input/fold_2/evaluator/groups.csv",
+            "sha256": "8b73c4ec4f6a24c2ba7c8b18c83499313807f50ae1c3158aa263b3192c51172a"
+          }
+        }
+      ],
+      "dataset": "tenv",
+      "fold": 2,
+      "genes": {
+        "path": "stage2/03_modes_tenv/output/input/genes.csv",
+        "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+      },
+      "model": "delta_mean",
+      "reference": "delta_mean",
+      "regime": "cold-drug",
+      "role": "test",
+      "seed": 17,
+      "step": 4,
+      "train_cases": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/train.csv",
+        "sha256": "333a54057e4f1099d045be64c5d269367709588e879692a8c68759739833db16"
+      },
+      "train_delta": {
+        "path": "stage2/03_modes_tenv/output/input/fold_2/train_expression.npy",
+        "sha256": "94d7e4f2e8ffd6467a334035ad741a290edd559190b296db4469cdff633b5632"
+      }
+    }
+  ],
+  "labels": {
+    "tenv": "49281a84ff7166be71c21bd0989110a12ccbd3622d4d3fe02d1b6faa441a93a5"
+  },
+  "metrics": [
+    "AUPRC",
+    "AUPRC_positive",
+    "AUPRC_negative"
+  ],
+  "schema": "stage2-significance-scoring-v1",
+  "sources": {
+    "continuous.py": "ee7b0e24fcc7e26f414e5170504d67b193cefa4576fb6940ec132b3e57e3287b",
+    "evaluate.py": "cba78af77f75cc4f2a0816844ef3453e322d1f94720ce96e3494c3a8af830f75",
+    "figures.py": "8200fb2617d6e669aa00e1a7c0d1d47a23b36d7b29cb49f90899bd8b22bbc85a",
+    "inventory.py": "91fc91d013b3e67703a4e921b54c4806ca9bd128a91cd151f18ddf4a6dd50436",
+    "metrics.py": "ca6349b71aef57e5fbead874d29b500e4a8d7f868a1305ec631cd87475e05c22"
+  }
+}

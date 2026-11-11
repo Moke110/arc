@@ -107,25 +107,10 @@ reviewed joint runtime for the next dispatch, after its separate preflight):
   stage2/03_modes_tenv/execution/formal/queue.json
 ```
 
-Predictions and checkpoints stay local at `output/formal/`. Canonical final test
-scoring waits for all 63 completed or terminal failure outcomes; no pilot is a
-formal run. The user-authorized 2026-11-06 amendment in ADR 0042 permits separate
-partial scoring of validated completed predictions while remaining fits continue.
-After that barrier, use `benchmark.py seal` with the frozen commands and models,
-then `evaluate --workers 2` and `replay`. All three figures export both PNG and
-text-preserving SVG, with metric-defined counts distinguished from completed
-runs.
-
-
-For an unsupplemented evaluation, publish the verified CSV tables and three
-PNG/SVG figures to the step output directory:
-
-```bash
-/home/chang/miniconda3/envs/arc/bin/python \
-  stage2/03_modes_tenv/execution/script/deliver.py \
-  --output stage2/03_modes_tenv/output/formal \
-  --publish stage2/03_modes_tenv/output
-```
+Predictions and checkpoints stay local at `output/formal/`. The original
+63-slot terminal barrier and authenticated completed-run verification remain
+available. Current tenv scoring, figures and replay use the shared commands
+above. Earlier partial/final score publication and best-run figures are retired.
 
 Native learning curves are an additional artifact-only deliverable. Rebuild the
 interim figure without loading models, datasets, prediction arrays or test truth:
@@ -136,8 +121,7 @@ interim figure without loading models, datasets, prediction arrays or test truth
 ```
 
 For unsupplemented final delivery and replay, run that command with `--final`
-after all 63 outcomes are terminal. The supplement-aware replay below refreshes
-the final learning curves alongside the other figures. The renderer checks the
+after all 63 outcomes are terminal. The standalone renderer refreshes the final learning curves. The renderer checks the
 terminal barrier and writes `output/learning_curves.png` and its text-preserving
 SVG companion at the same display paths. `output/learning_curves.json` records source checkpoint
 hashes, actual plotted coordinates, available/missing histories, run statuses and
@@ -251,11 +235,8 @@ remain in the learning-curve JSON evidence.
 
 The selected matrix completed **63/63** slots across five admitted predictors
 and two deterministic references. The candidate registry records eleven
-excluded and four unresolved candidates. The evaluator produced 28,980
-drug–dose group rows and 63 run-level PR sources. Every model–metric pair has
-nine defined runs except `no_change` PCC and Spearman, which are undefined in
-all nine runs because its predictions are constant. Each reference has three
-folds with deterministic seed copies.
+excluded and four unresolved candidates. The shared evaluator now rescores these frozen predictions under ADR 0059.
+Each reference has three folds with deterministic seed copies.
 
 The original joint v2 scheduler sampled host pressure and the read-only watcher
 monitored it. Automatic in-flight pressure stops were unavailable in that
@@ -273,15 +254,7 @@ recorded in its policy.
 
 ### Replay the published figures
 
-Use the preserved workstation artifacts, with the scheduler idle and at least
-12 GiB available RAM. Run from the repo root. The pinned publication command
-uses the saved evaluator results and refreshes all four figure pairs and their
-provenance. The initial run used `prepare`, `verify` and `evaluate` in order,
-with independent review of the emitted selection and evaluation digests.
-
-
-
-Preparation, two-worker evaluation and publication peaked at 210,896,
-422,864 and 259,312 KiB RSS, respectively. The [final evidence index](execution/final_record/evidence.sha256)
-binds the compact audit records and resource logs. The live prediction arrays,
-model weights and PR source array remain local.
+Use the shared tenv publication and replay commands at the top of this file.
+Learning curves retain their standalone history-based workflow. Historical
+score publications and PR source arrays are retired; trained weights, sealed
+predictions and resource records are retained.

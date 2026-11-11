@@ -35,31 +35,12 @@ records the screening, confirmation and attribution rules.
 
 ## Paired optimization results
 
-Run `publish` through the dedicated scheduler to verify all 18 cells
-against their sealed artifacts and reproduce the publication. From the
-runtime checkout, use the arc interpreter.
-
-```bash
-step=stage2/06_pdiff_transfer_optimize
-python "$step/execution/script/paired_publication.py" publish "$step/output/paired-transfer"
-```
-
-The tracked numeric record also supports a figure-only replay. With the
-arc plotting environment, the command verifies the regenerated PNG
-against its recorded SHA-256. Supply `--figure /path/to/replay.png` to
-write a separate copy.
-
-
-
-## Historical cold-drug results
-
-The dose reset improved the 0.2 and 1 µM strata by +0.01155 and +0.01470
-respectively, with a −0.00080 change at 10 µM. Neither intervention reached
-the +0.010 pooled promotion threshold. The added screening seeds and the
-fold 1 source fits, target fits and test scoring were skipped. The dose
-reset reduced the seed 17 validation gap by about 54%. The major-contribution
-rule requires independent fold 1 replication and a matched gap comparison
-there, so attribution remains unresolved.
+Use the shared publication and replay commands above for all current tenv
+retrieval results. Previous paired score tables, gains, PR figures and scoring
+commands are retired; their numeric values remain only in Git. Training and
+terminal seed dispositions remain available in the score-free provenance
+records. The historical confirmation branch was skipped; this retrospective
+rescoring does not authorize new training or promotion.
 
 The separate source audit covers nine shared tenv training parents and
 50 Tahoe cell lines. Seven of those parents share identical standardized
@@ -257,21 +238,18 @@ run_phase() {
     "$pdiff" "$scheduler" run "$queue"
 }
 
-for phase in verify predict score; do
+for phase in verify predict; do
     run_phase reference "$phase"
 done
 run_phase log-source fit
 for arm in random log all-half main-half adaLN-only; do
-    for phase in verify fit predict score matrix-verify; do
+    for phase in verify fit predict; do
         run_phase "$arm" "$phase"
     done
 done
 ```
 
-Each matrix verification writes `<matrix-root>/<arm>/matrix.json`. After
-all five have verified, submit the [publication command](#paired-optimization-results)
-as a CPU job through the same scheduler. The publisher checks the queued
-phase and input digests against the current cells, then verifies each
-successful attempt's log against the corresponding sealed output. For a
-fresh run, use `--record` and `--figure` to write the newly generated
-resource ledger and PNG to separate paths for comparison.
+The original per-arm scoring and matrix-report phases are retired. Existing
+sealed predictions are bound by the shared inventory and rescored with the
+three current significance metrics. Submit the shared publication command
+above under the scheduler and repository resource limits.

@@ -38,11 +38,7 @@ and compares CM, Tahoe, Transfer and Mix with two deterministic references.
 
 ## Formal results
 
-| Regime | Learned slots | Seed 17 | Seed 42 | Seed 2026 | Complete pairs | Mean difference |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| warm-start | 12/12 | -0.01737 | -0.03511 | -0.03219 | 3/3 | -0.02822 |
-| cold-cm-drug | 12/12 | -0.02825 | -0.02096 | -0.01864 | 3/3 | -0.02262 |
-| cold-drug | 12/12 | -0.02966 | -0.02252 | -0.02481 | 3/3 | -0.02566 |
+Current results are linked above. Historical paired score differences remain only in Git.
 
 Counts below are shared parent-connectivity blocks in the realized Tahoe
 and tenv memberships. Mix uses Tahoe's training membership. Tahoe and
@@ -56,18 +52,10 @@ Transfer use the source training and validation memberships.
 
 ## Shared cold tenv comparison
 
-Run from the repository root using the `arc` interpreter. Submit the full
-replay to the dedicated scheduling subagent as a CPU job under the repository
-resource limits.
-
-```bash
-step04=stage2/04_pdiff_hyperparameter
-step05=stage2/05_pdiff_transfer
-python "$step05/execution/script/cold_tenv.py" \
-  "$step04/execution/output/tenv-formal-ticket72" \
-  "$step04/output/checkpoints/tenv" \
-  "$step05/execution/output/cold-tenv-replay"
-```
+The original Step 04 tenv checkpoint and ordered prediction reuse are preserved.
+The previous standalone cold replay score publication is retired. Current cold
+regimes are included in the shared tenv inventory and replayed by the commands
+above.
 
 ## Globally cold Tahoe source release
 
@@ -327,20 +315,6 @@ CM evidence. The inventory is the input to publication and scoring.
 
 ## Publication replay
 
-Use the `arc` interpreter from the repository root. Submit real scoring
-and replay to the dedicated scheduler. All output directories must be fresh.
-
-
-
-To verify the tracked release from a checkout, run the command below. It
-uses the publication checksum and path map in
-[run.json](execution/formal_record/run.json). The map includes the sealed
-[generated report](execution/formal_record/results.md) under its original
-logical name, `README.md`.
-
-
-
-Add `--scores "$step/execution/output/ticket83-scores"` to render a
-temporary publication from the original local score record and compare
-the resulting seal with the tracked release. An independently rescored
-directory can be supplied the same way.
+Use the shared publication and replay commands above. Historical score releases
+and their renderer arguments are retired; existing prediction, checkpoint,
+training and exposure provenance remain available.

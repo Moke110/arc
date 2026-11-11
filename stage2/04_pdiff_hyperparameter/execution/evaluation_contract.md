@@ -1,13 +1,18 @@
 # Held-out evaluation artifacts
 
-Run the evaluator with the `arc` interpreter. Repeating the command against
-the same frozen inputs and a fresh output directory replays the evaluation.
-Use the scheduling rules in the step README for full-size work.
+The active retrieval contract is [ADR 0059](../../../docs/adr/0059-stage2-significance-retrieval.md)
+and the [shared evaluator](../../evaluation/README.md). Only tenv retrieval is
+reported, using `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` on full-CM
+measured significance. Run under the step's scheduling and memory limits:
 
 ```bash
-python stage2/04_pdiff_hyperparameter/execution/script/evaluate.py \
-  <plan.json> <outcomes.json> <fresh-output-dir> --plan-sha256 "$plan_sha"
+python stage2/evaluation/publish.py --step 4
+python stage2/evaluation/evaluate.py replay --step 4
 ```
+
+The following producer-plan and prediction schemas describe frozen training
+provenance. They do not authorize Tahoe PR/AUPRC or the retired positional
+scoring interface.
 
 ## Freeze the plan before test inference
 
@@ -68,17 +73,10 @@ own directories. The frozen predictor request retains its absolute
 
 ## Read the outputs
 
-`per_group.csv` scores the means of the matching wells, with undefined
-metric reasons. `per_run.csv` includes all expected slots, equal-weight
-group means, valid-group counts and status. `summary.csv` gives run means,
-sample standard deviations, valid-run counts and completion counts for
-each dataset and model. Undefined metric cells are blank.
-
-Each reference directory binds one frozen group list to two single Δ vectors.
-The vectors apply to every listed group in that fold. `delta_mean` gives
-equal weight to the mean Δ of each training group. `no_change` is zero Δ.
-Reference rows have a blank seed and contribute one result per fold.
-
-`evaluation.json` binds the plan, outcomes and output hashes, records
-whether every expected result is complete, and discloses the prior Step 03
-scoring of the formal tenv test memberships when tenv is in scope.
+`output/retrieval/` holds the generated run/group/dose tables, summary, pooled
+PR points, PR curve and AUPRC PNG/SVG figures, and hash manifest. Exact group AP
+and fixed-group pooled PR follow the shared contract. Undefined scores retain
+counts and reasons. Continuous metrics remain available. Deterministic
+reference seed copies are retained as outcomes and counted once per fold in
+uncertainty summaries. Frozen producer bindings and measured label hashes are
+checked again before final publication.

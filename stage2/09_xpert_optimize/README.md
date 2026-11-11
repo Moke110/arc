@@ -191,9 +191,7 @@ All nine XPert arms completed the formal fold 0, seed 17 policy and replayed
 their selected checkpoints on tenv validation and test. The validation seal in
 `88b621b` advanced all four G arms and all four MLP arms for confirmation.
 
-```bash
-"$CAP" "$RECORD/directional-replay" "$PY" "$SCORE" replay-revision --work-root "$WORK"
-```
+Use the shared publication and replay commands above for current metrics.
 
 The shared continuous panel contains 73 genes, so its metrics are provisional.
 
