@@ -1,4 +1,4 @@
-"""Verify fold-local ADR0060 inputs and freeze the independent 24-run matrix."""
+"""Verify fold-local ADR0060 inputs and freeze the independent eight-run matrix."""
 import argparse
 import hashlib
 import json
@@ -13,8 +13,7 @@ STEP = REPO / 'stage2/09_xpert_optimize'
 sys.path.insert(0, str(STEP / 'execution/01_corpus'))
 from build import DEFAULT_NATIVE, normalize_counts, raw_batches
 
-MODELS = ('XPert_G512', 'XPert_G1024', 'XPert_G2048',
-          'XPert_MLP512', 'XPert_MLP1024', 'XPert_MLP2048')
+MODELS = ('XPert_G512', 'XPert_MLP512')
 
 
 def sha256(path):
@@ -59,7 +58,7 @@ def freeze(inputs, landmark, tenv_release, output, fixture=False, native=DEFAULT
                 raise ValueError('rank/panel payload differs')
         previous = set()
         view_records = {}
-        for axis, count in [('G512', 512), ('G1024', 1024), ('G2048', 2048), ('G18164', 18164)]:
+        for axis, count in [('G512', 512), ('G18164', 18164)]:
             view = root / 'views' / axis
             predictor, evaluator = view / 'predictor', view / 'evaluator'
             manifest = json.loads((predictor / 'manifest.json').read_text())

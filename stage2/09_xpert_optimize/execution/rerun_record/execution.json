@@ -1,6 +1,6 @@
 {
   "schema": "step09-rerun-execution-v1",
-  "status": "running",
+  "status": "reconfiguring",
   "service": "arc-step09-round1-rerun.service",
   "started_at": "2026-11-11T14:07:09+08:00",
   "integration_branch": "dev",
@@ -13,15 +13,32 @@
     "verify_all_peak_rss_kib": 79236,
     "verify_all_resources": "stage2/09_xpert_optimize/execution/tmp/rerun/resources/verify-all"
   },
-  "formal_run_count": 24,
-  "completed_runs": 1,
+  "formal_run_count": 8,
+  "completed_runs": 2,
   "remaining_acceptance": [
-    "24 complete formal two-phase runs",
+    "8 complete formal two-phase runs",
     "selected-checkpoint test replay",
     "real-data three-figure publication and replay",
     "visual inspection and historical artifact replacement"
   ],
   "telemetry_note": "Service PATH lacks nvidia-smi; first fit retains torch GPU peaks and a supplemental live GPU monitor. Subsequent capped jobs resolve WSL nvidia-smi explicitly.",
-  "current_run": "XPert_G512-fold-0-seed-42",
-  "recovery_record": "execution/rerun_record/recovery.json"
+  "current_run": null,
+  "recovery_record": "execution/rerun_record/recovery.json",
+  "scope_amendment": {
+    "models": [
+      "XPert_G512",
+      "XPert_MLP512"
+    ],
+    "folds": [
+      0,
+      1
+    ],
+    "seeds": [
+      17,
+      42
+    ],
+    "preserved_prior_scope": "execution/rerun_record/six_model_history",
+    "excluded_training_records": "execution/tmp/rerun/superseded-six-model",
+    "reason": "Explicit user request on2026-11-11"
+  }
 }

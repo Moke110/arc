@@ -16,4 +16,4 @@ staging=$step/output/round1-staging
     --work-root "$work" --predictions-root "$work/predictions" --loss-root "$work/test_loss" \
     --output "$staging"
 "$python" "$step/execution/script/rerun_publication.py" replay --output "$staging"
-printf '24 fits, test prediction replays and staged figure replay complete; awaiting visual/final acceptance.\n'
+printf '8 fits, test prediction replays and staged figure replay complete; awaiting visual/final acceptance.\n'

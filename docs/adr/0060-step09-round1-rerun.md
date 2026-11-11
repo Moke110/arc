@@ -1,14 +1,21 @@
-# Rerun Step 09 Round 1 with six models and validation early stopping
+# Rerun Step 09 Round 1 with two models and validation early stopping
 
 **Status:** accepted (2026-11-11). Amends ADR 0057's Round 1 arms, run matrix,
 continuous scoring and artifact placement. ADR 0059 retrieval remains unchanged.
 
-Replace the exploratory nine-arm, one-run screen with G512, G1024, G2048,
-MLP512, MLP1024 and MLP2048 crossed with folds 0/1 and seeds 17/42 from
-Step 03. G arms use nested fold-local training-only HVGs; MLP arms retain the
-full 18,164-gene axis. Preserve existing normalization and loss definitions.
-This compares smaller gene axes and compressed full-axis models within the
-available workstation budget.
+Replace the exploratory nine-arm, one-run screen with G512 and MLP512 crossed
+with folds 0/1 and seeds 17/42 from Step 03: eight runs in total. G512 uses its
+frozen fold-local training-only HVG panel; MLP512 retains the full 18,164-gene
+axis. Preserve existing normalization and loss definitions.
+
+**Scope amendment (2026-11-11):** The user reduced the original six-model,
+24-run plan to these two models while execution was in progress. Reuse completed
+G512 runs whose input and policy identities still match. Preserve completed and
+interrupted G1024 work outside the active matrix; do not continue any G1024,
+G2048, MLP1024 or MLP2048 formal run. The superseded plan and qualification
+records remain in `execution/rerun_record/six_model_history/` under Step 09.
+The training recipe, four paired slots per model, evaluation definitions and
+three-figure publication contract remain unchanged.
 
 Use cold-cm-drug folds: Tahoe has a shared train/validation partition and may
 contain tenv test drugs; tenv train/validation exclude that fold's test drugs.

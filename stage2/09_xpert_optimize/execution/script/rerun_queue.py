@@ -1,4 +1,4 @@
-"""Serial, capped execution of the verified ADR 0060 24-slot plan."""
+"""Serial, capped execution of the verified ADR 0060 eight-slot plan."""
 import argparse
 import fcntl
 import json
@@ -9,15 +9,15 @@ import sys
 from round_contract import sha256, read_json, write_json
 
 SCRIPT = Path(__file__).resolve().parent
-MODELS = {f'XPert_{kind}{size}' for kind in ('G', 'MLP') for size in (512, 1024, 2048)}
+MODELS = {'XPert_G512', 'XPert_MLP512'}
 
 
 def verify_plan(plan):
     expected = {(m, f, s) for m in MODELS for f in (0, 1) for s in (17, 42)}
     runs = plan['runs']
     if (plan['schema'] != 'step09-round1-rerun-plan-v1' or plan['fixture']
-            or len(runs) != 24 or {(r['model'], r['fold'], r['seed']) for r in runs} != expected
-            or len({r['id'] for r in runs}) != 24):
+            or len(runs) != 8 or {(r['model'], r['fold'], r['seed']) for r in runs} != expected
+            or len({r['id'] for r in runs}) != 8):
         raise ValueError('formal execution requires the verified complete real-data plan')
     for run in runs:
         for side in ('predictor', 'evaluator'):
@@ -50,9 +50,9 @@ def execute(plan_path, policy, work, selected=None, smoke=False):
         if (qualification['status'] != 'qualified'
                 or qualification['plan_sha256'] != sha256(plan_path)
                 or qualification['formal_policy_sha256'] != sha256(policy)
-                or len(qualification['runs']) != 6
+                or len(qualification['runs']) != 2
                 or {r['id'].split('-fold-')[0] for r in qualification['runs']} != MODELS):
-            raise ValueError('formal execution requires matching six-model qualification evidence')
+            raise ValueError('formal execution requires matching two-model qualification evidence')
     work.mkdir(parents=True, exist_ok=True)
     with (work / '.queue.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

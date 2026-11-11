@@ -3,18 +3,20 @@
 ## Round 1 rerun (ADR 0060)
 
 The active rerun is specified in [issue #140](https://github.com/Moke110/arc/issues/140)
-and [ADR 0060](../../docs/adr/0060-step09-round1-rerun.md). It uses G512,
-G1024, G2048, MLP512, MLP1024 and MLP2048, each on folds 0/1 and seeds
-17/42. The sections below describe the previous exploratory study.
+and [ADR 0060](../../docs/adr/0060-step09-round1-rerun.md), amended by the user
+on 2026-11-11 to use only G512 and MLP512, each on folds 0/1 and seeds 17/42
+(eight runs). Completed matching G512 runs are reused. The original six-model
+plan and excluded-model records are retained as historical evidence. The
+sections below describe the previous exploratory study.
 
-The [verified plan](execution/rerun_record/plan.json) binds all 24 input
+The [verified plan](execution/rerun_record/plan.json) binds all eight input
 identities. [Formal policy](execution/rerun_record/policy.json) fixes effective
 batch 16, validation cadence, exposure budgets and early stopping. The
 [smoke policy](execution/rerun_record/smoke-policy.json) is qualification only
 and cannot be used for a formal publication. Real-data work is serial and
 memory capped; live telemetry is retained under `execution/tmp/rerun/`.
 
-From the repository root, after input verification and six-arm qualification:
+From the repository root, after input verification and two-arm qualification:
 
 ```bash
 PY=/home/chang/miniconda3/envs/arc/bin/python

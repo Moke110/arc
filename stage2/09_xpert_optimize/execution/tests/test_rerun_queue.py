@@ -21,6 +21,21 @@ class QueueTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify_plan(plan)
 
+    def test_only_two_models_form_the_complete_eight_run_plan(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / 'manifest.json').write_text('{}')
+            runs = [{'id': f'{model}-{fold}-{seed}', 'model': model, 'fold': fold, 'seed': seed,
+                     'predictor': str(root), 'predictor_sha256': sha256(root / 'manifest.json'),
+                     'evaluator': str(root), 'evaluator_sha256': sha256(root / 'manifest.json')}
+                    for model in ('XPert_G512', 'XPert_MLP512')
+                    for fold in (0, 1) for seed in (17, 42)]
+            plan = {'schema': 'step09-round1-rerun-plan-v1', 'fixture': False, 'runs': runs}
+            verify_plan(plan)
+            unwanted = dict(runs[0], model='XPert_G1024', id='excluded')
+            with self.assertRaises(ValueError):
+                verify_plan(dict(plan, runs=runs + [unwanted]))
+
     def test_completed_fit_requires_selected_checkpoint_identity(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)

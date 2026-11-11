@@ -47,50 +47,6 @@
       "seed": 42
     },
     {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/evaluator",
-      "evaluator_sha256": "b325a1df804074e8feefa09b58ac6206c14519d630021ea55b4819e66a0828e7",
-      "fold": 0,
-      "gene_count": 1024,
-      "id": "XPert_G1024-fold-0-seed-17",
-      "model": "XPert_G1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/predictor",
-      "predictor_sha256": "14fe05ed3086e947f00713ec7573c01ad3c0ced8f099f464179a271dcbf62a0d",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/evaluator",
-      "evaluator_sha256": "b325a1df804074e8feefa09b58ac6206c14519d630021ea55b4819e66a0828e7",
-      "fold": 0,
-      "gene_count": 1024,
-      "id": "XPert_G1024-fold-0-seed-42",
-      "model": "XPert_G1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/predictor",
-      "predictor_sha256": "14fe05ed3086e947f00713ec7573c01ad3c0ced8f099f464179a271dcbf62a0d",
-      "seed": 42
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/evaluator",
-      "evaluator_sha256": "22aca58cf534aa7d9b1305d39b2e7384969a08cd2193f7ff5206d8fc304efdc9",
-      "fold": 0,
-      "gene_count": 2048,
-      "id": "XPert_G2048-fold-0-seed-17",
-      "model": "XPert_G2048",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/predictor",
-      "predictor_sha256": "357ed6a5901c428d92b35a6db108ae5a419271bdd516f806b6ecf07f354efcea",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/evaluator",
-      "evaluator_sha256": "22aca58cf534aa7d9b1305d39b2e7384969a08cd2193f7ff5206d8fc304efdc9",
-      "fold": 0,
-      "gene_count": 2048,
-      "id": "XPert_G2048-fold-0-seed-42",
-      "model": "XPert_G2048",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/predictor",
-      "predictor_sha256": "357ed6a5901c428d92b35a6db108ae5a419271bdd516f806b6ecf07f354efcea",
-      "seed": 42
-    },
-    {
       "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
       "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
       "fold": 0,
@@ -108,50 +64,6 @@
       "gene_count": 18164,
       "id": "XPert_MLP512-fold-0-seed-42",
       "model": "XPert_MLP512",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
-      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
-      "seed": 42
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
-      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
-      "fold": 0,
-      "gene_count": 18164,
-      "id": "XPert_MLP1024-fold-0-seed-17",
-      "model": "XPert_MLP1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
-      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
-      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
-      "fold": 0,
-      "gene_count": 18164,
-      "id": "XPert_MLP1024-fold-0-seed-42",
-      "model": "XPert_MLP1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
-      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
-      "seed": 42
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
-      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
-      "fold": 0,
-      "gene_count": 18164,
-      "id": "XPert_MLP2048-fold-0-seed-17",
-      "model": "XPert_MLP2048",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
-      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
-      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
-      "fold": 0,
-      "gene_count": 18164,
-      "id": "XPert_MLP2048-fold-0-seed-42",
-      "model": "XPert_MLP2048",
       "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
       "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
       "seed": 42
@@ -179,50 +91,6 @@
       "seed": 42
     },
     {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/evaluator",
-      "evaluator_sha256": "aa304681a2c33bbb2bdc813dc3f521e0c9a9169a730a8e995dec8be26a784ba0",
-      "fold": 1,
-      "gene_count": 1024,
-      "id": "XPert_G1024-fold-1-seed-17",
-      "model": "XPert_G1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/predictor",
-      "predictor_sha256": "a6640045c6642fb47a23bb4cf302de2abbaa8d3d2043b66d92273c4b41f7f3cf",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/evaluator",
-      "evaluator_sha256": "aa304681a2c33bbb2bdc813dc3f521e0c9a9169a730a8e995dec8be26a784ba0",
-      "fold": 1,
-      "gene_count": 1024,
-      "id": "XPert_G1024-fold-1-seed-42",
-      "model": "XPert_G1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/predictor",
-      "predictor_sha256": "a6640045c6642fb47a23bb4cf302de2abbaa8d3d2043b66d92273c4b41f7f3cf",
-      "seed": 42
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/evaluator",
-      "evaluator_sha256": "ad2b7c4eebcd39bb79861d0027e8e541b6b4ad3f17b1f81f735271f676fde634",
-      "fold": 1,
-      "gene_count": 2048,
-      "id": "XPert_G2048-fold-1-seed-17",
-      "model": "XPert_G2048",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/predictor",
-      "predictor_sha256": "1340630445efa9e1eb6d37aef0df0730d7a823d0026ec91f5a13e4f7dedc52c7",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/evaluator",
-      "evaluator_sha256": "ad2b7c4eebcd39bb79861d0027e8e541b6b4ad3f17b1f81f735271f676fde634",
-      "fold": 1,
-      "gene_count": 2048,
-      "id": "XPert_G2048-fold-1-seed-42",
-      "model": "XPert_G2048",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/predictor",
-      "predictor_sha256": "1340630445efa9e1eb6d37aef0df0730d7a823d0026ec91f5a13e4f7dedc52c7",
-      "seed": 42
-    },
-    {
       "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
       "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
       "fold": 1,
@@ -240,50 +108,6 @@
       "gene_count": 18164,
       "id": "XPert_MLP512-fold-1-seed-42",
       "model": "XPert_MLP512",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
-      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
-      "seed": 42
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
-      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
-      "fold": 1,
-      "gene_count": 18164,
-      "id": "XPert_MLP1024-fold-1-seed-17",
-      "model": "XPert_MLP1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
-      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
-      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
-      "fold": 1,
-      "gene_count": 18164,
-      "id": "XPert_MLP1024-fold-1-seed-42",
-      "model": "XPert_MLP1024",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
-      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
-      "seed": 42
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
-      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
-      "fold": 1,
-      "gene_count": 18164,
-      "id": "XPert_MLP2048-fold-1-seed-17",
-      "model": "XPert_MLP2048",
-      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
-      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
-      "seed": 17
-    },
-    {
-      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
-      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
-      "fold": 1,
-      "gene_count": 18164,
-      "id": "XPert_MLP2048-fold-1-seed-42",
-      "model": "XPert_MLP2048",
       "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
       "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
       "seed": 42

@@ -1,4 +1,4 @@
-"""CLI contract for fold-local rerun inputs and the 24-slot study."""
+"""CLI contract for fold-local rerun inputs and the eight-slot study."""
 import json
 from tempfile import TemporaryDirectory
 from pathlib import Path
@@ -43,10 +43,11 @@ class RerunInputsTest(unittest.TestCase):
             run('script/rerun_inputs.py', '--inputs', root, '--landmark', landmark,
                 '--tenv-release', tenv, '--native', native, '--output', plan, '--fixture')
             payload = json.loads(plan.read_text())
-            self.assertEqual(len(payload['runs']), 24)
-            self.assertEqual(len({r['id'] for r in payload['runs']}), 24)
+            self.assertEqual(len(payload['runs']), 8)
+            self.assertEqual(len({r['id'] for r in payload['runs']}), 8)
             self.assertEqual({r['fold'] for r in payload['runs']}, {0, 1})
             self.assertEqual({r['seed'] for r in payload['runs']}, {17, 42})
+            self.assertEqual({r['model'] for r in payload['runs']}, {'XPert_G512', 'XPert_MLP512'})
 
     def test_fold_one_panels_ignore_all_nontraining_expression(self):
         with TemporaryDirectory() as temp:
