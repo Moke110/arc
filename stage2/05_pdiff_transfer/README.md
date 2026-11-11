@@ -1,5 +1,30 @@
 # Step 05 — PerturbDiff transfer from Tahoe to tenv
 
+## Retrieval evaluation
+
+The active retrieval statistics are **AUPRC**, **AUPRC_positive**, and
+**AUPRC_negative**, with corresponding **PR curve** panels. All use full-CM
+DESeq2 significance and direction matching, under [ADR 0059](../../docs/adr/0059-stage2-significance-retrieval.md).
+The [shared evaluator](../evaluation/README.md) defines the denominator,
+undefined groups, pooling, and bounded resource policy.
+
+- [PR curve](output/retrieval/PR_curve.png)
+- [AUPRC and continuous metrics](output/retrieval/AUPRC.png)
+- [Run statistics](output/retrieval/per_run.csv), [dose statistics](output/retrieval/per_dose.csv), and [summary](output/retrieval/summary.csv)
+- [Replay manifest](output/retrieval/manifest.json)
+
+From the repository root, after the relevant significance release is ready:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 5
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 5
+```
+
+Previous retrieval scores, metric figures, and historical copies were removed;
+Git retains their version history. Existing checkpoints and their original
+validation-loss selections are unchanged. Other sections below describe input
+and training provenance, rather than the retired retrieval publication.
+
 > **Cross-dataset dose encoding limitation.** Tahoe uses 0.05, 0.5 and 5 µM.
 > Tenv uses 0.2, 1 and 10 µM. The current bridge interpolates the learned
 > categorical embeddings on the log-dose axis and clamps outside Tahoe's
@@ -12,12 +37,6 @@ warm-start, cold-cm-drug and cold-drug comparisons. Each tests tenv responses
 and compares CM, Tahoe, Transfer and Mix with two deterministic references.
 
 ## Formal results
-
-All 36 learned-arm slots completed. Transfer scored below CM in all nine
-paired seed comparisons on these fixed splits. Each pair subtracts CM's
-mean of positive and negative AP@100 from Transfer's corresponding mean,
-with equal weight for each direction. Seed variation describes repeated
-fits on each fixed split.
 
 | Regime | Learned slots | Seed 17 | Seed 42 | Seed 2026 | Complete pairs | Mean difference |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -35,23 +54,7 @@ Transfer use the source training and validation memberships.
 | cold-cm-drug | 1 | 2 | 0 | 0 |
 | cold-drug | 0 | 0 | 0 | 0 |
 
-- [Eight-metric summary](summary.csv), [per-run scores and valid-group counts](per_run.csv), and [metric plots](metrics.png). The cold CM and deterministic references share the `cold-shared` scope.
-- [Full-precision paired contrasts](execution/formal_record/paired_ap100.json) and [undefined metric counts](execution/formal_record/undefined_reasons.json).
-- [Directional precision–recall curves](pr_curves.png) and [plotted points](execution/formal_record/pr_points.json).
-- [Learning curves](learning_curves.png), [plotted points](execution/formal_record/learning_points.json), and [selected checkpoint index](execution/formal_record/checkpoints.json).
-- [Publication checksums](execution/formal_record/publication.json) and [execution and replay evidence](execution/formal_record/run.json).
-- [Output handoff](output/handoff.json) maps all 36 logical slots to the sealed prediction values, case order and selected source and target checkpoints. Paths start at the repository root. Both cold regimes point to the same three historical CM predictions. The handoff references the original local files in place and retains their SHA-256 digests.
-
 ## Shared cold tenv comparison
-
-Both cold regimes use the frozen Step 04 tenv fold 0. The comparison CLI
-verifies all three membership lists, their parent-connectivity blocks and
-case order, the matched controls and the ordered 18,164-gene axis. It verifies
-the three indexed CM checkpoints and their existing held-out predictions
-against the Step 04 recipe, validation replay and prediction seals. Scoring
-reads held-out expression only after these checks. The two seedless
-references and the three CM predictions are scored once. The replay checks
-all eight metrics and both directional PR curves against the Step 04 record.
 
 Run from the repository root using the `arc` interpreter. Submit the full
 replay to the dedicated scheduling subagent as a CPU job under the repository
@@ -65,22 +68,6 @@ python "$step05/execution/script/cold_tenv.py" \
   "$step04/output/checkpoints/tenv" \
   "$step05/execution/output/cold-tenv-replay"
 ```
-
-`comparison.json` binds the two regime names to the shared artifacts, with
-CM evidence indexed by seed and a SHA-256 inventory of the output.
-`split.json` gives the frozen input identity, predictor paths and hashes,
-case and group counts, and each role's parent-connectivity blocks.
-`predictor_request.json` is the verified Step 04 request and lists only
-predictor inputs. `per_run.csv`, `per_group.csv` and `tenv/pr_curves.json`
-use the Step 04 evaluator format, where the model name `perturbdiff` means
-the CM arm for this comparison.
-
-The [scheduled replay record](execution/cold_record/replay.json) confirms
-exact agreement with the Step 04 fold 0 scores and directional PR curves.
-The frozen train, validation and test roles contain 2,388, 417 and 1,401
-cases, respectively. The CPU replay finished in 14.50 seconds and peaked
-at 459,572 KiB RSS. The replay record binds the local comparison and raw
-scheduler evidence by SHA-256.
 
 ## Globally cold Tahoe source release
 
@@ -154,17 +141,6 @@ digest=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
 python "$warm" score "$out" "${out}-scores" --plan-sha256 "$digest"
 ```
 
-For a formal run, prepare a fresh output without `--smoke` and complete the
-fit and prediction phases for seeds 17, 42 and 2026 before scoring. The
-three byte-identical Step 04 fold 0 recipes are frozen in both modes.
-`verify` takes the same output and plan digest as the workers and checks the
-recipe, canonical membership and predictor allowlist. Fit and prediction
-seal separate outputs and reproduce the validation-selected EMA loss and
-probe. Only the scorer reconstructs warm-start held-out treated expression,
-after verifying the prediction and checkpoint evidence. Score outputs use
-the Step 04 format and include all eight metrics, directional PR curves,
-and the seedless `no_change` and training-group `delta_mean` references.
-
 The [scheduled smoke record](execution/warm_record/replay.json) binds the
 split, recipe, fit, predictions, scores and resource telemetry by SHA-256.
 The split holds out 153 parent–dose combinations at 0.2 µM and 152 at
@@ -199,23 +175,6 @@ digest=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
 "$pdiff" "$cli" predict "$out" cold-drug 17 --plan-sha256 "$digest"
 python "$cli" score "$out" cold-drug "${out}-scores" --plan-sha256 "$digest"
 ```
-
-`plan.json` records all nine formal slot identities, source and case
-inventories, dose categories and CM recipe hashes. For a formal run, prepare a
-fresh directory without `--smoke`, run fit and predict for seeds 17, 42 and
-2026 in each regime, then score each regime separately. `verify` checks
-all three pools against the frozen releases. A score seals all eight metrics,
-both directional PR curves and hashes for the held-out evidence.
-
-The cold-drug qualification used seed 17 and 12 optimizer steps. It selected
-step 12 by native EMA loss on the 138 tenv validation groups and reproduced
-the validation probe exactly on reload. It predicted all 1,401 held-out tenv
-cases across 462 groups. Peak host RSS was 3,300,484 KiB for fitting and
-2,648,996 KiB for held-out prediction.
-The [qualification record](execution/mix_record/qualification.json) binds the
-plan, checkpoint, predictions, score outputs and scheduler evidence.
-Independent scoring reproduced every metric, both directional PR curves and
-the evaluation manifest byte-for-byte.
 
 ## Tahoe zero-shot on tenv
 
@@ -255,11 +214,6 @@ for regime in warm-start cold-cm-drug; do
 done
 ```
 
-For the complete score output, predict seeds 17, 42 and 2026 and omit the
-scorer's `--seed` argument. The scorer verifies each prediction seal and
-case order before opening the test truth. It emits all eight group-weighted
-metrics and both directional PR curves.
-
 Each prediction directory contains `bridge.json`, the initialization
 record used by Tahoe and Transfer. The record pins the historical EMA
 checkpoint and the verified recipient request. It preserves the zero-dose
@@ -268,16 +222,6 @@ rebuilds the chemical fingerprint lookup and dose indices from tenv.
 The loader checks the complete mapped state hash after loading it.
 The source checkpoint stays in its original location and the bridge
 stores the mapping and hashes needed to reconstruct the initialization.
-
-The [scheduled qualification record](execution/tahoe_zero_shot_record/qualification.json)
-verifies all three source checkpoints, each selected at step 8,000. The seed
-17 prediction preserved 1,402 warm-start wells in 460 groups and 1,401
-cold-cm-drug wells in 462 groups. All eight metrics were defined for every
-group in both runs. Nine warm-start and two cold-cm-drug test parent blocks
-appeared in Tahoe training. Tahoe validation included three warm-start test
-parent blocks and zero cold-cm-drug test parent blocks. Both predictions
-completed concurrently with a workstation VRAM peak of 3.30 GiB. Maximum
-host RSS was 2,445,856 KiB for warm-start and 2,446,240 KiB for cold-cm-drug.
 
 ## Transfer and globally cold Tahoe
 
@@ -383,44 +327,10 @@ CM evidence. The inventory is the input to publication and scoring.
 
 ## Publication replay
 
-The publisher verifies the frozen plan, all terminal outcomes, selected
-checkpoint evidence and held-out prediction files before reading test
-truth. It computes the eight Step 04 metrics on equally weighted tenv
-drug–dose groups. Cold CM and deterministic references are scored once
-under `cold-shared`. The two cold regimes link to those rows and have their
-own Tahoe, Transfer and Mix results. Each seed pair uses the difference
-between the two arms’ equal means of positive and negative AP@100. The
-regime mean requires all three pairs.
-
 Use the `arc` interpreter from the repository root. Submit real scoring
 and replay to the dedicated scheduler. All output directories must be fresh.
 
-```bash
-step=stage2/05_pdiff_transfer
-cli="$step/execution/script/publish.py"
-out="$step/execution/output"
-formal="$out/formal-ticket82"
-plan=$(sha256sum "$formal/plan.json" | cut -d ' ' -f 1)
-inventory=$(sha256sum "$formal/prediction_inventory.json" | cut -d ' ' -f 1)
 
-python "$cli" score "$formal" "$out/scores" --plan-sha256 "$plan" --inventory-sha256 "$inventory"
-scores=$(sha256sum "$out/scores/scores.json" | cut -d ' ' -f 1)
-python "$cli" render "$out/scores" "$out/publication" --scores-sha256 "$scores"
-release=$(sha256sum "$out/publication/publication.json" | cut -d ' ' -f 1)
-
-python "$cli" score "$formal" "$out/scores-replay" --plan-sha256 "$plan" --inventory-sha256 "$inventory"
-python "$cli" verify-replay "$out/scores-replay" "$out/publication" --publication-sha256 "$release"
-```
-
-Use the published plan and inventory digests when verifying a formal run.
-Replay verifies the score record and reproduces the publication checksums,
-including plotted points and PNG bytes. The full scoring output includes
-group-level values and reasons for undefined metrics. The compact records
-include per-run coverage and reasons, both directional PR curves, training
-and validation points, and checkpoint hashes and paths. The checkpoint index
-links each logical slot to its source and target fits by digest. Tahoe and
-Transfer link to the same source fit for a given regime and seed. The two
-historically sourced regimes also share those source records.
 
 To verify the tracked release from a checkout, run the command below. It
 uses the publication checksum and path map in
@@ -428,10 +338,7 @@ uses the publication checksum and path map in
 [generated report](execution/formal_record/results.md) under its original
 logical name, `README.md`.
 
-```bash
-step=stage2/05_pdiff_transfer
-python "$step/execution/script/publish.py" verify-release "$step"
-```
+
 
 Add `--scores "$step/execution/output/ticket83-scores"` to render a
 temporary publication from the original local score record and compare

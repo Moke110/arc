@@ -1,5 +1,30 @@
 # Step 04 — PerturbDiff training configuration
 
+## Retrieval evaluation
+
+The active retrieval statistics are **AUPRC**, **AUPRC_positive**, and
+**AUPRC_negative**, with corresponding **PR curve** panels. All use full-CM
+DESeq2 significance and direction matching, under [ADR 0059](../../docs/adr/0059-stage2-significance-retrieval.md).
+The [shared evaluator](../evaluation/README.md) defines the denominator,
+undefined groups, pooling, and bounded resource policy.
+
+- [PR curve](output/retrieval/PR_curve.png)
+- [AUPRC and continuous metrics](output/retrieval/AUPRC.png)
+- [Run statistics](output/retrieval/per_run.csv), [dose statistics](output/retrieval/per_dose.csv), and [summary](output/retrieval/summary.csv)
+- [Replay manifest](output/retrieval/manifest.json)
+
+From the repository root, after the relevant significance release is ready:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 4
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 4
+```
+
+Previous retrieval scores, metric figures, and historical copies were removed;
+Git retains their version history. Existing checkpoints and their original
+validation-loss selections are unchanged. Other sections below describe input
+and training provenance, rather than the retired retrieval publication.
+
 Step 04 studies standalone PerturbDiff training on Tahoe and tenv on the
 18,164-gene CM axis. [ADR 0046](../../docs/adr/0046-perturbdiff-standalone-training.md)
 defines the validation, checkpoint and reporting contract.
@@ -11,48 +36,12 @@ on folds 0–2 with seeds 17, 42 and 2026. Both deterministic references were
 scored once per fold on the matching held-out groups. Tenv reuses the
 held-out memberships already scored in Step 03.
 
-- [Learning curves](output/learning_curve.png) show all 18 original loss
-  histories and each validation-selected EMA checkpoint. Fold 0 uses solid
-  lines, fold 1 dashed lines and fold 2 dotted lines.
-- [Held-out metrics](output/metrics.png) show eight metric means, with each
-  model grouped with its dataset's references. Both `no_change` PCC and
-  Spearman means are undefined because the prediction is constant. The
-  [publication record](execution/formal_record/publication.json) preserves
-  all valid run and group counts and the plotted coordinates.
-- [Held-out PR curves](output/pr_curves.png) show positive and negative gene
-  retrieval in separate panels. Blue represents PerturbDiff and gray represents
-  `delta_mean`. Solid lines represent Tahoe and dashed lines represent tenv.
-  At each recall point, the line shows the median precision across runs and
-  the band spans the minimum and maximum. Each run curve gives equal weight
-  to held-out groups with labels in that direction. The labels are the top
-  100 observed genes in the direction, or all eligible genes if fewer qualify.
-- The [tenv checkpoint index](execution/formal_record/tenv/checkpoints.json)
-  identifies the nine local checkpoints. The release metadata hashes matched
-  the tracked index, all nine files shared hard links with the verified
-  formal fits, and the recorded held-out workers reproduced each selected
-  EMA validation loss and prediction probe exactly.
-
 A workstation power cut interrupted two Tahoe held-out predictions.
 Both retried from their sealed fits. The [recovery record](execution/formal_record/tahoe/recovery.json)
 identifies the preserved attempts and [the scoring audit](execution/formal_record/tahoe/audit.json)
 records exact replay of the completed evaluation.
 
-ADR 0046 specifies the three figure destinations under `output/`.
-The score tables and per-run PR sources for
-[Tahoe](execution/formal_record/tahoe/pr_curves.json) and
-[tenv](execution/formal_record/tenv/pr_curves.json) are the compact replay
-inputs. To regenerate the figures, use the `arc` interpreter with
-Matplotlib 3.10.9 and fresh destination paths.
 
-```bash
-step=stage2/04_pdiff_hyperparameter
-replay=$(mktemp -d)
-python "$step/execution/script/publish.py" "$step/execution/formal_record" \
-  "$replay/output" "$replay/publication.json"
-cmp "$step/output/learning_curve.png" "$replay/output/learning_curve.png"
-cmp "$step/output/metrics.png" "$replay/output/metrics.png"
-cmp "$step/output/pr_curves.png" "$replay/output/pr_curves.png"
-```
 
 Add `--local-checkpoints "$step/output/checkpoints/tenv" "$step/execution/output/tenv-formal-ticket72"`
 to include the local checkpoint audit in the publication record. It checks
@@ -60,23 +49,7 @@ the request, recipe, run and replay metadata by hash. It also streams the
 checkpoint hashes and checks the hard links against the formal fits.
 The formal prediction and release records bind the exact model reload.
 
-To rebuild the compact PR sources from saved predictions, run the held-out
-evaluator with `--include-pr-curves` and a fresh evaluation directory.
-Use the frozen plan and outcomes for each dataset. The optional output
-`<dataset>/pr_curves.json` contains the positive and negative precision
-arrays on the shared 101-point recall grid. It records the hashes of the
-frozen plan, outcomes and per-run scores. The renderer reads it from
-`execution/formal_record/<dataset>/` and records its hash and the plotted
-coordinates in the publication record.
 
-```bash
-formal="$step/execution/output/tenv-formal-ticket72"
-plan_sha=$(sha256sum "$step/execution/formal_record/tenv/plan.json" | cut -d ' ' -f 1)
-python "$step/execution/script/evaluate.py" "$formal/plan.json" "$formal/outcomes.json" \
-  "$replay/tenv-evaluation" --plan-sha256 "$plan_sha" \
-  --include-pr-curves
-cmp "$step/execution/formal_record/tenv/pr_curves.json" "$replay/tenv-evaluation/tenv/pr_curves.json"
-```
 
 For Tahoe, use `tahoe-formal-ticket73` and the `tahoe` output paths.
 The Step 04 scheduler and resource rules apply to these evaluation replays.
@@ -314,13 +287,7 @@ and run the evaluator with the `arc` interpreter. Give full-size scoring
 and checkpoint release to the dedicated scheduler. Use the SHA-256 printed
 by the freeze command for `plan_sha`.
 
-```bash
-python "$execution/script/formal_outcomes.py" "$formal/plan.json" "$plan_sha" "$formal/outcomes.json"
-python "$execution/script/evaluate.py" "$formal/plan.json" "$formal/outcomes.json" "$formal/evaluation" \
-  --plan-sha256 "$plan_sha"
-python "$execution/script/formal_outcomes.py" "$formal/plan.json" "$plan_sha" "$formal/outcomes.json" \
-  --publish-checkpoints "$formal/evaluation" "$step/output/checkpoints/tenv"
-```
+
 
 The [evaluation contract](execution/evaluation_contract.md) describes the
 score tables and provenance. The standalone tenv evaluation uses the

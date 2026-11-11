@@ -460,17 +460,10 @@ A preserved pre-v2 binary/history/status with its original identity and hashes.
 It supplies audit and budget evidence, and cannot fill a formal v2 outcome slot
 or establish exact training continuation.
 
-**Tenv directional truth set**:
-The at-most-100 genes with the largest strictly positive true Δ, or the
-at-most-100 with the smallest strictly negative true Δ, for a tenv drug–dose
-group. The labels depend on observed responses and are shared across models
-and training seeds.
-_Avoid_: significant DEG set, predicted top-100 set
-
-**Tenv Recall@P80**:
-The greatest recall attainable with a nonempty prediction set at precision
-at least 0.8 for one tenv directional truth set; zero when no such set is
-attainable.
+**Tenv significance truth set**:
+Genes significant in the measured treatment-versus-matched-control drug–dose
+contrast on the full CM axis, retaining their measured up- or downregulation.
+This is a statistical significance set rather than a fixed-size response rank.
 
 **Cold-drug fold**:
 One Stage 2 benchmark split whose test drugs are absent from its training and
@@ -491,18 +484,23 @@ Tahoe.
 One of the frozen tenv cold-drug folds paired with the shared Tahoe training
 and validation partitions. Tenv test drug blocks can appear in Tahoe.
 
-**Step 09 direction-matched hit**:
-A predicted up- or downregulated gene that is significant in the measured
+**Stage 2 direction-matched hit**:
+A predicted up- or downregulated CM gene that is significant in the measured
 drug–dose contrast and has the same direction as its measured log2 fold change.
 
-**Step 09 AUPRC@full**:
-The macro mean of per-group direction-matched average precision, with every
-measured significant gene on the 18,164-gene CM axis in the recall denominator,
-including significant genes outside the model's coverage.
+**Stage 2 AUPRC**:
+The macro mean of exact group average precision for combined direction-matched
+retrieval, with every measured significant gene on the 18,164-gene CM axis in
+the recall denominator, including genes outside prediction coverage.
 
-**Step 09 pooled PR**:
+**Stage 2 directional AUPRC**:
+`AUPRC_positive` retrieves significant upregulated CM genes using positive
+predictions; `AUPRC_negative` retrieves significant downregulated CM genes using
+negative predictions. Each uses its full-CM directional truth denominator.
+
+**Stage 2 pooled PR curve**:
 Precision and recall of pooled gene–group predictions across a fixed eligible
-group population at a common prediction-magnitude threshold. Its endpoint is
+group population at common prediction-magnitude thresholds. Its endpoint is
 the attainable pooled recall; its area differs from macro AUPRC.
 
 **Step 05 cold-drug split**:

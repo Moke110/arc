@@ -75,3 +75,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0056](0056-step07-shared-expression-representation.md) | Compare five matrix reconstruction models with a shared frozen expression representation interface |
 | [0057](0057-step09-xpert-landmark-reference.md) | Use an internal landmark reference and a shared scoring panel for the Step 09 XPert ablation |
 | [0058](0058-step09-direction-matched-pr.md) | Direction-matched significance retrieval and fixed-group pooled PR ending at attainable recall |
+| [0059](0059-stage2-significance-retrieval.md) | Three full-CM, significance-and-direction matched retrieval metrics and one shared Stage 2 evaluator |

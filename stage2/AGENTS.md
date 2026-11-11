@@ -22,3 +22,5 @@ Stage 1 is `stage1/`, not a dependency here; the data contract is ADR 0030.
   selection decisions.
 - [`_archive/`](_archive/README.md) — non-step: superseded `cm_bench_v1/` and the
   archived `PLAN.md`; nothing here is an active dependency.
+
+- [`evaluation/`](evaluation/README.md) — non-step: shared tenv significance labels, three AUPRC metrics, fixed-group PR curves, and independent publication replay (ADR 0059).

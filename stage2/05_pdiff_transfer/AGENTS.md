@@ -28,3 +28,5 @@ Only the dedicated scheduling subagent admits or restarts heavy work.
 - `execution/script/publish.py` verifies and scores the terminal inventory and
   renders the compact results. `execution/tests/test_publish.py` checks paired
   scoring coverage and offline figure replay on an incomplete fixture.
+
+- Active retrieval scoring and figures use [`../evaluation/README.md`](../evaluation/README.md), with `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` on the full CM significance axis.

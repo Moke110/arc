@@ -1,5 +1,32 @@
 # Step 09 XPert gene-axis and compression ablation
 
+## Retrieval evaluation
+
+The active retrieval statistics are **AUPRC**, **AUPRC_positive**, and
+**AUPRC_negative**, with corresponding **PR curve** panels. All use full-CM
+DESeq2 significance and direction matching, under [ADR 0059](../../docs/adr/0059-stage2-significance-retrieval.md).
+The [shared evaluator](../evaluation/README.md) defines the denominator,
+undefined groups, pooling, and bounded resource policy.
+
+- [PR curve](output/retrieval/PR_curve.png)
+- [AUPRC and continuous metrics](output/retrieval/AUPRC.png)
+- [Run statistics](output/retrieval/per_run.csv), [dose statistics](output/retrieval/per_dose.csv), and [summary](output/retrieval/summary.csv)
+- [Replay manifest](output/retrieval/manifest.json)
+
+From the repository root, after the relevant significance release is ready:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 9
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 9
+```
+
+Previous retrieval scores, metric figures, and historical copies were removed;
+Git retains their version history. Existing checkpoints and their original
+validation-loss selections are unchanged. Other sections below describe input
+and training provenance, rather than the retired retrieval publication.
+
+Continuous expression metrics still use the 73-gene shared panel and remain provisional. Retrieval uses the full 18,164-gene CM truth.
+
 [ADR 0057](../../docs/adr/0057-step09-xpert-landmark-reference.md) defines the
 cold-cm-drug ablation. Round 1 screens fold 0 and seed 17. The landmark
 reference follows the author’s 978-gene order. The other arms test gene-axis
@@ -149,21 +176,6 @@ axis and the shared panel. `delta_mean` first averages training wells within
 each tenv drug–dose group, then averages the groups equally. Both references
 use zero training minutes.
 
-The evaluator ranks genes by absolute predicted group Δ. Equal scores enter
-together. `AUPRC@full` ranks covered CM genes against all measured significant
-CM genes. `AUPRC@G` ranks the model axis against significant genes on that axis,
-including HDGFL3 for the landmark reference. A measured, testable group with
-zero significant genes on the relevant axis has undefined AP. A true positive
-must also match the sign of the measured DESeq2 log2 fold
-change. Wrong directions count as false positives and missed true responses;
-zero predictions abstain. The displayed PR pools gene–group predictions at a
-common absolute-Δ threshold over a fixed group population. Recall divides
-pooled correct hits by all significant genes in those groups; precision divides
-by all selected predictions. Every curve stops at its attainable recall,
-including full-axis curves with direction errors. The reported macro AP still
-averages exact per-group AP and differs from the area of the pooled display.
-[ADR 0058](../../docs/adr/0058-step09-direction-matched-pr.md) records the revision.
-
 Continuous metrics compare group Δ on the shared panel. Per predicted well,
 the evaluator adds predicted native-axis Δ to its matched native-axis control,
 converts to nonnegative expression, and projects and normalizes on the
@@ -171,38 +183,7 @@ shared panel. It subtracts the control independently normalized on that
 panel. Observed shared-panel Δ comes from independently projected raw counts.
 Native-axis continuous scores are reported separately in the tables.
 
-`build_significance.py` builds the two-sided DESeq2 label releases with
-same-plate DMSO and within-contrast BH correction over CM plus HDGFL3. The
-validation seal binds the replayed validation predictions, labels and scores.
-It records each strict `AUPRC@full` improvement against the designated
-control. Test labels and scoring require the seal committed on `dev`.
 
-```bash
-ROUND="$STEP/output/round1"
-WORK="$STEP/execution/tmp/round1"
-PROMOTION="$STEP/execution/round1_record/promotion.json"
-RSCRIPT="$HOME/miniconda3/envs/biomni_e1/bin/Rscript"
-QUEUE="$STEP/execution/script/round1_fit.py"
-SCORE="$STEP/execution/script/evaluate.py"
-LABELS="$STEP/execution/script/build_significance.py"
-
-"$PY" "$QUEUE" --role validation --work-root "$WORK"
-"$CAP" "$RECORD/validation-labels" "$PY" "$LABELS" --role validation \
-    --rscript "$RSCRIPT" --output "$ROUND/labels/validation"
-"$CAP" "$RECORD/validation-score" "$PY" "$SCORE" seal --work-root "$WORK"
-# Commit the validation promotion on dev before running the test phase.
-"$PY" "$QUEUE" --role test --work-root "$WORK"
-"$CAP" "$RECORD/test-labels" "$PY" "$LABELS" --role test \
-    --rscript "$RSCRIPT" --workers 2 --promotion "$PROMOTION" --output "$ROUND/labels/test"
-"$CAP" "$RECORD/test-score" "$PY" "$SCORE" test --work-root "$WORK"
-"$CAP" "$RECORD/evaluation-replay" "$PY" "$SCORE" replay --work-root "$WORK"
-```
-
-Both score releases include aggregate metrics, per-group scores and PR
-data. The test release also publishes `xpert_opti_r1_metrics.png` and
-`xpert_opti_r1_PR.png` at the Round 1 root. Independent replay recalculates
-the validation seal, test tables and both figures from frozen inputs and
-checks every output by SHA-256.
 
 ## Round 1 results
 
@@ -210,32 +191,11 @@ All nine XPert arms completed the formal fold 0, seed 17 policy and replayed
 their selected checkpoints on tenv validation and test. The validation seal in
 `88b621b` advanced all four G arms and all four MLP arms for confirmation.
 
-Under the revised direction-matched metric, `XPert_MLP2048` led the trained
-arms on exploratory test AUPRC@full at 0.02216, compared with 0.01933 for
-`XPert_G18164` and 0.02241 for `delta_mean`. AUPRC@full was defined for 359 of
-the 462 drug–dose groups. The pooled base curve ends at recall 0.03976 with
-all 359 groups retained. Zero-change predictions have AP zero.
-
-The original unsigned validation/test tables and figures are preserved in
-`output/round1/legacy_unsigned/`. The original committed promotion is unchanged;
-revised validation scores are in `output/round1/validation_scores_directional/`.
-These are retrospective metric corrections, not new pre-test promotions.
-The original acceptance record describes the historical unsigned release;
-`execution/round1_record/directional-pr.json` binds the revised release.
-To perform this migration once on an original release, use `evaluate.py revise`;
-verify the published revision with `evaluate.py replay-revision`. Both reuse
-frozen labels and predictions without retraining:
-
 ```bash
 "$CAP" "$RECORD/directional-replay" "$PY" "$SCORE" replay-revision --work-root "$WORK"
 ```
 
 The shared continuous panel contains 73 genes, so its metrics are provisional.
-
-- [Metrics figure](output/round1/xpert_opti_r1_metrics.png)
-- [Precision–recall figure](output/round1/xpert_opti_r1_PR.png)
-- [Test scores and PR data](output/round1/test_scores/)
-- [Acceptance, checkpoint replay and resources](execution/round1_record/acceptance.json)
 
 The work directory holds fits, queue status and per-attempt resource logs.
 Sealing requires a terminal validation outcome for every model. Test scoring

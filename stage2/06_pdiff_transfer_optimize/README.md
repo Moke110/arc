@@ -1,5 +1,30 @@
 # Step 06 — PerturbDiff transfer diagnostics
 
+## Retrieval evaluation
+
+The active retrieval statistics are **AUPRC**, **AUPRC_positive**, and
+**AUPRC_negative**, with corresponding **PR curve** panels. All use full-CM
+DESeq2 significance and direction matching, under [ADR 0059](../../docs/adr/0059-stage2-significance-retrieval.md).
+The [shared evaluator](../evaluation/README.md) defines the denominator,
+undefined groups, pooling, and bounded resource policy.
+
+- [PR curve](output/retrieval/PR_curve.png)
+- [AUPRC and continuous metrics](output/retrieval/AUPRC.png)
+- [Run statistics](output/retrieval/per_run.csv), [dose statistics](output/retrieval/per_dose.csv), and [summary](output/retrieval/summary.csv)
+- [Replay manifest](output/retrieval/manifest.json)
+
+From the repository root, after the relevant significance release is ready:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 6
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 6
+```
+
+Previous retrieval scores, metric figures, and historical copies were removed;
+Git retains their version history. Existing checkpoints and their original
+validation-loss selections are unchanged. Other sections below describe input
+and training provenance, rather than the retired retrieval publication.
+
 Step 05 observed a Tahoe Transfer deficit against the tenv-only CM arm.
 Step 06 establishes a shared validation baseline and tests positive-dose
 initialization and target base learning rate in separate paired arms.
@@ -9,26 +34,6 @@ extends the study to five optimizations on the Step 05 cold-cm-drug split.
 records the screening, confirmation and attribution rules.
 
 ## Paired optimization results
-
-The [AUPRC and PCC figure](output/03-paired-transfer-optimizations.png) shows
-all five interventions and the shared original Transfer reference on
-cold-cm-drug fold 0 validation. Each point gives equal weight to seeds 17,
-42 and 2026, with 46 frozen drug–dose groups per concentration. Each fit
-uses its own EMA selected by the author's validation diffusion loss.
-The three seeds are repeated fits on one split.
-
-Original Transfer had the highest mean PCC at every dose. The random
-reset and log dose encoder each improved mean AUPRC at 1 µM by roughly
-0.0014 and 0.0017, respectively. Halving the denoiser learning rate
-improved mean AUPRC at 10 µM by 0.0013. Fine-tuning only adaLN produced
-the lowest mean AUPRC and PCC at all three doses.
-
-The [numeric record](execution/paired_publication.json) retains the
-per-seed absolute scores, same-seed differences from original Transfer,
-valid-group counts and undefined reasons, selected EMA steps, optimizer
-steps and file digests. Its resource ledger summarizes the scheduler
-attempts and binds their queues, status records and telemetry by digest.
-Paths in the record are relative to the runtime checkout.
 
 Run `publish` through the dedicated scheduler to verify all 18 cells
 against their sealed artifacts and reproduce the publication. From the
@@ -44,23 +49,9 @@ arc plotting environment, the command verifies the regenerated PNG
 against its recorded SHA-256. Supply `--figure /path/to/replay.png` to
 write a separate copy.
 
-```bash
-python "$step/execution/script/paired_publication.py" replay "$step/execution/paired_publication.json"
-```
+
 
 ## Historical cold-drug results
-
-Cold-drug fold 0 validation, seed 17. Each comparison covers 138 drug–dose
-groups, with 46 at each of 0.2, 1 and 10 µM. Both AP@100 directions receive
-equal weight. CM and original Transfer use the loss-selected step 6500 EMAs.
-
-| Comparison | Intervention EMA step | Mean AP@100 | Gain vs original Transfer | Residual CM gap |
-| --- | ---: | ---: | ---: | ---: |
-| CM | 6500 | 0.25409 | | |
-| Original Transfer | 6500 | 0.23843 | | 0.01566 |
-| Positive-dose reset, loss-selected | 6000 | 0.24691 | +0.00848 | 0.00718 |
-| Half base learning rate, matched step | 6500 | 0.23680 | −0.00163 | 0.01729 |
-| Half base learning rate, loss-selected | 6000 | 0.23376 | −0.00467 | 0.02033 |
 
 The dose reset improved the 0.2 and 1 µM strata by +0.01155 and +0.01470
 respectively, with a −0.00080 change at 10 µM. Neither intervention reached
@@ -70,34 +61,12 @@ reset reduced the seed 17 validation gap by about 54%. The major-contribution
 rule requires independent fold 1 replication and a matched gap comparison
 there, so attribution remains unresolved.
 
-Cross-dataset dose representation is worth further optimization. Replacing
-the Tahoe-mapped positive-dose embeddings with fresh tenv embeddings
-improved validation AP@100 in this screen, with gains concentrated at 0.2
-and 1 µM. This single-seed result motivates further work on dose
-representation and leaves its contribution to the Transfer deficit open.
-The [fine-tuning research note](transfer_finetuning_research.md) compares
-published adaptation methods with the original Transfer recipe.
-
 The separate source audit covers nine shared tenv training parents and
 50 Tahoe cell lines. Seven of those parents share identical standardized
 parent SMILES. Historical Tahoe training overlapped one tenv validation
 parent. After global exclusion, both Tahoe fitting roles overlap zero tenv
 validation or test parents. Dose brackets and the assay, time, normalization
 and coverage limitations are documented in the [source audit](execution/source_audit.md).
-
-- [Paired effects figure](output/01-paired-validation-effects.png) and
-  [Tahoe exposure figure](output/02-tahoe-exposure.png)
-- [Paired per-run results](per_run.csv),
-  [paired per-dose results](per_dose.csv) and
-  [Tahoe fitting exposure](source_exposure.csv)
-- [Decision summary](execution/publication_record/decision.json),
-  [artifact hashes](execution/publication_record/evidence.json) and
-  [resource ledger](execution/publication_record/resources.json)
-- [Dose reset commands](execution/dose_reset.md),
-  [learning-rate commands](execution/learning_rate.md),
-  [confirmation source commands](execution/confirmation.md),
-  [replication commands](execution/replication.md) and
-  [publication replay](execution/publication.md)
 
 ## Validation baseline
 
@@ -148,16 +117,6 @@ plan=$(sha256sum "$out/plan.json" | cut -d ' ' -f 1)
 "$pdiff" "$cli" predict "$out" --seed "$seed" --plan-sha256 "$plan"
 python "$cli" score "$out" --seed "$seed" --plan-sha256 "$plan"
 ```
-
-The plan binds the original Tahoe and tenv EMAs and their author validation
-loss histories. It records Tahoe's original exposure to tenv held-out drug
-parents, along with the validation wells, group order, same-plate controls,
-Morgan fingerprints, gene axis and sampling settings. The replay opens only
-predictor inputs. The scoring job joins the sealed validation truth with the
-sealed prediction and writes `scores/per_group.csv`, `scores/per_dose.csv`
-and `scores/scores.json`. Dose summaries contain AUPRC (mean AP@100), PCC,
-valid group counts and counts by undefined reason. The score record
-distinguishes the selected EMA step from actual optimizer steps.
 
 ## Random positive-dose reset
 

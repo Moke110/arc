@@ -1,4 +1,11 @@
 # Stage 2 — model setup and selection
+All active tenv retrieval publications use the [shared evaluator](evaluation/README.md)
+and exactly **AUPRC**, **AUPRC_positive**, and **AUPRC_negative**.
+[ADR 0059](../docs/adr/0059-stage2-significance-retrieval.md) supersedes the
+previous retrieval definitions. Tahoe test PR/AUPRC is not computed; models
+trained on Tahoe are evaluated when predicting tenv. Superseded score and
+figure copies were removed from the working tree and remain in Git history.
+
 
 Stage 2 chooses the open-source whole-transcriptome drug-perturbation model that
 will produce the perturbomes feeding future MIRI drug scoring. Setup ("does the
@@ -12,7 +19,7 @@ the second under ADR 0042.
 |---|---|---|---|
 | [`01_setup/`](01_setup/README.md) | does each model run? | nine historical run cards plus the separately dated PerturbDiff native setup addition; one pinned environment per model; setup remains separate from whole-gene runtime admission | ADR 0021, ADR 0024 |
 | [`02_dataset_corpus/`](02_dataset_corpus/README.md) | what data substrate do we build on? | **five source-dataset corpora** — four CM native-axis + `tahoe.h5ad`, 67,018 × 62,710, 25.8 GB — raw counts, every raw well (controls + blanks), no pharmacology filter and no Δ; **seven crosswalk tables** + coverage README (18,164-gene CM axis as `tables/genes.csv`); `--verify` **G1–G6 PASS**, with G4 reproducing 5/5 frozen v1 view content hashes | ADR 0033 (amends ADR 0026) |
-| [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | final 63-slot comparison across five predictors and two references. PerturbDiff led seven of eight nine-run metric means, including positive/negative AP@100 of 0.23914/0.23463. The training-group mean reference led mean R² | ADR 0042 |
+| [`03_modes_tenv/`](03_modes_tenv/README.md) | which admissible model predicts tenv with shared Morgan inputs? | final 63-slot comparison across five predictors and two references. retrieval is rescored with the shared tenv significance standard (ADR 0059), alongside the preserved continuous metrics | ADR 0042 |
 | [`04_pdiff_hyperparameter/`](04_pdiff_hyperparameter/README.md) | how does standalone PerturbDiff train and score on Tahoe and tenv? | complete nine-fit matrices for both datasets, learning curves, eight held-out metrics with matched references, and nine verified tenv EMA checkpoints for handoff | ADR 0046 |
 | [`05_pdiff_transfer/`](05_pdiff_transfer/README.md) | does Tahoe training improve tenv prediction? | verified common cold tenv fold with reused CM checkpoints and deterministic references | ADR 0047 |
 | [`06_pdiff_transfer_optimize/`](06_pdiff_transfer_optimize/README.md) | what accounts for the Tahoe Transfer deficit? | paired validation replay, independent interventions and source-domain audit | ADR 0048 |

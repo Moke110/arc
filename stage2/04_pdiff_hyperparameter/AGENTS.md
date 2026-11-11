@@ -21,3 +21,5 @@ Only the dedicated scheduling subagent may launch or restart Step 04 heavy work.
 - `execution/script/publish.py` renders the ADR 0046 figures and verifies the compact formal records.
 - `execution/tests/test_publish.py` checks replay and incomplete publication evidence through the CLI.
 - `execution/formal_record/publication.json` binds the figures and the tenv checkpoint handoff.
+
+- Active retrieval scoring and figures use [`../evaluation/README.md`](../evaluation/README.md), with `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` on the full CM significance axis.

@@ -12,3 +12,5 @@ Read `README.md` for the contract and reproduction commands.
 
 Training uses `docs/agents/execution-environment.md` limits and scheduler-owned
 telemetry. New code depends on this step and corpus inputs, never archived code.
+
+- Active retrieval scoring and figures use [`../evaluation/README.md`](../evaluation/README.md), with `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` on the full CM significance axis.

@@ -228,6 +228,13 @@ def replay(output_root):
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] in ('evaluate', 'score', 'replay'):
+        sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+        from stage2.evaluation.evaluate import main as shared_main
+        if sys.argv[1] == 'evaluate':
+            sys.argv[1] = 'score'
+        sys.argv.extend(['--step', '3'])
+        return shared_main()
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action',choices=['synthetic','predict','seal','evaluate','replay','verify'])
     parser.add_argument('--input',type=Path)

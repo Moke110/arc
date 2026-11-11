@@ -197,3 +197,16 @@ Heliste source-first corpora live in `stage3/01_corpus/output/baseline/` and
 `stage3/01_corpus/output/H-R/`; chemical-resolution reports describe admitted and
 pending values separately from source availability. Historical endpoint-gated
 evidence is retained under `stage3/01_corpus/execution/historical/`. No model view or training result is implied by the archive.
+
+## Shared Stage 2 tenv significance labels
+
+`stage2/evaluation/output/labels/tenv/` holds evaluator-only DESeq2 results on
+1,380 tenv drug–dose contrasts and the CM-plus-HDGFL3 family of 18,165 genes.
+The three float64 memmaps (`padj.npy`, `pvalue.npy`, `log2_fold_change.npy`) total
+about 602 MB. Checkpoint shards under `tenv.building/parts/` and final `parts/`
+retain bounded replay intermediates; they are ignored rather than vendored.
+`genes.csv`, `groups.csv`, contrast sample joins and `manifest.json` bind the
+raw-count joins and source hashes. The shared scorer never passes these assets
+to a predictor. `stage2/evaluation/build_labels.py` rebuilds the release from
+Step 02 native tenv counts, matched DMSO controls and checked Step 09 caches.
+No Tahoe test significance release is required by the current reporting scope.

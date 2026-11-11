@@ -4,3 +4,5 @@
 - **Interventions and attribution** follow [ADR 0048](../../docs/adr/0048-perturbdiff-transfer-diagnosis.md) and [spec #89](https://github.com/Moke110/arc/issues/89).
 - **Schedule** real-data verification, inference and fitting through the dedicated scheduler under the [WSL resource limits](../../docs/agents/execution-environment.md).
 - **Publish** result PNGs directly in `output/` and new checkpoints with numbered, readable names in `output/checkpoints/`. Reference reused checkpoints by path and digest.
+
+- Active retrieval scoring and figures use [`../evaluation/README.md`](../evaluation/README.md), with `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` on the full CM significance axis.

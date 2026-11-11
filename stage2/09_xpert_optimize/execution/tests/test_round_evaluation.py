@@ -10,8 +10,6 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from test_gene_axes import build
-from test_landmark import make_fixture, run
 
 SCRIPT = Path(__file__).resolve().parents[1] / "script"
 sys.path.insert(0, str(SCRIPT))
@@ -108,8 +106,8 @@ class RoundEvaluationTest(unittest.TestCase):
         stats = continuous(np.array([2., 2.]), np.array([2., 2.]))
         self.assertEqual(stats["rmse"], 0.)
         self.assertTrue(all(stats[name] is None for name in ("pcc", "spearman", "r2")))
-        rows = [{"model": "XPert_base", "auprc_full": .4}, {"model": "XPert_G2000", "auprc_full": .4},
-                {"model": "XPert_G5000", "auprc_full": .6}, {"model": "XPert_MLP512", "auprc_full": .7}]
+        rows = [{"model": "XPert_base", "AUPRC": .4}, {"model": "XPert_G2000", "AUPRC": .4},
+                {"model": "XPert_G5000", "AUPRC": .6}, {"model": "XPert_MLP512", "AUPRC": .7}]
         decisions = paired_promotions(rows)
         self.assertEqual([item["decision"] for item in decisions], ["not_promoted", "promoted", "unavailable"])
 
@@ -136,116 +134,3 @@ def commit(repo, *files):
     subprocess.run(["git", "-C", str(repo), "add", *files], check=True)
     subprocess.run(["git", "-C", str(repo), "-c", "user.email=fixture@example.invalid",
                     "-c", "user.name=Fixture", "commit", "-qm", "seal"], check=True)
-
-
-def write_labels(round_root, corpus, role, promotion=None):
-    labels = round_root / "labels" / role
-    labels.mkdir(parents=True)
-    full = corpus / MODEL_VIEWS["XPert_G18164"]
-    landmark = corpus / MODEL_VIEWS["XPert_base"]
-    genes = pd.read_csv(full / "genes.csv")
-    supplement = pd.read_csv(landmark / "genes.csv").query("symbol == 'HDGFL3'")
-    pd.concat([genes, supplement])[["hgnc_id", "symbol"]].to_csv(labels / "genes.csv", index=False)
-    groups = pd.read_csv(full / f"tenv/fold_0/{role}.csv").group_id.drop_duplicates().tolist()
-    groups.reverse()
-    pd.DataFrame({"group_id": groups, "status": "eligible", "reason": ""}).to_csv(
-        labels / "groups.csv", index=False
-    )
-    (labels / "contrast_samples.csv").write_text("group_id\n")
-    padj = np.ones((len(groups), len(genes) + 1))
-    padj[:, -1] = .001  # HDGFL3 alone is significant.
-    for name, data in (("padj", padj), ("pvalue", padj), ("log2_fold_change", np.full_like(padj, -1.))):
-        np.save(labels / f"{name}.npy", data)
-    manifest = {"schema": "step09-significance-v1", "role": role, "fold": 0, "fdr": .05,
-                "gene_axes_manifest_sha256": sha256(corpus / "gene_axes/manifest.json"),
-                "predictor_manifest_sha256": sha256(full / "manifest.json"),
-                "evaluator_manifest_sha256": sha256(full.parent / "evaluator/manifest.json"),
-                "landmark_predictor_manifest_sha256": sha256(landmark / "manifest.json"),
-                "native_sha256": json.loads((corpus / "gene_axes/manifest.json").read_text())["source_hashes"]["tenv.h5ad"],
-                "files": {f.name: sha256(f) for f in labels.iterdir()}}
-    if promotion:
-        manifest["promotion_sha256"] = sha256(promotion)
-    (labels / "manifest.json").write_text(json.dumps(manifest))
-
-
-class RoundWorkflowTest(unittest.TestCase):
-    def test_cli_seals_before_test_and_replays_both_figures(self):
-        with TemporaryDirectory() as directory:
-            root = Path(directory)
-            native, tenv = make_fixture(root)
-            axes, landmark = build(root, native, tenv)
-            corpus = root / "corpus"
-            corpus.mkdir()
-            axes.rename(corpus / "gene_axes")
-            landmark.rename(corpus / "tahoe_tenv_bulk_l1000")
-            subprocess.run(["git", "init", "-q", "-b", "dev", str(root)], check=True)
-            policy = root / "policy.json"
-            policy.write_text(json.dumps({
-                "kind": "qualification", "device": "cpu", "kernel": "math", "dtype": "float32",
-                "microbatch": 1, "effective_batch": 1,
-                "phases": {"tahoe": {"updates": 1, "validation_interval": 1, "learning_rate": .0001},
-                           "tenv": {"updates": 1, "validation_interval": 1, "learning_rate": .0001}},
-            }))
-            plan = root / "plan.json"
-            plan.write_text(json.dumps({
-                "schema": "step09-round1-plan-v1", "fold": 0, "seed": 17,
-                "policy_sha256": sha256(policy), "references": ["no_change", "delta_mean"],
-                "models": [{"name": model, "view": view,
-                            "predictor_sha256": sha256(corpus / view / "manifest.json")}
-                           for model, view in MODEL_VIEWS.items()],
-                "gene_axes_manifest_sha256": sha256(corpus / "gene_axes/manifest.json"),
-                "shared_gene_count": 1, "continuous_metrics_provisional": True,
-            }))
-            commit(root, "plan.json", "policy.json")
-            round_root = root / "round1"
-            round_root.mkdir()
-            work = root / "work"
-            model = "XPert_base"
-            predictor = corpus / MODEL_VIEWS[model]
-            fit = work / "fits" / model
-            run("script/xpert.py", "fit", "--predictor", predictor, "--policy", policy, "--fold", 0,
-                "--seed", 17, "--output", fit)
-            first = work / "resources" / model / "fit-1"
-            second = work / "resources" / model / "fit-2"
-            first.mkdir(parents=True)
-            second.mkdir()
-            (first / "time.log").write_text("Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.00\n")
-            (second / "time.log").write_text("Elapsed (wall clock) time (h:mm:ss or m:ss): 0:30.00\n")
-            (second / "wall-clock.tsv").write_text("100\t132\n")
-            prediction = round_root / "predictions/validation" / model
-            run("script/xpert.py", "predict", "--predictor", predictor, "--checkpoint", fit / "tenv.pt",
-                "--role", "validation", "--output", prediction)
-            write_labels(round_root, corpus, "validation")
-            promotion = root / "promotion.json"
-            arguments = ("--round-root", round_root, "--work-root", work, "--corpus", corpus, "--plan", plan,
-                         "--promotion", promotion)
-            run("script/evaluate.py", "seal", *arguments)
-            valid = pd.read_csv(round_root / "validation_scores/metrics.csv").set_index("model")
-            self.assertTrue(np.isnan(valid.at[model, "auprc_full"]))
-            self.assertGreaterEqual(valid.at[model, "auprc_g"], 0.)
-            self.assertAlmostEqual(valid.at[model, "fit_attempt_wall_minutes"], 44 / 60)
-            self.assertEqual(valid.at[model, "timed_fit_attempts"], 2)
-            rejected = run("script/evaluate.py", "test", *arguments, check=False)
-            self.assertNotEqual(rejected.returncode, 0)
-            self.assertIn("committed dev bytes", rejected.stderr)
-            commit(root, "promotion.json")
-            write_labels(round_root, corpus, "test", promotion)
-            prediction = round_root / "predictions/test" / model
-            run("script/xpert.py", "predict", "--predictor", predictor, "--checkpoint", fit / "tenv.pt",
-                "--role", "test", "--output", prediction)
-            run("script/evaluate.py", "test", *arguments)
-            run("script/evaluate.py", "replay", *arguments)
-            original_seal = sha256(promotion)
-            original_validation = sha256(round_root / "validation_scores/manifest.json")
-            run("script/evaluate.py", "revise", *arguments)
-            run("script/evaluate.py", "replay-revision", *arguments)
-            self.assertEqual(sha256(promotion), original_seal)
-            self.assertEqual(sha256(round_root / "legacy_unsigned/validation_scores/manifest.json"),
-                             original_validation)
-            results = pd.read_csv(round_root / "test_scores/metrics.csv").set_index("model")
-            self.assertEqual(results.index.tolist(), ["no_change", "delta_mean", *MODEL_VIEWS])
-            self.assertEqual(results.at["XPert_G18164", "status"], "incomplete")
-            self.assertEqual(results.at["delta_mean", "training_minutes"], 0.)
-            for name in ("xpert_opti_r1_metrics.png", "xpert_opti_r1_PR.png"):
-                with (round_root / name).open("rb") as handle:
-                    self.assertEqual(handle.read(8), b"\x89PNG\r\n\x1a\n")

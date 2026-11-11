@@ -206,36 +206,7 @@ def evaluator_inputs(fold):
 
 
 def run_scores(writer, slot, status, reason, groups, truth, labels, indices, delta, pr_runs=None):
-    row = {**slot, 'status': status, 'reason': reason, 'group_count': 0}
-    scores = {metric: [] for metric in METRICS}
-    curve_sum = np.zeros((2, len(RECALL_GRID))) if pr_runs is not None else None
-    if status == 'completed':
-        row['group_count'] = len(groups)
-        for index, group in enumerate(groups):
-            group_id = group['group_id']
-            predicted = delta if delta.ndim == 1 else mean_delta(delta, indices[group_id])
-            values, reasons, curve = score_group(truth[index], predicted, [label[index] for label in labels])
-            if curve_sum is not None:
-                for direction, metric in enumerate(METRICS[:2]):
-                    if math.isfinite(values[metric]):
-                        curve_sum[direction] += curve[direction]
-            group_row = {**slot, 'group_id': group_id, 'n_wells': group['n_wells']}
-            for metric, value in values.items():
-                if math.isfinite(value):
-                    scores[metric].append(value)
-                    group_row[metric] = value
-                group_row[f'{metric}_reason'] = reasons.get(metric, '')
-            writer.writerow(group_row)
-    for metric, values in scores.items():
-        row[metric] = float(np.mean(values)) if values else None
-        row[f'{metric}_valid_groups'] = len(values)
-    if curve_sum is not None:
-        pr_runs.append({
-            **slot,
-            'precision': [(total / len(scores[metric])).tolist() if scores[metric] else None
-                          for metric, total in zip(METRICS[:2], curve_sum)],
-        })
-    return row
+    raise ValueError('Old score releases are retired; use stage2/evaluation/evaluate.py with the frozen inventory')
 
 
 def summaries(runs):
@@ -352,19 +323,10 @@ def evaluate(plan_path, outcomes_path, output, expected_plan_sha=None, include_p
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('plan', type=Path)
-    parser.add_argument('outcomes', type=Path)
-    parser.add_argument('output', type=Path)
-    parser.add_argument('--plan-sha256', help='required frozen hash for any formal plan')
-    parser.add_argument('--include-pr-curves', action='store_true',
-                        help='also save the run-level directional PR curves for publication')
-    args = parser.parse_args()
-    try:
-        evaluate(args.plan.resolve(), args.outcomes.resolve(), args.output.absolute(),
-                 args.plan_sha256, args.include_pr_curves)
-    except (ValueError, TypeError, KeyError, OSError, EOFError) as error:
-        parser.exit(1, f'evaluation rejected: {error}\n')
+    sys.path.insert(0, str(REPO))
+    from stage2.evaluation.evaluate import main as shared_main
+    sys.argv.extend(['--step', '4'])
+    shared_main()
 
 
 if __name__ == '__main__':

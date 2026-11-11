@@ -13,3 +13,5 @@
   seal on `dev` before building test labels or scoring the test split.
 - Before real-data jobs, read the [WSL resource rules](../../docs/agents/execution-environment.md)
   and use `execution/script/run_capped.sh`. Run long fits serially.
+
+- Active retrieval scoring and figures use [`../evaluation/README.md`](../evaluation/README.md), with `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` on the full CM significance axis.

@@ -1,5 +1,30 @@
 # 03_modes_tenv — tenv shared-Morgan comparison
 
+## Retrieval evaluation
+
+The active retrieval statistics are **AUPRC**, **AUPRC_positive**, and
+**AUPRC_negative**, with corresponding **PR curve** panels. All use full-CM
+DESeq2 significance and direction matching, under [ADR 0059](../../docs/adr/0059-stage2-significance-retrieval.md).
+The [shared evaluator](../evaluation/README.md) defines the denominator,
+undefined groups, pooling, and bounded resource policy.
+
+- [PR curve](output/retrieval/PR_curve.png)
+- [AUPRC and continuous metrics](output/retrieval/AUPRC.png)
+- [Run statistics](output/retrieval/per_run.csv), [dose statistics](output/retrieval/per_dose.csv), and [summary](output/retrieval/summary.csv)
+- [Replay manifest](output/retrieval/manifest.json)
+
+From the repository root, after the relevant significance release is ready:
+
+```bash
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 3
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 3
+```
+
+Previous retrieval scores, metric figures, and historical copies were removed;
+Git retains their version history. Existing checkpoints and their original
+validation-loss selections are unchanged. Other sections below describe input
+and training provenance, rather than the retired retrieval publication.
+
 This step implements [specification #40](https://github.com/Moke110/arc/issues/40)
 under [ADR 0042](../../docs/adr/0042-tenv-model-benchmark-redesign.md).
 The requested spelling `03_modes_tenv` is intentional. The prior benchmark's
@@ -101,18 +126,6 @@ PNG/SVG figures to the step output directory:
   --output stage2/03_modes_tenv/output/formal \
   --publish stage2/03_modes_tenv/output
 ```
-
-This artifact-only delivery replays the original checked evaluation, then adds
-completion, incomplete-entry and deterministic-reference labels to the best-run
-figure. It preserves all scored values, selected runs, source arrays and frozen
-run identities. `publication.json` records source/evaluation/rendering hashes
-and the exact published table/figure hashes. Run delivery again after an original
-`benchmark.py replay` to restore the additional presentation labels. Canonical final publication follows the formal evaluation barrier. Interim
-scores, provenance and snapshots use a separate partial-evaluation namespace.
-User-facing interim figures are `output/metrics.png`, `output/pr_panels.png` and
-`output/best_run.png`, with SVG companions when produced. The canonical final
-figures overwrite those same display paths after all 63 outcomes settle; the
-partial snapshot evidence remains separate.
 
 Native learning curves are an additional artifact-only deliverable. Rebuild the
 interim figure without loading models, datasets, prediction arrays or test truth:
@@ -244,20 +257,6 @@ nine defined runs except `no_change` PCC and Spearman, which are undefined in
 all nine runs because its predictions are constant. Each reference has three
 folds with deterministic seed copies.
 
-PerturbDiff led seven of the eight nine-run metric means, including positive
-and negative AP@100 of 0.23914 and 0.23463 and RMSE of 0.13172. The training
-group mean reference led mean R² at 0.02252. CMonge's directional AP@100 means
-were 0.18588 and 0.18040 under the disclosed supplemental budget. The best-run
-figure is a post-hoc view. The summary describes held-out performance on the
-frozen tenv release, with variability across folds and seeds.
-
-- Metrics [PNG](output/metrics.png) and [SVG](output/metrics.svg)
-- Directional PR panels [PNG](output/pr_panels.png) and [SVG](output/pr_panels.svg)
-- Best-run PR [PNG](output/best_run.png) and [SVG](output/best_run.svg)
-- Native learning curves [PNG](output/learning_curves.png), [SVG](output/learning_curves.svg) and [coordinates](output/learning_curves.json)
-- Tables for [groups](output/per_group.csv), [runs](output/per_run.csv), [summaries](output/summary.csv), [PR bands](output/pr_bands.csv) and [best runs](output/best_runs.csv)
-- [Publication hashes](output/publication.json), [slot provenance](output/slot_provenance.json) and [sealed prediction manifest](execution/final_record/predictions.json)
-
 The original joint v2 scheduler sampled host pressure and the read-only watcher
 monitored it. Automatic in-flight pressure stops were unavailable in that
 scheduler, and its resource admission check preceded input verification.
@@ -280,20 +279,7 @@ uses the saved evaluator results and refreshes all four figure pairs and their
 provenance. The initial run used `prepare`, `verify` and `evaluate` in order,
 with independent review of the emitted selection and evaluation digests.
 
-```bash
-step=/home/chang/arc/stage2/03_modes_tenv
-systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- \
-  env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 \
-  /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python \
-  "$step/execution/script/supplement_overlay.py" publish \
-  --formal "$step/execution/formal" \
-  --reviewed-stage-sha256 73fb21036a2d04a12c5d8d9ce712ed544b1c38eb70fbfff884dc6753c8b60028 \
-  --policy "$step/execution/final_record/policy.json" \
-  --reviewed-policy-sha256 3b577b7a441b6e0f730c808b79b98ef57bd79c6a13a3b2dfa9e9ff29550923db \
-  --reviewed-terminal-sha256 591872e3aca0a6fba30b0b308381a8569b62c24b1a6ade07a7289c69f0eefb67 \
-  --reviewed-selection-sha256 e2bc2ea2414e52a905c405d37f7ff58acab48e6c56211fd0f4c9d1269bbbae56 \
-  --reviewed-evaluation-sha256 839045cc974386d1c6d21c61753ede02e92a0b208845816f090a94e903f6a918
-```
+
 
 Preparation, two-worker evaluation and publication peaked at 210,896,
 422,864 and 259,312 KiB RSS, respectively. The [final evidence index](execution/final_record/evidence.sha256)
