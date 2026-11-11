@@ -13,6 +13,9 @@ DOSE_BOUNDARIES = np.array([.21, .41, .71, 1.01, 1.51, 3.1, 4.1, 7.1, 12.1], dty
 FIT_ROLES = ("train", "validation")
 SOURCES = ("tahoe", "tenv")
 AXIS_MODELS = {
+    "G512": "XPert_G512",
+    "G1024": "XPert_G1024",
+    "G2048": "XPert_G2048",
     "landmark": "XPert_base",
     "G2000": "XPert_G2000",
     "G5000": "XPert_G5000",
