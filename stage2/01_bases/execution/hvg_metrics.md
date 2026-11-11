@@ -97,3 +97,40 @@ Tahoe significance or PR publication is supported.
 The contract example rendered during implementation is synthetic hand-worked
 evidence, not a model result. Its CSV replay reproduced identical PNG bytes.
 Actual model reports require real predictions and an accepted truth release.
+
+## Actual-data diagnostic acceptance
+
+After training-v2, the complete truth release and its accepted successor
+envelope exist, the following commands replay actual HVG populations and
+export a diagnostic panel:
+
+    python stage2/01_bases/execution/build_hvg.py
+    python stage2/01_bases/execution/build_hvg.py --verify
+    python stage2/01_bases/execution/verify_hvg_metrics.py       --training stage2/01_bases/output/training-v2       --hvg stage2/01_bases/output/hvg-tenv-v1       --successor stage2/01_bases/output/truth-tenv-v2       --output stage2/01_bases/output/hvg-metrics-diagnostic-v1
+
+Run these only in an approved dataset slot, with the documented memory and
+thread caps. The isolation verifier uses temporary HDF5 virtual datasets:
+original training rows are referenced unchanged, and every held-out row is
+replaced by a legal single-gene CP10K spike. It recomputes each fold and
+requires bit-exact training statistics and ranks, changed descriptive
+statistics, and rejection of descriptive or wrong-population selection.
+It never copies or materializes the whole expression matrix.
+
+There are no surviving model predictions in this scope. The diagnostic
+therefore ranks the measured delta layer against measured significance
+truth through SuccessorTruth. All three test-role populations must cover
+all 4206 wells and 1377 parent-dose groups exactly once. Each fold rejects
+truth access for a training-role group. Exported per-group CSV, fixed-group
+PR source, PNG and replay are marked diagnostic; the title explicitly says
+not model performance. These numbers are mechanical acceptance evidence,
+not a trained model result. Numeric success remains
+NUMERIC_PASS_VISUAL_PENDING until the rendered PNG is inspected and that
+separate visual QA is recorded.
+
+The generic evaluator also supports an accepted successor:
+
+    python stage2/01_bases/execution/evaluate_predictions.py       --predictions diagnostic.npy --samples samples.csv --genes genes.csv       --successor stage2/01_bases/output/truth-tenv-v2       --training stage2/01_bases/output/training-v2       --assignments stage2/01_bases/output/hvg-tenv-v1/cohorts.csv       --fold 0 --role test --label "Measured delta" --diagnostic       --output diagnostic-output
+
+The --diagnostic flag sets both report metadata and the visible title.
+Ordinary model prediction evaluation omits that flag; neither mode trains
+a model or alters any significance release.
