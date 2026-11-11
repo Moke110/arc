@@ -1,0 +1,98 @@
+{
+  "bindings": {
+    "accepted_verification": "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records/truth_complete_verify.json",
+    "native": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
+    "native_manifest": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv_manifest.json",
+    "original_native": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
+    "original_native_manifest": "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv_manifest.json",
+    "original_training_manifest": "/home/chang/arc/stage2/01_bases/output/historical-training-release/manifest.json",
+    "original_training_tenv": "/home/chang/arc/stage2/01_bases/output/historical-training-release/tenv.h5ad",
+    "rscript": "/home/chang/miniconda3/envs/biomni_e1/bin/Rscript",
+    "training_manifest": "/home/chang/arc/stage2/01_bases/output/training-corpora/manifest.json",
+    "training_tenv": "/home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad",
+    "truth_manifest": "/home/chang/arc/stage2/01_bases/output/tenv-truth/manifest.json"
+  },
+  "candidate": {
+    "create_pass": true,
+    "manifest_sha256": "0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc",
+    "path": "/home/chang/arc/.scratch/stage2-bases/runtime/v3/successor-candidate",
+    "verify_pass": true
+  },
+  "command": [
+    "/home/chang/miniconda3/bin/python3",
+    "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/execution/reissue_truth_successor.py",
+    "--step-root",
+    "/home/chang/arc/stage2/01_bases",
+    "--candidate",
+    "/home/chang/arc/.scratch/stage2-bases/runtime/v3/successor-candidate",
+    "--record",
+    "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/156-successor-reissue.json",
+    "--records-dir",
+    "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/home/chang/miniconda3/bin/python3",
+        "/home/chang/arc/stage2/01_bases/execution/bind_truth_successor.py",
+        "--truth",
+        "/home/chang/arc/stage2/01_bases/output/tenv-truth",
+        "--original-training",
+        "/home/chang/arc/stage2/01_bases/output/historical-training-release",
+        "--training",
+        "/home/chang/arc/stage2/01_bases/output/training-corpora",
+        "--original-native",
+        "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
+        "--native",
+        "/home/chang/arc/stage2/01_bases/output/tenv-raw-counts/tenv.h5ad",
+        "--accepted-verification",
+        "/home/chang/arc/.scratch/worktrees/stage2-bases-156/stage2/01_bases/log/records/truth_complete_verify.json",
+        "--output",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/v3/successor-candidate",
+        "--rscript",
+        "/home/chang/miniconda3/envs/biomni_e1/bin/Rscript"
+      ],
+      "label": "create candidate",
+      "returncode": 0,
+      "seconds": 243.88,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "  \"result\": \"PASS\",",
+        "  \"samples_compared\": 4206",
+        "}"
+      ]
+    },
+    {
+      "argv": [
+        "/home/chang/miniconda3/bin/python3",
+        "/home/chang/arc/stage2/01_bases/execution/bind_truth_successor.py",
+        "--verify",
+        "--training",
+        "/home/chang/arc/stage2/01_bases/output/training-corpora",
+        "--output",
+        "/home/chang/arc/.scratch/stage2-bases/runtime/v3/successor-candidate",
+        "--rscript",
+        "/home/chang/miniconda3/envs/biomni_e1/bin/Rscript"
+      ],
+      "label": "verify candidate",
+      "returncode": 0,
+      "seconds": 248.8,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "  \"manifest_sha256\": \"0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc\",",
+        "  \"result\": \"PASS\"",
+        "}"
+      ]
+    }
+  ],
+  "finished": 1794417803.280134,
+  "manifest_sha256": "0e55fd98f39f1f8304e484ac7a830321a1e72a100d589b24d96cee2a921085cc",
+  "parent": 154,
+  "result": "PASS",
+  "schema": "bases-156-truth-successor-reissue-v1",
+  "started": 1794417310.0871615,
+  "step_root": "/home/chang/arc/stage2/01_bases",
+  "superseded_bytes_preserved_at": "/home/chang/arc/stage2/01_bases/log/historical/seals/truth-successor-envelope-v1",
+  "superseded_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+  "ticket": 156
+}

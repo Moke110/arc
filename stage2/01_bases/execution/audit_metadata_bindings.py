@@ -28,7 +28,7 @@ STABLE_DIRS = {"gene-identity", "tenv-raw-counts", "tahoe-raw-counts",
 OLD_NAMES = ("identity-v1", "native-v1", "shared-v1", "shared-v2", "training-v1",
              "training-v2", "truth-tenv-v1", "truth-tenv-v2", "tahoe-counts-v1",
              "hvg-tenv-v1", "hvg-metrics-diagnostic-v1", "build_record")
-DIAGNOSTIC_EVIDENCE = {"cohorts.csv": "output/tenv-hvg/cohorts.csv"}
+DIAGNOSTIC_EVIDENCE = {"cohorts.csv": "tenv-hvg/cohorts.csv"}
 FIGURE_PNG = "35d14266283b296c1585af3d58f0bacb15a3d7f854cde4972c433375bbdd911f"
 
 parser = argparse.ArgumentParser(description=__doc__,
@@ -54,6 +54,14 @@ CODE = (args.code_root or STEP).resolve()
 
 checks, structure = [], []
 manifests = {}
+
+
+def label(path):
+    """Step-relative when possible; a split checkout may keep code/figure elsewhere."""
+    try:
+        return str(Path(path).relative_to(STEP))
+    except ValueError:
+        return str(path)
 
 
 def sha(path):
@@ -228,7 +236,7 @@ add(structure, "figure: a renderer exists and the step root no longer publishes 
     "PASS" if (FIG / "script/render_diagnostic_tenv_pr.py").is_file()
     and not (STEP / "diagnostic_tenv_pr.png").exists()
     and not (STEP / "diagnostic_tenv_pr.csv").exists() else "FAIL",
-    {"renderer": str((FIG / "script/render_diagnostic_tenv_pr.py").relative_to(STEP))})
+    {"renderer": label(FIG / "script/render_diagnostic_tenv_pr.py")})
 
 # --- layout -------------------------------------------------------------------
 stable = {path.name for path in OUT.iterdir() if path.is_dir()}
@@ -256,6 +264,12 @@ def same(label, left, right):
         {"expected": left, "actual": right})
 
 
+add(checks, "cross: historical-training-release.inputs.shared_manifest -> deleted shared-v1 seal",
+    "EXPECTED_GAP",
+    {"declared": h1["inputs"]["shared_manifest"],
+     "detail": "shared-v1 has no manifest.json: its expression payload and seal were deleted with the "
+               "historical release; only the mapping CSVs survive under log/historical/shared-v1-mappings, "
+               "so the historical release stays a seal, not a reconstruction input"})
 same("training-corpora.inputs.shared_manifest -> shared-expression-manifest",
      tr["inputs"]["shared_manifest"], manifests["shared-expression/manifest.json"])
 same("tenv-truth.provenance.training_manifest_sha256 -> historical-training-release manifest",
