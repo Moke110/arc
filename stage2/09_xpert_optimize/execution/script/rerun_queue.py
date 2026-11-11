@@ -45,6 +45,14 @@ def execute(plan_path, policy, work, selected=None, smoke=False):
     recipe = read_json(policy)
     if (recipe['kind'] == 'qualification') != smoke:
         raise ValueError('qualification and formal output must remain separate')
+    if not smoke:
+        qualification = read_json(plan_path.parent / 'qualification.json')
+        if (qualification['status'] != 'qualified'
+                or qualification['plan_sha256'] != sha256(plan_path)
+                or qualification['formal_policy_sha256'] != sha256(policy)
+                or len(qualification['runs']) != 6
+                or {r['id'].split('-fold-')[0] for r in qualification['runs']} != MODELS):
+            raise ValueError('formal execution requires matching six-model qualification evidence')
     work.mkdir(parents=True, exist_ok=True)
     with (work / '.queue.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
