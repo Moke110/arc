@@ -1,0 +1,30 @@
+{
+  "contrasts": [
+    {
+      "design": "~ condition",
+      "down": 33,
+      "group_id": "002816689f1848369b8c3f80",
+      "n_controls": 12,
+      "n_treated": 3,
+      "raw_counts_sha256": "1ff67895abb58d1110dba6cf11b3a99d0a02ab706400c3c6c938e8fe5624556d",
+      "up": 2
+    },
+    {
+      "design": "~ plate + condition",
+      "down": 61,
+      "group_id": "52e2fdcd4379f4673b779c16",
+      "n_controls": 24,
+      "n_treated": 6,
+      "raw_counts_sha256": "ee4f82479ed777e79e18b0c0e9f38696cee32867904f4c826a15e4c7d01e8746",
+      "up": 1
+    }
+  ],
+  "gene_count": 18164,
+  "native_sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+  "result": "PASS",
+  "versions": [
+    "4.5.3",
+    "1.50.2"
+  ],
+  "worker_sha256": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
+}

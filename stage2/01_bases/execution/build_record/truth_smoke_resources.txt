@@ -1,0 +1,55 @@
+Running as unit: arc-bases-truth-smoke.scope; invocation ID: 7fc0062895ec4307a34abe8065d16644
+{
+  "contrasts": [
+    {
+      "design": "~ condition",
+      "down": 33,
+      "group_id": "002816689f1848369b8c3f80",
+      "n_controls": 12,
+      "n_treated": 3,
+      "raw_counts_sha256": "1ff67895abb58d1110dba6cf11b3a99d0a02ab706400c3c6c938e8fe5624556d",
+      "up": 2
+    },
+    {
+      "design": "~ plate + condition",
+      "down": 61,
+      "group_id": "52e2fdcd4379f4673b779c16",
+      "n_controls": 24,
+      "n_treated": 6,
+      "raw_counts_sha256": "ee4f82479ed777e79e18b0c0e9f38696cee32867904f4c826a15e4c7d01e8746",
+      "up": 1
+    }
+  ],
+  "gene_count": 18164,
+  "native_sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+  "result": "PASS",
+  "versions": [
+    "4.5.3",
+    "1.50.2"
+  ],
+  "worker_sha256": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
+}
+
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python /home/chang/arc/.worktrees/stage2-bases-truth-final/stage2/01_bases/execution/build_significance.py --native /home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad --training /home/chang/arc/stage2/01_bases/output/training-v1 --output /home/chang/arc/.scratch/stage2-bases/runtime/truth/smoke --smoke --record /home/chang/arc/.worktrees/stage2-bases-truth-final/stage2/01_bases/execution/build_record/truth_real_smoke.json"
+	User time (seconds): 49.60
+	System time (seconds): 0.61
+	Percent of CPU this job got: 97%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:51.51
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1016344
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 52
+	Minor (reclaiming a frame) page faults: 332600
+	Voluntary context switches: 475
+	Involuntary context switches: 317
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
