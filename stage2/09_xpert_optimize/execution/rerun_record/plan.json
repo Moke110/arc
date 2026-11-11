@@ -1,0 +1,294 @@
+{
+  "fixture": false,
+  "gates": {
+    "0": {
+      "full_axis_mlp": "verified",
+      "membership": "verified",
+      "nested_training_axes": "verified",
+      "normalized_axis_samples": "verified",
+      "parent_drug_exclusion": "verified",
+      "predictor_evaluator_separation": "verified"
+    },
+    "1": {
+      "full_axis_mlp": "verified",
+      "membership": "verified",
+      "nested_training_axes": "verified",
+      "normalized_axis_samples": "verified",
+      "parent_drug_exclusion": "verified",
+      "predictor_evaluator_separation": "verified"
+    }
+  },
+  "input_manifest_sha256": {
+    "0": "af2401b7163707f45d985268cb19640e6f2143d5b6229c20a12d893b1b53d9f5",
+    "1": "420f353876193b03d4328aade4893ce718566875578e879012e9a7025955001a"
+  },
+  "landmark_predictor_sha256": "085dd04a932d7b3f975a55c6be665204a76ea898a732e7894824ee1ad95316c8",
+  "runs": [
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G512/evaluator",
+      "evaluator_sha256": "355ebecfd43861b24586c4068ab4afbf1a03d0ebd654497c587526d0b8d8938e",
+      "fold": 0,
+      "gene_count": 512,
+      "id": "XPert_G512-fold-0-seed-17",
+      "model": "XPert_G512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G512/predictor",
+      "predictor_sha256": "b4e329969d5285bb66c3a6436e6b2f094abfaff76798075cfd0c1c72403aa302",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G512/evaluator",
+      "evaluator_sha256": "355ebecfd43861b24586c4068ab4afbf1a03d0ebd654497c587526d0b8d8938e",
+      "fold": 0,
+      "gene_count": 512,
+      "id": "XPert_G512-fold-0-seed-42",
+      "model": "XPert_G512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G512/predictor",
+      "predictor_sha256": "b4e329969d5285bb66c3a6436e6b2f094abfaff76798075cfd0c1c72403aa302",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/evaluator",
+      "evaluator_sha256": "b325a1df804074e8feefa09b58ac6206c14519d630021ea55b4819e66a0828e7",
+      "fold": 0,
+      "gene_count": 1024,
+      "id": "XPert_G1024-fold-0-seed-17",
+      "model": "XPert_G1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/predictor",
+      "predictor_sha256": "14fe05ed3086e947f00713ec7573c01ad3c0ced8f099f464179a271dcbf62a0d",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/evaluator",
+      "evaluator_sha256": "b325a1df804074e8feefa09b58ac6206c14519d630021ea55b4819e66a0828e7",
+      "fold": 0,
+      "gene_count": 1024,
+      "id": "XPert_G1024-fold-0-seed-42",
+      "model": "XPert_G1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G1024/predictor",
+      "predictor_sha256": "14fe05ed3086e947f00713ec7573c01ad3c0ced8f099f464179a271dcbf62a0d",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/evaluator",
+      "evaluator_sha256": "22aca58cf534aa7d9b1305d39b2e7384969a08cd2193f7ff5206d8fc304efdc9",
+      "fold": 0,
+      "gene_count": 2048,
+      "id": "XPert_G2048-fold-0-seed-17",
+      "model": "XPert_G2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/predictor",
+      "predictor_sha256": "357ed6a5901c428d92b35a6db108ae5a419271bdd516f806b6ecf07f354efcea",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/evaluator",
+      "evaluator_sha256": "22aca58cf534aa7d9b1305d39b2e7384969a08cd2193f7ff5206d8fc304efdc9",
+      "fold": 0,
+      "gene_count": 2048,
+      "id": "XPert_G2048-fold-0-seed-42",
+      "model": "XPert_G2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G2048/predictor",
+      "predictor_sha256": "357ed6a5901c428d92b35a6db108ae5a419271bdd516f806b6ecf07f354efcea",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
+      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "fold": 0,
+      "gene_count": 18164,
+      "id": "XPert_MLP512-fold-0-seed-17",
+      "model": "XPert_MLP512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
+      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
+      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "fold": 0,
+      "gene_count": 18164,
+      "id": "XPert_MLP512-fold-0-seed-42",
+      "model": "XPert_MLP512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
+      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
+      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "fold": 0,
+      "gene_count": 18164,
+      "id": "XPert_MLP1024-fold-0-seed-17",
+      "model": "XPert_MLP1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
+      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
+      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "fold": 0,
+      "gene_count": 18164,
+      "id": "XPert_MLP1024-fold-0-seed-42",
+      "model": "XPert_MLP1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
+      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
+      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "fold": 0,
+      "gene_count": 18164,
+      "id": "XPert_MLP2048-fold-0-seed-17",
+      "model": "XPert_MLP2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
+      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/evaluator",
+      "evaluator_sha256": "4f0e0922c8e16c5c306381d5f290a3f81eb6024dcaaaaaf8cf077a9f951000ce",
+      "fold": 0,
+      "gene_count": 18164,
+      "id": "XPert_MLP2048-fold-0-seed-42",
+      "model": "XPert_MLP2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_0/views/G18164/predictor",
+      "predictor_sha256": "7c8940be7ec5b11f87c70396b63453552bc585cdf2a8c643f1343b6f9092e713",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G512/evaluator",
+      "evaluator_sha256": "4deaf96e4a2756aa6d5e2ad5a2d6fb6c1a1202bbe94494fdab6475b9fd5f6efa",
+      "fold": 1,
+      "gene_count": 512,
+      "id": "XPert_G512-fold-1-seed-17",
+      "model": "XPert_G512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G512/predictor",
+      "predictor_sha256": "5925c1108563c8ecfddb8ff0c21ceebbddcea9fab0a474682291f050776f46ad",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G512/evaluator",
+      "evaluator_sha256": "4deaf96e4a2756aa6d5e2ad5a2d6fb6c1a1202bbe94494fdab6475b9fd5f6efa",
+      "fold": 1,
+      "gene_count": 512,
+      "id": "XPert_G512-fold-1-seed-42",
+      "model": "XPert_G512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G512/predictor",
+      "predictor_sha256": "5925c1108563c8ecfddb8ff0c21ceebbddcea9fab0a474682291f050776f46ad",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/evaluator",
+      "evaluator_sha256": "aa304681a2c33bbb2bdc813dc3f521e0c9a9169a730a8e995dec8be26a784ba0",
+      "fold": 1,
+      "gene_count": 1024,
+      "id": "XPert_G1024-fold-1-seed-17",
+      "model": "XPert_G1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/predictor",
+      "predictor_sha256": "a6640045c6642fb47a23bb4cf302de2abbaa8d3d2043b66d92273c4b41f7f3cf",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/evaluator",
+      "evaluator_sha256": "aa304681a2c33bbb2bdc813dc3f521e0c9a9169a730a8e995dec8be26a784ba0",
+      "fold": 1,
+      "gene_count": 1024,
+      "id": "XPert_G1024-fold-1-seed-42",
+      "model": "XPert_G1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G1024/predictor",
+      "predictor_sha256": "a6640045c6642fb47a23bb4cf302de2abbaa8d3d2043b66d92273c4b41f7f3cf",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/evaluator",
+      "evaluator_sha256": "ad2b7c4eebcd39bb79861d0027e8e541b6b4ad3f17b1f81f735271f676fde634",
+      "fold": 1,
+      "gene_count": 2048,
+      "id": "XPert_G2048-fold-1-seed-17",
+      "model": "XPert_G2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/predictor",
+      "predictor_sha256": "1340630445efa9e1eb6d37aef0df0730d7a823d0026ec91f5a13e4f7dedc52c7",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/evaluator",
+      "evaluator_sha256": "ad2b7c4eebcd39bb79861d0027e8e541b6b4ad3f17b1f81f735271f676fde634",
+      "fold": 1,
+      "gene_count": 2048,
+      "id": "XPert_G2048-fold-1-seed-42",
+      "model": "XPert_G2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G2048/predictor",
+      "predictor_sha256": "1340630445efa9e1eb6d37aef0df0730d7a823d0026ec91f5a13e4f7dedc52c7",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
+      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
+      "fold": 1,
+      "gene_count": 18164,
+      "id": "XPert_MLP512-fold-1-seed-17",
+      "model": "XPert_MLP512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
+      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
+      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
+      "fold": 1,
+      "gene_count": 18164,
+      "id": "XPert_MLP512-fold-1-seed-42",
+      "model": "XPert_MLP512",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
+      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
+      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
+      "fold": 1,
+      "gene_count": 18164,
+      "id": "XPert_MLP1024-fold-1-seed-17",
+      "model": "XPert_MLP1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
+      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
+      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
+      "fold": 1,
+      "gene_count": 18164,
+      "id": "XPert_MLP1024-fold-1-seed-42",
+      "model": "XPert_MLP1024",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
+      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
+      "seed": 42
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
+      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
+      "fold": 1,
+      "gene_count": 18164,
+      "id": "XPert_MLP2048-fold-1-seed-17",
+      "model": "XPert_MLP2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
+      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
+      "seed": 17
+    },
+    {
+      "evaluator": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/evaluator",
+      "evaluator_sha256": "7469fcf9ebe9248c0a8842c06cb7949c5d0c6de2362ee8ce493e011de269837d",
+      "fold": 1,
+      "gene_count": 18164,
+      "id": "XPert_MLP2048-fold-1-seed-42",
+      "model": "XPert_MLP2048",
+      "predictor": "/home/chang/arc/stage2/09_xpert_optimize/output/corpus/rerun/fold_1/views/G18164/predictor",
+      "predictor_sha256": "848b8cf37788c2cef70eb42728e50b246a20df59b0a90c1bb4fc4fc83f09d991",
+      "seed": 42
+    }
+  ],
+  "schema": "step09-round1-rerun-plan-v1",
+  "split_source_sha256": "0805a5116c346a2d618fd8035e361fa3a945f306e7297c86efa66eeaaf323853"
+}

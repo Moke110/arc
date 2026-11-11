@@ -1,5 +1,43 @@
 # Step 09 XPert gene-axis and compression ablation
 
+## Round 1 rerun (ADR 0060)
+
+The active rerun is specified in [issue #140](https://github.com/Moke110/arc/issues/140)
+and [ADR 0060](../../docs/adr/0060-step09-round1-rerun.md). It uses G512,
+G1024, G2048, MLP512, MLP1024 and MLP2048, each on folds 0/1 and seeds
+17/42. The sections below describe the previous exploratory study.
+
+The [verified plan](execution/rerun_record/plan.json) binds all 24 input
+identities. [Formal policy](execution/rerun_record/policy.json) fixes effective
+batch 16, validation cadence, exposure budgets and early stopping. The
+[smoke policy](execution/rerun_record/smoke-policy.json) is qualification only
+and cannot be used for a formal publication. Real-data work is serial and
+memory capped; live telemetry is retained under `execution/tmp/rerun/`.
+
+From the repository root, after input verification and six-arm qualification:
+
+```bash
+PY=/home/chang/miniconda3/envs/arc/bin/python
+STEP=stage2/09_xpert_optimize
+PLAN=$STEP/execution/rerun_record/plan.json
+POLICY=$STEP/execution/rerun_record/policy.json
+WORK=$STEP/execution/tmp/rerun/formal
+"$PY" "$STEP/execution/script/rerun_queue.py" --plan "$PLAN" --policy "$POLICY" --work "$WORK"
+"$PY" "$STEP/execution/script/rerun_queue.py" --plan "$PLAN" --policy "$POLICY" --work "$WORK" --evaluate
+"$STEP/execution/script/run_capped.sh" "$WORK/publication-resources" "$PY" \
+  "$STEP/execution/script/rerun_publication.py" score-publish --plan "$PLAN" \
+  --work-root "$WORK" --predictions-root "$WORK/predictions" --loss-root "$WORK/test_loss" \
+  --output "$STEP/output/round1-staging"
+"$PY" "$STEP/execution/script/rerun_publication.py" replay --output "$STEP/output/round1-staging"
+```
+
+A failed run stops the queue. Completed runs resume only after identity and
+selected-checkpoint verification; incomplete attempts require explicit recovery
+and remain in the resource history. Each run retains only `best.pt`: Tahoe-best
+initializes tenv, then tenv-best replaces the same slot. Figures use native-axis
+continuous metrics and canonical full-CM significance retrieval. PR summaries
+are restricted to the domain shared by all four native curves.
+
 ## Retrieval evaluation
 
 The active retrieval statistics are **AUPRC**, **AUPRC_positive**, and
