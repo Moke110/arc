@@ -1,8 +1,0 @@
-model,fold,seed,selection_score,label
-no_change,1,17,0.005505395287381633,post-hoc best test; fixed fold/seed tie order
-delta_mean,0,17,0.18893400036864305,post-hoc best test; fixed fold/seed tie order
-prnet,0,2026,0.18415776676694445,post-hoc best test; fixed fold/seed tie order
-cpa,1,2026,0.09338915317582597,post-hoc best test; fixed fold/seed tie order
-chemcpa,1,17,0.05378583206279583,post-hoc best test; fixed fold/seed tie order
-cmonge,0,42,0.20285356007304572,post-hoc best test; fixed fold/seed tie order
-perturbdiff,,,nan,post-hoc best test; fixed fold/seed tie order

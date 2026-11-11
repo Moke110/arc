@@ -1,7 +1,0 @@
-{
-  "host_peak_gib": 1.3577423095703125,
-  "gpu_peak_gib": 0.8046875,
-  "measured_rss_kib": 1423696,
-  "current_identity_evidence": "execution/models/resume_verified_record/prnet",
-  "formal_config_sha256": "a1f29927e999a19e59e0b375633b32ee4e546b372d92fdaa68faf25a405ba732"
-}

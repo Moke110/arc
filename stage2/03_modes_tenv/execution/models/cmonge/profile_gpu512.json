@@ -1,1 +1,0 @@
-{"iterations": 100, "batch_size": 512, "eval_every": 100, "max_groups": 100000, "qualification": true}

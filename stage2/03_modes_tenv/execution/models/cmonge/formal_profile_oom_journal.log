@@ -1,4 +1,0 @@
-Nov 05 22:08:07 systemd: Started run-r891a2ac84d90440fb305b3a5b63a87bf.scope.
-Nov 05 22:08:22 systemd: run-r891a2ac84d90440fb305b3a5b63a87bf.scope: A process of this unit has been killed by the OOM killer.
-Nov 05 22:08:23 systemd: run-r891a2ac84d90440fb305b3a5b63a87bf.scope: Failed with result 'oom-kill'.
-Nov 05 22:08:23 systemd: Consumed 39.606s CPU time.
