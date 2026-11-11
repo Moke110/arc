@@ -14,12 +14,14 @@
     "verify_all_resources": "stage2/09_xpert_optimize/execution/tmp/rerun/resources/verify-all"
   },
   "formal_run_count": 24,
-  "completed_runs": 0,
+  "completed_runs": 1,
   "remaining_acceptance": [
     "24 complete formal two-phase runs",
     "selected-checkpoint test replay",
     "real-data three-figure publication and replay",
     "visual inspection and historical artifact replacement"
   ],
-  "telemetry_note": "Service PATH lacks nvidia-smi; first fit retains torch GPU peaks and a supplemental live GPU monitor. Subsequent capped jobs resolve WSL nvidia-smi explicitly."
+  "telemetry_note": "Service PATH lacks nvidia-smi; first fit retains torch GPU peaks and a supplemental live GPU monitor. Subsequent capped jobs resolve WSL nvidia-smi explicitly.",
+  "current_run": "XPert_G512-fold-0-seed-42",
+  "recovery_record": "execution/rerun_record/recovery.json"
 }

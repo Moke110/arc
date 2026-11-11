@@ -25,5 +25,7 @@
   "resource_caveat": "time.log/stdout.log/stderr.log were truncated by duplicate worker launch. time.log measures the rejected duplicate, not original fit. Original run.json training_minutes/peak_rss_kib/GPU peaks, histories, full pipeline log and resources.tsv are retained. wall-clock.tsv spans the full launcher including duplicate.",
   "retained_attempt_snapshot": "stage2/09_xpert_optimize/execution/tmp/rerun/formal/resources/XPert_G512-fold-0-seed-17/duplicate-launch-incident",
   "repair": "launcher executes immutable in-memory snapshot before opening logs; regression passes; restart verifies and skips completed first run, runs remaining 23 without retraining it",
-  "status": "ready_to_resume"
+  "status": "resumed",
+  "resumed_at": "2026-11-11T14:35:31+08:00",
+  "resumed_run": "XPert_G512-fold-0-seed-42"
 }
