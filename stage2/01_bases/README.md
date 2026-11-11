@@ -44,7 +44,8 @@ not require recreating the deleted 62710-gene derived matrix.
 
 ## Training files and source replay
 
-`output/training-v1/{tahoe_bulk,tenv}.h5ad` keep separate treated wells. `X`
+`output/training-v2/{tahoe_bulk,tenv}.h5ad` are the current separate training
+releases and keep individual treated wells. `X`
 is natural log1p of raw counts projected onto the full fixed axis and scaled
 to 10000. `layers/control` averages independently normalized controls;
 `layers/delta` is treated minus control. Tenv uses same-plate DMSO, excludes
@@ -130,11 +131,32 @@ not describe a current shared-expression payload, which was deleted. A new
 shared manifest seals the actual raw files and their release manifests;
 `training-v2` binds that shared manifest. Separate replay records bind raw SHA,
 axis SHA, training SHA and the selected training manifest without rewriting
-historical bytes. To establish equivalence to surviving v1 expression, run
-both source replay commands with
-`--training stage2/01_bases/output/training-v1 --record <new-record.json>`.
+historical bytes. The current v2 Tahoe release passes raw-source replay for
+all 65318 treated profiles and 1400 matched controls with zero numerical error;
+its upstream raw counts pass independent replay of all 3388 expression shards,
+67018 profiles and 95624334 cells.
 
-The running truth-v1 release retains its original v1 input seals. Linking it
+**Historical v1 Tahoe is rejected and superseded, not an accepted training
+input.** Its explicit raw replay fails; the same fixed-profile probe matches
+current v2 X/control/delta exactly. The old source aggregator removed marker
+entries but then indexed the compacted arrays with original offsets, which
+misattributes and drops counts. The two-cell counterexample and actual
+v1/v2/raw evidence are in
+[`tahoe_historical_raw_diagnosis.json`](execution/build_record/tahoe_historical_raw_diagnosis.json),
+with the failed replay in
+[`tahoe_training_v1_rejection.json`](execution/build_record/tahoe_training_v1_rejection.json).
+The sealed v1 file is retained as forensic evidence; it is not repaired,
+relabeled or claimed equivalent to v2. The historical native matrix was
+removed, so the diagnosis does not claim an exhaustive reconstruction of all
+v1 differences.
+
+Historical v1 **tenv** remains accepted as the original truth-fit input.
+Its immutable payload/manifest seals are retained, and the exact tenv successor
+proof authorizes current v2 labels. A manifest containing the rejected Tahoe
+entry does not endorse that entry: truth, HVG and retrieval use the accepted
+tenv population and current v2 release. No Tahoe labels or PR are published.
+
+The original truth-v1 release retains its v1 tenv input seals. Linking it
 to a successor training release requires exact gene order, integer contrast
 counts, treated/control memberships and statistical recipe equality, plus
 worker/runtime/statistic seals and a versioned successor record. Matching raw

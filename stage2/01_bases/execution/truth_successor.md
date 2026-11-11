@@ -23,7 +23,7 @@ row positions. Every plate/design covariate and parent–dose membership must
 agree. Different physical row orders and native file bytes are allowed only
 when the actual mathematical data are equal.
 
-Both training files must contain exactly the same sample identities and
+The original and successor **tenv.h5ad** files must contain the same sample identities and
 matched-control IDs. All X/control/delta values are compared with
 `numpy.array_equal`, not `allclose`, and are also independently recomputed from
 raw counts, full-axis CP10K/log1p and independently normalized matched-control
@@ -53,14 +53,21 @@ prediction and cohort identities.
 
 ## Actual acceptance order
 
-These commands are **pending real acceptance**, not claims that the still
-running1377-fit service or future v2 training has completed. Obtain a resource
-slot first; do not introduce a third heavy job. Run from the canonical repo
-with the `arc` Python, threads2, MemoryMax10G/MemorySwapMax8G and `/usr/bin/time -v`.
-Keep both training-v1 files and all running implementation code frozen.
+Complete 1377-contrast verification with three independent R refits and the
+exact v2 successor envelope have passed; their actual records are
+`build_record/truth_complete_verify.json` and
+`build_record/truth_successor_acceptance.json`. The commands below document
+that acceptance sequence. Reuse the sealed accepted evidence when inputs are
+unchanged; they are not instructions to repeat an expensive fit or refit.
+Obtain a resource slot for any necessary verification, keep the `arc` Python,
+threads2, MemoryMax10G/MemorySwapMax8G and `/usr/bin/time -v`.
 
-After the truth service exits successfully, run the updated verifier (which
-selects the three distinct representative classes):
+The original fit uses only accepted v1 **tenv**. V1 Tahoe failed independent
+source replay and is rejected/superseded; it is never read by this tenv proof.
+Both historical files and their original manifest remain unchanged. Current
+training, HVG and diagnostics use v2, and labels use truth-tenv-v2.
+
+The original complete verifier selects three distinct representative classes:
 
 ```bash
 systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python /home/chang/arc/stage2/01_bases/execution/build_significance.py --native /home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad --training /home/chang/arc/stage2/01_bases/output/training-v1 --output /home/chang/arc/stage2/01_bases/output/truth-tenv-v1 --verify --replay-groups 3 --record /home/chang/arc/stage2/01_bases/execution/build_record/truth_complete_verify.json

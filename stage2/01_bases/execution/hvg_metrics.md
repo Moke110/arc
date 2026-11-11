@@ -77,12 +77,13 @@ and samples from another role are rejected before scoring. The evaluator publish
 per-group AP, macro summaries, input seals and the plotted numeric source.
 It does not train a model or restore historical predictions.
 
-The long-running truth release seals its original frozen training-v1 input.
-Using its labels with training-v2 cohorts requires an accepted equivalence
-envelope proving the same raw counts, exact treated/control identities,
-parent-dose membership and normalization. The original truth manifest is not
-rewritten to claim a different input hash. This implementation does not
-claim that equivalence until the v2 source acceptance is complete.
+Current selection, scoring and diagnostics use training-v2 and the accepted
+truth-tenv-v2 successor envelope. That envelope proves the same tenv raw counts,
+exact treated/control identities, parent-dose membership and normalization as
+the original frozen v1 tenv truth input. The original truth manifest is not
+rewritten. Historical v1 Tahoe failed source replay and is rejected/superseded;
+it is not a model input or a label source. Its presence in the old training
+manifest does not affect the tenv-only equivalence proof.
 
 ## Plotting and replay
 
