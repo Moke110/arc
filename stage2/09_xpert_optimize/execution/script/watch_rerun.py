@@ -30,7 +30,8 @@ def snapshot(work, plan):
                             '--property=ActiveState', '--property=SubState', '--property=ExecMainStatus'],
                            capture_output=True, text=True, check=True)
     return {'read_at': datetime.now(timezone(timedelta(hours=8))).isoformat(),
-            'complete_count': len(completed), 'completed': completed, 'current': current,
+            'total_count': len(plan['runs']), 'complete_count': len(completed),
+            'completed': completed, 'current': current,
             'available_ram_gib': memory / 1024**2,
             'service': dict(line.split('=', 1) for line in state.stdout.splitlines())}
 
