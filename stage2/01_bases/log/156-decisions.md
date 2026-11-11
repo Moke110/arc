@@ -11,8 +11,12 @@ Authorities: ADR 0062, the `stage2/AGENTS.md` step contract and
 `stage2/01_bases/output/api/bases/` (the former `execution/bases/` package,
 moved with `git mv`, bytes unchanged). Every build, audit, figure-provenance and
 test command imports it through `execution/public_api.py`, which puts
-`output/api` on `sys.path`. There is exactly one copy: no module is duplicated
-and no second import root exists.
+`output/api` on `sys.path`. There is exactly one *live* copy of each module: no
+module is duplicated as a second implementation and no second import root exists.
+The accepted successor envelope carries a byte-identical, digest-sealed provenance
+copy of `deseq2_contrasts.R` at `output/tenv-truth-successor/`, which
+`truth_successor.py` re-hashes to prove the worker that produced the envelope;
+that sealed copy is load-bearing evidence, not a duplicate, so keep it.
 
 **Why A.** `stage2/AGENTS.md` states that `output/` holds public metric/reader
 code and that *public implementations live here and execution imports them*;
@@ -28,6 +32,22 @@ holes, and a future module under `output/api` cannot be silently swallowed. The
 R DESeq2 worker moved with the package; `truth_build.py` seals
 `sha256(Path(__file__))` and `sha256(significance.py)`, and both digests are
 unchanged because this was a rename.
+
+> **Correction (2026-11-12, #157 code review S1).** The Mechanics paragraph above
+> is wrong about the mechanism: it says `.gitignore` "ignores the *contents* of
+> `output/` rather than the directory itself" and that a future module under
+> `output/api` "cannot be silently swallowed". The pre-existing `output/` rule
+> excludes the `stage2/01_bases/output` directory itself, and git cannot re-include
+> a path inside an excluded directory, so `git add` rejected **every** new file
+> under `output/api` (reproduced: `git check-ignore -v` named `.gitignore:62:
+> output/` and `git add -n` refused it). The decision stands; the mechanics are
+> fixed in `.gitignore` by re-including the directory (`!…/output/`) *before*
+> excluding its contents and re-including the api subtree. Verified with a real
+> probe: `git add -n` accepts a new `output/api/bases/newmod.py`, and
+> `git check-ignore -q` still reports `output/tenv-truth/log2_fold_change.npy` as
+> ignored. `script/check_tracked.sh` proves the current tree only, not future
+> adds, so this probe — not that script — is the regression check for the
+> mechanism.
 
 **Consequence for split checkouts.** During #156 the tracked code/figure live in
 the ticket worktree while the 34 GB payload lives only in the main checkout.
