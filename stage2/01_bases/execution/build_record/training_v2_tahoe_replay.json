@@ -1,0 +1,26 @@
+{
+  "axis_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+  "control_profiles_replayed": 1400,
+  "max_abs_error": 0.0,
+  "native_file": "/home/chang/arc/stage2/01_bases/output/tahoe-counts-v1/tahoe.h5ad",
+  "native_sha256": "a830a34a11759d060fb31697df9281ad6f7667b8051616e1bfea4fbeea64ea15",
+  "provenance": "independent raw-source replay; selected training build seal retained",
+  "result": "PASS",
+  "rows_replayed": 65318,
+  "source": "tahoe",
+  "structure_serialization_changes": [],
+  "summary": {
+    "controls": 1400,
+    "declared_treated": 65618,
+    "excluded_by_reason": {
+      "missing_or_invalid_structure": 300
+    },
+    "matched_control_profiles": 1400,
+    "parent_dose_groups": 1056,
+    "parent_identity_remapped_samples": 0,
+    "raw_profiles": 67018,
+    "samples": 65318
+  },
+  "training_manifest_sha256": "aac36d2d8306c234da581ae2763b8703a323db89870c7db42a15fe0fd5be564b",
+  "training_sha256": "fa6e5a4c613af6f83a459505d49c4df5bd3f9259286d20115bcc8390497a2ab5"
+}

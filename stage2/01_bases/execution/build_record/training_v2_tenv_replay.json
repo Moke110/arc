@@ -1,0 +1,26 @@
+{
+  "axis_sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+  "control_profiles_replayed": 192,
+  "max_abs_error": 0.0,
+  "native_file": "/home/chang/arc/stage2/01_bases/output/native-v1/tenv.h5ad",
+  "native_sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+  "provenance": "independent raw-source replay; selected training build seal retained",
+  "result": "PASS",
+  "rows_replayed": 4206,
+  "source": "tenv",
+  "structure_serialization_changes": [],
+  "summary": {
+    "controls": 272,
+    "declared_treated": 4206,
+    "excluded_by_reason": {
+      "technical_blank": 32
+    },
+    "matched_control_profiles": 192,
+    "parent_dose_groups": 1377,
+    "parent_identity_remapped_samples": 81,
+    "raw_profiles": 4510,
+    "samples": 4206
+  },
+  "training_manifest_sha256": "aac36d2d8306c234da581ae2763b8703a323db89870c7db42a15fe0fd5be564b",
+  "training_sha256": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830"
+}

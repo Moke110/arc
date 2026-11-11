@@ -1,0 +1,44 @@
+{
+  "axis_size": 18164,
+  "files": {
+    "tahoe_bulk.h5ad": "fa6e5a4c613af6f83a459505d49c4df5bd3f9259286d20115bcc8390497a2ab5",
+    "tahoe_bulk_exclusions.csv": "2ef64cb0c22ad917a8387db4cfaeece9ac409bc3ece90e907fe6649eceb6c0fc",
+    "tenv.h5ad": "bab4140c055297370c9694f9d367cc8a73326c77cde2836c32959738be73c830",
+    "tenv_exclusions.csv": "6359c4153a27c9678e76a308314df7d8a7770efb1cf964be7edc57ea01b40937"
+  },
+  "fixture": false,
+  "input_provenance": "rebuilt raw counts and independent source bindings sealed by the shared manifest",
+  "inputs": {
+    "drug_metadata": "7a04c7a6611e74c92253163b994ff0a47191928ee7511f1c2ca508cee0e79f28",
+    "shared_manifest": "fb352f2be2c93408b58daddf5f0ed9d2972b97c0f9a5f16b187316c6245987c3"
+  },
+  "normalization": "project raw counts to frozen axis; CP10K; natural log1p; mean normalized matched controls",
+  "rdkit_version": "2026.03.2",
+  "schema": "stage2-indexed-training-corpora-v1",
+  "sources": {
+    "tahoe": {
+      "controls": 1400,
+      "declared_treated": 65618,
+      "excluded_by_reason": {
+        "missing_or_invalid_structure": 300
+      },
+      "matched_control_profiles": 1400,
+      "parent_dose_groups": 1056,
+      "parent_identity_remapped_samples": 0,
+      "raw_profiles": 67018,
+      "samples": 65318
+    },
+    "tenv": {
+      "controls": 272,
+      "declared_treated": 4206,
+      "excluded_by_reason": {
+        "technical_blank": 32
+      },
+      "matched_control_profiles": 192,
+      "parent_dose_groups": 1377,
+      "parent_identity_remapped_samples": 81,
+      "raw_profiles": 4510,
+      "samples": 4206
+    }
+  }
+}
