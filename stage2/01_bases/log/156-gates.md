@@ -21,7 +21,7 @@ approached. See "Deviations".
 
 | id | check | outcome | measured | evidence |
 |---|---|---|---|---|
-| E1 | re-hash the accepted payloads once after the move | **PASS** | 1425 files, 20,880,197,658 B, 13.3 s wall, 22.8 MiB peak RSS | [`156-payload-digests.json`](156-payload-digests.json) |
+| E1 | re-hash the accepted payloads once after the move | **PASS** | 1425 files, 20,880,197,658 B, 12.2 s wall, 22.4 MiB peak RSS | [`156-payload-digests.json`](156-payload-digests.json) |
 | E2 | re-issue + verify the truth successor envelope, serial | **PASS** | create 243.4 s + verify 234.6 s = 7:59 wall, 878,732 KiB peak RSS | [`156-successor-reissue.json`](156-successor-reissue.json), [`records/156_truth_successor_build.json`](records/156_truth_successor_build.json), [`records/156_truth_successor_verify.json`](records/156_truth_successor_verify.json) |
 | E3 | `verify_hvg_metrics.py` against the stable paths | **PASS** | 1:25 wall, 405,908 KiB peak RSS | [`records/156_e3_diagnostic_replay.json`](records/156_e3_diagnostic_replay.json) |
 | E4 | render the panel from the CSV alone and compare PNG bytes | **PASS** | seconds, byte-identical `35d14266…` | [`156-figure-reproduction.json`](156-figure-reproduction.json) |
