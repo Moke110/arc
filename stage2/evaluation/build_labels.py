@@ -30,9 +30,16 @@ def membership(ids):
     return hashlib.sha256(json.dumps(sorted(ids), separators=(',', ':')).encode()).hexdigest()
 
 
+def significance_gene_family(step09=STEP09):
+    """Read the preserved CM-plus-HDGFL3 family across Round 1 replacement."""
+    active = step09 / 'output/round1/labels/test/genes.csv'
+    archived = step09 / 'execution/history/round1-exploratory/round1/labels/test/genes.csv'
+    return pd.read_csv(active if active.is_file() else archived)
+
+
 def prepare(dataset):
     native = REPO / f'stage2/02_dataset_corpus/output/corpus/v2/{dataset}.h5ad'
-    genes = pd.read_csv(STEP09 / 'output/round1/labels/test/genes.csv')
+    genes = significance_gene_family()
     with h5py.File(native) as f:
         obs, var = read_elem(f['obs']), read_elem(f['var'])
     if dataset == 'tenv':
