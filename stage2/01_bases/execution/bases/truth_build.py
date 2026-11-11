@@ -17,6 +17,7 @@ from .significance import (FIELDS, SCHEMA, bh_adjust, checked_file, contrast_pla
                            sha256, write_json)
 
 WORKER = Path(__file__).with_name('deseq2_contrasts.R')
+VERIFICATION_SCHEMA = 'stage2-parent-dose-truth-verification-v1'
 
 
 def source_plan(training, native, *, fixture=False):
@@ -196,6 +197,23 @@ def build(training, native, output, rscript, *, batch_size=25, workers=2, fixtur
     return json.loads((output / 'manifest.json').read_text())
 
 
+def representative_indices(groups, count):
+    """Cover ordinary nonempty, multi-plate and tested-empty fits before filling."""
+    if count < 0:
+        raise ValueError('independent replay count must be nonnegative')
+    eligible = groups.status.eq('eligible')
+    masks = [eligible & groups.n_plates.eq(1) & groups.n_significant.gt(0),
+             eligible & groups.n_plates.gt(1), eligible & groups.n_significant.eq(0),
+             groups.status.eq('untestable')]
+    chosen = []
+    for mask in masks:
+        available = [int(i) for i in np.flatnonzero(mask.to_numpy()) if int(i) not in chosen]
+        if available:
+            chosen.append(available[0])
+    chosen.extend(i for i in range(len(groups)) if i not in chosen)
+    return chosen[:count]
+
+
 def verify(training, native, output, rscript, *, replay_groups=3, fixture=False):
     """Replay every raw membership/BH/ranking plus independently refit representatives."""
     import hashlib
@@ -244,15 +262,15 @@ def verify(training, native, output, rscript, *, replay_groups=3, fixture=False)
                 raise ValueError('complete-release ranked truth/status replay differs')
     replayed = []
     if replay_groups:
-        candidates = [*groups.index[groups.n_plates.gt(1)],
-                      *groups.index[groups.status.eq('eligible') & groups.n_significant.eq(0)],
-                      *groups.index[groups.status.eq('eligible')]]
-        chosen = list(dict.fromkeys(candidates))[:replay_groups]
+        chosen = representative_indices(groups, replay_groups)
         with tempfile.TemporaryDirectory(prefix='.truth-refit-', dir=output.parent) as directory:
             directory = Path(directory)
             selected = groups.loc[chosen, planned.columns].reset_index(drop=True)
             write_part_inputs(directory, native, selected, samples, columns)
             run_worker(directory, rscript, len(genes))
+            versions = (directory / 'versions.txt').read_text().splitlines()
+            if versions != [provenance['r_version'], provenance['deseq2_version']]:
+                raise ValueError('independent DESeq2 runtime versions differ from the original fit')
             results = pd.read_csv(directory / 'results.csv', keep_default_na=False)
             for local, original in enumerate(chosen):
                 for field in FIELDS:
@@ -264,7 +282,10 @@ def verify(training, native, output, rscript, *, replay_groups=3, fixture=False)
                 if results.iloc[local].status != groups.iloc[original].status:
                     raise ValueError('independent DESeq2 status differs')
                 replayed.append(groups.iloc[original].group_id)
-    return {'result': 'PASS', 'manifest_sha256': sha256(output / 'manifest.json'),
+    return {'schema': VERIFICATION_SCHEMA, 'dataset': 'tenv', 'complete': True,
+            'result': 'PASS', 'manifest_sha256': sha256(output / 'manifest.json'),
+            'input_seals': {key: provenance[key] for key in ('native_counts_sha256',
+                'training_manifest_sha256','tenv_training_sha256','worker_sha256')},
             'groups_replayed': len(groups), 'treated_samples': int(samples.condition.eq('treated').sum()),
             'gene_count': len(genes), 'independent_refits': replayed,
             'statuses': groups.status.value_counts().to_dict(),
