@@ -147,6 +147,9 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 !/stage2/01_bases/output/api/
 !/stage2/01_bases/output/api/**
 
+# ADR 0062: disposable build resumption state lives in execution/, never output/.
+/stage2/01_bases/execution/checkpoints/
+
 # ADR 0062 report panels: the complete plotted values are tracked next to the
 # figure, not stored as payload.
 !/stage2/01_bases/figure/data/*.csv
