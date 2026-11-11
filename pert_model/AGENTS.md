@@ -1,9 +1,7 @@
 # AGENTS.md — pert_model
-
 Drug-perturbation model code and weights as external 项 (ADR 0030):
 each has tracked `script/` + `author_log.json`, and gitignored `source/`
 (upstream clone + downloaded assets) and `local/` (declared local additions).
-
 Historically set up (run cards are retained in Git history):
 
 - `PRnet/` — PRnet (Apache-2.0); 978 LINCS + 5,000 Sci-Plex checkpoints.
