@@ -1,0 +1,14 @@
+import datetime,hashlib,json,os,pathlib,re,subprocess,sys,time
+root=pathlib.Path('/home/chang/arc');out=root/'.scratch/stage2-bases/runtime/final-health';path=out/'final_paths.json'
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+now=lambda:datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat()
+if path.exists():raise SystemExit('Existing final path record: no silent repetition')
+script=root/'script/check_paths.sh';pins={str(p.relative_to(root)):sha(p) for p in [script,root/'script/check_stage2_paths.sh',root/'script/check_stage3_paths.sh']}
+if subprocess.check_output(['git','status','--porcelain'],cwd=root):raise SystemExit('Canonical tree dirty')
+stdout=out/'paths_final.stdout.log';stderr=out/'paths_final.stderr.log';resources=out/'paths_final.time.txt';argv=['/usr/bin/time','-v','-o',str(resources),'/bin/bash',str(script)]
+started=now();clock=time.monotonic()
+with stdout.open('wb') as a,stderr.open('wb') as b:r=subprocess.run(argv,cwd=root,stdout=a,stderr=b)
+text=stdout.read_text();scan=re.search(r'tracked text files scanned: (\d+)',text)
+valid=r.returncode==0 and scan is not None and int(scan[1])>0 and stderr.stat().st_size==0 and 'RESULT: PASS — every extracted path literal resolves' in text and 'stage3 source-first path audit: PASS' in text and '0 stale stage2 path literals' in text
+value={'schema':'stage2-final-paths-failclosed-real-replay-v1','started_at':started,'finished_at':now(),'elapsed_seconds':time.monotonic()-clock,'checked_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'cwd':str(root),'argv':argv,'PATH':os.environ['PATH'],'pins':pins,'pins_unchanged':all(sha(root/p)==s for p,s in pins.items()),'exit_code':r.returncode,'scan_files':int(scan[1]) if scan else None,'stderr_bytes':stderr.stat().st_size,'stdout_sha256':sha(stdout),'stderr_sha256':sha(stderr),'resources_sha256':sha(resources),'status':'PASS' if valid else 'FAIL','verify_all_repeated':False}
+path.write_text(json.dumps(value,indent=2,sort_keys=True)+'\n');print(json.dumps(value,sort_keys=True),flush=True);sys.exit(0 if valid else 1)

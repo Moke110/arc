@@ -1,0 +1,2 @@
+PASS: tracking scan fails closed when the NUL filter fails
+PASS: tracking comparison fails closed

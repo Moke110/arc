@@ -4,7 +4,9 @@
     "bytes_unchanged": true,
     "commit": "cda881ba3e55b2e962cb22230ed499d5b5d07e9d",
     "filesystem_metadata_note": "Firsttrackingcheckoutupdatedworkerfilemtime/ctime;byteSHAunchanged. Manifest/historicaltenvstatunchanged.",
+    "final_tracking_acceptance": "corrected_audits.json check_tracked entry,scan244 stderr0",
     "successor_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+    "tracking_recheck_valid": false,
     "worker_sha256": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
   },
   "external_verification": {
@@ -51,20 +53,51 @@
     "recheck_reason": "Existingarc environment required by3python/PyMuPDF item wrappers; PATH corrected without dependency installation or source/check/manifest modification",
     "tahoe": "PASS original fullitem manifest4430entries; no skip/reuse and no duplicate fullhash"
   },
+  "final_checked_commit": "b17049c71b53dd44b7e92034964ec6ce07ae13f0",
+  "invalid_prior_verdicts": [
+    {
+      "reason": "Stage3 rg commandnotfound hidden as no matches; final_paths replaces this acceptance",
+      "record": "check_paths.log",
+      "reported_exit": 0,
+      "verdict": "INVALID"
+    },
+    {
+      "reason": "Conda sed-z segmentation fault/findbrokenpipe emptied disklist; scan0/PASS invalid",
+      "record": "check_tracked_recheck.log",
+      "reported_exit": 0,
+      "verdict": "INVALID"
+    },
+    {
+      "reason": "Fixture fakepath and missingrg; fixed then independently rerun clean",
+      "record": "corrected_audits.json check_paths entry",
+      "reported_exit": 1,
+      "verdict": "VALID_FAIL"
+    }
+  ],
   "original_check_exit_codes": {
     "check_paths": 0,
     "check_tracked": 1,
     "verify_all": 1
   },
   "original_checks_ran_unmodified": true,
-  "original_full_run_status": "FAIL retained exactly; check_tracked1sealedworker hole and4runtimephenotypeverifier errors",
+  "original_external_manifest_inputs_unchanged": true,
+  "original_full_run_status": "FAIL retained exactly. Original paths exit0 is INVALID due missingrg hidden by Stage3 guard; tracking exit1 workerhole; verify_all exit1 four runtime errors.",
   "original_verify_all_invocations": 1,
-  "path_check": "PASS original run",
+  "path_check": {
+    "checked_commit": "b17049c71b53dd44b7e92034964ec6ce07ae13f0",
+    "record": "final_paths.json",
+    "scan_files": 758,
+    "status": "PASS",
+    "stderr_bytes": 0
+  },
   "post_tracking_fix_commit": "7cd77cbbd80e046e33552870f02b0218cf78c317",
+  "resource_service_snapshot_note": "Initial tracking_service.properties is post-transient-unload defaults, not valid cap evidence. Actual launch argv/time retained; final paths/corrected audits use retained oneshot services with actual limits. All verdicts require nonzero observed inventory and no stderr errors.",
   "resources": {
+    "final_paths_wall_seconds": 9.989384351996705,
+    "final_tracking_wall_seconds": 0.041798604012001306,
     "monitor_low_memory_seen": false,
-    "monitor_min_available_bytes": 42677182464,
-    "monitor_samples": 39,
+    "monitor_min_available_bytes": 42498211840,
+    "monitor_samples": 133,
     "original_fullverify_peak_rss_kib": 32828,
     "original_fullverify_wall_seconds": 299.93272411599173,
     "original_service_memory_peak_including_pagecache_bytes": 10737418240,
@@ -74,8 +107,32 @@
     "thread_caps": 2
   },
   "schema": "stage2-bases-final-health-evidence-summary-v1",
-  "scope": "Onlyfinalhealthrecords;historicalTahoev1rejectedelsewhere,currentv2acceptanceindependent;nodeploymentorissueclosureclaimed",
-  "scripts_and_original_manifest_inputs_unchanged": true,
-  "status": "PASS_AFTER_DOCUMENTED_TARGETED_CORRECTIONS",
-  "tracking_check": "PASS original check_tracked targeted rerun after exact sealedworker force-track; no check implementation change"
+  "scope": "Finalhealthafterindependentreviewedfailclosedrepairs;originalexternalfullonceplusonly4runtimeitemrechecks;no repeatedverify_all,nodeploymentorissueclosureclaimed.",
+  "script_repairs": [
+    {
+      "commit": "e9b40fc",
+      "regression": "badNULfilter,badcomparison RED/GREEN",
+      "scope": "tracking scan/index/comparison failclosed"
+    },
+    {
+      "commit": "31b1560",
+      "regression": "badgitinventory,badliteralfilter RED/GREEN",
+      "scope": "paths sourceinventory/extraction/literalfilter failclosed"
+    },
+    {
+      "commit": "b6261ad",
+      "regression": "dependencyfailure/nohit/stale3states, RED/GREEN",
+      "scope": "Stage3 searchdependency rc1vs>1 and source-safefixture"
+    }
+  ],
+  "scripts_unchanged_during_original_full_run": true,
+  "status": "PASS_AFTER_DOCUMENTED_FAIL_CLOSED_REPAIRS_AND_TARGETED_CORRECTIONS",
+  "tracking_check": {
+    "checked_commit": "aaa48b58d4f0f378677acfc405d1b19e08627c15",
+    "note": "Whole intermediate corrected_audits statusFAIL is retained because paths failed; only its independently valid tracking entry is accepted.",
+    "record": "corrected_audits.json check_tracked entry",
+    "scan_files": 244,
+    "status": "PASS",
+    "stderr_bytes": 0
+  }
 }

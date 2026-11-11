@@ -1,0 +1,31 @@
+{
+  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/chang/.kimi-code/bin",
+  "argv": [
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/chang/arc/.scratch/stage2-bases/runtime/final-health/paths_final.time.txt",
+    "/bin/bash",
+    "/home/chang/arc/script/check_paths.sh"
+  ],
+  "checked_commit": "b17049c71b53dd44b7e92034964ec6ce07ae13f0",
+  "cwd": "/home/chang/arc",
+  "elapsed_seconds": 9.989384351996705,
+  "exit_code": 0,
+  "finished_at": "2026-11-11T23:12:05.525210+08:00",
+  "pins": {
+    "script/check_paths.sh": "37e76871b8db58f1ed7d3e0fcb57250bc0aed3ae38ef879f69b6fed4adb8e1cf",
+    "script/check_stage2_paths.sh": "931e06677861d6fa71d813e89c2fab77c97722b44b87fdf1eb62b7ac059be086",
+    "script/check_stage3_paths.sh": "ff02a9e7fba3b7d5e5ff86e1888f683ea89a2d7aa338ec1f1b3fbf1fc644a849"
+  },
+  "pins_unchanged": true,
+  "resources_sha256": "debbfb352e8d8c255e25a3ea954f8e358df65a1f662844a229522f8cb8d62aec",
+  "scan_files": 758,
+  "schema": "stage2-final-paths-failclosed-real-replay-v1",
+  "started_at": "2026-11-11T23:11:55.535826+08:00",
+  "status": "PASS",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "686262b5abfbc399e86f40fa0d9728e04c48f5aa00e331a3035f24a02ae4f537",
+  "verify_all_repeated": false
+}
