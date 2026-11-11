@@ -116,8 +116,12 @@ Tracked historical code and records remain in Git. Recovering deleted ignored
 model fits would require retraining; no current build depends on them.
 
 Every accepted product now has one stable semantic path (`du -sb`,
-2026-11-12). Payloads total ≈32.1 GB; the tracked public implementation,
-records, figure and evidence add ≈9.5 MB.
+2026-11-12, refreshed after the #157 removals). Payloads total ≈20.9 GB; the
+tracked public implementation, records, figure and evidence add ≈10.6 MB.
+#157 removed 15.27 GB of rejected and disposable payload — the rejected
+historical v1 Tahoe h5ad (11.20 GB) and two superseded build-state directories
+(1.21 GB + 2.83 GB) — after the dependency proof recorded in
+`stage2/01_bases/log/157-removals.json`.
 
 | stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
 |---|---:|---|---|
@@ -126,13 +130,13 @@ records, figure and evidence add ≈9.5 MB.
 | `output/tahoe-raw-counts/` | 2,957,405,982 | projected 18164-gene Tahoe integer pseudobulk counts, original token evidence and seal | immutable Tahoe source, `prepare_tahoe.py`; full build/source verification has its own acceptance record |
 | `output/shared-expression/` | 5,201,458,961 | verified CP10K/log1p shared projection, profiles, mappings and manifest | `build_shared.py` from the sealed raw counts; reconstruction intermediate retained because the training manifest seals it |
 | `output/training-corpora/` | 11,506,981,739 | current separate Tahoe (65318) and tenv (4206) normalized training h5ads, exclusions and seal | `build_corpora.py` from sealed raw counts and the shared release |
-| `output/historical-training-release/` | 11,688,514,849 | historical v1 truth-fit release; includes the **rejected** Tahoe payload kept as forensic evidence | retained bytes; never a current training input |
+| `output/historical-training-release/` | 486,898,232 | historical v1 truth-fit release: the tenv h5ad the truth fit depends on, its sealed manifest and the exclusion CSVs; the **rejected** v1 Tahoe payload was removed by #157 with its digest and rejection evidence retained | retained bytes; never a current training input |
 | `output/tenv-truth/` | 604,807,845 | independently fitted 1377 parent–dose tenv contrasts on exactly 18164 genes, statistic matrices and per-contrast payloads | bounded raw-count DESeq2 worker; truth acceptance has its own record |
-| `output/tenv-truth-successor/` | 897,159 | accepted exact-equivalence envelope for the current training release, re-issued at this path | `reissue_truth_successor.py`; requires the complete accepted truth verification and runtime seals |
+| `output/tenv-truth-successor/` | 897,211 | accepted exact-equivalence envelope for the current training release, re-issued at this path | `reissue_truth_successor.py`; requires the complete accepted truth verification and runtime seals |
 | `output/tenv-hvg/` | 6,243,580 | descriptive plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` from `training-corpora/tenv.h5ad`; held-out isolation re-checked |
-| `output/api/` | 513,083 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
-| `figure/` | 617,014 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
-| `log/` | 7,329,259 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
+| `output/api/` | 512,471 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
+| `figure/` | 711,136 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
+| `log/` | 9,377,232 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
 
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See
