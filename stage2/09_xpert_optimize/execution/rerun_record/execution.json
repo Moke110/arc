@@ -1,6 +1,6 @@
 {
   "schema": "step09-rerun-execution-v1",
-  "status": "reconfiguring",
+  "status": "running",
   "service": "arc-step09-round1-rerun.service",
   "started_at": "2026-11-11T14:07:09+08:00",
   "integration_branch": "dev",
@@ -22,7 +22,7 @@
     "visual inspection and historical artifact replacement"
   ],
   "telemetry_note": "Service PATH lacks nvidia-smi; first fit retains torch GPU peaks and a supplemental live GPU monitor. Subsequent capped jobs resolve WSL nvidia-smi explicitly.",
-  "current_run": null,
+  "current_run": "XPert_MLP512-fold-0-seed-17",
   "recovery_record": "execution/rerun_record/recovery.json",
   "scope_amendment": {
     "models": [
@@ -40,5 +40,6 @@
     "preserved_prior_scope": "execution/rerun_record/six_model_history",
     "excluded_training_records": "execution/tmp/rerun/superseded-six-model",
     "reason": "Explicit user request on2026-11-11"
-  }
+  },
+  "scope_amendment_resumed_at": "2026-11-11T15:33:27.580877+08:00"
 }
