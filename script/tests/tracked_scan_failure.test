@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Public CLI boundary: failed enumeration must never look like zero untracked code.
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+tmp="$(mktemp -d)"
+trap 'rm -rf -- "$tmp"' EXIT
+mkdir -p "$tmp/repo/script" "$tmp/bin"
+cp "$root/script/check_tracked.sh" "$tmp/repo/script/"
+printf 'x = 1\n' > "$tmp/repo/model.py"
+git -C "$tmp/repo" init -q
+git -C "$tmp/repo" add script model.py
+out="$(PATH=/usr/bin:/bin bash "$tmp/repo/script/check_tracked.sh")"
+printf '%s\n' "$out" | grep -q 'scan: 2 code files on disk' || {
+  echo 'FAIL: real fixture scan must include both executable files' >&2; exit 1;
+}
+cat > "$tmp/bin/sed" <<'SED'
+#!/bin/bash
+if [ "${1:-}" = '-z' ]; then
+  echo 'injected NUL scan filter failure' >&2
+  exit 139
+fi
+exec /usr/bin/sed "$@"
+SED
+chmod +x "$tmp/bin/sed"
+if out="$(PATH="$tmp/bin:/usr/bin:/bin" bash "$tmp/repo/script/check_tracked.sh" 2>&1)"; then
+  echo 'FAIL: a broken NUL scan filter returned success' >&2
+  printf '%s\n' "$out" >&2
+  exit 1
+fi
+if printf '%s\n' "$out" | grep -q 'RESULT: PASS'; then
+  echo 'FAIL: a failed scan must not print PASS' >&2; exit 1
+fi
+echo 'PASS: tracking scan fails closed when the NUL filter fails'
+rm "$tmp/bin/sed"
+cat > "$tmp/bin/comm" <<'COMM'
+#!/bin/bash
+echo 'injected inventory comparison failure' >&2
+exit 2
+COMM
+chmod +x "$tmp/bin/comm"
+if out="$(PATH="$tmp/bin:/usr/bin:/bin" bash "$tmp/repo/script/check_tracked.sh" 2>&1)"; then
+  echo 'FAIL: a broken inventory comparison returned success' >&2
+  printf '%s\n' "$out" >&2
+  exit 1
+fi
+if printf '%s\n' "$out" | grep -q 'RESULT: PASS'; then
+  echo 'FAIL: a failed inventory comparison must not print PASS' >&2; exit 1
+fi
+echo 'PASS: tracking comparison fails closed'

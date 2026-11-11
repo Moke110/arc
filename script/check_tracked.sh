@@ -35,7 +35,7 @@
 #   0  every scanned executable file is tracked, or lives in a documented
 #      expected-ignored tree
 #   1  at least one unexpected untracked executable file exists (a hole)
-#   2  the script could not locate the repository root
+#   2  the repository root or executable inventory could not be read
 #
 # The repository root is found by walking up from this script until a directory
 # containing .git is found — never by counting `../..` segments.
@@ -105,19 +105,28 @@ main() {
   : >"$exp_rows"
 
   # 1. Code files on disk (find prunes, NUL-safe for odd path names).
-  find . \
+  if ! find . \
     \( -path './.git' -o -path './.worktrees' -o -path './.scratch' -o -path './tmp' -o -path './reference' \
        -o -path './wet_data' -o -path './.uploads' \
        -o -name '_envs' -o -name '.venv' -o -name 'venv' -o -name 'source' \
        -o -name 'local' -o -name '__pycache__' \) -prune \
     -o -type f \( -name '*.py' -o -name '*.sh' -o -name '*.R' \) -print0 \
-    | sed -z 's|^\./||' | LC_ALL=C sort -z >"$disk_list"
+    | sed -z 's|^\./||' | LC_ALL=C sort -z >"$disk_list"; then
+    echo "ERROR: executable disk scan failed; no tracking verdict is valid" >&2
+    return 2
+  fi
 
   # 2. Code files tracked by git (NUL-safe; -z avoids the C-quoting of non-ASCII
   #    path names that would otherwise break the comparison).
-  git ls-files -z -- '*.py' '*.sh' '*.R' | LC_ALL=C sort -z >"$tracked_list"
+  if ! git ls-files -z -- '*.py' '*.sh' '*.R' | LC_ALL=C sort -z >"$tracked_list"; then
+    echo "ERROR: tracked executable inventory failed; no tracking verdict is valid" >&2
+    return 2
+  fi
 
-  comm -z -23 "$disk_list" "$tracked_list" >"$holes_file" 2>/dev/null || true
+  if ! comm -z -23 "$disk_list" "$tracked_list" >"$holes_file"; then
+    echo "ERROR: executable inventory comparison failed; no tracking verdict is valid" >&2
+    return 2
+  fi
 
   local on_disk tracked
   on_disk="$(grep -zc '' "$disk_list" 2>/dev/null || true)"
