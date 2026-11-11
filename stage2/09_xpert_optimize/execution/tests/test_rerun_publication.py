@@ -43,7 +43,9 @@ class PublicationTest(unittest.TestCase):
             output = root/'publication'
             publish(bundles, output)
             self.assertEqual(set(p.name for p in output.iterdir()), ENTRIES)
-            self.assertEqual(len(list((output/'checkpoints').iterdir())),24)
+            self.assertEqual(len(list((output/'checkpoints').iterdir())),8)
+            self.assertEqual(MODELS, ('XPert_G512', 'XPert_MLP512'))
+            self.assertEqual({run['model'] for run in bundles}, {'XPert_G512', 'XPert_MLP512'})
             data = json.loads((output/'figure_data/source.json').read_text())
             self.assertEqual(data['pr_summary'][MODELS[0]]['AUPRC_positive'][-1]['recall'],.25)
             self.assertTrue(replay(output))

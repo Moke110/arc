@@ -102,7 +102,7 @@ def finalize(repo, staging, destination, archive, inventory, retrieval_manifest,
         proposal = {'status': 'proposal_only_no_deletion_performed',
                     'candidates': [{'path': str((round1_record.parent / 'tmp/round1').relative_to(repo)),
                                     'reason': 'obsolete exploratory fits; retain until archived evidence and old replay verified'}],
-                    'retain': ['shared corpora', 'full-axis MLP inputs', 'new 24-run checkpoints',
+                    'retain': ['shared corpora', 'full-axis MLP inputs', 'new 8-run checkpoints',
                                'historical predictions bound by shared evaluator', 'unrelated work']}
         atomic_bytes(archive / 'cleanup-proposal.json', json_bytes(proposal))
         old_moved = new_moved = False

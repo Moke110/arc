@@ -58,6 +58,7 @@ class FinalizeTest(unittest.TestCase):
             self.assertEqual((retrieval.parent/'scores.csv').read_bytes(), b'immutable scores')
             self.assertEqual(result['status'], 'complete')
             self.assertTrue((archive/'cleanup-proposal.json').exists())
+            self.assertIn('new 8-run checkpoints', json.loads((archive/'cleanup-proposal.json').read_text())['retain'])
 
     def test_failed_postswap_verification_rolls_back_publication_and_bindings(self):
         with TemporaryDirectory() as temp:

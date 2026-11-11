@@ -1,4 +1,4 @@
-"""ADR 0060 native-axis scoring and replayable 24-run publication.
+"""ADR 0060 native-axis scoring and replayable 8-run publication.
 
 score_run consumes selected-checkpoint deltas, native observed deltas and the
 canonical Labels.truth callback. well_loss must be the full test well-weighted
@@ -18,7 +18,7 @@ sys.path.insert(0, str(next(p for p in Path(__file__).resolve().parents if (p / 
 from stage2.evaluation.metrics import METRICS as RETRIEVAL, PooledPR, retrieval
 from round_metrics import continuous
 
-MODELS = tuple(f'XPert_{kind}{size}' for kind in ('G', 'MLP') for size in (512, 1024, 2048))
+MODELS = ('XPert_G512', 'XPert_MLP512')
 METRICS = ('test_loss', 'pcc', 'spearman', 'rmse', 'r2', *RETRIEVAL)
 ENTRIES = {'checkpoints', 'logs', 'figure_data', 'r1_learning_curves.png', 'r1_metrics.png', 'r1_PR_curves.png'}
 
@@ -120,7 +120,7 @@ def render(source, destination):
     from matplotlib.lines import Line2D
     destination = Path(destination)
     styles = ('-', '--', ':', '-.')
-    fig, axes = plt.subplots(2,3,figsize=(16,9), constrained_layout=True)
+    fig, axes = plt.subplots(1,2,figsize=(13,5), constrained_layout=True)
     for model, ax in zip(MODELS, axes.flat, strict=True):
         for slot, run in enumerate(r for r in source['runs'] if r['model'] == model):
             offset = 0
@@ -154,13 +154,13 @@ def render(source, destination):
             ax.scatter(index+np.linspace(-.12,.12,len(valid)),valid,color='steelblue',s=17)
             if len(valid)<4:
                 ax.text(index,.98,f'{len(valid)}/4',transform=ax.get_xaxis_transform(),ha='center',va='top',fontsize=8,color='firebrick')
-        ax.set(title=metric,xticks=range(6),xticklabels=[m.removeprefix('XPert_') for m in MODELS])
+        ax.set(title=metric,xticks=range(len(MODELS)),xticklabels=[m.removeprefix('XPert_') for m in MODELS])
         ax.tick_params(axis='x',labelrotation=35)
         ax.grid(axis='y',alpha=.2)
     fig.suptitle('Native-axis continuous metrics; axes differ across models. Group macro AUPRC; well-level test loss.\nSquares: equal four-run mean; bars: min–max; dots: individual runs. Undefined summaries are withheld.',fontsize=11)
     fig.savefig(destination/'r1_metrics.png',dpi=160)
     plt.close(fig)
-    fig,axes=plt.subplots(2,3,figsize=(15,9),constrained_layout=True)
+    fig,axes=plt.subplots(1,2,figsize=(12,5),constrained_layout=True)
     for model,ax in zip(MODELS,axes.flat,strict=True):
         for metric,color in (('AUPRC_negative','royalblue'),('AUPRC_positive','firebrick')):
             points=source['pr_summary'][model][metric]
@@ -180,7 +180,7 @@ def render(source, destination):
 
 
 def publish(bundles, destination):
-    """Publish a complete 24-run matrix to a fresh staging destination.
+    """Publish a complete 8-run matrix to a fresh staging destination.
 
     Each bundle merges score_run output with model/fold/seed, checkpoint,
     status='complete' and phases from the selected run.json. The caller retains
@@ -189,8 +189,8 @@ def publish(bundles, destination):
     destination=Path(destination)
     expected={(m,f,s) for m in MODELS for f in (0,1) for s in (17,42)}
     identities=[(r['model'],r['fold'],r['seed']) for r in bundles]
-    if len(identities)!=24 or set(identities)!=expected:
-        raise ValueError('incomplete or duplicate 24-run matrix')
+    if len(identities)!=8 or set(identities)!=expected:
+        raise ValueError('incomplete or duplicate 8-run matrix')
     runs=sorted(bundles,key=lambda r:(MODELS.index(r['model']),r['fold'],r['seed']))
     for run in runs:
         if run['status']!='complete' or not Path(run['checkpoint']).is_file():
@@ -258,8 +258,8 @@ def replay(destination):
     source=json.loads((destination/'figure_data/source.json').read_text())
     expected=json.loads((destination/'figure_data/figures.json').read_text())
     identities={(r['model'],r['fold'],r['seed']) for r in source['runs']}
-    if (len(source['runs'])!=24 or identities!={(m,f,s) for m in MODELS for f in (0,1) for s in (17,42)}
-            or len(list((destination/'checkpoints').iterdir()))!=24):
+    if (len(source['runs'])!=8 or identities!={(m,f,s) for m in MODELS for f in (0,1) for s in (17,42)}
+            or len(list((destination/'checkpoints').iterdir()))!=8):
         raise ValueError('incomplete retained checkpoint matrix')
     for name,digest in expected.items():
         if sha(destination/name)!=digest: raise ValueError('published source or figure changed')
