@@ -256,7 +256,16 @@ the validation objective at the indicated update. Both use the frozen loss
 weights `(0.2, 0.003, 0.2, 1.0)`. Open circles mark the best recorded validation
 point. The deterministic references do not train and have no learning curves.
 
-Reproduce from existing fit JSON logs, without loading data or checkpoints:
+`round1_fit.py --role validation` and `--role test` automatically refresh the
+combined figure, both learning-curve CSVs and `learning-curves.json` in the
+selected `--output` directory once all nine fit logs are available. This also
+runs when resuming an existing queue. Custom `--work-root`, `--output`, `--plan`
+and `--policy` are respected. A partial model run without all nine logs reports
+that plotting is deferred; it does not produce an incomplete grid. No separate
+plot command is needed during a full Round 1 rerun. Individual PNGs are not generated.
+Update labels come from the actual logged schedule.
+
+To refresh only the plot from existing fit JSON logs, without loading data or checkpoints:
 
 ```bash
 "$HOME/miniconda3/envs/arc/bin/python" stage2/09_xpert_optimize/execution/script/round1_learning_curves.py
@@ -264,8 +273,11 @@ Reproduce from existing fit JSON logs, without loading data or checkpoints:
 
 [Curve points](output/round1/learning_curve_points.csv) and
 [endpoint audit](output/round1/learning_curve_convergence.csv) retain the
-numeric evidence. [Source hashes](execution/round1_record/learning-curves.json)
-bind the original fit logs. This audit is separate from held-out score replay.
+numeric evidence. The automatic queue writes source hashes to
+`output/round1/learning-curves.json`; the standalone default command updates the
+[historical audit record](execution/round1_record/learning-curves.json).
+Source keys are relative to `--work-root`. For another run directory, pass
+`--work-root PATH --output PATH` to the standalone command. This audit is separate from held-out score replay.
 The endpoint criterion requires final validation loss to be no lower than the
 previous observation and strictly above its recorded minimum.
 

@@ -163,6 +163,15 @@ def main():
     with (args.work_root / ".queue.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         failures = run_queue(args.output, args.work_root, args.corpus, plan, args.policy, args.role, args.models)
+        # Plot from this invocation's work/output paths, including resumed runs.
+        if all((args.work_root / "fits" / entry["name"] / "run.json").is_file()
+               for entry in plan["models"]):
+            from round1_learning_curves import render
+            render(plan, read_json(args.policy), args.work_root, args.output,
+                   args.output / "learning-curves.json")
+            print("Round 1 combined learning curves refreshed", flush=True)
+        else:
+            print("Learning curves deferred: waiting for all model fit logs", flush=True)
         if failures:
             raise SystemExit(f"Round 1 {args.role} failures: {', '.join(failures)}")
 
