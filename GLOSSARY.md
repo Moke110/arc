@@ -147,15 +147,21 @@ The per-file hash list over one external item's source tree, with which the item
 _Avoid_: checksum list (when meaning the whole record), lockfile
 
 **Execution area**:
-The part of a Stage 2 step that holds the harness and the intermediates — code, configurations, run cards, tests, logs, checkpoints. Agents own it; it is not a result and no human reads it as a conclusion.
+The build and audit machinery of a Stage 2 step, including its disposable working intermediates. It is distinct from reusable accepted products and the evidence establishing their acceptance.
 _Avoid_: code folder, scripts
 
 **Output area**:
-The part of a Stage 2 step that holds artifacts a later step reads or a human must know exists — frozen inputs, predictions, expression matrices. The conclusions a human opens (figures and result tables) sit above it, at step level.
+The minimal set of accepted products a Stage 2 step supplies for reuse by other steps, including data, public evaluation interfaces and reusable trained models. Report figures and audit evidence are separate.
 _Avoid_: results (when meaning the whole area), artifacts
 
+**Stage 2 report figure**:
+A human-facing visual conclusion whose complete plotted values are retained separately, allowing the same figure to be reproduced independently of model execution and scientific recalculation.
+
+**Stage 2 acceptance evidence**:
+The retained records establishing a product’s identity, provenance and successful scientific and downstream-use checks. Failure diagnoses and migration mappings preserve the interpretation of historical records.
+
 **Substep**:
-An independently concluded part of a Stage 2 step, placed in its own `NN.N_<outcome>/` directory that carries the full step layout, including its own human-facing figure and table. The parent step then keeps only its own two documents and the substep directories.
+An independently concluded part of a Stage 2 step, placed in its own `NN.N_<outcome>/` directory that carries the full step layout, including its own report figures, plotted data and audit evidence. The parent step then keeps only its own two documents and the substep directories.
 _Avoid_: phase, sub-stage, chapter
 
 ### Categories
