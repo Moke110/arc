@@ -71,7 +71,9 @@ The standalone evaluator reads prediction .npy arrays through a memory map:
 
 The samples CSV gives sample_id, drug_parent, dose_um in prediction row
 order; the genes CSV gives integer gene_index in prediction column order.
-The assignment file defines complete groups. The evaluator publishes
+The assignment file defines complete groups. Predictions must cover every sample
+in the selected fold and role exactly once; omitted groups, repeated samples
+and samples from another role are rejected before scoring. The evaluator publishes
 per-group AP, macro summaries, input seals and the plotted numeric source.
 It does not train a model or restore historical predictions.
 
