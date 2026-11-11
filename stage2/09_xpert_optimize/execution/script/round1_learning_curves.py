@@ -72,7 +72,7 @@ def main():
         plt.close(fig)
     for filename, rows in [('learning_curve_points.csv', points), ('learning_curve_convergence.csv', summary)]:
         with (output / filename).open('w', newline='') as handle:
-            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+            writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
             writer.writeheader()
             writer.writerows(rows)
     record = dict(source_sha256=sources, loss_weights=LOSS_WEIGHTS,
