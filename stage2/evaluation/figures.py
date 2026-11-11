@@ -3,12 +3,15 @@ import os
 os.environ.setdefault('MPLBACKEND', 'Agg')
 import matplotlib.pyplot as plt
 plt.rcParams['svg.hashsalt'] = 'stage2-significance-v1'
+plt.rcParams['svg.fonttype'] = 'none'
 import numpy as np
 import pandas as pd
 from stage2.evaluation.metrics import METRICS
 
 
-def render(root):
+def render(root, figure_destination=None):
+    figure_destination = figure_destination or root
+    figure_destination.mkdir(parents=True, exist_ok=True)
     data = pd.read_csv(root / 'per_run.csv')
     curves = pd.read_csv(root / 'pr.csv')
     if data.role.eq('test').any():
@@ -52,7 +55,7 @@ def render(root):
     fig.text(.5, .015, 'Fixed-group pooled retrieval; direction-matched significance on 18,164 CM genes; endpoints mark attainable recall.', ha='center', fontsize=9)
     fig.tight_layout(rect=(0, .18, 1, .96))
     for suffix in ('png', 'svg'):
-        fig.savefig(root / f'PR_curve.{suffix}', dpi=150, metadata={'Creator': 'Stage 2 evaluation', 'Date': '2026-11-11'} if suffix == 'svg' else {'Software': 'Stage 2 evaluation'})
+        fig.savefig(figure_destination / f'PR_curve.{suffix}', dpi=150, metadata={'Creator': 'Stage 2 evaluation', 'Date': '2026-11-11'} if suffix == 'svg' else {'Software': 'Stage 2 evaluation'})
     plt.close(fig)
     extra = [m for m in ('PCC', 'Spearman', 'RMSE', 'R2') if m in data]
     metrics = [*METRICS, *extra]
@@ -80,8 +83,11 @@ def render(root):
             axis.set_axisbelow(True)
             axis.spines[['top', 'right']].set_visible(False)
     fig.suptitle('AUPRC', fontsize=18)
-    fig.text(.5, .015, 'Exact group AP, equally averaged within run; run means shown. Undefined groups are excluded and counted in the tables.', ha='center', fontsize=9)
+    footer = 'Exact group AP, equally averaged within run; run means shown. Undefined groups are excluded and counted in the tables.'
+    if 'continuous_provisional' in data and data.continuous_provisional.fillna(False).any():
+        footer += '\nContinuous metrics retain the provisional 73-gene common axis; retrieval uses all 18,164 CM genes.'
+    fig.text(.5, .015, footer, ha='center', fontsize=9)
     fig.tight_layout(rect=(0, .04, 1, .95))
     for suffix in ('png', 'svg'):
-        fig.savefig(root / f'AUPRC.{suffix}', dpi=150, metadata={'Creator': 'Stage 2 evaluation', 'Date': '2026-11-11'} if suffix == 'svg' else {'Software': 'Stage 2 evaluation'})
+        fig.savefig(figure_destination / f'AUPRC.{suffix}', dpi=150, metadata={'Creator': 'Stage 2 evaluation', 'Date': '2026-11-11'} if suffix == 'svg' else {'Software': 'Stage 2 evaluation'})
     plt.close(fig)

@@ -36,7 +36,7 @@ order, gene axis or significance-contrast membership. Run scoring under the
 repository's capped resource policy; at most two heavy jobs may run repo-wide.
 
 ```bash
-python stage2/evaluation/evaluate.py score --step 9
+python stage2/evaluation/publish.py --step 9
 python stage2/evaluation/evaluate.py replay --step 9
 ```
 
@@ -49,7 +49,14 @@ groups fail closed. Per-group tables retain undefined reasons and counts.
 
 Outputs are generated in each step's `output/retrieval/`: three-metric
 statistics, dose summaries, threshold-sampled pooled PR points, PNG/SVG figures
-and a hash manifest. Replay recomputes every statistic and both figures from
+and a hash manifest. Step 06 keeps its result PNG/SVG figures directly in
+`output/`, following its owning placement rule; its numeric tables and manifest
+remain in `output/retrieval/`. Replay recomputes every statistic and both figures from
 frozen predictions and labels, then compares their hashes. Learning curves,
 model weights, reconstruction scores and non-retrieval figures keep their
 existing workflows. Previous rank-based metric commands are retired.
+
+Step 09 retains its original pre-test authorization through a committed,
+score-free `promotion-provenance.json` pointer. Dispatch and label rebuilding
+read the original seal from Git, verify its digest and ancestry, and retain the
+original promotion digest without restoring historical score files.

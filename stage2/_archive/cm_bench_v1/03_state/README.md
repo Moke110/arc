@@ -40,5 +40,4 @@ combos; output = predicted perturbed HVG expression. The entry:
   Sunitinib, Tofacitinib, Trametinib, Vandetanib, Vemurafenib, Verapamil). The
   other 62 fall back to the DMSO control one-hot, so State predicts ≈no-change
   for them. The model also has no cardiomyocyte cell type (50 cancer lines).
-  The resulting cold-drug macro AUPRC (0.0865) is therefore ≈ the no-change
-  baseline (0.0844) — reported as-is, never padded with fabricated rows.
+  Historical retrieval scores and figures are retained only through Git.

@@ -14,7 +14,7 @@ import pandas as pd
 SCRIPT = Path(__file__).resolve().parents[1] / "script"
 sys.path.insert(0, str(SCRIPT))
 from round1_fit import run_queue
-from round_contract import role_result, sha256, verify_committed_promotion
+from round_contract import promotion_digest, role_result, sha256, verify_committed_promotion
 from round_inputs import MODEL_VIEWS, RoundInputs
 from round_metrics import average_precision, continuous, pooled_pr, paired_promotions, project_delta
 
@@ -128,6 +128,37 @@ class RoundEvaluationTest(unittest.TestCase):
             file.write_text(json.dumps({**record, "seed": 42}))
             with self.assertRaisesRegex(ValueError, "committed dev bytes"):
                 verify_committed_promotion(file)
+
+    def test_historical_seal_remains_in_git_without_restoring_score_values(self):
+        import hashlib
+        with TemporaryDirectory() as directory:
+            repo = Path(directory)
+            subprocess.run(['git', 'init', '-q', '-b', 'dev', str(repo)], check=True)
+            path = repo / 'promotion.json'
+            record = {'schema': 'step09-promotion-v1', 'fold': 0, 'seed': 17,
+                      **{key: 'a' * 64 for key in ('plan_sha256', 'validation_manifest_sha256',
+                                                   'validation_labels_sha256', 'validation_metrics_sha256')},
+                      'comparisons': [{'model': f'm{i}', 'control': 'base', 'decision': 'promoted',
+                                       'model_auprc_full': .2} for i in range(8)]}
+            blob = json.dumps(record).encode()
+            path.write_bytes(blob)
+            commit(repo, 'promotion.json')
+            original = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
+            subprocess.run(['git', '-C', str(repo), 'rm', '-q', 'promotion.json'], check=True)
+            pointer = repo / 'promotion-provenance.json'
+            metadata = {'schema': 'step09-historical-promotion-v1', 'path': 'promotion.json',
+                        'git_commit': original, 'sha256': hashlib.sha256(blob).hexdigest()}
+            pointer.write_text(json.dumps(metadata))
+            commit(repo, 'promotion-provenance.json')
+            self.assertEqual(promotion_digest(path), metadata['sha256'])
+            restored = verify_committed_promotion(path)
+            self.assertEqual(len(restored['comparisons']), 8)
+            self.assertFalse(any('model_auprc_full' in item for item in restored['comparisons']))
+            self.assertFalse(path.exists())
+            pointer.write_text(json.dumps({**metadata, 'sha256': '0' * 64}))
+            commit(repo, 'promotion-provenance.json')
+            with self.assertRaisesRegex(ValueError, 'digest'):
+                verify_committed_promotion(path)
 
 
 def commit(repo, *files):

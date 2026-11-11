@@ -46,8 +46,36 @@ def verify_committed(path):
     return expected.stdout
 
 
+def promotion_bytes(path):
+    """Read a current committed seal or its checked, score-free Git pointer."""
+    path = Path(path).absolute()
+    if path.exists():
+        return verify_committed(path)
+    pointer = path.with_name(f"{path.stem}-provenance.json")
+    metadata = json.loads(verify_committed(pointer))
+    repo = next(parent for parent in path.parents if (parent / '.git').exists())
+    relative = path.relative_to(repo).as_posix()
+    commit = metadata.get('git_commit', '')
+    if (metadata.get('schema') != 'step09-historical-promotion-v1'
+            or metadata.get('path') != relative or len(commit) != 40
+            or any(c not in '0123456789abcdef' for c in commit)):
+        raise ValueError('invalid historical promotion provenance')
+    ancestor = subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', commit, 'dev'],
+                              capture_output=True, check=False)
+    blob = subprocess.run(['git', '-C', str(repo), 'show', f'{commit}:{relative}'],
+                          capture_output=True, check=False)
+    if (ancestor.returncode or blob.returncode
+            or hashlib.sha256(blob.stdout).hexdigest() != metadata.get('sha256')):
+        raise ValueError('historical promotion digest or ancestry differs')
+    return blob.stdout
+
+
+def promotion_digest(path):
+    return hashlib.sha256(promotion_bytes(path)).hexdigest()
+
+
 def verify_committed_promotion(path):
-    promotion = json.loads(verify_committed(path))
+    promotion = json.loads(promotion_bytes(path))
     if (promotion.get("schema"), promotion.get("fold"), promotion.get("seed")) != (PROMOTION_SCHEMA, 0, 17):
         raise ValueError("invalid committed Round 1 promotion")
     for field in ("plan_sha256", "validation_manifest_sha256", "validation_labels_sha256",
@@ -57,6 +85,9 @@ def verify_committed_promotion(path):
             raise ValueError(f"invalid committed Round 1 promotion digest: {field}")
     if not isinstance(promotion.get("comparisons"), list) or len(promotion["comparisons"]) != 8:
         raise ValueError("committed Round 1 promotion must account for all eight paired comparisons")
+    if not Path(path).exists():
+        promotion['comparisons'] = [{key: item[key] for key in ('model', 'control', 'decision')}
+                                   for item in promotion['comparisons']]
     return promotion
 
 

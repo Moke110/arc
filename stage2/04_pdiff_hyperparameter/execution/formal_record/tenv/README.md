@@ -12,22 +12,10 @@ Step 03. The three folds contain 462, 459 and 459 held-out groups across
 1,401, 1,407 and 1,398 wells, respectively. The two references are scored
 once per fold on the same groups as PerturbDiff.
 
-| Metric | PerturbDiff | no_change | delta_mean |
-| --- | ---: | ---: | ---: |
-| Positive AP@100 | 0.241595 | 0.005505 | 0.189543 |
-| Negative AP@100 | 0.240177 | 0.005505 | 0.173670 |
-| Positive recall at P80 | 0.114448 | 0.000000 | 0.056218 |
-| Negative recall at P80 | 0.100120 | 0.000000 | 0.073587 |
-| PCC | 0.435337 | undefined | 0.229553 |
-| Spearman | 0.426140 | undefined | 0.189353 |
-| RMSE | 0.130314 | 0.144450 | 0.140614 |
-| R² | 0.022906 | −0.019548 | 0.022523 |
-
-Each PerturbDiff metric has nine valid runs and 4,140 valid group scores.
-Each defined reference metric has three valid runs and 1,380 valid group
-scores. For `no_change`, PCC and Spearman are undefined in all 1,380
-groups because the prediction is constant. See [per-run scores](per_run.csv),
-[aggregate scores](summary.csv) and [group-count audit](execution.json).
+The original retrieval score table and figures were removed. Active tenv
+reporting uses `AUPRC`, `AUPRC_positive`, and `AUPRC_negative` through the
+[shared evaluator](../../../../evaluation/README.md). Tahoe test retrieval is
+outside the reporting scope. Training metadata and checkpoints remain intact.
 
 | Scheduler phase | Completed jobs | Elapsed (min) | Peak host RSS (GiB) | Peak workstation GPU use (GiB) |
 | --- | ---: | ---: | ---: | ---: |
@@ -37,7 +25,7 @@ groups because the prediction is constant. See [per-run scores](per_run.csv),
 | Checkpoint release | 1 | 0.1 | 0.038 | 1.738 |
 
 Elapsed time is the phase's monotonic telemetry span. Each job completed on
-its first attempt. [Execution evidence](execution.json) records per-slot
+its first attempt. [Training provenance](training-provenance.json) records per-slot
 timings, worker and native resource peaks, scheduler attempts and hashes
 for status, logs and raw telemetry. The original records, predictions and
 group-level scores are local at `execution/output/tenv-formal-ticket72/`.

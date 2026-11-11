@@ -9,7 +9,7 @@ from scipy.stats import rankdata
 
 
 CONTINUOUS = ("pcc", "spearman", "rmse", "r2")
-sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+sys.path.insert(0, str(next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())))
 from stage2.evaluation.metrics import PR, PR_FIELDS, average_precision, pooled_pr
 
 

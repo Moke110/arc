@@ -11,8 +11,8 @@ import tempfile
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from stage2.evaluation.inventory import REPO, ROOT, STEPS, read, sha
+sys.path.insert(0, str(next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())))
+from stage2.evaluation.inventory import REPO, ROOT, STEPS, iter_bindings, load_inventory, read, sha
 from stage2.evaluation.metrics import METRICS, PooledPR, retrieval
 
 KEYS = ('step', 'dataset', 'regime', 'role', 'model', 'fold', 'seed')
@@ -43,7 +43,10 @@ class Labels:
             partial = self.root.with_name(f'{dataset}-partial')
             if (partial / 'manifest.json').exists():
                 self.root = partial
+        self.manifest_digest = sha(self.root / 'manifest.json')
         self.manifest = read(self.root / 'manifest.json')
+        if self.manifest.get('schema') != 'stage2-significance-v1' or self.manifest.get('dataset') != dataset:
+            raise ValueError('significance dataset or schema differs from the Stage 2 standard')
         if self.manifest['fdr'] != .05:
             raise ValueError('significance threshold differs from the Stage 2 standard')
         for name, digest in self.manifest['files'].items():
@@ -58,6 +61,11 @@ class Labels:
         self.lfc = np.load(self.root / 'log2_fold_change.npy', mmap_mode='r')
         if self.padj.shape != (len(self.groups), 18165) or self.padj.shape != self.lfc.shape:
             raise ValueError('invalid full-CM significance release')
+
+    def verify(self):
+        checked(str((self.root / 'manifest.json').relative_to(REPO)), self.manifest_digest)
+        for name, digest in self.manifest['files'].items():
+            checked(str((self.root / name).relative_to(REPO)), digest)
 
     def truth(self, group, cases):
         metadata = self.groups.loc[group]
@@ -77,6 +85,35 @@ class Labels:
         if np.any(significant & (~np.isfinite(direction) | (direction == 0))):
             raise ValueError('invalid significant-gene direction')
         return np.where(significant, np.sign(direction), 0).astype(np.int8)
+
+
+def validate_prediction_parent(item):
+    if 'prediction_manifest' in item:
+        manifest = read(bound(item['prediction_manifest']))
+        expected = manifest.get('prediction_sha256', manifest.get('files', {}).get('delta.npy'))
+        if expected != item['prediction']['sha256']:
+            raise ValueError('prediction manifest does not bind the selected prediction')
+        if 'prediction_order' in item and manifest.get('cases_sha256') != item['prediction_order']['sha256']:
+            raise ValueError('prediction manifest does not bind the case order')
+        for name, key in (('cases.csv', 'cases'), ('genes.csv', 'genes')):
+            if name in manifest.get('files', {}) and manifest['files'][name] != item[key]['sha256']:
+                raise ValueError(f'prediction manifest does not bind {key}')
+        if 'selected_run' in item:
+            run = read(bound(item['selected_run']))
+            if manifest.get('run_sha256') != item['selected_run']['sha256']:
+                raise ValueError('prediction manifest does not bind its selected run')
+            for field in ('identity', 'recipe_sha256', 'checkpoint_sha256', 'best_step',
+                          'best_validation_loss', 'model_state_sha256'):
+                if manifest.get(field) != run.get(field):
+                    raise ValueError(f'prediction differs from the selected checkpoint: {field}')
+    elif 'run' in item:
+        run = read(bound(item['run']))
+        if (run.get('status') != 'completed'
+                or run['artifacts']['prediction.npy'] != item['prediction']['sha256']
+                or run['artifacts']['case_ids.json'] != item['prediction_order']['sha256']):
+            raise ValueError('selected run does not bind the completed prediction')
+        if any(run['identity'][key] != item[key] for key in ('model', 'fold', 'seed')):
+            raise ValueError('selected run identity differs from the frozen inventory')
 
 
 def mean_rows(matrix, rows):
@@ -104,14 +141,15 @@ def training_mean(cases_path, delta_path, controls_path=None):
     return total / len(groups)
 
 
-def score(entries, destination, label_root=None):
+def score(entries, destination, label_root=None, figure_destination=None):
     destination.mkdir(parents=True)
+    from stage2.evaluation.continuous import ContinuousMetrics, FIELDS as CONTINUOUS
     source_hashes = {name: sha(Path(__file__).with_name(name))
-                     for name in ('evaluate.py', 'metrics.py', 'figures.py', 'inventory.py')}
+                     for name in ('evaluate.py', 'metrics.py', 'figures.py', 'inventory.py', 'continuous.py')}
     label_sets = {}
     pooled, reports, dose_reports = defaultdict(PooledPR), [], []
     group_fields = [*KEYS, 'group_id', 'dose_um', 'wells', 'significance_status',
-                    *METRICS, *(f'{m}_status' for m in METRICS), *(f'{m}_terminal_recall' for m in METRICS)]
+                    *METRICS, *(f'{m}_status' for m in METRICS), *(f'{m}_terminal_recall' for m in METRICS), *CONTINUOUS]
     with (destination / 'per_group.csv').open('w') as stream:
         writer = csv.DictWriter(stream, fieldnames=group_fields)
         writer.writeheader()
@@ -133,6 +171,7 @@ def score(entries, destination, label_root=None):
                                         str(bound(item['train_controls'])) if 'train_controls' in item else None))
                 matrix = None
             else:
+                validate_prediction_parent(item)
                 matrix = np.load(bound(item['prediction']), mmap_mode='r')
                 if matrix.shape != (len(cases), len(genes)):
                     raise ValueError('prediction shape differs from cases and genes')
@@ -141,6 +180,9 @@ def score(entries, destination, label_root=None):
                     expected = cases[['case_id', 'group_id']].values.tolist() if order and isinstance(order[0], list) else cases.case_id.tolist()
                     if order != expected:
                         raise ValueError('prediction row order differs from cases')
+            continuity = ContinuousMetrics(item, bound)
+            continuous_values = {m: [] for m in CONTINUOUS}
+            continuous_present = set()
             values = {m: [] for m in METRICS}
             dose_values = defaultdict(lambda: {m: [] for m in METRICS})
             dose_counts = defaultdict(int)
@@ -165,10 +207,28 @@ def score(entries, destination, label_root=None):
                         terminal[metric].append(curve.recall[-1])
                     key = (*[item[k] for k in ('dataset', 'regime', 'role', 'model')], metric)
                     pooled[key].add(curve)
+                continuous_row = continuity.row(group, predicted)
+                row.update(continuous_row)
+                continuous_present.update(continuous_row)
+                for metric, value in continuous_row.items():
+                    dose_values[row['dose_um']].setdefault(metric, [])
+                    if value is not None:
+                        continuous_values[metric].append(value)
+                        dose_values[row['dose_um']][metric].append(value)
                 writer.writerow(row)
             report = {key: item[key] for key in KEYS}
             report.update(groups=len(groups), covered_genes=int(covered.sum()))
+            report['deterministic_reference'] = item['model'] in ('no_change', 'delta_mean')
             report.update(item.get('continuous_metrics', {}))
+            for metric in (name for name in CONTINUOUS if name in continuous_present):
+                numbers = continuous_values[metric]
+                value = float(np.mean(numbers)) if numbers else None
+                prior = item.get('continuous_metrics', {}).get(metric)
+                if prior is not None and (value is None or not np.isclose(prior, value, rtol=1e-7, atol=1e-9)):
+                    raise ValueError(f"{item['model']}/{item['regime']}: preserved {metric} differs from group scores")
+                report[metric] = prior if prior is not None else value
+                report[f'{metric}_defined_groups'] = len(numbers)
+                report[f'{metric}_undefined_groups'] = len(groups) - len(numbers)
             report.update({key: item[key] for key in ('continuous_gene_count', 'continuous_provisional') if key in item})
             for metric in METRICS:
                 report[metric] = float(np.mean(values[metric])) if values[metric] else None
@@ -197,22 +257,29 @@ def score(entries, destination, label_root=None):
     pd.concat(frames, ignore_index=True).to_csv(destination / 'pr.csv', index=False)
     data = pd.DataFrame(reports)
     group = ['dataset', 'regime', 'role', 'model']
-    summary = data.groupby(group, sort=False)[list(METRICS)].agg(['mean', 'std', 'count'])
+    references = data[data.deterministic_reference].drop_duplicates([*group, 'fold'])
+    summary_data = pd.concat([data[~data.deterministic_reference], references], ignore_index=True)
+    summary_metrics = [*METRICS, *[m for m in CONTINUOUS if m in data]]
+    summary = summary_data.groupby(group, sort=False)[summary_metrics].agg(['mean', 'std', 'count'])
     summary.columns = ['_'.join(c) for c in summary.columns]
     summary.reset_index().to_csv(destination / 'summary.csv', index=False)
     from stage2.evaluation.figures import render
-    render(destination)
+    figure_destination = figure_destination or destination
+    render(destination, figure_destination)
     # Detect in-place input changes before publishing any replay manifest.
     for item in entries:
-        for value in item.values():
-            if isinstance(value, dict) and 'path' in value and 'sha256' in value:
-                bound(value)
+        for value in iter_bindings(item):
+            bound(value)
+    for labels in label_sets.values():
+        labels.verify()
     if any(sha(Path(__file__).with_name(name)) != digest for name, digest in source_hashes.items()):
         raise ValueError('scoring source changed during evaluation')
     manifest = {'schema': 'stage2-significance-scoring-v1', 'metrics': METRICS, 'sources': source_hashes,
-                'labels': {k: sha(v.root / 'manifest.json') for k, v in label_sets.items()},
+                'labels': {k: v.manifest_digest for k, v in label_sets.items()},
                 'inventory_runs': entries,
-                'files': {p.name: sha(p) for p in destination.iterdir() if p.is_file()}}
+                'files': {p.name: sha(p) for p in destination.glob('*.csv')},
+                'figures': {name: sha(figure_destination / name)
+                            for name in ('PR_curve.png', 'PR_curve.svg', 'AUPRC.png', 'AUPRC.svg')}}
     (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
 
 
@@ -225,13 +292,16 @@ def main():
     parser.add_argument('--inventory', type=Path, default=Path(__file__).with_name('inventory.json'))
     parser.add_argument('--destination', type=Path)
     args = parser.parse_args()
-    entries = [r for r in read(args.inventory)['runs'] if r['step'] == args.step and (not args.dataset or r['dataset'] == args.dataset)]
+    entries = [r for r in load_inventory(args.inventory)['runs'] if r['step'] == args.step and (not args.dataset or r['dataset'] == args.dataset)]
     if not entries:
         raise ValueError('empty scoring inventory')
     destination = args.destination or STEPS[args.step] / 'output/retrieval'
+    figure_destination = STEPS[6] / 'output' if args.step == 6 and args.destination is None else destination
     if args.action == 'score':
-        score(entries, destination, args.labels_root)
+        score(entries, destination, args.labels_root, figure_destination)
     else:
+        from stage2.evaluation.publish import verify_existing
+        verify_existing(destination, figure_destination)
         with tempfile.TemporaryDirectory(dir=destination.parent) as temp:
             replay = Path(temp) / 'replay'
             score(entries, replay, args.labels_root)

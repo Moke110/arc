@@ -14,7 +14,7 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from round_contract import verify_committed_promotion
+from round_contract import promotion_digest, verify_committed_promotion
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "01_corpus"))
 from build import DEFAULT_NATIVE, DEFAULT_OUTPUT as DEFAULT_LANDMARK, STEP
@@ -240,7 +240,7 @@ def build(native, axes, landmark, role, output, rscript, promotion=None, workers
     sources = {Path(__file__).name: sha256(Path(__file__)), WORKER.name: sha256(WORKER)}
     family, cases, controls, fixture, provenance = load_release(axes, landmark, role)
     if role == "test":
-        provenance["promotion_sha256"] = sha256(promotion)
+        provenance["promotion_sha256"] = promotion_digest(promotion)
     if sha256(native) != provenance["native_sha256"]:
         raise ValueError("native tenv counts differ from the frozen gene-axis release")
     output.parent.mkdir(parents=True, exist_ok=True)

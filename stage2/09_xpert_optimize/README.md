@@ -16,7 +16,7 @@ undefined groups, pooling, and bounded resource policy.
 From the repository root, after the relevant significance release is ready:
 
 ```bash
-/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 9
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/publish.py --step 9
 /home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 9
 ```
 

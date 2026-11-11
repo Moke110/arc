@@ -229,7 +229,7 @@ def replay(output_root):
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1] in ('evaluate', 'score', 'replay'):
-        sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+        sys.path.insert(0, str(next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())))
         from stage2.evaluation.evaluate import main as shared_main
         if sys.argv[1] == 'evaluate':
             sys.argv[1] = 'score'

@@ -3,17 +3,18 @@ import argparse
 import json
 from pathlib import Path
 import re
-import subprocess
 
-ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parent
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
+ROOT = REPO / 'stage2'
 LEGACY = re.compile(r'(?:AUPRC_(?:positive|negative)@\d+|auprc_(?:full|g)|(?:positive|negative|mean)_ap100|AP@(?:100|200)|auprc@(?:full|G))', re.I)
 
 
 def old_values(value):
     if isinstance(value, dict):
+        if LEGACY.search(str(value.get('metric', ''))):
+            return True
         for key, item in value.items():
-            if (LEGACY.search(key) or key == 'auprc') and isinstance(item, (int, float, list, dict)):
+            if (LEGACY.search(key) or 'auprc' in key.lower()) and isinstance(item, (int, float, list, dict)):
                 return True
             if old_values(item):
                 return True
@@ -58,7 +59,7 @@ def candidates():
             if path.suffix in ('.csv', '.tsv'):
                 with path.open(errors='replace') as handle:
                     header = handle.readline()
-                if LEGACY.search(header) or re.search(r'(^|,)auprc(,|$)', header):
+                if LEGACY.search(header) or re.search(r'auprc', header, re.I):
                     paths.add(path)
                 continue
             try:

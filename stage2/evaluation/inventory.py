@@ -2,12 +2,10 @@
 from pathlib import Path
 import hashlib
 import json
-import pandas as pd
 from functools import lru_cache
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
 ROOT = REPO / 'stage2'
-SEEDS = (17, 42, 2026)
 STEPS = {n: next(ROOT.glob(f'{n:02d}_*')) for n in (3, 4, 5, 6, 9)}
 
 
@@ -38,18 +36,42 @@ def binding(path, expected=None):
     return {'path': str(path.relative_to(REPO)), 'sha256': digest}
 
 
+def iter_bindings(value):
+    if isinstance(value, dict):
+        if 'path' in value and 'sha256' in value:
+            yield value
+        else:
+            for item in value.values():
+                yield from iter_bindings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from iter_bindings(item)
+
+
+def load_inventory(path):
+    inventory = read(path)
+    fields = ('step', 'dataset', 'regime', 'role', 'model', 'fold', 'seed')
+    identities = [tuple(run[key] for key in fields) for run in inventory['runs']]
+    expected = [tuple(value) for value in inventory['expected_identities']]
+    if (inventory.get('schema') != 'stage2-retrieval-inventory-v1'
+            or len(identities) != len(set(identities)) or len(expected) != len(set(expected))
+            or set(identities) != set(expected)
+            or any(run['dataset'] != 'tenv' for run in inventory['runs'])):
+        raise ValueError('incomplete or invalid frozen tenv prediction inventory')
+    return inventory
+
+
 def verify(path=None):
     path = path or Path(__file__).with_name('inventory.json')
-    inventory = read(path)
+    inventory = load_inventory(path)
     seen = set()
     for run in inventory['runs']:
         key = tuple(run[k] for k in ('step', 'dataset', 'regime', 'role', 'model', 'fold', 'seed'))
         if key in seen:
             raise ValueError(f'duplicate evaluation identity: {key}')
         seen.add(key)
-        for value in run.values():
-            if isinstance(value, dict) and 'path' in value and 'sha256' in value:
-                binding(REPO / value['path'], value['sha256'])
+        for value in iter_bindings(run):
+            binding(REPO / value['path'], value['sha256'])
     return inventory
 
 

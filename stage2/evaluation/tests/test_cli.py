@@ -1,5 +1,6 @@
 """Every step's public reporting CLI must use the same three-metric scorer."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -31,7 +32,7 @@ class PublicCLITest(unittest.TestCase):
             padj = np.ones((2, 18165)); padj[0, :3] = .001
             direction = np.zeros_like(padj); direction[0, :3] = [1, -1, 1]
             np.save(labels / 'padj.npy', padj); np.save(labels / 'log2_fold_change.npy', direction)
-            manifest = {'schema': 'stage2-significance-v1', 'fixture': True, 'fdr': .05,
+            manifest = {'schema': 'stage2-significance-v1', 'dataset': 'tenv', 'fixture': True, 'fdr': .05,
                         'files': {p.name: sha(p) for p in labels.iterdir()}}
             (labels / 'manifest.json').write_text(json.dumps(manifest))
             genes.iloc[:2].to_csv(root / 'genes.csv', index=False)
@@ -42,7 +43,14 @@ class PublicCLITest(unittest.TestCase):
                      'fold': 0, 'seed': 17, 'cases': binding(root / 'cases.csv'),
                      'genes': binding(root / 'genes.csv'), 'prediction': binding(root / 'prediction.npy')}
                     for step in wrappers]
-            inventory = root / 'inventory.json'; inventory.write_text(json.dumps({'runs': runs}))
+            from stage2.evaluation.continuous import FIELDS, parent_identity
+            pd.DataFrame([{'role': 'test', 'model': 'covered', 'group_id': group,
+                           **{metric: .25 for metric in FIELDS}} for group in ('g', 'z')]).to_csv(root / 'continuous.csv', index=False)
+            for item in runs:
+                item['continuous_cache'] = binding(root / 'continuous.csv')
+                item['continuous_cache_parent'] = parent_identity(item)
+            inventory = root / 'inventory.json'; inventory.write_text(json.dumps({'schema': 'stage2-retrieval-inventory-v1', 'runs': runs,
+                'expected_identities': [[r[k] for k in ('step','dataset','regime','role','model','fold','seed')] for r in runs]}))
             for step, script in wrappers.items():
                 with self.subTest(step=step):
                     destination = root / f'step{step}'
@@ -62,3 +70,15 @@ class PublicCLITest(unittest.TestCase):
                     points = pd.read_csv(destination / 'pr.csv')
                     self.assertEqual(set(points.metric), set(METRICS))
                     self.assertAlmostEqual(points[points.metric.eq('AUPRC')].recall.iloc[-1], 2 / 3)
+
+    def test_missing_expected_paired_seed_is_rejected(self):
+        from stage2.evaluation.inventory import load_inventory
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'inventory.json'
+            fields = ('step','dataset','regime','role','model','fold','seed')
+            item = dict(zip(fields, (6,'tenv','cold-cm-drug','validation','Transfer',0,17)))
+            expected = [list(item.values()), [6,'tenv','cold-cm-drug','validation','Transfer',0,42]]
+            path.write_text(json.dumps({'schema':'stage2-retrieval-inventory-v1','runs':[item],
+                                        'expected_identities':expected}))
+            with self.assertRaisesRegex(ValueError, 'incomplete'):
+                load_inventory(path)

@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys
 import numpy as np
-sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+sys.path.insert(0, str(next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())))
 from stage2.evaluation.metrics import METRICS as RETRIEVAL_METRICS, retrieval
 
 METRICS = (*RETRIEVAL_METRICS, 'PCC', 'Spearman', 'RMSE', 'R2')

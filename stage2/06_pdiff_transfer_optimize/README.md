@@ -8,15 +8,15 @@ DESeq2 significance and direction matching, under [ADR 0059](../../docs/adr/0059
 The [shared evaluator](../evaluation/README.md) defines the denominator,
 undefined groups, pooling, and bounded resource policy.
 
-- [PR curve](output/retrieval/PR_curve.png)
-- [AUPRC and continuous metrics](output/retrieval/AUPRC.png)
+- [PR curve](output/PR_curve.png)
+- [AUPRC and continuous metrics](output/AUPRC.png)
 - [Run statistics](output/retrieval/per_run.csv), [dose statistics](output/retrieval/per_dose.csv), and [summary](output/retrieval/summary.csv)
 - [Replay manifest](output/retrieval/manifest.json)
 
 From the repository root, after the relevant significance release is ready:
 
 ```bash
-/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py score --step 6
+/home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/publish.py --step 6
 /home/chang/miniconda3/envs/arc/bin/python stage2/evaluation/evaluate.py replay --step 6
 ```
 

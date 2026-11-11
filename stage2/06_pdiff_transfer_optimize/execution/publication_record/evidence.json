@@ -20,9 +20,6 @@
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/baseline/fold-0-seed-17/Transfer/prediction.json": "195889b234dbbbad148b29365f0cad265ca0b92614c88537783273abce0aa94c",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/baseline/fold-0-seed-17/Transfer/prediction.npy": "195de596fc617bb2a95f88656699c48031ded7fa4d9234b4f7e73f5e1a2210c8",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/baseline/fold-0-seed-17/plan.json": "9ca0c8a4491bfb351fc4c8cfa05953160599df749b57bd284cf1c8af8e48e328",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/baseline/fold-0-seed-17/scores/per_dose.csv": "51c260c03b9ded4fb5980f21e1f6f98b431b10f150be98fae08421e02fb1e7cd",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/baseline/fold-0-seed-17/scores/per_group.csv": "a1d9ac839b9dbb6e284832adfd9d5118ff7d1a8e7ca2252861c9f8e6f9b696d9",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/baseline/fold-0-seed-17/scores/scores.json": "f1f03d6d56e2beb67b4854639a0c27aec41dcc91c1cc1924568d110f5705777a",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/checkpoints/01-dose-reset-fold-0-seed-17/01-ema-selected-step-06000.pt": "4489bb3779db9c20c22d46314dd2cd9c7f7eac1a22cb677421cbee3582a78279",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/checkpoints/01-dose-reset-fold-0-seed-17/fit.json": "14a81e022e31fa6469587d20349bc64d8b864a0ba92a41b07908bdb305f9cd29",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/checkpoints/01-dose-reset-fold-0-seed-17/run.json": "78f2ab28cd6086baee7a4db66edc257694595feefee73c755aa35057fe277594",
@@ -33,15 +30,10 @@
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/checkpoints/04-learning-rate-fold-0-seed-17/native-selection.json": "a39d7b97facbdef59d1b989c18ae81a56db6a18142ec8fad1f104a38f9b39942",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/checkpoints/04-learning-rate-fold-0-seed-17/run.json": "15dcaed833ed67969070ff9a65c777714e92690ed235e62ef86c47c182d98994",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/confirmation/plan.json": "7e2f5cd4e8f32c2bc0f68a1bb337014623b8b84c8d180ed6c27dd1fc1c4ecc82",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/decision.json": "22d78df7a946b6fb24c7602a803eda908bf56638ebb90f5e438e97b41ecd520e",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/plan.json": "d651a64d045b57a77513bc9bd4e0e6fbf704e14a250cd5737caaa759f3eeeb58",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/prediction/cases.json": "1da65612efa76da6fe64f673f15ce616b2d0e83a3106cf7bc129576f1b1c9206",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/prediction/prediction.json": "fdf26209dfd1fab570dd555b96298615f0cf42edc746bbe2110d0573dbad8021",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/prediction/prediction.npy": "a287cf7283329f063ec381b938fd3aa54105418a9f2a26c0228c212ec222b110",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/scores/per_dose.csv": "7c53217a0138891f89a7e7865b92f687e0f1789762bea0276cdc864564689bd0",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/scores/per_group.csv": "ad5dc1388d5a56a33de380cf09db5669236432ae3760fbdcc540e57229e4886c",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/dose_reset/fold-0-seed-17/scores/scores.json": "631761ba5c6db4df899b107f13c6833923425739bc0e2cb8c69abc08c66cf438",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/decision.json": "c01529717887f9179fdf2d631a9af31671b1906381a76d00ca7b55e4882e459f",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/plan.json": "e287451639e45aba4d807ce743767ff0d0274d71f965d09a162ec86e471909c9",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/predictions/common/cases.json": "1da65612efa76da6fe64f673f15ce616b2d0e83a3106cf7bc129576f1b1c9206",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/predictions/common/prediction.json": "226f0022c913c12d184aae7f4c92ce14fd4534af1ac1811297a29eb19db59e2a",
@@ -49,11 +41,7 @@
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/predictions/native/cases.json": "1da65612efa76da6fe64f673f15ce616b2d0e83a3106cf7bc129576f1b1c9206",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/predictions/native/prediction.json": "43c8562d69cc0fe19c34f8192984c25bc213b6dddcb7d19b55f0e252d72664df",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/predictions/native/prediction.npy": "1b29a56baec50d2ad606f77196f084dbce3ff16e4fa290d5328d5b05b67826ef",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/scores/per_dose.csv": "e5dad5f6481d1f6ab8a71d2a2a3c3bfa845602f2a4fbe5c2f38045eaeddc2041",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/scores/per_group.csv": "01ee1fbc919806e22826638f8ab66be37db09a1ab53626afa3a881ed609de55e",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/learning-rate/fold-0-seed-17/scores/scores.json": "bfe8d58ba0c349ed845bddb8665bd379e44a0ed52dd2f17e2d76a73f28e1c033",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/replication/plan.json": "9fa4c2674b97e008b0dd3cf5524f901bf1ebc83321153936c1b84629e886d773",
-    "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/replication/result.json": "9f3593877a0b73705c4f0635e4628e2891c8c8790ff50f9444736b441ee9241f",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/source-audit-attempt-01-missing-cell-line/delta_panel.csv": "d7428ca023300d90470688fb1ba742ee048debfa28182f4a0a1cb1da58c92f01",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/source-audit-attempt-01-missing-cell-line/exact_smiles_panel.csv": "24838bf6717ac7cf8e759cf33753f113745e6616eedde86b28c423e497552ca6",
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/source-audit-attempt-01-missing-cell-line/exposure.csv": "558b0d023fa1fb285d44bf801e7fc6d2f33d9d9a5559ad5e94386a9ca2779c59",
@@ -68,16 +56,13 @@
     "/home/chang/arc/stage2/06_pdiff_transfer_optimize/output/source-audit/lineage.json": "fe0b6ef3fc59fa4fc6a91c5b198e796aa7f5037ed1cf482c7e335ae081a70394"
   },
   "figures": {
-    "output/01-paired-validation-effects.png": "57b93ffd9dfc70879cfd3a0c81426675119e4866f059864476f05465ea446866",
     "output/02-tahoe-exposure.png": "6dda6032070fe51774b20f2a47c8c0955647fb5ecc368b5a4545d407e8dc2dda"
   },
   "tables": {
-    "per_run.csv": "b165135de0433353d1a4a969193cb87b4fa2c4e84433e06e2f19d1f8e4209648",
-    "per_dose.csv": "bc5e322fcfd815c1a9a77ca8be32d22f1d37d4efd9c4993d8cb2ecf4893b39f4",
     "source_exposure.csv": "558b0d023fa1fb285d44bf801e7fc6d2f33d9d9a5559ad5e94386a9ca2779c59"
   },
   "record": {
-    "decision.json": "16ae11b68f8b65231b50aa45be432a64b5af774ea86a8442f6d2434e8a3ffb3a",
     "resources.json": "d84b6fdbf0f1f95c679a13c120a306a757187f0bb3bc75fcb8c26b4912c1c5f6"
-  }
+  },
+  "schema": "step06-nonretrieval-evidence-v1"
 }

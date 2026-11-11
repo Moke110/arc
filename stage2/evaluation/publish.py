@@ -1,6 +1,5 @@
 """Independently rescore twice, then atomically publish one Stage 2 release."""
 import argparse
-import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -8,27 +7,33 @@ import sys
 import tempfile
 import uuid
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
 sys.path.insert(0, str(REPO))
 from stage2.evaluation.inventory import STEPS, read, sha
 
 
-def verify_existing(destination):
+def verify_existing(destination, figure_destination=None):
     if not destination.exists():
         return
+    figure_destination = figure_destination or destination
     manifest = read(destination / 'manifest.json')
     expected = {*manifest['files'], 'manifest.json'}
+    if figure_destination == destination:
+        expected.update(manifest.get('figures', {}))
     if {p.name for p in destination.iterdir()} != expected or any(not p.is_file() for p in destination.iterdir()):
         raise ValueError('publication directory contains files outside the generated release')
-    for name, digest in manifest['files'].items():
-        if sha(destination / name) != digest:
-            raise ValueError(f'published artifact changed: {name}')
+    for directory, entries in ((destination, manifest['files']),
+                               (figure_destination, manifest.get('figures', {}))):
+        for name, digest in entries.items():
+            if sha(directory / name) != digest:
+                raise ValueError(f'published artifact changed: {name}')
 
 
 def publish(step, inventory, labels_root=None, destination=None):
     destination = destination or STEPS[step] / 'output/retrieval'
     destination.parent.mkdir(parents=True, exist_ok=True)
-    verify_existing(destination)
+    figure_destination = STEPS[6] / 'output' if step == 6 and destination == STEPS[6] / 'output/retrieval' else destination
+    verify_existing(destination, figure_destination)
     with tempfile.TemporaryDirectory(dir=destination.parent, prefix='.retrieval-') as temp:
         temporary = Path(temp)
         for name in ('score', 'replay'):
@@ -40,17 +45,43 @@ def publish(step, inventory, labels_root=None, destination=None):
         first, second = temporary / 'score', temporary / 'replay'
         if sha(first / 'manifest.json') != sha(second / 'manifest.json'):
             raise ValueError('independent process replay differs')
-        for name, digest in read(first / 'manifest.json')['files'].items():
-            if sha(second / name) != digest:
+        manifest = read(first / 'manifest.json')
+        for name, digest in {**manifest['files'], **manifest['figures']}.items():
+            if sha(first / name) != digest or sha(second / name) != digest:
                 raise ValueError(f'independent replay differs: {name}')
         previous = destination.with_name(f'.retrieval-previous-{uuid.uuid4().hex}')
-        if destination.exists():
-            destination.rename(previous)
+        old_figures, moved_figures = {}, []
+        # Step 06's owning rule keeps result figures directly in output/.
+        if figure_destination != destination:
+            figure_destination.mkdir(parents=True, exist_ok=True)
+            old = read(destination / 'manifest.json') if destination.exists() else {}
+            for name in manifest['figures']:
+                existing = figure_destination / name
+                if existing.exists():
+                    if name not in old.get('figures', {}):
+                        raise ValueError(f'unowned result figure would be overwritten: {existing}')
+                    backup = temporary / f'previous-{name}'
+                    shutil.copy2(existing, backup)
+                    old_figures[name] = backup
+        exchanged = False
         try:
+            if figure_destination != destination:
+                for name in manifest['figures']:
+                    (first / name).replace(figure_destination / name)
+                    moved_figures.append(name)
+            if destination.exists():
+                destination.rename(previous)
             first.rename(destination)
+            exchanged = True
         except BaseException:
-            if previous.exists():
+            if not exchanged and previous.exists():
                 previous.rename(destination)
+            for name in moved_figures:
+                target = figure_destination / name
+                if name in old_figures:
+                    old_figures[name].replace(target)
+                else:
+                    target.unlink(missing_ok=True)
             raise
         if previous.exists():
             shutil.rmtree(previous)

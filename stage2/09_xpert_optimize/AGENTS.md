@@ -9,8 +9,10 @@
   `execution/01_corpus/gene_axes.py`. Freeze the shared panel before fitting.
 - Fit and replay with `execution/script/xpert.py`. Give workers the predictor
   directory and selected checkpoint.
-- Seal validation promotions with `execution/script/evaluate.py seal`. Commit the
-  seal on `dev` before building test labels or scoring the test split.
+- Original Round 1 test dispatch and label rebuilding validate the committed
+  score-free `execution/round1_record/promotion-provenance.json` pointer to the
+  original Git seal. Rescoring uses the shared evaluator and creates no new
+  promotion or checkpoint selection.
 - Before real-data jobs, read the [WSL resource rules](../../docs/agents/execution-environment.md)
   and use `execution/script/run_capped.sh`. Run long fits serially.
 
