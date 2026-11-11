@@ -57,10 +57,10 @@ def publish(native, annotation, output, shared, verify=False):
 if __name__ == '__main__':
     root = repo_root()
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--native', type=Path, default=root / 'stage2/02_dataset_corpus/output/corpus/v2')
+    parser.add_argument('--native', type=Path, default=root / 'stage2/01_bases/output/native-v1')
     parser.add_argument('--annotation', type=Path, default=root / 'pert_data/Annotation/source/hgnc_complete_set.txt')
     parser.add_argument('--output', type=Path, default=root / 'stage2/01_bases/output/identity-v1')
-    parser.add_argument('--shared', type=Path, default=root / 'stage2/02_dataset_corpus/output/corpus/shared-cm-v1')
+    parser.add_argument('--shared', type=Path, default=root / 'stage2/01_bases/output/shared-v1')
     parser.add_argument('--verify', action='store_true')
     args = parser.parse_args()
     print(json.dumps(publish(args.native, args.annotation, args.output, args.shared, args.verify), indent=2))

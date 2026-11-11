@@ -1,11 +1,14 @@
 # AGENTS.md — stage2/01_bases
 
-Routing for the shared Stage 2 foundation (ADR 0061); summary and commands:
-[`README.md`](README.md).
+Routing for the standalone Stage 2 foundation; commands and contracts are in
+[`README.md`](README.md). ADR 0061 defines the frozen gene and evaluation semantics.
 
-- Gene identity: `execution/bases/identity.py`; release build/replay:
-  `execution/build_identity.py`; indexed axis: `output/identity-v1/`.
-- Before changing source bindings or moving shared assets, read
-  `execution/build_record/pre_migration_inventory.md` and ADR 0030.
-- Existing setup, native corpora, expression and evaluator entry points remain
-  at the compatibility locations listed in README until their migration.
+- Identity: `execution/bases/identity.py`, `execution/build_identity.py` and
+  `output/identity-v1/`; native evidence tables are owned within this step.
+- Raw preparation: `execution/build_native.py`, `execution/bases/native.py` and
+  `execution/bases/raw.py`. Read the repository execution-environment rules before
+  data access. External `source/` inputs are immutable.
+- Training corpora: `execution/build_corpora.py`, `execution/verify_training_source.py`
+  and `execution/bases/corpora.py`; bounded raw-count replay verifies all three layers.
+- Evaluator-only truth: `execution/build_significance.py` and
+  `execution/bases/significance.py`; ordinary training readers open only the h5ad.
