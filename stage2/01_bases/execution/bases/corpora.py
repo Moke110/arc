@@ -357,7 +357,6 @@ def replay_source(native, release, source, frame, controls, axis, crosswalk, fix
         control_means = {
             k: (v / counts_per[k]).astype("float32") for k, v in sums.items()
         }
-        target_positions = {int(r): i for i, r in enumerate(frame.source_row)}
         max_error = 0.0
         with h5py.File(release, "r") as output:
             actual_obs, actual_var = training_header(release)
@@ -402,7 +401,7 @@ def replay_source(native, release, source, frame, controls, axis, crosswalk, fix
                 if not selected:
                     continue
                 local, positions = map(np.array, zip(*selected, strict=True))
-                part = frame.iloc[positions]
+                part = aligned.iloc[positions]
                 control = np.stack(
                     [
                         control_means[
