@@ -64,13 +64,16 @@ successor envelope's bytes are preserved at
 
 1. **Step-root duplicates (gate G7).** `diagnostic_tenv_pr.png` was moved to
    `figure/diagnostic_tenv_pr.png` and `diagnostic_tenv_pr.csv` to
-   `figure/data/diagnostic_tenv_pr.csv`. Nothing was deleted at the step root:
-   the PNG bytes are also preserved as audit evidence at
-   `log/diagnostic/diagnostic_pr.png`, and the *original* plotted CSV bytes are
-   preserved at `log/diagnostic/diagnostic_pr.csv`. The published
+   `figure/data/diagnostic_tenv_pr.csv`. The original bytes are preserved as
+   audit evidence: the PNG is byte-identical (`35d14266…`) at
+   `log/diagnostic/diagnostic_pr.png`, and the *original* plotted CSV bytes
+   (`eaad870b…`) at `log/diagnostic/diagnostic_pr.csv`. The published
    `figure/data` CSV extends those bytes with the displayed macro-AP values
    (finding F6), so its digest necessarily differs from the accepted evidence
-   digest `eaad870b…`; the evidence copy keeps that digest checkable.
+   digest; the evidence copy keeps that digest checkable. The two superseded
+   step-root placements were still tracked by the merge commit; the follow-up
+   fix (`codex/stage2-bases-156-fix`) removes them from the tracked tree, which
+   is the migration completing, not a payload deletion.
 2. **`output/api` joins the stable set (D1).** Gate G1 was written before D1 was
    decided; the stable set is the map's products **plus** the code directory
    `output/api/`. G1 is evaluated as: the migrated payload tree contains exactly

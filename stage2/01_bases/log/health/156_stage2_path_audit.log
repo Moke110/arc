@@ -1,0 +1,11 @@
+$ bash script/check_stage2_paths.sh   # standalone component of check_paths.sh, after the #156 false-positive fix
+== check_stage2_paths: no retired step paths in tracked stage2 executable code ==
+repo root: /home/chang/arc/.scratch/worktrees/stage2-bases-156
+tracked stage2 executable files scanned: 55
+stage2 path literals: 0 occurrences (non-bases roots + datasets-1)
+whitelisted: 0 occurrences (entries in script/stage2_path_whitelist.txt: 0)
+stale: 0 occurrences, 0 distinct
+
+RESULT: PASS — 0 stale stage2 path literals
+exit: 0
+exit=0
