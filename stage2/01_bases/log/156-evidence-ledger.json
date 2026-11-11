@@ -81,8 +81,8 @@
       "claim": "metadata and structural bindings after the move",
       "record": "log/156-metadata-binding-audit.json",
       "rerun_by_156": true,
-      "sha256": "c9c62d26279a0e03e8ba2c9911592c3c68dc2bf14e7fd94374c26946248b9d36",
-      "verification": "44 binding + 21 structural checks, 0 non-pass, 1 documented expected gap"
+      "sha256": "9867be5068bea868fa619a38ebbbf0f8e819d50e7f7fd756b83ff0ee12685a9f",
+      "verification": "44 binding + 21 structural checks, 0 non-pass, 1 documented expected gap; regenerated on the fix branch from the final tracked tree"
     },
     {
       "claim": "old->new layout, inode-preserving renames and rollback",
@@ -102,8 +102,8 @@
       "claim": "repository health for the new layout",
       "record": "log/health/156_check_tracked.log",
       "rerun_by_156": true,
-      "sha256": "17fe53c7b512c8bdd7388380dcf2c19d638aefbd59a75aada7e3d14cd7ca627d",
-      "verification": "check_tracked PASS; check_paths single run recorded in log/health/156_check_paths.log"
+      "sha256": "c74fe820e2e047f4df8d93780003a8a4103ded7f06788f8e08a2d1b56608f6bf",
+      "verification": "check_tracked PASS and check_paths PASS (0 unresolved) on the fix branch; records in log/health/156_check_paths.log and log/health/156_check_tracked.log"
     }
   ],
   "note": "Per claim: the record that supports it, its sha256 as committed, whether #156 re-ran the computation, and the acceptance outcome.",

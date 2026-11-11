@@ -146,6 +146,9 @@ def main():
     preserved = seals / "truth-successor-envelope-v1"
     if preserved.exists():
         if old is None:
+            # A re-run after the swap finds the superseded envelope only at its
+            # preserved seal; record that digest instead of a null (#156 follow-up).
+            old = digest(preserved / "manifest.json")
             print("superseded envelope already preserved; publishing the verified candidate",
                   file=sys.stderr)
         elif (digest(preserved / "manifest.json") != old

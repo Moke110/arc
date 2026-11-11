@@ -22,9 +22,12 @@ import sys
 
 SCHEMA = "bases-156-metadata-binding-audit-v1"
 EXPRESSION = {".h5ad", ".npy", ".npz", ".bin"}
+# The map's stable payload products plus ``api``, the D1-sanctioned publication
+# of the public implementation (code, not payload) under ``output/``.
 STABLE_DIRS = {"gene-identity", "tenv-raw-counts", "tahoe-raw-counts",
                "shared-expression", "training-corpora", "tenv-truth",
-               "tenv-truth-successor", "tenv-hvg", "historical-training-release"}
+               "tenv-truth-successor", "tenv-hvg", "historical-training-release",
+               "api"}
 OLD_NAMES = ("identity-v1", "native-v1", "shared-v1", "shared-v2", "training-v1",
              "training-v2", "truth-tenv-v1", "truth-tenv-v2", "tahoe-counts-v1",
              "hvg-tenv-v1", "hvg-metrics-diagnostic-v1", "build_record")
@@ -232,11 +235,16 @@ add(structure, "figure: published PNG is the accepted byte-identical panel",
     "PASS" if (FIG / "diagnostic_tenv_pr.png").is_file()
     and sha(FIG / "diagnostic_tenv_pr.png") == FIGURE_PNG else "FAIL",
     {"sha256": sha(FIG / "diagnostic_tenv_pr.png") if (FIG / "diagnostic_tenv_pr.png").is_file() else None})
+duplicates = {name: {"code_root": (CODE / name).exists(),
+                     "step_root": (STEP / name).exists()}
+              for name in ("diagnostic_tenv_pr.png", "diagnostic_tenv_pr.csv")}
 add(structure, "figure: a renderer exists and the step root no longer publishes duplicates",
     "PASS" if (FIG / "script/render_diagnostic_tenv_pr.py").is_file()
-    and not (STEP / "diagnostic_tenv_pr.png").exists()
-    and not (STEP / "diagnostic_tenv_pr.csv").exists() else "FAIL",
-    {"renderer": label(FIG / "script/render_diagnostic_tenv_pr.py")})
+    and not any(item["code_root"] for item in duplicates.values()) else "FAIL",
+    {"renderer": label(FIG / "script/render_diagnostic_tenv_pr.py"),
+     "duplicates": duplicates, "checked_in": str(CODE),
+     "rule": "publishing is judged on the code root; a split payload root may still "
+             "carry dev's restored copies of the two superseded placements"})
 
 # --- layout -------------------------------------------------------------------
 stable = {path.name for path in OUT.iterdir() if path.is_dir()}

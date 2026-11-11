@@ -4,7 +4,13 @@ Ticket #156, parent #154. Branch `codex/stage2-bases-156` based on `dev`
 `22048777`. Worktree `/home/chang/arc/.scratch/worktrees/stage2-bases-156`; the
 34 GB payload tree stayed in the main checkout `/home/chang/arc` and every tool
 below took explicit `--step-root`/`--candidate`/`--figure`/`--records-dir`
-paths. Nothing was copied into a worktree and nothing was pushed or merged.
+paths. Nothing was copied into a worktree during the migration and nothing was
+pushed or merged.
+
+Follow-up acceptance fix: branch `codex/stage2-bases-156-fix` based on the merged
+`dev` `9c3beba`. It removes the two superseded step-root placements, corrects the
+audit's stable-set and duplicate-check semantics, drops the quoted fixture
+literal from this record and fills the missing superseded-seal digest.
 
 Environment: Python 3.13.13, matplotlib 3.10.9, pandas 2.3.3, NumPy 2.2.6;
 R 4.5.3 / DESeq2 1.50.2 at `/home/chang/miniconda3/envs/biomni_e1/bin/Rscript`
@@ -55,7 +61,9 @@ The final envelope binds the canonical paths only:
 `output/training-corpora/{manifest.json,tenv.h5ad}`, `output/tenv-raw-counts/tenv.h5ad`
 (+ its producer manifest), `log/records/truth_complete_verify.json` and the
 current `Rscript`. Create reported 1377 contrasts / 4206 samples; verify reported
-`groups_compared: 1377`, `gene_count: 18164`.
+`groups_compared: 1377`, `gene_count: 18164`. The re-issue record now records the
+superseded envelope digest explicitly (`superseded_manifest_sha256`
+`24b65aee…`), recovered from the preserved seal.
 
 E3 (re-run against the final envelope, successor seal `2798e3b8…`): the replay recomputed the HVG source replay and the held-out isolation
 intervention for all three folds, then exported the diagnostic panel to a fresh
@@ -82,18 +90,18 @@ digest is the accepted `7a543149…`.
 
 | id | outcome | evidence |
 |---|---|---|
-| G1 stable paths only | **PASS** | migrated tree contains exactly the nine stable product directories; the branch tracks `output/api/bases/**` and no file at an old path. `find output -maxdepth 1 -type d` + `git ls-files`. |
+| G1 stable paths only | **PASS** | the migrated payload tree holds exactly the nine stable product directories plus the `output/api` code publication; the branch tracks `output/api/bases/**` and no file at an old path, and the two superseded step-root placements are gone. `find output -maxdepth 1 -type d` + `git ls-files`. |
 | G2 no payload bytes changed | **PASS** | E1: 1425 files / 20.88 GB re-hashed to the declared digests. |
-| G3 non-expression audit | **PASS** | [`156-metadata-binding-audit.json`](156-metadata-binding-audit.json): 44 binding + 21 structural checks, `non_pass: []`, one documented `EXPECTED_GAP` (the deleted shared-v1 seal that the historical release references). |
+| G3 non-expression audit | **PASS** | [`156-metadata-binding-audit.json`](156-metadata-binding-audit.json), regenerated on the fix branch (split checkout, code root = branch tree): 44 binding + 21 structural checks, `non_pass: []`, one documented `EXPECTED_GAP` (the deleted shared-v1 seal that the historical release references). |
 | G4 successor re-issued, not edited | **PASS** | E2 + preserved superseded bytes. |
 | G5 evaluator through new paths only | **PASS** | E5; no code path falls back to an old path (see G9). |
 | G6 one figure triple, CSV-only render | **PASS** | E4 + audit figure checks. |
-| G7 step-root duplicates gone | **PASS** | the PNG moved to `figure/`, the CSV to `figure/data/`; original bytes preserved as evidence at `log/diagnostic/diagnostic_pr.{png,csv}`; old hashes `35d14266…/eaad870b…` remain checkable. |
+| G7 step-root duplicates gone | **PASS** | the two superseded step-root placements are removed from the tracked tree (follow-up commit); the PNG lives at `figure/diagnostic_tenv_pr.png` (`35d14266…`, byte-identical to the preserved evidence copy `log/diagnostic/diagnostic_pr.png`), the raw CSV bytes at `log/diagnostic/diagnostic_pr.csv` (`eaad870b…`) and the extended plotted-values CSV at `figure/data/diagnostic_tenv_pr.csv`. |
 | G8 evidence out of `output/` | **PASS** | `log/diagnostic/`, `log/records/`, `log/health/`, `log/historical/`; no `*.h5ad`/`*.npy` under `log/` (audit check). |
 | G9 no runtime old-path reference | **PASS** | see the exact command and residual list below. |
 | G10 README/AGENTS in the new vocabulary | **PASS** | `stage2/01_bases/README.md`, `AGENTS.md`, `execution/hvg_metrics.md`, `execution/truth_successor.md` reviewed; D1 placement documented. |
 | G11 data inventory | **PASS** | `docs/data-inventory.md` lists every stable product with refreshed `du -sb` sizes, the api code and the figure/records roles. |
-| G12 repo health | **PASS after fixes** | `check_tracked` PASS; `check_paths` ran once (9.0 s, 804 files, 6247 literal occurrences) and reported one pre-existing unresolved fixture literal plus one pre-existing stage2-audit false positive; both are fixed and their components re-verified (details below). `verify_all.sh` not run and not needed. |
+| G12 repo health | **PASS** | `check_tracked` PASS; `check_paths` PASS on the final branch tree (858 text files, 6254 literal occurrences, 0 unresolved); the migration-time run's two pre-existing hits are fixed and recorded (details below). `verify_all.sh` not run. |
 | G13 existing science still binds | **PASS** | E1 digests + E3 byte-identical panel/AP + E5 identical macro AP and groups digest; no refit, no retrain. |
 | G14 rejected Tahoe still present/rejected | **PASS** | audit check on `historical-training-release/tahoe_bulk.h5ad` digest `6e3ac2ec…`; no code path opens it. |
 
@@ -110,26 +118,33 @@ git grep -nE 'identity-v1|native-v1|shared-v[12]|training-v[12]|truth-tenv-v[12]
 
 ## Health checks
 
-`script/check_tracked.sh` (worktree): **PASS** — 242 code files on disk, 284
-tracked, 0 untracked, 0 holes, 0.01 s, 4.3 MiB. Record:
-[`health/156_check_tracked.log`](health/156_check_tracked.log).
+Re-verified from the follow-up branch `codex/stage2-bases-156-fix` (based on the
+merged `dev`): the tracked tree now carries neither the step-root duplicates nor
+a live-looking fixture literal in this record.
 
-`script/check_paths.sh` (main checkout, the only checkout that owns the external
-payloads; the tracked file list came from the branch tree through a temporary
-`GIT_INDEX_FILE`, because the main checkout must stay on `dev`): **one run**,
-8.96 s wall, 6,472 KiB peak RSS, 804 text files scanned, 6247 literal occurrences
-/ 247 distinct, 6217 resolved, 29 whitelisted, 1 unresolved, `verify_all` not
-run. Record: [`health/156_check_paths.log`](health/156_check_paths.log).
+`script/check_tracked.sh` (fix worktree): **PASS** — 242 code files on
+disk, 284 tracked, 0 untracked, 0 holes, 0.01 s, 4.4 MiB.
+Record: [`health/156_check_tracked.log`](health/156_check_tracked.log).
 
-The single run failed for two reasons, both reproduced on the untouched `dev`
-tree, i.e. neither was introduced by #156's path move:
+`script/check_paths.sh` (fix branch tree; the main checkout owns the external
+payloads, so the run used the documented temporary `GIT_INDEX_FILE` from
+`git read-tree codex/stage2-bases-156-fix`, inside a private mount namespace
+where the branch `stage2/` tree was bind-mounted read-only over the main
+checkout's `stage2/`): **PASS** — 8–9 s wall, 6.3 MiB peak RSS,
+858 text files scanned, 6254 literal occurrences / 248 distinct,
+6224 resolved, 30 whitelisted (20 distinct), 0 unresolved.
+Record: [`health/156_check_paths.log`](health/156_check_paths.log).
 
-1. `pert_data/Test/source/` in the frozen
-   `final_health/check_paths_corrected.stdout.log` — a captured fixture literal
-   that never existed in the repository; the same literal is present at `dev`
-   `22048777`. That file is exactly the frozen evidence the whitelist exists for,
-   so it is now whitelisted by path (`script/path_whitelist.txt`); the match
-   predicate was re-checked directly.
+The migration run was red for two pre-existing hits, both reproduced on
+untouched `dev`:
+
+1. a fixture literal captured in the frozen
+   `final_health/check_paths_corrected.stdout.log` — it never existed in the
+   repository; that frozen file is exactly the evidence the whitelist exists
+   for, so it stays whitelisted by path (`script/path_whitelist.txt`) and the
+   match predicate was re-checked directly. This record previously quoted the
+   literal itself; it now names the frozen file instead, so the repository path
+   check no longer sees a live-looking path in a document.
 2. `check_stage2_paths.sh` reported `unexpected Stage 2 entry: stage2/AGENTS.md`
    on pristine `dev` as well: its entry loop compared every `stage2/*` entry to
    `stage2/01_bases` without requiring a directory. The loop now skips
@@ -139,9 +154,6 @@ tree, i.e. neither was introduced by #156's path move:
    ([`health/156_health_script_tests.log`](health/156_health_script_tests.log)),
    and the standalone stage2 audit now PASSes
    ([`health/156_stage2_path_audit.log`](health/156_stage2_path_audit.log)).
-   The full `check_paths.sh` was deliberately **not** run a second time, per the
-   ticket instruction; the two fixed components and the already-PASS stage3
-   audit are recorded individually.
 
 ## Tests
 
@@ -180,8 +192,13 @@ Machine-readable per-claim ledger: [`156-evidence-ledger.json`](156-evidence-led
    worktree, the payload in the main checkout; tools take explicit roots. G1 is
    therefore stated as two facts (payload directories in the data root, tracked
    code paths in the branch) rather than one `find` over a single checkout.
-3. **`check_paths` was not re-run** after the two fixes, per instruction; the
-   fixed components were re-verified individually (see Health checks).
+3. **`check_paths` re-run on the follow-up branch.** The migration run was not
+   repeated before the merge; the follow-up branch drops the record's quoted
+   fixture literal and runs the check against the final tracked tree (private
+   bind mount of the branch tree; see Health checks). The plain pre-merge
+   invocation against the main checkout still reads the merged `dev`
+   working-tree copy of this record, which cannot be updated before the branch
+   lands, so that invocation is expected to turn green at merge time.
 4. The published `figure/data` CSV necessarily differs from the accepted
    evidence CSV (`eaad870b…`) because it now carries the displayed macro-AP
    values and the fixed-group definition; the original bytes are preserved and
@@ -194,14 +211,17 @@ Machine-readable per-claim ledger: [`156-evidence-ledger.json`](156-evidence-led
    step-root diagnostic pair, `execution/build_record/**` and the force-tracked
    files inside the moved products) were restored from `dev` HEAD after the
    migration to leave `git status` with no tracked changes. Those restored
-   copies are `dev`'s state, not this branch's layout; the branch tracks the new
-   stable paths only. The only remaining untracked entries in the main checkout
-   are the new data directories `figure/`, `log/{diagnostic,health,historical,records}`
-   and `execution/checkpoints/` (the last becomes ignored by this branch's
-   `.gitignore`). The acceptance audit recorded above was executed against the
-   migrated layout **before** that restore; re-run it from the branch checkout,
-   or after this branch lands on `dev`, where the tracked tree has neither old
-   paths nor step-root duplicates.
+   copies are `dev`'s state, not the branch's layout. The shipped branch tracks
+   the new stable paths only and **deletes the two superseded step-root
+   placements** (`diagnostic_tenv_pr.{png,csv}`); their bytes are preserved at
+   `figure/diagnostic_tenv_pr.png` (`35d14266…`, also `log/diagnostic/diagnostic_pr.png`)
+   and the raw plotted values at `log/diagnostic/diagnostic_pr.csv`
+   (`eaad870b…`). The audit record was regenerated on the follow-up branch in
+   split-checkout mode (payload root = main checkout, code root = branch tree);
+   its duplicate check judges publishing on the code root, so `non_pass` is
+   empty there. After the branch lands on `dev` the default single-checkout run
+   (all roots = the main checkout) is expected to be identical, because the
+   tracked copies no longer exist.
 7. `log/records/truth_successor_acceptance.json` and
    `log/records/hvg_metrics_actual_acceptance.json` keep their original bytes and
    therefore name the *superseded* envelope digest (`24b65aee…`); the audit
