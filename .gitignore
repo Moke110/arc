@@ -141,11 +141,21 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 
 # Bases payloads/checkpoints stay local; required compact evidence is force-added.
 # The single public implementation under output/api is code, not payload
-# (ADR 0062, ticket #156 decision D1), so the payload rule ignores the directory
-# contents rather than the directory itself and the api subtree is re-included.
+# (ADR 0062, ticket #156 decision D1).  Git cannot re-include a path whose parent
+# directory is excluded, and the pre-existing `output/` rule excludes this
+# directory itself, so the directory is re-included FIRST, its contents excluded,
+# then the api subtree re-included.  `script/check_tracked.sh` proves the current
+# tree only, not future adds; see the #157 review correction in
+# log/156-decisions.md.
+!/stage2/01_bases/output/
 /stage2/01_bases/output/*
 !/stage2/01_bases/output/api/
 !/stage2/01_bases/output/api/**
+# Re-assert the global bytecode rules inside the re-included api tree: a later
+# negation overrides an earlier ignore, so without these `git add -A` would stage
+# `output/api/**/__pycache__`.
+/stage2/01_bases/output/api/**/__pycache__/
+/stage2/01_bases/output/api/**/*.py[cod]
 
 # ADR 0062: disposable build resumption state lives in execution/, never output/.
 /stage2/01_bases/execution/checkpoints/

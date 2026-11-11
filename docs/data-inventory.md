@@ -136,7 +136,7 @@ historical v1 Tahoe h5ad (11.20 GB) and two superseded build-state directories
 | `output/tenv-hvg/` | 6,243,580 | descriptive plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` from `training-corpora/tenv.h5ad`; held-out isolation re-checked |
 | `output/api/` | 512,471 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
 | `figure/` | 711,136 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
-| `log/` | 9,377,232 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
+| `log/` | 9,440,464 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
 
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See

@@ -4,10 +4,15 @@ Routing for the standalone Stage 2 foundation; commands and contracts are in
 [`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
 gene and evaluation semantics. Every path below is a stable semantic path.
 
-- Public implementation: `output/api/bases/` is the **single** public
+- Public implementation: `output/api/bases/` is the **single live** public
   reader/metric implementation (ADR 0062, ticket #156 decision D1). Build, audit,
   figure-provenance and test commands bind it with `import public_api` from
-  `execution/`; never copy a module out of `output/api`.
+  `execution/`; never copy a module out of `output/api` to create a second live
+  implementation. One deliberate exception is the accepted successor envelope
+  `output/tenv-truth-successor/deseq2_contrasts.R`: it is a byte-identical,
+  digest-sealed **provenance copy** of `output/api/bases/deseq2_contrasts.R` that
+  `truth_successor.py` re-hashes to prove which worker produced the envelope.
+  Keep it — it is sealed evidence, not an alleged duplicate.
 - Identity: `execution/build_identity.py` and `output/gene-identity/`
   (`genes.csv`, `manifest.json`, and the frozen `tables/`). Historical v1 mapping
   evidence is `log/historical/shared-v1-mappings/`.
