@@ -1,0 +1,81 @@
+{
+  "checked_original_commit": "7a75525ccf1ba8a91339d4f81b10a34af5db1ce6",
+  "exact_worker_tracking": {
+    "bytes_unchanged": true,
+    "commit": "cda881ba3e55b2e962cb22230ed499d5b5d07e9d",
+    "filesystem_metadata_note": "Firsttrackingcheckoutupdatedworkerfilemtime/ctime;byteSHAunchanged. Manifest/historicaltenvstatunchanged.",
+    "successor_manifest_sha256": "24b65aee8664c65487ec65da885c66067551cc6928113e503f84a538e7f1aba7",
+    "worker_sha256": "65db039a06b58c9fef42ec1531b6f1f9e6ca85554c0ee774d5b325f59e304b2c"
+  },
+  "external_verification": {
+    "failed_item_rechecks": {
+      "pheno_data/Duan-2013": 0,
+      "pheno_data/Huang-2022": 0,
+      "pheno_data/Linn-2024": 0,
+      "pheno_data/Liu-2021": 0
+    },
+    "final_union_verified_items": 34,
+    "original_full_result": "30/34PASS; exit1 preserved",
+    "original_passed_items": [
+      "pert_data/Annotation",
+      "pert_data/DToxS-iPSC",
+      "pert_data/GSE244740",
+      "pert_data/GSE247541",
+      "pert_data/GSE262419",
+      "pert_data/LINCS-LDS-1593",
+      "pert_data/Tahoe-100M",
+      "pert_data/XPert-L1000",
+      "pert_model/PRnet",
+      "pert_model/CPA",
+      "pert_model/chemCPA",
+      "pert_model/biolord",
+      "pert_model/PerturbNet",
+      "pert_model/scVIDR",
+      "pert_model/Squidiff",
+      "pert_model/CMonge",
+      "pert_model/DECANT",
+      "pert_model/WAVE",
+      "pert_model/ExPO",
+      "pert_model/State",
+      "pert_model/TranSiGen",
+      "pert_model/XPert",
+      "pert_model/PerturbDiff",
+      "disease_data/GSE108940",
+      "disease_data/GSE137293",
+      "disease_data/GSE160516",
+      "drug_emb_model/HG",
+      "drug_emb_model/KPGT",
+      "pheno_data/Sirenko-2013",
+      "pheno_data/Heliste-2021"
+    ],
+    "recheck_reason": "Existingarc environment required by3python/PyMuPDF item wrappers; PATH corrected without dependency installation or source/check/manifest modification",
+    "tahoe": "PASS original fullitem manifest4430entries; no skip/reuse and no duplicate fullhash"
+  },
+  "original_check_exit_codes": {
+    "check_paths": 0,
+    "check_tracked": 1,
+    "verify_all": 1
+  },
+  "original_checks_ran_unmodified": true,
+  "original_full_run_status": "FAIL retained exactly; check_tracked1sealedworker hole and4runtimephenotypeverifier errors",
+  "original_verify_all_invocations": 1,
+  "path_check": "PASS original run",
+  "post_tracking_fix_commit": "7cd77cbbd80e046e33552870f02b0218cf78c317",
+  "resources": {
+    "monitor_low_memory_seen": false,
+    "monitor_min_available_bytes": 42677182464,
+    "monitor_samples": 39,
+    "original_fullverify_peak_rss_kib": 32828,
+    "original_fullverify_wall_seconds": 299.93272411599173,
+    "original_service_memory_peak_including_pagecache_bytes": 10737418240,
+    "resource_monitor_service": "arc-bases-resource-monitor.service",
+    "scope_cap_bytes": 10737418240,
+    "swap_cap_bytes": 8589934592,
+    "thread_caps": 2
+  },
+  "schema": "stage2-bases-final-health-evidence-summary-v1",
+  "scope": "Onlyfinalhealthrecords;historicalTahoev1rejectedelsewhere,currentv2acceptanceindependent;nodeploymentorissueclosureclaimed",
+  "scripts_and_original_manifest_inputs_unchanged": true,
+  "status": "PASS_AFTER_DOCUMENTED_TARGETED_CORRECTIONS",
+  "tracking_check": "PASS original check_tracked targeted rerun after exact sealedworker force-track; no check implementation change"
+}

@@ -1,0 +1,353 @@
+[
+  {
+    "gpu": "16376, 1835, 34",
+    "low_memory": false,
+    "mem_available": 42677182464,
+    "mem_total": 50517921792,
+    "swap_free": 68319641600,
+    "time": 1794408576.6942549,
+    "wsl_user_cgroup_bytes": 37902196736
+  },
+  {
+    "gpu": "16376, 1832, 8",
+    "low_memory": false,
+    "mem_available": 42944479232,
+    "mem_total": 50517921792,
+    "swap_free": 68319387648,
+    "time": 1794408586.7517905,
+    "wsl_user_cgroup_bytes": 43466162176
+  },
+  {
+    "gpu": "16376, 1807, 8",
+    "low_memory": false,
+    "mem_available": 42961506304,
+    "mem_total": 50517921792,
+    "swap_free": 68318855168,
+    "time": 1794408596.8166268,
+    "wsl_user_cgroup_bytes": 43712634880
+  },
+  {
+    "gpu": "16376, 1754, 8",
+    "low_memory": false,
+    "mem_available": 42956353536,
+    "mem_total": 50517921792,
+    "swap_free": 68318855168,
+    "time": 1794408606.8808236,
+    "wsl_user_cgroup_bytes": 43810136064
+  },
+  {
+    "gpu": "16376, 1748, 10",
+    "low_memory": false,
+    "mem_available": 43011739648,
+    "mem_total": 50517921792,
+    "swap_free": 68317913088,
+    "time": 1794408616.947096,
+    "wsl_user_cgroup_bytes": 43834560512
+  },
+  {
+    "gpu": "16376, 1738, 10",
+    "low_memory": false,
+    "mem_available": 42990952448,
+    "mem_total": 50517921792,
+    "swap_free": 68317913088,
+    "time": 1794408627.006507,
+    "wsl_user_cgroup_bytes": 43844243456
+  },
+  {
+    "gpu": "16376, 1733, 11",
+    "low_memory": false,
+    "mem_available": 43026882560,
+    "mem_total": 50517921792,
+    "swap_free": 68317913088,
+    "time": 1794408637.0715554,
+    "wsl_user_cgroup_bytes": 43898081280
+  },
+  {
+    "gpu": "16376, 1722, 2",
+    "low_memory": false,
+    "mem_available": 43051180032,
+    "mem_total": 50517921792,
+    "swap_free": 68317913088,
+    "time": 1794408647.1327078,
+    "wsl_user_cgroup_bytes": 43783270400
+  },
+  {
+    "gpu": "16376, 1711, 6",
+    "low_memory": false,
+    "mem_available": 43045732352,
+    "mem_total": 50517921792,
+    "swap_free": 68317917184,
+    "time": 1794408657.1970568,
+    "wsl_user_cgroup_bytes": 43725709312
+  },
+  {
+    "gpu": "16376, 1688, 6",
+    "low_memory": false,
+    "mem_available": 43039711232,
+    "mem_total": 50517921792,
+    "swap_free": 68317917184,
+    "time": 1794408667.2519286,
+    "wsl_user_cgroup_bytes": 43745492992
+  },
+  {
+    "gpu": "16376, 1694, 11",
+    "low_memory": false,
+    "mem_available": 43050381312,
+    "mem_total": 50517921792,
+    "swap_free": 68317917184,
+    "time": 1794408677.3097434,
+    "wsl_user_cgroup_bytes": 43728396288
+  },
+  {
+    "gpu": "16376, 1687, 7",
+    "low_memory": false,
+    "mem_available": 43026874368,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408687.3657475,
+    "wsl_user_cgroup_bytes": 43742420992
+  },
+  {
+    "gpu": "16376, 1687, 12",
+    "low_memory": false,
+    "mem_available": 43005566976,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408697.4186656,
+    "wsl_user_cgroup_bytes": 43749818368
+  },
+  {
+    "gpu": "16376, 1687, 6",
+    "low_memory": false,
+    "mem_available": 43018833920,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408707.4777322,
+    "wsl_user_cgroup_bytes": 43745226752
+  },
+  {
+    "gpu": "16376, 1687, 10",
+    "low_memory": false,
+    "mem_available": 43033776128,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408717.535228,
+    "wsl_user_cgroup_bytes": 43696738304
+  },
+  {
+    "gpu": "16376, 1687, 6",
+    "low_memory": false,
+    "mem_available": 43035668480,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408727.5959191,
+    "wsl_user_cgroup_bytes": 43737505792
+  },
+  {
+    "gpu": "16376, 1775, 17",
+    "low_memory": false,
+    "mem_available": 43013971968,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408737.652766,
+    "wsl_user_cgroup_bytes": 43745243136
+  },
+  {
+    "gpu": "16376, 1686, 6",
+    "low_memory": false,
+    "mem_available": 43028848640,
+    "mem_total": 50517921792,
+    "swap_free": 68317925376,
+    "time": 1794408747.7200427,
+    "wsl_user_cgroup_bytes": 43742171136
+  },
+  {
+    "gpu": "16376, 1686, 10",
+    "low_memory": false,
+    "mem_available": 42986897408,
+    "mem_total": 50517921792,
+    "swap_free": 68317929472,
+    "time": 1794408757.7800596,
+    "wsl_user_cgroup_bytes": 43761606656
+  },
+  {
+    "gpu": "16376, 1687, 7",
+    "low_memory": false,
+    "mem_available": 42907926528,
+    "mem_total": 50517921792,
+    "swap_free": 68317933568,
+    "time": 1794408767.8418148,
+    "wsl_user_cgroup_bytes": 43754635264
+  },
+  {
+    "gpu": "16376, 1687, 10",
+    "low_memory": false,
+    "mem_available": 43051679744,
+    "mem_total": 50517921792,
+    "swap_free": 68317937664,
+    "time": 1794408777.9019601,
+    "wsl_user_cgroup_bytes": 43733577728
+  },
+  {
+    "gpu": "16376, 1687, 7",
+    "low_memory": false,
+    "mem_available": 42933682176,
+    "mem_total": 50517921792,
+    "swap_free": 68317937664,
+    "time": 1794408787.9692945,
+    "wsl_user_cgroup_bytes": 43740844032
+  },
+  {
+    "gpu": "16376, 1687, 9",
+    "low_memory": false,
+    "mem_available": 42927239168,
+    "mem_total": 50517921792,
+    "swap_free": 68317937664,
+    "time": 1794408798.03466,
+    "wsl_user_cgroup_bytes": 43738374144
+  },
+  {
+    "gpu": "16376, 1687, 6",
+    "low_memory": false,
+    "mem_available": 43016589312,
+    "mem_total": 50517921792,
+    "swap_free": 68317941760,
+    "time": 1794408808.0890462,
+    "wsl_user_cgroup_bytes": 43404849152
+  },
+  {
+    "gpu": "16376, 1713, 10",
+    "low_memory": false,
+    "mem_available": 43061633024,
+    "mem_total": 50517921792,
+    "swap_free": 68317941760,
+    "time": 1794408818.1434596,
+    "wsl_user_cgroup_bytes": 43620028416
+  },
+  {
+    "gpu": "16376, 1686, 6",
+    "low_memory": false,
+    "mem_available": 43060523008,
+    "mem_total": 50517921792,
+    "swap_free": 68317941760,
+    "time": 1794408828.2026277,
+    "wsl_user_cgroup_bytes": 43653066752
+  },
+  {
+    "gpu": "16376, 1686, 6",
+    "low_memory": false,
+    "mem_available": 43044003840,
+    "mem_total": 50517921792,
+    "swap_free": 68317839360,
+    "time": 1794408838.266427,
+    "wsl_user_cgroup_bytes": 43674161152
+  },
+  {
+    "gpu": "16376, 1686, 6",
+    "low_memory": false,
+    "mem_available": 43040002048,
+    "mem_total": 50517921792,
+    "swap_free": 68317839360,
+    "time": 1794408848.3247592,
+    "wsl_user_cgroup_bytes": 43729846272
+  },
+  {
+    "gpu": "16376, 1686, 6",
+    "low_memory": false,
+    "mem_available": 43048411136,
+    "mem_total": 50517921792,
+    "swap_free": 68317843456,
+    "time": 1794408858.3805454,
+    "wsl_user_cgroup_bytes": 43726725120
+  },
+  {
+    "gpu": "16376, 1686, 7",
+    "low_memory": false,
+    "mem_available": 43057844224,
+    "mem_total": 50517921792,
+    "swap_free": 68317851648,
+    "time": 1794408868.437578,
+    "wsl_user_cgroup_bytes": 43688079360
+  },
+  {
+    "gpu": "16376, 1687, 7",
+    "low_memory": false,
+    "mem_available": 43050565632,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408878.4972067,
+    "wsl_user_cgroup_bytes": 43660390400
+  },
+  {
+    "gpu": "16376, 1687, 7",
+    "low_memory": false,
+    "mem_available": 42807115776,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408888.5683331,
+    "wsl_user_cgroup_bytes": 43632910336
+  },
+  {
+    "gpu": "16376, 1690, 6",
+    "low_memory": false,
+    "mem_available": 42824306688,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408898.6210117,
+    "wsl_user_cgroup_bytes": 43621720064
+  },
+  {
+    "gpu": "16376, 1687, 7",
+    "low_memory": false,
+    "mem_available": 42812583936,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408908.6813629,
+    "wsl_user_cgroup_bytes": 43625033728
+  },
+  {
+    "gpu": "16376, 1687, 6",
+    "low_memory": false,
+    "mem_available": 42823462912,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408918.7354805,
+    "wsl_user_cgroup_bytes": 43619536896
+  },
+  {
+    "gpu": "16376, 1727, 7",
+    "low_memory": false,
+    "mem_available": 42922553344,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408928.7934303,
+    "wsl_user_cgroup_bytes": 43624603648
+  },
+  {
+    "gpu": "16376, 1758, 30",
+    "low_memory": false,
+    "mem_available": 42872401920,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408938.8472245,
+    "wsl_user_cgroup_bytes": 43619659776
+  },
+  {
+    "gpu": "16376, 1763, 13",
+    "low_memory": false,
+    "mem_available": 42900058112,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408948.903025,
+    "wsl_user_cgroup_bytes": 43608772608
+  },
+  {
+    "gpu": "16376, 1775, 6",
+    "low_memory": false,
+    "mem_available": 42821177344,
+    "mem_total": 50517921792,
+    "swap_free": 68317241344,
+    "time": 1794408958.9590309,
+    "wsl_user_cgroup_bytes": 43615432704
+  }
+]
