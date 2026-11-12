@@ -50,6 +50,8 @@ def main(argv=None):
     parser.add_argument('--release', required=True)
     parser.add_argument('--request', required=True)
     parser.add_argument('--config', required=True)
+    parser.add_argument('--default-config',
+                        default=str(SCRIPT_DIR.parent / 'models/prnet/config.json'))
     parser.add_argument('--fit-time', required=True)
     parser.add_argument('--prepare-time', required=True)
     parser.add_argument('--prepare-output', required=True)
@@ -67,6 +69,7 @@ def main(argv=None):
     progress = read_json(run / 'progress.json')
     manifest = read_json(release / 'manifest.json')
     effective = read_json(run / 'config.json')
+    default_config = read_json(args.default_config)
     request = read_json(args.request)
     tests = read_json(args.tests) if args.tests else []
 
@@ -98,6 +101,8 @@ def main(argv=None):
             'the early-stopping dominance statement is missing')
     require(int(effective['max_epochs']) == int(checkpoint['config']['max_epochs']),
             'effective config and checkpoint config disagree')
+    require(default_config['early_stopping']['max_epochs'] == 100,
+            'the default recipe does not declare the 100-epoch ceiling')
 
     fit_time = parse_time(args.fit_time)
     prepare_time = parse_time(args.prepare_time)
@@ -115,6 +120,7 @@ def main(argv=None):
         'run/config.json': sha256(run / 'config.json'),
         'request.json': sha256(args.request),
         'config/bounded_run.json': sha256(args.config),
+        'config/default.json': sha256(args.default_config),
     }
     record = {
         'schema': 'stage2-02-models-tenv-bounded-run-v1',
@@ -125,13 +131,16 @@ def main(argv=None):
         'status': terminal['status'],
         'identity': checkpoint['identity'],
         'declared': {
-            'bound_epochs': effective['max_epochs'],
-            'full_epoch_ceiling': checkpoint['early_stopping']['rules']['max_epochs'],
+            'bounded_epoch_override': effective['max_epochs'],
+            'full_epoch_ceiling': default_config['early_stopping']['max_epochs'],
             'batch_size': effective['batch_size'],
             'wells': manifest['roles'],
             'n_genes': n_genes,
             'early_stopping': checkpoint['early_stopping']['rules'],
+            'early_stopping_observed': checkpoint['early_stopping']['observed'],
             'early_stopping_dominance': checkpoint['early_stopping']['dominance'],
+            'early_stopping_dominance_observed':
+                checkpoint['early_stopping']['dominance_observed'],
         },
         'outcome': {
             'best_epoch': checkpoint['best_epoch'],
@@ -141,6 +150,7 @@ def main(argv=None):
             'training_seconds': checkpoint['training_seconds'],
             'inference_seconds': checkpoint['inference_seconds'],
             'behavior': checkpoint['behavior'],
+            'extra_config_sha256': sha256(args.default_config),
             'selection': checkpoint['selection'],
             'output': checkpoint['output'],
         },
