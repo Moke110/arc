@@ -1,0 +1,49 @@
+{
+  "accession": "GSE116250",
+  "species": "Homo sapiens",
+  "platform": "Illumina HiSeq 2000 (GPL16791), hg19 / Ensembl GRCh37.82 Cufflinks RPKM",
+  "tissue_model": "human left-ventricular bulk tissue",
+  "contrast": "HF_vs_NF",
+  "contrast_description": "primary HF_vs_NF = (DCM + ICM)/2 - NF, 50 HF (37 DCM + 13 ICM) vs 14 NF; DCM_vs_NF and ICM_vs_NF fitted in the same model and recorded as extra `contrast` rows; positive log2FC = higher in disease",
+  "arm_contrasts": {
+    "DCM_vs_NF": {
+      "n_case": 37,
+      "n_control": 14,
+      "n_up": 1675,
+      "n_down": 1068
+    },
+    "ICM_vs_NF": {
+      "n_case": 13,
+      "n_control": 14,
+      "n_up": 3217,
+      "n_down": 1626
+    }
+  },
+  "method": "limma on log2(RPKM+1); Ensembl annotations collapsed to HGNC symbols by max mean expression; 999999999 sentinel cells -> NA; expression filter RPKM>0 in >=25% of samples; lmFit(~0+group) with group in {NF,DCM,ICM} + eBayes(trend=TRUE, robust=TRUE)",
+  "covariates": "group only (three levels); sex, age and other clinical covariates not modelled; the DCM and ICM arms are reported as separate contrasts",
+  "thresholds": {
+    "padj": 0.05,
+    "abs_log2FC": 0.5,
+    "p_adjust_method": "BH"
+  },
+  "n_genes_tested": 29391,
+  "n_up": 2451,
+  "n_down": 1342,
+  "n_case": 50,
+  "n_control": 14,
+  "group_counts": {
+    "NF": 14,
+    "DCM": 37,
+    "ICM": 13
+  },
+  "normalization": "log2(RPKM + 1), RPKM as deposited",
+  "expression_filter": "expressed (RPKM > 0) in >= 25% of 64 samples",
+  "expression_matrix": "local/expr/GSE116250_log_expr.tsv.gz",
+  "samples": "local/expr/GSE116250_samples.csv",
+  "source_digests": {
+    "GSE116250_rpkm.txt.gz": "b99e4d9d53f0835ceb0885365f43d4a4329f6e5aee6709abc823e94b4ca21cda",
+    "lib_gse116250.R": "71f043d8637781d2babcbe73739876a1f443017aabfad7191ae3b4bd76324677"
+  },
+  "deg_csv": "local/deg/GSE116250_deg.csv",
+  "reproducibility": "deterministic; re-running build_deg.R reproduces the CSV sha256 exactly"
+}

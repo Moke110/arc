@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# verify.sh — offline verification of GSE128188/source/ against ../manifest.sha256.
+#
+# The manifest lists `source/` only (ADR 0030), so `sha256sum -c` checks the
+# downloaded bytes without touching local material and without the network.
+# A missing manifest is a failure (exit 2), not a pass: regenerate it with
+# `.scratch/data-provenance-restructure/ops/hash_items.py` or, for this item,
+# `(cd source && sha256sum *.gz | LC_ALL=C sort > ../manifest.sha256)`.
+set -uo pipefail
+ITEM_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
+MANIFEST="$ITEM_DIR/manifest.sha256"
+if [ ! -f "$MANIFEST" ]; then
+  echo "GSE128188: manifest missing — rerun .scratch/data-provenance-restructure/ops/hash_items.py" >&2
+  exit 2
+fi
+cd -- "$ITEM_DIR/source" || { echo "GSE128188: source/ is missing" >&2; exit 2; }
+echo "GSE128188: sha256sum -c ../manifest.sha256 (cwd: source/)"
+sha256sum -c ../manifest.sha256
