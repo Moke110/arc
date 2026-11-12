@@ -93,22 +93,50 @@ class FigureValueContractTests(unittest.TestCase):
         from bases import plots
         data = STEP_ROOT / "figure/data"
         return plots, plots.read_plot_values(data / "metrics_values.csv"), \
+            plots.read_plot_values(data / "metrics_indirect_values.csv"), \
             plots.read_plot_values(data / "learning_curve_values.csv")
 
     def test_recorded_tables_follow_the_adr_layout(self):
-        plots, metrics, curve = self.values()
+        plots, metrics, indirect, curve = self.values()
         self.assertEqual(metrics["schema"], plots.METRICS_SCHEMA)
+        self.assertEqual((metrics["layout"]["rows"], metrics["layout"]["columns"]), (1, 4))
         self.assertEqual([panel["panel"] for panel in metrics["panels"]],
                          list(plots.PANEL_ORDER))
-        self.assertEqual([panel["kind"] for panel in metrics["panels"]],
-                         ["bar"] * 4 + ["curve"] * 2 + ["bar"] * 2)
+        self.assertEqual([panel["kind"] for panel in metrics["panels"]], ["bar"] * 4)
         self.assertEqual(len(metrics["panels"][0]["entries"]), 2)
         self.assertEqual({entry["series"] for entry in metrics["panels"][0]["entries"]},
                          {"PRnet", "Mean"})
+        self.assertEqual(indirect["schema"], plots.INDIRECT_SCHEMA)
+        self.assertEqual((indirect["layout"]["rows"], indirect["layout"]["columns"]), (2, 4))
+        self.assertEqual([panel["panel"] for panel in indirect["panels"]],
+                         list(plots.INDIRECT_PANEL_ORDER))
+        self.assertEqual([panel["kind"] for panel in indirect["panels"]],
+                         ["curve"] * 4 + ["bar", "bar", "heatmap", "bar"])
+        reliability = indirect["panels"][3]
+        self.assertEqual(reliability["panel"], "Reliability@d")
+        self.assertEqual(len(reliability["entries"]), 2)
+        for entry in reliability["entries"]:
+            self.assertIn("reference", entry)
+            self.assertEqual(len(entry["d_star"]), 4)
+        confusion = indirect["panels"][6]
+        self.assertEqual(confusion["classes"], ("up", "not_significant", "down"))
+        self.assertEqual([entry["series"] for entry in confusion["entries"]],
+                         ["PRnet", "Mean"])
+        self.assertTrue(all(len(entry["matrix"]) == 3 for entry in confusion["entries"]))
         self.assertEqual(curve["schema"], plots.LEARNING_CURVE_SCHEMA)
         self.assertEqual(len(curve["panels"]), 1)
         self.assertEqual(curve["panels"][0]["panel"], "PRnet")
         self.assertEqual(len(curve["panels"][0]["runs"]), 4)
+
+    def test_three_figures_are_published_and_verified(self):
+        self.assertEqual(list(run_matrix.FIGURE_FILES),
+                         ["metrics", "metrics_indirect", "learning_curve"])
+        metrics, indirect, curve = run_matrix.verify_figure_values(STEP_ROOT / "figure/data")
+        self.assertEqual(len(metrics["panels"]), 4)
+        self.assertEqual(len(indirect["panels"]), 8)
+        self.assertEqual(indirect["layout"]["rows"], 2)
+        self.assertEqual(indirect["layout"]["columns"], 4)
+        self.assertEqual(curve["schema"], "stage2-tenv-learning-curve-values-v1")
 
 
 if __name__ == "__main__":

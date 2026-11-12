@@ -25,6 +25,8 @@ from bases import plots  # noqa: E402  (public implementation bound above)
 
 FIGURES = {
     "metrics": ("metrics_values.csv", "metrics.png", plots.replay_metrics),
+    "metrics_indirect": ("metrics_indirect_values.csv", "metrics_indirect.png",
+                         plots.replay_metrics),
     "learning_curve": ("learning_curve_values.csv", "learning_curve.png",
                        plots.replay_learning_curve),
 }

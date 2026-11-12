@@ -6,7 +6,7 @@ trained **serialized**, one heavy job at a time through ``execution/capped.sh``
 under ``/usr/bin/time -v``, in a candidate tree outside the formal ``output/``.
 Only after every run has reached ``complete`` and the shared #164 driver has
 scored the whole set are the stable products published, the tracked plot-value
-CSVs copied and both figures rendered and replay-verified.
+CSVs copied and every figure rendered and replay-verified.
 
     python execution/run_matrix.py --plan-only
     python execution/run_matrix.py --all
@@ -34,6 +34,8 @@ ENTRIES = ("prnet", "mean")
 FOLDS, SEEDS = 2, 2
 STABLE_PRODUCTS = ("inputs", "runs", "evaluation", "figure_data")
 FIGURE_FILES = {"metrics": ("metrics_values.csv", "metrics.png"),
+                "metrics_indirect": ("metrics_indirect_values.csv",
+                                     "metrics_indirect.png"),
                 "learning_curve": ("learning_curve_values.csv", "learning_curve.png")}
 DEFAULT_BASES = Path("/home/chang/arc/stage2/01_bases/output")
 
@@ -279,20 +281,32 @@ def score(*, bases, candidate, python):
 
 
 def verify_figure_values(figure_data):
-    """Check the recorded tables are the shared #162 schema before publishing."""
+    """Check the recorded tables are the shared ADR 0064 schema before publishing."""
     sys.path.insert(0, str(repo_root() / "stage2/01_bases/output/api"))
     from bases import plots
     metrics = plots.read_plot_values(Path(figure_data) / "metrics_values.csv")
-    if metrics["schema"] != plots.METRICS_SCHEMA or len(metrics["panels"]) != 8:
-        raise MatrixError("metrics plot values are not the eight ADR 0063 panels")
+    if metrics["schema"] != plots.METRICS_SCHEMA or len(metrics["panels"]) != 4:
+        raise MatrixError("metrics plot values are not the four direct ADR 0064 panels")
+    if (metrics["layout"]["rows"], metrics["layout"]["columns"]) != (1, 4):
+        raise MatrixError("direct metrics plot values are not one row by four columns")
     if [panel["panel"] for panel in metrics["panels"]] != list(plots.PANEL_ORDER):
-        raise MatrixError("metrics panel order differs from ADR 0063")
-    if [panel["kind"] for panel in metrics["panels"]] != ["bar"] * 4 + ["curve"] * 2 + ["bar"] * 2:
-        raise MatrixError("metrics panel kinds differ from ADR 0063")
+        raise MatrixError("metrics panel order differs from ADR 0064")
+    if [panel["kind"] for panel in metrics["panels"]] != ["bar"] * 4:
+        raise MatrixError("metrics panel kinds differ from ADR 0064")
+    indirect = plots.read_plot_values(Path(figure_data) / "metrics_indirect_values.csv")
+    if indirect["schema"] != plots.INDIRECT_SCHEMA or len(indirect["panels"]) != 8:
+        raise MatrixError("reliability plot values are not the eight ADR 0064 panels")
+    if (indirect["layout"]["rows"], indirect["layout"]["columns"]) != (2, 4):
+        raise MatrixError("reliability plot values are not two rows by four columns")
+    if [panel["panel"] for panel in indirect["panels"]] != list(plots.INDIRECT_PANEL_ORDER):
+        raise MatrixError("reliability panel order differs from ADR 0064")
+    expected_kinds = ["curve"] * 4 + ["bar", "bar", "heatmap", "bar"]
+    if [panel["kind"] for panel in indirect["panels"]] != expected_kinds:
+        raise MatrixError("reliability panel kinds differ from ADR 0064")
     curve = plots.read_plot_values(Path(figure_data) / "learning_curve_values.csv")
     if curve["schema"] != plots.LEARNING_CURVE_SCHEMA or len(curve["panels"]) != 1:
         raise MatrixError("learning curve must have one PRnet subplot")
-    return metrics, curve
+    return metrics, indirect, curve
 
 
 def publish_tree(source, destination):
@@ -316,7 +330,7 @@ def publish_tree(source, destination):
 
 
 def render(figure_data, figure_dir, python):
-    """Render both figures from the tracked CSVs alone; return the PNG paths."""
+    """Render every figure from the tracked CSVs alone; return the PNG paths."""
     command = [python, "figure/script/render_figures.py",
                "--figure-data", str(figure_data), "--out-dir", str(figure_dir)]
     completed = subprocess.run(command, cwd=str(STEP_ROOT), capture_output=True, text=True)
@@ -330,7 +344,7 @@ def render(figure_data, figure_dir, python):
 
 
 def verify_replay(figure_data, figure_dir, python):
-    """Prove both PNGs rebuild with the step's ``output/`` moved away."""
+    """Prove every PNG rebuilds with the step's ``output/`` moved away."""
     output = STEP_ROOT / "output"
     hidden = STEP_ROOT / "output.replay-hidden"
     moved = False
@@ -346,7 +360,7 @@ def verify_replay(figure_data, figure_dir, python):
 
 
 def publish(candidate, *, figure_data, figure_dir, python):
-    """Publish stable products, tracked plot values and both figures."""
+    """Publish stable products, tracked plot values and every figure."""
     step_output = STEP_ROOT / "output"
     published = {name: str(publish_tree(candidate / name, step_output / name))
                  for name in STABLE_PRODUCTS}
@@ -446,7 +460,7 @@ def acceptance_record(*, cells, candidate, bases, evaluation, figures, digests,
                              for name, (csv, _) in FIGURE_FILES.items()},
                     "png": {name: {"path": f"figure/{png}", "sha256": figure_hashes[name]}
                             for name, (_, png) in FIGURE_FILES.items()},
-                    "replay": "both PNGs rebuilt from figure/data alone with output/ moved away",
+                    "replay": "every PNG rebuilt from figure/data alone with output/ moved away",
                     "replay_sha256": digests},
         "tolerances": {
             "stochastic": ("metric values differ across seeds; the four runs are a spread "
@@ -506,7 +520,7 @@ def run_all(*, bases, candidate, python, prepare_python, train_python, config,
         build_mean(cell, bases=bases, candidate=candidate, python=python, log_root=log_root)
         print(f"mean  fold {cell['fold']} seed {cell['seed']}: complete", flush=True)
     evaluation = score(bases=bases, candidate=candidate, python=python)
-    metrics, curve = verify_figure_values(candidate / "figure_data")
+    metrics, indirect, curve = verify_figure_values(candidate / "figure_data")
     environments = environments_for(python=python, prepare_python=prepare_python,
                                     train_python=train_python, config=config)
     # Publish only from the fully verified candidate (fail closed above).
