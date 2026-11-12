@@ -1,0 +1,53 @@
+{
+  "item": "GSE243674",
+  "category": "disease_data",
+  "purpose": "Independent human hiPSC-CM chemotherapy-cardiotoxicity series for the Stage 2 gene axis (anthracyclines + mitoxantrone + trastuzumab vs vehicle, full transcriptome)",
+  "retrieved_at": "2026-11-13T01:16+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE243674",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE243674",
+      "version": "GSE243674",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP series directory: GSE243674_Counts_RNA_ERMatthews.txt.gz, 2,424,618 B, byte-identical; no other file is stored)",
+      "path": "source/",
+      "files": 1,
+      "bytes": 2424618,
+      "tree_sha256": "6ed672359b0db3974a35c532cb503ab3ddb75cfdf7dedf286cc357b5967a341a"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE243674_deg.csv",
+      "origin": "full-transcriptome DESeq2 long table, one row per contrast (10 drug x time vs vehicle) x gene; contrast, gene_symbol, log2FC (drug vs vehicle), stat, p_value, padj (BH), baseMean, n_case, n_control; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE243674_deg.json",
+      "origin": "tracked compact summary: per-contrast n_up/n_down/n_genes_tested/n_padj_not_na, species, platform, cell model, method, thresholds, ENTREZID->HGNC mapping evidence (file, sha256, losses, one-to-many resolution), drug-class labels, source/output digests",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/expr/GSE243674_log_expr.tsv.gz",
+      "origin": "normalized gene-level expression matrix, genes x 72 wells, log2(CP10K+1); regenerable, never tracked (local/expr/.gitignore)",
+      "generated_by": "script/build_expression.R"
+    },
+    {
+      "path": "local/expr/GSE243674_samples.csv",
+      "origin": "well metadata, sample,drug,time_h,donor,group; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_expression.R"
+    },
+    {
+      "path": "local/expr/.gitignore",
+      "origin": "nested ignore rule that keeps local/expr/ outputs out of git without adding a sixth top-level member to the ADR 0030 item; the file itself is tracked",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T01:22+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE243674 (Homo sapiens, GPL21697 NextSeq 550; featureCounts gene-level counts on hg38). Series title: 'Anthracyclines induce cardiotoxicity through a shared gene expression response signature' (PMID 38416769). The only stored source file is GSE243674_Counts_RNA_ERMatthews.txt.gz: an ENTREZID x 72-well space-delimited count matrix (28,395 Entrez rows, 72 wells = 6 healthy female hiPSC-CM donors x 6 arms x 2 time points). ARMS: the matrix header tokens are DNR/DOX/EPI/MTX/TRZ/VEH (12 wells each); they were expanded to daunorubicin/doxorubicin/epirubicin/mitoxantrone/trastuzumab/vehicle from the GSE243674 series-matrix metadata (!Sample_characteristics_ch1 'treatment: 0.5 uM ...' and !Series_overall_design), fetched only to verify the labels and NOT stored in source/ — the abbreviations are what this item's own download carries. treatment is 0.5 uM for all agents, 3 h and 24 h. MAPPING: ENTREZID -> HGNC symbol with the pinned pert_data/Annotation/source/hgnc_complete_set.txt (16,982,321 B, sha256 12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91; 44,497 approved rows). 26,867 of 28,395 Entrez IDs mapped; 1,528 lost (0.154% of reads); 1 one-to-many Entrez ID in this matrix (100874204 -> ALDH1L1-AS1 vs SLC41A3-AS1, resolved to ALDH1L1-AS1 by protein-coding < non-coding RNA < pseudogene < other, then lowest hgnc_id); 0 duplicate symbols collapsed; 1,769 mapped genes have zero counts in all 72 wells (kept, NA statistics). DEG: DESeq2 per drug x time vs vehicle at the same time point (12 wells: 6 drug + 6 vehicle, same 6 donors), design ~ donor + group (paired donor term), Wald test with unshrunken MLE log2FoldChange, BH padj, DESeq2 default independent filtering at alpha 0.05; no L1000 or expression filter; 26,867 genes tested per contrast; n_up/n_down at padj<0.05 and |log2FC|>0.5. Expression matrix: log2(CP10K+1), CP10K on the mapped-gene library size, 4 decimals, 26,867 genes x 72 wells; local/expr/GSE243674_samples.csv has one row per well in matrix column order with drug tokens dnr/dox/epi/mtx/trz/veh and group treated/vehicle. Gene set of the expression matrix equals the DEG gene set by construction (same pinned mapping rule in both scripts). DIGESTS: source 4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882; manifest/tree_sha256 6ed672359b0db3974a35c532cb503ab3ddb75cfdf7dedf286cc357b5967a341a; deg CSV 0ff8716bf12b0dde9fb4160c01dd4beb58af0e9114e2e45933ec200430e7cf8c (268,670 rows); log_expr 074142d8cec91947ae1056619e8c8a2ae2ad4024d12fba0385299c8050c90907; samples.csv fe454e4cf94ef77e03bd167340dc62ca6f69fdf6bf6e326649869a8134ac2907; helpers map_to_human.R b90b96be8dd6b6ab7abd5b7547345a4d9bd50c0b5e41d3309ba8ca037873f91a and map_orthologs.R 2306f1021931aa3a56557294530fd33a08957174b085ab8cc7a847f19fb4cf5f (byte-identical to disease_data/GSE160516/script/). BUILD: pinned R /home/chang/miniconda3/envs/biomni_e1/bin/Rscript (R 4.5.3, DESeq2 1.x), ulimit -v 6G, OMP_NUM_THREADS=2; peak RSS build_deg.R 1,085,564 KiB (max of two runs: 1,084,448 / 1,085,564 KiB, ~1.04 GiB), wall 54-59 s; build_expression.R 193,796 KiB, wall 1.4 s. REPRODUCTION: re-running build_deg.R reproduces the deg CSV sha256 above (and therefore the pinned deg JSON counts); the expression build is deterministic on the same R. In a checkout (worktree) where the gitignored pert_data/Annotation/source/ tree is not materialised, point ARC_HGNC_TABLE at a materialised copy; the canonical default is the repo-relative pinned path used above.",
+  "hashed_at": "2026-11-13T01:22+08:00"
+}

@@ -1,0 +1,48 @@
+{
+  "item": "GSE128188",
+  "category": "disease_data",
+  "purpose": "Human atrial fibrillation (AF) disease input for the Stage 2 gene axis: full-transcriptome AF-vs-sinus-rhythm DEG and log expression for the >5% AF prevalence category (docs/research/stage2-stage3-gene-axis-datasets.md).",
+  "retrieved_at": "2026-11-13T01:15+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE128188",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE128188",
+      "version": "GSE128188",
+      "license": "unknown",
+      "species": "Homo sapiens",
+      "method": "script/fetch.sh (curl from the GEO FTP supplementary directory); upstream GSE128188_CountsV2_EdgeR.txt.gz kept byte-identical",
+      "path": "source/",
+      "files": 1,
+      "bytes": 647785,
+      "tree_sha256": "cac134e201d75cf22a7baf5c83a3293ec1458c202e8d7ef0a8f792bbb2814b72"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE128188_deg.csv",
+      "origin": "Full-transcriptome DESeq2 AF-vs-SR DEG table (14,823 genes; gene_symbol, contrast, log2FC, stat, p_value, padj, baseMean, n_case, n_control); regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE128188_deg.json",
+      "origin": "Tracked per-GSE DEG summary: accession, species, platform, contrast, method, pairing decision, thresholds, n_genes_tested, n_up, n_down, and digests of the source file and DEG CSV",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/expr/GSE128188_log_expr.tsv.gz",
+      "origin": "log2(CPM+1) gene-level expression matrix, 14,823 genes x 20 GEO libraries (all LA/RA libraries); regenerable, ignored by the item-level .gitignore because the global *.tsv rule does not match *.tsv.gz",
+      "generated_by": "script/build_expression.R"
+    },
+    {
+      "path": "local/expr/GSE128188_samples.csv",
+      "origin": "Sample sheet for the log expression matrix: sample, group (AF/SR), donor, tissue; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_expression.R"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T01:21+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE128188 (Homo sapiens, GPL18573 Illumina NextSeq 500). 5 AF / 5 SR donors, each with paired LA and RA atrial appendage (20 libraries). The >5% AF prevalence justification is docs/research/stage2-stage3-gene-axis-datasets.md ('Disease-prevalence taxonomy': AF/AFL is ~17% of heart-disease prevalence) and is not re-researched here. Design: DESeq2 AF vs SR on donor-pooled counts (paired LA+RA summed per donor -> 5 AF / 5 SR) because disease status is donor-level and a donor fixed block is confounded with the contrast (header of script/build_deg.R states the choice and why); n_case/n_control in the DEG CSV are donors while the expression matrix keeps all 20 libraries. The supplementary counts table has no group column, so group labels come from the GEO series-matrix sample titles and are pinned and validated in both build scripts. Tracked: script/**, local/deg/GSE128188_deg.json, author_log.json, manifest.sha256, .gitignore. Ignored: source/ (ADR 0030), local/deg/GSE128188_deg.csv and local/expr/GSE128188_samples.csv (global *.csv rule), local/expr/GSE128188_log_expr.tsv.gz (item .gitignore).",
+  "hashed_at": "2026-11-13T01:21+08:00"
+}

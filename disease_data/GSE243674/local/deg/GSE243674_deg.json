@@ -1,0 +1,244 @@
+{
+  "item": "GSE243674",
+  "accession": "GSE243674",
+  "accession_url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE243674",
+  "title": "Anthracyclines induce cardiotoxicity through a shared gene expression response signature",
+  "species": "Homo sapiens",
+  "species_taxid": 9606,
+  "platform": "GPL21697 NextSeq 550 (Homo sapiens); featureCounts gene-level counts on hg38",
+  "cell_model": "hiPSC-CM monolayer, 6 healthy female donors (UCSD iPSC lines), 0.5 uM, 3 h / 24 h",
+  "contrast_direction": "drug vs vehicle (positive log2FC = higher in drug-treated wells)",
+  "design": {
+    "n_wells": 72,
+    "n_donors": 6,
+    "timepoints_h": [3, 24],
+    "vehicle_wells": 12,
+    "arms": [
+      {
+        "token": "DNR",
+        "drug": "daunorubicin",
+        "drug_class": "anthracycline TOP2 inhibitor",
+        "wells": 12
+      },
+      {
+        "token": "DOX",
+        "drug": "doxorubicin",
+        "drug_class": "anthracycline TOP2 inhibitor",
+        "wells": 12
+      },
+      {
+        "token": "EPI",
+        "drug": "epirubicin",
+        "drug_class": "anthracycline TOP2 inhibitor",
+        "wells": 12
+      },
+      {
+        "token": "MTX",
+        "drug": "mitoxantrone",
+        "drug_class": "anthraquinone TOP2 inhibitor",
+        "wells": 12
+      },
+      {
+        "token": "TRZ",
+        "drug": "trastuzumab",
+        "drug_class": "HER2-targeted antibody",
+        "wells": 12
+      },
+      {
+        "token": "VEH",
+        "drug": "vehicle",
+        "drug_class": "vehicle",
+        "wells": 12
+      }
+    ]
+  },
+  "method": {
+    "deg": "DESeq2 (DESeq2::DESeq + results) per drug x time vs vehicle at the same time point",
+    "model": "~ donor + group; donor is a fixed effect because each donor contributes matched vehicle and drug wells",
+    "test": "Wald test, unshrunken MLE log2FoldChange, BH padj, DESeq2 default independent filtering (alpha = 0.05)",
+    "genes": "all mapped genes (no L1000 or expression-level filter); all-zero genes carry NA statistics",
+    "normalization": "DESeq2 median-of-ratios size factors within each 12-well contrast",
+    "drug_names_source": "column tokens DNR/DOX/EPI/MTX/TRZ/VEH are expanded using GSE243674 series-matrix metadata (!Sample_characteristics_ch1 treatment)"
+  },
+  "thresholds": {
+    "padj": 0.05,
+    "abs_log2FC": 0.5
+  },
+  "contrasts": [
+    {
+      "contrast": "dnr_3h_vs_vehicle",
+      "drug": "daunorubicin",
+      "drug_token": "DNR",
+      "drug_class": "anthracycline TOP2 inhibitor",
+      "time_h": 3,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 14501,
+      "n_up": 363,
+      "n_down": 850,
+      "n_significant": 3253
+    },
+    {
+      "contrast": "dnr_24h_vs_vehicle",
+      "drug": "daunorubicin",
+      "drug_token": "DNR",
+      "drug_class": "anthracycline TOP2 inhibitor",
+      "time_h": 24,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 19632,
+      "n_up": 4719,
+      "n_down": 3831,
+      "n_significant": 10419
+    },
+    {
+      "contrast": "dox_3h_vs_vehicle",
+      "drug": "doxorubicin",
+      "drug_token": "DOX",
+      "drug_class": "anthracycline TOP2 inhibitor",
+      "time_h": 3,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 14067,
+      "n_up": 102,
+      "n_down": 113,
+      "n_significant": 402
+    },
+    {
+      "contrast": "dox_24h_vs_vehicle",
+      "drug": "doxorubicin",
+      "drug_token": "DOX",
+      "drug_class": "anthracycline TOP2 inhibitor",
+      "time_h": 24,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 19264,
+      "n_up": 4058,
+      "n_down": 3524,
+      "n_significant": 8729
+    },
+    {
+      "contrast": "epi_3h_vs_vehicle",
+      "drug": "epirubicin",
+      "drug_token": "EPI",
+      "drug_class": "anthracycline TOP2 inhibitor",
+      "time_h": 3,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 13268,
+      "n_up": 169,
+      "n_down": 462,
+      "n_significant": 2545
+    },
+    {
+      "contrast": "epi_24h_vs_vehicle",
+      "drug": "epirubicin",
+      "drug_token": "EPI",
+      "drug_class": "anthracycline TOP2 inhibitor",
+      "time_h": 24,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 18956,
+      "n_up": 3649,
+      "n_down": 3028,
+      "n_significant": 7491
+    },
+    {
+      "contrast": "mtx_3h_vs_vehicle",
+      "drug": "mitoxantrone",
+      "drug_token": "MTX",
+      "drug_class": "anthraquinone TOP2 inhibitor",
+      "time_h": 3,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 14666,
+      "n_up": 232,
+      "n_down": 328,
+      "n_significant": 1833
+    },
+    {
+      "contrast": "mtx_24h_vs_vehicle",
+      "drug": "mitoxantrone",
+      "drug_token": "MTX",
+      "drug_class": "anthraquinone TOP2 inhibitor",
+      "time_h": 24,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 19155,
+      "n_up": 1895,
+      "n_down": 1552,
+      "n_significant": 6214
+    },
+    {
+      "contrast": "trz_3h_vs_vehicle",
+      "drug": "trastuzumab",
+      "drug_token": "TRZ",
+      "drug_class": "HER2-targeted antibody",
+      "time_h": 3,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 22313,
+      "n_up": 0,
+      "n_down": 2,
+      "n_significant": 3
+    },
+    {
+      "contrast": "trz_24h_vs_vehicle",
+      "drug": "trastuzumab",
+      "drug_token": "TRZ",
+      "drug_class": "HER2-targeted antibody",
+      "time_h": 24,
+      "n_case": 6,
+      "n_control": 6,
+      "n_genes_tested": 26867,
+      "n_padj_not_na": 15931,
+      "n_up": 3,
+      "n_down": 9,
+      "n_significant": 15
+    }
+  ],
+  "mapping": {
+    "gene_id_type": "ENTREZID",
+    "table": "pert_data/Annotation/source/hgnc_complete_set.txt",
+    "table_sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91",
+    "table_bytes": 16982321,
+    "table_rows_approved": 44497,
+    "input_entrez": 28395,
+    "mapped_entrez": 26867,
+    "unmapped_entrez": 1528,
+    "unmapped_read_share": 0.0015,
+    "one_to_many_entrez": 1,
+    "one_to_many_resolution": [
+      {
+        "entrez_id": "100874204",
+        "candidates": ["ALDH1L1-AS1", "SLC41A3-AS1"],
+        "chosen": "ALDH1L1-AS1",
+        "rule": "protein-coding < non-coding RNA < pseudogene < other, then lowest hgnc_id"
+      }
+    ],
+    "duplicate_symbols_collapsed": 0,
+    "genes": 26867,
+    "genes_all_zero": 1769
+  },
+  "inputs": {
+    "path": "source/GSE243674_Counts_RNA_ERMatthews.txt.gz",
+    "bytes": 2424618,
+    "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882",
+    "manifest": "manifest.sha256"
+  },
+  "outputs": {
+    "deg_csv": "local/deg/GSE243674_deg.csv",
+    "deg_csv_sha256": "0ff8716bf12b0dde9fb4160c01dd4beb58af0e9114e2e45933ec200430e7cf8c",
+    "deg_csv_rows": 268670
+  },
+  "generated_by": "script/build_deg.R"
+}

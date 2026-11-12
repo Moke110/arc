@@ -104,9 +104,12 @@ main() {
     pert_model/PerturbDiff
     disease_data/GSE108940
     disease_data/GSE116250
+    disease_data/GSE128188
     disease_data/GSE137293
     disease_data/GSE141910
     disease_data/GSE160516
+    disease_data/GSE243674
+    disease_data/GSE282618
     drug_emb_model/HG
     drug_emb_model/KPGT
   )
