@@ -6,7 +6,7 @@
     "truth_manifest_sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f"
   },
   "branch": "codex/tenv-rel-review",
-  "created_utc": "2026-11-12T15:10:33.282504+00:00",
+  "created_utc": "2026-11-12T15:56:50.673022+00:00",
   "declared": {
     "entries": [
       "prnet",
@@ -42,8 +42,8 @@
     ],
     "git": {
       "branch": "codex/tenv-rel-review",
-      "head_sha": "ac2aaadb6a643a771c7384fee79cf9824ed94c5a",
-      "status_porcelain": "?? stage2/02_models_tenv/log/resources/166-figure-replay.time\n?? stage2/02_models_tenv/log/resources/166-rescore-publish.time\n?? stage2/02_models_tenv/log/resources/166-rescore-verification.time"
+      "head_sha": "3935a8ef83dadb865caa135c4499c43896e05038",
+      "status_porcelain": "M stage2/02_models_tenv/log/resources/166-figure-replay.time\n M stage2/02_models_tenv/log/resources/166-rescore-publish.time\n M stage2/02_models_tenv/log/resources/166-rescore-verification.time"
     },
     "gpu": {
       "available": false,
@@ -132,7 +132,7 @@
     },
     "replay": "each PNG was re-rendered from the tracked figure/data alone and compared to the accepted sha256 before being installed"
   },
-  "head_sha": "ac2aaadb6a643a771c7384fee79cf9824ed94c5a",
+  "head_sha": "3935a8ef83dadb865caa135c4499c43896e05038",
   "notes": [
     "peak selection is optimistic: the same group data selects d* and reports the value; the full curve and the four per-run d* values are recorded",
     "all four PRnet runs record M=5.926281 because the normaliser is set by one gene's degenerate extreme: gene index 13241 attains the float32 floor -5.926281452178955 in 36 distinct wells in fold 0 and 102 distinct wells in fold 1 (different wells, and the seed prediction arrays differ), so this is not a copied value. The mechanism that produces the floor is inferred, not traced through the entrant (it is consistent with a saturated or zero output for that gene); because d = k*0.01*M, this extreme is why the scan empties toward d'=1",
@@ -176,27 +176,27 @@
   "resources": {
     "figure_replay": {
       "config": "GNU time -v",
-      "elapsed_seconds": 4.07,
-      "peak_rss_kib": 175276,
+      "elapsed_seconds": 1.09,
+      "peak_rss_kib": 175036,
       "record": "log/resources/166-figure-replay.time",
       "system_seconds": 0.05,
-      "user_seconds": 1.23
+      "user_seconds": 1.21
     },
     "rescore_publish": {
       "config": "GNU time -v",
-      "elapsed_seconds": 50.28,
-      "peak_rss_kib": 2794324,
+      "elapsed_seconds": 51.81,
+      "peak_rss_kib": 2782760,
       "record": "log/resources/166-rescore-publish.time",
-      "system_seconds": 1.45,
-      "user_seconds": 77.18
+      "system_seconds": 1.28,
+      "user_seconds": 77.43
     },
     "rescore_verification": {
       "config": "GNU time -v",
-      "elapsed_seconds": 57.47,
-      "peak_rss_kib": 2796852,
+      "elapsed_seconds": 54.72,
+      "peak_rss_kib": 2782540,
       "record": "log/resources/166-rescore-verification.time",
-      "system_seconds": 1.7,
-      "user_seconds": 76.95
+      "system_seconds": 2.53,
+      "user_seconds": 77.74
     }
   },
   "runs": [
@@ -418,7 +418,7 @@
     }
   ],
   "schema": "stage2-tenv-acceptance-v2",
-  "started_utc": "2026-11-12T15:08:40.718680+00:00",
+  "started_utc": "2026-11-12T15:55:01.221483+00:00",
   "supersedes": "log/165-acceptance.json",
   "tables": {
     "confusion": {
