@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import sys
 
+import h5py
 import numpy as np
 import pandas as pd
 from rdkit import Chem, rdBase
@@ -207,7 +208,7 @@ def build_release(corpus, fold_product, output, *, fold_row, seed_row,
     files = {'drugs': 'drugs.csv', 'morgan': 'morgan.npy'}
     write_rows(output / 'drugs.csv', drugs['drugs'])
     np.save(output / 'morgan.npy', drugs['morgan'])
-    with __import__('h5py').File(corpus, 'r') as handle:
+    with h5py.File(corpus, 'r') as handle:
         if set(handle['layers']) != {'control', 'delta'}:
             raise InputError('unexpected corpus layers')
         control = handle['layers/control']
