@@ -182,9 +182,10 @@ script/check_paths.sh                                 # green
    copies-identical invariant and the other items are outside this ticket's write scope; the
    helper does not participate in the corrected `build_deg.R` path (which sources
    `map_to_human.R:mouse2human` directly).
-3. **Category-level docs still say rat.** `disease_data/README.md` (table row + "Rat vs human"
-   section) and `disease_data/AGENTS.md` still describe GSE108940 as rat; they were outside the
-   write scope of this ticket and need a follow-up edit.
+3. **Category-level docs (resolved).** When this note was written,
+   `disease_data/README.md` and `disease_data/AGENTS.md` still described GSE108940 as rat;
+   they now describe it as mouse GPL7202 (`inTax=10090`) after the category-docs update in
+   the same round.
 4. **Stage 1 label.** `stage1/*/08_miri_phenotype/miri_phenotype.py` still prints/labels
    `"GSE108940": "rat MIRI"`; Stage 1 is frozen for this ticket (impact recorded above).
 5. **L1000 only.** The corrected list remains a 978-landmark set; it is not usable as the

@@ -41,7 +41,6 @@ from bases.gene_axis import (
 )
 import gene_axis_sources as sources
 
-STEP = Path(__file__).resolve().parents[1]
 DIRECTION_SIZES = (500, 1000, 2000, 3000, 5000)
 # Inflection is evaluated on the sorted primary rank-sum curve.
 INFLECTION_X = 'fused_rank'
@@ -300,6 +299,7 @@ def _expression_metadata(path):
 
 def read_expression(path):
     """Read a disease expression matrix and its declared metadata header."""
+    path = forbidden_input(path)
     metadata = _expression_metadata(path)
     with Path(path).open('rb') as raw:
         import gzip

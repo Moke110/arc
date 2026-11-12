@@ -73,9 +73,12 @@ gene-axis step reads from an item (ADR 0065):
 (never edited afterwards); `script/build_deg.R` writes the DEG table and its
 tracked JSON; `script/build_expression.R` writes the expression pair where the
 series supports one. Each item carries its own copies of the shared
-`script/{map_to_human.R,map_orthologs.R}` helpers (no cross-item dependency) and
-adds a series-specific `script/lib_<GSE>.R` when the label map needs pinning
-(GSE141910, GSE116250).
+`script/{map_to_human.R,map_orthologs.R}` helpers (no shared-helper dependency
+between items) and adds a series-specific `script/lib_<GSE>.R` when the label map
+needs pinning (GSE141910, GSE116250). One deliberate cross-category read exists:
+`GSE243674/script/build_deg.R` maps its ENTREZID keys with the pinned
+`pert_data/Annotation/` HGNC table (read-only, digest recorded in the author log),
+because that mapping table is a repository asset rather than an item download.
 
 Pinned R interpreters — do not substitute the default `Rscript` on `PATH`:
 

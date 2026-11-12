@@ -195,6 +195,12 @@ below, and no evidence byte.
 
 ## Deviations and reading notes
 
+- **Pre-existing `GSE108940/source/` anomaly, preserved not introduced.** That old item's
+  `source/` holds the locally generated limma DEG table instead of the raw download; ADR 0030
+  purity was already violated before this round. The provenance correction keeps `source/`
+  byte-identical (its manifest still passes) and records the anomaly in
+  `docs/research/stage2-stage3-gene-axis-gse108940-provenance.md`; normalising the item to
+  "source is a pure download" would need a new raw-data item and is outside this round.
 - **A fourth unresolved path literal existed beyond the three in the ticket.**
   `stage2/01_bases/execution/tests/test_gene_axis.py` used the deliberately
   non-existent `…/source/labels.csv` path under the Heliste item as a truth-poisoning

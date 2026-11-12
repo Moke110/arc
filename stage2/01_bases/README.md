@@ -374,7 +374,7 @@ is a reported sensitivity, not a chosen rule); fused order ties break on
 Headline evidence (exact digests in the manifest, numbers in
 [`log/gene-axis/record.md`](log/gene-axis/record.md)):
 
-- Axis coverage 0.68–1.00 per source; per-source HVG share 0.11–0.16 at the
+- Axis coverage 0.68–1.00 per source; per-source HVG share 0.11–0.15 at the
   declared reporting size `K=2000`; DEG up/down shares range from 0.000/0.000
   (GSE108940: one significant gene at padj<0.05) to 0.53/0.45 (DToxS).
 - **No inflection.** Kneedle (online `S=1.0`) puts its broad arc maximum at
