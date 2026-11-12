@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
 #
-# Stage 2 currently contains only 01_bases (user scope, 2026-11-11).
-# Scan tracked active executable code for references to any other Stage 2 root.
+# Stage 2's active roots are 01_bases (shared foundation) and 02_models_tenv
+# (first model-comparison step, ADR 0063).  Scan tracked active executable code
+# for references to any other Stage 2 root.
 # Historical payload literals require exact file/literal whitelist entries.
 # Every invocation rejects any other immediate on-disk Stage 2 entry (directories
 # and regular files alike; the routing document stage2/AGENTS.md is the only
-# allowed root file) and checks the owning AGENTS.md/README.md.  The layout check
+# allowed root file) and checks each active root's owning AGENTS.md/README.md.
+# The layout check
 # runs in fixture mode too; `STAGE2_PATH_AUDIT_ROOT` overrides the scanned root
 # for script/tests/.
 # No network or dataset access. Exit 0 clean, 1 stale/layout failure, 2 usage error.
@@ -94,31 +96,41 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
-  # Layout guard: fail closed on retired step entries.  Only the 01_bases step
-  # directory and the Stage 2 routing document stage2/AGENTS.md (present at the
+  # Active Stage 2 roots, in the order the routing document lists them.
+  local active_roots=(01_bases 02_models_tenv)
+
+  # Layout guard: fail closed on retired step entries.  Only the active step
+  # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
   # review base a53c9ff) may sit at the Stage 2 root; any other regular file,
   # symlink or directory is a retired-step entry.  The earlier form replaced the
   # existence test with a bare `-d` test, which silently accepted any stray file
   # (#157 review S2).  `STAGE2_PATH_AUDIT_ROOT` is a script/tests/ hook;
   # production uses `stage2`.
   local stage2_root="${STAGE2_PATH_AUDIT_ROOT:-stage2}"
-  local entry
+  local entry root active
   for entry in "$stage2_root"/* "$stage2_root"/.[!.]* "$stage2_root"/..?*; do
     [ -e "$entry" ] || [ -L "$entry" ] || continue
-    if [ "$entry" = "$stage2_root/01_bases" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
-      continue
-    fi
+    active=0
+    for root in "${active_roots[@]}"; do
+      if [ "$entry" = "$stage2_root/$root" ] && [ -d "$entry" ] && [ ! -L "$entry" ]; then
+        active=1
+        break
+      fi
+    done
+    [ "$active" -eq 1 ] && continue
     if [ "$entry" = "$stage2_root/AGENTS.md" ] && [ -f "$entry" ] && [ ! -L "$entry" ]; then
       continue
     fi
     echo "RESULT: FAIL — unexpected Stage 2 entry: $entry" >&2
     return 1
   done
-  for entry in "$stage2_root/01_bases/AGENTS.md" "$stage2_root/01_bases/README.md"; do
-    if [ ! -f "$entry" ]; then
-      echo "RESULT: FAIL — missing bases routing: $entry" >&2
-      return 1
-    fi
+  for root in "${active_roots[@]}"; do
+    for entry in "$stage2_root/$root/AGENTS.md" "$stage2_root/$root/README.md"; do
+      if [ ! -f "$entry" ]; then
+        echo "RESULT: FAIL — missing step routing: $entry" >&2
+        return 1
+      fi
+    done
   done
 
   # Production scans the tracked tree.  `STAGE2_PATH_AUDIT_FILES` is a
@@ -146,7 +158,11 @@ main() {
       [ -n "$hit" ] || continue
       lineno="${hit%%:*}"
       literal="${hit#*:}"
-      case "$literal" in stage2/01_bases | stage2/01_bases/*) continue ;; esac
+      local active_literal=0
+      for root in "${active_roots[@]}"; do
+        case "$literal" in "stage2/$root" | "stage2/$root"/*) active_literal=1 ;; esac
+      done
+      [ "$active_literal" -eq 1 ] && continue
       occurrences=$((occurrences + 1))
       if is_whitelisted "$f" "$literal"; then
         whitelisted=$((whitelisted + 1))
@@ -187,7 +203,7 @@ main() {
   echo "== check_stage2_paths: no retired step paths in tracked stage2 executable code =="
   echo "repo root: $repo_root"
   echo "tracked stage2 executable files scanned: $files_scanned"
-  echo "stage2 path literals: $occurrences occurrences (non-bases roots + datasets-1)"
+  echo "stage2 path literals: $occurrences occurrences (retired roots + datasets-1)"
   echo "whitelisted: $whitelisted occurrences (entries in script/stage2_path_whitelist.txt: $whitelist_entries)"
   echo "stale: $stale occurrences, ${distinct_stale:-0} distinct"
   if [ "$stale" -gt 0 ]; then
