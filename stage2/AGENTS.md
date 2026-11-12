@@ -8,12 +8,16 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - `01_bases/` — shared foundation: frozen identity, corpora, evaluator truth,
   fold/seed products, metrics, palette and figure APIs. Every later step imports
   this implementation instead of re-deriving it.
-- `02_models_tenv/` — tenv model comparison (ADR 0063): the PRnet entrant and the
-  `Mean` reference, trained and evaluated on `tenv`. Bounded fit/predict
-  admission is #163; the evaluation driver and plot-value tables are #164; the
-  accepted 2 folds x 2 seeds matrix, `figure/metrics.png`,
-  `figure/learning_curve.png`, their tracked `figure/data/*.csv` values and the
-  one-command publish/replay `execution/run_matrix.py` are #165.
+- `02_models_tenv/` — tenv model comparison (ADR 0064, superseding the indirect
+  and figure portions of ADR 0063): the PRnet entrant and the `Mean` reference,
+  trained and evaluated on `tenv`. Bounded fit/predict admission is #163; the
+  shared evaluation driver is #164; the accepted 2 folds x 2 seeds matrix and its
+  `execution/run_matrix.py` publish/replay are #165; the @d reliability family is
+  #167, the driver/tables #168, the three figures #169, and the no-training
+  acceptance/replay plus retirement #170. The three report figures are
+  `figure/metrics.png` (four direct-metric panels), `figure/metrics_indirect.png`
+  (two-by-four reliability panels) and `figure/learning_curve.png`; each has one
+  tracked `figure/data/*.csv` plot-value table.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
