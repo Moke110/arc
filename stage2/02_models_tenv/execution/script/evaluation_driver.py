@@ -824,7 +824,7 @@ def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus
         'figures': {name: {'path': str(path), 'sha256': sha256(path)}
                     for name, path in figure_files.items()},
         'plot_value_schema': {
-            'source': 'driver plot_tables @d mapping; shared bases.plots drawing API adapts in #169',
+            'source': 'driver plot_tables @d mapping into the shared bases.plots drawing API',
             'columns': list(plot_tables.PLOT_VALUE_COLUMNS),
             'metrics_schema': plot_tables.METRICS_SCHEMA,
             'metrics_indirect_schema': plot_tables.METRICS_INDIRECT_SCHEMA,

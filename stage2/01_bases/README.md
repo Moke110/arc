@@ -342,13 +342,17 @@ direct family is unchanged.
 
 - **Label side.** `measured_effect_gate(padj, log2_fold_change)` marks every gene
   with `padj < 0.05`, direction `sign(log2FC)`, and returns
-  `MeasuredEffects(signed, magnitude, indices)`. `PADJ_THRESHOLD` and
-  `THRESHOLD_GRID_POINTS = 100` are the only declared constants.
+  `MeasuredEffects(signed, magnitude, indices)`. The declared constants are
+  `PADJ_THRESHOLD`, `THRESHOLD_GRID_POINTS = 100`, `MIN_HITS_FOR_SPEARMAN = 3`,
+  `SPEARMAN_NEUTRAL = 1.0`, `GENE_COUNT` and `RELIABILITY_METRICS`.
 - **Predicted side.** `predicted_rank_table(delta_mean)` is the full-axis
   `|Δ̂_mean|` rank table, retained unchanged from the previous comparison.
 - **Scan.** `threshold_grid(M)` returns `d = k · 0.01 · M` for `k = 1..100`;
-  window membership is `|Δ̂_mean| >= d`, so the strictest point can select each
-  group's strongest gene.
+  window membership is `|Δ̂_mean| >= d`, so the strictest point keeps the window
+  of the gene that defines `M` non-empty instead of emptying every window. It
+  does not select every group's strongest gene: at `d = M` only the group(s)
+  whose maximum is `M` can be non-empty (12/459 fold 0, 33/459 fold 1 here), so
+  the top of the grid is a degenerate edge.
 - **Metric functions.** `precision_at_d`, `recall_at_d`, `f1_at_d` (harmonic),
   `spearman_at_d` (neutral `mult = 1` below three hits) and `reliability_at_d`
   are pure functions over counts and arrays. `reliability_curve` binds one

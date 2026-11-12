@@ -5,8 +5,8 @@
     "root": "/home/chang/arc/stage2/01_bases/output",
     "truth_manifest_sha256": "ab73b3018bfaaaedb91328f455c1f1bf3832949de553026923c06d4d11f8977f"
   },
-  "branch": "codex/tenv-rel-170",
-  "created_utc": "2026-11-12T14:34:17.310262+00:00",
+  "branch": "codex/tenv-rel-review",
+  "created_utc": "2026-11-12T15:56:50.673022+00:00",
   "declared": {
     "entries": [
       "prnet",
@@ -31,19 +31,19 @@
   },
   "deviations": [
     "the declared 2-fold matrix scores 918 test groups (fold 0: 459 with 90 null results; fold 1: 459 with 79 null results), not the corpus-wide 1,377 parent-dose groups (1,104 non-empty, 273 null). Fold 2 has no runs and re-inference is out of scope: accepted, documented deviation",
-    "PRnet's peak Reliability@d is at the strictest grid point k=100 (d'=1) in all four runs; at that point the mean window is 0.03 genes, so the peak is a nearly empty-table solution whose value is the empty-window null-group share (fold 0 90/459 = 0.196078; fold 1 76/459 = 0.165577, with 76 of the 79 null groups empty at k=100)",
+    "PRnet's peak Reliability@d is at the strictest grid point k=100 (d'=1) in all four runs; at that point the mean window is 0.049 genes (90 non-empty group windows over 4 runs x 459 groups; the per-fold means are 0.026 and 0.072), so the peak is a nearly empty-table solution whose value is the empty-window null-group share (fold 0 90/459 = 0.196078; fold 1 76/459 = 0.165577, with 76 of the 79 null groups empty at k=100)",
     "delivered table size W(d*) is a property of each run and its d*: PRnet's delivered table is near-empty, so downstream phenotype work must treat table size as part of the intervention rather than as noise"
   ],
   "environment": {
     "commands": [
-      "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/evaluation --figure-data /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/figure_data",
+      "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/.worktrees/tfix/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/evaluation --figure-data /home/chang/arc/.worktrees/tfix/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/figure_data",
       "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/stage2/02_models_tenv/output/evaluation --figure-data /home/chang/arc/stage2/02_models_tenv/output/figure_data",
-      "/home/chang/miniconda3/envs/arc/bin/python figure/script/render_figures.py --figure-data /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/figure/data --out-dir /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/execution/checkpoints/accept-170/replay-figures"
+      "/home/chang/miniconda3/envs/arc/bin/python figure/script/render_figures.py --figure-data /home/chang/arc/.worktrees/tfix/stage2/02_models_tenv/figure/data --out-dir /home/chang/arc/.worktrees/tfix/stage2/02_models_tenv/execution/checkpoints/accept-170/replay-figures"
     ],
     "git": {
-      "branch": "codex/tenv-rel-170",
-      "head_sha": "c0629219c6b784811ddc02120f5a38cf7a4d9fa1",
-      "status_porcelain": "M stage2/02_models_tenv/log/166-acceptance.json"
+      "branch": "codex/tenv-rel-review",
+      "head_sha": "3935a8ef83dadb865caa135c4499c43896e05038",
+      "status_porcelain": "M stage2/02_models_tenv/log/resources/166-figure-replay.time\n M stage2/02_models_tenv/log/resources/166-rescore-publish.time\n M stage2/02_models_tenv/log/resources/166-rescore-verification.time"
     },
     "gpu": {
       "available": false,
@@ -81,7 +81,7 @@
       "Reliability@d"
     ],
     "schema": "stage2-tenv-evaluation-v2",
-    "sha256": "21001eddcf42ba27813fd5f4524843c49c1ccafaf9d4d77632143cad6a25a5d1",
+    "sha256": "7e0fa9eb0dfda1749eaa73d612a8bf8f23410febe8af038eb661b4d327f0ef43",
     "threshold_grid": {
       "membership": "|delta_mean| >= d",
       "normalisation": "M = max |delta_mean| over the run test groups",
@@ -132,10 +132,10 @@
     },
     "replay": "each PNG was re-rendered from the tracked figure/data alone and compared to the accepted sha256 before being installed"
   },
-  "head_sha": "c0629219c6b784811ddc02120f5a38cf7a4d9fa1",
+  "head_sha": "3935a8ef83dadb865caa135c4499c43896e05038",
   "notes": [
     "peak selection is optimistic: the same group data selects d* and reports the value; the full curve and the four per-run d* values are recorded",
-    "all four PRnet runs record M=5.926281 because the same cold-drug test wells define the predicted magnitude scale; this is a genuine data property, not a copied value",
+    "all four PRnet runs record M=5.926281 because the normaliser is set by one gene's degenerate extreme: gene index 13241 attains the float32 floor -5.926281452178955 in 36 distinct wells in fold 0 and 102 distinct wells in fold 1 (different wells, and the seed prediction arrays differ), so this is not a copied value. The mechanism that produces the floor is inferred, not traced through the entrant (it is consistent with a saturated or zero output for that gene); because d = k*0.01*M, this extreme is why the scan empties toward d'=1",
     "the two Mean entries per fold are identical seed copies of the deterministic reference, not independent fits"
   ],
   "publish": {
@@ -170,34 +170,33 @@
   "replay_commands": [
     "python execution/run_matrix.py --accept-only --python /home/chang/miniconda3/envs/arc/bin/python",
     "python figure/script/render_figures.py --figure-data figure/data --out-dir figure",
-    "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/evaluation --figure-data /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/figure_data",
-    "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/stage2/02_models_tenv/output/evaluation --figure-data /home/chang/arc/stage2/02_models_tenv/output/figure_data",
-    "/home/chang/miniconda3/envs/arc/bin/python figure/script/render_figures.py --figure-data /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/figure/data --out-dir /home/chang/arc/.worktrees/t170/stage2/02_models_tenv/figure"
+    "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/.worktrees/tfix/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/evaluation --figure-data /home/chang/arc/.worktrees/tfix/stage2/02_models_tenv/execution/checkpoints/accept-170/candidate/figure_data",
+    "/home/chang/miniconda3/envs/arc/bin/python execution/script/evaluation_driver.py --runs-root /home/chang/arc/stage2/02_models_tenv/output/runs --entries prnet,mean --fold-rows 0,1 --seeds 17,42 --fold-product /home/chang/arc/stage2/01_bases/output/fold_n_seed --truth /home/chang/arc/stage2/01_bases/output/tenv-truth --corpus /home/chang/arc/stage2/01_bases/output/training-corpora/tenv.h5ad --output /home/chang/arc/stage2/02_models_tenv/output/evaluation --figure-data /home/chang/arc/stage2/02_models_tenv/output/figure_data"
   ],
   "resources": {
     "figure_replay": {
       "config": "GNU time -v",
-      "elapsed_seconds": 1.08,
-      "peak_rss_kib": 175116,
-      "record": "execution/checkpoints/accept-170/figure-replay.time",
+      "elapsed_seconds": 1.09,
+      "peak_rss_kib": 175036,
+      "record": "log/resources/166-figure-replay.time",
       "system_seconds": 0.05,
       "user_seconds": 1.21
     },
     "rescore_publish": {
       "config": "GNU time -v",
-      "elapsed_seconds": 54.54,
-      "peak_rss_kib": 2797408,
-      "record": "execution/checkpoints/accept-170/rescore-publish.time",
-      "system_seconds": 1.26,
-      "user_seconds": 77.24
+      "elapsed_seconds": 51.81,
+      "peak_rss_kib": 2782760,
+      "record": "log/resources/166-rescore-publish.time",
+      "system_seconds": 1.28,
+      "user_seconds": 77.43
     },
     "rescore_verification": {
       "config": "GNU time -v",
-      "elapsed_seconds": 52.03,
-      "peak_rss_kib": 2797344,
-      "record": "execution/checkpoints/accept-170/rescore-verification.time",
-      "system_seconds": 1.7,
-      "user_seconds": 77.34
+      "elapsed_seconds": 54.72,
+      "peak_rss_kib": 2782540,
+      "record": "log/resources/166-rescore-verification.time",
+      "system_seconds": 2.53,
+      "user_seconds": 77.74
     }
   },
   "runs": [
@@ -419,7 +418,7 @@
     }
   ],
   "schema": "stage2-tenv-acceptance-v2",
-  "started_utc": "2026-11-12T14:32:28.965302+00:00",
+  "started_utc": "2026-11-12T15:55:01.221483+00:00",
   "supersedes": "log/165-acceptance.json",
   "tables": {
     "confusion": {
@@ -450,9 +449,10 @@
   },
   "ticket": 170,
   "tolerances": {
-    "figures": "each PNG must equal its accepted sha256 and is a function of the tracked figure/data alone",
+    "figures": "each PNG must equal the accepted sha256 and is a function of the tracked figure/data alone",
     "hashes": "sha256 over exact bytes",
     "per_run_values": "exact equality; no numeric tolerance is applied",
-    "rescore": "deterministic: the driver is run twice and every evaluation table and plot-value CSV must match byte for byte; no stochastic term exists in the rescoring path"
+    "rescore": "deterministic: the driver is run twice and every evaluation table and plot-value CSV must match byte for byte; no stochastic term exists in the rescoring path",
+    "seed_replication": "the four PRnet runs report numerically identical M, d* and Reliability@d* across seeds even though their prediction arrays differ; the scan therefore has no seed-driven metric spread and no run-to-run numeric tolerance is asserted. The optimistic term is the in-sample choice of d*: the same group data selects the peak and reports its value"
   }
 }

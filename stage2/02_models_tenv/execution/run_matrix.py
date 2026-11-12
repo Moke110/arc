@@ -53,6 +53,8 @@ DEFAULT_BASES = Path("/home/chang/arc/stage2/01_bases/output")
 DEFAULT_OUTPUT = Path("/home/chang/arc/stage2/02_models_tenv/output")
 ACCEPT_SCHEMA = "stage2-tenv-acceptance-v2"
 ACCEPT_RECORD = STEP_ROOT / "log" / "166-acceptance.json"
+HISTORICAL_RECORD = STEP_ROOT / "log" / "165-acceptance.json"
+RESOURCE_DIR = STEP_ROOT / "log" / "resources"
 ACCEPT_CHECKPOINT = STEP_ROOT / "execution/checkpoints/accept-170"
 REPLAY_TABLES = ("per_well", "per_group", "per_run", "per_run_curve", "confusion")
 # The accepted ADR 0064 figures and their complete plotted values.  A replay that
@@ -279,15 +281,8 @@ def score(*, bases, candidate, python):
     output = candidate / "evaluation"
     figure_data = candidate / "figure_data"
     cells = declared_identities(bases / "fold_n_seed")
-    command = [python, "execution/script/evaluation_driver.py",
-               "--runs-root", str(candidate / "runs"),
-               "--entries", ",".join(ENTRIES),
-               "--fold-rows", ",".join(str(row) for row in sorted({cell["fold_row"] for cell in cells})),
-               "--seeds", ",".join(str(seed) for seed in sorted({cell["seed"] for cell in cells})),
-               "--fold-product", str(bases / "fold_n_seed"),
-               "--truth", str(bases / "tenv-truth"),
-               "--corpus", str(bases / "training-corpora/tenv.h5ad"),
-               "--output", str(output), "--figure-data", str(figure_data)]
+    command = driver_command(bases=bases, runs_root=candidate / "runs", output=output,
+                             figure_data=figure_data, python=python)
     completed = subprocess.run(command, cwd=str(STEP_ROOT), capture_output=True, text=True)
     if completed.returncode != 0:
         raise MatrixError(f"evaluation driver failed: {completed.stderr.strip()}")
@@ -409,111 +404,6 @@ def publish(candidate, *, figure_data, figure_dir, python):
     return published, {name: str(path) for name, path in pngs.items()}, digests
 
 
-def device_of(run_dir):
-    """The recorded torch device of one PRnet run, wherever the identity nests it."""
-    identity = read_json(Path(run_dir) / "identity.json")
-    for block in (identity, identity.get("identity") or {},
-                  identity.get("environment") or {}):
-        if isinstance(block, dict) and block.get("device"):
-            return str(block["device"])
-    return "unknown"
-
-
-def acceptance_record(*, cells, candidate, bases, evaluation, figures, digests,
-                      environments, started_utc, finished_utc):
-    """Assemble the compact acceptance record with hashes, statuses and peaks."""
-    runs = []
-    for cell in cells:
-        for entry in ENTRIES:
-            run_dir = candidate / "runs" / entry / f"fold_{cell['fold']}" / f"seed_{cell['seed']}"
-            terminal = check_terminal(run_dir)
-            resources = read_json(run_dir / "resources.json")["resources"]
-            identity = read_json(run_dir / "identity.json")
-            checkpoint_path = run_dir / "checkpoint.json"
-            checkpoint = read_json(checkpoint_path) if checkpoint_path.is_file() else {}
-            runs.append({
-                "entry": entry, "label": identity["identity"].get("model"),
-                "fold": cell["fold"], "seed": cell["seed"],
-                "terminal_status": terminal["status"],
-                "terminal_sha256": sha256(run_dir / "terminal.json"),
-                "identity_sha256": sha256(run_dir / "identity.json"),
-                "prediction_sha256": identity.get("prediction_sha256"),
-                "case_ids_sha256": identity.get("case_ids_sha256"),
-                "best_epoch": checkpoint.get("best_epoch"),
-                "best_validation_loss": checkpoint.get("best_validation_loss"),
-                "stop_reason": checkpoint.get("stop_reason"),
-                "history_epochs": len(checkpoint.get("history") or []),
-                "elapsed_seconds": resources["elapsed_seconds"],
-                "peak_rss_kib": resources["peak_rss_kib"],
-                "resources_record": resources["record"],
-                "device": device_of(run_dir) if entry == "prnet" else "cpu",
-            })
-    released = []
-    for cell in cells:
-        release = candidate / "inputs" / f"fold_{cell['fold']}" / f"seed_{cell['seed']}"
-        manifest = read_json(release / "manifest.json")
-        released.append({"fold": cell["fold"], "seed": cell["seed"],
-                         "identity": manifest["identity"],
-                         "roles": manifest["roles"],
-                         "manifest_sha256": sha256(release / "manifest.json"),
-                         "files_sha256": manifest["sha256"],
-                         "source": manifest["source"]})
-    figure_hashes = {name: sha256(Path(STEP_ROOT / "figure") / png)
-                     for name, (_, png) in FIGURE_FILES.items()}
-    metric_rows = {}
-    for name in ("per_well", "per_group", "per_run"):
-        path = candidate / "evaluation" / f"{name}.csv"
-        metric_rows[name] = {"path": f"output/evaluation/{name}.csv",
-                             "sha256": sha256(path), "rows": sum(1 for _ in open(path)) - 1}
-    return {
-        "schema": "stage2-tenv-acceptance-v1",
-        "ticket": 165,
-        "created_utc": finished_utc,
-        "started_utc": started_utc,
-        "branch": subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
-                                 cwd=STEP_ROOT, capture_output=True, text=True).stdout.strip(),
-        "head_sha": subprocess.run(["git", "rev-parse", "HEAD"], cwd=STEP_ROOT,
-                                   capture_output=True, text=True).stdout.strip(),
-        "declared": {"entries": list(ENTRIES), "fold_rows": [0, 1], "seeds": [17, 42],
-                     "matrix": "2 folds x 2 seeds + deterministic Mean reference",
-                     "gene_count": EXPECTED_GENES},
-        "environments": environments,
-        "bases": {"root": str(bases),
-                  "corpus_sha256": sha256(bases / "training-corpora/tenv.h5ad"),
-                  "fold_product_manifest_sha256": sha256(bases / "fold_n_seed/manifest.json"),
-                  "truth_manifest_sha256": sha256(bases / "tenv-truth/manifest.json")},
-        "releases": released,
-        "runs": runs,
-        "scoring": {"record": "output/evaluation/evaluation.json",
-                    "sha256": sha256(candidate / "evaluation/evaluation.json"),
-                    "per_run_metrics": read_json(candidate / "evaluation/evaluation.json").get("runs")},
-        "tables": metric_rows,
-        "figures": {"data": {name: {"path": f"figure/data/{csv}",
-                                    "sha256": sha256(STEP_ROOT / "figure/data" / csv)}
-                             for name, (csv, _) in FIGURE_FILES.items()},
-                    "png": {name: {"path": f"figure/{png}", "sha256": figure_hashes[name]}
-                            for name, (_, png) in FIGURE_FILES.items()},
-                    "replay": "every PNG rebuilt from figure/data alone with output/ moved away",
-                    "replay_sha256": digests},
-        "tolerances": {
-            "stochastic": ("metric values differ across seeds; the four runs are a spread "
-                           "indicator, not a confidence interval, and no run-to-run numeric "
-                           "tolerance is asserted"),
-            "figures": ("figure/data CSVs must equal the driver output byte for byte and each "
-                        "PNG must be byte-identical to a fresh CSV-only replay"),
-            "hashes": "sha256 over exact bytes",
-        },
-        "replay_commands": [
-            "python figure/script/render_figures.py --figure-data figure/data --out-dir figure",
-            "python execution/run_matrix.py --all",
-        ],
-        "deviations": [
-            "no GPU on this boot (torch.cuda.is_available() false): CPU fallback per ADR 0063",
-            "training/prediction runs use 2 CPU threads and the 10 GiB cap",
-        ],
-    }
-
-
 def resolve_output(explicit=None):
     """The stable step output: this checkout when it holds runs, else canonical."""
     if explicit:
@@ -541,6 +431,7 @@ def verify_accepted_digests(paths, expected):
     if mismatches:
         raise MatrixError("re-emitted payload does not match the accepted sha256; "
                           "refusing to rewrite: " + "; ".join(mismatches))
+    return True
 
 
 def verify_published_runs(output_root, cells):
@@ -597,11 +488,10 @@ def render_command(*, figure_data, out_dir, python):
             "--figure-data", str(figure_data), "--out-dir", str(out_dir)]
 
 
-def accept_commands(*, bases, output_root, python, candidate=None, figure_dir=None):
-    """The only commands the acceptance path may run: rescore twice and render."""
+def accept_commands(*, bases, output_root, python, candidate=None):
+    """The two driver commands the acceptance path actually runs, in order."""
     candidate = Path(candidate or ACCEPT_CHECKPOINT / "candidate")
     output_root = Path(output_root)
-    figure_dir = Path(figure_dir or STEP_ROOT / "figure")
     return [
         driver_command(bases=bases, runs_root=output_root / "runs",
                        output=candidate / "evaluation",
@@ -609,8 +499,6 @@ def accept_commands(*, bases, output_root, python, candidate=None, figure_dir=No
         driver_command(bases=bases, runs_root=output_root / "runs",
                        output=output_root / "evaluation",
                        figure_data=output_root / "figure_data", python=python),
-        render_command(figure_data=STEP_ROOT / "figure/data", out_dir=figure_dir,
-                       python=python),
     ]
 
 
@@ -627,6 +515,7 @@ def compare_product_trees(first, second, names):
     if mismatches:
         raise MatrixError("replay mismatch between the candidate and the published "
                           "products: " + "; ".join(mismatches))
+    return True
 
 
 def _normalised_record(record, root):
@@ -639,9 +528,11 @@ def compare_evaluation_records(first, first_root, second, second_root):
     if _normalised_record(first, first_root) != _normalised_record(second, second_root):
         raise MatrixError("replay mismatch between the candidate and the published "
                           "evaluation.json (values other than the product paths differ)")
+    return True
 
 
 def _restore_product(output_root, backup, names):
+    """Put every product back exactly as it was before the failed publish."""
     for name in names:
         source = Path(backup) / name
         destination = Path(output_root) / name
@@ -649,6 +540,9 @@ def _restore_product(output_root, backup, names):
             if destination.exists():
                 shutil.rmtree(destination)
             shutil.copytree(source, destination)
+        elif destination.exists():
+            # The product did not pre-exist (first publish): leave no trace.
+            shutil.rmtree(destination)
 
 
 def ensure_accepted_file(source, destination, expected, label):
@@ -708,13 +602,14 @@ def environment_record(python, commands):
 
 def acceptance_record_v2(*, cells, published, output_root, bases, candidate,
                          resources, environment, started_utc, finished_utc,
-                         commands):
+                         commands, replay, replay_commands=None):
     """Assemble the self-describing ADR 0064 acceptance record."""
     output_root = Path(output_root)
     resources = {name: {**value, "record": _relative(value["record"])}
                  for name, value in resources.items()}
     evaluation = read_json(output_root / "evaluation/evaluation.json")
-    rows = list(csv.DictReader(open(output_root / "evaluation/per_run.csv")))
+    with open(output_root / "evaluation/per_run.csv", newline="") as stream:
+        rows = list(csv.DictReader(stream))
     by_key = {(row["entry"], int(row["fold"]), int(row["seed"])): row for row in rows}
     runs = []
     for run in published:
@@ -737,11 +632,13 @@ def acceptance_record_v2(*, cells, published, output_root, bases, candidate,
             "changed_Reliability@d*": float(row["changed_Reliability@d*"]),
             "measured_effects": int(row["measured_effects"]),
         })
-    tables = {name: {"path": f"output/evaluation/{name}.csv",
-                     "sha256": sha256(output_root / "evaluation" / f"{name}.csv"),
-                     "rows": len(list(csv.DictReader(
-                         open(output_root / "evaluation" / f"{name}.csv"))))}
-              for name in (*REPLAY_TABLES,)}
+    tables = {}
+    for name in REPLAY_TABLES:
+        path = output_root / "evaluation" / f"{name}.csv"
+        with open(path, newline="") as stream:
+            row_count = len(list(csv.DictReader(stream)))
+        tables[name] = {"path": f"output/evaluation/{name}.csv",
+                        "sha256": sha256(path), "rows": row_count}
     evaluation_record = {
         "path": "output/evaluation/evaluation.json",
         "sha256": sha256(output_root / "evaluation/evaluation.json"),
@@ -791,37 +688,44 @@ def acceptance_record_v2(*, cells, published, output_root, bases, candidate,
         "figures": {
             "data": figure_data,
             "png": figure_png,
-            "replay": ("each PNG was re-rendered from the tracked figure/data alone "
-                       "and compared to the accepted sha256 before being installed"),
+            "replay": replay.get("figures_replay",
+                                 "each PNG was re-rendered from the tracked figure/data "
+                                 "alone and compared to the accepted sha256 before being "
+                                 "installed"),
             "accepted_sha256": {"data": ACCEPTED_DATA, "png": ACCEPTED_FIGURES},
         },
         "resources": resources,
         "replay": {
-            "method": ("the shared driver was executed twice with OMP, MKL, OPENBLAS "
-                       "and NUMEXPR pinned to 2 threads: once into a candidate tree "
-                       "and once into the stable output; every evaluation table, "
-                       "evaluation record and figure-data CSV was compared byte for "
-                       "byte, and the three figures were re-rendered from the tracked "
-                       "figure/data alone"),
+            "method": replay["method"],
             "candidate": _relative(candidate),
             "candidate_tables": candidate_tables,
             "published_tables": published_tables,
-            "tables_byte_identical": True,
-            "evaluation_record_equal_except_paths": True,
-            "figure_data_byte_identical_to_accepted": True,
-            "figures_byte_identical_to_accepted": True,
-            "per_run_values_reproduced": True,
+            "tables_byte_identical": replay["tables_byte_identical"],
+            "evaluation_record_equal_except_paths":
+                replay["evaluation_record_equal_except_paths"],
+            "figure_data_byte_identical_to_accepted":
+                replay["figure_data_byte_identical_to_accepted"],
+            "figures_byte_identical_to_accepted":
+                replay["figures_byte_identical_to_accepted"],
+            "per_run_values_reproduced": replay["per_run_values_reproduced"],
         },
         "tolerances": {
             "rescore": ("deterministic: the driver is run twice and every evaluation "
                         "table and plot-value CSV must match byte for byte; no "
                         "stochastic term exists in the rescoring path"),
             "per_run_values": "exact equality; no numeric tolerance is applied",
-            "figures": ("each PNG must equal its accepted sha256 and is a function of "
+            "seed_replication": (
+                "the four PRnet runs report numerically identical M, d* and "
+                "Reliability@d* across seeds even though their prediction arrays "
+                "differ; the scan therefore has no seed-driven metric spread and no "
+                "run-to-run numeric tolerance is asserted. The optimistic term is the "
+                "in-sample choice of d*: the same group data selects the peak and "
+                "reports its value"),
+            "figures": ("each PNG must equal the accepted sha256 and is a function of "
                         "the tracked figure/data alone"),
             "hashes": "sha256 over exact bytes",
         },
-        "replay_commands": [
+        "replay_commands": replay_commands if replay_commands is not None else [
             "python execution/run_matrix.py --accept-only "
             "--python /home/chang/miniconda3/envs/arc/bin/python",
             "python figure/script/render_figures.py "
@@ -834,10 +738,11 @@ def acceptance_record_v2(*, cells, published, output_root, bases, candidate,
              "1,377 parent-dose groups (1,104 non-empty, 273 null). Fold 2 has no runs "
              "and re-inference is out of scope: accepted, documented deviation"),
             ("PRnet's peak Reliability@d is at the strictest grid point k=100 (d'=1) "
-             "in all four runs; at that point the mean window is 0.03 genes, so the "
-             "peak is a nearly empty-table solution whose value is the empty-window "
-             "null-group share (fold 0 90/459 = 0.196078; fold 1 76/459 = 0.165577, "
-             "with 76 of the 79 null groups empty at k=100)"),
+             "in all four runs; at that point the mean window is 0.049 genes (90 "
+             "non-empty group windows over 4 runs x 459 groups; the per-fold means are "
+             "0.026 and 0.072), so the peak is a nearly empty-table solution whose "
+             "value is the empty-window null-group share (fold 0 90/459 = 0.196078; "
+             "fold 1 76/459 = 0.165577, with 76 of the 79 null groups empty at k=100)"),
             ("delivered table size W(d*) is a property of each run and its d*: PRnet's "
              "delivered table is near-empty, so downstream phenotype work must treat "
              "table size as part of the intervention rather than as noise"),
@@ -845,9 +750,14 @@ def acceptance_record_v2(*, cells, published, output_root, bases, candidate,
         "notes": [
             ("peak selection is optimistic: the same group data selects d* and reports "
              "the value; the full curve and the four per-run d* values are recorded"),
-            ("all four PRnet runs record M=5.926281 because the same cold-drug test "
-             "wells define the predicted magnitude scale; this is a genuine data "
-             "property, not a copied value"),
+            ("all four PRnet runs record M=5.926281 because the normaliser is set by "
+             "one gene's degenerate extreme: gene index 13241 attains the float32 floor "
+             "-5.926281452178955 in 36 distinct wells in fold 0 and 102 distinct wells "
+             "in fold 1 (different wells, and the seed prediction arrays differ), so "
+             "this is not a copied value. The mechanism that produces the floor is "
+             "inferred, not traced through the entrant (it is consistent with a "
+             "saturated or zero output for that gene); because d = k*0.01*M, this "
+             "extreme is why the scan empties toward d'=1"),
             ("the two Mean entries per fold are identical seed copies of the "
              "deterministic reference, not independent fits"),
         ],
@@ -872,6 +782,76 @@ def mark_superseded(path, pointer):
         raise MatrixError(f"superseded_by pointer did not round-trip in {path}")
 
 
+def _track_resource(resources, name, time_path):
+    """Copy one raw ``/usr/bin/time -v`` file into tracked ``log/resources``."""
+    tracked = RESOURCE_DIR / f"166-{name.replace('_', '-')}.time"
+    tracked.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(time_path, tracked)
+    resources[name] = {**resources[name], "record": str(tracked)}
+    return tracked
+
+
+def write_acceptance_record(record, *, target=None, historical=None):
+    """Write the current v2 record; the historical record only gains a pointer."""
+    target = Path(target or ACCEPT_RECORD)
+    historical = Path(historical or HISTORICAL_RECORD)
+    write_json(target, record)
+    mark_superseded(historical, {"record": _relative(target).replace(os.sep, "/"),
+                                 "schema": ACCEPT_SCHEMA, "ticket": 170})
+    return target
+
+
+def record_all_acceptance(*, cells, candidate, bases, python, started_utc,
+                          finished_utc, commands):
+    """Assemble the current v2 record from a completed ``--all`` publish."""
+    output_root = STEP_ROOT / "output"
+    published = verify_published_runs(output_root, cells)
+    resources = {}
+    for cell in cells:
+        for entry in ENTRIES:
+            run_dir = (output_root / "runs" / entry
+                       / f"fold_{cell['fold']}" / f"seed_{cell['seed']}")
+            resources[f"{entry}-fold_{cell['fold']}-seed_{cell['seed']}"] = (
+                read_json(run_dir / "resources.json")["resources"])
+    tables_identical = compare_product_trees(
+        candidate / "evaluation", output_root / "evaluation", REPLAY_TABLES)
+    records_equal = compare_evaluation_records(
+        read_json(candidate / "evaluation/evaluation.json"), candidate,
+        read_json(output_root / "evaluation/evaluation.json"), output_root)
+    data_identical = all(
+        sha256(output_root / "figure_data" / csv_name) == ACCEPTED_DATA[name]
+        for name, (csv_name, _) in FIGURE_FILES.items())
+    figures_identical = all(
+        sha256(STEP_ROOT / "figure" / png_name) == ACCEPTED_FIGURES[name]
+        for name, (_, png_name) in FIGURE_FILES.items())
+    replay = {
+        "method": ("the shared driver scored the rebuilt candidate; every published "
+                   "evaluation table and the evaluation record were compared to the "
+                   "candidate byte for byte, and the three figures were rendered from "
+                   "the tracked figure/data and replay-verified with output/ moved "
+                   "away"),
+        "figures_replay": ("each PNG was re-rendered from the tracked figure/data alone "
+                           "with the step output/ moved away and compared to the "
+                           "installed bytes; whether those bytes equal the previously "
+                           "accepted sha256 is recorded by "
+                           "figures_byte_identical_to_accepted"),
+        "tables_byte_identical": tables_identical,
+        "evaluation_record_equal_except_paths": records_equal,
+        "figure_data_byte_identical_to_accepted": data_identical,
+        "figures_byte_identical_to_accepted": figures_identical,
+        "per_run_values_reproduced": tables_identical,
+    }
+    return acceptance_record_v2(
+        cells=cells, published=published, output_root=output_root, bases=bases,
+        candidate=candidate, resources=resources,
+        environment=environment_record(python, commands),
+        started_utc=started_utc, finished_utc=finished_utc, commands=commands,
+        replay=replay,
+        replay_commands=["python execution/run_matrix.py --all",
+                         *[" ".join(str(item) for item in command)
+                           for command in commands]])
+
+
 def run_accept(*, bases, output_root, python, figure_dir, checkpoint_root=None,
                record_path=None):
     """Rescore and replay the accepted matrix without training or re-inference."""
@@ -889,11 +869,13 @@ def run_accept(*, bases, output_root, python, figure_dir, checkpoint_root=None,
     candidate.mkdir(parents=True, exist_ok=True)
     replay_figures.mkdir(parents=True, exist_ok=True)
     commands = accept_commands(bases=bases, output_root=output_root, python=python,
-                               candidate=candidate, figure_dir=figure_dir)
+                               candidate=candidate)
     resources = {}
     resources["rescore_verification"] = heavy(
         commands[0], stdout_path=checkpoint / "rescore-verification.out",
         time_path=checkpoint / "rescore-verification.time")
+    _track_resource(resources, "rescore_verification",
+                    checkpoint / "rescore-verification.time")
     verify_figure_values(candidate / "figure_data")
     verify_accepted_digests(
         {name: candidate / "figure_data" / csv_name
@@ -909,12 +891,14 @@ def run_accept(*, bases, output_root, python, figure_dir, checkpoint_root=None,
         resources["rescore_publish"] = heavy(
             commands[1], stdout_path=checkpoint / "rescore-publish.out",
             time_path=checkpoint / "rescore-publish.time")
-        compare_product_trees(candidate / "evaluation", output_root / "evaluation",
-                              REPLAY_TABLES)
-        compare_evaluation_records(
+        _track_resource(resources, "rescore_publish",
+                        checkpoint / "rescore-publish.time")
+        tables_identical = compare_product_trees(
+            candidate / "evaluation", output_root / "evaluation", REPLAY_TABLES)
+        records_equal = compare_evaluation_records(
             read_json(candidate / "evaluation/evaluation.json"), candidate,
             read_json(output_root / "evaluation/evaluation.json"), output_root)
-        verify_accepted_digests(
+        data_identical = verify_accepted_digests(
             {name: output_root / "figure_data" / csv_name
              for name, (csv_name, _) in FIGURE_FILES.items()}, ACCEPTED_DATA)
     except BaseException:
@@ -929,7 +913,8 @@ def run_accept(*, bases, output_root, python, figure_dir, checkpoint_root=None,
     resources["figure_replay"] = heavy(
         replay_command, stdout_path=checkpoint / "figure-replay.out",
         time_path=checkpoint / "figure-replay.time")
-    verify_accepted_digests(
+    _track_resource(resources, "figure_replay", checkpoint / "figure-replay.time")
+    figures_identical = verify_accepted_digests(
         {name: replay_figures / png_name
          for name, (_, png_name) in FIGURE_FILES.items()}, ACCEPTED_FIGURES)
     for name, (_, png_name) in FIGURE_FILES.items():
@@ -940,37 +925,33 @@ def run_accept(*, bases, output_root, python, figure_dir, checkpoint_root=None,
         candidate=candidate, resources=resources,
         environment=environment_record(python, [commands[0], commands[1],
                                                 replay_command]),
-        started_utc=started, finished_utc=finished, commands=commands)
+        started_utc=started, finished_utc=finished, commands=commands,
+        replay={
+            "method": ("the shared driver was executed twice with OMP, MKL, OPENBLAS "
+                       "and NUMEXPR pinned to 2 threads: once into a candidate tree "
+                       "and once into the stable output; every evaluation table, "
+                       "evaluation record and figure-data CSV was compared byte for "
+                       "byte, and the three figures were re-rendered from the tracked "
+                       "figure/data alone"),
+            "tables_byte_identical": tables_identical,
+            "evaluation_record_equal_except_paths": records_equal,
+            "figure_data_byte_identical_to_accepted": data_identical,
+            "figures_byte_identical_to_accepted": figures_identical,
+            "per_run_values_reproduced": tables_identical,
+        },
+        replay_commands=[
+            "python execution/run_matrix.py --accept-only "
+            "--python /home/chang/miniconda3/envs/arc/bin/python",
+            "python figure/script/render_figures.py "
+            "--figure-data figure/data --out-dir figure",
+            *[" ".join(str(item) for item in command) for command in commands],
+        ])
     record["publish"] = {"output_root": _relative(output_root),
                          "evaluation": _relative(output_root / "evaluation"),
                          "figure_data": _relative(output_root / "figure_data"),
                          "figure_dir": _relative(figure_dir)}
-    target = Path(record_path or ACCEPT_RECORD)
-    write_json(target, record)
-    mark_superseded(STEP_ROOT / "log/165-acceptance.json",
-                    {"record": "log/166-acceptance.json",
-                     "schema": ACCEPT_SCHEMA, "ticket": 170})
+    write_acceptance_record(record, target=record_path)
     return record
-
-
-def environments_for(*, python, prepare_python, train_python, config):
-    def probe(executable, code):
-        completed = subprocess.run([str(executable), "-c", code], capture_output=True, text=True)
-        return completed.stdout.strip() or completed.stderr.strip()
-
-    return {
-        "orchestration": {"executable": str(python),
-                          "version": probe(python, "import sys;print(sys.version.split()[0])")},
-        "input_preparation": {"executable": str(prepare_python),
-                              "version": probe(prepare_python,
-                                               "import sys;print(sys.version.split()[0])")},
-        "training": {"executable": str(train_python),
-                     "version": probe(train_python,
-                                      "import sys,torch,numpy;print(sys.version.split()[0], "
-                                      "torch.__version__, numpy.__version__, "
-                                      "torch.cuda.is_available())")},
-        "train_config": {"path": str(config), "sha256": sha256(config)},
-    }
 
 
 def run_all(*, bases, candidate, python, prepare_python, train_python, config,
@@ -991,23 +972,27 @@ def run_all(*, bases, candidate, python, prepare_python, train_python, config,
         print(f"prnet fold {cell['fold']} seed {cell['seed']}: complete", flush=True)
         build_mean(cell, bases=bases, candidate=candidate, python=python, log_root=log_root)
         print(f"mean  fold {cell['fold']} seed {cell['seed']}: complete", flush=True)
-    evaluation = score(bases=bases, candidate=candidate, python=python)
-    metrics, indirect, curve = verify_figure_values(candidate / "figure_data")
-    environments = environments_for(python=python, prepare_python=prepare_python,
-                                    train_python=train_python, config=config)
+    score(bases=bases, candidate=candidate, python=python)
+    verify_figure_values(candidate / "figure_data")
     # Publish only from the fully verified candidate (fail closed above).
     published, figure_paths, digests = publish(
         candidate, figure_data=STEP_ROOT / "figure/data",
         figure_dir=figure_dir, python=python)
     finished = datetime.now(timezone.utc).isoformat()
-    record = acceptance_record(cells=cells, candidate=candidate, bases=bases,
-                               evaluation=evaluation, figures=figure_paths,
-                               digests=digests, environments=environments,
-                               started_utc=started, finished_utc=finished)
+    score_command = driver_command(bases=bases, runs_root=candidate / "runs",
+                                   output=candidate / "evaluation",
+                                   figure_data=candidate / "figure_data",
+                                   python=python)
+    figure_command = render_command(figure_data=STEP_ROOT / "figure/data",
+                                    out_dir=figure_dir, python=python)
+    record = record_all_acceptance(
+        cells=cells, candidate=candidate, bases=bases, python=python,
+        started_utc=started, finished_utc=finished,
+        commands=[score_command, figure_command])
     record["publish"] = {"products": published,
                          "figures": figure_paths,
                          "candidate": str(candidate)}
-    write_json(STEP_ROOT / "log" / "165-acceptance.json", record)
+    write_acceptance_record(record)
     return record
 
 
