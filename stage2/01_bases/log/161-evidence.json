@@ -48,6 +48,7 @@
     "docs/adr/0063-tenv-comparison-direct-and-indirect-metrics.md"
   ],
   "branch": "codex/tenv-161",
+  "branch_head_before_evidence_commit": "061be5fccf7892056a890e37973f92c9c9548c8e",
   "build_command": "cd stage2/01_bases/execution && python3 build_fold_n_seed.py --cohorts stage2/01_bases/output/tenv-hvg/cohorts.csv --output stage2/01_bases/output/fold_n_seed --record stage2/01_bases/log/161-build.json",
   "build_verification": {
     "checks": [
@@ -100,6 +101,31 @@
       "row": 2
     }
   ],
+  "health": {
+    "check_paths": {
+      "command": "GIT_INDEX_FILE=<branch index> git -C /home/chang/arc read-tree codex/tenv-161; cd /home/chang/arc && script/check_paths.sh",
+      "note": "a first attempt from the split-checkout worktree root was discarded: that root does not own the external pert_data/ etc. payload, so its 54 unresolved literals are environmental, not #161 paths",
+      "record": "log/health/161_check_paths.log",
+      "result": "PASS: every extracted path literal resolves (959 tracked files from the branch index; repo root owns the external payload)"
+    },
+    "check_stage2_paths": {
+      "command": "script/check_stage2_paths.sh",
+      "record": "log/health/161_check_stage2_paths.log",
+      "result": "PASS: 0 stale stage2 path literals"
+    },
+    "check_tracked": {
+      "command": "script/check_tracked.sh (flag)",
+      "record": "log/health/161_check_tracked.log",
+      "result": "PASS: 246 code files on disk, 288 tracked, 0 holes"
+    },
+    "verify_all": "not run: #161 touches no external source tree and the 52 GB re-hash is a #157 payload gate"
+  },
+  "merge": {
+    "base_dev_tip": "3baec0731b8e3a524efe01ef6e9d8ef213e1cff4",
+    "merge_commit": "061be5fccf7892056a890e37973f92c9c9548c8e",
+    "merged_dev_tip": "8e5fbcf00e52081174991fcd0387680f2d59b82b",
+    "note": "dev (#160 merge) merged before re-running the ticket tests and verifier"
+  },
   "metadata_audit": {
     "change": "STABLE_DIRS now also accepts the #161 fold_n_seed product",
     "command": "python3 stage2/01_bases/execution/audit_metadata_bindings.py --step-root /home/chang/arc/stage2/01_bases --code-root <branch checkout>/stage2/01_bases",
@@ -196,7 +222,7 @@
     ],
     "command": "cd stage2/01_bases/execution && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 python3 -m unittest discover -s tests -p 'test_fold_seed.py'",
     "file": "stage2/01_bases/execution/tests/test_fold_seed.py",
-    "result": "Ran 17 tests OK",
+    "result": "Ran 17 tests OK (also re-run after merging dev)",
     "seam": "Testing Decisions seam 2 (fold/seed index products)"
   },
   "ticket": 161,
