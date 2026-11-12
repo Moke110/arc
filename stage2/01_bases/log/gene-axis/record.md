@@ -103,7 +103,7 @@ ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
   /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py --verify
 #   {"result":"PASS","inputs":20,"outputs":7,"schema":"stage2-gene-axis-evidence-v1",
 #    "manifest_sha256":"05df744a552aa62f639301fbc2e7f60982c874ef047c44ced271662ff4e31021"}
-#   peak RSS 488,332 KiB; 10.0 s
+#   peak RSS 488,332-530,336 KiB across two runs; 9.8-10.0 s
 
 # 3. figure (CSV-only; verified byte-identical over repeated renders and while
 #    the CSV is the only input)
@@ -134,8 +134,11 @@ Tracked digests (sha256):
 
 `--verify` rebuilds all seven output digests (and compares the rebuilt manifest
 apart from its recorded environment facts) in a temporary directory and checks
-every input sha256. The figure replay is checked by the committed-PNG test, so
-the PNG digest is pinned twice (here and in `inputs.json`).
+every input sha256. The figure replay was also run from a directory containing
+only the copied CSV and the renderer (no `output/`, no other repository file):
+two renders and the committed PNG are byte-identical (`544c0a8c…`). The
+committed-PNG test keeps that check in the suite, so the PNG digest is pinned
+twice (here and in `inputs.json`).
 
 ## Evidence — six §C questions
 

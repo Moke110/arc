@@ -122,7 +122,7 @@
     "csv_sha256": "f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a",
     "png": "stage2/01_bases/figure/gene_axis_source_summary.png",
     "png_sha256": "544c0a8c98086c31b4a79b27d8142502c14a781b33a4a1eb3ab04b612d12f472",
-    "replay": "byte-identical from the CSV alone (two independent renders and the committed-PNG test)"
+    "replay": "byte-identical from the CSV alone: rendered twice from a directory containing only the copied CSV and the renderer, and the committed-PNG test"
   },
   "input_digests": {
     "disease_data/GSE108940/source/GSE108940_WT_deg_results.csv": "4d7505e41b952177d3e983cfc1e7a065e1315b6adaad062c976c1a2087e09098",
@@ -175,7 +175,11 @@
     "elapsed_s": {
       "build": 11.0,
       "orthologs_r": 2.2,
-      "verify": 10.0
+      "verify": 10.0,
+      "verify_runs": [
+        9.8,
+        10.0
+      ]
     },
     "free_g_before_build": {
       "available": 42,
@@ -184,7 +188,11 @@
     "peak_rss_kib": {
       "build": 494060,
       "orthologs_r": 415852,
-      "verify": 488332
+      "verify": 488332,
+      "verify_runs": [
+        488332,
+        530336
+      ]
     },
     "runner": "/usr/bin/time -v (Maximum resident set size)"
   },
