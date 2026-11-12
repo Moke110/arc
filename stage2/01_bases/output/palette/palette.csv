@@ -1,0 +1,10 @@
+shade,gray,blue,green,orange,purple,magenta
+0,#383838,#06316b,#066b22,#6b3506,#42066b,#6b064c
+1,#4a4a4a,#0c4288,#0c882f,#88460c,#560c88,#880c63
+2,#5c5c5c,#1452a3,#14a33d,#a35714,#6a14a3,#a31478
+3,#6e6e6e,#1f63bd,#1fbd4b,#bd681f,#7d1fbd,#bd1f8d
+4,#808080,#2b74d4,#2bd45b,#d47a2b,#902bd4,#d42ba1
+5,#919191,#5089d3,#50d375,#d38d50,#9f50d3,#d350ac
+6,#a3a3a3,#729dd5,#72d58e,#d5a072,#ad72d5,#d572b7
+7,#b5b5b5,#92b0d9,#92d9a6,#d9b392,#bc92d9,#d992c3
+8,#c7c7c7,#afc4de,#afdebd,#dec5af,#ccafde,#deafd0
