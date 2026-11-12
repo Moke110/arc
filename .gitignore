@@ -167,3 +167,7 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # ADR 0062 audit evidence: the dissolved diagnostic evidence CSVs are tracked
 # beside the records that seal them.
 !/stage2/01_bases/log/diagnostic/*.csv
+
+# ADR 0062 / #162: test fixtures are the recorded plot values that prove a
+# figure is a function of those values, so they are tracked next to their PNGs.
+!/stage2/01_bases/execution/tests/fixtures/*.csv
