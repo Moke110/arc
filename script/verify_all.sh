@@ -105,6 +105,7 @@ main() {
     disease_data/GSE108940
     disease_data/GSE137293
     disease_data/GSE160516
+    disease_data/GSE243674
     drug_emb_model/HG
     drug_emb_model/KPGT
   )
