@@ -645,6 +645,90 @@ The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue
 Two rows by four columns: `Precision@d`, `Recall@d`, `Spearman@d` and `Reliability@d` as curves over `d'` (with `F1@d` as a thin reference line on the Reliability panel), then `Reliability@d*` and `d*` bars, a macro three-class confusion heat map at `d*`, and the null-versus-changed Reliability split.
 
 
+### Stage 2 gene-axis decision preparation
+
+Analysis vocabulary for the evidence that precedes the gene-axis decision (ADR 0065). These
+terms describe how the evidence is computed; none of them is an axis decision. `N`, the
+source quota, the direction rule and the animal weighting stay open (#173).
+
+**Gene-axis decision preparation**:
+The round of work that produces the evidence for narrowing the frozen 18,164-gene axis
+without choosing the narrow axis: the public disease sources under `disease_data/`, the
+already-local cardiotoxicity sources under `pert_data/`, and the evidence product
+`01_bases/output/gene-axis/` built by `01_bases/execution/build_gene_axis.py` from
+`01_bases/output/api/bases/gene_axis.py` on the unchanged frozen axis. It is preparation,
+not the gene-axis release (#174), and it decides no `N`, quota, direction rule or animal
+weight.
+_Avoid_: gene-axis selection, gene-axis release, new axis (for the preparation)
+
+**Disease source**:
+One fusion input of the gene-axis preparation: an external 项 under `disease_data/` that
+supplies a full-transcriptome signed DEG table (`local/deg/<GSE>_deg.csv`) and, where
+available, a normalized log expression matrix (`local/expr/<GSE>_log_expr.tsv.gz` with
+`local/expr/<GSE>_samples.csv`) — or the read-only cardiotoxicity adapter over
+`pert_data/DToxS-iPSC/` or `pert_data/GSE244740/` in
+`01_bases/execution/gene_axis_sources.py`. `disease_data/GSE137293/` is supplementary only
+and never a disease source; `pert_data/LINCS-LDS-1593/` is an L1000 coverage note only.
+_Avoid_: dataset, cohort, GSE (when meaning the source role)
+
+**Source rank**:
+A disease source's own ordering of the frozen axis genes: its `hvg_rank` where an expression
+matrix exists (Seurat-style normalized dispersion on the item's normalized log expression,
+`gene_index` tie-break), or its `deg_rank` from the continuous effect score
+`|log2FC| × -log10(padj)`; a gene the source does not measure gets the worst rank
+`n_measured + 1`. It is written as the source's `<source>_rank` column in
+`01_bases/output/gene-axis/fused_rank.csv`. Ranks are **within-source only**: effect sizes
+from different platforms are never compared directly.
+_Avoid_: global rank, meta-rank
+
+**Source HVG share**:
+The share of a disease source's measured axis genes that the source's own HVG rank marks as
+highly variable: the `hvg_share` column of
+`01_bases/output/gene-axis/source_summary.csv`, beside `n_hvg`, `n_axis_measured` and
+`axis_coverage_share`. It says how much of a source's variability evidence lands on the
+axis; it is not an axis-selection score.
+_Avoid_: HVG overlap (when the share is meant)
+
+**Rank-sum fusion**:
+The declared unweighted combination of source ranks: per gene,
+`rank_sum = Σ rank_norm` over the sources, with `rank_norm = rank / n_measured` and an
+unmeasured source pinned to `rank_norm = 1.0` (the worst rank). No weights, no per-source
+quota and no animal down-weighting; the half-weight animal variant is only a sensitivity
+column (`rank_sum_animal_half`). It is recorded as `rank_sum` in
+`01_bases/output/gene-axis/fused_rank.csv`, is reproducible from its pinned inputs alone and
+sets no `N`.
+_Avoid_: weighted fusion, meta-analysis, Borda (unqualified)
+
+**Fused rank**:
+The order of the frozen axis genes by ascending `rank_sum`, ties broken by the frozen
+`gene_index`: the `fused_rank` column of `01_bases/output/gene-axis/fused_rank.csv`, beside
+`n_sources_measured`. It ranks genes for the axis decision; it is not a released axis.
+_Avoid_: selected axis, new axis, gene-axis release
+
+**Inflection point**:
+The candidate `N` on the fused-score curve identified by the declared criterion (Kneedle
+`S=1.0`, online variant, plus a second-difference peak, with leave-one-source-out
+stability): `01_bases/output/gene-axis/inflection.json`, which records the parameters and
+may report `"inflection": false`. The preparation never forces an `N`.
+_Avoid_: optimal N, elbow (unqualified), cutoff
+
+**Tenv non-HVG share**:
+The share of a top-`N` fused selection that is **not** a member of a declared tenv HVG set
+`K ∈ {1000, 2000, 5000}` taken from the published `01_bases/output/tenv-hvg/descriptive.csv`
+ranking: the `non_hvg_share` curve over `N = 1..18164` in
+`01_bases/output/gene-axis/tenv_non_hvg_curve.csv`. It bounds how much of a candidate axis
+lies outside tenv variability evidence; it is descriptive, not a trainability guarantee.
+_Avoid_: tenv overlap, HVG loss (unqualified)
+
+**Direction composition**:
+The up/down split of the top-`N` fused selection (`N ∈ {500, 1000, 2000, 3000, 5000}`) under
+symmetric inclusion versus a `|log2FC|`-weighted ranking, each gene's sign taken from its
+highest-supporting source with ties recorded:
+`01_bases/output/gene-axis/direction_summary.csv`. It informs the direction rule that #173
+must still decide; it does not set that rule.
+_Avoid_: direction rule (that is #173's decision)
+
+
 ### Stage 1 evaluation
 
 **Top-k true set**:
