@@ -28,7 +28,12 @@
 # `geo_title` column.
 #
 # Outputs (local/, never source/):
-#   local/expr/GSE282618_log_expr.tsv.gz  genes x 10 libraries, log2(CPM+1)
+#   local/expr/GSE282618_log_expr.tsv.gz  genes x 10 libraries, log2(CPM+1);
+#                                         first line is a metadata comment
+#                                         '# genes=... samples=...
+#                                         normalization=... contrast=...'
+#                                         (same convention as the sibling
+#                                         gene-axis items)
 #   local/expr/GSE282618_samples.csv      sample, group, subject, site, geo_title
 #
 # Usage (after build_deg.R, which is independent of this script):
@@ -125,7 +130,15 @@ genes <- rownames(counts)
 ord <- order(genes, method = "radix")
 log_expr <- log_expr[ord, , drop = FALSE]
 out <- data.frame(gene_symbol = genes[ord], log_expr, check.names = FALSE)
+# Leading metadata comment line, the same convention as the sibling gene-axis
+# items: '# genes=<n> samples=<n> normalization=<desc> contrast=<contrast>'.
+# It is written through the gzip connection so a re-run reproduces the file
+# byte-for-byte.
 con <- gzfile(EXPR_TSV, "w")
+writeLines(sprintf(
+  paste0("# genes=%d samples=%d normalization=",
+         "log2(CPM+1)_library_sizes_from_all_source_genes contrast=HHD_vs_control"),
+  nrow(out), ncol(out) - 1L), con)
 write.table(out, con, sep = "\t", quote = FALSE, row.names = FALSE,
             col.names = TRUE)
 close(con)
