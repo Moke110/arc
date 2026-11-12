@@ -208,11 +208,12 @@ that opening it fails, so the red line is enforced rather than promised.
   pretend they are interchangeable.
 - The tenv ranking is descriptive over all wells, so the non-HVG share bounds coverage of
   tenv variability evidence, not model trainability under the train-only rankings.
-- `check_paths.sh` audits `disease_data/` path literals. The five new item directories are
-  created by the sibling gene-axis tickets, so this record cites the `disease_data/`
-  category and item-relative members (`local/deg/…`, `local/expr/…`) rather than literal
-  per-item paths; that keeps the path audit green with no whitelist exception before those
-  items exist.
+- `check_paths.sh` audits `disease_data/` path literals. The five item directories are
+  created by the sibling gene-axis tickets, and their DEG CSV and expression members are
+  gitignored payload that exists only after a data build, so a literal per-item path would
+  put the path audit at the mercy of build state. This record therefore cites the
+  `disease_data/` category and item-relative members (`local/deg/…`, `local/expr/…`), which
+  keeps the audit green with no whitelist exception.
 
 ## See
 
