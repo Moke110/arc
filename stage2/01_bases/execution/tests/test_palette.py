@@ -53,12 +53,13 @@ def recipe_table(recipe):
     """Regenerate the whole table from the recorded recipe alone."""
     assert recipe["rounding"]["operation"] == "floor(channel*255 + 0.5)"
     scale = recipe["rounding"]["scale"]
+    families = [item["name"] for item in recipe["families"]]
     hues = {item["name"]: item["hue_degrees"] for item in recipe["families"]}
     rows = []
     for shade in range(recipe["shades"]):
         row = []
-        for family in ("gray", "blue", "green", "orange", "purple", "magenta"):
-            saturation = (0.0 if family == "gray"
+        for family in families:
+            saturation = (0.0 if hues[family] is None
                           else round(recipe["saturation"]["start"]
                                      + recipe["saturation"]["step"] * shade, 6))
             lightness = round(recipe["lightness"]["start"]

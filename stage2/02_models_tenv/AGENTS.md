@@ -94,8 +94,11 @@ status and no prediction. The bounded run is #163 admission only; the accepted
 epochs without a strict validation-loss decrease, independently stop after
 20 consecutive epochs above the running minimum, never exceed 100 epochs, keep
 the lowest-validation-loss checkpoint. The 5-epoch rule dominates the 20-epoch
-rule (recorded in `checkpoint.json` and `terminal.json` evidence); the
-20-epoch rule is still implemented and checked on its own counter.
+rule (the observed first-firing accounting is recorded in `checkpoint.json`,
+and repeated in `terminal.json` once training has completed; `terminal.json`
+also exists for failed, interrupted and over-budget runs, where it may carry no
+early-stopping record). The 20-epoch rule is still implemented and checked on
+its own counter, and its dominance accounting is exercised in the tests.
 
 ## Accepted products (ADR 0062, #165)
 
@@ -127,7 +130,11 @@ suite beside another heavy job:
 `test_prnet.py` is the ADR 0063 seam-3 test: it runs the real command on a
 synthetic release and asserts reload-exact prediction, case identity/order,
 finite full-axis output, the early-stopping record, and honest terminal status
-for failed and over-budget runs.
+for failed, training-over-budget and inference-over-budget runs.  One scenario
+selects a best epoch before the last epoch and then runs the command again with
+`--replay`, which recomputes `replay.npy` from `best.pt` in a fresh process and
+must match the published prediction exactly (deleting the fit-time reload makes
+that test fail).
 
 Seam-2/4 tests added by #165 run with `/home/chang/miniconda3/bin/python`:
 `test_run_matrix.py` (declared 2 x 2 plan, `/usr/bin/time -v` parsing,

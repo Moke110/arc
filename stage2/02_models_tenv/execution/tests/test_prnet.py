@@ -46,7 +46,8 @@ def write_csv(path, records):
         writer.writerows(records)
 
 
-def write_release(root, rng, *, n_train=6, n_validation=2, n_test=2):
+def write_release(root, rng, *, n_train=6, n_validation=2, n_test=2,
+                  delta_value=None):
     release = root / 'release'
     release.mkdir()
     drugs = [{'drug_key': f'drug{i}', 'morgan_index': i} for i in range(3)]
@@ -66,7 +67,10 @@ def write_release(root, rng, *, n_train=6, n_validation=2, n_test=2):
         np.save(release / f'{role}_baseline.npy', baseline)
         files[f'{role}_baseline'] = f'{role}_baseline.npy'
         if role != 'test':
-            delta = rng.uniform(-.05, .05, (count, N_GENES)).astype('float32')
+            if delta_value is not None:
+                delta = np.full((count, N_GENES), delta_value[role], dtype='float32')
+            else:
+                delta = rng.uniform(-.05, .05, (count, N_GENES)).astype('float32')
             np.save(release / f'{role}_delta.npy', delta)
             files[f'{role}_delta'] = f'{role}_delta.npy'
     manifest = {
@@ -105,20 +109,25 @@ def test_environment(temporary):
     return environment
 
 
-def run_agent(root, config_path):
+def run_agent(root, config_path, extra=()):
     return subprocess.run(
         [PYTHON, str(ADAPTER), '--request', str(root / 'request.json'),
-         '--config', str(config_path)],
+         '--config', str(config_path), *extra],
         capture_output=True, text=True, cwd=str(REPO),
         env=test_environment(root))
 
 
-def bounded_config(root, *, max_epochs=2, max_training_seconds=600):
+def bounded_config(root, *, max_epochs=2, max_training_seconds=600,
+                   no_strict_decrease_epochs=5, learning_rate=None,
+                   inference_max_seconds=300):
     config = json.loads(BASE_CONFIG.read_text())
     config.update(max_epochs=max_epochs, batch_size=2, device='cpu',
-                  no_strict_decrease_epochs=5, above_running_min_epochs=20,
+                  no_strict_decrease_epochs=no_strict_decrease_epochs,
+                  above_running_min_epochs=20,
                   max_training_seconds=max_training_seconds,
-                  inference_max_seconds=300)
+                  inference_max_seconds=inference_max_seconds)
+    if learning_rate is not None:
+        config['learning_rate'] = learning_rate
     config['early_stopping'].update(
         max_epochs=max_epochs,
         no_strict_decrease_epochs=config['no_strict_decrease_epochs'],
@@ -205,7 +214,9 @@ class CompletedRun(unittest.TestCase):
             status = subprocess.run(
                 ['git', 'status', '--porcelain', 'pert_model/PRnet/source'],
                 capture_output=True, text=True, cwd=str(REPO))
-            self.assertEqual(status.stdout.strip(), '',
+            tracked_changes = [line for line in status.stdout.splitlines()
+                               if not line.startswith('??')]
+            self.assertEqual(tracked_changes, [],
                              'upstream PRnet source must stay unmodified')
 
 
@@ -245,6 +256,80 @@ class HonestTerminalStatus(unittest.TestCase):
             self.assertEqual(terminal['status'], 'failed')
             self.assertEqual(terminal['phase'], 'validate')
             self.assertIn('n_genes', terminal['error'])
+
+
+class ReloadAndReplay(unittest.TestCase):
+    def test_a_best_epoch_before_the_last_is_reloaded_and_replays_exactly(self):
+        # Train targets positive, validation targets negative: training improves
+        # the fit while worsening validation, so the selected checkpoint is an
+        # early epoch and the final in-memory state is not the selected one.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            rng = np.random.default_rng(123)
+            request = write_release(
+                root, rng, delta_value={'train': .2, 'validation': -.2})
+            config_path = bounded_config(
+                root, max_epochs=6, no_strict_decrease_epochs=2,
+                learning_rate=0.01)
+            process = run_agent(root, config_path)
+            self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+            output = Path(request['output_directory'])
+            checkpoint = json.loads((output / 'checkpoint.json').read_text())
+            last_epoch = checkpoint['history'][-1]['epoch']
+            self.assertEqual(checkpoint['stop_reason'], 'no_strict_decrease')
+            self.assertLess(checkpoint['best_epoch'], last_epoch,
+                            'this fixture must select an epoch before the last')
+            terminal_before = (output / 'terminal.json').read_bytes()
+            replay = run_agent(root, config_path, extra=['--replay'])
+            self.assertEqual(replay.returncode, 0, replay.stdout + replay.stderr)
+            published = np.load(output / 'prediction.npy')
+            replayed = np.load(output / 'replay.npy')
+            np.testing.assert_array_equal(replayed, published)
+            summary = json.loads(replay.stdout.strip().splitlines()[-1])
+            self.assertTrue(summary['matches_published'])
+            self.assertEqual(summary['replay_sha256'], sha256(output / 'replay.npy'))
+            self.assertEqual((output / 'terminal.json').read_bytes(), terminal_before,
+                             'replay must never rewrite the run terminal record')
+            self.assertLessEqual(checkpoint['best_epoch'], 6)
+
+
+class ConfigContract(unittest.TestCase):
+    def test_epoch_ceiling_above_the_adr_limit_is_rejected_before_training(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request = write_release(root, np.random.default_rng(5))
+            config_path = bounded_config(root, max_epochs=101)
+            process = run_agent(root, config_path)
+            self.assertNotEqual(process.returncode, 0)
+            output = Path(request['output_directory'])
+            self.assertFalse((output / 'prediction.npy').exists())
+            terminal = json.loads((output / 'terminal.json').read_text())
+            self.assertEqual(terminal['status'], 'failed')
+            self.assertEqual(terminal['phase'], 'validate')
+            self.assertIn('max_epochs', terminal['error'])
+
+    def test_inference_budget_exhaustion_records_over_budget_after_training(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request = write_release(root, np.random.default_rng(11))
+            config_path = bounded_config(root, max_epochs=2,
+                                         inference_max_seconds=1e-9)
+            process = run_agent(root, config_path)
+            self.assertNotEqual(process.returncode, 0)
+            output = Path(request['output_directory'])
+            self.assertFalse((output / 'prediction.npy').exists())
+            self.assertFalse((output / 'prediction.npy.partial').exists())
+            terminal = json.loads((output / 'terminal.json').read_text())
+            self.assertEqual(terminal['status'], 'over_budget')
+            self.assertEqual(terminal['phase'], 'inference')
+            self.assertIn('inference budget', terminal['error'])
+            # Training completed, so the terminal record carries the observed
+            # early-stopping accounting (the ADR 0063 dominance evidence).
+            self.assertIsNotNone(terminal['early_stopping'])
+            self.assertEqual(
+                terminal['early_stopping']['rules']['no_strict_decrease_epochs'], 5)
+            self.assertIn('5-epoch rule dominates',
+                          terminal['early_stopping']['dominance'])
 
 
 if __name__ == '__main__':

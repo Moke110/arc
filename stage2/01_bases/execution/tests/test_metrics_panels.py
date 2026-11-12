@@ -259,6 +259,42 @@ class MetricsDrawingTests(unittest.TestCase):
             import matplotlib.pyplot as plt
             plt.close(fig)
 
+    def test_undefined_marks_use_the_documented_axis_fraction_placement(self):
+        fig, axes = self.figure()
+        try:
+            plots.draw_metrics(self.values, axes)
+            bar = axes[0, 0]  # PCC: the Mean entry is undefined
+            marks = [line for line in bar.lines if line.get_marker() == "x"]
+            self.assertEqual(len(marks), 1)
+            mark = marks[0]
+            self.assertEqual(tuple(float(value) for value in mark.get_ydata()), (0.02,))
+            x = float(mark.get_xdata()[0])
+            display = mark.get_transform().transform((x, 0.02))
+            fraction_x, fraction_y = bar.transAxes.inverted().transform(display)
+            self.assertAlmostEqual(fraction_y, 0.02, places=6)
+            self.assertAlmostEqual(
+                display[0], bar.transData.transform((x, 0.0))[0], places=6)
+            label = next(text for text in bar.texts
+                         if "undefined" in text.get_text())
+            self.assertEqual(tuple(float(value) for value in label.get_position()), (x, 0.04))
+            label_display = label.get_transform().transform((x, 0.04))
+            _, label_fraction_y = bar.transAxes.inverted().transform(label_display)
+            self.assertAlmostEqual(label_fraction_y, 0.04, places=6)
+            indirect = axes[1, 1]  # Spearman@k: undefined for k < 3
+            indirect_marks = [line for line in indirect.lines
+                              if line.get_marker() == "x"]
+            self.assertTrue(indirect_marks)
+            for line in indirect_marks:
+                self.assertEqual(tuple(float(value) for value in line.get_ydata()),
+                                 (0.02,) * len(line.get_ydata()))
+                point = line.get_transform().transform(
+                    (float(line.get_xdata()[0]), 0.02))
+                _, y_fraction = indirect.transAxes.inverted().transform(point)
+                self.assertAlmostEqual(y_fraction, 0.02, places=6)
+        finally:
+            import matplotlib.pyplot as plt
+            plt.close(fig)
+
     def test_indirect_panels_draw_a_band_a_mean_line_and_explicit_undefined_marks(self):
         from matplotlib import colors as mcolors
         fig, axes = self.figure()
