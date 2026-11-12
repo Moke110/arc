@@ -216,12 +216,13 @@ REPO = EXECUTION.parents[2]
 FOUNDATION_API = REPO / 'stage2/01_bases/output/api'
 sys.path.insert(0, str(FOUNDATION_API))
 import hashlib  # noqa: E402
+from types import SimpleNamespace  # noqa: E402
 import pandas as pd  # noqa: E402
 from bases.corpora import write_h5ad  # noqa: E402
 from bases.fold_seed import build_fold_seed  # noqa: E402
 from bases.significance import bh_adjust, group_key, membership, publish_statistics  # noqa: E402
 import plot_tables  # noqa: E402
-from evaluation_driver import run_driver  # noqa: E402
+from evaluation_driver import run_driver, verify_identity_hashes  # noqa: E402
 
 CASES4 = ['tenv:temp_env::Plate1-A01', 'tenv:temp_env::Plate1-A02',
           'tenv:temp_env::Plate1-A03', 'tenv:temp_env::Plate1-A04']
@@ -417,6 +418,48 @@ class SharedSchemaCompatibility(unittest.TestCase):
         shared_curve = shared.learning_curve_values(models)
         self.assertTrue(_rows_equal(plot_tables.plot_rows(fallback_curve),
                                     shared.plot_rows(shared_curve)))
+
+
+class IdentityDigestBinding(unittest.TestCase):
+    """A completed run's bytes must match the digests its identity claims."""
+
+    def _run(self, root, *, prediction_sha256='missing', case_sha256='missing'):
+        run = root / 'prnet' / 'fold_0' / 'seed_17'
+        run.mkdir(parents=True)
+        np.save(run / 'prediction.npy', np.arange(4, dtype='float32'))
+        (run / 'case_ids.json').write_text('["case"]')
+        identity = {}
+        if prediction_sha256 != 'missing':
+            identity['prediction_sha256'] = prediction_sha256
+        if case_sha256 != 'missing':
+            identity['case_ids_sha256'] = case_sha256
+        return SimpleNamespace(run_dir=run, identity=identity), run
+
+    def test_matching_digests_pass(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            run, _ = self._run(Path(temporary))
+            run.identity['prediction_sha256'] = hashlib.sha256(
+                (run.run_dir / 'prediction.npy').read_bytes()).hexdigest()
+            run.identity['case_ids_sha256'] = hashlib.sha256(
+                (run.run_dir / 'case_ids.json').read_bytes()).hexdigest()
+            verify_identity_hashes(run)
+
+    def test_missing_digest_fails_a_formal_run(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            run, _ = self._run(Path(temporary))
+            with self.assertRaisesRegex(DriverError, 'missing prediction_sha256'):
+                verify_identity_hashes(run)
+
+    def test_mismatched_digest_fails(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            run, _ = self._run(Path(temporary), prediction_sha256='0' * 64)
+            with self.assertRaisesRegex(DriverError, 'prediction digest differs'):
+                verify_identity_hashes(run)
+
+    def test_fixture_runs_may_omit_digests(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            run, _ = self._run(Path(temporary))
+            verify_identity_hashes(run, allow_fixture=True)
 
 
 if __name__ == "__main__":

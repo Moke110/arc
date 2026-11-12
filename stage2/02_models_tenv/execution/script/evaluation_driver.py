@@ -362,6 +362,10 @@ def per_run_rows(scores):
         precision_defined = int(score.indirect.counts['Precision@k'][0])
         row['Precision@k_groups'] = precision_defined
         row['Precision@k_groups_undefined'] = len(score.group_results) - precision_defined
+        # `Spearman@k` is defined only for k >= 3 (ADR 0063), so its macro
+        # effective-group count is the count at k=3 (slot 2 of the k axis), not
+        # the number of groups with any defined k.  `groups` above stays the
+        # full group total; the undefined complement uses this same k=3 count.
         spearman_defined = (int(score.indirect.counts['Spearman@k'][2])
                             if len(score.indirect.k) >= 3 else 0)
         row['Spearman@k_groups'] = spearman_defined
@@ -585,15 +589,25 @@ def _write_csv(path, records, fields):
     return path
 
 
-def _verify_identity_hashes(run):
-    recorded = run.identity.get('prediction_sha256')
-    if recorded:
-        actual = sha256(run.run_dir / PREDICTION_FILE)
-        if actual != recorded:
-            raise DriverError(f'prediction digest differs from identity.json in {run.run_dir}')
-    recorded_cases = run.identity.get('case_ids_sha256')
-    if recorded_cases and sha256(run.run_dir / CASES_FILE) != recorded_cases:
-        raise DriverError(f'case-id digest differs from identity.json in {run.run_dir}')
+def verify_identity_hashes(run, *, allow_fixture=False):
+    """Bind each run's published bytes to the digests its identity record claims.
+
+    A completed run must record both digests; fixture runs may omit them.  The
+    check is unconditional for formal runs so a missing identity field cannot
+    silently disable the binding.
+    """
+    for field, filename, label in (
+            ('prediction_sha256', PREDICTION_FILE, 'prediction'),
+            ('case_ids_sha256', CASES_FILE, 'case-id')):
+        recorded = run.identity.get(field)
+        if recorded is None:
+            if allow_fixture:
+                continue
+            raise DriverError(
+                f'identity.json in {run.run_dir} is missing {field}')
+        if sha256(run.run_dir / filename) != recorded:
+            raise DriverError(
+                f'{label} digest differs from identity.json in {run.run_dir}')
 
 
 def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus,
@@ -613,7 +627,7 @@ def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus
     runs = load_run_set(runs_root, entries, fold_rows, seeds, case_ids)
     scores = []
     for (entry, fold, seed), run in sorted(runs.items()):
-        _verify_identity_hashes(run)
+        verify_identity_hashes(run, allow_fixture=allow_fixture)
         partition = statistics.partition(cohorts[cohorts.fold.astype(int).eq(fold)])
         measured = load_measured_delta(corpus, expected_cases[fold])
         scores.append(score_run(expected_cases[fold], run.prediction, measured,
