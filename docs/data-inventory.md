@@ -167,7 +167,7 @@ training or re-inference.
 | `output/evaluation/` | 57,435,713 | `per_well.csv`, `per_group.csv`, `per_run.csv`, `per_run_curve.csv`, `confusion.csv`, `evaluation.json` and the three plot-value copies from the shared #168 driver | `execution/script/evaluation_driver.py` over the eight complete runs; re-scores from persisted predictions only |
 | `output/figure_data/` | 825,190 | copies of the three @d plot-value tables (byte-identical to the tracked `figure/data/`) | `evaluation_driver.py --figure-data` |
 | `figure/` | 1,270,546 | `metrics.png` (4 direct panels), `metrics_indirect.png` (8 reliability panels), `learning_curve.png` (PRnet), the three complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
-| `log/` | 63,233 | #163 admission, #164 driver, #165 and #166 acceptance records plus the raw `/usr/bin/time -v` measurements and the environment locks | execution records; tracked |
+| `log/` | 89,486 | #163 admission, #164 driver, #165 and #166 acceptance records plus the raw `/usr/bin/time -v` measurements (including the three tracked `166-*.time` replay files) and the environment locks | execution records; tracked |
 
 Historical tenv comparison code, figures and records are **not** present in the
 working tree; they remain untouched in Git history (`git show
