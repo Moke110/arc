@@ -1,0 +1,44 @@
+[
+  {
+    "command": "stage2/02_models_tenv/execution/tests: /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python -m unittest discover -s stage2/02_models_tenv/execution/tests -p test_early_stopping.py",
+    "result": "OK",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-test_early_stopping.txt"
+  },
+  {
+    "command": "stage2/02_models_tenv/execution/tests: /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python -m unittest discover -s stage2/02_models_tenv/execution/tests -p test_prnet.py",
+    "result": "OK",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-test_prnet.txt"
+  },
+  {
+    "command": "stage2/02_models_tenv/execution/tests: /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python -m unittest discover -s stage2/02_models_tenv/execution/tests -p test_inputs.py",
+    "result": "OK",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-test_inputs.txt"
+  },
+  {
+    "command": "bash script/tests/stage2_paths_audit.test",
+    "result": "PASS: active-roots Stage 2 runtime path fixtures",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-stage2_paths_audit.txt"
+  },
+  {
+    "command": "bash script/tests/bases_scope_health.test",
+    "result": "PASS: active-roots layout and separate-checkout tracking boundaries",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-bases_scope_health.txt"
+  },
+  {
+    "command": "bash script/check_stage2_paths.sh",
+    "result": "exit: 0",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-check_stage2_paths.txt"
+  },
+  {
+    "command": "cd /home/chang/arc && bash script/check_paths.sh",
+    "result": "exit: 0",
+    "exit_code": 0,
+    "detail_file": "log/resources/tests-check_paths_main.txt"
+  }
+]

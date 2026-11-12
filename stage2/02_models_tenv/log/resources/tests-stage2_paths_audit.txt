@@ -1,0 +1,2 @@
+RESULT: FAIL — unexpected Stage 2 entry: /tmp/tmp.7O2Ir0tect/layout/stage2/link.md
+PASS: active-roots Stage 2 runtime path fixtures
