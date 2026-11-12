@@ -3,7 +3,9 @@
 Ticket #162 (parent #158), branch `codex/tenv-162` off `dev` (`8e5fbcf`, which
 contains the #160 evaluation core). Authority: ADR 0063 for the palette, the two
 figure layouts and the undefined rule; ADR 0062 and `stage2/AGENTS.md` for the
-product/figure contract. No scientific metric is recomputed here: both drawing
+product/figure contract. Before reporting it merged the then-current `dev` tip
+`fc9c2ce` (#161 fold/seed products); the merge was clean and every command below
+was re-run on the merged tree. No scientific metric is recomputed here: both drawing
 APIs present values that the step computed elsewhere, and they return exactly
 the values they drew.
 
