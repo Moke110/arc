@@ -1,0 +1,36 @@
+{
+  "accession": "GSE282618",
+  "title": "Multiomics Investigation of the Hypertensive Human Heart",
+  "species": "Homo sapiens",
+  "platform": "GPL30173 (NextSeq 2000, Homo sapiens)",
+  "tissue_model": "human post-mortem left and right ventricle, bulk RNA-seq",
+  "contrast": "HHD_vs_control",
+  "contrast_description": "positive log2FC = higher expression in hypertensive heart disease than in control",
+  "method": "DESeq2 1.50.2 Wald test; pairing pooled: counts summed across each subject's LV+RV libraries (10 libraries -> 5 subjects), design ~ group, BH adjustment; DESeq2 independent filtering leaves padj NA for filtered genes",
+  "pairing": "pooled",
+  "pairing_rationale": "disease status is subject-level (each subject is HHD or control and contributes both LV and RV), so a subject fixed block is confounded with the contrast; DESeq2 has no random effects; pooling the paired libraries avoids pseudo-replication",
+  "symbol_mapping": "org.Hs.eg.db 3.22.0 ENSEMBL -> SYMBOL (multiVals = first); unmapped Ensembl IDs dropped; duplicate symbols collapsed to the Ensembl ID with the highest mean CPM",
+  "thresholds": {
+    "padj": 0.05,
+    "abs_log2FC": 0.5
+  },
+  "n_genes_tested": 36631,
+  "n_genes_padj": 18261,
+  "n_up": 44,
+  "n_down": 60,
+  "n_case": 3,
+  "n_control": 2,
+  "n_subjects": 5,
+  "n_libraries": 10,
+  "source_genes": 60646,
+  "dropped_no_symbol": 23914,
+  "duplicate_symbols_collapsed": 101,
+  "exploratory": true,
+  "exploratory_reason": "3 hypertensive vs 2 control subjects (n=5); the dataset survey records the series as exploratory because n=5 subjects cannot support a stable transcriptome-wide DEG list",
+  "description": "EXPLORATORY — full-transcriptome DESeq2 HHD-vs-control differential expression on subject-pooled counts (paired LV+RV libraries summed per subject, 10 libraries -> 5 subjects; 3 HHD / 2 control). n=5 subjects cannot support a stable DEG list; this is a small-n reference only. Positive log2FC = higher in HHD. Hypertensive heart disease is a borderline >5% prevalence category (docs/research/stage2-stage3-gene-axis-datasets.md, 'Disease-prevalence taxonomy').",
+  "digests": {
+    "source/GSE282618_counts.txt.gz": "ec5129bf9411f0a8dd5a1ee7e6c068a0aec75fdf58e5e69bdf1719b3f1157910",
+    "local/deg/GSE282618_deg.csv": "7573368b4c03dbb24e54cb19b06493673804499f4f7ed430dc8b3f48fe63259f"
+  },
+  "generated_by": "script/build_deg.R"
+}
