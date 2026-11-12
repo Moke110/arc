@@ -17,6 +17,7 @@ family for training and the green family for validation at one shade per
 import colorsys
 import hashlib
 import json
+import math
 from pathlib import Path
 
 SCHEMA = "stage2-tenv-stage-palette-v1"
@@ -49,6 +50,7 @@ _ROLE_SPECS = {
     "line": {"family": "entry", "shade": LINE_SHADE},
     "bar_edge": {"family": "entry", "shade": LINE_SHADE},
     "dot": {"family": "entry", "shade": LINE_SHADE},
+    "dot_edge": {"family": "gray", "shade": 8},
     "band": {"family": "entry", "shade": FILL_SHADE},
     "bar_fill": {"family": "entry", "shade": FILL_SHADE},
     "train": {"family": TRAIN_FAMILY, "shade": "run"},
@@ -61,9 +63,9 @@ RECIPE = {
     "algorithm": (
         "Per shade s in 0..8: L = 0.22 + 0.07*s, S = 0.90 - 0.06*s (S = 0 for "
         "gray). Convert (H/360, L, S) with colorsys.hls_to_rgb, then each "
-        "channel is int(round(channel*255 + 0.5)) and formatted as lowercase "
-        "#rrggbb."
+        "channel is floor(channel*255 + 0.5) and formatted as lowercase #rrggbb."
     ),
+    "rounding": {"operation": "floor(channel*255 + 0.5)", "scale": 255},
     "families": [{"name": name, "hue_degrees": FAMILY_HUES[name]} for name in FAMILIES],
     "shades": SHADE_COUNT,
     "lightness": {"start": LIGHTNESS_START, "step": LIGHTNESS_STEP},
@@ -93,7 +95,8 @@ def _check_shade(shade):
 
 def _hex(hue, saturation, lightness):
     red, green, blue = colorsys.hls_to_rgb((hue or 0.0) / 360.0, lightness, saturation)
-    return "#%02x%02x%02x" % tuple(int(channel * 255 + 0.5) for channel in (red, green, blue))
+    return "#%02x%02x%02x" % tuple(math.floor(channel * 255 + 0.5)
+                                  for channel in (red, green, blue))
 
 
 def color(family, shade):

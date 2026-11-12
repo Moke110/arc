@@ -109,10 +109,26 @@ class LearningCurveDrawingTests(unittest.TestCase):
         fig, axes = self.figure()
         try:
             drawn = plots.draw_learning_curve(values, axes)
+            self.assertEqual(canonical(drawn), canonical(values))
+            # Audit the artists against the returned values; the test fails if
+            # the drawing call returns values it did not actually draw.
+            panel = values["panels"][0]
+            expected = []
+            for run in panel["runs"]:
+                if not run["defined"]:
+                    continue
+                expected.append((palette.color("blue", run["shade"]), run["epoch"], run["train"]))
+                expected.append((palette.color("green", run["shade"]), run["epoch"],
+                                 run["validation"]))
+            self.assertEqual(len(axes.lines), len(expected))
+            for line, (color, epoch, trajectory) in zip(axes.lines, expected):
+                self.assertEqual(line.get_color(), color)
+                self.assertEqual(tuple(float(value) for value in line.get_xdata()), tuple(epoch))
+                self.assertEqual(tuple(float(value) for value in line.get_ydata()),
+                                 tuple(trajectory))
         finally:
             import matplotlib.pyplot as plt
             plt.close(fig)
-        self.assertEqual(canonical(drawn), canonical(values))
 
     def test_each_run_draws_blue_training_and_green_validation_at_its_shade(self):
         values = plots.learning_curve_values(synthetic_models())

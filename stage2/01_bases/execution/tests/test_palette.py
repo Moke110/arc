@@ -4,8 +4,10 @@ The two Stage 2 comparison figures select every colour from this palette, so the
 table must be reproducible from a recorded recipe and the published product must
 be byte-identical to what the public implementation generates.
 """
+import colorsys
 import hashlib
 import json
+import math
 import re
 import sys
 import tempfile
@@ -45,6 +47,28 @@ def relative_luminance(value):
         scaled = channel / 255.0
         parts.append(scaled / 12.92 if scaled <= 0.03928 else ((scaled + 0.055) / 1.055) ** 2.4)
     return 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2]
+
+
+def recipe_table(recipe):
+    """Regenerate the whole table from the recorded recipe alone."""
+    assert recipe["rounding"]["operation"] == "floor(channel*255 + 0.5)"
+    scale = recipe["rounding"]["scale"]
+    hues = {item["name"]: item["hue_degrees"] for item in recipe["families"]}
+    rows = []
+    for shade in range(recipe["shades"]):
+        row = []
+        for family in ("gray", "blue", "green", "orange", "purple", "magenta"):
+            saturation = (0.0 if family == "gray"
+                          else round(recipe["saturation"]["start"]
+                                     + recipe["saturation"]["step"] * shade, 6))
+            lightness = round(recipe["lightness"]["start"]
+                              + recipe["lightness"]["step"] * shade, 6)
+            red, green, blue = colorsys.hls_to_rgb(
+                (hues[family] or 0.0) / 360.0, lightness, saturation)
+            row.append("#%02x%02x%02x" % tuple(math.floor(channel * scale + 0.5)
+                                              for channel in (red, green, blue)))
+        rows.append(tuple(row))
+    return tuple(rows)
 
 
 def hue_degrees(value):
@@ -106,6 +130,12 @@ class PaletteTableTests(unittest.TestCase):
         for (family, shade), expected in GOLDEN.items():
             self.assertEqual(palette.color(family, shade), expected, (family, shade))
 
+    def test_recorded_recipe_regenerates_all_fifty_four_cells(self):
+        self.assertEqual(recipe_table(palette.RECIPE), palette.table())
+        committed = tuple(tuple(line.split(",")[1:])
+                          for line in (PRODUCT / "palette.csv").read_text().splitlines()[1:])
+        self.assertEqual(recipe_table(palette.RECIPE), committed)
+
     def test_unknown_family_shade_and_run_index_are_rejected(self):
         with self.assertRaisesRegex(ValueError, "family"):
             palette.color("red", 0)
@@ -140,7 +170,8 @@ class PaletteRoleTests(unittest.TestCase):
     def test_every_role_the_two_figures_need_resolves_from_the_table(self):
         colors = palette.role_colors(entry_hue="blue", run_index=0)
         self.assertEqual(set(colors), set(palette.ROLES))
-        self.assertEqual(len(palette.ROLES), 11)
+        self.assertEqual(len(palette.ROLES), 12)
+        self.assertEqual(colors["dot_edge"], palette.color("gray", 8))
         published = {cell for row in palette.table() for cell in row}
         for role, value in colors.items():
             self.assertIn(value, published, role)

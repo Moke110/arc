@@ -9,10 +9,10 @@
   ],
   "module": {
     "path": "output/api/bases/palette.py",
-    "sha256": "a0e9524891f4bd8dbbb1ca99321b4564f54070f52c53e6316735707b42edc535"
+    "sha256": "29d7b18b76c7fc3a91d8f2ff090472c52a4fdaedcf7a46ee57d423f4497302fa"
   },
   "recipe": {
-    "algorithm": "Per shade s in 0..8: L = 0.22 + 0.07*s, S = 0.90 - 0.06*s (S = 0 for gray). Convert (H/360, L, S) with colorsys.hls_to_rgb, then each channel is int(round(channel*255 + 0.5)) and formatted as lowercase #rrggbb.",
+    "algorithm": "Per shade s in 0..8: L = 0.22 + 0.07*s, S = 0.90 - 0.06*s (S = 0 for gray). Convert (H/360, L, S) with colorsys.hls_to_rgb, then each channel is floor(channel*255 + 0.5) and formatted as lowercase #rrggbb.",
     "families": [
       {
         "hue_degrees": null,
@@ -42,6 +42,10 @@
     "lightness": {
       "start": 0.22,
       "step": 0.07
+    },
+    "rounding": {
+      "operation": "floor(channel*255 + 0.5)",
+      "scale": 255
     },
     "saturation": {
       "gray": 0.0,
@@ -92,6 +96,10 @@
     "dot": {
       "family": "entry",
       "shade": 2
+    },
+    "dot_edge": {
+      "family": "gray",
+      "shade": 8
     },
     "grid": {
       "family": "gray",

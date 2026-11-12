@@ -35,7 +35,7 @@ a deterministic reference takes gray last; four runs use shades `2, 4, 6, 8`.
 
 The product files are force-added: `.gitignore` excludes
 `stage2/01_bases/output/*` and re-includes only `output/api/**`; the established
-#156 practice is to force-add compact evidence. No `.gitignore` rule was changed.
+#156 practice is to force-add compact evidence.
 
 ## Plotting API — `output/api/bases/plots.py`
 
@@ -77,7 +77,7 @@ step's own tickets; these are test evidence, not report figures.
 
 | file | sha256 |
 |---|---|
-| `metrics_fixture.png` | `aa00c92c92d9ff3e3b4fb98d727294097ac78a7fd8efdde9352a06719130595e` |
+| `metrics_fixture.png` | `eff059409d31ba6656bdb4f74de1e63dded475a739b0a2a9778d900d9adc131b` |
 | `metrics_fixture.csv` | `071c34b4b6a93bebebe8fe6a1a18da281c2ac792422d68642a8479b15760d4ee` |
 | `learning_curve_fixture.png` | `62127d02e1f54ce29a7fe755a235067c7d0cf2098278d37fca33a1468caf63c0` |
 | `learning_curve_fixture.csv` | `58bd73c7540ed0060a7f0dc36f823a9d85da0ee4304f5277f1b8435bd3889110` |
@@ -111,6 +111,33 @@ plots.render_learning_curve(synthetic_models(), fx/'learning_curve_fixture.png')
 | Fixture figure from synthetic values whose returned values equal what was drawn | fixture CSV/PNG above; `test_metrics_panels.py::test_draw_returns_exactly_the_values_it_drew`, `::test_recorded_values_round_trip_and_replay_byte_identical`, `::test_committed_fixture_is_the_synthetic_values_and_replays_byte_identical` |
 | CSV-only reproduction needs no step `output/` | `replay_metrics`/`replay_learning_curve` read only the recorded CSV and the public palette/drawing code; the byte-identity tests prove presentation is a function of recorded values |
 
+## Review fixes (reviewer-b, `dd5cac9`)
+
+- **Fixture CSVs are tracked.** The recorded plot-value CSVs were silently
+  ignored by `.gitignore:40 (*.csv)`, so a clean export had PNGs but no values.
+  Added a documented negation next to the existing bases evidence exceptions
+  (`!/stage2/01_bases/execution/tests/fixtures/*.csv`) and committed both CSVs;
+  proven by `git archive HEAD` export + running the four test files there (below).
+- **The recorded recipe now reproduces the table.** `_hex` computes
+  `floor(channel*255 + 0.5)` and `RECIPE` records exactly that operation plus a
+  machine-readable `rounding` entry; the old text said `int(round(...))`, which
+  is a different formula (43/54 cells). `test_palette.py` now regenerates all 54
+  cells from `RECIPE` (not just golden cells) and compares them with both
+  `palette.table()` and the committed `palette.csv`.
+- **No colour escapes the palette.** The per-run dot edge used the literal
+  `"white"`; it is now the palette role `dot_edge` (gray shade 8, `#c7c7c7`), and
+  `test_metrics_panels.py` asserts the drawn edge colour. `ROLES` is now 12.
+- **Draw-return evidence is no longer tautological.** Both figure tests now audit
+  the matplotlib artists against the returned values: bar heights and per-run
+  dots, curve mean lines and band min/max vertices, learning-curve epoch/loss
+  lines and their train/validation colours. A drawing call that returns values it
+  did not draw now fails.
+- **Undefined bar marks aligned with the curve panels**: the `×` and label now use
+  the axis-fraction placement (y = 0.02/0.04) instead of data y = 0, so they do
+  not sit on a zero line for metrics such as `PCC`.
+- Fixture PNGs were regenerated after the colour change; only
+  `metrics_fixture.png` changed bytes (the learning curve does not draw dots).
+
 ## Deviations and follow-ups
 
 - Issue #162's summary sentence groups `Precision@k`, `Spearman@k` and the
@@ -120,9 +147,10 @@ plots.render_learning_curve(synthetic_models(), fx/'learning_curve_fixture.png')
   threshold panels are bar charts"). `precision`/`spearman` are the two arrays in
   `aggregate_indirect`; `max_k`/`recall` are scalars there by construction.
 - `output/palette/` is force-added (see above); no ignore rule changed.
-- The step `README.md`, `AGENTS.md` and `docs/data-inventory.md` still do not
-  list `output/palette/`; those files are outside this ticket's write scope and
-  should be updated when the step's own figure ticket lands.
+- Documentation deferrals are tracked by **#165**: the step `README.md`,
+  `AGENTS.md` and `docs/data-inventory.md` still do not list `output/palette/`
+  (outside this ticket's write scope, to be updated by the documentation ticket
+  after #162/#164 merge).
 - The fixture PNGs live under `execution/tests/fixtures/`, not `figure/`,
   because `#162` owns no report figure; #163's renderer will consume this API for
   `figure/metrics.png` and `figure/learning_curve.png`.

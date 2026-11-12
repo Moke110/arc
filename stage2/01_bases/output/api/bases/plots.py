@@ -421,13 +421,16 @@ def draw_metrics(values, axes):
                     dots = [value for value, defined in zip(entry["values"], entry["defined"]) if defined]
                     if dots:
                         ax.plot([position] * len(dots), dots, linestyle="none", marker="o",
-                                markersize=5, color=line, markeredgecolor="white",
+                                markersize=5, color=line,
+                                markeredgecolor=fixed["dot_edge"],
                                 markeredgewidth=.8, zorder=4)
                 else:
-                    ax.plot([position], [0.0], linestyle="none", marker="x", markersize=7,
+                    ax.plot([position], [.02], transform=ax.get_xaxis_transform(),
+                            linestyle="none", marker="x", markersize=7,
                             color=fixed["undefined_marker"], zorder=4)
-                    ax.text(position, 0.0, "undefined", rotation=90, ha="center",
-                            va="bottom", fontsize=7, color=fixed["undefined_label"])
+                    ax.text(position, .04, "undefined", transform=ax.get_xaxis_transform(),
+                            rotation=90, ha="center", va="bottom", fontsize=7,
+                            color=fixed["undefined_label"])
             ax.axhline(0.0, color=fixed["grid"], linewidth=.8, zorder=1)
             ax.set_xticks(positions, [entry["series"] for entry in panel["entries"]],
                           rotation=20, ha="right", fontsize=8)

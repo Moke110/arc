@@ -7,6 +7,7 @@ explicitly and never as zero, and a drawing call returns exactly the values it
 drew so a renderer can rebuild the PNG from the recorded CSV alone.
 """
 import math
+import numpy as np
 import sys
 import tempfile
 import unittest
@@ -174,10 +175,54 @@ class MetricsDrawingTests(unittest.TestCase):
         fig, axes = self.figure()
         try:
             drawn = plots.draw_metrics(self.values, axes)
+            self.assertEqual(canonical(drawn), canonical(self.values))
+            # Audit the actual artists against the returned values, so the test
+            # fails if the drawing call ignores or alters the values it returns.
+            for panel, ax in zip(self.values["panels"], axes.flat):
+                if panel["kind"] == "bar":
+                    patches = {round(float(patch.get_x() + patch.get_width() / 2), 6): patch
+                               for patch in ax.patches}
+                    for position, entry in enumerate(panel["entries"]):
+                        if entry["mean_defined"]:
+                            self.assertAlmostEqual(patches[float(position)].get_height(),
+                                                   entry["mean"], places=12)
+                        else:
+                            self.assertNotIn(float(position), patches)
+                    dots = [line for line in ax.lines if line.get_marker() == "o"]
+                    for line, entry in zip(dots, [item for item in panel["entries"]
+                                                  if item["mean_defined"]]):
+                        expected = [value for value, defined
+                                    in zip(entry["values"], entry["defined"]) if defined]
+                        self.assertEqual(tuple(float(value) for value in line.get_ydata()),
+                                         tuple(expected))
+                else:
+                    k = np.asarray(panel["k"], dtype=float)
+                    for band_index, entry in enumerate(panel["entries"]):
+                        color = palette.color(entry["hue"], palette.LINE_SHADE)
+                        mean_lines = [line for line in ax.lines
+                                      if line.get_color() == color
+                                      and line.get_marker() in (None, "None", "")
+                                      and len(line.get_xdata()) == len(k)]
+                        self.assertEqual(len(mean_lines), 1, entry["series"])
+                        np.testing.assert_array_equal(
+                            np.asarray(mean_lines[0].get_xdata(), dtype=float), k)
+                        np.testing.assert_array_equal(
+                            np.asarray(mean_lines[0].get_ydata(), dtype=float),
+                            np.asarray(entry["mean"], dtype=float))
+                        if not any(entry["mean_defined"]):
+                            continue
+                        vertices = ax.collections[band_index].get_paths()[0].vertices
+                        for index in range(len(k)):
+                            if not entry["mean_defined"][index]:
+                                continue
+                            for bound in (entry["minimum"][index], entry["maximum"][index]):
+                                matched = any(abs(float(vx) - k[index]) < 1e-9
+                                              and abs(float(vy) - bound) < 1e-9
+                                              for vx, vy in vertices)
+                                self.assertTrue(matched, (panel["panel"], entry["series"], index, bound))
         finally:
             import matplotlib.pyplot as plt
             plt.close(fig)
-        self.assertEqual(canonical(drawn), canonical(self.values))
 
     def test_bar_panels_use_the_entry_hue_edge_and_lighter_fill_with_one_dot_per_run(self):
         from matplotlib import colors as mcolors
@@ -195,6 +240,7 @@ class MetricsDrawingTests(unittest.TestCase):
             self.assertEqual(tuple(dots.get_xdata()), (0.0, 0.0, 0.0, 0.0))
             self.assertEqual(tuple(float(value) for value in dots.get_ydata()), (2.0, 1.8, 1.6, 1.4))
             self.assertEqual(dots.get_color(), palette.color("blue", palette.LINE_SHADE))
+            self.assertEqual(dots.get_markeredgecolor(), palette.color("gray", 8))
             reference = [line for line in panel.lines if line.get_marker() == "o"][1]
             self.assertEqual(reference.get_color(), palette.color("gray", palette.LINE_SHADE))
             self.assertEqual(tuple(float(value) for value in reference.get_ydata()), (3.0, 3.0, 3.0, 3.0))
