@@ -11,8 +11,8 @@ EXECUTION = Path(__file__).resolve().parents[1]
 SCRIPT = EXECUTION / 'script'
 sys.path.insert(0, str(SCRIPT))
 from evaluation_driver import (  # noqa: E402
-    DriverError, load_run_set, per_group_rows, per_run_rows, per_well_rows,
-    score_run, validate_run)
+    DriverError, figure_entries, learning_models, load_run_set, per_group_rows,
+    per_run_rows, per_well_rows, score_run, validate_run)
 
 GENES = 18164
 CASES = ['tenv:temp_env::Plate1-A01', 'tenv:temp_env::Plate1-A02',

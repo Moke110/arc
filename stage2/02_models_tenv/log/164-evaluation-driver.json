@@ -29,9 +29,9 @@
   "batch": "2 x 2 matrix is #165; this ticket scores whatever persisted run set it is given",
   "branch": "codex/tenv-164",
   "deviations": [
-    "The #162 shared plotting API is not on dev; plot_tables.py carries a presentation-only fallback that reproduces its long-form schema exactly, and switches to bases.plots automatically once #162 merges (test asserts equality then).",
-    "No full-fold prediction set exists before #165, so the committed evidence is the fixture-driven driver plus the real bounded run refusal; figure/data is not published in this ticket.",
-    "Per-group long-form rows put the k-curves beside the scalar max_k/Recall rows; the per-run table keeps scalar macro means plus effective-group counts, with the cross-run curve means/min-max in the figure CSV (the renderer only reads the figure CSV).",
+    "The shared #162 plotting API landed on dev while this branch was open; the driver now delegates table building and serialization to bases.plots, and the compatibility test (fallback vs shared rows) executes instead of skipping.",
+    "No full-fold prediction set exists before #165, so the committed evidence is the fixture-driven driver plus the real bounded run refusal; figure/data is not published in this ticket. The driver supports --figure-data so #165 can publish figure/data/metrics_values.csv and figure/data/learning_curve_values.csv in one call.",
+    "Per-group long-form rows carry the k-curves beside the scalar max_k/Recall rows; the per-run table keeps scalar macro means plus effective-group counts, with the cross-run curve means/min-max in the figure CSV, which is the only source the renderers read.",
     "Entry labels come from each run identity (prnet now, mean when #165 adds it); directory names only locate the run.",
     "Stage-2 step README/AGENTS command tables were not edited because the ticket write scope is execution/ and log/ only."
   ],
@@ -45,9 +45,13 @@
       "sha256": "5d52742cb94299a4938b5fca2c8debe4784ce30d169f152acdc1c2da3ee5bf7e"
     },
     "execution/tests/test_evaluation_driver.py": {
-      "bytes": 21027,
-      "sha256": "ef8e932277bc70eb1c37c162ee72005685bd832c69f808fc64d1aded407e5c63"
+      "bytes": 21060,
+      "sha256": "2d31ded903442713dd5d78654ae35889cac02031e929176d7570e20454726356"
     }
+  },
+  "merge": {
+    "branch_head_before_followup": "d4ccaa5",
+    "dev_tip_at_report": "9a0e4cc"
   },
   "offline": true,
   "python": "/home/chang/miniconda3/bin/python (3.13)",
@@ -131,11 +135,11 @@
     "delta": "stage2/01_bases/output/training-corpora/tenv.h5ad layers/delta via bases.corpora.training_header + bounded h5py slabs",
     "fold_index": "stage2/01_bases/output/fold_n_seed via bases.fold_seed.FoldSeedIndex.load",
     "metrics": "stage2/01_bases/output/api/bases/evaluation.py (#160) imported, never re-implemented",
-    "plotting_api": "stage2/01_bases/output/api/bases/plots.py from branch codex/tenv-162 (not yet on dev); driver uses it when importable and otherwise a presentation-only fallback mirroring its long-form schema",
+    "plotting_api": "stage2/01_bases/output/api/bases/plots.py: #162 merged into dev while this branch was open; the driver imports it through plot_tables.shared_plot_api() and emits its exact long-form schema. plot_tables keeps a presentation-only fallback for checkouts without #162, and the compatibility test proves both serializations are row-identical.",
     "truth": "stage2/01_bases/output/tenv-truth via bases.significance.PartitionTruth + accepted padj.npy/log2_fold_change.npy"
   },
   "subject": "Tenv metrics 06 - evaluation driver and figure data",
   "test_command": "cd stage2/02_models_tenv && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 /home/chang/miniconda3/bin/python -m unittest discover -s execution/tests -p 'test_evaluation_driver.py' -v",
-  "test_result": "Ran 10 tests in 0.459s -- OK (1 skipped: shared #162 plotting API not on this checkout)",
+  "test_result": "Ran 10 tests in 0.473s -- OK (0 skipped; the shared #162 plotting API is now present on dev and exercised by SharedSchemaCompatibility)",
   "ticket": 164
 }
