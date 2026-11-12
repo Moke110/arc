@@ -16,6 +16,13 @@ Scope boundary: this is decision *preparation*. Nothing here chooses the axis
 size ``N``, a per-source quota, the direction rule or the animal-source weight;
 those remain #173's decision. The unweighted rank sum is the primary result and
 the animal half-weight column is a reported sensitivity only.
+
+Index convention: every public function that consumes per-gene vectors indexes
+them by the frozen ``gene_index`` (0..18163). The tracked ``fused_rank.csv`` is
+sorted by ``fused_rank``, so its row order is not the axis order; callers scatter
+it back with :func:`align_to_gene_index` before using any ``gene_index``-indexed
+array. The fixture tests pin this contract so a consumer cannot silently answer
+a row-position question.
 """
 
 import numpy as np
@@ -418,70 +425,199 @@ def fused_order(fused_rank):
     return np.argsort(fused_rank, kind='stable')
 
 
-def direction_composition(fused_order, direction, abs_effect, sizes, tie_counts=None):
-    """Up/down composition of the fused top-N under two declared rules.
+def direction_composition(fused_rank, direction, max_abs_effect, sizes, tie_counts=None):
+    """Top-N up/down composition under two declared, genuinely different rules.
 
-    ``direction`` is +1/-1/0 per axis gene (0 = no significant DEG support);
-    ``abs_effect`` is the winning ``|log2FC|``. The symmetric rule counts genes
-    equally; the ``abs_log2fc`` rule weights each gene by its winning
-    ``|log2FC|``. ``tie_counts`` records genes whose winning effect tied across
-    sources; unsupported genes are reported as ``n_unsupported``.
+    All vectors are indexed by the frozen ``gene_index`` (never by the row order
+    of the tracked fused table, which is sorted by ``fused_rank``):
+
+    ``direction`` is +1/-1/0 per axis gene (0 = the DEG sources report no
+    winning effect for the gene); ``max_abs_effect`` is the gene's maximum
+    ``|log2FC|`` over the sources that report it; ``tie_counts`` counts genes
+    whose winning effect tied across sources.
+
+    - ``symmetric``: the top-N are the first N genes in ascending
+      ``fused_rank`` (symmetric inclusion; every gene counts equally).
+    - ``max_abs_log2fc``: the top-N are the N genes with the largest
+      ``max_abs_effect``, ties broken by ascending ``fused_rank``. It ranks by
+      effect magnitude instead of by the fusion, so the two rules select
+      different gene sets.
+
+    Genes whose direction is not significant in any source are counted as
+    ``n_unsupported`` in both rules.
     """
-    fused_order = np.asarray(fused_order, dtype=np.int64)
+    fused_rank = np.asarray(fused_rank, dtype=np.int64)
     direction = np.asarray(direction, dtype=np.int64)
-    abs_effect = np.asarray(abs_effect, dtype=np.float64)
-    if not (len(fused_order) == len(direction) == len(abs_effect)):
-        raise ValueError('direction vectors must cover the fused order')
-    tie_counts = np.zeros(len(direction), dtype=np.int64) if tie_counts is None else np.asarray(tie_counts, dtype=np.int64)
+    max_abs_effect = np.asarray(max_abs_effect, dtype=np.float64)
+    if not (len(fused_rank) == len(direction) == len(max_abs_effect)):
+        raise ValueError('direction vectors must cover the frozen axis')
+    if sorted(fused_rank.tolist()) != list(range(1, len(fused_rank) + 1)):
+        raise ValueError('fused rank must be a complete 1-based permutation')
+    tie_counts = (np.zeros(len(direction), dtype=np.int64) if tie_counts is None
+                  else np.asarray(tie_counts, dtype=np.int64))
+    fused_order = np.argsort(fused_rank, kind='stable')
+    effect_order = np.lexsort((fused_rank, -max_abs_effect))
     rows = []
-    for size in sizes:
-        size = int(size)
-        if not 0 < size <= len(fused_order):
-            raise ValueError('direction size outside the fused order')
-        chosen = fused_order[:size]
-        sign = direction[chosen]
-        weight = abs_effect[chosen]
-        up, down = sign > 0, sign < 0
-        unsupported = sign == 0
-        rows.append({
-            'n': size, 'rule': 'symmetric',
-            'n_up': int(up.sum()), 'n_down': int(down.sum()),
-            'n_unsupported': int(unsupported.sum()),
-            'up_share': up.sum() / size, 'down_share': down.sum() / size,
-            'unsupported_share': unsupported.sum() / size,
-            'weighted_up_share': weight[up].sum() / weight.sum() if weight.sum() > 0 else 0.0,
-            'weighted_down_share': weight[down].sum() / weight.sum() if weight.sum() > 0 else 0.0,
-            'n_direction_ties': int(tie_counts[chosen].sum()),
-        })
-        total = weight.sum()
-        rows.append({
-            'n': size, 'rule': 'abs_log2fc',
-            'n_up': int(up.sum()), 'n_down': int(down.sum()),
-            'n_unsupported': int(unsupported.sum()),
-            'up_share': weight[up].sum() / total if total > 0 else 0.0,
-            'down_share': weight[down].sum() / total if total > 0 else 0.0,
-            'unsupported_share': 0.0,
-            'weighted_up_share': weight[up].sum() / total if total > 0 else 0.0,
-            'weighted_down_share': weight[down].sum() / total if total > 0 else 0.0,
-            'n_direction_ties': int(tie_counts[chosen].sum()),
-        })
+    for rule, order in (('symmetric', fused_order),
+                        ('max_abs_log2fc', effect_order)):
+        for size in sizes:
+            size = int(size)
+            if not 0 < size <= len(fused_rank):
+                raise ValueError('direction size outside the fused order')
+            chosen = order[:size]
+            sign = direction[chosen]
+            up, down = sign > 0, sign < 0
+            unsupported = sign == 0
+            rows.append({
+                'n': size, 'rule': rule,
+                'n_up': int(up.sum()), 'n_down': int(down.sum()),
+                'n_unsupported': int(unsupported.sum()),
+                'up_share': up.sum() / size, 'down_share': down.sum() / size,
+                'unsupported_share': unsupported.sum() / size,
+                'n_direction_ties': int(tie_counts[chosen].sum()),
+            })
     return pd.DataFrame(rows)
 
 
-def overlap_metrics(set_a, set_b, fused_rank):
-    """Sizes, Jaccard and fused-rank positions of an intersection."""
-    set_a, set_b = set(map(int, set_a)), set(map(int, set_b))
-    intersection = set_a & set_b
-    union = set_a | set_b
-    jaccard = len(intersection) / len(union) if union else 0.0
-    positions = np.asarray([fused_rank[index] for index in sorted(intersection)], dtype=np.int64)
+def align_to_gene_index(values, gene_index, axis_size=AXIS_SIZE):
+    """Scatter per-row values (rows in any order) onto a frozen-axis vector.
+
+    The tracked fused table is sorted by ``fused_rank``, so its row order is
+    *not* the frozen axis order. Any consumer that indexes an array by
+    ``gene_index`` must first put the values back into frozen-axis order with
+    this helper; using the row position as if it were a gene index is the
+    index-space error this module's tests pin down.
+
+    Every axis gene must appear exactly once.
+    """
+    values = np.asarray(values)
+    gene_index = np.asarray(gene_index, dtype=np.int64)
+    if values.ndim != 1 or values.shape[0] != gene_index.shape[0]:
+        raise ValueError('values must be a vector matching the gene index')
+    if len(np.unique(gene_index)) != len(gene_index):
+        raise ValueError('gene index has duplicate rows')
+    if gene_index.size and (gene_index.min() < 0 or gene_index.max() >= axis_size):
+        raise ValueError('gene index outside the frozen axis')
+    filled = np.zeros(axis_size, dtype=values.dtype)
+    seen = np.zeros(axis_size, dtype=bool)
+    filled[gene_index] = values
+    seen[gene_index] = True
+    if not seen.all():
+        raise ValueError('values do not cover the frozen axis')
+    return filled
+
+
+def fused_rank_stats(genes, fused_rank):
+    """Min/median/max fused rank of a gene set; ``fused_rank`` is gene-indexed."""
+    genes = np.asarray(sorted(set(map(int, genes))), dtype=np.int64)
+    positions = (np.asarray(fused_rank, dtype=np.int64)[genes] if len(genes)
+                 else np.empty(0, dtype=np.int64))
     return {
-        'n_a': len(set_a), 'n_b': len(set_b), 'n_intersection': len(intersection),
-        'n_union': len(union), 'jaccard': float(jaccard),
         'fused_rank_min': int(positions.min()) if len(positions) else 0,
         'fused_rank_median': float(np.median(positions)) if len(positions) else 0.0,
         'fused_rank_max': int(positions.max()) if len(positions) else 0,
     }
+
+
+def overlap_metrics(set_a, set_b, fused_rank):
+    """Sizes, Jaccard and fused-rank positions of an intersection.
+
+    ``fused_rank`` is indexed by ``gene_index`` (use
+    :func:`align_to_gene_index` on the sorted fused table). For a multi-way
+    intersection whose two operands are the same set, Jaccard is undefined; use
+    :func:`fused_rank_stats` for that case instead of this function.
+    """
+    set_a, set_b = set(map(int, set_a)), set(map(int, set_b))
+    intersection = set_a & set_b
+    union = set_a | set_b
+    jaccard = len(intersection) / len(union) if union else 0.0
+    return {
+        'n_a': len(set_a), 'n_b': len(set_b), 'n_intersection': len(intersection),
+        'n_union': len(union), 'jaccard': float(jaccard),
+        **fused_rank_stats(intersection, fused_rank),
+    }
+
+
+def transcriptome_hvg_sets(hvg_rank, row_gene_index, ks, axis_size=AXIS_SIZE):
+    """Declared per-source HVG sets from a source-transcriptome dispersion rank.
+
+    ``hvg_rank`` is a complete 1..n_source_rows ranking over **all** genes the
+    source's expression matrix measures (not only the genes that resolve to the
+    frozen axis); ``row_gene_index`` maps each source row to its axis gene
+    (``-1`` for unresolved rows). For each declared size ``k`` the source's HVG
+    set is its top-``k`` source rows, so ``n_total = min(k, n_source_rows)`` and
+    ``n_on_axis`` counts the distinct axis genes in that set. This measures how
+    much of the source's own variability evidence lands on the frozen axis, not
+    how variable the axis is.
+    """
+    hvg_rank = np.asarray(hvg_rank, dtype=np.int64)
+    row_gene_index = np.asarray(row_gene_index, dtype=np.int64)
+    if hvg_rank.shape != row_gene_index.shape:
+        raise ValueError('hvg rank and row gene index must cover the source rows')
+    n_rows = len(hvg_rank)
+    result = {}
+    for k in ks:
+        k = int(k)
+        if k <= 0:
+            raise ValueError('declared HVG set size must be positive')
+        total = min(k, n_rows)
+        members = np.flatnonzero(hvg_rank <= total)
+        genes = row_gene_index[members]
+        on_axis = np.unique(genes[genes >= 0])
+        axis_set = np.zeros(axis_size, dtype=bool)
+        axis_set[on_axis] = True
+        result[k] = {'set': axis_set, 'n_total': int(total),
+                     'n_on_axis': int(len(on_axis))}
+    return result
+
+
+def spearman(left, right):
+    """Spearman correlation with average ranks for ties (deterministic)."""
+    left, right = pd.Series(left), pd.Series(right)
+    return float(left.rank(method='average').corr(right.rank(method='average')))
+
+
+def empty_rank(order):
+    """1-based rank vector (indexed by gene_index) for a gene permutation."""
+    order = np.asarray(order, dtype=np.int64)
+    rank = np.empty(len(order), dtype=np.int64)
+    rank[order] = np.arange(1, len(order) + 1)
+    return rank
+
+
+def deg_count_agreement(fused_rank, significant_count, sizes):
+    """Agreement between the fused order and the DEG-count order.
+
+    ``fused_rank`` and ``significant_count`` are indexed by ``gene_index``. The
+    DEG-count order is descending ``significant_count`` with the **fused rank**
+    as tie-break (declared and deterministic): source counts are small integers,
+    so ties are frequent and ordering equal-count genes the way the fusion
+    orders them keeps the comparison informative. A frozen-axis ``gene_index``
+    tie-break would be a different, much weaker ranking (Spearman 0.679 vs
+    0.809 on this product); the product's choice is the fused-rank one.
+
+    Returns ``{'spearman', 'top_n_agreement', 'deg_count_rank'}``.
+    """
+    fused_rank = np.asarray(fused_rank, dtype=np.int64)
+    significant_count = np.asarray(significant_count, dtype=np.int64)
+    if fused_rank.shape != significant_count.shape:
+        raise ValueError('fused rank and DEG count must cover the frozen axis')
+    # lexsort sorts by the last key first: descending count is primary, the
+    # ascending fused rank is the tie-break. The result is a gene permutation.
+    count_order = np.lexsort((fused_rank, -significant_count))
+    count_rank = empty_rank(count_order)
+    fused_order = np.argsort(fused_rank, kind='stable')
+    agreement = {}
+    for size in sizes:
+        size = int(size)
+        if not 0 < size <= len(fused_rank):
+            raise ValueError('agreement size outside the frozen axis')
+        overlap = len(set(fused_order[:size].tolist())
+                      & set(count_order[:size].tolist()))
+        agreement[str(size)] = {'n_overlap': int(overlap), 'share': overlap / size}
+    return {'spearman': spearman(fused_rank, count_rank),
+            'top_n_agreement': agreement,
+            'deg_count_rank': count_rank}
 
 
 def kneedle_knee(x, y, sensitivity=1.0):
@@ -599,18 +735,22 @@ def _drop_index(result):
     return {key: value for key, value in result.items() if key != 'index'}
 
 
-def tenv_non_hvg_curve(fused_order, tenv_rank, ks=TENV_HVG_KS):
+def tenv_non_hvg_curve(ranked_genes, tenv_rank, ks=TENV_HVG_KS):
     """Share of the fused top-N lying outside each declared tenv HVG set.
 
-    ``N`` runs over every position 1..axis_size. Membership in a declared set of
+    ``ranked_genes`` is the frozen-axis gene order of the fused ranking (the
+    ``gene_index`` values of the fused table sorted by ``fused_rank``), **not**
+    a row-position vector: ``tenv_rank`` is indexed by ``gene_index``, so a
+    permutation of row positions would silently answer the wrong question.
+    ``N`` runs over every position 1..axis_size; membership in a declared set of
     size ``K`` is ``tenv_rank <= K``.
     """
-    fused_order = np.asarray(fused_order, dtype=np.int64)
+    ranked_genes = np.asarray(ranked_genes, dtype=np.int64)
     tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
-    if fused_order.shape != tenv_rank.shape:
+    if ranked_genes.shape != tenv_rank.shape:
         raise ValueError('fused order and tenv rank must cover the same axis')
-    membership = {k: tenv_rank[fused_order] <= k for k in ks}
-    n = np.arange(1, len(fused_order) + 1, dtype=np.int64)
+    membership = {k: tenv_rank[ranked_genes] <= k for k in ks}
+    n = np.arange(1, len(ranked_genes) + 1, dtype=np.int64)
     frame = pd.DataFrame({'n': n})
     for k in ks:
         cumulative = np.cumsum(~membership[k])
