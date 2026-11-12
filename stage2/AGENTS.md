@@ -8,6 +8,12 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 - `01_bases/` — shared foundation: frozen identity, corpora, evaluator truth,
   fold/seed products, metrics, palette and figure APIs. Every later step imports
   this implementation instead of re-deriving it.
+  - Gene-axis decision preparation: the evidence product `output/gene-axis/`
+    (built by `execution/build_gene_axis.py`) reports per-source HVG/DEG shares,
+    the unweighted rank-sum fusion, the inflection answer, the tenv non-HVG curve
+    and direction composition for the axis decision — preparation under ADR 0065,
+    not a release: no `N`, quota, direction rule or animal weight (#173). Routing:
+    `stage2/01_bases/AGENTS.md`.
 - `02_models_tenv/` — tenv model comparison (ADR 0064, superseding the indirect
   and figure portions of ADR 0063): the PRnet entrant and the `Mean` reference,
   trained and evaluated on `tenv`. Bounded fit/predict admission is #163; the
