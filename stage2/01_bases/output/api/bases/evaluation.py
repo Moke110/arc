@@ -1,34 +1,33 @@
 """Stage 2 evaluation semantics shared by every model-comparison step.
 
-Owns the evaluator truth gate, the per-well direct metrics, the predicted
-absolute rank table, the four group-level indirect metrics and run-level
+Owns the measured-effect gate, the per-well direct metrics, the predicted
+absolute rank table, the group-level ``@d`` reliability family and run-level
 aggregation. Every function is pure over arrays plus identity metadata: no file
-I/O, no cached state. Undefined values are returned as NaN together with a
-reason; nothing is zero-filled. The retired AUPRC/PR implementation in
-``bases.metrics`` is deliberately not imported or modified here (ADR 0063).
+I/O, no cached state.
+
+The reliability family is total by convention (ADR 0064): the four
+empty/non-empty window/measured-effect cells take declared values, so no
+reliability metric is NaN and none carries a reason or a defined-group count.
+The retired ``@k`` family, its ``|log2FC| >= 2`` gate and its NaN-plus-reason
+machinery are gone. The retired AUPRC/PR implementation in ``bases.metrics`` is
+deliberately not imported or modified here.
 """
 from dataclasses import dataclass
 import numpy as np
 
 GENE_COUNT = 18164
-K_MAX = 100
 DIRECT_METRICS = ('PCC', 'Spearman', 'RMSE', 'R2')
-INDIRECT_METRICS = ('Precision@k', 'Spearman@k', 'max_k@P80S40', 'Recall@max_k')
+RELIABILITY_METRICS = ('Precision@d', 'Recall@d', 'F1@d', 'Spearman@d', 'Reliability@d')
 
 PADJ_THRESHOLD = 0.05
-EFFECT_THRESHOLD = 2.0
-K_MIN_FOR_SPEARMAN = 3
-PRECISION_TARGET = 0.8
-SPEARMAN_TARGET = 0.4
+THRESHOLD_GRID_POINTS = 100
+MIN_HITS_FOR_SPEARMAN = 3
+SPEARMAN_NEUTRAL = 1.0
 
-# Undefined reasons; never used to fill a value with zero.
-EMPTY_GATE = 'empty_gate'
-K_BELOW_THREE = 'k_below_3'
-NO_QUALIFYING_K = 'no_qualifying_k'
+# Undefined direct-metric reasons; the reliability family never uses them.
 CONSTANT_PREDICTION = 'constant_prediction'
 CONSTANT_TRUTH = 'constant_truth'
 NO_DEFINED_UNITS = 'no_defined_units'
-NO_DEFINED_GROUPS = 'no_defined_groups'
 
 
 def _vector(value, label):
@@ -54,9 +53,14 @@ def _shared_axis(**arrays):
 
 
 @dataclass(frozen=True)
-class GatedTruth:
-    """Full-axis signed gate: +1/-1 for gated truth genes, 0 elsewhere."""
+class MeasuredEffects:
+    """Full-axis measured-effect gate: direction from ``sign(log2FC)``, 0 elsewhere.
+
+    ``magnitude`` is ``|log2FC|`` on the measured genes and 0 elsewhere, so the
+    ordering term always has a finite measured magnitude to rank.
+    """
     signed: np.ndarray
+    magnitude: np.ndarray
     indices: np.ndarray
 
     @property
@@ -64,25 +68,27 @@ class GatedTruth:
         return int(len(self.indices))
 
 
-def truth_gate(padj, log2_fold_change, delta_mean):
-    """Gated truth: ``padj < 0.05`` and ``|log2FC| >= 2``, direction from Δ_mean."""
-    arrays = _shared_axis(padj=padj, log2_fold_change=log2_fold_change, delta_mean=delta_mean)
+def measured_effect_gate(padj, log2_fold_change):
+    """Measured effects: ``padj < 0.05`` with direction ``sign(log2FC)`` (ADR 0064).
+
+    There is no fold-change magnitude gate. A NaN ``padj`` is not significant; a
+    selected gene must have a finite, nonzero ``log2FC``.
+    """
+    arrays = _shared_axis(padj=padj, log2_fold_change=log2_fold_change)
     padj = arrays['padj'].astype(np.float64)
     effect = arrays['log2_fold_change'].astype(np.float64)
-    delta = arrays['delta_mean'].astype(np.float64)
     finite = np.isfinite(padj)
     if np.any(np.isinf(padj)) or np.any((padj[finite] < 0) | (padj[finite] > 1)):
         raise ValueError('invalid adjusted p-values')
     selected = padj < PADJ_THRESHOLD
     if np.any(selected & (~np.isfinite(effect) | (effect == 0))):
         raise ValueError('significant gene has invalid direction')
-    gated = selected & (np.abs(effect) >= EFFECT_THRESHOLD)
-    if np.any(gated & (~np.isfinite(delta) | (delta == 0))):
-        raise ValueError('gated truth gene has no measured delta direction')
     signed = np.zeros(len(padj), dtype=np.int8)
-    indices = np.flatnonzero(gated).astype(np.int64)
-    signed[indices] = np.sign(delta[indices]).astype(np.int8)
-    return GatedTruth(signed=signed, indices=indices)
+    magnitude = np.zeros(len(padj), dtype=np.float64)
+    indices = np.flatnonzero(selected).astype(np.int64)
+    signed[indices] = np.sign(effect[indices]).astype(np.int8)
+    magnitude[indices] = np.abs(effect[indices])
+    return MeasuredEffects(signed=signed, magnitude=magnitude, indices=indices)
 
 
 @dataclass(frozen=True)
@@ -156,82 +162,168 @@ def predicted_rank_table(delta_mean):
 
 
 @dataclass(frozen=True)
-class GroupIndirectMetrics:
-    """One group's indirect curves, qualifying cut-off and recall, with reasons.
+class ThresholdGrid:
+    """One run's declared 100-point threshold grid.
 
-    ``matched`` is the number of direction-matched gated truth genes on the whole
-    axis, i.e. the Recall@max_k denominator.
+    ``d_prime = k/100`` is the scale-free plotted axis; ``thresholds = d'·M`` is
+    the predicted-magnitude threshold in the run's own units, where ``M`` is the
+    run's largest ``|Δ̂_mean|`` over its test groups and the whole gene axis.
     """
-    k: np.ndarray
-    precision: np.ndarray
-    spearman: np.ndarray
-    max_k: float
-    recall: float
-    matched: int
-    reasons: dict
+    d_prime: np.ndarray
+    thresholds: np.ndarray
+    max_absolute_delta: float
 
 
-def indirect_metrics(table, gated, delta_mean, *, k_max=K_MAX):
-    """Precision@k, Spearman@k, max_k@P80S40 and Recall@max_k for one group.
+def threshold_grid(max_absolute_delta):
+    """Declared scan ``d = k·0.01·M`` for ``k = 1..100`` (ADR 0064), as ``d'·M``.
 
-    ``table`` is the group's predicted absolute rank table, ``gated`` its truth
-    gate and ``delta_mean`` the group's measured Δ_mean. ``k`` runs over
-    1..``k_max``; every undefined value is NaN with a reason. Spearman@k is the
-    rank correlation between signed predicted Δ̂_mean and measured Δ_mean over
-    the top-k set (average ranks resolve ties).
+    ``M`` must be a positive finite magnitude, so ``d' = d/M = k/100`` and the
+    strictest point is exactly ``M``. Window membership is ``|Δ̂| >= d``.
     """
+    normaliser = float(max_absolute_delta)
+    if not np.isfinite(normaliser) or normaliser <= 0:
+        raise ValueError('max_absolute_delta must be a positive finite magnitude')
+    steps = np.arange(1, THRESHOLD_GRID_POINTS + 1, dtype=np.float64)
+    d_prime = steps / THRESHOLD_GRID_POINTS
+    return ThresholdGrid(d_prime=d_prime, thresholds=d_prime * normaliser,
+                         max_absolute_delta=normaliser)
+
+
+def precision_at_d(n_window, n_hits, n_measured):
+    """``|H|/|W|`` with the declared empty-window totals.
+
+    An empty window scores 1 when the group has no measured effect and 0 when it
+    has one; a non-empty window scores ``|H|/|W|``.
+    """
+    if n_window == 0:
+        return 1.0 if n_measured == 0 else 0.0
+    return n_hits / n_window
+
+
+def recall_at_d(n_measured, n_hits, n_window):
+    """``|H|/|measured effects|`` with the declared empty-label totals.
+
+    A group with no measured effect scores 1 when its window is also empty and 0
+    when it emitted a window; otherwise the recall is ``|H|/|measured|``.
+    """
+    if n_measured == 0:
+        return 1.0 if n_window == 0 else 0.0
+    return n_hits / n_measured
+
+
+def f1_at_d(precision, recall):
+    """Harmonic mean of ``Precision@d`` and ``Recall@d``; ``0`` when both are 0.
+
+    Harmonic averaging is load-bearing: an arithmetic mean peaks at the smallest
+    window and would make the reliability peak select a one-gene table.
+    """
+    total = precision + recall
+    if total == 0:
+        return 0.0
+    return 2.0 * precision * recall / total
+
+
+def spearman_at_d(predicted_magnitude, measured_magnitude):
+    """Spearman inside the direction-correct hits: predicted vs measured magnitude.
+
+    Neutral (``1.0``, so the reliability multiplier is 1) below
+    ``MIN_HITS_FOR_SPEARMAN`` hits or when either hit magnitude has no rank
+    variation, because the ordering cannot be estimated there. Ties use average
+    ranks.
+    """
+    predicted = np.asarray(predicted_magnitude, dtype=np.float64)
+    measured = np.asarray(measured_magnitude, dtype=np.float64)
+    if predicted.ndim != 1 or measured.ndim != 1 or len(predicted) != len(measured):
+        raise ValueError('spearman magnitudes must share one hit axis')
+    if not np.isfinite(predicted).all() or not np.isfinite(measured).all():
+        raise ValueError('spearman magnitudes must be finite')
+    if len(predicted) < MIN_HITS_FOR_SPEARMAN:
+        return SPEARMAN_NEUTRAL
     from scipy.stats import rankdata
 
+    predicted_ranks = rankdata(predicted)
+    measured_ranks = rankdata(measured)
+    if np.ptp(predicted_ranks) == 0 or np.ptp(measured_ranks) == 0:
+        return SPEARMAN_NEUTRAL
+    return float(np.corrcoef(predicted_ranks, measured_ranks)[0, 1])
+
+
+def reliability_at_d(f1, spearman):
+    """``F1@d · (1 + Spearman@d)/2``, in ``[0, 1]``."""
+    return f1 * (1.0 + spearman) / 2.0
+
+
+@dataclass(frozen=True)
+class GroupReliabilityCurve:
+    """One group's ``@d`` curve over a run's threshold grid.
+
+    ``spearman`` is neutral (1.0) where the ordering term cannot be estimated, so
+    every array is finite and ``reliability = f1 · (1 + spearman)/2`` holds at
+    every point. ``n_window`` and ``n_hits`` vary per threshold; ``n_measured``
+    is the group's fixed measured-effect count.
+    """
+    grid: ThresholdGrid
+    precision: np.ndarray
+    recall: np.ndarray
+    f1: np.ndarray
+    spearman: np.ndarray
+    reliability: np.ndarray
+    n_window: np.ndarray
+    n_hits: np.ndarray
+    n_measured: int
+
+    @property
+    def d_prime(self):
+        return self.grid.d_prime
+
+    @property
+    def thresholds(self):
+        return self.grid.thresholds
+
+
+def reliability_curve(delta_mean, effects, grid):
+    """Score one group's predicted mean Δ against its measured effects.
+
+    The window is ``W(d) = {i : |Δ̂_mean| >= d}``; a direction-correct hit is a
+    window gene that is a measured effect with matching direction. ``grid`` is
+    the run-level grid, so a weak group's window can empty at high thresholds.
+    """
     delta = _float_vector(delta_mean, 'delta_mean')
-    signed_truth = np.asarray(gated.signed)
-    if (signed_truth.ndim != 1 or len(signed_truth) != len(delta) or len(table) != len(delta)):
-        raise ValueError('indirect metrics require one shared gene axis')
-    if not isinstance(k_max, (int, np.integer)) or k_max < 1:
-        raise ValueError('k_max must be a positive integer')
-    if k_max > len(delta):
-        raise ValueError('k_max exceeds the gene axis')
-    k_values = np.arange(1, k_max + 1, dtype=np.int64)
-    precision = np.full(k_max, np.nan)
-    spearman = np.full(k_max, np.nan)
-    max_k = float('nan')
-    recall = float('nan')
-    reasons = {}
-    ordered_truth = signed_truth[table.gene_index]
-    ordered_delta = delta[table.gene_index]
-    ordered_direction = np.asarray(table.direction)
-    ordered_prediction = ordered_direction.astype(np.float64) * np.asarray(table.absolute_delta)
-    matched = (ordered_truth != 0) & (ordered_direction == ordered_truth)
-    matched_total = int(np.count_nonzero(matched))
-    if not gated.count:
-        reasons.update({name: EMPTY_GATE for name in INDIRECT_METRICS})
-        return GroupIndirectMetrics(k_values, precision, spearman, max_k, recall, 0, reasons)
-    cumulative = np.cumsum(matched, dtype=np.int64)[:k_max]
-    precision = cumulative / k_values
-    spearman_reason = None
-    for k in range(K_MIN_FOR_SPEARMAN, k_max + 1):
-        predicted_ranks = rankdata(ordered_prediction[:k])
-        truth_ranks = rankdata(ordered_delta[:k])
-        if np.ptp(predicted_ranks) == 0:
-            spearman_reason = spearman_reason or CONSTANT_PREDICTION
-            continue
-        if np.ptp(truth_ranks) == 0:
-            spearman_reason = spearman_reason or CONSTANT_TRUTH
-            continue
-        spearman[k - 1] = np.corrcoef(predicted_ranks, truth_ranks)[0, 1]
-    if np.isnan(spearman).all():
-        reasons['Spearman@k'] = spearman_reason or K_BELOW_THREE
-    elif np.isnan(spearman[:K_MIN_FOR_SPEARMAN - 1]).any():
-        reasons['Spearman@k'] = K_BELOW_THREE
-    qualifying = np.flatnonzero(
-        np.isfinite(spearman) & (precision >= PRECISION_TARGET) & (spearman >= SPEARMAN_TARGET))
-    if len(qualifying):
-        max_k = float(k_values[qualifying[-1]])
-        recall = float(cumulative[int(max_k) - 1] / matched_total)
-    else:
-        reasons['max_k@P80S40'] = NO_QUALIFYING_K
-        reasons['Recall@max_k'] = NO_QUALIFYING_K
-    return GroupIndirectMetrics(k_values, precision, spearman, max_k, recall,
-                                matched_total, reasons)
+    signed = np.asarray(effects.signed)
+    magnitude = np.asarray(effects.magnitude, dtype=np.float64)
+    if signed.ndim != 1 or len(signed) != len(delta) or len(magnitude) != len(delta):
+        raise ValueError('reliability curve requires one shared gene axis')
+    thresholds = np.asarray(grid.thresholds, dtype=np.float64)
+    if thresholds.ndim != 1 or len(thresholds) != THRESHOLD_GRID_POINTS:
+        raise ValueError('threshold grid must hold 100 points')
+
+    absolute = np.abs(delta)
+    direction = np.sign(delta).astype(np.int8)
+    measured = signed != 0
+    n_measured = int(np.count_nonzero(measured))
+    window = absolute[None, :] >= thresholds[:, None]
+    hits = window & measured[None, :] & (direction[None, :] == signed[None, :])
+
+    count = len(thresholds)
+    precision = np.empty(count)
+    recall = np.empty(count)
+    f1 = np.empty(count)
+    spearman = np.empty(count)
+    reliability = np.empty(count)
+    n_window = np.empty(count, dtype=np.int64)
+    n_hits = np.empty(count, dtype=np.int64)
+    for index in range(count):
+        n_window[index] = int(np.count_nonzero(window[index]))
+        n_hits[index] = int(np.count_nonzero(hits[index]))
+        precision[index] = precision_at_d(int(n_window[index]), int(n_hits[index]), n_measured)
+        recall[index] = recall_at_d(n_measured, int(n_hits[index]), int(n_window[index]))
+        f1[index] = f1_at_d(float(precision[index]), float(recall[index]))
+        hit_index = np.flatnonzero(hits[index])
+        spearman[index] = spearman_at_d(absolute[hit_index], magnitude[hit_index])
+        reliability[index] = reliability_at_d(float(f1[index]), float(spearman[index]))
+    return GroupReliabilityCurve(
+        grid=grid, precision=precision, recall=recall, f1=f1, spearman=spearman,
+        reliability=reliability, n_window=n_window, n_hits=n_hits, n_measured=n_measured)
 
 
 @dataclass(frozen=True)
@@ -261,52 +353,69 @@ def aggregate_direct(wells):
 
 
 @dataclass(frozen=True)
-class IndirectAggregate:
-    """Run-level indirect metric means over defined test groups, with counts and reasons."""
-    k: np.ndarray
+class ReliabilityAggregate:
+    """Run-level ``@d`` macro curves over the evaluated fold's test groups.
+
+    Every group contributes to every macro because the family is total, so
+    ``counts['groups']`` is the population behind each metric curve; the
+    ``null``/``changed`` split macros are means over the groups of each class.
+    """
+    grid: ThresholdGrid
     precision: np.ndarray
+    recall: np.ndarray
+    f1: np.ndarray
     spearman: np.ndarray
-    max_k: float
-    recall: float
+    reliability: np.ndarray
+    null_reliability: np.ndarray
+    changed_reliability: np.ndarray
     counts: dict
-    reasons: dict
+
+    @property
+    def d_prime(self):
+        return self.grid.d_prime
+
+    @property
+    def thresholds(self):
+        return self.grid.thresholds
 
 
-def aggregate_indirect(groups):
-    """Equal-weight macro mean over defined test groups; no well weighting."""
-    groups = list(groups)
-    if not groups:
-        raise ValueError('at least one group result is required')
-    k = np.asarray(groups[0].k)
-    if any(not np.array_equal(np.asarray(group.k), k) for group in groups):
-        raise ValueError('group results must share one k axis')
-    counts = {'groups': len(groups)}
-    reasons = {}
+def aggregate_reliability(curves):
+    """Equal-weight macro mean over one fold's test groups, plus the null split.
 
-    def curve(attribute, name):
-        matrix = np.vstack([np.asarray(getattr(group, attribute), dtype=np.float64)
-                            for group in groups])
-        defined = np.isfinite(matrix)
-        count = defined.sum(axis=0)
-        mean = np.full(matrix.shape[1], np.nan)
-        np.divide(np.where(defined, matrix, 0.).sum(axis=0), count, out=mean, where=count > 0)
-        counts[name] = count
-        if not count.any():
-            reasons[name] = NO_DEFINED_GROUPS
-        return mean
+    ``curves`` must share one run's threshold grid. A class with no groups in
+    that fold gets a zero curve and a zero count, never NaN.
+    """
+    curves = list(curves)
+    if not curves:
+        raise ValueError('at least one group curve is required')
+    grid = curves[0].grid
+    for curve in curves[1:]:
+        if (not np.array_equal(curve.grid.d_prime, grid.d_prime)
+                or not np.array_equal(curve.grid.thresholds, grid.thresholds)):
+            raise ValueError('group curves must share one threshold grid')
+    points = len(grid.thresholds)
 
-    def scalar(attribute, name):
-        samples = [value for group in groups
-                   if np.isfinite(value := float(getattr(group, attribute)))]
-        counts[name] = len(samples)
-        if not samples:
-            reasons[name] = NO_DEFINED_GROUPS
-            return float('nan')
-        return float(np.mean(samples))
+    def macro(attribute):
+        return np.mean(np.vstack([np.asarray(getattr(curve, attribute), dtype=np.float64)
+                                  for curve in curves]), axis=0)
 
-    precision = curve('precision', 'Precision@k')
-    spearman = curve('spearman', 'Spearman@k')
-    max_k = scalar('max_k', 'max_k@P80S40')
-    recall = scalar('recall', 'Recall@max_k')
-    return IndirectAggregate(k=k, precision=precision, spearman=spearman, max_k=max_k,
-                             recall=recall, counts=counts, reasons=reasons)
+    precision, recall = macro('precision'), macro('recall')
+    f1, spearman = macro('f1'), macro('spearman')
+    reliability = macro('reliability')
+    reliability_matrix = np.vstack([np.asarray(curve.reliability, dtype=np.float64)
+                                    for curve in curves])
+    measured = np.array([curve.n_measured for curve in curves], dtype=np.int64)
+    null = measured == 0
+    changed = ~null
+
+    def split(mask):
+        if not mask.any():
+            return np.zeros(points)
+        return reliability_matrix[mask].mean(axis=0)
+
+    return ReliabilityAggregate(
+        grid=grid, precision=precision, recall=recall, f1=f1, spearman=spearman,
+        reliability=reliability, null_reliability=split(null),
+        changed_reliability=split(changed),
+        counts={'groups': len(curves), 'null_groups': int(null.sum()),
+                'changed_groups': int(changed.sum())})

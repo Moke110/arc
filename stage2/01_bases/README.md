@@ -334,6 +334,50 @@ the PNG byte for byte (sha256 `35d14266…`); it never opens `output/`.
 The panel covers the three test folds, 4206 measured wells and 1377 parent–dose
 groups and is measurement-derived diagnostic QA, not trained-model performance.
 
+## Shared `@d` evaluation and figure APIs
+
+`output/api/bases/evaluation.py` owns the ADR 0064 reliability family used by the
+tenv comparison; `02_models_tenv` imports it and re-implements none of it. The
+direct family is unchanged.
+
+- **Label side.** `measured_effect_gate(padj, log2_fold_change)` marks every gene
+  with `padj < 0.05`, direction `sign(log2FC)`, and returns
+  `MeasuredEffects(signed, magnitude, indices)`. The declared constants are
+  `PADJ_THRESHOLD`, `THRESHOLD_GRID_POINTS = 100`, `MIN_HITS_FOR_SPEARMAN = 3`,
+  `SPEARMAN_NEUTRAL = 1.0`, `GENE_COUNT` and `RELIABILITY_METRICS`.
+- **Predicted side.** `predicted_rank_table(delta_mean)` is the full-axis
+  `|Δ̂_mean|` rank table, retained unchanged from the previous comparison.
+- **Scan.** `threshold_grid(M)` returns `d = k · 0.01 · M` for `k = 1..100`;
+  window membership is `|Δ̂_mean| >= d`, so the strictest point keeps the window
+  of the gene that defines `M` non-empty instead of emptying every window. It
+  does not select every group's strongest gene: at `d = M` only the group(s)
+  whose maximum is `M` can be non-empty (12/459 fold 0, 33/459 fold 1 here), so
+  the top of the grid is a degenerate edge.
+- **Metric functions.** `precision_at_d`, `recall_at_d`, `f1_at_d` (harmonic),
+  `spearman_at_d` (neutral `mult = 1` below three hits) and `reliability_at_d`
+  are pure functions over counts and arrays. `reliability_curve` binds one
+  group's window to the grid; `aggregate_reliability` is the equal-weight macro
+  over a fold's test groups with the null/changed split. The family is **total**:
+  an empty window on a null group scores `1`, an empty window on a group with
+  measured effects scores `0`, a non-empty window on a null group scores `0`.
+  No metric returns NaN and none carries a defined-group count.
+
+`output/api/bases/plots.py` owns the complete plot-value schema and the drawing
+API both step figures use. New panel kinds added for ADR 0064 are a `curve`
+panel with a per-run threshold marker (`d*`) and an optional reference line
+(`F1@d` on the Reliability panel), and a three-class `heatmap` panel; the `bar`
+panel is reused for the direct metrics and the reliability summaries. The
+figure row records its panel grid, so a replay is driven by the recorded layout
+rather than a hard-coded shape. `output/api/bases/palette.py` gains the
+`reference` and `marker` roles and a recorded sequential heat-map ramp; entry
+hues, line/fill shades and the learning-curve training/validation families are
+unchanged. `02_models_tenv/figure/script/render_figures.py` is the only step
+consumer.
+
+The retired k-parameterized indirect family and its undefined-group machinery
+are no longer called by any live step; `bases/metrics.py` (the earlier retrieval
+module) remains untouched and is not imported here.
+
 ## Accepted results and limitations
 
 Results reused from the accepted records (#156 re-verified digests and path

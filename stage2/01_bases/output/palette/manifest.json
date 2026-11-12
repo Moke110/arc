@@ -9,7 +9,7 @@
   ],
   "module": {
     "path": "output/api/bases/palette.py",
-    "sha256": "29d7b18b76c7fc3a91d8f2ff090472c52a4fdaedcf7a46ee57d423f4497302fa"
+    "sha256": "51e9ffe7bf2c57fb4469aea8d36990e46dc670bb962837a37e301f30ce8cb9e1"
   },
   "recipe": {
     "algorithm": "Per shade s in 0..8: L = 0.22 + 0.07*s, S = 0.90 - 0.06*s (S = 0 for gray). Convert (H/360, L, S) with colorsys.hls_to_rgb, then each channel is floor(channel*255 + 0.5) and formatted as lowercase #rrggbb.",
@@ -39,6 +39,21 @@
         "name": "magenta"
       }
     ],
+    "heatmap": {
+      "family": "gray",
+      "order": "low count -> high count",
+      "shades": [
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ]
+    },
     "lightness": {
       "start": 0.22,
       "step": 0.07
@@ -64,6 +79,8 @@
       ],
       "fill": 6,
       "line": 2,
+      "marker": 0,
+      "reference": 4,
       "run_shade_order": [
         2,
         4,
@@ -108,6 +125,14 @@
     "line": {
       "family": "entry",
       "shade": 2
+    },
+    "marker": {
+      "family": "entry",
+      "shade": 0
+    },
+    "reference": {
+      "family": "entry",
+      "shade": 4
     },
     "text": {
       "family": "gray",

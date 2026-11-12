@@ -1,32 +1,42 @@
 # AGENTS.md — stage2/02_models_tenv
 
-Routing for the Stage 2 tenv model-comparison step (#163, #164, #165). ADR 0063
-is the authority for the metric families, run matrix, palette and figures; the
-step contract is [`../AGENTS.md`](../AGENTS.md); the shared readers, evaluator,
-palette and drawing API are owned by [`../01_bases/`](../01_bases/README.md) and
-are never re-implemented here. Human-readable results are in
-[`README.md`](README.md).
+Routing for the Stage 2 tenv model-comparison step (#163, #164, #165, #167,
+#168, #169, #170). ADR 0064 is the authority for the metric family, run matrix,
+palette and figures (it supersedes the indirect-metric and figure portions of
+ADR 0063); the step contract is [`../AGENTS.md`](../AGENTS.md); the shared
+readers, evaluator, palette and drawing API are owned by
+[`../01_bases/`](../01_bases/README.md) and are never re-implemented here.
+Human-readable results are in [`README.md`](README.md).
 
-## The accepted matrix and its one command (#165)
+## The accepted matrix and its one command (#165, #170)
 
-`execution/run_matrix.py` is the one-command publish/replay. It builds each
+`execution/run_matrix.py` is the one-command publish/replay. `--all` builds each
 fold's complete predictor-input release, trains PRnet for the declared
 2 folds x 2 seeds **serialized** through `execution/capped.sh` under
 `/usr/bin/time -v`, writes the deterministic `Mean` reference, scores the whole
-run set with the shared #164 driver, verifies the #162 plot-value contract,
-publishes the stable products, and renders and replay-verifies both figures.
+run set with the shared #168 driver, verifies the ADR 0064 plot-value contract,
+publishes the stable products, and renders and replay-verifies the **three**
+figures. `--accept-only` is the no-training acceptance path: it verifies the
+eight published runs and their identity digests, rescores them twice with BLAS
+threads pinned to 2, compares the candidate and published trees byte for byte,
+re-emits `output/evaluation` and `output/figure_data`, re-renders the three
+figures from the tracked `figure/data`, refuses to rewrite accepted bytes, and
+writes `log/166-acceptance.json`. It never trains or re-infers.
 
 ```bash
 python execution/run_matrix.py --plan-only   # print the declared identities
 python execution/run_matrix.py --all         # candidate -> acceptance -> publish
 python execution/run_matrix.py --all --resume
+python execution/run_matrix.py --accept-only \
+  --python /home/chang/miniconda3/envs/arc/bin/python   # no-training replay
 ```
 
-Candidate state lives in `execution/checkpoints/matrix-165/`, never in
-`output/`; a run that is not `complete` aborts before any stable path is
-touched. `figure/script/render_figures.py --figure-data figure/data --out-dir
-figure` rebuilds both PNGs from the tracked plot values alone and never opens
-the step's `output/` tree.
+Candidate state lives in `execution/checkpoints/matrix-165/` (and
+`execution/checkpoints/accept-170/` for the replay), never in `output/`; a run
+that is not `complete` aborts before any stable path is touched.
+`figure/script/render_figures.py --figure-data figure/data --out-dir figure`
+rebuilds all three PNGs from the tracked plot values alone and never opens the
+step's `output/` tree.
 
 ## Environments (two, recorded)
 
@@ -86,7 +96,9 @@ effective config, `identity.json` (hashes), `checkpoint.json` (history,
 early-stopping record, behavior probes, resource peak) and `terminal.json`.
 A failed, interrupted or over-budget run writes `terminal.json` with that
 status and no prediction. The bounded run is #163 admission only; the accepted
-2 × 2 matrix is #165 and is recorded in `log/165-acceptance.json`.
+2 × 2 matrix is #165, and its current @d acceptance is recorded in
+`log/166-acceptance.json` (`log/165-acceptance.json` remains as history with a
+`superseded_by` pointer).
 
 ## Early stopping and selection (ADR 0063)
 
@@ -100,18 +112,20 @@ also exists for failed, interrupted and over-budget runs, where it may carry no
 early-stopping record). The 20-epoch rule is still implemented and checked on
 its own counter, and its dominance accounting is exercised in the tests.
 
-## Accepted products (ADR 0062, #165)
+## Accepted products (ADR 0062, #165, #170)
 
 | path | content | tracked? |
 |---|---|---|
 | `output/inputs/{fold_X}/{seed_Y}/` | complete predictor-input release per matrix cell and its manifest | ignored payload |
 | `output/runs/{entry}/{fold_X}/{seed_Y}/` | `prediction.npy`, `case_ids.json`, `best.pt`, `config.json`, `checkpoint.json`, `identity.json`, `terminal.json`, `progress.json`, `resources.json` | ignored payload |
-| `output/evaluation/` | `per_well.csv`, `per_group.csv`, `per_run.csv`, `evaluation.json` from the shared driver | ignored payload |
-| `output/figure_data/` | candidate copies of the two plot-value tables (identical to `figure/data/`) | ignored payload |
-| `figure/metrics.png`, `figure/learning_curve.png` | the report figures | tracked |
-| `figure/data/metrics_values.csv`, `figure/data/learning_curve_values.csv` | complete plotted values in the shared `PLOT_VALUE_COLUMNS` schema | tracked |
+| `output/evaluation/` | `per_well.csv`, `per_group.csv`, `per_run.csv`, `per_run_curve.csv`, `confusion.csv` and `evaluation.json` from the shared driver | ignored payload |
+| `output/figure_data/` | copies of the three plot-value tables (identical to `figure/data/`) | ignored payload |
+| `figure/metrics.png`, `figure/metrics_indirect.png`, `figure/learning_curve.png` | the three report figures | tracked |
+| `figure/data/metrics_values.csv`, `figure/data/metrics_indirect_values.csv`, `figure/data/learning_curve_values.csv` | complete plotted values in the shared `PLOT_VALUE_COLUMNS` schema | tracked |
 | `figure/script/render_figures.py` | CSV-only renderer (no matrices, checkpoints or truth) | tracked |
-| `log/165-acceptance.json`, `log/resources/165-*` | acceptance record with hashes/statuses/peaks and the raw `/usr/bin/time -v` files | tracked |
+| `log/166-acceptance.json` | current `stage2-tenv-acceptance-v2` record: hashes, per-run `M`/`d*`/`Reliability@d*`, replay proof | tracked |
+| `log/165-acceptance.json`, `log/resources/{prnet,mean}-fold_*-seed_*.time` | earlier acceptance record and raw `/usr/bin/time -v` measurements | tracked |
+| `log/resources/166-{rescore-verification,rescore-publish,figure-replay}.time` | raw `/usr/bin/time -v` measurements behind the current record's resource evidence | tracked |
 
 ## Tests
 
@@ -136,17 +150,20 @@ selects a best epoch before the last epoch and then runs the command again with
 must match the published prediction exactly (deleting the fit-time reload makes
 that test fail).
 
-Seam-2/4 tests added by #165 run with `/home/chang/miniconda3/bin/python`:
+Seam-2/4 tests added by #165/#170 run with `/home/chang/miniconda3/bin/python`:
 `test_run_matrix.py` (declared 2 x 2 plan, `/usr/bin/time -v` parsing,
-fail-closed terminal status and candidate-only publish, recorded figure layout),
+fail-closed terminal status and candidate-only publish, recorded figure layout,
+the `--accept-only` refusals, accepted-hash guards and the replay comparison),
 `test_mean_reference.py` (the retired `delta_mean` arithmetic, cold-drug
-semantics, driver-validated artifacts) and `test_figures.py` (both PNGs rebuild
-byte-identically from tracked `figure/data` with the step `output/` unreadable).
+semantics, driver-validated artifacts) and `test_figures.py` (all three PNGs
+rebuild byte-identically from tracked `figure/data` with the step `output/`
+unreadable).
 
 ## Records and resources
 
 `log/` holds the environment locks, the bounded-run acceptance record
-(`log/163-bounded-run.json`), raw `/usr/bin/time -v` measurements
+(`log/163-bounded-run.json`), the current @d acceptance record
+(`log/166-acceptance.json`), raw `/usr/bin/time -v` measurements
 (`log/resources/`) and the per-phase `progress.json` beside the run's published
 artifacts. Disposable run payload
 lives under `output/` and stays untracked. Heavy commands run one at a time

@@ -6,6 +6,12 @@ comparison. Retains both historical implementations, their figures and their
 records for replay. Introduces `stage2/02_models_tenv/` and the shared
 evaluation, palette and figure products in `stage2/01_bases/`.
 
+**Update (2026-11-12):** ADR 0064 replaces the indirect-metric and figure
+portions of this record. The direct metrics, the fold/seed index tables, the
+palette, the `Mean` reference and the PRnet entrant described below remain in
+force; `Precision@k`, `Spearman@k`, `max_k@P80S40`, `Recall@max_k`, the
+`|log2FC| >= 2` gate and the `metrics.png` indirect panels are retired.
+
 The user removed every Stage 2 step except `01_bases` on 2026-11-11. That
 foundation keeps the frozen gene axis, the training corpora, the measured tenv
 truth and shared retrieval metrics, but no model comparison. This record
