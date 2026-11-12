@@ -1,0 +1,30 @@
+{
+  "accession": "GSE128188",
+  "title": "Differentially Expressed Genes for Atrial Fibrillation Identified using RNA Sequencing from Paired Human Left and Right Atrial Appendages.",
+  "species": "Homo sapiens",
+  "platform": "GPL18573 (Illumina NextSeq 500, Homo sapiens)",
+  "tissue_model": "human paired left and right atrial appendage, bulk RNA-seq",
+  "contrast": "AF_vs_SR",
+  "contrast_description": "positive log2FC = higher expression in atrial fibrillation than in sinus rhythm",
+  "method": "DESeq2 1.50.2 Wald test; pairing pooled: counts summed across each donor's two appendages (20 libraries -> 10 donors), design ~ group, BH adjustment; DESeq2 independent filtering leaves padj NA for filtered genes",
+  "pairing": "pooled",
+  "pairing_rationale": "disease status is donor-level (each donor is AF or SR and contributes both LA and RA), so a donor fixed block is confounded with the contrast; DESeq2 has no random effects; pooling the paired libraries avoids pseudo-replication",
+  "thresholds": {
+    "padj": 0.05,
+    "abs_log2FC": 0.5
+  },
+  "n_genes_tested": 14823,
+  "n_genes_padj": 14810,
+  "n_up": 99,
+  "n_down": 242,
+  "n_case": 5,
+  "n_control": 5,
+  "n_libraries": 20,
+  "exploratory": false,
+  "description": "Full-transcriptome DESeq2 AF-vs-SR differential expression on donor-pooled counts (paired LA+RA appendages summed per donor, 20 libraries -> 10 donors; 5 AF / 5 SR). Positive log2FC = higher in AF.",
+  "digests": {
+    "source/GSE128188_CountsV2_EdgeR.txt.gz": "a5bbf3964cd9636fe5926b89de99ff81eaa6249bc82eeaa5ff5662a76bc6e114",
+    "local/deg/GSE128188_deg.csv": "7dd30d8f51b6bbe59e6cc2564b1aa47fd32f5b8f537ae5cf45ae72a99044f438"
+  },
+  "generated_by": "script/build_deg.R"
+}

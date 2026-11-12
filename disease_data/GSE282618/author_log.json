@@ -1,0 +1,48 @@
+{
+  "item": "GSE282618",
+  "category": "disease_data",
+  "purpose": "EXPLORATORY human hypertensive heart disease (HHD) input for the Stage 2 gene axis: full-transcriptome HHD-vs-control DEG and log expression at n=5 subjects (3 HHD / 2 control), i.e. a small-n reference only, for the borderline >5% HHD prevalence category (docs/research/stage2-stage3-gene-axis-datasets.md).",
+  "retrieved_at": "2026-11-13T01:15+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE282618",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE282618",
+      "version": "GSE282618",
+      "license": "unknown",
+      "species": "Homo sapiens",
+      "method": "script/fetch.sh (curl from the GEO FTP supplementary directory); upstream GSE282618_counts.txt.gz kept byte-identical",
+      "path": "source/",
+      "files": 1,
+      "bytes": 699058,
+      "tree_sha256": "61595b3f8a9220f2d7dc3abe3df6db52ed2f08b8dd672cf7bbe08dc7dc2b6ddb"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE282618_deg.csv",
+      "origin": "Full-transcriptome DESeq2 HHD-vs-control DEG table (36,631 symbol-mapped genes; gene_symbol, contrast, log2FC, stat, p_value, padj, baseMean, n_case, n_control); regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE282618_deg.json",
+      "origin": "Tracked per-GSE DEG summary: accession, species, platform, contrast, method, pairing decision, exploratory flag and reason, thresholds, n_genes_tested, n_up, n_down, symbol-mapping/coverage counts, and digests of the source file and DEG CSV",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/expr/GSE282618_log_expr.tsv.gz",
+      "origin": "log2(CPM+1) gene-level expression matrix, 36,631 genes x 10 GEO libraries (LV+RV); regenerable, ignored by the item-level .gitignore because the global *.tsv rule does not match *.tsv.gz",
+      "generated_by": "script/build_expression.R"
+    },
+    {
+      "path": "local/expr/GSE282618_samples.csv",
+      "origin": "Sample sheet for the log expression matrix: sample, group (HHD/control), subject, site (LV/RV), geo_title (verbatim GEO series-matrix title); regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_expression.R"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T01:21+08:00",
+  "verify_result": "pass",
+  "notes": "EXPLORATORY. GEO ACCESSION: GSE282618 (Homo sapiens, GPL30173 NextSeq 2000, post-mortem LV+RV bulk RNA-seq). GEO overall design: 3 hypertensive (NDRI1, NDRI3, NDRI5) vs 2 control (NDRI4, NDRI7) subjects, 6 LV/RV libraries vs 4; n=5 subjects cannot support a stable transcriptome-wide DEG list, so this item is a small-n reference for the axis and is flagged exploratory in local/deg/GSE282618_deg.json, the author log and the item purpose. Hypertensive heart disease is a borderline >5% prevalence category (~5.3% of heart-disease prevalence in GBD 2019 arithmetic; docs/research/stage2-stage3-gene-axis-datasets.md, 'Disease-prevalence taxonomy'), cited rather than re-researched. Design: DESeq2 HHD vs control on subject-pooled counts (paired LV+RV summed per subject -> 3 HHD / 2 control) for the same reason as GSE128188 (disease status is subject-level; a subject fixed block is confounded with the contrast and DESeq2 has no random effects). The upstream matrix is Ensembl-ID-keyed (60,646 IDs); symbols come from org.Hs.eg.db (36,732 mapped; 23,914 without a symbol dropped, and 101 duplicate symbols collapsed to the highest-mean-CPM Ensembl ID, both recorded in the JSON). Group labels come from the GEO series matrix (!Sample_characteristics_ch1 disease) and are pinned and validated in both build scripts. Tracked: script/**, local/deg/GSE282618_deg.json, author_log.json, manifest.sha256, .gitignore. Ignored: source/ (ADR 0030), local/deg/GSE282618_deg.csv and local/expr/GSE282618_samples.csv (global *.csv rule), local/expr/GSE282618_log_expr.tsv.gz (item .gitignore).",
+  "hashed_at": "2026-11-13T01:21+08:00"
+}
