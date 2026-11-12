@@ -1,4 +1,4 @@
-"""Shared Stage 2 evaluation contract: gate, direct, rank table, indirect, aggregation."""
+"""Shared Stage 2 evaluation contract: measured effects, direct, rank table, @d family."""
 import hashlib
 import unittest
 import numpy as np
@@ -7,36 +7,40 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
+from bases import evaluation
 from bases.evaluation import (
-    truth_gate, direct_metrics, predicted_rank_table, indirect_metrics,
-    aggregate_direct, aggregate_indirect)
+    measured_effect_gate, direct_metrics, predicted_rank_table, threshold_grid,
+    precision_at_d, recall_at_d, f1_at_d, spearman_at_d, reliability_at_d,
+    reliability_curve, aggregate_direct, aggregate_reliability)
 
 PADJ = np.array([0.01, 0.02, 0.049, 0.05, 0.01, 0.2])
-LOG2FC = np.array([3.0, -2.0, 2.5, 10.0, 1.0, -5.0])
-DELTA_MEAN = np.array([5.0, -3.0, 2.0, 4.0, 1.0, -1.0])
+LOG2FC = np.array([3.0, -2.0, 2.5, 10.0, -1.0, -5.0])
 
 
-class TruthGateTests(unittest.TestCase):
-    def test_gate_requires_padj_and_fold_change_and_takes_direction_from_delta_mean(self):
-        gate = truth_gate(PADJ, LOG2FC, DELTA_MEAN)
-        self.assertEqual(gate.signed.tolist(), [1, -1, 1, 0, 0, 0])
-        self.assertEqual(gate.indices.tolist(), [0, 1, 2])
-        self.assertEqual(gate.count, 3)
+class MeasuredEffectTests(unittest.TestCase):
+    def test_padj_selects_and_log2fc_supplies_direction_without_a_magnitude_gate(self):
+        gate = measured_effect_gate(PADJ, LOG2FC)
+        self.assertEqual(gate.signed.tolist(), [1, -1, 1, 0, -1, 0])
+        self.assertEqual(gate.indices.tolist(), [0, 1, 2, 4])
+        self.assertEqual(gate.count, 4)
+        np.testing.assert_allclose(gate.magnitude, [3.0, 2.0, 2.5, 0.0, 1.0, 0.0])
 
-    def test_gate_ignores_non_significant_effect_and_threshold_edges(self):
-        padj = np.array([0.05, 0.049, 0.01, 0.2])
-        log2fc = np.array([40.0, 1.999, -2.0, 7.0])
-        delta_mean = np.array([8.0, 4.0, -6.0, 3.0])
-        gate = truth_gate(padj, log2fc, delta_mean)
-        self.assertEqual(gate.signed.tolist(), [0, 0, -1, 0])
+    def test_only_padj_below_threshold_selects_and_nan_padj_is_not_measured(self):
+        padj = np.array([0.05, 0.049, np.nan, 0.0])
+        log2fc = np.array([-40.0, 1.999, 5.0, 2.0])
+        gate = measured_effect_gate(padj, log2fc)
+        self.assertEqual(gate.signed.tolist(), [0, 1, 0, 1])
+        np.testing.assert_allclose(gate.magnitude, [0.0, 1.999, 0.0, 2.0])
 
     def test_gate_rejects_inconsistent_or_degenerate_statistics(self):
         with self.assertRaisesRegex(ValueError, 'adjusted p-values'):
-            truth_gate(np.array([1.2, 0.01]), LOG2FC[:2], DELTA_MEAN[:2])
-        with self.assertRaisesRegex(ValueError, 'significant gene'):
-            truth_gate(np.array([0.01, 0.02]), np.array([np.nan, -3.0]), DELTA_MEAN[:2])
-        with self.assertRaisesRegex(ValueError, 'measured delta'):
-            truth_gate(np.array([0.01, 0.02]), np.array([3.0, -3.0]), np.array([0.0, -3.0]))
+            measured_effect_gate(np.array([1.2, 0.01]), LOG2FC[:2])
+        with self.assertRaisesRegex(ValueError, 'direction'):
+            measured_effect_gate(np.array([0.01, 0.02]), np.array([np.nan, -3.0]))
+        with self.assertRaisesRegex(ValueError, 'direction'):
+            measured_effect_gate(np.array([0.01, 0.02]), np.array([0.0, -3.0]))
+        with self.assertRaisesRegex(ValueError, 'gene axis'):
+            measured_effect_gate(np.array([0.01, 0.02]), LOG2FC[:3])
 
 
 class DirectMetricTests(unittest.TestCase):
@@ -98,109 +102,122 @@ class PredictedRankTableTests(unittest.TestCase):
             predicted_rank_table(np.array([1., np.inf]))
 
 
-def _gated(padj, log2fc, delta_mean):
-    return truth_gate(np.asarray(padj, dtype=float), np.asarray(log2fc, dtype=float),
-                      np.asarray(delta_mean, dtype=float))
+def _gate(padj, log2fc):
+    return measured_effect_gate(np.asarray(padj, dtype=float), np.asarray(log2fc, dtype=float))
 
 
-class IndirectMetricTests(unittest.TestCase):
-    def test_exact_k_curve_with_tie_in_absolute_predicted_delta(self):
-        # genes 1 and 2 tie at |Δ̂| = 6, so the table orders them by gene index.
-        true_delta = np.array([5., -4., 3., 2.5])
-        gated = _gated([.01, .01, .01, .2], [3., -2., 3., 5.], true_delta)
-        table = predicted_rank_table(np.array([10., 6., -6., 1.]))
-        self.assertEqual(table.gene_index.tolist(), [0, 1, 2, 3])
-        metrics = indirect_metrics(table, gated, true_delta, k_max=4)
-        self.assertEqual(metrics.k.tolist(), [1, 2, 3, 4])
-        self.assertEqual(metrics.precision[0], 1.)
-        self.assertAlmostEqual(metrics.precision[1], 1 / 2)
-        self.assertAlmostEqual(metrics.precision[2], 1 / 3)
-        self.assertAlmostEqual(metrics.precision[3], 1 / 4)
-        self.assertTrue(np.isnan(metrics.spearman[0]))
-        self.assertTrue(np.isnan(metrics.spearman[1]))
-        self.assertAlmostEqual(metrics.spearman[2], 0.5)
-        self.assertAlmostEqual(metrics.spearman[3], 0.2)
-        self.assertEqual(metrics.reasons['Spearman@k'], 'k_below_3')
-        self.assertTrue(np.isnan(metrics.max_k))
-        self.assertTrue(np.isnan(metrics.recall))
-        self.assertEqual(metrics.reasons['max_k@P80S40'], 'no_qualifying_k')
-        self.assertEqual(metrics.reasons['Recall@max_k'], 'no_qualifying_k')
-        self.assertEqual(metrics.matched, 1)
+def _curve(delta, padj, log2fc, max_absolute_delta=10.0):
+    return reliability_curve(np.asarray(delta, dtype=float), _gate(padj, log2fc),
+                             threshold_grid(max_absolute_delta))
 
-    def test_max_k_and_recall_on_a_qualifying_group(self):
-        # Absolute predicted order: 0,1,2,3,10,4,11,5,... ; gated truth 0..5.
-        predicted = np.array([12., 11., 10., 9., 7., 5., 4., 3., 2., 1., 8., 6.])
-        true_delta = np.array([6., 5., 4., 3., 2., 1., 0., 0., 0., 0., 0., 0.])
-        padj = [.01] * 6 + [.2] * 6
-        log2fc = [3., 2., 2.5, 3., 2., 2.] + [5.] * 6
-        gated = _gated(padj, log2fc, true_delta)
-        metrics = indirect_metrics(predicted_rank_table(predicted), gated, true_delta, k_max=12)
-        self.assertEqual(metrics.precision[:4].tolist(), [1., 1., 1., 1.])
-        self.assertAlmostEqual(metrics.precision[4], .8)
-        self.assertAlmostEqual(metrics.precision[5], 5 / 6)
-        self.assertAlmostEqual(metrics.spearman[2], 1.)
-        self.assertAlmostEqual(metrics.spearman[3], 1.)
-        self.assertAlmostEqual(metrics.spearman[4], 1.)
-        self.assertAlmostEqual(metrics.spearman[5], 33 / 35)
-        self.assertEqual(metrics.max_k, 6.)
-        self.assertAlmostEqual(metrics.recall, 5 / 6)
-        self.assertEqual(metrics.matched, 6)
-        self.assertNotIn('max_k@P80S40', metrics.reasons)
 
-    def test_full_k_range_reaches_one_hundred(self):
-        count = 120
-        predicted = np.arange(count, 0, -1, dtype=float)
-        true_delta = np.arange(count, 0, -1, dtype=float)
-        padj = np.full(count, .2)
-        padj[:60] = .01
-        padj[110] = .01
-        log2fc = np.full(count, 5.)
-        gated = _gated(padj, log2fc, true_delta)
-        metrics = indirect_metrics(predicted_rank_table(predicted), gated, true_delta)
-        self.assertEqual(len(metrics.k), 100)
-        self.assertEqual(metrics.precision[0], 1.)
-        self.assertEqual(metrics.precision[59], 1.)
-        self.assertAlmostEqual(metrics.precision[60], 60 / 61)
-        self.assertAlmostEqual(metrics.precision[74], 60 / 75)
-        self.assertAlmostEqual(metrics.precision[75], 60 / 76)
-        self.assertAlmostEqual(metrics.precision[99], .6)
-        np.testing.assert_allclose(metrics.spearman[2:], np.ones(98))
-        self.assertEqual(metrics.max_k, 75.)
-        self.assertAlmostEqual(metrics.recall, 60 / 61)
-        self.assertEqual(metrics.matched, 61)
+class ThresholdGridTests(unittest.TestCase):
+    def test_grid_is_one_hundred_scaled_points_with_open_ends(self):
+        grid = threshold_grid(8.0)
+        self.assertEqual(len(grid.d_prime), 100)
+        np.testing.assert_array_equal(grid.d_prime, np.arange(1, 101) / 100)
+        self.assertEqual(grid.d_prime[0], 0.01)
+        self.assertEqual(grid.d_prime[-1], 1.0)
+        self.assertAlmostEqual(grid.thresholds[0], 0.08)
+        self.assertAlmostEqual(grid.thresholds[-1], 8.0)
+        np.testing.assert_allclose(grid.thresholds, np.arange(1, 101) * 0.01 * 8.0)
+        self.assertEqual(grid.max_absolute_delta, 8.0)
 
-    def test_empty_gate_is_nan_with_its_own_reason(self):
-        true_delta = np.array([5., 4., -3.])
-        gated = _gated([.2, .2, .2], [5., 5., 5.], true_delta)
-        metrics = indirect_metrics(predicted_rank_table(np.array([3., 2., 1.])), gated, true_delta, k_max=3)
-        self.assertTrue(np.isnan(metrics.precision).all())
-        self.assertTrue(np.isnan(metrics.spearman).all())
-        self.assertTrue(np.isnan(metrics.max_k))
-        self.assertTrue(np.isnan(metrics.recall))
-        for name in ('Precision@k', 'Spearman@k', 'max_k@P80S40', 'Recall@max_k'):
-            self.assertEqual(metrics.reasons[name], 'empty_gate')
+    def test_two_runs_with_different_m_share_one_d_prime_axis(self):
+        small, large = threshold_grid(3.0), threshold_grid(0.4)
+        np.testing.assert_array_equal(small.d_prime, large.d_prime)
+        self.assertFalse(np.allclose(small.thresholds, large.thresholds))
 
-    def test_constant_prediction_and_constant_truth_are_distinct_reasons(self):
-        true_delta = np.array([5., 4., 3., 2.])
-        gated = _gated([.01] * 3 + [.2], [3.] * 4, true_delta)
-        constant_prediction = indirect_metrics(
-            predicted_rank_table(np.zeros(4)), gated, true_delta, k_max=4)
-        self.assertTrue(np.isnan(constant_prediction.spearman).all())
-        self.assertEqual(constant_prediction.reasons['Spearman@k'], 'constant_prediction')
-        self.assertEqual(constant_prediction.reasons['max_k@P80S40'], 'no_qualifying_k')
+    def test_grid_rejects_nonpositive_or_nonfinite_normalisers(self):
+        for value in (0.0, -1.0, np.nan, np.inf):
+            with self.assertRaisesRegex(ValueError, 'max_absolute_delta'):
+                threshold_grid(value)
 
-        constant_truth = indirect_metrics(
-            predicted_rank_table(np.array([4., 3., 2., 1.])), gated, np.full(4, 2.), k_max=4)
-        self.assertTrue(np.isnan(constant_truth.spearman).all())
-        self.assertEqual(constant_truth.reasons['Spearman@k'], 'constant_truth')
 
-    def test_indirect_metrics_require_one_axis_and_available_k(self):
-        gated = _gated([.01, .01], [3., 3.], np.array([2., 3.]))
-        table = predicted_rank_table(np.array([2., 1.]))
-        with self.assertRaisesRegex(ValueError, 'gene axis'):
-            indirect_metrics(table, gated, np.array([2., 3.]), k_max=3)
-        with self.assertRaisesRegex(ValueError, 'k_max'):
-            indirect_metrics(table, gated, np.array([2., 3.]), k_max=0)
+class ReliabilityMetricTests(unittest.TestCase):
+    def test_four_grid_cells_take_their_declared_totals_and_stay_finite(self):
+        grid = threshold_grid(10.0)
+        empty_none = reliability_curve(np.zeros(3), _gate([.2] * 3, [5.] * 3), grid)
+        empty_measured = reliability_curve(np.zeros(3), _gate([.01, .2, .2], [1., 5., 5.]), grid)
+        window_none = reliability_curve(np.array([10., 0., 0.]), _gate([.2] * 3, [5.] * 3), grid)
+        window_measured = reliability_curve(
+            np.array([10., 5., 0.]), _gate([.01, .2, .01], [2., 5., 1.]), grid)
+
+        self.assertEqual(empty_none.precision[99], 1.0)
+        self.assertEqual(empty_none.recall[99], 1.0)
+        self.assertEqual(empty_none.f1[99], 1.0)
+        self.assertEqual(empty_none.spearman[99], 1.0)
+        self.assertEqual(empty_none.reliability[99], 1.0)
+
+        for curve in (empty_measured, window_none):
+            self.assertEqual(curve.precision[99], 0.0)
+            self.assertEqual(curve.recall[99], 0.0)
+            self.assertEqual(curve.f1[99], 0.0)
+            self.assertEqual(curve.reliability[99], 0.0)
+
+        self.assertEqual(window_measured.n_window[39], 2)
+        self.assertEqual(window_measured.n_hits[39], 1)
+        self.assertEqual(window_measured.precision[39], 0.5)
+        self.assertEqual(window_measured.recall[39], 0.5)
+        self.assertEqual(window_measured.f1[39], 0.5)
+        self.assertEqual(window_measured.spearman[39], 1.0)
+        self.assertEqual(window_measured.reliability[39], 0.5)
+
+        for curve in (empty_none, empty_measured, window_none, window_measured):
+            self.assertFalse(hasattr(curve, 'reasons'))
+            for attribute in ('precision', 'recall', 'f1', 'spearman', 'reliability'):
+                self.assertTrue(np.isfinite(getattr(curve, attribute)).all())
+
+    def test_perfect_table_scores_reliability_one(self):
+        curve = _curve([4., 3., 2., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.], 4.0)
+        index = 49  # d' = 0.50, so d = 2.0
+        self.assertEqual(curve.n_window[index], 3)
+        self.assertEqual(curve.n_hits[index], 3)
+        self.assertEqual(curve.precision[index], 1.0)
+        self.assertEqual(curve.recall[index], 1.0)
+        self.assertEqual(curve.f1[index], 1.0)
+        self.assertEqual(curve.spearman[index], 1.0)
+        self.assertEqual(curve.reliability[index], 1.0)
+
+    def test_direction_inverted_perfect_set_scores_zero(self):
+        curve = _curve([-4., -3., -2., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.], 4.0)
+        index = 49  # d' = 0.50, so d = 2.0 and the full measured set is still emitted
+        self.assertEqual(curve.n_window[index], 3)
+        self.assertEqual(curve.n_hits[index], 0)
+        self.assertEqual(curve.f1[index], 0.0)
+        self.assertEqual(curve.reliability[index], 0.0)
+
+    def test_f1_is_harmonic_so_one_hit_in_three_is_half_not_two_thirds(self):
+        curve = _curve([10., 0., 0., 0.], [.01, .01, .01, .2], [3., 2., 1., 5.])
+        index = 99  # d = 10.0 selects only the strongest gene
+        self.assertEqual(curve.precision[index], 1.0)
+        self.assertAlmostEqual(curve.recall[index], 1 / 3)
+        self.assertAlmostEqual(curve.f1[index], 0.5)
+        self.assertNotAlmostEqual(curve.f1[index], (1.0 + 1 / 3) / 2)
+        self.assertAlmostEqual(curve.reliability[index], 0.5)
+
+    def test_spearman_is_neutral_below_three_hits_and_hand_computed_at_three(self):
+        self.assertEqual(spearman_at_d(np.array([]), np.array([])), 1.0)
+        self.assertEqual(spearman_at_d(np.array([3.]), np.array([1.])), 1.0)
+        self.assertEqual(spearman_at_d(np.array([3., 2.]), np.array([1., 2.])), 1.0)
+        # ranks 1,2,3 against 1,3,2: 1 - 6*2/(3*8) = 0.5.
+        self.assertAlmostEqual(spearman_at_d(np.array([1., 2., 3.]), np.array([1., 3., 2.])), 0.5)
+        self.assertAlmostEqual(reliability_at_d(0.6, 0.5), 0.45)
+        # No rank variation is uninformative, so the term stays neutral and finite.
+        self.assertEqual(spearman_at_d(np.array([2., 2., 2.]), np.array([1., 2., 3.])), 1.0)
+
+    def test_correct_set_in_reverse_magnitude_order_loses_the_ordering_term(self):
+        # The window is the measured set, but predicted magnitudes rise as measured fall.
+        curve = _curve([2., 3., 4., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.], 4.0)
+        self.assertEqual(curve.f1[49], 1.0)
+        self.assertAlmostEqual(curve.spearman[49], -1.0)
+        self.assertEqual(curve.reliability[49], 0.0)
+
+    def test_strictest_grid_point_selects_the_gene_that_defines_m(self):
+        curve = _curve([25., 10., 0.], [.2, .2, .2], [5., 5., 5.], 25.0)
+        self.assertAlmostEqual(curve.thresholds[-1], 25.0)
+        self.assertEqual(curve.n_window[-1], 1)
+        self.assertEqual(curve.n_hits[-1], 0)
 
 
 class AggregationTests(unittest.TestCase):
@@ -226,61 +243,70 @@ class AggregationTests(unittest.TestCase):
         self.assertEqual(aggregate.reasons['PCC'], 'constant_truth')
         self.assertEqual(aggregate.counts['RMSE'], 1)
 
-    def test_indirect_run_mean_is_equal_weight_over_defined_groups(self):
-        predicted = np.array([12., 11., 10., 9., 7., 5., 4., 3., 2., 1., 8., 6.])
-        true_delta = np.array([6., 5., 4., 3., 2., 1., 0., 0., 0., 0., 0., 0.])
-        qualifying = indirect_metrics(
-            predicted_rank_table(predicted),
-            _gated([.01] * 6 + [.2] * 6, [3., 2., 2.5, 3., 2., 2.] + [5.] * 6, true_delta),
-            true_delta, k_max=12)
-        # One gated truth gene at the top cannot reach precision .8 for k >= 2.
-        descending = np.arange(12., 0., -1)
-        unqualified = indirect_metrics(
-            predicted_rank_table(descending),
-            _gated([.01] + [.2] * 11, [3.] + [5.] * 11, np.array([5.] + [0.] * 11)),
-            np.array([5.] + [0.] * 11), k_max=12)
-        empty = indirect_metrics(
-            predicted_rank_table(descending),
-            _gated([.2] * 12, [5.] * 12, np.arange(12., 0., -1)),
-            np.arange(12., 0., -1), k_max=12)
-        aggregate = aggregate_indirect([qualifying, unqualified, empty])
-        self.assertEqual(aggregate.counts['groups'], 3)
-        self.assertEqual(aggregate.k.tolist(), list(range(1, 13)))
-        self.assertEqual(aggregate.counts['Precision@k'].tolist(), [2] * 12)
-        np.testing.assert_allclose(aggregate.precision, (qualifying.precision + unqualified.precision) / 2)
-        self.assertEqual(aggregate.counts['Spearman@k'][:2].tolist(), [0, 0])
-        self.assertEqual(aggregate.counts['Spearman@k'][2], 2)
-        self.assertAlmostEqual(aggregate.max_k, 6.)
-        self.assertEqual(aggregate.counts['max_k@P80S40'], 1)
-        self.assertAlmostEqual(aggregate.recall, 5 / 6)
-        self.assertEqual(aggregate.counts['Recall@max_k'], 1)
-        self.assertEqual(aggregate.reasons, {})
+    def test_macro_is_equal_weight_over_every_passed_test_group_with_a_null_split(self):
+        changed = _curve([4., 3., 2., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.])
+        null_empty = _curve([0., 0., 0., 0.], [.2] * 4, [5.] * 4)
+        null_hallucinated = _curve([10., 0., 0., 0.], [.2] * 4, [5.] * 4)
+        aggregate = aggregate_reliability([changed, null_empty, null_hallucinated])
 
-    def test_indirect_aggregation_with_every_group_undefined_reason(self):
-        empty = indirect_metrics(
-            predicted_rank_table(np.array([3., 2., 1.])),
-            _gated([.2, .2, .2], [5., 5., 5.], np.array([5., 4., 3.])),
-            np.array([5., 4., 3.]), k_max=3)
-        aggregate = aggregate_indirect([empty])
-        self.assertTrue(np.isnan(aggregate.precision).all())
-        self.assertTrue(np.isnan(aggregate.spearman).all())
-        self.assertTrue(np.isnan(aggregate.max_k))
-        self.assertTrue(np.isnan(aggregate.recall))
-        self.assertEqual(aggregate.counts['Precision@k'].tolist(), [0, 0, 0])
-        self.assertEqual(aggregate.counts['max_k@P80S40'], 0)
-        for name in ('Precision@k', 'Spearman@k', 'max_k@P80S40', 'Recall@max_k'):
-            self.assertEqual(aggregate.reasons[name], 'no_defined_groups')
+        self.assertEqual(aggregate.counts, {'groups': 3, 'null_groups': 2, 'changed_groups': 1})
+        np.testing.assert_allclose(
+            aggregate.reliability,
+            (changed.reliability + null_empty.reliability + null_hallucinated.reliability) / 3)
+        np.testing.assert_allclose(
+            aggregate.null_reliability,
+            (null_empty.reliability + null_hallucinated.reliability) / 2)
+        np.testing.assert_allclose(aggregate.changed_reliability, changed.reliability)
+        self.assertAlmostEqual(aggregate.reliability[99], 1 / 3)
+        np.testing.assert_array_equal(aggregate.d_prime, changed.grid.d_prime)
+        for attribute in ('precision', 'recall', 'f1', 'spearman', 'reliability',
+                          'null_reliability', 'changed_reliability'):
+            self.assertTrue(np.isfinite(getattr(aggregate, attribute)).all())
+        self.assertFalse(hasattr(aggregate, 'reasons'))
 
-    def test_indirect_aggregation_requires_matching_k_axes(self):
-        empty = indirect_metrics(
-            predicted_rank_table(np.array([3., 2., 1.])),
-            _gated([.2, .2, .2], [5., 5., 5.], np.array([5., 4., 3.])), np.array([5., 4., 3.]), k_max=3)
-        other = indirect_metrics(
-            predicted_rank_table(np.array([4., 3., 2., 1.])),
-            _gated([.2] * 4, [5.] * 4, np.array([5., 4., 3., 2.])),
-            np.array([5., 4., 3., 2.]), k_max=4)
-        with self.assertRaisesRegex(ValueError, 'k axis'):
-            aggregate_indirect([empty, other])
+    def test_macro_uses_only_the_passed_groups(self):
+        first = _curve([4., 3., 2., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.])
+        second = _curve([0., 0., 0., 0.], [.2] * 4, [5.] * 4)
+        pair = aggregate_reliability([first, second])
+        self.assertEqual(pair.counts['groups'], 2)
+        np.testing.assert_allclose(pair.reliability, (first.reliability + second.reliability) / 2)
+
+    def test_macro_requires_at_least_one_group_and_one_shared_grid(self):
+        with self.assertRaisesRegex(ValueError, 'at least one'):
+            aggregate_reliability([])
+        first = _curve([4., 3., 2., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.], 10.0)
+        other_run = _curve([4., 3., 2., 0.], [.01, .01, .01, .2], [4., 3., 2., 5.], 20.0)
+        with self.assertRaisesRegex(ValueError, 'threshold grid'):
+            aggregate_reliability([first, other_run])
+
+
+class RetiredVocabularyTests(unittest.TestCase):
+    """The indirect family and its NaN-plus-reason machinery are gone (ADR 0064).
+
+    The retired tokens below are the guard itself; nothing else in this file may
+    use them.
+    """
+
+    RETIRED_TOKENS = (
+        'Precision@k', 'Spearman@k', 'max_k@P80S40', 'Recall@max_k',
+        'INDIRECT_METRICS', 'EFFECT_THRESHOLD', 'K_MIN_FOR_SPEARMAN', 'K_MAX',
+        'PRECISION_TARGET', 'SPEARMAN_TARGET', 'empty_gate', 'k_below_3',
+        'no_qualifying_k', 'no_defined_groups')
+
+    def test_no_retired_name_gate_or_reason_remains_in_the_implementation(self):
+        source = Path(evaluation.__file__).read_text()
+        for token in self.RETIRED_TOKENS:
+            self.assertNotIn(token, source)
+        for name in ('truth_gate', 'GatedTruth', 'GroupIndirectMetrics', 'IndirectAggregate',
+                     'indirect_metrics', 'aggregate_indirect'):
+            self.assertFalse(hasattr(evaluation, name), name)
+
+    def test_the_new_family_and_its_docstring_are_declared(self):
+        self.assertEqual(evaluation.RELIABILITY_METRICS,
+                         ('Precision@d', 'Recall@d', 'F1@d', 'Spearman@d', 'Reliability@d'))
+        self.assertEqual(evaluation.MIN_HITS_FOR_SPEARMAN, 3)
+        self.assertEqual(evaluation.SPEARMAN_NEUTRAL, 1.0)
+        self.assertIn('ADR 0064', evaluation.__doc__)
 
 
 class RetiredAuprcTests(unittest.TestCase):
