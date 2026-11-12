@@ -37,7 +37,7 @@
       "version": "3.13.13"
     },
     "train_config": {
-      "path": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/execution/models/prnet/config.json",
+      "path": "/home/chang/arc/stage2/02_models_tenv/execution/models/prnet/config.json",
       "sha256": "02b7dbfcc7e2d250e1d1047e323935130160cdd30e6c0826fea9087214fbdfbe"
     },
     "training": {
@@ -74,16 +74,16 @@
   },
   "head_sha": "43765f90ef942b576b04f5f3a6a360547df103f1",
   "publish": {
-    "candidate": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/execution/checkpoints/matrix-165",
+    "candidate": "/home/chang/arc/stage2/02_models_tenv/execution/checkpoints/matrix-165",
     "figures": {
-      "learning_curve": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/figure/learning_curve.png",
-      "metrics": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/figure/metrics.png"
+      "learning_curve": "/home/chang/arc/stage2/02_models_tenv/figure/learning_curve.png",
+      "metrics": "/home/chang/arc/stage2/02_models_tenv/figure/metrics.png"
     },
     "products": {
-      "evaluation": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/output/evaluation",
-      "figure_data": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/output/figure_data",
-      "inputs": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/output/inputs",
-      "runs": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/output/runs"
+      "evaluation": "/home/chang/arc/stage2/02_models_tenv/output/evaluation",
+      "figure_data": "/home/chang/arc/stage2/02_models_tenv/output/figure_data",
+      "inputs": "/home/chang/arc/stage2/02_models_tenv/output/inputs",
+      "runs": "/home/chang/arc/stage2/02_models_tenv/output/runs"
     }
   },
   "releases": [
@@ -246,7 +246,7 @@
       "label": "PRnet",
       "peak_rss_kib": 2029832,
       "prediction_sha256": "ed7d33d77edb12d5b8ab8020d852bc1bceb6c5253096989b1c3877a456761042",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/prnet-fold_0-seed_17.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/prnet-fold_0-seed_17.time",
       "seed": 17,
       "stop_reason": "no_strict_decrease",
       "terminal_sha256": "8b6edbf8b8d72cad2283fdd25cdcc259860afa15599f70d58d62c9c2d519049b",
@@ -265,7 +265,7 @@
       "label": "Mean",
       "peak_rss_kib": 1099512,
       "prediction_sha256": "d89502742333158466be3e8ff08414a2b6e867abeba63be289a6babd6e513f3a",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/mean-fold_0-seed_17.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/mean-fold_0-seed_17.time",
       "seed": 17,
       "stop_reason": null,
       "terminal_sha256": "a768cc6e79c549c3c7915111daed801071d4376e667238ff7b668fb011ddcaa3",
@@ -284,7 +284,7 @@
       "label": "PRnet",
       "peak_rss_kib": 2048864,
       "prediction_sha256": "bbafe3805a9999dc43e30914b1c682053ad70aa70a01c3950beb22858812f5d5",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/prnet-fold_0-seed_42.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/prnet-fold_0-seed_42.time",
       "seed": 42,
       "stop_reason": "no_strict_decrease",
       "terminal_sha256": "3ea43659f90b75bd343d4e1b78d2a512c52bfd90038f7f59f14e01902f5f0e3d",
@@ -303,7 +303,7 @@
       "label": "Mean",
       "peak_rss_kib": 1099048,
       "prediction_sha256": "d89502742333158466be3e8ff08414a2b6e867abeba63be289a6babd6e513f3a",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/mean-fold_0-seed_42.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/mean-fold_0-seed_42.time",
       "seed": 42,
       "stop_reason": null,
       "terminal_sha256": "59dcd8b0f177502c65f7804dc74baf31cd65b09a467746259197485bc8fe8e9a",
@@ -322,7 +322,7 @@
       "label": "PRnet",
       "peak_rss_kib": 2031068,
       "prediction_sha256": "5c8a923f8b08f64725ea4d8436d0f1ab394820939cd46a973b44e8528beda5ce",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/prnet-fold_1-seed_17.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/prnet-fold_1-seed_17.time",
       "seed": 17,
       "stop_reason": "no_strict_decrease",
       "terminal_sha256": "aa5f01fb94e4d7a2871b1db1dfe82b11a989eef6555bad7fd39d26def10ce6c7",
@@ -341,7 +341,7 @@
       "label": "Mean",
       "peak_rss_kib": 1064756,
       "prediction_sha256": "65afb93b050c61e6723440c7d244a0a3f03ea14df8983798822f6d2089022630",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/mean-fold_1-seed_17.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/mean-fold_1-seed_17.time",
       "seed": 17,
       "stop_reason": null,
       "terminal_sha256": "2c2732a08fa40ee91a06aca495afbe2d7755927e4fec2d5bbba6bfd0bfbf253c",
@@ -360,7 +360,7 @@
       "label": "PRnet",
       "peak_rss_kib": 2028664,
       "prediction_sha256": "05724678160c303a0592ca0ed5e6d09e6bf5303dca8f602a3a86265e9e4eb41f",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/prnet-fold_1-seed_42.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/prnet-fold_1-seed_42.time",
       "seed": 42,
       "stop_reason": "no_strict_decrease",
       "terminal_sha256": "e6d52346ba5634563f5bd53465c3b9c36b306c5c97d2d96f60bd187d0a536756",
@@ -379,7 +379,7 @@
       "label": "Mean",
       "peak_rss_kib": 1064624,
       "prediction_sha256": "65afb93b050c61e6723440c7d244a0a3f03ea14df8983798822f6d2089022630",
-      "resources_record": "/home/chang/arc/.worktrees/tenv-165/stage2/02_models_tenv/log/resources/mean-fold_1-seed_42.time",
+      "resources_record": "/home/chang/arc/stage2/02_models_tenv/log/resources/mean-fold_1-seed_42.time",
       "seed": 42,
       "stop_reason": null,
       "terminal_sha256": "506c09ee7660495512847cbdaaced3f921f86807f3c97b93cc74a1bf91e360d2",
@@ -504,5 +504,11 @@
     "figures": "figure/data CSVs must equal the driver output byte for byte and each PNG must be byte-identical to a fresh CSV-only replay",
     "hashes": "sha256 over exact bytes",
     "stochastic": "metric values differ across seeds; the four runs are a spread indicator, not a confidence interval, and no run-to-run numeric tolerance is asserted"
+  },
+  "delivery": {
+    "delivered_on_branch": "dev",
+    "delivery_head_sha": "591b1191971f0ddeed567b7682c0f7b38cc6d030",
+    "original_acceptance_head_sha": "43765f90ef942b576b04f5f3a6a360547df103f1",
+    "note": "Accepted products were built and accepted in worktree .worktrees/tenv-165 and are installed at the canonical stable paths under stage2/02_models_tenv/output/. The installation was verified byte-for-byte: every recorded run artifact, evaluation table and tracked figure hash in this record re-verified against the installed copy (39/39 match). The publish.candidate/checkpoint path is the disposable build location (gitignored, not part of the accepted product)."
   }
 }
