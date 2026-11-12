@@ -592,19 +592,41 @@ _Avoid_: benchmark step (when meaning the rebuilt comparison)
 **Direct metric**:
 `PCC`, `Spearman`, `RMSE` or `R²` computed on one test well's predicted Δ against that well's observed Δ over the full gene axis. A run reports the equal-weight mean over its fold's test wells; no group aggregation precedes it. It measures per-sample fidelity, not group-level accuracy.
 
-**Indirect metric**:
-`Precision@k`, `Spearman@k`, `max_k@P80S40` or `Recall@max_k`, computed per drug–dose group from that group's mean predicted Δ. It measures whether a model ranks a group's true responder genes above the rest.
+**@d reliability family** (reliability family):
+`Precision@d`, `Recall@d`, `Spearman@d` and `Reliability@d`, computed per drug–dose group from that group's mean predicted Δ against its measured DESeq2 contrast. It replaces the retired `k`-parameterized indirect family. The `@d` suffix is the family marker: every member is parameterized by the predicted-effect threshold `d`, not by a declared table size.
+_Avoid_: indirect metric (unqualified, when the @d family is meant); batched metric (withdrawn, never built)
 
-**Gated truth gene**:
-A gene of one drug–dose group whose measured contrast has `padj < 0.05` and `|log2FC| >= 2`. It is the label set of the indirect metrics, and its direction is the sign of its Δ_mean.
-_Avoid_: DEG (unqualified, when the fold-change gate is meant)
+**Measured effect**:
+A gene of one drug–dose group whose measured contrast has `padj < 0.05`; its direction is `sign(log2FC)`. It is the label side of the @d family.
+_Avoid_: gated truth gene (the retired `|log2FC| >= 2` gate), DEG (unqualified)
+
+**Predicted effect threshold** (`d`, `d'`):
+The threshold applied to a group's `|Δ̂_mean|`: a gene is *predicted changed* when `|Δ̂_mean| >= d`. On a run it is declared as `d = k · 0.01 · M` for `k = 1..100`, where `M` is that run's largest `|Δ̂_mean|` over its test groups and the whole gene axis; `d' = d/M = k/100` is the plotted, scale-free axis. `d` is a predicted effect magnitude, not a fold change and not a p-value.
+_Avoid_: cutoff, significance threshold (a predicted magnitude carries no statistical test)
+
+**Threshold window** (`W(d)`):
+The genes of one group whose `|Δ̂_mean| >= d`. It is the model's own "changed gene" table at that threshold, so its size follows the group's predicted effect strength instead of a declared table size.
+_Avoid_: predicted set, top-k
+
+**Direction-correct hit** (`H(d)`):
+A gene of `W(d)` that is a measured effect and whose measured direction equals the predicted direction `sign(Δ̂_mean)`.
+
+**Precision@d / Recall@d / F1@d**:
+`Precision@d = |H|/|W|`, `Recall@d = |H|/|measured effects|`, and `F1@d` their harmonic mean. All three are total by convention: an empty window on a group with no measured effect scores `F1 = 1`, an empty window on a group with measured effects scores `0`, and a non-empty window on a group with no measured effect scores `0`. Harmonic rather than arithmetic averaging is load-bearing: an arithmetic mean peaks at the smallest table and would make `Reliability@d` select a one-gene table.
+
+**Spearman@d**:
+The Spearman correlation inside `H(d)` between predicted magnitude (`|Δ̂_mean|` rank) and measured magnitude (`|log2FC|` rank): given that those genes are right and correctly directed, did the model order them by effect size correctly? Neutral (`mult = 1`) when `|H| < 3`, so a weak condition is not capped by the ordering term. It is not the retired `Spearman@k`, which correlated signed predictions against measured Δ over all of a top-k table.
+_Avoid_: Spearman@k (the retired top-k statistic)
+
+**Reliability@d**:
+`F1@d · mult`, with `mult = (1 + Spearman@d)/2` for `|H| >= 3` and `1` otherwise. Range `[0, 1]`: `0` means the emitted table is wrong or direction-inverted, `1` means it is exactly the measured effect set in the correct order. It is a model-selection proxy for the downstream phenotype task, not a biological claim.
+
+**`d*`**:
+The `d` that maximizes a run's macro `Reliability@d` over the 100-point scan. There is one `d*` per run, so a consumer of a given run's checkpoint uses that run's `d*`.
 
 **Predicted absolute rank table (预测绝对秩表)**:
 One group's genes listed as `gene_index`, `rank`, `direction` and `|Δ̂_mean|`, ordered by predicted absolute effect. A light rank table orders the same genes by absolute *observed* Δ.
 _Avoid_: prediction table, prediction matrix
-
-**max_k@P80S40**:
-The largest `k` at which a group reaches both `Precision@k >= 0.8` and `Spearman@k >= 0.4`, over `k` from 1 to 100; undefined when no `k` qualifies. It is bounded by the group's own gated-gene count.
 
 **Mean baseline** (`Mean`):
 The reference entry that predicts, for every gene of a group, the mean Δ of that same group in the training partition. It is deterministic, not a trained fit, and its fold copies are not independent training results.
@@ -618,6 +640,9 @@ The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue
 
 **Learning-curve figure**:
 `figure/learning_curve.png`: one subplot per learnable model, epoch on the horizontal axis and loss on the vertical axis. The blue family is training and the green family is validation; one shade identifies one `(fold, seed)` run in both families.
+
+**Reliability figure** (`figure/metrics_indirect.png`):
+Two rows by four columns: `Precision@d`, `Recall@d`, `Spearman@d` and `Reliability@d` as curves over `d'` (with `F1@d` as a thin reference line on the Reliability panel), then `Reliability@d*` and `d*` bars, a macro three-class confusion heat map at `d*`, and the null-versus-changed Reliability split.
 
 
 ### Stage 1 evaluation
