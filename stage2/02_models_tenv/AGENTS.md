@@ -1,10 +1,32 @@
 # AGENTS.md — stage2/02_models_tenv
 
-Routing for the Stage 2 tenv model-comparison step (#163). ADR 0063 is the
-authority for the metric families, run matrix, palette and figures; the step
-contract is [`../AGENTS.md`](../AGENTS.md); the shared readers and evaluator are
-owned by [`../01_bases/`](../01_bases/README.md) and are never re-implemented
-here. Human-readable results are in [`README.md`](README.md).
+Routing for the Stage 2 tenv model-comparison step (#163, #164, #165). ADR 0063
+is the authority for the metric families, run matrix, palette and figures; the
+step contract is [`../AGENTS.md`](../AGENTS.md); the shared readers, evaluator,
+palette and drawing API are owned by [`../01_bases/`](../01_bases/README.md) and
+are never re-implemented here. Human-readable results are in
+[`README.md`](README.md).
+
+## The accepted matrix and its one command (#165)
+
+`execution/run_matrix.py` is the one-command publish/replay. It builds each
+fold's complete predictor-input release, trains PRnet for the declared
+2 folds x 2 seeds **serialized** through `execution/capped.sh` under
+`/usr/bin/time -v`, writes the deterministic `Mean` reference, scores the whole
+run set with the shared #164 driver, verifies the #162 plot-value contract,
+publishes the stable products, and renders and replay-verifies both figures.
+
+```bash
+python execution/run_matrix.py --plan-only   # print the declared identities
+python execution/run_matrix.py --all         # candidate -> acceptance -> publish
+python execution/run_matrix.py --all --resume
+```
+
+Candidate state lives in `execution/checkpoints/matrix-165/`, never in
+`output/`; a run that is not `complete` aborts before any stable path is
+touched. `figure/script/render_figures.py --figure-data figure/data --out-dir
+figure` rebuilds both PNGs from the tracked plot values alone and never opens
+the step's `output/` tree.
 
 ## Environments (two, recorded)
 
@@ -63,8 +85,8 @@ The bounded run publishes `prediction.npy` (all 18,164 genes, finite, declared
 effective config, `identity.json` (hashes), `checkpoint.json` (history,
 early-stopping record, behavior probes, resource peak) and `terminal.json`.
 A failed, interrupted or over-budget run writes `terminal.json` with that
-status and no prediction. The full 2 × 2 matrix is #165, not this step's bounded
-acceptance.
+status and no prediction. The bounded run is #163 admission only; the accepted
+2 × 2 matrix is #165 and is recorded in `log/165-acceptance.json`.
 
 ## Early stopping and selection (ADR 0063)
 
@@ -75,10 +97,23 @@ the lowest-validation-loss checkpoint. The 5-epoch rule dominates the 20-epoch
 rule (recorded in `checkpoint.json` and `terminal.json` evidence); the
 20-epoch rule is still implemented and checked on its own counter.
 
+## Accepted products (ADR 0062, #165)
+
+| path | content | tracked? |
+|---|---|---|
+| `output/inputs/{fold_X}/{seed_Y}/` | complete predictor-input release per matrix cell and its manifest | ignored payload |
+| `output/runs/{entry}/{fold_X}/{seed_Y}/` | `prediction.npy`, `case_ids.json`, `best.pt`, `config.json`, `checkpoint.json`, `identity.json`, `terminal.json`, `progress.json`, `resources.json` | ignored payload |
+| `output/evaluation/` | `per_well.csv`, `per_group.csv`, `per_run.csv`, `evaluation.json` from the shared driver | ignored payload |
+| `output/figure_data/` | candidate copies of the two plot-value tables (identical to `figure/data/`) | ignored payload |
+| `figure/metrics.png`, `figure/learning_curve.png` | the report figures | tracked |
+| `figure/data/metrics_values.csv`, `figure/data/learning_curve_values.csv` | complete plotted values in the shared `PLOT_VALUE_COLUMNS` schema | tracked |
+| `figure/script/render_figures.py` | CSV-only renderer (no matrices, checkpoints or truth) | tracked |
+| `log/165-acceptance.json`, `log/resources/165-*` | acceptance record with hashes/statuses/peaks and the raw `/usr/bin/time -v` files | tracked |
+
 ## Tests
 
-Run each file individually with the pinned interpreter; never the full suite
-beside another heavy job:
+Run each file individually with the repository Python 3.13; never the full
+suite beside another heavy job:
 
 ```bash
 /home/chang/miniconda3/envs/arc-stage2-bench-prnet/bin/python -m unittest discover \
@@ -93,6 +128,13 @@ beside another heavy job:
 synthetic release and asserts reload-exact prediction, case identity/order,
 finite full-axis output, the early-stopping record, and honest terminal status
 for failed and over-budget runs.
+
+Seam-2/4 tests added by #165 run with `/home/chang/miniconda3/bin/python`:
+`test_run_matrix.py` (declared 2 x 2 plan, `/usr/bin/time -v` parsing,
+fail-closed terminal status and candidate-only publish, recorded figure layout),
+`test_mean_reference.py` (the retired `delta_mean` arithmetic, cold-drug
+semantics, driver-validated artifacts) and `test_figures.py` (both PNGs rebuild
+byte-identically from tracked `figure/data` with the step `output/` unreadable).
 
 ## Records and resources
 

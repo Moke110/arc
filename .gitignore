@@ -159,10 +159,15 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 
 # ADR 0062: disposable build resumption state lives in execution/, never output/.
 /stage2/01_bases/execution/checkpoints/
+/stage2/02_models_tenv/execution/checkpoints/
 
 # ADR 0062 report panels: the complete plotted values are tracked next to the
 # figure, not stored as payload.
 !/stage2/01_bases/figure/data/*.csv
+
+# ADR 0062 / #165: the tenv comparison figures are rebuilt from these recorded
+# plot values alone, so the values are tracked next to the PNGs.
+!/stage2/02_models_tenv/figure/data/*.csv
 
 # ADR 0062 audit evidence: the dissolved diagnostic evidence CSVs are tracked
 # beside the records that seal them.
