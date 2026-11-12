@@ -108,12 +108,16 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — bases only (2026-11-12, ADR 0062 stable layout)
+## Stage 2 — the two active steps (2026-11-12, ADR 0062 stable layout)
 
-Only `stage2/01_bases/` remains. Other Stage 2 directories, including ignored
-checkpoints and historical predictions, were deleted at the user's request.
-Tracked historical code and records remain in Git. Recovering deleted ignored
-model fits would require retraining; no current build depends on them.
+`stage2/01_bases/` (the foundation) and `stage2/02_models_tenv/` (the tenv model
+comparison restored by ADR 0063, tickets #163-#165) are the active steps. Other
+Stage 2 directories, including ignored checkpoints and historical predictions,
+were deleted at the user's request. Tracked historical code and records remain in
+Git; the retired comparison implementation is reachable only through Git history
+(`git show 1543781^:stage2/03_modes_tenv/...`) and is untouched by the restored
+step. Recovering deleted ignored model fits would require retraining; no current
+build depends on them.
 
 Every accepted product now has one stable semantic path (`du -sb`,
 2026-11-12, refreshed after the #157 removals). Payloads total ≈20.9 GB; the
@@ -134,6 +138,8 @@ historical v1 Tahoe h5ad (11.20 GB) and two superseded build-state directories
 | `output/tenv-truth/` | 604,807,845 | independently fitted 1377 parent–dose tenv contrasts on exactly 18164 genes, statistic matrices and per-contrast payloads | bounded raw-count DESeq2 worker; truth acceptance has its own record |
 | `output/tenv-truth-successor/` | 897,211 | accepted exact-equivalence envelope for the current training release, re-issued at this path | `reissue_truth_successor.py`; requires the complete accepted truth verification and runtime seals |
 | `output/tenv-hvg/` | 6,243,580 | descriptive plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` from `training-corpora/tenv.h5ad`; held-out isolation re-checked |
+| `output/fold_n_seed/` | 1,159,437 | the accepted cold-drug assignment re-homed (#161) plus the ordered `folds.csv`/`seeds.csv` index tables and manifest | `build_fold_n_seed.py` from the sealed HVG cohort assignment; row-prefix selection only |
+| `output/palette/` | 3,204 | the stage palette: six hue families x nine shades as a hex table, its generation recipe and the colour roles (#162) | `output/api/bases/palette.py` `publish()`; the table is a pure function of the recorded recipe |
 | `output/api/` | 512,471 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
 | `figure/` | 711,136 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
 | `log/` | 9,440,464 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
@@ -143,6 +149,28 @@ the tracked `output/api` implementation and the records remain tracked. See
 `stage2/01_bases/README.md` for the current commands, accepted results,
 limitations and historical-versus-current provenance boundary, and
 `stage2/01_bases/log/156-migration-record.json` for the old→new binding.
+
+### `stage2/02_models_tenv/` — accepted tenv matrix (2026-11-12, #165)
+
+The step's products are untracked ignored payloads under its `output/`; only the
+two figures, their complete plotted-value CSVs, the CSV-only renderer, the
+acceptance record and the raw resource measurements are tracked. The whole
+`output/` tree is regenerable from the canonical checkout with
+`python execution/run_matrix.py --all`; a completed run set is reused with
+`--resume`.
+
+| path under `stage2/02_models_tenv/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/inputs/` | 2,041,030,268 | four complete predictor-input releases (`drugs.csv`, `morgan.npy`, per-role baseline/delta arrays, case tables and manifests), one per `(fold, seed)` matrix cell | `execution/script/prepare_inputs.py` from the sealed `01_bases` corpus and fold/seed products |
+| `output/runs/` | 967,675,021 | eight run directories: four PRnet fits (`prediction.npy`, `best.pt`, checkpoint/identity/terminal/resource records) and four deterministic `Mean` fold copies | PRnet runs: pinned PRnet environment + `execution/script/prnet_fit_predict.py`; `Mean`: `execution/script/mean_reference.py`; one heavy job at a time under the 10 GiB cap |
+| `output/evaluation/` | 99,838,316 | `per_well.csv`, `per_group.csv`, `per_run.csv` and `evaluation.json` from the shared #164 driver | `execution/script/evaluation_driver.py` over the eight complete runs; re-scores from persisted predictions only |
+| `output/figure_data/` | 377,681 | candidate copies of the two plot-value tables (byte-identical to the tracked `figure/data/`) | `evaluation_driver.py --figure-data` |
+| `figure/` | 693,274 | `metrics.png` (eight panels), `learning_curve.png` (PRnet), the two complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
+| `log/` | 62,873 | #163 admission, #164 driver and #165 acceptance records plus the raw `/usr/bin/time -v` measurements and the environment locks | execution records; tracked |
+
+Historical tenv comparison code, figures and records are **not** present in the
+working tree; they remain untouched in Git history (`git show
+1543781^:stage2/03_modes_tenv/...`) and nothing in this step depends on them.
 
 ## Archived, literature, wet-lab, logs
 

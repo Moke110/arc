@@ -10,7 +10,10 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   this implementation instead of re-deriving it.
 - `02_models_tenv/` — tenv model comparison (ADR 0063): the PRnet entrant and the
   `Mean` reference, trained and evaluated on `tenv`. Bounded fit/predict
-  admission is #163; the 2 x 2 run matrix is #165; report figures are #164.
+  admission is #163; the evaluation driver and plot-value tables are #164; the
+  accepted 2 folds x 2 seeds matrix, `figure/metrics.png`,
+  `figure/learning_curve.png`, their tracked `figure/data/*.csv` values and the
+  one-command publish/replay `execution/run_matrix.py` are #165.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,

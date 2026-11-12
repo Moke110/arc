@@ -1,0 +1,25 @@
+
+INITIALIZING NEW NETWORK..............
+Encoder Architecture:
+	Input Layer in, out: 18228 128
+	Mean/Var Layer in/out: 128 64
+Decoder Architecture:
+	First Layer in, out 138 128
+	Output Layer in/out:  128 36328 
+
+Encoder Architecture:
+	Input Layer in, out: 1024 128
+	Comb Layer in/out: 128 64
+
+INITIALIZING NEW NETWORK..............
+Encoder Architecture:
+	Input Layer in, out: 18228 128
+	Mean/Var Layer in/out: 128 64
+Decoder Architecture:
+	First Layer in, out 138 128
+	Output Layer in/out:  128 36328 
+
+Encoder Architecture:
+	Input Layer in, out: 1024 128
+	Comb Layer in/out: 128 64
+{"best_epoch": 44, "best_validation_loss": -1.2078840732574463, "stop_reason": "no_strict_decrease", "training_seconds": 75.5144911009993, "inference_seconds": 0.26647314700130664, "behavior": {"adapter_parameter_change_l2": 22.712085723876953, "predictor_parameter_change_l2": 118.79424285888672, "baseline_sensitivity_l2": 52.49069595336914, "reload_max_abs_error": 0.0}}
