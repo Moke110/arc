@@ -147,12 +147,26 @@ plots.render_learning_curve(synthetic_models(), fx/'learning_curve_fixture.png')
   threshold panels are bar charts"). `precision`/`spearman` are the two arrays in
   `aggregate_indirect`; `max_k`/`recall` are scalars there by construction.
 - `output/palette/` is force-added (see above); no ignore rule changed.
-- Documentation deferrals are tracked by **#165**: the step `README.md`,
-  `AGENTS.md` and `docs/data-inventory.md` still do not list `output/palette/`
-  (outside this ticket's write scope, to be updated by the documentation ticket
-  after #162/#164 merge).
+- Documentation deferrals were deferred to **#165** by the review: the step
+  `README.md`, `AGENTS.md` and `docs/data-inventory.md` still do not list
+  `output/palette/` (outside this ticket's write scope).
 - The fixture PNGs live under `execution/tests/fixtures/`, not `figure/`,
   because `#162` owns no report figure; #163's renderer will consume this API for
   `figure/metrics.png` and `figure/learning_curve.png`.
 - PNG byte identity is asserted only within one environment (matplotlib 3.10.9,
   Agg, dpi 160), the same standard the committed diagnostic figure uses.
+
+## Post-review verification (branch `abab6d6`, merged dev `62a66d9`)
+
+- `git archive HEAD | tar -x -C /tmp/arc-162-export` then, from
+  `/tmp/arc-162-export/stage2/01_bases/execution`, all four test files pass:
+  `test_palette.py` 13, `test_metrics_panels.py` 12, `test_learning_curve_panels.py`
+  8, `test_plots.py` 1. This is the clean-checkout proof that the fixture CSVs are
+  tracked (they were absent from `HEAD` before this fix).
+- The palette table digest is unchanged (`6428333d…`); only the recorded recipe
+  and role list in `manifest.json` changed (`5943fd6c…`), and `publish()` still
+  reproduces the committed bytes.
+- `render_diagnostic_tenv_pr.py` still reproduces the committed diagnostic panel
+  sha256 `35d14266…`.
+- Repo health: `bash script/check_stage2_paths.sh` and `bash script/check_paths.sh`
+  run from `/home/chang/arc`; results recorded in the branch report.
