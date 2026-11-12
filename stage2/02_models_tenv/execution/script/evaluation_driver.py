@@ -1,17 +1,27 @@
-"""Score a fold's persisted tenv predictions against evaluator-only truth (#164).
+"""Score a fold's persisted tenv predictions against evaluator-only truth (#168).
 
 The driver is the only evaluator in ``stage2/02_models_tenv``. It reads the
 step's published run artifacts, checks that the run set is complete and that
 every fold case is covered, then scores the persisted predictions through the
 shared implementation in ``stage2/01_bases/output/api/bases/evaluation.py``
-(ADR 0063). It writes the per-well, per-group and per-run tables plus the
-long-form plot-value tables both report figures render from. No metric is
+(ADR 0064). It writes the per-well, per-group, per-run and per-run-curve tables,
+the macro three-class confusion at ``d*``, the long-form plot-value tables both
+report figures render from, and the evaluation record. No metric is
 re-implemented here.
 
+Every evaluated fold's **test groups** are scored against the shared ``@d``
+reliability family: the label side is the accepted ``tenv-truth`` statistics
+(``padj < 0.05``, direction ``sign(log2FC)``), the predicted side is the group's
+predicted mean Δ, and the threshold grid is ``d = k/100 · M`` with ``M`` the
+run's largest ``|Δ̂_mean|`` over its test groups. The family is total, so all
+459 test groups of each fold enter every macro and none is dropped for an
+undefined metric.
+
 Fail-closed: a run set that is missing a declared (entry, fold, seed), a run
-whose ``terminal.json`` is absent or not ``complete``, and a prediction set
-that does not cover every case of the evaluated fold all raise
-:class:`DriverError` instead of scoring a subset.
+whose ``terminal.json`` is absent or not ``complete``, and a prediction set that
+does not cover every case of the evaluated fold all raise :class:`DriverError`
+instead of scoring a subset. A run whose predicted magnitude is not positive
+cannot define the threshold scan and also raises.
 """
 import argparse
 from dataclasses import dataclass
@@ -29,13 +39,15 @@ from artifacts import read_json, sha256, write_json, write_rows  # noqa: E402
 import plot_tables  # noqa: E402
 
 EXPECTED_GENES = 18164
-K_MAX = 100
 ROLES = ('train', 'validation', 'test')
 PREDICTION_FILE = 'prediction.npy'
 TERMINAL_FILE = 'terminal.json'
 CASES_FILE = 'case_ids.json'
 IDENTITY_FILE = 'identity.json'
 CHECKPOINT_FILE = 'checkpoint.json'
+CONFUSION_CLASSES = ('up', 'not_significant', 'down')
+CONFUSION_INDEX = {name: index for index, name in enumerate(CONFUSION_CLASSES)}
+THRESHOLD_RULE = 'd = k/100 * M'
 
 
 class DriverError(ValueError):
@@ -197,8 +209,7 @@ def load_run_set(runs_root, entries, fold_rows, seeds, expected_cases, gene_coun
 # ---------------------------------------------------------------------------
 EXPECTED_FIELDS = ('sample_id', 'group_id', 'drug_parent', 'dose_um')
 DIRECT_COLUMNS = ('PCC', 'Spearman', 'RMSE', 'R2')
-CURVE_METRICS = ('Precision@k', 'Spearman@k')
-SCALAR_METRICS = ('max_k@P80S40', 'Recall@max_k')
+RELIABILITY_COLUMNS = ('Precision@d', 'Recall@d', 'F1@d', 'Spearman@d', 'Reliability@d')
 
 
 def evaluation_module():
@@ -216,11 +227,30 @@ class RunScore:
     seed: int
     expected: list
     well_results: list
-    group_results: list
+    group_curves: list
     group_meta: list
     direct: object
-    indirect: object
+    aggregate: object
+    grid: object
+    d_star_index: int
+    confusion: object
     history: list
+
+    @property
+    def d_star(self):
+        return float(self.grid.thresholds[self.d_star_index])
+
+    @property
+    def d_star_prime(self):
+        return float(self.grid.d_prime[self.d_star_index])
+
+    @property
+    def d_star_k(self):
+        return int(self.d_star_index) + 1
+
+    @property
+    def reliability_at_d_star(self):
+        return float(self.aggregate.reliability[self.d_star_index])
 
 
 def _check_expected(expected):
@@ -237,18 +267,40 @@ def _check_expected(expected):
     return expected
 
 
-def _undefined_group(k_max, reason, matched=0):
-    evaluation = evaluation_module()
-    return evaluation.GroupIndirectMetrics(
-        k=np.arange(1, k_max + 1, dtype=np.int64),
-        precision=np.full(k_max, np.nan), spearman=np.full(k_max, np.nan),
-        max_k=float('nan'), recall=float('nan'), matched=int(matched),
-        reasons={name: reason for name in evaluation.INDIRECT_METRICS})
+def _group_positions(expected):
+    positions = {}
+    for index, row in enumerate(expected):
+        positions.setdefault(row['group_id'], []).append(index)
+    return positions
+
+
+def _predicted_mean(prediction, members):
+    return prediction[members].mean(axis=0)
+
+
+def _confusion_matrix(evaluation, predicted_mean, padj, log2_fold_change, d_star):
+    """3x3 macro counts at ``d*``: predicted class (rows) x measured class (columns).
+
+    A gene is predicted ``up``/``down`` when ``|Δ̂_mean| >= d*`` and its sign is
+    positive/negative, otherwise ``not_significant``. A gene is measured
+    ``up``/``down`` when it is a measured effect with that direction, otherwise
+    ``not_significant``. This is a diagnostic and is not scored (ADR 0064).
+    """
+    effects = evaluation.measured_effect_gate(padj, log2_fold_change)
+    strong = np.abs(predicted_mean) >= d_star
+    predicted = np.zeros(len(predicted_mean), dtype=np.int8)
+    predicted[strong] = np.sign(predicted_mean[strong]).astype(np.int8)
+    # class order up (+1) / not significant (0) / down (-1) is 1 - sign.
+    predicted_index = 1 - predicted
+    measured_index = 1 - effects.signed
+    flat = predicted_index.astype(np.int64) * len(CONFUSION_CLASSES) + measured_index
+    counts = np.bincount(flat, minlength=len(CONFUSION_CLASSES) ** 2)
+    return counts.reshape(len(CONFUSION_CLASSES), len(CONFUSION_CLASSES))
 
 
 def score_run(expected, prediction, measured_delta, truth_rows, *, entry='run',
-              label=None, fold=0, seed=0, k_max=K_MAX, history=None):
-    """Score one run's persisted predictions against measured Δ and truth rows."""
+              label=None, fold=0, seed=0, history=None):
+    """Score one run's persisted predictions with the shared @d reliability family."""
     evaluation = evaluation_module()
     expected = _check_expected(list(expected))
     prediction = np.asarray(prediction, dtype=np.float64)
@@ -266,40 +318,47 @@ def score_run(expected, prediction, measured_delta, truth_rows, *, entry='run',
         result = evaluation.direct_metrics(measured_delta[index], prediction[index])
         well_results.append({'sample_id': row['sample_id'], 'group_id': row['group_id'],
                              'values': result.values, 'reasons': result.reasons})
-    positions = {}
-    for index, row in enumerate(expected):
-        positions.setdefault(row['group_id'], []).append(index)
-    group_results, group_meta = [], []
-    for group_id in sorted(positions):
+    positions = _group_positions(expected)
+    ordered_groups = sorted(positions)
+    predicted_means = [_predicted_mean(prediction, positions[group_id])
+                       for group_id in ordered_groups]
+    largest = max((float(np.abs(mean).max()) for mean in predicted_means), default=0.0)
+    try:
+        grid = evaluation.threshold_grid(largest)
+    except ValueError as exc:
+        raise DriverError(
+            f'run {entry}/fold_{fold}/seed_{seed} has no positive predicted magnitude '
+            f'for the threshold scan: {exc}') from exc
+    group_curves, group_meta = [], []
+    for group_id, predicted_mean in zip(ordered_groups, predicted_means):
         members = positions[group_id]
         row = expected[members[0]]
         truth = truth_rows.row(group_id)
-        predicted_mean = prediction[members].mean(axis=0)
-        measured_mean = measured_delta[members].mean(axis=0)
-        status = str(truth.get('status') or 'eligible')
-        if status == 'eligible':
-            gate = evaluation.truth_gate(truth['padj'], truth['log2_fold_change'], measured_mean)
-            table = evaluation.predicted_rank_table(predicted_mean)
-            result = evaluation.indirect_metrics(table, gate, measured_mean, k_max=k_max)
-            matched = result.matched
-        else:
-            gate = None
-            result = _undefined_group(k_max, f'truth_{status}')
-            matched = 0
-        group_results.append(result)
+        if str(truth.get('status') or 'eligible') != 'eligible':
+            raise DriverError(
+                f'truth group {group_id!r} is {truth.get("status")!r}, not eligible; '
+                'the evaluated population must not drop a test group')
+        effects = evaluation.measured_effect_gate(truth['padj'], truth['log2_fold_change'])
+        group_curves.append(evaluation.reliability_curve(predicted_mean, effects, grid))
         group_meta.append({'group_id': group_id, 'drug_parent': str(row['drug_parent']),
-                           'dose_um': float(row['dose_um']), 'n_wells': len(members),
-                           'gated_truth': 0 if gate is None else gate.count,
-                           'direction_matched': matched, 'truth_status': status,
-                           'truth_reason': str(truth.get('reason') or '')})
+                           'dose_um': float(row['dose_um']), 'n_wells': len(members)})
+    aggregate = evaluation.aggregate_reliability(group_curves)
+    d_star_index = int(np.argmax(aggregate.reliability))
+    d_star = float(grid.thresholds[d_star_index])
+    confusion = np.zeros((len(CONFUSION_CLASSES), len(CONFUSION_CLASSES)), dtype=np.int64)
+    for group_id in ordered_groups:
+        truth = truth_rows.row(group_id)
+        confusion += _confusion_matrix(
+            evaluation, _predicted_mean(prediction, positions[group_id]),
+            truth['padj'], truth['log2_fold_change'], d_star)
     return RunScore(entry=entry, label=label or entry, fold=int(fold), seed=int(seed),
                     expected=expected, well_results=well_results,
-                    group_results=group_results, group_meta=group_meta,
+                    group_curves=group_curves, group_meta=group_meta,
                     direct=evaluation.aggregate_direct(
                         [type('Well', (), {'values': row['values'], 'reasons': row['reasons']})
                          for row in well_results]),
-                    indirect=evaluation.aggregate_indirect(group_results),
-                    history=list(history or []))
+                    aggregate=aggregate, grid=grid, d_star_index=d_star_index,
+                    confusion=confusion, history=list(history or []))
 
 
 def _number(value):
@@ -323,54 +382,102 @@ def per_well_rows(scores):
 
 
 def per_group_rows(scores):
+    """One row per (entry, fold, seed, group, threshold): the complete @d scan."""
     rows = []
     for score in scores:
-        for result, meta in zip(score.group_results, score.group_meta):
+        thresholds = np.asarray(score.grid.thresholds, dtype=np.float64)
+        d_prime = np.asarray(score.grid.d_prime, dtype=np.float64)
+        for curve, meta in zip(score.group_curves, score.group_meta):
             base = {'entry': score.entry, 'label': score.label, 'fold': score.fold,
                     'seed': score.seed, **meta}
-            for metric, curve in (('Precision@k', result.precision),
-                                  ('Spearman@k', result.spearman)):
-                for index, value in enumerate(curve):
-                    rows.append({**base, 'k': index + 1, 'metric': metric,
-                                 'value': _number(value),
-                                 'status': 'defined' if np.isfinite(value) else 'undefined',
-                                 'reason': '' if np.isfinite(value) else result.reasons.get(metric, '')})
-            for metric, value in (('max_k@P80S40', result.max_k),
-                                  ('Recall@max_k', result.recall)):
-                rows.append({**base, 'k': '', 'metric': metric, 'value': _number(value),
-                             'status': 'defined' if np.isfinite(value) else 'undefined',
-                             'reason': '' if np.isfinite(value) else result.reasons.get(metric, '')})
+            for index in range(len(thresholds)):
+                rows.append({
+                    'entry': base['entry'], 'label': base['label'], 'fold': base['fold'],
+                    'seed': base['seed'], 'group_id': base['group_id'],
+                    'drug_parent': base['drug_parent'], 'dose_um': base['dose_um'],
+                    'n_wells': base['n_wells'],
+                    'k': index + 1, 'd': float(thresholds[index]),
+                    'd_prime': float(d_prime[index]),
+                    'n_window': int(curve.n_window[index]),
+                    'n_measured': int(curve.n_measured),
+                    'n_hits': int(curve.n_hits[index]),
+                    'Precision@d': float(curve.precision[index]),
+                    'Recall@d': float(curve.recall[index]),
+                    'F1@d': float(curve.f1[index]),
+                    'Spearman@d': float(curve.spearman[index]),
+                    'Reliability@d': float(curve.reliability[index])})
     return rows
 
 
 def per_run_rows(scores):
+    """One summary row per run: grid identity, M, d*, Reliability@d* and split."""
     rows = []
     for score in scores:
+        aggregate = score.aggregate
+        index = score.d_star_index
         row = {'entry': score.entry, 'label': score.label, 'fold': score.fold,
                'seed': score.seed, 'wells': len(score.well_results),
-               'groups': len(score.group_results)}
+               'groups': int(aggregate.counts['groups']),
+               'threshold_points': int(len(score.grid.thresholds)),
+               'threshold_rule': THRESHOLD_RULE,
+               'M': float(score.grid.max_absolute_delta),
+               'd_star_k': score.d_star_k, 'd_star': score.d_star,
+               'd_star_prime': score.d_star_prime,
+               'Precision@d*': float(aggregate.precision[index]),
+               'Recall@d*': float(aggregate.recall[index]),
+               'F1@d*': float(aggregate.f1[index]),
+               'Spearman@d*': float(aggregate.spearman[index]),
+               'Reliability@d*': score.reliability_at_d_star,
+               'null_groups': int(aggregate.counts['null_groups']),
+               'changed_groups': int(aggregate.counts['changed_groups']),
+               'null_Reliability@d*': float(aggregate.null_reliability[index]),
+               'changed_Reliability@d*': float(aggregate.changed_reliability[index]),
+               'measured_effects': int(sum(curve.n_measured for curve in score.group_curves))}
         for metric in DIRECT_COLUMNS:
             defined = int(score.direct.counts[metric])
             row[metric] = _number(score.direct.values[metric])
-            row[f'{metric}_defined'] = defined
-            row[f'{metric}_undefined'] = len(score.well_results) - defined
-        for metric, attribute in (('max_k@P80S40', 'max_k'), ('Recall@max_k', 'recall')):
-            defined = int(score.indirect.counts[metric])
-            row[metric] = _number(getattr(score.indirect, attribute))
-            row[f'{metric}_defined'] = defined
-            row[f'{metric}_undefined'] = len(score.group_results) - defined
-        precision_defined = int(score.indirect.counts['Precision@k'][0])
-        row['Precision@k_groups'] = precision_defined
-        row['Precision@k_groups_undefined'] = len(score.group_results) - precision_defined
-        # `Spearman@k` is defined only for k >= 3 (ADR 0063), so its macro
-        # effective-group count is the count at k=3 (slot 2 of the k axis), not
-        # the number of groups with any defined k.  `groups` above stays the
-        # full group total; the undefined complement uses this same k=3 count.
-        spearman_defined = (int(score.indirect.counts['Spearman@k'][2])
-                            if len(score.indirect.k) >= 3 else 0)
-        row['Spearman@k_groups'] = spearman_defined
-        row['Spearman@k_groups_undefined'] = len(score.group_results) - spearman_defined
+            row[f'{metric}_defined_wells'] = defined
+            row[f'{metric}_undefined_wells'] = len(score.well_results) - defined
         rows.append(row)
+    return rows
+
+
+def per_run_curve_rows(scores):
+    """One row per run per threshold: the macro and null/changed curves."""
+    rows = []
+    for score in scores:
+        aggregate = score.aggregate
+        thresholds = np.asarray(score.grid.thresholds, dtype=np.float64)
+        d_prime = np.asarray(score.grid.d_prime, dtype=np.float64)
+        for index in range(len(thresholds)):
+            rows.append({'entry': score.entry, 'label': score.label, 'fold': score.fold,
+                         'seed': score.seed, 'k': index + 1,
+                         'd': float(thresholds[index]),
+                         'd_prime': float(d_prime[index]),
+                         'Precision@d': float(aggregate.precision[index]),
+                         'Recall@d': float(aggregate.recall[index]),
+                         'F1@d': float(aggregate.f1[index]),
+                         'Spearman@d': float(aggregate.spearman[index]),
+                         'Reliability@d': float(aggregate.reliability[index]),
+                         'null_Reliability@d': float(aggregate.null_reliability[index]),
+                         'changed_Reliability@d': float(aggregate.changed_reliability[index])})
+    return rows
+
+
+def confusion_rows(scores):
+    """Per run and class pair, the macro three-class confusion counts at ``d*``."""
+    rows = []
+    for score in scores:
+        for predicted in CONFUSION_CLASSES:
+            for measured in CONFUSION_CLASSES:
+                rows.append({'entry': score.entry, 'label': score.label,
+                             'fold': score.fold, 'seed': score.seed,
+                             'd_star_k': score.d_star_k,
+                             'd_star_prime': score.d_star_prime,
+                             'predicted_class': predicted,
+                             'measured_class': measured,
+                             'count': int(score.confusion[CONFUSION_INDEX[predicted],
+                                                          CONFUSION_INDEX[measured]])})
     return rows
 
 
@@ -380,18 +487,24 @@ def per_run_rows(scores):
 PER_WELL_FIELDS = ['entry', 'label', 'fold', 'seed', 'sample_id', 'group_id',
                    'metric', 'value', 'status', 'reason']
 PER_GROUP_FIELDS = ['entry', 'label', 'fold', 'seed', 'group_id', 'drug_parent',
-                    'dose_um', 'n_wells', 'gated_truth', 'direction_matched',
-                    'truth_status', 'truth_reason', 'k', 'metric', 'value',
-                    'status', 'reason']
+                    'dose_um', 'n_wells', 'k', 'd', 'd_prime', 'n_window',
+                    'n_measured', 'n_hits',
+                    'Precision@d', 'Recall@d', 'F1@d', 'Spearman@d', 'Reliability@d']
 PER_RUN_FIELDS = ['entry', 'label', 'fold', 'seed', 'wells', 'groups',
-                  'PCC', 'PCC_defined', 'PCC_undefined',
-                  'Spearman', 'Spearman_defined', 'Spearman_undefined',
-                  'RMSE', 'RMSE_defined', 'RMSE_undefined',
-                  'R2', 'R2_defined', 'R2_undefined',
-                  'max_k@P80S40', 'max_k@P80S40_defined', 'max_k@P80S40_undefined',
-                  'Recall@max_k', 'Recall@max_k_defined', 'Recall@max_k_undefined',
-                  'Precision@k_groups', 'Precision@k_groups_undefined',
-                  'Spearman@k_groups', 'Spearman@k_groups_undefined']
+                  'threshold_points', 'threshold_rule', 'M',
+                  'd_star_k', 'd_star', 'd_star_prime',
+                  'Precision@d*', 'Recall@d*', 'F1@d*', 'Spearman@d*', 'Reliability@d*',
+                  'null_groups', 'changed_groups',
+                  'null_Reliability@d*', 'changed_Reliability@d*', 'measured_effects',
+                  'PCC', 'PCC_defined_wells', 'PCC_undefined_wells',
+                  'Spearman', 'Spearman_defined_wells', 'Spearman_undefined_wells',
+                  'RMSE', 'RMSE_defined_wells', 'RMSE_undefined_wells',
+                  'R2', 'R2_defined_wells', 'R2_undefined_wells']
+PER_RUN_CURVE_FIELDS = ['entry', 'label', 'fold', 'seed', 'k', 'd', 'd_prime',
+                        'Precision@d', 'Recall@d', 'F1@d', 'Spearman@d', 'Reliability@d',
+                        'null_Reliability@d', 'changed_Reliability@d']
+CONFUSION_FIELDS = ['entry', 'label', 'fold', 'seed', 'd_star_k', 'd_star_prime',
+                    'predicted_class', 'measured_class', 'count']
 
 
 def fold_cases(cohorts, fold_rows):
@@ -512,8 +625,12 @@ def run_label(fold, seed):
     return f'fold_{int(fold)}/seed_{int(seed)}'
 
 
+def _curve_list(values):
+    return [float(item) for item in values]
+
+
 def figure_entries(scores, entries):
-    """Plotting entries for the metrics figure; accepts any entry label."""
+    """Plotting entries for the @d figures; accepts any entry label."""
     plotted = []
     for index, entry in enumerate(entries):
         members = sorted((score for score in scores if score.entry == entry),
@@ -529,22 +646,32 @@ def figure_entries(scores, entries):
                 direct[metric] = None if not np.isfinite(value) else value
                 if not np.isfinite(value):
                     reasons[metric] = score.direct.reasons.get(metric, 'undefined')
-            indirect = {'k': [int(item) for item in score.indirect.k],
-                        'precision': [float(item) for item in score.indirect.precision],
-                        'spearman': [float(item) for item in score.indirect.spearman],
-                        'max_k': (None if not np.isfinite(score.indirect.max_k)
-                                  else float(score.indirect.max_k)),
-                        'recall': (None if not np.isfinite(score.indirect.recall)
-                                   else float(score.indirect.recall))}
-            for metric in SCALAR_METRICS:
-                if indirect['max_k' if metric == 'max_k@P80S40' else 'recall'] is None:
-                    reasons[metric] = score.indirect.reasons.get(metric, 'undefined')
-            for metric in CURVE_METRICS:
-                values = indirect['precision' if metric == 'Precision@k' else 'spearman']
-                if not np.isfinite(values).any():
-                    reasons[metric] = score.indirect.reasons.get(metric, 'undefined')
-            runs.append({'run': run_label(score.fold, score.seed), 'direct': direct,
-                         'indirect': indirect, 'reasons': reasons})
+            aggregate = score.aggregate
+            index_at_star = score.d_star_index
+            runs.append({
+                'run': run_label(score.fold, score.seed),
+                'direct': direct,
+                'reasons': reasons,
+                'd_prime': _curve_list(score.grid.d_prime),
+                'precision': _curve_list(aggregate.precision),
+                'recall': _curve_list(aggregate.recall),
+                'f1': _curve_list(aggregate.f1),
+                'spearman': _curve_list(aggregate.spearman),
+                'reliability': _curve_list(aggregate.reliability),
+                'null_reliability': _curve_list(aggregate.null_reliability),
+                'changed_reliability': _curve_list(aggregate.changed_reliability),
+                'd_star_k': score.d_star_k,
+                'd_star': score.d_star,
+                'd_star_prime': score.d_star_prime,
+                'reliability_at_d_star': float(aggregate.reliability[index_at_star]),
+                'null_reliability_at_d_star': float(aggregate.null_reliability[index_at_star]),
+                'changed_reliability_at_d_star':
+                    float(aggregate.changed_reliability[index_at_star]),
+                'null_groups': int(aggregate.counts['null_groups']),
+                'changed_groups': int(aggregate.counts['changed_groups']),
+                'confusion': {'classes': list(CONFUSION_CLASSES),
+                              'matrix': [[int(value) for value in row]
+                                         for row in score.confusion]}})
         plotted.append({'label': members[0].label,
                         'hue': plot_tables.palette_entry_hue(index), 'runs': runs})
     return plotted
@@ -634,19 +761,21 @@ def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus
                                 statistics.rows(partition), entry=entry,
                                 label=run.label, fold=fold, seed=seed,
                                 history=run.history))
-    well_rows = per_well_rows(scores)
-    group_rows = per_group_rows(scores)
-    run_rows = per_run_rows(scores)
+    table_rows = {'per_well': (per_well_rows(scores), PER_WELL_FIELDS),
+                  'per_group': (per_group_rows(scores), PER_GROUP_FIELDS),
+                  'per_run': (per_run_rows(scores), PER_RUN_FIELDS),
+                  'per_run_curve': (per_run_curve_rows(scores), PER_RUN_CURVE_FIELDS),
+                  'confusion': (confusion_rows(scores), CONFUSION_FIELDS)}
     output.mkdir(parents=True, exist_ok=True)
-    table_rows = {'per_well': (well_rows, PER_WELL_FIELDS),
-                  'per_group': (group_rows, PER_GROUP_FIELDS),
-                  'per_run': (run_rows, PER_RUN_FIELDS)}
     tables = {name: _write_csv(output / f'{name}.csv', rows, fields)
               for name, (rows, fields) in table_rows.items()}
     entries_values = figure_entries(scores, entries)
     metrics = plot_tables.metrics_values(entries_values)
     figure_files = {'metrics': Path(plot_tables.write_plot_values(
         metrics, output / 'metrics_values.csv'))}
+    indirect = plot_tables.indirect_metrics_values(entries_values)
+    figure_files['metrics_indirect'] = Path(plot_tables.write_plot_values(
+        indirect, output / 'metrics_indirect_values.csv'))
     models = learning_models(scores, entries)
     if models:
         curve = plot_tables.learning_curve_values(models)
@@ -660,20 +789,34 @@ def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus
             destination.write_bytes(path.read_bytes())
             figure_files[name] = destination
     record = {
-        'schema': 'stage2-tenv-evaluation-v1',
+        'schema': 'stage2-tenv-evaluation-v2',
         'entries': list(entries),
         'seeds': list(seeds),
         'fold_rows': list(fold_rows),
+        'threshold_grid': {'points': int(len(scores[0].grid.thresholds)),
+                           'rule': THRESHOLD_RULE,
+                           'membership': '|delta_mean| >= d',
+                           'normalisation': 'M = max |delta_mean| over the run test groups'},
         'truth': {'release': str(Path(truth).resolve()),
                   'manifest_sha256': sha256(Path(truth) / 'manifest.json'),
                   'gene_count': int(statistics.manifest['gene_count']),
                   'fixture': bool(statistics.manifest.get('fixture'))},
         'runs': [{'entry': score.entry, 'label': score.label, 'fold': score.fold,
                   'seed': score.seed, 'wells': len(score.well_results),
-                  'groups': len(score.group_results),
+                  'groups': int(score.aggregate.counts['groups']),
                   'terminal_status': runs[(score.entry, score.fold, score.seed)].terminal.get('status'),
                   'prediction_sha256': runs[(score.entry, score.fold, score.seed)].identity.get('prediction_sha256'),
-                  'n_gated_truth': int(sum(meta['gated_truth'] for meta in score.group_meta))}
+                  'M': float(score.grid.max_absolute_delta),
+                  'threshold_points': int(len(score.grid.thresholds)),
+                  'd_star_k': score.d_star_k,
+                  'd_star': score.d_star,
+                  'd_star_prime': score.d_star_prime,
+                  'Reliability@d*': score.reliability_at_d_star,
+                  'null_groups': int(score.aggregate.counts['null_groups']),
+                  'changed_groups': int(score.aggregate.counts['changed_groups']),
+                  'null_Reliability@d*': float(score.aggregate.null_reliability[score.d_star_index]),
+                  'changed_Reliability@d*': float(score.aggregate.changed_reliability[score.d_star_index]),
+                  'measured_effects': int(sum(curve.n_measured for curve in score.group_curves))}
                  for score in scores],
         'tables': {name: {'path': str(path), 'sha256': sha256(path),
                           'rows': len(table_rows[name][0])}
@@ -681,15 +824,14 @@ def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus
         'figures': {name: {'path': str(path), 'sha256': sha256(path)}
                     for name, path in figure_files.items()},
         'plot_value_schema': {
-            'source': 'shared bases.plots' if plot_tables.shared_plot_api() else
-                      'driver fallback matching the shared schema',
+            'source': 'driver plot_tables @d mapping; shared bases.plots drawing API adapts in #169',
             'columns': list(plot_tables.PLOT_VALUE_COLUMNS),
             'metrics_schema': plot_tables.METRICS_SCHEMA,
+            'metrics_indirect_schema': plot_tables.METRICS_INDIRECT_SCHEMA,
             'learning_curve_schema': plot_tables.LEARNING_CURVE_SCHEMA},
         'learning_curve_skipped': None if models else 'no_learnable_entry_trajectory',
         'direct_metrics': list(DIRECT_COLUMNS),
-        'indirect_metrics': ['Precision@k', 'Spearman@k', 'max_k@P80S40', 'Recall@max_k'],
-        'k_axis': list(range(1, K_MAX + 1)),
+        'reliability_metrics': list(RELIABILITY_COLUMNS),
     }
     write_json(output / 'evaluation.json', record)
     return record
@@ -697,7 +839,7 @@ def run_driver(runs_root, entries, fold_rows, seeds, fold_product, truth, corpus
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description='Score persisted tenv predictions against evaluator-only truth (#164).')
+        description='Score persisted tenv predictions against evaluator-only truth (#168).')
     parser.add_argument('--runs-root', required=True)
     parser.add_argument('--entries', required=True)
     parser.add_argument('--fold-rows', default='0')

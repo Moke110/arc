@@ -265,8 +265,14 @@ def score(*, bases, candidate, python):
                     if run.get("terminal_status") != "complete"]
     if not_complete:
         raise MatrixError(f"unscored or incomplete runs: {not_complete}")
+    tables = record.get("tables") or {}
+    for name in ("per_well", "per_group", "per_run", "per_run_curve", "confusion"):
+        if name not in tables or not Path(tables[name]["path"]).is_file():
+            raise MatrixError(f"evaluation table is missing: {name}")
     if not (figure_data / "metrics_values.csv").is_file():
         raise MatrixError("metrics plot-value table is missing")
+    if not (figure_data / "metrics_indirect_values.csv").is_file():
+        raise MatrixError("reliability plot-value table is missing")
     if not (figure_data / "learning_curve_values.csv").is_file():
         raise MatrixError("learning-curve plot-value table is missing")
     return record
