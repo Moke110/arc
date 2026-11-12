@@ -150,23 +150,24 @@ the tracked `output/api` implementation and the records remain tracked. See
 limitations and historical-versus-current provenance boundary, and
 `stage2/01_bases/log/156-migration-record.json` for the old→new binding.
 
-### `stage2/02_models_tenv/` — accepted tenv matrix (2026-11-12, #165)
+### `stage2/02_models_tenv/` — accepted tenv matrix (2026-11-12, #165/#170)
 
 The step's products are untracked ignored payloads under its `output/`; only the
-two figures, their complete plotted-value CSVs, the CSV-only renderer, the
-acceptance record and the raw resource measurements are tracked. The whole
+three figures, their three complete plotted-value CSVs, the CSV-only renderer,
+the acceptance records and the raw resource measurements are tracked. The whole
 `output/` tree is regenerable from the canonical checkout with
 `python execution/run_matrix.py --all`; a completed run set is reused with
-`--resume`.
+`--resume`, and `--accept-only` rescores and replays the published runs without
+training or re-inference.
 
 | path under `stage2/02_models_tenv/` | `du -sb` | contents | reconstruction |
 |---|---:|---|---|
 | `output/inputs/` | 2,041,030,268 | four complete predictor-input releases (`drugs.csv`, `morgan.npy`, per-role baseline/delta arrays, case tables and manifests), one per `(fold, seed)` matrix cell | `execution/script/prepare_inputs.py` from the sealed `01_bases` corpus and fold/seed products |
 | `output/runs/` | 967,675,021 | eight run directories: four PRnet fits (`prediction.npy`, `best.pt`, checkpoint/identity/terminal/resource records) and four deterministic `Mean` fold copies | PRnet runs: pinned PRnet environment + `execution/script/prnet_fit_predict.py`; `Mean`: `execution/script/mean_reference.py`; one heavy job at a time under the 10 GiB cap |
-| `output/evaluation/` | 99,838,316 | `per_well.csv`, `per_group.csv`, `per_run.csv` and `evaluation.json` from the shared #164 driver | `execution/script/evaluation_driver.py` over the eight complete runs; re-scores from persisted predictions only |
-| `output/figure_data/` | 377,681 | candidate copies of the two plot-value tables (byte-identical to the tracked `figure/data/`) | `evaluation_driver.py --figure-data` |
-| `figure/` | 693,274 | `metrics.png` (eight panels), `learning_curve.png` (PRnet), the two complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
-| `log/` | 62,873 | #163 admission, #164 driver and #165 acceptance records plus the raw `/usr/bin/time -v` measurements and the environment locks | execution records; tracked |
+| `output/evaluation/` | 57,435,713 | `per_well.csv`, `per_group.csv`, `per_run.csv`, `per_run_curve.csv`, `confusion.csv`, `evaluation.json` and the three plot-value copies from the shared #168 driver | `execution/script/evaluation_driver.py` over the eight complete runs; re-scores from persisted predictions only |
+| `output/figure_data/` | 825,190 | copies of the three @d plot-value tables (byte-identical to the tracked `figure/data/`) | `evaluation_driver.py --figure-data` |
+| `figure/` | 1,270,546 | `metrics.png` (4 direct panels), `metrics_indirect.png` (8 reliability panels), `learning_curve.png` (PRnet), the three complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
+| `log/` | 63,233 | #163 admission, #164 driver, #165 and #166 acceptance records plus the raw `/usr/bin/time -v` measurements and the environment locks | execution records; tracked |
 
 Historical tenv comparison code, figures and records are **not** present in the
 working tree; they remain untouched in Git history (`git show
