@@ -18,47 +18,99 @@
       }
     },
     "q2_up_down_rank_symmetry": {
-      "median_fused_rank_down": 9560.0,
-      "median_fused_rank_up": 8561.0,
+      "median_fused_rank_down": 8031.0,
+      "median_fused_rank_up": 8779.0,
       "n_down_significant": 7857,
       "n_up_significant": 8889,
       "top_n_composition": {
         "1000": {
-          "down_share": 0.432,
-          "n_down": 432,
-          "n_up": 568,
-          "up_share": 0.568
+          "max_abs_log2fc": {
+            "down_share": 0.116,
+            "n_down": 116,
+            "n_unsupported": 0,
+            "n_up": 884,
+            "up_share": 0.884
+          },
+          "symmetric": {
+            "down_share": 0.475,
+            "n_down": 475,
+            "n_unsupported": 0,
+            "n_up": 525,
+            "up_share": 0.525
+          }
         },
         "2000": {
-          "down_share": 0.4375,
-          "n_down": 875,
-          "n_up": 1123,
-          "up_share": 0.5615
+          "max_abs_log2fc": {
+            "down_share": 0.1375,
+            "n_down": 275,
+            "n_unsupported": 0,
+            "n_up": 1725,
+            "up_share": 0.8625
+          },
+          "symmetric": {
+            "down_share": 0.462,
+            "n_down": 924,
+            "n_unsupported": 0,
+            "n_up": 1076,
+            "up_share": 0.538
+          }
         },
         "3000": {
-          "down_share": 0.434,
-          "n_down": 1302,
-          "n_up": 1694,
-          "up_share": 0.5646666666666667
+          "max_abs_log2fc": {
+            "down_share": 0.20966666666666667,
+            "n_down": 629,
+            "n_unsupported": 1,
+            "n_up": 2370,
+            "up_share": 0.79
+          },
+          "symmetric": {
+            "down_share": 0.4656666666666667,
+            "n_down": 1397,
+            "n_unsupported": 0,
+            "n_up": 1603,
+            "up_share": 0.5343333333333333
+          }
         },
         "500": {
-          "down_share": 0.422,
-          "n_down": 211,
-          "n_up": 289,
-          "up_share": 0.578
+          "max_abs_log2fc": {
+            "down_share": 0.132,
+            "n_down": 66,
+            "n_unsupported": 0,
+            "n_up": 434,
+            "up_share": 0.868
+          },
+          "symmetric": {
+            "down_share": 0.474,
+            "n_down": 237,
+            "n_unsupported": 0,
+            "n_up": 263,
+            "up_share": 0.526
+          }
         },
         "5000": {
-          "down_share": 0.4402,
-          "n_down": 2201,
-          "n_up": 2792,
-          "up_share": 0.5584
+          "max_abs_log2fc": {
+            "down_share": 0.2914,
+            "n_down": 1457,
+            "n_unsupported": 2,
+            "n_up": 3541,
+            "up_share": 0.7082
+          },
+          "symmetric": {
+            "down_share": 0.4798,
+            "n_down": 2399,
+            "n_unsupported": 0,
+            "n_up": 2601,
+            "up_share": 0.5202
+          }
         }
-      }
+      },
+      "up_down_definition": "up/down = significant in any DEG source (padj < 0.05) with the winning cross-source direction"
     },
     "q3_effect_replication_vs_deg_count": {
       "n_genes_supported_by_2plus": 15231,
       "n_genes_supported_by_any_deg": 16746,
       "spearman_fused_vs_count_rank": 0.8094560964384797,
+      "tie_break": "descending n_sources_deg_significant, ties broken by ascending fused_rank (a frozen gene_index tie-break gives Spearman 0.6791 and top-500 overlap 0.204 instead of the tracked values)",
       "top_n_agreement": {
         "1000": {
           "n_overlap": 555,
@@ -94,6 +146,11 @@
       "gse160516",
       "gse108940"
     ],
+    "deg_count_tie_break": "descending n_sources_deg_significant, ties by ascending fused_rank",
+    "direction_rules": [
+      "symmetric",
+      "max_abs_log2fc"
+    ],
     "direction_sizes": [
       500,
       1000,
@@ -113,6 +170,8 @@
       "dtoxs_ipsc",
       "gse244740"
     ],
+    "hvg_density": "n_hvg_on_axis / n_axis_expression",
+    "hvg_share": "n_hvg_on_axis / n_hvg_total",
     "padj_threshold": 0.05,
     "source_hvg_k": 2000,
     "tenv_hvg_ks": [
@@ -131,7 +190,7 @@
     "n_fused_sources": 10,
     "n_genes_supported_by_all_deg": 0,
     "n_genes_supported_by_any_deg": 16746,
-    "overlap_rows": 71,
+    "overlap_rows": 81,
     "source_summary_rows": 12,
     "tenv_non_hvg_rows": 18164
   },
@@ -226,21 +285,22 @@
     }
   },
   "ortholog_generator": {
+    "candidate_policy": "writes execution/gene_axis/mouse_human_orthologs.candidate.csv (candidates stay outside formal output, ADR 0062), compares its sha256 with the accepted table, and replaces the accepted table only when byte-identical or when --accept is passed",
     "command": "R_HOME=/home/chang/miniconda3/envs/arc/lib/R /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave --file=stage2/01_bases/execution/build_mouse_orthologs.R",
     "homologene_version": "1.4.68.19.3.27",
     "org.Mm.eg.db_version": "3.20.0",
     "r_version": "R version 4.4.1 (2024-06-14)",
     "script": "stage2/01_bases/execution/build_mouse_orthologs.R",
-    "sha256": "e1afe383434b100acccd733973cc947226bd826de23a5f220ef8ac459854d82e"
+    "sha256": "fd8f874b8a096c879221b07cb4aa354a9b3f956456d383ce1f1f601dffac0fa0"
   },
   "outputs": {
     "figure/data/gene_axis_source_summary.csv": {
       "rows": 705,
-      "sha256": "f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a"
+      "sha256": "7361eae4170b8601c5144e214446c15277ee087fe0221396a2d0daa5f1e05160"
     },
     "output/gene-axis/direction_summary.csv": {
       "rows": 10,
-      "sha256": "92f856874dcfbbce377ed44460df8cc251cbcb8575e2cdf52de33a2b9fd712de"
+      "sha256": "23a6b8c6bb3c5f0534f44f3b77d4eed2a95f669a264bd5ea0282f8518eb108f5"
     },
     "output/gene-axis/fused_rank.csv": {
       "rows": 18164,
@@ -251,28 +311,29 @@
       "sha256": "0f2c955f89b489aaf781e5724cdf2ed44487f8051b0ebcc8f15fe8a1c32201f4"
     },
     "output/gene-axis/overlap.csv": {
-      "rows": 71,
-      "sha256": "039510eb5cbcccf47bd3ac349491de5a4569cc84c4d04b99b91efcd368bbbe65"
+      "rows": 81,
+      "sha256": "45b8eafbd27c69e39d5a385354c375aa569c0d6f1ba8174d58fab59fba1a74f6"
     },
     "output/gene-axis/source_summary.csv": {
       "rows": 12,
-      "sha256": "c1940152d7f2adc846609a10fc1b818dc3f3baea0f06c8e5f6c105aece16ccdd"
+      "sha256": "673f58d66a6b35ce93d721e654175e48ddf1d175bb92f31bbf60cf49a9bc9dc5"
     },
     "output/gene-axis/tenv_non_hvg_curve.csv": {
       "rows": 18164,
-      "sha256": "b650f8bce96d6ee745ac6f2135d0bb76c0f94b32377283e97f726a665ebe2375"
+      "sha256": "b421a4b64e7648cda48d5766f014db127ae419b0f2503b99855906899e7981ae"
     }
   },
   "recipe": {
-    "alignment": "Source symbol -> axis gene_index by precedence: canonical axis symbol; gene_crosswalk.csv alias/previous rows; pinned HGNC alias_symbol / prev_symbol; Ensembl id (version stripped) via the axis ensembl_id or the HGNC ensembl_gene_id. Multi-candidate aliases are ambiguous and unresolved, never guessed; unresolved symbols are counted and reported.",
+    "alignment": "Source symbol -> axis gene_index by precedence: canonical axis symbol; gene_crosswalk.csv alias/previous rows; pinned HGNC alias_symbol / prev_symbol; Ensembl id (version stripped) via the axis ensembl_id or the HGNC ensembl_gene_id. Multi-candidate aliases are ambiguous and unresolved, never guessed; unresolved symbols are counted and reported. Duplicate source symbols that resolve to one axis gene collapse under the shared max-effect DEG rule (per_gene_deg); the source-transcriptome HVG ranking is computed on the source rows before the axis projection.",
     "deg": "Continuous per-contrast effect score |log2FC| * -log10(padj) with padj floored at 1e-300; NA padj (DESeq2 independent filtering) is treated as non-significant with score 0, not dropped from the measured set. A gene scores the maximum over its source contrasts (declared collapse rule); direction and padj come from that winning contrast and n_contrasts_supporting counts padj < 0.05 contrasts.",
-    "direction": "Per gene the significant DEG contrast with the largest effect score across all DEG sources gives the direction; exact ties break by the declared source order and are counted. The symmetric rule counts genes equally, the abs_log2fc rule weights each gene by its winning |log2FC|.",
-    "expression_collapse": "Duplicate source symbols resolving to one axis gene are averaged on the deposited log expression.",
+    "direction": "Per gene the per-source maximum-effect DEG row (the multi-contrast maximum) gives the sign: direction = sign(log2FC) of the largest source effect across the nine DEG sources, 0 when no source reports an effect (n_unsupported). Top-N direction composition is reported under two genuinely different orderings: \"symmetric\" = the first N genes in ascending fused_rank (every gene counts equally), and \"max_abs_log2fc\" = the N genes with the largest max_abs_effect = max over the sources that report the gene of |log2FC|, ties broken by ascending fused_rank. Exact cross-source effect ties are counted (n_direction_ties).",
     "fusion": "Unweighted sum of rank_norm = rank / n_measured (unmeasured = 1.0) over the fused sources; primary fused rank is ascending rank_sum with gene_index tie-break. rank_sum_animal_half re-weights the two animal MIRI sources at 0.5 (reported sensitivity, not chosen); the primary fusion is unweighted.",
-    "hvg": "Seurat-style normalized dispersion on the item's deposited log expression: per-gene mean over finite samples, sample variance / mean, log dispersion standardized in 20 equal-width log1p-mean bins, singleton bins score 1, undefined dispersion sorts last, gene_index tie-break. Same family as output/api/bases/hvg.py; deliberate difference: no expm1 recovery because the disease matrices are heterogeneous non-invertible log scales, so the statistics are computed on the deposited log values directly.",
+    "hvg": "Seurat-style normalized dispersion on the item's deposited log expression: per-gene mean over finite samples, sample variance / mean, log dispersion standardized in 20 equal-width log1p-mean bins, singleton bins score 1, undefined dispersion sorts last, source-row order as tie-break. Same family as output/api/bases/hvg.py; deliberate difference: no expm1 recovery because the disease matrices are heterogeneous non-invertible log scales, so the statistics are computed on the deposited log values directly. The ranking is over the source's whole measured transcriptome (every matrix row, not only the rows that resolve to the frozen axis).",
+    "hvg_sets": "A source's declared HVG set at size K is its top-K source rows by that ranking; the overlap table reports K in {1000, 2000, 5000} and the source summary reports the declared reporting size K=2000. n_hvg_total is the declared set size min(K, n_source_genes); n_hvg_on_axis is the number of distinct frozen-axis genes in it; hvg_share = n_hvg_on_axis / n_hvg_total (the share of the source's own variability evidence that lands on the frozen axis, not how variable the axis is); hvg_density = n_hvg_on_axis / n_axis_expression. n_hvg keeps its existing column and equals the declared set size (n_hvg_total).",
     "inflection": "Kneedle online S=1.0 (first interior local maximum of the normalized arc y_norm - x_norm) plus the second-difference peak; accepted only when both candidates agree within 25% and the knee exceeds 0.01 normalized units, otherwise an explicit \"inflection\": false.",
-    "overlap": "TenV HVG sets are the published descriptive top-K (K in {1000, 2000, 5000}); a source HVG set is its top-2000 measured genes; a source DEG set is padj < 0.05 on the winning contrast.",
-    "rank": "Within-source only. Measured genes are ranked 1..n_measured by descending score with gene_index as tie-break; unmeasured genes get n_measured + 1 and rank_norm = 1.0. Ranks are never compared across sources as raw effect sizes."
+    "overlap": "TenV HVG sets are the published descriptive top-K (K in {1000, 2000, 5000}); a source HVG set is the same declared K over the source's own measured transcriptome, projected to the axis; a source DEG set is padj < 0.05 on the winning contrast. All sets are gene_index sets; the reported fused_rank_min/median/max look the intersection genes up in the gene_index-indexed fused rank. A multi-way intersection row has no Jaccard (identical operands): it reports the intersection size, its fused ranks and a note, with n_a/n_b/n_union/jaccard left blank.",
+    "rank": "Within-source only. Measured genes are ranked 1..n_measured by descending score with gene_index as tie-break; unmeasured genes get n_measured + 1 and rank_norm = 1.0. Ranks are never compared across sources as raw effect sizes.",
+    "tenv_non_hvg": "For N = 1..18164 the fused top-N are the first N genes in ascending fused_rank; the curve reports the share of that set whose published tenv HVG rank exceeds K for K in {1000, 2000, 5000}."
   },
   "schema": "stage2-gene-axis-evidence-v1",
   "sources": {

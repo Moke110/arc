@@ -41,7 +41,10 @@ gene and evaluation semantics. Every path below is a stable semantic path.
   `--verify` included; `execution/gene_axis_sources.py` holds the two
   `pert_data/` cardiotoxicity adapters and `execution/build_mouse_orthologs.R`
   regenerates the pinned `output/gene-axis/mouse_human_orthologs.csv` (pinned
-  `arc` R entry point, homologene + org.Mm.eg.db). Product is
+  `arc` R entry point, homologene + org.Mm.eg.db); the R script writes a candidate
+  under `execution/gene_axis/`, checks its sha256 against the accepted table and
+  replaces it only when byte-identical or with `--args --accept` (ADR 0062
+  candidate-then-replace). Product is
   `output/gene-axis/` (`source_summary.csv`, `fused_rank.csv`, `overlap.csv`,
   `inflection.json`, `tenv_non_hvg_curve.csv`, `direction_summary.csv`,
   `manifest.json` + the ortholog table; large per-source intermediates stay

@@ -30,5 +30,8 @@
     "lib_gse141910.R": "589ed484895be49d53be7c234095324220068ff8749bccf0d9da36d5e0e7e289"
   },
   "deg_csv": "local/deg/GSE141910_deg.csv",
+  "digests": {
+    "local/deg/GSE141910_deg.csv": "3beed5df35bde8e748d03a0c76e2001ffa8f9dff963d60f5472363d88869e2da"
+  },
   "reproducibility": "deterministic; re-running build_deg.R reproduces the CSV sha256 exactly"
 }

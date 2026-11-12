@@ -30,10 +30,11 @@ import public_api  # noqa: F401  (binds the single public implementation in outp
 import build_gene_axis as driver
 import render_gene_axis_source_summary as renderer
 from bases.gene_axis import (
-    AXIS_SIZE, SymbolResolver, collapse_expression, complete_rank, deg_effect,
-    detect_inflection, direction_composition, fuse_ranks, fused_order, hvg_membership,
-    kneedle_knee, normalized_dispersion, normalized_rank, overlap_metrics, per_gene_deg,
-    rank_scores, second_difference_peak, tenv_non_hvg_curve,
+    AXIS_SIZE, SymbolResolver, align_to_gene_index, collapse_expression, complete_rank,
+    deg_count_agreement, deg_effect, detect_inflection, direction_composition, fuse_ranks,
+    fused_rank_stats, hvg_membership, kneedle_knee, normalized_dispersion, normalized_rank,
+    overlap_metrics, per_gene_deg, rank_scores, second_difference_peak, tenv_non_hvg_curve,
+    transcriptome_hvg_sets,
 )
 
 AXIS_SYMBOLS = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7']
@@ -201,35 +202,127 @@ class FusionTests(unittest.TestCase):
         pd.testing.assert_frame_equal(first[columns], second[columns])
         pd.testing.assert_frame_equal(first, fuse_ranks(ranks, measured, axis_size=6))
 
-    def test_direction_composition(self):
-        order = np.array([0, 1, 2, 3, 4, 5])
-        direction = np.array([1, -1, 1, 0, -1, 1])
-        magnitude = np.array([1.0, 3.0, 1.0, 0.0, 1.0, 1.0])
-        frame = direction_composition(order, direction, magnitude, sizes=(4, 6))
-        symmetric = frame[frame.rule == 'symmetric'].set_index('n')
-        weighted = frame[frame.rule == 'abs_log2fc'].set_index('n')
-        self.assertEqual(symmetric.loc[4, 'n_up'], 2)
-        self.assertEqual(symmetric.loc[4, 'n_down'], 1)
-        self.assertEqual(symmetric.loc[4, 'n_unsupported'], 1)
-        self.assertAlmostEqual(symmetric.loc[4, 'up_share'], 2 / 4)
-        self.assertAlmostEqual(weighted.loc[4, 'up_share'], 2 / 5)
-        self.assertAlmostEqual(weighted.loc[4, 'down_share'], 3 / 5)
-
     def test_overlap_metrics(self):
-        fused_rank = np.array([3, 1, 2])
+        fused_rank = np.array([3, 1, 2])   # gene-indexed: gene 1 is fused rank 1
         metrics = overlap_metrics({0, 1}, {1, 2}, fused_rank)
         self.assertEqual(metrics['n_intersection'], 1)
         self.assertAlmostEqual(metrics['jaccard'], 1 / 3)
         self.assertEqual(metrics['fused_rank_min'], 1)
 
     def test_tenv_non_hvg_curve(self):
-        fused = np.array([2, 0, 1])
-        tenv_rank = np.array([3, 1, 2])
-        curve = tenv_non_hvg_curve(fused, tenv_rank, ks=(1, 2))
+        ranked_genes = np.array([2, 0, 1])   # fused order: genes 2, 0, 1
+        tenv_rank = np.array([3, 1, 2])      # gene-indexed
+        curve = tenv_non_hvg_curve(ranked_genes, tenv_rank, ks=(1, 2))
         self.assertEqual(curve.n.tolist(), [1, 2, 3])
         self.assertEqual(curve['n_non_hvg_k1'].tolist(), [1, 2, 2])
         self.assertEqual(curve['n_non_hvg_k2'].tolist(), [0, 1, 1])
         self.assertTrue(hvg_membership(tenv_rank, 1).tolist() == [False, True, False])
+
+
+class IndexSpaceTests(unittest.TestCase):
+    """The tracked fused table is sorted by fused_rank, never by gene_index.
+
+    These fixtures make fused-rank order differ from gene_index order and pin
+    that every consumer answers the fused-order question, not the row-position
+    one (the bug class this round fixes).
+    """
+
+    def test_align_to_gene_index_scatters_sorted_rows(self):
+        # Rows in fused-rank order hold gene indices [1, 3, 0, 4, 2].
+        row_gene_index = np.array([1, 3, 0, 4, 2])
+        row_fused_rank = np.array([1, 2, 3, 4, 5])
+        scattered = align_to_gene_index(row_fused_rank, row_gene_index, axis_size=5)
+        self.assertEqual(scattered.tolist(), [3, 1, 5, 2, 4])
+        with self.assertRaises(ValueError):
+            align_to_gene_index(np.array([1, 2]), np.array([0, 1]), axis_size=5)
+        with self.assertRaises(ValueError):
+            align_to_gene_index(np.array([1, 2]), np.array([0, 0]), axis_size=2)
+
+    def test_tenv_curve_uses_fused_order_not_gene_index(self):
+        tenv_rank = np.array([1, 2, 3, 4, 5])   # gene 0 is tenv's top HVG
+        fused_rank = np.array([3, 1, 5, 2, 4])  # fused order genes [1, 3, 0, 4, 2]
+        fused_order = np.argsort(fused_rank)
+        curve = tenv_non_hvg_curve(fused_order, tenv_rank, ks=(1, 2))
+        self.assertEqual(curve['n_non_hvg_k1'].tolist(), [1, 2, 2, 3, 4])
+        self.assertEqual(curve['n_non_hvg_k2'].tolist(), [0, 1, 1, 2, 3])
+        # The old row-position call (gene_index order) must give a different curve.
+        wrong = tenv_non_hvg_curve(np.arange(5), tenv_rank, ks=(1,))
+        self.assertEqual(wrong['n_non_hvg_k1'].tolist(), [0, 1, 2, 3, 4])
+
+    def test_overlap_rank_stats_use_gene_indexed_fused_rank(self):
+        fused_rank = np.array([3, 1, 2])
+        own = overlap_metrics({0}, {0}, fused_rank)
+        self.assertEqual(own['fused_rank_min'], 3)
+        self.assertEqual(own['fused_rank_max'], 3)
+        self.assertEqual(fused_rank_stats({1}, fused_rank)['fused_rank_min'], 1)
+        self.assertEqual(fused_rank_stats({0, 2}, fused_rank)['fused_rank_median'], 2.5)
+        # A row-position array would report 2 for gene 0, not its true rank 3.
+        positional = np.array([1, 2, 3])
+        self.assertEqual(overlap_metrics({0}, {0}, positional)['fused_rank_min'], 1)
+
+    def test_direction_composition_rules_select_different_genes(self):
+        fused_rank = np.array([1, 2, 3, 4, 5, 6])
+        direction = np.array([1, 1, -1, -1, 1, -1])
+        max_abs_effect = np.array([0.0, 0.0, 0.0, 0.0, 9.0, 8.0])
+        frame = direction_composition(fused_rank, direction, max_abs_effect, sizes=(2, 6))
+        symmetric = frame[frame.rule == 'symmetric'].set_index('n')
+        weighted = frame[frame.rule == 'max_abs_log2fc'].set_index('n')
+        self.assertEqual((symmetric.loc[2, 'n_up'], symmetric.loc[2, 'n_down']), (2, 0))
+        self.assertEqual((weighted.loc[2, 'n_up'], weighted.loc[2, 'n_down']), (1, 1))
+        self.assertAlmostEqual(symmetric.loc[2, 'up_share'], 1.0)
+        self.assertAlmostEqual(weighted.loc[2, 'up_share'], 0.5)
+        self.assertEqual((symmetric.loc[6, 'n_up'], weighted.loc[6, 'n_up']), (3, 3))
+
+    def test_direction_composition_uses_fused_rank_values_not_row_order(self):
+        fused_rank = np.array([3, 1, 5, 2, 4])
+        direction = np.array([1, -1, 1, -1, 1])
+        max_abs_effect = np.zeros(5)
+        frame = direction_composition(fused_rank, direction, max_abs_effect, sizes=(2,))
+        symmetric = frame[frame.rule == 'symmetric'].iloc[0]
+        self.assertEqual((symmetric.n_up, symmetric.n_down), (0, 2))  # genes 1, 3
+        wrong = direction_composition(np.arange(1, 6), direction, max_abs_effect, sizes=(2,))
+        wrong_row = wrong[wrong.rule == 'symmetric'].iloc[0]
+        self.assertEqual((wrong_row.n_up, wrong_row.n_down), (1, 1))  # row positions 0, 1
+
+    def test_deg_count_tie_break_is_fused_rank(self):
+        fused_rank = np.array([4, 5, 1, 2, 3, 6])
+        count = np.array([1, 1, 0, 1, 0, 0])
+        result = deg_count_agreement(fused_rank, count, sizes=(2,))
+        self.assertEqual(result['top_n_agreement']['2']['n_overlap'], 1)
+        self.assertAlmostEqual(result['top_n_agreement']['2']['share'], 0.5)
+        # The frozen gene_index tie-break is a different, weaker ranking.
+        gene_order = np.lexsort((np.arange(6), -count))
+        fused_order = np.argsort(fused_rank)
+        self.assertEqual(len(set(fused_order[:2]) & set(gene_order[:2])), 0)
+
+    def test_transcriptome_hvg_sets_project_top_k_onto_axis(self):
+        hvg_rank = np.array([1, 2, 3, 4])
+        row_gene_index = np.array([-1, 0, 1, 2])   # the most variable row is off-axis
+        sets = transcriptome_hvg_sets(hvg_rank, row_gene_index, ks=(1, 2, 4), axis_size=3)
+        self.assertEqual(sets[1]['n_total'], 1)
+        self.assertEqual(sets[1]['n_on_axis'], 0)
+        self.assertFalse(sets[1]['set'].any())
+        self.assertEqual(sets[2]['n_on_axis'], 1)
+        self.assertEqual(sets[4]['n_total'], 4)
+        self.assertEqual(sets[4]['n_on_axis'], 3)
+        self.assertAlmostEqual(sets[2]['n_on_axis'] / sets[2]['n_total'], 0.5)
+
+    def test_source_summary_hvg_share_and_density(self):
+        spec = {'id': 'x', 'accession': 'X', 'category': 'disease_data',
+                'species': 'Homo sapiens', 'tissue_model': 't', 'contrast': 'c',
+                'method': 'm', 'ortholog_chain': 'none', 'fused': True,
+                'exploratory': False, 'supplementary_only': False, 'notes': ''}
+        axis_set = np.zeros(8, dtype=bool)
+        axis_set[[0, 1, 2, 3, 4]] = True
+        result = {'measured': 6, 'n_axis_expression': 7, 'n_samples': 2,
+                  'n_contrasts': 1, 'per_gene': None, 'metadata': {},
+                  'hvg_sets': {2000: {'set': axis_set, 'n_total': 8, 'n_on_axis': 5}}}
+        row = driver._source_summary_row(spec, result, axis_size=8)
+        self.assertEqual(row['n_hvg'], 8)
+        self.assertEqual(row['n_hvg_total'], 8)
+        self.assertEqual(row['n_hvg_on_axis'], 5)
+        self.assertAlmostEqual(row['hvg_share'], 5 / 8)
+        self.assertAlmostEqual(row['hvg_density'], 5 / 7)
 
 
 class InflectionTests(unittest.TestCase):

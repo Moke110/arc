@@ -35,9 +35,10 @@ import pandas as pd
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.gene_axis import (
     ANIMAL_SOURCES, AXIS_SIZE, PADJ_THRESHOLD, SCHEMA, SOURCE_HVG_K, TENV_HVG_KS,
-    SymbolResolver, collapse_expression, complete_rank, deg_effect, detect_inflection,
-    direction_composition, fuse_ranks, fused_order, hvg_membership, normalized_dispersion,
-    overlap_metrics, per_gene_deg, rank_scores, tenv_non_hvg_curve,
+    SymbolResolver, align_to_gene_index, complete_rank, deg_count_agreement,
+    deg_effect, detect_inflection, direction_composition, fuse_ranks, fused_rank_stats,
+    hvg_membership, normalized_dispersion, overlap_metrics, per_gene_deg, rank_scores,
+    tenv_non_hvg_curve, transcriptome_hvg_sets,
 )
 import gene_axis_sources as sources
 
@@ -50,14 +51,25 @@ CURVE_SAMPLE_STEP = 100
 FORBIDDEN = ('tenv-truth', 'heliste')
 
 RECIPE = {
-    'hvg': ('Seurat-style normalized dispersion on the item\'s deposited log expression: '
+    'hvg': ("Seurat-style normalized dispersion on the item's deposited log expression: "
             'per-gene mean over finite samples, sample variance / mean, log dispersion '
             'standardized in 20 equal-width log1p-mean bins, singleton bins score 1, '
-            'undefined dispersion sorts last, gene_index tie-break. Same family as '
-            'output/api/bases/hvg.py; deliberate difference: no expm1 recovery because '
+            'undefined dispersion sorts last, source-row order as tie-break. Same family '
+            'as output/api/bases/hvg.py; deliberate difference: no expm1 recovery because '
             'the disease matrices are heterogeneous non-invertible log scales, so the '
-            'statistics are computed on the deposited log values directly.'),
-    'deg': ('Continuous per-contrast effect score |log2FC| * -log10(padj) with padj floored '
+            'statistics are computed on the deposited log values directly. The ranking is '
+            'over the source\'s whole measured transcriptome (every matrix row, not only '
+            'the rows that resolve to the frozen axis).'),
+    'hvg_sets': ("A source's declared HVG set at size K is its top-K source rows by that "
+                 'ranking; the overlap table reports K in {1000, 2000, 5000} and the source '
+                 'summary reports the declared reporting size K=2000. n_hvg_total is the '
+                 'declared set size min(K, n_source_genes); n_hvg_on_axis is the number of '
+                 'distinct frozen-axis genes in it; hvg_share = n_hvg_on_axis / n_hvg_total '
+                 '(the share of the source\'s own variability evidence that lands on the '
+                 'frozen axis, not how variable the axis is); hvg_density = n_hvg_on_axis / '
+                 'n_axis_expression. n_hvg keeps its existing column and equals the declared '
+                 'set size (n_hvg_total).'),
+    'deg': ("Continuous per-contrast effect score |log2FC| * -log10(padj) with padj floored "
             'at 1e-300; NA padj (DESeq2 independent filtering) is treated as '
             'non-significant with score 0, not dropped from the measured set. A gene '
             'scores the maximum over its source contrasts (declared collapse rule); '
@@ -67,9 +79,10 @@ RECIPE = {
                   'gene_crosswalk.csv alias/previous rows; pinned HGNC alias_symbol / '
                   'prev_symbol; Ensembl id (version stripped) via the axis ensembl_id or '
                   'the HGNC ensembl_gene_id. Multi-candidate aliases are ambiguous and '
-                  'unresolved, never guessed; unresolved symbols are counted and reported.'),
-    'expression_collapse': ('Duplicate source symbols resolving to one axis gene are '
-                            'averaged on the deposited log expression.'),
+                  'unresolved, never guessed; unresolved symbols are counted and reported. '
+                  'Duplicate source symbols that resolve to one axis gene collapse under '
+                  'the shared max-effect DEG rule (per_gene_deg); the source-transcriptome '
+                  'HVG ranking is computed on the source rows before the axis projection.'),
     'rank': ('Within-source only. Measured genes are ranked 1..n_measured by descending '
              'score with gene_index as tie-break; unmeasured genes get n_measured + 1 and '
              'rank_norm = 1.0. Ranks are never compared across sources as raw effect sizes.'),
@@ -77,13 +90,26 @@ RECIPE = {
                'the fused sources; primary fused rank is ascending rank_sum with gene_index '
                'tie-break. rank_sum_animal_half re-weights the two animal MIRI sources at '
                '0.5 (reported sensitivity, not chosen); the primary fusion is unweighted.'),
-    'direction': ('Per gene the significant DEG contrast with the largest effect score '
-                  'across all DEG sources gives the direction; exact ties break by the '
-                  'declared source order and are counted. The symmetric rule counts genes '
-                  'equally, the abs_log2fc rule weights each gene by its winning |log2FC|.'),
+    'direction': ("Per gene the per-source maximum-effect DEG row (the multi-contrast "
+                  'maximum) gives the sign: direction = sign(log2FC) of the largest '
+                  'source effect across the nine DEG sources, 0 when no source reports an '
+                  'effect (n_unsupported). Top-N direction composition is reported under '
+                  'two genuinely different orderings: "symmetric" = the first N genes in '
+                  'ascending fused_rank (every gene counts equally), and "max_abs_log2fc" '
+                  '= the N genes with the largest max_abs_effect = max over the sources '
+                  'that report the gene of |log2FC|, ties broken by ascending fused_rank. '
+                  'Exact cross-source effect ties are counted (n_direction_ties).'),
     'overlap': ('TenV HVG sets are the published descriptive top-K (K in {1000, 2000, 5000}); '
-                'a source HVG set is its top-2000 measured genes; a source DEG set is '
-                'padj < 0.05 on the winning contrast.'),
+                'a source HVG set is the same declared K over the source\'s own measured '
+                'transcriptome, projected to the axis; a source DEG set is padj < 0.05 on '
+                'the winning contrast. All sets are gene_index sets; the reported '
+                'fused_rank_min/median/max look the intersection genes up in the '
+                'gene_index-indexed fused rank. A multi-way intersection row has no '
+                'Jaccard (identical operands): it reports the intersection size, its fused '
+                'ranks and a note, with n_a/n_b/n_union/jaccard left blank.'),
+    'tenv_non_hvg': ('For N = 1..18164 the fused top-N are the first N genes in ascending '
+                     'fused_rank; the curve reports the share of that set whose published '
+                     'tenv HVG rank exceeds K for K in {1000, 2000, 5000}.'),
     'inflection': ('Kneedle online S=1.0 (first interior local maximum of the normalized '
                    'arc y_norm - x_norm) plus the second-difference peak; accepted only when '
                    'both candidates agree within 25% and the knee exceeds 0.01 normalized '
@@ -350,13 +376,19 @@ def process_expression_source(config, axis, resolver, spec, intermediates):
     indices, categories = resolver.resolve_many(symbols)
     alignment = _alignment_rows(spec['id'], symbols, indices, categories)
     loss = resolver.loss_summary(indices, categories)
-    keep = indices >= 0
-    gene_index, values = collapse_expression(matrix.to_numpy(dtype=np.float64)[keep],
-                                             indices[keep], AXIS_SIZE)
-    hvg = normalized_dispersion(values, gene_index)
-    hvg_top = hvg.sort_values('rank').gene_index.to_numpy(dtype=np.int64)[:SOURCE_HVG_K]
-    hvg_set = np.zeros(AXIS_SIZE, dtype=bool)
-    hvg_set[hvg_top] = True
+    values = matrix.to_numpy(dtype=np.float64)
+    # The source's HVG ranking is over its whole measured transcriptome (every
+    # matrix row, including rows that do not resolve to the frozen axis); the
+    # source row order is the deterministic tie-break. Only after ranking are
+    # the declared top-K rows projected onto the axis, so hvg_share measures how
+    # much of the source's own variability evidence lands on the frozen axis.
+    hvg = normalized_dispersion(values, np.arange(len(symbols)))
+    hvg = hvg.assign(source_symbol=symbols, gene_index=indices)
+    hvg = hvg[['source_symbol', 'gene_index', 'n_obs', 'log_mean', 'log_dispersion',
+               'normalized_dispersion', 'rank']]
+    hvg_sets = transcriptome_hvg_sets(hvg['rank'].to_numpy(dtype=np.int64), indices,
+                                      TENV_HVG_KS)
+    n_axis_expression = int(len(np.unique(indices[indices >= 0])))
     deltas = read_csv(deg_path, dtype={'gene_symbol': str, 'contrast': str})
     deg_indices, deg_categories = resolver.resolve_many([str(v) for v in deltas.gene_symbol])
     deg_rows = pd.DataFrame({'gene_index': deg_indices,
@@ -372,9 +404,10 @@ def process_expression_source(config, axis, resolver, spec, intermediates):
     significant[per_gene.loc[per_gene.padj < PADJ_THRESHOLD, 'gene_index'].to_numpy(dtype=np.int64)] = 1
     result = {'rank': rank, 'measured': len(measured), 'significant': significant,
               'alignment': alignment, 'loss': loss, 'per_gene': per_gene,
-              'hvg': hvg, 'hvg_set': hvg_set, 'metadata': metadata,
+              'hvg': hvg, 'hvg_sets': hvg_sets, 'hvg_set': hvg_sets[SOURCE_HVG_K]['set'],
+              'metadata': metadata, 'n_source_genes': int(len(symbols)),
               'n_samples': int(matrix.shape[1]), 'n_contrasts': int(deltas.contrast.nunique()),
-              'n_axis_expression': int(len(gene_index))}
+              'n_axis_expression': n_axis_expression}
     if intermediates is not None:
         write_frame(alignment, intermediates / 'sources' / f'{spec["id"]}_alignment.csv')
         write_frame(hvg, intermediates / 'sources' / f'{spec["id"]}_hvg.csv')
@@ -520,10 +553,11 @@ def process_pert_sources(config, axis, resolver, intermediates, cache_dir):
 
 SUMMARY_COLUMNS = ('source', 'accession', 'category', 'species', 'tissue_model',
                    'contrast', 'n_samples', 'n_contrasts', 'n_axis_expression',
-                   'n_axis_measured', 'axis_coverage_share', 'n_hvg', 'hvg_share',
-                   'hvg_k', 'deg_up', 'deg_down', 'deg_up_share', 'deg_down_share',
-                   'deg_share', 'method', 'normalization', 'ortholog_chain', 'fused',
-                   'exploratory', 'supplementary_only', 'notes')
+                   'n_axis_measured', 'axis_coverage_share', 'n_hvg', 'n_hvg_total',
+                   'n_hvg_on_axis', 'hvg_share', 'hvg_density', 'hvg_k', 'deg_up',
+                   'deg_down', 'deg_up_share', 'deg_down_share', 'deg_share', 'method',
+                   'normalization', 'ortholog_chain', 'fused', 'exploratory',
+                   'supplementary_only', 'notes')
 
 
 def _source_summary_row(spec, result, axis_size=AXIS_SIZE):
@@ -535,8 +569,9 @@ def _source_summary_row(spec, result, axis_size=AXIS_SIZE):
            'supplementary_only': spec['supplementary_only'], 'notes': spec['notes']}
     if result is None:
         for key in ('n_samples', 'n_contrasts', 'n_axis_expression', 'n_axis_measured',
-                    'axis_coverage_share', 'n_hvg', 'hvg_share', 'hvg_k',
-                    'deg_up', 'deg_down', 'deg_up_share', 'deg_down_share', 'deg_share'):
+                    'axis_coverage_share', 'n_hvg', 'n_hvg_total', 'n_hvg_on_axis',
+                    'hvg_share', 'hvg_density', 'hvg_k', 'deg_up', 'deg_down',
+                    'deg_up_share', 'deg_down_share', 'deg_share'):
             row[key] = None
         row['normalization'] = spec.get('normalization', '')
         return pd.Series(row, dtype=object)
@@ -547,10 +582,18 @@ def _source_summary_row(spec, result, axis_size=AXIS_SIZE):
         significant_up = int(((per_gene.padj < PADJ_THRESHOLD) & (per_gene.log2fc > 0)).sum())
         significant_down = int(((per_gene.padj < PADJ_THRESHOLD) & (per_gene.log2fc < 0)).sum())
     measured = result['measured']
-    hvg = result.get('hvg')
-    hvg_set = result.get('hvg_set')
-    n_hvg = int(hvg_set.sum()) if hvg_set is not None else None
+    hvg_sets = result.get('hvg_sets')
     n_expression = result.get('n_axis_expression', measured)
+    if hvg_sets is not None:
+        declared = hvg_sets[SOURCE_HVG_K]
+        n_hvg_total = int(declared['n_total'])
+        n_hvg_on_axis = int(declared['n_on_axis'])
+        n_hvg = n_hvg_total
+        hvg_share = (n_hvg_on_axis / n_hvg_total) if n_hvg_total else None
+        hvg_density = (n_hvg_on_axis / n_expression) if n_expression else None
+    else:
+        n_hvg = n_hvg_total = n_hvg_on_axis = None
+        hvg_share = hvg_density = None
     row.update({
         'n_samples': result.get('n_samples'),
         'n_contrasts': result.get('n_contrasts'),
@@ -558,7 +601,10 @@ def _source_summary_row(spec, result, axis_size=AXIS_SIZE):
         'n_axis_measured': measured,
         'axis_coverage_share': measured / axis_size,
         'n_hvg': n_hvg,
-        'hvg_share': n_hvg / n_expression if n_hvg is not None and n_expression else None,
+        'n_hvg_total': n_hvg_total,
+        'n_hvg_on_axis': n_hvg_on_axis,
+        'hvg_share': hvg_share,
+        'hvg_density': hvg_density,
         'hvg_k': SOURCE_HVG_K if n_hvg is not None else None,
         'deg_up': significant_up, 'deg_down': significant_down,
         'deg_up_share': significant_up / measured if significant_up is not None and measured else None,
@@ -571,7 +617,14 @@ def _source_summary_row(spec, result, axis_size=AXIS_SIZE):
 
 
 def _direction_arrays(results):
-    """Per-gene winning direction, |log2FC| and exact-tie count across DEG sources."""
+    """Per-gene winning direction, max |log2FC| and exact-tie count across DEG sources.
+
+    The returned vectors are indexed by ``gene_index`` (0..18163). ``direction``
+    is the sign of the largest cross-source per-gene DEG effect (0 when no source
+    reports an effect); ``max_abs_effect`` is the gene's maximum |log2FC| over
+    the sources that report it (0 when none do). Exact cross-source effect ties
+    are counted and broken by the declared source order.
+    """
     order = [source for source in DEG_IDS if source in results]
     effects = np.zeros((AXIS_SIZE, len(order)), dtype=np.float64)
     log2fc = np.zeros((AXIS_SIZE, len(order)), dtype=np.float64)
@@ -587,20 +640,27 @@ def _direction_arrays(results):
     best_log2fc = log2fc[np.arange(AXIS_SIZE), best]
     ties = (np.isclose(effects, best_effect[:, None], rtol=0.0, atol=1e-12)).sum(axis=1) - 1
     direction = np.where(best_effect > 0, np.sign(best_log2fc).astype(np.int64), 0)
-    abs_effect = np.where(best_effect > 0, np.abs(best_log2fc), 0.0)
-    return direction, abs_effect, ties, significant.any(axis=1)
+    max_abs_effect = np.nanmax(np.abs(log2fc), axis=1)
+    max_abs_effect = np.where(np.isfinite(max_abs_effect), max_abs_effect, 0.0)
+    return direction, max_abs_effect, ties, significant.any(axis=1)
 
 
-def _overlap_rows(fused, results, tenv_rank):
-    """Long overlap table: tenv sets, source-HVG sets, DEG pairs and the intersection."""
-    fused_rank = fused.fused_rank.to_numpy(dtype=np.int64)
+def _overlap_rows(fused_rank, results, tenv_rank):
+    """Long overlap table: tenv sets, source-HVG sets, DEG pairs and intersections.
+
+    Every set is a ``gene_index`` set and ``fused_rank`` is gene-indexed, so the
+    reported rank positions are true fused ranks. Multi-way intersection rows
+    have identical operands, so Jaccard is undefined; they report the
+    intersection size and its fused ranks plus an explanatory ``note``, leaving
+    ``n_a``/``n_b``/``n_union``/``jaccard`` blank instead of a fake 1.0.
+    """
     sets = {}
     for k in TENV_HVG_KS:
         sets[f'tenv_hvg_{k}'] = set(np.flatnonzero(hvg_membership(tenv_rank, k)))
     for name in EXPRESSION_IDS:
         if name in results:
-            sets[f'{name}_hvg_{SOURCE_HVG_K}'] = set(
-                np.flatnonzero(results[name]['hvg_set']))
+            for k in TENV_HVG_KS:
+                sets[f'{name}_hvg_{k}'] = set(np.flatnonzero(results[name]['hvg_sets'][k]['set']))
     for name in DEG_IDS:
         if name in results:
             sets[f'{name}_deg'] = set(np.flatnonzero(results[name]['significant']))
@@ -609,23 +669,16 @@ def _overlap_rows(fused, results, tenv_rank):
     def add(kind, left, right):
         metrics = overlap_metrics(sets[left], sets[right], fused_rank)
         rows.append({'comparison': kind, 'set_a': left, 'set_b': right,
-                     'k_a': _set_k(left), 'k_b': _set_k(right), **metrics})
-
-    def _set_k(name):
-        if name.startswith('tenv_hvg_'):
-            return int(name.rsplit('_', 1)[1])
-        if '_hvg_' in name:
-            return int(name.rsplit('_', 1)[1])
-        return ''
+                     'k_a': _set_k(left), 'k_b': _set_k(right), **metrics, 'note': ''})
 
     for k in TENV_HVG_KS:
         for name in DEG_IDS:
             if name in results:
                 add('tenv_hvg_vs_source_deg', f'tenv_hvg_{k}', f'{name}_deg')
-    for name in EXPRESSION_IDS:
-        if name in results:
-            add('tenv_hvg_vs_source_hvg', f'tenv_hvg_{SOURCE_HVG_K}',
-                f'{name}_hvg_{SOURCE_HVG_K}')
+    for k in TENV_HVG_KS:
+        for name in EXPRESSION_IDS:
+            if name in results:
+                add('tenv_hvg_vs_source_hvg', f'tenv_hvg_{k}', f'{name}_hvg_{k}')
     names = [name for name in DEG_IDS if name in results]
     for left_index, left in enumerate(names):
         for right in names[left_index + 1:]:
@@ -639,22 +692,38 @@ def _overlap_rows(fused, results, tenv_rank):
               if name in names])):
         intersection = (set.intersection(*[sets[f'{name}_deg'] for name in members])
                         if members else set())
-        metrics = overlap_metrics(intersection, intersection, fused_rank)
-        rows.append({'comparison': label, 'set_a': 'intersection',
-                     'set_b': 'intersection', 'k_a': '', 'k_b': '',
-                     'n_a': len(intersection), 'n_b': len(intersection),
-                     'n_intersection': len(intersection), 'n_union': len(intersection),
-                     'jaccard': 1.0,
-                     'fused_rank_min': metrics['fused_rank_min'],
-                     'fused_rank_median': metrics['fused_rank_median'],
-                     'fused_rank_max': metrics['fused_rank_max']})
-    return pd.DataFrame(rows), sets
+        rows.append({'comparison': label, 'set_a': 'intersection', 'set_b': '',
+                     'k_a': None, 'k_b': None,
+                     'n_a': None, 'n_b': None,
+                     'n_intersection': len(intersection), 'n_union': None,
+                     'jaccard': None,
+                     **fused_rank_stats(intersection, fused_rank),
+                     'note': (f'multi-way intersection of {len(members)} DEG sources '
+                              f'({", ".join(members)}); Jaccard is undefined for identical '
+                              'operands, so only the intersection size and its fused ranks '
+                              'are reported')})
+    columns = ['comparison', 'set_a', 'set_b', 'k_a', 'k_b', 'n_a', 'n_b',
+               'n_intersection', 'n_union', 'jaccard', 'fused_rank_min',
+               'fused_rank_median', 'fused_rank_max', 'note']
+    return pd.DataFrame(rows, columns=columns), sets
 
 
-def _answers(fused, results, sets, direction, significant):
-    """Numbers that answer #175's three questions, pinned in the manifest."""
-    fused_rank = fused.fused_rank.to_numpy(dtype=np.int64)
+def _set_k(name):
+    """Declared set size encoded in a set name ('' for DEG sets)."""
+    if name.startswith('tenv_hvg_'):
+        return int(name.rsplit('_', 1)[1])
+    if '_hvg_' in name:
+        return int(name.rsplit('_', 1)[1])
+    return ''
 
+
+def _answers(fused_rank, deg_count, sets, direction, significant):
+    """Numbers that answer #175's three questions, pinned in the manifest.
+
+    All vectors are gene-indexed; ``fused_rank`` is scattered back from the
+    sorted fused table, so the medians and the DEG-count comparison are true
+    fused-rank quantities rather than row positions.
+    """
     def jaccard(left, right):
         a, b = sets[left], sets[right]
         return len(a & b) / len(a | b) if (a | b) else 0.0
@@ -667,16 +736,7 @@ def _answers(fused, results, sets, direction, significant):
             for name in DEG_IDS if f'{name}_deg' in sets}
     up = significant & (direction > 0)
     down = significant & (direction < 0)
-    count = fused.n_sources_deg_significant.to_numpy(dtype=np.int64)
-    gene_index = np.arange(AXIS_SIZE)
-    count_order = np.lexsort((gene_index, -count))
-    count_rank = np.empty(AXIS_SIZE, dtype=np.int64)
-    count_rank[count_order] = np.arange(1, AXIS_SIZE + 1)
-    order = fused_order(fused_rank)
-    agreement = {}
-    for size in DIRECTION_SIZES:
-        overlap = len(set(order[:size]) & set(count_order[:size]))
-        agreement[str(size)] = {'n_overlap': int(overlap), 'share': overlap / size}
+    agreement = deg_count_agreement(fused_rank, deg_count, DIRECTION_SIZES)
     return {
         'q1_chronic_remodelling_vs_hf': {
             'hf_pair_jaccard': hf,
@@ -690,21 +750,20 @@ def _answers(fused, results, sets, direction, significant):
             'n_up_significant': int(up.sum()), 'n_down_significant': int(down.sum()),
             'median_fused_rank_up': float(np.median(fused_rank[up])) if up.any() else None,
             'median_fused_rank_down': float(np.median(fused_rank[down])) if down.any() else None,
+            'up_down_definition': ('up/down = significant in any DEG source (padj < 0.05) '
+                                   'with the winning cross-source direction'),
             'top_n_composition': {},
         },
         'q3_effect_replication_vs_deg_count': {
-            'n_genes_supported_by_any_deg': int((count > 0).sum()),
-            'n_genes_supported_by_2plus': int((count >= 2).sum()),
-            'top_n_agreement': agreement,
-            'spearman_fused_vs_count_rank': _spearman(fused_rank, count_rank),
+            'n_genes_supported_by_any_deg': int((deg_count > 0).sum()),
+            'n_genes_supported_by_2plus': int((deg_count >= 2).sum()),
+            'tie_break': ('descending n_sources_deg_significant, ties broken by ascending '
+                          'fused_rank (a frozen gene_index tie-break gives Spearman 0.6791 '
+                          'and top-500 overlap 0.204 instead of the tracked values)'),
+            'top_n_agreement': agreement['top_n_agreement'],
+            'spearman_fused_vs_count_rank': agreement['spearman'],
         },
     }
-
-
-def _spearman(left, right):
-    """Spearman correlation with average ranks for ties (deterministic)."""
-    left, right = pd.Series(left), pd.Series(right)
-    return float(left.rank(method='average').corr(right.rank(method='average')))
 
 
 def _figure_rows(fused, summary_rows, curve, inflection, overlap_matrix):
@@ -791,7 +850,8 @@ def build(config):
                         'significant': np.zeros(AXIS_SIZE, dtype=np.int64),
                         'n_axis_expression': AXIS_SIZE, 'n_samples': 4206,
                         'n_contrasts': 0, 'metadata': {},
-                        'hvg_set': hvg_membership(tenv_rank, SOURCE_HVG_K)}}
+                        'hvg_sets': transcriptome_hvg_sets(
+                            tenv_rank, np.arange(AXIS_SIZE), TENV_HVG_KS)}}
     for spec in SOURCE_SPECS:
         if spec['id'] in EXPRESSION_IDS:
             results[spec['id']] = process_expression_source(
@@ -823,12 +883,19 @@ def build(config):
     columns += [f'tenv_hvg_member_k{k}' for k in TENV_HVG_KS]
     fused = fused.reindex(columns=columns)
     fused = fused.sort_values(['fused_rank', 'gene_index']).reset_index(drop=True)
+    # The tracked frame is sorted by fused_rank; every consumer below indexes by
+    # gene_index, so scatter the sorted columns back into frozen-axis order once.
+    fused_gene_index = fused.gene_index.to_numpy(dtype=np.int64)
+    fused_rank_by_gene = align_to_gene_index(fused.fused_rank.to_numpy(dtype=np.int64),
+                                             fused_gene_index)
+    deg_count_by_gene = align_to_gene_index(
+        fused.n_sources_deg_significant.to_numpy(dtype=np.int64), fused_gene_index)
+    fused_gene_order = np.argsort(fused_rank_by_gene, kind='stable')
 
-    overlap, sets = _overlap_rows(fused, results, tenv_rank)
-    direction, abs_effect, ties, significant_any = _direction_arrays(results)
+    overlap, sets = _overlap_rows(fused_rank_by_gene, results, tenv_rank)
+    direction, max_abs_effect, ties, significant_any = _direction_arrays(results)
     composition = direction_composition(
-        fused_order(fused.fused_rank.to_numpy(dtype=np.int64)), direction, abs_effect,
-        DIRECTION_SIZES, tie_counts=ties)
+        fused_rank_by_gene, direction, max_abs_effect, DIRECTION_SIZES, tie_counts=ties)
 
     ordered = fused.sort_values('fused_rank')
     x = ordered.fused_rank.to_numpy(dtype=np.int64)
@@ -849,19 +916,21 @@ def build(config):
     inflection['curve'] = {'x': INFLECTION_X, 'y': INFLECTION_Y, 'n': int(len(x))}
     inflection['leave_one_source_out'] = leave_one_out
 
-    curve = tenv_non_hvg_curve(fused_order(fused.fused_rank.to_numpy(dtype=np.int64)),
-                               tenv_rank)
+    curve = tenv_non_hvg_curve(fused_gene_order, tenv_rank)
     summary_rows = [_source_summary_row(spec, results.get(spec['id']))
                     for spec in SOURCE_SPECS]
     summary = pd.DataFrame(summary_rows, columns=list(SUMMARY_COLUMNS))
-    answers = _answers(fused, results, sets, direction, significant_any)
+    answers = _answers(fused_rank_by_gene, deg_count_by_gene, sets, direction,
+                       significant_any)
     for size in DIRECTION_SIZES:
-        rows = composition[(composition.n == size) & (composition.rule == 'symmetric')]
-        answers['q2_up_down_rank_symmetry']['top_n_composition'][str(size)] = {
-            'n_up': int(rows.n_up.iloc[0]), 'n_down': int(rows.n_down.iloc[0]),
-            'up_share': float(rows.up_share.iloc[0]),
-            'down_share': float(rows.down_share.iloc[0])}
-    matrix = _overlap_matrix(fused.fused_rank.to_numpy(dtype=np.int64), sets)
+        for rule in ('symmetric', 'max_abs_log2fc'):
+            rows = composition[(composition.n == size) & (composition.rule == rule)]
+            answers['q2_up_down_rank_symmetry']['top_n_composition']                 .setdefault(str(size), {})[rule] = {
+                    'n_up': int(rows.n_up.iloc[0]), 'n_down': int(rows.n_down.iloc[0]),
+                    'n_unsupported': int(rows.n_unsupported.iloc[0]),
+                    'up_share': float(rows.up_share.iloc[0]),
+                    'down_share': float(rows.down_share.iloc[0])}
+    matrix = _overlap_matrix(fused_rank_by_gene, sets)
     figure = _figure_rows(fused, summary_rows, curve, inflection, matrix)
 
     outputs = {
@@ -892,6 +961,10 @@ def build(config):
         'constants': {'tenv_hvg_ks': list(TENV_HVG_KS), 'source_hvg_k': SOURCE_HVG_K,
                       'padj_threshold': PADJ_THRESHOLD, 'animal_half_weight': 0.5,
                       'direction_sizes': list(DIRECTION_SIZES),
+                      'direction_rules': ['symmetric', 'max_abs_log2fc'],
+                      'hvg_share': 'n_hvg_on_axis / n_hvg_total',
+                      'hvg_density': 'n_hvg_on_axis / n_axis_expression',
+                      'deg_count_tie_break': 'descending n_sources_deg_significant, ties by ascending fused_rank',
                       'fused_sources': [spec['id'] for spec in SOURCE_SPECS if spec['fused']],
                       'animal_sources': list(ANIMAL_SOURCES)},
         'inputs': {}, 'outputs': output_digests,
@@ -905,7 +978,11 @@ def build(config):
                         '--slave --file=stage2/01_bases/execution/build_mouse_orthologs.R'),
             'r_version': 'R version 4.4.1 (2024-06-14)',
             'homologene_version': '1.4.68.19.3.27',
-            'org.Mm.eg.db_version': '3.20.0'},
+            'org.Mm.eg.db_version': '3.20.0',
+            'candidate_policy': ('writes execution/gene_axis/mouse_human_orthologs.candidate.csv '
+                                 '(candidates stay outside formal output, ADR 0062), compares '
+                                 'its sha256 with the accepted table, and replaces the accepted '
+                                 'table only when byte-identical or when --accept is passed')},
     }
     for role, path in config.input_roles():
         manifest['inputs'][repo_relative(path, config.root)] = {

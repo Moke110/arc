@@ -45,5 +45,8 @@
     "lib_gse116250.R": "71f043d8637781d2babcbe73739876a1f443017aabfad7191ae3b4bd76324677"
   },
   "deg_csv": "local/deg/GSE116250_deg.csv",
+  "digests": {
+    "local/deg/GSE116250_deg.csv": "23d89527ca1f220cad172d2bbf47c74c4509c181b8c0d6515039be3e1c04bb6d"
+  },
   "reproducibility": "deterministic; re-running build_deg.R reproduces the CSV sha256 exactly"
 }

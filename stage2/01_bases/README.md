@@ -347,10 +347,13 @@ Heliste label file; the only tenv input is the published descriptive HVG ranking
 Public implementation: `output/api/bases/gene_axis.py` (pure functions: symbol /
 alias / Ensembl alignment, Seurat-style normalized dispersion, the continuous DEG
 effect score, within-source ranks, rank-sum fusion, overlap, direction
-composition, Kneedle + second-difference inflection, tenv non-HVG curve).
-Execution: `execution/build_gene_axis.py` (build + `--verify` replay),
+composition, Kneedle + second-difference inflection, tenv non-HVG curve, and the
+gene-index helpers that keep the sorted fused table from being read by row
+position). Execution: `execution/build_gene_axis.py` (build + `--verify` replay),
 `execution/gene_axis_sources.py` (the two `pert_data/` cardiotoxicity adapters)
-and `execution/build_mouse_orthologs.R` (the pinned mouse→human table).
+and `execution/build_mouse_orthologs.R` (the pinned mouse→human table; it writes a
+candidate and replaces the accepted table only after a sha256 check, with
+`--args --accept` for a deliberate re-pin).
 
 Fused sources (one rank column each, tenv included): the published tenv HVG rank,
 GSE141910 and GSE116250 (HF), GSE243674 (hiPSC-CM anthracyclines), GSE128188 (AF),
@@ -362,54 +365,66 @@ as a coverage note; neither is fused.
 
 Declared recipe (details and constants in `output/gene-axis/manifest.json`):
 per-source HVG = normalized dispersion on the item's own deposited log expression
-(z-scored in 20 equal-width `log1p(mean)` bins, singleton bins score 1, undefined
-sorts last, `gene_index` tie-break — the `bases/hvg.py` family without `expm1`
-recovery because the disease matrices are heterogeneous log scales); DEG =
+over its **whole measured transcriptome** (z-scored in 20 equal-width
+`log1p(mean)` bins, singleton bins score 1, undefined sorts last, source-row
+tie-break — the `bases/hvg.py` family without `expm1` recovery because the disease
+matrices are heterogeneous log scales); a source's declared HVG set is its top-K
+source rows, and `hvg_share = n_hvg_on_axis / n_hvg_total` (share of the source's
+HVG set that lands on the axis), with `n_hvg`, `n_hvg_total`, `n_hvg_on_axis` and
+`hvg_density = n_hvg_on_axis / n_axis_expression` reported; DEG =
 `|log2FC| * -log10(padj)` with NA padj treated as non-significant and multi-contrast
 max-collapse; unmeasured genes get rank `n_measured + 1` and rank-normalized value
 1.0; fusion = unweighted sum of `rank / n_measured` (the animal half-weight column
 is a reported sensitivity, not a chosen rule); fused order ties break on
-`gene_index`.
+`gene_index`. Top-N direction composition is reported under two **different**
+orderings: `symmetric` (ascending fused rank) and `max_abs_log2fc` (descending
+max cross-source |log2FC|, fused-rank tie-break). Multi-way overlap intersections
+report the size and true fused ranks with an explanatory `note`; Jaccard is left
+blank because the operands are identical.
 
 Headline evidence (exact digests in the manifest, numbers in
 [`log/gene-axis/record.md`](log/gene-axis/record.md)):
 
-- Axis coverage 0.68–1.00 per source; per-source HVG share 0.11–0.15 at the
-  declared reporting size `K=2000`; DEG up/down shares range from 0.000/0.000
-  (GSE108940: one significant gene at padj<0.05) to 0.53/0.45 (DToxS).
+- Axis coverage 0.68–1.00 per source; per-source HVG share (of the source's own
+  top-2,000 HVG set, on the axis) 0.1465–0.9375 for the expression sources (tenv
+  1.0 by definition, density 0.1101) with `hvg_density` 0.0162–0.1389; DEG
+  up/down shares range from 0.000/0.000 (GSE108940: one significant gene at
+  padj<0.05) to 0.53/0.45 (DToxS).
 - **No inflection.** Kneedle (online `S=1.0`) puts its broad arc maximum at
   `N≈1314`; the second-difference peak sits in the tail (`N≈18156`); the criteria
   do not agree, so `inflection.json` reports `"inflection": false` and `n: null`.
   All ten leave-one-source-out replays also report no inflection.
-- Tenv non-HVG share of the fused top-N is ~0.93 / 0.89 / 0.72 at declared
-  `K=1000 / 2000 / 5000` and is essentially flat in `N` — the disease-consensus
-  top of the fused ranking is mostly *not* the tenv HVG top.
-- HF sources agree (GSE141910 ∩ GSE116250 Jaccard 0.425); the AF/HHD
-  chronic-remodelling pair is nearly disjoint (0.0043) as are HF×remodelling pairs.
-- Top-N direction composition is a stable ~56–58% up / 42–44% down under symmetric
-  inclusion (≈64/36 under `|log2FC|` weighting); up-regulated genes have a better
-  median fused rank (8561) than down-regulated ones (9560).
-- Effect×replication rank vs DEG-count rank: Spearman 0.81 and top-N overlap
-  0.62 / 0.56 / 0.48 / 0.45 / 0.76 at N = 500 / 1000 / 2000 / 3000 / 5000.
+- Tenv non-HVG share of the **true fused top-N** at declared `K=1000 / 2000 /
+  5000`: 0.884 / 0.782 / 0.540 at N=500 and 0.913 / 0.823 / 0.610 at N=2,000,
+  rising to the axis background 0.945 / 0.890 / 0.725 at N=18,164. The fused top
+  is enriched for tenv HVGs relative to the background but remains mostly
+  (82.3% at K=2000) outside tenv's top-2,000.
+- HF sources agree (GSE141910 ∩ GSE116250 Jaccard 0.4255, 5,320 genes); the
+  AF/HHD chronic-remodelling pair is nearly disjoint (0.0043) as are HF×remodelling
+  pairs (cross-pair mean 0.0233).
+- Top-N direction composition is 52–54% up / 46–48% down under symmetric
+  inclusion; the max-|log2FC| ranking is 71–88% up at the top. Across all
+  significant genes the down set has the better median fused rank (8,031 vs
+  8,779 for up).
+- Effect×replication rank vs DEG-count rank: Spearman 0.81 (ties broken by
+  ascending fused rank) and top-N overlap 0.62 / 0.56 / 0.48 / 0.45 / 0.76 at
+  N = 500 / 1000 / 2000 / 3000 / 5000.
 
 ```bash
 python stage2/01_bases/execution/build_gene_axis.py
 python stage2/01_bases/execution/build_gene_axis.py --verify
-R_HOME=/home/chang/miniconda3/envs/arc/lib/R \
-  /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave \
-  --file=stage2/01_bases/execution/build_mouse_orthologs.R   # only to regenerate the pinned table
-python stage2/01_bases/figure/script/render_gene_axis_source_summary.py \
-  --csv stage2/01_bases/figure/data/gene_axis_source_summary.csv \
-  --png stage2/01_bases/figure/gene_axis_source_summary.png
+R_HOME=/home/chang/miniconda3/envs/arc/lib/R   /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave   --file=stage2/01_bases/execution/build_mouse_orthologs.R   # only to regenerate the pinned table
+python stage2/01_bases/figure/script/render_gene_axis_source_summary.py   --csv stage2/01_bases/figure/data/gene_axis_source_summary.csv   --png stage2/01_bases/figure/gene_axis_source_summary.png
 ```
 
 The figure is `figure/gene_axis_source_summary.png` (four panels: per-source
 HVG/DEG shares, fused rank-sum histogram with the candidate inflection, tenv
 non-HVG share vs N, source-overlap Jaccard matrix); its complete plotted values
 are `figure/data/gene_axis_source_summary.csv` and the CSV-only renderer
-reproduces the PNG byte for byte (sha256 `544c0a8c…`) without opening `output/`.
+reproduces the PNG byte for byte (sha256 `91673888…`) without opening `output/`.
 `execution/tests/test_gene_axis.py` is fixture-driven and includes the
-truth-path poisoning test.
+truth-path poisoning test plus index-space regression fixtures where fused-rank
+order differs from `gene_index` order.
 
 ## Shared `@d` evaluation and figure APIs
 
