@@ -83,3 +83,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0062](0062-stage2-accepted-products-and-reproducible-figures.md) | Stage 2 stable accepted products, CSV-reproducible figures and separate audit evidence |
 | [0063](0063-tenv-comparison-direct-and-indirect-metrics.md) | Rebuilt tenv comparison: direct and indirect metrics, fold/seed index tables, stage palette, PRnet — *indirect metrics and figures superseded by 0064* |
 | [0064](0064-tenv-reliability-threshold-scan.md) | Score the tenv comparison by a predicted-effect threshold scan and a reliability score |
+| [0065](0065-stage2-gene-axis-decision-preparation.md) | Prepare the Stage 2 gene-axis decision: public disease sources, full-transcriptome DEGs and an unweighted rank-sum fusion, without deciding the axis |
