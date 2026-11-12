@@ -33,7 +33,8 @@
     "No full-fold prediction set exists before #165, so the committed evidence is the fixture-driven driver plus the real bounded run refusal; figure/data is not published in this ticket. The driver supports --figure-data so #165 can publish figure/data/metrics_values.csv and figure/data/learning_curve_values.csv in one call.",
     "Per-group long-form rows carry the k-curves beside the scalar max_k/Recall rows; the per-run table keeps scalar macro means plus effective-group counts, with the cross-run curve means/min-max in the figure CSV, which is the only source the renderers read.",
     "Entry labels come from each run identity (prnet now, mean when #165 adds it); directory names only locate the run.",
-    "Stage-2 step README/AGENTS command tables were not edited because the ticket write scope is execution/ and log/ only."
+    "Stage-2 step README/AGENTS command tables were not edited because the ticket write scope is execution/ and log/ only.",
+    "Tests run with the shared /home/chang/miniconda3/bin/python 3.13 interpreter: the driver has no torch dependency, and the pinned PRnet environment lacks the anndata/scipy stack the corpus-reader fixture needs."
   ],
   "files": {
     "execution/script/evaluation_driver.py": {
@@ -140,6 +141,7 @@
   },
   "subject": "Tenv metrics 06 - evaluation driver and figure data",
   "test_command": "cd stage2/02_models_tenv && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 /home/chang/miniconda3/bin/python -m unittest discover -s execution/tests -p 'test_evaluation_driver.py' -v",
-  "test_result": "Ran 10 tests in 0.473s -- OK (0 skipped; the shared #162 plotting API is now present on dev and exercised by SharedSchemaCompatibility)",
+  "test_output": "log/resources/164-tests.txt",
+  "test_result": "Ran 10 tests in 0.486s -- OK (0 skipped; shared #162 plotting API exercised)",
   "ticket": 164
 }

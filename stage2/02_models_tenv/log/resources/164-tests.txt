@@ -1,0 +1,15 @@
+test_driver_scores_fold_writes_tables_and_both_plot_value_tables (test_evaluation_driver.DriverEndToEnd.test_driver_scores_fold_writes_tables_and_both_plot_value_tables) ... ok
+test_complete_run_is_accepted_and_reordered_to_the_expected_case_axis (test_evaluation_driver.RunSetContract.test_complete_run_is_accepted_and_reordered_to_the_expected_case_axis) ... ok
+test_missing_entry_of_the_run_set_fails_completion (test_evaluation_driver.RunSetContract.test_missing_entry_of_the_run_set_fails_completion) ... ok
+test_partially_written_run_fails_completion (test_evaluation_driver.RunSetContract.test_partially_written_run_fails_completion) ... ok
+test_prediction_set_must_cover_every_fold_case (test_evaluation_driver.RunSetContract.test_prediction_set_must_cover_every_fold_case) ... ok
+test_run_without_prediction_or_case_identity_fails (test_evaluation_driver.RunSetContract.test_run_without_prediction_or_case_identity_fails) ... ok
+test_direct_metrics_match_hand_computed_values_per_well (test_evaluation_driver.ScoringContract.test_direct_metrics_match_hand_computed_values_per_well) ... ok
+test_indirect_metrics_match_hand_computed_values_per_group (test_evaluation_driver.ScoringContract.test_indirect_metrics_match_hand_computed_values_per_group) ... ok
+test_run_tables_carry_macro_means_counts_and_reasons (test_evaluation_driver.ScoringContract.test_run_tables_carry_macro_means_counts_and_reasons) ... ok
+test_fallback_matches_shared_plot_api_when_merged (test_evaluation_driver.SharedSchemaCompatibility.test_fallback_matches_shared_plot_api_when_merged) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.486s
+
+OK
