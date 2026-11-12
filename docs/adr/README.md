@@ -81,3 +81,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0061](0061-stage2-shared-bases-and-indexed-corpora.md) | Shared Stage 2 bases, indexed gene identity and separate Tahoe/tenv training corpora |
 
 | [0062](0062-stage2-accepted-products-and-reproducible-figures.md) | Stage 2 stable accepted products, CSV-reproducible figures and separate audit evidence |
+| [0063](0063-tenv-comparison-direct-and-indirect-metrics.md) | Rebuilt tenv comparison: direct and indirect metrics, fold/seed index tables, stage palette, PRnet |

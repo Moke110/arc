@@ -4,11 +4,14 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
-mkdir -p "$tmp/script" "$tmp/stage2/01_bases" "$tmp/.worktrees/worker"
+mkdir -p "$tmp/script" "$tmp/stage2/01_bases" "$tmp/stage2/02_models_tenv" "$tmp/.worktrees/worker"
 cp "$root/script/check_stage2_paths.sh" "$root/script/check_tracked.sh" "$tmp/script/"
 printf 'bases\n' > "$tmp/stage2/01_bases/AGENTS.md"
 printf 'bases\n' > "$tmp/stage2/01_bases/README.md"
+printf 'models\n' > "$tmp/stage2/02_models_tenv/AGENTS.md"
+printf 'models\n' > "$tmp/stage2/02_models_tenv/README.md"
 printf 'x = 1\n' > "$tmp/stage2/01_bases/run.py"
+printf 'x = 1\n' > "$tmp/stage2/02_models_tenv/run.py"
 printf 'x = 1\n' > "$tmp/.worktrees/worker/run.py"
 git -C "$tmp" init -q
 git -C "$tmp" add script stage2
@@ -23,4 +26,4 @@ printf 'x = 1\n' > "$tmp/stage2/01_bases/untracked.py"
 if bash "$tmp/script/check_tracked.sh" >/dev/null 2>&1; then
   echo 'FAIL: active untracked executable must fail' >&2; exit 1
 fi
-echo 'PASS: bases layout and separate-checkout tracking boundaries'
+echo 'PASS: active-roots layout and separate-checkout tracking boundaries'

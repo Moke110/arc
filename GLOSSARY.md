@@ -435,9 +435,10 @@ The adapter's parameters belong to the compared model.
 
 **Tenv benchmark sample**:
 One model's training-and-test result under one fixed fold and one fixed training
-seed in the redesigned tenv comparison. Three folds crossed with three seeds
-yield nine run samples per model; these are not nine independent biological
-samples.
+seed in the tenv comparison. The rebuilt comparison takes two folds and two seeds
+from the accepted index tables, yielding four run samples per model; the retired
+design crossed three folds with three seeds. Neither set is a set of independent
+biological samples.
 _Avoid_: well, drug–dose group, independent replicate
 
 **Standalone training study**:
@@ -487,12 +488,15 @@ or establish exact training continuation.
 Genes significant in the measured treatment-versus-matched-control drug–dose
 contrast on the full CM axis, retaining their measured up- or downregulation.
 This is a statistical significance set rather than a fixed-size response rank.
+The rebuilt comparison applies a further declared fold-change threshold; see
+*Gated truth gene*.
 
 **Cold-drug fold**:
 One Stage 2 benchmark split whose test drugs are absent from its training and
 validation sets at every dose and repeat; each drug is tested exactly once
 across the outer folds. The historical benchmark used five folds; the redesigned
-tenv comparison uses three, with validation drawn from the remaining drugs.
+tenv comparison freezes three and indexes them, so an experiment takes the first
+`n` folds from the accepted index table.
 _Avoid_: cold-start split, holdout (unqualified)
 
 **CM-unseen drug (CM 未见药物)**:
@@ -577,6 +581,43 @@ _Avoid_: ideal model, tier
 **Benchmark run**:
 One `(model, fold)` unit in the historical ADR 0027 benchmark: fit on the training drugs, select the checkpoint on the cold validation drugs, predict the test wells, and write the per-unit artifacts and `status.json`.
 _Avoid_: experiment, trial
+
+
+### Stage 2 tenv model comparison
+
+**Tenv comparison step** (`02_models_tenv`):
+The active Stage 2 step that trains perturbation predictors on `tenv` and reports their held-out performance. It owns entrants, predictions and figures; the shared metrics, palette and fold/seed index tables stay in `01_bases`.
+_Avoid_: benchmark step (when meaning the rebuilt comparison)
+
+**Direct metric**:
+`PCC`, `Spearman`, `RMSE` or `R²` computed on one test well's predicted Δ against that well's observed Δ over the full gene axis. A run reports the equal-weight mean over its fold's test wells; no group aggregation precedes it. It measures per-sample fidelity, not group-level accuracy.
+
+**Indirect metric**:
+`Precision@k`, `Spearman@k`, `max_k@P80S40` or `Recall@max_k`, computed per drug–dose group from that group's mean predicted Δ. It measures whether a model ranks a group's true responder genes above the rest.
+
+**Gated truth gene**:
+A gene of one drug–dose group whose measured contrast has `padj < 0.05` and `|log2FC| >= 2`. It is the label set of the indirect metrics, and its direction is the sign of its Δ_mean.
+_Avoid_: DEG (unqualified, when the fold-change gate is meant)
+
+**Predicted absolute rank table (预测绝对秩表)**:
+One group's genes listed as `gene_index`, `rank`, `direction` and `|Δ̂_mean|`, ordered by predicted absolute effect. A light rank table orders the same genes by absolute *observed* Δ.
+_Avoid_: prediction table, prediction matrix
+
+**max_k@P80S40**:
+The largest `k` at which a group reaches both `Precision@k >= 0.8` and `Spearman@k >= 0.4`, over `k` from 1 to 100; undefined when no `k` qualifies. It is bounded by the group's own gated-gene count.
+
+**Mean baseline** (`Mean`):
+The reference entry that predicts, for every gene of a group, the mean Δ of that same group in the training partition. It is deterministic, not a trained fit, and its fold copies are not independent training results.
+_Avoid_: delta_mean (retired name), no_change (withdrawn)
+
+**Fold/seed index table**:
+`01_bases/output/fold_n_seed/folds.csv` or `seeds.csv`. Each table orders frozen identities by row, and an experiment takes the first `n` rows for the `n` folds or `n` seeds it declares, so every study consumes the same identities in the same order.
+
+**Stage palette**:
+The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue families (gray, blue, green, orange, purple, magenta) crossed with nine lightness-and-saturation shades. A color means the same thing in every Stage 2 figure.
+
+**Learning-curve figure**:
+`figure/learning_curve.png`: one subplot per learnable model, epoch on the horizontal axis and loss on the vertical axis. The blue family is training and the green family is validation; one shade identifies one `(fold, seed)` run in both families.
 
 
 ### Stage 1 evaluation

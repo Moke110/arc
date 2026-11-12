@@ -23,11 +23,12 @@ import sys
 SCHEMA = "bases-156-metadata-binding-audit-v1"
 EXPRESSION = {".h5ad", ".npy", ".npz", ".bin"}
 # The map's stable payload products plus ``api``, the D1-sanctioned publication
-# of the public implementation (code, not payload) under ``output/``.
+# of the public implementation (code, not payload) under ``output/``.  #161
+# adds the accepted fold/seed index product (ADR 0063).
 STABLE_DIRS = {"gene-identity", "tenv-raw-counts", "tahoe-raw-counts",
                "shared-expression", "training-corpora", "tenv-truth",
-               "tenv-truth-successor", "tenv-hvg", "historical-training-release",
-               "api"}
+               "tenv-truth-successor", "tenv-hvg", "fold_n_seed",
+               "historical-training-release", "api"}
 OLD_NAMES = ("identity-v1", "native-v1", "shared-v1", "shared-v2", "training-v1",
              "training-v2", "truth-tenv-v1", "truth-tenv-v2", "tahoe-counts-v1",
              "hvg-tenv-v1", "hvg-metrics-diagnostic-v1", "build_record")

@@ -1,0 +1,10 @@
+.....[14:31:55] SMILES Parse Error: syntax error while parsing: not-a-smiles
+[14:31:55] SMILES Parse Error: check for mistakes around position 3:
+[14:31:55] not-a-smiles
+[14:31:55] ~~^
+[14:31:55] SMILES Parse Error: Failed parsing SMILES 'not-a-smiles' for input: 'not-a-smiles'
+..
+----------------------------------------------------------------------
+Ran 7 tests in 0.009s
+
+OK

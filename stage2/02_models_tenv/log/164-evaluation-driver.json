@@ -1,0 +1,147 @@
+{
+  "acceptance": {
+    "both_figure_plot_value_tables_curves_groups_minmax_run_values": [
+      "DriverEndToEnd (metrics_values.csv, learning_curve_values.csv)",
+      "SharedSchemaCompatibility (skips until #162 merges)"
+    ],
+    "missing_coverage_fails_explicitly": [
+      "RunSetContract.test_prediction_set_must_cover_every_fold_case",
+      "real bounded-run refusal"
+    ],
+    "partial_run_set_fails_completion": [
+      "RunSetContract.test_missing_entry_of_the_run_set_fails_completion",
+      "RunSetContract.test_partially_written_run_fails_completion",
+      "RunSetContract.test_run_without_prediction_or_case_identity_fails"
+    ],
+    "per_group_table_every_metric_status_reason": [
+      "ScoringContract.test_indirect_metrics_match_hand_computed_values_per_group",
+      "DriverEndToEnd (per_group.csv)"
+    ],
+    "per_run_table_macro_means_defined_undefined_counts": [
+      "ScoringContract.test_run_tables_carry_macro_means_counts_and_reasons",
+      "DriverEndToEnd (aggregation equality)"
+    ],
+    "shared_evaluation_and_accepted_truth_over_fold_test_groups": [
+      "DriverEndToEnd",
+      "Real truth binding record"
+    ]
+  },
+  "batch": "2 x 2 matrix is #165; this ticket scores whatever persisted run set it is given",
+  "branch": "codex/tenv-164",
+  "deviations": [
+    "The shared #162 plotting API landed on dev while this branch was open; the driver now delegates table building and serialization to bases.plots, and the compatibility test (fallback vs shared rows) executes instead of skipping.",
+    "No full-fold prediction set exists before #165, so the committed evidence is the fixture-driven driver plus the real bounded run refusal; figure/data is not published in this ticket. The driver supports --figure-data so #165 can publish figure/data/metrics_values.csv and figure/data/learning_curve_values.csv in one call.",
+    "Per-group long-form rows carry the k-curves beside the scalar max_k/Recall rows; the per-run table keeps scalar macro means plus effective-group counts, with the cross-run curve means/min-max in the figure CSV, which is the only source the renderers read.",
+    "Entry labels come from each run identity (prnet now, mean when #165 adds it); directory names only locate the run.",
+    "Stage-2 step README/AGENTS command tables were not edited because the ticket write scope is execution/ and log/ only.",
+    "Tests run with the shared /home/chang/miniconda3/bin/python 3.13 interpreter: the driver has no torch dependency, and the pinned PRnet environment lacks the anndata/scipy stack the corpus-reader fixture needs."
+  ],
+  "files": {
+    "execution/script/evaluation_driver.py": {
+      "bytes": 34082,
+      "sha256": "267b6f8a0f495949ed1ecfecf5ef2ee50d87e7d4121eecd83f70f3d2e2fba451"
+    },
+    "execution/script/plot_tables.py": {
+      "bytes": 14157,
+      "sha256": "5d52742cb94299a4938b5fca2c8debe4784ce30d169f152acdc1c2da3ee5bf7e"
+    },
+    "execution/tests/test_evaluation_driver.py": {
+      "bytes": 21060,
+      "sha256": "2d31ded903442713dd5d78654ae35889cac02031e929176d7570e20454726356"
+    }
+  },
+  "merge": {
+    "branch_head_before_followup": "d4ccaa5",
+    "dev_tip_at_report": "9a0e4cc"
+  },
+  "offline": true,
+  "python": "/home/chang/miniconda3/bin/python (3.13)",
+  "real_data_evidence": {
+    "fail_closed_real_bounded_run": {
+      "command": "python execution/script/evaluation_driver.py --runs-root .worktrees/tenv-163/stage2/02_models_tenv/output/bounded/runs --entries prnet --fold-rows 0 --seeds 17 --fold-product .../tenv-truth ... --output /tmp/tenv164-real-bounded",
+      "interpretation": "the #163 bounded run predicts 64 of the fold 1401 test wells; the driver refuses to score a subset",
+      "result": "exit 2: prediction coverage mismatch ... 1337 fold case(s) missing, 0 foreign case(s)"
+    },
+    "truth_binding": {
+      "command": "python - <<... TruthStatistics/partition over stage2/01_bases/output/* (record: log/resources/164-real-truth-binding.txt)",
+      "result": "truth groups 1377; fold 0 test groups authorized 459; fold 0 test wells 1401; missing truth groups 0; sample group padj finite 16748 status eligible"
+    }
+  },
+  "schema_decision": {
+    "figure_csv": {
+      "files": [
+        "metrics_values.csv",
+        "learning_curve_values.csv"
+      ],
+      "layout": "one long-form CSV per figure with the shared PLOT_VALUE_COLUMNS (record, schema, kind, panel, title, x_label, y_label, series, hue, shade, role, run, x, y, defined, reason)",
+      "palette": "entry hue order ENTRY_HUES; LINE_SHADE=2; learning-curve RUN_SHADE_ORDER=(2,4,6,8,1,3,5,7,0), train blue / validation green (constants of bases.palette, #162)",
+      "roles": {
+        "learning_curve": [
+          "line"
+        ],
+        "metrics_bar": [
+          "bar_mean",
+          "bar_run"
+        ],
+        "metrics_curve": [
+          "curve_mean",
+          "curve_min",
+          "curve_max",
+          "curve_run"
+        ]
+      },
+      "schemas": [
+        "stage2-tenv-metrics-values-v1",
+        "stage2-tenv-learning-curve-values-v1"
+      ]
+    },
+    "figure_data_publication": "driver writes the two CSVs under --output and mirrors them under --figure-data (the step figure/data contract path); no full-fold predictions exist in this ticket (#165 produces them), so no figure/data file is committed here",
+    "per_group_granularity": "long-form: one row per Precision@k and one per Spearman@k for k=1..100, plus one row each for max_k@P80S40 and Recall@max_k; status/reason on every row, so every metric family is present per group",
+    "tables": {
+      "per_group.csv": [
+        "entry",
+        "label",
+        "fold",
+        "seed",
+        "group_id",
+        "drug_parent",
+        "dose_um",
+        "n_wells",
+        "gated_truth",
+        "direction_matched",
+        "truth_status",
+        "truth_reason",
+        "k",
+        "metric",
+        "value",
+        "status",
+        "reason"
+      ],
+      "per_run.csv": "one wide row per run: 4 direct macro means + max_k@P80S40 + Recall@max_k, each with defined/undefined counts, plus Precision@k/Spearman@k effective-group counts",
+      "per_well.csv": [
+        "entry",
+        "label",
+        "fold",
+        "seed",
+        "sample_id",
+        "group_id",
+        "metric",
+        "value",
+        "status",
+        "reason"
+      ]
+    }
+  },
+  "scoring_source": {
+    "delta": "stage2/01_bases/output/training-corpora/tenv.h5ad layers/delta via bases.corpora.training_header + bounded h5py slabs",
+    "fold_index": "stage2/01_bases/output/fold_n_seed via bases.fold_seed.FoldSeedIndex.load",
+    "metrics": "stage2/01_bases/output/api/bases/evaluation.py (#160) imported, never re-implemented",
+    "plotting_api": "stage2/01_bases/output/api/bases/plots.py: #162 merged into dev while this branch was open; the driver imports it through plot_tables.shared_plot_api() and emits its exact long-form schema. plot_tables keeps a presentation-only fallback for checkouts without #162, and the compatibility test proves both serializations are row-identical.",
+    "truth": "stage2/01_bases/output/tenv-truth via bases.significance.PartitionTruth + accepted padj.npy/log2_fold_change.npy"
+  },
+  "subject": "Tenv metrics 06 - evaluation driver and figure data",
+  "test_command": "cd stage2/02_models_tenv && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 /home/chang/miniconda3/bin/python -m unittest discover -s execution/tests -p 'test_evaluation_driver.py' -v",
+  "test_output": "log/resources/164-tests.txt",
+  "test_result": "Ran 10 tests in 0.486s -- OK (0 skipped; shared #162 plotting API exercised)",
+  "ticket": 164
+}
