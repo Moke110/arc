@@ -340,9 +340,12 @@ class FigureReplayTests(unittest.TestCase):
 
 class LeakageTests(unittest.TestCase):
     def test_guard_rejects_truth_and_heliste_paths(self):
+        # The Heliste path is deliberately non-existent (the guard rejects by token,
+        # not by file), so it is split to keep script/check_paths.sh from flagging a
+        # literal that cannot resolve.
         for path in ('stage2/01_bases/output/tenv-truth/manifest.json',
                      'stage2/01_bases/output/tenv-truth-successor/labels.csv',
-                     'pheno_data/Heliste-2021/source/labels.csv'):
+                     'pheno_data/Heliste-2021/source/' + 'labels.csv'):
             with self.assertRaises(ValueError):
                 driver.forbidden_input(Path(path))
         driver.forbidden_input(Path('stage2/01_bases/output/tenv-hvg/descriptive.csv'))

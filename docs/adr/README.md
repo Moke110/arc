@@ -8,11 +8,12 @@ Index of the architecture decision records in `docs/adr/`.
 decisions amend them, they are not silently rewritten. Read a record together with the
 files its `See` section names.
 
-**Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
-sequence runs 0022 → 0024 deliberately); there is nothing to restore.
+**Numbering note: 0023 and 0050 are gaps, not missing files.** Neither number was ever
+assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
+restore.
 
-The index covers every record in the directory, 0001–0044 (43 files; 0023 is the
-gap). Two early records are marked superseded in place, and 0026 is marked
+The index covers every record in the directory, 0001–0065 (63 files; 0023 and 0050 are the
+gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
 details in 0038–0041. ADR 0043 reopens the corpus as source measurements without endpoint gates; ADR 0044 subsequently replaces universal-corpus-first planning with source-first corpora.
