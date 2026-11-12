@@ -612,11 +612,12 @@ def _draw_curve_panel(panel, ax, fixed):
     for entry in panel["entries"]:
         if "reference" not in entry:
             continue
+        roles = palette.role_colors(entry_hue=entry["hue"], run_index=0)
         ax.plot(axis, np.asarray(entry["reference"], dtype=float),
-                color=palette.color(entry["hue"], palette.REFERENCE_SHADE),
+                color=roles["reference"],
                 linewidth=.85, linestyle="--", zorder=2)
         for marker in entry.get("d_star", ()):
-            color = palette.color(entry["hue"], palette.MARKER_SHADE)
+            color = roles["marker"]
             ax.plot([marker["x"], marker["x"]], [0.0, marker["y"]],
                     color=color, linewidth=.7, linestyle=":", zorder=4)
             ax.plot([marker["x"]], [marker["y"]], linestyle="none", marker="o",
@@ -748,8 +749,9 @@ def _legend_handles(values):
     for panel in values["panels"]:
         for entry in panel["entries"]:
             if "reference" in entry:
+                roles = palette.role_colors(entry_hue=entry["hue"], run_index=0)
                 handles.append(Line2D(
-                    [0], [0], color=palette.color(entry["hue"], palette.REFERENCE_SHADE),
+                    [0], [0], color=roles["reference"],
                     linewidth=1, linestyle="--", label=f"{entry['series']} | F1@d"))
     return handles
 

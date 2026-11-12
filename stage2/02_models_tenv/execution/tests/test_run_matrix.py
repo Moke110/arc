@@ -182,20 +182,20 @@ class AcceptedProductTests(unittest.TestCase):
             for root in (first, second):
                 root.mkdir()
                 (root / "per_run.csv").write_text("a,b\n1,2\n")
-            run_matrix.compare_product_trees(first, second, ("per_run",))
+            self.assertTrue(run_matrix.compare_product_trees(first, second, ("per_run",)))
             (second / "per_run.csv").write_text("a,b\n1,3\n")
             with self.assertRaisesRegex(run_matrix.MatrixError, "replay"):
                 run_matrix.compare_product_trees(first, second, ("per_run",))
 
 
 class AcceptCommandTests(unittest.TestCase):
-    def test_accept_mode_runs_only_the_rescore_and_renderer(self):
+    def test_accept_mode_runs_only_the_two_rescore_commands_it_records(self):
         commands = run_matrix.accept_commands(
             bases=BASES, output_root=Path("/tmp/tenv-output"), python="python")
         scripts = [Path(command[1]).name for command in commands]
-        self.assertEqual(scripts, ["evaluation_driver.py", "evaluation_driver.py",
-                                   "render_figures.py"])
+        self.assertEqual(scripts, ["evaluation_driver.py", "evaluation_driver.py"])
         joined = " ".join(" ".join(command) for command in commands)
+        self.assertNotIn("render_figures.py", joined)
         for forbidden in ("prnet_fit_predict.py", "prepare_inputs.py", "mean_reference.py"):
             self.assertNotIn(forbidden, joined)
 
@@ -248,6 +248,163 @@ class SupersededPointerTests(unittest.TestCase):
             self.assertEqual(json.loads(text)["superseded_by"], pointer)
             run_matrix.mark_superseded(path, pointer)
             self.assertEqual(path.read_text(), text)
+
+
+class RestoreTests(unittest.TestCase):
+    SAMPLE = ("\tUser time (seconds): 1.00\n"
+              "\tSystem time (seconds): 0.50\n"
+              "\tElapsed (wall clock) time (m:ss): 0:02.00\n"
+              "\tMaximum resident set size (kbytes): 2048\n")
+
+    def test_restore_removes_products_that_did_not_preexist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output, backup = Path(tmp) / "output", Path(tmp) / "backup"
+            backup.mkdir()
+            for name in ("evaluation", "figure_data"):
+                (output / name).mkdir(parents=True)
+                (output / name / "new.txt").write_text("first publish")
+            run_matrix._restore_product(output, backup, ("evaluation", "figure_data"))
+            self.assertFalse((output / "evaluation").exists())
+            self.assertFalse((output / "figure_data").exists())
+
+    def test_restore_puts_a_previous_publish_back(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output, backup = Path(tmp) / "output", Path(tmp) / "backup"
+            (backup / "evaluation").mkdir(parents=True)
+            (backup / "evaluation" / "old.txt").write_text("accepted")
+            (output / "evaluation").mkdir(parents=True)
+            (output / "evaluation" / "new.txt").write_text("failed publish")
+            run_matrix._restore_product(output, backup, ("evaluation",))
+            self.assertEqual((output / "evaluation/old.txt").read_text(), "accepted")
+            self.assertFalse((output / "evaluation/new.txt").exists())
+
+    def test_failed_second_command_removes_a_first_publish(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            output, figure = tmp / "output", tmp / "figure"
+            calls = []
+
+            def fake_heavy(command, *, stdout_path, time_path, **kwargs):
+                calls.append(command)
+                path = Path(time_path)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(self.SAMPLE)
+                if len(calls) == 1:
+                    return run_matrix.parse_time(path)
+                for name in ("evaluation", "figure_data"):
+                    (output / name).mkdir(parents=True, exist_ok=True)
+                    (output / name / "partial.txt").write_text("wrong bytes")
+                raise run_matrix.MatrixError("driver failed after writing products")
+
+            originals = {name: getattr(run_matrix, name) for name in (
+                "heavy", "verify_published_runs", "verify_figure_values",
+                "verify_accepted_digests")}
+            run_matrix.heavy = fake_heavy
+            run_matrix.verify_published_runs = lambda output_root, cells: []
+            run_matrix.verify_figure_values = lambda path: None
+            run_matrix.verify_accepted_digests = lambda paths, expected: True
+            original_resources = run_matrix.RESOURCE_DIR
+            run_matrix.RESOURCE_DIR = tmp / "resources"
+            try:
+                with self.assertRaisesRegex(run_matrix.MatrixError, "driver failed"):
+                    run_matrix.run_accept(
+                        bases=BASES, output_root=output, python="python",
+                        figure_dir=figure, checkpoint_root=tmp / "checkpoints",
+                        record_path=tmp / "record.json")
+            finally:
+                for name, value in originals.items():
+                    setattr(run_matrix, name, value)
+                run_matrix.RESOURCE_DIR = original_resources
+            self.assertEqual(len(calls), 2)
+            self.assertFalse((output / "evaluation").exists())
+            self.assertFalse((output / "figure_data").exists())
+            self.assertFalse((tmp / "record.json").exists())
+
+
+class AllRecordTargetTests(unittest.TestCase):
+    def test_all_writes_the_v2_record_to_166_and_only_marks_165(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            output, figure, candidate = tmp / "output", tmp / "figure", tmp / "candidate"
+            for fold, seed in ((0, 17), (0, 42), (1, 17), (1, 42)):
+                cell = {"fold": fold, "seed": seed}
+                for entry in ("prnet", "mean"):
+                    run = (output / "runs" / entry
+                           / f"fold_{cell['fold']}" / f"seed_{cell['seed']}")
+                    run.mkdir(parents=True)
+                    (run / "resources.json").write_text(json.dumps(
+                        {"resources": {"record": str(run / "r.time"),
+                                       "peak_rss_kib": 1, "elapsed_seconds": 1.0}}))
+            for root in (candidate / "evaluation", output / "evaluation"):
+                root.mkdir(parents=True)
+                (root / "evaluation.json").write_text(json.dumps({"schema": "x"}))
+                for table in run_matrix.REPLAY_TABLES:
+                    (root / f"{table}.csv").write_text(f"{table}\n")
+            accepted_data = {}
+            for name, (csv_name, _) in run_matrix.FIGURE_FILES.items():
+                path = output / "figure_data" / csv_name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(name)
+                accepted_data[name] = run_matrix.sha256(path)
+            accepted_figures = {}
+            for name, (_, png_name) in run_matrix.FIGURE_FILES.items():
+                path = figure / png_name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(name)
+                accepted_figures[name] = run_matrix.sha256(path)
+            captured = {}
+
+            def fake_builder(**kwargs):
+                captured.update(kwargs)
+                return {"schema": run_matrix.ACCEPT_SCHEMA, "ticket": 170}
+
+            historical = tmp / "log/165-acceptance.json"
+            historical.parent.mkdir(parents=True)
+            historical.write_text('{\n  "z_first": 1,\n  "a_second": 2\n}\n')
+            target = tmp / "log/166-acceptance.json"
+            originals = {name: getattr(run_matrix, name) for name in (
+                "STEP_ROOT", "ACCEPT_RECORD", "HISTORICAL_RECORD", "ACCEPTED_DATA",
+                "ACCEPTED_FIGURES", "build_release", "train_prnet", "build_mean",
+                "score", "verify_figure_values", "publish", "acceptance_record_v2",
+                "environment_record", "verify_published_runs")}
+            run_matrix.STEP_ROOT = tmp
+            run_matrix.ACCEPT_RECORD = target
+            run_matrix.HISTORICAL_RECORD = historical
+            run_matrix.ACCEPTED_DATA = accepted_data
+            run_matrix.ACCEPTED_FIGURES = accepted_figures
+            run_matrix.build_release = lambda *a, **k: (None, {})
+            run_matrix.train_prnet = lambda *a, **k: None
+            run_matrix.build_mean = lambda *a, **k: None
+            run_matrix.score = lambda *a, **k: None
+            run_matrix.verify_figure_values = lambda *a, **k: None
+            run_matrix.publish = lambda *a, **k: ({}, {}, {})
+            run_matrix.environment_record = lambda python, commands: {
+                "git": {"branch": "test", "head_sha": "0" * 40},
+                "commands": []}
+            run_matrix.acceptance_record_v2 = fake_builder
+            run_matrix.verify_published_runs = lambda output_root, cells: []
+            try:
+                run_matrix.run_all(
+                    bases=BASES, candidate=candidate, python="python",
+                    prepare_python="python", train_python="python",
+                    config=Path(tmp) / "config.json", figure_dir=figure,
+                    resume=True)
+            finally:
+                for name, value in originals.items():
+                    setattr(run_matrix, name, value)
+            self.assertEqual(json.loads(target.read_text())["schema"],
+                             run_matrix.ACCEPT_SCHEMA)
+            self.assertTrue(captured["replay"]["tables_byte_identical"])
+            self.assertTrue(captured["replay"]["evaluation_record_equal_except_paths"])
+            self.assertTrue(captured["replay"]["figure_data_byte_identical_to_accepted"])
+            self.assertTrue(captured["replay"]["figures_byte_identical_to_accepted"])
+            historical_record = json.loads(historical.read_text())
+            self.assertEqual(historical_record["z_first"], 1)
+            self.assertEqual(historical_record["a_second"], 2)
+            self.assertEqual(historical_record["superseded_by"]["record"],
+                             "log/166-acceptance.json")
+            text = historical.read_text()
+            self.assertLess(text.index('"z_first"'), text.index('"a_second"'))
 
 
 class AcceptModeGuardTests(unittest.TestCase):

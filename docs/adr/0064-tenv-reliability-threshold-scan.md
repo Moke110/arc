@@ -82,8 +82,13 @@ run by its own `M` is deliberate: it removes absolute magnitude calibration from
 the comparison, so a model is judged on the best table it can produce on its own
 scale rather than on whether its Δ happens to be in the right units.
 
-The comparison is `|Δ̂| >= d`, not `> d`, so the strictest grid point can still
-select each group's strongest gene instead of emptying every window.
+The comparison is `|Δ̂| >= d`, not `> d`, so the strictest grid point keeps the
+window of the gene that defines `M` non-empty instead of emptying every window.
+It does **not** select every group's strongest gene: at `d = M` only the
+group(s) whose maximum *is* `M` can be non-empty, and the shipped grid leaves
+12/459 groups (fold 0) and 33/459 (fold 1) non-empty there. The top of the grid
+is therefore a degenerate edge, and the accepted PRnet peak sits exactly on
+it.
 
 ## Totality
 
@@ -161,6 +166,16 @@ from the `Reliability@d` curve itself.
   and reports the value, so the headline number is optimistic. The whole curve is
   reported beside it so the optimism is visible, and the four per-run `d*` values
   are recorded as stability evidence.
+- Macro `Reliability@d` is the equal-weight mean of each test group's per-group
+  `Reliability@d`; it is **not** `F1@d · (1 + Spearman@d)/2` applied to the
+  adjacent macro `F1@d` and macro `Spearman@d` columns. The two coincide only
+  when Spearman is constant across groups (for the accepted PRnet runs,
+  `Spearman@d* = 1`); for `Mean` fold 0 the mean-of-groups value is `0.007049`
+  while the ratio-of-macros identity gives `0.012088`.
+- The ordering term is also neutral (`mult = 1`) when the direction-correct hit
+  set has no rank variation in the predicted or measured magnitudes, not only
+  below three hits. That rule can only inflate a score, so it is declared here
+  and in the GLOSSARY rather than left implicit.
 - Different runs deliver different table sizes, so the downstream phenotype
   comparison must treat table size as part of the intervention, not as noise.
 - `d` is a predicted magnitude in ln-log1p CP10K units. It carries no statistical

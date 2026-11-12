@@ -125,6 +125,7 @@ its own counter, and its dominance accounting is exercised in the tests.
 | `figure/script/render_figures.py` | CSV-only renderer (no matrices, checkpoints or truth) | tracked |
 | `log/166-acceptance.json` | current `stage2-tenv-acceptance-v2` record: hashes, per-run `M`/`d*`/`Reliability@d*`, replay proof | tracked |
 | `log/165-acceptance.json`, `log/resources/{prnet,mean}-fold_*-seed_*.time` | earlier acceptance record and raw `/usr/bin/time -v` measurements | tracked |
+| `log/resources/166-{rescore-verification,rescore-publish,figure-replay}.time` | raw `/usr/bin/time -v` measurements behind the current record's resource evidence | tracked |
 
 ## Tests
 

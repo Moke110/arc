@@ -92,13 +92,20 @@ accuracy.
 ## Reading the result
 
 PRnet's `Reliability@d` peaks at the **strictest grid point** `k = 100`
-(`d' = 1`) in all four runs. At that edge the mean window size is **0.03 genes**
-— the peak is a nearly-empty-table solution rather than a recovered gene set.
+(`d' = 1`) in all four runs. At that edge the mean window size is **0.049 genes**:
+90 non-empty group windows over 4 runs × 459 groups, with per-fold means of
+0.026 (fold 0) and 0.072 (fold 1). The peak is therefore a nearly-empty-table
+solution rather than a recovered gene set.
 The value it reports is the share of the fold's test groups that emit an empty
 window on a null group: fold 0 is exactly `90/459 = 0.196078`; fold 1 is
 `76/459 = 0.165577`, because 76 of its 79 null groups are empty at `k = 100`
 while three still emit one gene. PRnet's changed-group Reliability at `d*` is
 zero in every run.
+
+Stated bluntly: PRnet's accepted `Reliability@d*` of **0.196 / 0.166 is exactly
+the score of a model that emits nothing at all** on these folds. `Mean`'s
+null-group Reliability is **0** because it emits a window on every null group at
+every threshold, so its small positive score comes only from changed groups.
 
 The consequence is load-bearing for downstream work: the **delivered table
 `W(d*)` is near-empty**, and different runs deliver different table sizes. A
@@ -109,9 +116,21 @@ measured set, but its macro Reliability is two orders of magnitude smaller.
 
 Peak selection is **in-sample and optimistic**: the same group data chooses `d*`
 and reports the value. The full curve ships beside the number so the optimism is
-visible, and the four per-run `d*` values are the stability evidence. PRnet's
-four identical `M = 5.926281` values are a genuine data property of the shared
-cold-drug test wells, not a copied record.
+visible, and the four per-run `d*` values are the stability evidence.
+
+`Reliability@d*` in the per-run table is the **equal-weight mean of the per-group
+reliabilities**, not `F1@d* · (1 + Spearman@d*)/2` applied to the adjacent macro
+`F1@d*` and `Spearman@d*` columns. The two agree only when Spearman is constant
+across groups: for `Mean` fold 0 the recorded value is 0.007049 while the
+ratio-of-macros identity gives 0.012088.
+
+PRnet's four identical `M = 5.926281` values come from a **degenerate extreme of
+one gene**, not from the same wells: gene index 13241 attains the float32 floor
+`-5.926281452178955` in 36 distinct wells in fold 0 and 102 distinct wells in
+fold 1, and the seed prediction arrays differ. The mechanism that produces the
+floor is inferred (consistent with a saturated or zero output for that gene), not
+traced through the entrant. Because `d = k · 0.01 · M`, this extreme is why the
+scan empties toward `d' = 1`.
 
 ## Figures
 
@@ -158,8 +177,12 @@ python execution/run_matrix.py --plan-only    # just print the declared matrix
 rescores them twice with the shared driver (BLAS threads pinned to 2), compares
 the candidate and published trees byte for byte, re-emits
 `output/evaluation/` and `output/figure_data/`, and refuses to rewrite any
-accepted figure or plot-value byte. It writes `log/166-acceptance.json`; a
-failure leaves the accepted products untouched. The driver itself is
+accepted figure or plot-value byte. It writes `log/166-acceptance.json` and
+copies its three raw `/usr/bin/time -v` files into tracked
+`log/resources/166-*.time`; a failure restores the accepted products exactly,
+including removing `evaluation/`/`figure_data/` when the failed publish created
+them for the first time. `log/165-acceptance.json` is never rewritten: it only
+carries the committed `superseded_by` pointer. The driver itself is
 deterministic: the two rescoring passes must match byte for byte, and no
 stochastic term enters the rescoring path.
 
@@ -167,7 +190,9 @@ stochastic term enters the rescoring path.
 `execution/checkpoints/matrix-165/` and touches no stable path until every run
 is `complete` and the whole set is scored (fail closed). It publishes
 `output/{inputs,runs,evaluation,figure_data}/`, copies the three plot-value
-tables into `figure/data/`, renders the three PNGs and re-verifies them.
+tables into `figure/data/`, renders the three PNGs and re-verifies them, then
+writes its own `stage2-tenv-acceptance-v2` record to
+`log/166-acceptance.json` (never to the historical `165` record).
 
 ## Products and paths
 
@@ -183,6 +208,7 @@ tables into `figure/data/`, renders the three PNGs and re-verifies them.
 | `execution/script/mean_reference.py` | the deterministic reference |
 | `log/166-acceptance.json` | the current `stage2-tenv-acceptance-v2` record |
 | `log/165-acceptance.json`, `log/resources/{prnet,mean}-fold_*-seed_*.time` | earlier acceptance record and raw `/usr/bin/time -v` measurements |
+| `log/resources/166-{rescore-verification,rescore-publish,figure-replay}.time` | raw `/usr/bin/time -v` measurements behind the current record's resource evidence |
 | `log/163-bounded-run.json`, `log/164-evaluation-driver.json` | earlier admission and driver records |
 
 ## What the entrant is

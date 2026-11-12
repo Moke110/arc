@@ -593,7 +593,7 @@ _Avoid_: benchmark step (when meaning the rebuilt comparison)
 `PCC`, `Spearman`, `RMSE` or `R²` computed on one test well's predicted Δ against that well's observed Δ over the full gene axis. A run reports the equal-weight mean over its fold's test wells; no group aggregation precedes it. It measures per-sample fidelity, not group-level accuracy.
 
 **@d reliability family** (reliability family):
-`Precision@d`, `Recall@d`, `Spearman@d` and `Reliability@d`, computed per drug–dose group from that group's mean predicted Δ against its measured DESeq2 contrast. It replaces the retired `k`-parameterized indirect family. The `@d` suffix is the family marker: every member is parameterized by the predicted-effect threshold `d`, not by a declared table size.
+`Precision@d`, `Recall@d`, `F1@d`, `Spearman@d` and `Reliability@d`, computed per drug–dose group from that group's mean predicted Δ against its measured DESeq2 contrast. It replaces the retired `k`-parameterized indirect family. The `@d` suffix is the family marker: every member is parameterized by the predicted-effect threshold `d`, not by a declared table size.
 _Avoid_: indirect metric (unqualified, when the @d family is meant); batched metric (withdrawn, never built)
 
 **Measured effect**:
@@ -615,11 +615,11 @@ A gene of `W(d)` that is a measured effect and whose measured direction equals t
 `Precision@d = |H|/|W|`, `Recall@d = |H|/|measured effects|`, and `F1@d` their harmonic mean. All three are total by convention: an empty window on a group with no measured effect scores `F1 = 1`, an empty window on a group with measured effects scores `0`, and a non-empty window on a group with no measured effect scores `0`. Harmonic rather than arithmetic averaging is load-bearing: an arithmetic mean peaks at the smallest table and would make `Reliability@d` select a one-gene table.
 
 **Spearman@d**:
-The Spearman correlation inside `H(d)` between predicted magnitude (`|Δ̂_mean|` rank) and measured magnitude (`|log2FC|` rank): given that those genes are right and correctly directed, did the model order them by effect size correctly? Neutral (`mult = 1`) when `|H| < 3`, so a weak condition is not capped by the ordering term. It is not the retired `Spearman@k`, which correlated signed predictions against measured Δ over all of a top-k table.
+The Spearman correlation inside `H(d)` between predicted magnitude (`|Δ̂_mean|` rank) and measured magnitude (`|log2FC|` rank): given that those genes are right and correctly directed, did the model order them by effect size correctly? Neutral (`mult = 1`) when `|H| < 3`, and also when the predicted or measured magnitudes of `H` have no rank variation; both rules can only inflate a score, so they are declared here and in ADR 0064. It is not the retired `Spearman@k`, which correlated signed predictions against measured Δ over all of a top-k table.
 _Avoid_: Spearman@k (the retired top-k statistic)
 
 **Reliability@d**:
-`F1@d · mult`, with `mult = (1 + Spearman@d)/2` for `|H| >= 3` and `1` otherwise. Range `[0, 1]`: `0` means the emitted table is wrong or direction-inverted, `1` means it is exactly the measured effect set in the correct order. It is a model-selection proxy for the downstream phenotype task, not a biological claim.
+`F1@d · mult`, with `mult = (1 + Spearman@d)/2` for `|H| >= 3` and `1` otherwise. The macro `Reliability@d` of a run is the equal-weight mean of the per-group values, **not** `F1@d · (1 + Spearman@d)/2` applied to the macro `F1@d` and macro `Spearman@d` columns; the two agree only when Spearman is constant across groups. Range `[0, 1]`: `0` means the emitted table is wrong or direction-inverted, `1` means it is exactly the measured effect set in the correct order. It is a model-selection proxy for the downstream phenotype task, not a biological claim.
 
 **`d*`**:
 The `d` that maximizes a run's macro `Reliability@d` over the 100-point scan. There is one `d*` per run, so a consumer of a given run's checkpoint uses that run's `d*`.
