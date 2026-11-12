@@ -147,7 +147,7 @@ def _validate_assignment(frame):
         frame[column] = frame[column].astype(str)
     if frame.eq('').any().any():
         raise FoldSeedError('assignment has an empty required value')
-    if not frame.sample_id.nunique() or frame.sample_id.nunique() != len(set(frame.sample_id)):
+    if not frame.sample_id.nunique():
         raise FoldSeedError('assignment has no complete well population')
     if not set(frame.role) <= set(ROLES):
         raise FoldSeedError('assignment has an unknown role')
