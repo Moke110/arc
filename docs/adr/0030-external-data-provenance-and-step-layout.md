@@ -2,6 +2,14 @@
 
 **Status: accepted (2026-10-30)**
 
+**Update (2026-11-13, ADR 0065):** an external item MAY carry one additional tracked
+`.gitignore` as a sixth member when a regenerable `local/` artefact's file extension is
+not covered by the repository-wide `*.csv`/`*.tsv` rules (for example
+`local/expr/*.tsv.gz` in the gene-axis disease items). The `.gitignore` is an
+ignore-rule declaration, not measurement data: the canonical members remain
+`script/`, `source/`, `local/`, `author_log.json` and `manifest.sha256`, and
+`manifest.sha256` still covers `source/` only.
+
 **Update (2026-11-12, ADR 0062):** the Stage 2 step layout and figure/log/checkpoint
 placement are superseded by ADR 0062 and `stage2/AGENTS.md`. External-item provenance
 rules remain in force; Stage 1 remains outside this migration.

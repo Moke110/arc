@@ -36,6 +36,26 @@ gene and evaluation semantics. Every path below is a stable semantic path.
 - HVG/metrics: `execution/hvg_metrics.md` routes the train-only selector,
   `build_hvg.py`, `evaluate_predictions.py` and `replay_pr.py`; product is
   `output/tenv-hvg/`.
+- Gene-axis decision evidence (#183): public implementation
+  `output/api/bases/gene_axis.py`; build/replay `execution/build_gene_axis.py`,
+  `--verify` included; `execution/gene_axis_sources.py` holds the two
+  `pert_data/` cardiotoxicity adapters and `execution/build_mouse_orthologs.R`
+  regenerates the pinned `output/gene-axis/mouse_human_orthologs.csv` (pinned
+  `arc` R entry point, homologene + org.Mm.eg.db); the R script writes a candidate
+  under `execution/gene_axis/`, checks its sha256 against the accepted table and
+  replaces it only when byte-identical or with `--args --accept` (ADR 0062
+  candidate-then-replace). Product is
+  `output/gene-axis/` (`source_summary.csv`, `fused_rank.csv`, `overlap.csv`,
+  `inflection.json`, `tenv_non_hvg_curve.csv`, `direction_summary.csv`,
+  `manifest.json` + the ortholog table; large per-source intermediates stay
+  untracked under `execution/gene_axis/`). Figure:
+  `figure/gene_axis_source_summary.png`, plotted values
+  `figure/data/gene_axis_source_summary.csv`, CSV-only renderer
+  `figure/script/render_gene_axis_source_summary.py` (must keep working with
+  `output/` unreadable). Records: `log/gene-axis/{record.md,inputs.json}`.
+  Decision preparation only — it chooses no `N`, quota, direction rule or animal
+  weight (#173), builds no corpus/model and opens no truth or Heliste file; the
+  only tenv input is the published descriptive HVG ranking.
 - Figure: `figure/diagnostic_tenv_pr.png`, complete plotted values in
   `figure/data/diagnostic_tenv_pr.csv`, and the CSV-only renderer
   `figure/script/render_diagnostic_tenv_pr.py`. The renderer must keep working

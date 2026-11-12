@@ -1,0 +1,9 @@
+# GSE282618 local additions (ADR 0030).
+#
+# `local/` is where this item's derived artefacts live; the tracked one is
+# local/deg/GSE282618_deg.json. The regenerable outputs stay out of git:
+#   - `*.csv` is already ignored by the repository-wide rule (DEG table and
+#     sample sheet), but
+#   - `*.tsv` does not match `*.tsv.gz`, so the compressed expression matrix is
+#     pinned here instead of widening the repository-wide rule.
+local/expr/*.tsv.gz

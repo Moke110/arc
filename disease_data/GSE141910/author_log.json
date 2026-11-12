@@ -1,0 +1,48 @@
+{
+  "item": "GSE141910",
+  "category": "disease_data",
+  "purpose": "Human heart-failure left-ventricular bulk transcriptome (MAGNet consortium) - HF primary anchor for the Stage 2 gene-axis disease evidence",
+  "retrieved_at": "2026-11-13T01:22+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE141910",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE141910",
+      "version": "GSE141910",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "GEO acquisition of the two supplementary files in https://ftp.ncbi.nlm.nih.gov/geo/series/GSE141nnn/GSE141910/suppl/ (GSE141910_RAW.tar with 366 per-sample Ensembl-v67 CSVs + filelist.txt) followed by the HF-vs-NF limma analysis and the gene-level matrix export in script/build_deg.R and script/build_expression.R; the deposited per-sample values are the submitters' log2-scale voom-transformed abundance (GEO sample_data_processing: raw counts were transformed using SVA and the LIMMA-Voom method, and no raw counts are deposited)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 60049299,
+      "tree_sha256": "8142f7234f6d1b5b815ffb234da7bd4a7ec1fa237d032c9763e765179aed5ec9"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE141910_deg.csv",
+      "origin": "full-transcriptome HF-vs-NF limma DEG table (20,770 gene symbols, effect size + BH padj + case/control n); regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE141910_deg.json",
+      "origin": "small tracked DEG summary: method, thresholds, n_genes_tested, n_up, n_down, case/control n and source digests",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/expr/GSE141910_log_expr.tsv.gz",
+      "origin": "gene-level log-scale expression matrix (20,770 symbols x 366 samples, voom log2 abundance as deposited) for the Stage 2 gene-axis step; regenerable, never tracked",
+      "generated_by": "script/build_expression.R"
+    },
+    {
+      "path": "local/expr/GSE141910_samples.csv",
+      "origin": "sample -> group map (366 rows: 200 HF / 166 NF) for the expression matrix; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_expression.R"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T01:34+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE141910 (Homo sapiens, Illumina HiSeq 2500 GPL16791, left-ventricular free-wall bulk tissue). 366 samples = 200 HF (DCM 166, HCM 28, PPCM 6) + 166 non-failing donor hearts. SCOPE: ticket #179 fixes source/ to exactly GSE141910_RAW.tar + filelist.txt, so the GEO series matrix (which carries the etiology labels and the data-processing text) is NOT in source/; the title -> group/etiology map extracted from https://ftp.ncbi.nlm.nih.gov/geo/series/GSE141nnn/GSE141910/matrix/GSE141910_series_matrix.txt.gz on 2026-11-13 is pinned in the tracked script/lib_gse141910.R instead, so the build reproduces from source/ + tracked scripts alone. METHOD: the deposited per-sample CSVs are log2-scale voom-transformed abundance already SVA-processed by the submitters, not raw counts, so DESeq2/limma-voom weighting cannot be re-run from source/; script/build_deg.R runs limma on the deposited log2 values (lmFit(~0+group) + eBayes(trend=TRUE, robust=TRUE)), models group only (etiology recorded but not a covariate; sex/age/race and the submitter surrogate variables not modelled). SYMBOLS: 16,989 of 20,781 Ensembl v67 IDs map to HGNC symbols in current org.Hs.eg.db; the 3,792 retired v67 IDs keep their Ensembl ID as gene_symbol so the table stays full-transcriptome. NON-MODEL CAVEATS: donor hearts are not healthy hearts (brain death, ICU stay, cold cardioplegia; stated in the GSE141910 series summary) and bulk LV includes fibroblasts/immune/vasculature, so cell-composition shifts can masquerade as cardiomyocyte-intrinsic signal.",
+  "hashed_at": "2026-11-13T01:34+08:00"
+}

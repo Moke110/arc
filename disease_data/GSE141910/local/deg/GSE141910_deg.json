@@ -1,0 +1,37 @@
+{
+  "accession": "GSE141910",
+  "species": "Homo sapiens",
+  "platform": "Illumina HiSeq 2500 (GPL16791), hg19 / Ensembl v67 gene counts",
+  "tissue_model": "human left-ventricular free-wall bulk tissue (MAGNet consortium)",
+  "contrast": "HF_vs_NF",
+  "contrast_description": "heart failure (DCM 166, HCM 28, PPCM 6; n=200) vs non-failing donor hearts (n=166); positive log2FC = higher in HF",
+  "method": "limma on the deposited log2-scale voom-transformed abundance (GEO sample_data_processing: raw counts transformed using SVA and LIMMA-Voom); HGNC symbols collapsed by max mean expression, retired Ensembl v67 IDs kept as Ensembl-ID fallback; lmFit(~0+group) + eBayes(trend=TRUE, robust=TRUE)",
+  "covariates": "group only. Etiology (DCM/HCM/PPCM) recorded (see lib_gse141910.R) but NOT modelled; sex, age, race and submitter SVA surrogate variables are not modelled",
+  "thresholds": {
+    "padj": 0.05,
+    "abs_log2FC": 0.5,
+    "p_adjust_method": "BH"
+  },
+  "n_genes_tested": 20770,
+  "n_up": 2569,
+  "n_down": 1534,
+  "n_case": 200,
+  "n_control": 166,
+  "case_etiology": {
+    "DCM": 166,
+    "HCM": 28,
+    "PPCM": 6
+  },
+  "expression_matrix": "local/expr/GSE141910_log_expr.tsv.gz",
+  "samples": "local/expr/GSE141910_samples.csv",
+  "source_digests": {
+    "GSE141910_RAW.tar": "7b0aba1331a63a9920a1efea5bb4b16ccddba608461189854a7506ca06fb47fb",
+    "filelist.txt": "5263cb8e91cdf26c096df798c0e5b9411be89dad33221fe0148d0ce1eb085430",
+    "lib_gse141910.R": "589ed484895be49d53be7c234095324220068ff8749bccf0d9da36d5e0e7e289"
+  },
+  "deg_csv": "local/deg/GSE141910_deg.csv",
+  "digests": {
+    "local/deg/GSE141910_deg.csv": "3beed5df35bde8e748d03a0c76e2001ffa8f9dff963d60f5472363d88869e2da"
+  },
+  "reproducibility": "deterministic; re-running build_deg.R reproduces the CSV sha256 exactly"
+}

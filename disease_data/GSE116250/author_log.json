@@ -1,0 +1,48 @@
+{
+  "item": "GSE116250",
+  "category": "disease_data",
+  "purpose": "Human heart-failure left-ventricular bulk transcriptome (50 HF: 37 DCM / 13 ICM vs 14 NF) - cheapest HF anchor and human post-MI (ICM) proxy for the Stage 2 gene-axis disease evidence",
+  "retrieved_at": "2026-11-13T01:22+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE116250",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE116250",
+      "version": "GSE116250",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "GEO acquisition of https://ftp.ncbi.nlm.nih.gov/geo/series/GSE116nnn/GSE116250/suppl/GSE116250_rpkm.txt.gz (gene-level RPKM, Gene=Ensembl + Common_name=symbol + 64 sample columns) followed by the HF-vs-NF limma analysis on log2(RPKM+1) and the gene-level matrix export in script/build_deg.R and script/build_expression.R",
+      "path": "source/",
+      "files": 1,
+      "bytes": 7487245,
+      "tree_sha256": "26c86a20c338ac11581d6fc21c0ec95064ef1d6e4995441882bd966499a6b260"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE116250_deg.csv",
+      "origin": "full-transcriptome DEG table for three contrasts (HF_vs_NF primary; DCM_vs_NF and ICM_vs_NF arms) with effect size + BH padj + case/control n; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/deg/GSE116250_deg.json",
+      "origin": "small tracked DEG summary: method, thresholds, n_genes_tested, n_up, n_down, group counts, arm-contrast counts and source digests",
+      "generated_by": "script/build_deg.R"
+    },
+    {
+      "path": "local/expr/GSE116250_log_expr.tsv.gz",
+      "origin": "gene-level log-scale expression matrix (55,830 symbols x 64 samples, log2(RPKM+1) with sentinel cells NA) for the Stage 2 gene-axis step; regenerable, never tracked",
+      "generated_by": "script/build_expression.R"
+    },
+    {
+      "path": "local/expr/GSE116250_samples.csv",
+      "origin": "sample -> group map (64 rows: 14 NF / 37 DCM / 13 ICM) for the expression matrix; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_expression.R"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T01:34+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE116250 (Homo sapiens, Illumina HiSeq 2000 GPL16791, left-ventricular bulk tissue). 64 samples = 14 non-failing (NF) + 37 dilated cardiomyopathy (DCM) + 13 ischaemic cardiomyopathy (ICM); the group is parsed from the sample column names in source/ itself (NF*/DCM*/ICM*), consistent with the GEO series matrix characteristics. PRIMARY CONTRAST: HF_vs_NF = (DCM+ICM)/2 - NF (50 vs 14); DCM_vs_NF and ICM_vs_NF are fitted in the same linear model and recorded as extra contrast rows. The ICM arm is the smallest human post-MI-proxy LV transcriptome in the dataset, but end-stage explanted ICM tissue is a remodelling proxy, not acute ischaemia-reperfusion. NORMALIZATION: RPKM as deposited (Cufflinks/GRCh37.82; mitochondrial genes removed by the submitters -> 57,974 annotations), used as log2(RPKM+1). SENTINEL PITFALL: 656 cells across 65 genes carry 999999999, an invalid-RPKM fill/overflow code (max valid RPKM 687,869; affected genes are ordinary, e.g. MYH7); they are set to NA and limma fits each gene on its non-missing samples. Duplicate Ensembl rows and duplicate symbols are collapsed to the max mean-expression row. EXPRESSION FILTER: genes with RPKM > 0 in >= 25% of the 64 samples. Bulk LV tissue includes non-cardiomyocyte cells, so DEGs mix disease and cell-composition effects.",
+  "hashed_at": "2026-11-13T01:34+08:00"
+}

@@ -8,11 +8,12 @@ Index of the architecture decision records in `docs/adr/`.
 decisions amend them, they are not silently rewritten. Read a record together with the
 files its `See` section names.
 
-**Numbering note: 0023 is a gap, not a missing file.** The number was never assigned (the
-sequence runs 0022 → 0024 deliberately); there is nothing to restore.
+**Numbering note: 0023 and 0050 are gaps, not missing files.** Neither number was ever
+assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
+restore.
 
-The index covers every record in the directory, 0001–0044 (43 files; 0023 is the
-gap). Two early records are marked superseded in place, and 0026 is marked
+The index covers every record in the directory, 0001–0065 (63 files; 0023 and 0050 are the
+gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
 details in 0038–0041. ADR 0043 reopens the corpus as source measurements without endpoint gates; ADR 0044 subsequently replaces universal-corpus-first planning with source-first corpora.
@@ -83,3 +84,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0062](0062-stage2-accepted-products-and-reproducible-figures.md) | Stage 2 stable accepted products, CSV-reproducible figures and separate audit evidence |
 | [0063](0063-tenv-comparison-direct-and-indirect-metrics.md) | Rebuilt tenv comparison: direct and indirect metrics, fold/seed index tables, stage palette, PRnet — *indirect metrics and figures superseded by 0064* |
 | [0064](0064-tenv-reliability-threshold-scan.md) | Score the tenv comparison by a predicted-effect threshold scan and a reliability score |
+| [0065](0065-stage2-gene-axis-decision-preparation.md) | Prepare the Stage 2 gene-axis decision: public disease sources, full-transcriptome DEGs and an unweighted rank-sum fusion, without deciding the axis |

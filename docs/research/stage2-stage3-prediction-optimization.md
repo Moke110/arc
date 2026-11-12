@@ -346,7 +346,7 @@ perturbation data is a separate model, excluded from this comparison" (ADR 0042)
 | HG biological embedding (HeteroGNN, contrastive drug–gene graph) | `stage1/xpert-fda-miri-v3/input/HG_drug_embeddings.npy`, `drug_emb_model/HG/` | 8,981 × 256 float32 | **L1000-indexed** (`drug_idx < 8981`); author reference, no training route left (library dormant, ADR 0008) |
 | KPGT graph-transformer embedding | `drug_emb_model/KPGT/` (894 MB weights + 35 MB cached tensors for LINCS2020/GSE92742/FDA_drugs) | 512-d base output (ADR 0042 notes 2,304-d base) | LINCS/FDA-indexed; upstream commit unknown |
 | **UniMol 3D atom features** | `stage1/xpert-fda-miri-v3/input/all_drugs_unimol_arr.npy` | **(11,104, 122, 514) float64, 5.57 GB** | L1000 `drug_idx`-indexed; a SMILES→idx join for the 459 tenv parents is **not measured** |
-| ChemBERTa / MolFormer | **not in this repo** — only referenced inside third-party sources (`pert_model/ExPO/source/.../chem_encoder.py`, `pert_model/PerturbDiff/.../covariate_encoding.py`). `drug_emb_model/` contains **only HG and KPGT** | — | not an available asset |
+| ChemBERTa / MolFormer | **not in this repo** — only referenced inside third-party sources (`pert_model/ExPO/source/` `chem_encoder.py`, `pert_model/PerturbDiff/source/` `covariate_encoding.py`). `drug_emb_model/` contains **only HG and KPGT** | — | not an available asset |
 
 **What Stage 1 XPert used:** the drug encoder consumes the **author HG 256-d
 biological embedding** (byte-parity gated against `HG_drug_embeddings.npy`) *plus*
