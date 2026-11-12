@@ -1,0 +1,211 @@
+{
+  "checks": [
+    {
+      "check": "manifest: schema is the fold/seed index schema",
+      "detail": {
+        "schema": "stage2-fold-seed-index-v1"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "manifest: declared file digests match the product bytes",
+      "detail": {
+        "actual": {
+          "cohorts.csv": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc",
+          "folds.csv": "d59d4b7c90d26a731d1342a2e81c9c318aa18e54b67f94fc52f1ad8aa33f6e7e",
+          "seeds.csv": "21e14ff3aff48ee3ddb624c344f728c9a08505e37b714150da9089c4a1760041"
+        },
+        "declared": [
+          "cohorts.csv",
+          "folds.csv",
+          "seeds.csv"
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "cohorts.csv: accepted assignment digest",
+      "detail": {
+        "actual_sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc",
+        "expected_sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "cohorts.csv: complete well, role and group assignment",
+      "detail": {
+        "n_folds": 3,
+        "n_groups": 1377,
+        "n_wells": 4206
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "folds: test drugs are disjoint across folds and cover every drug exactly once",
+      "detail": {
+        "covered": 459,
+        "n_drugs": 459,
+        "overlap": [],
+        "test_drugs_per_fold": {
+          "0": 153,
+          "1": 153,
+          "2": 153
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "folds.csv: rows 0..n-1 order the frozen folds",
+      "detail": {
+        "columns": [
+          "row",
+          "fold",
+          "n_wells",
+          "n_train",
+          "n_validation",
+          "n_test",
+          "n_test_drugs"
+        ],
+        "rows": true
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "folds.csv: role counts match the assignment and sum to the well count",
+      "detail": {
+        "mismatches": [],
+        "role_sums_equal_well_count": true
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "folds.csv: manifest order and count match the table",
+      "detail": {
+        "declared_count": 3,
+        "declared_order": [
+          0,
+          1,
+          2
+        ],
+        "table_order": [
+          0,
+          1,
+          2
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "seeds.csv: rows 0-2 order the accepted seeds 17, 42, 2026",
+      "detail": {
+        "declared_order": [
+          17,
+          42,
+          2026
+        ],
+        "order": [
+          17,
+          42,
+          2026
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "selection: row prefix returns the first n rows and rejects beyond the table",
+      "detail": {
+        "rejected_beyond_table": [
+          "fold",
+          "seed"
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "manifest: recorded assignment totals and index counts match",
+      "detail": {
+        "assignment": {
+          "n_drugs": 459,
+          "n_folds": 3,
+          "n_groups": 1377,
+          "n_wells": 4206
+        },
+        "totals": {
+          "n_drugs": 459,
+          "n_folds": 3,
+          "n_groups": 1377,
+          "n_wells": 4206
+        }
+      },
+      "status": "PASS"
+    }
+  ],
+  "cohorts": {
+    "expected_sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc",
+    "n_drugs": 459,
+    "n_groups": 1377,
+    "n_rows": 12618,
+    "n_wells": 4206,
+    "sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc"
+  },
+  "failures": [],
+  "files": {
+    "cohorts.csv": {
+      "bytes": 1158109,
+      "sha256": "c1dcce7954b3fd1757dd68fdef4a9e5bf80a0015be6354d29c7be37628a843cc"
+    },
+    "folds.csv": {
+      "bytes": 139,
+      "sha256": "d59d4b7c90d26a731d1342a2e81c9c318aa18e54b67f94fc52f1ad8aa33f6e7e"
+    },
+    "seeds.csv": {
+      "bytes": 26,
+      "sha256": "21e14ff3aff48ee3ddb624c344f728c9a08505e37b714150da9089c4a1760041"
+    }
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "n_test": 1401,
+      "n_test_drugs": 153,
+      "n_train": 2508,
+      "n_validation": 297,
+      "n_wells": 4206,
+      "row": 0
+    },
+    {
+      "fold": 1,
+      "n_test": 1416,
+      "n_test_drugs": 153,
+      "n_train": 2508,
+      "n_validation": 282,
+      "n_wells": 4206,
+      "row": 1
+    },
+    {
+      "fold": 2,
+      "n_test": 1389,
+      "n_test_drugs": 153,
+      "n_train": 2535,
+      "n_validation": 282,
+      "n_wells": 4206,
+      "row": 2
+    }
+  ],
+  "result": "PASS",
+  "schema": "stage2-fold-seed-index-v1",
+  "seeds": [
+    {
+      "row": 0,
+      "seed": 17
+    },
+    {
+      "row": 1,
+      "seed": 42
+    },
+    {
+      "row": 2,
+      "seed": 2026
+    }
+  ]
+}
