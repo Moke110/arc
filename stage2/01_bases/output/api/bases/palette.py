@@ -32,6 +32,16 @@ SATURATION_START, SATURATION_STEP = 0.90, -0.06
 # A figure entry draws in one shade and fills with a lighter one of its family.
 LINE_SHADE = 2
 FILL_SHADE = 6
+# The thin reference line and the threshold marker sit between the line and the
+# fill, and darker than the line, so they stay distinguishable inside the entry's
+# family without leaving the stage palette.
+REFERENCE_SHADE = 4
+MARKER_SHADE = 0
+# The three-class confusion heat map is a sequential gray ramp, ordered from a
+# low count (shade 8) to a high count (shade 0), so a categorical entry hue never
+# competes with it.
+HEATMAP_FAMILY = "gray"
+HEATMAP_SHADES = tuple(reversed(range(SHADE_COUNT)))
 # Entry order used when a caller does not name hues; the deterministic reference
 # (gray) comes last so trained entrants take the chromatic families first.
 ENTRY_HUES = ("blue", "orange", "green", "purple", "magenta", "gray")
@@ -53,6 +63,8 @@ _ROLE_SPECS = {
     "dot_edge": {"family": "gray", "shade": 8},
     "band": {"family": "entry", "shade": FILL_SHADE},
     "bar_fill": {"family": "entry", "shade": FILL_SHADE},
+    "reference": {"family": "entry", "shade": REFERENCE_SHADE},
+    "marker": {"family": "entry", "shade": MARKER_SHADE},
     "train": {"family": TRAIN_FAMILY, "shade": "run"},
     "validation": {"family": VALIDATION_FAMILY, "shade": "run"},
 }
@@ -77,8 +89,29 @@ RECIPE = {
         "validation_family": VALIDATION_FAMILY,
         "run_shade_order": list(RUN_SHADE_ORDER),
         "entry_hue_order": list(ENTRY_HUES),
+        "reference": REFERENCE_SHADE,
+        "marker": MARKER_SHADE,
     },
+    "heatmap": {"family": HEATMAP_FAMILY,
+                "shades": list(HEATMAP_SHADES),
+                "order": "low count -> high count"},
 }
+
+
+def heatmap_colors():
+    """Return the sequential heat-map ramp, low count first, from the table."""
+    return tuple(color(HEATMAP_FAMILY, shade) for shade in HEATMAP_SHADES)
+
+
+def heatmap_color(fraction):
+    """Return the ramp cell at a normalized ``fraction`` in ``[0, 1]``."""
+    if isinstance(fraction, bool) or not isinstance(fraction, (int, float)):
+        raise ValueError("a heat-map fraction must be a number in [0, 1]")
+    if not 0 <= float(fraction) <= 1:
+        raise ValueError("a heat-map fraction must be a number in [0, 1]")
+    ramp = heatmap_colors()
+    index = min(int(float(fraction) * len(ramp)), len(ramp) - 1)
+    return ramp[index]
 
 
 def _check_family(family):

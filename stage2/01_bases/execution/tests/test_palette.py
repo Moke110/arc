@@ -168,14 +168,34 @@ class PaletteRoleTests(unittest.TestCase):
             self.assertEqual(colors["validation"], palette.color("green", shade))
         self.assertEqual(len({palette.run_shade(index) for index in range(4)}), 4)
 
+    def test_reference_line_and_threshold_marker_stay_inside_the_entry_family(self):
+        for hue in palette.FAMILIES:
+            colors = palette.role_colors(entry_hue=hue, run_index=0)
+            self.assertEqual(colors["reference"], palette.color(hue, palette.REFERENCE_SHADE))
+            self.assertEqual(colors["marker"], palette.color(hue, palette.MARKER_SHADE))
+            self.assertNotIn(colors["reference"], (colors["line"], colors["band"]))
+
     def test_every_role_the_two_figures_need_resolves_from_the_table(self):
         colors = palette.role_colors(entry_hue="blue", run_index=0)
         self.assertEqual(set(colors), set(palette.ROLES))
-        self.assertEqual(len(palette.ROLES), 12)
+        self.assertEqual(len(palette.ROLES), 14)
         self.assertEqual(colors["dot_edge"], palette.color("gray", 8))
         published = {cell for row in palette.table() for cell in row}
         for role, value in colors.items():
             self.assertIn(value, published, role)
+
+    def test_heatmap_ramp_is_a_recorded_sequential_palette_subset(self):
+        ramp = palette.heatmap_colors()
+        self.assertEqual(len(ramp), palette.SHADE_COUNT)
+        self.assertEqual(ramp[0], palette.color("gray", 8))
+        self.assertEqual(ramp[-1], palette.color("gray", 0))
+        self.assertEqual(palette.HEATMAP_SHADES, tuple(range(8, -1, -1)))
+        published = {cell for row in palette.table() for cell in row}
+        self.assertTrue(set(ramp) <= published)
+        self.assertEqual(palette.heatmap_color(0.0), ramp[0])
+        self.assertEqual(palette.heatmap_color(1.0), ramp[-1])
+        with self.assertRaisesRegex(ValueError, "fraction"):
+            palette.heatmap_color(-0.1)
 
     def test_role_colors_require_the_identity_their_roles_depend_on(self):
         with self.assertRaisesRegex(ValueError, "entry hue"):
@@ -216,6 +236,8 @@ class PaletteProductTests(unittest.TestCase):
         self.assertEqual(roles["band"], {"family": "entry", "shade": palette.FILL_SHADE})
         self.assertEqual(roles["train"], {"family": "blue", "shade": "run"})
         self.assertEqual(roles["validation"], {"family": "green", "shade": "run"})
+        self.assertEqual(roles["reference"], {"family": "entry", "shade": palette.REFERENCE_SHADE})
+        self.assertEqual(roles["marker"], {"family": "entry", "shade": palette.MARKER_SHADE})
         self.assertEqual(set(roles), set(palette.ROLES))
 
 
