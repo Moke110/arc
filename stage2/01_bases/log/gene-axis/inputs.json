@@ -1,0 +1,193 @@
+{
+  "answers_175": {
+    "q1_chronic_remodelling_vs_hf": {
+      "cross_mean_jaccard": 0.023271711166342773,
+      "hf_pair_jaccard": 0.42549788050867793,
+      "interpretation": "HF-source agreement is compared with the AF/HHD (chronic-remodelling) pair and the four cross pairs.",
+      "remodelling_pair_jaccard": 0.0042796005706134095,
+      "tenv_hvg_2000_intersection": {
+        "dtoxs_ipsc": 1522,
+        "gse108940": 0,
+        "gse116250": 735,
+        "gse128188": 59,
+        "gse141910": 972,
+        "gse160516": 82,
+        "gse243674": 1192,
+        "gse244740": 666,
+        "gse282618": 10
+      }
+    },
+    "q2_up_down_rank_symmetry": {
+      "median_fused_rank_down": 9560.0,
+      "median_fused_rank_up": 8561.0,
+      "n_down_significant": 7857,
+      "n_up_significant": 8889,
+      "top_n_composition": {
+        "1000": {
+          "down_share": 0.432,
+          "n_down": 432,
+          "n_up": 568,
+          "up_share": 0.568
+        },
+        "2000": {
+          "down_share": 0.4375,
+          "n_down": 875,
+          "n_up": 1123,
+          "up_share": 0.5615
+        },
+        "3000": {
+          "down_share": 0.434,
+          "n_down": 1302,
+          "n_up": 1694,
+          "up_share": 0.5646666666666667
+        },
+        "500": {
+          "down_share": 0.422,
+          "n_down": 211,
+          "n_up": 289,
+          "up_share": 0.578
+        },
+        "5000": {
+          "down_share": 0.4402,
+          "n_down": 2201,
+          "n_up": 2792,
+          "up_share": 0.5584
+        }
+      }
+    },
+    "q3_effect_replication_vs_deg_count": {
+      "n_genes_supported_by_2plus": 15231,
+      "n_genes_supported_by_any_deg": 16746,
+      "spearman_fused_vs_count_rank": 0.8094560964384797,
+      "top_n_agreement": {
+        "1000": {
+          "n_overlap": 555,
+          "share": 0.555
+        },
+        "2000": {
+          "n_overlap": 955,
+          "share": 0.4775
+        },
+        "3000": {
+          "n_overlap": 1343,
+          "share": 0.44766666666666666
+        },
+        "500": {
+          "n_overlap": 308,
+          "share": 0.616
+        },
+        "5000": {
+          "n_overlap": 3802,
+          "share": 0.7604
+        }
+      }
+    }
+  },
+  "answers_issue": 175,
+  "article": "stage2/01_bases/README.md#gene-axis-decision-evidence-183",
+  "branch": "codex/gene-axis-06-evidence",
+  "commands": {
+    "build": "free -g && ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py",
+    "figure_render": "MPLCONFIGDIR=/tmp/mpl python3 stage2/01_bases/figure/script/render_gene_axis_source_summary.py --csv stage2/01_bases/figure/data/gene_axis_source_summary.csv --png stage2/01_bases/figure/gene_axis_source_summary.png",
+    "figure_replay": "render the tracked CSV to a temporary PNG and compare sha256 with the committed PNG; also exercised by tests/test_gene_axis.py",
+    "note_ticket_pytest_flag": "the ticket's `pytest -p 'test_gene_axis.py'` is not a valid pytest invocation (-p takes a plugin); the file is run explicitly above",
+    "orthologs": "R_HOME=/home/chang/miniconda3/envs/arc/lib/R /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave --file=stage2/01_bases/execution/build_mouse_orthologs.R",
+    "tests": "MPLCONFIGDIR=/tmp/mpl python3 -m pytest -q stage2/01_bases/execution/tests/test_gene_axis.py",
+    "verify": "ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py --verify"
+  },
+  "counts": {
+    "direction_rows": 10,
+    "fused_rank_rows": 18164,
+    "inflection": false,
+    "inflection_n": null,
+    "n_axis": 18164,
+    "n_deg_sources": 9,
+    "n_fused_sources": 10,
+    "n_genes_supported_by_all_deg": 0,
+    "n_genes_supported_by_any_deg": 16746,
+    "overlap_rows": 71,
+    "source_summary_rows": 12,
+    "tenv_non_hvg_rows": 18164
+  },
+  "environment": {
+    "data_access": "offline; no h5ad read, no truth or Heliste file opened",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "resource_caps": "ulimit -v 8G, OMP_NUM_THREADS=2, run under /usr/bin/time -v",
+    "scipy": "1.17.1"
+  },
+  "figure": {
+    "csv": "stage2/01_bases/figure/data/gene_axis_source_summary.csv",
+    "csv_sha256": "f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a",
+    "png": "stage2/01_bases/figure/gene_axis_source_summary.png",
+    "png_sha256": "544c0a8c98086c31b4a79b27d8142502c14a781b33a4a1eb3ab04b612d12f472",
+    "replay": "byte-identical from the CSV alone (two independent renders and the committed-PNG test)"
+  },
+  "input_digests": {
+    "disease_data/GSE108940/source/GSE108940_WT_deg_results.csv": "4d7505e41b952177d3e983cfc1e7a065e1315b6adaad062c976c1a2087e09098",
+    "disease_data/GSE116250/local/deg/GSE116250_deg.csv": "23d89527ca1f220cad172d2bbf47c74c4509c181b8c0d6515039be3e1c04bb6d",
+    "disease_data/GSE116250/local/expr/GSE116250_log_expr.tsv.gz": "1d3e5a2c18d9e4cc3c3bd7783942e41e6fa19afa7b286babc21ed7b97cf4fc26",
+    "disease_data/GSE128188/local/deg/GSE128188_deg.csv": "7dd30d8f51b6bbe59e6cc2564b1aa47fd32f5b8f537ae5cf45ae72a99044f438",
+    "disease_data/GSE128188/local/expr/GSE128188_log_expr.tsv.gz": "27693afc41437316d1b3b80299890048d8ec5f9db1e2b075e066f59b05f7d8a0",
+    "disease_data/GSE141910/local/deg/GSE141910_deg.csv": "3beed5df35bde8e748d03a0c76e2001ffa8f9dff963d60f5472363d88869e2da",
+    "disease_data/GSE141910/local/expr/GSE141910_log_expr.tsv.gz": "30e7f1f49e2d8c0b5df2327a3327d4549efe58a865a4dbc4922627626d652881",
+    "disease_data/GSE160516/source/GSE160516_deg_results.csv": "da61928a58edabde11a630049777f853545646fba0ef3bc783d96f69e4b5930c",
+    "disease_data/GSE243674/local/deg/GSE243674_deg.csv": "0ff8716bf12b0dde9fb4160c01dd4beb58af0e9114e2e45933ec200430e7cf8c",
+    "disease_data/GSE243674/local/expr/GSE243674_log_expr.tsv.gz": "074142d8cec91947ae1056619e8c8a2ae2ad4024d12fba0385299c8050c90907",
+    "disease_data/GSE282618/local/deg/GSE282618_deg.csv": "7573368b4c03dbb24e54cb19b06493673804499f4f7ed430dc8b3f48fe63259f",
+    "disease_data/GSE282618/local/expr/GSE282618_log_expr.tsv.gz": "181ed748dd2d2fe47d51e9495dfa3cc23d1a2fb3b924f7522be66a4641670182",
+    "pert_data/Annotation/source/hgnc_complete_set.txt": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91",
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e",
+    "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c",
+    "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e",
+    "stage2/01_bases/output/gene-axis/mouse_human_orthologs.csv": "cc22358e0ef0d886bb304d940fd8e6dac70c7c5008811f9dfb1f524fc31cbb6a",
+    "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544",
+    "stage2/01_bases/output/tenv-hvg/descriptive.csv": "1291385e559cf8f5a04c958acc7ec9241113d89aaeb783482b77332ce7f423ca"
+  },
+  "manifest_sha256": "50d2e94d1db2eb73516dded6413647c5387fbc51f03cc36285560d82b325237f",
+  "no_accepted_product_changed": "output/gene-identity, output/tenv-hvg, output/training-corpora, output/tenv-truth*, output/shared-expression, corpora, disease_data items, pert_data and stage1 are untouched",
+  "objective": "Build the HVG + rank-sum decision evidence for the frozen 18,164-gene axis: per-source HVG/DEG ranks, unweighted rank-sum fusion, source overlap, direction composition, an explicit inflection answer and the tenv non-HVG curve. Decision preparation only: no N/quota/direction/weight choice (#173), no corpus, no model, no genes.csv release, no truth or Heliste file opened.",
+  "ortholog_generator": {
+    "command": "R_HOME=/home/chang/miniconda3/envs/arc/lib/R /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave --file=stage2/01_bases/execution/build_mouse_orthologs.R",
+    "homologene_version": "1.4.68.19.3.27",
+    "org.Mm.eg.db_version": "3.20.0",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "script": "stage2/01_bases/execution/build_mouse_orthologs.R",
+    "sha256": "e6d49117be5926f6effa80c41af183127a3cded637194e7c967d00f49db7069c"
+  },
+  "ortholog_table_sha256": "cc22358e0ef0d886bb304d940fd8e6dac70c7c5008811f9dfb1f524fc31cbb6a",
+  "output_digests": {
+    "figure/data/gene_axis_source_summary.csv": "f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a",
+    "output/gene-axis/direction_summary.csv": "92f856874dcfbbce377ed44460df8cc251cbcb8575e2cdf52de33a2b9fd712de",
+    "output/gene-axis/fused_rank.csv": "c1c632f3f166b93f206d441cbd96a7e031fcbd226d3779dc5a610a4c90be1a47",
+    "output/gene-axis/inflection.json": "0f2c955f89b489aaf781e5724cdf2ed44487f8051b0ebcc8f15fe8a1c32201f4",
+    "output/gene-axis/overlap.csv": "039510eb5cbcccf47bd3ac349491de5a4569cc84c4d04b99b91efcd368bbbe65",
+    "output/gene-axis/source_summary.csv": "c1940152d7f2adc846609a10fc1b818dc3f3baea0f06c8e5f6c105aece16ccdd",
+    "output/gene-axis/tenv_non_hvg_curve.csv": "b650f8bce96d6ee745ac6f2135d0bb76c0f94b32377283e97f726a665ebe2375"
+  },
+  "parent_issue": 177,
+  "recipe_of_record": "stage2/01_bases/output/gene-axis/manifest.json",
+  "resources": {
+    "calls": "ulimit -v 8388608; OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2; one heavy job at a time",
+    "data_access": "no h5ad read at all; no truth or Heliste path opened; source/ trees read-only",
+    "elapsed_s": {
+      "build": 10.81,
+      "orthologs_r": 2.2,
+      "verify": 12.78
+    },
+    "free_g_before_build": {
+      "available": 42,
+      "total": 47
+    },
+    "peak_rss_kib": {
+      "build": 494188,
+      "orthologs_r": 415852,
+      "verify": 497952
+    },
+    "runner": "/usr/bin/time -v (Maximum resident set size)"
+  },
+  "schema": "stage2-gene-axis-evidence-v1",
+  "ticket": 183
+}
