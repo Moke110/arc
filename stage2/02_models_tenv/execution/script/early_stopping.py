@@ -53,6 +53,12 @@ class EarlyStopper:
         self.no_strict_decrease = 0
         self.above_running_min = 0
         self.stop_reason = None
+        # First epoch at which each rule on its own would have fired.  These are
+        # observed accounting, not an algebraic identity: with the declared
+        # thresholds the 20-epoch rule can never be first, and a custom recipe
+        # (or a regression in the counters) can make the comparison false.
+        self.first_no_strict_decrease_epoch = None
+        self.first_above_running_min_epoch = None
 
     def update(self, epoch, validation_loss):
         """Consume one epoch; return the stop decision and the counters seen."""
@@ -73,6 +79,12 @@ class EarlyStopper:
                 self.above_running_min += 1
             else:  # a tie with the minimum is not "above" it
                 self.above_running_min = 0
+        if (self.first_no_strict_decrease_epoch is None
+                and self.no_strict_decrease >= self.no_strict_decrease_epochs):
+            self.first_no_strict_decrease_epoch = epoch
+        if (self.first_above_running_min_epoch is None
+                and self.above_running_min >= self.above_running_min_epochs):
+            self.first_above_running_min_epoch = epoch
         reason = None
         if self.no_strict_decrease >= self.no_strict_decrease_epochs:
             reason = 'no_strict_decrease'
@@ -93,17 +105,32 @@ class EarlyStopper:
         }
 
     def record(self):
-        """Machine-readable rule declaration plus the observed counters."""
+        """Machine-readable rule declaration plus the observed counters.
+
+        Dominance is decided from the first observed firing epoch of each rule,
+        not from a comparison of the two current counters: with the declared
+        thresholds the 5-epoch rule fires first; a recipe whose 5-epoch
+        threshold is larger than the 20-epoch threshold records
+        ``dominance_observed: false``.
+        """
+        five = self.first_no_strict_decrease_epoch
+        twenty = self.first_above_running_min_epoch
+        if twenty is None:
+            dominance_observed = True
+        else:
+            dominance_observed = five is not None and five <= twenty
         return {
             'rules': dict(self.rules()),
             'dominance': DOMINANCE,
-            'dominance_observed': self.above_running_min <= self.no_strict_decrease,
+            'dominance_observed': dominance_observed,
             'stop_reason': self.stop_reason,
             'observed': {
                 'best_validation_loss': self.best,
                 'best_epoch': self.best_epoch,
                 'no_strict_decrease': self.no_strict_decrease,
                 'above_running_min': self.above_running_min,
+                'first_no_strict_decrease_epoch': five,
+                'first_above_running_min_epoch': twenty,
             },
         }
 

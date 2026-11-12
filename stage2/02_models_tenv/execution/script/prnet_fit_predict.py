@@ -93,7 +93,7 @@ def upstream_source():
 REPO = repo_root()
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from artifacts import read_json, read_rows, sha256, write_json  # noqa: E402
-from early_stopping import EarlyStopper  # noqa: E402
+from early_stopping import STOP_REASONS, EarlyStopper  # noqa: E402
 
 UPSTREAM = upstream_source()
 sys.path.insert(0, str(UPSTREAM))
@@ -140,6 +140,40 @@ def config_digest(config):
         json.dumps(config, sort_keys=True).encode()).hexdigest()
 
 
+def _integer(config, name, low, high):
+    value = config[name]
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise RunFailure(f'config {name} must be an integer, found {value!r}')
+    if not low <= value <= high:
+        raise RunFailure(
+            f'config {name} must be within [{low}, {high}], found {value}')
+    return value
+
+
+def _number(config, name, low, high, *, low_open=False, high_open=False):
+    value = config[name]
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise RunFailure(f'config {name} must be a number, found {value!r}')
+    value = float(value)
+    if not np.isfinite(value):
+        raise RunFailure(f'config {name} must be finite, found {value!r}')
+    too_low = value <= low if low_open else value < low
+    too_high = value >= high if high_open else value > high
+    if too_low or too_high:
+        raise RunFailure(
+            f'config {name} is outside its declared range, found {value}')
+    return value
+
+
+def _layer_sizes(config, name):
+    value = config[name]
+    if (not isinstance(value, list) or not value
+            or any(isinstance(item, bool) or not isinstance(item, int) or item < 1
+                   for item in value)):
+        raise RunFailure(f'config {name} must be a non-empty list of positive ints')
+    return value
+
+
 def load_config(path):
     config = read_json(path)
     required = ('max_epochs', 'batch_size', 'hidden_layer_sizes', 'z_dimension',
@@ -153,14 +187,29 @@ def load_config(path):
     missing = [name for name in required if name not in config]
     if missing:
         raise RunFailure(f'config missing keys: {missing}')
-    if config['threads'] not in (1, 2):
-        raise RunFailure('config threads must be 1 or 2')
-    if config['batch_size'] < 2:
-        raise RunFailure('config batch_size must be at least 2 (native BatchNorm)')
-    if config['max_epochs'] < 1:
-        raise RunFailure('config max_epochs must be at least 1')
-    if config['drug_dimension'] != 1024:
+    # ADR 0063: at most 100 epochs, both counters declared, 2 threads, 10 GiB.
+    _integer(config, 'max_epochs', 1, 100)
+    _integer(config, 'batch_size', 2, 4096)
+    _integer(config, 'threads', 1, 2)
+    _integer(config, 'z_dimension', 1, 4096)
+    _integer(config, 'comb_dimension', 1, 4096)
+    _integer(config, 'noise_dimension', 1, 4096)
+    if _integer(config, 'drug_dimension', 1, 4096) != 1024:
         raise RunFailure('ADR 0063 adapter requires drug_dimension 1024')
+    _layer_sizes(config, 'hidden_layer_sizes')
+    _layer_sizes(config, 'adaptor_layer_sizes')
+    _number(config, 'dropout', 0.0, 1.0, high_open=True)
+    _number(config, 'learning_rate', 0.0, 1.0, low_open=True)
+    _number(config, 'weight_decay', 0.0, 1.0)
+    _number(config, 'scheduler_factor', 0.0, 1.0, low_open=True, high_open=True)
+    _integer(config, 'scheduler_patience', 1, 1000)
+    minimum = _number(config, 'minimum_learning_rate', 0.0, 1.0)
+    if minimum >= float(config['learning_rate']):
+        raise RunFailure('config minimum_learning_rate must be below learning_rate')
+    _integer(config, 'no_strict_decrease_epochs', 1, 1000)
+    _integer(config, 'above_running_min_epochs', 1, 1000)
+    _number(config, 'max_training_seconds', 0.0, 86400.0)
+    _number(config, 'inference_max_seconds', 0.0, 86400.0)
     early = config['early_stopping']
     expected = {
         'no_strict_decrease_epochs': config['no_strict_decrease_epochs'],
@@ -379,6 +428,77 @@ class JointPRnet(nn.Module):
         return self.predictor(baseline, chemical, noise)
 
 
+def device_for(config):
+    if config['device'] == 'cpu':
+        return torch.device('cpu')
+    if config['device'] == 'cuda':
+        if not torch.cuda.is_available():
+            raise RunFailure('config requires CUDA but no device is available')
+        return torch.device('cuda')
+    return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+def predict_deltas(model, release, config, device, seed):
+    """Frozen test prediction: one batch of (indices, delta) at a time.
+
+    Both the published prediction and the fresh-process replay consume this one
+    generator, so a replay from ``best.pt`` is exact by construction.
+    """
+    n_genes = release.n_genes
+    generator = torch.Generator(device=device).manual_seed(seed + 200000)
+    with torch.no_grad():
+        for indices in minibatches(len(release.cases['test']), config['batch_size']):
+            baseline, fingerprint, dose = release.batch('test', indices, device)
+            noise = torch.randn(len(indices), config['noise_dimension'],
+                                generator=generator, device=device)
+            mean = model(baseline, fingerprint, dose, noise)[:, :n_genes]
+            yield indices, (mean - baseline).cpu().numpy()
+
+
+def replay_prediction(request, config, directory):
+    """Recompute the published prediction from ``best.pt`` in a fresh process."""
+    directory = Path(directory)
+    release = Release(request)
+    torch.set_num_threads(int(config['threads']))
+    device = device_for(config)
+    config_sha = config_digest(config)
+    if not (directory / 'best.pt').is_file():
+        raise RunFailure(f'missing checkpoint for replay: {directory / "best.pt"}')
+    checkpoint = torch.load(directory / 'best.pt', map_location=device,
+                            weights_only=False)
+    if checkpoint['identity'] != release.identity:
+        raise RunFailure('stale selected checkpoint identity')
+    if checkpoint['config_sha256'] != config_sha:
+        raise RunFailure('stale selected checkpoint config')
+    model = JointPRnet(release.n_genes, config).to(device)
+    model.load_state_dict(checkpoint['model_state'])
+    model.eval()
+    partial = directory / 'replay.npy.partial'
+    replay = np.lib.format.open_memmap(
+        partial, mode='w+', dtype='float32',
+        shape=(len(release.cases['test']), release.n_genes))
+    for indices, delta in predict_deltas(model, release, config, device,
+                                         release.identity['seed']):
+        if not np.isfinite(delta).all():
+            raise RunFailure('nonfinite replay prediction')
+        replay[indices] = delta
+    replay.flush()
+    del replay
+    partial.replace(directory / 'replay.npy')
+    summary = {
+        'replay_sha256': sha256(directory / 'replay.npy'),
+        'shape': [len(release.cases['test']), release.n_genes],
+        'best_epoch': checkpoint['epoch'],
+        'config_sha256': config_sha,
+        'device': str(device),
+    }
+    published = directory / 'prediction.npy'
+    if published.is_file():
+        summary['matches_published'] = bool(np.array_equal(
+            np.load(published), np.load(directory / 'replay.npy')))
+    return summary
+
+
 def parameter_vector(module):
     return torch.cat([p.detach().cpu().reshape(-1) for p in module.parameters()])
 
@@ -419,14 +539,7 @@ def fit_predict(request, config, release, directory, state):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
         torch.cuda.reset_peak_memory_stats()
-    if config['device'] == 'cpu':
-        device = torch.device('cpu')
-    elif config['device'] == 'cuda':
-        if not torch.cuda.is_available():
-            raise RunFailure('config requires CUDA but no device is available')
-        device = torch.device('cuda')
-    else:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = device_for(config)
     torch.set_num_threads(int(config['threads']))
     n_genes = release.n_genes
     config_sha = config_digest(config)
@@ -549,13 +662,21 @@ def fit_predict(request, config, release, directory, state):
     if best_epoch is None or not (directory / 'best.pt').is_file():
         raise RunFailure('fit produced no validation checkpoint')
     stopping = stopper.record()
-    if stopping['stop_reason'] != stop_reason:
-        raise RunFailure('early-stopping record disagrees with the observed stop')
+    state['early_stopping'] = stopping
+    if stop_reason not in STOP_REASONS:
+        raise RunFailure(f'unexpected early-stopping reason: {stop_reason}')
     if not stopping['dominance_observed']:
-        raise RunFailure('early-stopping dominance invariant violated')
-    if stop_reason in ('no_strict_decrease', 'max_epochs') and \
-            history[-1]['validation_loss'] < best:
-        raise RunFailure('checkpoint selection is not the lowest validation loss')
+        raise RunFailure(
+            'the recorded early-stopping dominance accounting is inverted')
+    # Real selection accounting: the saved checkpoint must be an argmin of the
+    # observed validation-loss history, not merely "the last improved epoch".
+    minimum_loss = min(entry['validation_loss'] for entry in history)
+    minimizers = [entry['epoch'] for entry in history
+                  if entry['validation_loss'] == minimum_loss]
+    if best_epoch != min(minimizers) or best != minimum_loss:
+        raise RunFailure(
+            f'selected checkpoint epoch {best_epoch} loss {best!r} is not the '
+            f'lowest-validation-loss epoch {min(minimizers)} loss {minimum_loss!r}')
 
     # Reload the selected checkpoint from disk; the published prediction must come
     # from this reloaded artifact, not from in-memory training state.
@@ -570,6 +691,10 @@ def fit_predict(request, config, release, directory, state):
         raise RunFailure('stale selected checkpoint identity')
     if checkpoint['config_sha256'] != config_sha:
         raise RunFailure('stale selected checkpoint config')
+    if checkpoint['epoch'] != best_epoch:
+        raise RunFailure(
+            f'saved checkpoint epoch {checkpoint["epoch"]} is not the selected '
+            f'epoch {best_epoch}')
     model.load_state_dict(checkpoint['model_state'])
     model.eval()
     probe_count = min(2, len(release.cases['test']))
@@ -617,21 +742,14 @@ def fit_predict(request, config, release, directory, state):
     prediction = np.lib.format.open_memmap(
         partial, mode='w+', dtype='float32',
         shape=(len(release.cases['test']), n_genes))
-    predict_generator = torch.Generator(device=device).manual_seed(seed + 200000)
-    with torch.no_grad():
-        for indices in minibatches(len(release.cases['test']), config['batch_size']):
-            check_stop()
-            if time.monotonic() - inference_start >= config['inference_max_seconds']:
-                raise OverBudget(
-                    f'inference budget of {config["inference_max_seconds"]} s exceeded')
-            baseline, fingerprint, dose = release.batch('test', indices, device)
-            noise = torch.randn(len(indices), config['noise_dimension'],
-                                generator=predict_generator, device=device)
-            mean = model(baseline, fingerprint, dose, noise)[:, :n_genes]
-            delta = (mean - baseline).cpu().numpy()
-            if not np.isfinite(delta).all():
-                raise RunFailure('nonfinite full-axis prediction')
-            prediction[indices] = delta
+    for indices, delta in predict_deltas(model, release, config, device, seed):
+        check_stop()
+        if time.monotonic() - inference_start >= config['inference_max_seconds']:
+            raise OverBudget(
+                f'inference budget of {config["inference_max_seconds"]} s exceeded')
+        if not np.isfinite(delta).all():
+            raise RunFailure('nonfinite full-axis prediction')
+        prediction[indices] = delta
     prediction.flush()
     del prediction
     partial.replace(directory / 'prediction.npy')
@@ -709,6 +827,7 @@ def write_terminal(directory, status, phase, state, error=None):
         'wall_seconds': time.monotonic() - state.get('started', time.monotonic()),
         'peak_rss_kbytes': int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss),
         'finished_utc': datetime.now(timezone.utc).isoformat(),
+        'early_stopping': state.get('early_stopping'),
     }
     write_json(directory / 'terminal.json', record)
     return record
@@ -719,11 +838,24 @@ def main(argv=None):
     parser.add_argument('--request', required=True)
     parser.add_argument('--config',
                         default=str(SCRIPT_DIR.parent / 'models/prnet/config.json'))
+    parser.add_argument(
+        '--replay', action='store_true',
+        help='recompute the published prediction from best.pt in this fresh '
+             'process (writes replay.npy; never rewrites run artifacts)')
     args = parser.parse_args(argv)
     signal.signal(signal.SIGTERM, _request_stop)
     signal.signal(signal.SIGINT, _request_stop)
     request = read_json(args.request)
     directory = Path(request['output_directory'])
+    if args.replay:
+        try:
+            summary = replay_prediction(request, load_config(args.config), directory)
+            print(json.dumps(summary, sort_keys=True), flush=True)
+            return 0
+        except Exception as error:  # noqa: BLE001 - replay is a read-only check
+            traceback.print_exc()
+            print(f'PRnet replay failed: {error}', file=sys.stderr)
+            return 1
     directory.mkdir(parents=True, exist_ok=True)
     for name in ('prediction.npy', 'prediction.npy.partial', 'terminal.json',
                  'checkpoint.json', 'identity.json', 'case_ids.json', 'best.pt'):

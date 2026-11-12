@@ -92,6 +92,27 @@ class DefaultRules(unittest.TestCase):
         self.assertEqual(record['dominance'], DOMINANCE)
         self.assertTrue(record['dominance_observed'])
 
+    def test_dominance_accounting_records_the_first_firing_epochs(self):
+        stopper = EarlyStopper()
+        run(stopper, [1.0] + [2.0] * 8)
+        record = stopper.record()
+        self.assertEqual(record['observed']['first_no_strict_decrease_epoch'], 6)
+        self.assertIsNone(record['observed']['first_above_running_min_epoch'])
+        self.assertTrue(record['dominance_observed'])
+
+    def test_dominance_accounting_can_be_false_for_a_custom_recipe(self):
+        # A 5-epoch threshold that never fires while a 3-epoch above-minimum
+        # rule does: the recorded accounting must expose the inversion instead
+        # of the old tautology `above <= no_strict_decrease`.
+        stopper = EarlyStopper(no_strict_decrease_epochs=1000,
+                               above_running_min_epochs=3)
+        run(stopper, [1.0, 2.0, 2.0, 2.0])
+        record = stopper.record()
+        self.assertEqual(record['observed']['first_above_running_min_epoch'], 4)
+        self.assertIsNone(record['observed']['first_no_strict_decrease_epoch'])
+        self.assertFalse(record['dominance_observed'])
+        self.assertEqual(record['stop_reason'], 'above_running_min')
+
     def test_invalid_recipe_is_rejected(self):
         for kwargs in ({'max_epochs': 0}, {'no_strict_decrease_epochs': 0},
                        {'above_running_min_epochs': 0}):
