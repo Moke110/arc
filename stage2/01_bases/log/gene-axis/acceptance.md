@@ -203,16 +203,17 @@ below, and no evidence byte.
   explanatory comment: the runtime path is identical (still non-existent, still
   rejected by the guard) and the audit sees the existing `…/source/` prefix.
   This is the only code change in the round.
-- **`overlap.csv` has 71 data rows, not 70.** `log/gene-axis/record.md` says 70;
+- **`overlap.csv` has 71 data rows, not 70.** `log/gene-axis/record.md` said 70;
   the product and `manifest.json → counts.overlap_rows` say 71
-  (27 + 5 + 36 + 3). The record's prose is not edited here (out of this
-  ticket's write scope); the resolution asset and this record use 71.
-- **`#175` question 3 tie-break.** The record's prose says the DEG-count ranking
-  breaks ties on `gene_index`; the build actually breaks them in fused-rank row
-  order. The tracked numbers (Spearman 0.8095, overlap 0.616/0.555/0.4775/
-  0.4477/0.7604) are the product's and are what the resolution asset cites; a
-  `gene_index` re-implementation would give 0.6791 and 0.204 at top-500. Flagged
-  for the Lead; no code or evidence change was made.
+  (27 + 5 + 36 + 3). The record prose was corrected to 71 in the same round.
+- **`#175` question 3 tie-break.** The DEG-count ranking breaks ties on
+  `gene_index` (`np.lexsort((gene_index, -count))` in
+  `execution/build_gene_axis.py`), matching the record's prose. An independent
+  re-derivation from `fused_rank.csv` reproduces the tracked numbers
+  (Spearman 0.8095; top-N overlap 0.616 / 0.555 / 0.4775 / 0.4477 / 0.7604)
+  when the comparison uses positional row order rather than the `gene_index`
+  values; an earlier note here that claimed a fused-order tie-break was that
+  positional-index artifact and is withdrawn. No code or evidence change.
 - **`docs/research/stage2-stage3-gene-axis-datasets.md` is link-only here.** Its
   GSE108940 rows still describe the pre-correction provenance ("must be
   resolved first"); that resolution is the dedicated provenance note

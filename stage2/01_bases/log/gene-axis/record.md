@@ -175,7 +175,7 @@ twice (here and in `inputs.json`).
    `fused_rank_animal_half` is the re-ranked sensitivity order. `n_sources_measured`
    is 2–10 for every gene (no gene is unmeasured everywhere).
 
-3. **Source overlap** (`overlap.csv`, 70 rows: tenv-HVG × each DEG source at
+3. **Source overlap** (`overlap.csv`, 71 rows: tenv-HVG × each DEG source at
    K = 1000/2000/5000, tenv-HVG × each expression-source HVG set, all 36 DEG
    pairs, and three intersection rows). Key values:
 
