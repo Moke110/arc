@@ -1,4 +1,7 @@
-"""The #165 matrix runner: declared plan, resource parsing, fail-closed publish."""
+"""The #165/#170 matrix runner: declared plan, resource parsing, fail-closed
+publish and the no-training acceptance/replay path."""
+import contextlib
+import io
 import json
 import sys
 import tempfile
@@ -137,6 +140,118 @@ class FigureValueContractTests(unittest.TestCase):
         self.assertEqual(indirect["layout"]["rows"], 2)
         self.assertEqual(indirect["layout"]["columns"], 4)
         self.assertEqual(curve["schema"], "stage2-tenv-learning-curve-values-v1")
+
+
+def _fake_run(root, entry, fold, seed, *, status="complete", digest_ok=True):
+    run = Path(root) / "runs" / entry / f"fold_{fold}" / f"seed_{seed}"
+    run.mkdir(parents=True)
+    (run / "prediction.npy").write_bytes(b"prediction-bytes")
+    (run / "case_ids.json").write_text('["case-a", "case-b"]\n')
+    prediction = run_matrix.sha256(run / "prediction.npy") if digest_ok else "0" * 64
+    (run / "identity.json").write_text(json.dumps({
+        "identity": {"model": entry},
+        "prediction_sha256": prediction,
+        "case_ids_sha256": run_matrix.sha256(run / "case_ids.json"),
+    }))
+    (run / "terminal.json").write_text(json.dumps({"status": status}))
+    return run
+
+
+class AcceptedProductTests(unittest.TestCase):
+    def test_recorded_accepted_hashes_match_the_published_figures_and_values(self):
+        self.assertEqual(sorted(run_matrix.ACCEPTED_DATA), sorted(run_matrix.FIGURE_FILES))
+        self.assertEqual(sorted(run_matrix.ACCEPTED_FIGURES), sorted(run_matrix.FIGURE_FILES))
+        for name, digest in run_matrix.ACCEPTED_DATA.items():
+            path = STEP_ROOT / "figure/data" / run_matrix.FIGURE_FILES[name][0]
+            self.assertEqual(run_matrix.sha256(path), digest)
+        for name, digest in run_matrix.ACCEPTED_FIGURES.items():
+            path = STEP_ROOT / "figure" / run_matrix.FIGURE_FILES[name][1]
+            self.assertEqual(run_matrix.sha256(path), digest)
+
+    def test_digest_guard_refuses_changed_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "metrics_values.csv"
+            path.write_text("changed")
+            with self.assertRaisesRegex(run_matrix.MatrixError, "accepted"):
+                run_matrix.verify_accepted_digests(
+                    {"metrics": path}, {"metrics": "0" * 64})
+
+    def test_replay_comparison_refuses_a_changed_table(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            first, second = Path(tmp) / "first", Path(tmp) / "second"
+            for root in (first, second):
+                root.mkdir()
+                (root / "per_run.csv").write_text("a,b\n1,2\n")
+            run_matrix.compare_product_trees(first, second, ("per_run",))
+            (second / "per_run.csv").write_text("a,b\n1,3\n")
+            with self.assertRaisesRegex(run_matrix.MatrixError, "replay"):
+                run_matrix.compare_product_trees(first, second, ("per_run",))
+
+
+class AcceptCommandTests(unittest.TestCase):
+    def test_accept_mode_runs_only_the_rescore_and_renderer(self):
+        commands = run_matrix.accept_commands(
+            bases=BASES, output_root=Path("/tmp/tenv-output"), python="python")
+        scripts = [Path(command[1]).name for command in commands]
+        self.assertEqual(scripts, ["evaluation_driver.py", "evaluation_driver.py",
+                                   "render_figures.py"])
+        joined = " ".join(" ".join(command) for command in commands)
+        for forbidden in ("prnet_fit_predict.py", "prepare_inputs.py", "mean_reference.py"):
+            self.assertNotIn(forbidden, joined)
+
+
+class PublishedRunTests(unittest.TestCase):
+    def test_absent_run_set_fails_closed_before_any_command(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original = run_matrix.heavy
+            run_matrix.heavy = lambda *args, **kwargs: self.fail(
+                "accept mode invoked a command before verifying the run set")
+            try:
+                with self.assertRaisesRegex(run_matrix.MatrixError, "missing"):
+                    run_matrix.run_accept(
+                        bases=BASES, output_root=Path(tmp), python="python",
+                        figure_dir=Path(tmp) / "figure",
+                        checkpoint_root=Path(tmp) / "checkpoints",
+                        record_path=Path(tmp) / "acceptance.json")
+            finally:
+                run_matrix.heavy = original
+
+    def test_verify_published_runs_requires_every_complete_run(self):
+        cells = [{"fold": 0, "seed": 17}]
+        with tempfile.TemporaryDirectory() as tmp:
+            _fake_run(tmp, "prnet", 0, 17)
+            with self.assertRaisesRegex(run_matrix.MatrixError, "missing"):
+                run_matrix.verify_published_runs(Path(tmp), cells)
+            _fake_run(tmp, "mean", 0, 17, status="failed")
+            with self.assertRaisesRegex(run_matrix.MatrixError, "not complete"):
+                run_matrix.verify_published_runs(Path(tmp), cells)
+
+    def test_verify_published_runs_binds_prediction_digest(self):
+        cells = [{"fold": 0, "seed": 17}]
+        with tempfile.TemporaryDirectory() as tmp:
+            _fake_run(tmp, "prnet", 0, 17)
+            _fake_run(tmp, "mean", 0, 17, digest_ok=False)
+            with self.assertRaisesRegex(run_matrix.MatrixError, "digest"):
+                run_matrix.verify_published_runs(Path(tmp), cells)
+
+
+class AcceptModeGuardTests(unittest.TestCase):
+    def test_accept_only_refuses_training_plan_and_resume(self):
+        for argv in (["--accept-only", "--all"],
+                     ["--accept-only", "--plan-only"],
+                     ["--accept-only", "--resume"]):
+            with contextlib.redirect_stderr(io.StringIO()) as error:
+                self.assertEqual(run_matrix.main(argv), 2)
+            self.assertIn("accept-only", error.getvalue())
+
+    def test_accept_only_refuses_an_unpublished_run_set(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with contextlib.redirect_stderr(io.StringIO()) as error:
+                code = run_matrix.main(["--accept-only", "--output-root", tmp,
+                                        "--record", str(Path(tmp) / "record.json")])
+            self.assertEqual(code, 2)
+            self.assertIn("missing", error.getvalue())
+            self.assertFalse((Path(tmp) / "record.json").exists())
 
 
 if __name__ == "__main__":
