@@ -13,10 +13,10 @@ HF, MI/MIRI, chemotherapy cardiotoxicity, and any heart disease with prevalence 
 
 **Bottom line.** Chemo-cardiotoxicity is already fully covered locally (repo `pert_data/`);
 MIRI is already covered locally (repo `disease_data/`, animal only — human acute-MI myocardium
-bulk data does not exist). The genuinely missing, high-value, cheap addition is **human
-heart-failure LV tissue** plus **one human AF series** and, optionally, **one valvular/HHD
-series**. Five public series (<100 MB total) are enough; the two largest HF series are
-optional replication.
+bulk data does not exist, and the GSE108940 species label needs a provenance check first). The
+genuinely missing, high-value, cheap addition is **human heart-failure LV tissue** plus **one
+human AF series** and, optionally, **one valvular/HHD series**. Five public series (<100 MB
+total) are enough; the two largest HF series are optional replication.
 
 ## Recommendation
 
@@ -24,20 +24,22 @@ optional replication.
    per-sample CSVs. Primary HF anchor (largest verified human HF LV transcriptome).
 2. **GSE116250** — human LV RNA-seq: **50 HF (37 DCM, 13 ICM) / 14 NF**; open, **7.5 MB**
    gene-level RPKM with both ENSG and symbol columns. Cheapest HF anchor, and its **ICM arm is
-   the only human post-MI-proxy LV transcriptome** we found.
+   the smallest download that contains a human post-MI-proxy LV transcriptome** (GSE5406 has
+   the larger ICM arm but ships a series matrix only).
 3. **GSE243674** — human **iPSC-CM** anthracyclines (DOX, DNR, EPI, MTX, trastuzumab + vehicle;
    6 female donors; 3 h/24 h): **72 wells**; open, 2.3 MB counts. Best new disease-side series
    because the model (hiPSC-CM) matches the Stage 2 cell model.
 4. **GSE128188** — human atrial appendage RNA-seq: **5 AF / 5 SR, paired LA+RA**; open, 0.6 MB
    counts. Covers the >5% AF category.
-5. **GSE282618** — human heart RNA-seq, hypertension vs control: **6 vs 4 samples**; open,
-   0.7 MB counts. Covers the >5% hypertensive-heart-disease category, but it is tiny — treat as
-   exploratory only.
+5. **GSE282618** — human heart RNA-seq, hypertension vs control: **3 hypertensive vs 2 control
+   subjects** (6 vs 4 LV/RV samples); open, 0.7 MB counts. Covers the >5% hypertensive-heart-
+   disease category, but at n=5 subjects it is exploratory only.
 6. **Do not download** for MIRI or anthracycline cardiotoxicity: repo `disease_data/` already
-   has GSE160516 (mouse MIRI), GSE108940 (rat MIRI), GSE137293 (pig scar-vs-border, severity
-   gradient only), and `pert_data/` already has GSE217424 (DToxS iPSC-CM) and GSE244740
-   (ScreenSeq hiPSC-CM cardiotox panel), both of which contain doxorubicin/daunorubicin/
-   epirubicin/idarubicin/mitoxantrone. See `## Already-local assets`.
+   has GSE160516 (mouse MIRI), GSE108940 (mouse MuRF1 I/R — repo labels it rat; see pitfalls)
+   and GSE137293 (pig scar-vs-border, severity gradient only), and `pert_data/` already has
+   GSE217424 (DToxS iPSC-CM) and GSE244740 (ScreenSeq hiPSC-CM cardiotox panel), both of which
+   contain doxorubicin/daunorubicin/epirubicin/idarubicin/mitoxantrone. See
+   `## Already-local assets`.
 
 **Smallest viable first pass** if downloads are constrained:
 **GSE116250 (7.5 MB) + GSE243674 (2.3 MB) + GSE128188 (0.6 MB) ≈ 10.4 MB**, combined with the
@@ -64,10 +66,10 @@ the matrix maps to human symbols. All `n` values are from the series matrix, not
 | 3 | [GSE57338](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE57338) | HF (ischemic 95, IDCM 82) | human | LV, bulk | yes | **177 HF / 136 NF** | microarray HuGene-1.0-st, GPL11532 | yes | `GSE57338_RAW.tar` **1.3 GB** (CEL) + `filelist.txt`; series matrix also exists | no — compute (RMA/limma) | probe → symbol (GPL11532 annotation) | optional — HF replication / platform diversity |
 | 4 | [GSE5406](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE5406) | HF (ICM 108, IDCM 86) | human | LV, bulk | yes | **194 HF / 16 donor** | microarray HG-U133A, GPL96 | yes | none — processed **series matrix only** (size not checked) | no — compute | probe → symbol (GPL96) | optional — independent ICM cohort; only 16 controls |
 | 5 | [GSE36961](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE36961) | HCM (cardiomyopathy) | human | myectomy LV, bulk | yes | **106 HCM / 36 control** | microarray GPL15389 | yes | `GSE36961_non-normalized.txt.gz` 37 MB | no — compute | probe → symbol | optional — HCM >5% only if cardiomyopathy is counted separately |
-| 6 | [GSE1145](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE1145) | HF, mixed etiologies (IDCM, ICM, valvular, alcoholic, HCM) | human | LV, bulk | yes | 107 total, per-group n not enumerated in matrix | microarray GPL8300 + GPL570 | yes | `GSE1145_RAW.tar` **665 MB** (CEL); **no series matrix (404)** | no — compute | probe → symbol, two platforms | skip — large, no processed matrix, etiology labels coarse |
-| 7 | [GSE160516](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160516) | MIRI | mouse | LV, bulk | no | 12 I/R (4 each 6/24/72 h) / 4 sham | Affymetrix Clariom S, GPL23040 | yes | already local (`source/GSE160516_deg_results.csv`) | **yes** (limma, tracked) | mouse→human ortholog (repo `map_to_human.R`) | **local — MIRI primary reference** |
-| 8 | [GSE108940](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108940) | MIRI | rat | LV (above/below LAD), bulk | no | 12 I/R / 12 sham (WT + MuRF1-Tg arms) | Agilent GE2-v5 8×60K | yes | already local (`source/GSE108940_WT_deg_results.csv`) | **yes** (limma, tracked) | rat→human ortholog (repo) | **local — MIRI** |
-| 9 | [GSE137293](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE137293) | post-MI scar | pig | scar vs border zone, bulk | no | 8 pigs × 2 regions (16 libraries) | Illumina NovaSeq | yes | already local (`source/GSE137293_COUNTS.txt.gz`, `*_deg_results.csv`) | **partial** (Welch, tracked) | pig→human ortholog (repo) | **local, but scar-vs-border = severity gradient, not disease-vs-healthy** |
+| 6 | [GSE1145](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE1145) | HF, mixed etiologies (IDCM, ICM, valvular, alcoholic, HCM) | human | LV, bulk | yes | 107 total; group sizes **UNVERIFIED** (no series matrix; taken from GEO summary) | microarray GPL8300 + GPL570 | yes | `GSE1145_RAW.tar` **665 MB** (CEL); **no series matrix (404)** | no — compute | probe → symbol, two platforms | skip — large, no processed matrix, etiology labels coarse |
+| 7 | [GSE160516](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160516) | MIRI | mouse | LV, bulk | no | 16: 4 sham + 12 I/R (matrix labels 6/24/72 h; GEO title says 0/24/48/72 h) | Affymetrix Clariom S, GPL23038 | yes | already local (`source/GSE160516_deg_results.csv`) | **yes** (limma, tracked) | mouse→human ortholog (repo `map_to_human.R`) | **local — MIRI primary reference** |
+| 8 | [GSE108940](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108940) | MIRI | **mouse per GEO** (repo says rat — see pitfalls) | LV (above/below LAD), bulk | no | 24: 12 WT / 12 MuRF1-Tg; 12 sham / 12 IRI | **Agilent Whole Mouse Genome 4×44K, GPL7202** (repo says rat 8×60K) | yes | already local (`source/GSE108940_WT_deg_results.csv`) | **yes** (limma on the WT arm, tracked) | repo maps rat→human; **if GEO species is right it must be mouse→human (10090)** | **local — MIRI, but species/platform provenance must be resolved first** |
+| 9 | [GSE137293](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE137293) | post-MI scar (young swine I/R) | pig | scar vs border zone, bulk | no | 8 pigs × 2 regions (16 libraries; sham not deposited) | RNA-seq, GPL19176 / GPL26351 | yes | already local (`source/GSE137293_COUNTS.txt.gz`, `*_deg_results.csv`) | **partial** (Welch, tracked) | pig→human ortholog (repo) | **local, but scar-vs-border = severity gradient, not disease-vs-healthy** |
 | 10 | *(no human acute-MI bulk series found)* | MI / MIRI | human | — | — | — | — | — | — | — | — | **no public transcriptome series found**; human MI exists only as single-cell/spatial: [Zenodo record 6578617](https://zenodo.org/records/6578617) ("Raw Data – Part 2: Spatial multi-omic map of human myocardial infarction"), a different evidence type |
 | 11 | [GSE243674](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE243674) | chemo-cardiotoxicity (TOP2 inhibitors) | human | **hiPSC-CM**, 6 healthy female donors, 0.5 µM, 3 h / 24 h | yes | 72 wells (12 vehicle; 12 per drug) | RNA-seq, GPL21697 | yes | `GSE243674_Counts_RNA_ERMatthews.txt.gz` **2.3 MB** (ENTREZID × 72) | no — compute (ENTREZ → symbol) | Entrez → symbol map needed (pitfall) | **include — best new chemo series** |
 | 12 | [GSE242692](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE242692) | chemo-cardiotoxicity (doxorubicin) | human | donor-specific hiPSC-CM, DOX 0/0.3/1/3 µM | yes | 88 wells (donors × 4 doses; 40 "resistant"/48 "sensitive") | RNA-seq, GPL24676 | yes | `GSE242692_countsMatrix_raw.txt.gz` 2.1 MB; `GSE242692_RAW.tar` 20 MB | no — compute | gene symbols | optional — donor-variability replication |
@@ -76,7 +78,7 @@ the matrix maps to human symbols. All `n` values are from the series matrix, not
 | 15 | [GSE79768](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE79768) | atrial fibrillation | human | LA + RA appendage | yes | **14 AF / 12 SR** (26 arrays) | microarray HG-U133 Plus 2.0, GPL570 | yes | `GSE79768_RAW.tar` **125 MB** (CEL) | no — compute | probe → symbol | optional — larger AF, but CEL-only |
 | 16 | [GSE262690](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262690) | valvular / pressure overload (aortic stenosis) | human | LV, bulk | yes | **22 AS / 36 control** | RNA-seq, GPL24676 | yes | `GSE262690_vandy_AS_full_processed.forDE.rds.gz` **915 MB** | RDS "for DE" object (needs R) | depends on RDS object | optional — only AS-vs-control series found; big RDS |
 | 17 | [GSE236191](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE236191) | aortic stenosis ± T2D | human | LV myocardial biopsy | yes | **47 AS (30 non-diabetic / 17 T2D), no healthy control** | RNA-seq, GPL18573 | yes | `GSE236191_RAW.tar` 11 MB + `filelist.txt` | no | gene symbols / counts | skip — no disease-vs-healthy contrast |
-| 18 | [GSE282618](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE282618) | hypertensive heart disease | human | LV + RV, 5 subjects | yes | **6 hypertension / 4 control** | RNA-seq, GPL30173 | yes | `GSE282618_counts.txt.gz` 0.7 MB; VST 2.1 MB | no — compute | gene symbols | **include (exploratory) — HHD** |
+| 18 | [GSE282618](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE282618) | hypertensive heart disease | human | LV + RV, 5 subjects | yes | **3 hypertensive / 2 control subjects** (6 / 4 samples) | RNA-seq, GPL30173 | yes | `GSE282618_counts.txt.gz` 0.7 MB; VST 2.1 MB | no — compute | gene symbols | **include (exploratory) — HHD; n=5 subjects** |
 
 Notes on the table:
 
@@ -117,7 +119,7 @@ which are unquantified here):
 | Atrial fibrillation / flutter | ≈17% | **yes** | **GSE128188** (5 AF/5 SR, processed counts); GSE79768 (14 AF/12 SR, CEL only) |
 | Rheumatic heart disease | ≈11% | **yes** (globally; <5% in US/EU) | **no public transcriptome series found** — GEO search (2026-11-13) returned only small ncRNA / valve-interstitial-cell studies (e.g. [GSE185581](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185581), [GSE88803](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE88803)); no RHD-vs-healthy myocardium series |
 | Non-rheumatic valvular disease (AS/MR) | ≥6.8% (MV subset only) | **yes** | **GSE262690** (22 AS/36 control, 915 MB RDS); GSE236191 exists but has **no healthy controls**; valve-tissue series (e.g. GSE153555) are not myocardium |
-| Hypertensive heart disease | ≈5.3% | **yes** (borderline) | **GSE282618** (6 hypertension/4 control; very small) |
+| Hypertensive heart disease | ≈5.3% | **yes** (borderline) | **GSE282618** (3 vs 2 subjects; 6/4 samples — exploratory only) |
 | Cardiomyopathy / myocarditis (DCM, HCM, PPCM, alcoholic, viral) | unquantified in GBD text (9.14 M DALYs) | unclear | DCM/HCM arms of GSE141910 and GSE116250; GSE36961 (106 HCM/36 control); **no adequate bulk myocarditis series** (only small ICI-myocarditis / spatial studies) |
 | Congenital heart anomalies | ≈3.8% | no | none usable for adult LV myocardium |
 | Endocarditis | <1% | no | no transcriptome series found |
@@ -161,6 +163,14 @@ Two caveats a reviewer will (rightly) raise:
 - **Scar-vs-border is not disease-vs-healthy.** GSE137293 (pig) compares infarct scar with
   border zone inside the same animal — a severity gradient. It should not be interpreted as a
   disease-vs-control contrast in the axis.
+- **Local MIRI provenance mismatch (must be resolved first).** `disease_data/GSE108940/` is
+  labelled rat (Rattus norvegicus, Agilent 8×60K) in its `author_log.json`, `README.md` and
+  `build_deg.R`, but GEO says **[GSE108940](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108940)
+  is *Mus musculus* (GPL7202, 24 samples, MuRF1 I/R)**; the local DEG csv contains mouse
+  `Gm*` genes and no rat `Rn*` IDs. The `GSE108940_MIRI.json` list was mapped with rat→human
+  orthologs (inTax 10116) — if the data are mouse this mapping is wrong (should be 10090) and
+  some genes will have been silently dropped. Do not let this list into the new axis until the
+  provenance is fixed or the intended rat series is identified under its correct accession.
 - **Processed-data traps.** GSE243674 is ENTREZID-keyed; GSE262690 ships only a 915 MB
   "forDE" RDS (R required); GSE5406 has no supplementary file at all (series matrix only);
   GSE57338 is CEL-only in `suppl/`; GSE1145 has no series matrix (404) — each adds a
@@ -179,8 +189,8 @@ Checked so nothing is downloaded twice (paths relative to repo root):
 
 | Local item | What it is | Verified content relevant here |
 |---|---|---|
-| `disease_data/GSE160516/` | mouse MIRI (I/R vs sham), limma; the workflow's Primary rank reference | 16 samples: 4 sham + 12 I/R (4 each 6/24/72 h); tracked `source/GSE160516_deg_results.csv`; `local/deg/GSE160516_MIRI.json` (L1000-filtered) |
-| `disease_data/GSE108940/` | rat MIRI vs sham, limma | 24 samples (WT + MuRF1-Tg, sham/IRI, above/below LAD); tracked DEG csv; `local/deg/*.json` (L1000-filtered) |
+| `disease_data/GSE160516/` | mouse MIRI (I/R vs sham), limma; the workflow's Primary rank reference | 16 samples: 4 sham + 12 I/R (matrix labels 6/24/72 h); tracked `source/GSE160516_deg_results.csv`; `local/deg/GSE160516_MIRI.json` (L1000-filtered) |
+| `disease_data/GSE108940/` | **repo labels it rat MIRI vs sham**; GEO says mouse MuRF1 I/R | 24 samples (12 WT / 12 MuRF1-Tg; 12 sham / 12 IRI, above/below LAD); tracked DEG csv; `local/deg/*.json` (L1000-filtered). **GEO metadata: *Mus musculus*, GPL7202**; the local DEG csv contains 106 mouse `Gm*` genes and zero `Rn*` IDs, and the JSON metadata says `Rattus norvegicus` / inTax 10116. Species and platform provenance are inconsistent and must be resolved before this list feeds the axis |
 | `disease_data/GSE137293/` | pig scar vs border zone | 16 libraries (8 pigs × scar/border); **severity gradient, not disease-vs-healthy** |
 | `disease_data/*/local/deg/*.json` | 3 human-symbol DEG lists | **all L1000-978-only** — do not reuse for the new axis |
 | `pert_data/GSE217424/` (DToxS-iPSC) | iPSC-CM drug panel, GSE217421 Conv + GSE217423 DGE | 2.66 GB; series-matrix `drug name` values include **Doxorubicin, Daunorubicin, Epirubicin, Idarubicin** (also Afatinib, Amiodarone, Axitinib, Bortezomib, Imatinib, Lapatinib, …) → criterion (c) already local |
@@ -217,3 +227,8 @@ gap is human MI, which does not exist as bulk case–control data.
    pipeline.
 7. **RHD geography.** Is the programme US/EU-centric (RHD <5%, exclude) or global (RHD >5%,
    but no usable public transcriptome series anyway)?
+8. **GSE108940 provenance.** Is the intended local MIRI series the mouse MuRF1 I/R study now
+   deposited under GSE108940 (then the species/platform labels and the rat→human mapping in
+   `disease_data/GSE108940/` are wrong), or was the GEO accession recorded incorrectly for a
+   different rat series? This affects the existing Stage 1 MIRI reference, independently of the
+   new axis.
