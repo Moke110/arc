@@ -98,12 +98,12 @@ R_HOME=/home/chang/miniconda3/envs/arc/lib/R \
 # 2. build / replay
 ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
   /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py
-#   RESULT PASS-shaped manifest; peak RSS 494,188 KiB; 10.8 s
+#   manifest written; peak RSS 494,060 KiB; 11.0 s
 ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
   /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py --verify
 #   {"result":"PASS","inputs":20,"outputs":7,"schema":"stage2-gene-axis-evidence-v1",
-#    "manifest_sha256":"50d2e94d1db2eb73516dded6413647c5387fbc51f03cc36285560d82b325237f"}
-#   peak RSS 497,952 KiB; 12.8 s
+#    "manifest_sha256":"05df744a552aa62f639301fbc2e7f60982c874ef047c44ced271662ff4e31021"}
+#   peak RSS 488,332 KiB; 10.0 s
 
 # 3. figure (CSV-only; verified byte-identical over repeated renders and while
 #    the CSV is the only input)
@@ -128,7 +128,7 @@ Tracked digests (sha256):
 | `output/gene-axis/tenv_non_hvg_curve.csv` | `b650f8bce96d6ee745ac6f2135d0bb76c0f94b32377283e97f726a665ebe2375` |
 | `output/gene-axis/direction_summary.csv` | `92f856874dcfbbce377ed44460df8cc251cbcb8575e2cdf52de33a2b9fd712de` |
 | `output/gene-axis/mouse_human_orthologs.csv` | `cc22358e0ef0d886bb304d940fd8e6dac70c7c5008811f9dfb1f524fc31cbb6a` |
-| `output/gene-axis/manifest.json` | `50d2e94d1db2eb73516dded6413647c5387fbc51f03cc36285560d82b325237f` |
+| `output/gene-axis/manifest.json` | `05df744a552aa62f639301fbc2e7f60982c874ef047c44ced271662ff4e31021` |
 | `figure/data/gene_axis_source_summary.csv` | `f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a` |
 | `figure/gene_axis_source_summary.png` | `544c0a8c98086c31b4a79b27d8142502c14a781b33a4a1eb3ab04b612d12f472` |
 

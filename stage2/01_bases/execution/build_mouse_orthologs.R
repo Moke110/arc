@@ -5,9 +5,10 @@
 #
 # The repository has no axis-level mouse->human table. This script derives one
 # deterministically from the two mouse MIRI DEG items with the pinned `arc`
-# environment's homologene package (the same definition used by
-# disease_data/*/script/map_to_human.R:mouse2human), writes the small table to
-# the gene-axis evidence product and prints the pinned package versions. The
+# environment's homologene package (the same `mouse2human` definition used by the
+# shared per-item ortholog helper in each disease item's `script/map_to_human.R`),
+# writes the small table to the gene-axis evidence product and prints the pinned
+# package versions. The
 # table is then a tracked, digest-sealed input of the gene-axis build; re-running
 # this script reproduces it byte for byte.
 #

@@ -146,7 +146,7 @@
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544",
     "stage2/01_bases/output/tenv-hvg/descriptive.csv": "1291385e559cf8f5a04c958acc7ec9241113d89aaeb783482b77332ce7f423ca"
   },
-  "manifest_sha256": "50d2e94d1db2eb73516dded6413647c5387fbc51f03cc36285560d82b325237f",
+  "manifest_sha256": "05df744a552aa62f639301fbc2e7f60982c874ef047c44ced271662ff4e31021",
   "no_accepted_product_changed": "output/gene-identity, output/tenv-hvg, output/training-corpora, output/tenv-truth*, output/shared-expression, corpora, disease_data items, pert_data and stage1 are untouched",
   "objective": "Build the HVG + rank-sum decision evidence for the frozen 18,164-gene axis: per-source HVG/DEG ranks, unweighted rank-sum fusion, source overlap, direction composition, an explicit inflection answer and the tenv non-HVG curve. Decision preparation only: no N/quota/direction/weight choice (#173), no corpus, no model, no genes.csv release, no truth or Heliste file opened.",
   "ortholog_generator": {
@@ -155,7 +155,7 @@
     "org.Mm.eg.db_version": "3.20.0",
     "r_version": "R version 4.4.1 (2024-06-14)",
     "script": "stage2/01_bases/execution/build_mouse_orthologs.R",
-    "sha256": "e6d49117be5926f6effa80c41af183127a3cded637194e7c967d00f49db7069c"
+    "sha256": "e1afe383434b100acccd733973cc947226bd826de23a5f220ef8ac459854d82e"
   },
   "ortholog_table_sha256": "cc22358e0ef0d886bb304d940fd8e6dac70c7c5008811f9dfb1f524fc31cbb6a",
   "output_digests": {
@@ -173,18 +173,18 @@
     "calls": "ulimit -v 8388608; OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2; one heavy job at a time",
     "data_access": "no h5ad read at all; no truth or Heliste path opened; source/ trees read-only",
     "elapsed_s": {
-      "build": 10.81,
+      "build": 11.0,
       "orthologs_r": 2.2,
-      "verify": 12.78
+      "verify": 10.0
     },
     "free_g_before_build": {
       "available": 42,
       "total": 47
     },
     "peak_rss_kib": {
-      "build": 494188,
+      "build": 494060,
       "orthologs_r": 415852,
-      "verify": 497952
+      "verify": 488332
     },
     "runner": "/usr/bin/time -v (Maximum resident set size)"
   },

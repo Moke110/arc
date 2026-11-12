@@ -231,7 +231,7 @@
     "org.Mm.eg.db_version": "3.20.0",
     "r_version": "R version 4.4.1 (2024-06-14)",
     "script": "stage2/01_bases/execution/build_mouse_orthologs.R",
-    "sha256": "e6d49117be5926f6effa80c41af183127a3cded637194e7c967d00f49db7069c"
+    "sha256": "e1afe383434b100acccd733973cc947226bd826de23a5f220ef8ac459854d82e"
   },
   "outputs": {
     "figure/data/gene_axis_source_summary.csv": {
