@@ -235,6 +235,21 @@ class PublishedRunTests(unittest.TestCase):
                 run_matrix.verify_published_runs(Path(tmp), cells)
 
 
+class SupersededPointerTests(unittest.TestCase):
+    def test_pointer_is_added_without_reordering_the_historical_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "165-acceptance.json"
+            path.write_text('{\n  "z_first": 1,\n  "a_second": 2\n}\n')
+            pointer = {"record": "log/166-acceptance.json",
+                       "schema": "stage2-tenv-acceptance-v2", "ticket": 170}
+            run_matrix.mark_superseded(path, pointer)
+            text = path.read_text()
+            self.assertLess(text.index('"z_first"'), text.index('"a_second"'))
+            self.assertEqual(json.loads(text)["superseded_by"], pointer)
+            run_matrix.mark_superseded(path, pointer)
+            self.assertEqual(path.read_text(), text)
+
+
 class AcceptModeGuardTests(unittest.TestCase):
     def test_accept_only_refuses_training_plan_and_resume(self):
         for argv in (["--accept-only", "--all"],

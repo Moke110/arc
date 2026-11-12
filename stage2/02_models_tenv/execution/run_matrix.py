@@ -855,15 +855,21 @@ def acceptance_record_v2(*, cells, published, output_root, bases, candidate,
 
 
 def mark_superseded(path, pointer):
-    """Add the forward pointer to the previous acceptance record, additively."""
+    """Add the forward pointer without rewriting the historical record's layout."""
     path = Path(path)
     if not path.is_file():
         return
-    record = read_json(path)
+    text = path.read_text()
+    record = json.loads(text)
     if record.get("superseded_by") == pointer:
         return
-    record["superseded_by"] = pointer
-    write_json(path, record)
+    stripped = text.rstrip()
+    if not stripped.endswith("}"):
+        raise MatrixError(f"cannot add a superseded_by pointer to {path}")
+    nested = json.dumps(pointer, indent=2, sort_keys=True).replace("\n", "\n  ")
+    path.write_text(f"{stripped[:-1].rstrip()},\n  \"superseded_by\": {nested}\n}}\n")
+    if json.loads(path.read_text()).get("superseded_by") != pointer:
+        raise MatrixError(f"superseded_by pointer did not round-trip in {path}")
 
 
 def run_accept(*, bases, output_root, python, figure_dir, checkpoint_root=None,

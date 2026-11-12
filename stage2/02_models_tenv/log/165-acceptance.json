@@ -23,12 +23,6 @@
       42
     ]
   },
-  "delivery": {
-    "delivered_on_branch": "dev",
-    "delivery_head_sha": "591b1191971f0ddeed567b7682c0f7b38cc6d030",
-    "note": "Accepted products were built and accepted in worktree .worktrees/tenv-165 and are installed at the canonical stable paths under stage2/02_models_tenv/output/. The installation was verified byte-for-byte: every recorded run artifact, evaluation table and tracked figure hash in this record re-verified against the installed copy (39/39 match). The publish.candidate/checkpoint path is the disposable build location (gitignored, not part of the accepted product).",
-    "original_acceptance_head_sha": "43765f90ef942b576b04f5f3a6a360547df103f1"
-  },
   "deviations": [
     "no GPU on this boot (torch.cuda.is_available() false): CPU fallback per ADR 0063",
     "training/prediction runs use 2 CPU threads and the 10 GiB cap"
@@ -488,11 +482,6 @@
     "sha256": "723a76b554cb6da943e5af4f3c8cc8d4a13aa9fa9b7df312023e41a606db234c"
   },
   "started_utc": "2026-11-12T07:38:53.621470+00:00",
-  "superseded_by": {
-    "record": "log/166-acceptance.json",
-    "schema": "stage2-tenv-acceptance-v2",
-    "ticket": 170
-  },
   "tables": {
     "per_group": {
       "path": "output/evaluation/per_group.csv",
@@ -515,5 +504,16 @@
     "figures": "figure/data CSVs must equal the driver output byte for byte and each PNG must be byte-identical to a fresh CSV-only replay",
     "hashes": "sha256 over exact bytes",
     "stochastic": "metric values differ across seeds; the four runs are a spread indicator, not a confidence interval, and no run-to-run numeric tolerance is asserted"
+  },
+  "delivery": {
+    "delivered_on_branch": "dev",
+    "delivery_head_sha": "591b1191971f0ddeed567b7682c0f7b38cc6d030",
+    "original_acceptance_head_sha": "43765f90ef942b576b04f5f3a6a360547df103f1",
+    "note": "Accepted products were built and accepted in worktree .worktrees/tenv-165 and are installed at the canonical stable paths under stage2/02_models_tenv/output/. The installation was verified byte-for-byte: every recorded run artifact, evaluation table and tracked figure hash in this record re-verified against the installed copy (39/39 match). The publish.candidate/checkpoint path is the disposable build location (gitignored, not part of the accepted product)."
+  },
+  "superseded_by": {
+    "record": "log/166-acceptance.json",
+    "schema": "stage2-tenv-acceptance-v2",
+    "ticket": 170
   }
 }
