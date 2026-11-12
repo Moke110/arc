@@ -13,7 +13,7 @@
 #   script/verify_all.sh --help print this text
 #
 # What it does
-#   1. Checks 30 core items plus active ADR 0038 phenotype items. A missing
+#   1. Checks the core external items plus active ADR 0038 phenotype items. A missing
 #      category/item/verifier, or an unknown extra item directory, is a failure.
 #   2. An item without `manifest.sha256` is a failure, not a skip: every item is
 #      expected to carry one (initial27/27 hashed2026-10-30; additions hashed
@@ -103,8 +103,10 @@ main() {
     pert_model/XPert
     pert_model/PerturbDiff
     disease_data/GSE108940
+    disease_data/GSE116250
     disease_data/GSE128188
     disease_data/GSE137293
+    disease_data/GSE141910
     disease_data/GSE160516
     disease_data/GSE243674
     disease_data/GSE282618

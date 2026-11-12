@@ -1,0 +1,7 @@
+# Local regenerable additions (ADR 0030). Every path here is declared in
+# author_log.json's local_additions[]; the tracked DEG summary stays at
+# local/deg/GSE116250_deg.json.
+local/expr/
+local/deg/*.csv
+local/deg/*.tsv
+local/deg/*.tsv.gz
