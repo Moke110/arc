@@ -18,47 +18,99 @@
       }
     },
     "q2_up_down_rank_symmetry": {
-      "median_fused_rank_down": 9560.0,
-      "median_fused_rank_up": 8561.0,
+      "median_fused_rank_down": 8031.0,
+      "median_fused_rank_up": 8779.0,
       "n_down_significant": 7857,
       "n_up_significant": 8889,
       "top_n_composition": {
         "1000": {
-          "down_share": 0.432,
-          "n_down": 432,
-          "n_up": 568,
-          "up_share": 0.568
+          "max_abs_log2fc": {
+            "down_share": 0.116,
+            "n_down": 116,
+            "n_unsupported": 0,
+            "n_up": 884,
+            "up_share": 0.884
+          },
+          "symmetric": {
+            "down_share": 0.475,
+            "n_down": 475,
+            "n_unsupported": 0,
+            "n_up": 525,
+            "up_share": 0.525
+          }
         },
         "2000": {
-          "down_share": 0.4375,
-          "n_down": 875,
-          "n_up": 1123,
-          "up_share": 0.5615
+          "max_abs_log2fc": {
+            "down_share": 0.1375,
+            "n_down": 275,
+            "n_unsupported": 0,
+            "n_up": 1725,
+            "up_share": 0.8625
+          },
+          "symmetric": {
+            "down_share": 0.462,
+            "n_down": 924,
+            "n_unsupported": 0,
+            "n_up": 1076,
+            "up_share": 0.538
+          }
         },
         "3000": {
-          "down_share": 0.434,
-          "n_down": 1302,
-          "n_up": 1694,
-          "up_share": 0.5646666666666667
+          "max_abs_log2fc": {
+            "down_share": 0.20966666666666667,
+            "n_down": 629,
+            "n_unsupported": 1,
+            "n_up": 2370,
+            "up_share": 0.79
+          },
+          "symmetric": {
+            "down_share": 0.4656666666666667,
+            "n_down": 1397,
+            "n_unsupported": 0,
+            "n_up": 1603,
+            "up_share": 0.5343333333333333
+          }
         },
         "500": {
-          "down_share": 0.422,
-          "n_down": 211,
-          "n_up": 289,
-          "up_share": 0.578
+          "max_abs_log2fc": {
+            "down_share": 0.132,
+            "n_down": 66,
+            "n_unsupported": 0,
+            "n_up": 434,
+            "up_share": 0.868
+          },
+          "symmetric": {
+            "down_share": 0.474,
+            "n_down": 237,
+            "n_unsupported": 0,
+            "n_up": 263,
+            "up_share": 0.526
+          }
         },
         "5000": {
-          "down_share": 0.4402,
-          "n_down": 2201,
-          "n_up": 2792,
-          "up_share": 0.5584
+          "max_abs_log2fc": {
+            "down_share": 0.2914,
+            "n_down": 1457,
+            "n_unsupported": 2,
+            "n_up": 3541,
+            "up_share": 0.7082
+          },
+          "symmetric": {
+            "down_share": 0.4798,
+            "n_down": 2399,
+            "n_unsupported": 0,
+            "n_up": 2601,
+            "up_share": 0.5202
+          }
         }
-      }
+      },
+      "up_down_definition": "up/down = significant in any DEG source (padj < 0.05) with the winning cross-source direction"
     },
     "q3_effect_replication_vs_deg_count": {
       "n_genes_supported_by_2plus": 15231,
       "n_genes_supported_by_any_deg": 16746,
       "spearman_fused_vs_count_rank": 0.8094560964384797,
+      "tie_break": "descending n_sources_deg_significant, ties broken by ascending fused_rank (a frozen gene_index tie-break gives Spearman 0.6791 and top-500 overlap 0.204 instead of the tracked values)",
       "top_n_agreement": {
         "1000": {
           "n_overlap": 555,
@@ -85,13 +137,14 @@
   },
   "answers_issue": 175,
   "article": "stage2/01_bases/README.md#gene-axis-decision-evidence-183",
-  "branch": "codex/gene-axis-06-evidence",
+  "branch": "codex/gene-axis-08-review-fixes",
   "commands": {
     "build": "free -g && ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2 /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py",
     "figure_render": "MPLCONFIGDIR=/tmp/mpl python3 stage2/01_bases/figure/script/render_gene_axis_source_summary.py --csv stage2/01_bases/figure/data/gene_axis_source_summary.csv --png stage2/01_bases/figure/gene_axis_source_summary.png",
     "figure_replay": "render the tracked CSV to a temporary PNG and compare sha256 with the committed PNG; also exercised by tests/test_gene_axis.py",
     "note_ticket_pytest_flag": "the ticket's `pytest -p 'test_gene_axis.py'` is not a valid pytest invocation (-p takes a plugin); the file is run explicitly above",
     "orthologs": "R_HOME=/home/chang/miniconda3/envs/arc/lib/R /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave --file=stage2/01_bases/execution/build_mouse_orthologs.R",
+    "orthologs_accept": "add `--args --accept` to deliberately replace the accepted ortholog table after reviewing the candidate digest",
     "tests": "MPLCONFIGDIR=/tmp/mpl python3 -m pytest -q stage2/01_bases/execution/tests/test_gene_axis.py",
     "verify": "ulimit -v 8388608 && OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 /usr/bin/time -v python3 stage2/01_bases/execution/build_gene_axis.py --verify"
   },
@@ -105,7 +158,7 @@
     "n_fused_sources": 10,
     "n_genes_supported_by_all_deg": 0,
     "n_genes_supported_by_any_deg": 16746,
-    "overlap_rows": 71,
+    "overlap_rows": 81,
     "source_summary_rows": 12,
     "tenv_non_hvg_rows": 18164
   },
@@ -119,9 +172,9 @@
   },
   "figure": {
     "csv": "stage2/01_bases/figure/data/gene_axis_source_summary.csv",
-    "csv_sha256": "f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a",
+    "csv_sha256": "7361eae4170b8601c5144e214446c15277ee087fe0221396a2d0daa5f1e05160",
     "png": "stage2/01_bases/figure/gene_axis_source_summary.png",
-    "png_sha256": "544c0a8c98086c31b4a79b27d8142502c14a781b33a4a1eb3ab04b612d12f472",
+    "png_sha256": "916738888f1f25e3954e48489661edb2b6bd7a018f19f1ea6391debb4e37c255",
     "replay": "byte-identical from the CSV alone: rendered twice from a directory containing only the copied CSV and the renderer, and the committed-PNG test"
   },
   "input_digests": {
@@ -146,26 +199,27 @@
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544",
     "stage2/01_bases/output/tenv-hvg/descriptive.csv": "1291385e559cf8f5a04c958acc7ec9241113d89aaeb783482b77332ce7f423ca"
   },
-  "manifest_sha256": "05df744a552aa62f639301fbc2e7f60982c874ef047c44ced271662ff4e31021",
+  "manifest_sha256": "cf9dc2dec7cd5bb72a7b6d503a2bb246675e540403c8af9ba4e012b0fb56f89b",
   "no_accepted_product_changed": "output/gene-identity, output/tenv-hvg, output/training-corpora, output/tenv-truth*, output/shared-expression, corpora, disease_data items, pert_data and stage1 are untouched",
   "objective": "Build the HVG + rank-sum decision evidence for the frozen 18,164-gene axis: per-source HVG/DEG ranks, unweighted rank-sum fusion, source overlap, direction composition, an explicit inflection answer and the tenv non-HVG curve. Decision preparation only: no N/quota/direction/weight choice (#173), no corpus, no model, no genes.csv release, no truth or Heliste file opened.",
   "ortholog_generator": {
+    "candidate_policy": "writes execution/gene_axis/mouse_human_orthologs.candidate.csv (candidates stay outside formal output, ADR 0062), compares its sha256 with the accepted table, and replaces the accepted table only when byte-identical or when --accept is passed",
     "command": "R_HOME=/home/chang/miniconda3/envs/arc/lib/R /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave --file=stage2/01_bases/execution/build_mouse_orthologs.R",
     "homologene_version": "1.4.68.19.3.27",
     "org.Mm.eg.db_version": "3.20.0",
     "r_version": "R version 4.4.1 (2024-06-14)",
     "script": "stage2/01_bases/execution/build_mouse_orthologs.R",
-    "sha256": "e1afe383434b100acccd733973cc947226bd826de23a5f220ef8ac459854d82e"
+    "sha256": "fd8f874b8a096c879221b07cb4aa354a9b3f956456d383ce1f1f601dffac0fa0"
   },
   "ortholog_table_sha256": "cc22358e0ef0d886bb304d940fd8e6dac70c7c5008811f9dfb1f524fc31cbb6a",
   "output_digests": {
-    "figure/data/gene_axis_source_summary.csv": "f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a",
-    "output/gene-axis/direction_summary.csv": "92f856874dcfbbce377ed44460df8cc251cbcb8575e2cdf52de33a2b9fd712de",
+    "figure/data/gene_axis_source_summary.csv": "7361eae4170b8601c5144e214446c15277ee087fe0221396a2d0daa5f1e05160",
+    "output/gene-axis/direction_summary.csv": "23a6b8c6bb3c5f0534f44f3b77d4eed2a95f669a264bd5ea0282f8518eb108f5",
     "output/gene-axis/fused_rank.csv": "c1c632f3f166b93f206d441cbd96a7e031fcbd226d3779dc5a610a4c90be1a47",
     "output/gene-axis/inflection.json": "0f2c955f89b489aaf781e5724cdf2ed44487f8051b0ebcc8f15fe8a1c32201f4",
-    "output/gene-axis/overlap.csv": "039510eb5cbcccf47bd3ac349491de5a4569cc84c4d04b99b91efcd368bbbe65",
-    "output/gene-axis/source_summary.csv": "c1940152d7f2adc846609a10fc1b818dc3f3baea0f06c8e5f6c105aece16ccdd",
-    "output/gene-axis/tenv_non_hvg_curve.csv": "b650f8bce96d6ee745ac6f2135d0bb76c0f94b32377283e97f726a665ebe2375"
+    "output/gene-axis/overlap.csv": "45b8eafbd27c69e39d5a385354c375aa569c0d6f1ba8174d58fab59fba1a74f6",
+    "output/gene-axis/source_summary.csv": "673f58d66a6b35ce93d721e654175e48ddf1d175bb92f31bbf60cf49a9bc9dc5",
+    "output/gene-axis/tenv_non_hvg_curve.csv": "b421a4b64e7648cda48d5766f014db127ae419b0f2503b99855906899e7981ae"
   },
   "parent_issue": 177,
   "recipe_of_record": "stage2/01_bases/output/gene-axis/manifest.json",
@@ -174,28 +228,30 @@
     "data_access": "no h5ad read at all; no truth or Heliste path opened; source/ trees read-only",
     "elapsed_s": {
       "build": 11.0,
-      "orthologs_r": 2.2,
-      "verify": 10.0,
-      "verify_runs": [
-        9.8,
-        10.0
-      ]
+      "orthologs_r": 2.3,
+      "verify": 10.9
     },
     "free_g_before_build": {
       "available": 42,
       "total": 47
     },
     "peak_rss_kib": {
-      "build": 494060,
-      "orthologs_r": 415852,
-      "verify": 488332,
-      "verify_runs": [
-        488332,
-        530336
-      ]
+      "build": 528712,
+      "orthologs_r": 415280,
+      "verify": 496988
     },
     "runner": "/usr/bin/time -v (Maximum resident set size)"
   },
+  "review_fixes": [
+    "tenv_non_hvg_curve.csv now uses the true fused top-N (was gene_index order)",
+    "overlap.csv fused-rank min/median/max now use gene-indexed true fused ranks",
+    "direction_summary.csv now uses the true fused top-N and a genuinely different max|log2FC| ranking (the old weighted row duplicated the symmetric row)",
+    "Q3 DEG-count ties are declared as fused-rank ties (the values were already that ranking; the prose now says so)",
+    "hvg_share is n_hvg_on_axis / n_hvg_total over the source's whole measured transcriptome (was n_hvg / n_axis_expression with n_hvg identically 2000); hvg_density added",
+    "overlap.csv adds tenv-HVG vs source-HVG at K=1000/2000/5000 and honest multi-way intersection rows (no fake Jaccard; note column)",
+    "DEG-CSV sha256 added to the GSE141910 and GSE116250 DEG JSON summaries",
+    "GLOSSARY Source rank corrected; candidate-then-replace policy for the R ortholog generator; index-space regression fixtures added"
+  ],
   "schema": "stage2-gene-axis-evidence-v1",
   "ticket": 183
 }

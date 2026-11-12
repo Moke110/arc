@@ -672,22 +672,36 @@ and never a disease source; `pert_data/LINCS-LDS-1593/` is an L1000 coverage not
 _Avoid_: dataset, cohort, GSE (when meaning the source role)
 
 **Source rank**:
-A disease source's own ordering of the frozen axis genes: its `hvg_rank` where an expression
-matrix exists (Seurat-style normalized dispersion on the item's normalized log expression,
-`gene_index` tie-break), or its `deg_rank` from the continuous effect score
-`|log2FC| × -log10(padj)`; a gene the source does not measure gets the worst rank
-`n_measured + 1`. It is written as the source's `<source>_rank` column in
-`01_bases/output/gene-axis/fused_rank.csv`. Ranks are **within-source only**: effect sizes
-from different platforms are never compared directly.
+A source's own ordering of the frozen axis genes: its `deg_rank` from the continuous effect
+score `|log2FC| × -log10(padj)` for every disease, animal and `pert_data` source, or the
+published tenv HVG rank for the tenv source; a gene the source does not measure gets the
+worst rank `n_measured + 1`. Those are the `<source>_rank` columns of
+`01_bases/output/gene-axis/fused_rank.csv`. Where an expression matrix exists, the source's
+own **HVG rank** (Seurat-style normalized dispersion over the item's whole measured
+transcriptome) is also computed, but it is reported separately — `source_summary.csv`
+(`n_hvg`, `n_hvg_on_axis`, `hvg_share`, `hvg_density`), the tenv-HVG × source-HVG rows of
+`overlap.csv` and the per-source intermediates — not as the fusion column. Ranks are
+**within-source only**: effect sizes from different platforms are never compared directly.
 _Avoid_: global rank, meta-rank
 
 **Source HVG share**:
-The share of a disease source's measured axis genes that the source's own HVG rank marks as
-highly variable: the `hvg_share` column of
-`01_bases/output/gene-axis/source_summary.csv`, beside `n_hvg`, `n_axis_measured` and
-`axis_coverage_share`. It says how much of a source's variability evidence lands on the
-axis; it is not an axis-selection score.
-_Avoid_: HVG overlap (when the share is meant)
+The share of a source's **own declared HVG set** that lands on the frozen axis. The source's
+HVG ranking is computed over its whole measured transcriptome (all matrix rows it measures,
+not only the axis-mapped ones); its declared set at K=2000 is the top 2,000 source rows, and
+`hvg_share = n_hvg_on_axis / n_hvg_total` in
+`01_bases/output/gene-axis/source_summary.csv`, beside `n_hvg` (= the declared set size),
+`n_hvg_total`, `n_hvg_on_axis` and `n_axis_measured`. It says how much of a source's
+variability evidence lands on the axis; it is not an axis-selection score, and tenv's value
+is 1.0 by construction because its published ranking is already axis-restricted.
+_Avoid_: HVG overlap (when the share is meant), axis variability (the share is per source)
+
+**HVG density**:
+The share of a source's on-axis measured genes that are in its own declared HVG set:
+`hvg_density = n_hvg_on_axis / n_axis_expression` in
+`01_bases/output/gene-axis/source_summary.csv`. This is the number comparable across
+sources when asking how much of the axis a source's variability evidence covers; tenv's is
+2,000 / 18,164 = 0.1101.
+_Avoid_: HVG share (that one is per source set, not per axis)
 
 **Rank-sum fusion**:
 The declared unweighted combination of source ranks: per gene,
@@ -721,12 +735,16 @@ lies outside tenv variability evidence; it is descriptive, not a trainability gu
 _Avoid_: tenv overlap, HVG loss (unqualified)
 
 **Direction composition**:
-The up/down split of the top-`N` fused selection (`N ∈ {500, 1000, 2000, 3000, 5000}`) under
-symmetric inclusion versus a `|log2FC|`-weighted ranking, each gene's sign taken from its
-highest-supporting source with ties recorded:
+The up/down split of the top-`N` selection (`N ∈ {500, 1000, 2000, 3000, 5000}`) under two
+different orderings: `symmetric` = the first N genes by ascending `fused_rank`, and
+`max_abs_log2fc` = the N genes with the largest maximum cross-source `|log2FC|` (ties by
+ascending `fused_rank`). Each gene's sign is the sign of its maximum-effect per-gene DEG row
+across the DEG sources, so genes with no reported effect are `n_unsupported`; exact
+cross-source ties are recorded:
 `01_bases/output/gene-axis/direction_summary.csv`. It informs the direction rule that #173
 must still decide; it does not set that rule.
-_Avoid_: direction rule (that is #173's decision)
+_Avoid_: direction rule (that is #173's decision), |log2FC|-weighted share (the second rule
+ranks genes, it does not reweight the same top-N)
 
 
 ### Stage 1 evaluation

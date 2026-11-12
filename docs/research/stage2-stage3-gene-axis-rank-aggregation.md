@@ -55,19 +55,27 @@ Exact recipe strings and constants are in
 `stage2/01_bases/output/gene-axis/manifest.json → recipe` and `constants`.
 
 - **Within-source ranks only.** A source's own order of the axis genes is its
-  HVG rank (where an expression matrix exists) or its DEG rank. Microarray and
-  RNA-seq effect sizes are never compared directly.
+  HVG rank (where an expression matrix exists) or its DEG rank. The fusion
+  columns in `fused_rank.csv` are the **DEG** rank for every disease, animal and
+  `pert_data` source, and the published HVG rank for tenv; an expression source's
+  own HVG ranking is computed and reported separately (`source_summary.csv`,
+  the tenv-HVG × source-HVG overlap rows and the per-source intermediates).
+  Microarray and RNA-seq effect sizes are never compared directly.
 - **DEG score.** `|log2FC| × -log10(padj)` with `padj` floored at `1e-300`; an NA
   `padj` (DESeq2 independent filtering) is non-significant but stays measured.
   A multi-contrast source collapses per gene by the **maximum** effect over
   contrasts and records `n_contrasts_supporting` (padj < 0.05).
 - **HVG score.** Seurat-style normalized dispersion on the item's deposited log
-  expression: sample variance / mean, log dispersion z-scored in 20 equal-width
-  `log1p(mean)` bins, singleton bins score 1, undefined dispersion sorts last,
-  `gene_index` tie-break. Deliberate difference from
-  `stage2/01_bases/output/api/bases/hvg.py`: no `expm1` recovery, because the
-  disease matrices are heterogeneous non-invertible log scales (voom log2
-  abundance, `log2(RPKM+1)`, `log2(CPM+1)`, `log2(CP10K+1)`).
+  expression over its **whole measured transcriptome** (all matrix rows, not only
+  the rows on the axis): sample variance / mean, log dispersion z-scored in 20
+  equal-width `log1p(mean)` bins, singleton bins score 1, undefined dispersion
+  sorts last, source-row order as tie-break. A source's declared HVG set at size
+  K is its top-K source rows; `hvg_share` is the share of that set that lands on
+  the axis and `hvg_density` is its share of the source's on-axis measured genes.
+  Deliberate difference from `stage2/01_bases/output/api/bases/hvg.py`: no
+  `expm1` recovery, because the disease matrices are heterogeneous non-invertible
+  log scales (voom log2 abundance, `log2(RPKM+1)`, `log2(CPM+1)`,
+  `log2(CP10K+1)`).
 - **Unmeasured genes** get raw rank `n_measured + 1` and `rank_norm = 1.0` (the
   worst rank); they are never silently dropped.
 - **Fusion.** `rank_sum = Σ_sources rank_norm`, with
@@ -91,31 +99,38 @@ convention** for comparing a source's HVG set to tenv's, not the axis `N`.
 
 File: `stage2/01_bases/output/gene-axis/source_summary.csv` — columns
 `n_samples`, `n_axis_measured`, `axis_coverage_share` (= `n_axis_measured/18,164`),
-`n_hvg`, `hvg_share` (= `n_hvg/n_axis_expression`, `hvg_k`), `deg_up`,
-`deg_down`, `deg_up_share`, `deg_down_share`, `deg_share` (over `n_axis_measured`).
+`n_hvg` and `n_hvg_total` (the declared set size `min(K, n_source_genes)`, K=2,000),
+`n_hvg_on_axis`, `hvg_share` (= `n_hvg_on_axis / n_hvg_total`),
+`hvg_density` (= `n_hvg_on_axis / n_axis_expression`), `deg_up`, `deg_down`,
+`deg_up_share`, `deg_down_share` (over `n_axis_measured`) and `deg_share`.
 
-| source | n | axis measured | coverage | n_hvg / share | DEG up | DEG down | up / down share |
+| source | n | axis measured | coverage | HVG set / on axis / share / density | DEG up | DEG down | up / down share |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| tenv (HVG only) | 4,206 | 18,164 | 1.0000 | 2,000 / 0.1101 | — | — | — |
-| GSE141910 | 366 | 14,763 | 0.8128 | 2,000 / 0.1355 | 4,538 | 5,543 | 0.3074 / 0.3755 |
-| GSE116250 | 64 | 16,412 | 0.9035 | 2,000 / 0.1108 | 4,936 | 2,806 | 0.3008 / 0.1710 |
-| GSE243674 | 72 | 18,151 | 0.9993 | 2,000 / 0.1102 | 6,248 | 6,250 | 0.3442 / 0.3443 |
-| GSE128188 | 20 | 13,498 | 0.7431 | 2,000 / 0.1482 | 234 | 382 | 0.0173 / 0.0283 |
-| GSE282618 | 10 | 18,042 | 0.9933 | 2,000 / 0.1109 | 35 | 53 | 0.0019 / 0.0029 |
+| tenv (HVG only) | 4,206 | 18,164 | 1.0000 | 2,000 / 2,000 / 1.0000 / 0.1101 | — | — | — |
+| GSE141910 | 366 | 14,763 | 0.8128 | 2,000 / 1,472 / 0.7360 / 0.0997 | 4,538 | 5,543 | 0.3074 / 0.3755 |
+| GSE116250 | 64 | 16,412 | 0.9035 | 2,000 / 293 / 0.1465 / 0.0162 | 4,936 | 2,806 | 0.3008 / 0.1710 |
+| GSE243674 | 72 | 18,151 | 0.9993 | 2,000 / 1,775 / 0.8875 / 0.0978 | 6,248 | 6,250 | 0.3442 / 0.3443 |
+| GSE128188 | 20 | 13,498 | 0.7431 | 2,000 / 1,875 / 0.9375 / 0.1389 | 234 | 382 | 0.0173 / 0.0283 |
+| GSE282618 | 10 | 18,042 | 0.9933 | 2,000 / 1,406 / 0.7030 / 0.0779 | 35 | 53 | 0.0019 / 0.0029 |
 | GSE160516 (mouse) | n/a | 14,692 | 0.8089 | — | 437 | 375 | 0.0297 / 0.0255 |
 | GSE108940 (mouse) | 12 | 12,357 | 0.6803 | — | 0 | 1 | 0.0000 / 0.0001 |
 | DToxS-iPSC | 92 | 15,838 | 0.8719 | — | 8,376 | 7,076 | 0.5289 / 0.4468 |
 | GSE244740 | 94 | 18,164 | 1.0000 | — | 1,137 | 7,246 | 0.0626 / 0.3989 |
 
-Coverage is 0.68–1.00; at `K=2,000` the expression sources' HVG shares span
-0.1102–0.1482, i.e. no disease source is dramatically more variable than tenv.
-The DEG counts are strongly source-dependent: GSE141910/GSE116250/GSE243674 and
-the two `pert_data/` sources produce thousands of significant genes, while the
-small-n AF/HHD series (234/382 and 35/53) and the DEG-only mouse series
-(437/375 and 0/1) produce very few. GSE108940 has exactly **one** gene at
-`padj < 0.05` (minimum padj 0.0083 over 28,037 tests and 12 samples), so its
-column is carried by the continuous effect score, not by significance.
-Alignment losses (crosswalk/alias/ortholog) are per source in
+Coverage is 0.68–1.00. The declared source HVG set is the source's top-2,000 rows
+by its own normalized dispersion over its **whole measured transcriptome**, so
+`hvg_share` measures how much of the source's own variability evidence lands on
+the frozen axis: it spans 0.1465 (GSE116250, whose 55,830-row RPKM matrix has most
+of its top variable genes off-axis) to 0.9375 (GSE128188). tenv's share is 1.0 by
+definition because its published ranking is already over the axis; its comparable
+number is `hvg_density` = 0.1101 (11.0% of the axis). `n_hvg` keeps its old column
+and equals the declared set size. The DEG counts are strongly source-dependent:
+GSE141910/GSE116250/GSE243674 and the two `pert_data/` sources produce thousands
+of significant genes, while the small-n AF/HHD series (234/382 and 35/53) and the
+DEG-only mouse series (437/375 and 0/1) produce very few. GSE108940 has exactly
+**one** gene at `padj < 0.05` (minimum padj 0.0083 over 28,037 tests and 12
+samples), so its column is carried by the continuous effect score, not by
+significance. Alignment losses (crosswalk/alias/ortholog) are per source in
 `manifest.json → sources.<id>.alignment`.
 
 ### 2. Per-source and fused rank distributions
@@ -137,28 +152,38 @@ frozen gene, columns `gene_index`, `symbol`, the ten `<source>_rank` columns,
 
 ### 3. Source overlap
 
-File: `stage2/01_bases/output/gene-axis/overlap.csv` (71 rows, columns
+File: `stage2/01_bases/output/gene-axis/overlap.csv` (81 rows, columns
 `comparison, set_a, set_b, k_a, k_b, n_a, n_b, n_intersection, n_union, jaccard,
-fused_rank_min, fused_rank_median, fused_rank_max`). The rows are 27 tenv-HVG ×
-each DEG source at `K ∈ {1000, 2000, 5000}`, 5 tenv-HVG × each expression-source
-HVG set, all 36 DEG source pairs, and 3 intersection rows.
+fused_rank_min, fused_rank_median, fused_rank_max, note`). The rows are 27
+tenv-HVG × each DEG source at `K ∈ {1000, 2000, 5000}`, 15 tenv-HVG × each
+expression-source HVG set at `K ∈ {1000, 2000, 5000}`, all 36 DEG source pairs,
+and 3 multi-way intersection rows. Every set is a `gene_index` set and the
+reported rank positions are **true fused ranks** (the sorted fused table is
+scattered back by `gene_index` before lookup).
 
 - **tenv-HVG(2000) ∩ source DEG:** GSE141910 **972** (Jaccard 0.0875),
   GSE116250 **735** (0.0816), GSE243674 **1,192** (0.0896), GSE128188 **59**
   (0.0231), GSE282618 **10** (0.0048), GSE160516 **82** (0.0300), GSE108940
   **0** (0), DToxS-iPSC **1,522** (0.0955), GSE244740 **666** (0.0685).
-- **tenv-HVG(2000) ∩ source HVG(2000):** GSE141910 **200** (0.0526), GSE116250
-  **264** (0.0707), GSE243674 **261** (0.0698), GSE128188 **243** (0.0647),
-  GSE282618 **251** (0.0670). The HVG sets overlap tenv's far less than the DEG
-  sets do.
+- **tenv-HVG(2000) ∩ source HVG(2000):** GSE141910 **155** (0.0467), GSE116250
+  **29** (0.0128), GSE243674 **254** (0.0721), GSE128188 **234** (0.0643),
+  GSE282618 **180** (0.0558). At K=1000 the counts are 44 / 4 / 59 / 58 / 45 and
+  at K=5000 they are 1,036 / 431 / 1,392 / 1,301 / 1,070. The source-HVG sets
+  overlap tenv's far less than the DEG sets do.
 - **HF pair** GSE141910 ∩ GSE116250: **5,320** genes, Jaccard **0.4255**, union
-  12,503; its intersection sits at a median fused rank of **9,077.5**.
+  12,503; its intersection sits at a median fused rank of **4,954.5**.
 - **Chronic-remodelling pair** GSE128188 (AF) ∩ GSE282618 (HHD): **3** genes,
-  Jaccard **0.0043**, median fused rank 2,569.
+  Jaccard **0.0043**, median fused rank 2,917; the four HF×remodelling cross
+  pairs average 0.0233.
 - **All nine DEG sources:** intersection **empty** (`all_source_deg`); also empty
   without GSE108940. The four core sources (both HF, GSE243674, DToxS) intersect
-  in 3,966 genes (median fused rank 9,224.5) — the broad "disease consensus" is
-  a handful of thousands, not a compact signature.
+  in 3,966 genes (median fused rank 4,178) — the broad "disease consensus" is a
+  handful of thousands, not a compact signature. These three rows have no
+  Jaccard: the two operands are the same set, so Jaccard is undefined. They report
+  the intersection size and its fused ranks, with `n_a`/`n_b`/`n_union`/`jaccard`
+  blank and a `note` that names the member sources.
+- Rank positions are true fused ranks, e.g. tenv-HVG(1000) ∩ GSE243674_DEG (607
+  genes) spans fused ranks 2–17,156 (median 4,987).
 
 ### 4. Inflection — an explicit "no inflection"
 
@@ -187,42 +212,52 @@ mostly-unmeasured tail; the body is close to linear. **No N is forced.**
 
 File: `stage2/01_bases/output/gene-axis/tenv_non_hvg_curve.csv` — every
 `N = 1…18,164` with `n_non_hvg_k{1000,2000,5000}` and
-`non_hvg_share_k{1000,2000,5000}`; membership is the published tenv HVG rank
-`≤ K`.
+`non_hvg_share_k{1000,2000,5000}`; the top-N are the true fused top-N (ascending
+`fused_rank`) and membership is the published tenv HVG rank `≤ K`.
 
 | N | K=1000 | K=2000 | K=5000 |
 |---:|---:|---:|---:|
-| 500 | 0.9300 | 0.8680 | 0.7040 |
-| 1,000 | 0.9330 | 0.8810 | 0.7140 |
-| 1,314 | 0.9391 | 0.8904 | 0.7283 |
-| 2,000 | 0.9390 | 0.8865 | 0.7195 |
-| 3,000 | 0.9407 | 0.8823 | 0.7180 |
-| 5,000 | 0.9450 | 0.8880 | 0.7206 |
-| 10,000 | 0.9433 | 0.8840 | 0.7183 |
+| 500 | 0.8840 | 0.7820 | 0.5400 |
+| 1,000 | 0.8940 | 0.8020 | 0.5800 |
+| 1,314 | 0.9018 | 0.8067 | 0.5822 |
+| 2,000 | 0.9130 | 0.8230 | 0.6095 |
+| 3,000 | 0.9210 | 0.8387 | 0.6243 |
+| 5,000 | 0.9284 | 0.8556 | 0.6586 |
+| 10,000 | 0.9406 | 0.8795 | 0.7086 |
 | 18,164 | 0.9449 | 0.8899 | 0.7247 |
 
-The share is essentially **flat in N**: at `K=2000` it stays in 0.868–0.890
-across N=500…18,164, and only 227 of the fused top-2,000 (11.35%) are in tenv's
-top-2,000. This is the central decision input of this product: the
-disease-consensus top of the fused ranking is mostly **not** the tenv HVG top,
-so a capped tenv non-HVG share trades away most of the disease evidence.
+The corrected curve is **not flat**: the fused top is enriched for tenv HVGs
+relative to the axis background (the N=18,164 rows are the background). At K=2000
+the non-HVG share rises from 0.782 at N=500 to 0.890 at N=18,164, and at K=5000
+from 0.540 to 0.725. Even so, the fused top-2,000 is still mostly (82.3%) outside
+tenv's top-2,000, and 61.0% of it is outside tenv's top-5,000: the fusion carries
+real tenv-variability signal, but the disease-consensus top is not a tenv-HVG top.
+That is the central decision input of this product.
 
 ### 6. Top-N direction composition
 
-File: `stage2/01_bases/output/gene-axis/direction_summary.csv` — two rules for
-each `N ∈ {500, 1000, 2000, 3000, 5000}`, columns `n_up`, `n_down`,
-`n_unsupported`, `up_share`, `down_share`, `unsupported_share`,
-`weighted_up_share`, `weighted_down_share`, `n_direction_ties`. A gene's sign is
-taken from the significant DEG contrast with the largest effect across all DEG
-sources; exact ties break by the declared source order and are counted.
+File: `stage2/01_bases/output/gene-axis/direction_summary.csv` — two genuinely
+different rules for each `N ∈ {500, 1000, 2000, 3000, 5000}`, columns `n_up`,
+`n_down`, `n_unsupported`, `up_share`, `down_share`, `unsupported_share`,
+`n_direction_ties`. A gene's sign is taken from the maximum-effect per-gene DEG row
+across all DEG sources; exact ties break by the declared source order and are
+counted. Rule `symmetric` = first N genes by ascending `fused_rank`; rule
+`max_abs_log2fc` = N genes with the largest maximum cross-source `|log2FC|`, ties
+broken by ascending `fused_rank`.
 
-| N | up (symmetric) | down (symmetric) | up (|log2FC|-weighted) | direction ties |
-|---:|---:|---:|---:|---:|
-| 500 | 0.5780 | 0.4220 | 0.6533 | 0 |
-| 1,000 | 0.5680 | 0.4320 | 0.6424 | 0 |
-| 2,000 | 0.5615 | 0.4375 | 0.6429 | 16 |
-| 3,000 | 0.5647 | 0.4340 | 0.6464 | 32 |
-| 5,000 | 0.5584 | 0.4402 | 0.6433 | 56 |
+| N | up (symmetric) | down (symmetric) | up (max abs log2FC) | down (max abs log2FC) | unsupported (sym / max) | ties |
+|---:|---:|---:|---:|---:|---:|---:|
+| 500 | 0.5260 | 0.4740 | 0.8680 | 0.1320 | 0 / 0 | 0 |
+| 1,000 | 0.5250 | 0.4750 | 0.8840 | 0.1160 | 0 / 0 | 0 |
+| 2,000 | 0.5380 | 0.4620 | 0.8625 | 0.1375 | 0 / 0 | 0 |
+| 3,000 | 0.5343 | 0.4657 | 0.7900 | 0.2097 | 0 / 1 | 8 |
+| 5,000 | 0.5202 | 0.4798 | 0.7082 | 0.2914 | 0 / 2 | 16 |
+
+The symmetric up share is 52–54% (mild up bias); ranking by effect magnitude is
+far more strongly up-biased at the very top (86.8% up at N=500) and fades with N.
+Across all significant genes the down set has the better median fused rank
+(8,031 vs 8,779 for up), so the overall ranking is only mildly up-biased at the
+top, not symmetric.
 
 ## The three #175 questions
 
@@ -236,23 +271,24 @@ Also pinned in `manifest.json → answers` (and re-derived by `--verify`).
    HHD contribute a different, much smaller gene set; they are not a cheaper HF
    replicate.
 2. **Are up and down genes rank-symmetric?** Only mildly. 8,889 genes are
-   up-significant and 7,857 down-significant; the up set's median fused rank is
-   **8,561** versus **9,560** for down. In the fused top-N the up share is stable
-   at **56–58%** under symmetric inclusion (≈**64%** under `|log2FC|` weight),
-   with 0–56 exact direction ties. The ranking is therefore mildly up-biased, not
-   symmetric — a direction rule still matters.
+   up-significant and 7,857 down-significant; across all significant genes the up
+   set's median fused rank is **8,779** versus **8,031** for down (the down set
+   ranks better overall). In the fused top-N the up share is **52–54%** under
+   symmetric inclusion and **71–88%** under the `max_abs_log2fc` ranking (86.8%
+   at N=500), with 0–16 exact direction ties. The ranking is therefore mildly
+   up-biased at the top, not symmetric — a direction rule still matters.
 3. **Does effect×replication agree with DEG-count ranking?** Mostly at the top,
-   less in the middle. Ranking genes by `n_sources_deg_significant` (descending;
-   #175's "DEG-count" risk check) agrees with the fused ranking at Spearman
+   less in the middle. Ranking genes by `n_sources_deg_significant` (descending,
+   ties by **ascending fused rank**) agrees with the fused ranking at Spearman
    **0.8095**; top-N intersection shares are **0.616 / 0.555 / 0.4775 / 0.4477 /
    0.7604** at N = 500 / 1,000 / 2,000 / 3,000 / 5,000 (308 / 555 / 955 / 1,343 /
    3,802 genes). Agreement is strongest at the very top, weakest around N≈3,000,
    and rises again at N=5,000. The exact-tie rule matters here because source
-   counts are small integers: the product breaks ties by fused rank (the build's
-   row order), whereas the record's prose says "tie-break `gene_index`"; a
-   re-implementation that uses the frozen `gene_index` tie-break instead gets
-   Spearman 0.6791 and top-500 overlap 0.204. The tracked number is the
-   product's, and it is the one #173 should cite.
+   counts are small integers: the product declares the **fused-rank** tie-break
+   (deterministic and consistent with the fusion), and the manifest, record and
+   acceptance record state it. A re-implementation that uses the frozen
+   `gene_index` tie-break instead gets Spearman 0.6791 and top-500 overlap 0.204;
+   the fused-rank number is the product's and the one #173 should cite.
 
 ## Decisions left to #173 (not made here)
 
@@ -263,8 +299,8 @@ Also pinned in `manifest.json → answers` (and re-derived by `--verify`).
   coverage and per-source shares; `tenv_non_hvg_curve.csv` gives the cost of any
   cap in rejected disease evidence.
 - **Direction rule.** `direction_summary.csv` gives the symmetric vs
-  `|log2FC|`-weighted composition; the ~56–58% up share and the up/down median
-  rank gap are the inputs.
+  max-`|log2FC|` ranking composition; the 52–54% symmetric up share, the
+  71–88% effect-ranked up share and the up/down median-rank gap are the inputs.
 - **Animal-source weighting and the >5% category rule.**
   `rank_sum_animal_half` is the half-weight sensitivity; the AF/HHD overlap
   numbers show what the chronic-remodelling categories add. The prevalence
@@ -305,16 +341,16 @@ Tracked digests (sha256; full set in `log/gene-axis/inputs.json` and
 
 | file | sha256 |
 |---|---|
-| `output/gene-axis/source_summary.csv` | `c1940152d7f2adc846609a10fc1b818dc3f3baea0f06c8e5f6c105aece16ccdd` |
+| `output/gene-axis/source_summary.csv` | `673f58d66a6b35ce93d721e654175e48ddf1d175bb92f31bbf60cf49a9bc9dc5` |
 | `output/gene-axis/fused_rank.csv` | `c1c632f3f166b93f206d441cbd96a7e031fcbd226d3779dc5a610a4c90be1a47` |
-| `output/gene-axis/overlap.csv` | `039510eb5cbcccf47bd3ac349491de5a4569cc84c4d04b99b91efcd368bbbe65` |
+| `output/gene-axis/overlap.csv` | `45b8eafbd27c69e39d5a385354c375aa569c0d6f1ba8174d58fab59fba1a74f6` |
 | `output/gene-axis/inflection.json` | `0f2c955f89b489aaf781e5724cdf2ed44487f8051b0ebcc8f15fe8a1c32201f4` |
-| `output/gene-axis/tenv_non_hvg_curve.csv` | `b650f8bce96d6ee745ac6f2135d0bb76c0f94b32377283e97f726a665ebe2375` |
-| `output/gene-axis/direction_summary.csv` | `92f856874dcfbbce377ed44460df8cc251cbcb8575e2cdf52de33a2b9fd712de` |
+| `output/gene-axis/tenv_non_hvg_curve.csv` | `b421a4b64e7648cda48d5766f014db127ae419b0f2503b99855906899e7981ae` |
+| `output/gene-axis/direction_summary.csv` | `23a6b8c6bb3c5f0534f44f3b77d4eed2a95f669a264bd5ea0282f8518eb108f5` |
 | `output/gene-axis/mouse_human_orthologs.csv` | `cc22358e0ef0d886bb304d940fd8e6dac70c7c5008811f9dfb1f524fc31cbb6a` |
-| `output/gene-axis/manifest.json` | `05df744a552aa62f639301fbc2e7f60982c874ef047c44ced271662ff4e31021` |
-| `figure/data/gene_axis_source_summary.csv` | `f1e1d500c916601b94dcffe62a5752d728e75e1a8990f0705fb82f1eac4a6b0a` |
-| `figure/gene_axis_source_summary.png` | `544c0a8c98086c31b4a79b27d8142502c14a781b33a4a1eb3ab04b612d12f472` |
+| `output/gene-axis/manifest.json` | `cf9dc2dec7cd5bb72a7b6d503a2bb246675e540403c8af9ba4e012b0fb56f89b` |
+| `figure/data/gene_axis_source_summary.csv` | `7361eae4170b8601c5144e214446c15277ee087fe0221396a2d0daa5f1e05160` |
+| `figure/gene_axis_source_summary.png` | `916738888f1f25e3954e48489661edb2b6bd7a018f19f1ea6391debb4e37c255` |
 
 ## Reading notes and limitations
 
@@ -333,6 +369,12 @@ Tracked digests (sha256; full set in `log/gene-axis/inputs.json` and
   this and the fusion does not pretend otherwise.
 - **The tenv ranking is descriptive over all wells.** The non-HVG share bounds
   coverage of tenv variability evidence, not model trainability under the
-  train-only rankings.
+  train-only rankings. The corrected curve is increasing in N (the fused top is
+  enriched for tenv HVGs), not flat; only the axis background equals the
+  complement of K/18,164.
+- **`hvg_share` is per-source, not per-axis.** It is the share of a source's own
+  declared HVG set that lands on the frozen axis, so the tenv value is 1.0 by
+  construction; compare `hvg_density` when asking how much of the axis a source's
+  variability evidence covers.
 - **GSE137293 and LINCS-LDS-1593 are listed-only** in `source_summary.csv`
   (`supplementary_only = True`) and never enter the fusion.
