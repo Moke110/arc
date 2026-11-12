@@ -18,6 +18,16 @@ genuinely missing, high-value, cheap addition is **human heart-failure LV tissue
 human AF series** and, optionally, **one valvular/HHD series**. Five public series (<100 MB
 total) are enough; the two largest HF series are optional replication.
 
+**Resolution asset.** The tracked aggregation of the ingested sources into the
+rank-sum decision evidence — the source set and fusion contract, the six reported
+quantities with their real numbers, the explicit **no-inflection** answer, the
+tenv non-HVG curve, the top-N direction composition, and the decisions left to
+#173 — is
+[`stage2-stage3-gene-axis-rank-aggregation.md`](stage2-stage3-gene-axis-rank-aggregation.md)
+(the #175 resolution). The evidence product it cites is
+`stage2/01_bases/output/gene-axis/`; the item interfaces are documented in
+`disease_data/README.md`.
+
 ## Recommendation
 
 1. **GSE141910** — human LV RNA-seq, MAGNet: **200 HF / 166 non-failing**; open, 60 MB
@@ -193,7 +203,7 @@ Checked so nothing is downloaded twice (paths relative to repo root):
 | `disease_data/GSE108940/` | **repo labels it rat MIRI vs sham**; GEO says mouse MuRF1 I/R | 24 samples (12 WT / 12 MuRF1-Tg; 12 sham / 12 IRI, above/below LAD); tracked DEG csv; `local/deg/*.json` (L1000-filtered). **GEO metadata: *Mus musculus*, GPL7202**; the local DEG csv contains 106 mouse `Gm*` genes and zero `Rn*` IDs, and the JSON metadata says `Rattus norvegicus` / inTax 10116. Species and platform provenance are inconsistent and must be resolved before this list feeds the axis |
 | `disease_data/GSE137293/` | pig scar vs border zone | 16 libraries (8 pigs × scar/border); **severity gradient, not disease-vs-healthy** |
 | `disease_data/*/local/deg/*.json` | 3 human-symbol DEG lists | **all L1000-978-only** — do not reuse for the new axis |
-| `pert_data/GSE217424/` (DToxS-iPSC) | iPSC-CM drug panel, GSE217421 Conv + GSE217423 DGE | 2.66 GB; series-matrix `drug name` values include **Doxorubicin, Daunorubicin, Epirubicin, Idarubicin** (also Afatinib, Amiodarone, Axitinib, Bortezomib, Imatinib, Lapatinib, …) → criterion (c) already local |
+| `pert_data/DToxS-iPSC/` (GSE217424 SuperSeries) | iPSC-CM drug panel, GSE217421 Conv + GSE217423 DGE | 2.66 GB; series-matrix `drug name` values include **Doxorubicin, Daunorubicin, Epirubicin, Idarubicin** (also Afatinib, Amiodarone, Axitinib, Bortezomib, Imatinib, Lapatinib, …) → criterion (c) already local |
 | `pert_data/LINCS-LDS-1593/` | DToxS LINCS L1000, primary human CM | 872 MB; `Metadata/Small_Molecule_Metadata.txt` contains Doxorubicin, Daunorubicin, Epirubicin, Idarubicin, Mitoxantrone (verified by grep) |
 | `pert_data/GSE244740/` | Rosell-Hidalgo ScreenSeq hiPSC-CM cardiotoxicity panel | 37.5 MB; `treatment` values include **Doxorubicin, Idarubicin, Mitoxantrone, 5-Fluorouracil, Bortezomib, Lapatinib, Imatinib, Dasatinib, Cyclophosphamide** → second local anthracycline source |
 | `pert_data/GSE262419/` | `tenv` TempO-Seq hiPSC-CM panel | 4,206 wells, 459 drug parents × 3 doses, 18,164-gene axis (`stage2/01_bases/README.md`) |
