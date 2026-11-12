@@ -77,11 +77,27 @@ Prior benchmark records can be inspected in Git; their ignored predictions and
 checkpoints are no longer local inputs. The original consumer-migration scope
 is not an acceptance claim for this retained foundation.
 
+The Stage 2 exit is now fixed: **the predicted Δ on a selected gene axis, as
+accurate as possible**. Narrowing the frozen 18,164-gene axis to that selected
+axis — from tenv HVG plus public myocardial-disease datasets — is being decided
+and delivered under the [Stage 2 exit → Stage 3 exit decision
+map](https://github.com/Moke110/arc/issues/171). Model, chemistry, dose and
+pretraining-transfer optimisation is recorded on that map only, as a decision
+card with its supporting research in `docs/research/`.
+
 ## Stage 3 — cardiomyocyte phenotype direction prediction (first-wave corpus audited)
 
 Predict the direction of change (+1 / 0 / −1) of one phenotype readout under one
 specified experimental condition from the drug-induced perturbome predicted by a
-Stage 2 model. Input representation and model design remain undecided.
+Stage 2 model.
+
+Both stage boundaries are fixed (2026-11-13): the Stage 2 exit and Stage 3 entry
+are **the predicted Δ on the selected gene axis**, and the Stage 3 exit is a
+**phenotype change direction a simple non-high-throughput wet-lab readout can
+detect** (for example cell viability), not an in-vivo endpoint. Input
+representation and model design remain open; they are recorded, with their
+evidence, on the [Stage 2 exit → Stage 3 exit decision
+map](https://github.com/Moke110/arc/issues/171).
 
 The first effort plans the drug–phenotype experimental database: 24–48 h drug
 exposure followed by MTT/CCK8, the same exposure followed by hypoxia/reoxygenation
