@@ -54,11 +54,16 @@ is dropped: it existed only to define a "final table" that this record no longer
 needs, and it removed 5.4 genes and 10 non-empty groups from an already small
 label set (median 11 measured effects per contrast, q25 = 1, max = 7,457).
 
-The evaluated population is **every one of the 1,377 parent-dose groups**, not
-only the 1,094 with a non-empty label set. The 273 groups with no measured effect
+The scoring population is **every one of the 1,377 parent-dose groups**, not
+only the 1,104 with a non-empty label set. The 273 groups with no measured effect
 are real null results — 19.8% of the corpus — and a model that hallucinates a
 signature on them must be penalised. ADR 0063 excluded them, which is what made
 the weak-condition population shrink.
+
+The shipped declared 2-fold matrix evaluates 918 of those groups — the test
+groups of fold 0 and fold 1, 169 of them null — because fold 2 has no runs and
+re-inference is out of scope; the metric definition covers the corpus, while the
+accepted comparison covers those 918 test groups.
 
 ## Threshold scan
 

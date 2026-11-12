@@ -510,5 +510,10 @@
     "delivery_head_sha": "591b1191971f0ddeed567b7682c0f7b38cc6d030",
     "original_acceptance_head_sha": "43765f90ef942b576b04f5f3a6a360547df103f1",
     "note": "Accepted products were built and accepted in worktree .worktrees/tenv-165 and are installed at the canonical stable paths under stage2/02_models_tenv/output/. The installation was verified byte-for-byte: every recorded run artifact, evaluation table and tracked figure hash in this record re-verified against the installed copy (39/39 match). The publish.candidate/checkpoint path is the disposable build location (gitignored, not part of the accepted product)."
+  },
+  "superseded_by": {
+    "record": "log/166-acceptance.json",
+    "schema": "stage2-tenv-acceptance-v2",
+    "ticket": 170
   }
 }
