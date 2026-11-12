@@ -1,0 +1,32 @@
+# #161 health record — script/check_paths.sh, 2026-11-12T14:16:52+08:00
+# command (canonical, like #157): repo root owns the external payload; tracked list from
+# the branch index so split-checkout worktree files are not scanned:
+#   export GIT_INDEX_FILE=<worktree>/stage2/01_bases/execution/checkpoints/health/index-161
+#   git -C /home/chang/arc read-tree codex/tenv-161
+#   cd /home/chang/arc && GIT_INDEX_FILE=$GIT_INDEX_FILE script/check_paths.sh
+# tracked files: 959
+# note: a first run from the worktree root (which does not own pert_data/ etc.) was
+# discarded as inconclusive; the split-checkout does not resolve external payload.
+#
+== check_paths: every external-data path literal must resolve ==
+repo root: /home/chang/arc
+tracked text files scanned: 872
+path literals scanned: 6308 occurrences, 248 distinct (pert_data, pert_model, disease_data, drug_emb_model, pheno_data)
+resolved:    6278 occurrences, 228 distinct
+whitelisted: 30 occurrences, 20 distinct (entries in script/path_whitelist.txt: 20)
+unresolved:  0 occurrences, 0 distinct
+
+== check_stage2_paths: no retired step paths in tracked stage2 executable code ==
+repo root: /home/chang/arc
+tracked stage2 executable files scanned: 58
+stage2 path literals: 0 occurrences (non-bases roots + datasets-1)
+whitelisted: 0 occurrences (entries in script/stage2_path_whitelist.txt: 0)
+stale: 0 occurrences, 0 distinct
+
+RESULT: PASS — 0 stale stage2 path literals
+exit: 0
+stage3 source-first path audit: PASS
+
+RESULT: PASS — every extracted path literal resolves
+stage2 retired-step-path audit: PASS
+exit: 0

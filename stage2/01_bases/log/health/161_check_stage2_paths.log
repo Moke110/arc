@@ -1,0 +1,13 @@
+# #161 health record — script/check_stage2_paths.sh, 2026-11-12T14:16:55+08:00
+# command: cd <worktree> && script/check_stage2_paths.sh
+# scope: tracked active stage2/ executable code and the stage2 root layout (post-merge)
+#
+== check_stage2_paths: no retired step paths in tracked stage2 executable code ==
+repo root: /home/chang/arc/.worktrees/tenv-161
+tracked stage2 executable files scanned: 61
+stage2 path literals: 0 occurrences (non-bases roots + datasets-1)
+whitelisted: 0 occurrences (entries in script/stage2_path_whitelist.txt: 0)
+stale: 0 occurrences, 0 distinct
+
+RESULT: PASS — 0 stale stage2 path literals
+exit: 0
