@@ -146,7 +146,7 @@ plots.render_learning_curve(synthetic_models(), fx/'learning_curve_fixture.png')
   `Recall@max_k` are per-run scalars and are bars (ADR: "the six direct and
   threshold panels are bar charts"). `precision`/`spearman` are the two arrays in
   `aggregate_indirect`; `max_k`/`recall` are scalars there by construction.
-- `output/palette/` is force-added (see above); no ignore rule changed.
+- `output/palette/` is force-added (see above); #162 itself changed no ignore rule. (#165 later added the tracked-evidence negations for `figure/data/*.csv`, so the palette product still relies on force-add and the statement is scoped to this ticket.)
 - Documentation deferrals were deferred to **#165** by the review: the step
   `README.md`, `AGENTS.md` and `docs/data-inventory.md` still do not list
   `output/palette/` (outside this ticket's write scope).
