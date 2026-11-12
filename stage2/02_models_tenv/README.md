@@ -133,7 +133,7 @@ subplot with blue training and green validation, one shade per `(fold, seed)`.
 
 PRnet is the palette blue family and `Mean` the orange entry slot; an entry's
 hue colours its line/edge/dots and the lighter shade fills its band/bar. The
-reliability figure's fourth row uses the shared sequential heat-map ramp.
+reliability figure's confusion panel uses the shared sequential heat-map ramp.
 
 All three PNGs regenerate from the tracked CSVs alone, with the step's
 `output/` unreadable. The committed replay test proves each PNG rebuilds
