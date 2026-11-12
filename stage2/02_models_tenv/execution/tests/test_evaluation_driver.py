@@ -417,3 +417,7 @@ class SharedSchemaCompatibility(unittest.TestCase):
         shared_curve = shared.learning_curve_values(models)
         self.assertTrue(_rows_equal(plot_tables.plot_rows(fallback_curve),
                                     shared.plot_rows(shared_curve)))
+
+
+if __name__ == "__main__":
+    unittest.main()

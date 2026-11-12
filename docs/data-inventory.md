@@ -161,12 +161,12 @@ acceptance record and the raw resource measurements are tracked. The whole
 
 | path under `stage2/02_models_tenv/` | `du -sb` | contents | reconstruction |
 |---|---:|---|---|
-| `output/inputs/` | 2,041,030,270 | four complete predictor-input releases (`drugs.csv`, `morgan.npy`, per-role baseline/delta arrays, case tables and manifests), one per `(fold, seed)` matrix cell | `execution/script/prepare_inputs.py` from the sealed `01_bases` corpus and fold/seed products |
-| `output/runs/` | 967,675,030 | eight run directories: four PRnet fits (`prediction.npy`, `best.pt`, checkpoint/identity/terminal/resource records) and four deterministic `Mean` fold copies | PRnet runs: pinned PRnet environment + `execution/script/prnet_fit_predict.py`; `Mean`: `execution/script/mean_reference.py`; one heavy job at a time under the 10 GiB cap |
+| `output/inputs/` | 2,041,030,268 | four complete predictor-input releases (`drugs.csv`, `morgan.npy`, per-role baseline/delta arrays, case tables and manifests), one per `(fold, seed)` matrix cell | `execution/script/prepare_inputs.py` from the sealed `01_bases` corpus and fold/seed products |
+| `output/runs/` | 967,675,021 | eight run directories: four PRnet fits (`prediction.npy`, `best.pt`, checkpoint/identity/terminal/resource records) and four deterministic `Mean` fold copies | PRnet runs: pinned PRnet environment + `execution/script/prnet_fit_predict.py`; `Mean`: `execution/script/mean_reference.py`; one heavy job at a time under the 10 GiB cap |
 | `output/evaluation/` | 99,838,316 | `per_well.csv`, `per_group.csv`, `per_run.csv` and `evaluation.json` from the shared #164 driver | `execution/script/evaluation_driver.py` over the eight complete runs; re-scores from persisted predictions only |
 | `output/figure_data/` | 377,681 | candidate copies of the two plot-value tables (byte-identical to the tracked `figure/data/`) | `evaluation_driver.py --figure-data` |
-| `figure/` | 1,132,509 | `metrics.png` (eight panels), `learning_curve.png` (PRnet), the two complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
-| `log/` | 52,666 | #163 admission, #164 driver and #165 acceptance records plus the raw `/usr/bin/time -v` measurements and the environment locks | execution records; tracked |
+| `figure/` | 693,274 | `metrics.png` (eight panels), `learning_curve.png` (PRnet), the two complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
+| `log/` | 62,873 | #163 admission, #164 driver and #165 acceptance records plus the raw `/usr/bin/time -v` measurements and the environment locks | execution records; tracked |
 
 Historical tenv comparison code, figures and records are **not** present in the
 working tree; they remain untouched in Git history (`git show
