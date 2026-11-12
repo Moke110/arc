@@ -1,0 +1,134 @@
+{
+  "families": [
+    "gray",
+    "blue",
+    "green",
+    "orange",
+    "purple",
+    "magenta"
+  ],
+  "module": {
+    "path": "output/api/bases/palette.py",
+    "sha256": "a0e9524891f4bd8dbbb1ca99321b4564f54070f52c53e6316735707b42edc535"
+  },
+  "recipe": {
+    "algorithm": "Per shade s in 0..8: L = 0.22 + 0.07*s, S = 0.90 - 0.06*s (S = 0 for gray). Convert (H/360, L, S) with colorsys.hls_to_rgb, then each channel is int(round(channel*255 + 0.5)) and formatted as lowercase #rrggbb.",
+    "families": [
+      {
+        "hue_degrees": null,
+        "name": "gray"
+      },
+      {
+        "hue_degrees": 214.0,
+        "name": "blue"
+      },
+      {
+        "hue_degrees": 137.0,
+        "name": "green"
+      },
+      {
+        "hue_degrees": 28.0,
+        "name": "orange"
+      },
+      {
+        "hue_degrees": 276.0,
+        "name": "purple"
+      },
+      {
+        "hue_degrees": 318.0,
+        "name": "magenta"
+      }
+    ],
+    "lightness": {
+      "start": 0.22,
+      "step": 0.07
+    },
+    "saturation": {
+      "gray": 0.0,
+      "start": 0.9,
+      "step": -0.06
+    },
+    "schema": "stage2-tenv-stage-palette-recipe-v1",
+    "shade_roles": {
+      "entry_hue_order": [
+        "blue",
+        "orange",
+        "green",
+        "purple",
+        "magenta",
+        "gray"
+      ],
+      "fill": 6,
+      "line": 2,
+      "run_shade_order": [
+        2,
+        4,
+        6,
+        8,
+        1,
+        3,
+        5,
+        7,
+        0
+      ],
+      "train_family": "blue",
+      "validation_family": "green"
+    },
+    "shades": 9
+  },
+  "roles": {
+    "band": {
+      "family": "entry",
+      "shade": 6
+    },
+    "bar_edge": {
+      "family": "entry",
+      "shade": 2
+    },
+    "bar_fill": {
+      "family": "entry",
+      "shade": 6
+    },
+    "dot": {
+      "family": "entry",
+      "shade": 2
+    },
+    "grid": {
+      "family": "gray",
+      "shade": 8
+    },
+    "line": {
+      "family": "entry",
+      "shade": 2
+    },
+    "text": {
+      "family": "gray",
+      "shade": 0
+    },
+    "train": {
+      "family": "blue",
+      "shade": "run"
+    },
+    "undefined_label": {
+      "family": "gray",
+      "shade": 4
+    },
+    "undefined_marker": {
+      "family": "gray",
+      "shade": 4
+    },
+    "validation": {
+      "family": "green",
+      "shade": "run"
+    }
+  },
+  "schema": "stage2-tenv-stage-palette-v1",
+  "shade_count": 9,
+  "table": {
+    "bytes": 494,
+    "columns": 6,
+    "file": "palette.csv",
+    "rows": 9,
+    "sha256": "6428333dbc791caa46748e4da1f2b581c80b837a8bd36a37e40147bcfe2deb39"
+  }
+}
