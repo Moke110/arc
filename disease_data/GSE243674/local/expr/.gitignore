@@ -1,0 +1,6 @@
+# Regenerable outputs of script/build_expression.R (ADR 0030: local/ content is
+# not repository content). The normalized matrix is ~3.5 MB and the samples CSV
+# is covered by the global *.csv rule; the item keeps only its declared tracked
+# summary (local/deg/GSE243674_deg.json) in git.
+*
+!.gitignore
