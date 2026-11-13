@@ -204,8 +204,19 @@ by a follow-up; recorded here so it is not mistaken for a new regression.
 
 ## 9. Health (final tree)
 
-`script/check_paths.sh` and `script/check_tracked.sh` are recorded green below the
-deletions, and `script/verify_all.sh` was run alone with `free -g` before/after and
-its runtime recorded in the ticket report (this file records the product-level
-gates; the health log lines are reproduced at the end of the ticket's commit
-message).
+Run from the worktree root after the deletions and after `git merge dev`
+(`dev=cb72b92`; "Already up to date" — no drift).
+
+- `script/check_paths.sh`: **PASS** — 987 tracked text files scanned, 6,425 path
+  literals (0 unresolved; the two stage2 retired-root literals are whitelisted
+  frozen evidence), stage2 retired-step-path audit **PASS**, stage3 source-first
+  audit **PASS**, 10.0 s. The check resolves literals against the filesystem, so
+  the worktree used read-only hardlinks to the gitignored external `source/`/
+  `local/` trees (a fresh clone is not a merged checkout); nothing in the tracked
+  tree was changed by that.
+- `script/check_tracked.sh`: **PASS** — all scanned executable files are tracked
+  (or in a documented expected-ignored tree).
+- `script/verify_all.sh` (run alone, the documented ~9.7 GiB page-cache job):
+  **PASS — 48/48 items**, 4 m 48.7 s, peak RSS 79,124 KiB. `free -g` available
+  memory: 42 GiB before and 42 GiB after (the kernel reclaimed page cache; no
+  pressure on the 12 GiB floor).
