@@ -491,6 +491,50 @@ Per-category composition of `G_2000` / `G_5000` (axis genes the source measures)
 `genetic_cardiomyopathy` 1,997 / 4,997, `cardiotox_TOP2` 2,000 / 5,000,
 `cardiotox_other` 1,513 / 3,738; the tenv-HVG halves are 1,000 / 2,500.
 
+**Top-N source coverage.** Each fusion source's top-`N` set is the `N` genes
+with `rank_s <= N` in the candidate table; the five active `<category>_rank`
+columns and `tenv_hvg_rank` are complete `1..18,164` permutations, so each set
+holds exactly `N` genes (for the five category sources every one of those genes
+is measured; `tenv-HVG` ranks the full frozen axis), matching the `pN`
+definition. Intersecting a top-`N` set with the released axis gives the coverage
+below. The two sets carry the same number of genes, so a count is both the share
+of the source's top-`N` the axis keeps and the share of the axis drawn from that
+source's top-`N`; the sets overlap across sources (a gene can sit in several —
+that is what `pN` counts), so the rows do not sum to 100%. `af` has no rank
+(`NaN`) and therefore no top-`N` set (ADR 0068). For reference, a random
+`N`-gene set covers `N/18,164` = 11.01% (`G_2000`) / 27.53% (`G_5000`) of an
+axis of the same size. The tables are descriptive, computed from
+`candidate_rank_sum.csv` and `gene_axis_{2000,5000}.csv` only; they are not an
+axis-selection criterion.
+
+`G_2000`, coverage of each source's top-2,000:
+
+| source | top-2,000 | in `G_2000` | coverage |
+|---|---:|---:|---:|
+| `nhf` | 2,000 | 632 | 31.60% |
+| `icm` | 2,000 | 651 | 32.55% |
+| `af` | — | — | excluded from the fusion (no rank, ADR 0068) |
+| `genetic_cardiomyopathy` | 2,000 | 748 | 37.40% |
+| `cardiotox_TOP2` | 2,000 | 578 | 28.90% |
+| `cardiotox_other` | 2,000 | 712 | 35.60% |
+| `tenv-HVG` | 2,000 | 1,174 | 58.70% |
+
+`G_5000`, coverage of each source's top-5,000:
+
+| source | top-5,000 | in `G_5000` | coverage |
+|---|---:|---:|---:|
+| `nhf` | 5,000 | 2,321 | 46.42% |
+| `icm` | 5,000 | 2,350 | 47.00% |
+| `af` | — | — | excluded from the fusion (no rank, ADR 0068) |
+| `genetic_cardiomyopathy` | 5,000 | 2,611 | 52.22% |
+| `cardiotox_TOP2` | 5,000 | 2,224 | 44.48% |
+| `cardiotox_other` | 5,000 | 2,416 | 48.32% |
+| `tenv-HVG` | 5,000 | 3,275 | 65.50% |
+
+`tenv-HVG` is the only source with guaranteed axis membership: the fill rule
+places its top `N/2` (`1,000` / `2,500`) first and `174` / `775` more enter via
+the `pN`/`rank_sum` half; the five category sources have no guaranteed gene.
+
 **Evidence panel and inflection.** `figure/gene_axis_rank_sum_histogram.png` is
 the rank-sum histogram over all 18,164 candidates with both axes' `rank_sum`
 intervals shaded (median lines): `G_2000` 0.0237–4.9587 (median 1.7507),
