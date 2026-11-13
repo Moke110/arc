@@ -1,0 +1,47 @@
+axis,n_axis,record,group,n_genes,share,note
+2000,2000,composition,nhf,1977,0.98850000000000005,axis genes the category source measures
+2000,2000,composition,icm,1904,0.95199999999999996,axis genes the category source measures
+2000,2000,composition,af,1998,0.999,axis genes the category source measures
+2000,2000,composition,genetic_cardiomyopathy,1997,0.99850000000000005,axis genes the category source measures
+2000,2000,composition,cardiotox_TOP2,2000,1,axis genes the category source measures
+2000,2000,composition,cardiotox_other,1468,0.73399999999999999,axis genes the category source measures
+2000,2000,composition,tenv_hvg_top_half,1000,0.5,declared 0.5*N tenv-HVG half of the axis
+2000,2000,pN,0,0,0,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,1,499,0.2495,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,2,407,0.20349999999999999,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,3,839,0.41949999999999998,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,4,204,0.10199999999999999,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,5,44,0.021999999999999999,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,6,7,0.0035000000000000001,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,pN,7,0,0,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,0,9064,0.49900902884827131,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,1,5607,0.30868751376348824,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,2,2399,0.13207443294428539,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,3,839,0.046190266461131911,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,4,204,0.011231006386258534,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,5,44,0.002422373926447919,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,6,7,0.0003853776701167144,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+2000,2000,candidate_pN,7,0,0,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,composition,nhf,4936,0.98719999999999997,axis genes the category source measures
+5000,5000,composition,icm,4743,0.9486,axis genes the category source measures
+5000,5000,composition,af,4994,0.99880000000000002,axis genes the category source measures
+5000,5000,composition,genetic_cardiomyopathy,4997,0.99939999999999996,axis genes the category source measures
+5000,5000,composition,cardiotox_TOP2,5000,1,axis genes the category source measures
+5000,5000,composition,cardiotox_other,3682,0.73640000000000005,axis genes the category source measures
+5000,5000,composition,tenv_hvg_top_half,2500,0.5,declared 0.5*N tenv-HVG half of the axis
+5000,5000,pN,0,0,0,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,1,493,0.098599999999999993,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,2,697,0.1394,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,3,1245,0.249,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,4,1710,0.34200000000000003,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,5,679,0.1358,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,6,156,0.031199999999999999,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,pN,7,20,0.0040000000000000001,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,0,2923,0.16092270425016517,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,1,4903,0.26992953094032152,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,2,4533,0.24955956837700946,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,3,3240,0.17837480731116495,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,4,1710,0.094142259414225937,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,5,679,0.037381634001321294,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,6,156,0.0085884166483153491,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"
+5000,5000,candidate_pN,7,20,0.0011010790574763269,"pN is an ordinal cross-source replication count (0..7), not a continuous quality score"

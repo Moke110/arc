@@ -30,7 +30,20 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .deg_rank import AXIS_SIZE, normalized_rank
+# The #186 contract: ``bases.gene_axis`` re-exports the DEG/rank functions now
+# owned by ``bases.deg_rank`` (one live implementation, no second copy).
+from .deg_rank import (
+    ALIGNMENT_CATEGORIES,
+    AXIS_SIZE,
+    PADJ_FLOOR,
+    PADJ_THRESHOLD,
+    SymbolResolver,
+    complete_rank,
+    deg_effect,
+    normalized_rank,
+    per_gene_deg,
+    rank_scores,
+)
 
 SCHEMA = 'stage2-gene-axis-release-v1'
 
@@ -351,6 +364,185 @@ def pn_distribution(p_n, n_sources=N_FUSION_SOURCES):
     return np.bincount(p_n, minlength=n_sources + 1)
 
 
+def rank_sum_histogram(values, low=0.0, high=None, bins=70):
+    """Histogram of ``rank_sum`` over all candidates, with fixed declared edges.
+
+    The evidence panel marks both released axes' ``rank_sum`` intervals on this
+    histogram. Fixed equal-width edges (default ``0..7`` in 70 bins, the range of
+    a seven-source sum) keep the plotted values deterministic and comparable
+    between replays; every candidate falls inside the interval and every bin is
+    emitted, including empty ones, so the CSV is the complete plotted value set.
+    """
+    values = np.asarray(values, dtype=np.float64)
+    if values.ndim != 1 or values.size == 0:
+        raise ValueError('rank_sum histogram needs a non-empty vector')
+    if not np.isfinite(values).all():
+        raise ValueError('rank_sum histogram values must be finite')
+    high = float(np.ceil(values.max()) if high is None else high)
+    low = float(low)
+    bins = int(bins)
+    if not low < high:
+        raise ValueError('histogram interval must be non-empty')
+    if bins <= 0:
+        raise ValueError('histogram needs at least one bin')
+    if values.min() < low or values.max() > high:
+        raise ValueError('a rank_sum value is outside the declared histogram interval')
+    edges = np.linspace(low, high, bins + 1)
+    counts, edges = np.histogram(values, bins=edges)
+    frame = pd.DataFrame({
+        'bin_left': edges[:-1],
+        'bin_right': edges[1:],
+        'bin_center': (edges[:-1] + edges[1:]) / 2.0,
+        'count': counts.astype(np.int64),
+    })
+    if int(frame['count'].sum()) != len(values):
+        raise ValueError('rank_sum histogram does not cover every candidate')
+    return frame
+
+
+def kneedle_knee(x, y, sensitivity=1.0):
+    """Online Kneedle: first interior local maximum of the normalized arc above the chord.
+
+    Both axes are min-max normalized, ``arc = y_norm - x_norm``; the knee is the
+    first interior local maximum reaching ``sensitivity * max(arc)``. A monotone
+    or straight curve has no interior maximum and returns ``None`` -- the caller
+    must report *no inflection* rather than invent an ``N``.
+    """
+    x = np.asarray(x, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64)
+    if len(x) != len(y) or len(x) < 3:
+        return None
+    span_x, span_y = x[-1] - x[0], y.max() - y.min()
+    if span_x <= 0 or span_y <= 0:
+        return None
+    x_norm = (x - x[0]) / span_x
+    y_norm = (y - y.min()) / span_y
+    arc = y_norm - x_norm
+    peak = float(arc.max())
+    if peak <= 1e-12:
+        return None
+    interior = np.where((arc[1:-1] >= arc[:-2]) & (arc[1:-1] > arc[2:]))[0] + 1
+    if not len(interior):
+        return None
+    accepts = interior[arc[interior] >= sensitivity * peak]
+    if not len(accepts):
+        return None
+    position = int(accepts[0])
+    return {'index': position, 'n': int(x[position]), 'arc': float(arc[position]),
+            'arc_max': peak, 'knee_strength': float(arc[position])}
+
+
+def second_difference_peak(y, min_n=100, max_n=None, minimum_curvature=1e-6):
+    """Most concave point of the min-max normalized curve inside a declared range.
+
+    The second difference is taken on the uniform rank grid and the search is
+    restricted to ``[min_n, max_n]``; the leading positions below ``min_n`` are
+    excluded because a rank-sum curve's first genes are strong outliers whose
+    curvature would dominate any knee test. Returns ``None`` when the largest
+    curvature is below ``minimum_curvature`` (a straight line has zero curvature,
+    so it reports no candidate rather than inventing one).
+    """
+    y = np.asarray(y, dtype=np.float64)
+    if len(y) < 3:
+        return None
+    span = y.max() - y.min()
+    if span <= 0:
+        return None
+    y_norm = (y - y.min()) / span
+    curvature = y_norm[2:] - 2.0 * y_norm[1:-1] + y_norm[:-2]
+    positions = np.arange(2, len(y))
+    upper = len(y) - 1 if max_n is None else min(int(max_n), len(y) - 1)
+    lower = max(int(min_n), 2)
+    mask = (positions >= lower) & (positions <= upper)
+    if not mask.any():
+        return None
+    masked = np.where(mask, curvature, np.inf)
+    packed = int(np.argmin(masked))
+    magnitude = float(-masked[packed])
+    if magnitude < minimum_curvature:
+        return None
+    return {'index': int(positions[packed] - 1), 'n': int(positions[packed]),
+            'curvature': magnitude}
+
+
+def detect_inflection(x, y, sensitivity=1.0, agreement_tolerance=0.25,
+                      minimum_knee_strength=0.01, min_n=100):
+    """Kneedle + second-difference inflection, reported as a diagnostic only.
+
+    ADR 0066: the rank-sum curve gets the declared check and may honestly report
+    ``"inflection": false``; it never chooses ``N``. An inflection is accepted
+    only when both criteria find a candidate, the two candidate positions agree
+    within ``agreement_tolerance`` (relative) and the Kneedle knee clears
+    ``minimum_knee_strength`` above the chord.
+    """
+    kneedle = kneedle_knee(x, y, sensitivity=sensitivity)
+    curvature = second_difference_peak(y, min_n=min_n)
+    accepted = False
+    candidate = None
+    if kneedle is not None and curvature is not None:
+        left, right = kneedle['n'], curvature['n']
+        agreement = abs(left - right) / max(left, right)
+        accepted = (agreement <= agreement_tolerance
+                    and kneedle['knee_strength'] >= minimum_knee_strength)
+        if accepted:
+            candidate = int(round((left + right) / 2))
+    return {
+        'criterion': ('Kneedle online S=1.0 (first interior maximum of the normalized '
+                      'arc above the chord) plus the second-difference peak of the same '
+                      'normalized curve inside the declared decision range [min_n, n]; '
+                      'both must agree within 25% and the knee must exceed 0.01 '
+                      'normalized units'),
+        'parameters': {'sensitivity': sensitivity,
+                       'agreement_tolerance': agreement_tolerance,
+                       'minimum_knee_strength': minimum_knee_strength,
+                       'min_n': min_n,
+                       'minimum_curvature': 1e-6},
+        'kneedle': _drop_index(kneedle),
+        'second_difference': _drop_index(curvature),
+        'inflection': accepted,
+        'n': candidate,
+    }
+
+
+def _drop_index(result):
+    if result is None:
+        return None
+    return {key: value for key, value in result.items() if key != 'index'}
+
+
+def inflection_stability(curves, tolerance=0.10):
+    """Stability of the inflection answer under leave-one-source-out replays.
+
+    ``curves`` is the primary ``(x, y)`` rank-sum curve followed by the curves of
+    the leave-one-source-out replays. The diagnostic is stable only when every
+    replay reproduces the primary's decision and, when an inflection is accepted,
+    its ``N`` within ``tolerance`` (relative). Stability is reported, never used.
+    """
+    if not curves:
+        raise ValueError('inflection stability needs at least the primary curve')
+    outcomes = [detect_inflection(np.asarray(x, dtype=np.float64),
+                                  np.asarray(y, dtype=np.float64))
+                for x, y in curves]
+    primary = outcomes[0]
+    replays = outcomes[1:]
+    same = [result['inflection'] == primary['inflection'] for result in replays]
+    within = []
+    for result in replays:
+        if primary['inflection'] and result['inflection']:
+            within.append(abs(result['n'] - primary['n'])
+                          <= tolerance * max(primary['n'], 1))
+        else:
+            within.append(result['inflection'] == primary['inflection'])
+    return {
+        'method': f'leave-one-source-out; N within {tolerance:.0%} of the primary',
+        'n_replays': len(replays),
+        'n_same_decision': int(sum(same)),
+        'n_within_tolerance': int(sum(within)),
+        'stable': bool(replays) and all(same) and all(within),
+        'primary': primary,
+    }
+
+
 def sha256(path):
     """Streaming sha256 of one file (reader-side digest check)."""
     digest = hashlib.sha256()
@@ -393,14 +585,19 @@ class GeneAxis:
                 for name, record in self.manifest()['outputs'].items()}
 
     # ---- payloads ------------------------------------------------------
-    def _verified(self, name):
+    def _declared(self, basename):
+        """The single manifest output whose basename is ``basename`` in gene-axis/."""
         manifest = self.manifest()
-        declared = manifest['outputs'].get(name)
-        if not isinstance(declared, dict):
-            raise ValueError(f'{name} is not a declared gene-axis output')
-        path = self.root.parent.parent / name
-        if not path.is_file():
-            path = self.root / Path(name).name
+        matches = [name for name in manifest['outputs']
+                   if Path(name).name == basename
+                   and Path(name).parent.name == 'gene-axis']
+        if len(matches) != 1:
+            raise ValueError(f'{basename} is not exactly one declared gene-axis output')
+        return matches[0], manifest['outputs'][matches[0]]
+
+    def _verified(self, basename):
+        name, declared = self._declared(basename)
+        path = self.root / basename
         if not path.is_file():
             raise FileNotFoundError(f'missing declared gene-axis output {name}')
         if sha256(path) != declared['sha256']:
@@ -409,20 +606,19 @@ class GeneAxis:
 
     def candidate_table(self):
         """All frozen-axis candidates with their seven source ranks and ``pN``."""
-        path = self._verified('output/gene-axis/candidate_rank_sum.csv')
+        path = self._verified('candidate_rank_sum.csv')
         table = pd.read_csv(path, dtype={'symbol': str}, float_precision='round_trip')
-        missing = set(CANDIDATE_COLUMNS) - set(table.columns)
-        if missing:
-            raise ValueError(f'{path}: candidate table lacks {sorted(missing)}')
+        expected = candidate_columns(self.axis_sizes())
+        if list(table.columns) != list(expected):
+            raise ValueError(f'{path}: candidate table columns differ from the release contract')
         return table
 
     def axis_frame(self, size):
         """The released axis as a frame (``gene_index``, ``symbol``), ascending."""
-        path = self._verified(f'output/gene-axis/gene_axis_{int(size)}.csv')
+        path = self._verified(f'gene_axis_{int(size)}.csv')
         frame = pd.read_csv(path, dtype={'symbol': str})
-        missing = set(AXIS_COLUMNS) - set(frame.columns)
-        if missing:
-            raise ValueError(f'{path}: axis file lacks {sorted(missing)}')
+        if list(frame.columns) != list(AXIS_COLUMNS):
+            raise ValueError(f'{path}: axis file columns differ from the contract')
         return frame
 
     def axis(self, size):
@@ -431,5 +627,5 @@ class GeneAxis:
 
     def composition(self):
         """The per-category / pN composition table of both released axes."""
-        path = self._verified('output/gene-axis/axis_composition.csv')
+        path = self._verified('axis_composition.csv')
         return pd.read_csv(path)

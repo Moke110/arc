@@ -21,8 +21,13 @@ EXECUTION = Path(__file__).resolve().parents[1]
 STEP = EXECUTION.parent
 sys.path.insert(0, str(EXECUTION))
 sys.path.insert(0, str(STEP / 'output/api'))
+sys.path.insert(0, str(STEP / 'figure/script'))
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
-from bases import gene_axis
+import build_gene_axis as driver
+import render_gene_axis_rank_sum_histogram as renderer
+from bases import deg_rank, gene_axis
+from bases.deg_rank import normalized_rank
+from bases.disease_deg import catalog_digest
 from bases.gene_axis import (
     AXIS_SIZES, CATEGORIES, CATEGORY_RANK_COLUMNS, CANDIDATE_COLUMNS, GeneAxis,
     category_rank, winning_tier,
@@ -45,6 +50,17 @@ def dataset_record(dataset_id, tier, isogenic=False, n_measured=8):
     if isogenic:
         record['isogenic_exception'] = {'applies': True, 'why': 'fixture isogenic pair'}
     return record
+
+
+class ReExportContractTests(unittest.TestCase):
+    """#186 contract: gene_axis re-exports the DEG/rank functions, never copies them."""
+
+    def test_deg_rank_contract_is_re_exported_by_identity(self):
+        for name in ('SymbolResolver', 'complete_rank', 'deg_effect', 'per_gene_deg',
+                     'rank_scores', 'ALIGNMENT_CATEGORIES', 'PADJ_FLOOR',
+                     'PADJ_THRESHOLD', 'normalized_rank', 'AXIS_SIZE'):
+            self.assertIs(getattr(gene_axis, name), getattr(deg_rank, name),
+                          f'bases.gene_axis.{name} is not bases.deg_rank.{name}')
 
 
 class WinningTierTests(unittest.TestCase):
@@ -322,6 +338,331 @@ class AxisFillTests(unittest.TestCase):
         counts = gene_axis.pn_distribution(p_n[6])
         self.assertEqual(counts.tolist(), [0, 1, 1, 1, 1, 1, 0, 3])
         self.assertEqual(int(counts.sum()), len(AXIS_SYMBOLS))
+
+
+class HistogramAndInflectionTests(unittest.TestCase):
+    """Evidence panel: rank-sum histogram and the diagnostic-only inflection."""
+
+    @staticmethod
+    def bent_curve(n=1000, knee=300):
+        # piecewise linear: y = x up to the knee, then a tenth of that slope.
+        # Both criteria then point at the same position, as the design intends.
+        x = np.arange(1, n + 1, dtype=np.float64)
+        y = np.where(x <= knee, x, knee + 0.1 * (x - knee))
+        return x, y
+
+    def test_histogram_covers_every_candidate_and_keeps_empty_bins(self):
+        values = np.array([0.1, 0.2, 0.2, 6.9])
+        frame = gene_axis.rank_sum_histogram(values, low=0.0, high=7.0, bins=7)
+        self.assertEqual(int(frame['count'].sum()), len(values))
+        self.assertEqual(frame['count'].tolist(), [3, 0, 0, 0, 0, 0, 1])
+        np.testing.assert_allclose(frame['bin_left'], np.arange(7, dtype=float))
+        np.testing.assert_allclose(frame['bin_center'], np.arange(7) + 0.5)
+
+    def test_histogram_rejects_values_outside_the_declared_interval(self):
+        with self.assertRaises(ValueError):
+            gene_axis.rank_sum_histogram(np.array([-0.1, 1.0]), low=0.0, high=7.0)
+        with self.assertRaises(ValueError):
+            gene_axis.rank_sum_histogram(np.array([7.5]), low=0.0, high=7.0)
+
+    def test_synthetic_knee_is_detected(self):
+        x, y = self.bent_curve()
+        result = gene_axis.detect_inflection(x, y, min_n=10)
+        self.assertTrue(result['inflection'])
+        self.assertIsNotNone(result['n'])
+        self.assertGreater(result['n'], 250)
+        self.assertLess(result['n'], 350)
+        self.assertIn('parameters', result)
+        self.assertIn('sensitivity', result['parameters'])
+        self.assertIsNotNone(result['kneedle'])
+        self.assertIsNotNone(result['second_difference'])
+
+    def test_straight_line_has_no_inflection(self):
+        x = np.arange(1, 1001, dtype=np.float64)
+        y = 2.0 + 0.001 * x
+        result = gene_axis.detect_inflection(x, y, min_n=10)
+        self.assertFalse(result['inflection'])
+        self.assertIsNone(result['n'])
+        self.assertIsNotNone(result['parameters'])
+
+    def test_stability_reports_leave_one_source_out_agreement(self):
+        x, y = self.bent_curve()
+        stable = gene_axis.inflection_stability([(x, y), (x, y * 1.001), (x, y * 0.999)])
+        self.assertTrue(stable['stable'])
+        self.assertEqual(stable['n_replays'], 2)
+        self.assertEqual(stable['n_same_decision'], 2)
+        straight = 2.0 + 0.001 * x
+        unstable = gene_axis.inflection_stability([(x, y), (x, straight)])
+        self.assertFalse(unstable['stable'])
+        self.assertEqual(unstable['n_same_decision'], 0)
+
+
+
+# ---- hermetic release fixture ------------------------------------------------
+
+IDENTITY = np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
+SECOND = np.array([8, 1, 2, 3, 4, 5, 6, 7], dtype=np.int64)
+FIXTURE_CATEGORIES = {
+    'nhf': [('nhf_a', 1, False, IDENTITY)],
+    'icm': [('icm_a', 1, False, IDENTITY)],
+    'af': [('af_a', 1, False, IDENTITY)],
+    'genetic_cardiomyopathy': [
+        ('gcm_tier1', 1, False, IDENTITY),
+        ('gcm_isogenic', 2, True, SECOND),
+        ('gcm_dropped', 2, False, SECOND),
+    ],
+    'cardiotox_TOP2': [('top2_a', 2, False, IDENTITY)],
+    'cardiotox_other': [('other_a', 2, False, IDENTITY)],
+}
+FIXTURE_AXIS_SIZES = (4, 6)
+FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
+
+
+def write_fixture(root, *, drop_method=False, drop_derived=False):
+    """Write a hermetic mini repository: axis, tenv ranking and six catalogs."""
+    root = Path(root)
+    step = root / 'stage2/01_bases'
+    genes = axis_fixture()
+    genes_path = step / 'output/gene-identity/genes.csv'
+    genes_path.parent.mkdir(parents=True, exist_ok=True)
+    genes.to_csv(genes_path, index=False, lineterminator='\n')
+    tenv = pd.DataFrame({
+        'gene_index': np.arange(len(AXIS_SYMBOLS)),
+        'log_mean': np.zeros(len(AXIS_SYMBOLS)),
+        'log_dispersion': np.zeros(len(AXIS_SYMBOLS)),
+        'normalized_dispersion': -FIXTURE_TENV_RANK.astype(float),
+        'rank': FIXTURE_TENV_RANK,
+    })
+    tenv_path = step / 'output/tenv-hvg/descriptive.csv'
+    tenv_path.parent.mkdir(parents=True, exist_ok=True)
+    tenv.to_csv(tenv_path, index=False, line_terminator='\n') if False else tenv.to_csv(
+        tenv_path, index=False, lineterminator='\n')
+    disease = step / 'output/disease-deg'
+    for category, records in FIXTURE_CATEGORIES.items():
+        directory = disease / category
+        directory.mkdir(parents=True, exist_ok=True)
+        canon = category not in ('cardiotox_TOP2', 'cardiotox_other')
+        catalog_records, outputs = [], {}
+        for dataset_id, tier, isogenic, rank in records:
+            rank_name = f'{dataset_id}.rank.csv'
+            frame = pd.DataFrame({'gene_index': np.arange(len(AXIS_SYMBOLS)),
+                                  'rank': rank,
+                                  'rank_norm': normalized_rank(rank, len(AXIS_SYMBOLS))})
+            frame.to_csv(directory / rank_name, index=False, lineterminator='\n')
+            outputs[rank_name] = {'sha256': hashlib.sha256(
+                (directory / rank_name).read_bytes()).hexdigest()}
+            record = {
+                'dataset_id': dataset_id, 'tier': tier,
+                'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
+                'n_measured': len(AXIS_SYMBOLS),
+                'n_significant': 2, 'n_case': 3, 'n_control': 3,
+                'deg': f'{dataset_id}.deg.csv', 'rank': rank_name,
+                'method': {'model': 'fixture'},
+                'inputs': {'fixture_input.csv': {
+                    'sha256': hashlib.sha256(b'fixture-input').hexdigest()}},
+            }
+            if isogenic:
+                record['isogenic_exception'] = {'applies': True}
+            if canon:
+                record['derived_inputs'] = [{
+                    'relative': 'local/deg/fixture.csv',
+                    'sha256': hashlib.sha256(b'fixture-derived').hexdigest()}]
+            if drop_method and dataset_id == 'nhf_a':
+                record.pop('method')
+            if drop_derived and dataset_id == 'nhf_a':
+                record.pop('derived_inputs')
+            catalog_records.append(record)
+        catalog = {
+            'schema': 'stage2-disease-deg-catalog-v1',
+            'category': {'nhf': 'nHF'}.get(category, category),
+            'directory': category, 'axis_size': len(AXIS_SYMBOLS),
+            'tier': 1 if canon else 2,
+            'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
+            'datasets': catalog_records,
+        }
+        if canon:
+            catalog['rank_contract'] = 'stage2-disease-deg-v1'
+        catalog['catalog_sha256'] = catalog_digest(catalog)
+        (directory / 'catalog.json').write_text(
+            json.dumps(catalog, indent=2, sort_keys=True) + '\n')
+        (directory / 'manifest.json').write_text(json.dumps({
+            'schema': 'stage2-disease-deg-release-v1',
+            'catalog_sha256': catalog['catalog_sha256'],
+            'outputs': dict(sorted(outputs.items())),
+        }, indent=2, sort_keys=True) + '\n')
+    return driver.default_config(
+        root=root,
+        output=step / 'output/gene-axis',
+        figure_data=step / 'figure/data/gene_axis_rank_sum_histogram.csv',
+        axis_sizes=FIXTURE_AXIS_SIZES)
+
+
+def manifest_strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from manifest_strings(key)
+            yield from manifest_strings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from manifest_strings(item)
+
+
+class ReleaseBuildTests(unittest.TestCase):
+    """Candidate-then-replace publication, replay determinism and the reader seam."""
+
+    def test_publish_products_and_reader_contract(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            result = driver.publish(config)
+            self.assertEqual(result['n_candidates'], len(AXIS_SYMBOLS))
+            reader = GeneAxis(config.output)
+            manifest = reader.manifest()
+            self.assertEqual(manifest['schema'], gene_axis.SCHEMA)
+            self.assertEqual(reader.axis_sizes(), FIXTURE_AXIS_SIZES)
+            table = reader.candidate_table()
+            self.assertEqual(list(table.columns),
+                             list(gene_axis.candidate_columns(FIXTURE_AXIS_SIZES)))
+            self.assertEqual(len(table), len(AXIS_SYMBOLS))
+            np.testing.assert_array_equal(reader.axis(4), np.array([0, 1, 6, 7]))
+            np.testing.assert_array_equal(reader.axis(6), np.array([2, 3, 4, 5, 6, 7]))
+            self.assertFalse(set(reader.axis(4)) <= set(reader.axis(6)))
+            self.assertEqual(manifest['intersection']['n_intersection'], 2)
+            self.assertEqual(manifest['intersection']['sizes'], [4, 6])
+            self.assertEqual(manifest['categories']['genetic_cardiomyopathy']
+                             ['winning_tier'], 1)
+            self.assertEqual(
+                manifest['categories']['genetic_cardiomyopathy']['retained_by_exception'],
+                ['gcm_isogenic'])
+            self.assertNotIn('gcm_dropped',
+                             [record['dataset_id'] for record in
+                              manifest['categories']['genetic_cardiomyopathy']['datasets']])
+            self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 8 + 8))
+            for text in manifest_strings(manifest):
+                self.assertFalse(text.startswith('/'), f'absolute path in manifest: {text}')
+
+    def test_publish_preserves_the_retired_gene_axis_file_set(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            config.output.mkdir(parents=True, exist_ok=True)
+            legacy = config.output / 'fused_rank.csv'
+            legacy.write_text('retired product\n')
+            driver.publish(config)
+            self.assertTrue(legacy.is_file())  # removal is #192's job, not #190's
+
+    def test_publish_is_deterministic_across_roots(self):
+        with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
+            config_a = write_fixture(Path(first) / 'repo')
+            config_b = write_fixture(Path(second) / 'repo')
+            result_a = driver.publish(config_a)
+            result_b = driver.publish(config_b)
+            self.assertEqual(result_a['outputs'], result_b['outputs'])
+            self.assertEqual(
+                sha256_file(config_a.output / 'manifest.json'),
+                sha256_file(config_b.output / 'manifest.json'))
+
+    def test_verify_replays_and_detects_tampering(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            driver.publish(config)
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+            candidate = config.output / 'candidate_rank_sum.csv'
+            original = candidate.read_text()
+            candidate.write_text(original + '\n')
+            with self.assertRaises(ValueError):
+                driver.verify(config)
+            candidate.write_text(original)
+
+    def test_failed_publish_keeps_the_accepted_release(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            driver.publish(config)
+            before = sha256_file(config.output / 'manifest.json')
+            tenv = config.tenv_hvg
+            original = tenv.read_text()
+            corrupted = pd.read_csv(tenv)
+            corrupted.loc[1, 'rank'] = corrupted.loc[0, 'rank']
+            corrupted.to_csv(tenv, index=False, lineterminator='\n')
+            with self.assertRaises(ValueError):
+                driver.publish(config)
+            self.assertEqual(sha256_file(config.output / 'manifest.json'), before)
+            tenv.write_text(original)
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+
+    def test_uncontracted_catalog_shape_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary), drop_method=True)
+            with self.assertRaises(ValueError):
+                driver.publish(config)
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary), drop_derived=True)
+            with self.assertRaises(ValueError):
+                driver.publish(config)
+
+
+def sha256_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+class FigureTests(unittest.TestCase):
+    """The evidence PNG is a function of its plotted-values CSV alone."""
+
+    @staticmethod
+    def synthetic_rows():
+        rows = [{'record': 'figure', 'title': 'fixture'},
+                {'record': 'panel', 'panel': 'a', 'panel_title': 'rank-sum histogram'}]
+        for index in range(4):
+            rows.append({'record': 'hist', 'bin_left': index, 'bin_right': index + 1,
+                         'bin_center': index + 0.5, 'count': 10 + index,
+                         'share': (10 + index) / 46})
+        for axis, low, high, median in (('2000', 0.5, 2.0, 1.0),
+                                        ('5000', 0.9, 3.0, 1.8)):
+            rows.append({'record': 'interval', 'axis': axis, 'interval_low': low,
+                         'interval_high': high, 'median': median})
+        rows.append({'record': 'marker', 'inflection': False, 'inflection_n': '',
+                     'note': 'no inflection'})
+        return rows
+
+    def test_renderer_rejects_incomplete_csv(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'bad.csv'
+            path.write_text('record,panel,panel_title,title\nfigure,,,,x\n')
+            with self.assertRaises(ValueError):
+                renderer.load(path)
+
+    def test_synthetic_csv_renders_byte_identically_twice(self):
+        rows = self.synthetic_rows()
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            path = temporary / 'figure.csv'
+            fields = sorted({key for row in rows for key in row})
+            with path.open('w', newline='') as handle:
+                writer = csv.DictWriter(handle, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows(rows)
+            first, second = temporary / 'first.png', temporary / 'second.png'
+            renderer.render(*renderer.load(path), first)
+            renderer.render(*renderer.load(path), second)
+            self.assertEqual(sha256_file(first), sha256_file(second))
+
+    def test_committed_figure_replays_from_its_csv_alone(self):
+        csv_path = STEP / 'figure/data/gene_axis_rank_sum_histogram.csv'
+        png_path = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        self.assertTrue(csv_path.is_file(), f'missing plotted-values CSV: {csv_path}')
+        self.assertTrue(png_path.is_file(), f'missing committed figure: {png_path}')
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            copied = temporary / 'figure.csv'
+            copied.write_bytes(csv_path.read_bytes())
+            rendered = temporary / 'rendered.png'
+            renderer.render(*renderer.load(copied), rendered)
+            self.assertEqual(sha256_file(rendered), sha256_file(png_path))
+        source = Path(renderer.__file__).read_text(encoding='utf-8')
+        self.assertNotIn('read_csv', source)
+        self.assertNotIn('read_excel', source)
+        self.assertNotIn("palette.csv", source)
+        self.assertNotIn("manifest.json", source)
 
 
 if __name__ == '__main__':
