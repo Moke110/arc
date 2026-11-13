@@ -37,6 +37,40 @@
   `execution/tests/release_fixtures.py`; run each file individually. The pre-0066
   raw/training products stay present read-only until the removal ticket (#192).
 
+## Disease DEGs: nHF / ICM / AF (#187, ADR 0066)
+
+- Public implementation: `output/api/bases/disease_deg.py` — the contract layer
+  (`align_source_table`, `build_dataset_products`, `genotype_split`,
+  `contrast_selection`, `validate_table`, `validate_rank`, the
+  `DiseaseDeg` reader, category catalog/release-manifest assembly) plus
+  `output/api/bases/disease_deg.R`, the **one live DEG implementation** for the
+  disease side (limma: voom for integer counts, `lmFit` on the log-scale deposit;
+  the pinned arc R env has limma but no edgeR, so voom's own library-size
+  normalisation is used and TMM is deliberately not re-implemented).
+- Sources: `disease_data/GSE270788`, `disease_data/GSE255612` and
+  `disease_data/Reichart-CM` (ADR 0030 items; CM gate + per-donor pseudobulk +
+  item-local DEG in each item's `script/`). They import the public module through
+  `execution/public_api.py`; do not copy the pseudobulk or DEG logic into them.
+- Driver: `execution/build_disease_deg.py publish|verify --all` (also
+  `--category nHF|ICM|AF`), with `--root/--input-root/--sources` as test seams.
+  Candidates stage in `execution/checkpoints/`; verify replays from the pinned
+  item-local DEGs and compares every digest. Products:
+  `output/disease-deg/{nhf,icm,af}/` — per dataset `<dataset>.deg.csv` +
+  `<dataset>.rank.csv` (18,164-row frozen-axis rank frame) plus per-category
+  `catalog.json` and `manifest.json`. There is deliberately no top-level
+  catalog/manifest: `#190` aggregates per category.
+- Source declarations (eligibility, tier, `shared_control_group`,
+  `genotype_status`, `time_window_basis`, contrasts, n_case/n_control) are data
+  in `execution/disease_deg_sources.py`; the published catalog carries them
+  verbatim.
+- Tests: `execution/tests/test_disease_deg_human_sc.py` + `disease_deg_fixtures.py`
+  (hermetic; schema, rank/tie-break, NA/unmeasured, genotype split, joint-design
+  arm collapse, determinism, no absolute paths). Run each file individually.
+- GSE270788 erratum: the deposit's arm sizes are Donor 7 / NICM 6 / ICM 5 / AMI 5
+  (both label sources), not the ticket's 6/7; the deposit is used unchanged and
+  `n_case`/`n_control` are 6/7, 5/7, 5/7. Recorded in issue #187 and the item
+  author log; #192 carries it into ADR 0066.
+
 ## Drug-cardiotoxicity class evidence (#189, ADR 0066)
 
 - Public implementation: `output/api/bases/cardiotox.py` (pinned code→drug→

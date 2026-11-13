@@ -1,0 +1,155 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv",
+    "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "size": 18164
+  },
+  "axis_size": 18164,
+  "catalog_sha256": "e60777aa5033f986fa99380a10be7d3810ea94f632dfde516dab91e8ed3a7164",
+  "category": "nHF",
+  "datasets": [
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 16579,
+          "crosswalk_alias": 315,
+          "ensembl": 216,
+          "offaxis": 35,
+          "unmapped": 12446
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17092,
+        "n_recovered_by_identifier": 436,
+        "n_resolved": 17110,
+        "n_source_rows": 29591,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 16579,
+          "crosswalk_alias": 95,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17092,
+          "n_resolved": 16674,
+          "n_source_symbols": 29591,
+          "offaxis": 35,
+          "unmapped": 12882
+        }
+      },
+      "arm_or_class": "NICM arm (6 donors) vs the seven shared Donor controls",
+      "category": "nHF",
+      "contrasts": [
+        "NICM-Donor"
+      ],
+      "dataset_id": "gse270788__nicm",
+      "deg": "gse270788__nicm.deg.csv",
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "inputs": {
+        "disease_data/GSE270788/local/deg/gse270788_deg.csv": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12",
+        "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+        "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b",
+        "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts",
+        "design": "one joint fit ~0 + arm over Donor/NICM/ICM/AMI (shared Donor controls)",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human left-ventricle 10x Multiome CM pseudobulk",
+      "n_axis_unmeasured": 1072,
+      "n_case": 6,
+      "n_control": 7,
+      "n_measured": 17092,
+      "n_significant": 7,
+      "rank": "gse270788__nicm.rank.csv",
+      "shared_control_group": "gse270788:donor",
+      "source_item": "disease_data/GSE270788",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 17513
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17513,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 17513,
+        "n_source_rows": 17513,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 17513,
+          "crosswalk_alias": 0,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17513,
+          "n_resolved": 17513,
+          "n_source_symbols": 17513,
+          "offaxis": 0,
+          "unmapped": 0
+        }
+      },
+      "arm_or_class": "genotype-negative DCM donors vs the object's normal donors",
+      "category": "nHF",
+      "contrasts": [
+        "dcm_genotype_negative-normal"
+      ],
+      "dataset_id": "reichart-cm__dcm_genotype_negative",
+      "deg": "reichart-cm__dcm_genotype_negative.deg.csv",
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "negative",
+      "inputs": {
+        "disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv": "1eafc8272ae15d6a34c452a51708e2452387a9921aaf751e45bc6730cdf6c732",
+        "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
+        "disease_data/Reichart-CM/local/genotype/reichart-cm_donor_genotypes.csv": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb",
+        "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts",
+        "design": "one joint fit ~0 + status over normal / genotype-negative DCM / genotype-positive DCM / ARVC; positive and ARVC donors share the fit for dispersion but publish no DEG in this ticket",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human LV/RV/apex/IVS sc+snRNA CM-only cellxgene object pseudobulk",
+      "n_axis_unmeasured": 651,
+      "n_case": 0,
+      "n_control": 0,
+      "n_measured": 17513,
+      "n_significant": 3297,
+      "rank": "reichart-cm__dcm_genotype_negative.rank.csv",
+      "shared_control_group": "reichart-cm:normal",
+      "source_item": "disease_data/Reichart-CM",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    }
+  ],
+  "directory": "nhf",
+  "evidence_type": "cm_pseudobulk",
+  "rank_contract": "stage2-disease-deg-v1",
+  "rejected": [
+    {
+      "candidate": "GSE183852",
+      "reason": "eligible human LV CM source, but CM labels live only inside 2.1-12 GB Seurat Robj objects; ad-hoc re-clustering is forbidden"
+    },
+    {
+      "candidate": "cellxgene myocarditis CM object",
+      "reason": "shares its normal donors with the Reichart object, so the two cannot both count as independent sources"
+    },
+    {
+      "candidate": "GSE141910 / GSE116250 / GSE128188 / GSE282618",
+      "reason": "whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived"
+    }
+  ],
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 1
+}

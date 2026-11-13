@@ -1,0 +1,156 @@
+{
+  "category": "nHF",
+  "contrasts": {
+    "dcm_genotype_negative-normal": {
+      "n_case": 8,
+      "n_control": 18
+    }
+  },
+  "deg": {
+    "n_source_genes": 17513,
+    "path": "local/deg/reichart-cm_deg.csv",
+    "rows": 17513,
+    "sha256": "1eafc8272ae15d6a34c452a51708e2452387a9921aaf751e45bc6730cdf6c732"
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "normal",
+        "label": "dcm_genotype_negative-normal",
+        "numerator": "dcm_genotype_negative"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "design_ambiguities": {
+    "genotype_first": "donors are split by Primary.Genetic.Diagnosis, not by the study disease label; genotype-positive DCM and the 8 ARVC donors move out of nHF",
+    "joint_design": "one joint fit ~0 + status over normal / genotype-negative DCM / genotype-positive DCM / ARVC; only the genotype-negative DCM vs normal contrast is published here"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "grouparvc",
+      "groupdcm_genotype_negative",
+      "groupdcm_genotype_positive",
+      "groupnormal"
+    ],
+    "contrasts": [
+      "dcm_genotype_negative-normal"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 17513,
+    "n_genes_tested": 17513,
+    "n_rows": 17513,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "gate": "cell_type == \"cardiac muscle cell\" (CM-only object)",
+  "genotype_table": {
+    "note": "tracked compact export for ticket #188",
+    "path": "local/genotype/reichart-cm_donor_genotypes.csv",
+    "sha256": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb"
+  },
+  "item": "Reichart-CM",
+  "method": {
+    "contrast_direction": "positive log2FC = up in genotype-negative DCM vs normal",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "c1d46ea51daaec506d0e395c3f0c7e085b26972d826dfb053dd7cea5e7db9fb8",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "pseudobulk": {
+    "axis_aligned": true,
+    "cells_per_donor": {
+      "D1": 5752,
+      "D2": 6291,
+      "D4": 8482,
+      "D5": 9100,
+      "D6": 5823,
+      "D7": 6396,
+      "DL2": 2569,
+      "DL3": 66,
+      "DO1": 214,
+      "DP1": 2629,
+      "DP2": 1338,
+      "DS3": 363,
+      "DT4": 3979,
+      "H01": 2913,
+      "H02": 1854,
+      "H03": 3194,
+      "H04": 1736,
+      "H05": 4094,
+      "H06": 3726,
+      "H07": 2440,
+      "H08": 6146,
+      "H09": 1464,
+      "H10": 3955,
+      "H11": 2901,
+      "H12": 8993,
+      "H13": 4384,
+      "H14": 3533,
+      "H15": 534,
+      "H16": 2202,
+      "H17": 1818,
+      "H18": 952,
+      "H19": 2400,
+      "H2": 5961,
+      "H20": 2835,
+      "H21": 186,
+      "H22": 3334,
+      "H24": 3366,
+      "H25": 5071,
+      "H26": 3909,
+      "H27": 3771,
+      "H28": 4036,
+      "H29": 4201,
+      "H3": 10824,
+      "H31": 7505,
+      "H32": 213,
+      "H33": 4947,
+      "H34": 4402,
+      "H35": 3885,
+      "H36": 2557,
+      "H37": 1864,
+      "H39": 3215,
+      "H4": 10130,
+      "H40": 2127,
+      "H41": 4454,
+      "H42": 2240,
+      "H44": 226,
+      "H46": 5355,
+      "H49": 8531,
+      "H5": 20568,
+      "H51": 3812,
+      "H53": 5307,
+      "H55": 2942,
+      "H56": 585,
+      "H57": 326,
+      "H58": 60,
+      "H59": 797,
+      "H6": 13564,
+      "H67": 1781,
+      "H7": 11206,
+      "H73": 752,
+      "H78": 1214,
+      "H79": 12609,
+      "H80": 5839,
+      "H81": 2180,
+      "IC_H01": 868,
+      "IC_H02": 1624,
+      "IC_H03": 35,
+      "IC_H04": 889
+    },
+    "donors": 78,
+    "dtype": "integer counts summed per donor across that donor's CM cells",
+    "excluded_donors": [],
+    "path": "local/pseudobulk/reichart-cm_cm_pseudobulk.csv.gz",
+    "sha256": "4b94576a6b3b1cf7173dda83116ad85d1df97b7f2d1be13cdfa4435eb9f37643"
+  },
+  "schema": "stage2-item-deg-summary-v1"
+}

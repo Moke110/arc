@@ -1,0 +1,266 @@
+{
+  "cells_per_donor": {
+    "P1279_3n": 613,
+    "P1296_1n": 4520,
+    "P1334_3n": 881,
+    "P1357_2n": 1023,
+    "P1360_1n": 781,
+    "P1365_1n": 663,
+    "P1369_3n": 522,
+    "P1377_3n": 393,
+    "P1440_1n": 1149,
+    "P1465_1n": 1802,
+    "P1488_2n": 1996,
+    "P1490_3n": 1312,
+    "P1498_1n": 266,
+    "P1513_1n": 152,
+    "P1515_1n": 1006,
+    "P1540_3n": 886,
+    "P1543_1n": 1080,
+    "P1558_1n": 1438,
+    "P1561_1n": 130,
+    "P1570_1n": 500,
+    "P1582_1n": 135,
+    "P1588_1n": 1178,
+    "P1591_1n": 1211,
+    "P1593_1n": 751,
+    "P1603_1n": 562,
+    "P1610_1n": 314,
+    "P1623_1n": 763,
+    "P1626_1n": 1293,
+    "P1696_1n": 378,
+    "P1698_3n": 400,
+    "P1741_1n": 654,
+    "P1758_1n": 1133,
+    "P1762_1n": 642,
+    "P1789_1n": 1911
+  },
+  "deposit_format": "Matrix Market feature x cell, real log1p(CP10K) values",
+  "donor_column": "donor_id",
+  "donors": [
+    {
+      "cells_cm": 613,
+      "cells_total": 6166,
+      "donor_id": "P1279_3n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 4520,
+      "cells_total": 6736,
+      "donor_id": "P1296_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 881,
+      "cells_total": 6713,
+      "donor_id": "P1334_3n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1023,
+      "cells_total": 4278,
+      "donor_id": "P1357_2n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 781,
+      "cells_total": 6415,
+      "donor_id": "P1360_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 663,
+      "cells_total": 3711,
+      "donor_id": "P1365_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 522,
+      "cells_total": 2832,
+      "donor_id": "P1369_3n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 393,
+      "cells_total": 4383,
+      "donor_id": "P1377_3n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1149,
+      "cells_total": 3138,
+      "donor_id": "P1440_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 1802,
+      "cells_total": 6332,
+      "donor_id": "P1465_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1996,
+      "cells_total": 5479,
+      "donor_id": "P1488_2n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 1312,
+      "cells_total": 7542,
+      "donor_id": "P1490_3n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 266,
+      "cells_total": 3300,
+      "donor_id": "P1498_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 152,
+      "cells_total": 2918,
+      "donor_id": "P1513_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 1006,
+      "cells_total": 6522,
+      "donor_id": "P1515_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 886,
+      "cells_total": 5216,
+      "donor_id": "P1540_3n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 1080,
+      "cells_total": 5618,
+      "donor_id": "P1543_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1438,
+      "cells_total": 6478,
+      "donor_id": "P1558_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 130,
+      "cells_total": 2034,
+      "donor_id": "P1561_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 500,
+      "cells_total": 3340,
+      "donor_id": "P1570_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 135,
+      "cells_total": 3833,
+      "donor_id": "P1582_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1178,
+      "cells_total": 9471,
+      "donor_id": "P1588_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 1211,
+      "cells_total": 3510,
+      "donor_id": "P1591_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 751,
+      "cells_total": 5252,
+      "donor_id": "P1593_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 562,
+      "cells_total": 5140,
+      "donor_id": "P1603_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 314,
+      "cells_total": 6294,
+      "donor_id": "P1610_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 763,
+      "cells_total": 5435,
+      "donor_id": "P1623_1n",
+      "group": "control"
+    },
+    {
+      "cells_cm": 1293,
+      "cells_total": 5320,
+      "donor_id": "P1626_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 378,
+      "cells_total": 4759,
+      "donor_id": "P1696_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 400,
+      "cells_total": 4173,
+      "donor_id": "P1698_3n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 654,
+      "cells_total": 5795,
+      "donor_id": "P1741_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1133,
+      "cells_total": 8062,
+      "donor_id": "P1758_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 642,
+      "cells_total": 6669,
+      "donor_id": "P1762_1n",
+      "group": "case"
+    },
+    {
+      "cells_cm": 1911,
+      "cells_total": 6833,
+      "donor_id": "P1789_1n",
+      "group": "case"
+    }
+  ],
+  "donors_sha256": "2f6064950b5f7f6242fcf04a9ced2e5d2e09e91c0d523efe608cdfba9ca53314",
+  "gate": "cell_type == \"Cardiomyocytes\"",
+  "group_column": "af (case/control)",
+  "item": "GSE255612",
+  "n_cells_cm": 32438,
+  "n_cells_total": 179697,
+  "n_donors": 34,
+  "n_genes": 36600,
+  "n_mtx_nonzero": 288701961,
+  "normalization_check": {
+    "conclusion": "deposited values are log1p(CP10K); expm1 recovers linear CP10K",
+    "expected_cp10k_total": 10000.0,
+    "median_cell_cp10k_total": 9999.979655081115,
+    "n_sampled_cells": 179697,
+    "p05_cell_cp10k_total": 9996.839250552623,
+    "p95_cell_cp10k_total": 10003.164719722285
+  },
+  "pseudobulk_basis": "per-donor mean over CM cells of the linear CP10K value (expm1 of the deposited log1p value)",
+  "pseudobulk_sha256": "8988afbebfbaff511471fe8f5dba7d8ffd6dc27a7172784079617b705b73470f",
+  "schema": "stage2-item-cm-pseudobulk-v1"
+}

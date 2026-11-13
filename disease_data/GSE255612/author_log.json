@@ -1,0 +1,68 @@
+{
+  "item": "GSE255612",
+  "category": "disease_data",
+  "purpose": "Human left-atrium 10x 3' v3 snRNA source for the Stage 2 gene axis (ADR 0066): 18 AF / 16 control donors gated on the author CM label, one CM pseudobulk per donor, and one limma DEG that supplies the AF category. The deposit is normalised expression (log1p(CP10K)), so the DEG is a documented linear model on the log2-scale pseudobulk rather than a count model.",
+  "retrieved_at": "2026-11-13T14:47+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE255612",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE255612",
+      "version": "GSE255612",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP series suppl/: the 1,003,414,933 B Scanpy Matrix-Market matrix, its 277,568 B feature axis and the 8,846,174 B cell metadata table, byte-identical; the matrix is fetched as parallel byte ranges because GEO throttles one connection, and gzip integrity is checked afterwards)",
+      "path": "source/",
+      "files": 3,
+      "bytes": 1012538675,
+      "tree_sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/pseudobulk/gse255612_cm_pseudobulk.csv.gz",
+      "origin": "per-donor CM pseudobulk: the deposited values are log1p(CP10K), so expm1 recovers linear CP10K; each donor's CM cells are summed in that linear space and divided by the donor's CM cell count (mean CP10K per cell, so the profile does not scale with how many CM cells a donor yielded). 36,600 genes x 34 donors. Regenerable, never tracked (item .gitignore).",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/pseudobulk/gse255612_donors.csv",
+      "origin": "per-donor cells/group table: donor_id, af case/control, cells_total, cells_cm; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/pseudobulk/gse255612_cm_pseudobulk.json",
+      "origin": "tracked summary: CM gate (32,438 CM cells), 34 donors (18 case / 16 control, 130-4,520 CM per donor), the normalisation proof (sum(expm1(value)) == 1e4 on all 179,697 cells: median 9,999.98, p05 9,996.84, p95 10,003.16), pseudobulk/donors digests",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/deg/gse255612_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene for the AF vs control contrast (source_gene_id = Ensembl, gene_symbol, log2FC, moderated t, p, BH padj, AveExpr); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/gse255612_deg.json",
+      "origin": "tracked compact DEG summary: one joint ~0 + group fit over 34 donors, n_case 18 / n_control 16, limma-on-log2(pseudobulk) method, R+limma versions, digests",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/gse255612_log_matrix.tsv.gz",
+      "origin": "item-local fit input: log2(mean CP10K + 1) gene x donor matrix handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/gse255612_samples.csv",
+      "origin": "item-local fit design sheet: donor -> AF/control; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/pseudobulk and local/deg additions",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T14:48+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE255612, human left atrium, 10x 3' v3 snRNA. The usable payload is one Scanpy Matrix-Market matrix (36,600 features x 179,697 cells, 288,701,961 nonzeros, REAL values) plus its feature axis and the author cell table; the series-matrix processing note says 'Processed data files output from Scanpy as gene expression matrix'. The metadata rows are in matrix column order (verified against the deposited barcodes_V1 file, which is NOT stored: the order is reproducible from the metadata itself), so no barcode file is fetched. NORMALISATION PROOF: for a single-count gene the deposited value equals log1p(1e4/n_umi); over every cell, sum(expm1(value)) = 10,000 (median 9,999.98, p05 9,996.84, p95 10,003.16), so the deposit is log1p(CP10K), not counts. GATE: cell_type == 'Cardiomyocytes' selects 32,438 CM cells (130-4,520 per donor); the author af column gives 18 case / 16 control donors, matching the ADR roster. PSEUDOBULK: mean over each donor's CM cells of expm1(value) (linear CP10K); dividing by the donor's CM count is required because cell counts differ 35-fold across donors, so a raw sum would be a cell-count artifact. DEG: one joint limma fit, design ~0 + group over the 34 donor pseudobulk profiles on the log2(mean_CP10K + 1) scale; the deposit is normalised expression, so a count model would be inappropriate and the documented linear model is used. No expression filter: all 36,600 deposited features are tested and every one is reported; after BH over 36,600 tests the AF contrast has 0 genes at padj < 0.05 (smallest p 2.0e-5, 1,144 genes at nominal p < 0.05, |log2FC| <= 0.63) — the rank is the fusion input, so a weak-significance dataset still contributes its ordering and its n_measured, and this is recorded rather than hidden. BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; pseudobulk peak RSS 1,350,828 KiB (~1.29 GiB), wall 47 s (the 1 GB mtx was streamed in 20M-row chunks, only CM cells accumulated); DEG peak RSS 222,984 KiB, wall 2.3 s. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_pseudobulk.py -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T14:48+08:00"
+}

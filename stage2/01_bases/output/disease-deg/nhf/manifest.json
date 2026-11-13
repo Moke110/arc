@@ -1,0 +1,49 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv"
+  },
+  "catalog_sha256": "e60777aa5033f986fa99380a10be7d3810ea94f632dfde516dab91e8ed3a7164",
+  "category": "nHF",
+  "counts": {
+    "datasets": 2,
+    "n_measured": {
+      "gse270788__nicm": 17092,
+      "reichart-cm__dcm_genotype_negative": 17513
+    }
+  },
+  "inputs": {
+    "disease_data/GSE270788/local/deg/gse270788_deg.csv": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12",
+    "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+    "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b",
+    "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb",
+    "disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv": "1eafc8272ae15d6a34c452a51708e2452387a9921aaf751e45bc6730cdf6c732",
+    "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
+    "disease_data/Reichart-CM/local/genotype/reichart-cm_donor_genotypes.csv": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb",
+    "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66",
+    "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+  },
+  "outputs": {
+    "catalog.json": {
+      "sha256": "b2dbd9977c49fdce2bb19a5cf269a9cad0e4bec76dccef87694e8de21968b26b"
+    },
+    "gse270788__nicm.deg.csv": {
+      "rows": 17092,
+      "sha256": "6b09a27a9892650a019cc85b129506cee373c23e0aec3652f6bb47b997984090"
+    },
+    "gse270788__nicm.rank.csv": {
+      "rows": 18164,
+      "sha256": "c63f43b3d5d7b91a4b94ea4a16e829c8327c88ae782a050a61cefc91a7d3e8a9"
+    },
+    "reichart-cm__dcm_genotype_negative.deg.csv": {
+      "rows": 17513,
+      "sha256": "f154bfaa70859b1ff9e60f1b3bdefabee5f3aa8cc42f2e3740b406d5f011aa90"
+    },
+    "reichart-cm__dcm_genotype_negative.rank.csv": {
+      "rows": 18164,
+      "sha256": "93a0e1a4cab8cbac3cb2d025fe45d0f4fe85e98f7b31c78458071848b1e09445"
+    }
+  },
+  "recipe": "execution/build_disease_deg.py publish --category nHF",
+  "schema": "stage2-disease-deg-release-v1"
+}

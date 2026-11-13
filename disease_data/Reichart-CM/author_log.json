@@ -1,0 +1,69 @@
+{
+  "item": "Reichart-CM",
+  "category": "disease_data",
+  "purpose": "Human cardiomyocyte single-cell/single-nucleus source for the Stage 2 gene axis (ADR 0066): the CM-only cellxgene object of the Reichart et al. cardiomyopathy collection. The object's donors are split by Primary.Genetic.Diagnosis: genotype-negative DCM donors supply the nHF CM-pseudobulk evidence, while genotype-positive DCM and the 8 ARVC donors are exported (single NCCM donor excluded) as the tracked compact per-donor pseudobulk + genotype table ticket #188 uses for genetic_cardiomyopathy.",
+  "retrieved_at": "2026-11-13T13:57+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "cellxgene:e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb/27fdbdf9-deae-4aed-bf7f-21964ee62137",
+      "url": "https://cellxgene.cziscience.com/collections/e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb",
+      "asset_url": "https://datasets.cellxgene.cziscience.com/27fdbdf9-deae-4aed-bf7f-21964ee62137.h5ad",
+      "version": "CELLxGENE dataset version 27fdbdf9-deae-4aed-bf7f-21964ee62137 (dataset f7995301-7551-4e1d-8396-ffe3c9497ace); collection e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb; object 'DCM/ACM heart cell atlas: Cardiomyocytes', schema 7.1.0, revised 2026-06-11",
+      "license": "CC BY 4.0 (CELLxGENE collection license; see collection page)",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from datasets.cellxgene.cziscience.com, 3,194,863,189 B, byte-identical; the object is stored under its version id; no other file is stored)",
+      "path": "source/",
+      "files": 1,
+      "bytes": 3194863189,
+      "tree_sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/pseudobulk/reichart-cm_cm_pseudobulk.csv.gz",
+      "origin": "axis-aligned per-donor CM pseudobulk: integer counts summed over each donor's cell_type == 'cardiac muscle cell' cells from raw/X, then mapped to the frozen 18,164 gene_index space (Ensembl first, then symbol; aliases summed). 18,164 rows x 78 donor columns (79 donors minus the single NCCM donor). Tracked compact export and the input ticket #188 uses.",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/pseudobulk/reichart-cm_cm_pseudobulk.json",
+      "origin": "tracked summary: CM gate, cells per donor, 8 genotype-negative DCM nHF cases / 18 normal controls / 52 ticket-188 export donors, the 1 excluded NCCM donor, native-gene alignment losses and pseudobulk digests",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/genotype/reichart-cm_donor_genotypes.csv",
+      "origin": "tracked compact per-donor table: donor_id, disease, Primary.Genetic.Diagnosis, normalized genotype label, genotype_status (negative/pathogenic), nHF_role (control/case/export_only/excluded), cells, fit group and exported_as; the genotype half of the ticket #188 export",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/deg/reichart-cm_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene for the genotype-negative DCM vs normal contrast (source_gene_id = axis symbol, log2FC/stat/p_value/padj/base_mean); regenerable, never tracked (disease_data item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/reichart-cm_deg.json",
+      "origin": "tracked compact DEG summary: one-joint-design statement (normal / genotype-negative / genotype-positive / ARVC), n_case 8 / n_control 18, limma-voom method, R+limma versions, input and output digests",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/reichart-cm_pseudobulk_matrix.tsv.gz",
+      "origin": "item-local fit input: gene x donor count matrix handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/reichart-cm_samples.csv",
+      "origin": "item-local fit design sheet: donor, group (normal / dcm_genotype_negative / dcm_genotype_positive / arvc); regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 sixth-member allowance: declares the regenerable local/ DEG additions so a fresh checkout stays clean while the tracked compact export stays in git",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T14:08+08:00",
+  "verify_result": "pass",
+  "notes": "OBJECT IDENTITY: the item is named by its collection/object identity (as pert_data/DToxS-iPSC is), because it is not a GEO series. Collection e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb, dataset version 27fdbdf9-deae-4aed-bf7f-21964ee62137, title 'DCM/ACM heart cell atlas: Cardiomyocytes', 311,418 cells, 32,383 features, schema 7.1.0. GATE: obs cell_type has exactly one category, 'cardiac muscle cell' (the object is CM-only), so every cell is gated in; the pseudobulk assumes no re-clustering. COUNTS: raw/X is the deposited count matrix (raw_data_location raw.X); values are integer counts (float32 storage) and were summed per donor in the linear space before any test. GENOTYPE SPLIT: obs Primary.Genetic.Diagnosis values are 'control' (18 normals), 'PVneg' (8 DCM donors without a pathogenic variant) and 12 pathogenic-variant gene names (BAG3, DES, DSP, FKTN, FLNC, LMNA, PKP2, PLN, RBM20, TNNC1, TNNT2, TTN, TPM1); the split is genotype-first as ADR 0066 requires, so the 8 DCM/PVneg donors are the nHF cases, the 44 genotype-positive DCM donors plus the 8 ARVC donors are the ticket-188 export, and the single NCCM donor (H84, TPM1) is excluded. H29 is disease-labelled ARVC with an LMNA genotype; it is kept in the ARVC export by its disease label and not used for nHF. ARMS: the object's 'assay' field is confounded with cohort (10x 3' v2 vs v3), so no assay term is fitted; this is declared rather than corrected. ALIGNMENT: native 32,383 features are Ensembl ids without version; 18,085 resolve to the frozen axis by the ticket-01 precedence (canonical symbol, then Ensembl); unresolved native features are recorded in the summary, never guessed. The object's controls are the same H-series normal donors as the dropped myocarditis object (declared shared_control_group reichart-cm:normal; the myocarditis object is not ingested). DEG: one joint limma-voom fit over 78 donors, design ~0 + status (normal / genotype-negative DCM / genotype-positive DCM / ARVC); only the genotype-negative DCM vs normal contrast publishes a DEG (17,513 tested genes, n_case 8, n_control 18). The pinned arc R env ships limma but not edgeR, so voom's own total-count library-size normalisation is used and TMM is deliberately not re-implemented. BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; pseudobulk peak RSS 870,940 KiB (~851 MiB), wall 22.9 s (675,760,435 raw/X nonzeros streamed in 4,000-cell chunks); DEG peak RSS 221,160 KiB, wall 2.3 s. R/limma recorded in local/deg/reichart-cm_deg.json. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_pseudobulk.py -> script/build_deg.py; the tracked pseudobulk digest is recorded in the summary and the genotype table digest too.",
+  "hashed_at": "2026-11-13T14:08+08:00"
+}
