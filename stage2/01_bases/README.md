@@ -166,7 +166,10 @@ Sources and derivations are ADR 0030 items: `disease_data/GSE270788`,
 pseudobulk is summed per donor before testing (integer counts for the count
 deposits, a per-donor mean CP10K for the normalised GSE255612 deposit), and the
 one live DEG implementation is `output/api/bases/disease_deg.R` (limma: voom for
-counts, `lmFit` for the log-scale deposit). GSE270788's three arms share one
+counts, `lmFit` for the log-scale deposit). The worker's `R_HOME` is resolved by
+`output/api/bases/r_env.py`: an explicit argument or `ARC_R_HOME` wins, otherwise
+the R of the conda env running the build (`<prefix>/lib/R`), otherwise the
+`Rscript` on `PATH`. GSE270788's three arms share one
 control set, so all three contrasts come from **one joint `~ 0 + arm` fit**
 over the 23 donor pseudobulk profiles rather than three case-control fits.
 
@@ -334,10 +337,13 @@ python stage2/01_bases/execution/build_disease_deg_cardiotox.py publish
 python stage2/01_bases/execution/build_disease_deg_cardiotox.py verify
 ```
 
-The build uses the repository's R build environment
-`/home/chang/miniconda3/envs/biomni_e1/bin/Rscript` (R 4.5.3, edgeR 4.8.2,
-DESeq2 1.50.2; recorded as `conda:biomni_e1`), because the `arc` env's R has
-neither package. The pinned DToxS pipeline calls `decideTestsDGE`, removed in
+The build uses the repository's documented R build environment, the `biomni_e1`
+conda env (R 4.5.3, edgeR 4.8.2, DESeq2 1.50.2; recorded as
+`conda:biomni_e1`), because the `arc` env's R has neither package. Which
+`Rscript` runs is configuration, not science: `output/api/bases/r_env.py`
+resolves an explicit argument, then `ARC_RSCRIPT`, then the `Rscript` on `PATH`,
+so exporting `ARC_RSCRIPT` to that env's `Rscript` is the documented setting on
+this workstation. The pinned DToxS pipeline calls `decideTestsDGE`, removed in
 edgeR >= 4; the R driver provides the documented two-group
 `decideTests(method = "separate")` equivalent. The step-owned counts and R
 outputs stay under `execution/checkpoints/`; the manifests record every input
@@ -392,11 +398,14 @@ an ordered subset that keeps the original integers and is never renumbered.
 tenv-HVG axis source) plus `fold_0/1/2.csv` (train-only **model-selection** rankings,
 not an axis input) and `cohorts.csv`/`manifest.json`. `execution/build_hvg.py` and
 `output/api/bases/hvg.py` remain its publisher/reader. Its pre-0066 input
-`training-corpora/tenv.h5ad` is retired; the same 4,206-well population and the frozen
-CP10K/log1p normalization are available from `output/corpus/tenv.h5ad` under the view
-recipe, so re-pointing `build_hvg.py` at the corpus is a documented deferred follow-up
-(the accepted `descriptive.csv` bytes and digests are what the gene axis pins; nothing
-recomputes them today).
+`training-corpora/tenv.h5ad` is retired and is never read: `build_hvg.py`
+`--training` now defaults to the live corpus payload `output/corpus/tenv.h5ad`
+(published by `execution/build_corpus.py`) and refuses to run when that path is
+absent. The builder still expects a training-style h5ad (`obs` with `sample_id`,
+`drug_parent`, `dose_um`), so deriving that projection from the corpus is the
+documented deferred re-point (ADR 0066 *Deferred*) and the accepted
+`descriptive.csv` bytes and digests stay what the gene axis pins — the default no
+longer names a retired payload.
 ## Released gene axes `G_2000` / `G_5000` (#190, ADR 0066)
 
 `output/gene-axis/` is the **released** two-version gene axis: the master candidate
@@ -533,16 +542,15 @@ view semantics*). No `{N}k_eval_truth/` directory is created here: the
 evaluation redesign owns each view's truth later.
 
 **Measured denominator basis (released axes, this build).** The tenv axis
-carries **12.9299987%** (`G_2000`) and **37.2063189%** (`G_5000`) of the
-full-axis CP10K mass, pooled over all 4,478 profiles (treated-only 12.9566820% /
-37.1590893%); `tahoe_bulk` carries 10.4600758% / 24.7819987%. A view-local denominator would change the
-per-gene input baseline by about 2.88× between the two axes and turn
+carries **15.0548953%** (`G_2000`) and **37.4273748%** (`G_5000`) of the
+full-axis CP10K mass, pooled over all 4,478 profiles (treated-only 15.0892505% /
+37.3846128%); `tahoe_bulk` carries 10.8317768% / 24.7366390%. A view-local denominator would change the
+per-gene input baseline by about 2.49× between the two axes and turn
 `mean|Δ|` into an artifact of the denominator, which is why the one
 normalization is on the **full axis, not the view**. ADR 0066's design-record
-figures 12.9% / 36.3% came from an **interim pre-#190** axis: the 2,000-gene
-figure reproduces, the released `G_5000` measures 37.2063189%, and the measured
-value recorded in each manifest is authoritative; the decision is unaffected
-(≈2.88× measured vs the ADR's implied ≈2.81×). Each manifest also records every
+figures 12.9% / 36.3% came from an **interim pre-#190** axis; the measured value
+recorded in each manifest is authoritative, and the decision is unaffected
+(≈2.49× measured vs the ADR's implied ≈2.81×). Each manifest also records every
 profile's full-axis library total through `sources.<source>.full_axis_library_total`
 and `library_totals.csv`.
 
@@ -551,17 +559,17 @@ payloads gitignored, manifests force-tracked):
 
 | path | rows × columns | bytes | sha256 |
 |---|---|---:|---|
-| `output/view-2k/manifest.json` | — | 5,752 | `b48eeddb…` |
-| `output/view-2k/tenv.h5ad` | 4,478 × 2,000 | 59,829,344 | `4bcdddb5…` |
-| `output/view-2k/tahoe_bulk.h5ad` | 66,718 × 2,000 | 1,307,875,582 | `f0732761…` |
+| `output/view-2k/manifest.json` | — | 5,754 | `cb190846…` |
+| `output/view-2k/tenv.h5ad` | 4,478 × 2,000 | 59,912,368 | `c02f320c…` |
+| `output/view-2k/tahoe_bulk.h5ad` | 66,718 × 2,000 | 1,312,787,850 | `8ed8655b…` |
 | — rows | tenv 4,206 treated + 272 vehicle; tahoe_bulk 65,318 treated + 1,400 vehicle | | |
 | `output/view-2k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
-| `output/view-5k/manifest.json` | — | 5,757 | `37af263b…` |
-| `output/view-5k/tenv.h5ad` | 4,478 × 5,000 | 142,393,266 | `5827434c…` |
-| `output/view-5k/tahoe_bulk.h5ad` | 66,718 × 5,000 | 3,146,195,077 | `95330071…` |
+| `output/view-5k/manifest.json` | — | 5,753 | `03f2a056…` |
+| `output/view-5k/tenv.h5ad` | 4,478 × 5,000 | 142,266,477 | `e1a18a9a…` |
+| `output/view-5k/tahoe_bulk.h5ad` | 66,718 × 5,000 | 3,152,087,026 | `02abaed9…` |
 | `output/view-5k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
 
-`du -sb`: `view-2k/` 1,371,438,657 B, `view-5k/` 3,292,322,079 B. Each h5ad
+`du -sb`: `view-2k/` 1,376,433,951 B, `view-5k/` 3,298,087,235 B. Each h5ad
 carries `X` (float32), `layers/control` and `layers/delta`; `obs` carries the
 corpus row identity (`role`, plate/cell line, compound name, desalted parent
 InChIKey/SMILES, source item + item-manifest digest, `dose_um`, source dose
@@ -636,7 +644,8 @@ from the repository root):
 | `gene-identity/` | `bases.identity` |
 
 No reader ever materializes a dense observation x 18,164 matrix; every large payload
-is streamed in bounded batches.
+is streamed in bounded batches. Never open a payload h5ad with `backed="r"`: the
+readers (or their bounded window/batch methods) are the only supported access path.
 
 ## Figure reproduction
 
@@ -671,6 +680,11 @@ Each `verify` rebuilds from the pinned inputs into `execution/checkpoints/`, com
 the manifest and every output digest, and never writes the accepted release. The
 acceptance run's results, digests, peak RSS and the "no retired path read" evidence are
 in [`log/acceptance.md`](log/acceptance.md).
+
+Heavy work runs **one job at a time** through `execution/capped.sh` (systemd user
+scope when available, otherwise an equivalent 10 GiB `RLIMIT_AS`) wrapped with
+`/usr/bin/time -v`, and the measured peak is recorded. Disposable build state is
+`execution/checkpoints/`, never inside `output/`.
 
 ## `log/`
 
@@ -735,7 +749,8 @@ owned by a follow-up.
   Reichart controls, declared not corrected).
 - `02_models_tenv` still reads the retired `training-corpora/tenv.h5ad`; re-pointing it at
   `view-2k/`/`view-5k/` and re-running its accepted matrix are **deferred** (ADR 0066
-  *Deferred*), as is the evaluation redesign and the `build_hvg.py` re-point above.
+  *Deferred*), as is the evaluation redesign and recomputing the tenv-HVG ranking from the
+  corpus (the default `--training` already names that live payload).
 - Cell-type labels for some candidate sources live in large serialized R objects; those
   sources remain declared gaps rather than being re-clustered ad hoc.
 

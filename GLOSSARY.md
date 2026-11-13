@@ -296,7 +296,7 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 ### Stage 2 dataset corpus
 
 **Bases**:
-The retained Stage 2 foundation for shared gene identity, raw preparation, separate training corpora, measured tenv truth, training-only HVG selection and common evaluation semantics. Model setup and benchmark experiments are outside its current scope.
+The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-2k`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
 Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
@@ -322,7 +322,7 @@ The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `s
 _Avoid_: source name, dataset name, accession
 
 **View**:
-A derived, model-facing h5ad that a consuming step builds from one or more corpora (one pharmacology tier, or a projection onto the CM gene axis); it is reproducible and disposable, and it is owned by the consumer that defines its rule — the corpus step never ships one.
+The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the fused six-source rank sum; the `AF` source is excluded as non-informative, ADR 0068), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
