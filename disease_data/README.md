@@ -111,6 +111,63 @@ Conventions specific to these three items:
 `script/verify_all.sh` includes all three items; `bash script/verify.sh` in each
 item checks `source/` offline against its `manifest.sha256`.
 
+## Stage 2 isogenic CM models (ticket #188, ADR 0066)
+
+Six **isogenic hiPSC-CM bulk** models join the `genetic_cardiomyopathy`
+category, where the two Reichart genotype-split exports (genotype-positive DCM
+and ARVC donors) are the tier-1 human CM-pseudobulk datasets and the six
+in-vitro models enter at tier 2 under ADR 0066's **Isogenic exception**. Each
+item follows the same five-member ADR 0030 contract, and one shared adapter
+(`stage2/01_bases/output/api/bases/bulk_deg.py`) binds the deposited matrix +
+GEO series matrix and runs the one live DEG implementation
+(`output/api/bases/disease_deg.R`); the item script only declares its design.
+
+| item | deposit | design | published dataset |
+|---|---|---|---|
+| `GSE224129/` | MYBPC3 (cMyBP-C) HCM engineered cardiac tissue, isogenic +/+ (4), +/- (4), -/- (4); RSEM gene matrix | one joint `~0 + group`; `+/-` and `-/-` vs `+/+`, collapsed by maximum effect | `gse224129__mybpc3_hcm` |
+| `GSE234141/` | TTN truncating-variant DCM hiPSC-CM vs isogenic WT/WT, 2D monolayer and EHT, atrial- and ventricular-like, 3 replicates per cell (24 libraries) | one joint fit over 8 composite strata; four paired TTNtv-vs-WT contrasts, collapsed by maximum effect | `gse234141__ttntv_dcm` |
+| `GSE304575/` | LMNA p.His222Pro DCM hiPSC-CM vs CRISPR-corrected isogenic control (6/6) | `~0 + group`; one contrast | `gse304575__lmna_h222p_dcm` |
+| `GSE305648/` | RBM20 DCM hiPSC cardioids, WTC11: KO / PL / RQ / wildtype (3 each) | `~0 + group + batch` (batch rotated A/B/C); three mutant-vs-WT contrasts, collapsed by maximum effect | `gse305648__rbm20_dcm` |
+| `GSE253223/` | ARVC-model wild-type hiPSC-CM, siPKP2 (4/day) vs siNeg (1/day), days 2/4/6/8 | `~0 + group + day`; four harvest days pooled with day blocked; one knockdown contrast | `gse253223__pkp2_knockdown_arvc` |
+| `GSE194297/` | DMD point-mutation cardiac organoids day 56 vs CRISPR-corrected isogenic line (3/3) | `~0 + group`; one contrast | `gse194297__dmd_cardiomyopathy` |
+
+Conventions specific to these six items:
+
+- **`script/fetch.sh`** stores exactly two payloads per item: the deposited
+  expression matrix and the GEO series matrix (the sample titles/characteristics
+  that carry genotype, cell type, format, batch and harvest day). No other
+  payload is fetched; both are byte-size pinned and verified offline by
+  `script/verify.sh` against `manifest.sha256` over `source/`.
+- **Sample binding is by name, never by position.** The matrix column tokens are
+  matched to the series-matrix titles/descriptions with a recorded basis and a
+  fail-closed bijection check, so no library can be silently dropped or twice
+  matched.
+- **`local/deg/<item>_expr.tsv.gz` + `_samples.csv` + `_deg.csv`** are the
+  item-local regenerable derivation (matrix, design sheet, full long DEG table);
+  the **tracked** `local/deg/<item>_deg.json` summary records the deposit
+  digests, the sample-mapping basis, the isogenic-control arm, the
+  strata/pooling decision, the design and its contrasts with `n_case`/
+  `n_control`, the integerisation statistics when the deposit is not integer
+  (rule, maximum absolute deviation, library-size scale, and how many genes'
+  rounded rows are all-zero so the count model drops them), and the R/limma
+  versions.
+- **Integerisation is one shared, tested helper** (`bases.bulk_deg.integerise_counts`,
+  round to nearest with ties to even). It is used for `GSE224129` (RSEM
+  expected counts) and `GSE253223` (estimated counts); the other four deposits
+  are integer and go straight to the strict-count voom path. The shared
+  `disease_deg.R` count contract is **not** relaxed: #186/#187/#189 recorded
+  products depend on it. A deposit that is already normalised takes the
+  `lmFit` non-count path instead of being rounded.
+- **`Reichart-CM/`** keeps #187's tracked pseudobulk + genotype export
+  untouched; ticket #188 adds `script/build_genetic_deg.py`, which runs the same
+  live implementation over those **tracked** inputs (read-only, the pseudobulk is
+  not re-derived) and publishes the `dcm_genotype_positive-normal` (44 vs 18) and
+  `arvc-normal` (8 vs 18) contrasts into `local/deg/reichart-cm_genetic_deg.csv`
+  + a tracked `.json` summary.
+- **Registration**: all six items are in `script/verify_all.sh`'s
+  `expected_items` (additive), so a missing item or manifest turns the health
+  check red.
+
 ## Build recipes and pinned R
 
 `script/fetch.sh` documents and re-runs the GEO FTP download into `source/`

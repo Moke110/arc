@@ -1,0 +1,53 @@
+{
+  "item": "GSE194297",
+  "category": "disease_data",
+  "purpose": "Human DMD point-mutation cardiac-organoid series for the Stage 2 gene axis genetic_cardiomyopathy category (ADR 0066): DMD patient-derived hiPSC cardiac organoids at day 56 (3 libraries) and the same line after CRISPR/Cas correction (3 libraries). The item-local derivation fits the single DMD-vs-corrected contrast; the deposit is the low-priority DMD arm of the category.",
+  "retrieved_at": "2026-11-13T17:05+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE194297",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194297",
+      "version": "GSE194297 (GPL20301 (Illumina HiSeq 4000))",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: GSE194297_DMD_vs_DMD-Iso.absolute_counts.csv.gz and GSE194297_series_matrix.txt.gz, byte-size pinned; no other payload fetched)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 345371,
+      "tree_sha256": "86ecc070d9ef7875ceced3e0de29fe716d6e0ffa72160ddd21222e12401a7056"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE194297_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id, gene_symbol and one count column per library (feature x sample), handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE194297_samples.csv",
+      "origin": "item-local fit design sheet: sample, group, declared blocking covariates, gsm and title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE194297_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene and contrast (29,911 rows, 29,911 source genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE194297_deg.json",
+      "origin": "tracked compact DEG summary: deposit digests, sample mapping basis, the isogenic-control record, the strata/pooling decision, the one-joint design and its contrasts with n_case/n_control, integerisation statistics (when used), limma/R versions and output digest",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg matrix, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T17:22+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE194297 \u2014 DMD point-mutation cardiac organoids vs CRISPR-corrected isogenic line. The deposit is open GEO access; two payloads are stored in source/ (the expression matrix and the GEO series matrix, both byte-size pinned in script/fetch.sh), nothing else is fetched. SAMPLE MAPPING: matrix columns are the GSM title bracket tokens [GC115820]..[GC115825]; the binding is by name (never by position) with a fail-closed bijection check, and every library is matched (no silent drop). DERIVATION: deposited absolute count matrix (semicolon-separated, gene symbols, 29,911 features x 6 libraries, all values integer, library sums 13.9-24.4M), used as deposited by the strict-count voom path. DESIGN: one joint limma-voom fit ~0 + group over all 6 organoid libraries; single contrast DMD-DMD_corrected. ISOGENIC EXCEPTION: Single time point (day 56) and single case/control pair; no stratum to pool. The adapter is the single shared derivation stage2/01_bases/output/api/bases/bulk_deg.py and the single live DEG implementation output/api/bases/disease_deg.R (limma 3.62.2; R version 4.4.1 (2024-06-14)); the item script only binds its deposited bytes and its declared design. PUBLISHED: one item-local full DEG table and the tracked summary here; the step's output/disease-deg/genetic_cardiomyopathy/ publishes the compact table and within-dataset rank per source dataset (ticket #188, not the item). CONTRASTS: DMD-DMD_corrected (3 case / 3 control). BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 168,200 KiB, wall 1.4 s; a second independent run reproduced the DEG table byte-identically. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T17:22+08:00"
+}

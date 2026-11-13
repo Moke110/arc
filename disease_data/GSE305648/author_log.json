@@ -1,0 +1,53 @@
+{
+  "item": "GSE305648",
+  "category": "disease_data",
+  "purpose": "Human RBM20 dilated-cardiomyopathy hiPSC cardioid series for the Stage 2 gene axis genetic_cardiomyopathy category (ADR 0066): four genotype arms on the WTC11 background (wildtype, RBM20 KO, RBM20 PL, RBM20 RQ), 3 cardioid libraries each. The item-local derivation fits the three mutant-vs-wildtype contrasts in one joint design with the rotated library batch blocked; the published dataset collapses them per gene by maximum effect. This is the survey's best organoid candidate.",
+  "retrieved_at": "2026-11-13T17:05+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE305648",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE305648",
+      "version": "GSE305648 (GPL30173 (Illumina NextSeq 2000))",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: GSE305648_counts.tsv.gz and GSE305648_series_matrix.txt.gz, byte-size pinned; the three author DESeq2 result tables are deliberately not fetched because the release derives its own DEG)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 771457,
+      "tree_sha256": "1ca0fd6363d1180e8c8a325e59a94d4453c0e1b58e94ec4f640c7ec09ce2d342"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE305648_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id, gene_symbol and one count column per library (feature x sample), handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE305648_samples.csv",
+      "origin": "item-local fit design sheet: sample, group, declared blocking covariates, gsm and title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE305648_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene and contrast (128,901 rows, 42,967 source genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE305648_deg.json",
+      "origin": "tracked compact DEG summary: deposit digests, sample mapping basis, the isogenic-control record, the strata/pooling decision, the one-joint design and its contrasts with n_case/n_control, integerisation statistics (when used), limma/R versions and output digest",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg matrix, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T17:22+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE305648 \u2014 RBM20 DCM hiPSC cardioids: KO / PL / RQ vs isogenic WTC11 wildtype. The deposit is open GEO access; two payloads are stored in source/ (the expression matrix and the GEO series matrix, both byte-size pinned in script/fetch.sh), nothing else is fetched. SAMPLE MAPPING: matrix columns equal the !Sample_title values RBM20_<genotype>_Rep<n>_b<batch>; the binding is by name (never by position) with a fail-closed bijection check, and every library is matched (no silent drop). DERIVATION: deposited integer count matrix (Ensembl ids with version suffix, 58,780 features x 12 libraries, all values integer, library sums 13.9-23.4M), used as deposited by the strict-count voom path (versions stripped by the resolver, not by the item). DESIGN: one joint limma-voom fit ~0 + group + batch over all 12 cardioid libraries; contrasts RBM20_KO-WT, RBM20_PL-WT and RBM20_RQ-WT collapsed per gene by maximum effect into one published dataset. ISOGENIC EXCEPTION: The three mutant alleles are distinct RBM20 lesions on one WTC11 background, so each keeps its own contrast inside one fit and the three collapse by maximum effect. The library batch (A/B/C) is rotated once per arm, so it enters the design as a blocking covariate. The adapter is the single shared derivation stage2/01_bases/output/api/bases/bulk_deg.py and the single live DEG implementation output/api/bases/disease_deg.R (limma 3.62.2; R version 4.4.1 (2024-06-14)); the item script only binds its deposited bytes and its declared design. PUBLISHED: one item-local full DEG table and the tracked summary here; the step's output/disease-deg/genetic_cardiomyopathy/ publishes the compact table and within-dataset rank per source dataset (ticket #188, not the item). CONTRASTS: RBM20_KO-WT (3 case / 3 control); RBM20_PL-WT (3 case / 3 control); RBM20_RQ-WT (3 case / 3 control). BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 202,344 KiB, wall 3.3 s; a second independent run reproduced the DEG table byte-identically. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T17:22+08:00"
+}

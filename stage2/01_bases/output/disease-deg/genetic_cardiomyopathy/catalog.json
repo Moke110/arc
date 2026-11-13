@@ -1,0 +1,651 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv",
+    "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "size": 18164
+  },
+  "axis_size": 18164,
+  "catalog_sha256": "93cd60413ad720a26ab91e43a708224d68cb7c1ec97c50a5239b00b9e4a3f333",
+  "category": "genetic_cardiomyopathy",
+  "datasets": [
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 17513
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17513,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 17513,
+        "n_source_rows": 17513,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 17513,
+          "crosswalk_alias": 0,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17513,
+          "n_resolved": 17513,
+          "n_source_symbols": 17513,
+          "offaxis": 0,
+          "unmapped": 0
+        }
+      },
+      "arm_or_class": "genotype-positive DCM donors (44) vs the 18 normal donors",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "dcm_genotype_positive-normal"
+      ],
+      "dataset_id": "reichart-cm__dcm_genotype_positive",
+      "deg": "reichart-cm__dcm_genotype_positive.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/reichart-cm_genetic_deg.csv",
+          "sha256": "270afbfd63c853c286ce6c4233fa839969ee810594479199ad0c5e77481ecedb"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
+        "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts (per-donor CM pseudobulk)",
+        "derivation": "disease_data/Reichart-CM/script/build_genetic_deg.py runs the one live implementation over ticket #187's tracked pseudobulk + genotype export, read-only; the pseudobulk is not re-derived",
+        "design": "one joint fit ~0 + group over the 78 donors exported by ticket #187 (18 normal / 8 genotype-negative DCM / 44 genotype-positive DCM / 8 ARVC); this dataset selects the genotype-positive DCM vs normal contrast",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human LV/RV/apex/IVS sc+snRNA CM-only cellxgene object pseudobulk",
+      "n_axis_unmeasured": 651,
+      "n_case": 44,
+      "n_control": 18,
+      "n_measured": 17513,
+      "n_significant": 6829,
+      "rank": "reichart-cm__dcm_genotype_positive.rank.csv",
+      "shared_control_group": "reichart-cm:normal",
+      "source_item": "disease_data/Reichart-CM",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 17513
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17513,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 17513,
+        "n_source_rows": 17513,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 17513,
+          "crosswalk_alias": 0,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17513,
+          "n_resolved": 17513,
+          "n_source_symbols": 17513,
+          "offaxis": 0,
+          "unmapped": 0
+        }
+      },
+      "arm_or_class": "ARVC donors (8) vs the 18 normal donors",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "arvc-normal"
+      ],
+      "dataset_id": "reichart-cm__arvc",
+      "deg": "reichart-cm__arvc.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/reichart-cm_genetic_deg.csv",
+          "sha256": "270afbfd63c853c286ce6c4233fa839969ee810594479199ad0c5e77481ecedb"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
+        "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts (per-donor CM pseudobulk)",
+        "derivation": "disease_data/Reichart-CM/script/build_genetic_deg.py runs the one live implementation over ticket #187's tracked pseudobulk + genotype export, read-only; the pseudobulk is not re-derived",
+        "design": "one joint fit ~0 + group over the 78 donors exported by ticket #187 (18 normal / 8 genotype-negative DCM / 44 genotype-positive DCM / 8 ARVC); this dataset selects the ARVC vs normal contrast",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human LV/RV/apex/IVS sc+snRNA CM-only cellxgene object pseudobulk",
+      "n_axis_unmeasured": 651,
+      "n_case": 8,
+      "n_control": 18,
+      "n_measured": 17513,
+      "n_significant": 2507,
+      "rank": "reichart-cm__arvc.rank.csv",
+      "shared_control_group": "reichart-cm:normal",
+      "source_item": "disease_data/Reichart-CM",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "crosswalk_alias": 444,
+          "ensembl": 34086,
+          "offaxis": 16306,
+          "unmapped": 20358
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17258,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 34530,
+        "n_source_rows": 71194,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 0,
+          "crosswalk_alias": 444,
+          "ensembl": 34086,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17258,
+          "n_resolved": 34530,
+          "n_source_symbols": 71194,
+          "offaxis": 16306,
+          "unmapped": 20358
+        }
+      },
+      "arm_or_class": "MYBPC3 +/- and -/- engineered cardiac tissue vs the isogenic +/+ arm",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "MYBPC3_het-MYBPC3_wt",
+        "MYBPC3_hom-MYBPC3_wt"
+      ],
+      "dataset_id": "gse224129__mybpc3_hcm",
+      "deg": "gse224129__mybpc3_hcm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE224129_deg.csv",
+          "sha256": "463ddc2e9e2dee496d3a4ccabfe594095d2eb2dbe9ec56442dde9b822a159359"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/GSE224129/local/deg/GSE224129_deg.json": "fcdd34d6154f17c17a5e704a8131d44364297a21f51d835a1c936e664020663c",
+        "disease_data/GSE224129/manifest.sha256": "6cd74673ae1394ae6b0ff3b0f2cb0af4c657969c1fc4e3f48645341085a8bdfd"
+      },
+      "isogenic_exception": {
+        "applies": true,
+        "control_arm": "cMyBP-C+/+ ECT, 4 libraries (isogenic +/+ line, DF19-9-11T.H)",
+        "why": "ADR 0066 Isogenic exception: a single-genotype isogenic HCM model is kept as its own evidence type even though the human CM-pseudobulk Reichart cohort supplies this category, because a mixed-etiology clinical cohort and a causal single-lesion model answer different questions"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "RSEM gene-level expected counts (non-integer, count scale)",
+        "design": "one joint fit ~0 + group over all 12 ECT libraries; the +\u2044- and -/- contrasts share the isogenic +/+ control",
+        "integerisation": "bases.bulk_deg.integerise_counts: round to nearest, ties to even; max |x - round(x)| 0.5; 52,572 non-integer values; library sums 24.1-30.7M before rounding; 119 genes whose rounded row is all-zero recorded and dropped by the count model, never silently filtered",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human hiPSC-CM engineered cardiac tissue (isogenic MYBPC3 +/- and -/-)",
+      "n_axis_unmeasured": 906,
+      "n_case": 8,
+      "n_control": 4,
+      "n_measured": 17258,
+      "n_significant": 3321,
+      "rank": "gse224129__mybpc3_hcm.rank.csv",
+      "shared_control_group": "gse224129:isogenic",
+      "source_item": "disease_data/GSE224129",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [],
+        "decision": "two mutant genotype arms (heterozygous, homozygous) vs one isogenic +/+ control arm; both contrasts from one joint fit, collapsed per gene by maximum effect",
+        "pooled": true
+      },
+      "tier": 2,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "crosswalk_alias": 912,
+          "ensembl": 69540,
+          "offaxis": 32704,
+          "unmapped": 37396
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17606,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 70452,
+        "n_source_rows": 140552,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 0,
+          "crosswalk_alias": 912,
+          "ensembl": 69540,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17606,
+          "n_resolved": 70452,
+          "n_source_symbols": 140552,
+          "offaxis": 32704,
+          "unmapped": 37396
+        }
+      },
+      "arm_or_class": "TTN truncating-variant hiPSC-CM vs the isogenic WT/WT line across 2D/EHT x ventricular-like/atrial-like strata",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "TTNtv-WT.2d_ventricular",
+        "TTNtv-WT.2d_atrial",
+        "TTNtv-WT.eht_ventricular",
+        "TTNtv-WT.eht_atrial"
+      ],
+      "dataset_id": "gse234141__ttntv_dcm",
+      "deg": "gse234141__ttntv_dcm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE234141_deg.csv",
+          "sha256": "f4765e0f989f7b54436695f33ae4a4b8b5ed43be14fc2c6fa9b232fe1629533c"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/GSE234141/local/deg/GSE234141_deg.json": "33b2e03fa6df8e13c1bc6d5575ac69a35485ff802369e42fde077b08bc0df12e",
+        "disease_data/GSE234141/manifest.sha256": "8305e560229968df266051a1edc67eba9e8dae95f93fbccd866b08b96f038f23"
+      },
+      "isogenic_exception": {
+        "applies": true,
+        "control_arm": "WT/WT isogenic line, 12 libraries (3 per format x cell-type stratum)",
+        "why": "ADR 0066 Isogenic exception: the TTNtv model is a causal single-lesion isogenic pair, kept as its own evidence type beside the human CM-pseudobulk cohort"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts",
+        "design": "one joint fit ~0 + group over all 24 libraries with 8 composite format x cell-type x genotype arms; four paired TTNtv-vs-WT contrasts",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human hiPSC-CM 2D monolayer and engineered heart tissue (isogenic TTNtv)",
+      "n_axis_unmeasured": 558,
+      "n_case": 12,
+      "n_control": 12,
+      "n_measured": 17606,
+      "n_significant": 121,
+      "rank": "gse234141__ttntv_dcm.rank.csv",
+      "shared_control_group": "gse234141:isogenic",
+      "source_item": "disease_data/GSE234141",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [],
+        "decision": "four paired strata (format 2D vs EHT) x (cell type ventricular-like vs atrial-like), each TTNtv vs its isogenic WT/WT, collapsed per gene by maximum effect into one published dataset",
+        "pooled": true,
+        "why": "format and cell type are culture/differentiation strata of one isogenic pair, not independent cohorts; each stratum keeps its own paired contrast inside one joint fit (shared dispersion) and the four collapse by maximum effect (ticket-01 rule for a multi-arm source)"
+      },
+      "tier": 2,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 16579,
+          "crosswalk_alias": 164,
+          "offaxis": 52,
+          "unmapped": 19489
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 16737,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 16743,
+        "n_source_rows": 36284,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 16579,
+          "crosswalk_alias": 164,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 16737,
+          "n_resolved": 16743,
+          "n_source_symbols": 36284,
+          "offaxis": 52,
+          "unmapped": 19489
+        }
+      },
+      "arm_or_class": "LMNA p.His222Pro heterozygous hiPSC-CM vs the CRISPR-corrected isogenic control",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "LMNA_H222P-corrected"
+      ],
+      "dataset_id": "gse304575__lmna_h222p_dcm",
+      "deg": "gse304575__lmna_h222p_dcm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE304575_deg.csv",
+          "sha256": "970749b9226fb589f82e8afc8d36e36d67eb3ebf9e79e33fc1480bc42ee09cba"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/GSE304575/local/deg/GSE304575_deg.json": "839659aca1245f535a2cbcf643cf39ac72cd60415d0f03866201fc1986a827a8",
+        "disease_data/GSE304575/manifest.sha256": "45abab8e5b263a548e7d8b597466154ba9439b0eff23e48022e354d10a3e3075"
+      },
+      "isogenic_exception": {
+        "applies": true,
+        "control_arm": "Corrected Isogenic control, 6 libraries (CRISPR/Cas9-corrected line)",
+        "why": "ADR 0066 Isogenic exception: a causal single-variant isogenic DCM model kept as its own evidence type beside the mixed-etiology human cohort"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts",
+        "design": "one joint fit ~0 + group over all 12 libraries; single contrast",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human hiPSC-CM (isogenic LMNA p.His222Pro vs CRISPR-corrected)",
+      "n_axis_unmeasured": 1427,
+      "n_case": 6,
+      "n_control": 6,
+      "n_measured": 16737,
+      "n_significant": 35,
+      "rank": "gse304575__lmna_h222p_dcm.rank.csv",
+      "shared_control_group": "gse304575:isogenic",
+      "source_item": "disease_data/GSE304575",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [],
+        "decision": "single case/control pair; no stratum to pool",
+        "pooled": false,
+        "why": "one genotype arm against one isogenic control arm; the only batch value is constant (6/15/2023) on all 12 libraries"
+      },
+      "tier": 2,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "ensembl": 53226,
+          "offaxis": 31515,
+          "unmapped": 44160
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17741,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 53226,
+        "n_source_rows": 128901,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 0,
+          "crosswalk_alias": 0,
+          "ensembl": 53226,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17741,
+          "n_resolved": 53226,
+          "n_source_symbols": 128901,
+          "offaxis": 31515,
+          "unmapped": 44160
+        }
+      },
+      "arm_or_class": "RBM20 KO / PL / RQ cardioids vs the isogenic WTC11 wildtype cardioids",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "RBM20_KO-WT",
+        "RBM20_PL-WT",
+        "RBM20_RQ-WT"
+      ],
+      "dataset_id": "gse305648__rbm20_dcm",
+      "deg": "gse305648__rbm20_dcm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE305648_deg.csv",
+          "sha256": "342c91fff3364a92ac5e17388584065e050ab54ef6e5b7cbe964fa0a82fad1ef"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/GSE305648/local/deg/GSE305648_deg.json": "5fe09fd154850411840646304e91bf5869cf363cbd91e1f6cc48f3d3fb9b0d78",
+        "disease_data/GSE305648/manifest.sha256": "1ca0fd6363d1180e8c8a325e59a94d4453c0e1b58e94ec4f640c7ec09ce2d342"
+      },
+      "isogenic_exception": {
+        "applies": true,
+        "control_arm": "RBM20 wildtype cardioids, 3 libraries (WTC11 background)",
+        "why": "ADR 0066 Isogenic exception: the three RBM20 alleles are causal single-lesion isogenic models on one WTC11 background, kept as their own evidence type"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts (Ensembl ids with version suffix)",
+        "design": "one joint fit ~0 + group + batch over all 12 cardioid libraries; three mutant-vs-WT contrasts",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human hiPSC cardioids (isogenic RBM20 KO / PL / RQ vs WTC11 wildtype)",
+      "n_axis_unmeasured": 423,
+      "n_case": 9,
+      "n_control": 3,
+      "n_measured": 17741,
+      "n_significant": 29,
+      "rank": "gse305648__rbm20_dcm.rank.csv",
+      "shared_control_group": "gse305648:isogenic",
+      "source_item": "disease_data/GSE305648",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [
+          "batch"
+        ],
+        "decision": "three mutant genotype arms (KO, PL, RQ) vs one isogenic wildtype arm; collapsed per gene by maximum effect",
+        "pooled": true,
+        "why": "the mutant alleles are distinct RBM20 lesions, so each keeps its own contrast inside one fit; the library batch (A/B/C) is rotated across the arms and enters the design as a blocking covariate"
+      },
+      "tier": 2,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 15969,
+          "crosswalk_alias": 537,
+          "offaxis": 168,
+          "unmapped": 16781
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 16495,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 16506,
+        "n_source_rows": 33455,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 15969,
+          "crosswalk_alias": 537,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 16495,
+          "n_resolved": 16506,
+          "n_source_symbols": 33455,
+          "offaxis": 168,
+          "unmapped": 16781
+        }
+      },
+      "arm_or_class": "siPKP2 (PKP2 knockdown) vs siNeg in wild-type hiPSC-CM, days 2/4/6/8",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "siPKP2-siNeg"
+      ],
+      "dataset_id": "gse253223__pkp2_knockdown_arvc",
+      "deg": "gse253223__pkp2_knockdown_arvc.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE253223_deg.csv",
+          "sha256": "f60806be945961557bf986f6f895ab2dd5b1b6407d984207d66dcf659dc3534f"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "not_applicable",
+      "inputs": {
+        "disease_data/GSE253223/local/deg/GSE253223_deg.json": "e7cd26411ae07a71af070dfce92d7b5f45ccb512025a0a5509db4d02cc25ceae",
+        "disease_data/GSE253223/manifest.sha256": "ddbd4a1c5f846756f69f25a9d180c84a13d880a737b105cbcd38f8acb2c45f0a"
+      },
+      "isogenic_exception": {
+        "applies": true,
+        "control_arm": "siNeg (non-targeting siRNA), 4 libraries (one per harvest day)",
+        "why": "ADR 0066 Isogenic exception is applied to the model system rather than to a patient genotype: this is an acquired PKP2 knockdown on a single wild-type line, so it is kept as its own in-vitro ARVC-loss evidence type and is explicitly NOT a patient variant"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "estimated counts (non-integer, count scale)",
+        "design": "one joint fit ~0 + group + day over all 20 libraries; single siPKP2-vs-siNeg contrast",
+        "integerisation": "bases.bulk_deg.integerise_counts: round to nearest, ties to even; max |x - round(x)| 0.5; 282,071 non-integer values; library sums 25.2-41.9M before rounding; 4 genes whose rounded row is all-zero recorded and dropped by the count model, never silently filtered",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human wild-type hiPSC-CM (acquired PKP2 siRNA knockdown)",
+      "n_axis_unmeasured": 1669,
+      "n_case": 16,
+      "n_control": 4,
+      "n_measured": 16495,
+      "n_significant": 83,
+      "rank": "gse253223__pkp2_knockdown_arvc.rank.csv",
+      "shared_control_group": "gse253223:isogenic",
+      "source_item": "disease_data/GSE253223",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [
+          "day"
+        ],
+        "decision": "four harvest days (2/4/6/8) pooled in one fit with day as a blocking covariate",
+        "pooled": true,
+        "why": "each day has one siNeg library and four siPKP2 libraries, so a per-day contrast would rest on a single control; pooling with day as a covariate uses all 20 libraries for one knockdown effect"
+      },
+      "tier": 2,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 15859,
+          "crosswalk_alias": 566,
+          "offaxis": 154,
+          "unmapped": 13332
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 16409,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 16425,
+        "n_source_rows": 29911,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 15859,
+          "crosswalk_alias": 566,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 16409,
+          "n_resolved": 16425,
+          "n_source_symbols": 29911,
+          "offaxis": 154,
+          "unmapped": 13332
+        }
+      },
+      "arm_or_class": "DMD point-mutation cardiac organoids vs the CRISPR-corrected isogenic line",
+      "category": "genetic_cardiomyopathy",
+      "contrasts": [
+        "DMD-DMD_corrected"
+      ],
+      "dataset_id": "gse194297__dmd_cardiomyopathy",
+      "deg": "gse194297__dmd_cardiomyopathy.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE194297_deg.csv",
+          "sha256": "324d6ed1864e4327ab786a11de50e38d13f2fddb1da103eea91726f55675e64f"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "pathogenic",
+      "inputs": {
+        "disease_data/GSE194297/local/deg/GSE194297_deg.json": "51a174b356ec0d3b4c83d3f8c4125bce4153b2bd96ac67d5ef604f1e7b1512b1",
+        "disease_data/GSE194297/manifest.sha256": "86ecc070d9ef7875ceced3e0de29fe716d6e0ffa72160ddd21222e12401a7056"
+      },
+      "isogenic_exception": {
+        "applies": true,
+        "control_arm": "CRISPR/Cas9-corrected isogenic line, 3 day-56 cardiac organoids",
+        "why": "ADR 0066 Isogenic exception: the DMD mutation was corrected in the same patient-derived line, so the model is its own causal isogenic evidence type"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts",
+        "design": "one joint fit ~0 + group over all 6 organoid libraries; single contrast",
+        "model": "limma-voom (voom library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human hiPSC cardiac organoids (DMD point mutation vs corrected isogenic)",
+      "n_axis_unmeasured": 1755,
+      "n_case": 3,
+      "n_control": 3,
+      "n_measured": 16409,
+      "n_significant": 4439,
+      "rank": "gse194297__dmd_cardiomyopathy.rank.csv",
+      "shared_control_group": "gse194297:isogenic",
+      "source_item": "disease_data/GSE194297",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [],
+        "decision": "single case/control pair at one time point; no stratum to pool",
+        "pooled": false,
+        "why": "one mutant line against its corrected isogenic line (day 56)"
+      },
+      "tier": 2,
+      "time_window_basis": null
+    }
+  ],
+  "directory": "genetic_cardiomyopathy",
+  "evidence_type": "cm_pseudobulk",
+  "isogenic_exception": {
+    "applies": true,
+    "statement": "ADR 0066 Isogenic exception: the six in-vitro hiPSC-CM models carry a patient genotype with an isogenic control and are kept as their own evidence type inside this category even though a human CM-pseudobulk cohort (Reichart-CM) exists for the same category: a mixed-etiology clinical cohort and a single-genotype isogenic model answer different questions, and collapsing them loses the causal signature. The category therefore has one tier-1 human CM-pseudobulk pair (Reichart genotype-positive DCM + ARVC) and six tier-2 isogenic bulk datasets; `tier` records the winning tier and each dataset record carries its own `evidence_type` and `tier`."
+  },
+  "rank_contract": "stage2-disease-deg-v1",
+  "rejected": [
+    {
+      "candidate": "GSE140965",
+      "reason": "eligible isogenic HCM MYBPC3 deposit, but its control sets are batch confounded and the six isogenic models already cover MYBPC3 HCM"
+    },
+    {
+      "candidate": "GSE251993 / GSE262876 / GSE274124 / GSE221945 / GSE329393",
+      "reason": "eligible isogenic bulk models, but the declared roster fixes the six isogenic accessions; admitting more would exceed the survey fetch list"
+    },
+    {
+      "candidate": "GSE289628 / GSE248187",
+      "reason": "ARVC DSP models: GSE289628 is confounded by AAV6-vs-siRNA vehicle and GSE248187 deposits a DEG table only, so no counts could be re-fit"
+    },
+    {
+      "candidate": "GSE141910 / GSE116250 / GSE128188 / GSE282618",
+      "reason": "whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived"
+    },
+    {
+      "candidate": "Reichart-CM single NCCM donor",
+      "reason": "ADR 0066 does not use the NCCM donor; it is excluded from the tracked export and appears in no dataset of this category"
+    }
+  ],
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 1
+}

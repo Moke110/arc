@@ -1,0 +1,94 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "arvc-normal": {
+      "denominator": "normal",
+      "n_case": 8,
+      "n_control": 18,
+      "numerator": "arvc"
+    },
+    "dcm_genotype_positive-normal": {
+      "denominator": "normal",
+      "n_case": 44,
+      "n_control": 18,
+      "numerator": "dcm_genotype_positive"
+    }
+  },
+  "deg": {
+    "n_source_genes": 17513,
+    "path": "local/deg/reichart-cm_genetic_deg.csv",
+    "rows": 35026,
+    "sha256": "270afbfd63c853c286ce6c4233fa839969ee810594479199ad0c5e77481ecedb"
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "normal",
+        "label": "dcm_genotype_positive-normal",
+        "numerator": "dcm_genotype_positive"
+      },
+      {
+        "denominator": "normal",
+        "label": "arvc-normal",
+        "numerator": "arvc"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "design_ambiguities": {
+    "genotype_first": "donors are split by Primary.Genetic.Diagnosis, not the study disease label; the genotype-positive DCM and ARVC donors are the genetic_cardiomyopathy datasets",
+    "joint_design": "one joint fit ~0 + group over the 78 exported donors (18 normal / 8 genotype-negative DCM / 44 genotype-positive DCM / 8 ARVC); this item-local table publishes the two genetic contrasts only and leaves #187's genotype-negative contrast and its tracked summary untouched",
+    "shared_controls": "both genetic contrasts use the same 18 normal donors, which are also nHF's Reichart controls; the normal signal is therefore counted in both categories (declared, not corrected)"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "grouparvc",
+      "groupdcm_genotype_negative",
+      "groupdcm_genotype_positive",
+      "groupnormal"
+    ],
+    "contrasts": [
+      "dcm_genotype_positive-normal",
+      "arvc-normal"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 17513,
+    "n_genes_tested": 17513,
+    "n_rows": 35026,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "gate": "cell_type == \"cardiac muscle cell\" (CM-only cellxgene object)",
+  "inputs": {
+    "genotype": {
+      "note": "tracked #187 genotype split; genotype-first per Primary.Genetic.Diagnosis, NCCM donor excluded from the export",
+      "path": "local/genotype/reichart-cm_donor_genotypes.csv",
+      "sha256": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb"
+    },
+    "pseudobulk": {
+      "note": "tracked #187 export consumed read-only; the pseudobulk is NOT re-derived here",
+      "path": "local/pseudobulk/reichart-cm_cm_pseudobulk.csv.gz",
+      "sha256": "4b94576a6b3b1cf7173dda83116ad85d1df97b7f2d1be13cdfa4435eb9f37643"
+    }
+  },
+  "item": "Reichart-CM",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the genotype-positive DCM (or ARVC) donors vs the object's normal donors",
+    "derivation": "disease_data/Reichart-CM/script/build_genetic_deg.py",
+    "derivation_sha256": "f077ea42b0b9dafbbea70ba13981f73dddfb6aac17a9299431ebb42d3476ebde",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 52,
+  "n_control": 18,
+  "schema": "stage2-item-deg-summary-v1"
+}

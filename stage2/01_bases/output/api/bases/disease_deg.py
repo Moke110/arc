@@ -415,7 +415,8 @@ def read_catalog(path):
 
 
 def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
-                  source_records, rejected=(), axis_size=AXIS_SIZE):
+                  source_records, rejected=(), axis_size=AXIS_SIZE,
+                  isogenic_exception=None):
     """Assemble a category catalog from the declared source/eligibility records.
 
     Canonical #190 shape: ``datasets`` is a **list of full record objects** (no
@@ -443,6 +444,10 @@ def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
         'datasets': records,
         'rejected': list(rejected),
     }
+    if isogenic_exception is not None:
+        # ADR 0066 Isogenic exception, recorded as data (ticket #188). Absent for
+        # every category that has no in-vitro isogenic model.
+        catalog['isogenic_exception'] = isogenic_exception
     return catalog
 
 

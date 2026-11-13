@@ -180,6 +180,71 @@ digest, so a replay is byte-identical. The compact CSVs, catalogs and manifests
 are force-tracked (payloads otherwise gitignored); the item-local DEG tables and
 pseudobulk matrices stay in the items' `local/` areas.
 
+### Isogenic CM models: `genetic_cardiomyopathy` (ADR 0066, #188)
+
+The hereditary-myocardial-disease category is the widest one: **eight datasets**
+in one category at two tiers. The two Reichart genotype-split exports
+(genotype-positive DCM donors and the 8 ARVC donors, tier 1, human CM
+pseudobulk) and six isogenic hiPSC-CM bulk models (tier 2) that ADR 0066's
+**Isogenic exception** keeps as their own evidence type beside the clinical
+cohort. The catalog records the exception per dataset and at category level.
+
+| path | datasets |
+|---|---|
+| `output/disease-deg/genetic_cardiomyopathy/` | `reichart-cm__dcm_genotype_positive.*`, `reichart-cm__arvc.*`, `gse224129__mybpc3_hcm.*`, `gse234141__ttntv_dcm.*`, `gse304575__lmna_h222p_dcm.*`, `gse305648__rbm20_dcm.*`, `gse253223__pkp2_knockdown_arvc.*`, `gse194297__dmd_cardiomyopathy.*`, `catalog.json`, `manifest.json` |
+
+The compact tables and full-axis ranks follow the same contract as
+`nHF`/`ICM`/`AF`; what is new here is the **derivation** of the in-vitro bulk
+sources and the way a multi-arm deposit becomes one dataset:
+
+- **One shared derivation adapter**:
+  `output/api/bases/bulk_deg.py` parses the GEO series matrix, binds matrix
+  columns to samples by name (fail-closed bijection), names features, runs the
+  one live DEG implementation (`disease_deg.R`) and writes the item-local
+  matrix / sample sheet / long DEG table plus a tracked summary. Each item's
+  `script/build_deg.py` only declares its design, so six items do not carry six
+  copies of the source-adapter logic.
+- **Integerisation is one shared, tested helper**
+  (`bases.bulk_deg.integerise_counts`, round to nearest with ties to even, and a
+  count-scale guard that refuses a normalised matrix declared as counts). It is
+  used by `GSE224129` (RSEM expected counts) and `GSE253223` (estimated counts);
+  the other four deposits are integer and take the strict-count voom path
+  unchanged. The tracked summaries and the catalog `method` record the rule, the
+  maximum absolute deviation, the library-size scale and the number of genes
+  whose rounded row is all-zero (dropped by the count model, reported — never
+  silently filtered). The shared `disease_deg.R` count contract is **not**
+  relaxed: #186/#187/#189 recorded products depend on it.
+- **Multi-arm deposits collapse by maximum effect or pool with a blocking
+  covariate**, and the decision is recorded in both the item summary and the
+  catalog: `GSE224129` (`+/-` and `-/-` vs `+/+`), `GSE234141` (four paired
+  format × cell-type strata) and `GSE305648` (KO/PL/RQ vs WT, batch blocked)
+  collapse per gene by the ticket-01 maximum-effect rule; `GSE253223` pools four
+  harvest days in one fit with `day` as a blocking factor. Single-pair deposits
+  (`GSE304575`, `GSE194297`) declare `pooled: false`.
+- **The two Reichart datasets are derived read-only from ticket #187's tracked
+  export** by `disease_data/Reichart-CM/script/build_genetic_deg.py`; the
+  pseudobulk is not re-derived and #187's own tracked summary/table bytes are
+  untouched. Catalog records state this in `method.derivation`.
+- **Category catalog additions** on top of the `stage2-disease-deg-catalog-v1`
+  shape: a category-level `isogenic_exception` record, a per-dataset
+  `isogenic_exception` (`control_arm`, `why`) for the six models, and a
+  per-dataset `strata` record (`decision`, `pooled`, `blocking_covariates`).
+  Dataset records otherwise carry the mandatory
+  `dataset_id, deg, rank, n_measured, n_significant, method, inputs` plus
+  `derived_inputs`.
+
+```bash
+python stage2/01_bases/execution/build_disease_deg.py publish --category genetic_cardiomyopathy
+python stage2/01_bases/execution/build_disease_deg.py verify  --category genetic_cardiomyopathy
+```
+
+The six isogenic items are built first (each item's own `script/fetch.sh` ->
+`script/verify.sh` -> `script/build_deg.py`), then this driver publishes and
+replays the category. The tests are
+`execution/tests/test_disease_deg_isogenic.py` (integerisation contract, sample
+binding, isogenic control selection, multi-arm pooling recorded and applied,
+catalog shape, rank semantics, determinism, no absolute paths, genotype split).
+
 ### Drug-cardiotoxicity class sources (#189, ADR 0066)
 
 `cardiotox_TOP2` and `cardiotox_other` treat a **mechanism class**, not a drug,

@@ -92,6 +92,30 @@ item-local DEG stay in `local/`, and the compact published product is the step's
 | `disease_data/GSE255612/` | 1,032,251,016 | 1.03 GB | yes — GEO **GSE255612**: Scanpy mtx (1,003,414,933 B), feature axis (277,568 B) and cell metadata (8,846,174 B); `script/fetch.sh` (parallel ranges). `local/` pseudobulk + DEG derived | re-download `source/`; tracked summary/manifest in git |
 | `disease_data/Reichart-CM/` | 3,201,296,579 | 3.2 GB | yes — CELLxGENE object, collection `e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb`, version `27fdbdf9-deae-4aed-bf7f-21964ee62137` (CC BY 4.0), 3,194,863,189 B; `script/fetch.sh` | re-download; the **tracked** axis-aligned per-donor pseudobulk + genotype export (ticket #188 input) is in git |
 
+### disease_data — Stage 2 isogenic CM models (#188, ADR 0066)
+
+Six in-vitro hiPSC-CM bulk items added for the `genetic_cardiomyopathy`
+category. Each stores two byte-size-pinned payloads (the deposited expression
+matrix + the GEO series matrix) in `source/`; the item-local expression matrix,
+design sheet and full DEG table are derived under `local/deg/` with a tracked
+`_deg.json` summary, and the compact published product is the step's
+`output/disease-deg/genetic_cardiomyopathy/`. `du -sb`, 2026-11-13 (whole item
+directory, including the derived `local/` payloads).
+
+| 项 (item) | `du -sb` bytes | ≈ | reconstructible? (and from where) | backup expectation |
+|---|---:|---:|---|---|
+| `disease_data/GSE224129/` | 11,849,846 | 11.8 MB | yes — GEO **GSE224129** (GPL24676): RSEM gene matrix 826,308 B + series matrix 3,834 B; `script/fetch.sh` | re-download `source/`; tracked summary/manifest in git; `local/` derived |
+| `disease_data/GSE234141/` | 22,693,331 | 22.7 MB | yes — GEO **GSE234141** (GPL28337): counts 1,123,421 B + series matrix 3,460 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE304575/` | 6,430,249 | 6.4 MB | yes — GEO **GSE304575** (GPL24676): raw-count table 817,509 B + series matrix 3,382 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE305648/` | 19,583,646 | 19.6 MB | yes — GEO **GSE305648** (GPL30173): counts 765,978 B + series matrix 5,479 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE253223/` | 6,699,341 | 6.7 MB | yes — GEO **GSE253223** (GPL24676): estimated counts 1,526,983 B + series matrix 4,219 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE194297/` | 4,528,189 | 4.5 MB | yes — GEO **GSE194297** (GPL20301): absolute counts 342,625 B + series matrix 2,746 B; `script/fetch.sh` | re-download; `local/` derived |
+
+`disease_data/Reichart-CM/` gains one additive derivation for ticket #188
+(`script/build_genetic_deg.py` → ignored `local/deg/reichart-cm_genetic_deg.csv`
+plus a tracked `_deg.json` summary, ~4 MB on disk); its `source/` and #187 bytes
+are unchanged.
+
 ### drug_emb_model — 2 項 (930.1 MB)
 
 Unlike the other three categories these are **code libraries**: their `source/` trees are tracked; only the downloaded assets (`KPGT/source/models/`, `KPGT/source/feature_extract/`) are ignored.
@@ -170,7 +194,7 @@ table; `du -sb`, 2026-11-13.
 |---|---:|---|---|
 | `output/raw_counts/` | 3,037,082,960 | `tenv.h5ad` (4,510 wells x 19,613 native genes, int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 profiles x 18,164 axis genes, CSR int32), `token_mapping.csv`, `manifest.json` | `execution/build_raw_counts.py publish`: rehomes the source-accepted payloads and records `source-accepted-replay` provenance (`log/records/native_tenv_verify.json`, `log/records/tahoe_counts_source_acceptance.json`). `--full-rebuild` rebuilds both from `pert_data/GSE262419/source` + `pert_data/Tahoe-100M/source` and replays from source (recorded ~4 h under the 10 GiB cap) |
 | `output/corpus/` | 1,395,893,021 | `tenv.h5ad` (4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv` (32 blanks + 300 invalid structures), `manifest.json` with the matched-control report; int32, no normalization, no delta | `execution/build_corpus.py publish` from `output/raw_counts/` + `pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet` |
-| `output/disease-deg/` | 17,993,614 | per category `nhf/`, `icm/`, `af/`: one rank-sorted compact `<dataset>.deg.csv` + full-axis `<dataset>.rank.csv` per dataset, plus `catalog.json` (canonical record list, `catalog_sha256`) and `manifest.json`; no top-level catalog (ticket #190 aggregates the per-category files). Five datasets: GSE270788 NICM/ICM/AMI, Reichart genotype-negative DCM, GSE255612 AF | `execution/build_disease_deg.py publish --all` from the pinned item-local DEG tables in `disease_data/{GSE270788,GSE255612,Reichart-CM}/local/deg/`; `verify --all` replays and compares every digest. The compact CSVs/catalogs/manifests are force-tracked; the item-local DEG/pseudobulk payloads stay ignored |
+| `output/disease-deg/` | 63,635,080 | 63.6 MB | per category `nhf/`, `icm/`, `af/`, `genetic_cardiomyopathy/`: one rank-sorted compact `<dataset>.deg.csv` + full-axis `<dataset>.rank.csv` per dataset, plus `catalog.json` (canonical record list, `catalog_sha256`) and `manifest.json`; no top-level catalog (ticket #190 aggregates the per-category files). Thirteen datasets: GSE270788 NICM/ICM/AMI, Reichart genotype-negative DCM, Reichart genotype-positive DCM + ARVC, GSE255612 AF, and six isogenic models (GSE224129/234141/304575/305648/253223/194297); `genetic_cardiomyopathy/` is 29,961,789 B of it | `execution/build_disease_deg.py publish --all` from the pinned item-local DEG tables in `disease_data/{GSE270788,GSE255612,Reichart-CM,GSE224129,GSE234141,GSE304575,GSE305648,GSE253223,GSE194297}/local/deg/`; `verify --all` replays and compares every digest. The compact CSVs/catalogs/manifests are force-tracked; the item-local DEG/pseudobulk payloads stay ignored |
 
 Both products are replayed by their drivers' `verify` action (rebuild in
 `execution/checkpoints/` and compare every digest). The compact manifests,

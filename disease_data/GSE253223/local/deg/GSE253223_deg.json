@@ -1,0 +1,136 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "siPKP2-siNeg": {
+      "denominator": "control",
+      "n_case": 16,
+      "n_control": 4,
+      "numerator": "case"
+    }
+  },
+  "deg": {
+    "bytes": 4050155,
+    "n_source_genes": 33455,
+    "path": "local/deg/GSE253223_deg.csv",
+    "rows": 33455,
+    "sha256": "f60806be945961557bf986f6f895ab2dd5b1b6407d984207d66dcf659dc3534f"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 1526983,
+      "feature_count": 55610,
+      "id_kind": "symbol",
+      "path": "source/GSE253223_TNYA0016.counts.txt.gz",
+      "sha256": "fffcdb40b99d7f92bde8c02ad5c2ca8b2d10c23f8617e5d47c759c9a10043e8f"
+    },
+    "series_matrix": {
+      "bytes": 4219,
+      "path": "source/GSE253223_series_matrix.txt.gz",
+      "sha256": "138eec3112935d91559b842e9a254f37c8221ed183aba23983316b22d113654b"
+    },
+    "values": {
+      "dropped_gene_ids": [
+        "RNU1-59P",
+        "RP11-1281K21.1",
+        "RP11-241F15.7",
+        "SSU72P2"
+      ],
+      "library_size_after": {
+        "max": 41872101,
+        "median": 35130771,
+        "min": 25212848
+      },
+      "library_size_before": {
+        "max": 41872262.801,
+        "median": 35130906.2985,
+        "min": 25212945.825
+      },
+      "max_abs_deviation": 0.5,
+      "mean_abs_deviation": 0.052551354972127665,
+      "n_genes_all_zero_after": 22155,
+      "n_genes_all_zero_before": 22151,
+      "n_genes_dropped_by_rounding": 4,
+      "n_non_integer_values": 282071,
+      "n_values": 1112200,
+      "rule": "round to nearest integer, ties to even (numpy.rint)"
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "control",
+        "label": "siPKP2-siNeg",
+        "numerator": "case"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group + day",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE253223_expr.tsv.gz",
+    "sha256": "db8e11bddb3711920668803c8706c9d511d065c80bab57eb561805066843013f"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupcase",
+      "groupcontrol",
+      "day"
+    ],
+    "contrasts": [
+      "siPKP2-siNeg"
+    ],
+    "factor": "group",
+    "formula": "~0 + group + day",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 33455,
+    "n_genes_tested": 33455,
+    "n_rows": 33455,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE253223",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the PKP2-knockdown arm (siPKP2) vs the negative-control siRNA (siNeg)",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 16,
+  "n_control": 4,
+  "samples": {
+    "covariates": [
+      "day"
+    ],
+    "group_counts": {
+      "case": 16,
+      "control": 4
+    },
+    "group_source": "treatment",
+    "isogenic_control": {
+      "arm": "siNeg (non-targeting siRNA), 4 libraries (one per harvest day)",
+      "basis": "a single wild-type hiPSC-CM line (iCell Cardiomyocytes2) in both arms; the negative-control siRNA is the matched control. This is an acquired knockdown, not a patient variant and not an engineered isogenic line, so the isogenic exception is applied to the model system, not to a genotype",
+      "deposit_evidence": "series-matrix !Sample_characteristics_ch1 \"treatment: siNeg\" / \"treatment: siPKP2\", \"genotype: WT\" on all 20 libraries"
+    },
+    "match_basis": "title_bracket",
+    "n": 20,
+    "path": "local/deg/GSE253223_samples.csv",
+    "sha256": "ec38ec4df0b625523bdffbafc11fbec7b1ee3928180d4b1aac322abfb1ba57cf"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [
+      "day"
+    ],
+    "decision": "four harvest days (2/4/6/8) pooled in one fit with day as a blocking covariate",
+    "pooled": true,
+    "why": "each day contributes one siNeg library and four siPKP2 libraries, so a per-day case/control contrast would rest on a single control; pooling the days with day as a covariate uses all 20 libraries for one knockdown effect and removes the harvest-time effect"
+  }
+}
