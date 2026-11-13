@@ -7,6 +7,14 @@ species, model system, ``evidence_type``, priority ``tier``,
 driver turns into each category's ``catalog.json``; eligibility is data, not
 prose, so the published catalog carries it verbatim.
 
+Local input paths are **item-relative** here (``source_item`` names the ADR
+0030 directory, ``local_deg``/``cells_per_donor``/``local_summary`` are relative
+to it). The driver composes the repo-relative path at runtime, so a merged
+checkout does not carry a repo-relative literal for an item's gitignored
+``local/`` payload (``script/check_paths.sh`` must stay green without the
+per-worktree derived files). Every derived input is still pinned by sha256 in
+the published catalog/manifest.
+
 The ticket-187 categories are ``nHF``, ``ICM`` and ``AF`` only. The six isogenic
 models (#188), the drug-class sources (#189) and the Reichart genotype-positive /
 ARVC DEG (also #188) are other tickets and are not declared here.
@@ -65,9 +73,9 @@ DATASETS = [
         'dataset_id': 'gse270788__nicm',
         'category': 'nHF',
         'source_item': 'disease_data/GSE270788',
-        'local_deg': 'disease_data/GSE270788/local/deg/gse270788_deg.csv',
-        'local_summary': 'disease_data/GSE270788/local/deg/gse270788_deg.json',
-        'cells_per_donor': 'disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv',
+        'local_deg': 'local/deg/gse270788_deg.csv',
+        'local_summary': 'local/deg/gse270788_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse270788_donors.csv',
         'arm_or_class': 'NICM arm (6 donors) vs the seven shared Donor controls',
         'species': 'Homo sapiens',
         'model_system': 'human left-ventricle 10x Multiome CM pseudobulk',
@@ -92,9 +100,9 @@ DATASETS = [
         'dataset_id': 'gse270788__icm',
         'category': 'ICM',
         'source_item': 'disease_data/GSE270788',
-        'local_deg': 'disease_data/GSE270788/local/deg/gse270788_deg.csv',
-        'local_summary': 'disease_data/GSE270788/local/deg/gse270788_deg.json',
-        'cells_per_donor': 'disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv',
+        'local_deg': 'local/deg/gse270788_deg.csv',
+        'local_summary': 'local/deg/gse270788_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse270788_donors.csv',
         'arm_or_class': 'ICM (chronic ischemic) arm (5 donors) vs the seven shared Donor controls',
         'species': 'Homo sapiens',
         'model_system': 'human left-ventricle 10x Multiome CM pseudobulk',
@@ -119,9 +127,9 @@ DATASETS = [
         'dataset_id': 'gse270788__ami',
         'category': 'ICM',
         'source_item': 'disease_data/GSE270788',
-        'local_deg': 'disease_data/GSE270788/local/deg/gse270788_deg.csv',
-        'local_summary': 'disease_data/GSE270788/local/deg/gse270788_deg.json',
-        'cells_per_donor': 'disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv',
+        'local_deg': 'local/deg/gse270788_deg.csv',
+        'local_summary': 'local/deg/gse270788_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse270788_donors.csv',
         'arm_or_class': 'AMI (acute MI) arm (5 donors) vs the seven shared Donor controls',
         'species': 'Homo sapiens',
         'model_system': 'human left-ventricle 10x Multiome CM pseudobulk',
@@ -148,9 +156,9 @@ DATASETS = [
         'dataset_id': 'reichart-cm__dcm_genotype_negative',
         'category': 'nHF',
         'source_item': 'disease_data/Reichart-CM',
-        'local_deg': 'disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv',
-        'local_summary': 'disease_data/Reichart-CM/local/deg/reichart-cm_deg.json',
-        'cells_per_donor': 'disease_data/Reichart-CM/local/genotype/reichart-cm_donor_genotypes.csv',
+        'local_deg': 'local/deg/reichart-cm_deg.csv',
+        'local_summary': 'local/deg/reichart-cm_deg.json',
+        'cells_per_donor': 'local/genotype/reichart-cm_donor_genotypes.csv',
         'arm_or_class': 'genotype-negative DCM donors vs the object\'s normal donors',
         'species': 'Homo sapiens',
         'model_system': 'human LV/RV/apex/IVS sc+snRNA CM-only cellxgene object pseudobulk',
@@ -160,8 +168,8 @@ DATASETS = [
         'time_window_basis': None,
         'exploratory': False,
         'shared_control_group': 'reichart-cm:normal',
-        'n_case': 0,
-        'n_control': 0,
+        'n_case': 8,
+        'n_control': 18,
         'contrasts': ['dcm_genotype_negative-normal'],
         'method': {
             'deposition': 'integer counts',
@@ -177,9 +185,9 @@ DATASETS = [
         'dataset_id': 'gse255612__af',
         'category': 'AF',
         'source_item': 'disease_data/GSE255612',
-        'local_deg': 'disease_data/GSE255612/local/deg/gse255612_deg.csv',
-        'local_summary': 'disease_data/GSE255612/local/deg/gse255612_deg.json',
-        'cells_per_donor': 'disease_data/GSE255612/local/pseudobulk/gse255612_donors.csv',
+        'local_deg': 'local/deg/gse255612_deg.csv',
+        'local_summary': 'local/deg/gse255612_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse255612_donors.csv',
         'arm_or_class': 'AF donors vs non-AF control donors (left-atrial CM)',
         'species': 'Homo sapiens',
         'model_system': 'human left-atrium 10x snRNA CM pseudobulk',
@@ -189,8 +197,8 @@ DATASETS = [
         'time_window_basis': None,
         'exploratory': False,
         'shared_control_group': 'gse255612:donor',
-        'n_case': 0,
-        'n_control': 0,
+        'n_case': 18,
+        'n_control': 16,
         'contrasts': ['AF-control'],
         'method': {
             'deposition': 'normalised expression (log1p(CP10K))',

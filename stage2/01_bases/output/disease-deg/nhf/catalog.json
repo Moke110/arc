@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "e60777aa5033f986fa99380a10be7d3810ea94f632dfde516dab91e8ed3a7164",
+  "catalog_sha256": "3b9655044ba545f89b4b9baa3fcd46a9f9edbcb49a2db6bed22faef60d800454",
   "category": "nHF",
   "datasets": [
     {
@@ -42,13 +42,21 @@
       ],
       "dataset_id": "gse270788__nicm",
       "deg": "gse270788__nicm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/gse270788_deg.csv",
+          "sha256": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12"
+        },
+        {
+          "relative": "local/pseudobulk/gse270788_donors.csv",
+          "sha256": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b"
+        }
+      ],
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "not_declared",
       "inputs": {
-        "disease_data/GSE270788/local/deg/gse270788_deg.csv": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12",
         "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
-        "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b",
         "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
       },
       "method": {
@@ -102,13 +110,21 @@
       ],
       "dataset_id": "reichart-cm__dcm_genotype_negative",
       "deg": "reichart-cm__dcm_genotype_negative.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/reichart-cm_deg.csv",
+          "sha256": "1eafc8272ae15d6a34c452a51708e2452387a9921aaf751e45bc6730cdf6c732"
+        },
+        {
+          "relative": "local/genotype/reichart-cm_donor_genotypes.csv",
+          "sha256": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb"
+        }
+      ],
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "negative",
       "inputs": {
-        "disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv": "1eafc8272ae15d6a34c452a51708e2452387a9921aaf751e45bc6730cdf6c732",
         "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
-        "disease_data/Reichart-CM/local/genotype/reichart-cm_donor_genotypes.csv": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb",
         "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
       },
       "method": {
@@ -121,8 +137,8 @@
       },
       "model_system": "human LV/RV/apex/IVS sc+snRNA CM-only cellxgene object pseudobulk",
       "n_axis_unmeasured": 651,
-      "n_case": 0,
-      "n_control": 0,
+      "n_case": 8,
+      "n_control": 18,
       "n_measured": 17513,
       "n_significant": 3297,
       "rank": "reichart-cm__dcm_genotype_negative.rank.csv",

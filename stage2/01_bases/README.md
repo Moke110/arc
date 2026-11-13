@@ -130,8 +130,15 @@ rank = db.rank('nHF', 'gse270788__nicm')     # 18,164-row frozen-axis rank frame
 db.eligibility('ICM', 'gse270788__ami')      # tier/evidence/shared-control/time-window record
 ```
 
-Every read is digest-checked against the category `manifest.json`. The five
-datasets and their declared eligibility:
+Every read is digest-checked against the category `manifest.json`. Each catalog
+record pins its tracked inputs as repo-relative `inputs` and its item-local
+derived artefacts as `derived_inputs` (`{relative, sha256}`, relative to the ADR
+0030 item): the derived DEG/pseudobulk CSVs are gitignored per item, so their
+paths are composed at build time from `source_item` + the relative name and are
+never emitted as repo-relative literals (keeps `script/check_paths.sh` green in
+a merged checkout). Every record also carries `n_case`/`n_control` for its
+contrast (a bulk/pseudobulk DEG always has both arms). The five datasets and
+their declared eligibility:
 
 | category | dataset | evidence | tier | case/control | file |
 |---|---|---|---|---|---|

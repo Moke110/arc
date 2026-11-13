@@ -205,6 +205,22 @@ class ReleaseTest(unittest.TestCase):
                     'deg', 'rank'):
             self.assertIn(key, record)
 
+    def test_every_dataset_carries_case_control_counts_and_pinned_derived_inputs(self):
+        for category in ('af', 'icm', 'nhf'):
+            catalog = json.loads((self.output / category / 'catalog.json').read_text())
+            self.assertTrue(catalog['datasets'])
+            for record in catalog['datasets']:
+                # A bulk/pseudobulk DEG always has both arms; zero is a metadata bug.
+                self.assertGreater(record['n_case'], 0, record['dataset_id'])
+                self.assertGreater(record['n_control'], 0, record['dataset_id'])
+                self.assertTrue(record['derived_inputs'], record['dataset_id'])
+                for entry in record['derived_inputs']:
+                    self.assertEqual(len(entry['sha256']), 64)
+                    self.assertFalse(entry['relative'].startswith('disease_data/'))
+                for key in record['inputs']:
+                    self.assertFalse(key.startswith('/'))
+                    self.assertTrue((self.input_root / key).is_file(), key)
+
     def test_manifests_have_no_absolute_paths(self):
         for category, manifest in self._manifests().items():
             driver.release.check_relative_paths(manifest)

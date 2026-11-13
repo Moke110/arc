@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "79d2cdbc7e98239978e5595f5609116178e298169739e5740e506e253b0fb581",
+  "catalog_sha256": "311a5a4dd14db17bf9b9767472e504b11d0dfba092bcb8a88e11791ccd72a381",
   "category": "AF",
   "counts": {
     "datasets": 1,
@@ -11,16 +11,14 @@
     }
   },
   "inputs": {
-    "disease_data/GSE255612/local/deg/gse255612_deg.csv": "7cd553ab0c9ecab5e89d33f721e6b925919380c17ab3cf78ca4eccc35d0a8b35",
     "disease_data/GSE255612/local/deg/gse255612_deg.json": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
-    "disease_data/GSE255612/local/pseudobulk/gse255612_donors.csv": "2f6064950b5f7f6242fcf04a9ced2e5d2e09e91c0d523efe608cdfba9ca53314",
     "disease_data/GSE255612/manifest.sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93",
     "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "159127af67f2f50e365b4f886bc4de7e3ab5b2aef521785ef46dfcfba8f51d94"
+      "sha256": "25f19e52e5f434edfc449b15a003bb68dbc70875398f84e0785dd6107ee95d23"
     },
     "gse255612__af.deg.csv": {
       "rows": 18092,

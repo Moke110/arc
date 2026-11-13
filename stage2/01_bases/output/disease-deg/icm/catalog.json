@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "eda9e1310b0a5befa41e3bdc8795f15c4628ff9a5ddde345311bdeddb008fd61",
+  "catalog_sha256": "eca2d0a5b30d9a12d781e277986deaed1a4ecf2d3e2a98aa84e253e46eb25447",
   "category": "ICM",
   "datasets": [
     {
@@ -42,13 +42,21 @@
       ],
       "dataset_id": "gse270788__icm",
       "deg": "gse270788__icm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/gse270788_deg.csv",
+          "sha256": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12"
+        },
+        {
+          "relative": "local/pseudobulk/gse270788_donors.csv",
+          "sha256": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b"
+        }
+      ],
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "not_declared",
       "inputs": {
-        "disease_data/GSE270788/local/deg/gse270788_deg.csv": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12",
         "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
-        "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b",
         "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
       },
       "method": {
@@ -106,13 +114,21 @@
       ],
       "dataset_id": "gse270788__ami",
       "deg": "gse270788__ami.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/gse270788_deg.csv",
+          "sha256": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12"
+        },
+        {
+          "relative": "local/pseudobulk/gse270788_donors.csv",
+          "sha256": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b"
+        }
+      ],
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "not_declared",
       "inputs": {
-        "disease_data/GSE270788/local/deg/gse270788_deg.csv": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12",
         "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
-        "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b",
         "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
       },
       "method": {

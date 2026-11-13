@@ -87,20 +87,41 @@ def load_sources(path=None):
     return module
 
 
+def item_input(context, dataset, relative):
+    """Resolve an item-relative local path (no repo-relative literal in the source)."""
+    path = context.input(dataset['source_item']) / relative
+    if not path.is_file():
+        raise release.ReleaseError(
+            f"missing pinned item input {dataset['source_item']}/{relative}")
+    return path
+
+
 def source_inputs(context, dataset):
-    """The pinned inputs of one dataset, input-root-relative path -> sha256."""
+    """Pinned inputs of one dataset: tracked files by path, derived files by digest.
+
+    Tracked inputs (item manifest, the item's tracked DEG summary, the axis and
+    the crosswalk) are repo-relative. The item-local DEG/pseudobulk CSV artefacts
+    are gitignored by their ADR 0030 item, so they are recorded as
+    ``derived_inputs`` with an item-relative name and their sha256: the path is
+    resolved at build time from ``source_item`` + the relative name, which keeps
+    ``script/check_paths.sh`` green in a merged checkout that does not carry the
+    per-worktree derived files, while every input is still digest-pinned.
+    """
     inputs = {}
     item_manifest = context.input(Path(dataset['source_item']) / 'manifest.sha256')
     inputs[context.relative(item_manifest)] = sha256(item_manifest)
-    for key in ('local_deg', 'cells_per_donor', 'local_summary'):
-        value = dataset.get(key)
-        if not value:
-            continue
-        path = context.input(value)
-        if not path.is_file():
-            raise release.ReleaseError(f'missing pinned input {value}')
+    summary = dataset.get('local_summary')
+    if summary:
+        path = item_input(context, dataset, summary)
         inputs[context.relative(path)] = sha256(path)
-    return inputs
+    derived = []
+    for key in ('local_deg', 'cells_per_donor'):
+        relative = dataset.get(key)
+        if not relative:
+            continue
+        path = item_input(context, dataset, relative)
+        derived.append({'relative': relative, 'sha256': sha256(path)})
+    return inputs, derived
 
 
 def build_category(context, candidate, category):
@@ -115,7 +136,8 @@ def build_category(context, candidate, category):
     category_record = context.sources.category_record(category)
     records, outputs, inputs = [], {}, {}
     for dataset in context.sources.datasets(category):
-        local = disease_deg.read_local_deg(context.input(dataset['local_deg']))
+        local = disease_deg.read_local_deg(
+            item_input(context, dataset, dataset['local_deg']))
         local = disease_deg.contrast_selection(local, dataset['dataset_id'],
                                                dataset['contrasts'])
         table, rank, stats, report = disease_deg.build_dataset_products(
@@ -128,7 +150,7 @@ def build_category(context, candidate, category):
         # still encode the exact effect order the rank was derived from.
         table.to_csv(candidate / deg_name, index=False, float_format='%.17g')
         rank.to_csv(candidate / rank_name, index=False, float_format='%.17g')
-        dataset_inputs = source_inputs(context, dataset)
+        dataset_inputs, derived_inputs = source_inputs(context, dataset)
         inputs.update(dataset_inputs)
         method = dict(dataset['method'])
         method['alignment'] = 'symbol-first then Ensembl; unresolved rows reported'
@@ -156,6 +178,7 @@ def build_category(context, candidate, category):
             'method': method,
             'alignment': report,
             'inputs': dataset_inputs,
+            'derived_inputs': derived_inputs,
         })
         for name in (deg_name, rank_name):
             path = candidate / name
