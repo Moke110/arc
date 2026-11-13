@@ -309,7 +309,12 @@ through `bases.deg_rank`, and the published table carries the winning contrast's
 `n_contrasts`, `n_contrasts_supporting`, `effect`, `rank`, `rank_norm`; the rank
 file covers all 18,164 frozen genes with unmeasured genes at `n_measured + 1`.
 Shared vehicle wells are declared per source in `eligibility.csv`; classes are
-never treated as independent experiments.
+never treated as independent experiments. Each catalog record carries the real
+pooled arm sizes: `n_case` is the pooled class-drug well count and `n_control`
+the vehicle well count (the per-contrast arm size when it is constant, otherwise
+the sum over the disjoint source strata), with `n_case_basis`/`n_control_basis`
+recording the derivation and the per-stratum counts kept in `contrasts[]`."""
+
 
 ```bash
 python stage2/01_bases/execution/build_disease_deg_cardiotox.py publish
