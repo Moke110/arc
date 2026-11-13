@@ -221,6 +221,29 @@ the candidate replaces the accepted product. `verify` replays the whole build
 from the pinned inputs and compares every digest; the peak RSS of the build
 (≈1.5 GiB Python, ≈0.9 GiB R) is recorded in the ticket record, not in a manifest.
 
+### Gene-axis release (#190, ADR 0066)
+
+The two released axes are **tracked compact evidence**, not ignored payloads:
+`candidate_rank_sum.csv` is 1.35 MB, the two axis files 23 kB + 58 kB, the
+composition table 5 kB and the manifest 25 kB; the figure CSV and PNG are 6 kB +
+83 kB. They are force-added because the repository-wide `*.csv` ignore rule would
+otherwise drop them. The pre-0066 `gene-axis/` file set (direction composition,
+unweighted quota-free fused table, animal half-weight column, tenv non-HVG curve,
+ortholog table, `inflection.json`, ~3.54 MB) is **retained byte-identically**
+until the removal ticket (#192) deletes it after acceptance; nothing reads it.
+`du -sb`, 2026-11-13.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/gene-axis/` | 5,006,217 | released products (`candidate_rank_sum.csv`, `gene_axis_2000.csv`, `gene_axis_5000.csv`, `axis_composition.csv`, `manifest.json`, ~1.46 MB) plus the retained pre-0066 file set (~3.54 MB) | `execution/build_gene_axis.py publish` from the read-only `output/disease-deg/**`, `output/tenv-hvg/descriptive.csv` and `output/gene-identity/genes.csv`; `--verify` replays and compares every digest |
+| `figure/gene_axis_rank_sum_histogram.png` | 82,830 | rank-sum histogram over all 18,164 candidates with both axes' `rank_sum` intervals marked (sha256 `49d1dc5d…`) | `figure/script/render_gene_axis_rank_sum_histogram.py` from `figure/data/gene_axis_rank_sum_histogram.csv` alone (`output/` unreadable) |
+| `figure/data/gene_axis_rank_sum_histogram.csv` | 6,483 | complete plotted values: histogram bins/shares, both axis intervals/medians and the inflection diagnostic marker | written by the build from the pinned inputs; tracked next to the PNG |
+
+The catalog inputs are the per-category `output/disease-deg/` products; the
+manifest pins 33 input digests (frozen axis, tenv-HVG ranking, six catalogs,
+six release manifests, 19 used rank frames) and 5 output digests, with no
+absolute paths. Build + replay peak RSS ≈140 MiB under the 10 GiB cap.
+
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See
 `stage2/01_bases/README.md` for the current commands, accepted results,

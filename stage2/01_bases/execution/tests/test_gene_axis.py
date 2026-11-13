@@ -1,22 +1,18 @@
-"""Fixture-only tests for the gene-axis evidence definitions and its seams.
+"""Fixture-only tests for the two-level rank-sum fusion and the released axes.
 
-No real data is read: the axis, expression, DEG, ortholog and plotted-value
-tables below are hand-built fixtures. The only repository files opened are the
-tracked evidence artifacts (the committed figure CSV/PNG and the committed
-manifest) which the replay and leakage tests must verify without touching
-``output/`` products.
+No real data is read: the axis, the per-dataset ranks, the tenv-HVG ranking and
+the published plotted values are hand-built 8-gene fixtures. The fusion, the
+axis fill rule and the readers are exercised at the public API boundary; one
+seam only (ADR 0066 / spec). Determinism is tested by building the same fixture
+twice into scratch candidate roots and comparing every digest.
 """
-import builtins
 import csv
 import hashlib
-import io
 import json
 import sys
-import tarfile
 import tempfile
 import unittest
 from pathlib import Path
-from unittest import mock
 
 import numpy as np
 import pandas as pd
@@ -24,17 +20,17 @@ import pandas as pd
 EXECUTION = Path(__file__).resolve().parents[1]
 STEP = EXECUTION.parent
 sys.path.insert(0, str(EXECUTION))
-sys.path.insert(0, str(STEP / 'figure/script'))
 sys.path.insert(0, str(STEP / 'output/api'))
+sys.path.insert(0, str(STEP / 'figure/script'))
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 import build_gene_axis as driver
-import render_gene_axis_source_summary as renderer
+import render_gene_axis_rank_sum_histogram as renderer
+from bases import deg_rank, gene_axis
+from bases.deg_rank import normalized_rank
+from bases.disease_deg import catalog_digest
 from bases.gene_axis import (
-    AXIS_SIZE, SymbolResolver, align_to_gene_index, collapse_expression, complete_rank,
-    deg_count_agreement, deg_effect, detect_inflection, direction_composition, fuse_ranks,
-    fused_rank_stats, hvg_membership, kneedle_knee, normalized_dispersion, normalized_rank,
-    overlap_metrics, per_gene_deg, rank_scores, second_difference_peak, tenv_non_hvg_curve,
-    transcriptome_hvg_sets,
+    AXIS_SIZES, CATEGORIES, CATEGORY_RANK_COLUMNS, CANDIDATE_COLUMNS, GeneAxis,
+    category_rank, winning_tier,
 )
 
 AXIS_SYMBOLS = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7']
@@ -42,334 +38,596 @@ AXIS_SYMBOLS = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7']
 
 def axis_fixture():
     return pd.DataFrame({
-        'gene_index': np.arange(len(AXIS_SYMBOLS)),
+        'gene_index': np.arange(len(AXIS_SYMBOLS), dtype=np.int64),
         'symbol': AXIS_SYMBOLS,
         'hgnc_id': [f'HGNC:{index + 1}' for index in range(len(AXIS_SYMBOLS))],
-        'entrez_id': [str(index + 1) for index in range(len(AXIS_SYMBOLS))],
         'ensembl_id': [f'ENSG0000000000{index + 1}' for index in range(len(AXIS_SYMBOLS))],
     })
 
 
-def crosswalk_fixture():
-    return pd.DataFrame([
-        {'dataset_id': 'dtoxs', 'source_gene_id': 'OLD_G0', 'symbol': 'G0',
-         'hgnc_id': 'HGNC:1', 'match_type': 'previous'},
-        {'dataset_id': 'dtoxs', 'source_gene_id': 'ALIAS_G1', 'symbol': 'G1',
-         'hgnc_id': 'HGNC:2', 'match_type': 'alias'},
-        {'dataset_id': 'dtoxs', 'source_gene_id': 'AMB', 'symbol': 'X',
-         'hgnc_id': 'HGNC:3', 'match_type': 'alias'},
-        {'dataset_id': 'dtoxs', 'source_gene_id': 'AMB', 'symbol': 'Y',
-         'hgnc_id': 'HGNC:4', 'match_type': 'alias'},
-        {'dataset_id': 'dtoxs', 'source_gene_id': 'OFF', 'symbol': 'Z',
-         'hgnc_id': 'HGNC:999', 'match_type': 'previous'},
-        {'dataset_id': 'dtoxs', 'source_gene_id': 'ENSG00000000005', 'symbol': 'G4',
-         'hgnc_id': 'HGNC:5', 'match_type': 'ensembl'},
-    ])
+def dataset_record(dataset_id, tier, isogenic=False, n_measured=8):
+    record = {'dataset_id': dataset_id, 'tier': tier, 'n_measured': n_measured}
+    if isogenic:
+        record['isogenic_exception'] = {'applies': True, 'why': 'fixture isogenic pair'}
+    return record
 
 
-def hgnc_fixture():
-    return pd.DataFrame([
-        {'hgnc_id': 'HGNC:1', 'symbol': 'G0', 'alias_symbol': 'HG0|HG0B',
-         'prev_symbol': '', 'ensembl_gene_id': 'ENSG00000000001'},
-        {'hgnc_id': 'HGNC:6', 'symbol': 'G5', 'alias_symbol': 'HG5',
-         'prev_symbol': 'OLD5', 'ensembl_gene_id': 'ENSG00000000006'},
-        {'hgnc_id': 'HGNC:999', 'symbol': 'OFFAXIS', 'alias_symbol': '',
-         'prev_symbol': '', 'ensembl_gene_id': 'ENSG000000009999'},
-    ])
+class ReExportContractTests(unittest.TestCase):
+    """#186 contract: gene_axis re-exports the DEG/rank functions, never copies them."""
+
+    def test_deg_rank_contract_is_re_exported_by_identity(self):
+        for name in ('SymbolResolver', 'complete_rank', 'deg_effect', 'per_gene_deg',
+                     'rank_scores', 'ALIGNMENT_CATEGORIES', 'PADJ_FLOOR',
+                     'PADJ_THRESHOLD', 'normalized_rank', 'AXIS_SIZE'):
+            self.assertIs(getattr(gene_axis, name), getattr(deg_rank, name),
+                          f'bases.gene_axis.{name} is not bases.deg_rank.{name}')
 
 
-class AlignmentTests(unittest.TestCase):
-    def setUp(self):
-        self.resolver = SymbolResolver(axis_fixture(), crosswalk_fixture().to_dict('records'),
-                                       hgnc_fixture().to_dict('records'))
+class WinningTierTests(unittest.TestCase):
+    """ADR 0066 priority tier + isogenic exception (which datasets a category fuses)."""
 
-    def test_precedence_and_categories(self):
-        cases = {
-            'G0': (0, 'canonical'),
-            'OLD_G0': (0, 'crosswalk_alias'),
-            'ALIAS_G1': (1, 'crosswalk_alias'),
-            'HG5': (5, 'hgnc_alias'),
-            'OLD5': (5, 'hgnc_alias'),
-            'ENSG00000000005': (4, 'ensembl'),
-            'ENSG00000000005.7': (4, 'ensembl'),
-            'AMB': (-1, 'ambiguous'),
-            'OFF': (-1, 'offaxis'),
-            'UNKNOWN_SYMBOL': (-1, 'unmapped'),
-            'ENSG000000009999': (-1, 'offaxis'),
-        }
-        for symbol, expected in cases.items():
-            self.assertEqual(self.resolver.resolve(symbol), expected, symbol)
+    def test_lowest_tier_supplies_the_source(self):
+        catalog = {'datasets': [dataset_record('a', 1), dataset_record('b', 1),
+                                dataset_record('c', 2), dataset_record('d', 3)]}
+        selected = winning_tier(catalog)
+        self.assertEqual(selected['winning_tier'], 1)
+        self.assertEqual(selected['datasets'], ['a', 'b'])
+        self.assertEqual(selected['excluded_tiers'], [2, 3])
+        self.assertEqual(selected['retained_by_exception'], [])
 
-    def test_loss_summary_counts_every_symbol(self):
-        symbols = ['G0', 'G1', 'AMB', 'OFF', 'UNKNOWN_SYMBOL', 'HG5']
-        indices, categories = self.resolver.resolve_many(symbols)
-        summary = self.resolver.loss_summary(indices, categories)
-        self.assertEqual(summary['n_source_symbols'], len(symbols))
-        self.assertEqual(summary['canonical'], 2)
-        self.assertEqual(summary['hgnc_alias'], 1)
-        self.assertEqual(summary['ambiguous'], 1)
-        self.assertEqual(summary['offaxis'], 1)
-        self.assertEqual(summary['unmapped'], 1)
-        self.assertEqual(summary['n_resolved'], 3)
-        self.assertEqual(summary['n_axis_genes_resolved'], 3)
+    def test_isogenic_exception_retains_higher_tier_models(self):
+        catalog = {'datasets': [
+            dataset_record('human_a', 1), dataset_record('human_b', 1),
+            dataset_record('isogenic_a', 2, isogenic=True),
+            dataset_record('isogenic_b', 2, isogenic=True),
+            dataset_record('other_invitro', 2),
+        ]}
+        selected = winning_tier(catalog)
+        self.assertEqual(selected['datasets'],
+                         ['human_a', 'human_b', 'isogenic_a', 'isogenic_b'])
+        self.assertEqual(selected['retained_by_exception'],
+                         ['isogenic_a', 'isogenic_b'])
+        self.assertEqual(selected['excluded_tiers'], [2])
 
-
-class RankTests(unittest.TestCase):
-    def test_effect_score_and_na_padj(self):
-        effect = deg_effect(np.array([2.0, -2.0, 1.0, 3.0]), np.array([1e-4, 0.5, np.nan, 0.0]))
-        self.assertAlmostEqual(effect[0], 2.0 * 4.0)
-        self.assertAlmostEqual(effect[1], 2.0 * -np.log10(0.5))
-        self.assertEqual(effect[2], 0.0)   # NA padj is non-significant, not dropped
-        self.assertAlmostEqual(effect[3], 3.0 * 300.0)  # floored at 1e-300
-
-    def test_multi_contrast_collapse_by_max(self):
-        per_gene = per_gene_deg(
-            gene_index=np.array([0, 0, 1, 1]),
-            log2fc=np.array([0.5, -2.0, 1.0, 0.2]),
-            padj=np.array([0.04, 0.001, 0.5, np.nan]),
-            contrast=np.array(['a', 'b', 'a', 'b']))
-        winning = per_gene.set_index('gene_index')
-        self.assertEqual(winning.loc[0, 'contrast'], 'b')
-        self.assertAlmostEqual(winning.loc[0, 'effect'], 2.0 * 3.0)
-        self.assertEqual(winning.loc[0, 'direction'], -1)
-        self.assertEqual(winning.loc[0, 'n_contrasts_supporting'], 2)
-        self.assertEqual(winning.loc[1, 'contrast'], 'a')
-        self.assertEqual(winning.loc[1, 'direction'], 0)   # winning padj is not significant
-        self.assertEqual(winning.loc[1, 'n_contrasts_supporting'], 0)
-
-    def test_unmeasured_gets_worst_rank_and_one(self):
-        measured = np.array([0, 2, 4])
-        effect = np.array([1.0, 3.0, 2.0])
-        rank = complete_rank(measured, rank_scores(measured, effect), axis_size=8)
-        self.assertEqual(rank.tolist(), [3, 4, 1, 4, 2, 4, 4, 4])
-        norm = normalized_rank(rank, 3)
-        self.assertEqual(norm[1], 1.0)                      # unmeasured
-        self.assertEqual(norm[0], 1.0)
-        self.assertEqual(norm[2], 1 / 3)
-
-    def test_rank_ties_break_on_gene_index(self):
-        rank = rank_scores(np.array([4, 2, 9, 1]), np.array([1.0, 1.0, 1.0, 1.0]))
-        self.assertEqual(rank.tolist(), [3, 2, 4, 1])
-
-    def test_hvg_recipe_ranks_variable_genes_first(self):
-        values = np.array([
-            [1.0, 1.0, 1.0, 1.0],
-            [0.0, 0.0, 10.0, 10.0],
-            [2.0, 2.1, 1.9, 2.0],
-            [1.0, 3.0, 5.0, 7.0],
-        ])
-        table = normalized_dispersion(values, np.arange(4))
-        self.assertEqual(int(table.sort_values('rank').gene_index.iloc[0]), 1)
-        self.assertEqual(sorted(table['rank'].tolist()), [1, 2, 3, 4])
-
-
-class FusionTests(unittest.TestCase):
-    def test_unweighted_fusion_tie_break_and_animal_sensitivity(self):
-        n = 4
-        ranks = {
-            'tenv': np.array([1, 2, 3, 4]),
-            'human': np.array([1, 2, 3, 4]),
-            'gse160516': np.array([1, 2, 3, 4]),
-            'gse108940': np.array([2, 1, 3, 4]),
-        }
-        measured = {name: 4 for name in ranks}
-        fused = fuse_ranks(ranks, measured, axis_size=n)
-        self.assertEqual(fused.rank_sum.tolist(), [1.25, 1.75, 3.0, 4.0])
-        self.assertEqual(fused.fused_rank.tolist(), [1, 2, 3, 4])
-        # animal sources at 0.5: 0.25 + 0.25 + 0.5*0.25 + 0.5*0.5 = 0.875
-        self.assertAlmostEqual(fused.rank_sum_animal_half.iloc[0], 0.875)
-        self.assertAlmostEqual(fused.rank_sum_animal_half.iloc[1], 1.375)
-        self.assertEqual(fused.n_sources_measured.tolist(), [4, 4, 4, 4])
-
-    def test_unmeasured_counts_and_tie_break(self):
-        ranks = {
-            'a': np.array([1, 2, 3]),          # 2 measured
-            'b': np.array([1, 1, 3]),          # 2 measured
-        }
-        fused = fuse_ranks(ranks, {'a': 2, 'b': 2}, axis_size=3)
-        self.assertEqual(fused.rank_sum.tolist(), [1.0, 1.5, 2.0])
-        self.assertEqual(fused.n_sources_measured.tolist(), [2, 2, 0])
-        self.assertEqual(fused.fused_rank.tolist(), [1, 2, 3])  # tie on gene_index
-        self.assertEqual(fused.n_sources_deg_significant.tolist(), [0, 0, 0])
-
-    def test_fusion_is_deterministic_and_order_independent(self):
-        rng = np.random.default_rng(17)
-        ranks = {name: rng.permutation(6) + 1 for name in ('a', 'b', 'c')}
-        measured = {'a': 4, 'b': 5, 'c': 3}
-        first = fuse_ranks(ranks, measured, axis_size=6)
-        second = fuse_ranks(dict(reversed(list(ranks.items()))), measured, axis_size=6)
-        columns = sorted(first.columns)
-        pd.testing.assert_frame_equal(first[columns], second[columns])
-        pd.testing.assert_frame_equal(first, fuse_ranks(ranks, measured, axis_size=6))
-
-    def test_overlap_metrics(self):
-        fused_rank = np.array([3, 1, 2])   # gene-indexed: gene 1 is fused rank 1
-        metrics = overlap_metrics({0, 1}, {1, 2}, fused_rank)
-        self.assertEqual(metrics['n_intersection'], 1)
-        self.assertAlmostEqual(metrics['jaccard'], 1 / 3)
-        self.assertEqual(metrics['fused_rank_min'], 1)
-
-    def test_tenv_non_hvg_curve(self):
-        ranked_genes = np.array([2, 0, 1])   # fused order: genes 2, 0, 1
-        tenv_rank = np.array([3, 1, 2])      # gene-indexed
-        curve = tenv_non_hvg_curve(ranked_genes, tenv_rank, ks=(1, 2))
-        self.assertEqual(curve.n.tolist(), [1, 2, 3])
-        self.assertEqual(curve['n_non_hvg_k1'].tolist(), [1, 2, 2])
-        self.assertEqual(curve['n_non_hvg_k2'].tolist(), [0, 1, 1])
-        self.assertTrue(hvg_membership(tenv_rank, 1).tolist() == [False, True, False])
-
-
-class IndexSpaceTests(unittest.TestCase):
-    """The tracked fused table is sorted by fused_rank, never by gene_index.
-
-    These fixtures make fused-rank order differ from gene_index order and pin
-    that every consumer answers the fused-order question, not the row-position
-    one (the bug class this round fixes).
-    """
-
-    def test_align_to_gene_index_scatters_sorted_rows(self):
-        # Rows in fused-rank order hold gene indices [1, 3, 0, 4, 2].
-        row_gene_index = np.array([1, 3, 0, 4, 2])
-        row_fused_rank = np.array([1, 2, 3, 4, 5])
-        scattered = align_to_gene_index(row_fused_rank, row_gene_index, axis_size=5)
-        self.assertEqual(scattered.tolist(), [3, 1, 5, 2, 4])
+    def test_missing_tier_fails_closed(self):
         with self.assertRaises(ValueError):
-            align_to_gene_index(np.array([1, 2]), np.array([0, 1]), axis_size=5)
+            winning_tier({'datasets': [{'dataset_id': 'a'}]})
         with self.assertRaises(ValueError):
-            align_to_gene_index(np.array([1, 2]), np.array([0, 0]), axis_size=2)
-
-    def test_tenv_curve_uses_fused_order_not_gene_index(self):
-        tenv_rank = np.array([1, 2, 3, 4, 5])   # gene 0 is tenv's top HVG
-        fused_rank = np.array([3, 1, 5, 2, 4])  # fused order genes [1, 3, 0, 4, 2]
-        fused_order = np.argsort(fused_rank)
-        curve = tenv_non_hvg_curve(fused_order, tenv_rank, ks=(1, 2))
-        self.assertEqual(curve['n_non_hvg_k1'].tolist(), [1, 2, 2, 3, 4])
-        self.assertEqual(curve['n_non_hvg_k2'].tolist(), [0, 1, 1, 2, 3])
-        # The old row-position call (gene_index order) must give a different curve.
-        wrong = tenv_non_hvg_curve(np.arange(5), tenv_rank, ks=(1,))
-        self.assertEqual(wrong['n_non_hvg_k1'].tolist(), [0, 1, 2, 3, 4])
-
-    def test_overlap_rank_stats_use_gene_indexed_fused_rank(self):
-        fused_rank = np.array([3, 1, 2])
-        own = overlap_metrics({0}, {0}, fused_rank)
-        self.assertEqual(own['fused_rank_min'], 3)
-        self.assertEqual(own['fused_rank_max'], 3)
-        self.assertEqual(fused_rank_stats({1}, fused_rank)['fused_rank_min'], 1)
-        self.assertEqual(fused_rank_stats({0, 2}, fused_rank)['fused_rank_median'], 2.5)
-        # A row-position array would report 2 for gene 0, not its true rank 3.
-        positional = np.array([1, 2, 3])
-        self.assertEqual(overlap_metrics({0}, {0}, positional)['fused_rank_min'], 1)
-
-    def test_direction_composition_rules_select_different_genes(self):
-        fused_rank = np.array([1, 2, 3, 4, 5, 6])
-        direction = np.array([1, 1, -1, -1, 1, -1])
-        max_abs_effect = np.array([0.0, 0.0, 0.0, 0.0, 9.0, 8.0])
-        frame = direction_composition(fused_rank, direction, max_abs_effect, sizes=(2, 6))
-        symmetric = frame[frame.rule == 'symmetric'].set_index('n')
-        weighted = frame[frame.rule == 'max_abs_log2fc'].set_index('n')
-        self.assertEqual((symmetric.loc[2, 'n_up'], symmetric.loc[2, 'n_down']), (2, 0))
-        self.assertEqual((weighted.loc[2, 'n_up'], weighted.loc[2, 'n_down']), (1, 1))
-        self.assertAlmostEqual(symmetric.loc[2, 'up_share'], 1.0)
-        self.assertAlmostEqual(weighted.loc[2, 'up_share'], 0.5)
-        self.assertEqual((symmetric.loc[6, 'n_up'], weighted.loc[6, 'n_up']), (3, 3))
-
-    def test_direction_composition_uses_fused_rank_values_not_row_order(self):
-        fused_rank = np.array([3, 1, 5, 2, 4])
-        direction = np.array([1, -1, 1, -1, 1])
-        max_abs_effect = np.zeros(5)
-        frame = direction_composition(fused_rank, direction, max_abs_effect, sizes=(2,))
-        symmetric = frame[frame.rule == 'symmetric'].iloc[0]
-        self.assertEqual((symmetric.n_up, symmetric.n_down), (0, 2))  # genes 1, 3
-        wrong = direction_composition(np.arange(1, 6), direction, max_abs_effect, sizes=(2,))
-        wrong_row = wrong[wrong.rule == 'symmetric'].iloc[0]
-        self.assertEqual((wrong_row.n_up, wrong_row.n_down), (1, 1))  # row positions 0, 1
-
-    def test_deg_count_tie_break_is_fused_rank(self):
-        fused_rank = np.array([4, 5, 1, 2, 3, 6])
-        count = np.array([1, 1, 0, 1, 0, 0])
-        result = deg_count_agreement(fused_rank, count, sizes=(2,))
-        self.assertEqual(result['top_n_agreement']['2']['n_overlap'], 1)
-        self.assertAlmostEqual(result['top_n_agreement']['2']['share'], 0.5)
-        # The frozen gene_index tie-break is a different, weaker ranking.
-        gene_order = np.lexsort((np.arange(6), -count))
-        fused_order = np.argsort(fused_rank)
-        self.assertEqual(len(set(fused_order[:2]) & set(gene_order[:2])), 0)
-
-    def test_transcriptome_hvg_sets_project_top_k_onto_axis(self):
-        hvg_rank = np.array([1, 2, 3, 4])
-        row_gene_index = np.array([-1, 0, 1, 2])   # the most variable row is off-axis
-        sets = transcriptome_hvg_sets(hvg_rank, row_gene_index, ks=(1, 2, 4), axis_size=3)
-        self.assertEqual(sets[1]['n_total'], 1)
-        self.assertEqual(sets[1]['n_on_axis'], 0)
-        self.assertFalse(sets[1]['set'].any())
-        self.assertEqual(sets[2]['n_on_axis'], 1)
-        self.assertEqual(sets[4]['n_total'], 4)
-        self.assertEqual(sets[4]['n_on_axis'], 3)
-        self.assertAlmostEqual(sets[2]['n_on_axis'] / sets[2]['n_total'], 0.5)
-
-    def test_source_summary_hvg_share_and_density(self):
-        spec = {'id': 'x', 'accession': 'X', 'category': 'disease_data',
-                'species': 'Homo sapiens', 'tissue_model': 't', 'contrast': 'c',
-                'method': 'm', 'ortholog_chain': 'none', 'fused': True,
-                'exploratory': False, 'supplementary_only': False, 'notes': ''}
-        axis_set = np.zeros(8, dtype=bool)
-        axis_set[[0, 1, 2, 3, 4]] = True
-        result = {'measured': 6, 'n_axis_expression': 7, 'n_samples': 2,
-                  'n_contrasts': 1, 'per_gene': None, 'metadata': {},
-                  'hvg_sets': {2000: {'set': axis_set, 'n_total': 8, 'n_on_axis': 5}}}
-        row = driver._source_summary_row(spec, result, axis_size=8)
-        self.assertEqual(row['n_hvg'], 8)
-        self.assertEqual(row['n_hvg_total'], 8)
-        self.assertEqual(row['n_hvg_on_axis'], 5)
-        self.assertAlmostEqual(row['hvg_share'], 5 / 8)
-        self.assertAlmostEqual(row['hvg_density'], 5 / 7)
+            winning_tier({'datasets': []})
 
 
-class InflectionTests(unittest.TestCase):
+class LevelOneTests(unittest.TestCase):
+    """Level 1: sum(rank_norm) inside one category, ties by gene_index."""
+
+    def test_single_dataset_category_is_its_own_order(self):
+        ranks = np.array([8, 1, 7, 2, 6, 3, 5, 4], dtype=np.int64)
+        result = category_rank([ranks], [8])
+        np.testing.assert_array_equal(result['rank'], ranks)
+        self.assertEqual(result['n_datasets'], 1)
+        self.assertTrue(result['measured'].all())
+
+    def test_sum_of_normalized_ranks_and_gene_index_tie_break(self):
+        # A = 1..8, B = 8,1,2,...,7 over 8 measured genes. Sum/8:
+        # [9,3,5,7,9,11,13,15]/8 -> ascending 3,5,7,9,9,11,13,15 with the two
+        # 9/8 ties broken by gene_index (gene 0 before gene 4).
+        a = np.arange(1, 9, dtype=np.int64)
+        b = np.array([8, 1, 2, 3, 4, 5, 6, 7], dtype=np.int64)
+        result = category_rank([a, b], [8, 8])
+        np.testing.assert_array_equal(result['rank'], np.array([4, 1, 2, 3, 5, 6, 7, 8]))
+        np.testing.assert_allclose(
+            result['sum'], np.array([9, 3, 5, 7, 9, 11, 13, 15]) / 8.0)
+
+    def test_unmeasured_gene_contributes_exactly_one(self):
+        ranks = np.array([1, 2, 3, 4, 5, 6, 7, 7], dtype=np.int64)
+        result = category_rank([ranks], [6])
+        np.testing.assert_allclose(result['sum'], [1/6, 2/6, 3/6, 4/6, 5/6, 1.0, 1.0, 1.0])
+        np.testing.assert_array_equal(result['rank'], np.arange(1, 9))
+        np.testing.assert_array_equal(
+            result['measured'], [True, True, True, True, True, True, False, False])
+
+    def test_level_one_rank_is_a_complete_permutation(self):
+        a = np.arange(1, 9, dtype=np.int64)
+        b = np.array([2, 1, 4, 3, 6, 5, 8, 7], dtype=np.int64)
+        result = category_rank([a, b], [8, 8])
+        self.assertEqual(sorted(result['rank'].tolist()), list(range(1, 9)))
+        # every pair ties at 3,7,11,15 / 8, so gene_index orders each pair
+        np.testing.assert_array_equal(result['rank'], np.arange(1, 9))
+
+    def test_out_of_contract_rank_fails_closed(self):
+        with self.assertRaises(ValueError):
+            category_rank([np.array([1, 2, 3, 4, 5, 6, 7, 9])], [8])
+        with self.assertRaises(ValueError):
+            category_rank([np.array([1, 2, 3, 4, 5, 6, 7, 8])], [0])
+
+
+class LevelTwoTests(unittest.TestCase):
+    """Level 2: rank_sum over the seven sources, ascending-is-better, pN, coverage."""
+
     @staticmethod
-    def knee_curve(knee=750, length=2000):
-        x = np.arange(1, length + 1, dtype=float)
-        y = np.minimum(x * 0.001, 0.6 + 0.0002 * (x - 1))
+    def identity():
+        return np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
+
+    def test_sum_of_seven_normalized_ranks_and_gene_index_tie_break(self):
+        ranks = [self.identity().copy() for _ in CATEGORIES]
+        # one source puts gene 0 at rank 8 and gene 1 at rank 2: the integer
+        # sums 8+6*1 and 2+6*2 both equal 14, and genes 6/7 also tie at 49
+        ranks[0] = np.array([8, 2, 3, 4, 5, 6, 7, 1], dtype=np.int64)
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
+        result = gene_axis.fusion_rank_sum(
+            ranks, measured, self.identity(), sizes=(2, 4))
+        np.testing.assert_allclose(
+            result['rank_sum'],
+            np.array([14, 14, 21, 28, 35, 42, 49, 49]) / 8.0)
+        # equal rank sums are ordered by gene_index in the fusion (fill-rule test)
+        self.assertEqual(result['rank_sum'][0], result['rank_sum'][1])
+
+    def test_pn_boundaries_zero_and_seven(self):
+        ranks = [self.identity().copy() for _ in CATEGORIES]
+        ranks[0][:2] = [2, 1]
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
+        result = gene_axis.fusion_rank_sum(
+            ranks, measured, self.identity(), sizes=(1, 2, 4))
+        self.assertEqual(result['pn'][1].tolist(), [6, 1, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(result['pn'][2].tolist(), [7, 7, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(result['pn'][4].tolist(), [7, 7, 7, 7, 0, 0, 0, 0])
+        self.assertEqual(int(result['pn'][2].max()), 7)
+        self.assertEqual(int(result['pn'][2].min()), 0)
+
+    def test_n_sources_measured_counts_sources_not_datasets(self):
+        ranks = [self.identity().copy() for _ in CATEGORIES]
+        measured = [np.zeros(8, dtype=bool) for _ in CATEGORIES]
+        measured[0][0] = True
+        measured[3][0] = True
+        result = gene_axis.fusion_rank_sum(ranks, measured, self.identity(), sizes=(2,))
+        # tenv always measures the gene; two of the six categories do
+        self.assertEqual(result['n_sources_measured'].tolist(),
+                         [3, 1, 1, 1, 1, 1, 1, 1])
+
+    def test_rank_sum_is_ascending_is_better(self):
+        ranks = [self.identity().copy() for _ in CATEGORIES]
+        ranks[0] = self.identity()[::-1].copy()
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
+        result = gene_axis.fusion_rank_sum(ranks, measured, self.identity(), sizes=(2,))
+        order = np.argsort(result['rank_sum'], kind='stable')
+        self.assertEqual(int(order[0]), 0)   # every source ranks gene 0 first
+        self.assertEqual(int(order[-1]), 7)  # and gene 7 last
+        self.assertTrue(result['rank_sum'][order[0]] < result['rank_sum'][order[-1]])
+
+    def test_fusion_rejects_incomplete_source_ranks(self):
+        ranks = [self.identity().copy() for _ in CATEGORIES]
+        ranks[0][0] = 99
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
+        with self.assertRaises(ValueError):
+            gene_axis.fusion_rank_sum(ranks, measured, self.identity(), sizes=(2,))
+        with self.assertRaises(ValueError):
+            gene_axis.fusion_rank_sum(ranks[:5], measured[:5], self.identity(), sizes=(2,))
+        good = [self.identity().copy() for _ in CATEGORIES]
+        with self.assertRaises(ValueError):
+            gene_axis.fusion_rank_sum(good, measured, np.array([1, 2, 3]), sizes=(2,))
+
+
+class CandidateTableTests(unittest.TestCase):
+    """The master candidate table: one row per frozen-axis gene, all contracted columns."""
+
+    @staticmethod
+    def fusion_inputs():
+        identity = np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
+        ranks = [identity.copy() for _ in CATEGORIES]
+        ranks[0] = np.array([8, 2, 3, 4, 5, 6, 7, 1], dtype=np.int64)
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
+        return ranks, measured, identity.copy()
+
+    def test_columns_rows_and_values(self):
+        axis = axis_fixture()
+        ranks, measured, tenv = self.fusion_inputs()
+        table = gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2, 4))
+        self.assertEqual(list(table.columns), list(gene_axis.candidate_columns((2, 4))))
+        self.assertEqual(len(table), len(AXIS_SYMBOLS))
+        np.testing.assert_array_equal(table.gene_index.to_numpy(), np.arange(8))
+        self.assertEqual(table.symbol.tolist(), AXIS_SYMBOLS)
+        np.testing.assert_array_equal(table.tenv_hvg_rank.to_numpy(), tenv)
+        for column, rank in zip(CATEGORY_RANK_COLUMNS, ranks):
+            np.testing.assert_array_equal(table[column].to_numpy(), rank)
+        expected = gene_axis.fusion_rank_sum(
+            ranks, measured, tenv, sizes=(2, 4))
+        np.testing.assert_allclose(table.rank_sum.to_numpy(), expected['rank_sum'])
+        np.testing.assert_array_equal(
+            table.n_sources_measured.to_numpy(),
+            expected['n_sources_measured'])
+        np.testing.assert_array_equal(table.p2.to_numpy(), expected['pn'][2])
+        np.testing.assert_array_equal(table.p4.to_numpy(), expected['pn'][4])
+
+    def test_unmeasured_mask_counts_sources_and_keeps_the_row(self):
+        axis = axis_fixture()
+        ranks, measured, tenv = self.fusion_inputs()
+        measured[0][3] = False
+        table = gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2,))
+        self.assertEqual(int(table.n_sources_measured[3]), 6)
+        self.assertIn(3, table.gene_index.tolist())
+
+    def test_axis_order_is_required(self):
+        axis = axis_fixture().iloc[::-1].reset_index(drop=True)
+        ranks, measured, tenv = self.fusion_inputs()
+        with self.assertRaises(ValueError):
+            gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2,))
+
+
+class AxisFillTests(unittest.TestCase):
+    """ADR 0066 axis fill rule: 0.5*N tenv-HVG then 0.5*N by pN / rank_sum / index."""
+
+    @staticmethod
+    def fill_inputs():
+        # tenv-HVG ranks genes in reverse; the top 2 are 6,7 and the top 3 add 5
+        tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
+        rank_sum = np.array([0.50, 0.20, 0.20, 0.30, 0.10, 0.40, 0.05, 0.01])
+        p_n = {4: np.array([0, 0, 0, 4, 0, 5, 7, 7]),
+               6: np.array([4, 3, 2, 1, 5, 7, 7, 7])}
+        return tenv, rank_sum, p_n
+
+    def test_fill_takes_exactly_half_tenv_and_half_replication(self):
+        tenv, rank_sum, p_n = self.fill_inputs()
+        for n in (4, 6):
+            axis = gene_axis.axis_fill(tenv, p_n[n], rank_sum, n=n)
+            self.assertEqual(len(axis), n)
+            from_tenv = int((tenv[axis] <= n // 2).sum())
+            self.assertEqual(from_tenv, n // 2)
+            self.assertEqual(n - from_tenv, n // 2)
+
+    def test_pN_descending_then_rank_sum_then_gene_index(self):
+        tenv, rank_sum, p_n = self.fill_inputs()
+        axis4 = gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=4)
+        # tenv top-2 are 6,7; of the remaining, gene 5 has the top p4 then gene 3
+        self.assertEqual(axis4.tolist(), [3, 5, 6, 7])
+        axis6 = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
+        # tenv top-3 are 5,6,7; fill takes gene 4 (p=5), then gene 0 (p=4)
+        # and gene 1 (p=3) by pN descending
+        self.assertEqual(axis6.tolist(), [0, 1, 4, 5, 6, 7])
+
+    def test_ties_break_on_rank_sum_then_gene_index(self):
+        tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
+        # four candidates tie on p; the fill order is rank_sum asc, then index
+        rank_sum = np.array([0.9, 0.2, 0.2, 0.1, 0.5, 0.5, 0.5, 0.5])
+        p_n = np.array([7, 7, 7, 7, 0, 7, 7, 7])
+        axis = gene_axis.axis_fill(tenv, p_n, rank_sum, n=4)
+        # tenv top-2 = genes 6,7; fill needs 2: gene 3 (rank_sum 0.1) then gene 1
+        # (rank_sum 0.2 ties gene 2 at 0.2, gene_index picks 1)
+        self.assertEqual(axis.tolist(), [1, 3, 6, 7])
+
+    def test_axes_are_not_nested_and_intersection_is_reported(self):
+        tenv, rank_sum, p_n = self.fill_inputs()
+        axis4 = gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=4)
+        axis6 = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
+        self.assertFalse(set(axis4) <= set(axis6))
+        self.assertFalse(set(axis6) <= set(axis4))
+        overlap = gene_axis.axis_intersection(axis4, axis6)
+        self.assertEqual(overlap['n_intersection'], 3)
+        self.assertEqual(overlap['n_union'], 7)
+        self.assertAlmostEqual(overlap['jaccard'], 3 / 7)
+
+    def test_axis_is_an_ascending_subset_of_the_frozen_space(self):
+        tenv, rank_sum, p_n = self.fill_inputs()
+        axis = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
+        self.assertEqual(axis.dtype, np.int64)
+        np.testing.assert_array_equal(axis, np.sort(axis))
+        self.assertEqual(len(set(axis.tolist())), len(axis))
+        self.assertGreaterEqual(int(axis.min()), 0)
+        self.assertLess(int(axis.max()), len(AXIS_SYMBOLS))
+        # never renumbered: the values are the original gene_index integers
+        self.assertIn(7, axis.tolist())
+
+    def test_out_of_contract_fill_fails_closed(self):
+        tenv, rank_sum, p_n = self.fill_inputs()
+        with self.assertRaises(ValueError):
+            gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=7)  # odd N
+        with self.assertRaises(ValueError):
+            gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=10)  # larger than axis
+        with self.assertRaises(ValueError):
+            gene_axis.axis_fill(tenv[:7], p_n[4][:7], rank_sum[:7], n=4)  # not the axis
+
+    def test_composition_and_pn_distribution(self):
+        tenv, rank_sum, p_n = self.fill_inputs()
+        axis = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
+        measured = [np.zeros(8, dtype=bool) for _ in CATEGORIES]
+        measured[0][[0, 5, 7]] = True
+        measured[1][[1, 2]] = True
+        composition = gene_axis.axis_composition(axis, measured)
+        self.assertEqual(composition['nhf'], 3)     # genes 0, 5 and 7
+        self.assertEqual(composition['icm'], 1)     # gene 1
+        self.assertEqual(composition['af'], 0)
+        self.assertEqual(sum(composition.values()), 4)
+        counts = gene_axis.pn_distribution(p_n[6])
+        self.assertEqual(counts.tolist(), [0, 1, 1, 1, 1, 1, 0, 3])
+        self.assertEqual(int(counts.sum()), len(AXIS_SYMBOLS))
+
+
+class HistogramAndInflectionTests(unittest.TestCase):
+    """Evidence panel: rank-sum histogram and the diagnostic-only inflection."""
+
+    @staticmethod
+    def bent_curve(n=1000, knee=300):
+        # piecewise linear: y = x up to the knee, then a tenth of that slope.
+        # Both criteria then point at the same position, as the design intends.
+        x = np.arange(1, n + 1, dtype=np.float64)
+        y = np.where(x <= knee, x, knee + 0.1 * (x - knee))
         return x, y
 
+    def test_histogram_covers_every_candidate_and_keeps_empty_bins(self):
+        values = np.array([0.1, 0.2, 0.2, 6.9])
+        frame = gene_axis.rank_sum_histogram(values, low=0.0, high=7.0, bins=7)
+        self.assertEqual(int(frame['count'].sum()), len(values))
+        self.assertEqual(frame['count'].tolist(), [3, 0, 0, 0, 0, 0, 1])
+        np.testing.assert_allclose(frame['bin_left'], np.arange(7, dtype=float))
+        np.testing.assert_allclose(frame['bin_center'], np.arange(7) + 0.5)
+
+    def test_histogram_rejects_values_outside_the_declared_interval(self):
+        with self.assertRaises(ValueError):
+            gene_axis.rank_sum_histogram(np.array([-0.1, 1.0]), low=0.0, high=7.0)
+        with self.assertRaises(ValueError):
+            gene_axis.rank_sum_histogram(np.array([7.5]), low=0.0, high=7.0)
+
     def test_synthetic_knee_is_detected(self):
-        x, y = self.knee_curve()
-        result = detect_inflection(x, y, min_n=50)
+        x, y = self.bent_curve()
+        result = gene_axis.detect_inflection(x, y, min_n=10)
         self.assertTrue(result['inflection'])
-        self.assertLessEqual(abs(result['n'] - 750), 750 * 0.25)
+        self.assertIsNotNone(result['n'])
+        self.assertGreater(result['n'], 250)
+        self.assertLess(result['n'], 350)
+        self.assertIn('parameters', result)
+        self.assertIn('sensitivity', result['parameters'])
         self.assertIsNotNone(result['kneedle'])
         self.assertIsNotNone(result['second_difference'])
 
     def test_straight_line_has_no_inflection(self):
-        x = np.arange(1, 2001, dtype=float)
-        y = 0.001 * x
-        result = detect_inflection(x, y, min_n=50)
+        x = np.arange(1, 1001, dtype=np.float64)
+        y = 2.0 + 0.001 * x
+        result = gene_axis.detect_inflection(x, y, min_n=10)
         self.assertFalse(result['inflection'])
         self.assertIsNone(result['n'])
-        self.assertIsNone(result['kneedle'])
-        self.assertIsNone(second_difference_peak(y, min_n=50))
-        self.assertIsNone(kneedle_knee(x, y))
+        self.assertIsNotNone(result['parameters'])
 
-    def test_leading_outliers_do_not_fake_a_knee(self):
-        x = np.arange(1, 2001, dtype=float)
-        y = x * 0.001 + 0.4 * (x == 1)
-        y = y - y.min()
-        result = detect_inflection(x, y, min_n=100)
-        self.assertIsNone(result['n'])
-
-    def test_declared_criterion_names_both_tests(self):
-        recipe = driver.RECIPE['inflection']
-        self.assertIn('Kneedle', recipe)
-        self.assertIn('second-difference', recipe)
-        self.assertIn('inflection', recipe)
+    def test_stability_reports_leave_one_source_out_agreement(self):
+        x, y = self.bent_curve()
+        stable = gene_axis.inflection_stability([(x, y), (x, y * 1.001), (x, y * 0.999)])
+        self.assertTrue(stable['stable'])
+        self.assertEqual(stable['n_replays'], 2)
+        self.assertEqual(stable['n_same_decision'], 2)
+        straight = 2.0 + 0.001 * x
+        unstable = gene_axis.inflection_stability([(x, y), (x, straight)])
+        self.assertFalse(unstable['stable'])
+        self.assertEqual(unstable['n_same_decision'], 0)
 
 
-class FigureReplayTests(unittest.TestCase):
+
+# ---- hermetic release fixture ------------------------------------------------
+
+IDENTITY = np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
+SECOND = np.array([8, 1, 2, 3, 4, 5, 6, 7], dtype=np.int64)
+FIXTURE_CATEGORIES = {
+    'nhf': [('nhf_a', 1, False, IDENTITY)],
+    'icm': [('icm_a', 1, False, IDENTITY)],
+    'af': [('af_a', 1, False, IDENTITY)],
+    'genetic_cardiomyopathy': [
+        ('gcm_tier1', 1, False, IDENTITY),
+        ('gcm_isogenic', 2, True, SECOND),
+        ('gcm_dropped', 2, False, SECOND),
+    ],
+    'cardiotox_TOP2': [('top2_a', 2, False, IDENTITY)],
+    'cardiotox_other': [('other_a', 2, False, IDENTITY)],
+}
+FIXTURE_AXIS_SIZES = (4, 6)
+FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
+
+
+def write_fixture(root, *, drop_method=False, drop_derived=False):
+    """Write a hermetic mini repository: axis, tenv ranking and six catalogs."""
+    root = Path(root)
+    step = root / 'stage2/01_bases'
+    genes = axis_fixture()
+    genes_path = step / 'output/gene-identity/genes.csv'
+    genes_path.parent.mkdir(parents=True, exist_ok=True)
+    genes.to_csv(genes_path, index=False, lineterminator='\n')
+    tenv = pd.DataFrame({
+        'gene_index': np.arange(len(AXIS_SYMBOLS)),
+        'log_mean': np.zeros(len(AXIS_SYMBOLS)),
+        'log_dispersion': np.zeros(len(AXIS_SYMBOLS)),
+        'normalized_dispersion': -FIXTURE_TENV_RANK.astype(float),
+        'rank': FIXTURE_TENV_RANK,
+    })
+    tenv_path = step / 'output/tenv-hvg/descriptive.csv'
+    tenv_path.parent.mkdir(parents=True, exist_ok=True)
+    tenv.to_csv(tenv_path, index=False, line_terminator='\n') if False else tenv.to_csv(
+        tenv_path, index=False, lineterminator='\n')
+    disease = step / 'output/disease-deg'
+    for category, records in FIXTURE_CATEGORIES.items():
+        directory = disease / category
+        directory.mkdir(parents=True, exist_ok=True)
+        canon = category not in ('cardiotox_TOP2', 'cardiotox_other')
+        catalog_records, outputs = [], {}
+        for dataset_id, tier, isogenic, rank in records:
+            rank_name = f'{dataset_id}.rank.csv'
+            frame = pd.DataFrame({'gene_index': np.arange(len(AXIS_SYMBOLS)),
+                                  'rank': rank,
+                                  'rank_norm': normalized_rank(rank, len(AXIS_SYMBOLS))})
+            frame.to_csv(directory / rank_name, index=False, lineterminator='\n')
+            outputs[rank_name] = {'sha256': hashlib.sha256(
+                (directory / rank_name).read_bytes()).hexdigest()}
+            record = {
+                'dataset_id': dataset_id, 'tier': tier,
+                'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
+                'n_measured': len(AXIS_SYMBOLS),
+                'n_significant': 2, 'n_case': 3, 'n_control': 3,
+                'deg': f'{dataset_id}.deg.csv', 'rank': rank_name,
+                'method': {'model': 'fixture'},
+                'inputs': {'fixture_input.csv': {
+                    'sha256': hashlib.sha256(b'fixture-input').hexdigest()}},
+            }
+            if isogenic:
+                record['isogenic_exception'] = {'applies': True}
+            if canon:
+                record['derived_inputs'] = [{
+                    'relative': 'local/deg/fixture.csv',
+                    'sha256': hashlib.sha256(b'fixture-derived').hexdigest()}]
+            if drop_method and dataset_id == 'nhf_a':
+                record.pop('method')
+            if drop_derived and dataset_id == 'nhf_a':
+                record.pop('derived_inputs')
+            catalog_records.append(record)
+        catalog = {
+            'schema': 'stage2-disease-deg-catalog-v1',
+            'category': {'nhf': 'nHF'}.get(category, category),
+            'directory': category, 'axis_size': len(AXIS_SYMBOLS),
+            'tier': 1 if canon else 2,
+            'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
+            'datasets': catalog_records,
+        }
+        if canon:
+            catalog['rank_contract'] = 'stage2-disease-deg-v1'
+        catalog['catalog_sha256'] = catalog_digest(catalog)
+        (directory / 'catalog.json').write_text(
+            json.dumps(catalog, indent=2, sort_keys=True) + '\n')
+        (directory / 'manifest.json').write_text(json.dumps({
+            'schema': 'stage2-disease-deg-release-v1',
+            'catalog_sha256': catalog['catalog_sha256'],
+            'outputs': dict(sorted(outputs.items())),
+        }, indent=2, sort_keys=True) + '\n')
+    return driver.default_config(
+        root=root,
+        output=step / 'output/gene-axis',
+        figure_data=step / 'figure/data/gene_axis_rank_sum_histogram.csv',
+        axis_sizes=FIXTURE_AXIS_SIZES)
+
+
+def manifest_strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from manifest_strings(key)
+            yield from manifest_strings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from manifest_strings(item)
+
+
+class ReleaseBuildTests(unittest.TestCase):
+    """Candidate-then-replace publication, replay determinism and the reader seam."""
+
+    def test_publish_products_and_reader_contract(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            result = driver.publish(config)
+            self.assertEqual(result['n_candidates'], len(AXIS_SYMBOLS))
+            reader = GeneAxis(config.output)
+            manifest = reader.manifest()
+            self.assertEqual(manifest['schema'], gene_axis.SCHEMA)
+            self.assertEqual(reader.axis_sizes(), FIXTURE_AXIS_SIZES)
+            table = reader.candidate_table()
+            self.assertEqual(list(table.columns),
+                             list(gene_axis.candidate_columns(FIXTURE_AXIS_SIZES)))
+            self.assertEqual(len(table), len(AXIS_SYMBOLS))
+            np.testing.assert_array_equal(reader.axis(4), np.array([0, 1, 6, 7]))
+            np.testing.assert_array_equal(reader.axis(6), np.array([2, 3, 4, 5, 6, 7]))
+            self.assertFalse(set(reader.axis(4)) <= set(reader.axis(6)))
+            self.assertEqual(manifest['intersection']['n_intersection'], 2)
+            self.assertEqual(manifest['intersection']['sizes'], [4, 6])
+            self.assertEqual(manifest['categories']['genetic_cardiomyopathy']
+                             ['winning_tier'], 1)
+            self.assertEqual(
+                manifest['categories']['genetic_cardiomyopathy']['retained_by_exception'],
+                ['gcm_isogenic'])
+            self.assertNotIn('gcm_dropped',
+                             [record['dataset_id'] for record in
+                              manifest['categories']['genetic_cardiomyopathy']['datasets']])
+            self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 8 + 8))
+            for text in manifest_strings(manifest):
+                self.assertFalse(text.startswith('/'), f'absolute path in manifest: {text}')
+
+    def test_publish_preserves_the_retired_gene_axis_file_set(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            config.output.mkdir(parents=True, exist_ok=True)
+            legacy = config.output / 'fused_rank.csv'
+            legacy.write_text('retired product\n')
+            driver.publish(config)
+            self.assertTrue(legacy.is_file())  # removal is #192's job, not #190's
+
+    def test_publish_is_deterministic_across_roots(self):
+        with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
+            config_a = write_fixture(Path(first) / 'repo')
+            config_b = write_fixture(Path(second) / 'repo')
+            result_a = driver.publish(config_a)
+            result_b = driver.publish(config_b)
+            self.assertEqual(result_a['outputs'], result_b['outputs'])
+            self.assertEqual(
+                sha256_file(config_a.output / 'manifest.json'),
+                sha256_file(config_b.output / 'manifest.json'))
+
+    def test_verify_replays_and_detects_tampering(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            driver.publish(config)
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+            candidate = config.output / 'candidate_rank_sum.csv'
+            original = candidate.read_text()
+            candidate.write_text(original + '\n')
+            with self.assertRaises(ValueError):
+                driver.verify(config)
+            candidate.write_text(original)
+
+    def test_failed_publish_keeps_the_accepted_release(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            driver.publish(config)
+            before = sha256_file(config.output / 'manifest.json')
+            tenv = config.tenv_hvg
+            original = tenv.read_text()
+            corrupted = pd.read_csv(tenv)
+            corrupted.loc[1, 'rank'] = corrupted.loc[0, 'rank']
+            corrupted.to_csv(tenv, index=False, lineterminator='\n')
+            with self.assertRaises(ValueError):
+                driver.publish(config)
+            self.assertEqual(sha256_file(config.output / 'manifest.json'), before)
+            tenv.write_text(original)
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+
+    def test_uncontracted_catalog_shape_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary), drop_method=True)
+            with self.assertRaises(ValueError):
+                driver.publish(config)
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary), drop_derived=True)
+            with self.assertRaises(ValueError):
+                driver.publish(config)
+
+
+def sha256_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+class FigureTests(unittest.TestCase):
+    """The evidence PNG is a function of its plotted-values CSV alone."""
+
+    @staticmethod
+    def synthetic_rows():
+        rows = [{'record': 'figure', 'title': 'fixture'},
+                {'record': 'panel', 'panel': 'a', 'panel_title': 'rank-sum histogram'}]
+        for index in range(4):
+            rows.append({'record': 'hist', 'bin_left': index, 'bin_right': index + 1,
+                         'bin_center': index + 0.5, 'count': 10 + index,
+                         'share': (10 + index) / 46})
+        for axis, low, high, median in (('2000', 0.5, 2.0, 1.0),
+                                        ('5000', 0.9, 3.0, 1.8)):
+            rows.append({'record': 'interval', 'axis': axis, 'interval_low': low,
+                         'interval_high': high, 'median': median})
+        rows.append({'record': 'marker', 'inflection': False, 'inflection_n': '',
+                     'note': 'no inflection'})
+        return rows
+
     def test_renderer_rejects_incomplete_csv(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / 'bad.csv'
-            path.write_text('record,panel,panel_title,title\nfigure,,,,x\n',
-                            encoding='utf-8')
+            path.write_text('record,panel,panel_title,title\nfigure,,,,x\n')
             with self.assertRaises(ValueError):
                 renderer.load(path)
 
@@ -383,126 +641,28 @@ class FigureReplayTests(unittest.TestCase):
                 writer = csv.DictWriter(handle, fieldnames=fields)
                 writer.writeheader()
                 writer.writerows(rows)
-            first = temporary / 'first.png'
-            second = temporary / 'second.png'
+            first, second = temporary / 'first.png', temporary / 'second.png'
             renderer.render(*renderer.load(path), first)
             renderer.render(*renderer.load(path), second)
-            self.assertEqual(hashlib.sha256(first.read_bytes()).hexdigest(),
-                             hashlib.sha256(second.read_bytes()).hexdigest())
-
-    @staticmethod
-    def synthetic_rows():
-        rows = [{'record': 'figure', 'title': 'fixture'},
-                {'record': 'panel', 'panel': 'a', 'panel_title': 'bars'},
-                {'record': 'panel', 'panel': 'b', 'panel_title': 'hist'},
-                {'record': 'panel', 'panel': 'c', 'panel_title': 'curve'},
-                {'record': 'panel', 'panel': 'd', 'panel_title': 'matrix'}]
-        for source, share in (('tenv', 0.1), ('gse141910', 0.2)):
-            rows.append({'record': 'bar', 'source': source, 'hvg_share': share,
-                         'deg_up_share': share / 2, 'deg_down_share': share / 3})
-        for index in range(4):
-            rows.append({'record': 'hist', 'bin_left': index, 'bin_right': index + 1,
-                         'count': 10 + index})
-        rows.append({'record': 'marker', 'marker_n': '', 'marker_score': '',
-                     'note': 'no inflection'})
-        for k in (1000, 2000):
-            for n in (1, 100, 1000):
-                rows.append({'record': 'curve', 'k': k, 'n': n,
-                             'non_hvg_share': 0.5 + k / 10000 + n / 10000})
-        for left in ('tenv_hvg_2000', 'gse141910_deg'):
-            for right in ('tenv_hvg_2000', 'gse141910_deg'):
-                rows.append({'record': 'matrix', 'row_source': left, 'col_source': right,
-                             'jaccard': 1.0 if left == right else 0.25})
-        return rows
+            self.assertEqual(sha256_file(first), sha256_file(second))
 
     def test_committed_figure_replays_from_its_csv_alone(self):
-        csv_path = STEP / 'figure/data/gene_axis_source_summary.csv'
-        png_path = STEP / 'figure/gene_axis_source_summary.png'
+        csv_path = STEP / 'figure/data/gene_axis_rank_sum_histogram.csv'
+        png_path = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        self.assertTrue(csv_path.is_file(), f'missing plotted-values CSV: {csv_path}')
+        self.assertTrue(png_path.is_file(), f'missing committed figure: {png_path}')
         with tempfile.TemporaryDirectory() as temporary:
             temporary = Path(temporary)
             copied = temporary / 'figure.csv'
             copied.write_bytes(csv_path.read_bytes())
             rendered = temporary / 'rendered.png'
             renderer.render(*renderer.load(copied), rendered)
-            self.assertEqual(hashlib.sha256(rendered.read_bytes()).hexdigest(),
-                             hashlib.sha256(png_path.read_bytes()).hexdigest())
+            self.assertEqual(sha256_file(rendered), sha256_file(png_path))
         source = Path(renderer.__file__).read_text(encoding='utf-8')
         self.assertNotIn('read_csv', source)
         self.assertNotIn('read_excel', source)
-
-
-class LeakageTests(unittest.TestCase):
-    def test_guard_rejects_truth_and_heliste_paths(self):
-        # The Heliste path is deliberately non-existent (the guard rejects by token,
-        # not by file), so it is split to keep script/check_paths.sh from flagging a
-        # literal that cannot resolve.
-        for path in ('stage2/01_bases/output/tenv-truth/manifest.json',
-                     'stage2/01_bases/output/tenv-truth-successor/labels.csv',
-                     'pheno_data/Heliste-2021/source/' + 'labels.csv'):
-            with self.assertRaises(ValueError):
-                driver.forbidden_input(Path(path))
-        driver.forbidden_input(Path('stage2/01_bases/output/tenv-hvg/descriptive.csv'))
-
-    def test_poisoned_open_blocks_truth_but_not_evidence(self):
-        real_open = builtins.open
-        truth_reads = []
-
-        def poison(file, *args, **kwargs):
-            name = str(file).lower()
-            if 'tenv-truth' in name or 'heliste' in name:
-                truth_reads.append(str(file))
-                raise AssertionError(f'truth read attempted: {file}')
-            return real_open(file, *args, **kwargs)
-
-        with mock.patch('builtins.open', poison):
-            manifest = json.loads((STEP / 'output/gene-axis/manifest.json').read_text())
-            self.assertTrue(manifest['inputs'])
-            for path in manifest['inputs']:
-                self.assertNotIn('tenv-truth', path.lower())
-                self.assertNotIn('heliste', path.lower())
-            with self.assertRaises(AssertionError):
-                open('stage2/01_bases/output/tenv-truth/manifest.json')
-            with self.assertRaises(AssertionError):
-                pd.read_csv('stage2/01_bases/output/tenv-truth/labels.csv')
-        self.assertEqual(len(truth_reads), 2)
-
-    def test_manifests_contain_no_absolute_paths(self):
-        manifest = json.loads((STEP / 'output/gene-axis/manifest.json').read_text())
-        for path in manifest['inputs']:
-            self.assertFalse(Path(path).is_absolute(), path)
-        self.assertNotIn(str(driver.repo_root()), json.dumps(manifest['inputs']))
-
-
-class SourceAdapterTests(unittest.TestCase):
-    @staticmethod
-    def dtoxs_fixture(path):
-        header = ['CTRL.w1', 'DOX.w2', 'DOX.w3',
-                  'CTRL.w1.Norm', 'DOX.w2.Norm', 'DOX.w3.Norm',
-                  'logFC', 'logCPM', 'PValue', 'FDR', 'Regulation']
-        table = ['\t'.join(header),
-                 '\t'.join(['A', '10', '20', '30', '1', '2', '3',
-                            '1.5', '2.0', '0.01', '0.02', '1']),
-                 '\t'.join(['B', '10', '10', '10', '1', '1', '1',
-                            '-0.5', '1.0', '0.20', '0.30', '-1'])]
-        with tarfile.open(path, 'w:gz') as archive:
-            payload = ('\n'.join(table) + '\n').encode()
-            info = tarfile.TarInfo('Human-X-CM-Hour-48-Plate-0-Calc.CTRL-DOX.tsv')
-            info.size = len(payload)
-            archive.addfile(info, io.BytesIO(payload))
-
-    def test_dtoxs_adapter_reads_upstream_statistics(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            temporary = Path(temporary)
-            path = temporary / 'deg.tar.gz'
-            self.dtoxs_fixture(path)
-            frame, provenance = driver.sources.dtoxs_contrasts(path)
-            self.assertEqual(provenance['contrasts'], [Path('Human-X-CM-Hour-48-Plate-0-Calc.CTRL-DOX.tsv').stem])
-            self.assertEqual(provenance['n_distinct_wells'], 3)
-            self.assertEqual(frame.shape[0], 2)
-            self.assertEqual(frame.n_control.iloc[0], 1)
-            self.assertEqual(frame.n_treated.iloc[0], 2)
-            self.assertAlmostEqual(frame.padj.iloc[0], 0.02)
-            self.assertAlmostEqual(frame.log2fc.iloc[1], -0.5)
+        self.assertNotIn("palette.csv", source)
+        self.assertNotIn("manifest.json", source)
 
 
 if __name__ == '__main__':

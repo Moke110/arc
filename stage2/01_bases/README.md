@@ -665,97 +665,112 @@ the PNG byte for byte (sha256 `35d14266…`); it never opens `output/`.
 The panel covers the three test folds, 4206 measured wells and 1377 parent–dose
 groups and is measurement-derived diagnostic QA, not trained-model performance.
 
-## Gene-axis decision evidence (#183)
+## Released gene axes `G_2000` / `G_5000` (#190, ADR 0066)
 
-`output/gene-axis/` is the **decision-preparation** evidence for the frozen
-18,164-gene axis: per-source HVG and DEG ranks, an unweighted rank-sum fusion,
-source overlap, direction composition, an explicit inflection answer and the
-tenv non-HVG curve. It chooses nothing — the axis size `N`, the per-source quota,
-the direction rule and the animal-source weight remain #173's decision. It builds
-no corpus, trains no model, publishes no `genes.csv`, and never opens a truth or
-Heliste label file; the only tenv input is the published descriptive HVG ranking.
+`output/gene-axis/` is the **released** two-version gene axis: the master candidate
+table, the two ordered axis files, their manifest, the per-category composition
+table and the rank-sum histogram evidence panel. The axes are built from the six
+cardiomyocyte-derived disease-DEG categories (`output/disease-deg/`) fused at two
+levels with the published tenv-HVG ranking. Nothing is recomputed here: the
+disease-DEG ranks, the tenv-HVG ranking and the frozen 18,164-gene identity are
+read-only inputs, and no corpus, view, model or truth is opened.
 
-Public implementation: `output/api/bases/gene_axis.py` (pure functions: symbol /
-alias / Ensembl alignment, Seurat-style normalized dispersion, the continuous DEG
-effect score, within-source ranks, rank-sum fusion, overlap, direction
-composition, Kneedle + second-difference inflection, tenv non-HVG curve, and the
-gene-index helpers that keep the sorted fused table from being read by row
-position). Execution: `execution/build_gene_axis.py` (build + `--verify` replay),
-`execution/gene_axis_sources.py` (the two `pert_data/` cardiotoxicity adapters)
-and `execution/build_mouse_orthologs.R` (the pinned mouse→human table; it writes a
-candidate and replaces the accepted table only after a sha256 check, with
-`--args --accept` for a deliberate re-pin).
+Public implementation: `output/api/bases/gene_axis.py` — the pure fusion/axis
+definitions (`winning_tier`, `category_rank`, `fusion_rank_sum`,
+`candidate_table`, `axis_fill`, `axis_intersection`, `axis_composition`,
+`pn_distribution`, `rank_sum_histogram`, `kneedle_knee`,
+`second_difference_peak`, `detect_inflection`, `inflection_stability`) and the
+digest-checked `GeneAxis` reader. It also keeps the #186 re-export contract:
+`SymbolResolver`, `complete_rank`, `deg_effect`, `per_gene_deg`, `rank_scores`,
+`ALIGNMENT_CATEGORIES`, `PADJ_FLOOR`, `PADJ_THRESHOLD`, `normalized_rank` and
+`AXIS_SIZE` are the same objects as in `bases.deg_rank`. Driver:
+`execution/build_gene_axis.py publish|verify` (candidate-then-replace, replay
+comparison of the manifest and every output digest).
 
-Fused sources (one rank column each, tenv included): the published tenv HVG rank,
-GSE141910 and GSE116250 (HF), GSE243674 (hiPSC-CM anthracyclines), GSE128188 (AF),
-GSE282618 (hypertensive heart disease, exploratory), the two mouse MIRI DEG-only
-items GSE160516/GSE108940 (homologene-mapped), and the two `pert_data/`
-cardiotoxicity sources DToxS-iPSC (22 upstream tables) and GSE244740 (ScreenSeq
-counts re-derived). `GSE137293` is listed as supplementary-only and `LINCS-LDS-1593`
-as a coverage note; neither is fused.
+**Two-level rank-sum fusion.** Within a category, the *winning tier* is the
+category's minimum declared `tier`, and every dataset at that tier contributes
+its within-dataset rank; ADR 0066's *Isogenic exception* additionally keeps a
+record whose `isogenic_exception.applies` is true even above the winning tier,
+so `genetic_cardiomyopathy` fuses its two tier-1 human CM-pseudobulk datasets
+**plus** its six tier-2 isogenic hiPSC-CM models (winning tier 1, six records
+retained by exception). Level 1 is the ascending `sum(rank_norm)` over those
+datasets with `gene_index` tie-break; level 2 is
+`rank_sum = sum(rank_norm)` over the six category class ranks and the tenv-HVG
+rank, **each normalized by the frozen-axis size** (`rank / 18164`; ADR 0066
+"each normalized by the frozen-axis size", GLOSSARY *Source rank*: "tenv-HVG
+contributes its dispersion rank under the same normalization"). `pN` counts how
+many of the seven sources place a gene in their top-`N` set; `n_sources_measured`
+counts the sources that measure it.
 
-Declared recipe (details and constants in `output/gene-axis/manifest.json`):
-per-source HVG = normalized dispersion on the item's own deposited log expression
-over its **whole measured transcriptome** (z-scored in 20 equal-width
-`log1p(mean)` bins, singleton bins score 1, undefined sorts last, source-row
-tie-break — the `bases/hvg.py` family without `expm1` recovery because the disease
-matrices are heterogeneous log scales); a source's declared HVG set is its top-K
-source rows, and `hvg_share = n_hvg_on_axis / n_hvg_total` (share of the source's
-HVG set that lands on the axis), with `n_hvg`, `n_hvg_total`, `n_hvg_on_axis` and
-`hvg_density = n_hvg_on_axis / n_axis_expression` reported; DEG =
-`|log2FC| * -log10(padj)` with NA padj treated as non-significant and multi-contrast
-max-collapse; unmeasured genes get rank `n_measured + 1` and rank-normalized value
-1.0; fusion = unweighted sum of `rank / n_measured` (the animal half-weight column
-is a reported sensitivity, not a chosen rule); fused order ties break on
-`gene_index`. Top-N direction composition is reported under two **different**
-orderings: `symmetric` (ascending fused rank) and `max_abs_log2fc` (descending
-max cross-source |log2FC|, fused-rank tie-break). Multi-way overlap intersections
-report the size and true fused ranks with an explanatory `note`; Jaccard is left
-blank because the operands are identical.
+**Axis fill rule.** `G_N` takes the top `0.5*N` tenv-HVG genes
+(`tenv_hvg_rank <= N/2`), then `0.5*N` more from the remaining candidates by
+`pN` descending, `rank_sum` ascending, `gene_index` ascending. Both axes are
+ascending-`gene_index` subsets of the frozen space with the original integers —
+never renumbered — and they are **not nested**: `G_2000 ∩ G_5000 = 1,919`
+(Jaccard 0.3777; 95.95% of `G_2000` lies inside `G_5000`, both axes carry genes
+the other does not). The manifest reports sizes, intersection, per-category
+composition, input digests and the fill rule; no consumer re-derives it.
 
-Headline evidence (exact digests in the manifest, numbers in
-[`log/gene-axis/record.md`](log/gene-axis/record.md)):
+Products (force-tracked compact CSVs; manifest sha256 `42baa74f…`):
 
-- Axis coverage 0.68–1.00 per source; per-source HVG share (of the source's own
-  top-2,000 HVG set, on the axis) 0.1465–0.9375 for the expression sources (tenv
-  1.0 by definition, density 0.1101) with `hvg_density` 0.0162–0.1389; DEG
-  up/down shares range from 0.000/0.000 (GSE108940: one significant gene at
-  padj<0.05) to 0.53/0.45 (DToxS).
-- **No inflection.** Kneedle (online `S=1.0`) puts its broad arc maximum at
-  `N≈1314`; the second-difference peak sits in the tail (`N≈18156`); the criteria
-  do not agree, so `inflection.json` reports `"inflection": false` and `n: null`.
-  All ten leave-one-source-out replays also report no inflection.
-- Tenv non-HVG share of the **true fused top-N** at declared `K=1000 / 2000 /
-  5000`: 0.884 / 0.782 / 0.540 at N=500 and 0.913 / 0.823 / 0.610 at N=2,000,
-  rising to the axis background 0.945 / 0.890 / 0.725 at N=18,164. The fused top
-  is enriched for tenv HVGs relative to the background but remains mostly
-  (82.3% at K=2000) outside tenv's top-2,000.
-- HF sources agree (GSE141910 ∩ GSE116250 Jaccard 0.4255, 5,320 genes); the
-  AF/HHD chronic-remodelling pair is nearly disjoint (0.0043) as are HF×remodelling
-  pairs (cross-pair mean 0.0233).
-- Top-N direction composition is 52–54% up / 46–48% down under symmetric
-  inclusion; the max-|log2FC| ranking is 71–88% up at the top. Across all
-  significant genes the down set has the better median fused rank (8,031 vs
-  8,779 for up).
-- Effect×replication rank vs DEG-count rank: Spearman 0.81 (ties broken by
-  ascending fused rank) and top-N overlap 0.62 / 0.56 / 0.48 / 0.45 / 0.76 at
-  N = 500 / 1000 / 2000 / 3000 / 5000.
+| path | rows | digest |
+|---|---:|---|
+| `output/gene-axis/candidate_rank_sum.csv` | 18,164 | `056f0fd1…` |
+| `output/gene-axis/gene_axis_2000.csv` | 2,000 | `a0c5ccb4…` |
+| `output/gene-axis/gene_axis_5000.csv` | 5,000 | `91095c15…` |
+| `output/gene-axis/axis_composition.csv` | — | `0bcf7612…` |
+| `figure/data/gene_axis_rank_sum_histogram.csv` | — | `7e28492e…` |
+| `figure/gene_axis_rank_sum_histogram.png` | — | `49d1dc5d…` |
+
+The candidate table carries `symbol`, `gene_index`, `tenv_hvg_rank`, the six
+`<category>_rank` columns, `rank_sum`, `n_sources_measured`, `p2000`, `p5000`
+(all `pN` in `0..7`; `n_sources_measured` in `1..7`). `rank_sum` ranges
+0.3845–6.5649 (median 3.5145). Cross-source replication is coarse by design:
+over all candidates `p2000` is 9,064 genes at 0, 5,607 at 1, 2,399 at 2 and only
+7 at 6 (none at 7); `p5000` has 20 genes at 7. Inside `G_2000` the `pN`
+distribution is 499/407/839/204/44/7 for `pN` 1–6; inside `G_5000` it is
+493/697/1,245/1,710/679/156/20 for `pN` 1–7. The composition table publishes
+both distributions so `pN` is not read as a continuous quality score.
+Per-category composition of `G_2000` / `G_5000` (axis genes the source measures):
+`nhf` 1,977 / 4,936, `icm` 1,904 / 4,743, `af` 1,998 / 4,994,
+`genetic_cardiomyopathy` 1,997 / 4,997, `cardiotox_TOP2` 2,000 / 5,000,
+`cardiotox_other` 1,468 / 3,682; the tenv-HVG halves are 1,000 / 2,500.
+
+**Evidence panel and inflection.** `figure/gene_axis_rank_sum_histogram.png` is
+the rank-sum histogram over all 18,164 candidates with both axes' `rank_sum`
+intervals shaded (median lines): `G_2000` 0.3845–5.8795 (median 2.3402),
+`G_5000` 0.3845–5.9846 (median 2.4488). Its complete plotted values are
+`figure/data/gene_axis_rank_sum_histogram.csv`; the CSV-only renderer
+`figure/script/render_gene_axis_rank_sum_histogram.py` reproduces the PNG byte
+for byte (sha256 `49d1dc5d…`) without opening `output/`. The Kneedle +
+second-difference diagnostic is **reported as a diagnostic only**: Kneedle
+(`S=1.0`, first interior arc maximum) puts a candidate at `N=1201`, the
+second-difference peak at `N=18161`; they do not agree, so
+`diagnostics.inflection = false` with its full parameters, and seven
+leave-one-source-out replays all reach the same decision (`stable: true`). It
+never chooses `N`.
 
 ```bash
-python stage2/01_bases/execution/build_gene_axis.py
-python stage2/01_bases/execution/build_gene_axis.py --verify
-R_HOME=/home/chang/miniconda3/envs/arc/lib/R   /home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save --slave   --file=stage2/01_bases/execution/build_mouse_orthologs.R   # only to regenerate the pinned table
-python stage2/01_bases/figure/script/render_gene_axis_source_summary.py   --csv stage2/01_bases/figure/data/gene_axis_source_summary.csv   --png stage2/01_bases/figure/gene_axis_source_summary.png
+python stage2/01_bases/execution/build_gene_axis.py            # publish
+python stage2/01_bases/execution/build_gene_axis.py --verify   # replay digests
+python stage2/01_bases/figure/script/render_gene_axis_rank_sum_histogram.py \
+    --csv stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv \
+    --png stage2/01_bases/figure/gene_axis_rank_sum_histogram.png
 ```
 
-The figure is `figure/gene_axis_source_summary.png` (four panels: per-source
-HVG/DEG shares, fused rank-sum histogram with the candidate inflection, tenv
-non-HVG share vs N, source-overlap Jaccard matrix); its complete plotted values
-are `figure/data/gene_axis_source_summary.csv` and the CSV-only renderer
-reproduces the PNG byte for byte (sha256 `91673888…`) without opening `output/`.
-`execution/tests/test_gene_axis.py` is fixture-driven and includes the
-truth-path poisoning test plus index-space regression fixtures where fused-rank
-order differs from `gene_index` order.
+`execution/tests/test_gene_axis.py` is hermetic (8-gene fixture): winning-tier
+and isogenic-exception selection, level-1 single-dataset identity, level-1/2
+sums and `gene_index` ties, `pN` boundaries 0 and 7, `n_sources_measured`,
+`0.5*N + 0.5*N` fill, pN/rank_sum/gene_index ordering, non-nested axes and
+intersection, ascending-in-frozen-space axes, histogram and inflection
+stability, candidate-then-replace determinism (`--verify` replay), manifest
+relative-path hygiene, figure CSV-only replay, the `deg_rank` re-export
+identity, and preservation of the retired file set. Build/verify peak RSS
+≈140 MiB under the 10 GiB cap. The pre-0066 `gene-axis/` file set (direction
+composition, unweighted quota-free fused table, animal half-weight column,
+tenv non-HVG curve, ortholog table, `inflection.json`) is retained on disk
+byte-identically until the removal ticket (#192) deletes it after acceptance;
+this ticket neither produces nor consumes it.
 
 ## Shared `@d` evaluation and figure APIs
 

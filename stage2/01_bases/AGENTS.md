@@ -148,6 +148,64 @@
   `pert_data/DToxS-iPSC/**`, `pert_data/GSE244740/**` and
   `pert_data/Annotation/**` are read-only — derived evidence is step-owned.
 
+## Released gene axes `G_2000` / `G_5000` (#190, ADR 0066)
+
+- Public implementation: `output/api/bases/gene_axis.py` — the pure two-level
+  fusion (`winning_tier`, `category_rank`, `fusion_rank_sum`, `candidate_table`,
+  `axis_fill`, `axis_intersection`, `axis_composition`, `pn_distribution`,
+  `rank_sum_histogram`, `kneedle_knee`, `second_difference_peak`,
+  `detect_inflection`, `inflection_stability`) plus the digest-checked
+  `GeneAxis` reader (`manifest`, `axis_sizes`, `candidate_table`, `axis`,
+  `axis_frame`, `composition`, `digests`). It keeps the #186 re-export contract:
+  the `bases.deg_rank` functions (`SymbolResolver`, `complete_rank`,
+  `deg_effect`, `per_gene_deg`, `rank_scores`, `ALIGNMENT_CATEGORIES`,
+  `PADJ_FLOOR`, `PADJ_THRESHOLD`, `normalized_rank`, `AXIS_SIZE`) are the same
+  objects here — a test asserts identity, so a rewrite cannot drop them.
+- Driver: `execution/build_gene_axis.py publish|verify`. Reads only
+  `output/disease-deg/**` (through `bases.disease_deg.DiseaseDeg` for the
+  catalog and digest checks, with the rank CSVs re-validated against the
+  declared `n_measured`), `output/tenv-hvg/descriptive.csv` (never recomputed)
+  and `output/gene-identity/genes.csv`. Candidates stage under
+  `execution/checkpoints/`; only this ticket's products are replaced (the
+  retired pre-0066 `gene-axis/` file set stays byte-identically in place for
+  #192's removal); `--verify` replays from the pinned inputs and compares the
+  manifest and every digest.
+- Contract decisions implemented, with ADR 0066 as the basis: **winning tier**
+  is the category's minimum catalog `tier`, plus records whose
+  `isogenic_exception.applies` is true (ADR 0066 *Priority* and *Isogenic
+  exception*; `genetic_cardiomyopathy` therefore fuses 2 tier-1 human
+  CM-pseudobulk datasets + 6 tier-2 isogenic models); the **seventh source** is
+  the published `descriptive.csv` `rank` column normalized as
+  `rank / frozen-axis size` (ADR 0066 "each normalized by the frozen-axis
+  size"; GLOSSARY *Source rank*). Level 1 is `sum(rank_norm)` over the
+  winning-tier datasets (ties by `gene_index`); level 2 is the seven-source
+  `rank_sum`; `pN` is the count of sources with `rank <= N`; `n_sources_measured`
+  counts sources that measure the gene.
+- Products (`output/gene-axis/`, force-tracked compact CSVs): `candidate_rank_sum.csv`
+  (18,164 rows: `symbol`, `gene_index`, `tenv_hvg_rank`, six `<category>_rank`,
+  `rank_sum`, `n_sources_measured`, `p2000`, `p5000`), `gene_axis_2000.csv` /
+  `gene_axis_5000.csv` (ascending original `gene_index` + `symbol`; never
+  renumbered), `axis_composition.csv` (per-category and `pN` distributions of
+  both axes, so `pN` is not read as a continuous score) and `manifest.json`
+  (fill rule, sizes, intersection, per-category composition and winning-tier
+  decisions, 33 input digests, 5 output digests, environment; no absolute
+  paths).
+- Evidence panel: `figure/gene_axis_rank_sum_histogram.png`, complete plotted
+  values `figure/data/gene_axis_rank_sum_histogram.csv`, CSV-only renderer
+  `figure/script/render_gene_axis_rank_sum_histogram.py` (palette colours from
+  the public `bases.palette`; reproduces the PNG byte for byte with `output/`
+  unreadable). The Kneedle + second-difference inflection is a diagnostic in
+  the manifest (parameters, candidates, seven leave-one-source-out replays)
+  and may honestly be `false`; it never chooses `N`.
+- Tests: `execution/tests/test_gene_axis.py` (38 tests, hermetic 8-gene
+  fixture) covers winning tier/isogenic exception, level-1 identity and
+  level-1/2 sums with `gene_index` ties, `pN` 0/7 boundaries, fill rule
+  `0.5*N + 0.5*N` and its ordering, non-nested axes + intersection, ascending
+  frozen-space axes, histogram, inflection detection/stability, candidate-then-
+  replace determinism and tamper detection, manifest relative-path hygiene,
+  figure CSV-only replay, `deg_rank` re-export identity and retired-file-set
+  preservation. Run it individually under the `arc` env.
+
 Routing for the standalone Stage 2 foundation; commands and contracts are in
 [`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
 gene and evaluation semantics. Every path below is a stable semantic path.
@@ -184,26 +242,17 @@ gene and evaluation semantics. Every path below is a stable semantic path.
 - HVG/metrics: `execution/hvg_metrics.md` routes the train-only selector,
   `build_hvg.py`, `evaluate_predictions.py` and `replay_pr.py`; product is
   `output/tenv-hvg/`.
-- Gene-axis decision evidence (#183): public implementation
-  `output/api/bases/gene_axis.py`; build/replay `execution/build_gene_axis.py`,
-  `--verify` included; `execution/gene_axis_sources.py` holds the two
-  `pert_data/` cardiotoxicity adapters and `execution/build_mouse_orthologs.R`
-  regenerates the pinned `output/gene-axis/mouse_human_orthologs.csv` (pinned
-  `arc` R entry point, homologene + org.Mm.eg.db); the R script writes a candidate
-  under `execution/gene_axis/`, checks its sha256 against the accepted table and
-  replaces it only when byte-identical or with `--args --accept` (ADR 0062
-  candidate-then-replace). Product is
-  `output/gene-axis/` (`source_summary.csv`, `fused_rank.csv`, `overlap.csv`,
-  `inflection.json`, `tenv_non_hvg_curve.csv`, `direction_summary.csv`,
-  `manifest.json` + the ortholog table; large per-source intermediates stay
-  untracked under `execution/gene_axis/`). Figure:
-  `figure/gene_axis_source_summary.png`, plotted values
-  `figure/data/gene_axis_source_summary.csv`, CSV-only renderer
-  `figure/script/render_gene_axis_source_summary.py` (must keep working with
-  `output/` unreadable). Records: `log/gene-axis/{record.md,inputs.json}`.
-  Decision preparation only — it chooses no `N`, quota, direction rule or animal
-  weight (#173), builds no corpus/model and opens no truth or Heliste file; the
-  only tenv input is the published descriptive HVG ranking.
+- Gene-axis products: the **released** axes `G_2000`/`G_5000` are documented
+  in *Released gene axes (#190, ADR 0066)* above. The pre-0066 #183 file set
+  (`source_summary.csv`, `fused_rank.csv`, `overlap.csv`, `inflection.json`,
+  `tenv_non_hvg_curve.csv`, `direction_summary.csv`,
+  `mouse_human_orthologs.csv`) and its figure/adapters
+  (`figure/gene_axis_source_summary.*`, `execution/gene_axis_sources.py`,
+  `execution/build_mouse_orthologs.R`) are **retired**, retained byte-identically
+  only until the removal ticket (#192) deletes them; nothing reads them.
+  Superseded decision-preparation semantics (direction composition, unweighted
+  quota-free fusion, animal half-weighting, tenv non-HVG curve, ortholog table)
+  must not be resurrected.
 - Figure: `figure/diagnostic_tenv_pr.png`, complete plotted values in
   `figure/data/diagnostic_tenv_pr.csv`, and the CSV-only renderer
   `figure/script/render_diagnostic_tenv_pr.py`. The renderer must keep working

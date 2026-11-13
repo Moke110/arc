@@ -1,397 +1,412 @@
-"""Cross-source HVG/DEG evidence and rank-sum fusion on the frozen gene axis.
+"""Two-level rank-sum fusion and the released Stage 2 axes (ADR 0066).
 
-This module owns every scientific definition used by the Stage 2 gene-axis
-decision-evidence product (ticket #183, spec §C): symbol/alias alignment to the
-frozen 18,164-gene axis, Seurat-style normalized dispersion, the continuous DEG
-effect score, within-source ranks, rank-sum fusion, overlap, direction
-composition, inflection detection and the tenv non-HVG curve.
+This module owns every scientific definition of the released gene axis: the
+winning-tier selection inside a disease category, the level-1 category rank, the
+level-2 seven-source rank sum, the ``pN`` cross-source replication count, the
+``0.5*N + 0.5*N`` axis fill rule, the rank-sum histogram and the diagnostic
+Kneedle + second-difference inflection. ``execution/build_gene_axis.py`` reads
+the pinned inputs and publishes the products; ``execution/tests/test_gene_axis.py``
+exercises these definitions on hermetic fixtures.
 
-It is a pure function module: no file is opened and no truth product is ever
-consulted. ``execution/build_gene_axis.py`` reads the inputs and writes the
-evidence; ``execution/tests/test_gene_axis.py`` exercises these definitions on
-fixtures. Keeping the definitions here (ADR 0062) means the driver, the
-verifier and the tests cannot drift apart.
+It is a pure function module (ADR 0062): no file is opened here except through
+:class:`GeneAxis`, the public reader for the published ``output/gene-axis/``
+release. Nothing here chooses an axis size: ``N`` is declared (2,000 and 5,000)
+and the inflection diagnostic never selects it.
 
-Scope boundary: this is decision *preparation*. Nothing here chooses the axis
-size ``N``, a per-source quota, the direction rule or the animal-source weight;
-those remain #173's decision. The unweighted rank sum is the primary result and
-the animal half-weight column is a reported sensitivity only.
+Vocabulary follows ADR 0066 and ``GLOSSARY.md`` -> *Stage 2 gene axis*:
+``Source rank``, ``Class source``, ``Rank-sum fusion``, ``pN``, ``Axis fill
+rule``, ``Inflection point``.
 
-Index convention: every public function that consumes per-gene vectors indexes
-them by the frozen ``gene_index`` (0..18163). The tracked ``fused_rank.csv`` is
-sorted by ``fused_rank``, so its row order is not the axis order; callers scatter
-it back with :func:`align_to_gene_index` before using any ``gene_index``-indexed
-array. The fixture tests pin this contract so a consumer cannot silently answer
-a row-position question.
+Index convention: every per-gene vector is indexed by the frozen ``gene_index``
+(``0..axis_size-1``). A released axis is an ascending ordering of original
+``gene_index`` values, never a renumbered ``0..N-1`` position vector.
 """
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+# The #186 contract: ``bases.gene_axis`` re-exports the DEG/rank functions now
+# owned by ``bases.deg_rank`` (one live implementation, no second copy).
 from .deg_rank import (
-    ALIGNMENT_CATEGORIES, AXIS_SIZE, PADJ_FLOOR, PADJ_THRESHOLD, SymbolResolver,
-    complete_rank, deg_effect, normalized_rank, per_gene_deg, rank_scores,
+    ALIGNMENT_CATEGORIES,
+    AXIS_SIZE,
+    PADJ_FLOOR,
+    PADJ_THRESHOLD,
+    SymbolResolver,
+    complete_rank,
+    deg_effect,
+    normalized_rank,
+    per_gene_deg,
+    rank_scores,
 )
 
-SCHEMA = 'stage2-gene-axis-evidence-v1'
-# Declared tenv HVG set sizes read off the published descriptive ranking. The
-# non-HVG curve is reported at each of these; none of them is a chosen axis size.
-TENV_HVG_KS = (1000, 2000, 5000)
-# Reporting convention only (not an axis decision): a per-source "HVG set" is the
-# source's top SOURCE_HVG_K measured genes by its own normalized dispersion, so a
-# tenv set and a disease-source set are compared at the same declared size.
-SOURCE_HVG_K = 2000
-HVG_BINS = 20
-# Animal MIRI DEG-only sources: species gap-fill, reported with a half-weight
-# sensitivity; the primary fusion is unweighted.
-ANIMAL_SOURCES = ('gse160516', 'gse108940')
+SCHEMA = 'stage2-gene-axis-release-v1'
+
+# The six declared disease categories, in ADR 0066 roster order. The product
+# directory is the catalog directory under ``output/disease-deg/``; it is also
+# the prefix of the candidate table's ``<category>_rank`` column.
+CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
+              'cardiotox_TOP2', 'cardiotox_other')
+CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',
+                   'genetic_cardiomyopathy': 'genetic_cardiomyopathy',
+                   'cardiotox_TOP2': 'cardiotox_TOP2',
+                   'cardiotox_other': 'cardiotox_other'}
+CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in CATEGORIES)
+
+#: Declared released axis sizes (ADR 0066). N is chosen, never read off a curve.
+AXIS_SIZES = (2000, 5000)
+#: Half of an axis comes from tenv-HVG, half from cross-source replication.
+FILL_FRACTION = 0.5
+#: The seventh fusion source is the published tenv-HVG ranking; the six others
+#: are the category class sources. This is the denominator of ``pN``.
+N_FUSION_SOURCES = len(CATEGORIES) + 1
+
+def candidate_columns(sizes=AXIS_SIZES):
+    """Contracted candidate-table columns for the requested axis sizes."""
+    return (('symbol', 'gene_index', 'tenv_hvg_rank') + CATEGORY_RANK_COLUMNS
+            + ('rank_sum', 'n_sources_measured')
+            + tuple(f'p{int(size)}' for size in sizes))
 
 
-def collapse_expression(values, gene_index, axis_size, rule='mean'):
-    """Collapse duplicate source rows onto one axis gene (declared rules).
+CANDIDATE_COLUMNS = candidate_columns()
+AXIS_COLUMNS = ('gene_index', 'symbol')
 
-    ``values`` is genes x samples. Duplicate source symbols can resolve to the
-    same axis gene through alias evidence; expression rows are averaged
-    (``rule='mean'``) so no single alias row wins arbitrarily.
+FILL_RULE = (
+    'G_N = the top 0.5*N genes of tenv-HVG (tenv_hvg_rank <= N/2), then 0.5*N '
+    'more from the remaining candidates ordered by pN descending, rank_sum '
+    'ascending, gene_index ascending; the union is published ordered by '
+    'ascending gene_index and is never renumbered.')
+
+
+def winning_tier(catalog):
+    """Select the datasets a category fuses, and report the rule that selected them.
+
+    ADR 0066 *Source eligibility*: the highest available priority tier supplies
+    the source and **all independent datasets at that tier** are kept. ADR 0066
+    *Isogenic exception*: an in-vitro isogenic model is kept as its own evidence
+    type even when a higher-tier human cohort exists for the same category, so a
+    record whose ``isogenic_exception.applies`` is true is retained alongside the
+    winning-tier records instead of being dropped by the tier rule.
+
+    Returns ``{'winning_tier', 'datasets', 'records', 'retained_by_exception',
+    'excluded_tiers', 'rule'}``. ``datasets`` is the catalog order, so the fused
+    dataset order is the producer's declared order, not a re-sort.
     """
-    values = np.asarray(values, dtype=np.float64)
-    if rule != 'mean':
-        raise ValueError('unsupported expression collapse rule')
-    unique, inverse = np.unique(gene_index, return_inverse=True)
-    totals = np.zeros((len(unique), values.shape[1]), dtype=np.float64)
-    counts = np.zeros(len(unique), dtype=np.int64)
-    np.add.at(totals, inverse, values)
-    np.add.at(counts, inverse, 1)
-    collapsed = totals / counts[:, None]
-    return unique, collapsed
+    records = list(catalog.get('datasets') or ())
+    if not records:
+        raise ValueError('a disease category catalog needs at least one dataset record')
+    tiers = []
+    for record in records:
+        tier = record.get('tier')
+        if tier is None or int(tier) <= 0:
+            raise ValueError(
+                f'{record.get("dataset_id", "?")}: dataset record has no priority tier')
+        tiers.append(int(tier))
+    winning = min(tiers)
+    retained = []
+    by_exception = []
+    excluded = sorted({tier for tier in tiers if tier != winning})
+    for record, tier in zip(records, tiers):
+        isogenic = (record.get('isogenic_exception') or {}).get('applies') is True
+        if tier == winning:
+            retained.append(record)
+        elif isogenic:
+            retained.append(record)
+            by_exception.append(record['dataset_id'])
+    return {
+        'winning_tier': winning,
+        'datasets': [record['dataset_id'] for record in retained],
+        'records': retained,
+        'retained_by_exception': by_exception,
+        'excluded_tiers': excluded,
+        'rule': ('minimum catalog tier, plus records whose isogenic_exception.applies '
+                 'is true (ADR 0066 Isogenic exception)'),
+    }
 
 
-def normalized_dispersion(values, gene_index, bins=HVG_BINS):
-    """Seurat-style normalized dispersion on a source's own log expression.
+def category_rank(ranks, n_measured, gene_index=None, axis_size=None):
+    """Level 1: a category's source rank from its datasets' within-dataset ranks.
 
-    Rows are genes, columns samples. ``log_mean`` is ``log1p(mean)`` of the
-    deposited log values; dispersion is sample variance / mean; log dispersion
-    is z-scored inside ``bins`` equal-width ``log_mean`` bins (singleton bins
-    score 1, an undefined dispersion sorts last). This is the published tenv
-    recipe's family (``bases.hvg``) with one deliberate difference: the tenv
-    release recovers linear CP10K with ``expm1`` because it is exactly log1p
-    CP10K, while the disease matrices are heterogeneous non-invertible log
-    scales (voom log2 abundance, log2(RPKM+1), log2(CPM+1), log2(CP10K+1)), so
-    the statistics are computed on the deposited log values directly.
+    ADR 0066 *Candidate table and the two-level rank-sum fusion*::
 
-    Ties (including undefined scores) break on the frozen ``gene_index``.
+        level-1 sum = sum(rank_norm)  over the datasets at the winning tier
+        category rank = position in ascending level-1 sum, ties by gene_index
+
+    ``rank_norm`` is recomputed from the raw rank and the dataset's
+    ``n_measured`` with :func:`bases.deg_rank.normalized_rank` (measured rank
+    ``rank/n_measured``; unmeasured ``1.0``) so a category never trusts a
+    hand-edited normalized value. Every dataset rank vector covers the frozen
+    axis (``gene_index`` order) and is a complete ``1..n_measured+1`` assignment.
+
+    Returns ``{'rank', 'sum', 'measured', 'n_datasets'}``: a 1-based
+    ``1..axis_size`` permutation, the level-1 ``sum(rank_norm)``, and a boolean
+    "this source measures the gene" mask (measured by at least one dataset).
     """
-    values = np.asarray(values, dtype=np.float64)
-    gene_index = np.asarray(gene_index, dtype=np.int64)
-    if values.ndim != 2 or values.shape[0] != len(gene_index):
-        raise ValueError('expression matrix rows must match the gene index')
-    finite = np.isfinite(values)
-    count = finite.sum(axis=1)
-    safe = np.where(finite, values, 0.0)
-    mean = safe.sum(axis=1) / np.maximum(count, 1)
-    deviation = np.where(finite, values - mean[:, None], 0.0)
-    m2 = (deviation * deviation).sum(axis=1)
-    variance = np.where(count > 1, m2 / np.maximum(count - 1, 1), np.nan)
-    with np.errstate(invalid='ignore', divide='ignore'):
-        dispersion = np.where(mean > 0, variance / mean, np.nan)
-        log_dispersion = np.where(dispersion > 0, np.log(dispersion), np.nan)
-    log_mean = np.where(mean > 0, np.log1p(np.maximum(mean, 0.0)), np.nan)
-    score = np.full(len(gene_index), np.nan, dtype=np.float64)
-    usable = np.isfinite(log_mean) & np.isfinite(log_dispersion)
-    if usable.any():
-        edges = np.linspace(log_mean[usable].min(), log_mean[usable].max(), bins + 1)
-        assignment = np.clip(np.searchsorted(edges, log_mean, side='right') - 1, 0, bins - 1)
-        for bin_id in range(bins):
-            members = usable & (assignment == bin_id)
-            if not members.any():
-                continue
-            block = log_dispersion[members]
-            if len(block) == 1:
-                score[members] = 1.0
-                continue
-            spread = block.std(ddof=1)
-            if spread > 0:
-                score[members] = (block - block.mean()) / spread
-            else:
-                score[members] = 0.0
-    rank = rank_scores(gene_index, score)
-    return pd.DataFrame({
-        'gene_index': gene_index,
-        'n_obs': count,
-        'log_mean': log_mean,
-        'log_dispersion': log_dispersion,
-        'normalized_dispersion': score,
-        'rank': rank,
-    })
-
-
-def fuse_ranks(ranks, measured, axis_size=AXIS_SIZE, weights=None, flags=None):
-    """Unweighted primary rank-sum plus the animal half-weight sensitivity.
-
-    ``ranks`` maps source id -> raw rank vector over the frozen axis.
-    ``measured`` maps source id -> its measured-gene count. ``weights`` maps a
-    source id to a weight (default 1.0) and is used only for the reported
-    sensitivity column. ``flags`` optionally maps source id -> 0/1 per gene for
-    "this source reports the gene as a significant DEG".
-
-    The fused rank is ascending ``rank_sum`` with the frozen ``gene_index`` as
-    the deterministic tie-break.
-    """
+    ranks = [np.asarray(rank, dtype=np.int64) for rank in ranks]
+    n_measured = [int(value) for value in n_measured]
     if not ranks:
-        raise ValueError('rank fusion needs at least one source')
-    axis_size = int(axis_size)
-    names = list(ranks)
-    primary = np.array([(weights or {}).get(name, 1.0) for name in names], dtype=np.float64)
-    sensitivity = np.array([0.5 if name in ANIMAL_SOURCES else (weights or {}).get(name, 1.0)
-                            for name in names], dtype=np.float64)
-    if not np.isfinite(primary).all() or not np.isfinite(sensitivity).all():
-        raise ValueError('source weights must be finite')
-    matrix = np.empty((axis_size, len(names)), dtype=np.float64)
-    measured_count = np.zeros(axis_size, dtype=np.int64)
-    for column, name in enumerate(names):
-        rank = np.asarray(ranks[name], dtype=np.int64)
+        raise ValueError('a category needs at least one dataset rank')
+    if len(ranks) != len(n_measured):
+        raise ValueError('every dataset rank needs its n_measured')
+    axis_size = int(axis_size if axis_size is not None else len(ranks[0]))
+    gene_index = (np.arange(axis_size, dtype=np.int64) if gene_index is None
+                  else np.asarray(gene_index, dtype=np.int64))
+    if gene_index.shape != (axis_size,):
+        raise ValueError('gene_index must cover the frozen axis')
+    total = np.zeros(axis_size, dtype=np.float64)
+    measured = np.zeros(axis_size, dtype=bool)
+    for rank, n in zip(ranks, n_measured):
         if rank.shape != (axis_size,):
-            raise ValueError(f'rank vector for {name} must cover the frozen axis')
-        n_measured = int(measured[name])
-        matrix[:, column] = normalized_rank(rank, n_measured)
-        measured_count += (rank <= n_measured).astype(np.int64)
-    rank_sum = matrix @ primary
-    rank_sum_sensitivity = matrix @ sensitivity
-    significant = np.zeros(axis_size, dtype=np.int64)
-    for name in (flags or {}):
-        significant += np.asarray(flags[name], dtype=np.int64)
-    gene_index = np.arange(axis_size, dtype=np.int64)
-    fused_order = np.lexsort((gene_index, rank_sum))
-    fused_rank = np.empty(axis_size, dtype=np.int64)
-    fused_rank[fused_order] = np.arange(1, axis_size + 1)
-    sensitivity_order = np.lexsort((gene_index, rank_sum_sensitivity))
-    sensitivity_rank = np.empty(axis_size, dtype=np.int64)
-    sensitivity_rank[sensitivity_order] = np.arange(1, axis_size + 1)
-    result = pd.DataFrame({'gene_index': gene_index})
-    for name in names:
-        result[name] = np.asarray(ranks[name], dtype=np.int64)
-    result['rank_sum'] = rank_sum
-    result['rank_sum_animal_half'] = rank_sum_sensitivity
-    result['fused_rank'] = fused_rank
-    result['fused_rank_animal_half'] = sensitivity_rank
-    result['n_sources_measured'] = measured_count
-    result['n_sources_deg_significant'] = significant
-    return result
+            raise ValueError('a dataset rank vector must cover the frozen axis')
+        if n <= 0:
+            raise ValueError('a dataset needs at least one measured gene')
+        if rank.min() < 1 or rank.max() > n + 1:
+            raise ValueError('a dataset rank must be in 1..n_measured+1')
+        # A complete frozen-axis rank frame: measured genes get exactly 1..n and
+        # every unmeasured gene gets n+1 (ADR 0066 / bases.deg_rank contract).
+        if int((rank <= n).sum()) != n or np.any(rank > n + 1):
+            raise ValueError('a dataset rank frame is not a complete 1..n_measured+1 assignment')
+        if not np.array_equal(np.sort(rank[rank <= n]), np.arange(1, n + 1)):
+            raise ValueError('measured ranks must be exactly 1..n_measured')
+        measured |= rank <= n
+        total += normalized_rank(rank, n)
+    order = np.lexsort((gene_index, total))
+    rank = np.empty(axis_size, dtype=np.int64)
+    rank[order] = np.arange(1, axis_size + 1, dtype=np.int64)
+    return {'rank': rank, 'sum': total, 'measured': measured, 'n_datasets': len(ranks)}
 
 
-def fused_order(fused_rank):
-    """Gene indices in ascending fused-rank order."""
-    fused_rank = np.asarray(fused_rank, dtype=np.int64)
-    if sorted(fused_rank.tolist()) != list(range(1, len(fused_rank) + 1)):
-        raise ValueError('fused rank must be a complete 1-based permutation')
-    return np.argsort(fused_rank, kind='stable')
-
-
-def direction_composition(fused_rank, direction, max_abs_effect, sizes, tie_counts=None):
-    """Top-N up/down composition under two declared, genuinely different rules.
-
-    All vectors are indexed by the frozen ``gene_index`` (never by the row order
-    of the tracked fused table, which is sorted by ``fused_rank``):
-
-    ``direction`` is +1/-1/0 per axis gene (0 = the DEG sources report no
-    winning effect for the gene); ``max_abs_effect`` is the gene's maximum
-    ``|log2FC|`` over the sources that report it; ``tie_counts`` counts genes
-    whose winning effect tied across sources.
-
-    - ``symmetric``: the top-N are the first N genes in ascending
-      ``fused_rank`` (symmetric inclusion; every gene counts equally).
-    - ``max_abs_log2fc``: the top-N are the N genes with the largest
-      ``max_abs_effect``, ties broken by ascending ``fused_rank``. It ranks by
-      effect magnitude instead of by the fusion, so the two rules select
-      different gene sets.
-
-    Genes whose direction is not significant in any source are counted as
-    ``n_unsupported`` in both rules.
-    """
-    fused_rank = np.asarray(fused_rank, dtype=np.int64)
-    direction = np.asarray(direction, dtype=np.int64)
-    max_abs_effect = np.asarray(max_abs_effect, dtype=np.float64)
-    if not (len(fused_rank) == len(direction) == len(max_abs_effect)):
-        raise ValueError('direction vectors must cover the frozen axis')
-    if sorted(fused_rank.tolist()) != list(range(1, len(fused_rank) + 1)):
-        raise ValueError('fused rank must be a complete 1-based permutation')
-    tie_counts = (np.zeros(len(direction), dtype=np.int64) if tie_counts is None
-                  else np.asarray(tie_counts, dtype=np.int64))
-    fused_order = np.argsort(fused_rank, kind='stable')
-    effect_order = np.lexsort((fused_rank, -max_abs_effect))
-    rows = []
-    for rule, order in (('symmetric', fused_order),
-                        ('max_abs_log2fc', effect_order)):
-        for size in sizes:
-            size = int(size)
-            if not 0 < size <= len(fused_rank):
-                raise ValueError('direction size outside the fused order')
-            chosen = order[:size]
-            sign = direction[chosen]
-            up, down = sign > 0, sign < 0
-            unsupported = sign == 0
-            rows.append({
-                'n': size, 'rule': rule,
-                'n_up': int(up.sum()), 'n_down': int(down.sum()),
-                'n_unsupported': int(unsupported.sum()),
-                'up_share': up.sum() / size, 'down_share': down.sum() / size,
-                'unsupported_share': unsupported.sum() / size,
-                'n_direction_ties': int(tie_counts[chosen].sum()),
-            })
-    return pd.DataFrame(rows)
-
-
-def align_to_gene_index(values, gene_index, axis_size=AXIS_SIZE):
-    """Scatter per-row values (rows in any order) onto a frozen-axis vector.
-
-    The tracked fused table is sorted by ``fused_rank``, so its row order is
-    *not* the frozen axis order. Any consumer that indexes an array by
-    ``gene_index`` must first put the values back into frozen-axis order with
-    this helper; using the row position as if it were a gene index is the
-    index-space error this module's tests pin down.
-
-    Every axis gene must appear exactly once.
-    """
-    values = np.asarray(values)
-    gene_index = np.asarray(gene_index, dtype=np.int64)
-    if values.ndim != 1 or values.shape[0] != gene_index.shape[0]:
-        raise ValueError('values must be a vector matching the gene index')
-    if len(np.unique(gene_index)) != len(gene_index):
-        raise ValueError('gene index has duplicate rows')
-    if gene_index.size and (gene_index.min() < 0 or gene_index.max() >= axis_size):
-        raise ValueError('gene index outside the frozen axis')
-    filled = np.zeros(axis_size, dtype=values.dtype)
-    seen = np.zeros(axis_size, dtype=bool)
-    filled[gene_index] = values
-    seen[gene_index] = True
-    if not seen.all():
-        raise ValueError('values do not cover the frozen axis')
-    return filled
-
-
-def fused_rank_stats(genes, fused_rank):
-    """Min/median/max fused rank of a gene set; ``fused_rank`` is gene-indexed."""
-    genes = np.asarray(sorted(set(map(int, genes))), dtype=np.int64)
-    positions = (np.asarray(fused_rank, dtype=np.int64)[genes] if len(genes)
-                 else np.empty(0, dtype=np.int64))
-    return {
-        'fused_rank_min': int(positions.min()) if len(positions) else 0,
-        'fused_rank_median': float(np.median(positions)) if len(positions) else 0.0,
-        'fused_rank_max': int(positions.max()) if len(positions) else 0,
-    }
-
-
-def overlap_metrics(set_a, set_b, fused_rank):
-    """Sizes, Jaccard and fused-rank positions of an intersection.
-
-    ``fused_rank`` is indexed by ``gene_index`` (use
-    :func:`align_to_gene_index` on the sorted fused table). For a multi-way
-    intersection whose two operands are the same set, Jaccard is undefined; use
-    :func:`fused_rank_stats` for that case instead of this function.
-    """
-    set_a, set_b = set(map(int, set_a)), set(map(int, set_b))
-    intersection = set_a & set_b
-    union = set_a | set_b
-    jaccard = len(intersection) / len(union) if union else 0.0
-    return {
-        'n_a': len(set_a), 'n_b': len(set_b), 'n_intersection': len(intersection),
-        'n_union': len(union), 'jaccard': float(jaccard),
-        **fused_rank_stats(intersection, fused_rank),
-    }
-
-
-def transcriptome_hvg_sets(hvg_rank, row_gene_index, ks, axis_size=AXIS_SIZE):
-    """Declared per-source HVG sets from a source-transcriptome dispersion rank.
-
-    ``hvg_rank`` is a complete 1..n_source_rows ranking over **all** genes the
-    source's expression matrix measures (not only the genes that resolve to the
-    frozen axis); ``row_gene_index`` maps each source row to its axis gene
-    (``-1`` for unresolved rows). For each declared size ``k`` the source's HVG
-    set is its top-``k`` source rows, so ``n_total = min(k, n_source_rows)`` and
-    ``n_on_axis`` counts the distinct axis genes in that set. This measures how
-    much of the source's own variability evidence lands on the frozen axis, not
-    how variable the axis is.
-    """
-    hvg_rank = np.asarray(hvg_rank, dtype=np.int64)
-    row_gene_index = np.asarray(row_gene_index, dtype=np.int64)
-    if hvg_rank.shape != row_gene_index.shape:
-        raise ValueError('hvg rank and row gene index must cover the source rows')
-    n_rows = len(hvg_rank)
-    result = {}
-    for k in ks:
-        k = int(k)
-        if k <= 0:
-            raise ValueError('declared HVG set size must be positive')
-        total = min(k, n_rows)
-        members = np.flatnonzero(hvg_rank <= total)
-        genes = row_gene_index[members]
-        on_axis = np.unique(genes[genes >= 0])
-        axis_set = np.zeros(axis_size, dtype=bool)
-        axis_set[on_axis] = True
-        result[k] = {'set': axis_set, 'n_total': int(total),
-                     'n_on_axis': int(len(on_axis))}
-    return result
-
-
-def spearman(left, right):
-    """Spearman correlation with average ranks for ties (deterministic)."""
-    left, right = pd.Series(left), pd.Series(right)
-    return float(left.rank(method='average').corr(right.rank(method='average')))
-
-
-def empty_rank(order):
-    """1-based rank vector (indexed by gene_index) for a gene permutation."""
-    order = np.asarray(order, dtype=np.int64)
-    rank = np.empty(len(order), dtype=np.int64)
-    rank[order] = np.arange(1, len(order) + 1)
+def _complete_rank(rank, axis_size, label):
+    """Validate one source's frozen-axis rank vector is a complete 1..axis_size permutation."""
+    rank = np.asarray(rank, dtype=np.int64)
+    if rank.shape != (axis_size,):
+        raise ValueError(f'{label} rank must cover the frozen axis')
+    if not np.array_equal(np.sort(rank), np.arange(1, axis_size + 1, dtype=np.int64)):
+        raise ValueError(f'{label} rank must be a complete 1..{axis_size} permutation')
     return rank
 
 
-def deg_count_agreement(fused_rank, significant_count, sizes):
-    """Agreement between the fused order and the DEG-count order.
+def fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
+                    gene_index=None, axis_size=None, sizes=AXIS_SIZES):
+    """Level 2: ``rank_sum`` over the seven fusion sources.
 
-    ``fused_rank`` and ``significant_count`` are indexed by ``gene_index``. The
-    DEG-count order is descending ``significant_count`` with the **fused rank**
-    as tie-break (declared and deterministic): source counts are small integers,
-    so ties are frequent and ordering equal-count genes the way the fusion
-    orders them keeps the comparison informative. A frozen-axis ``gene_index``
-    tie-break would be a different, much weaker ranking (Spearman 0.679 vs
-    0.809 on this product); the product's choice is the fused-rank one.
+    ADR 0066 / spec D13: ``rank_sum = sum(rank_norm)`` over the six category
+    class sources plus the published tenv-HVG ranking, each normalized by the
+    frozen-axis size; **ascending is better** and ties break on ``gene_index``.
+    ``pN`` counts how many of the seven sources place the gene in their top-``N``
+    set; ``n_sources_measured`` counts the sources that measure it (tenv-HVG
+    ranks every frozen-axis gene, so it always contributes one).
 
-    Returns ``{'spearman', 'top_n_agreement', 'deg_count_rank'}``.
+    ``category_ranks`` are the level-1 category ranks (one complete permutation
+    per category, in :data:`CATEGORIES` order), ``categories_measured`` the
+    corresponding "source measures the gene" masks, ``tenv_rank`` the published
+    tenv-HVG dispersion rank. Returns ``{'rank_sum', 'n_sources_measured', 'pn'}``
+    where ``pn`` maps each requested ``N`` to its integer vector.
     """
-    fused_rank = np.asarray(fused_rank, dtype=np.int64)
-    significant_count = np.asarray(significant_count, dtype=np.int64)
-    if fused_rank.shape != significant_count.shape:
-        raise ValueError('fused rank and DEG count must cover the frozen axis')
-    # lexsort sorts by the last key first: descending count is primary, the
-    # ascending fused rank is the tie-break. The result is a gene permutation.
-    count_order = np.lexsort((fused_rank, -significant_count))
-    count_rank = empty_rank(count_order)
-    fused_order = np.argsort(fused_rank, kind='stable')
-    agreement = {}
+    if len(category_ranks) != len(CATEGORIES):
+        raise ValueError(f'a level-2 fusion needs exactly {len(CATEGORIES)} category ranks')
+    if len(categories_measured) != len(CATEGORIES):
+        raise ValueError('every category rank needs its measured mask')
+    tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
+    axis_size = int(axis_size if axis_size is not None else tenv_rank.size)
+    gene_index = (np.arange(axis_size, dtype=np.int64) if gene_index is None
+                  else np.asarray(gene_index, dtype=np.int64))
+    if gene_index.shape != (axis_size,):
+        raise ValueError('gene_index must cover the frozen axis')
+    tenv_rank = _complete_rank(tenv_rank, axis_size, 'tenv-HVG')
+    sources = [_complete_rank(rank, axis_size, category)
+               for rank, category in zip(category_ranks, CATEGORIES)]
+    sources.append(tenv_rank)
+    rank_sum = np.zeros(axis_size, dtype=np.float64)
+    for rank in sources:
+        rank_sum += rank / float(axis_size)
+    measured = [np.asarray(mask, dtype=bool) for mask in categories_measured]
+    for mask in measured:
+        if mask.shape != (axis_size,):
+            raise ValueError('a category measured mask must cover the frozen axis')
+    n_sources_measured = 1 + np.sum(measured, axis=0).astype(np.int64)
+    pn = {}
     for size in sizes:
         size = int(size)
-        if not 0 < size <= len(fused_rank):
-            raise ValueError('agreement size outside the frozen axis')
-        overlap = len(set(fused_order[:size].tolist())
-                      & set(count_order[:size].tolist()))
-        agreement[str(size)] = {'n_overlap': int(overlap), 'share': overlap / size}
-    return {'spearman': spearman(fused_rank, count_rank),
-            'top_n_agreement': agreement,
-            'deg_count_rank': count_rank}
+        if size <= 0 or size > axis_size:
+            raise ValueError('a pN size must be within the frozen axis')
+        pn[size] = np.sum([rank <= size for rank in sources], axis=0).astype(np.int64)
+    return {'rank_sum': rank_sum, 'n_sources_measured': n_sources_measured, 'pn': pn}
+
+
+def candidate_table(axis, tenv_rank, category_ranks, categories_measured,
+                    gene_index=None, sizes=AXIS_SIZES):
+    """The master candidate table: one row per frozen-axis gene.
+
+    ADR 0066: ``symbol``, ``gene_index``, ``tenv_hvg_rank``, one
+    ``<category>_rank`` per category, ``rank_sum``, ``n_sources_measured``,
+    ``p2000``, ``p5000``. Rows are in frozen-axis order; every vector is indexed
+    by ``gene_index`` so no consumer can read a row position as a gene index.
+    """
+    axis = pd.DataFrame(axis)
+    required = {'gene_index', 'symbol'}
+    if not required <= set(axis.columns):
+        raise ValueError(f'axis table requires {sorted(required)}')
+    axis_size = len(axis)
+    gene_index = (np.arange(axis_size, dtype=np.int64) if gene_index is None
+                  else np.asarray(gene_index, dtype=np.int64))
+    if gene_index.shape != (axis_size,):
+        raise ValueError('gene_index must cover the frozen axis')
+    if not np.array_equal(np.asarray(axis.gene_index, dtype=np.int64), gene_index):
+        raise ValueError('axis table must be in frozen gene_index order')
+    fusion = fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
+                             gene_index=gene_index, axis_size=axis_size, sizes=sizes)
+    columns = {'symbol': axis.symbol.to_numpy(), 'gene_index': gene_index,
+               'tenv_hvg_rank': np.asarray(tenv_rank, dtype=np.int64)}
+    for category, rank in zip(CATEGORIES, category_ranks):
+        columns[f'{category}_rank'] = np.asarray(rank, dtype=np.int64)
+    columns['rank_sum'] = fusion['rank_sum']
+    columns['n_sources_measured'] = fusion['n_sources_measured']
+    for size in sizes:
+        columns[f'p{int(size)}'] = fusion['pn'][int(size)]
+    table = pd.DataFrame(columns)
+    return table.loc[:, list(candidate_columns(sizes))]
+
+
+def axis_fill(tenv_rank, p_n, rank_sum, n, gene_index=None):
+    """One released axis: the declared ``0.5*N + 0.5*N`` fill rule (ADR 0066).
+
+    ``G_N`` takes the top ``0.5*N`` genes of tenv-HVG (``tenv_hvg_rank <= N/2``),
+    then ``0.5*N`` more from the **remaining** candidates ordered by ``pN``
+    descending, ``rank_sum`` ascending, ``gene_index`` ascending. The result is
+    returned as ascending original ``gene_index`` integers: an axis is an
+    ordered subset of the frozen space, never renumbered to ``0..N-1``.
+
+    ``p_n`` is the gene's ``pN`` count for this axis size (``p2000`` for N=2000,
+    ``p5000`` for N=5000); the differing ``pN`` vectors are the main reason the
+    two axes are not nested.
+    """
+    tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
+    axis_size = tenv_rank.size
+    tenv_rank = _complete_rank(tenv_rank, axis_size, 'tenv-HVG')
+    n = int(n)
+    if n < 2 or n % 2:
+        raise ValueError('an axis size must be an even integer >= 2')
+    if n > axis_size:
+        raise ValueError('an axis size cannot exceed the frozen axis')
+    half = n // 2
+    p_n = np.asarray(p_n, dtype=np.int64)
+    rank_sum = np.asarray(rank_sum, dtype=np.float64)
+    if p_n.shape != (axis_size,) or rank_sum.shape != (axis_size,):
+        raise ValueError('pN and rank_sum must cover the frozen axis')
+    if p_n.min() < 0 or p_n.max() > N_FUSION_SOURCES:
+        raise ValueError(f'pN must be in 0..{N_FUSION_SOURCES}')
+    if not np.isfinite(rank_sum).all():
+        raise ValueError('rank_sum must be finite')
+    gene_index = (np.arange(axis_size, dtype=np.int64) if gene_index is None
+                  else np.asarray(gene_index, dtype=np.int64))
+    if gene_index.shape != (axis_size,):
+        raise ValueError('gene_index must cover the frozen axis')
+    tenv_half = np.flatnonzero(tenv_rank <= half)
+    if len(tenv_half) != half:
+        raise ValueError('tenv-HVG rank is not a complete permutation')
+    remaining = np.flatnonzero(tenv_rank > half)
+    # lexsort's last key is primary: pN descending, rank_sum ascending, index.
+    order = np.lexsort((gene_index[remaining], rank_sum[remaining],
+                        -p_n[remaining]))
+    chosen = remaining[order[:half]]
+    axis = np.sort(np.concatenate([tenv_half, chosen]).astype(np.int64))
+    if len(np.unique(axis)) != n or len(axis) != n:
+        raise ValueError('axis fill did not select N distinct frozen-axis genes')
+    return axis
+
+
+def axis_intersection(left, right):
+    """Sizes and Jaccard of two released axes; the manifest reports the intersection."""
+    left = set(np.asarray(left, dtype=np.int64).tolist())
+    right = set(np.asarray(right, dtype=np.int64).tolist())
+    intersection = left & right
+    union = left | right
+    smaller = min(len(left), len(right))
+    return {
+        'n_left': len(left), 'n_right': len(right),
+        'n_intersection': len(intersection), 'n_union': len(union),
+        'jaccard': len(intersection) / len(union) if union else 0.0,
+        'share_of_smaller': len(intersection) / smaller if smaller else 0.0,
+    }
+
+
+def axis_composition(axis_genes, categories_measured):
+    """How many axis genes each category source measures (the composition table)."""
+    if len(categories_measured) != len(CATEGORIES):
+        raise ValueError(f'a composition needs {len(CATEGORIES)} category masks')
+    axis_genes = np.asarray(axis_genes, dtype=np.int64)
+    composition = {}
+    for category, mask in zip(CATEGORIES, categories_measured):
+        mask = np.asarray(mask, dtype=bool)
+        if mask.ndim != 1:
+            raise ValueError('a category measured mask must be a vector')
+        if axis_genes.size and int(axis_genes.max()) >= mask.size:
+            raise ValueError('an axis gene is outside the mask axis')
+        if axis_genes.size and int(axis_genes.min()) < 0:
+            raise ValueError('axis gene indices must be non-negative')
+        composition[category] = int(mask[axis_genes].sum())
+    return composition
+
+
+def pn_distribution(p_n, n_sources=N_FUSION_SOURCES):
+    """Counts of genes at each ``pN`` value ``0..n_sources`` (ordinal, not a score)."""
+    p_n = np.asarray(p_n, dtype=np.int64)
+    if p_n.ndim != 1:
+        raise ValueError('pN must be a vector')
+    if p_n.min() < 0 or p_n.max() > n_sources:
+        raise ValueError(f'pN must be in 0..{n_sources}')
+    return np.bincount(p_n, minlength=n_sources + 1)
+
+
+def rank_sum_histogram(values, low=0.0, high=None, bins=70):
+    """Histogram of ``rank_sum`` over all candidates, with fixed declared edges.
+
+    The evidence panel marks both released axes' ``rank_sum`` intervals on this
+    histogram. Fixed equal-width edges (default ``0..7`` in 70 bins, the range of
+    a seven-source sum) keep the plotted values deterministic and comparable
+    between replays; every candidate falls inside the interval and every bin is
+    emitted, including empty ones, so the CSV is the complete plotted value set.
+    """
+    values = np.asarray(values, dtype=np.float64)
+    if values.ndim != 1 or values.size == 0:
+        raise ValueError('rank_sum histogram needs a non-empty vector')
+    if not np.isfinite(values).all():
+        raise ValueError('rank_sum histogram values must be finite')
+    high = float(np.ceil(values.max()) if high is None else high)
+    low = float(low)
+    bins = int(bins)
+    if not low < high:
+        raise ValueError('histogram interval must be non-empty')
+    if bins <= 0:
+        raise ValueError('histogram needs at least one bin')
+    if values.min() < low or values.max() > high:
+        raise ValueError('a rank_sum value is outside the declared histogram interval')
+    edges = np.linspace(low, high, bins + 1)
+    counts, edges = np.histogram(values, bins=edges)
+    frame = pd.DataFrame({
+        'bin_left': edges[:-1],
+        'bin_right': edges[1:],
+        'bin_center': (edges[:-1] + edges[1:]) / 2.0,
+        'count': counts.astype(np.int64),
+    })
+    if int(frame['count'].sum()) != len(values):
+        raise ValueError('rank_sum histogram does not cover every candidate')
+    return frame
 
 
 def kneedle_knee(x, y, sensitivity=1.0):
-    """Online Kneedle: first local maximum of the normalized arc above the chord.
+    """Online Kneedle: first interior local maximum of the normalized arc above the chord.
 
-    Both axes are min-max normalized, ``arc = y_norm - x_norm`` and the knee is
-    the first interior local maximum of ``arc`` that reaches
-    ``sensitivity * max(arc)``. With ``sensitivity=1.0`` that is the first
-    interior maximum attaining the global maximum, i.e. the classic Kneedle
-    knee. A monotone or straight curve has no interior maximum and returns
-    ``None`` — the caller must then report *no inflection* rather than invent
-    an ``N``.
+    Both axes are min-max normalized, ``arc = y_norm - x_norm``; the knee is the
+    first interior local maximum reaching ``sensitivity * max(arc)``. A monotone
+    or straight curve has no interior maximum and returns ``None`` -- the caller
+    must report *no inflection* rather than invent an ``N``.
     """
     x = np.asarray(x, dtype=np.float64)
     y = np.asarray(y, dtype=np.float64)
@@ -405,7 +420,6 @@ def kneedle_knee(x, y, sensitivity=1.0):
     arc = y_norm - x_norm
     peak = float(arc.max())
     if peak <= 1e-12:
-        # a straight (or monotone-flat) curve's arc is zero up to float noise
         return None
     interior = np.where((arc[1:-1] >= arc[:-2]) & (arc[1:-1] > arc[2:]))[0] + 1
     if not len(interior):
@@ -419,16 +433,14 @@ def kneedle_knee(x, y, sensitivity=1.0):
 
 
 def second_difference_peak(y, min_n=100, max_n=None, minimum_curvature=1e-6):
-    """Most concave point of the min-max normalized curve inside a decision range.
+    """Most concave point of the min-max normalized curve inside a declared range.
 
     The second difference is taken on the uniform rank grid and the search is
-    restricted to the declared range ``[min_n, max_n]``. The leading positions
-    below ``min_n`` are excluded because the first few genes of a rank-sum curve
-    are strong outliers whose curvature would dominate any knee test; ``min_n``
-    is a declared floor (an axis of fewer than 100 genes is not a candidate).
-    Returns ``None`` when the largest curvature is below ``minimum_curvature``
-    (a straight line has exactly zero curvature, so it reports no candidate
-    rather than inventing one).
+    restricted to ``[min_n, max_n]``; the leading positions below ``min_n`` are
+    excluded because a rank-sum curve's first genes are strong outliers whose
+    curvature would dominate any knee test. Returns ``None`` when the largest
+    curvature is below ``minimum_curvature`` (a straight line has zero curvature,
+    so it reports no candidate rather than inventing one).
     """
     y = np.asarray(y, dtype=np.float64)
     if len(y) < 3:
@@ -455,12 +467,13 @@ def second_difference_peak(y, min_n=100, max_n=None, minimum_curvature=1e-6):
 
 def detect_inflection(x, y, sensitivity=1.0, agreement_tolerance=0.25,
                       minimum_knee_strength=0.01, min_n=100):
-    """Combined Kneedle + second-difference inflection with an explicit answer.
+    """Kneedle + second-difference inflection, reported as a diagnostic only.
 
-    An inflection is accepted only when both criteria find a candidate, the two
-    candidate positions agree within ``agreement_tolerance`` (relative) and the
-    Kneedle knee is at least ``minimum_knee_strength`` above the chord. Anything
-    else returns ``inflection: False`` and ``n: None``.
+    ADR 0066: the rank-sum curve gets the declared check and may honestly report
+    ``"inflection": false``; it never chooses ``N``. An inflection is accepted
+    only when both criteria find a candidate, the two candidate positions agree
+    within ``agreement_tolerance`` (relative) and the Kneedle knee clears
+    ``minimum_knee_strength`` above the chord.
     """
     kneedle = kneedle_knee(x, y, sensitivity=sensitivity)
     curvature = second_difference_peak(y, min_n=min_n)
@@ -497,30 +510,122 @@ def _drop_index(result):
     return {key: value for key, value in result.items() if key != 'index'}
 
 
-def tenv_non_hvg_curve(ranked_genes, tenv_rank, ks=TENV_HVG_KS):
-    """Share of the fused top-N lying outside each declared tenv HVG set.
+def inflection_stability(curves, tolerance=0.10):
+    """Stability of the inflection answer under leave-one-source-out replays.
 
-    ``ranked_genes`` is the frozen-axis gene order of the fused ranking (the
-    ``gene_index`` values of the fused table sorted by ``fused_rank``), **not**
-    a row-position vector: ``tenv_rank`` is indexed by ``gene_index``, so a
-    permutation of row positions would silently answer the wrong question.
-    ``N`` runs over every position 1..axis_size; membership in a declared set of
-    size ``K`` is ``tenv_rank <= K``.
+    ``curves`` is the primary ``(x, y)`` rank-sum curve followed by the curves of
+    the leave-one-source-out replays. The diagnostic is stable only when every
+    replay reproduces the primary's decision and, when an inflection is accepted,
+    its ``N`` within ``tolerance`` (relative). Stability is reported, never used.
     """
-    ranked_genes = np.asarray(ranked_genes, dtype=np.int64)
-    tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
-    if ranked_genes.shape != tenv_rank.shape:
-        raise ValueError('fused order and tenv rank must cover the same axis')
-    membership = {k: tenv_rank[ranked_genes] <= k for k in ks}
-    n = np.arange(1, len(ranked_genes) + 1, dtype=np.int64)
-    frame = pd.DataFrame({'n': n})
-    for k in ks:
-        cumulative = np.cumsum(~membership[k])
-        frame[f'n_non_hvg_k{k}'] = cumulative
-        frame[f'non_hvg_share_k{k}'] = cumulative / n
-    return frame
+    if not curves:
+        raise ValueError('inflection stability needs at least the primary curve')
+    outcomes = [detect_inflection(np.asarray(x, dtype=np.float64),
+                                  np.asarray(y, dtype=np.float64))
+                for x, y in curves]
+    primary = outcomes[0]
+    replays = outcomes[1:]
+    same = [result['inflection'] == primary['inflection'] for result in replays]
+    within = []
+    for result in replays:
+        if primary['inflection'] and result['inflection']:
+            within.append(abs(result['n'] - primary['n'])
+                          <= tolerance * max(primary['n'], 1))
+        else:
+            within.append(result['inflection'] == primary['inflection'])
+    return {
+        'method': f'leave-one-source-out; N within {tolerance:.0%} of the primary',
+        'n_replays': len(replays),
+        'n_same_decision': int(sum(same)),
+        'n_within_tolerance': int(sum(within)),
+        'stable': bool(replays) and all(same) and all(within),
+        'primary': primary,
+    }
 
 
-def hvg_membership(tenv_rank, k):
-    """Boolean membership in the published tenv top-K HVG set."""
-    return np.asarray(tenv_rank, dtype=np.int64) <= int(k)
+def sha256(path):
+    """Streaming sha256 of one file (reader-side digest check)."""
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as handle:
+        for block in iter(lambda: handle.read(8 * 1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+class GeneAxis:
+    """Public reader for the published ``output/gene-axis/`` release.
+
+    Every read is digest-checked against ``manifest.json``, so a consumer (the
+    views of #191, the acceptance of #192) trusts the accepted bytes and never
+    re-derives the fill rule. The reader is importable without the external item
+    trees and opens only the gene-axis release directory.
+    """
+
+    def __init__(self, root):
+        self.root = Path(root)
+
+    # ---- structure -----------------------------------------------------
+    def manifest(self):
+        """The release manifest, after checking its schema and relative paths."""
+        path = self.root / 'manifest.json'
+        if not path.is_file():
+            raise FileNotFoundError(f'no gene-axis manifest at {path}')
+        manifest = json.loads(path.read_text())
+        if manifest.get('schema') != SCHEMA:
+            raise ValueError(f'{path}: unexpected gene-axis schema')
+        return manifest
+
+    def axis_sizes(self):
+        """The declared released axis sizes, ascending."""
+        return tuple(int(size) for size in self.manifest()['axes'])
+
+    def digests(self):
+        """Declared sha256 of every output (repo-relative name -> digest)."""
+        return {name: record['sha256']
+                for name, record in self.manifest()['outputs'].items()}
+
+    # ---- payloads ------------------------------------------------------
+    def _declared(self, basename):
+        """The single manifest output whose basename is ``basename`` in gene-axis/."""
+        manifest = self.manifest()
+        matches = [name for name in manifest['outputs']
+                   if Path(name).name == basename
+                   and Path(name).parent.name == 'gene-axis']
+        if len(matches) != 1:
+            raise ValueError(f'{basename} is not exactly one declared gene-axis output')
+        return matches[0], manifest['outputs'][matches[0]]
+
+    def _verified(self, basename):
+        name, declared = self._declared(basename)
+        path = self.root / basename
+        if not path.is_file():
+            raise FileNotFoundError(f'missing declared gene-axis output {name}')
+        if sha256(path) != declared['sha256']:
+            raise ValueError(f'{name}: digest differs from the release manifest')
+        return path
+
+    def candidate_table(self):
+        """All frozen-axis candidates with their seven source ranks and ``pN``."""
+        path = self._verified('candidate_rank_sum.csv')
+        table = pd.read_csv(path, dtype={'symbol': str}, float_precision='round_trip')
+        expected = candidate_columns(self.axis_sizes())
+        if list(table.columns) != list(expected):
+            raise ValueError(f'{path}: candidate table columns differ from the release contract')
+        return table
+
+    def axis_frame(self, size):
+        """The released axis as a frame (``gene_index``, ``symbol``), ascending."""
+        path = self._verified(f'gene_axis_{int(size)}.csv')
+        frame = pd.read_csv(path, dtype={'symbol': str})
+        if list(frame.columns) != list(AXIS_COLUMNS):
+            raise ValueError(f'{path}: axis file columns differ from the contract')
+        return frame
+
+    def axis(self, size):
+        """The released axis gene indices (original integers), ascending."""
+        return self.axis_frame(size).gene_index.to_numpy(dtype=np.int64)
+
+    def composition(self):
+        """The per-category / pN composition table of both released axes."""
+        path = self._verified('axis_composition.csv')
+        return pd.read_csv(path)
