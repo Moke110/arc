@@ -4,6 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
+  "catalog_sha256": "db0857db8466ce9ba204332a65237234f49b21dbf63b59e771854adacd766a0e",
   "category": "cardiotox_TOP2",
   "datasets": [
     {
@@ -115,6 +116,17 @@
         "EPI",
         "MTX"
       ],
+      "method": {
+        "collapse": "per-gene maximum effect over the time-point contrasts",
+        "deposition": "GSE243674 featureCounts gene counts",
+        "design": "a class's member wells pooled into one CLASS arm vs the same-time vehicle wells; donor is a fixed effect",
+        "env": "conda:biomni_e1 (R 4.5.3, DESeq2 1.50.2)",
+        "implementation": "cardiotox_deseq2.R",
+        "model": "DESeq2 ~ donor + group",
+        "name": "GSE243674 pooled DESeq2",
+        "source_item": "disease_data/GSE243674",
+        "test": "Wald, unshrunken MLE log2FC, BH padj, DESeq2 independent filtering (alpha 0.05)"
+      },
       "model_system": "hiPSC-CM monolayer (6 healthy female donors, 0.5 uM, 3 h / 24 h)",
       "n_case": 24,
       "n_contrasts": 2,
@@ -126,14 +138,6 @@
       "shared_control_group": "GSE243674:same-time vehicle wells (6 donors per time point, shared by every drug arm)",
       "source_item": "disease_data/GSE243674",
       "species": "Homo sapiens",
-      "test_method": {
-        "collapse": "per-gene maximum effect over the time-point contrasts",
-        "deposition": "GSE243674 featureCounts gene counts",
-        "design": "a class's member wells pooled into one CLASS arm vs the same-time vehicle wells; donor is a fixed effect",
-        "model": "DESeq2 ~ donor + group",
-        "source_item": "disease_data/GSE243674",
-        "test": "Wald, unshrunken MLE log2FC, BH padj, DESeq2 independent filtering (alpha 0.05)"
-      },
       "tier": 2
     },
     {
@@ -269,6 +273,17 @@
         "EPI",
         "IDA"
       ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
       "n_case": null,
       "n_contrasts": 6,
@@ -280,14 +295,6 @@
       "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
       "source_item": "pert_data/DToxS-iPSC",
       "species": "Homo sapiens",
-      "test_method": {
-        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
-        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
-        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
-        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
-        "source_item": "pert_data/DToxS-iPSC",
-        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
-      },
       "tier": 2
     },
     {
@@ -391,6 +398,17 @@
         "Idarubicin",
         "Mitoxantrone"
       ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-plate contrasts",
+        "deposition": "GSE244740 ScreenSeq processed counts",
+        "design": "a class's member wells (all doses) pooled into one arm vs same-plate DMSO wells at 24 h",
+        "env": "arc python (numpy 2.4.6)",
+        "implementation": "bases.cardiotox.gse244740_class_contrasts",
+        "model": "two-sample Welch t-test on log2(CPM + 1)",
+        "name": "GSE244740 pooled Welch class contrast",
+        "source_item": "pert_data/GSE244740",
+        "test": "Welch t per gene, BH within contrast, library over all source genes"
+      },
       "model_system": "ScreenSeq hiPSC-CM panel (24 h, plate S4881Nr8)",
       "n_case": 72,
       "n_contrasts": 1,
@@ -402,14 +420,6 @@
       "shared_control_group": "GSE244740:same-plate DMSO wells at 24 h (shared by the three anthracycline/anthraquinone arms)",
       "source_item": "pert_data/GSE244740",
       "species": "Homo sapiens",
-      "test_method": {
-        "collapse": "per-gene maximum effect over the per-plate contrasts",
-        "deposition": "GSE244740 ScreenSeq processed counts",
-        "design": "a class's member wells (all doses) pooled into one arm vs same-plate DMSO wells at 24 h",
-        "model": "two-sample Welch t-test on log2(CPM + 1)",
-        "source_item": "pert_data/GSE244740",
-        "test": "Welch t per gene, BH within contrast, library over all source genes"
-      },
       "tier": 2
     }
   ],

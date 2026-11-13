@@ -4,6 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
+  "catalog_sha256": "db0857db8466ce9ba204332a65237234f49b21dbf63b59e771854adacd766a0e",
   "counts": {
     "datasets": 3,
     "measured_gene_rows": 50955
@@ -84,9 +85,9 @@
   },
   "outputs": {
     "catalog.json": {
-      "bytes": 16604,
+      "bytes": 17194,
       "rows": 3,
-      "sha256": "6c2f9b58aa9f7879014f4025fe4bff099052c93dc9e35bceb253c0d7ac5e6396"
+      "sha256": "72f092ddb055fb8f9cb711e3d4f98c5f0745bc0f88ddf7af902362dd890fbf7a"
     },
     "dtoxs_ipsc.atc_l4-L01DB.deg.csv": {
       "bytes": 2102478,

@@ -4,6 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
+  "catalog_sha256": "9cf0e676ea898887d29a4016679986db84aec41edc3931e9b412df73f125a3d7",
   "category": "cardiotox_other",
   "datasets": [
     {
@@ -121,6 +122,17 @@
         "NIL",
         "PON"
       ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
       "n_case": null,
       "n_contrasts": 6,
@@ -132,14 +144,6 @@
       "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
       "source_item": "pert_data/DToxS-iPSC",
       "species": "Homo sapiens",
-      "test_method": {
-        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
-        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
-        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
-        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
-        "source_item": "pert_data/DToxS-iPSC",
-        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
-      },
       "tier": 2
     },
     {
@@ -247,6 +251,17 @@
         "ERL",
         "GEF"
       ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
       "n_case": null,
       "n_contrasts": 5,
@@ -258,14 +273,6 @@
       "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
       "source_item": "pert_data/DToxS-iPSC",
       "species": "Homo sapiens",
-      "test_method": {
-        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
-        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
-        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
-        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
-        "source_item": "pert_data/DToxS-iPSC",
-        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
-      },
       "tier": 2
     },
     {
@@ -385,6 +392,17 @@
         "SUN",
         "VAN"
       ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
       "n_case": null,
       "n_contrasts": 6,
@@ -396,14 +414,6 @@
       "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
       "source_item": "pert_data/DToxS-iPSC",
       "species": "Homo sapiens",
-      "test_method": {
-        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
-        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
-        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
-        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
-        "source_item": "pert_data/DToxS-iPSC",
-        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
-      },
       "tier": 2
     }
   ],

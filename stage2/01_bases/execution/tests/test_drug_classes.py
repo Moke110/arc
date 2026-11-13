@@ -334,7 +334,7 @@ class EvidenceProductTest(unittest.TestCase):
                 manifests.append(cardiotox.write_evidence_product(
                     target / "cardiotox", self.root, self.crosswalk, self.classes,
                     self.members, self.excluded, cardiotox.rejected_table(),
-                    {}, {"python": "3.13"}, {}, "0" * 64))
+                    {}, {"python": "3.13"}, "0" * 64))
             for name in ("crosswalk.csv", "classes.csv", "class_members.csv",
                          "excluded.csv", "eligibility.csv", "rejected.csv",
                          "manifest.json"):

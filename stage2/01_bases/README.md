@@ -112,8 +112,11 @@ The compact tables (≈15.7 MB total) are force-tracked; the build's count and R
 intermediates live only in `execution/checkpoints/` and are deleted after the
 candidate is replaced. `bases.cardiotox.DiseaseDeg` and `.CategoryDeg` are the
 readers; `catalog.json` carries `(category, dataset_id, class_id) -> deg, rank,
-n_measured, test_method, member_drugs, n_small_molecule_drugs` for the fusion
-ticket.
+`n_measured`, `method`, `member_drugs`, `n_small_molecule_drugs` for the
+fusion ticket, plus a top-level `catalog_sha256` = sha256 of the canonical
+catalog JSON with that field removed (a file cannot contain its own digest); the
+manifest repeats it. All three products use schema
+`stage2-disease-deg-catalog-v1` with `datasets` as a list of full records.
 
 **Pinned crosswalk (no hand-entered class).** Every `(source, code)` pair is
 resolved to one annotation row in
