@@ -1,7 +1,10 @@
 # Acceptance record — Stage 2 `01_bases` rebuild (#192, ADR 0066 / ADR 0062)
 
 Accepted 2026-11-13 on branch `ticket/192-acceptance` (worktree `.scratch/worktrees/t192`,
-base `dev=cb72b92`). Environment: `/home/chang/miniconda3/envs/arc/bin/python`
+base `dev=cb72b92`). Re-accepted after the post-review fixes of #194 on branch
+`fix/194-products` (worktree `.scratch/worktrees/fix194a`, base `dev=d5512dd`); the
+product table below records that post-#194 replay, and §5 records the re-sealed
+raw-count provenance. Environment: `/home/chang/miniconda3/envs/arc/bin/python`
 (3.13.13; anndata 0.12.16, h5py 3.16.0, numpy 2.4.6, pandas 2.3.3), R worker
 `/home/chang/miniconda3/envs/biomni_e1/bin/Rscript` for the cardiotox DESeq2/edgeR
 products, `OMP_NUM_THREADS=2`, `ulimit -v 10485760` fallback, one heavy job at a
@@ -132,6 +135,25 @@ as history. A from-scratch replay still uses the documented stronger mode
 `build_raw_counts.py --full-rebuild publish|verify` (Tahoe build 1 h 35 m,
 independent source replay 2 h 35 m). The retained `tenv-hvg` ranking has the
 analogous deferred re-point documented in the README.
+
+## 5b. Post-review re-acceptance (#194)
+
+The #194 fixes changed three products: every disease-DEG rank table (`rank_norm`
+for unmeasured genes), the gene-axis fusion (`af` excluded, `pN ∈ 0..6`, both axes
+and composition/histogram rebuilt) and both views (rebuilt from the new axes); the
+raw-count release was re-sealed against the tracked provenance record without
+changing a payload byte. All six replay gates were re-run green at the times and
+peaks in §1, and the per-slice `*_verify.json` records were regenerated. The full
+`stage2/01_bases/execution/tests` suite passed (18 files; the two files that import
+`disease_deg_fixtures` are run directly from `execution/tests/`).
+
+`script/check_tracked.sh` is green. `script/check_paths.sh` is **red only in a
+payload-free merged checkout**, where it reports the same 68 pre-existing,
+payload-dependent unresolved literals on pristine `dev=d5512dd` and on
+`fix/194-products` (identical distinct-literal sets: the branch adds none); with
+the external `source/`/`local/` trees materialised it reports
+`RESULT: PASS — every extracted path literal resolves`, the stage2 retired-path
+audit `PASS` and the stage3 source-first audit `PASS`.
 
 ## 6. Old → new mapping (deletions)
 
