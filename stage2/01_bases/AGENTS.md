@@ -283,7 +283,7 @@ semantic path.
   out of `output/api` to create a second live implementation. Live modules:
   `raw_counts.py`, `corpus.py`, `view.py`, `gene_axis.py`, `disease_deg.py`,
   `cardiotox.py`, `bulk_deg.py`, `deg_rank.py`, `identity.py`, `native.py`,
-  `raw.py`, `tahoe.py`, `hvg.py`, `hvg_qa.py`, `fold_seed.py`, `palette.py`,
+  `raw.py`, `tahoe.py`, `hvg.py`, `fold_seed.py`, `palette.py`,
   `release.py`, plus `disease_deg.R`, `cardiotox_edgeR.R`,
   `cardiotox_deseq2.R` (R workers; `disease_deg.R` runs under the `arc` R,
   the cardiotox workers under `conda:biomni_e1` R).

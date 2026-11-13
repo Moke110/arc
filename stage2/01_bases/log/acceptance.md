@@ -65,7 +65,8 @@ Every retained reader module was exercised through its own test file under the
 (17), `test_gene_axis` (38), `test_deg_rank` (12), `test_disease_deg_human_sc`
 (18), `test_disease_deg_isogenic` (35), `test_drug_classes` (17),
 `test_disease_deg_cardiotox` (11), `test_identity`, `test_fold_seed`,
-`test_palette`, `test_hvg`, `test_native`, `test_tahoe`, `test_raw_provenance`.
+`test_palette`, `test_hvg` (2, after removing the retired metrics-QA assertion), `test_native`,
+`test_tahoe`, `test_raw_provenance`.
 `02_models_tenv` is deliberately **not** re-pointed (ADR 0066 *Deferred*); its
 target contract (`view-{N}k` `X`/`control`/`delta`, treated-row selection) is
 documented in the README, and its stale imports of the deleted evaluation
