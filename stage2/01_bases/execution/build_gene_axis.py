@@ -40,7 +40,8 @@ from bases.gene_axis import (
     AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, CANDIDATE_COLUMNS, FILL_RULE,
     N_FUSION_SOURCES, SCHEMA, axis_composition, axis_fill, axis_intersection,
     candidate_columns, candidate_table, category_rank, detect_inflection, fusion_rank_sum,
-    inflection_stability, pn_distribution, rank_sum_histogram, winning_tier,
+    inflection_stability, n_fusion_sources, pn_distribution, rank_sum_histogram,
+    winning_tier,
 )
 from bases.deg_rank import SCHEMA as RANK_SCHEMA, normalized_rank
 
@@ -53,10 +54,11 @@ FIGURE_NAME = 'gene_axis_rank_sum_histogram'
 HISTOGRAM_BINS = 70
 #: Inflection is diagnostic only; the declared decision range starts at N=100.
 INFLECTION_MIN_N = 100
-#: Values of rank_sum live in (0, 7]; the histogram covers the full possible range.
+#: Declared maximum source count (before excluding non-informative categories);
+#: the published histogram is bounded by the actual fused count instead.
 RANK_SUM_MAX = float(N_FUSION_SOURCES)
-COMPOSITION_NOTE = ('pN is an ordinal cross-source replication count (0..7), '
-                    'not a continuous quality score')
+COMPOSITION_NOTE = ('pN is an ordinal cross-source replication count bounded by the '
+                    'fused source count, not a continuous quality score')
 
 FIGURE_COLUMNS = ('record', 'panel', 'panel_title', 'title', 'axis', 'bin_left',
                   'bin_right', 'bin_center', 'count', 'share', 'interval_low',
@@ -232,6 +234,11 @@ def validate_catalog_shape(category, catalog, axis_size):
         for key in ('deg', 'rank', 'n_measured', 'n_significant'):
             if key not in record:
                 raise ValueError(f'{category}/{dataset_id}: record lacks {key}')
+        # ADR 0068: every published dataset record states whether its measured
+        # effect scores carry an ordering. The fusion reads this field and never
+        # guesses it from the table.
+        if not isinstance(record.get('informative'), bool):
+            raise ValueError(f'{category}/{dataset_id}: record lacks a boolean informative')
         method = record.get('method')
         if not isinstance(method, dict) or not method:
             raise ValueError(f'{category}/{dataset_id}: record lacks its own method')
@@ -264,8 +271,16 @@ def read_categories(config, axis_size):
         declared_outputs = category_manifest.get('outputs')
         if not isinstance(declared_outputs, dict) or not declared_outputs:
             raise ValueError(f'{manifest_path}: no declared outputs')
+        # ADR 0068: a record whose measured effect scores are all tied carries no
+        # ordering evidence. Its table/rank stay published, but it is not a
+        # fusion source; a category with no informative record is dropped from
+        # level 2 and from pN entirely.
+        informative_records = [record for record in selection['records']
+                               if record['informative'] is True]
+        excluded_records = [record for record in selection['records']
+                            if record['informative'] is not True]
         ranks, measured_counts, datasets = [], [], []
-        for record in selection['records']:
+        for record in informative_records:
             rank_path = config.disease_root / category / record['rank']
             declared = declared_outputs.get(record['rank'])
             declared_sha = (declared.get('sha256') if isinstance(declared, dict)
@@ -301,6 +316,7 @@ def read_categories(config, axis_size):
                              'tier': int(record['tier']),
                              'evidence_type': record.get('evidence_type'),
                              'n_measured': n_measured,
+                             'informative': True,
                              'rank_sha256': declared_sha})
         categories[category] = {
             'catalog': catalog,
@@ -308,6 +324,13 @@ def read_categories(config, axis_size):
             'ranks': ranks,
             'n_measured': measured_counts,
             'datasets': datasets,
+            'informative': bool(informative_records),
+            'excluded_datasets': [
+                {'dataset_id': record['dataset_id'],
+                 'tier': int(record['tier']),
+                 'n_measured': int(record['n_measured']),
+                 'informativeness': record.get('informativeness')}
+                for record in excluded_records],
             'catalog_sha256': catalog['catalog_sha256'],
             'manifest_sha256': sha256(manifest_path),
             'catalog_sha256_file': sha256(config.disease_root / category / 'catalog.json'),
@@ -325,13 +348,15 @@ def rank_sum_curve(rank_sum):
 
 
 def compute(axis, tenv_frame, categories, axis_sizes):
-    """Apply the ADR 0066 fusion and fill rule; returns every product payload."""
+    """Apply the ADR 0066/0068 fusion and fill rule; returns every product payload."""
     axis_size = len(axis)
     gene_index = np.asarray(axis.gene_index, dtype=np.int64)
     tenv_rank = np.asarray(tenv_frame['rank'], dtype=np.int64)
+    active = [category for category in CATEGORIES if categories[category]['informative']]
+    excluded = [category for category in CATEGORIES if category not in active]
     level_one = {}
     category_ranks, category_measured = [], []
-    for category in CATEGORIES:
+    for category in active:
         entry = categories[category]
         result = category_rank(entry['ranks'], entry['n_measured'],
                                gene_index=gene_index, axis_size=axis_size)
@@ -339,15 +364,18 @@ def compute(axis, tenv_frame, categories, axis_sizes):
         category_ranks.append(result['rank'])
         category_measured.append(result['measured'])
     fusion = fusion_rank_sum(category_ranks, category_measured, tenv_rank,
-                             gene_index=gene_index, axis_size=axis_size,
-                             sizes=axis_sizes)
-    table = candidate_table(axis, tenv_rank, category_ranks, category_measured,
+                             categories=active, gene_index=gene_index,
+                             axis_size=axis_size, sizes=axis_sizes)
+    table = candidate_table(axis, tenv_rank,
+                            {category: level_one[category]['rank'] for category in active},
+                            category_measured, categories=active,
                             gene_index=gene_index, sizes=axis_sizes)
     axes = {}
     for size in axis_sizes:
         axes[int(size)] = axis_fill(tenv_rank, fusion['pn'][int(size)],
                                     fusion['rank_sum'], n=int(size),
-                                    gene_index=gene_index)
+                                    gene_index=gene_index,
+                                    n_sources=fusion['n_sources'])
     intervals = {}
     for size, genes in axes.items():
         values = fusion['rank_sum'][genes]
@@ -355,11 +383,11 @@ def compute(axis, tenv_frame, categories, axis_sizes):
                            'high': float(values.max()),
                            'median': float(np.median(values))}
     histogram = rank_sum_histogram(fusion['rank_sum'], low=0.0,
-                                   high=RANK_SUM_MAX, bins=HISTOGRAM_BINS)
+                                   high=float(fusion['n_sources']), bins=HISTOGRAM_BINS)
     curve_x, curve_y = rank_sum_curve(fusion['rank_sum'])
     inflection = detect_inflection(curve_x, curve_y, min_n=INFLECTION_MIN_N)
     replay_curves = [(curve_x, curve_y)]
-    for dropped in range(N_FUSION_SOURCES):
+    for dropped in range(fusion['n_sources']):
         sources = category_ranks + [tenv_rank]
         replay_sum = np.zeros(axis_size, dtype=np.float64)
         for index, rank in enumerate(sources):
@@ -370,6 +398,8 @@ def compute(axis, tenv_frame, categories, axis_sizes):
     stability = inflection_stability(replay_curves)
     return {
         'level_one': level_one,
+        'active_categories': active,
+        'excluded_categories': excluded,
         'category_ranks': category_ranks,
         'category_measured': category_measured,
         'fusion': fusion,
@@ -383,28 +413,42 @@ def compute(axis, tenv_frame, categories, axis_sizes):
 
 
 def composition_rows(source, axes, axis_sizes):
-    """Per-category and pN composition of both released axes."""
+    """Per-category and pN composition of both released axes.
+
+    A category excluded from the fusion (ADR 0068) keeps a row with zero axis
+    genes and an explicit note, so the table reads as "not fused", never as
+    "fused but measured nothing".
+    """
+    active = set(source['active_categories'])
     rows = []
     for size in axis_sizes:
         size = int(size)
         genes = source['axes'][size]
-        composition = axis_composition(genes, source['category_measured'])
+        composition = axis_composition(genes, source['category_measured'],
+                                       categories=source['active_categories'])
         for category in CATEGORIES:
             count = composition[category]
+            if category in active:
+                note = 'axis genes the category source measures'
+            else:
+                note = ('excluded from the fusion: every dataset is non-informative '
+                        '(all effect scores tied)')
             rows.append({'axis': str(size), 'n_axis': size, 'record': 'composition',
                          'group': category, 'n_genes': count,
-                         'share': count / size,
-                         'note': 'axis genes the category source measures'})
+                         'share': count / size, 'note': note})
         rows.append({'axis': str(size), 'n_axis': size, 'record': 'composition',
                      'group': 'tenv_hvg_top_half', 'n_genes': size // 2,
                      'share': 0.5,
                      'note': 'declared 0.5*N tenv-HVG half of the axis'})
-        axis_counts = pn_distribution(source['table'][f'p{size}'].to_numpy()[genes])
+        axis_counts = pn_distribution(source['table'][f'p{size}'].to_numpy()[genes],
+                                      n_sources=source['fusion']['n_sources'])
         for value, count in enumerate(axis_counts.tolist()):
             rows.append({'axis': str(size), 'n_axis': size, 'record': 'pN',
                          'group': str(value), 'n_genes': count,
                          'share': count / size, 'note': COMPOSITION_NOTE})
-        candidate_counts = pn_distribution(source['table'][f'p{size}'].to_numpy())
+        candidate_counts = pn_distribution(
+            source['table'][f'p{size}'].to_numpy(),
+            n_sources=source['fusion']['n_sources'])
         for value, count in enumerate(candidate_counts.tolist()):
             rows.append({'axis': str(size), 'n_axis': size, 'record': 'candidate_pN',
                          'group': str(value),
@@ -460,6 +504,8 @@ def input_entries(config, axis_size):
         catalog = reader.catalog(category)
         selection = winning_tier(catalog)
         for record in selection['records']:
+            if record['informative'] is not True:
+                continue  # excluded from the fusion; its bytes are still accepted
             rank_path = directory / record['rank']
             entries[repo_relative(rank_path, config.root)] = {
                 'role': f'{category}:{record["dataset_id"]}:rank',
@@ -476,8 +522,10 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
     for size in axis_sizes:
         size = int(size)
         genes = source['axes'][size]
-        composition_counts = axis_composition(genes, source['category_measured'])
-        counts = pn_distribution(fusion['pn'][size][genes])
+        composition_counts = axis_composition(
+            genes, source['category_measured'], categories=source['active_categories'])
+        counts = pn_distribution(fusion['pn'][size][genes],
+                                  n_sources=fusion['n_sources'])
         axes_manifest[str(size)] = {
             'n': int(len(genes)),
             'file': f'gene_axis_{size}.csv',
@@ -498,7 +546,7 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
     for category in CATEGORIES:
         entry = categories[category]
         catalog = entry['catalog']
-        category_manifest[category] = {
+        record = {
             'label': CATEGORY_LABELS[category],
             'product_dir': category,
             'catalog_sha256': entry['catalog_sha256'],
@@ -509,10 +557,22 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             'winning_tier_rule': entry['selection']['rule'],
             'retained_by_exception': entry['selection']['retained_by_exception'],
             'excluded_tiers': entry['selection']['excluded_tiers'],
+            'informative': entry['informative'],
+            'excluded_datasets': entry['excluded_datasets'],
             'datasets': entry['datasets'],
             'n_measured_axis_genes': int(np.asarray(
-                source['category_measured'][CATEGORIES.index(category)]).sum()),
+                source['category_measured'][
+                    source['active_categories'].index(category)]).sum()
+                if category in source['active_categories'] else 0),
         }
+        if not entry['informative']:
+            # ADR 0068: no dataset in the category orders its measured genes, so
+            # the whole category is dropped from level 2 and from pN.
+            record['excluded_from_fusion'] = True
+            record['excluded_reason'] = (
+                'every dataset in the category is non-informative (all measured '
+                'effect scores tied); level-2 fusion and pN exclude the category')
+        category_manifest[category] = record
     return {
         'schema': SCHEMA,
         'generated_by': 'stage2/01_bases/execution/build_gene_axis.py',
@@ -520,16 +580,23 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             'axis_sizes': [int(size) for size in axis_sizes],
             'fill_rule': FILL_RULE,
             'fill_fraction': 0.5,
-            'pN': ('number of the seven fusion sources whose top-N set contains the '
-                   'gene; ordinal, not a continuous quality score'),
+            'pN': (f'number of the {fusion["n_sources"]} fusion sources whose top-N set '
+                   'contains the gene; ordinal, not a continuous quality score'),
+            'pN_bounds': [0, int(fusion['n_sources'])],
         },
         'environment': environment_facts(),
         'inputs': input_entries(config, axis_size),
         'fusion': {
-            'n_sources': N_FUSION_SOURCES,
-            'sources': list(CATEGORIES) + ['tenv_hvg'],
+            'n_sources': int(fusion['n_sources']),
+            'sources': list(source['active_categories']) + ['tenv_hvg'],
+            'n_declared_sources': N_FUSION_SOURCES,
+            'excluded_categories': list(source['excluded_categories']),
+            'exclusion_rule': ('a dataset whose measured effect scores are all tied is '
+                               'non-informative; a category with no informative dataset '
+                               'is excluded from level-2 rank_sum, pN and '
+                               'n_sources_measured (ADR 0068)'),
             'normalization': ('level-1 rank_norm = rank / n_measured per dataset; '
-                              'level-2 each of the seven source ranks / frozen-axis size'),
+                              'level-2 each active source rank / frozen-axis size'),
             'rank_sum': 'ascending is better; ties on gene_index',
             'n_candidates': int(len(table)),
         },
@@ -548,12 +615,13 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             'rank_sum_max': float(fusion['rank_sum'].max()),
             'pN_distribution': {
                 str(size): {str(value): int(count) for value, count in enumerate(
-                    pn_distribution(fusion['pn'][int(size)]).tolist())}
+                    pn_distribution(fusion['pn'][int(size)],
+                                    n_sources=fusion['n_sources']).tolist())}
                 for size in axis_sizes},
             'n_sources_measured_distribution': {
                 str(value): int(count) for value, count in enumerate(
                     np.bincount(np.asarray(table.n_sources_measured, dtype=np.int64),
-                                minlength=N_FUSION_SOURCES + 1).tolist())},
+                                minlength=fusion['n_sources'] + 1).tolist())},
         },
         'axes': axes_manifest,
         'intersection': intersection,
@@ -570,7 +638,7 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             },
             'histogram': {
                 'file': f'figure/data/{FIGURE_NAME}.csv',
-                'low': 0.0, 'high': RANK_SUM_MAX, 'bins': HISTOGRAM_BINS,
+                'low': 0.0, 'high': float(fusion['n_sources']), 'bins': HISTOGRAM_BINS,
                 'axis_intervals': {str(size): source['intervals'][size]
                                    for size in axis_sizes},
             },
@@ -658,11 +726,12 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
         raise ValueError('candidate table columns differ from the contract')
     if table.gene_index.tolist() != list(range(axis_size)):
         raise ValueError('candidate table is not in frozen gene_index order')
+    n_sources = int(manifest['fusion']['n_sources'])
     for size in config.axis_sizes:
         size = int(size)
         column = f'p{size}'
-        if int(table[column].min()) < 0 or int(table[column].max()) > N_FUSION_SOURCES:
-            raise ValueError(f'{column} is outside 0..{N_FUSION_SOURCES}')
+        if int(table[column].min()) < 0 or int(table[column].max()) > n_sources:
+            raise ValueError(f'{column} is outside 0..{n_sources}')
         genes = source['axes'][size]
         if len(genes) != size:
             raise ValueError(f'G_{size} does not hold exactly {size} genes')
@@ -672,7 +741,7 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
             raise ValueError(f'G_{size} is not a distinct subset of the frozen axis')
         expected = axis_fill(np.asarray(source['table'].tenv_hvg_rank, dtype=np.int64),
                              table[column].to_numpy(), table.rank_sum.to_numpy(),
-                             n=size)
+                             n=size, n_sources=n_sources)
         if not np.array_equal(expected, genes):
             raise ValueError(f'G_{size} does not follow the declared fill rule')
     release.check_relative_paths(manifest)
@@ -759,6 +828,8 @@ def summary(config, manifest):
         'n_candidates': manifest['counts']['n_candidates'],
         'axes': manifest['release']['axis_sizes'],
         'intersection': manifest['intersection']['n_intersection'],
+        'n_sources': manifest['fusion']['n_sources'],
+        'excluded_categories': manifest['fusion']['excluded_categories'],
         'inflection': manifest['diagnostics']['inflection']['inflection'],
         'manifest_sha256': sha256(config.output / 'manifest.json'),
         'outputs': {name: record['sha256'] for name, record in manifest['outputs'].items()},

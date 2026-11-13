@@ -4,7 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "1e52dee78661cd5fed0f493be868da58aa6a268556f3cae91d6221eb4a0ffe68",
+  "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
   "category": "cardiotox_TOP2",
   "datasets": [
     {
@@ -42,6 +42,12 @@
       "dataset_id": "gse243674",
       "deg": "gse243674.atc_l4-L01DB.deg.csv",
       "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17227,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
           "bytes": 7044,
@@ -201,6 +207,12 @@
       "dataset_id": "dtoxs_ipsc",
       "deg": "dtoxs_ipsc.atc_l4-L01DB.deg.csv",
       "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 14691,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
           "bytes": 7044,
@@ -330,6 +342,12 @@
       "dataset_id": "gse244740",
       "deg": "gse244740.atc_l4-L01DB.deg.csv",
       "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 13668,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
           "bytes": 7044,

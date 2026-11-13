@@ -40,10 +40,9 @@ def build_kwargs(args, mode):
         "data_root": args.data_root,
         "axis_path": args.axis,
         "crosswalk_path": args.crosswalk,
-        "tenv_payload": args.tenv_payload,
-        "tahoe_payload": args.tahoe_payload,
-        "tenv_acceptance": args.tenv_acceptance,
-        "tahoe_acceptance": args.tahoe_acceptance,
+        "tenv_payload": args.accepted_payload,
+        "tahoe_payload": args.accepted_payload,
+        "provenance": args.provenance,
         "gene_metadata": args.gene_metadata,
         "checkpoints_root": args.staging / "raw-counts-tahoe",
         "repo_root": REPO,
@@ -60,14 +59,14 @@ def main():
                         default=STEP / "output/gene-identity/tables/genes.csv")
     parser.add_argument("--crosswalk", type=Path,
                         default=STEP / "output/gene-identity/tables/gene_crosswalk.csv")
-    parser.add_argument("--tenv-payload", type=Path,
-                        default=STEP / "output/tenv-raw-counts")
-    parser.add_argument("--tahoe-payload", type=Path,
-                        default=STEP / "output/tahoe-raw-counts")
-    parser.add_argument("--tenv-acceptance", type=Path,
-                        default=REPO / raw_counts.TENV_ACCEPTANCE)
-    parser.add_argument("--tahoe-acceptance", type=Path,
-                        default=REPO / raw_counts.TAHOE_ACCEPTANCE)
+    # The accepted payloads live in the product itself; the retired pre-0066
+    # ``output/{tenv,tahoe}-raw-counts/`` directories are never a default.
+    parser.add_argument("--accepted-payload", type=Path,
+                        default=STEP / "output/raw_counts",
+                        help="directory holding the accepted tenv/tahoe payloads")
+    parser.add_argument("--provenance", type=Path,
+                        default=REPO / raw_counts.PROVENANCE,
+                        help="tracked source-replay provenance record")
     parser.add_argument("--gene-metadata", type=Path,
                         default=REPO / "pert_data/Tahoe-100M/source/metadata/gene_metadata.parquet")
     parser.add_argument("--staging", type=Path, default=STEP / "execution/checkpoints")

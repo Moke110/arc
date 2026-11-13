@@ -4,7 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "1e52dee78661cd5fed0f493be868da58aa6a268556f3cae91d6221eb4a0ffe68",
+  "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
   "counts": {
     "datasets": 3,
     "measured_gene_rows": 50955
@@ -85,9 +85,9 @@
   },
   "outputs": {
     "catalog.json": {
-      "bytes": 17751,
+      "bytes": 18909,
       "rows": 3,
-      "sha256": "3feba666358ebba270390eabed98822c387ad195940f79e4f05a43552d214900"
+      "sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be"
     },
     "dtoxs_ipsc.atc_l4-L01DB.deg.csv": {
       "bytes": 2102478,
@@ -95,9 +95,9 @@
       "sha256": "db1ab77af1c632acf7323f20d5b6c03935201720f4496be3a1ffaf8db38233e5"
     },
     "dtoxs_ipsc.atc_l4-L01DB.rank.csv": {
-      "bytes": 393876,
+      "bytes": 428446,
       "rows": 18164,
-      "sha256": "2b4413bca1cffcf0b0c0c025df7e67775fd1a6b858b05ec77967cb6a8c135f1e"
+      "sha256": "fe7c19ab639cd507493a3fe7b18ae93949047cb80f659ed55a75feca0c58370b"
     },
     "gse243674.atc_l4-L01DB.deg.csv": {
       "bytes": 2666367,
@@ -105,9 +105,9 @@
       "sha256": "740776031c84696ad37cc2d8a2d68c7e79b6528951599fb903b113843be7318e"
     },
     "gse243674.atc_l4-L01DB.rank.csv": {
-      "bytes": 431007,
+      "bytes": 431807,
       "rows": 18164,
-      "sha256": "32497e28ffd754954d27454af8fb95ca70704bbe4c3b885bfd22d54ae98b9dc9"
+      "sha256": "f55e1a1130f81272e96d258b2f9b6a71179644e8bda3ac5af5436331cb83d840"
     },
     "gse244740.atc_l4-L01DB.deg.csv": {
       "bytes": 2778575,

@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "eca2d0a5b30d9a12d781e277986deaed1a4ecf2d3e2a98aa84e253e46eb25447",
+  "catalog_sha256": "755971c79b60f5403fd7bfb9e430e329dbc37652b778a2b303fca09fcc88929e",
   "category": "ICM",
   "counts": {
     "datasets": 2,
@@ -19,7 +19,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "78031a67b9a6fd389e825d20d0bec1fbd8719ce890ae7822cfe69b1af2615b45"
+      "sha256": "b82673333dc137ef43a6237eb5eb04db8f0278b01097c6883d50b35d3692f290"
     },
     "gse270788__ami.deg.csv": {
       "rows": 17092,
@@ -27,7 +27,7 @@
     },
     "gse270788__ami.rank.csv": {
       "rows": 18164,
-      "sha256": "969997e4f8c555a883706c36611c3c3d9a9cf704fcae7a866f395a1606257b7b"
+      "sha256": "f3648b62bff2fe6ef182d82687d971861b9bc3c6fa445424300bf61698778041"
     },
     "gse270788__icm.deg.csv": {
       "rows": 17092,
@@ -35,7 +35,7 @@
     },
     "gse270788__icm.rank.csv": {
       "rows": 18164,
-      "sha256": "de760628569f1249a3e9ef9116bd771d86f7549678971012ed163dbed0e2d724"
+      "sha256": "29f9376a61fb1a7425f228b82cabfe57194e1652df5621e8b53bc9108173bb56"
     }
   },
   "recipe": "execution/build_disease_deg.py publish --category ICM",

@@ -4,7 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "5ca17ef1bf2299845c55358f381b7c39bbe448e4cc3c9ca22e31f9bb08526d3b",
+  "catalog_sha256": "a3213815e9117595e79d028967ccc9d0637333e735e2a8e18d472042fb5922c7",
   "counts": {
     "datasets": 3,
     "measured_gene_rows": 39698
@@ -65,9 +65,9 @@
   },
   "outputs": {
     "catalog.json": {
-      "bytes": 16900,
+      "bytes": 18058,
       "rows": 3,
-      "sha256": "cf37c284652c557d3ea0e6479380c68f9713c72fb3d0ad5ffd948da4a0f408d0"
+      "sha256": "a065d98e8c5b6453fab1ccacab80f7112d3580569c89148dda9842c8db9e2dbb"
     },
     "dtoxs_ipsc.atc_l4-L01EA.deg.csv": {
       "bytes": 1885707,
@@ -75,9 +75,9 @@
       "sha256": "d0dc1203c046ac81b01c01a5bd4e5c09fb2252c5bc50ff84f33913fced4ad916"
     },
     "dtoxs_ipsc.atc_l4-L01EA.rank.csv": {
-      "bytes": 378430,
+      "bytes": 427040,
       "rows": 18164,
-      "sha256": "f2b8b65d9f3d0722c6369c8fb841b87b307e7350ee91cea84189137d1340155d"
+      "sha256": "94fbd0fc76aa973468013ae480a0f70aaa437a6dec3dfb1d1860913ae460b8aa"
     },
     "dtoxs_ipsc.atc_l4-L01EB.deg.csv": {
       "bytes": 1862724,
@@ -85,9 +85,9 @@
       "sha256": "94e6b297e950394c768f4d864860ef3226b13c081d0d494188d75080cc6c80b5"
     },
     "dtoxs_ipsc.atc_l4-L01EB.rank.csv": {
-      "bytes": 375351,
+      "bytes": 426431,
       "rows": 18164,
-      "sha256": "3fbf56f98b12668f334fa10d4ac98d163fe883cda2c26ce6c933d4afd4ebe064"
+      "sha256": "d29376cc4ff754dff5ae348d549dc98942e5e2395a493f29ff61bf94fb346171"
     },
     "dtoxs_ipsc.atc_l4-L01EX.deg.csv": {
       "bytes": 1894108,
@@ -95,9 +95,9 @@
       "sha256": "7feaf0f7e335bfa9078ee7bbfdf827b7a285f90d847c7f28dfdba8942f57d033"
     },
     "dtoxs_ipsc.atc_l4-L01EX.rank.csv": {
-      "bytes": 378820,
+      "bytes": 427070,
       "rows": 18164,
-      "sha256": "85544578a633a3c930d3f08348dbcb4ce0f0309dcc22377ec9a5088438cea228"
+      "sha256": "df6a6664fe39ca1c44bb14a33231988baf19f5acfd4e197ca55b44a494849d0a"
     }
   },
   "product": "cardiotox_other",

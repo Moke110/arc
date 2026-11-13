@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "93cd60413ad720a26ab91e43a708224d68cb7c1ec97c50a5239b00b9e4a3f333",
+  "catalog_sha256": "b434dcf85459befcd0d3fd5ab59c4ecaf55c2ae1a1ccfddfccf2dd381995468b",
   "category": "genetic_cardiomyopathy",
   "datasets": [
     {
@@ -47,6 +47,12 @@
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17457,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
         "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
@@ -112,6 +118,12 @@
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17408,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
         "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
@@ -181,6 +193,12 @@
       "evidence_type": "bulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 16439,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE224129/local/deg/GSE224129_deg.json": "fcdd34d6154f17c17a5e704a8131d44364297a21f51d835a1c936e664020663c",
         "disease_data/GSE224129/manifest.sha256": "6cd74673ae1394ae6b0ff3b0f2cb0af4c657969c1fc4e3f48645341085a8bdfd"
@@ -262,6 +280,12 @@
       "evidence_type": "bulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 16979,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE234141/local/deg/GSE234141_deg.json": "33b2e03fa6df8e13c1bc6d5575ac69a35485ff802369e42fde077b08bc0df12e",
         "disease_data/GSE234141/manifest.sha256": "8305e560229968df266051a1edc67eba9e8dae95f93fbccd866b08b96f038f23"
@@ -340,6 +364,12 @@
       "evidence_type": "bulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 16180,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE304575/local/deg/GSE304575_deg.json": "839659aca1245f535a2cbcf643cf39ac72cd60415d0f03866201fc1986a827a8",
         "disease_data/GSE304575/manifest.sha256": "45abab8e5b263a548e7d8b597466154ba9439b0eff23e48022e354d10a3e3075"
@@ -419,6 +449,12 @@
       "evidence_type": "bulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17387,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE305648/local/deg/GSE305648_deg.json": "5fe09fd154850411840646304e91bf5869cf363cbd91e1f6cc48f3d3fb9b0d78",
         "disease_data/GSE305648/manifest.sha256": "1ca0fd6363d1180e8c8a325e59a94d4453c0e1b58e94ec4f640c7ec09ce2d342"
@@ -499,6 +535,12 @@
       "evidence_type": "bulk",
       "exploratory": false,
       "genotype_status": "not_applicable",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 16137,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE253223/local/deg/GSE253223_deg.json": "e7cd26411ae07a71af070dfce92d7b5f45ccb512025a0a5509db4d02cc25ceae",
         "disease_data/GSE253223/manifest.sha256": "ddbd4a1c5f846756f69f25a9d180c84a13d880a737b105cbcd38f8acb2c45f0a"
@@ -580,6 +622,12 @@
       "evidence_type": "bulk",
       "exploratory": false,
       "genotype_status": "pathogenic",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 16046,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE194297/local/deg/GSE194297_deg.json": "51a174b356ec0d3b4c83d3f8c4125bce4153b2bd96ac67d5ef604f1e7b1512b1",
         "disease_data/GSE194297/manifest.sha256": "86ecc070d9ef7875ceced3e0de29fe716d6e0ffa72160ddd21222e12401a7056"

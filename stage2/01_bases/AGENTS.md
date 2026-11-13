@@ -32,14 +32,15 @@ tenv non-HVG curve, ortholog table).
   `DMSO_TF`; `exclusions.csv`; `manifest.json`). Counts are integer only; the
   corpus has controls as rows and `matched_control_group` correspondence.
 - Provenance: `raw_counts` default mode is `source-accepted-replay` — the payloads
-  are rehomed, byte-checked against the two pre-0066 source-replay acceptance
-  records (preserved as digests in `log/inputs.json`; the records themselves were
-  deleted with the pre-0066 `log/` tree by #192), and the Tahoe token mapping is
-  re-derived from the immutable source metadata. Those retired payload/record pins
-  are the accepted one-way transition: the bytes are preserved verbatim in
-  `raw_counts/` (identical sha256), and the post-removal replay mode is
-  `--full-rebuild`, which rebuilds both payloads from the external `source/` trees
-  under `pert_data/` through `native.py`/`tahoe.py` and replays them from source.
+  are rehomed and byte-checked against the tracked
+  `log/raw_counts_provenance.json` (the two pre-0066 source-replay acceptance
+  records plus the native tenv build manifest, restored verbatim from git history
+  and digest-pinned), and the Tahoe token mapping is re-derived from the immutable
+  source metadata. Every pinned input resolves in a merged checkout; the retired
+  `log/records/` and `output/{tenv,tahoe}-raw-counts/` paths are never pinned. The
+  post-removal replay mode is `--full-rebuild`, which rebuilds both payloads from
+  the external `source/` trees under `pert_data/` through `native.py`/`tahoe.py`
+  and replays them from source.
 - Tests: `execution/tests/test_raw_counts.py`, `test_corpus.py`,
   `test_deg_rank.py`, hermetic fixtures in
   `execution/tests/release_fixtures.py`; run each file individually. The pre-0066

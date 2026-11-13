@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "311a5a4dd14db17bf9b9767472e504b11d0dfba092bcb8a88e11791ccd72a381",
+  "catalog_sha256": "c5706217b957501b6152512fbca078ba1f9ca35d4a21c9a5137f9796912346b2",
   "category": "AF",
   "counts": {
     "datasets": 1,
@@ -18,7 +18,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "25f19e52e5f434edfc449b15a003bb68dbc70875398f84e0785dd6107ee95d23"
+      "sha256": "581f201ddc6a524ae16a39944f81b82b929e66e470ae667946d88d913768dec0"
     },
     "gse255612__af.deg.csv": {
       "rows": 18092,
@@ -26,7 +26,7 @@
     },
     "gse255612__af.rank.csv": {
       "rows": 18164,
-      "sha256": "19171d88a413e8fe94baf6795411434998862ad5466dd329653f42531adff167"
+      "sha256": "fa1a5db3d9ff03ced6c82e49cb1f41379fd2b858cf79c45cd2abe1d5eb8f6382"
     }
   },
   "recipe": "execution/build_disease_deg.py publish --category AF",

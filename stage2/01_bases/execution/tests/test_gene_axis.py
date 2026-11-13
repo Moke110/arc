@@ -45,8 +45,13 @@ def axis_fixture():
     })
 
 
-def dataset_record(dataset_id, tier, isogenic=False, n_measured=8):
-    record = {'dataset_id': dataset_id, 'tier': tier, 'n_measured': n_measured}
+def dataset_record(dataset_id, tier, isogenic=False, n_measured=8,
+                   informative=True):
+    record = {'dataset_id': dataset_id, 'tier': tier, 'n_measured': n_measured,
+              'informative': informative}
+    if not informative:
+        record['informativeness'] = {'rule': 'fixture', 'n_distinct_effect': 1,
+                                     'reason': 'all effect scores are tied'}
     if isogenic:
         record['isogenic_exception'] = {'applies': True, 'why': 'fixture isogenic pair'}
     return record
@@ -87,7 +92,9 @@ class WinningTierTests(unittest.TestCase):
                          ['human_a', 'human_b', 'isogenic_a', 'isogenic_b'])
         self.assertEqual(selected['retained_by_exception'],
                          ['isogenic_a', 'isogenic_b'])
-        self.assertEqual(selected['excluded_tiers'], [2])
+        # Every tier-2 record is retained by the isogenic exception, so no tier
+        # is excluded; the manifest must not call tier 2 excluded (ADR 0068).
+        self.assertEqual(selected['excluded_tiers'], [])
 
     def test_missing_tier_fails_closed(self):
         with self.assertRaises(ValueError):
@@ -120,7 +127,8 @@ class LevelOneTests(unittest.TestCase):
     def test_unmeasured_gene_contributes_exactly_one(self):
         ranks = np.array([1, 2, 3, 4, 5, 6, 7, 7], dtype=np.int64)
         result = category_rank([ranks], [6])
-        np.testing.assert_allclose(result['sum'], [1/6, 2/6, 3/6, 4/6, 5/6, 1.0, 1.0, 1.0])
+        # unmeasured rank 7 / n_measured 6 = 7/6 (ADR 0066), never 1.0
+        np.testing.assert_allclose(result['sum'], [1/6, 2/6, 3/6, 4/6, 5/6, 1.0, 7/6, 7/6])
         np.testing.assert_array_equal(result['rank'], np.arange(1, 9))
         np.testing.assert_array_equal(
             result['measured'], [True, True, True, True, True, True, False, False])
@@ -172,6 +180,22 @@ class LevelTwoTests(unittest.TestCase):
         self.assertEqual(result['pn'][4].tolist(), [7, 7, 7, 7, 0, 0, 0, 0])
         self.assertEqual(int(result['pn'][2].max()), 7)
         self.assertEqual(int(result['pn'][2].min()), 0)
+
+    def test_excluded_category_shrinks_the_pn_bound(self):
+        # ADR 0068: five informative categories + tenv-HVG make pN bounded by 6.
+        ranks = [self.identity().copy() for _ in CATEGORIES[:5]]
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES[:5]]
+        result = gene_axis.fusion_rank_sum(
+            ranks, measured, self.identity(), categories=CATEGORIES[:5],
+            sizes=(2,))
+        self.assertEqual(result['n_sources'], 6)
+        self.assertEqual(int(result['pn'][2].max()), 6)
+        self.assertEqual(int(result['n_sources_measured'].max()), 6)
+        # One rank per active category is required: five names, five ranks.
+        with self.assertRaises(ValueError):
+            gene_axis.fusion_rank_sum(
+                ranks + [self.identity().copy()], measured + [np.ones(8, bool)],
+                self.identity(), categories=CATEGORIES[:5], sizes=(2,))
 
     def test_n_sources_measured_counts_sources_not_datasets(self):
         ranks = [self.identity().copy() for _ in CATEGORIES]
@@ -418,7 +442,8 @@ FIXTURE_AXIS_SIZES = (4, 6)
 FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
 
 
-def write_fixture(root, *, drop_method=False, drop_derived=False):
+def write_fixture(root, *, drop_method=False, drop_derived=False,
+                  noninformative=()):
     """Write a hermetic mini repository: axis, tenv ranking and six catalogs."""
     root = Path(root)
     step = root / 'stage2/01_bases'
@@ -444,6 +469,7 @@ def write_fixture(root, *, drop_method=False, drop_derived=False):
         canon = category not in ('cardiotox_TOP2', 'cardiotox_other')
         catalog_records, outputs = [], {}
         for dataset_id, tier, isogenic, rank in records:
+            informative = dataset_id not in noninformative
             rank_name = f'{dataset_id}.rank.csv'
             frame = pd.DataFrame({'gene_index': np.arange(len(AXIS_SYMBOLS)),
                                   'rank': rank,
@@ -456,6 +482,9 @@ def write_fixture(root, *, drop_method=False, drop_derived=False):
                 'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
                 'n_measured': len(AXIS_SYMBOLS),
                 'n_significant': 2, 'n_case': 3, 'n_control': 3,
+                'informative': informative,
+                'informativeness': {'rule': 'fixture', 'n_distinct_effect': 2,
+                                    'reason': None},
                 'deg': f'{dataset_id}.deg.csv', 'rank': rank_name,
                 'method': {'model': 'fixture'},
                 'inputs': {'fixture_input.csv': {
@@ -538,9 +567,40 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertNotIn('gcm_dropped',
                              [record['dataset_id'] for record in
                               manifest['categories']['genetic_cardiomyopathy']['datasets']])
+            # 2 axes x (6 categories + tenv half + 7 pN values + 7 candidate pN)
+            # 2 axes x (6 categories + tenv half + 8 pN values + 8 candidate pN)
             self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 8 + 8))
             for text in manifest_strings(manifest):
                 self.assertFalse(text.startswith('/'), f'absolute path in manifest: {text}')
+
+    def test_noninformative_category_is_excluded_from_fusion_and_pn(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary), noninformative=('af_a',))
+            driver.publish(config)
+            manifest = GeneAxis(config.output).manifest()
+            self.assertEqual(manifest['fusion']['n_sources'], 6)
+            self.assertEqual(manifest['fusion']['excluded_categories'], ['af'])
+            self.assertEqual(manifest['fusion']['sources'],
+                             [category for category in CATEGORIES if category != 'af']
+                             + ['tenv_hvg'])
+            self.assertFalse(manifest['categories']['af']['informative'])
+            self.assertTrue(manifest['categories']['af']['excluded_from_fusion'])
+            self.assertEqual(manifest['categories']['af']['excluded_datasets'][0]
+                             ['dataset_id'], 'af_a')
+            self.assertEqual(manifest['release']['pN_bounds'], [0, 6])
+            table = GeneAxis(config.output).candidate_table()
+            self.assertTrue(table['af_rank'].isna().all())
+            for size in FIXTURE_AXIS_SIZES:
+                self.assertLessEqual(int(table[f'p{size}'].max()), 6)
+                self.assertLessEqual(
+                    int(manifest['axes'][str(size)]['pN_distribution'].get('7', 0)), 0)
+            composition = GeneAxis(config.output).composition()
+            af = composition[(composition.record == 'composition')
+                             & (composition.group == 'af')]
+            self.assertTrue((af.n_genes == 0).all())
+            self.assertTrue(af.note.str.contains('excluded').all())
+            # Every other category still fuses: five + tenv.
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
 
     def test_publish_preserves_the_retired_gene_axis_file_set(self):
         with tempfile.TemporaryDirectory() as temporary:

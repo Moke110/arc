@@ -79,8 +79,9 @@ class ClassDegTest(unittest.TestCase):
                                                  axis_size=8)
         self.assertEqual(len(rank), 8)
         self.assertEqual(rank["rank"].tolist(), [3, 1, 2, 3, 3, 3, 3, 3])
+        # n_measured = 2, unmeasured rank 3: rank_norm = 3/2 = 1.5 (ADR 0066).
         np.testing.assert_allclose(rank.rank_norm.tolist(),
-                                   [1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+                                   [1.5, 0.5, 1.0, 1.5, 1.5, 1.5, 1.5, 1.5])
         self.assertEqual(int(stats["unmeasured_rank"]), 3)
 
     def test_alignment_losses_are_recorded(self):
@@ -197,7 +198,9 @@ class CatalogShapeTest(unittest.TestCase):
             "dtoxs_ipsc", "atc_l4:L01EA", "BCR-ABL tyrosine kinase inhibitors",
             ["Bosutinib", "Dasatinib", "Imatinib"], ["BOS", "DAS", "IMA"],
             [{"contrast": "x|a", "stratum": "a", "n_case": 7, "n_control": 6}],
-            {"n_measured": 2, "n_significant": 0, "alignment": {"n_resolved": 2}},
+            {"n_measured": 2, "n_significant": 0, "alignment": {"n_resolved": 2},
+             "informative": True, "informativeness_rule": "fixture",
+             "n_distinct_effect": 2, "informativeness_reason": None},
             "x.deg.csv", "x.rank.csv", {}, {"name": "test", "implementation": "t"})
         entry["category"] = "cardiotox_other"
         self.record = {"deg": "x.deg.csv", "rank_name": "x.rank.csv",
@@ -250,7 +253,9 @@ class DatasetEntryTest(unittest.TestCase):
             ["Doxorubicin", "Idarubicin", "Mitoxantrone"],
             [{"contrast": "x|plate", "stratum": "plate", "n_case": 72,
               "n_control": 22}],
-            {"n_measured": 10, "n_significant": 1, "alignment": {}},
+            {"n_measured": 10, "n_significant": 1, "alignment": {},
+             "informative": True, "informativeness_rule": "fixture",
+             "n_distinct_effect": 2, "informativeness_reason": None},
             "x.deg.csv", "x.rank.csv", {}, {"name": "t"})
         self.assertEqual(entry["n_case"], 72)
         self.assertEqual(entry["n_control"], 22)
@@ -264,7 +269,9 @@ class DatasetEntryTest(unittest.TestCase):
             [{"contrast": "x|a", "stratum": "a", "n_case": 7, "n_control": 6},
              {"contrast": "x|b", "stratum": "b", "n_case": 9, "n_control": 8}],
             {"n_measured": 15000, "n_significant": 400,
-             "alignment": {"n_resolved": 15000}}, "d.deg.csv", "d.rank.csv", {},
+             "alignment": {"n_resolved": 15000}, "informative": True,
+             "informativeness_rule": "fixture", "n_distinct_effect": 2,
+             "informativeness_reason": None}, "d.deg.csv", "d.rank.csv", {},
             {"test": "edgeR"})
         self.assertEqual(entry["dataset_id"], "dtoxs_ipsc")
         self.assertEqual(entry["class_id"], "atc_l4:L01EA")

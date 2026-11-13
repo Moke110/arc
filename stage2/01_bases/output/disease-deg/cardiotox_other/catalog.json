@@ -4,7 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "5ca17ef1bf2299845c55358f381b7c39bbe448e4cc3c9ca22e31f9bb08526d3b",
+  "catalog_sha256": "a3213815e9117595e79d028967ccc9d0637333e735e2a8e18d472042fb5922c7",
   "category": "cardiotox_other",
   "datasets": [
     {
@@ -66,6 +66,12 @@
       "dataset_id": "dtoxs_ipsc__atc_l4-L01EA",
       "deg": "dtoxs_ipsc.atc_l4-L01EA.deg.csv",
       "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 12472,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "pert_data/Annotation/local/cm_compound_annotation.csv": {
           "bytes": 116967,
@@ -201,6 +207,12 @@
       "dataset_id": "dtoxs_ipsc__atc_l4-L01EB",
       "deg": "dtoxs_ipsc.atc_l4-L01EB.deg.csv",
       "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 12966,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "pert_data/Annotation/local/cm_compound_annotation.csv": {
           "bytes": 116967,
@@ -338,6 +350,12 @@
       "dataset_id": "dtoxs_ipsc__atc_l4-L01EX",
       "deg": "dtoxs_ipsc.atc_l4-L01EX.deg.csv",
       "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 12975,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "pert_data/Annotation/local/cm_compound_annotation.csv": {
           "bytes": 116967,

@@ -106,7 +106,42 @@ class DegEffectTest(unittest.TestCase):
         np.testing.assert_allclose(table["rank_norm"], [1 / 3, 2 / 3, 1.0])
         self.assertEqual(full["rank"].tolist()[:3], [1, 2, 3])
         self.assertEqual(full["rank"].iloc[3:].tolist(), [4, 4, 4, 4, 4])
-        np.testing.assert_allclose(full["rank_norm"].iloc[3:], 1.0)
+        # ADR 0066 *Rank normalization*: unmeasured rank n+1, so rank_norm
+        # (n+1)/n = 4/3, never a clamp to exactly 1.0.
+        np.testing.assert_allclose(full["rank_norm"].iloc[3:], 4 / 3)
+
+    def test_rank_norm_both_branches_follow_the_adr_formula(self):
+        # measured: rank/n; unmeasured: (n+1)/n. n=4 here.
+        rank = np.array([1, 2, 3, 4, 5, 5], dtype=np.int64)
+        norm = deg_rank.normalized_rank(rank, 4)
+        np.testing.assert_allclose(norm[:4], [0.25, 0.5, 0.75, 1.0])
+        np.testing.assert_allclose(norm[4:], 5 / 4)
+        # An unmeasured gene is strictly worse than every measured gene.
+        self.assertTrue(np.all(norm[4:] > norm[:4].max()))
+
+    def test_all_tied_effect_scores_are_non_informative(self):
+        result = deg_rank.dataset_informativeness(np.zeros(4))
+        self.assertFalse(result["informative"])
+        self.assertEqual(result["n_distinct_effect"], 1)
+        self.assertIn("tied", result["reason"])
+        informative = deg_rank.dataset_informativeness(np.array([0.0, 0.0, 1.0]))
+        self.assertTrue(informative["informative"])
+        self.assertIsNone(informative["reason"])
+
+    def test_dataset_deg_rank_records_informativeness(self):
+        # Every padj is 1, so every effect score is exactly 0: the published
+        # rank is the gene_index tie-break and the dataset is non-informative.
+        _, _, stats = deg_rank.dataset_deg_rank(
+            pd.DataFrame({"gene_index": [2, 0, 1], "log2fc": [1.0, -1.0, 0.5],
+                          "padj": [1.0, 1.0, 1.0]}), axis_size=8)
+        self.assertFalse(stats["informative"])
+        self.assertEqual(stats["n_distinct_effect"], 1)
+        self.assertIn("tied", stats["informativeness_reason"])
+        _, _, informative = deg_rank.dataset_deg_rank(
+            pd.DataFrame({"gene_index": [0, 1], "log2fc": [1.0, 2.0],
+                          "padj": [0.01, 0.2]}), axis_size=8)
+        self.assertTrue(informative["informative"])
+        self.assertIsNone(informative["informativeness_reason"])
 
     def test_dataset_deg_rank_full_axis_and_determinism(self):
         rows = pd.DataFrame({

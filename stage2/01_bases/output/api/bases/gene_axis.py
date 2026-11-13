@@ -2,9 +2,9 @@
 
 This module owns every scientific definition of the released gene axis: the
 winning-tier selection inside a disease category, the level-1 category rank, the
-level-2 seven-source rank sum, the ``pN`` cross-source replication count, the
-``0.5*N + 0.5*N`` axis fill rule, the rank-sum histogram and the diagnostic
-Kneedle + second-difference inflection. ``execution/build_gene_axis.py`` reads
+level-2 rank sum over the **fused** sources, the ``pN`` cross-source replication
+count, the ``0.5*N + 0.5*N`` axis fill rule, the rank-sum histogram and the
+diagnostic Kneedle + second-difference inflection. ``execution/build_gene_axis.py`` reads
 the pinned inputs and publishes the products; ``execution/tests/test_gene_axis.py``
 exercises these definitions on hermetic fixtures.
 
@@ -62,9 +62,25 @@ CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in CATEGORIES)
 AXIS_SIZES = (2000, 5000)
 #: Half of an axis comes from tenv-HVG, half from cross-source replication.
 FILL_FRACTION = 0.5
-#: The seventh fusion source is the published tenv-HVG ranking; the six others
-#: are the category class sources. This is the denominator of ``pN``.
+#: The declared maximum: six category class sources plus the published
+#: tenv-HVG ranking. A category whose records are all non-informative is dropped
+#: from the fusion (ADR 0068), so the *actual* source count is
+#: :func:`n_fusion_sources` over the informative categories and is published in
+#: the release manifest; ``pN`` is bounded by that count, not by this maximum.
 N_FUSION_SOURCES = len(CATEGORIES) + 1
+
+
+def n_fusion_sources(categories=None):
+    """The number of sources actually fused: the given categories plus tenv-HVG."""
+    categories = CATEGORIES if categories is None else tuple(categories)
+    if not categories:
+        return 1
+    if len(set(categories)) != len(categories):
+        raise ValueError('a fusion source list cannot repeat a category')
+    unknown = set(categories) - set(CATEGORIES)
+    if unknown:
+        raise ValueError(f'unknown fusion categories: {sorted(unknown)}')
+    return len(categories) + 1
 
 def candidate_columns(sizes=AXIS_SIZES):
     """Contracted candidate-table columns for the requested axis sizes."""
@@ -96,6 +112,9 @@ def winning_tier(catalog):
     Returns ``{'winning_tier', 'datasets', 'records', 'retained_by_exception',
     'excluded_tiers', 'rule'}``. ``datasets`` is the catalog order, so the fused
     dataset order is the producer's declared order, not a re-sort.
+    ``excluded_tiers`` names only tiers from which **no** record was retained: a
+    tier whose records are all retained by the isogenic exception is not an
+    excluded tier, and the manifest must not call it one (ADR 0068).
     """
     records = list(catalog.get('datasets') or ())
     if not records:
@@ -109,23 +128,26 @@ def winning_tier(catalog):
         tiers.append(int(tier))
     winning = min(tiers)
     retained = []
+    retained_tiers = set()
     by_exception = []
-    excluded = sorted({tier for tier in tiers if tier != winning})
     for record, tier in zip(records, tiers):
         isogenic = (record.get('isogenic_exception') or {}).get('applies') is True
         if tier == winning:
             retained.append(record)
+            retained_tiers.add(tier)
         elif isogenic:
             retained.append(record)
+            retained_tiers.add(tier)
             by_exception.append(record['dataset_id'])
     return {
         'winning_tier': winning,
         'datasets': [record['dataset_id'] for record in retained],
         'records': retained,
         'retained_by_exception': by_exception,
-        'excluded_tiers': excluded,
+        'excluded_tiers': sorted(set(tiers) - retained_tiers),
         'rule': ('minimum catalog tier, plus records whose isogenic_exception.applies '
-                 'is true (ADR 0066 Isogenic exception)'),
+                 'is true (ADR 0066 Isogenic exception); excluded_tiers lists only '
+                 'tiers with no retained record'),
     }
 
 
@@ -138,8 +160,9 @@ def category_rank(ranks, n_measured, gene_index=None, axis_size=None):
         category rank = position in ascending level-1 sum, ties by gene_index
 
     ``rank_norm`` is recomputed from the raw rank and the dataset's
-    ``n_measured`` with :func:`bases.deg_rank.normalized_rank` (measured rank
-    ``rank/n_measured``; unmeasured ``1.0``) so a category never trusts a
+    ``n_measured`` with :func:`bases.deg_rank.normalized_rank` (every gene is
+    ``rank/n_measured``; an unmeasured gene's rank is ``n_measured + 1``, so its
+    value is ``(n_measured + 1)/n_measured``) so a category never trusts a
     hand-edited normalized value. Every dataset rank vector covers the frozen
     axis (``gene_index`` order) and is a complete ``1..n_measured+1`` assignment.
 
@@ -192,25 +215,33 @@ def _complete_rank(rank, axis_size, label):
 
 
 def fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
-                    gene_index=None, axis_size=None, sizes=AXIS_SIZES):
-    """Level 2: ``rank_sum`` over the seven fusion sources.
+                    categories=None, gene_index=None, axis_size=None,
+                    sizes=AXIS_SIZES):
+    """Level 2: ``rank_sum`` over the fused sources (ADR 0066, ADR 0068).
 
-    ADR 0066 / spec D13: ``rank_sum = sum(rank_norm)`` over the six category
-    class sources plus the published tenv-HVG ranking, each normalized by the
+    ADR 0066 / spec D13: ``rank_sum = sum(rank_norm)`` over the category class
+    sources plus the published tenv-HVG ranking, each normalized by the
     frozen-axis size; **ascending is better** and ties break on ``gene_index``.
-    ``pN`` counts how many of the seven sources place the gene in their top-``N``
-    set; ``n_sources_measured`` counts the sources that measure it (tenv-HVG
-    ranks every frozen-axis gene, so it always contributes one).
+    ``pN`` counts how many of the *fused* sources place the gene in their top-``N``
+    set; ``n_sources_measured`` counts the fused sources that measure it
+    (tenv-HVG ranks every frozen-axis gene, so it always contributes one).
 
-    ``category_ranks`` are the level-1 category ranks (one complete permutation
-    per category, in :data:`CATEGORIES` order), ``categories_measured`` the
-    corresponding "source measures the gene" masks, ``tenv_rank`` the published
-    tenv-HVG dispersion rank. Returns ``{'rank_sum', 'n_sources_measured', 'pn'}``
-    where ``pn`` maps each requested ``N`` to its integer vector.
+    ``categories`` is the active (informative) category subset in :data:`CATEGORIES`
+    order; a category whose every dataset is non-informative is passed by
+    omission and is excluded from ``rank_sum``, ``pN`` and ``n_sources_measured``
+    (ADR 0068). ``category_ranks`` are the level-1 category ranks (one complete
+    permutation per active category), ``categories_measured`` the corresponding
+    "source measures the gene" masks, ``tenv_rank`` the published tenv-HVG
+    dispersion rank. Returns ``{'rank_sum', 'n_sources_measured', 'pn',
+    'n_sources', 'categories'}`` where ``pn`` maps each requested ``N`` to its
+    integer vector.
     """
-    if len(category_ranks) != len(CATEGORIES):
-        raise ValueError(f'a level-2 fusion needs exactly {len(CATEGORIES)} category ranks')
-    if len(categories_measured) != len(CATEGORIES):
+    categories = tuple(CATEGORIES if categories is None else categories)
+    n_sources = n_fusion_sources(categories)
+    if len(category_ranks) != len(categories):
+        raise ValueError(
+            f'a level-2 fusion needs one rank per active category ({len(categories)})')
+    if len(categories_measured) != len(categories):
         raise ValueError('every category rank needs its measured mask')
     tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
     axis_size = int(axis_size if axis_size is not None else tenv_rank.size)
@@ -220,7 +251,7 @@ def fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
         raise ValueError('gene_index must cover the frozen axis')
     tenv_rank = _complete_rank(tenv_rank, axis_size, 'tenv-HVG')
     sources = [_complete_rank(rank, axis_size, category)
-               for rank, category in zip(category_ranks, CATEGORIES)]
+               for rank, category in zip(category_ranks, categories)]
     sources.append(tenv_rank)
     rank_sum = np.zeros(axis_size, dtype=np.float64)
     for rank in sources:
@@ -236,17 +267,24 @@ def fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
         if size <= 0 or size > axis_size:
             raise ValueError('a pN size must be within the frozen axis')
         pn[size] = np.sum([rank <= size for rank in sources], axis=0).astype(np.int64)
-    return {'rank_sum': rank_sum, 'n_sources_measured': n_sources_measured, 'pn': pn}
+    return {'rank_sum': rank_sum, 'n_sources_measured': n_sources_measured,
+            'pn': pn, 'n_sources': n_sources, 'categories': categories}
 
 
 def candidate_table(axis, tenv_rank, category_ranks, categories_measured,
-                    gene_index=None, sizes=AXIS_SIZES):
+                    categories=None, gene_index=None, sizes=AXIS_SIZES):
     """The master candidate table: one row per frozen-axis gene.
 
     ADR 0066: ``symbol``, ``gene_index``, ``tenv_hvg_rank``, one
     ``<category>_rank`` per category, ``rank_sum``, ``n_sources_measured``,
     ``p2000``, ``p5000``. Rows are in frozen-axis order; every vector is indexed
     by ``gene_index`` so no consumer can read a row position as a gene index.
+
+    ``category_ranks`` is either a mapping ``{category: rank}`` or a sequence
+    aligned with ``categories``. A category excluded from the fusion (ADR 0068:
+    every dataset non-informative) keeps its contracted column but the column is
+    empty (``NaN``) — it has no level-1 rank — and it does not contribute to
+    ``rank_sum``/``pN``/``n_sources_measured``.
     """
     axis = pd.DataFrame(axis)
     required = {'gene_index', 'symbol'}
@@ -259,12 +297,32 @@ def candidate_table(axis, tenv_rank, category_ranks, categories_measured,
         raise ValueError('gene_index must cover the frozen axis')
     if not np.array_equal(np.asarray(axis.gene_index, dtype=np.int64), gene_index):
         raise ValueError('axis table must be in frozen gene_index order')
-    fusion = fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
-                             gene_index=gene_index, axis_size=axis_size, sizes=sizes)
+    if isinstance(category_ranks, dict):
+        ranks_by_category = {str(key): np.asarray(value, dtype=np.int64)
+                             for key, value in category_ranks.items()}
+        active = tuple(CATEGORIES if categories is None else categories)
+        if set(ranks_by_category) != set(active):
+            raise ValueError('category rank mapping does not match the active categories')
+        rank_list = [ranks_by_category[category] for category in active]
+        measured_list = list(categories_measured)
+    else:
+        active = tuple(CATEGORIES if categories is None else categories)
+        if len(category_ranks) != len(active):
+            raise ValueError('a candidate table needs one rank per active category')
+        ranks_by_category = {category: np.asarray(rank, dtype=np.int64)
+                             for category, rank in zip(active, category_ranks)}
+        rank_list = list(category_ranks)
+        measured_list = list(categories_measured)
+    fusion = fusion_rank_sum(rank_list, measured_list, tenv_rank,
+                             categories=active, gene_index=gene_index,
+                             axis_size=axis_size, sizes=sizes)
     columns = {'symbol': axis.symbol.to_numpy(), 'gene_index': gene_index,
                'tenv_hvg_rank': np.asarray(tenv_rank, dtype=np.int64)}
-    for category, rank in zip(CATEGORIES, category_ranks):
-        columns[f'{category}_rank'] = np.asarray(rank, dtype=np.int64)
+    for category in CATEGORIES:
+        if category in ranks_by_category:
+            columns[f'{category}_rank'] = ranks_by_category[category]
+        else:
+            columns[f'{category}_rank'] = np.full(axis_size, np.nan)
     columns['rank_sum'] = fusion['rank_sum']
     columns['n_sources_measured'] = fusion['n_sources_measured']
     for size in sizes:
@@ -273,7 +331,8 @@ def candidate_table(axis, tenv_rank, category_ranks, categories_measured,
     return table.loc[:, list(candidate_columns(sizes))]
 
 
-def axis_fill(tenv_rank, p_n, rank_sum, n, gene_index=None):
+def axis_fill(tenv_rank, p_n, rank_sum, n, gene_index=None,
+              n_sources=N_FUSION_SOURCES):
     """One released axis: the declared ``0.5*N + 0.5*N`` fill rule (ADR 0066).
 
     ``G_N`` takes the top ``0.5*N`` genes of tenv-HVG (``tenv_hvg_rank <= N/2``),
@@ -299,8 +358,11 @@ def axis_fill(tenv_rank, p_n, rank_sum, n, gene_index=None):
     rank_sum = np.asarray(rank_sum, dtype=np.float64)
     if p_n.shape != (axis_size,) or rank_sum.shape != (axis_size,):
         raise ValueError('pN and rank_sum must cover the frozen axis')
-    if p_n.min() < 0 or p_n.max() > N_FUSION_SOURCES:
-        raise ValueError(f'pN must be in 0..{N_FUSION_SOURCES}')
+    n_sources = int(n_sources)
+    if n_sources < 1:
+        raise ValueError('pN needs at least the tenv-HVG source')
+    if p_n.min() < 0 or p_n.max() > n_sources:
+        raise ValueError(f'pN must be in 0..{n_sources}')
     if not np.isfinite(rank_sum).all():
         raise ValueError('rank_sum must be finite')
     gene_index = (np.arange(axis_size, dtype=np.int64) if gene_index is None
@@ -336,13 +398,22 @@ def axis_intersection(left, right):
     }
 
 
-def axis_composition(axis_genes, categories_measured):
-    """How many axis genes each category source measures (the composition table)."""
-    if len(categories_measured) != len(CATEGORIES):
-        raise ValueError(f'a composition needs {len(CATEGORIES)} category masks')
+def axis_composition(axis_genes, categories_measured, categories=None):
+    """How many axis genes each category source measures (the composition table).
+
+    ``categories_measured`` is aligned with ``categories`` (default
+    :data:`CATEGORIES`). A category that is not in the alignument — or whose
+    aligned mask is ``None`` — was excluded from the fusion and contributes
+    ``0`` (ADR 0068).
+    """
+    categories = tuple(CATEGORIES if categories is None else categories)
+    if len(categories_measured) != len(categories):
+        raise ValueError('a composition needs one mask per active category')
     axis_genes = np.asarray(axis_genes, dtype=np.int64)
-    composition = {}
-    for category, mask in zip(CATEGORIES, categories_measured):
+    composition = {category: 0 for category in CATEGORIES}
+    for category, mask in zip(categories, categories_measured):
+        if mask is None:
+            continue
         mask = np.asarray(mask, dtype=bool)
         if mask.ndim != 1:
             raise ValueError('a category measured mask must be a vector')
@@ -355,7 +426,11 @@ def axis_composition(axis_genes, categories_measured):
 
 
 def pn_distribution(p_n, n_sources=N_FUSION_SOURCES):
-    """Counts of genes at each ``pN`` value ``0..n_sources`` (ordinal, not a score)."""
+    """Counts of genes at each ``pN`` value ``0..n_sources`` (ordinal, not a score).
+
+    ``n_sources`` is the number of sources actually fused (ADR 0068), not the
+    declared maximum; the release passes its published source count.
+    """
     p_n = np.asarray(p_n, dtype=np.int64)
     if p_n.ndim != 1:
         raise ValueError('pN must be a vector')
@@ -368,10 +443,11 @@ def rank_sum_histogram(values, low=0.0, high=None, bins=70):
     """Histogram of ``rank_sum`` over all candidates, with fixed declared edges.
 
     The evidence panel marks both released axes' ``rank_sum`` intervals on this
-    histogram. Fixed equal-width edges (default ``0..7`` in 70 bins, the range of
-    a seven-source sum) keep the plotted values deterministic and comparable
-    between replays; every candidate falls inside the interval and every bin is
-    emitted, including empty ones, so the CSV is the complete plotted value set.
+    histogram. Fixed equal-width edges (bounded by the published source count,
+    ``0..n_sources`` in 70 bins) keep the plotted values deterministic and
+    comparable between replays; every candidate falls inside the interval and
+    every bin is emitted, including empty ones, so the CSV is the complete
+    plotted value set.
     """
     values = np.asarray(values, dtype=np.float64)
     if values.ndim != 1 or values.size == 0:
@@ -605,7 +681,7 @@ class GeneAxis:
         return path
 
     def candidate_table(self):
-        """All frozen-axis candidates with their seven source ranks and ``pN``."""
+        """All frozen-axis candidates with their source ranks and ``pN``."""
         path = self._verified('candidate_rank_sum.csv')
         table = pd.read_csv(path, dtype={'symbol': str}, float_precision='round_trip')
         expected = candidate_columns(self.axis_sizes())

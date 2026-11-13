@@ -71,7 +71,8 @@ class DegTableContractTest(unittest.TestCase):
         self.assertEqual(self.stats['n_measured'], 4)
         self.assertEqual(self.stats['unmeasured_rank'], 5)
         self.assertEqual(int(self.rank.loc[0, 'rank']), 5)
-        self.assertEqual(float(self.rank.loc[0, 'rank_norm']), 1.0)
+        # unmeasured rank n+1 over n_measured = 4 -> 5/4 (ADR 0066), not 1.0
+        self.assertEqual(float(self.rank.loc[0, 'rank_norm']), 1.25)
         self.assertEqual(int(self.rank.loc[1, 'rank']), 1)
         self.assertEqual(len(self.rank), fixtures.AXIS_SIZE)
         self.assertEqual(self.rank.gene_index.tolist(), list(range(fixtures.AXIS_SIZE)))
