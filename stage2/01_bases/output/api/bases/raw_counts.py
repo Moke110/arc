@@ -52,8 +52,10 @@ TENV_ITEM = "pert_data/GSE262419"
 TAHOE_ITEM = "pert_data/Tahoe-100M"
 AXIS_PATH = "stage2/01_bases/output/gene-identity/tables/genes.csv"
 CROSSWALK_PATH = "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv"
-TENV_ACCEPTANCE = "stage2/01_bases/log/records/native_tenv_verify.json"
-TAHOE_ACCEPTANCE = "stage2/01_bases/log/records/tahoe_counts_source_acceptance.json"
+#: The pre-0066 source-replay evidence restored as one tracked, digest-pinned
+#: record (ADR 0068/#194). It replaces the retired ``log/records/*.json`` inputs.
+PROVENANCE = "stage2/01_bases/log/raw_counts_provenance.json"
+PROVENANCE_SCHEMA = "stage2-raw-counts-provenance-v1"
 
 # Expected real-data populations. They are asserted, never inferred.
 TENV_COUNTS = {"profiles": 4510, "genes": 19613, "treated": 4206,
@@ -72,8 +74,9 @@ RECIPE = {
               "Ensembl/token identity is retained in token_mapping.csv. No "
               "normalization, no delta."),
     "provenance": ("Default mode rehomes the source-accepted payloads and re-seals "
-                   "them after re-checking their sha256 against the recorded "
-                   "source-replay acceptance record and re-deriving the Tahoe "
+                   "them after re-checking their sha256 against the tracked "
+                   "source-replay provenance record "
+                   "(log/raw_counts_provenance.json) and re-deriving the Tahoe "
                    "token mapping from the immutable source metadata; "
                    "--full-rebuild rebuilds both payloads from source/."),
 }
@@ -224,11 +227,13 @@ def _copy_payload(candidate, payload_dir, names, expected_digests, label):
 
 
 def _seal_tenv(candidate, payload_dir, manifest_name, axis, *, fixture,
-               payload_digests=None, accepted_manifest_digest=None):
+               payload_digests=None, accepted_manifest_digest=None,
+               build_manifest=None):
     payload_dir = Path(payload_dir)
     files = _copy_payload(candidate, payload_dir, TENV_PAYLOAD,
                           payload_digests or {}, "tenv")
-    build_manifest = read_json(payload_dir / manifest_name)
+    if build_manifest is None:
+        build_manifest = read_json(payload_dir / manifest_name)
     if not fixture:
         if build_manifest.get("schema") != "stage2-bases-native-tenv-v1":
             raise RawCountsError("unexpected native tenv build schema")
@@ -241,7 +246,7 @@ def _seal_tenv(candidate, payload_dir, manifest_name, axis, *, fixture,
         if build_manifest.get("files") != {
                 name: files[name]["sha256"] for name in TENV_PAYLOAD}:
             raise RawCountsError("native tenv manifest payload digests differ")
-        if (accepted_manifest_digest is not None
+        if (accepted_manifest_digest is not None and manifest_name is not None
                 and sha256(payload_dir / manifest_name) != accepted_manifest_digest):
             raise RawCountsError("native tenv manifest is not the accepted one")
     obs, var = _h5_header(Path(candidate) / "tenv.h5ad")
@@ -256,11 +261,13 @@ def _seal_tenv(candidate, payload_dir, manifest_name, axis, *, fixture,
 
 
 def _seal_tahoe(candidate, payload_dir, manifest_name, axis, *, fixture,
-                payload_digests=None, gene_metadata=None, crosswalk=None):
+                payload_digests=None, gene_metadata=None, crosswalk=None,
+                build_manifest=None):
     payload_dir = Path(payload_dir)
     files = _copy_payload(candidate, payload_dir, TAHOE_PAYLOAD,
                           payload_digests or {}, "tahoe")
-    build_manifest = read_json(payload_dir / manifest_name)
+    if build_manifest is None:
+        build_manifest = read_json(payload_dir / manifest_name)
     if not fixture:
         if build_manifest.get("schema") != "bases-tahoe-shared-counts-v1":
             raise RawCountsError("unexpected Tahoe build schema")
@@ -312,6 +319,7 @@ def _provenance(mode, *, acceptance=None, payloads=None, counts=None,
         value = acceptance["value"]
         provenance.update({"acceptance_record": acceptance["path"],
                            "acceptance_record_sha256": acceptance["sha256"],
+                           "acceptance_record_section": acceptance.get("section"),
                            "recorded_result": value.get("result")})
         for key in ("manifest_sha256", "source_rows_replayed", "scope",
                     "immutable_source_manifest_sha256", "raw_token_mapping_sha256",
@@ -371,31 +379,31 @@ def _outputs(candidate, names):
     return outputs
 
 
-def _prepare_acceptance(mode, fixture, data_root, tenv_payload, tahoe_payload,
-                        tenv_acceptance, tahoe_acceptance, repo_root):
-    """Validate the recorded source replay and return (records, payload digests)."""
+def _prepare_acceptance(mode, fixture, data_root, provenance, repo_root):
+    """Validate the tracked source-replay provenance and return its evidence.
+
+    Returns ``(records, payload_digests, tenv_build_manifest, tahoe_build_manifest)``.
+    ``records`` are the two per-source acceptance views of the one tracked
+    provenance record; the manifest pins that single file, so every input it
+    names resolves. The retired pre-0066 payload directories and log records are
+    no longer read: their bytes were rehomed into ``output/raw_counts/`` and
+    their evidence now lives in the tracked record.
+    """
     if mode != "source-accepted-replay" or fixture:
-        return None, None, {}
-    tenv_record = _record(tenv_acceptance, repo_root)
-    tahoe_record = _record(tahoe_acceptance, repo_root)
-    if tenv_record["value"].get("result") != "PASS":
+        return None, None, None, None
+    record = _record(provenance, repo_root)
+    value = record["value"]
+    if value.get("schema") != PROVENANCE_SCHEMA:
+        raise RawCountsError("the raw-count provenance record has an unknown schema")
+    acceptance = value.get("acceptance") or {}
+    tenv_value = acceptance.get("tenv") or {}
+    tahoe_value = acceptance.get("tahoe") or {}
+    if tenv_value.get("result") != "PASS":
         raise RawCountsError("the recorded tenv source replay is not PASS")
-    tenv_build = read_json(Path(tenv_payload) / "tenv_manifest.json")
-    if tenv_record["value"].get("manifest_sha256") != sha256(
-            Path(tenv_payload) / "tenv_manifest.json"):
-        raise RawCountsError("tenv payload is not the source-accepted payload")
-    if tenv_record["value"].get("source_rows_replayed") != TENV_COUNTS["profiles"]:
+    if tenv_value.get("source_rows_replayed") != TENV_COUNTS["profiles"]:
         raise RawCountsError("tenv recorded source replay is incomplete")
-    tahoe_value = tahoe_record["value"]
     if tahoe_value.get("result") != "PASS":
         raise RawCountsError("the recorded Tahoe source replay is not PASS")
-    if tahoe_value.get("raw_release_manifest", {}).get("sha256") != sha256(
-            Path(tahoe_payload) / "manifest.json"):
-        raise RawCountsError("Tahoe payload is not the source-accepted payload")
-    recorded = tahoe_value.get("raw_release", {})
-    expected_tahoe = {"tahoe.h5ad": recorded.get("h5ad_sha256"),
-                      "token_mapping.csv": tahoe_value.get("raw_token_mapping_sha256")}
-    recorded_tenv = {name: tenv_build["files"][name] for name in TENV_PAYLOAD}
     if tahoe_value.get("source_shards") != TAHOE_COUNTS["shards"]:
         raise RawCountsError("Tahoe recorded source replay did not cover every shard")
     if tahoe_value.get("independent_replay", {}).get("verified_profiles") != (
@@ -404,12 +412,45 @@ def _prepare_acceptance(mode, fixture, data_root, tenv_payload, tahoe_payload,
     if tahoe_value.get("immutable_source_manifest_sha256") != sha256(
             Path(data_root) / "Tahoe-100M/manifest.sha256"):
         raise RawCountsError("Tahoe immutable source manifest digest differs")
-    return (tenv_record, tahoe_record), (recorded_tenv, expected_tahoe), {}
+    payloads = value.get("payload_sha256") or {}
+    tenv_digests = {name: str(payloads.get("tenv", {}).get(name, ""))
+                    for name in TENV_PAYLOAD}
+    tahoe_digests = {name: str(payloads.get("tahoe", {}).get(name, ""))
+                     for name in TAHOE_PAYLOAD}
+    for label, digests in (("tenv", tenv_digests), ("tahoe", tahoe_digests)):
+        for name, digest in digests.items():
+            if len(digest) != 64:
+                raise RawCountsError(
+                    f"{label}: provenance lacks a payload digest for {name}")
+    tenv_build = value.get("tenv_build_manifest") or {}
+    if tenv_build.get("files") != tenv_digests:
+        raise RawCountsError("tenv provenance build manifest disagrees on payload digests")
+    raw_release = tahoe_value.get("raw_release") or {}
+    if raw_release.get("h5ad_sha256") != tahoe_digests["tahoe.h5ad"]:
+        raise RawCountsError("Tahoe provenance disagrees on the h5ad digest")
+    if tahoe_value.get("raw_token_mapping_sha256") != tahoe_digests["token_mapping.csv"]:
+        raise RawCountsError("Tahoe provenance disagrees on the token-mapping digest")
+    tahoe_build = {
+        "schema": tahoe_value["independent_replay"]["schema"],
+        "profiles": int(raw_release["profiles"]),
+        "cells": int(raw_release["cells"]),
+        "controls": int(raw_release["controls"]),
+        "treated": int(raw_release["treated"]),
+        "genes": int(raw_release["genes"]),
+        "h5ad_sha256": raw_release["h5ad_sha256"],
+        "mapping_sha256": tahoe_value["raw_token_mapping_sha256"],
+    }
+    tenv_record = dict(record, section="acceptance.tenv", source="tenv",
+                       value=tenv_value)
+    tahoe_record = dict(record, section="acceptance.tahoe", source="tahoe",
+                        value=tahoe_value)
+    return ((tenv_record, tahoe_record), (tenv_digests, tahoe_digests),
+            tenv_build, tahoe_build)
 
 
 def build(candidate, *, mode="source-accepted-replay", data_root, axis_path,
-          crosswalk_path, tenv_payload, tahoe_payload, tenv_acceptance=None,
-          tahoe_acceptance=None, gene_metadata=None, fixture=False,
+          crosswalk_path, tenv_payload, tahoe_payload, provenance=None,
+          gene_metadata=None, fixture=False,
           checkpoints_root=None, repo_root=None, tahoe_expected_shards=None,
           tahoe_expected_genes=None):
     """Write a complete raw-count candidate outside ``output/``."""
@@ -427,26 +468,21 @@ def build(candidate, *, mode="source-accepted-replay", data_root, axis_path,
     inputs = {}
     for path in (axis_path, crosswalk_path):
         _input_entry(path, inputs, repo_root)
-    records, recorded, _ = _prepare_acceptance(
-        mode, fixture, data_root, tenv_payload, tahoe_payload,
-        tenv_acceptance, tahoe_acceptance, repo_root)
+    records, recorded, tenv_build, tahoe_build = _prepare_acceptance(
+        mode, fixture, data_root, provenance, repo_root)
     if mode == "source-accepted-replay":
-        for directory in (tenv_payload, tahoe_payload):
-            for name in TENV_PAYLOAD + TAHOE_PAYLOAD + (
-                    "tenv_manifest.json", "manifest.json"):
-                path = Path(directory) / name
-                if path.is_file() and str(path) not in inputs:
-                    _input_entry(path, inputs, repo_root)
         tenv_digests, tahoe_digests = recorded if recorded else ({}, {})
         obs_t, var_t, files_t, build_t, bridge = _seal_tenv(
-            candidate, tenv_payload, "tenv_manifest.json", axis, fixture=fixture,
-            payload_digests=tenv_digests,
-            accepted_manifest_digest=(records[0]["value"]["manifest_sha256"]
-                                      if records else None))
+            candidate, tenv_payload,
+            None if tenv_build is not None else "tenv_manifest.json", axis,
+            fixture=fixture, payload_digests=tenv_digests,
+            build_manifest=tenv_build)
         obs_h, var_h, files_h, build_h, mapping = _seal_tahoe(
-            candidate, tahoe_payload, "manifest.json", axis, fixture=fixture,
-            payload_digests=tahoe_digests,
-            gene_metadata=gene_metadata, crosswalk=crosswalk)
+            candidate, tahoe_payload,
+            None if tahoe_build is not None else "manifest.json", axis,
+            fixture=fixture, payload_digests=tahoe_digests,
+            gene_metadata=gene_metadata, crosswalk=crosswalk,
+            build_manifest=tahoe_build)
     else:
         # Stronger mode: rebuild both payloads from the immutable source trees.
         if gene_metadata is None:
@@ -471,12 +507,14 @@ def build(candidate, *, mode="source-accepted-replay", data_root, axis_path,
             **options)
         obs_t, var_t, files_t, build_t, bridge = _seal_tenv(
             candidate, candidate, "tenv_build.json", axis, fixture=fixture,
-            payload_digests={name: native_build["files"][name] for name in TENV_PAYLOAD})
+            payload_digests={name: native_build["files"][name] for name in TENV_PAYLOAD},
+            build_manifest=None)
         obs_h, var_h, files_h, build_h, mapping = _seal_tahoe(
             candidate, candidate, "tahoe_build.json", axis, fixture=fixture,
             payload_digests={"tahoe.h5ad": tahoe_build["h5ad_sha256"],
                              "token_mapping.csv": tahoe_build["mapping_sha256"]},
-            gene_metadata=gene_metadata, crosswalk=crosswalk)
+            gene_metadata=gene_metadata, crosswalk=crosswalk,
+            build_manifest=None)
     if not fixture:
         _check_fam153b(axis, bridge, mapping)
     tenv_counts = {"profiles": int(len(obs_t)), "genes": int(len(var_t)),
@@ -495,7 +533,12 @@ def build(candidate, *, mode="source-accepted-replay", data_root, axis_path,
         for path in (data_root / "GSE262419/manifest.sha256",
                      data_root / "Tahoe-100M/manifest.sha256", gene_metadata):
             _input_entry(path, inputs, repo_root)
+        # Both source views point at the one tracked provenance record; pin it once.
+        pinned = set()
         for record in records or ():
+            if record["absolute"] in pinned:
+                continue
+            pinned.add(record["absolute"])
             _input_entry(record["absolute"], inputs, repo_root)
     names = list(PRODUCT_FILES)
     for extra in ("tenv_build.json", "tahoe_build.json"):

@@ -14,16 +14,16 @@ available, 12 GiB floor respected.
 
 | product | driver / mode | manifest sha256 | result | wall | peak RSS |
 |---|---|---|---:|---:|---:|
-| `output/raw_counts/` | `build_raw_counts.py verify` (`source-accepted-replay`) | `6d45b171…cbff4f` | PASS | 14.4 s | 379 MiB |
+| `output/raw_counts/` | `build_raw_counts.py verify` (`source-accepted-replay`) | `e02e5a1b…f6f406` | PASS | 15.9 s | 367 MiB |
 | `output/corpus/` | `build_corpus.py verify` | `f8c35ccc…9d5d9f6d` | PASS | 1 m 10.5 s | 462 MiB |
-| `output/disease-deg/{af,icm,nhf,genetic_cardiomyopathy}/` | `build_disease_deg.py verify --all` | AF `397c37c1…`, ICM `f05936a8…`, nHF `9cc58c08…`, genetic `18590976…` | PASS (4/4) | 8.5 s | 286 MiB |
-| `output/disease-deg/{cardiotox,cardiotox_TOP2,cardiotox_other}/` | `build_disease_deg_cardiotox.py verify` (R: DESeq2/edgeR) | `06e4e08b…`, `496b4977…`, `57529b8c…` | PASS (3/3) | 1 m 39.9 s | 1.47 GiB |
-| `output/gene-axis/` | `build_gene_axis.py --verify` | `42baa74f…aeb6fcb` | PASS | 0.5 s | 138 MiB |
-| `output/view-2k/` | `build_view.py verify` (payload published first) | `b48eeddb…040c18db` | PASS | 3 m 38.4 s (both views) | 435 MiB |
-| `output/view-5k/` | `build_view.py verify` | `37af263b…f2f6ae1e` | PASS | (both views) | (both views) |
+| `output/disease-deg/{af,icm,nhf,genetic_cardiomyopathy}/` | `build_disease_deg.py verify --all` | AF `7f9ab6bd…`, ICM `1f453553…`, nHF `afb50564…`, genetic `304d8182…` | PASS (4/4) | 8.6 s | 293 MiB |
+| `output/disease-deg/{cardiotox,cardiotox_TOP2,cardiotox_other}/` | `build_disease_deg_cardiotox.py verify` (R: DESeq2/edgeR) | `06e4e08b…`, `5ef7fa40…`, `12a3e1ba…` | PASS (3/3) | 1 m 40.1 s | 1.47 GiB |
+| `output/gene-axis/` | `build_gene_axis.py --verify` | `948f9687…a469e1` | PASS | 0.4 s | 138 MiB |
+| `output/view-2k/` | `build_view.py verify` (payload published first) | `cb190846…25e950` | PASS | 3 m 35.0 s (both views) | 432 MiB |
+| `output/view-5k/` | `build_view.py verify` | `03f2a056…e698ea` | PASS | (both views) | (both views) |
 
 The two view payloads are gitignored and were absent from the fresh worktree, so
-`build_view.py publish` materialised them first (3 m 32.5 s, 428 MiB); the
+`build_view.py publish` materialised them first (3 m 32.2 s, 427 MiB); the
 published manifests were **byte-identical to the tracked ones** (`git diff` empty),
 and the subsequent `verify` replayed both views from the pinned corpus + axis.
 `output/tenv-hvg/` is a retained pre-0066 product, not rebuilt by this ticket
@@ -45,14 +45,18 @@ inventory is `inputs.json`.
   with reasons); no normalization/Δ columns.
 - `disease-deg`: per-dataset tables/ranks rebuilt; rank rule (descending
   `|log2FC|·−log10(padj)`, max collapse, `NA` padj non-significant, unmeasured =
-  `n_measured + 1`, `rank_norm = rank/n_measured`, `gene_index` tie-break)
-  re-verified against the pinned item DEGs; catalogs' self-consistent
-  `catalog_sha256`; level-1 inputs are the released rank frames.
-- `gene-axis`: level-1 dataset fusion inside each category, level-2 seven-source
-  `rank_sum`, `pN ∈ 0..7`; axes exactly 2,000/5,000 ascending **original**
-  `gene_index` (never renumbered), fill `0.5·N` tenv-HVG + `0.5·N` pN/rank_sum
-  remainder; non-nested axes with reported intersection **1,919**; manifest
-  digests and 18,164-row candidate table.
+  `n_measured + 1`, `rank_norm = rank/n_measured` so an unmeasured gene is
+  `(n_measured+1)/n_measured`, `gene_index` tie-break) re-verified against the
+  pinned item DEGs; catalogs' self-consistent `catalog_sha256`; every record
+  carries explicit `informative`/`informativeness` evidence (ADR 0068) and only
+  informative datasets enter level 1; level-1 inputs are the released rank frames.
+- `gene-axis`: level-1 dataset fusion inside each category, level-2 six-source
+  `rank_sum` (five informative categories + tenv-HVG; `af` excluded because its
+  only dataset is non-informative), `pN ∈ 0..6`; axes exactly 2,000/5,000
+  ascending **original** `gene_index` (never renumbered), fill `0.5·N` tenv-HVG
+  + `0.5·N` pN/rank_sum remainder; non-nested axes with reported intersection
+  **1,972**; `af_rank` empty in the candidate table; manifest digests and
+  18,164-row candidate table.
 - `view-*`: normalization on the **full-axis** library total then subset (never
   the view-local denominator); `control` = mean of the named matched-control
   rows; `Δ = X − control` exactly; `X/control/Δ` float32; obs carries row
@@ -62,7 +66,7 @@ inventory is `inputs.json`.
 
 Every retained reader module was exercised through its own test file under the
 `arc` env (all green): `test_raw_counts` (8), `test_corpus` (10), `test_view`
-(17), `test_gene_axis` (38), `test_deg_rank` (12), `test_disease_deg_human_sc`
+(17), `test_gene_axis` (40), `test_deg_rank` (15), `test_disease_deg_human_sc`
 (18), `test_disease_deg_isogenic` (35), `test_drug_classes` (17),
 `test_disease_deg_cardiotox` (11), `test_identity`, `test_fold_seed`,
 `test_palette`, `test_hvg` (2, after removing the retired metrics-QA assertion), `test_native`,
@@ -74,12 +78,13 @@ modules are the deferred work item, not a live consumer of any accepted product.
 
 ## 3. Cross-category catalog invariant (new #192 gate)
 
-`execution/tests/test_acceptance_invariants.py` (8 tests) passes over the six
+`execution/tests/test_acceptance_invariants.py` (9 tests) passes over the six
 released catalogs. It pins the canonical `stage2-disease-deg-catalog-v1` shape
 (`datasets` list of full records, per-record `method`, self-consistent 64-hex
 `catalog_sha256`, no legacy `test_method`/`dataset_records`), positive
 `n_case`/`n_control` **or** an explicit `*_basis`, 64-hex `derived_inputs` where
-declared, and — explicitly, not silently — the documented cross-ticket variance:
+declared, an explicit boolean `informative` plus its `informativeness` reason
+(the degenerate-source field of ADR 0068), and — explicitly, not silently — the documented cross-ticket variance:
 #187/#188 declare the published `gene-identity/genes.csv` axis, a
 `rank_contract`/`rejected` block, bare-digest `inputs` and gitignored
 `derived_inputs`; #189 declares the `tables/genes.csv` axis, `{bytes,sha256}`
@@ -91,15 +96,18 @@ With every `output/` product directory made unreadable (`chmod a-r`; only
 `output/api` readable), the renderer
 `figure/script/render_gene_axis_rank_sum_histogram.py --csv
 figure/data/gene_axis_rank_sum_histogram.csv` re-rendered the committed PNG
-byte-identically: `49d1dc5d…c1f2581` = `49d1dc5d…c1f2581` (exit 0). The retired
+byte-identically: `3184b37f…3fcbe134` = `3184b37f…3fcbe134` (exit 0). The retired
 diagnostic PR figure and its renderer are deleted.
 
 ## 5. "No retired path read" evidence
 
 Input sets were read from the accepted manifests (`inputs.json`), not assumed.
 `output/raw_counts/` is built only from `gene-identity/{genes,crosswalk}`,
-`pert_data/GSE262419` + `pert_data/Tahoe-100M` source metadata, and the two
-pre-0066 source-replay acceptance records. `output/corpus/` reads only
+`pert_data/GSE262419` + `pert_data/Tahoe-100M` source manifests and the source
+`gene_metadata.parquet`, and the tracked
+`log/raw_counts_provenance.json` (the two pre-0066 source-replay acceptance
+records plus the native tenv build manifest, restored verbatim from git history
+and digest-pinned). `output/corpus/` reads only
 `raw_counts/` payloads + `gene-identity` + Tahoe drug metadata.
 `disease-deg` reads item DEG JSONs/CSVs under `disease_data/`/`pert_data/` and
 `gene_identity`. `gene-axis` reads `disease-deg/`, `tenv-hvg/descriptive.csv` and
@@ -109,16 +117,21 @@ raw-count directories, `tenv-truth*` or `historical-training-release/`
 (verified by reviewing every manifest `inputs` key and by
 `git grep` over retained code after deletion).
 
-The one accepted, one-way exception is documented instead of hidden:
-`raw_counts`' default **rehome** mode pins the pre-0066 raw-count payload bytes
-and the two pre-0066 source-replay records as its inputs. Those bytes are
-preserved verbatim in `raw_counts/` (identical sha256: tenv
-`efd07632…`, Tahoe `a830a34a…`) and inside git history, so the retired paths are
-not read by any live product; a from-scratch replay uses the documented stronger
-mode `build_raw_counts.py --full-rebuild publish|verify` (Tahoe build 1 h 35 m,
-independent source replay 2 h 35 m). The retired evidence digests are preserved
-in `inputs.json.retired_evidence_digests`. The retained `tenv-hvg` ranking has
-the analogous deferred re-point documented in the README.
+The one accepted, one-way transition is documented instead of hidden:
+`raw_counts`' default **rehome** mode pins the tracked
+`log/raw_counts_provenance.json` record, whose `acceptance.tenv` /
+`acceptance.tahoe` sections are the two pre-0066 source-replay acceptance
+records and whose `payload_sha256` map pins the rehomed bytes (tenv
+`efd07632…`, Tahoe `a830a34a…`; the bytes in `raw_counts/` are byte-identical,
+`source-accepted-replay`). Every other pinned input resolves in a merged
+checkout: the two source item manifests, the source `gene_metadata.parquet`,
+the frozen axis/crosswalk and the provenance record. The retired
+`log/records/` and `output/{tenv,tahoe}-raw-counts/` paths are **not** pinned by
+any live manifest; their digests remain in `inputs.json.retired_evidence_digests`
+as history. A from-scratch replay still uses the documented stronger mode
+`build_raw_counts.py --full-rebuild publish|verify` (Tahoe build 1 h 35 m,
+independent source replay 2 h 35 m). The retained `tenv-hvg` ranking has the
+analogous deferred re-point documented in the README.
 
 ## 6. Old → new mapping (deletions)
 
@@ -159,10 +172,11 @@ docs-only ADR (0067) by the Lead**; this ticket deliberately edits no ADR text.
 ### View basis figures
 
 ADR 0066 *Corpus and view semantics* quotes "12.9% / 36.3%" of full-axis CP10K
-from an interim pre-#190 axis. On the **released** axes, measured from the view
-manifests (tenv, all 4,478 profiles): **G_2000 = 12.9299987%** and **G_5000 =
-37.2063189%** (treated-only 12.9566820% / 37.1590893%; `tahoe_bulk` 10.4600758% /
-24.7819987%). The 2.5× baseline-change argument and the full-axis decision are
+from an interim pre-#190 axis. On the **released** axes after the #194 fusion
+amendment and both view rebuilds, measured from the view manifests (tenv, all
+4,478 profiles): **G_2000 = 15.0548953%** and **G_5000 = 37.4273748%**
+(treated-only 15.0892505% / 37.3846128%; `tahoe_bulk` 10.8317768% /
+24.7366390%). The 2.5× baseline-change argument and the full-axis decision are
 unaffected (measured denominator ratio ≈2.88×); the released values are
 authoritative and recorded in both view manifests.
 

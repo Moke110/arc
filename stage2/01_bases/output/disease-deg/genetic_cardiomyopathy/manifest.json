@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "93cd60413ad720a26ab91e43a708224d68cb7c1ec97c50a5239b00b9e4a3f333",
+  "catalog_sha256": "b434dcf85459befcd0d3fd5ab59c4ecaf55c2ae1a1ccfddfccf2dd381995468b",
   "category": "genetic_cardiomyopathy",
   "counts": {
     "datasets": 8,
@@ -37,7 +37,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "539538bd3a89b2fe4d3d059a818ac87b1adbcc4a4d96080a7f30f9a304baf076"
+      "sha256": "d697f6c4b692be423763713737dc0e10410c8b05ec45766362685573d1c1dfe8"
     },
     "gse194297__dmd_cardiomyopathy.deg.csv": {
       "rows": 16409,
@@ -45,7 +45,7 @@
     },
     "gse194297__dmd_cardiomyopathy.rank.csv": {
       "rows": 18164,
-      "sha256": "22fd33684261a76c87cc8df977bbbb8507f96fede4c246cbdca05e7c2ed6e188"
+      "sha256": "d7164e19b7dd37db8a07ef88eeae179f8b224147737e5eb93b527c5e4286f993"
     },
     "gse224129__mybpc3_hcm.deg.csv": {
       "rows": 17258,
@@ -53,7 +53,7 @@
     },
     "gse224129__mybpc3_hcm.rank.csv": {
       "rows": 18164,
-      "sha256": "7f42fe0a7552674520fe25fb82337c9624966bc2c58dd27255512bfaae74bd1f"
+      "sha256": "e3b94dc8d3061329152a222437861bca313c6b762fef23c690d34ee654f22658"
     },
     "gse234141__ttntv_dcm.deg.csv": {
       "rows": 17606,
@@ -61,7 +61,7 @@
     },
     "gse234141__ttntv_dcm.rank.csv": {
       "rows": 18164,
-      "sha256": "576cf8d5362b73b899b77018b50e03dec016d987f81eb17cf6fd2ff36875fcee"
+      "sha256": "4f83e2feaeafa60fc5f337dba37ef0998ab46a7583dd2830fc5f8fd99fc470b7"
     },
     "gse253223__pkp2_knockdown_arvc.deg.csv": {
       "rows": 16495,
@@ -69,7 +69,7 @@
     },
     "gse253223__pkp2_knockdown_arvc.rank.csv": {
       "rows": 18164,
-      "sha256": "3219ce8b4eb8fa2693f0807fe04357fbdb35e316a665c6ec2e51e8ffcc88d8f8"
+      "sha256": "8937906130be868a0dcfaa2b6ba26f48dade88f473bbf2a8f3462922879b5da3"
     },
     "gse304575__lmna_h222p_dcm.deg.csv": {
       "rows": 16737,
@@ -77,7 +77,7 @@
     },
     "gse304575__lmna_h222p_dcm.rank.csv": {
       "rows": 18164,
-      "sha256": "b5ca21b3e15ede95e4d773e2d2b264cbc10929a0ae301ca5b110b8305e32d266"
+      "sha256": "bbf7f1ed85b9156c6c644a69c58662b8d4ea13bb1a6c712ae1441bb2a31954c0"
     },
     "gse305648__rbm20_dcm.deg.csv": {
       "rows": 17741,
@@ -85,7 +85,7 @@
     },
     "gse305648__rbm20_dcm.rank.csv": {
       "rows": 18164,
-      "sha256": "a8c09f7c7745b29d17b65e11e5c00db998c4a3d0c1d7ca3f2d82cec2a30c71d2"
+      "sha256": "2e985728f5d3ff830f0db6fd0637e16c739efb4c8d62dcbc2da76a22ae138707"
     },
     "reichart-cm__arvc.deg.csv": {
       "rows": 17513,
@@ -93,7 +93,7 @@
     },
     "reichart-cm__arvc.rank.csv": {
       "rows": 18164,
-      "sha256": "a40b0f6eff2eadefddc7f48759b7f547f5036061138660a98c3f642982458432"
+      "sha256": "447a656d38f6553f3267a09050fcb8ad6d430ff2357b451f6581588c3b5cd2be"
     },
     "reichart-cm__dcm_genotype_positive.deg.csv": {
       "rows": 17513,
@@ -101,7 +101,7 @@
     },
     "reichart-cm__dcm_genotype_positive.rank.csv": {
       "rows": 18164,
-      "sha256": "d999c489ab8f8f15b15b9b5a51648fa563f3dddcc7a3294f731b0b8643a2f30a"
+      "sha256": "89b96afeb6a8ac1d99946b5c83e5437d9a6a3c440f3274f53c45863f82b8bb43"
     }
   },
   "recipe": "execution/build_disease_deg.py publish --category genetic_cardiomyopathy",

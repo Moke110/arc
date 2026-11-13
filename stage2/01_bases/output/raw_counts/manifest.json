@@ -22,13 +22,9 @@
       "bytes": 1326799,
       "sha256": "d6104d1ca570d94832be0d27ffe8b7e4e54cfd366c9080239219f9c406eb751c"
     },
-    "stage2/01_bases/log/records/native_tenv_verify.json": {
-      "bytes": 182,
-      "sha256": "0bf5fd1c5567ec3430e509cc09928ed3201ec0d4c4e0e64a7a6b8596277e9188"
-    },
-    "stage2/01_bases/log/records/tahoe_counts_source_acceptance.json": {
-      "bytes": 8888,
-      "sha256": "bc2fe8420aec773e02f068ae1e1628f08369882aad618570ab2104f0e2c105dd"
+    "stage2/01_bases/log/raw_counts_provenance.json": {
+      "bytes": 14926,
+      "sha256": "00f3f48be03b47cd2a1ebcf9a1d15f24a439192bdc07cdb22651b45ff774f295"
     },
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
       "bytes": 14873682,
@@ -37,30 +33,6 @@
     "stage2/01_bases/output/gene-identity/tables/genes.csv": {
       "bytes": 832969,
       "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
-    },
-    "stage2/01_bases/output/tahoe-raw-counts/manifest.json": {
-      "bytes": 817985,
-      "sha256": "7ea21f45e0a9d79383f243a5dd518a7e2851433da400e06e31e575a53cdada44"
-    },
-    "stage2/01_bases/output/tahoe-raw-counts/tahoe.h5ad": {
-      "bytes": 2955032051,
-      "sha256": "a830a34a11759d060fb31697df9281ad6f7667b8051616e1bfea4fbeea64ea15"
-    },
-    "stage2/01_bases/output/tahoe-raw-counts/token_mapping.csv": {
-      "bytes": 1555946,
-      "sha256": "05da6449520c7735eecf2f03d8c947f99e3771262e30c31c74c94fcb78b4ed35"
-    },
-    "stage2/01_bases/output/tenv-raw-counts/tenv.h5ad": {
-      "bytes": 78574803,
-      "sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502"
-    },
-    "stage2/01_bases/output/tenv-raw-counts/tenv_manifest.json": {
-      "bytes": 3189,
-      "sha256": "e0941b240985ed0c77687d363c8e2ba1b069d86f1227b1d512afad6c4897aa5b"
-    },
-    "stage2/01_bases/output/tenv-raw-counts/tenv_probe_mapping.csv": {
-      "bytes": 799000,
-      "sha256": "f3e3dfcd3e60442dedaadc126887c409fb6dedd52831f2f3811c796b457b0485"
     }
   },
   "outputs": {
@@ -115,7 +87,7 @@
     }
   },
   "recipe": {
-    "provenance": "Default mode rehomes the source-accepted payloads and re-seals them after re-checking their sha256 against the recorded source-replay acceptance record and re-deriving the Tahoe token mapping from the immutable source metadata; --full-rebuild rebuilds both payloads from source/.",
+    "provenance": "Default mode rehomes the source-accepted payloads and re-seals them after re-checking their sha256 against the tracked source-replay provenance record (log/raw_counts_provenance.json) and re-deriving the Tahoe token mapping from the immutable source metadata; --full-rebuild rebuilds both payloads from source/.",
     "tahoe": "Tahoe-100M cells summed per stable (plate, well, cell_line_id) profile as int32 UMI counts, projected to the frozen 18,164 axis before normalization; marker tokens dropped; the original Ensembl/token identity is retained in token_mapping.csv. No normalization, no delta.",
     "tenv": "GSE262419 TempO-Seq plate CSVs summed by the resolved native HGNC probe identity; int32; no normalization, no delta, no axis subsetting. The probe evidence is retained and the frozen-axis bridge is sealed as tenv_axis_mapping.csv."
   },
@@ -134,8 +106,9 @@
         "sha256": "de9e3c36908cf5d15400b64f67ed55ecca0343157040b8e93cbb5a97b02fa353"
       },
       "provenance": {
-        "acceptance_record": "stage2/01_bases/log/records/tahoe_counts_source_acceptance.json",
-        "acceptance_record_sha256": "bc2fe8420aec773e02f068ae1e1628f08369882aad618570ab2104f0e2c105dd",
+        "acceptance_record": "stage2/01_bases/log/raw_counts_provenance.json",
+        "acceptance_record_section": "acceptance.tahoe",
+        "acceptance_record_sha256": "00f3f48be03b47cd2a1ebcf9a1d15f24a439192bdc07cdb22651b45ff774f295",
         "counts": {
           "cells": 95624334,
           "genes": 18164,
@@ -192,8 +165,9 @@
         "sha256": "9f57a8d25562332ebf69d80d89dd3eabd7ab7ca55abdbd842469fe3a0293540a"
       },
       "provenance": {
-        "acceptance_record": "stage2/01_bases/log/records/native_tenv_verify.json",
-        "acceptance_record_sha256": "0bf5fd1c5567ec3430e509cc09928ed3201ec0d4c4e0e64a7a6b8596277e9188",
+        "acceptance_record": "stage2/01_bases/log/raw_counts_provenance.json",
+        "acceptance_record_section": "acceptance.tenv",
+        "acceptance_record_sha256": "00f3f48be03b47cd2a1ebcf9a1d15f24a439192bdc07cdb22651b45ff774f295",
         "counts": {
           "blank": 32,
           "genes": 19613,

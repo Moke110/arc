@@ -3,9 +3,9 @@
   "contract": "ADR 0066 / ADR 0062",
   "disease_deg_categories": {
     "af": {
-      "catalog_sha256": "311a5a4dd14db17bf9b9767472e504b11d0dfba092bcb8a88e11791ccd72a381",
+      "catalog_sha256": "c5706217b957501b6152512fbca078ba1f9ca35d4a21c9a5137f9796912346b2",
       "manifest": "stage2/01_bases/output/disease-deg/af/manifest.json",
-      "manifest_sha256": "397c37c16c10d5afb8f1cb38cad5ad35416381a1305a23a6df24a6eb9e8ab137"
+      "manifest_sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507"
     },
     "cardiotox": {
       "catalog_sha256": null,
@@ -13,37 +13,37 @@
       "manifest_sha256": "06e4e08b631ec8a2e908bb52d3a61ba5c9e48c7ed124134d8b69ca3f422dff9b"
     },
     "cardiotox_TOP2": {
-      "catalog_sha256": "1e52dee78661cd5fed0f493be868da58aa6a268556f3cae91d6221eb4a0ffe68",
+      "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
       "manifest": "stage2/01_bases/output/disease-deg/cardiotox_TOP2/manifest.json",
-      "manifest_sha256": "496b4977c63312655167aef9e512855308a37373ba3605f6c27bfe5a562f9d2b"
+      "manifest_sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55"
     },
     "cardiotox_other": {
-      "catalog_sha256": "5ca17ef1bf2299845c55358f381b7c39bbe448e4cc3c9ca22e31f9bb08526d3b",
+      "catalog_sha256": "a3213815e9117595e79d028967ccc9d0637333e735e2a8e18d472042fb5922c7",
       "manifest": "stage2/01_bases/output/disease-deg/cardiotox_other/manifest.json",
-      "manifest_sha256": "57529b8c662cb227475c899d23924d235e7a3d19bc7267b29b1e32e343c5586e"
+      "manifest_sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4"
     },
     "genetic_cardiomyopathy": {
-      "catalog_sha256": "93cd60413ad720a26ab91e43a708224d68cb7c1ec97c50a5239b00b9e4a3f333",
+      "catalog_sha256": "b434dcf85459befcd0d3fd5ab59c4ecaf55c2ae1a1ccfddfccf2dd381995468b",
       "manifest": "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/manifest.json",
-      "manifest_sha256": "18590976961d8b428c50a561b8ddbaf0577fc0e772d2d82f5ed820bda34a7006"
+      "manifest_sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673"
     },
     "icm": {
-      "catalog_sha256": "eca2d0a5b30d9a12d781e277986deaed1a4ecf2d3e2a98aa84e253e46eb25447",
+      "catalog_sha256": "755971c79b60f5403fd7bfb9e430e329dbc37652b778a2b303fca09fcc88929e",
       "manifest": "stage2/01_bases/output/disease-deg/icm/manifest.json",
-      "manifest_sha256": "f05936a87080c01aa42dd6992477a65b906043df9d18e633f43d21c75b868816"
+      "manifest_sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936"
     },
     "nhf": {
-      "catalog_sha256": "3b9655044ba545f89b4b9baa3fcd46a9f9edbcb49a2db6bed22faef60d800454",
+      "catalog_sha256": "62aa91a8b234b6bfb5bd4b92a5d94676d05128bacf9156dcfbd5b7f97d54f803",
       "manifest": "stage2/01_bases/output/disease-deg/nhf/manifest.json",
-      "manifest_sha256": "9cc58c08a2978e482cf377d198062beae8d88d0baf00620221c97788c011e671"
+      "manifest_sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e"
     }
   },
   "figure_reproduction": {
-    "committed_png_sha256": "49d1dc5d91f7da2e155fc91bc932ce6d35e7189b977627161d6fc158cc1f2581",
+    "committed_png_sha256": "3184b37f546dc312a7fe1d0c8282e5e542dbd02af5f424e436625a6a3fcbe134",
     "csv": "stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv",
     "output_products_readable_during_render": false,
     "renderer": "stage2/01_bases/figure/script/render_gene_axis_rank_sum_histogram.py",
-    "replayed_png_sha256": "49d1dc5d91f7da2e155fc91bc932ce6d35e7189b977627161d6fc158cc1f2581"
+    "replayed_png_sha256": "3184b37f546dc312a7fe1d0c8282e5e542dbd02af5f424e436625a6a3fcbe134"
   },
   "invariant_test": "stage2/01_bases/execution/tests/test_acceptance_invariants.py",
   "products": {
@@ -113,7 +113,7 @@
     },
     "disease_deg_af_icm_nhf_genetic": {
       "command": "build_disease_deg.py verify --all",
-      "elapsed_s": 8.45,
+      "elapsed_s": 8.55,
       "inputs": {
         "disease_data/GSE255612/local/deg/gse255612_deg.json": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
         "disease_data/GSE255612/manifest.sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93",
@@ -121,10 +121,10 @@
         "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
       },
       "manifest": "stage2/01_bases/output/disease-deg/af/manifest.json",
-      "manifest_sha256": "397c37c16c10d5afb8f1cb38cad5ad35416381a1305a23a6df24a6eb9e8ab137",
+      "manifest_sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507",
       "outputs": {
         "catalog.json": {
-          "sha256": "25f19e52e5f434edfc449b15a003bb68dbc70875398f84e0785dd6107ee95d23"
+          "sha256": "581f201ddc6a524ae16a39944f81b82b929e66e470ae667946d88d913768dec0"
         },
         "gse255612__af.deg.csv": {
           "rows": 18092,
@@ -132,16 +132,16 @@
         },
         "gse255612__af.rank.csv": {
           "rows": 18164,
-          "sha256": "19171d88a413e8fe94baf6795411434998862ad5466dd329653f42531adff167"
+          "sha256": "fa1a5db3d9ff03ced6c82e49cb1f41379fd2b858cf79c45cd2abe1d5eb8f6382"
         }
       },
-      "peak_rss_kib": 285744,
+      "peak_rss_kib": 299380,
       "replay_record": "log/disease_deg_verify.json",
       "result": "PASS"
     },
     "disease_deg_cardiotox": {
       "command": "build_disease_deg_cardiotox.py verify",
-      "elapsed_s": 99.91,
+      "elapsed_s": 100.07,
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
           "bytes": 7044,
@@ -205,12 +205,12 @@
         }
       },
       "manifest": "stage2/01_bases/output/disease-deg/cardiotox_TOP2/manifest.json",
-      "manifest_sha256": "496b4977c63312655167aef9e512855308a37373ba3605f6c27bfe5a562f9d2b",
+      "manifest_sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55",
       "outputs": {
         "catalog.json": {
-          "bytes": 17751,
+          "bytes": 18909,
           "rows": 3,
-          "sha256": "3feba666358ebba270390eabed98822c387ad195940f79e4f05a43552d214900"
+          "sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be"
         },
         "dtoxs_ipsc.atc_l4-L01DB.deg.csv": {
           "bytes": 2102478,
@@ -218,9 +218,9 @@
           "sha256": "db1ab77af1c632acf7323f20d5b6c03935201720f4496be3a1ffaf8db38233e5"
         },
         "dtoxs_ipsc.atc_l4-L01DB.rank.csv": {
-          "bytes": 393876,
+          "bytes": 428446,
           "rows": 18164,
-          "sha256": "2b4413bca1cffcf0b0c0c025df7e67775fd1a6b858b05ec77967cb6a8c135f1e"
+          "sha256": "fe7c19ab639cd507493a3fe7b18ae93949047cb80f659ed55a75feca0c58370b"
         },
         "gse243674.atc_l4-L01DB.deg.csv": {
           "bytes": 2666367,
@@ -228,9 +228,9 @@
           "sha256": "740776031c84696ad37cc2d8a2d68c7e79b6528951599fb903b113843be7318e"
         },
         "gse243674.atc_l4-L01DB.rank.csv": {
-          "bytes": 431007,
+          "bytes": 431807,
           "rows": 18164,
-          "sha256": "32497e28ffd754954d27454af8fb95ca70704bbe4c3b885bfd22d54ae98b9dc9"
+          "sha256": "f55e1a1130f81272e96d258b2f9b6a71179644e8bda3ac5af5436331cb83d840"
         },
         "gse244740.atc_l4-L01DB.deg.csv": {
           "bytes": 2778575,
@@ -243,43 +243,41 @@
           "sha256": "edc1e5b88113a69b402025171ec4f8a48a8b47d7bc98bed0cce10a23b281e81a"
         }
       },
-      "peak_rss_kib": 1535828,
+      "peak_rss_kib": 1536488,
       "replay_record": "log/cardiotox_verify.json",
       "result": "PASS"
     },
     "gene_axis": {
       "command": "build_gene_axis.py --verify",
-      "elapsed_s": 0.51,
+      "elapsed_s": 0.42,
+      "excluded_categories": [
+        "af"
+      ],
       "inputs": {
         "stage2/01_bases/output/disease-deg/af/catalog.json": {
-          "bytes": 3144,
+          "bytes": 3672,
           "role": "af:catalog",
-          "sha256": "25f19e52e5f434edfc449b15a003bb68dbc70875398f84e0785dd6107ee95d23"
-        },
-        "stage2/01_bases/output/disease-deg/af/gse255612__af.rank.csv": {
-          "bytes": 557716,
-          "role": "af:gse255612__af:rank",
-          "sha256": "19171d88a413e8fe94baf6795411434998862ad5466dd329653f42531adff167"
+          "sha256": "581f201ddc6a524ae16a39944f81b82b929e66e470ae667946d88d913768dec0"
         },
         "stage2/01_bases/output/disease-deg/af/manifest.json": {
           "bytes": 1330,
           "role": "af:release_manifest",
-          "sha256": "397c37c16c10d5afb8f1cb38cad5ad35416381a1305a23a6df24a6eb9e8ab137"
+          "sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_TOP2/catalog.json": {
-          "bytes": 17751,
+          "bytes": 18909,
           "role": "cardiotox_TOP2:catalog",
-          "sha256": "3feba666358ebba270390eabed98822c387ad195940f79e4f05a43552d214900"
+          "sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_TOP2/dtoxs_ipsc.atc_l4-L01DB.rank.csv": {
-          "bytes": 393876,
+          "bytes": 428446,
           "role": "cardiotox_TOP2:dtoxs_ipsc:rank",
-          "sha256": "2b4413bca1cffcf0b0c0c025df7e67775fd1a6b858b05ec77967cb6a8c135f1e"
+          "sha256": "fe7c19ab639cd507493a3fe7b18ae93949047cb80f659ed55a75feca0c58370b"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_TOP2/gse243674.atc_l4-L01DB.rank.csv": {
-          "bytes": 431007,
+          "bytes": 431807,
           "role": "cardiotox_TOP2:gse243674:rank",
-          "sha256": "32497e28ffd754954d27454af8fb95ca70704bbe4c3b885bfd22d54ae98b9dc9"
+          "sha256": "f55e1a1130f81272e96d258b2f9b6a71179644e8bda3ac5af5436331cb83d840"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_TOP2/gse244740.atc_l4-L01DB.rank.csv": {
           "bytes": 431872,
@@ -289,122 +287,122 @@
         "stage2/01_bases/output/disease-deg/cardiotox_TOP2/manifest.json": {
           "bytes": 5353,
           "role": "cardiotox_TOP2:release_manifest",
-          "sha256": "496b4977c63312655167aef9e512855308a37373ba3605f6c27bfe5a562f9d2b"
+          "sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_other/catalog.json": {
-          "bytes": 16900,
+          "bytes": 18058,
           "role": "cardiotox_other:catalog",
-          "sha256": "cf37c284652c557d3ea0e6479380c68f9713c72fb3d0ad5ffd948da4a0f408d0"
+          "sha256": "a065d98e8c5b6453fab1ccacab80f7112d3580569c89148dda9842c8db9e2dbb"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EA.rank.csv": {
-          "bytes": 378430,
+          "bytes": 427040,
           "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EA:rank",
-          "sha256": "f2b8b65d9f3d0722c6369c8fb841b87b307e7350ee91cea84189137d1340155d"
+          "sha256": "94fbd0fc76aa973468013ae480a0f70aaa437a6dec3dfb1d1860913ae460b8aa"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EB.rank.csv": {
-          "bytes": 375351,
+          "bytes": 426431,
           "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EB:rank",
-          "sha256": "3fbf56f98b12668f334fa10d4ac98d163fe883cda2c26ce6c933d4afd4ebe064"
+          "sha256": "d29376cc4ff754dff5ae348d549dc98942e5e2395a493f29ff61bf94fb346171"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EX.rank.csv": {
-          "bytes": 378820,
+          "bytes": 427070,
           "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EX:rank",
-          "sha256": "85544578a633a3c930d3f08348dbcb4ce0f0309dcc22377ec9a5088438cea228"
+          "sha256": "df6a6664fe39ca1c44bb14a33231988baf19f5acfd4e197ca55b44a494849d0a"
         },
         "stage2/01_bases/output/disease-deg/cardiotox_other/manifest.json": {
           "bytes": 4452,
           "role": "cardiotox_other:release_manifest",
-          "sha256": "57529b8c662cb227475c899d23924d235e7a3d19bc7267b29b1e32e343c5586e"
+          "sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/catalog.json": {
-          "bytes": 27685,
+          "bytes": 30773,
           "role": "genetic_cardiomyopathy:catalog",
-          "sha256": "539538bd3a89b2fe4d3d059a818ac87b1adbcc4a4d96080a7f30f9a304baf076"
+          "sha256": "d697f6c4b692be423763713737dc0e10410c8b05ec45766362685573d1c1dfe8"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse194297__dmd_cardiomyopathy.rank.csv": {
-          "bytes": 527471,
+          "bytes": 557306,
           "role": "genetic_cardiomyopathy:gse194297__dmd_cardiomyopathy:rank",
-          "sha256": "22fd33684261a76c87cc8df977bbbb8507f96fede4c246cbdca05e7c2ed6e188"
+          "sha256": "d7164e19b7dd37db8a07ef88eeae179f8b224147737e5eb93b527c5e4286f993"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse224129__mybpc3_hcm.rank.csv": {
-          "bytes": 542733,
+          "bytes": 558135,
           "role": "genetic_cardiomyopathy:gse224129__mybpc3_hcm:rank",
-          "sha256": "7f42fe0a7552674520fe25fb82337c9624966bc2c58dd27255512bfaae74bd1f"
+          "sha256": "e3b94dc8d3061329152a222437861bca313c6b762fef23c690d34ee654f22658"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse234141__ttntv_dcm.rank.csv": {
-          "bytes": 548959,
+          "bytes": 558445,
           "role": "genetic_cardiomyopathy:gse234141__ttntv_dcm:rank",
-          "sha256": "576cf8d5362b73b899b77018b50e03dec016d987f81eb17cf6fd2ff36875fcee"
+          "sha256": "4f83e2feaeafa60fc5f337dba37ef0998ab46a7583dd2830fc5f8fd99fc470b7"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse253223__pkp2_knockdown_arvc.rank.csv": {
-          "bytes": 528979,
+          "bytes": 557352,
           "role": "genetic_cardiomyopathy:gse253223__pkp2_knockdown_arvc:rank",
-          "sha256": "3219ce8b4eb8fa2693f0807fe04357fbdb35e316a665c6ec2e51e8ffcc88d8f8"
+          "sha256": "8937906130be868a0dcfaa2b6ba26f48dade88f473bbf2a8f3462922879b5da3"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse304575__lmna_h222p_dcm.rank.csv": {
-          "bytes": 533336,
+          "bytes": 557595,
           "role": "genetic_cardiomyopathy:gse304575__lmna_h222p_dcm:rank",
-          "sha256": "b5ca21b3e15ede95e4d773e2d2b264cbc10929a0ae301ca5b110b8305e32d266"
+          "sha256": "bbf7f1ed85b9156c6c644a69c58662b8d4ea13bb1a6c712ae1441bb2a31954c0"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse305648__rbm20_dcm.rank.csv": {
-          "bytes": 551434,
+          "bytes": 558625,
           "role": "genetic_cardiomyopathy:gse305648__rbm20_dcm:rank",
-          "sha256": "a8c09f7c7745b29d17b65e11e5c00db998c4a3d0c1d7ca3f2d82cec2a30c71d2"
+          "sha256": "2e985728f5d3ff830f0db6fd0637e16c739efb4c8d62dcbc2da76a22ae138707"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/manifest.json": {
           "bytes": 5311,
           "role": "genetic_cardiomyopathy:release_manifest",
-          "sha256": "18590976961d8b428c50a561b8ddbaf0577fc0e772d2d82f5ed820bda34a7006"
+          "sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/reichart-cm__arvc.rank.csv": {
-          "bytes": 547347,
+          "bytes": 558414,
           "role": "genetic_cardiomyopathy:reichart-cm__arvc:rank",
-          "sha256": "a40b0f6eff2eadefddc7f48759b7f547f5036061138660a98c3f642982458432"
+          "sha256": "447a656d38f6553f3267a09050fcb8ad6d430ff2357b451f6581588c3b5cd2be"
         },
         "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/reichart-cm__dcm_genotype_positive.rank.csv": {
-          "bytes": 547347,
+          "bytes": 558414,
           "role": "genetic_cardiomyopathy:reichart-cm__dcm_genotype_positive:rank",
-          "sha256": "d999c489ab8f8f15b15b9b5a51648fa563f3dddcc7a3294f731b0b8643a2f30a"
+          "sha256": "89b96afeb6a8ac1d99946b5c83e5437d9a6a3c440f3274f53c45863f82b8bb43"
         },
         "stage2/01_bases/output/disease-deg/icm/catalog.json": {
-          "bytes": 6120,
+          "bytes": 6892,
           "role": "icm:catalog",
-          "sha256": "78031a67b9a6fd389e825d20d0bec1fbd8719ce890ae7822cfe69b1af2615b45"
+          "sha256": "b82673333dc137ef43a6237eb5eb04db8f0278b01097c6883d50b35d3692f290"
         },
         "stage2/01_bases/output/disease-deg/icm/gse270788__ami.rank.csv": {
-          "bytes": 539713,
+          "bytes": 557937,
           "role": "icm:gse270788__ami:rank",
-          "sha256": "969997e4f8c555a883706c36611c3c3d9a9cf704fcae7a866f395a1606257b7b"
+          "sha256": "f3648b62bff2fe6ef182d82687d971861b9bc3c6fa445424300bf61698778041"
         },
         "stage2/01_bases/output/disease-deg/icm/gse270788__icm.rank.csv": {
-          "bytes": 539713,
+          "bytes": 557937,
           "role": "icm:gse270788__icm:rank",
-          "sha256": "de760628569f1249a3e9ef9116bd771d86f7549678971012ed163dbed0e2d724"
+          "sha256": "29f9376a61fb1a7425f228b82cabfe57194e1652df5621e8b53bc9108173bb56"
         },
         "stage2/01_bases/output/disease-deg/icm/manifest.json": {
           "bytes": 1653,
           "role": "icm:release_manifest",
-          "sha256": "f05936a87080c01aa42dd6992477a65b906043df9d18e633f43d21c75b868816"
+          "sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936"
         },
         "stage2/01_bases/output/disease-deg/nhf/catalog.json": {
-          "bytes": 6232,
+          "bytes": 7004,
           "role": "nhf:catalog",
-          "sha256": "a7fc0313b234b46adfa8ef26d804e6a500100b9590a227d3d5a1736c9e70a329"
+          "sha256": "6b5e36bfbe4429019799a249981b8f9556e7578e819c8d450f214cc1f4989eb6"
         },
         "stage2/01_bases/output/disease-deg/nhf/gse270788__nicm.rank.csv": {
-          "bytes": 539713,
+          "bytes": 557937,
           "role": "nhf:gse270788__nicm:rank",
-          "sha256": "c63f43b3d5d7b91a4b94ea4a16e829c8327c88ae782a050a61cefc91a7d3e8a9"
+          "sha256": "9089cf243e06510b1ca2731c50c2d73b9642fb612d1e43ee01d962e7e4eba5b8"
         },
         "stage2/01_bases/output/disease-deg/nhf/manifest.json": {
           "bytes": 1963,
           "role": "nhf:release_manifest",
-          "sha256": "9cc58c08a2978e482cf377d198062beae8d88d0baf00620221c97788c011e671"
+          "sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e"
         },
         "stage2/01_bases/output/disease-deg/nhf/reichart-cm__dcm_genotype_negative.rank.csv": {
-          "bytes": 547347,
+          "bytes": 558414,
           "role": "nhf:reichart-cm__dcm_genotype_negative:rank",
-          "sha256": "93a0e1a4cab8cbac3cb2d025fe45d0f4fe85e98f7b31c78458071848b1e09445"
+          "sha256": "a8a538a82ab9f49e874929fb4a890cb0b5a678099902e5d06d150b76fd2858c7"
         },
         "stage2/01_bases/output/gene-identity/genes.csv": {
           "bytes": 930854,
@@ -417,16 +415,18 @@
           "sha256": "1291385e559cf8f5a04c958acc7ec9241113d89aaeb783482b77332ce7f423ca"
         }
       },
+      "intersection": 1972,
       "manifest": "stage2/01_bases/output/gene-axis/manifest.json",
-      "manifest_sha256": "42baa74f2d53c2e91317ea7bd6a8f5e2dbf319e9b061325d02b803821aeb6fcb",
+      "manifest_sha256": "948f96875b89461b370ad5b44a99ec4c45cc369af1203e2c0fed1294a7a469e1",
+      "n_sources": 6,
       "outputs": {
         "stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv": {
           "rows": 75,
-          "sha256": "7e28492e2b34526a890301641c562b18ba288ee645338da6180a6c0707527b5b"
+          "sha256": "5dac4376deff481e78ad2b9395b85a76599f411b63b2b77b452a3e07f65182b8"
         },
         "stage2/01_bases/output/gene-axis/axis_composition.csv": {
-          "rows": 46,
-          "sha256": "0bcf76123b3b235ed8699fc87cdc03e28cff5c1b71c709889a070078c1c1a153"
+          "rows": 42,
+          "sha256": "4f89aab8cccf45c441a65adae91aef1e0761755d893abd02595b9b641c9ff424"
         },
         "stage2/01_bases/output/gene-axis/candidate_rank_sum.csv": {
           "columns": [
@@ -445,24 +445,28 @@
             "p5000"
           ],
           "rows": 18164,
-          "sha256": "056f0fd13094e89f4184693f9dee59a15d99ad5cafc52ab42299e170c41cc065"
+          "sha256": "7e1417b59571110e3ecf6bc416e57c9c63c1253210d7c3b4e19b28c87a2c2a3f"
         },
         "stage2/01_bases/output/gene-axis/gene_axis_2000.csv": {
           "rows": 2000,
-          "sha256": "a0c5ccb45b23dc0ba6f4bb542e3b84a040555d6a5730aa63200f98fc9e44bcbd"
+          "sha256": "cb07535f4f3ba4225a7f3466db4de14a3b4655a6a5d0e371da604ef0c9688d38"
         },
         "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
           "rows": 5000,
-          "sha256": "91095c15da37d3491e32676c7b005bf914531195e99d5404dc3cf631e76f780d"
+          "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676"
         }
       },
-      "peak_rss_kib": 141780,
+      "pN_bounds": [
+        0,
+        6
+      ],
+      "peak_rss_kib": 140724,
       "replay_record": "log/gene_axis_verify.json",
       "result": "PASS"
     },
     "raw_counts": {
-      "command": "build_raw_counts.py verify",
-      "elapsed_s": 14.42,
+      "command": "build_raw_counts.py verify (source-accepted-replay)",
+      "elapsed_s": 15.91,
       "inputs": {
         "pert_data/GSE262419/manifest.sha256": {
           "bytes": 1641,
@@ -476,13 +480,9 @@
           "bytes": 1326799,
           "sha256": "d6104d1ca570d94832be0d27ffe8b7e4e54cfd366c9080239219f9c406eb751c"
         },
-        "stage2/01_bases/log/records/native_tenv_verify.json": {
-          "bytes": 182,
-          "sha256": "0bf5fd1c5567ec3430e509cc09928ed3201ec0d4c4e0e64a7a6b8596277e9188"
-        },
-        "stage2/01_bases/log/records/tahoe_counts_source_acceptance.json": {
-          "bytes": 8888,
-          "sha256": "bc2fe8420aec773e02f068ae1e1628f08369882aad618570ab2104f0e2c105dd"
+        "stage2/01_bases/log/raw_counts_provenance.json": {
+          "bytes": 14926,
+          "sha256": "00f3f48be03b47cd2a1ebcf9a1d15f24a439192bdc07cdb22651b45ff774f295"
         },
         "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
           "bytes": 14873682,
@@ -491,34 +491,10 @@
         "stage2/01_bases/output/gene-identity/tables/genes.csv": {
           "bytes": 832969,
           "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
-        },
-        "stage2/01_bases/output/tahoe-raw-counts/manifest.json": {
-          "bytes": 817985,
-          "sha256": "7ea21f45e0a9d79383f243a5dd518a7e2851433da400e06e31e575a53cdada44"
-        },
-        "stage2/01_bases/output/tahoe-raw-counts/tahoe.h5ad": {
-          "bytes": 2955032051,
-          "sha256": "a830a34a11759d060fb31697df9281ad6f7667b8051616e1bfea4fbeea64ea15"
-        },
-        "stage2/01_bases/output/tahoe-raw-counts/token_mapping.csv": {
-          "bytes": 1555946,
-          "sha256": "05da6449520c7735eecf2f03d8c947f99e3771262e30c31c74c94fcb78b4ed35"
-        },
-        "stage2/01_bases/output/tenv-raw-counts/tenv.h5ad": {
-          "bytes": 78574803,
-          "sha256": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502"
-        },
-        "stage2/01_bases/output/tenv-raw-counts/tenv_manifest.json": {
-          "bytes": 3189,
-          "sha256": "e0941b240985ed0c77687d363c8e2ba1b069d86f1227b1d512afad6c4897aa5b"
-        },
-        "stage2/01_bases/output/tenv-raw-counts/tenv_probe_mapping.csv": {
-          "bytes": 799000,
-          "sha256": "f3e3dfcd3e60442dedaadc126887c409fb6dedd52831f2f3811c796b457b0485"
         }
       },
       "manifest": "stage2/01_bases/output/raw_counts/manifest.json",
-      "manifest_sha256": "6d45b1711cbe709416aab684b08c195dccada5dcfb49426dbbe16b76facbff4f",
+      "manifest_sha256": "e02e5a1bcba262afbb5594b03dd305a88f71af58ebe287c62d88db41bdf6f406",
       "outputs": {
         "tahoe.h5ad": {
           "bytes": 2955032051,
@@ -570,7 +546,7 @@
           "sha256": "05da6449520c7735eecf2f03d8c947f99e3771262e30c31c74c94fcb78b4ed35"
         }
       },
-      "peak_rss_kib": 378800,
+      "peak_rss_kib": 375856,
       "replay_record": "log/raw_counts_verify.json",
       "result": "PASS"
     },
@@ -602,18 +578,18 @@
           "sha256": "024cbd065e440a746886651d205decdea7d7cf99ebb1394c48ff15cb0a411e6e"
         },
         "stage2/01_bases/output/gene-axis/gene_axis_2000.csv": {
-          "bytes": 23153,
+          "bytes": 23375,
           "role": "gene_axis:2000",
-          "sha256": "a0c5ccb45b23dc0ba6f4bb542e3b84a040555d6a5730aa63200f98fc9e44bcbd"
+          "sha256": "cb07535f4f3ba4225a7f3466db4de14a3b4655a6a5d0e371da604ef0c9688d38"
         },
         "stage2/01_bases/output/gene-axis/manifest.json": {
-          "bytes": 25186,
+          "bytes": 27016,
           "role": "gene_axis_release_manifest",
-          "sha256": "42baa74f2d53c2e91317ea7bd6a8f5e2dbf319e9b061325d02b803821aeb6fcb"
+          "sha256": "948f96875b89461b370ad5b44a99ec4c45cc369af1203e2c0fed1294a7a469e1"
         }
       },
       "manifest": "stage2/01_bases/output/view-2k/manifest.json",
-      "manifest_sha256": "b48eeddbd09b8b7eb4d57597de3ae73bca8311e8e56d2e44d9e814e9040c18db",
+      "manifest_sha256": "cb190846d202505b8ecb674df9c3579d3fc3d3f1f5beb4601f230b692625e950",
       "outputs": {
         "library_totals.csv": {
           "bytes": 3727979,
@@ -627,26 +603,26 @@
           "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
         },
         "tahoe_bulk.h5ad": {
-          "bytes": 1307875582,
+          "bytes": 1312787850,
           "columns": 2000,
           "dtype": "float32",
           "rows": 66718,
-          "sha256": "f0732761b14298ae05679e958123147ebc6c47ac942eef87a9d8968ad4642566"
+          "sha256": "8ed8655b543d9c167b04933aa9c9b5cc5980f4ffdfc6baed5a5eea93d3395ea4"
         },
         "tenv.h5ad": {
-          "bytes": 59829344,
+          "bytes": 59912368,
           "columns": 2000,
           "dtype": "float32",
           "rows": 4478,
-          "sha256": "4bcdddb53c48a9031ae248e0e4db004797cb19c5db38926b7302cdd4a8cf4d7d"
+          "sha256": "c02f320c5caca8a3ddaf93943aedc8a5ffdf518007d30e32a47e108862b50e9c"
         }
       },
-      "publish_elapsed_s": 212.48,
-      "publish_peak_rss_kib": 438596,
+      "publish_elapsed_s": 212.24,
+      "publish_peak_rss_kib": 437668,
       "replay_record": "log/view_verify.json",
       "result": "PASS",
-      "verify_elapsed_s": 218.42,
-      "verify_peak_rss_kib": 445892
+      "verify_elapsed_s": 214.96,
+      "verify_peak_rss_kib": 442036
     },
     "view_5k": {
       "command": "build_view.py verify (publish first to materialise the gitignored payloads)",
@@ -667,18 +643,18 @@
           "sha256": "024cbd065e440a746886651d205decdea7d7cf99ebb1394c48ff15cb0a411e6e"
         },
         "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
-          "bytes": 58008,
+          "bytes": 58530,
           "role": "gene_axis:5000",
-          "sha256": "91095c15da37d3491e32676c7b005bf914531195e99d5404dc3cf631e76f780d"
+          "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676"
         },
         "stage2/01_bases/output/gene-axis/manifest.json": {
-          "bytes": 25186,
+          "bytes": 27016,
           "role": "gene_axis_release_manifest",
-          "sha256": "42baa74f2d53c2e91317ea7bd6a8f5e2dbf319e9b061325d02b803821aeb6fcb"
+          "sha256": "948f96875b89461b370ad5b44a99ec4c45cc369af1203e2c0fed1294a7a469e1"
         }
       },
       "manifest": "stage2/01_bases/output/view-5k/manifest.json",
-      "manifest_sha256": "37af263be54d135cb9c5bab2e3c43ef28497ade402cf57ff0717a196f2f6ae1e",
+      "manifest_sha256": "03f2a0563a2a600dc9b007c6ceb89b3737d798e51988728e6079093670e698ea",
       "outputs": {
         "library_totals.csv": {
           "bytes": 3727979,
@@ -692,38 +668,54 @@
           "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
         },
         "tahoe_bulk.h5ad": {
-          "bytes": 3146195077,
+          "bytes": 3152087026,
           "columns": 5000,
           "dtype": "float32",
           "rows": 66718,
-          "sha256": "9533007151fe6c6cdd5a7ec1a5e906de03cb2a37763668614e41a4eb3a79d91d"
+          "sha256": "02abaed932e3e0b82032e4ec78884531f9743d4143886f190752585e32c22905"
         },
         "tenv.h5ad": {
-          "bytes": 142393266,
+          "bytes": 142266477,
           "columns": 5000,
           "dtype": "float32",
           "rows": 4478,
-          "sha256": "5827434c7baa24745fc2cf3e98d16f7c10f8e5712504e0b1743c29fd8f4239e4"
+          "sha256": "e1a18a9acb75b610527bdd83bff31b27bbd8c71e8c4a8444f935f1f343dd47f3"
         }
       },
-      "publish_elapsed_s": 212.48,
-      "publish_peak_rss_kib": 438596,
+      "publish_elapsed_s": 212.24,
+      "publish_peak_rss_kib": 437668,
       "replay_record": "log/view_verify.json",
       "result": "PASS",
-      "verify_elapsed_s": 218.42,
-      "verify_peak_rss_kib": 445892
+      "verify_elapsed_s": 214.96,
+      "verify_peak_rss_kib": 442036
     }
   },
   "python": "/home/chang/miniconda3/envs/arc/bin/python",
+  "raw_counts_provenance": {
+    "note": "The two pre-0066 source-replay acceptance records and the native tenv build manifest were restored verbatim from git history into one tracked, digest-pinned record; the raw-count manifest pins this file and no longer pins the retired log/records or output/{tenv,tahoe}-raw-counts paths.",
+    "path": "stage2/01_bases/log/raw_counts_provenance.json",
+    "payload_sha256": {
+      "tahoe": {
+        "tahoe.h5ad": "a830a34a11759d060fb31697df9281ad6f7667b8051616e1bfea4fbeea64ea15",
+        "token_mapping.csv": "05da6449520c7735eecf2f03d8c947f99e3771262e30c31c74c94fcb78b4ed35"
+      },
+      "tenv": {
+        "tenv.h5ad": "efd076327cd3384f26beffde4d5293841216b0175b474765c8c9676c20892502",
+        "tenv_probe_mapping.csv": "f3e3dfcd3e60442dedaadc126887c409fb6dedd52831f2f3811c796b457b0485"
+      }
+    },
+    "restored_from": {
+      "commit": "d01448d4b36f59c7e49733b8022be784d0e796dd",
+      "paths": {
+        "tahoe_acceptance": "stage2/01_bases/log/records/tahoe_counts_source_acceptance.json",
+        "tenv_acceptance": "stage2/01_bases/log/records/native_tenv_verify.json",
+        "tenv_build_manifest": "stage2/01_bases/output/tenv-raw-counts/tenv_manifest.json"
+      },
+      "why": "The #186 rehome ruling required the recorded source-replay evidence to be carried into the regenerated raw-count record. ADR 0066 deleted the pre-0066 log/ tree and products; these two acceptance records and the native tenv build manifest are restored here verbatim from git history, digest-pinned by the raw-count release manifest."
+    },
+    "sha256": "00f3f48be03b47cd2a1ebcf9a1d15f24a439192bdc07cdb22651b45ff774f295"
+  },
   "retired_evidence_digests": {
-    "stage2/01_bases/log/records/native_tenv_verify.json": {
-      "bytes": 182,
-      "sha256": "0bf5fd1c5567ec3430e509cc09928ed3201ec0d4c4e0e64a7a6b8596277e9188"
-    },
-    "stage2/01_bases/log/records/tahoe_counts_source_acceptance.json": {
-      "bytes": 8888,
-      "sha256": "bc2fe8420aec773e02f068ae1e1628f08369882aad618570ab2104f0e2c105dd"
-    },
     "stage2/01_bases/output/gene-axis/direction_summary.csv": {
       "bytes": 583,
       "sha256": "23a6b8c6bb3c5f0534f44f3b77d4eed2a95f669a264bd5ea0282f8518eb108f5"

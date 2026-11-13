@@ -5,7 +5,7 @@
     "tahoe_profiles": 67018,
     "tenv_profiles": 4510
   },
-  "manifest_sha256": "6d45b1711cbe709416aab684b08c195dccada5dcfb49426dbbe16b76facbff4f",
+  "manifest_sha256": "e02e5a1bcba262afbb5594b03dd305a88f71af58ebe287c62d88db41bdf6f406",
   "mode": "source-accepted-replay",
   "outputs": [
     "tahoe.h5ad",

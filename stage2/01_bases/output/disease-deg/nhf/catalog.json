@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "3b9655044ba545f89b4b9baa3fcd46a9f9edbcb49a2db6bed22faef60d800454",
+  "catalog_sha256": "62aa91a8b234b6bfb5bd4b92a5d94676d05128bacf9156dcfbd5b7f97d54f803",
   "category": "nHF",
   "datasets": [
     {
@@ -55,6 +55,12 @@
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "not_declared",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 15992,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
         "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
@@ -123,6 +129,12 @@
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "negative",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17346,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
         "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"

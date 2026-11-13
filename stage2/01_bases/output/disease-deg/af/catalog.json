@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "311a5a4dd14db17bf9b9767472e504b11d0dfba092bcb8a88e11791ccd72a381",
+  "catalog_sha256": "c5706217b957501b6152512fbca078ba1f9ca35d4a21c9a5137f9796912346b2",
   "category": "AF",
   "datasets": [
     {
@@ -55,6 +55,12 @@
       "evidence_type": "cm_pseudobulk",
       "exploratory": false,
       "genotype_status": "not_declared",
+      "informative": false,
+      "informativeness": {
+        "n_distinct_effect": 1,
+        "reason": "all 18092 measured effect scores are tied at 0.0; the within-dataset order is the gene_index tie-break, so the dataset carries no ordering evidence",
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
       "inputs": {
         "disease_data/GSE255612/local/deg/gse255612_deg.json": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
         "disease_data/GSE255612/manifest.sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93"

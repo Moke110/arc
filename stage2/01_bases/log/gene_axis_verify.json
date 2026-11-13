@@ -4,9 +4,9 @@
     5000
   ],
   "inflection": false,
-  "inputs": 33,
-  "intersection": 1919,
-  "manifest_sha256": "42baa74f2d53c2e91317ea7bd6a8f5e2dbf319e9b061325d02b803821aeb6fcb",
+  "inputs": 32,
+  "intersection": 1972,
+  "manifest_sha256": "948f96875b89461b370ad5b44a99ec4c45cc369af1203e2c0fed1294a7a469e1",
   "outputs": 5,
   "result": "PASS",
   "schema": "stage2-gene-axis-release-v1"

@@ -173,6 +173,16 @@ def build_category(context, candidate, category):
             'n_measured': int(len(table)),
             'n_significant': int(table.significant.sum()),
             'n_axis_unmeasured': int(len(rank) - len(table)),
+            # ADR 0068: a measured dataset whose effect scores are all tied
+            # carries no ordering evidence. The table/rank are still published
+            # unchanged; the fusion excludes the record (and a category with no
+            # informative record entirely).
+            'informative': bool(stats['informative']),
+            'informativeness': {
+                'rule': stats['informativeness_rule'],
+                'n_distinct_effect': int(stats['n_distinct_effect']),
+                'reason': stats['informativeness_reason'],
+            },
             'deg': deg_name,
             'rank': rank_name,
             'method': method,

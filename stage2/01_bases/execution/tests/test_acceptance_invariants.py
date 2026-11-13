@@ -50,6 +50,9 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 RECORD_FIELDS = {
     "dataset_id", "category", "evidence_type", "tier", "deg", "rank",
     "method", "inputs", "n_measured", "n_significant",
+    # ADR 0068 / #194: every record states whether its measured effect scores
+    # carry an ordering, so the fusion never has to guess it.
+    "informative", "informativeness",
 }
 LEGACY_CATALOG_KEYS = {"test_method", "dataset_records"}
 LEGACY_RECORD_KEYS = {"test_method", "dataset_records"}
@@ -96,6 +99,24 @@ class CatalogShapeTest(unittest.TestCase):
                     self.assertTrue(record["method"],
                                     "a dataset record must carry its method")
                     self.assertTrue(str(record["dataset_id"]))
+
+    def test_informativeness_is_explicit_and_reasoned(self):
+        # ADR 0068: an all-tied dataset is published with informative: false and
+        # a recorded reason; the field is a boolean, never inferred downstream.
+        for category, catalog in self.catalogs.items():
+            for record in catalog["datasets"]:
+                with self.subTest(category=category, dataset=record["dataset_id"]):
+                    self.assertIsInstance(record["informative"], bool)
+                    details = record["informativeness"]
+                    self.assertIsInstance(details["rule"], str)
+                    self.assertGreaterEqual(int(details["n_distinct_effect"]), 1)
+                    if record["informative"]:
+                        self.assertIsNone(details["reason"])
+                        self.assertGreater(details["n_distinct_effect"], 1)
+                    else:
+                        self.assertIsInstance(details["reason"], str)
+                        self.assertTrue(details["reason"])
+                        self.assertEqual(int(details["n_distinct_effect"]), 1)
 
     def test_catalog_sha256_is_self_consistent_and_in_the_manifest(self):
         for category, catalog in self.catalogs.items():

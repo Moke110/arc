@@ -87,3 +87,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0065](0065-stage2-gene-axis-decision-preparation.md) | Prepare the Stage 2 gene-axis decision: public disease sources, full-transcriptome DEGs and an unweighted rank-sum fusion, without deciding the axis — *superseded by 0066* |
 | [0066](0066-stage2-corpus-view-and-gene-axis.md) | Stage 2 01_bases: raw counts, a raw corpus, gene-axis views and the released 2,000/5,000-gene axes |
 | [0067](0067-errata-to-0066-gse270788-arms-and-view-shares.md) | Errata to ADR 0066: GSE270788 arm sizes and released-axis CP10K shares |
+| [0068](0068-fusion-amendment-degenerate-sources-and-rank-norm.md) | Fusion amendment: non-informative sources excluded from fusion/`pN`, unmeasured `rank_norm`, and two removals |

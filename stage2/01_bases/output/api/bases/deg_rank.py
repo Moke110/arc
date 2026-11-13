@@ -16,8 +16,14 @@ ranks. The contract is deliberately pure and dataset-agnostic:
 * **within-dataset rank** — measured genes rank 1..``n_measured`` by descending
   effect score with ``gene_index`` as the deterministic tie-break; a gene the
   dataset does not measure gets ``n_measured + 1``.
-* **rank normalization** — ``rank_norm = rank / n_measured``. The denominator is
-  the measured-gene count, never the significant-DEG count.
+* **rank normalization** — ``rank_norm = rank / n_measured`` for every gene;
+  an unmeasured gene's raw rank is ``n_measured + 1``, so its normalized value
+  is ``(n_measured + 1) / n_measured``. The denominator is the measured-gene
+  count, never the significant-DEG count.
+* **informativeness** — a dataset whose measured effect scores are all tied has
+  no informative ordering (its rank is the ``gene_index`` tie-break). It is
+  published with ``informative: false`` and a recorded reason, and excluded
+  from the level-2 fusion and ``pN`` (ADR 0068).
 
 Ranks are within-dataset only; they are never compared across datasets as if
 they were effect sizes.
@@ -265,12 +271,60 @@ def complete_rank(measured_gene_index, measured_rank, axis_size=AXIS_SIZE):
 
 
 def normalized_rank(rank, n_measured):
-    """Rank / n_measured for measured genes; unmeasured is exactly 1.0."""
+    """``rank / n_measured`` for every gene, per ADR 0066 *Rank normalization*.
+
+    A measured gene has ``rank`` in ``1..n_measured``; a gene the dataset does
+    not measure has ``rank = n_measured + 1`` (see :func:`complete_rank`), so its
+    normalized value is ``(n_measured + 1) / n_measured`` — slightly worse than
+    every measured gene, never clamped to exactly 1.0. Clamping would let an
+    unmeasured gene tie the last measured gene and would contradict the ADR
+    formula; the denominator stays the measured-gene count, never the
+    significant-DEG count.
+    """
     rank = np.asarray(rank, dtype=np.float64)
     n_measured = float(n_measured)
     if n_measured <= 0:
         raise ValueError('a source needs at least one measured gene')
-    return np.where(rank <= n_measured, rank / n_measured, 1.0)
+    if not np.isfinite(n_measured):
+        raise ValueError('n_measured must be finite')
+    return rank / n_measured
+
+
+INFORMATIVENESS_RULE = (
+    'a dataset is informative when its measured genes carry more than one '
+    'distinct continuous effect score; when every measured effect is tied the '
+    'within-dataset order degenerates to gene_index and the dataset carries no '
+    'ordering evidence (ADR 0068)')
+
+
+def dataset_informativeness(effect):
+    """Decide whether a measured dataset carries an informative ordering.
+
+    The narrow, data-driven rule (ADR 0068; #185 User Story 22, ADR 0066
+    *Candidate table*): a dataset that measures genes but whose continuous
+    effect scores are all tied has no ordering information. Its published
+    DEG/rank table is still valid — the rank then follows the declared
+    ``gene_index`` tie-break — but the dataset must not count as a fusion
+    source. A dataset with two or more distinct effect scores is informative.
+
+    Returns ``{'informative', 'n_measured', 'n_distinct_effect', 'reason'}``
+    where ``reason`` is ``None`` for an informative dataset.
+    """
+    effect = np.asarray(effect, dtype=np.float64)
+    if effect.ndim != 1:
+        raise ValueError('effect scores must be a vector')
+    if effect.size == 0:
+        raise ValueError('informativeness needs at least one measured gene')
+    if not np.isfinite(effect).all():
+        raise ValueError('effect scores must be finite')
+    distinct = int(np.unique(effect).size)
+    informative = distinct > 1
+    reason = None if informative else (
+        f'all {effect.size} measured effect scores are tied at '
+        f'{float(effect[0])!r}; the within-dataset order is the gene_index '
+        f'tie-break, so the dataset carries no ordering evidence')
+    return {'informative': bool(informative), 'n_measured': int(effect.size),
+            'n_distinct_effect': distinct, 'reason': reason}
 
 
 
@@ -349,6 +403,7 @@ def dataset_deg_rank(rows, axis_size=AXIS_SIZE):
     rank = pd.DataFrame({'gene_index': np.arange(axis_size, dtype=np.int64),
                          'rank': full_rank,
                          'rank_norm': full_rank_norm})
+    informativeness = dataset_informativeness(table.effect.to_numpy())
     stats = {
         'schema': SCHEMA,
         'axis_size': int(axis_size),
@@ -359,5 +414,9 @@ def dataset_deg_rank(rows, axis_size=AXIS_SIZE):
         'n_significant': int(table.significant.sum()),
         'rank_norm_denominator': 'n_measured',
         'unmeasured_rank': int(n_measured + 1),
+        'informative': informativeness['informative'],
+        'informativeness_reason': informativeness['reason'],
+        'n_distinct_effect': informativeness['n_distinct_effect'],
+        'informativeness_rule': INFORMATIVENESS_RULE,
     }
     return table, rank, stats

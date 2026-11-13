@@ -1360,6 +1360,14 @@ def _dataset_entry(source, class_id, class_label, member_drugs, member_source_id
         "n_contrasts": int(len(contrasts)),
         "n_measured": int(stats["n_measured"]),
         "n_significant": int(stats["n_significant"]),
+        # ADR 0068: all-tied effect scores carry no ordering evidence; the record
+        # is still published but the gene-axis fusion excludes it.
+        "informative": bool(stats["informative"]),
+        "informativeness": {
+            "rule": stats["informativeness_rule"],
+            "n_distinct_effect": int(stats["n_distinct_effect"]),
+            "reason": stats["informativeness_reason"],
+        },
         "alignment": stats["alignment"],
         "method": test_method,
         "deg": deg_name,

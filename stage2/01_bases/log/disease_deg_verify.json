@@ -3,7 +3,7 @@
   "results": [
     {
       "category": "AF",
-      "manifest_sha256": "397c37c16c10d5afb8f1cb38cad5ad35416381a1305a23a6df24a6eb9e8ab137",
+      "manifest_sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507",
       "outputs": [
         "catalog.json",
         "gse255612__af.deg.csv",
@@ -13,7 +13,7 @@
     },
     {
       "category": "ICM",
-      "manifest_sha256": "f05936a87080c01aa42dd6992477a65b906043df9d18e633f43d21c75b868816",
+      "manifest_sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936",
       "outputs": [
         "catalog.json",
         "gse270788__ami.deg.csv",
@@ -25,7 +25,7 @@
     },
     {
       "category": "genetic_cardiomyopathy",
-      "manifest_sha256": "18590976961d8b428c50a561b8ddbaf0577fc0e772d2d82f5ed820bda34a7006",
+      "manifest_sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673",
       "outputs": [
         "catalog.json",
         "gse194297__dmd_cardiomyopathy.deg.csv",
@@ -49,7 +49,7 @@
     },
     {
       "category": "nHF",
-      "manifest_sha256": "9cc58c08a2978e482cf377d198062beae8d88d0baf00620221c97788c011e671",
+      "manifest_sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e",
       "outputs": [
         "catalog.json",
         "gse270788__nicm.deg.csv",
