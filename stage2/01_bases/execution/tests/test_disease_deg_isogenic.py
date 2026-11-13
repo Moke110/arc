@@ -567,13 +567,13 @@ def _fixture_sources():
                    'design': 'one joint fit', 'test': 'moderated t', 'padj': 'BH'},
     }
     datasets = [
-        dict(base, dataset_id='iso__multi', source_item='disease_data/ISO-FIX',
+        dict(base, dataset_id='iso__multi', source_item='fixture_items/ISO-FIX',
              local_deg='local/deg/iso_deg.csv', local_summary='local/deg/iso_deg.json',
              arm_or_class='two contrasts', n_case=4, n_control=2,
              contrasts=['A-wt', 'B-wt'],
              isogenic_exception={'applies': True, 'control_arm': 'wt', 'why': 'fixture'},
              strata={'decision': 'collapsed', 'pooled': True, 'blocking_covariates': []}),
-        dict(base, dataset_id='reichart__positive', source_item='disease_data/REICH-FIX',
+        dict(base, dataset_id='reichart__positive', source_item='fixture_items/REICH-FIX',
              local_deg='local/deg/reichart_deg.csv',
              local_summary='local/deg/reichart_deg.json', arm_or_class='positive',
              n_case=3, n_control=1, contrasts=['positive-normal'],
@@ -599,12 +599,12 @@ def _write_driver_fixture(root):
                          'contrast': contrast, 'log2fc': log2fc, 'stat': log2fc,
                          'p_value': 1e-3 if padj is not None else np.nan,
                          'padj': padj, 'base_mean': 1.0})
-    iso = root / 'disease_data/ISO-FIX'
+    iso = root / 'fixture_items/ISO-FIX'
     (iso / 'local/deg').mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(iso / 'local/deg/iso_deg.csv', index=False)
     (iso / 'local/deg/iso_deg.json').write_text('{fixture}\n')
     (iso / 'manifest.sha256').write_text('00  fixture\n')
-    reich = root / 'disease_data/REICH-FIX'
+    reich = root / 'fixture_items/REICH-FIX'
     (reich / 'local/deg').mkdir(parents=True, exist_ok=True)
     pd.DataFrame([{'source_gene_id': 'G00003', 'gene_symbol': 'G00003',
                    'contrast': 'positive-normal', 'log2fc': 1.0, 'stat': 2.0,
