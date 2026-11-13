@@ -1,5 +1,11 @@
 # Stage 2 shared foundations
 
+> **Superseded layout, rebuild pending (ADR 0066).** This step's `output/` tree is being
+> rebuilt as `raw_counts/` → `corpus/` → `view-2k/`/`view-5k/`, with `disease-deg/` and the
+> released `gene_axis_2000.csv` / `gene_axis_5000.csv` in `gene-axis/`. The measured truth,
+> the successor envelope, the diagnostic PR figure and `log/` are retired. Everything below
+> describes the pre-0066 tree until the rebuild lands.
+
 This is the standalone foundation retained after the user removed the other
 Stage 2 steps. Immutable raw inputs remain under `pert_data/`. Deleted historical
 experiments and their checkpoints are outside this build. The layout follows

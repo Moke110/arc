@@ -1,5 +1,11 @@
 # AGENTS.md — stage2/01_bases
 
+> **Superseded layout, rebuild pending (ADR 0066).** This step's `output/` tree is being
+> rebuilt as `raw_counts/` → `corpus/` → `view-2k/`/`view-5k/`, with `disease-deg/` and the
+> released `gene_axis_2000.csv` / `gene_axis_5000.csv` in `gene-axis/`. The measured truth,
+> the successor envelope, the diagnostic PR figure and `log/` are retired. Everything below
+> describes the pre-0066 tree until the rebuild lands.
+
 Routing for the standalone Stage 2 foundation; commands and contracts are in
 [`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
 gene and evaluation semantics. Every path below is a stable semantic path.
