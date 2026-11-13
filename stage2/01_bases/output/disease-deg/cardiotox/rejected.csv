@@ -1,0 +1,4 @@
+candidate,source_item,reason
+GSE217423 (DToxS 3'-DGE arm),pert_data/DToxS-iPSC,"same experiment as GSE217421 on a targeted 3'-DGE platform; not an independent cohort, so it is not a second DToxS dataset"
+GSE242692,(not admitted),single-drug doxorubicin series; fails the >=3 small-molecule class rule (ADR 0066)
+GSE313746,(not admitted),single-drug doxorubicin series; fails the >=3 small-molecule class rule (ADR 0066)

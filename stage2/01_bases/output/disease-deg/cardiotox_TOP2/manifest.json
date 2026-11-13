@@ -1,0 +1,125 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/tables/genes.csv",
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "counts": {
+    "datasets": 3,
+    "measured_gene_rows": 50955
+  },
+  "environment": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "r": {
+      "DESeq2": "1.50.2",
+      "edgeR": "4.8.2",
+      "interpreter": "conda:biomni_e1",
+      "r": "R version 4.5.3 (2026-03-11)"
+    },
+    "rdkit_version": "2026.03.2"
+  },
+  "inputs": {
+    "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
+      "bytes": 7044,
+      "sha256": "20b446a11cd4330194b73a3d0123282963fd796aa715f420cd1fa09e1a428514"
+    },
+    "disease_data/GSE243674/source/GSE243674_Counts_RNA_ERMatthews.txt.gz": {
+      "bytes": 2424618,
+      "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882"
+    },
+    "pert_data/Annotation/local/cm_compound_annotation.csv": {
+      "bytes": 116967,
+      "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+    },
+    "pert_data/Annotation/source/hgnc_complete_set.txt": {
+      "bytes": 16982321,
+      "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+      "bytes": 503862376,
+      "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+      "bytes": 536,
+      "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+      "bytes": 39517230,
+      "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+      "bytes": 118211,
+      "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+      "bytes": 66887,
+      "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+    },
+    "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": {
+      "bytes": 37354885,
+      "sha256": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c"
+    },
+    "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": {
+      "bytes": 125536,
+      "sha256": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e"
+    },
+    "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
+      "bytes": 4250,
+      "sha256": "97837f2edab14700aaf5939028fef3ce08bdde918f2b77efd127089e5168c63c"
+    },
+    "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+      "bytes": 4158,
+      "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+    },
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+      "bytes": 14873682,
+      "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+    },
+    "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+      "bytes": 832969,
+      "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+    }
+  },
+  "outputs": {
+    "catalog.json": {
+      "bytes": 16604,
+      "rows": 3,
+      "sha256": "6c2f9b58aa9f7879014f4025fe4bff099052c93dc9e35bceb253c0d7ac5e6396"
+    },
+    "dtoxs_ipsc.atc_l4-L01DB.deg.csv": {
+      "bytes": 2102478,
+      "rows": 14707,
+      "sha256": "db1ab77af1c632acf7323f20d5b6c03935201720f4496be3a1ffaf8db38233e5"
+    },
+    "dtoxs_ipsc.atc_l4-L01DB.rank.csv": {
+      "bytes": 393876,
+      "rows": 18164,
+      "sha256": "2b4413bca1cffcf0b0c0c025df7e67775fd1a6b858b05ec77967cb6a8c135f1e"
+    },
+    "gse243674.atc_l4-L01DB.deg.csv": {
+      "bytes": 2666367,
+      "rows": 18084,
+      "sha256": "740776031c84696ad37cc2d8a2d68c7e79b6528951599fb903b113843be7318e"
+    },
+    "gse243674.atc_l4-L01DB.rank.csv": {
+      "bytes": 431007,
+      "rows": 18164,
+      "sha256": "32497e28ffd754954d27454af8fb95ca70704bbe4c3b885bfd22d54ae98b9dc9"
+    },
+    "gse244740.atc_l4-L01DB.deg.csv": {
+      "bytes": 2778575,
+      "rows": 18164,
+      "sha256": "3bda7c9bea0208a40d2cfea79dacfa6ac4b1b2de6540916eed08094423cb12e3"
+    },
+    "gse244740.atc_l4-L01DB.rank.csv": {
+      "bytes": 431872,
+      "rows": 18164,
+      "sha256": "edc1e5b88113a69b402025171ec4f8a48a8b47d7bc98bed0cce10a23b281e81a"
+    }
+  },
+  "product": "cardiotox_TOP2",
+  "recipe": "Pool an entered class's drug wells into one Disease group against the same-plate/same-time vehicle in each source stratum, using the source's own test (DToxS GSE217421 pinned edgeR pipeline on its read counts; DESeq2 on GSE243674 counts with the item's donor-paired design; the declared Welch test on GSE244740 ScreenSeq counts). Align the per-stratum contrasts to the frozen 18,164 gene_index axis and collapse per gene by the maximum |log2FC| x -log10(padj) effect (ticket #186's deg_rank contract), then publish the compact table and the within-dataset rank rank_norm = rank / n_measured with unmeasured genes at n_measured + 1. No fusion, no axis and no view is computed.",
+  "schema": "stage2-cardiotox-class-v1"
+}
