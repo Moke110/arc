@@ -1,0 +1,45 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv"
+  },
+  "catalog_sha256": "eda9e1310b0a5befa41e3bdc8795f15c4628ff9a5ddde345311bdeddb008fd61",
+  "category": "ICM",
+  "counts": {
+    "datasets": 2,
+    "n_measured": {
+      "gse270788__ami": 17092,
+      "gse270788__icm": 17092
+    }
+  },
+  "inputs": {
+    "disease_data/GSE270788/local/deg/gse270788_deg.csv": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12",
+    "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+    "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b",
+    "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb",
+    "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+  },
+  "outputs": {
+    "catalog.json": {
+      "sha256": "1c21bc58ea68fde463334621a28ecef7e82bcc1303b9143a92a1a7b57658a6ba"
+    },
+    "gse270788__ami.deg.csv": {
+      "rows": 17092,
+      "sha256": "147d475bd8aaebd9dfac7847bab0f8f22c01fe127ab03239198c4f7e0cefc528"
+    },
+    "gse270788__ami.rank.csv": {
+      "rows": 18164,
+      "sha256": "969997e4f8c555a883706c36611c3c3d9a9cf704fcae7a866f395a1606257b7b"
+    },
+    "gse270788__icm.deg.csv": {
+      "rows": 17092,
+      "sha256": "4fb82b0b24b6ef5b06e96d711f6f5ae5f7c326f7a9bdc4c63410abae97f10470"
+    },
+    "gse270788__icm.rank.csv": {
+      "rows": 18164,
+      "sha256": "de760628569f1249a3e9ef9116bd771d86f7549678971012ed163dbed0e2d724"
+    }
+  },
+  "recipe": "execution/build_disease_deg.py publish --category ICM",
+  "schema": "stage2-disease-deg-release-v1"
+}

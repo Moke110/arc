@@ -1,0 +1,79 @@
+donor_id,disease,primary_genetic_diagnosis,genotype,genotype_status,nHF_role,cells,fit_group,exported_as
+D1,normal,control,normal,negative,control,5752,normal,nHF control
+D2,normal,control,normal,negative,control,6291,normal,nHF control
+D4,normal,control,normal,negative,control,8482,normal,nHF control
+D5,normal,control,normal,negative,control,9100,normal,nHF control
+D6,normal,control,normal,negative,control,5823,normal,nHF control
+D7,normal,control,normal,negative,control,6396,normal,nHF control
+DL2,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,2569,dcm_genotype_positive,ticket-188 export
+DL3,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,66,dcm_genotype_positive,ticket-188 export
+DO1,dilated cardiomyopathy,TNNT2,dcm_genotype_positive,pathogenic,export_only,214,dcm_genotype_positive,ticket-188 export
+DP1,dilated cardiomyopathy,PLN,dcm_genotype_positive,pathogenic,export_only,2629,dcm_genotype_positive,ticket-188 export
+DP2,dilated cardiomyopathy,PLN,dcm_genotype_positive,pathogenic,export_only,1338,dcm_genotype_positive,ticket-188 export
+DS3,dilated cardiomyopathy,DSP,dcm_genotype_positive,pathogenic,export_only,363,dcm_genotype_positive,ticket-188 export
+DT4,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,3979,dcm_genotype_positive,ticket-188 export
+H01,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,2913,dcm_genotype_negative,nHF case
+H02,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,1854,dcm_genotype_negative,nHF case
+H03,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,3194,dcm_genotype_negative,nHF case
+H04,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,1736,dcm_genotype_positive,ticket-188 export
+H05,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,4094,dcm_genotype_positive,ticket-188 export
+H06,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,3726,dcm_genotype_positive,ticket-188 export
+H07,arrhythmogenic right ventricular cardiomyopathy,PKP2,arvc,pathogenic,export_only,2440,arvc,ticket-188 export
+H08,arrhythmogenic right ventricular cardiomyopathy,PKP2,arvc,pathogenic,export_only,6146,arvc,ticket-188 export
+H09,arrhythmogenic right ventricular cardiomyopathy,PKP2,arvc,pathogenic,export_only,1464,arvc,ticket-188 export
+H10,arrhythmogenic right ventricular cardiomyopathy,PKP2,arvc,pathogenic,export_only,3955,arvc,ticket-188 export
+H11,arrhythmogenic right ventricular cardiomyopathy,PKP2,arvc,pathogenic,export_only,2901,arvc,ticket-188 export
+H12,dilated cardiomyopathy,DES,dcm_genotype_positive,pathogenic,export_only,8993,dcm_genotype_positive,ticket-188 export
+H13,dilated cardiomyopathy,DES,dcm_genotype_positive,pathogenic,export_only,4384,dcm_genotype_positive,ticket-188 export
+H14,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,3533,dcm_genotype_positive,ticket-188 export
+H15,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,534,dcm_genotype_positive,ticket-188 export
+H16,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,2202,dcm_genotype_positive,ticket-188 export
+H17,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,1818,dcm_genotype_positive,ticket-188 export
+H18,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,952,dcm_genotype_positive,ticket-188 export
+H19,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,2400,dcm_genotype_positive,ticket-188 export
+H2,normal,control,normal,negative,control,5961,normal,nHF control
+H20,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,2835,dcm_genotype_positive,ticket-188 export
+H21,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,186,dcm_genotype_positive,ticket-188 export
+H22,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,3334,dcm_genotype_positive,ticket-188 export
+H24,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,3366,dcm_genotype_positive,ticket-188 export
+H25,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,5071,dcm_genotype_positive,ticket-188 export
+H26,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,3909,dcm_genotype_positive,ticket-188 export
+H27,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,3771,dcm_genotype_positive,ticket-188 export
+H28,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,4036,dcm_genotype_positive,ticket-188 export
+H29,arrhythmogenic right ventricular cardiomyopathy,LMNA,arvc,pathogenic,export_only,4201,arvc,ticket-188 export
+H3,normal,control,normal,negative,control,10824,normal,nHF control
+H31,dilated cardiomyopathy,LMNA,dcm_genotype_positive,pathogenic,export_only,7505,dcm_genotype_positive,ticket-188 export
+H32,dilated cardiomyopathy,FLNC,dcm_genotype_positive,pathogenic,export_only,213,dcm_genotype_positive,ticket-188 export
+H33,dilated cardiomyopathy,RBM20,dcm_genotype_positive,pathogenic,export_only,4947,dcm_genotype_positive,ticket-188 export
+H34,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,4402,dcm_genotype_positive,ticket-188 export
+H35,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,3885,dcm_genotype_positive,ticket-188 export
+H36,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,2557,dcm_genotype_positive,ticket-188 export
+H37,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,1864,dcm_genotype_positive,ticket-188 export
+H39,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,3215,dcm_genotype_positive,ticket-188 export
+H4,normal,control,normal,negative,control,10130,normal,nHF control
+H40,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,2127,dcm_genotype_positive,ticket-188 export
+H41,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,4454,dcm_genotype_positive,ticket-188 export
+H42,arrhythmogenic right ventricular cardiomyopathy,PKP2,arvc,pathogenic,export_only,2240,arvc,ticket-188 export
+H44,arrhythmogenic right ventricular cardiomyopathy,PLN,arvc,pathogenic,export_only,226,arvc,ticket-188 export
+H46,normal,control,normal,negative,control,5355,normal,nHF control
+H49,normal,control,normal,negative,control,8531,normal,nHF control
+H5,normal,control,normal,negative,control,20568,normal,nHF control
+H51,normal,control,normal,negative,control,3812,normal,nHF control
+H53,normal,control,normal,negative,control,5307,normal,nHF control
+H55,normal,control,normal,negative,control,2942,normal,nHF control
+H56,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,585,dcm_genotype_negative,nHF case
+H57,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,326,dcm_genotype_negative,nHF case
+H58,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,60,dcm_genotype_negative,nHF case
+H59,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,797,dcm_genotype_negative,nHF case
+H6,normal,control,normal,negative,control,13564,normal,nHF control
+H67,normal,control,normal,negative,control,1781,normal,nHF control
+H7,normal,control,normal,negative,control,11206,normal,nHF control
+H73,dilated cardiomyopathy,FKTN,dcm_genotype_positive,pathogenic,export_only,752,dcm_genotype_positive,ticket-188 export
+H78,dilated cardiomyopathy,BAG3,dcm_genotype_positive,pathogenic,export_only,1214,dcm_genotype_positive,ticket-188 export
+H79,dilated cardiomyopathy,TNNC1,dcm_genotype_positive,pathogenic,export_only,12609,dcm_genotype_positive,ticket-188 export
+H80,dilated cardiomyopathy,TNNC1,dcm_genotype_positive,pathogenic,export_only,5839,dcm_genotype_positive,ticket-188 export
+H81,dilated cardiomyopathy,TNNT2,dcm_genotype_positive,pathogenic,export_only,2180,dcm_genotype_positive,ticket-188 export
+IC_H01,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,868,dcm_genotype_positive,ticket-188 export
+IC_H02,dilated cardiomyopathy,TTN,dcm_genotype_positive,pathogenic,export_only,1624,dcm_genotype_positive,ticket-188 export
+IC_H03,dilated cardiomyopathy,DSP,dcm_genotype_positive,pathogenic,export_only,35,dcm_genotype_positive,ticket-188 export
+IC_H04,dilated cardiomyopathy,PVneg,dcm_genotype_negative,negative,case,889,dcm_genotype_negative,nHF case

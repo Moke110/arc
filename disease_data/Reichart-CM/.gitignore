@@ -1,0 +1,7 @@
+# Local regenerable additions (ADR 0030). Every path is declared in
+# author_log.json's local_additions[]. The axis-aligned per-donor CM pseudobulk
+# and the genotype table are the compact export ticket 03 consumes, so they are
+# force-tracked (.csv.gz is not covered by the global *.csv rule); only the
+# item-local DEG derivations stay ignored.
+local/deg/*.csv
+local/deg/*.tsv.gz

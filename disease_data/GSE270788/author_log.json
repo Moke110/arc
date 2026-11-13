@@ -1,0 +1,63 @@
+{
+  "item": "GSE270788",
+  "category": "disease_data",
+  "purpose": "Human left-ventricle 10x Multiome (GEX SubSeries) CM source for the Stage 2 gene axis (ADR 0066): 23 GEX donors gated on the author CM label, one CM pseudobulk per donor, and one joint-design DEG fit supplying the NICM (nHF) and ICM/AMI (ICM) arm contrasts. GSE218392 is the SuperSeries; only the GEX SubSeries is ingested.",
+  "retrieved_at": "2026-11-13T14:10+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE270788",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270788",
+      "version": "GSE270788 (GEX SubSeries; SuperSeries GSE218392)",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: 23 per-GSM *_filtered_feature_bc_matrix.h5 GEX payloads plus GSE270788_metadata.csv.gz, byte-identical; the 80.7 GB series RAW.tar and every ATAC payload are deliberately not fetched; only the GEX SubSeries is stored)",
+      "path": "source/",
+      "files": 24,
+      "bytes": 939203099,
+      "tree_sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/pseudobulk/gse270788_cm_pseudobulk.csv.gz",
+      "origin": "per-donor CM pseudobulk: integer counts summed over each donor's cell.type.l1 == 'Cardiomyocyte' cells, GEX features only (the multiome h5 also carries ATAC peaks, dropped by feature_type). 36,601 GEX features x 23 donor columns; not aligned to the frozen axis here (the DEG driver aligns). Regenerable, never tracked (item .gitignore).",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/pseudobulk/gse270788_donors.csv",
+      "origin": "per-donor cells/arm table: sample, donor_id, HF.etiology arm, cells_total, cells_cm, cells_cm_metadata, matched CM barcodes, source file; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/pseudobulk/gse270788_cm_pseudobulk.json",
+      "origin": "tracked summary: CM gate, 13,803 CM cells, 52-1,576 CM per donor (all 23 donors qualify), samples resolved by filename token (and by barcode intersection for the token-less GSM8352066), pseudobulk/donors digests",
+      "generated_by": "script/build_pseudobulk.py"
+    },
+    {
+      "path": "local/deg/gse270788_deg.csv",
+      "origin": "item-local full joint-design DEG table: one row per tested gene and contrast NICM-Donor / ICM-Donor / AMI-Donor (log2FC, moderated t, p, BH padj, AveExpr); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/gse270788_deg.json",
+      "origin": "tracked compact DEG summary: one-joint-design record (~0 + arm, all three arms read from one fit; no donor term because donor is nested in arm), cells per donor, n_case/n_control, limma-voom method, R+limma versions, digests",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/gse270788_samples.csv",
+      "origin": "item-local fit design sheet: donor sample -> arm; regenerable, never tracked (global *.csv rule)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/pseudobulk and local/deg additions",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T14:14+08:00",
+  "verify_result": "pass",
+  "notes": "GEO ACCESSION: GSE270788 (Amrute et al., Nature 2024; PMID 39443792), human left-ventricle 10x Multiome; GSE218392 is its SuperSeries, so only the GEX SubSeries payloads are ingested (23 per-GSM filtered_feature_bc_matrix.h5, 931,875,148 B; plus the 1,272,635 B cell metadata table). The 80.7 GB GSE270788_RAW.tar and the 23 ATAC fragment files are deliberately not fetched. GATE: metadata cell.type.l1 == 'Cardiomyocyte' selects 13,803 CM cells, 52-1,576 per donor; every one of the 23 GEX donors qualifies, and every metadata CM barcode was matched in its donor's h5 (cells_cm == cells_cm_metadata for all donors). The metadata barcode is a lane prefix plus '_' plus the raw 10x barcode; the same raw barcode recurs across lanes, so the join is done per sample. GSM8352066's h5 filename has no MA token (re-uploaded 2025-03-25); its sample (GEX MA29) was resolved by barcode intersection and the resolution basis is recorded per donor. ARMS: the deposited labels are Donor 7 / NICM 6 / ICM 5 / AMI 5 (both the cell metadata's HF.etiology and the series-matrix 'disease state' characteristic agree). This differs from the survey/ticket statement 'Donor 6 / NICM 7' recorded before ingestion; the immutable source is authoritative for labels, so no donor is relabelled or dropped and the discrepancy is recorded here and in the DEG summary. The three disease arms still share one control set (the seven Donor samples), which is why the DEG is one joint design. PSEUDOBULK: integer counts summed per donor before testing; no dense cell x gene matrix was materialised (CSC per-cell column runs only). DEG: one limma-voom fit, design ~0 + arm over all 23 donor pseudobulks, contrasts NICM-Donor / ICM-Donor / AMI-Donor; a donor covariate is not identifiable because each donor belongs to exactly one arm, so the shared-control structure is handled by the single joint fit rather than three separate case-control fits. The AMI arm has no per-sample time-since-infarct field, so time_window_basis is author_declared. The pinned arc R env ships limma but not edgeR, so voom's own total-count library-size normalisation is used and TMM is deliberately not re-implemented. BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; pseudobulk peak RSS 1,111,388 KiB (~1.06 GiB), wall 15.9 s; DEG peak RSS 111,336 KiB, wall 0.4 s; 88,773 DEG rows (29,591 genes x 3 contrasts). R/limma versions are in local/deg/gse270788_deg.json. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_pseudobulk.py -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T14:14+08:00"
+}

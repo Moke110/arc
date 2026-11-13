@@ -94,6 +94,85 @@ ambiguous, off-axis and unmapped symbols are recorded, never guessed),
 re-exports these under the old names so the accepted pre-0066 evidence keeps
 working.
 
+### Disease DEGs: `nHF`, `ICM`, `AF` (ADR 0066, #187)
+
+The disease side of the gene axis has landed for the three human
+cardiomyocyte-derived categories. One product directory per category under
+`output/disease-deg/` holds the compact Control-vs-Disease table and the
+within-dataset rank of every source dataset (the level-1 inputs the fusion
+ticket #190 consumes), plus the category catalog and release manifest:
+
+| path | contents | reader |
+|---|---|---|
+| `output/disease-deg/nhf/` | `gse270788__nicm.*`, `reichart-cm__dcm_genotype_negative.*`, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/icm/` | `gse270788__icm.*`, `gse270788__ami.*`, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/af/` | `gse255612__af.*`, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+
+`<dataset>.deg.csv` is one row per measured axis gene (sorted by the
+within-dataset rank) with `gene_index`, `gene_symbol`, `contrast`, `log2fc`,
+`stat`, `p_value`, `padj`, `base_mean`, `direction`, `significant`,
+`n_contrasts`, `n_contrasts_supporting`, `effect`, `rank` and `rank_norm`.
+`<dataset>.rank.csv` is the full frozen-axis frame `{gene_index, rank,
+rank_norm}` (18,164 rows, unmeasured genes at `n_measured + 1` with
+`rank_norm = 1.0`). The effect score, maximum collapse, `NA`-padj and
+tie-break rules are ticket #186's `bases.deg_rank` contract; the published
+tables are written at 17 significant digits so their bytes encode the exact
+order the rank was derived from.
+
+```python
+import sys; sys.path.insert(0, 'stage2/01_bases/output/api')
+from bases.disease_deg import DiseaseDeg
+db = DiseaseDeg('stage2/01_bases/output/disease-deg')
+db.categories()                       # ['af', 'icm', 'nhf']
+db.datasets('nHF')                    # ['gse270788__nicm', 'reichart-cm__dcm_genotype_negative']
+table = db.table('nHF', 'gse270788__nicm')   # compact DEG table, rank-sorted
+rank = db.rank('nHF', 'gse270788__nicm')     # 18,164-row frozen-axis rank frame
+db.eligibility('ICM', 'gse270788__ami')      # tier/evidence/shared-control/time-window record
+```
+
+Every read is digest-checked against the category `manifest.json`. The five
+datasets and their declared eligibility:
+
+| category | dataset | evidence | tier | case/control | file |
+|---|---|---|---|---|---|
+| `nHF` | `gse270788__nicm` | CM pseudobulk, GSE270788 NICM arm vs shared Donors | 1 | 6 / 7 | `nhf/gse270788__nicm.*` |
+| `nHF` | `reichart-cm__dcm_genotype_negative` | CM pseudobulk, Reichart genotype-negative DCM vs normal | 1 | 8 / 18 | `nhf/reichart-cm__dcm_genotype_negative.*` |
+| `ICM` | `gse270788__icm` | CM pseudobulk, GSE270788 ICM arm vs shared Donors | 1 | 5 / 7 | `icm/gse270788__icm.*` |
+| `ICM` | `gse270788__ami` | CM pseudobulk, GSE270788 AMI arm vs shared Donors (`time_window_basis: author_declared`) | 1 | 5 / 7 | `icm/gse270788__ami.*` |
+| `AF` | `gse255612__af` | CM pseudobulk, GSE255612 AF vs non-AF left-atrial CM | 1 | 18 / 16 | `af/gse255612__af.*` |
+
+Sources and derivations are ADR 0030 items: `disease_data/GSE270788`,
+`disease_data/GSE255612` and `disease_data/Reichart-CM` each carry `script/`
+(download + offline verify + CM-gate/pseudobulk/DEG derivation), immutable
+`source/`, declared `local/`, `author_log.json` and `manifest.sha256`. The
+pseudobulk is summed per donor before testing (integer counts for the count
+deposits, a per-donor mean CP10K for the normalised GSE255612 deposit), and the
+one live DEG implementation is `output/api/bases/disease_deg.R` (limma: voom for
+counts, `lmFit` for the log-scale deposit). GSE270788's three arms share one
+control set, so all three contrasts come from **one joint `~ 0 + arm` fit**
+over the 23 donor pseudobulk profiles rather than three case-control fits.
+
+**GSE270788 arm-size erratum (recorded in issue #187 and in the item author
+log).** The ticket body and ADR 0066 say `Donor 6 / NICM 7`; the immutable
+deposit says **Donor 7 / NICM 6 / ICM 5 / AMI 5** (both
+`GSE270788_metadata.csv.gz` grouped by `sample`, and the series-matrix
+`!Sample_characteristics_ch1` disease state). The deposit is authoritative: no
+donor is relabelled, all 23 donors are used, and the seven Donor samples are the
+shared control set. ADR 0066's roster counts are superseded by the deposit
+(design unchanged); ticket #192 carries the erratum into the ADR.
+
+```bash
+python stage2/01_bases/execution/build_disease_deg.py publish --all   # candidate -> verify -> replace, per category
+python stage2/01_bases/execution/build_disease_deg.py verify --all    # replay from pinned item DEGs, compare every digest
+```
+
+Both commands run under the arc python. The driver stages candidates in
+`execution/checkpoints/`, verifies table/rank/catalog constraints and replaces
+only after success; `verify` rebuilds and compares the manifest and every output
+digest, so a replay is byte-identical. The compact CSVs, catalogs and manifests
+are force-tracked (payloads otherwise gitignored); the item-local DEG tables and
+pseudobulk matrices stay in the items' `local/` areas.
+
 This is the standalone foundation retained after the user removed the other
 Stage 2 steps. Immutable raw inputs remain under `pert_data/`. Deleted historical
 experiments and their checkpoints are outside this build. The layout follows

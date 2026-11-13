@@ -4,7 +4,7 @@ The disease-side inputs for the Stage 2 gene-axis decision preparation
 (ADR 0065) and the Stage 1 MIRI screen, split into one directory per **GEO
 series** (项) under the external-data provenance contract
 ([ADR 0030](../docs/adr/0030-external-data-provenance-and-step-layout.md)).
-Eight items are present. Each is:
+Eleven items are present. Each is:
 
 ```
 <GSE>/
@@ -66,6 +66,50 @@ gene-axis step reads from an item (ADR 0065):
   carry a top-level file; `GSE243674` pins its expression outputs with a nested
   `local/expr/.gitignore` (`*` + `!.gitignore`). Every ignored path is declared in
   `local_additions[]`.
+
+## Stage 2 gene-axis CM sources (ticket #187, ADR 0066)
+
+Three items added for the Stage 2 gene axis are **cardiomyocyte-derived**, not
+whole tissue: two GEO single-cell deposits and one cellxgene object. Each follows
+the same five-member ADR 0030 contract, adds a CM-gate + per-donor pseudobulk
+derivation under `local/`, and publishes one compact DEG table per dataset into
+`stage2/01_bases/output/disease-deg/` (the step, not the item, owns the compact
+product):
+
+| item | deposit | CM gate | donors | feeds |
+|---|---|---|---|---|
+| `GSE270788/` | human LV 10x Multiome GEX SubSeries (23 per-GSM filtered h5 + cell metadata; `RAW.tar` never fetched) | `cell.type.l1 == "Cardiomyocyte"` (13,803 CM, 52–1,576/donor, all qualify) | 23 | `nHF` NICM; `ICM` ICM + AMI |
+| `GSE255612/` | human left-atrium 10x snRNA (mtx + genes axis + cell metadata) | `cell_type == "Cardiomyocytes"` (32,438 CM) | 34 (18 AF / 16 control) | `AF` |
+| `Reichart-CM/` | cellxgene CM-only h5ad (collection `e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb`, version `27fdbdf9-deae-4aed-bf7f-21964ee62137`; 311,418 cells) | CM-only object (`cell_type == "cardiac muscle cell"`) | 79 (52 DCM / 18 normal / 8 ARVC / 1 NCCM) | `nHF` genotype-negative DCM; ticket #188 export for `genetic_cardiomyopathy` |
+
+Conventions specific to these three items:
+
+- **`local/pseudobulk/`** — the per-donor pseudobulk, summed over each donor's CM
+  cells **before** any test. GSE270788 and Reichart-CM store integer counts;
+  GSE255612's deposit is log1p(CP10K) normalised expression (verified on every
+  cell: `sum(expm1(value)) == 1e4`), so its pseudobulk is the per-donor mean
+  CP10K. The matrices are declared additions and stay out of `source/`.
+- **`local/deg/<item>_deg.csv` + tracked `_deg.json`** — the item-local
+  full DEG table (long, one row per gene × contrast) and its tracked summary.
+  The DEG is the single live implementation in
+  `stage2/01_bases/output/api/bases/disease_deg.R` (limma: voom for counts,
+  `lmFit` for the log-scale deposit); the item scripts only bind inputs and run
+  it. GSE270788's three arms share one control set, so its table comes from
+  **one joint `~ 0 + arm` fit** over all 23 donors (three contrasts), not three
+  case-control fits.
+- **Tracked compact export** — `Reichart-CM/local/pseudobulk/…csv.gz` (axis genes
+  × 78 donors, integer counts) and `Reichart-CM/local/genotype/…csv` (per-donor
+  genotype split) are force-tracked because they are the ticket #188
+  `genetic_cardiomyopathy` input. The single NCCM donor is excluded from that
+  export; genotype-positive DCM and the 8 ARVC donors are exported, not used for
+  `nHF`.
+- **Erratum carried from #187.** GSE270788's deposited arm sizes are Donor 7 /
+  NICM 6 / ICM 5 / AMI 5 (both the cell metadata grouped by `sample` and the
+  series-matrix `!Sample_characteristics_ch1`), not the survey's `6 / 7`; the
+  deposit is used unchanged and ADR 0066's roster counts are superseded.
+
+`script/verify_all.sh` includes all three items; `bash script/verify.sh` in each
+item checks `source/` offline against its `manifest.sha256`.
 
 ## Build recipes and pinned R
 

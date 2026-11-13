@@ -78,6 +78,20 @@ Each external item is one directory per download source under ADR 0030: `script/
 | `disease_data/GSE160516/` | 2,030,663 | 2.0 MB | yes — GEO **GSE160516** (mouse, Clariom S) | re-download; `local/deg/` derived |
 
 
+### disease_data — Stage 2 CM sources (#187, ADR 0066)
+
+Three cardiomyocyte-derived items added for the Stage 2 gene axis. Each is an
+ADR 0030 item (tracked `script/`/`author_log.json`/`manifest.sha256`, ignored
+`source/` + declared `local/`); the CM-gated per-donor pseudobulk and the
+item-local DEG stay in `local/`, and the compact published product is the step's
+`output/disease-deg/`. `du -sb`, 2026-11-13.
+
+| 项 (item) | `du -sb` bytes | ≈ | reconstructible? (and from where) | backup expectation |
+|---|---:|---:|---|---|
+| `disease_data/GSE270788/` | 951,113,459 | 951.1 MB | yes — GEO **GSE270788** GEX SubSeries: 23 per-GSM `*_filtered_feature_bc_matrix.h5` (931,875,148 B) + cell metadata (1,272,635 B); `script/fetch.sh`. `local/` pseudobulk + DEG are derived | re-download `source/`; tracked summary/manifest in git; `local/` derived |
+| `disease_data/GSE255612/` | 1,032,251,016 | 1.03 GB | yes — GEO **GSE255612**: Scanpy mtx (1,003,414,933 B), feature axis (277,568 B) and cell metadata (8,846,174 B); `script/fetch.sh` (parallel ranges). `local/` pseudobulk + DEG derived | re-download `source/`; tracked summary/manifest in git |
+| `disease_data/Reichart-CM/` | 3,201,296,579 | 3.2 GB | yes — CELLxGENE object, collection `e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb`, version `27fdbdf9-deae-4aed-bf7f-21964ee62137` (CC BY 4.0), 3,194,863,189 B; `script/fetch.sh` | re-download; the **tracked** axis-aligned per-donor pseudobulk + genotype export (ticket #188 input) is in git |
+
 ### drug_emb_model — 2 項 (930.1 MB)
 
 Unlike the other three categories these are **code libraries**: their `source/` trees are tracked; only the downloaded assets (`KPGT/source/models/`, `KPGT/source/feature_extract/`) are ignored.
@@ -156,6 +170,7 @@ table; `du -sb`, 2026-11-13.
 |---|---:|---|---|
 | `output/raw_counts/` | 3,037,082,960 | `tenv.h5ad` (4,510 wells x 19,613 native genes, int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 profiles x 18,164 axis genes, CSR int32), `token_mapping.csv`, `manifest.json` | `execution/build_raw_counts.py publish`: rehomes the source-accepted payloads and records `source-accepted-replay` provenance (`log/records/native_tenv_verify.json`, `log/records/tahoe_counts_source_acceptance.json`). `--full-rebuild` rebuilds both from `pert_data/GSE262419/source` + `pert_data/Tahoe-100M/source` and replays from source (recorded ~4 h under the 10 GiB cap) |
 | `output/corpus/` | 1,395,893,021 | `tenv.h5ad` (4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv` (32 blanks + 300 invalid structures), `manifest.json` with the matched-control report; int32, no normalization, no delta | `execution/build_corpus.py publish` from `output/raw_counts/` + `pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet` |
+| `output/disease-deg/` | 17,993,614 | per category `nhf/`, `icm/`, `af/`: one rank-sorted compact `<dataset>.deg.csv` + full-axis `<dataset>.rank.csv` per dataset, plus `catalog.json` (canonical record list, `catalog_sha256`) and `manifest.json`; no top-level catalog (ticket #190 aggregates the per-category files). Five datasets: GSE270788 NICM/ICM/AMI, Reichart genotype-negative DCM, GSE255612 AF | `execution/build_disease_deg.py publish --all` from the pinned item-local DEG tables in `disease_data/{GSE270788,GSE255612,Reichart-CM}/local/deg/`; `verify --all` replays and compares every digest. The compact CSVs/catalogs/manifests are force-tracked; the item-local DEG/pseudobulk payloads stay ignored |
 
 Both products are replayed by their drivers' `verify` action (rebuild in
 `execution/checkpoints/` and compare every digest). The compact manifests,

@@ -1,0 +1,6 @@
+# Local regenerable additions (ADR 0030). Every path is declared in
+# author_log.json's local_additions[]; tracked summaries stay in local/ as JSON.
+local/pseudobulk/*.csv.gz
+local/pseudobulk/*.csv
+local/deg/*.csv
+local/deg/*.tsv.gz
