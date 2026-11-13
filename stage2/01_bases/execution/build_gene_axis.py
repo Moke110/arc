@@ -477,7 +477,7 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
         size = int(size)
         genes = source['axes'][size]
         composition_counts = axis_composition(genes, source['category_measured'])
-        counts = pn_distribution(fusion['pn'][size])
+        counts = pn_distribution(fusion['pn'][size][genes])
         axes_manifest[str(size)] = {
             'n': int(len(genes)),
             'file': f'gene_axis_{size}.csv',
