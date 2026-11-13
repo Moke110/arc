@@ -6,6 +6,37 @@
 > the successor envelope, the diagnostic PR figure and `log/` are retired. Everything below
 > describes the pre-0066 tree until the rebuild lands.
 
+## Rebuild foundation (#186, ADR 0066)
+
+- Public implementation: `output/api/bases/raw_counts.py` (raw-count release,
+  readers, bridge), `output/api/bases/corpus.py` (corpus build/replay, matched
+  controls, reader), `output/api/bases/release.py` (candidate-then-replace and
+  digest-replay harness) and `output/api/bases/deg_rank.py` (the DEG-table/rank
+  contract tickets #187-#190 import: `SymbolResolver`/`align_table`,
+  `deg_effect`, `per_gene_deg`, `dataset_deg_rank`, `rank_scores`,
+  `complete_rank`, `normalized_rank`). `bases.gene_axis` re-exports the moved
+  functions; do not create a second live copy.
+- Drivers: `execution/build_raw_counts.py` and `execution/build_corpus.py`, both
+  `publish|verify`. Builds stage candidates under `execution/checkpoints/`,
+  verify digests, then replace the accepted product; `verify` replays from the
+  pinned inputs and compares every digest. Products: `output/raw_counts/`
+  (`tenv.h5ad` native 4,510 x 19,613; `tenv_probe_mapping.csv`;
+  `tenv_axis_mapping.csv` frozen-index bridge; `tahoe.h5ad` 67,018 x 18,164 CSR;
+  `token_mapping.csv`; `manifest.json`) and `output/corpus/` (`tenv.h5ad`
+  4,206 treated + 272 vehicle; `tahoe_bulk.h5ad` 65,318 treated + 1,400
+  `DMSO_TF`; `exclusions.csv`; `manifest.json`). Counts are integer only; the
+  corpus has controls as rows and `matched_control_group` correspondence.
+- Provenance: `raw_counts` default mode is `source-accepted-replay` — the payloads
+  are rehomed, byte-checked against `log/records/native_tenv_verify.json` and
+  `log/records/tahoe_counts_source_acceptance.json`, and the Tahoe token mapping
+  is re-derived from the immutable source metadata. `--full-rebuild` rebuilds both
+  payloads from the external `source/` trees under `pert_data/` through
+  `native.py`/`tahoe.py` and replays them from source; it is the stronger mode if the rehomed bytes are in doubt.
+- Tests: `execution/tests/test_raw_counts.py`, `test_corpus.py`,
+  `test_deg_rank.py`, hermetic fixtures in
+  `execution/tests/release_fixtures.py`; run each file individually. The pre-0066
+  raw/training products stay present read-only until the removal ticket (#192).
+
 Routing for the standalone Stage 2 foundation; commands and contracts are in
 [`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
 gene and evaluation semantics. Every path below is a stable semantic path.
