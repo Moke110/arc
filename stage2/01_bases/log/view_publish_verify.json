@@ -1,0 +1,141 @@
+{
+  "action": "publish",
+  "views": {
+    "view-2k": {
+      "basis": {
+        "tahoe_bulk": {
+          "n_axis": 2000,
+          "share": 0.1046007579370605,
+          "treated_share": 0.10455854592686896
+        },
+        "tenv": {
+          "n_axis": 2000,
+          "share": 0.1292999871357524,
+          "treated_share": 0.12956682012471624
+        }
+      },
+      "manifest_sha256": "b48eeddbd09b8b7eb4d57597de3ae73bca8311e8e56d2e44d9e814e9040c18db",
+      "name": "view-2k",
+      "outputs": {
+        "library_totals.csv": {
+          "bytes": 3727979,
+          "columns": [
+            "source",
+            "profile_id",
+            "role",
+            "library_total"
+          ],
+          "rows": 71196,
+          "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+        },
+        "tahoe_bulk.h5ad": {
+          "bytes": 1307875582,
+          "columns": 2000,
+          "rows": 66718,
+          "sha256": "f0732761b14298ae05679e958123147ebc6c47ac942eef87a9d8968ad4642566"
+        },
+        "tenv.h5ad": {
+          "bytes": 59829344,
+          "columns": 2000,
+          "rows": 4478,
+          "sha256": "4bcdddb53c48a9031ae248e0e4db004797cb19c5db38926b7302cdd4a8cf4d7d"
+        }
+      },
+      "path": "stage2/01_bases/output/view-2k",
+      "peak_rss_kib": 438596,
+      "size": 2000,
+      "sources": {
+        "tahoe_bulk": {
+          "basis_share": 0.1046007579370605,
+          "basis_share_treated": 0.10455854592686896,
+          "library_total": {
+            "max": 33209864,
+            "median": 2286586.0,
+            "min": 556,
+            "sum": 195911772545
+          },
+          "rows": 66718
+        },
+        "tenv": {
+          "basis_share": 0.1292999871357524,
+          "basis_share_treated": 0.12956682012471624,
+          "library_total": {
+            "max": 3978060,
+            "median": 879905.5,
+            "min": 6423,
+            "sum": 5083966198
+          },
+          "rows": 4478
+        }
+      }
+    },
+    "view-5k": {
+      "basis": {
+        "tahoe_bulk": {
+          "n_axis": 5000,
+          "share": 0.24781998737134647,
+          "treated_share": 0.24773099910589388
+        },
+        "tenv": {
+          "n_axis": 5000,
+          "share": 0.37206318990557535,
+          "treated_share": 0.37159089258532924
+        }
+      },
+      "manifest_sha256": "37af263be54d135cb9c5bab2e3c43ef28497ade402cf57ff0717a196f2f6ae1e",
+      "name": "view-5k",
+      "outputs": {
+        "library_totals.csv": {
+          "bytes": 3727979,
+          "columns": [
+            "source",
+            "profile_id",
+            "role",
+            "library_total"
+          ],
+          "rows": 71196,
+          "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+        },
+        "tahoe_bulk.h5ad": {
+          "bytes": 3146195077,
+          "columns": 5000,
+          "rows": 66718,
+          "sha256": "9533007151fe6c6cdd5a7ec1a5e906de03cb2a37763668614e41a4eb3a79d91d"
+        },
+        "tenv.h5ad": {
+          "bytes": 142393266,
+          "columns": 5000,
+          "rows": 4478,
+          "sha256": "5827434c7baa24745fc2cf3e98d16f7c10f8e5712504e0b1743c29fd8f4239e4"
+        }
+      },
+      "path": "stage2/01_bases/output/view-5k",
+      "peak_rss_kib": 438596,
+      "size": 5000,
+      "sources": {
+        "tahoe_bulk": {
+          "basis_share": 0.24781998737134647,
+          "basis_share_treated": 0.24773099910589388,
+          "library_total": {
+            "max": 33209864,
+            "median": 2286586.0,
+            "min": 556,
+            "sum": 195911772545
+          },
+          "rows": 66718
+        },
+        "tenv": {
+          "basis_share": 0.37206318990557535,
+          "basis_share_treated": 0.37159089258532924,
+          "library_total": {
+            "max": 3978060,
+            "median": 879905.5,
+            "min": 6423,
+            "sum": 5083966198
+          },
+          "rows": 4478
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,0 @@
-Starting check_paths at 2026-11-11T22:49:30.710828+08:00
-Finished check_paths exit=0
-Starting check_tracked at 2026-11-11T22:49:40.113816+08:00
-Finished check_tracked exit=1
-Starting verify_all at 2026-11-11T22:49:40.154916+08:00
-Finished verify_all exit=1
-Final original health FAIL

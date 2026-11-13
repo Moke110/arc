@@ -1,0 +1,21 @@
+{
+  "action": "verify",
+  "counts": {
+    "axis_size": 18164,
+    "tahoe_profiles": 67018,
+    "tenv_profiles": 4510
+  },
+  "manifest_sha256": "6d45b1711cbe709416aab684b08c195dccada5dcfb49426dbbe16b76facbff4f",
+  "mode": "source-accepted-replay",
+  "outputs": [
+    "tahoe.h5ad",
+    "tenv.h5ad",
+    "tenv_axis_mapping.csv",
+    "tenv_probe_mapping.csv",
+    "token_mapping.csv"
+  ],
+  "provenance": {
+    "tahoe": "source-accepted-replay",
+    "tenv": "source-accepted-replay"
+  }
+}
