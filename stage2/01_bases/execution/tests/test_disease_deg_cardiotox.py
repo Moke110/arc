@@ -7,6 +7,7 @@ that the cardiotoxicity products consume that contract correctly and that the
 pooled-class arithmetic is exactly "member wells + the same-plate CTRL wells".
 """
 import io
+import json
 import sys
 import tarfile
 import tempfile
@@ -185,6 +186,55 @@ class PooledStrataTest(unittest.TestCase):
             cardiotox.dtox_pooled_strata(archive, {"GEF"})
 
 
+class CatalogShapeTest(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = Path(self.temporary.name)
+        self.axis = axis_fixture()
+        table, rank, _ = cardiotox.class_deg(contrast_rows(), resolver_fixture(),
+                                             axis_size=8)
+        entry = cardiotox._dataset_entry(
+            "dtoxs_ipsc", "atc_l4:L01EA", "BCR-ABL tyrosine kinase inhibitors",
+            ["Bosutinib", "Dasatinib", "Imatinib"], ["BOS", "DAS", "IMA"],
+            [{"contrast": "x|a", "stratum": "a", "n_case": 7, "n_control": 6}],
+            {"n_measured": 2, "n_significant": 0, "alignment": {"n_resolved": 2}},
+            "x.deg.csv", "x.rank.csv", {}, {"name": "test", "implementation": "t"})
+        entry["category"] = "cardiotox_other"
+        self.record = {"deg": "x.deg.csv", "rank_name": "x.rank.csv",
+                       "table": table, "rank": rank, "axis": self.axis,
+                       "entry": entry}
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def test_canonical_catalog_shape_and_digest(self):
+        cardiotox.write_category_product(
+            self.root / "cat", "cardiotox_other", [self.record], {}, {},
+            "0" * 64)
+        catalog = json.loads((self.root / "cat/catalog.json").read_text())
+        self.assertEqual(catalog["schema"], cardiotox.CATALOG_SCHEMA)
+        self.assertEqual(catalog["category"], "cardiotox_other")
+        self.assertEqual(catalog["tier"], 2)
+        self.assertEqual(catalog["evidence_type"], "bulk")
+        self.assertIn("axis", catalog)
+        self.assertIsInstance(catalog["datasets"], list)
+        record = catalog["datasets"][0]
+        self.assertEqual(record["dataset_id"], "dtoxs_ipsc")
+        self.assertIn("method", record)
+        self.assertNotIn("test_method", record)
+        self.assertIn("class_id", record)
+        self.assertIn("n_measured", record)
+        # The digest is verifiable from the catalog payload alone.
+        verified = cardiotox.catalog_digest(self.root / "cat/catalog.json")
+        self.assertEqual(verified, catalog["catalog_sha256"])
+        manifest = json.loads((self.root / "cat/manifest.json").read_text())
+        self.assertEqual(manifest["catalog_sha256"], verified)
+        self.assertIn("catalog.json", manifest["outputs"])
+        self.assertEqual(cardiotox.CategoryDeg(self.root / "cat",
+                                               "cardiotox_other").catalog_digest,
+                         verified)
+
+
 class DatasetEntryTest(unittest.TestCase):
     def test_catalog_entry_records_the_required_fusion_fields(self):
         entry = cardiotox._dataset_entry(
@@ -202,7 +252,7 @@ class DatasetEntryTest(unittest.TestCase):
         self.assertEqual(entry["n_contrasts"], 2)
         self.assertIsNone(entry["n_case"])  # differs by stratum, recorded per contrast
         self.assertEqual(entry["contrasts"][0]["n_case"], 7)
-        self.assertEqual(entry["test_method"], {"test": "edgeR"})
+        self.assertEqual(entry["method"], {"test": "edgeR"})
         release.check_relative_paths(entry)
 
 

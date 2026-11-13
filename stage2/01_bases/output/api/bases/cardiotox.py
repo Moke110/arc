@@ -48,7 +48,9 @@ from __future__ import annotations
 
 import csv
 import gzip
+import hashlib
 import io
+import json
 import math
 import re
 import subprocess
@@ -752,6 +754,32 @@ def write_rank_table(path, rank):
     return frame
 
 
+def _canonical_catalog(path):
+    """Return the catalog without its digest field and the claimed digest."""
+    catalog = read_json(path)
+    claimed = catalog.pop("catalog_sha256", None)
+    if not isinstance(claimed, str) or len(claimed) != 64:
+        raise CardiotoxError("catalog.json lacks a valid catalog_sha256")
+    return catalog, claimed
+
+
+def catalog_digest(path):
+    """Verify a category catalog's payload digest; returns the verified digest.
+
+    ``catalog_sha256`` is the sha256 of the canonical JSON of the catalog with
+    that field removed (``write_json``'s sorted, two-space-indented form plus a
+    trailing newline) — the only self-consistent meaning for a file digest
+    stored inside the file it seals.
+    """
+    catalog, claimed = _canonical_catalog(path)
+    payload = (json.dumps(catalog, indent=2, sort_keys=True) + "\n").encode()
+    computed = hashlib.sha256(payload).hexdigest()
+    if computed != claimed:
+        raise CardiotoxError(
+            f"catalog payload digest differs for {Path(path).name}")
+    return computed
+
+
 def _rows(path):
     with Path(path).open(newline="") as handle:
         return sum(1 for _ in handle) - 1
@@ -801,6 +829,7 @@ class CategoryDeg:
             raise CardiotoxError("unsupported catalog schema")
         if self.catalog.get("category") != category:
             raise CardiotoxError(f"catalog category differs from {category}")
+        self.catalog_digest = catalog_digest(self.root / "catalog.json")
 
     def dataset_ids(self):
         return [entry["dataset_id"] for entry in self.catalog["datasets"]]
@@ -1200,7 +1229,7 @@ def _output_record(path, rows):
 
 
 def write_evidence_product(root, step, crosswalk, classes, members, exclusions,
-                           rejected, inputs, environment, resources, axis_digest):
+                           rejected, inputs, environment, axis_digest):
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
     eligibility = eligibility_table(step, crosswalk, classes, members, exclusions)
@@ -1236,7 +1265,7 @@ def _catalog_entry(record):
 
 
 def write_category_product(root, category, records, inputs, environment,
-                           resources, axis_digest):
+                           axis_digest):
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
     outputs = {}
@@ -1255,6 +1284,12 @@ def write_category_product(root, category, records, inputs, environment,
         "evidence_type": "bulk",
         "datasets": [_catalog_entry(record) for record in records],
     }
+    # A JSON file cannot contain its own file digest. ``catalog_sha256`` is the
+    # digest of the canonical catalog bytes *without* that field, so a consumer
+    # can strip the field, re-serialise with write_json's rule and compare.
+    write_json(root / "catalog.json", catalog)
+    catalog_sha256 = sha256(root / "catalog.json")
+    catalog["catalog_sha256"] = catalog_sha256
     write_json(root / "catalog.json", catalog)
     outputs["catalog.json"] = _output_record(root / "catalog.json", len(records))
     measured = sum(record["entry"]["n_measured"] for record in records)
@@ -1266,6 +1301,7 @@ def write_category_product(root, category, records, inputs, environment,
         "inputs": inputs,
         "outputs": outputs,
         "counts": {"datasets": len(records), "measured_gene_rows": int(measured)},
+        "catalog_sha256": catalog_sha256,
         "environment": environment,
     }
     write_json(root / "manifest.json", manifest)
@@ -1303,7 +1339,7 @@ def _dataset_entry(source, class_id, class_label, member_drugs, member_source_id
         "n_measured": int(stats["n_measured"]),
         "n_significant": int(stats["n_significant"]),
         "alignment": stats["alignment"],
-        "test_method": test_method,
+        "method": test_method,
         "deg": deg_name,
         "rank": rank_name,
         "inputs": inputs,
@@ -1328,6 +1364,9 @@ def _build_top2(step, resolver, axis, classes, members, workdir, inputs):
             frame, contrasts, peaks = gse243674_class_contrasts(
                 step, part.source_id.tolist(), slug, workdir)
             method = {
+                "name": "GSE243674 pooled DESeq2",
+                "implementation": "cardiotox_deseq2.R",
+                "env": "conda:biomni_e1 (R 4.5.3, DESeq2 1.50.2)",
                 "deposition": "GSE243674 featureCounts gene counts",
                 "model": "DESeq2 ~ donor + group",
                 "design": "a class's member wells pooled into one CLASS arm vs the "
@@ -1341,6 +1380,9 @@ def _build_top2(step, resolver, axis, classes, members, workdir, inputs):
             frame, contrasts, peaks = dtoxs_class_contrasts(
                 step, dtoxs_counts, part.source_id.tolist(), slug, workdir)
             method = {
+                "name": "DToxS pinned edgeR pooled class contrast",
+                "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+                "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
                 "deposition": "GSE217421 Conv read counts + shipped per-drug Calc "
                               "tables (wells/QC)",
                 "model": "the deposit's pinned edgeR differential-comparison "
@@ -1358,6 +1400,9 @@ def _build_top2(step, resolver, axis, classes, members, workdir, inputs):
             frame, contrasts, peaks = gse244740_class_contrasts(
                 step, [str(value) for value in part.drug_name], slug)
             method = {
+                "name": "GSE244740 pooled Welch class contrast",
+                "implementation": "bases.cardiotox.gse244740_class_contrasts",
+                "env": "arc python (numpy 2.4.6)",
                 "deposition": "GSE244740 ScreenSeq processed counts",
                 "model": "two-sample Welch t-test on log2(CPM + 1)",
                 "design": "a class's member wells (all doses) pooled into one arm "
@@ -1399,6 +1444,9 @@ def _build_other(step, resolver, axis, classes, members, workdir, inputs):
         deg_name = f"dtoxs_ipsc.{slug}.deg.csv"
         rank_name = f"dtoxs_ipsc.{slug}.rank.csv"
         method = {
+            "name": "DToxS pinned edgeR pooled class contrast",
+            "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+            "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
             "deposition": "GSE217421 Conv read counts + shipped per-drug Calc "
                           "tables (wells/QC)",
             "model": "the deposit's pinned edgeR differential-comparison pipeline "
@@ -1477,8 +1525,7 @@ def build_all(root, repo):
         evidence_inputs = _inputs(step, repo, EVIDENCE_INPUTS)
         evidence = write_evidence_product(
             root / EVIDENCE_DIR, step, crosswalk, classes, members, exclusions,
-            rejected, evidence_inputs, environment,
-            {"python_peak_rss_kib": _python_peak()}, axis_digest)
+            rejected, evidence_inputs, environment, axis_digest)
 
         top2_inputs = _inputs(step, repo, TOP2_INPUTS)
         top2_records = _build_top2(step, resolver, axis, classes, members,
@@ -1494,10 +1541,10 @@ def build_all(root, repo):
                      "r_peak_rss_kib": max(r_peaks) if r_peaks else None}
         top2 = write_category_product(root / CATEGORY_TOP2, CATEGORY_TOP2,
                                       top2_records, top2_inputs,
-                                      category_environment, resources, axis_digest)
+                                      category_environment, axis_digest)
         other = write_category_product(root / CATEGORY_OTHER, CATEGORY_OTHER,
                                        other_records, other_inputs,
-                                       category_environment, resources, axis_digest)
+                                       category_environment, axis_digest)
         return ({EVIDENCE_DIR: evidence, CATEGORY_TOP2: top2,
                  CATEGORY_OTHER: other}, resources)
     finally:

@@ -58,7 +58,11 @@
   JSON so tickets #187/#188 cannot collide): `cardiotox/` holds the crosswalk,
   `classes.csv`, `class_members.csv`, `excluded.csv`, `eligibility.csv`,
   `rejected.csv`; each category holds `<source>.<class_slug>.deg.csv` /
-  `.rank.csv` with the ticket-01 DEG/rank contract. The 15.7 MB of compact CSVs
+  `.rank.csv` with the ticket-01 DEG/rank contract; `catalog.json` uses
+  schema `stage2-disease-deg-catalog-v1` with a `datasets` list of full
+  records, each record keyed `method`, and a top-level `catalog_sha256`
+  (payload digest with the field removed; `bases.cardiotox.catalog_digest`
+  verifies it, and the category reader checks it). The 15.7 MB of compact CSVs
   are force-tracked (`*.csv` is globally ignored); no large payload is kept.
 - Tests: `execution/tests/test_drug_classes.py` (crosswalk resolution, the
   `(lookup_name, dataset_inchikey)` collision, the ≥3 rule, TOP2 mesh
