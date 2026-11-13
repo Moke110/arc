@@ -21,3 +21,20 @@ requires the recorded source-replay evidence to travel with the regenerated reco
 | `view_verify.json` | `build_view.py verify` replay output for both views |
 
 Disposable build state lives in `execution/checkpoints/`, never inside `output/`.
+
+## Consequential removals
+
+The #192 rebuild removed two QA helpers that had outlived the evidence they
+reported. Neither removal is a new science decision: both produced the retired
+HVG population-isolation report, and both lost their inputs with the evaluation
+chain (recorded as ADR 0068 (c)).
+
+| removed | commit | why | where the evidence lives now |
+|---|---|---|---|
+| `execution/verify_hvg_metrics.py` (with `hvg_metrics.md`) | `ee88e3c` (2026-11-13) | it recomputed the retired population-isolation metrics from `bases.metrics`; after the evaluation chain was removed it had no surviving input or consumer | listed in ADR 0066 *Removals* and named as "the already-retired `verify_hvg_metrics` report" in ADR 0068 (c); the retained `bases.hvg` release tests in `execution/tests/test_hvg.py` are the surviving regression coverage; code in git history |
+| `output/api/bases/hvg_qa.py` | `6078e9f` (2026-11-13) | it imported `score_groups`/`summarize_runs` from the deleted `bases.metrics`, so it could not import once the evaluation chain was removed; it was the last reporter of that retired QA | ADR 0068 (c); its population-isolation assertion was dropped from `test_hvg.py` (the release tests keep their two cases); code in git history |
+
+No other #192 removal is consequential: the one-off migration/audit scripts and
+the superseded build chain had finished their job, and the retired truth/
+evaluation products have no surviving consumer (the old→new mapping is in
+[`acceptance.md`](acceptance.md)).

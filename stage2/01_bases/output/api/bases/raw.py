@@ -55,7 +55,17 @@ def input_files(native, sources=SOURCES):
 
 
 def default_bindings(root, *, native=None, tables=None, tenv=None, tahoe=None):
-    """Bind independently owned raw releases without copying their payloads."""
+    """Bind independently owned raw releases without copying their payloads.
+
+    Legacy (ADR 0052) helper: the ADR 0066 rebuild replaced the
+    ``output/{tenv,tahoe}-raw-counts/`` interface with the single
+    ``output/raw_counts/`` release, so when called with no explicit bindings this
+    function still resolves the retired pre-0066 directories. Only
+    ``execution/tests/test_raw_provenance.py`` reaches that fallback; the live
+    driver ``build_raw_counts.py`` always passes explicit paths, and no shipped
+    reader imports this module. Kept as the historical replay boundary rather
+    than re-pointed, because the payload layout changed.
+    """
     output = Path(root) / "stage2/01_bases/output"
     legacy = Path(native) if native is not None else output / "tenv-raw-counts"
     if tables is not None:

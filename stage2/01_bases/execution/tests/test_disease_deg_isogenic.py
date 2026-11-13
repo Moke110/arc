@@ -29,7 +29,9 @@ import pandas as pd
 
 TESTS = Path(__file__).resolve().parent
 EXECUTION = TESTS.parent
-REPO = EXECUTION.parents[2]
+# ADR 0030: discover the root by the directory containing .git, never by counting
+# parents; the sibling acceptance test uses the same walk.
+REPO = next(path for path in Path(__file__).resolve().parents if (path / ".git").exists())
 sys.path.insert(0, str(EXECUTION))
 import public_api  # noqa: F401  (binds the single public implementation)
 import disease_deg_fixtures as fixtures  # noqa: E402
