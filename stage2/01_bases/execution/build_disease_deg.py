@@ -15,10 +15,9 @@ through :mod:`bases.disease_deg`, writes a candidate outside ``output/``
 category. ``verify`` replays the build from the pinned inputs and compares the
 manifest and every output digest; the accepted release is never written.
 
-Usage (arc python, from the repository root)::
+Usage (from the repository root, with the shared ``arc`` env's ``python``)::
 
-    /home/chang/miniconda3/envs/arc/bin/python \\
-        stage2/01_bases/execution/build_disease_deg.py publish --category nHF
+    python stage2/01_bases/execution/build_disease_deg.py publish --category nHF
     ... publish --all
     ... verify  --all
 
