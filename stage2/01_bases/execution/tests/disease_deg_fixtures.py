@@ -104,9 +104,9 @@ DATASETS = [
     {
         'dataset_id': 'gse270788__nicm', 'category': 'nHF',
         'source_item': 'disease_data/GSE270788',
-        'local_deg': 'disease_data/GSE270788/local/deg/gse270788_deg.csv',
-        'local_summary': 'disease_data/GSE270788/local/deg/gse270788_deg.json',
-        'cells_per_donor': 'disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv',
+        'local_deg': 'local/deg/gse270788_deg.csv',
+        'local_summary': 'local/deg/gse270788_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse270788_donors.csv',
         'arm_or_class': 'NICM arm vs six Donor controls',
         'species': 'Homo sapiens', 'model_system': 'fixture CM pseudobulk',
         'evidence_type': 'cm_pseudobulk', 'tier': 1,
@@ -120,9 +120,9 @@ DATASETS = [
     {
         'dataset_id': 'gse270788__icm', 'category': 'ICM',
         'source_item': 'disease_data/GSE270788',
-        'local_deg': 'disease_data/GSE270788/local/deg/gse270788_deg.csv',
-        'local_summary': 'disease_data/GSE270788/local/deg/gse270788_deg.json',
-        'cells_per_donor': 'disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv',
+        'local_deg': 'local/deg/gse270788_deg.csv',
+        'local_summary': 'local/deg/gse270788_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse270788_donors.csv',
         'arm_or_class': 'ICM arm vs six Donor controls',
         'species': 'Homo sapiens', 'model_system': 'fixture CM pseudobulk',
         'evidence_type': 'cm_pseudobulk', 'tier': 1,
@@ -136,9 +136,9 @@ DATASETS = [
     {
         'dataset_id': 'gse270788__ami', 'category': 'ICM',
         'source_item': 'disease_data/GSE270788',
-        'local_deg': 'disease_data/GSE270788/local/deg/gse270788_deg.csv',
-        'local_summary': 'disease_data/GSE270788/local/deg/gse270788_deg.json',
-        'cells_per_donor': 'disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv',
+        'local_deg': 'local/deg/gse270788_deg.csv',
+        'local_summary': 'local/deg/gse270788_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse270788_donors.csv',
         'arm_or_class': 'AMI arm vs six Donor controls',
         'species': 'Homo sapiens', 'model_system': 'fixture CM pseudobulk',
         'evidence_type': 'cm_pseudobulk', 'tier': 1,
@@ -152,9 +152,9 @@ DATASETS = [
     {
         'dataset_id': 'reichart-cm__dcm_genotype_negative', 'category': 'nHF',
         'source_item': 'disease_data/Reichart-CM',
-        'local_deg': 'disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv',
-        'local_summary': 'disease_data/Reichart-CM/local/deg/reichart-cm_deg.json',
-        'cells_per_donor': 'disease_data/Reichart-CM/local/genotype/reichart-cm_donor_genotypes.csv',
+        'local_deg': 'local/deg/reichart-cm_deg.csv',
+        'local_summary': 'local/deg/reichart-cm_deg.json',
+        'cells_per_donor': 'local/genotype/reichart-cm_donor_genotypes.csv',
         'arm_or_class': 'genotype-negative DCM vs normal donors',
         'species': 'Homo sapiens', 'model_system': 'fixture CM pseudobulk',
         'evidence_type': 'cm_pseudobulk', 'tier': 1, 'genotype_status': 'negative',
@@ -169,9 +169,9 @@ DATASETS = [
     {
         'dataset_id': 'gse255612__af', 'category': 'AF',
         'source_item': 'disease_data/GSE255612',
-        'local_deg': 'disease_data/GSE255612/local/deg/gse255612_deg.csv',
-        'local_summary': 'disease_data/GSE255612/local/deg/gse255612_deg.json',
-        'cells_per_donor': 'disease_data/GSE255612/local/pseudobulk/gse255612_donors.csv',
+        'local_deg': 'local/deg/gse255612_deg.csv',
+        'local_summary': 'local/deg/gse255612_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse255612_donors.csv',
         'arm_or_class': 'AF vs non-AF controls',
         'species': 'Homo sapiens', 'model_system': 'fixture CM pseudobulk',
         'evidence_type': 'cm_pseudobulk', 'tier': 1,
@@ -196,12 +196,12 @@ def write_fixture(root):
     _crosswalk().to_csv(identity / 'tables/gene_crosswalk.csv', index=False)
 
     tables = {
-        'disease_data/GSE270788/local/deg/gse270788_deg.csv': gse270788_deg(),
-        'disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv': reichart_deg(),
-        'disease_data/GSE255612/local/deg/gse255612_deg.csv': gse255612_deg(),
+        ('disease_data/GSE270788', 'local/deg/gse270788_deg.csv'): gse270788_deg(),
+        ('disease_data/Reichart-CM', 'local/deg/reichart-cm_deg.csv'): reichart_deg(),
+        ('disease_data/GSE255612', 'local/deg/gse255612_deg.csv'): gse255612_deg(),
     }
-    for relative, table in tables.items():
-        path = root / relative
+    for (item, relative), table in tables.items():
+        path = root / item / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         table.to_csv(path, index=False)
     items = sorted({record['source_item'] for record in DATASETS})
@@ -211,7 +211,7 @@ def write_fixture(root):
         (base / 'manifest.sha256').write_text('00  fixture\n')
     for record in DATASETS:
         for key in ('local_summary', 'cells_per_donor'):
-            path = root / record[key]
+            path = root / record['source_item'] / record[key]
             path.parent.mkdir(parents=True, exist_ok=True)
             if not path.exists():
                 path.write_text('fixture\n')

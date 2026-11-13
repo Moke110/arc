@@ -62,7 +62,11 @@
 - Source declarations (eligibility, tier, `shared_control_group`,
   `genotype_status`, `time_window_basis`, contrasts, n_case/n_control) are data
   in `execution/disease_deg_sources.py`; the published catalog carries them
-  verbatim.
+  verbatim. Local input paths there are **item-relative**: the driver composes
+  them from `source_item` at runtime, and the catalog pins tracked files as
+  `inputs` and item-local derived CSVs as `derived_inputs` (relative name +
+  sha256), so no repo-relative literal points at a gitignored `local/` payload
+  and `script/check_paths.sh` stays green in a merged checkout.
 - Tests: `execution/tests/test_disease_deg_human_sc.py` + `disease_deg_fixtures.py`
   (hermetic; schema, rank/tie-break, NA/unmeasured, genotype split, joint-design
   arm collapse, determinism, no absolute paths). Run each file individually.
