@@ -220,6 +220,13 @@ class CatalogShapeTest(unittest.TestCase):
         self.assertIsInstance(catalog["datasets"], list)
         record = catalog["datasets"][0]
         self.assertEqual(record["dataset_id"], "dtoxs_ipsc")
+        for dataset in catalog["datasets"]:
+            counted = (int(dataset["n_case"]) > 0
+                       and int(dataset["n_control"]) > 0)
+            explained = bool(dataset.get("n_case_basis")
+                             and dataset.get("n_control_basis"))
+            self.assertTrue(counted or explained,
+                            f"{dataset['dataset_id']} lacks n_case/n_control")
         self.assertIn("method", record)
         self.assertNotIn("test_method", record)
         self.assertIn("class_id", record)
@@ -236,6 +243,20 @@ class CatalogShapeTest(unittest.TestCase):
 
 
 class DatasetEntryTest(unittest.TestCase):
+    def test_constant_arm_size_keeps_the_per_contrast_count(self):
+        entry = cardiotox._dataset_entry(
+            "gse244740", "atc_l4:L01DB", "Anthracyclines and related substances",
+            ["Doxorubicin", "Idarubicin", "Mitoxantrone"],
+            ["Doxorubicin", "Idarubicin", "Mitoxantrone"],
+            [{"contrast": "x|plate", "stratum": "plate", "n_case": 72,
+              "n_control": 22}],
+            {"n_measured": 10, "n_significant": 1, "alignment": {}},
+            "x.deg.csv", "x.rank.csv", {}, {"name": "t"})
+        self.assertEqual(entry["n_case"], 72)
+        self.assertEqual(entry["n_control"], 22)
+        self.assertIn("per-contrast", entry["n_case_basis"])
+
+
     def test_catalog_entry_records_the_required_fusion_fields(self):
         entry = cardiotox._dataset_entry(
             "dtoxs_ipsc", "atc_l4:L01EA", "BCR-ABL tyrosine kinase inhibitors",
@@ -250,7 +271,11 @@ class DatasetEntryTest(unittest.TestCase):
         self.assertEqual(entry["class_slug"], "atc_l4-L01EA")
         self.assertEqual(entry["n_small_molecule_drugs"], 3)
         self.assertEqual(entry["n_contrasts"], 2)
-        self.assertIsNone(entry["n_case"])  # differs by stratum, recorded per contrast
+        # Varying per-stratum arm sizes are summed over the disjoint strata, not null.
+        self.assertEqual(entry["n_case"], 16)
+        self.assertEqual(entry["n_control"], 14)
+        self.assertTrue(entry["n_case_basis"])
+        self.assertTrue(entry["n_control_basis"])
         self.assertEqual(entry["contrasts"][0]["n_case"], 7)
         self.assertEqual(entry["method"], {"test": "edgeR"})
         release.check_relative_paths(entry)

@@ -1311,11 +1311,31 @@ def write_category_product(root, category, records, inputs, environment,
 # --------------------------------------------------------------------------- #
 # dataset assembly
 # --------------------------------------------------------------------------- #
+def _arm_counts(contrasts, key):
+    """Numeric arm size for one pooled class dataset and how it was derived.
+
+    A class DEG pools drug wells against the same-plate vehicle in one or more
+    source strata. When the per-stratum arm sizes are constant the catalog value
+    is that arm size (the per-contrast pooled-well count); when they differ the
+    catalog value is the sum over the disjoint strata, so the number stays the
+    real count of pooled wells instead of a null. Either way the derivation is
+    recorded in ``*_basis``.
+    """
+    values = [int(item[key]) for item in contrasts]
+    if not values:
+        raise CardiotoxError("a class dataset declares no contrast")
+    if len(set(values)) == 1:
+        return values[0], (f"per-contrast pooled wells, constant across "
+                           f"{len(values)} contrast(s)")
+    return sum(values), (f"sum of pooled wells over {len(values)} disjoint source "
+                         f"strata (per-contrast counts in contrasts[])")
+
+
 def _dataset_entry(source, class_id, class_label, member_drugs, member_source_ids,
                    contrasts, stats, deg_name, rank_name, inputs, test_method):
     spec = SOURCES[source]
-    n_case = sorted({item["n_case"] for item in contrasts})
-    n_control = sorted({item["n_control"] for item in contrasts})
+    n_case, n_case_basis = _arm_counts(contrasts, "n_case")
+    n_control, n_control_basis = _arm_counts(contrasts, "n_control")
     return {
         "dataset_id": source,
         "category": None,
@@ -1332,8 +1352,10 @@ def _dataset_entry(source, class_id, class_label, member_drugs, member_source_id
         "member_drugs": sorted(member_drugs),
         "n_small_molecule_drugs": len(member_drugs),
         "member_source_ids": sorted(member_source_ids),
-        "n_case": n_case[0] if len(n_case) == 1 else None,
-        "n_control": n_control[0] if len(n_control) == 1 else None,
+        "n_case": n_case,
+        "n_control": n_control,
+        "n_case_basis": n_case_basis,
+        "n_control_basis": n_control_basis,
         "contrasts": contrasts,
         "n_contrasts": int(len(contrasts)),
         "n_measured": int(stats["n_measured"]),

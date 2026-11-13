@@ -100,8 +100,11 @@
   schema `stage2-disease-deg-catalog-v1` with a `datasets` list of full
   records, each record keyed `method`, and a top-level `catalog_sha256`
   (payload digest with the field removed; `bases.cardiotox.catalog_digest`
-  verifies it, and the category reader checks it). The 15.7 MB of compact CSVs
-  are force-tracked (`*.csv` is globally ignored); no large payload is kept.
+  verifies it, and the category reader checks it). Each record also carries the
+  real pooled arm sizes (`n_case`/`n_control`, derived from the pooled wells,
+  with `n_case_basis`/`n_control_basis` and per-stratum counts in `contrasts[]`)
+  — never a bare null. The 15.7 MB of compact CSVs are force-tracked (`*.csv` is
+  globally ignored); no large payload is kept.
 - Tests: `execution/tests/test_drug_classes.py` (crosswalk resolution, the
   `(lookup_name, dataset_inchikey)` collision, the ≥3 rule, TOP2 mesh
   corroboration, antibody/unresolved exclusion, evidence-product determinism and

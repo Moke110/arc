@@ -4,7 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "9cf0e676ea898887d29a4016679986db84aec41edc3931e9b412df73f125a3d7",
+  "catalog_sha256": "5ca17ef1bf2299845c55358f381b7c39bbe448e4cc3c9ca22e31f9bb08526d3b",
   "category": "cardiotox_other",
   "datasets": [
     {
@@ -134,9 +134,11 @@
         "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
       },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
-      "n_case": null,
+      "n_case": 64,
+      "n_case_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
       "n_contrasts": 6,
-      "n_control": null,
+      "n_control": 41,
+      "n_control_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
       "n_measured": 13303,
       "n_significant": 1152,
       "n_small_molecule_drugs": 5,
@@ -263,9 +265,11 @@
         "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
       },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
-      "n_case": null,
+      "n_case": 36,
+      "n_case_basis": "sum of pooled wells over 5 disjoint source strata (per-contrast counts in contrasts[])",
       "n_contrasts": 5,
-      "n_control": null,
+      "n_control": 38,
+      "n_control_basis": "sum of pooled wells over 5 disjoint source strata (per-contrast counts in contrasts[])",
       "n_measured": 13056,
       "n_significant": 1464,
       "n_small_molecule_drugs": 3,
@@ -404,9 +408,11 @@
         "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
       },
       "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
-      "n_case": null,
+      "n_case": 72,
+      "n_case_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
       "n_contrasts": 6,
-      "n_control": null,
+      "n_control": 41,
+      "n_control_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
       "n_measured": 13339,
       "n_significant": 1212,
       "n_small_molecule_drugs": 6,
