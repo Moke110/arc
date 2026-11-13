@@ -145,7 +145,7 @@ from the immutable `source/` trees (see `docs/data-inventory.md`).
 
 ADR 0066's roster says "`GSE270788` NICM arm (7 donors vs 6 Donor)" and "All three
 `GSE270788` arms use the same six Donor controls". The deposit contradicts both.
-Measured directly from `disease_data/GSE270788/source/GSE270788_metadata.csv.gz`
+Measured directly from the item's `source/GSE270788_metadata.csv.gz`
 grouped by the metadata `sample` column (46,384 cells): **Donor 7 / NICM 6 / ICM 5
 / AMI 5**. The series-matrix `!Sample_characteristics_ch1` disease state agrees.
 Therefore the NICM arm is 6 case vs **7** shared Donor controls and the ICM/AMI
