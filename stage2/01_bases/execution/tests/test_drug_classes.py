@@ -8,17 +8,19 @@ exclusions), not a re-derivation from the implementation's internals.
 import gzip
 import io
 import json
+import os
 import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import pandas as pd
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
-from bases import cardiotox, release
+from bases import cardiotox, disease_deg, release, r_env
 
 TOP2 = "Topoisomerase II Inhibitors"
 TKI = "Tyrosine Kinase Inhibitors"
@@ -367,6 +369,68 @@ class EvidenceProductTest(unittest.TestCase):
         self.assertIn("GSE217423", text)
         self.assertIn("GSE242692", text)
         self.assertIn("GSE313746", text)
+
+
+class RResolutionTests(unittest.TestCase):
+    """The R launchers resolve configuration, never a host-absolute literal (#194).
+
+    No R is required: the overrides point at throwaway shell scripts, and the
+    missing-interpreter case is exercised with an empty ``PATH``.
+    """
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+
+    def fake_rscript(self, body="exit 0\n", name="Rscript"):
+        path = self.root / name
+        path.write_text("#!/bin/sh\n" + body)
+        path.chmod(0o755)
+        return path
+
+    def test_arc_rscript_override_wins_for_the_cardiotox_launcher(self):
+        marker = self.root / "ran"
+        fake = self.fake_rscript(body=f": > {marker}\nexit 0\n")
+        with mock.patch.dict(os.environ, {"ARC_RSCRIPT": str(fake)}, clear=True):
+            self.assertEqual(r_env.rscript(), str(fake))
+            cardiotox.run_r("step.R", [])
+        self.assertTrue(marker.is_file())
+
+    def test_arc_r_home_override_and_rscript_derivation_for_the_deg_worker(self):
+        home = self.root / "lib" / "R"
+        (home / "bin" / "exec").mkdir(parents=True)
+        (home / "bin" / "exec" / "R").write_text("")
+        with mock.patch.dict(os.environ, {"ARC_R_HOME": str(home)}, clear=True):
+            executable, resolved = disease_deg.r_entry_point()
+        self.assertEqual((executable, resolved), (home / "bin" / "exec" / "R", home))
+        printed = self.fake_rscript(body=f"echo {home}\nexit 0\n", name="print_home")
+        bare_env = mock.patch.object(sys, "prefix", str(self.root / "no-env-r"))
+        with mock.patch.dict(os.environ, {"ARC_RSCRIPT": str(printed)}, clear=True), bare_env:
+            self.assertEqual(r_env.r_home(), home)
+            self.assertEqual(disease_deg.r_entry_point(),
+                             (home / "bin" / "exec" / "R", home))
+
+    def test_missing_rscript_raises_a_clear_error(self):
+        empty = self.root / "empty"
+        empty.mkdir()
+        bare_env = mock.patch.object(sys, "prefix", str(self.root / "no-env-r"))
+        with mock.patch.dict(os.environ, {"PATH": str(empty)}, clear=True), bare_env:
+            with self.assertRaisesRegex(r_env.REnvironmentError, "Rscript"):
+                r_env.rscript()
+            with self.assertRaisesRegex(r_env.REnvironmentError, "Rscript"):
+                disease_deg.r_entry_point()
+            with self.assertRaisesRegex(r_env.REnvironmentError, "Rscript"):
+                cardiotox.run_r("step.R", [])
+
+    def test_the_running_env_r_wins_over_a_bare_path(self):
+        bundled = Path(sys.prefix) / "lib" / "R"
+        if not (bundled / "bin" / "exec" / "R").is_file():
+            self.skipTest("the running conda env ships no R")
+        empty = self.root / "empty"
+        empty.mkdir()
+        with mock.patch.dict(os.environ, {"PATH": str(empty)}, clear=True):
+            self.assertEqual(r_env.r_home(), bundled)
 
 
 if __name__ == "__main__":

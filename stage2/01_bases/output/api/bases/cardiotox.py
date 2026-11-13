@@ -60,7 +60,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from . import deg_rank
+from . import deg_rank, r_env
 from .release import (ReleaseError, candidate, check_manifest, output_digests,
                       read_json, replace, sha256, write_json)
 
@@ -101,11 +101,11 @@ GSE244740_SERIES = GSE244740_ITEM + "/source/GSE244740_series_matrix.txt.gz"
 
 TOOLS = "stage2/01_bases/execution/cardiotox_tools.py"
 
-# The pinned R build environment. The repository's own GSE243674 item build uses
-# this interpreter (R 4.5.3, DESeq2); the `arc` env's r-base has neither edgeR
-# nor DESeq2 and its `R` wrapper references a missing interpreter, so the
-# documented R build env is used instead of the Python interpreter rule.
-RSCRIPT = "/home/chang/miniconda3/envs/biomni_e1/bin/Rscript"
+# The R build environment is configuration, not science: `bases.r_env` resolves
+# `Rscript` from an explicit argument, `ARC_RSCRIPT`, or `PATH` in that order.
+# The documented build is the `biomni_e1` conda env (R 4.5.3, edgeR 4.8.2,
+# DESeq2 1.50.2); the `arc` env's R has neither package. Manifests record the
+# environment name/version only, never a host path.
 
 EDGE_R_SCRIPT = "stage2/01_bases/output/api/bases/cardiotox_edgeR.R"
 DESEQ2_SCRIPT = "stage2/01_bases/output/api/bases/cardiotox_deseq2.R"
@@ -618,9 +618,9 @@ def write_contrast_inputs(root, name, frame, samples):
     return counts_path, samples_path
 
 
-def run_r(script, arguments, record_path=None, rscript=RSCRIPT):
-    """Run one pinned R compute step under the documented R build environment."""
-    command = [rscript, str(script)] + [str(argument) for argument in arguments]
+def run_r(script, arguments, record_path=None, rscript=None):
+    """Run one pinned R compute step under the resolved R build environment."""
+    command = [r_env.rscript(rscript), str(script)] + [str(argument) for argument in arguments]
     environment = {"OMP_NUM_THREADS": "2", "MKL_NUM_THREADS": "2",
                    "OPENBLAS_NUM_THREADS": "2", "R_DEFAULT_PACKAGES": "datasets,utils,grDevices,graphics,stats,methods"}
     timed = ["/usr/bin/time", "-v", "-o", str(record_path)] if record_path else []
@@ -633,18 +633,19 @@ def run_r(script, arguments, record_path=None, rscript=RSCRIPT):
     return completed
 
 
-def r_environment(rscript=RSCRIPT):
+def r_environment(rscript=None):
     """R and package versions that produced the class DEGs."""
-    command = [rscript, "--vanilla", "-e",
+    executable = r_env.rscript(rscript)
+    command = [executable, "--vanilla", "-e",
                ('cat(R.version.string, "\\n"); for (p in c("edgeR", "DESeq2")) '
                 'cat(p, as.character(packageVersion(p)), "\\n")')]
     completed = subprocess.run(command, capture_output=True, text=True, check=False)
     if completed.returncode != 0:
         raise CardiotoxError(f"cannot read the R environment: {completed.stderr[-800:]}")
     lines = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
-    # The manifest may not carry an absolute path: name the documented conda env
-    # that supplies the R build instead of the host path.
-    environment_name = Path(rscript).resolve().parent.parent.name
+    # The manifest may not carry an absolute path: name the conda env that
+    # supplies the R build instead of the host path.
+    environment_name = Path(executable).resolve().parent.parent.name
     result = {"interpreter": f"conda:{environment_name}",
               "r": lines[0] if lines else ""}
     for line in lines[1:]:

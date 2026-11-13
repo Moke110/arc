@@ -46,6 +46,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from . import r_env
 from .deg_rank import (
     AXIS_SIZE,
     SCHEMA as RANK_SCHEMA,
@@ -310,21 +311,24 @@ def contrast_selection(rows, dataset_id, contrasts):
 
 # The single live DEG worker (ADR 0066 D9). The `arc` conda env's R wrapper is
 # mis-patched on this workstation, so the R entry point is invoked as
-# R_HOME=<env>/lib/R <env>/lib/R/bin/exec/R (the documented pattern for the
-# repository's pinned R envs). The path is configuration, not science: item
-# scripts pass it and record only the env name/version, never a host path.
-DEFAULT_R_HOME = '/home/chang/miniconda3/envs/arc/lib/R'
+# R_HOME=<home> <home>/bin/exec/R. Which R that is, is configuration, not
+# science: `bases.r_env` resolves it (explicit argument, then `ARC_R_HOME`, then
+# the running conda env's own `lib/R`, then the `Rscript` on PATH and its
+# `R.home()`), and item scripts record only the env name/version, never a host
+# path.
 DEG_WORKER = Path(__file__).with_name('disease_deg.R')
 DEG_SUMMARY_PREFIX = 'DEG_SUMMARY '
 
 
 def r_entry_point(r_home=None):
-    """Return the R executable of the pinned `arc` env (see module docstring)."""
-    home = Path(r_home or os.environ.get('ARC_R_HOME', DEFAULT_R_HOME))
-    executable = home / 'bin' / 'exec' / 'R'
-    if not executable.is_file():
-        raise FileNotFoundError(f'pinned R entry point not found: {executable}')
-    return executable, home
+    """Return the ``<R_HOME>/bin/exec/R`` entry point and its home.
+
+    ``r_home`` / ``ARC_R_HOME`` select the home explicitly; unset means the
+    running conda env's own ``lib/R``, then the ``Rscript`` on ``PATH`` (see
+    :mod:`bases.r_env`). The `arc` env's own ``lib/R`` is the documented setting
+    for this workstation.
+    """
+    return r_env.entry_point(r_home)
 
 
 def run_deg_worker(matrix, samples, design, out_csv, r_home=None, timeout=7200):
