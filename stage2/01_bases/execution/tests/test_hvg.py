@@ -58,3 +58,6 @@ class HVGReleaseTests(unittest.TestCase):
         changed=make_cohorts(samples.iloc[::-1],folds=3,seed='fixture-v1')
         pd.testing.assert_frame_equal(cohorts.sort_values(['fold','sample_id']).reset_index(drop=True),
                                       changed.sort_values(['fold','sample_id']).reset_index(drop=True))
+
+if __name__ == "__main__":
+    unittest.main()

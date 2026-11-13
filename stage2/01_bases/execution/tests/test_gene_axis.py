@@ -567,7 +567,6 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertNotIn('gcm_dropped',
                              [record['dataset_id'] for record in
                               manifest['categories']['genetic_cardiomyopathy']['datasets']])
-            # 2 axes x (6 categories + tenv half + 7 pN values + 7 candidate pN)
             # 2 axes x (6 categories + tenv half + 8 pN values + 8 candidate pN)
             self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 8 + 8))
             for text in manifest_strings(manifest):

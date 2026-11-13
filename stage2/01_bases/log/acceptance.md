@@ -144,8 +144,9 @@ and composition/histogram rebuilt) and both views (rebuilt from the new axes); t
 raw-count release was re-sealed against the tracked provenance record without
 changing a payload byte. All six replay gates were re-run green at the times and
 peaks in §1, and the per-slice `*_verify.json` records were regenerated. The full
-`stage2/01_bases/execution/tests` suite passed (18 files; the two files that import
-`disease_deg_fixtures` are run directly from `execution/tests/`).
+`stage2/01_bases/execution/tests` suite passed (17 files, each run directly from
+`stage2/01_bases`; the two files that import `disease_deg_fixtures` resolve it from
+`execution/tests/`).
 
 `script/check_tracked.sh` is green. `script/check_paths.sh` is **red only in a
 payload-free merged checkout**, where it reports the same 68 pre-existing,
@@ -199,7 +200,7 @@ amendment and both view rebuilds, measured from the view manifests (tenv, all
 4,478 profiles): **G_2000 = 15.0548953%** and **G_5000 = 37.4273748%**
 (treated-only 15.0892505% / 37.3846128%; `tahoe_bulk` 10.8317768% /
 24.7366390%). The 2.5× baseline-change argument and the full-axis decision are
-unaffected (measured denominator ratio ≈2.88×); the released values are
+unaffected (measured denominator ratio ≈2.49×); the released values are
 authoritative and recorded in both view manifests.
 
 ### Cosmetic, not fixed (out of scope)
