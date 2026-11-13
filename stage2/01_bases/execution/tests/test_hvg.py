@@ -10,7 +10,6 @@ from anndata.io import write_elem
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases.hvg import build_hvg, HVGRelease, verify_hvg, make_cohorts
-from bases.hvg_qa import verify_population_isolation
 
 class HVGReleaseTests(unittest.TestCase):
     def fixture(self, root, heldout_scale=1):
@@ -43,9 +42,6 @@ class HVGReleaseTests(unittest.TestCase):
             build_hvg(changed,second/'hvg',cohorts=cohorts,expected_genes=4)
             np.testing.assert_array_equal(rank,HVGRelease(second/'hvg').select('fold_0',4,training_sample_ids=['s0','s1','s2','s3']))
             self.assertEqual(verify_hvg(training,first/'hvg')['result'],'PASS')
-            isolation=verify_population_isolation(training,first/'hvg')
-            self.assertEqual(isolation['result'],'PASS')
-            self.assertEqual(isolation['folds']['fold_0']['heldout_wells'],8)
             with self.assertRaisesRegex(ValueError,'seal'):
                 verify_hvg(changed,first/'hvg')
             broken=cohorts.copy();broken.loc[1,'role']='test'

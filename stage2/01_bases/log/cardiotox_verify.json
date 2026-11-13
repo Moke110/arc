@@ -1,0 +1,47 @@
+{
+  "action": "verify",
+  "output_root": "stage2/01_bases/output/disease-deg",
+  "products": {},
+  "replay": {
+    "cardiotox": {
+      "manifest_sha256": "06e4e08b631ec8a2e908bb52d3a61ba5c9e48c7ed124134d8b69ca3f422dff9b",
+      "outputs": [
+        "class_members.csv",
+        "classes.csv",
+        "crosswalk.csv",
+        "eligibility.csv",
+        "excluded.csv",
+        "rejected.csv"
+      ]
+    },
+    "cardiotox_TOP2": {
+      "manifest_sha256": "496b4977c63312655167aef9e512855308a37373ba3605f6c27bfe5a562f9d2b",
+      "outputs": [
+        "catalog.json",
+        "dtoxs_ipsc.atc_l4-L01DB.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01DB.rank.csv",
+        "gse243674.atc_l4-L01DB.deg.csv",
+        "gse243674.atc_l4-L01DB.rank.csv",
+        "gse244740.atc_l4-L01DB.deg.csv",
+        "gse244740.atc_l4-L01DB.rank.csv"
+      ]
+    },
+    "cardiotox_other": {
+      "manifest_sha256": "57529b8c662cb227475c899d23924d235e7a3d19bc7267b29b1e32e343c5586e",
+      "outputs": [
+        "catalog.json",
+        "dtoxs_ipsc.atc_l4-L01EA.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01EA.rank.csv",
+        "dtoxs_ipsc.atc_l4-L01EB.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01EB.rank.csv",
+        "dtoxs_ipsc.atc_l4-L01EX.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01EX.rank.csv"
+      ]
+    },
+    "result": "PASS"
+  },
+  "resources": {
+    "python_peak_rss_kib": 1535828,
+    "r_peak_rss_kib": 891724
+  }
+}
