@@ -772,6 +772,106 @@ tenv non-HVG curve, ortholog table, `inflection.json`) is retained on disk
 byte-identically until the removal ticket (#192) deletes it after acceptance;
 this ticket neither produces nor consumes it.
 
+## Model-facing views `view-2k/` / `view-5k/` (#191, ADR 0066)
+
+`output/view-2k/` and `output/view-5k/` are the models' products: the integer
+corpus normalized **once** on the full 18,164-gene library total (`CP10K`, then
+natural `log1p`; ADR 0061's frozen normalization), then subset to one released
+axis's genes in ascending original `gene_index`, with `control` = the mean of
+that row's matched corpus controls normalized the same way and
+`Δ = X − control` elementwise. The view **never** re-normalizes on its own gene
+subset; there is one normalization and two gene subsets (ADR 0066 *Corpus and
+view semantics*). No `{N}k_eval_truth/` directory is created here: the
+evaluation redesign owns each view's truth later.
+
+**Measured denominator basis (released axes, this build).** The tenv axis
+carries **12.93%** (`G_2000`) and **37.21%** (`G_5000`) of the full-axis CP10K
+mass, pooled over all 4,478 profiles (treated-only 12.96% / 37.16%);
+`tahoe_bulk` carries 10.46% / 24.78%. A view-local denominator would change the
+per-gene input baseline by about 2.88× between the two axes and turn
+`mean|Δ|` into an artifact of the denominator, which is why the one
+normalization is on the **full axis, not the view**. ADR 0066's design-record
+figures 12.9% / 36.3% came from an **interim pre-#190** axis: the 2,000-gene
+figure reproduces, the released `G_5000` measures 37.21%, and the measured
+value recorded in each manifest is authoritative; the decision is unaffected
+(≈2.88× measured vs the ADR's implied ≈2.81×). Each manifest also records every
+profile's full-axis library total through `sources.<source>.full_axis_library_total`
+and `library_totals.csv`.
+
+Layout (the step's matrix-and-metadata pattern, one h5ad per corpus source;
+payloads gitignored, manifests force-tracked):
+
+| path | rows × columns | bytes | sha256 |
+|---|---|---:|---|
+| `output/view-2k/manifest.json` | — | 5,752 | `b48eeddb…` |
+| `output/view-2k/tenv.h5ad` | 4,478 × 2,000 | 59,829,344 | `4bcdddb5…` |
+| `output/view-2k/tahoe_bulk.h5ad` | 66,718 × 2,000 | 1,307,875,582 | `f0732761…` |
+| — rows | tenv 4,206 treated + 272 vehicle; tahoe_bulk 65,318 treated + 1,400 vehicle | | |
+| `output/view-2k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
+| `output/view-5k/manifest.json` | — | 5,757 | `37af263b…` |
+| `output/view-5k/tenv.h5ad` | 4,478 × 5,000 | 142,393,266 | `5827434c…` |
+| `output/view-5k/tahoe_bulk.h5ad` | 66,718 × 5,000 | 3,146,195,077 | `95330071…` |
+| `output/view-5k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
+
+`du -sb`: `view-2k/` 1,371,438,657 B, `view-5k/` 3,292,322,079 B. Each h5ad
+carries `X` (float32), `layers/control` and `layers/delta`; `obs` carries the
+corpus row identity (`role`, plate/cell line, compound name, desalted parent
+InChIKey/SMILES, source item + item-manifest digest, `dose_um`, source dose
+column, `matched_control_group`) plus the row's full-axis `library_total`; `var`
+carries the axis genes as original frozen integers (`gene_index`, `symbol`) in
+ascending order, never renumbered to `0..N−1`. `manifest.json` records the
+recipe, the full-axis normalization definition, input digests (corpus manifest +
+both payloads + gene-axis manifest + axis file), output digests, per-source
+counts, the measured basis and the environment; no absolute paths.
+
+```python
+import sys; sys.path.insert(0, 'stage2/01_bases/output/api')
+from bases.view import open_view
+with open_view('stage2/01_bases/output/view-2k') as view:
+    tenv = view.source('tenv')
+    x, control, delta = tenv.X(0, 64), tenv.control(0, 64), tenv.delta(0, 64)
+    row = tenv.obs.iloc[42]                    # role, dose, structure, matched_control_group, library_total
+    controls = tenv.matched_control_rows(42)   # vehicle row positions whose mean is `control`
+    genes = tenv.gene_index                    # original frozen gene_index integers, ascending
+```
+
+Readers are the only supported access path. `View` / `ViewSource` expose
+bounded dense windows (`X(start, stop)`, `control`, `delta`, `batches(batch_size)`
+yielding `(start, X, control, delta)`), the carried `obs`/`var`, `gene_index`,
+`library_totals()`, `control_groups()`, `control_rows(group)` and
+`matched_control_rows(index)`, plus `digests()`; they never materialize a dense
+observation × axis matrix and never open the corpus.
+
+**Consumer contract for `02_models_tenv` (re-pointing deferred).** The model
+step currently reads `output/training-corpora/tenv.h5ad` layers `control` and
+`delta`; re-pointing it and re-running its accepted 2-fold × 2-seed matrix are
+**deferred** (ADR 0066 *Deferred*) and were not attempted here. Its target
+contract is `output/view-{N}k/tenv.h5ad`: `X` (log1p CP10K on the full-axis
+denominator), `layers/control`, `layers/delta = X − control`, `obs` row identity,
+`var.gene_index` ascending frozen integers. The view keeps **both corpus roles**
+as rows (`role` is carried), so the model step selects `role == 'treated'`
+(4,206 tenv rows; the retired training h5ad held treated rows only) instead of
+treating vehicle rows as observations. The two axes share one scale, so the axis
+comparison must still declare one hyperparameter protocol across axes or a
+per-axis tuning budget (ADR 0066 *Tuning protocol for the axis comparison*).
+
+```bash
+python stage2/01_bases/execution/build_view.py publish   # candidate -> verify -> replace, both views
+python stage2/01_bases/execution/build_view.py verify    # replay both from corpus + axis, compare every digest
+```
+
+Publication is candidate-then-replace per view; `verify` rebuilds both views
+from the pinned corpus and gene-axis releases and compares the manifest and
+every output digest (recorded reproducible byte-identically). Measured cost of
+one publish run: 3 m 35 s, peak RSS 445,512 KiB; one verify replay: 3 m 29 s,
+peak RSS 443,036 KiB, both under the 10 GiB cap and streaming 256-row batches.
+`execution/tests/test_view.py` is hermetic (17 tests): the **full-axis vs
+view-local denominator** fixture asserting the full-axis result, `control` =
+mean of the named matched controls, `Δ = X − control` exactly, replay
+reproducing `Δ`, exactly 2,000/5,000 ascending frozen genes, no
+`{N}k_eval_truth/`, determinism, tamper detection and no absolute paths. Run it
+individually under the `arc` env.
+
 ## Shared `@d` evaluation and figure APIs
 
 `output/api/bases/evaluation.py` owns the ADR 0064 reliability family used by the

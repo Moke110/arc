@@ -244,6 +244,39 @@ manifest pins 33 input digests (frozen axis, tenv-HVG ranking, six catalogs,
 six release manifests, 19 used rank frames) and 5 output digests, with no
 absolute paths. Build + replay peak RSS ≈140 MiB under the 10 GiB cap.
 
+### Model-facing views `view-2k/` / `view-5k/` (#191, ADR 0066)
+
+The two views are the models' `X`/`control`/`Δ` products: each corpus profile is
+normalized once on the **full** 18,164-gene library total (CP10K, natural
+`log1p`), then subset to one released axis's ascending `gene_index`; `control`
+is the mean of the row's matched vehicle rows normalized the same way and
+`Δ = X − control` exactly. The view never re-normalizes on its own subset. The
+float32 payloads are gitignored (normalized log values are near-incompressible)
+and only the small manifests plus the reader are tracked; `du -sb`, 2026-11-13.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/view-2k/` | 1,371,438,657 | `tenv.h5ad` (4,478 × 2,000 float32: `X`, `layers/control`, `layers/delta`), `tahoe_bulk.h5ad` (66,718 × 2,000), `library_totals.csv` (71,196 profiles' full-axis totals, 3.7 MB), `manifest.json` (5,752 B) | `execution/build_view.py publish` from the read-only `output/corpus/` + `output/gene-axis/`; `verify` replays both views and compares every digest |
+| `output/view-5k/` | 3,292,322,079 | `tenv.h5ad` (4,478 × 5,000), `tahoe_bulk.h5ad` (66,718 × 5,000), `library_totals.csv`, `manifest.json` (5,757 B) | same driver; candidates stage in `execution/checkpoints/` and are replaced only after verification |
+
+Measured cost of one publish run: 3 m 35 s, peak RSS 445,512 KiB; one `verify`
+replay: 3 m 29 s, peak RSS 443,036 KiB, both streaming 256-row corpus batches
+under the 10 GiB cap. The measured full-axis CP10K basis is recorded in each
+manifest: `tenv` 12.93% (`G_2000`) / 37.21% (`G_5000`) pooled over all rows
+(treated-only 12.96% / 37.16%), `tahoe_bulk` 10.46% / 24.78%. ADR 0066's
+design-record 12.9% / 36.3% came from an interim pre-#190 axis; the measured
+released-axis value is authoritative and the one-normalization decision is
+unaffected (≈2.88× denominator ratio). Small-scale reproduction:
+
+```bash
+python stage2/01_bases/execution/build_view.py publish   # both views, candidate -> verify -> replace
+python stage2/01_bases/execution/build_view.py verify    # replay both, compare every digest
+```
+
+The two `manifest.json` files are force-tracked (they declare the payload
+digests, input digests and the measured basis); the h5ad payloads and
+`library_totals.csv` are ignored and reconstructible by the driver.
+
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See
 `stage2/01_bases/README.md` for the current commands, accepted results,
