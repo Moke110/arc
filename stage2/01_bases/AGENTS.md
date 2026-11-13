@@ -206,6 +206,61 @@
   figure CSV-only replay, `deg_rank` re-export identity and retired-file-set
   preservation. Run it individually under the `arc` env.
 
+## Model-facing views `view-2k/` / `view-5k/` (#191, ADR 0066)
+
+- Public implementation: `output/api/bases/view.py` — the one live view
+  definition (`library_totals`, `log1p_cp10k`, `build`, `verify`,
+  `publish_release`/`replay_release`) plus the bounded public reader
+  (`View`, `ViewSource`, `open_view`, `View.digests`, `.library_totals()`,
+  `.control_groups()`, `.matched_control_rows()`). It imports the corpus reader
+  and the digest-checked `GeneAxis` reader; it never re-derives the corpus axis,
+  the axis fill rule or the matched-control correspondence.
+- Definition: normalize every corpus profile on the **full 18,164-gene library
+  total** (`CP10K`, natural `log1p`), subset to the released axis's genes in
+  ascending original `gene_index`, `control` = mean of the row's matched
+  vehicle rows normalized the same way, `Δ = X − control` exactly. The view **never**
+  re-normalizes on its own gene subset — one normalization, two gene subsets
+  (ADR 0066 *Corpus and view semantics*). No `{N}k_eval_truth/` is created.
+- Measured basis (released axes, this build): tenv axis = 12.93% (`G_2000`) /
+  37.21% (`G_5000`) of full-axis CP10K (pooled all rows; treated-only 12.96% /
+  37.16%); `tahoe_bulk` 10.46% / 24.78%. ADR 0066's 12.9% / 36.3% are
+  design-record figures from an interim pre-#190 axis; the 2,000 figure
+  reproduces and the manifest records the measured released-axis values as
+  authoritative (the ~2.88× denominator ratio leaves the full-axis decision
+  unaffected). Per-source full-axis library totals live in
+  `manifest.sources.<source>.full_axis_library_total` and in
+  `library_totals.csv`.
+- Driver: `execution/build_view.py publish|verify` (one view at a time,
+  streaming 256-row corpus batches; candidates stage in
+  `execution/checkpoints/`; `verify` replays both views from the pinned corpus
+  and gene-axis manifests and compares every digest). Products:
+  `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad`
+  (`X` float32, `layers/control`, `layers/delta`; `obs` carries corpus row
+  identity + `library_total`; `var` carries ascending original `gene_index` +
+  `symbol`), `library_totals.csv` (`source`, `profile_id`, `role`,
+  `library_total`; 71,196 rows) and `manifest.json` (recipe, normalization,
+  input/output digests, counts, basis, environment; no absolute paths). The
+  manifests are force-tracked; the ~4.7 GB float32 h5ads and
+  `library_totals.csv` are gitignored and registered in
+  `docs/data-inventory.md`. Measured cost: publish 3 m 35 s / 445,512 KiB peak
+  RSS, verify 3 m 29 s / 443,036 KiB.
+- Consumer contract: `02_models_tenv` still reads the retired
+  `output/training-corpora/tenv.h5ad`; re-pointing it and re-running its accepted
+  matrix are deferred (ADR 0066 *Deferred*). Its target is
+  `output/view-{N}k/tenv.h5ad` `X`/`control`/`delta`; the view keeps both corpus
+  roles as rows (`obs.role`), so the model selects `role == 'treated'` (the
+  retired training h5ad held treated rows only). The two axes share one scale,
+  so an axis comparison must declare one hyperparameter protocol across axes or
+  a per-axis tuning budget.
+- Tests: `execution/tests/test_view.py` (17 tests) + `view_fixtures.py`
+  (hermetic corpus h5ads and gene-axis release written directly): the fixture
+  where view-local and full-axis denominators differ and the full-axis result is
+  asserted, control = mean of the named group, `Δ = X − control` exactly,
+  replay reproduces `Δ`, exactly 2,000/5,000 ascending frozen genes (no
+  renumbering), control scope per group, no `{N}k_eval_truth/`, determinism,
+  tamper detection, manifest relative-path hygiene. Run it individually under
+  the `arc` env.
+
 Routing for the standalone Stage 2 foundation; commands and contracts are in
 [`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
 gene and evaluation semantics. Every path below is a stable semantic path.
