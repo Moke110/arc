@@ -173,6 +173,87 @@ digest, so a replay is byte-identical. The compact CSVs, catalogs and manifests
 are force-tracked (payloads otherwise gitignored); the item-local DEG tables and
 pseudobulk matrices stay in the items' `local/` areas.
 
+### Drug-cardiotoxicity class sources (#189, ADR 0066)
+
+`cardiotox_TOP2` and `cardiotox_other` treat a **mechanism class**, not a drug,
+as evidence. Three already-owned items are read read-only: `disease_data/GSE243674`
+(hiPSC-CM, DNR/DOX/EPI/MTX + trastuzumab), `pert_data/DToxS-iPSC`
+(GSE217421 Conv arm; 54 codes) and `pert_data/GSE244740` (ScreenSeq; DOX/IDA/
+Mitoxantrone).
+
+| path under `output/disease-deg/` | contents |
+|---|---|
+| `cardiotox/` | the pinned crosswalk (`crosswalk.csv`), class selection (`classes.csv`), membership (`class_members.csv`), excluded codes (`excluded.csv`), per-source eligibility (`eligibility.csv`), rejected candidates (`rejected.csv`) and `manifest.json` |
+| `cardiotox_TOP2/` | one pooled class DEG and within-dataset rank per source (`gse243674.*`, `dtoxs_ipsc.*`, `gse244740.*`), `catalog.json`, `manifest.json` |
+| `cardiotox_other/` | one pooled class DEG and within-dataset rank per entered DToxS non-TOP2 class (`dtoxs_ipsc.atc_l4-L01EA/L01EB/L01EX.*`), `catalog.json`, `manifest.json` |
+
+The compact tables (≈15.7 MB total) are force-tracked; the build's count and R
+intermediates live only in `execution/checkpoints/` and are deleted after the
+candidate is replaced. `bases.cardiotox.DiseaseDeg` and `.CategoryDeg` are the
+readers; `catalog.json` carries `(category, dataset_id, class_id) -> deg, rank,
+`n_measured`, `method`, `member_drugs`, `n_small_molecule_drugs` for the
+fusion ticket, plus a top-level `catalog_sha256` = sha256 of the canonical
+catalog JSON with that field removed (a file cannot contain its own digest); the
+manifest repeats it. All three products use schema
+`stage2-disease-deg-catalog-v1` with `datasets` as a list of full records.
+
+**Pinned crosswalk (no hand-entered class).** Every `(source, code)` pair is
+resolved to one annotation row in
+`pert_data/Annotation/local/cm_compound_annotation.csv`, keyed on
+`(lookup_name, dataset_inchikey)` where present: a source's own analogue (the
+documented DToxS `AMI` pentyl-benzofuran homolog) keeps its own structure and is
+never relabelled as the named drug. The class is the **ATC level-4
+pharmacological subgroup** (five-character prefix); a code with several ATC
+subgroups is assigned only when exactly one candidate is corroborated by its
+`mesh_classes`, otherwise it is excluded as `ambiguous_multi_class`. A code the
+annotation does not carry, or whose row has no ATC subgroup, is unresolved and
+recorded. The partition is mandatory — one code, one class — so no well can enter
+two class DEGs. Coverage of the three sources: 101 pairs (54 DToxS codes, 5
+GSE243674 tokens, 42 GSE244740 compounds) → 69 resolved, 19 without an
+annotation row, 2 without an ATC subgroup, 11 ambiguous; 36 classes carry a
+resolved member.
+
+**Class rule.** A class enters a source only with **at least three
+small-molecule drugs** in that source (a small molecule is a structure-backed
+annotation row; antibodies and peptides cannot satisfy it and are therefore
+excluded — the ADR-declared trastuzumab, bevacizumab and rituximab are among the
+unresolved codes). `cardiotox_TOP2` is the `L01DB` subgroup and requires every
+member's `mesh_classes` to contain `Topoisomerase II Inhibitors`; a member
+missing that evidence is excluded and recorded. Entered classes: the TOP2 class
+in each of the three sources (4 / 4 / 3 drugs) and the DToxS `L01EA` (5),
+`L01EB` (3) and `L01EX` (6) classes for `cardiotox_other`. The 76 excluded codes
+and the classes below three are listed with their reason in `excluded.csv` /
+`classes.csv`.
+
+**Class DEG.** A class's drug wells are pooled into one Disease group and
+compared with the same-plate/same-time vehicle in each source stratum, using the
+source's own test: the DToxS deposit's pinned edgeR pipeline on its read counts
+(TMM, trended dispersion, `exactTest`, `remove_small`, per cell line), DESeq2
+`~ donor + group` on GSE243674's counts (3 h and 24 h), and the declared
+two-sample Welch test on log2(CPM+1) for GSE244740 (one plate). The per-stratum
+pooled contrasts then collapse per gene by the maximum `|log2FC| x -log10(padj)`
+through `bases.deg_rank`, and the published table carries the winning contrast's
+`log2fc`, `stat`, `p_value`, `padj`, `base_mean`, `direction`, `significant`,
+`n_contrasts`, `n_contrasts_supporting`, `effect`, `rank`, `rank_norm`; the rank
+file covers all 18,164 frozen genes with unmeasured genes at `n_measured + 1`.
+Shared vehicle wells are declared per source in `eligibility.csv`; classes are
+never treated as independent experiments.
+
+```bash
+python stage2/01_bases/execution/build_disease_deg_cardiotox.py publish
+python stage2/01_bases/execution/build_disease_deg_cardiotox.py verify
+```
+
+The build uses the repository's R build environment
+`/home/chang/miniconda3/envs/biomni_e1/bin/Rscript` (R 4.5.3, edgeR 4.8.2,
+DESeq2 1.50.2; recorded as `conda:biomni_e1`), because the `arc` env's R has
+neither package. The pinned DToxS pipeline calls `decideTestsDGE`, removed in
+edgeR >= 4; the R driver provides the documented two-group
+`decideTests(method = "separate")` equivalent. The step-owned counts and R
+outputs stay under `execution/checkpoints/`; the manifests record every input
+path + sha256 with no absolute paths, and `verify` replays the build from the
+pinned inputs and compares every digest.
+
 This is the standalone foundation retained after the user removed the other
 Stage 2 steps. Immutable raw inputs remain under `pert_data/`. Deleted historical
 experiments and their checkpoints are outside this build. The layout follows

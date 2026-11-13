@@ -1,0 +1,429 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/tables/genes.csv",
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "catalog_sha256": "db0857db8466ce9ba204332a65237234f49b21dbf63b59e771854adacd766a0e",
+  "category": "cardiotox_TOP2",
+  "datasets": [
+    {
+      "accession": "GSE243674",
+      "alignment": {
+        "ambiguous": 2,
+        "canonical": 36302,
+        "crosswalk_alias": 0,
+        "ensembl": 0,
+        "hgnc_alias": 26,
+        "n_axis_genes_resolved": 18151,
+        "n_resolved": 36328,
+        "n_source_symbols": 53734,
+        "offaxis": 230,
+        "unmapped": 17174
+      },
+      "category": "cardiotox_TOP2",
+      "class_id": "atc_l4:L01DB",
+      "class_label": "Anthracyclines and related substances",
+      "class_slug": "atc_l4-L01DB",
+      "contrasts": [
+        {
+          "contrast": "atc_l4-L01DB|3h_vs_vehicle",
+          "n_case": 24,
+          "n_control": 6,
+          "stratum": "3h"
+        },
+        {
+          "contrast": "atc_l4-L01DB|24h_vs_vehicle",
+          "n_case": 24,
+          "n_control": 6,
+          "stratum": "24h"
+        }
+      ],
+      "dataset_id": "gse243674",
+      "deg": "gse243674.atc_l4-L01DB.deg.csv",
+      "evidence_type": "bulk",
+      "inputs": {
+        "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
+          "bytes": 7044,
+          "sha256": "20b446a11cd4330194b73a3d0123282963fd796aa715f420cd1fa09e1a428514"
+        },
+        "disease_data/GSE243674/source/GSE243674_Counts_RNA_ERMatthews.txt.gz": {
+          "bytes": 2424618,
+          "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882"
+        },
+        "pert_data/Annotation/local/cm_compound_annotation.csv": {
+          "bytes": 116967,
+          "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+          "bytes": 536,
+          "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+          "bytes": 66887,
+          "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+        },
+        "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": {
+          "bytes": 37354885,
+          "sha256": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c"
+        },
+        "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": {
+          "bytes": 125536,
+          "sha256": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
+          "bytes": 4250,
+          "sha256": "97837f2edab14700aaf5939028fef3ce08bdde918f2b77efd127089e5168c63c"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        },
+        "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+          "bytes": 14873682,
+          "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+        },
+        "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+          "bytes": 832969,
+          "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+        }
+      },
+      "member_drugs": [
+        "daunorubicin",
+        "doxorubicin",
+        "epirubicin",
+        "mitoxantrone"
+      ],
+      "member_source_ids": [
+        "DNR",
+        "DOX",
+        "EPI",
+        "MTX"
+      ],
+      "method": {
+        "collapse": "per-gene maximum effect over the time-point contrasts",
+        "deposition": "GSE243674 featureCounts gene counts",
+        "design": "a class's member wells pooled into one CLASS arm vs the same-time vehicle wells; donor is a fixed effect",
+        "env": "conda:biomni_e1 (R 4.5.3, DESeq2 1.50.2)",
+        "implementation": "cardiotox_deseq2.R",
+        "model": "DESeq2 ~ donor + group",
+        "name": "GSE243674 pooled DESeq2",
+        "source_item": "disease_data/GSE243674",
+        "test": "Wald, unshrunken MLE log2FC, BH padj, DESeq2 independent filtering (alpha 0.05)"
+      },
+      "model_system": "hiPSC-CM monolayer (6 healthy female donors, 0.5 uM, 3 h / 24 h)",
+      "n_case": 24,
+      "n_contrasts": 2,
+      "n_control": 6,
+      "n_measured": 18084,
+      "n_significant": 10000,
+      "n_small_molecule_drugs": 4,
+      "rank": "gse243674.atc_l4-L01DB.rank.csv",
+      "shared_control_group": "GSE243674:same-time vehicle wells (6 donors per time point, shared by every drug arm)",
+      "source_item": "disease_data/GSE243674",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "accession": "GSE217421",
+      "alignment": {
+        "ambiguous": 18,
+        "canonical": 75420,
+        "crosswalk_alias": 2725,
+        "ensembl": 0,
+        "hgnc_alias": 1731,
+        "n_axis_genes_resolved": 14707,
+        "n_resolved": 79876,
+        "n_source_symbols": 92565,
+        "offaxis": 897,
+        "unmapped": 11774
+      },
+      "category": "cardiotox_TOP2",
+      "class_id": "atc_l4:L01DB",
+      "class_label": "Anthracyclines and related substances",
+      "class_slug": "atc_l4-L01DB",
+      "contrasts": [
+        {
+          "contrast": "atc_l4-L01DB|MSN01-03R|plate0|48h",
+          "n_case": 7,
+          "n_control": 7,
+          "stratum": "MSN01-03R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01DB|MSN02-04R|plate0|48h",
+          "n_case": 2,
+          "n_control": 3,
+          "stratum": "MSN02-04R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01DB|MSN05-01R|plate0|48h",
+          "n_case": 11,
+          "n_control": 10,
+          "stratum": "MSN05-01R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01DB|MSN06-07R|plate0|48h",
+          "n_case": 9,
+          "n_control": 6,
+          "stratum": "MSN06-07R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01DB|MSN08-13R|plate0|48h",
+          "n_case": 6,
+          "n_control": 8,
+          "stratum": "MSN08-13R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01DB|MSN09-04R|plate0|48h",
+          "n_case": 7,
+          "n_control": 7,
+          "stratum": "MSN09-04R|plate0|48h"
+        }
+      ],
+      "dataset_id": "dtoxs_ipsc",
+      "deg": "dtoxs_ipsc.atc_l4-L01DB.deg.csv",
+      "evidence_type": "bulk",
+      "inputs": {
+        "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
+          "bytes": 7044,
+          "sha256": "20b446a11cd4330194b73a3d0123282963fd796aa715f420cd1fa09e1a428514"
+        },
+        "disease_data/GSE243674/source/GSE243674_Counts_RNA_ERMatthews.txt.gz": {
+          "bytes": 2424618,
+          "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882"
+        },
+        "pert_data/Annotation/local/cm_compound_annotation.csv": {
+          "bytes": 116967,
+          "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+          "bytes": 536,
+          "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+          "bytes": 66887,
+          "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+        },
+        "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": {
+          "bytes": 37354885,
+          "sha256": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c"
+        },
+        "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": {
+          "bytes": 125536,
+          "sha256": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
+          "bytes": 4250,
+          "sha256": "97837f2edab14700aaf5939028fef3ce08bdde918f2b77efd127089e5168c63c"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        },
+        "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+          "bytes": 14873682,
+          "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+        },
+        "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+          "bytes": 832969,
+          "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+        }
+      },
+      "member_drugs": [
+        "Daunorubicin",
+        "Doxorubicin",
+        "Epirubicin",
+        "Idarubicin"
+      ],
+      "member_source_ids": [
+        "DAU",
+        "DOX",
+        "EPI",
+        "IDA"
+      ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
+      "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
+      "n_case": null,
+      "n_contrasts": 6,
+      "n_control": null,
+      "n_measured": 14707,
+      "n_significant": 10291,
+      "n_small_molecule_drugs": 4,
+      "rank": "dtoxs_ipsc.atc_l4-L01DB.rank.csv",
+      "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
+      "source_item": "pert_data/DToxS-iPSC",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "accession": "GSE244740",
+      "alignment": {
+        "ambiguous": 0,
+        "canonical": 0,
+        "crosswalk_alias": 235,
+        "ensembl": 17936,
+        "hgnc_alias": 0,
+        "n_axis_genes_resolved": 18164,
+        "n_resolved": 18171,
+        "n_source_symbols": 44154,
+        "offaxis": 13800,
+        "unmapped": 12183
+      },
+      "category": "cardiotox_TOP2",
+      "class_id": "atc_l4:L01DB",
+      "class_label": "Anthracyclines and related substances",
+      "class_slug": "atc_l4-L01DB",
+      "contrasts": [
+        {
+          "contrast": "atc_l4-L01DB|plateS4881Nr8|24h_vs_DMSO",
+          "n_case": 72,
+          "n_control": 22,
+          "stratum": "plateS4881Nr8"
+        }
+      ],
+      "dataset_id": "gse244740",
+      "deg": "gse244740.atc_l4-L01DB.deg.csv",
+      "evidence_type": "bulk",
+      "inputs": {
+        "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
+          "bytes": 7044,
+          "sha256": "20b446a11cd4330194b73a3d0123282963fd796aa715f420cd1fa09e1a428514"
+        },
+        "disease_data/GSE243674/source/GSE243674_Counts_RNA_ERMatthews.txt.gz": {
+          "bytes": 2424618,
+          "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882"
+        },
+        "pert_data/Annotation/local/cm_compound_annotation.csv": {
+          "bytes": 116967,
+          "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+          "bytes": 536,
+          "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+          "bytes": 66887,
+          "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+        },
+        "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": {
+          "bytes": 37354885,
+          "sha256": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c"
+        },
+        "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": {
+          "bytes": 125536,
+          "sha256": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
+          "bytes": 4250,
+          "sha256": "97837f2edab14700aaf5939028fef3ce08bdde918f2b77efd127089e5168c63c"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        },
+        "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+          "bytes": 14873682,
+          "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+        },
+        "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+          "bytes": 832969,
+          "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin",
+        "Idarubicin",
+        "Mitoxantrone"
+      ],
+      "member_source_ids": [
+        "Doxorubicin",
+        "Idarubicin",
+        "Mitoxantrone"
+      ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-plate contrasts",
+        "deposition": "GSE244740 ScreenSeq processed counts",
+        "design": "a class's member wells (all doses) pooled into one arm vs same-plate DMSO wells at 24 h",
+        "env": "arc python (numpy 2.4.6)",
+        "implementation": "bases.cardiotox.gse244740_class_contrasts",
+        "model": "two-sample Welch t-test on log2(CPM + 1)",
+        "name": "GSE244740 pooled Welch class contrast",
+        "source_item": "pert_data/GSE244740",
+        "test": "Welch t per gene, BH within contrast, library over all source genes"
+      },
+      "model_system": "ScreenSeq hiPSC-CM panel (24 h, plate S4881Nr8)",
+      "n_case": 72,
+      "n_contrasts": 1,
+      "n_control": 22,
+      "n_measured": 18164,
+      "n_significant": 4917,
+      "n_small_molecule_drugs": 3,
+      "rank": "gse244740.atc_l4-L01DB.rank.csv",
+      "shared_control_group": "GSE244740:same-plate DMSO wells at 24 h (shared by the three anthracycline/anthraquinone arms)",
+      "source_item": "pert_data/GSE244740",
+      "species": "Homo sapiens",
+      "tier": 2
+    }
+  ],
+  "evidence_type": "bulk",
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 2
+}

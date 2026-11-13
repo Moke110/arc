@@ -1,0 +1,77 @@
+source,source_id,drug_name,class_id,reason
+dtoxs_ipsc,AMI,Amiodarone,,the annotation row carries no ATC subgroup
+dtoxs_ipsc,AXI,Axitinib,atc_l4:L01EK,class_below_three
+dtoxs_ipsc,AZA,Azacytidine,,no annotation row for the deposited name
+dtoxs_ipsc,BEV,Bevacizmab,,no annotation row for the deposited name
+dtoxs_ipsc,BOR,Bortezomib,atc_l4:L01XG,class_below_three
+dtoxs_ipsc,CAR,Carfilzomib,,no annotation row for the deposited name
+dtoxs_ipsc,CER,Ceritinib,atc_l4:L01ED,class_below_three
+dtoxs_ipsc,CRI,Crizotinib,atc_l4:L01ED,class_below_three
+dtoxs_ipsc,CTX,Cetuximab,,no annotation row for the deposited name
+dtoxs_ipsc,CYC,Cyclosporine,atc_l4:L04AD,class_below_three
+dtoxs_ipsc,DAB,Dabrafenib,atc_l4:L01EC,class_below_three
+dtoxs_ipsc,DEC,Decitabine,,no annotation row for the deposited name
+dtoxs_ipsc,DEL,Delavirdine,,no annotation row for the deposited name
+dtoxs_ipsc,DIC,Diclofenac,,several ATC subgroups and none uniquely corroborated by mesh_classes
+dtoxs_ipsc,DOB,Dobutamine,atc_l4:C01CA,class_below_three
+dtoxs_ipsc,EDN,Endothelin,,no annotation row for the deposited name
+dtoxs_ipsc,EST,Estradiol,atc_l4:G03CA,class_below_three
+dtoxs_ipsc,FLE,Flecainide,atc_l4:C01BC,class_below_three
+dtoxs_ipsc,IGF,IGF-1,,no annotation row for the deposited name
+dtoxs_ipsc,ISO,Isoproterenol,,several ATC subgroups and none uniquely corroborated by mesh_classes
+dtoxs_ipsc,LAP,Lapatinib,atc_l4:L01EH,class_below_three
+dtoxs_ipsc,MIL,Milrinone,atc_l4:C01CE,class_below_three
+dtoxs_ipsc,OLM,Olmesartan,atc_l4:C09CA,class_below_three
+dtoxs_ipsc,PHP,Phenylephrine,,several ATC subgroups and none uniquely corroborated by mesh_classes
+dtoxs_ipsc,PIO,Pioglitazone,,no annotation row for the deposited name
+dtoxs_ipsc,PRE,Prednisolone,,several ATC subgroups and none uniquely corroborated by mesh_classes
+dtoxs_ipsc,ROS,Rosiglitazone,atc_l4:A10BG,class_below_three
+dtoxs_ipsc,RTX,Rituximab,,no annotation row for the deposited name
+dtoxs_ipsc,RUX,Ruxolitinib,,several ATC subgroups and none uniquely corroborated by mesh_classes
+dtoxs_ipsc,SAX,Saxagliptin,,no annotation row for the deposited name
+dtoxs_ipsc,TNF,TNF-alpha,,no annotation row for the deposited name
+dtoxs_ipsc,TOF,Tofacitinib,atc_l4:L04AF,class_below_three
+dtoxs_ipsc,TRA,Trametinib,atc_l4:L01EE,class_below_three
+dtoxs_ipsc,TRS,Trastuzumab,,no annotation row for the deposited name
+dtoxs_ipsc,VEM,Vemurafenib,atc_l4:L01EC,class_below_three
+dtoxs_ipsc,VRP,Verapamil,atc_l4:C08DA,class_below_three
+gse243674,TRZ,trastuzumab,,no annotation row for the deposited name
+gse244740,3_Azido_3_Deoxythymidine,3_Azido_3_Deoxythymidine,,no annotation row for the deposited name
+gse244740,5_Fluorouracil,5_Fluorouracil,,no annotation row for the deposited name
+gse244740,Acetaminophen,Acetaminophen,atc_l4:N02BE,not_a_roster_category
+gse244740,Acetylsalicylic_acid,Acetylsalicylic_acid,,no annotation row for the deposited name
+gse244740,Acyclovir,Acyclovir,,several ATC subgroups and none uniquely corroborated by mesh_classes
+gse244740,Amiodarone,Amiodarone,,the annotation row carries no ATC subgroup
+gse244740,Amitriptyline,Amitriptyline,atc_l4:N06AA,not_a_roster_category
+gse244740,Amoxicillin,Amoxicillin,atc_l4:J01CA,not_a_roster_category
+gse244740,Amphotericin_B,Amphotericin_B,,no annotation row for the deposited name
+gse244740,Atenolol,Atenolol,atc_l4:C07AB,not_a_roster_category
+gse244740,Bepridil,Bepridil,atc_l4:C08EA,not_a_roster_category
+gse244740,Bortezomib,Bortezomib,atc_l4:L01XG,not_a_roster_category
+gse244740,Buspirone,Buspirone,atc_l4:N05BE,not_a_roster_category
+gse244740,Cisapride,Cisapride,atc_l4:A03FA,not_a_roster_category
+gse244740,Clozapine,Clozapine,atc_l4:N05AH,not_a_roster_category
+gse244740,Cyclophosphamide,Cyclophosphamide,atc_l4:L01AA,not_a_roster_category
+gse244740,Dasatinib,Dasatinib,atc_l4:L01EA,not_a_roster_category
+gse244740,Digoxin,Digoxin,atc_l4:C01AA,not_a_roster_category
+gse244740,Diltiazem,Diltiazem,,several ATC subgroups and none uniquely corroborated by mesh_classes
+gse244740,Dobutamine,Dobutamine,atc_l4:C01CA,not_a_roster_category
+gse244740,Dopamine,Dopamine,atc_l4:C01CA,not_a_roster_category
+gse244740,Enalapril,Enalapril,atc_l4:C09AA,not_a_roster_category
+gse244740,Epinephrine,Epinephrine,,several ATC subgroups and none uniquely corroborated by mesh_classes
+gse244740,Furosemide,Furosemide,atc_l4:C03CA,not_a_roster_category
+gse244740,Imatinib,Imatinib,atc_l4:L01EA,not_a_roster_category
+gse244740,Isoproterenol,Isoproterenol,,several ATC subgroups and none uniquely corroborated by mesh_classes
+gse244740,Lapatinib,Lapatinib,atc_l4:L01EH,not_a_roster_category
+gse244740,Levosimendan,Levosimendan,atc_l4:C01CX,not_a_roster_category
+gse244740,Lidocaine,Lidocaine,,several ATC subgroups and none uniquely corroborated by mesh_classes
+gse244740,Mitomycin_C,Mitomycin_C,,no annotation row for the deposited name
+gse244740,Nifedipine,Nifedipine,atc_l4:C08CA,not_a_roster_category
+gse244740,Propranolol,Propranolol,atc_l4:C07AA,not_a_roster_category
+gse244740,Rofecoxib,Rofecoxib,atc_l4:M01AH,not_a_roster_category
+gse244740,Rosiglitazone,Rosiglitazone,atc_l4:A10BG,not_a_roster_category
+gse244740,Sildenafil,Sildenafil,atc_l4:G04BE,not_a_roster_category
+gse244740,Sotalol,Sotalol,atc_l4:C07AA,not_a_roster_category
+gse244740,Sunitinib,Sunitinib,atc_l4:L01EX,not_a_roster_category
+gse244740,Tolbutamide,Tolbutamide,,several ATC subgroups and none uniquely corroborated by mesh_classes
+gse244740,Verapamil,Verapamil,atc_l4:C08DA,not_a_roster_category

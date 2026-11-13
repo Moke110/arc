@@ -177,6 +177,26 @@ Both products are replayed by their drivers' `verify` action (rebuild in
 mapping evidence and exclusion table are force-tracked; the count payloads are
 gitignored.
 
+### Drug-cardiotoxicity class products (#189, ADR 0066)
+
+The `cardiotox_TOP2` / `cardiotox_other` class DEGs are **tracked compact
+tables**, not ignored payloads: each per-`(source, class)` DEG CSV is 1.9-2.8 MB
+and its full-axis rank CSV 0.38-0.43 MB, 15.7 MB in total across the three
+product directories. They are force-added because the repository-wide `*.csv`
+ignore rule would otherwise drop them.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/disease-deg/cardiotox/` | 57,716 | pinned crosswalk, classes, class members, excluded codes, per-source eligibility, rejected candidates and manifest | `execution/build_disease_deg_cardiotox.py publish` from the read-only GSE243674 / DToxS-iPSC / GSE244740 sources + `pert_data/Annotation/local/cm_compound_annotation.csv` |
+| `output/disease-deg/cardiotox_TOP2/` | 8,826,044 | three pooled class DEG tables + full-axis ranks, `catalog.json`, `manifest.json` | same driver; DToxS pinned edgeR pipeline, GSE243674 DESeq2 and the GSE244740 Welch test over pooled class wells |
+| `output/disease-deg/cardiotox_other/` | 6,795,074 | three DToxS non-TOP2 class DEG tables + full-axis ranks, `catalog.json`, `manifest.json` | same driver, DToxS pinned edgeR pipeline over pooled class wells |
+
+There is no gitignored cardiotox payload: the count/R intermediates exist only
+inside `execution/checkpoints/` while a candidate is built and are deleted after
+the candidate replaces the accepted product. `verify` replays the whole build
+from the pinned inputs and compares every digest; the peak RSS of the build
+(≈1.5 GiB Python, ≈0.9 GiB R) is recorded in the ticket record, not in a manifest.
+
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See
 `stage2/01_bases/README.md` for the current commands, accepted results,

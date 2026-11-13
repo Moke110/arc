@@ -71,6 +71,42 @@
   `n_case`/`n_control` are 6/7, 5/7, 5/7. Recorded in issue #187 and the item
   author log; #192 carries it into ADR 0066.
 
+## Drug-cardiotoxicity class evidence (#189, ADR 0066)
+
+- Public implementation: `output/api/bases/cardiotox.py` (pinned code→drug→
+  mechanism crosswalk, ATC level-4 class rule, TOP2 mesh corroboration, the
+  ≥3-small-molecule rule, pooled class DEGs, product writers, publish/replay and
+  the `DiseaseDeg`/`CategoryDeg` readers). The R compute steps are
+  `output/api/bases/cardiotox_edgeR.R` (DToxS pinned pipeline on pooled wells)
+  and `cardiotox_deseq2.R` (GSE243674 pooled DESeq2); both run under
+  `/home/chang/miniconda3/envs/biomni_e1/bin/Rscript` (recorded as
+  `conda:biomni_e1`), because the `arc` env's R lacks edgeR/DESeq2. edgeR >= 4
+  dropped `decideTestsDGE`, which the pinned DToxS pipeline calls; the R driver
+  supplies the documented two-group `decideTests(method = "separate")` shim.
+- Driver: `execution/build_disease_deg_cardiotox.py publish|verify`; builds all
+  three products in one candidate under `execution/checkpoints/`, verifies each
+  manifest, then replaces `output/disease-deg/{cardiotox,cardiotox_TOP2,
+  cardiotox_other}/`. `verify` rebuilds from the pinned inputs and compares every
+  digest; never publish from a stale worktree without re-running it.
+- Products (per-category `catalog.json` + `manifest.json`, no shared top-level
+  JSON so tickets #187/#188 cannot collide): `cardiotox/` holds the crosswalk,
+  `classes.csv`, `class_members.csv`, `excluded.csv`, `eligibility.csv`,
+  `rejected.csv`; each category holds `<source>.<class_slug>.deg.csv` /
+  `.rank.csv` with the ticket-01 DEG/rank contract; `catalog.json` uses
+  schema `stage2-disease-deg-catalog-v1` with a `datasets` list of full
+  records, each record keyed `method`, and a top-level `catalog_sha256`
+  (payload digest with the field removed; `bases.cardiotox.catalog_digest`
+  verifies it, and the category reader checks it). The 15.7 MB of compact CSVs
+  are force-tracked (`*.csv` is globally ignored); no large payload is kept.
+- Tests: `execution/tests/test_drug_classes.py` (crosswalk resolution, the
+  `(lookup_name, dataset_inchikey)` collision, the ≥3 rule, TOP2 mesh
+  corroboration, antibody/unresolved exclusion, evidence-product determinism and
+  relative-path manifests) and `test_disease_deg_cardiotox.py` (pooled-class
+  arithmetic, multi-contrast collapse/rank, published-table schema); run each
+  file individually. Inputs: `disease_data/GSE243674/**`,
+  `pert_data/DToxS-iPSC/**`, `pert_data/GSE244740/**` and
+  `pert_data/Annotation/**` are read-only — derived evidence is step-owned.
+
 Routing for the standalone Stage 2 foundation; commands and contracts are in
 [`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
 gene and evaluation semantics. Every path below is a stable semantic path.
