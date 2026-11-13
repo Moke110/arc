@@ -1,10 +1,15 @@
 # AGENTS.md — stage2/01_bases
 
-> **Superseded layout, rebuild pending (ADR 0066).** This step's `output/` tree is being
-> rebuilt as `raw_counts/` → `corpus/` → `view-2k/`/`view-5k/`, with `disease-deg/` and the
-> released `gene_axis_2000.csv` / `gene_axis_5000.csv` in `gene-axis/`. The measured truth,
-> the successor envelope, the diagnostic PR figure and `log/` are retired. Everything below
-> describes the pre-0066 tree until the rebuild lands.
+**Accepted post-rebuild layout (ADR 0066, #192).** `output/` is
+`raw_counts/` → `corpus/` → `view-2k/`/`view-5k/`, with `disease-deg/`,
+`gene-axis/` (released `G_2000`/`G_5000`) and the retained `gene-identity/`,
+`tenv-hvg/`, `fold_n_seed/`, `palette/` and `api/`. The measured truth, successor
+envelope, diagnostic PR figure, pre-0066 build chain and old `gene-axis/` file set
+are deleted; `log/` was deleted and regenerated at acceptance. Acceptance evidence
+and the old→new mapping: [`log/acceptance.md`](log/acceptance.md) +
+[`log/inputs.json`](log/inputs.json). Do not resurrect retired science (measured
+truth, direction composition, unweighted quota-free fusion, animal half-weighting,
+tenv non-HVG curve, ortholog table).
 
 ## Rebuild foundation (#186, ADR 0066)
 
@@ -27,15 +32,18 @@
   `DMSO_TF`; `exclusions.csv`; `manifest.json`). Counts are integer only; the
   corpus has controls as rows and `matched_control_group` correspondence.
 - Provenance: `raw_counts` default mode is `source-accepted-replay` — the payloads
-  are rehomed, byte-checked against `log/records/native_tenv_verify.json` and
-  `log/records/tahoe_counts_source_acceptance.json`, and the Tahoe token mapping
-  is re-derived from the immutable source metadata. `--full-rebuild` rebuilds both
-  payloads from the external `source/` trees under `pert_data/` through
-  `native.py`/`tahoe.py` and replays them from source; it is the stronger mode if the rehomed bytes are in doubt.
+  are rehomed, byte-checked against the two pre-0066 source-replay acceptance
+  records (preserved as digests in `log/inputs.json`; the records themselves were
+  deleted with the pre-0066 `log/` tree by #192), and the Tahoe token mapping is
+  re-derived from the immutable source metadata. Those retired payload/record pins
+  are the accepted one-way transition: the bytes are preserved verbatim in
+  `raw_counts/` (identical sha256), and the post-removal replay mode is
+  `--full-rebuild`, which rebuilds both payloads from the external `source/` trees
+  under `pert_data/` through `native.py`/`tahoe.py` and replays them from source.
 - Tests: `execution/tests/test_raw_counts.py`, `test_corpus.py`,
   `test_deg_rank.py`, hermetic fixtures in
   `execution/tests/release_fixtures.py`; run each file individually. The pre-0066
-  raw/training products stay present read-only until the removal ticket (#192).
+  raw/training products were deleted by #192 (mapping in `log/acceptance.md`).
 
 ## Disease DEGs: nHF / ICM / AF (#187, ADR 0066)
 
@@ -71,9 +79,11 @@
   (hermetic; schema, rank/tie-break, NA/unmeasured, genotype split, joint-design
   arm collapse, determinism, no absolute paths). Run each file individually.
 - GSE270788 erratum: the deposit's arm sizes are Donor 7 / NICM 6 / ICM 5 / AMI 5
-  (both label sources), not the ticket's 6/7; the deposit is used unchanged and
-  `n_case`/`n_control` are 6/7, 5/7, 5/7. Recorded in issue #187 and the item
-  author log; #192 carries it into ADR 0066.
+  (both label sources), not the ADR's 6/7; the deposit is used unchanged and
+  `n_case`/`n_control` are 6/7, 5/7, 5/7; the shared control set is 7 Donor
+  controls, not "six". Evidence paragraph in `log/acceptance.md`; the ADR text is
+  not edited by this ticket — the erratum is to be landed as a docs-only ADR
+  (0067) by the Lead.
 
 ## Isogenic CM models and `genetic_cardiomyopathy` (#188, ADR 0066)
 
@@ -167,9 +177,9 @@
   declared `n_measured`), `output/tenv-hvg/descriptive.csv` (never recomputed)
   and `output/gene-identity/genes.csv`. Candidates stage under
   `execution/checkpoints/`; only this ticket's products are replaced (the
-  retired pre-0066 `gene-axis/` file set stays byte-identically in place for
-  #192's removal); `--verify` replays from the pinned inputs and compares the
-  manifest and every digest.
+  retired pre-0066 `gene-axis/` file set was deleted by #192 after acceptance);
+  `--verify` replays from the pinned inputs and compares the manifest and every
+  digest.
 - Contract decisions implemented, with ADR 0066 as the basis: **winning tier**
   is the category's minimum catalog `tier`, plus records whose
   `isogenic_exception.applies` is true (ADR 0066 *Priority* and *Isogenic
@@ -221,13 +231,14 @@
   vehicle rows normalized the same way, `Δ = X − control` exactly. The view **never**
   re-normalizes on its own gene subset — one normalization, two gene subsets
   (ADR 0066 *Corpus and view semantics*). No `{N}k_eval_truth/` is created.
-- Measured basis (released axes, this build): tenv axis = 12.93% (`G_2000`) /
-  37.21% (`G_5000`) of full-axis CP10K (pooled all rows; treated-only 12.96% /
-  37.16%); `tahoe_bulk` 10.46% / 24.78%. ADR 0066's 12.9% / 36.3% are
-  design-record figures from an interim pre-#190 axis; the 2,000 figure
-  reproduces and the manifest records the measured released-axis values as
+- Measured basis (released axes, this build): tenv axis = **12.9299987%**
+  (`G_2000`) / **37.2063189%** (`G_5000`) of full-axis CP10K (pooled all rows;
+  treated-only 12.9566820% / 37.1590893%); `tahoe_bulk` 10.4600758% /
+  24.7819987%. ADR 0066's 12.9% / 36.3% are design-record figures from an interim
+  pre-#190 axis; the manifests record the measured released-axis values as
   authoritative (the ~2.88× denominator ratio leaves the full-axis decision
-  unaffected). Per-source full-axis library totals live in
+  unaffected). The exact figures are also the recorded erratum in
+  `log/acceptance.md`. Per-source full-axis library totals live in
   `manifest.sources.<source>.full_axis_library_total` and in
   `library_totals.csv`.
 - Driver: `execution/build_view.py publish|verify` (one view at a time,
@@ -261,66 +272,48 @@
   tamper detection, manifest relative-path hygiene. Run it individually under
   the `arc` env.
 
-Routing for the standalone Stage 2 foundation; commands and contracts are in
-[`README.md`](README.md). ADR 0062 fixes the layout; ADR 0061 defines the frozen
-gene and evaluation semantics. Every path below is a stable semantic path.
+Routing for the accepted Stage 2 foundation; commands and contracts are in
+[`README.md`](README.md). ADR 0062 fixes the layout, ADR 0066 defines the rebuild
+and ADR 0061 the frozen gene/evaluation semantics. Every path below is a stable
+semantic path.
 
 - Public implementation: `output/api/bases/` is the **single live** public
-  reader/metric implementation (ADR 0062, ticket #156 decision D1). Build, audit,
-  figure-provenance and test commands bind it with `import public_api` from
-  `execution/`; never copy a module out of `output/api` to create a second live
-  implementation. One deliberate exception is the accepted successor envelope
-  `output/tenv-truth-successor/deseq2_contrasts.R`: it is a byte-identical,
-  digest-sealed **provenance copy** of `output/api/bases/deseq2_contrasts.R` that
-  `truth_successor.py` re-hashes to prove which worker produced the envelope.
-  Keep it — it is sealed evidence, not an alleged duplicate.
-- Identity: `execution/build_identity.py` and `output/gene-identity/`
-  (`genes.csv`, `manifest.json`, and the frozen `tables/`). Historical v1 mapping
-  evidence is `log/historical/shared-v1-mappings/`.
-- Raw preparation: `execution/build_native.py`, `output/api/bases/native.py`,
-  `output/api/bases/raw.py`; products are `output/tenv-raw-counts/` and
-  `output/tahoe-raw-counts/`. Read the repository execution-environment rules
-  before data access. External `source/` inputs are immutable.
-- Shared expression: `execution/build_shared.py` and `output/api/bases/raw.py`;
-  raw files are bound independently from the identity tables and the product is
-  `output/shared-expression/`.
-- Training corpora: `execution/build_corpora.py`,
-  `execution/verify_training_source.py` and `output/api/bases/corpora.py`;
-  product is `output/training-corpora/`; bounded raw-count replay verifies all
-  three layers. `output/historical-training-release/` is the historical v1
-  truth-fit release, not a training destination.
-- Evaluator-only truth: `execution/build_significance.py` and
-  `output/api/bases/significance.py`; product is `output/tenv-truth/`. The exact
-  successor binding is `output/tenv-truth-successor/`, re-issued after a path
-  move by `execution/reissue_truth_successor.py` and never edited. Ordinary
-  training readers open only the h5ad.
-- HVG/metrics: `execution/hvg_metrics.md` routes the train-only selector,
-  `build_hvg.py`, `evaluate_predictions.py` and `replay_pr.py`; product is
-  `output/tenv-hvg/`.
-- Gene-axis products: the **released** axes `G_2000`/`G_5000` are documented
-  in *Released gene axes (#190, ADR 0066)* above. The pre-0066 #183 file set
-  (`source_summary.csv`, `fused_rank.csv`, `overlap.csv`, `inflection.json`,
-  `tenv_non_hvg_curve.csv`, `direction_summary.csv`,
-  `mouse_human_orthologs.csv`) and its figure/adapters
-  (`figure/gene_axis_source_summary.*`, `execution/gene_axis_sources.py`,
-  `execution/build_mouse_orthologs.R`) are **retired**, retained byte-identically
-  only until the removal ticket (#192) deletes them; nothing reads them.
-  Superseded decision-preparation semantics (direction composition, unweighted
-  quota-free fusion, animal half-weighting, tenv non-HVG curve, ortholog table)
-  must not be resurrected.
-- Figure: `figure/diagnostic_tenv_pr.png`, complete plotted values in
-  `figure/data/diagnostic_tenv_pr.csv`, and the CSV-only renderer
-  `figure/script/render_diagnostic_tenv_pr.py`. The renderer must keep working
-  with `output/` unreadable.
-- Records: acceptance/execution records in `log/records/`, repo-health records in
-  `log/health/`, dissolved and historical audit evidence in `log/historical/` and
-  `log/diagnostic/`. Disposable build state lives in `execution/checkpoints/`,
-  never inside `output/`; it is now empty — #157 removed the superseded truth-fit
-  build state and the Tahoe per-plate cache, and `log/157-removals.json` holds
-  their digests and resolution proof.
-- Migration: `execution/migrate_products.py` is the one-shot, idempotent rename
-  migration that produced this layout; its record is
-  `log/156-migration-record.json` and `--rollback RECORD` reverses it.
-- Heavy work: run one job at a time through `execution/capped.sh` (systemd user
-  scope when available, otherwise an equivalent 10 GiB RLIMIT_AS) with
-  `/usr/bin/time -v`, and record the measured peak.
+  reader/metric implementation (ADR 0062, #156 D1). Build, audit, figure and test
+  code binds it with `import public_api` from `execution/`; never copy a module
+  out of `output/api` to create a second live implementation. Live modules:
+  `raw_counts.py`, `corpus.py`, `view.py`, `gene_axis.py`, `disease_deg.py`,
+  `cardiotox.py`, `bulk_deg.py`, `deg_rank.py`, `identity.py`, `native.py`,
+  `raw.py`, `tahoe.py`, `hvg.py`, `hvg_qa.py`, `fold_seed.py`, `palette.py`,
+  `release.py`, plus `disease_deg.R`, `cardiotox_edgeR.R`,
+  `cardiotox_deseq2.R` (R workers; `disease_deg.R` runs under the `arc` R,
+  the cardiotox workers under `conda:biomni_e1` R).
+- Drivers (all `publish|verify`, candidates under `execution/checkpoints/`):
+  `build_raw_counts.py`, `build_corpus.py`, `build_disease_deg.py`,
+  `build_disease_deg_cardiotox.py`, `build_gene_axis.py`, `build_view.py`,
+  `build_identity.py`, `build_hvg.py`, `build_fold_n_seed.py`.
+- Products: `output/raw_counts/`, `output/corpus/`, `output/view-2k/`,
+  `output/view-5k/`, `output/disease-deg/**`, `output/gene-axis/`,
+  `output/gene-identity/`, `output/tenv-hvg/`, `output/fold_n_seed/`,
+  `output/palette/`, `output/api/`. Readers only; never open payload h5ads with
+  `backed="r"` and never materialize a dense observation × 18,164 matrix.
+- Figures: `figure/gene_axis_rank_sum_histogram.png` from
+  `figure/data/gene_axis_rank_sum_histogram.csv` by
+  `figure/script/render_gene_axis_rank_sum_histogram.py` (CSV-only; must work
+  with `output/` products unreadable).
+- Records: [`log/acceptance.md`](log/acceptance.md) (acceptance, digests, resource
+  peaks, "no retired path read" evidence, old→new mapping, recorded errata and
+  the #173 answers), [`log/inputs.json`](log/inputs.json) (machine-readable
+  digests) and the per-slice `log/*_verify.json` replay records. ADR 0066 applies
+  the repository rule strictly: `log/` is execution-run evidence, deleted and
+  regenerated at acceptance, never a change history. Disposable build state is
+  `execution/checkpoints/`, never inside `output/`.
+- Retained pre-0066 product with a deferred re-point: `output/tenv-hvg/` (the
+  published descriptive ranking the gene axis pins) plus `build_hvg.py` /
+  `bases/hvg.py`; its old `training-corpora/tenv.h5ad` input is retired and the
+  same 4,206-well population is available from `output/corpus/tenv.h5ad` under the
+  frozen normalization. Re-pointing it is deferred (same class as the
+  `02_models_tenv` re-point in ADR 0066 *Deferred*).
+- Heavy work: one job at a time through `execution/capped.sh` (systemd user scope
+  when available, otherwise an equivalent 10 GiB RLIMIT_AS) with
+  `/usr/bin/time -v`, and record the measured peak. Run `script/verify_all.sh`
+  alone (documented ~9.7 GiB page-cache job).

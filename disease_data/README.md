@@ -40,6 +40,32 @@ before this round and expose only DEG tables (GSE137293 additionally ships its
 counts matrix); the five human series added for the gene-axis decision
 preparation ship both a DEG table and a normalized log expression matrix.
 
+### Retained, but **not** axis sources after the ADR 0066 rebuild
+
+ADR 0066 requires a `{disease}-DEG` axis source to be **cardiomyocyte-derived**
+(in-vitro CM/organoid/engineered-tissue bulk, or a single-cell CM pseudobulk).
+Whole-heart / whole-left-ventricle **tissue bulk** is ineligible even though it
+contains cardiomyocytes: its signal is dominated by cell-composition and fibrosis
+shifts that do not describe the cardiomyocyte. The six whole-tissue series below
+are therefore **retained** (items and their `source/`/`local/` provenance stay
+byte-unchanged, and they remain available to Stage 1 / other analyses) but they
+are **not** gene-axis sources and must not be re-admitted as one without a new
+ADR:
+
+| item | why not an axis source |
+|---|---|
+| `GSE141910/` | human LV whole-tissue bulk (HF vs NF) — cell-composition/fibrosis signal dominates |
+| `GSE116250/` | human LV whole-tissue bulk (HF/ICM vs NF) — same reason |
+| `GSE128188/` | human atrial appendage tissue bulk (AF vs SR) — not CM-derived |
+| `GSE282618/` | human post-mortem LV/RV tissue bulk (HHD vs control) — not CM-derived |
+| `GSE160516/` | mouse whole-LV tissue bulk MIRI — species and tissue-composition signal |
+| `GSE108940/` | mouse whole-LV tissue bulk MIRI — same reason |
+
+Their DEG tables still exist for their own purposes; the retired
+`mouse_human_orthologs.csv` / `build_mouse_orthologs.R` path went with the old
+gene-axis evidence (ADR 0066 *Removals*), so no Stage 2 step consumes a mouse
+ranking any more.
+
 ## Per-item conventions for the new series
 
 The five human series follow one interface, and it is the only thing the Stage 2

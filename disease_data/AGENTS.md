@@ -6,6 +6,16 @@ shared R helpers), `source/` (upstream GEO bytes, gitignored and immutable),
 the normalized log-expression pair where the series ships one), tracked
 `author_log.json`, `manifest.sha256` over `source/`, and an item `.gitignore`.
 Category overview and conventions: `README.md`. Layout contract: ADR 0030.
+
+**Not gene-axis sources (ADR 0066).** These six items are whole-tissue bulk
+(human LV/atrial or mouse whole-LV) and are retained but ineligible as
+cardiomyocyte-derived `{disease}-DEG` axis sources; their signal is dominated by
+cell composition/fibrosis, not the cardiomyocyte: `GSE141910` (human LV bulk),
+`GSE116250` (human LV bulk), `GSE128188` (human atrial tissue bulk), `GSE282618`
+(human post-mortem LV/RV bulk), `GSE160516` and `GSE108940` (mouse whole-LV bulk
+MIRI). Do not re-admit them to a Stage 2 axis without a new ADR; the axis sources
+are the CM pseudobulk (`GSE270788`, `GSE255612`, `Reichart-CM`) and isogenic CM
+bulk models listed below.
 - `GSE108940/` — mouse MIRI (*Mus musculus*, GPL7202 Agilent 4×44K); limma WT I/R vs Sham; mouse→human homologene `inTax=10090`; L1000-978 Stage-1-only; provenance corrected in #176 (adds TP53 UP).
 - `GSE116250/` — human LV HF 37 DCM + 13 ICM vs 14 NF (50/14); limma on log2(RPKM+1); full DEG + expression; HF cheapest anchor and post-MI (ICM) proxy.
 - `GSE128188/` — human AF 5 vs 5 SR (paired LA+RA, 20 libraries); DESeq2 on donor-pooled counts; full DEG + expression; the >5% AF category.
