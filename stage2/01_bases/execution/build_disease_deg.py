@@ -154,7 +154,7 @@ def build_category(context, candidate, category):
         inputs.update(dataset_inputs)
         method = dict(dataset['method'])
         method['alignment'] = 'symbol-first then Ensembl; unresolved rows reported'
-        records.append({
+        record = {
             'dataset_id': dataset['dataset_id'],
             'category': category,
             'source_item': dataset['source_item'],
@@ -179,7 +179,13 @@ def build_category(context, candidate, category):
             'alignment': report,
             'inputs': dataset_inputs,
             'derived_inputs': derived_inputs,
-        })
+        }
+        # Optional declared evidence the canonical shape tolerates: the ADR 0066
+        # isogenic-exception record and the multi-arm strata/pooling decision.
+        for optional in ('isogenic_exception', 'strata'):
+            if optional in dataset:
+                record[optional] = dataset[optional]
+        records.append(record)
         for name in (deg_name, rank_name):
             path = candidate / name
             with path.open('rb') as handle:
@@ -192,7 +198,8 @@ def build_category(context, candidate, category):
     catalog = disease_deg.build_catalog(
         category, category_record['directory'], category_record['tier'],
         category_record['evidence_type'], axis, axis_sha, records,
-        rejected=category_record['rejected'])
+        rejected=category_record['rejected'],
+        isogenic_exception=category_record.get('isogenic_exception'))
     catalog_file = candidate / 'catalog.json'
     catalog_sha = disease_deg.write_catalog(catalog_file, catalog)
     outputs['catalog.json'] = {'sha256': sha256(catalog_file)}
@@ -235,8 +242,17 @@ def _verify_directory(path):
             raise release.ReleaseError(f'{dataset}: n_measured differs from the table')
         if record['n_axis_unmeasured'] != len(rank) - len(table):
             raise release.ReleaseError(f'{dataset}: n_axis_unmeasured differs from the rank')
-        if len(record['contrasts']) != table.contrast.nunique():
-            raise release.ReleaseError(f'{dataset}: contrast count differs from the table')
+        # A multi-contrast dataset collapses per gene by maximum effect, so the
+        # published table carries the winning contrast label per gene: every
+        # produced label must be a declared one and each declared label needs to
+        # have won at least one gene (a declared-but-never-winning arm would mean
+        # the declaration and the fit disagree).
+        undeclared = sorted(set(table.contrast.astype(str)) - set(record['contrasts']))
+        if undeclared:
+            raise release.ReleaseError(f'{dataset}: undeclared contrasts {undeclared}')
+        missing = sorted(set(record['contrasts']) - set(table.contrast.astype(str)))
+        if missing:
+            raise release.ReleaseError(f'{dataset}: declared contrasts {missing} won no gene')
         for name in (record['deg'], record['rank']):
             if sha256(path / name) != expected[name]:
                 raise release.ReleaseError(f'{dataset}: {name} digest differs')

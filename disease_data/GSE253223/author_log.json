@@ -1,0 +1,53 @@
+{
+  "item": "GSE253223",
+  "category": "disease_data",
+  "purpose": "Human ARVC-model hiPSC-CM series for the Stage 2 gene axis genetic_cardiomyopathy category (ADR 0066): wild-type iCell Cardiomyocytes2 transfected with PKP2 siRNA (siPKP2, 4 libraries per harvest day) or a negative-control siRNA (siNeg, 1 library per day) and harvested on days 2, 4, 6 and 8 (20 libraries). This is an acquired knockdown, not a patient variant and not an engineered isogenic line; the ARVC evidence it supplies is the PKP2-loss direction, and that caveat is recorded, not hidden.",
+  "retrieved_at": "2026-11-13T17:05+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE253223",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE253223",
+      "version": "GSE253223 (GPL24676 (Illumina NovaSeq 6000))",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: GSE253223_TNYA0016.counts.txt.gz and GSE253223_series_matrix.txt.gz, byte-size pinned; the TPM companion is not fetched because a count model is used)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 1531202,
+      "tree_sha256": "ddbd4a1c5f846756f69f25a9d180c84a13d880a737b105cbcd38f8acb2c45f0a"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE253223_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id, gene_symbol and one count column per library (feature x sample), handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE253223_samples.csv",
+      "origin": "item-local fit design sheet: sample, group, declared blocking covariates, gsm and title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE253223_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene and contrast (33,455 rows, 33,455 source genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE253223_deg.json",
+      "origin": "tracked compact DEG summary: deposit digests, sample mapping basis, the isogenic-control record, the strata/pooling decision, the one-joint design and its contrasts with n_case/n_control, integerisation statistics (when used), limma/R versions and output digest",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg matrix, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T17:22+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE253223 \u2014 PKP2 siRNA knockdown in wild-type hiPSC-CM, days 2/4/6/8. The deposit is open GEO access; two payloads are stored in source/ (the expression matrix and the GEO series matrix, both byte-size pinned in script/fetch.sh), nothing else is fetched. SAMPLE MAPPING: matrix columns are the GSM title bracket tokens [V2]..[V24]; the harvest day is parsed from the same title (_D2/_D4/_D6/_D8); the binding is by name (never by position) with a fail-closed bijection check, and every library is matched (no silent drop). DERIVATION: deposited estimated counts (non-integer values on a count scale: library sums 25.2-41.9M, max |x - round(x)| 0.5, 282,071 non-integer values) rounded to integers by the one shared helper bases.bulk_deg.integerise_counts; the 4 genes whose rounded row is all-zero are recorded in the tracked summary and dropped by the count model, never silently filtered. DESIGN: one joint limma-voom fit ~0 + group + day over all 20 libraries; single contrast siPKP2-siNeg with the four harvest days pooled and day as a blocking covariate. ISOGENIC EXCEPTION: Each day contributes one siNeg library and four siPKP2 libraries, so a per-day case/control contrast would rest on a single control; the days are pooled with day as a covariate to use all 20 libraries for one knockdown effect and remove the harvest-time effect. The matched control is the non-targeting siRNA on the same wild-type line, not a genotype. The adapter is the single shared derivation stage2/01_bases/output/api/bases/bulk_deg.py and the single live DEG implementation output/api/bases/disease_deg.R (limma 3.62.2; R version 4.4.1 (2024-06-14)); the item script only binds its deposited bytes and its declared design. PUBLISHED: one item-local full DEG table and the tracked summary here; the step's output/disease-deg/genetic_cardiomyopathy/ publishes the compact table and within-dataset rank per source dataset (ticket #188, not the item). CONTRASTS: siPKP2-siNeg (16 case / 4 control). BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 179,104 KiB, wall 2.5 s; a second independent run reproduced the DEG table byte-identically. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T17:22+08:00"
+}

@@ -1,0 +1,53 @@
+{
+  "item": "GSE234141",
+  "category": "disease_data",
+  "purpose": "Human TTN truncating-variant dilated-cardiomyopathy hiPSC-CM series for the Stage 2 gene axis genetic_cardiomyopathy category (ADR 0066): a patient TTNtv iPSC line and its CRISPR/Cas9-corrected isogenic WT/WT line, each in 2D monolayer and engineered heart tissue (EHT), atrial-like and ventricular-like, 3 biological replicates per cell (24 libraries). The item-local derivation fits the four paired strata in one joint design; the published dataset collapses the four contrasts per gene by maximum effect.",
+  "retrieved_at": "2026-11-13T17:05+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE234141",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE234141",
+      "version": "GSE234141 (GPL28337 (DNBSEQ-G50))",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: GSE234141_counts.txt.gz and GSE234141_series_matrix.txt.gz, byte-size pinned; no other payload fetched)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 1126881,
+      "tree_sha256": "8305e560229968df266051a1edc67eba9e8dae95f93fbccd866b08b96f038f23"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE234141_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id, gene_symbol and one count column per library (feature x sample), handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE234141_samples.csv",
+      "origin": "item-local fit design sheet: sample, group, declared blocking covariates, gsm and title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE234141_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene and contrast (140,552 rows, 35,138 source genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE234141_deg.json",
+      "origin": "tracked compact DEG summary: deposit digests, sample mapping basis, the isogenic-control record, the strata/pooling decision, the one-joint design and its contrasts with n_case/n_control, integerisation statistics (when used), limma/R versions and output digest",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg matrix, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T17:22+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE234141 \u2014 TTN truncating-variant DCM hiPSC-CM, 2D monolayer and EHT, atrial- and ventricular-like. The deposit is open GEO access; two payloads are stored in source/ (the expression matrix and the GEO series matrix, both byte-size pinned in script/fetch.sh), nothing else is fetched. SAMPLE MAPPING: matrix columns are !Sample_description values Count_KH1..Count_KH26 (KH19 and KH20 are absent from the deposit; 24 libraries present); the binding is by name (never by position) with a fail-closed bijection check, and every library is matched (no silent drop). DERIVATION: deposited integer count matrix (58,243 features x 24 libraries, all values integer, library sums 8.1-40.9M), used as deposited by the strict-count voom path (no integerisation needed). DESIGN: one joint limma-voom fit ~0 + group over all 24 libraries with 8 composite format x cell-type x genotype arms; four paired TTNtv-vs-WT contrasts (2D/EHT x ventricular-like/atrial-like) collapsed per gene by maximum effect into one published dataset. ISOGENIC EXCEPTION: Format and cell type are culture/differentiation strata of one isogenic pair, not independent cohorts: each stratum keeps its own paired contrast inside the joint fit (shared dispersion) and the four are collapsed by maximum effect, the ticket-01 rule for a multi-arm source. The adapter is the single shared derivation stage2/01_bases/output/api/bases/bulk_deg.py and the single live DEG implementation output/api/bases/disease_deg.R (limma 3.62.2; R version 4.4.1 (2024-06-14)); the item script only binds its deposited bytes and its declared design. PUBLISHED: one item-local full DEG table and the tracked summary here; the step's output/disease-deg/genetic_cardiomyopathy/ publishes the compact table and within-dataset rank per source dataset (ticket #188, not the item). CONTRASTS: TTNtv-WT.2d_atrial (3 case / 3 control); TTNtv-WT.2d_ventricular (3 case / 3 control); TTNtv-WT.eht_atrial (3 case / 3 control); TTNtv-WT.eht_ventricular (3 case / 3 control). BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 210,532 KiB, wall 3.0 s; a second independent run reproduced the DEG table byte-identically. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T17:22+08:00"
+}

@@ -1,0 +1,53 @@
+{
+  "item": "GSE304575",
+  "category": "disease_data",
+  "purpose": "Human LMNA p.His222Pro (c.665A>C) dilated-cardiomyopathy hiPSC-CM series for the Stage 2 gene axis genetic_cardiomyopathy category (ADR 0066): a patient line heterozygous for the LMNA H222P mutation and the isogenic CRISPR/Cas9-corrected line, 6 libraries each. The item-local derivation fits the single H222P-vs-corrected contrast; this is the cleanest isogenic deposit of the six (no stratum, one constant batch).",
+  "retrieved_at": "2026-11-13T17:05+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE304575",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE304575",
+      "version": "GSE304575 (GPL24676 (Illumina NovaSeq 6000))",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: GSE304575_Raw_Counts_table.csv.gz and GSE304575_series_matrix.txt.gz, byte-size pinned; no other payload fetched)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 820891,
+      "tree_sha256": "45abab8e5b263a548e7d8b597466154ba9439b0eff23e48022e354d10a3e3075"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE304575_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id, gene_symbol and one count column per library (feature x sample), handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE304575_samples.csv",
+      "origin": "item-local fit design sheet: sample, group, declared blocking covariates, gsm and title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE304575_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene and contrast (36,284 rows, 36,284 source genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE304575_deg.json",
+      "origin": "tracked compact DEG summary: deposit digests, sample mapping basis, the isogenic-control record, the strata/pooling decision, the one-joint design and its contrasts with n_case/n_control, integerisation statistics (when used), limma/R versions and output digest",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg matrix, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T17:22+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE304575 \u2014 LMNA p.His222Pro DCM hiPSC-CM vs CRISPR-corrected isogenic control. The deposit is open GEO access; two payloads are stored in source/ (the expression matrix and the GEO series matrix, both byte-size pinned in script/fetch.sh), nothing else is fetched. SAMPLE MAPPING: matrix columns match the !Sample_description \"Library name: ...\" values after the label prefix is stripped; the binding is by name (never by position) with a fail-closed bijection check, and every library is matched (no silent drop). DERIVATION: deposited raw count table (semicolon-separated, UTF-8 BOM, gene symbols, 59,050 features x 12 libraries, all values integer, library sums 31.5-48.1M), used as deposited by the strict-count voom path. DESIGN: one joint limma-voom fit ~0 + group over all 12 libraries; single contrast LMNA_H222P-corrected. ISOGENIC EXCEPTION: Single case/control pair: the only batch characteristic is 6/15/2023 on all 12 libraries, so no blocking term is estimable or needed. The adapter is the single shared derivation stage2/01_bases/output/api/bases/bulk_deg.py and the single live DEG implementation output/api/bases/disease_deg.R (limma 3.62.2; R version 4.4.1 (2024-06-14)); the item script only binds its deposited bytes and its declared design. PUBLISHED: one item-local full DEG table and the tracked summary here; the step's output/disease-deg/genetic_cardiomyopathy/ publishes the compact table and within-dataset rank per source dataset (ticket #188, not the item). CONTRASTS: LMNA_H222P-corrected (6 case / 6 control). BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 177,600 KiB, wall 2.1 s; a second independent run reproduced the DEG table byte-identically. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T17:22+08:00"
+}

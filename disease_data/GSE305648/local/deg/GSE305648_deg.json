@@ -1,0 +1,148 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "RBM20_KO-WT": {
+      "denominator": "wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "ko"
+    },
+    "RBM20_PL-WT": {
+      "denominator": "wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "pl"
+    },
+    "RBM20_RQ-WT": {
+      "denominator": "wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "rq"
+    }
+  },
+  "deg": {
+    "bytes": 17874555,
+    "n_source_genes": 42967,
+    "path": "local/deg/GSE305648_deg.csv",
+    "rows": 128901,
+    "sha256": "342c91fff3364a92ac5e17388584065e050ab54ef6e5b7cbe964fa0a82fad1ef"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 765978,
+      "feature_count": 58780,
+      "id_kind": "ensembl",
+      "path": "source/GSE305648_counts.tsv.gz",
+      "sha256": "cf84447d1bc963e6505ec43d55cc779b83664d34b7379718a603d1546fd9aff1"
+    },
+    "series_matrix": {
+      "bytes": 5479,
+      "path": "source/GSE305648_series_matrix.txt.gz",
+      "sha256": "b4fae83443765bd57f13897fb04f72ef016b4e11460a030f3b5ee14f9ebb82b5"
+    },
+    "values": {
+      "library_size": {
+        "max": 23370130,
+        "median": 18754464,
+        "min": 13873618
+      },
+      "mode": "integer-as-deposited",
+      "n_values": 705360
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "wt",
+        "label": "RBM20_KO-WT",
+        "numerator": "ko"
+      },
+      {
+        "denominator": "wt",
+        "label": "RBM20_PL-WT",
+        "numerator": "pl"
+      },
+      {
+        "denominator": "wt",
+        "label": "RBM20_RQ-WT",
+        "numerator": "rq"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group + batch",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE305648_expr.tsv.gz",
+    "sha256": "ae8bcc770fa1afc897da5cceee12592dff1c296a2c8631a504ee5d521090983a"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupko",
+      "grouppl",
+      "grouprq",
+      "groupwt",
+      "batchB",
+      "batchC"
+    ],
+    "contrasts": [
+      "RBM20_KO-WT",
+      "RBM20_PL-WT",
+      "RBM20_RQ-WT"
+    ],
+    "factor": "group",
+    "formula": "~0 + group + batch",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 42967,
+    "n_genes_tested": 42967,
+    "n_rows": 128901,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE305648",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the RBM20 mutant arm (KO / PL / RQ) vs the isogenic wildtype cardioid",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 9,
+  "n_control": 3,
+  "samples": {
+    "covariates": [
+      "batch"
+    ],
+    "group_counts": {
+      "ko": 3,
+      "pl": 3,
+      "rq": 3,
+      "wt": 3
+    },
+    "group_source": "genotype",
+    "isogenic_control": {
+      "arm": "RBM20 wildtype cardioids, 3 libraries",
+      "basis": "all four arms are the WTC11 iPSC background; KO / PL / RQ are engineered RBM20 alleles and the wildtype cardioids are the isogenic control",
+      "deposit_evidence": "series-matrix !Sample_characteristics_ch1 \"genotype: RBM20_KO/RBM20_PL/RBM20_RQ/wildtype\" (3 each)"
+    },
+    "match_basis": "title",
+    "n": 12,
+    "path": "local/deg/GSE305648_samples.csv",
+    "sha256": "23363a80909b59a06c83e61d7ec5f8c5f001b54016bf5a0e0382e05f6ce512e5"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [
+      "batch"
+    ],
+    "decision": "three mutant genotype arms (KO, PL, RQ) vs one isogenic wildtype arm",
+    "pooled": true,
+    "why": "the three mutant alleles are distinct RBM20 lesions on one WTC11 background, so each keeps its own contrast inside one joint fit and the three are collapsed per gene by maximum effect; the library batch (A/B/C) is rotated across the arms and enters the fit as a blocking covariate"
+  }
+}

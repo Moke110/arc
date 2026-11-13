@@ -1,0 +1,114 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "DMD-DMD_corrected": {
+      "denominator": "corrected",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "dmd"
+    }
+  },
+  "deg": {
+    "bytes": 3754523,
+    "n_source_genes": 29911,
+    "path": "local/deg/GSE194297_deg.csv",
+    "rows": 29911,
+    "sha256": "324d6ed1864e4327ab786a11de50e38d13f2fddb1da103eea91726f55675e64f"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 342625,
+      "feature_count": 29911,
+      "id_kind": "symbol",
+      "path": "source/GSE194297_DMD_vs_DMD-Iso.absolute_counts.csv.gz",
+      "sha256": "d0de10b4d2d55b69763ee1293d672d679e451451100a16a3f97c7a565414f9f1"
+    },
+    "series_matrix": {
+      "bytes": 2746,
+      "path": "source/GSE194297_series_matrix.txt.gz",
+      "sha256": "c6bdd60fc78a031a6ea6d98cb31c20f8f717127e97d779ed9c82d43efc8571aa"
+    },
+    "values": {
+      "library_size": {
+        "max": 24432973,
+        "median": 18779583,
+        "min": 13912883
+      },
+      "mode": "integer-as-deposited",
+      "n_values": 179466
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "corrected",
+        "label": "DMD-DMD_corrected",
+        "numerator": "dmd"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE194297_expr.tsv.gz",
+    "sha256": "3bd9f7e0bf9a959376b0caae9bc8aed70c8c68818f320cf5c5599f076ccfc25b"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupcorrected",
+      "groupdmd"
+    ],
+    "contrasts": [
+      "DMD-DMD_corrected"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 29911,
+    "n_genes_tested": 29911,
+    "n_rows": 29911,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE194297",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the DMD point-mutation organoids vs the CRISPR/Cas-corrected isogenic line",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 3,
+  "n_control": 3,
+  "samples": {
+    "covariates": [],
+    "group_counts": {
+      "corrected": 3,
+      "dmd": 3
+    },
+    "group_source": "genotype_variation",
+    "isogenic_control": {
+      "arm": "CRISPR/Cas9-corrected isogenic line, 3 day-56 cardiac organoids",
+      "basis": "the DMD point mutation was corrected in the same patient-derived hiPSC line, so the corrected organoids are the isogenic control",
+      "deposit_evidence": "series-matrix !Sample_characteristics_ch1 \"genotype/variation: Contains specific DMD point mutation\" (3) and \"DMD point mutation was corrected via CRISPR/Cas technology\" (3)"
+    },
+    "match_basis": "title_bracket",
+    "n": 6,
+    "path": "local/deg/GSE194297_samples.csv",
+    "sha256": "95ae6980093b359da5c449ff71f009ff801787be6dcc124f5ab1de6b1e4e33e0"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "single case/control pair (DMD vs corrected); no stratum to pool",
+    "pooled": false,
+    "why": "one mutant line against its corrected isogenic line at one time point (day 56)"
+  }
+}

@@ -75,6 +75,40 @@
   `n_case`/`n_control` are 6/7, 5/7, 5/7. Recorded in issue #187 and the item
   author log; #192 carries it into ADR 0066.
 
+## Isogenic CM models and `genetic_cardiomyopathy` (#188, ADR 0066)
+
+- Public implementation: `output/api/bases/bulk_deg.py` is the single **derivation
+  adapter** for the six in-vitro bulk ADR 0030 items (GEO series-matrix parsing,
+  fail-closed sample-token binding, feature naming, the shared integerisation
+  helper `integerise_counts` with its count-scale guard, and
+  `derive_item_deg`), so each item's `script/build_deg.py` only declares its
+  design and contrast arms. The live DEG implementation stays
+  `output/api/bases/disease_deg.R`; the shared count contract is not relaxed.
+- Sources: six new ADR 0030 items `disease_data/GSE224129|GSE234141|GSE304575|
+  GSE305648|GSE253223|GSE194297` (two payloads each: the deposited matrix +
+  the GEO series matrix; item-local `local/deg/` matrix/samples/full DEG table
+  with a tracked `_deg.json` summary) and `disease_data/Reichart-CM`'s new
+  `script/build_genetic_deg.py` (Option A, additive: the two genetic contrasts
+  are derived from #187's tracked pseudobulk + genotype export, read-only; the
+  derived table and tracked summary live in that item's declared `local/deg/`).
+- Driver: unchanged `execution/build_disease_deg.py publish|verify --category
+  genetic_cardiomyopathy` (also in `--all`). Declarations live in
+  `execution/disease_deg_sources.py`; the driver now carries an optional
+  category-level `isogenic_exception` into the catalog and optional per-dataset
+  `isogenic_exception` / `strata` records, and verification accepts a
+  multi-contrast table (every produced label must be declared and every declared
+  label must win at least one gene). Product:
+  `output/disease-deg/genetic_cardiomyopathy/` — eight datasets + catalog +
+  manifest, ~30 MB force-tracked (compact CSVs).
+- Tests: `execution/tests/test_disease_deg_isogenic.py` (35 tests) — the
+  integerisation contract and its guard, as-deposited count validation, series
+  matrix/sample binding, the declared isogenic control arm of every source, the
+  multi-arm strata decision recorded in item summary and catalog and applied in
+  the published table, catalog/manifest schema and digest replay, rank semantics
+  and multi-contrast collapse, determinism of a driver replay, no absolute
+  paths, and the genotype split (positive/ARVC donors only in this category,
+  never nHF). Run it individually under the `arc` env.
+
 ## Drug-cardiotoxicity class evidence (#189, ADR 0066)
 
 - Public implementation: `output/api/bases/cardiotox.py` (pinned code→drug→
