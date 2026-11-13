@@ -106,7 +106,7 @@ def input_seals(source,hgnc,annotation,selections):
     files=[Path(hgnc),Path(annotation),Path(source)/'GSE262419_hash.csv.gz',*[p for p,_ in selections]]
     return {p.name:{'sha256':digest(p),'bytes':p.stat().st_size} for p in files}
 
-def build_tenv(source,hgnc,annotation,output):
+def build_tenv(source,hgnc,annotation,output,manifest='tenv_manifest.json'):
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
     destination=output/'tenv.h5ad'
     if destination.exists():raise ValueError(f'native corpus exists: {destination}')
@@ -132,14 +132,14 @@ def build_tenv(source,hgnc,annotation,output):
         if Path(tmp).exists():Path(tmp).unlink()
     evidence.to_csv(output/'tenv_probe_mapping.csv',index=False)
     result={'schema':SCHEMA,'shape':[len(obs),len(var)],'inputs':seals,'files':{'tenv.h5ad':digest(destination),'tenv_probe_mapping.csv':digest(output/'tenv_probe_mapping.csv')},'populations':{'treated':int((~obs.is_control&~obs.is_blank).sum()),'control':int(obs.is_control.sum()),'blank':int(obs.is_blank.sum())}}
-    (output/'tenv_manifest.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+    (Path(output)/manifest).write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     return result
 
-def verify_tenv(source,hgnc,annotation,output):
-    output=Path(output);manifest=json.loads((output/'tenv_manifest.json').read_text())
+def verify_tenv(source,hgnc,annotation,output,manifest='tenv_manifest.json'):
+    output=Path(output);release=json.loads((Path(output)/manifest).read_text())
     obs,var,columns,selections,evidence=source_plan(source,hgnc,annotation)
-    if manifest['inputs']!=input_seals(source,hgnc,annotation,selections):raise ValueError('immutable input seals differ')
-    for name,value in manifest['files'].items():
+    if release['inputs']!=input_seals(source,hgnc,annotation,selections):raise ValueError('immutable input seals differ')
+    for name,value in release['files'].items():
         if digest(output/name)!=value:raise ValueError(f'native payload hash differs: {name}')
     # Independent source replay sums each probe directly, rather than matrix multiplication.
     with h5py.File(output/'tenv.h5ad') as f:
@@ -157,4 +157,4 @@ def verify_tenv(source,hgnc,annotation,output):
                 np.testing.assert_array_equal(f['X'][offset:offset+len(positions)],expected)
                 np.testing.assert_array_equal(actual_obs.lib_size.iloc[offset:offset+len(positions)],expected.sum(axis=1))
                 offset+=len(positions)
-    return {'result':'PASS','source_rows_replayed':offset,'shape':manifest['shape'],'manifest_sha256':digest(output/'tenv_manifest.json')}
+    return {'result':'PASS','source_rows_replayed':offset,'shape':release['shape'],'manifest_sha256':digest(Path(output)/manifest)}

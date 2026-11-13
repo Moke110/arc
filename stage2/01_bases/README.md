@@ -6,6 +6,94 @@
 > the successor envelope, the diagnostic PR figure and `log/` are retired. Everything below
 > describes the pre-0066 tree until the rebuild lands.
 
+## Rebuild foundation: `raw_counts/` and `corpus/` (ADR 0066, #186)
+
+The rebuild's first slice has landed. These two product areas are the new
+`source/` -> axis chain; the pre-0066 products above stay in place read-only until
+the acceptance/removal ticket (#192) deletes them.
+
+| path | contents | reader |
+|---|---|---|
+| `output/raw_counts/` | `tenv.h5ad` (4,510 x 19,613 native int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 x 18,164 int32 CSR), `token_mapping.csv` (original Ensembl/token per frozen gene), `manifest.json` | `bases.raw_counts.open_tenv` / `open_tahoe` |
+| `output/corpus/` | `tenv.h5ad` (4,478 rows = 4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (66,718 rows = 65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv`, `manifest.json` | `bases.corpus.open_corpus` |
+
+Raw counts are integer only: no normalization, no delta and no axis subsetting.
+The corpus is the same counts on the frozen 18,164-gene axis with **controls as
+ordinary rows**. Every row carries `role`, the source profile/well identity,
+plate, cell line, desalted drug-parent InChIKey, `dose_um` and the original dose,
+the source item and its item-manifest digest, and `matched_control_group`.
+Matched controls are the same-plate DMSO wells for `tenv` and the same-plate,
+same-cell-line `DMSO_TF` rows for `tahoe_bulk`; a treated row without a compatible
+control is excluded and the reason is recorded in `exclusions.csv`. No
+normalization, no delta, no filter and no HVG subsetting happens here — that is a
+view's job.
+
+```python
+import sys; sys.path.insert(0, 'stage2/01_bases/output/api')
+from bases.corpus import open_corpus
+with open_corpus('stage2/01_bases/output/corpus') as corpus:
+    tenv = corpus.source('tenv')
+    counts = tenv.counts(0, 64)                # dense int32 window; never the whole matrix
+    info = tenv.obs.iloc[42]                  # role, plate, dose, matched_control_group, ...
+    controls = tenv.matched_control_rows(42)  # vehicle row positions for that group
+```
+
+Readers are the only supported access path. `CorpusSource.counts(start, stop)`
+returns a dense int32 window and `batches(batch_size)` iterates it, so the full
+observation x 18,164 matrix is never materialized. `control_groups()`,
+`control_rows(group)` and `matched_control_rows(index)` resolve the control
+correspondence the view builder consumes. `RawCounts` exposes the native/projected
+payload, the probe/token evidence and the bridge frames.
+
+### Build, replay and provenance
+
+```bash
+python stage2/01_bases/execution/build_raw_counts.py publish   # candidate -> verify -> replace
+python stage2/01_bases/execution/build_raw_counts.py verify    # rebuild in scratch, compare every digest
+python stage2/01_bases/execution/build_corpus.py publish
+python stage2/01_bases/execution/build_corpus.py verify
+```
+
+Per ADR 0062 every build writes a candidate under `execution/checkpoints/` (never
+inside `output/`), verifies it and only then replaces the accepted path; a failed
+build leaves the accepted release usable. `verify` replays the build from the
+pinned inputs and compares the manifest and every output digest, so building
+twice produces identical digests. The measured acceptance runs were raw-count
+publish/verify 16.8 s / 16.5 s and corpus publish/verify 1 m 9 s / 1 m 11 s, each
+under 0.5 GiB peak RSS.
+
+`raw_counts/manifest.json` carries the recipe, the frozen axis digest, every input
+path + sha256 (no absolute paths), every output digest and the population counts.
+Its provenance is explicit: the default publication mode **rehomes** the already
+source-accepted tenv/Tahoe payloads, re-checks their bytes against
+`log/records/native_tenv_verify.json` and
+`log/records/tahoe_counts_source_acceptance.json`, re-derives the Tahoe token
+mapping from the immutable source `gene_metadata.parquet`, and records
+`provenance.mode: source-accepted-replay` with a pointer to the acceptance record
+and the recorded source-replay evidence. The stronger mode
+`build_raw_counts.py --full-rebuild publish|verify` rebuilds both payloads from the
+immutable `source/` trees through the original builders and replays them from
+source (recorded cost: Tahoe build 1 h 35 m, independent source replay 2 h 35 m
+under the 10 GiB cap); it stays available and is the mode to use if the rehomed
+bytes are ever in doubt.
+
+The compact manifests, the exclusion table and the mapping evidence
+(`tenv_probe_mapping.csv`, `tenv_axis_mapping.csv`, `token_mapping.csv`) are
+tracked; the multi-hundred-MB count payloads are gitignored and registered in
+`docs/data-inventory.md`.
+
+### DEG-table/rank contract (for tickets #187-#190)
+
+`output/api/bases/deg_rank.py` publishes once the pure functions the disease
+tickets import: `SymbolResolver`/`align_table` (symbol -> frozen `gene_index`;
+ambiguous, off-axis and unmapped symbols are recorded, never guessed),
+`deg_effect` (`|log2FC| * -log10(padj)`; `NA` padj is non-significant),
+`per_gene_deg` (multi-contrast maximum collapse) and `dataset_deg_rank`
+(within-dataset rank, unmeasured = `n_measured + 1`,
+`rank_norm = rank / n_measured`, `gene_index` tie-break). `bases.gene_axis`
+re-exports these under the old names so the accepted pre-0066 evidence keeps
+working.
+
 This is the standalone foundation retained after the user removed the other
 Stage 2 steps. Immutable raw inputs remain under `pert_data/`. Deleted historical
 experiments and their checkpoints are outside this build. The layout follows

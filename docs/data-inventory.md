@@ -144,6 +144,24 @@ historical v1 Tahoe h5ad (11.20 GB) and two superseded build-state directories
 | `figure/` | 711,136 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
 | `log/` | 9,440,464 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
 
+### Rebuild foundation products (#186, ADR 0066)
+
+The rebuild's `raw_counts/` -> `corpus/` chain is accepted separately from the
+pre-0066 products above; the removal ticket (#192) deletes the superseded raw,
+shared-expression and training products once the views exist. Both new areas are
+gitignored payloads with tracked manifests, mapping evidence and exclusion
+table; `du -sb`, 2026-11-13.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/raw_counts/` | 3,037,082,960 | `tenv.h5ad` (4,510 wells x 19,613 native genes, int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 profiles x 18,164 axis genes, CSR int32), `token_mapping.csv`, `manifest.json` | `execution/build_raw_counts.py publish`: rehomes the source-accepted payloads and records `source-accepted-replay` provenance (`log/records/native_tenv_verify.json`, `log/records/tahoe_counts_source_acceptance.json`). `--full-rebuild` rebuilds both from `pert_data/GSE262419/source` + `pert_data/Tahoe-100M/source` and replays from source (recorded ~4 h under the 10 GiB cap) |
+| `output/corpus/` | 1,395,893,021 | `tenv.h5ad` (4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv` (32 blanks + 300 invalid structures), `manifest.json` with the matched-control report; int32, no normalization, no delta | `execution/build_corpus.py publish` from `output/raw_counts/` + `pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet` |
+
+Both products are replayed by their drivers' `verify` action (rebuild in
+`execution/checkpoints/` and compare every digest). The compact manifests,
+mapping evidence and exclusion table are force-tracked; the count payloads are
+gitignored.
+
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See
 `stage2/01_bases/README.md` for the current commands, accepted results,

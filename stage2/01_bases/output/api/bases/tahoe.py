@@ -235,14 +235,14 @@ def _write_h5ad(destination, parts, obs, mapping):
     temporary.replace(destination)
 
 
-def build_tahoe(source, mapping, source_manifest, output, *, expected_shards=3388, expected_genes=18164, batch_size=1024):
+def build_tahoe(source, mapping, source_manifest, output, *, expected_shards=3388, expected_genes=18164, batch_size=1024, manifest='manifest.json', checkpoints=None):
     """Publish shared-axis raw counts; completed, sealed plates resume safely."""
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     source, mapping, plates, sample_meta, line_ids, cell_names, lookup, evidence, input_sha = _plan(
         source, mapping, source_manifest, expected_shards, expected_genes)
-    checkpoints = output / '.checkpoints'
-    checkpoints.mkdir(exist_ok=True)
+    checkpoints = Path(checkpoints) if checkpoints is not None else output / '.checkpoints'
+    checkpoints.mkdir(parents=True, exist_ok=True)
     parts, observations = [], []
     resumed = 0
     for plate in sorted(plates, key=_plate_key):
@@ -286,14 +286,14 @@ def build_tahoe(source, mapping, source_manifest, output, *, expected_shards=338
               'treated': int((~obs.is_control).sum()), 'genes': len(mapping), 'plates': len(parts), 'resumed_plates': resumed,
               'source_shards': expected_shards, 'profile_order': 'plate numeric, source well lexical, cell_line_id lexical',
               'h5ad_sha256': _digest(output / 'tahoe.h5ad'), 'mapping_sha256': _digest(output / 'token_mapping.csv')}
-    _json(output / 'manifest.json', result)
+    _json(output / manifest, result)
     return result
 
 
-def verify_tahoe(source, mapping, source_manifest, output, *, expected_shards=3388, expected_genes=18164, batch_size=1024):
+def verify_tahoe(source, mapping, source_manifest, output, *, expected_shards=3388, expected_genes=18164, batch_size=1024, manifest='manifest.json'):
     """Re-read every source cell and compare every published profile with sparse reduction."""
     output = Path(output)
-    release = json.loads((output / 'manifest.json').read_text())
+    release = json.loads((Path(output) / manifest).read_text())
     source, mapping, plates, sample_meta, line_ids, cell_names, lookup, _, input_sha = _plan(
         source, mapping, source_manifest, expected_shards, expected_genes)
     if release['input_sha256'] != input_sha or release['h5ad_sha256'] != _digest(output / 'tahoe.h5ad'):

@@ -38,30 +38,9 @@ def shared_library():
     return raw
 
 
-@lru_cache(maxsize=4096)
-def parent_structure(smiles):
-    mol = Chem.MolFromSmiles(str(smiles))
-    if mol is None:
-        raise ValueError("invalid_structure")
-    exact = Chem.MolToInchiKey(mol)
-    parent = rdMolStandardize.Uncharger().uncharge(
-        rdMolStandardize.FragmentParent(rdMolStandardize.Cleanup(mol))
-    )
-    Chem.AssignStereochemistry(parent, cleanIt=True, force=True)
-    key = Chem.MolToInchiKey(parent)
-    if len(key) != 27:
-        raise ValueError("unresolved_parent_structure")
-    return key, Chem.MolToSmiles(parent, isomericSmiles=True), exact
-
-
-def dose_micromolar(value, unit="uM"):
-    factors = {"uM": 1.0, "µM": 1.0, "μM": 1.0, "nM": 0.001, "mM": 1000.0, "M": 1e6}
-    if unit not in factors:
-        raise ValueError("unresolvable_dose_unit")
-    dose = float(value) * factors[unit]
-    if not np.isfinite(dose) or dose <= 0:
-        raise ValueError("invalid_treated_dose")
-    return dose
+# ADR 0061's desalting/dose science now lives once in bases.corpus; this retired
+# training-release module imports it rather than keeping a second live copy.
+from .corpus import dose_micromolar, parent_structure  # noqa: E402
 
 
 def metadata(source, obs, profiles, expression, drugs):
