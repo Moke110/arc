@@ -1,272 +1,113 @@
 #!/usr/bin/env python3
-"""Build or replay the Stage 2 gene-axis HVG/rank-sum decision evidence.
+"""Build or replay the released Stage 2 gene axes ``G_2000`` / ``G_5000`` (ADR 0066).
 
-The product is decision preparation (spec section C, ticket #183): per-source
-HVG and DEG ranks over the frozen 18,164-gene axis, an unweighted rank-sum
-fusion plus the animal half-weight sensitivity, source overlap, direction
-composition, an explicit inflection answer, and the tenv non-HVG curve. It does
-not choose the axis size, a source quota, a direction rule or the animal weight
-(those are #173), builds no corpus, trains no model, and never opens a truth or
-Heliste label file.
+The products are the two-level rank-sum fusion of the six cardiomyocyte-derived
+disease-DEG categories plus the published tenv-HVG ranking: the master candidate
+table, the two released axes, their manifest, the per-category composition table
+and the rank-sum histogram evidence panel. No corpus, view, model or truth is
+built; the disease-DEG products and the tenv-HVG ranking are read-only inputs.
 
-Every scientific definition lives in ``output/api/bases/gene_axis.py`` (the
-single public implementation, ADR 0062); the ``pert_data/`` cardiotoxicity
-adapters live in ``execution/gene_axis_sources.py``. This driver only reads the
-inputs, applies those definitions and writes the evidence.
+Every scientific definition lives in ``output/api/bases/gene_axis.py`` (the single
+public implementation, ADR 0062); this driver only reads the pinned inputs,
+applies those definitions and publishes the products.
 
     python stage2/01_bases/execution/build_gene_axis.py
     python stage2/01_bases/execution/build_gene_axis.py --verify
 
-``--verify`` rebuilds the complete evidence in a temporary directory from the
-pinned inputs and checks every tracked digest; it reads no truth product and
-writes nothing under ``output/``.
+Publication is candidate-then-replace (ADR 0062): a complete candidate is built
+outside ``output/``, validated, and only then swapped in; a failed build leaves
+the accepted release usable. ``--verify`` rebuilds from the pinned inputs into a
+scratch candidate and compares the manifest and every output digest.
 """
 import argparse
 import hashlib
 import json
+import os
+import platform
+import shutil
 import sys
+import tempfile
 from dataclasses import dataclass, replace
 from pathlib import Path
-import tempfile
 
 import numpy as np
 import pandas as pd
 
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
+from bases import release
+from bases.disease_deg import DiseaseDeg
 from bases.gene_axis import (
-    ANIMAL_SOURCES, AXIS_SIZE, PADJ_THRESHOLD, SCHEMA, SOURCE_HVG_K, TENV_HVG_KS,
-    SymbolResolver, align_to_gene_index, complete_rank, deg_count_agreement,
-    deg_effect, detect_inflection, direction_composition, fuse_ranks, fused_rank_stats,
-    hvg_membership, normalized_dispersion, overlap_metrics, per_gene_deg, rank_scores,
-    tenv_non_hvg_curve, transcriptome_hvg_sets,
+    AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, CANDIDATE_COLUMNS, FILL_RULE,
+    N_FUSION_SOURCES, SCHEMA, axis_composition, axis_fill, axis_intersection,
+    candidate_columns, candidate_table, category_rank, detect_inflection, fusion_rank_sum,
+    inflection_stability, n_fusion_sources, pn_distribution, rank_sum_histogram,
+    winning_tier,
 )
-import gene_axis_sources as sources
+from bases.deg_rank import SCHEMA as RANK_SCHEMA, normalized_rank
 
-DIRECTION_SIZES = (500, 1000, 2000, 3000, 5000)
-# Inflection is evaluated on the sorted primary rank-sum curve.
-INFLECTION_X = 'fused_rank'
-INFLECTION_Y = 'rank_sum'
-HISTOGRAM_BINS = 40
-CURVE_SAMPLE_STEP = 100
-FORBIDDEN = ('tenv-truth', 'heliste')
+#: The two accepted category product families that can contribute a level-1 source:
+#: the #187/#188 within-dataset release and the #189 cardiotoxicity class release.
+CATEGORY_MANIFEST_SCHEMAS = ('stage2-disease-deg-release-v1', 'stage2-cardiotox-class-v1')
+CANDIDATE_NAME = 'candidate_rank_sum.csv'
+COMPOSITION_NAME = 'axis_composition.csv'
+FIGURE_NAME = 'gene_axis_rank_sum_histogram'
+HISTOGRAM_BINS = 70
+#: Inflection is diagnostic only; the declared decision range starts at N=100.
+INFLECTION_MIN_N = 100
+#: Declared maximum source count (before excluding non-informative categories);
+#: the published histogram is bounded by the actual fused count instead.
+RANK_SUM_MAX = float(N_FUSION_SOURCES)
+COMPOSITION_NOTE = ('pN is an ordinal cross-source replication count bounded by the '
+                    'fused source count, not a continuous quality score')
 
-RECIPE = {
-    'hvg': ("Seurat-style normalized dispersion on the item's deposited log expression: "
-            'per-gene mean over finite samples, sample variance / mean, log dispersion '
-            'standardized in 20 equal-width log1p-mean bins, singleton bins score 1, '
-            'undefined dispersion sorts last, source-row order as tie-break. Same family '
-            'as output/api/bases/hvg.py; deliberate difference: no expm1 recovery because '
-            'the disease matrices are heterogeneous non-invertible log scales, so the '
-            'statistics are computed on the deposited log values directly. The ranking is '
-            'over the source\'s whole measured transcriptome (every matrix row, not only '
-            'the rows that resolve to the frozen axis).'),
-    'hvg_sets': ("A source's declared HVG set at size K is its top-K source rows by that "
-                 'ranking; the overlap table reports K in {1000, 2000, 5000} and the source '
-                 'summary reports the declared reporting size K=2000. n_hvg_total is the '
-                 'declared set size min(K, n_source_genes); n_hvg_on_axis is the number of '
-                 'distinct frozen-axis genes in it; hvg_share = n_hvg_on_axis / n_hvg_total '
-                 '(the share of the source\'s own variability evidence that lands on the '
-                 'frozen axis, not how variable the axis is); hvg_density = n_hvg_on_axis / '
-                 'n_axis_expression. n_hvg keeps its existing column and equals the declared '
-                 'set size (n_hvg_total).'),
-    'deg': ("Continuous per-contrast effect score |log2FC| * -log10(padj) with padj floored "
-            'at 1e-300; NA padj (DESeq2 independent filtering) is treated as '
-            'non-significant with score 0, not dropped from the measured set. A gene '
-            'scores the maximum over its source contrasts (declared collapse rule); '
-            'direction and padj come from that winning contrast and '
-            'n_contrasts_supporting counts padj < 0.05 contrasts.'),
-    'alignment': ('Source symbol -> axis gene_index by precedence: canonical axis symbol; '
-                  'gene_crosswalk.csv alias/previous rows; pinned HGNC alias_symbol / '
-                  'prev_symbol; Ensembl id (version stripped) via the axis ensembl_id or '
-                  'the HGNC ensembl_gene_id. Multi-candidate aliases are ambiguous and '
-                  'unresolved, never guessed; unresolved symbols are counted and reported. '
-                  'Duplicate source symbols that resolve to one axis gene collapse under '
-                  'the shared max-effect DEG rule (per_gene_deg); the source-transcriptome '
-                  'HVG ranking is computed on the source rows before the axis projection.'),
-    'rank': ('Within-source only. Measured genes are ranked 1..n_measured by descending '
-             'score with gene_index as tie-break; unmeasured genes get n_measured + 1 and '
-             'rank_norm = 1.0. Ranks are never compared across sources as raw effect sizes.'),
-    'fusion': ('Unweighted sum of rank_norm = rank / n_measured (unmeasured = 1.0) over '
-               'the fused sources; primary fused rank is ascending rank_sum with gene_index '
-               'tie-break. rank_sum_animal_half re-weights the two animal MIRI sources at '
-               '0.5 (reported sensitivity, not chosen); the primary fusion is unweighted.'),
-    'direction': ("Per gene the per-source maximum-effect DEG row (the multi-contrast "
-                  'maximum) gives the sign: direction = sign(log2FC) of the largest '
-                  'source effect across the nine DEG sources, 0 when no source reports an '
-                  'effect (n_unsupported). Top-N direction composition is reported under '
-                  'two genuinely different orderings: "symmetric" = the first N genes in '
-                  'ascending fused_rank (every gene counts equally), and "max_abs_log2fc" '
-                  '= the N genes with the largest max_abs_effect = max over the sources '
-                  'that report the gene of |log2FC|, ties broken by ascending fused_rank. '
-                  'Exact cross-source effect ties are counted (n_direction_ties).'),
-    'overlap': ('TenV HVG sets are the published descriptive top-K (K in {1000, 2000, 5000}); '
-                'a source HVG set is the same declared K over the source\'s own measured '
-                'transcriptome, projected to the axis; a source DEG set is padj < 0.05 on '
-                'the winning contrast. All sets are gene_index sets; the reported '
-                'fused_rank_min/median/max look the intersection genes up in the '
-                'gene_index-indexed fused rank. A multi-way intersection row has no '
-                'Jaccard (identical operands): it reports the intersection size, its fused '
-                'ranks and a note, with n_a/n_b/n_union/jaccard left blank.'),
-    'tenv_non_hvg': ('For N = 1..18164 the fused top-N are the first N genes in ascending '
-                     'fused_rank; the curve reports the share of that set whose published '
-                     'tenv HVG rank exceeds K for K in {1000, 2000, 5000}.'),
-    'inflection': ('Kneedle online S=1.0 (first interior local maximum of the normalized '
-                   'arc y_norm - x_norm) plus the second-difference peak; accepted only when '
-                   'both candidates agree within 25% and the knee exceeds 0.01 normalized '
-                   'units, otherwise an explicit "inflection": false.'),
-}
-
-SOURCE_SPECS = [
-    {'id': 'tenv', 'column': 'tenv_hvg_rank', 'accession': 'tenv', 'category': 'tenv',
-     'species': 'Homo sapiens', 'tissue_model': 'hiPSC-CM TempO-Seq (tenv corpus)',
-     'contrast': 'descriptive variability (published tenv HVG rank)',
-     'method': 'published descriptive normalized dispersion (output/tenv-hvg, not recomputed)',
-     'normalization': 'log1p CP10K', 'ortholog_chain': 'none (human)',
-     'fused': True, 'exploratory': False, 'supplementary_only': False,
-     'notes': 'variability reference only; no significance or truth input'},
-    {'id': 'gse141910', 'column': 'gse141910_rank', 'accession': 'GSE141910',
-     'category': 'disease_data', 'species': 'Homo sapiens',
-     'tissue_model': 'human left-ventricular free-wall bulk tissue (MAGNet)',
-     'contrast': 'HF_vs_NF', 'method': 'limma on deposited voom log2 abundance',
-     'ortholog_chain': 'none (human)', 'fused': True, 'exploratory': False,
-     'supplementary_only': False, 'notes': ''},
-    {'id': 'gse116250', 'column': 'gse116250_rank', 'accession': 'GSE116250',
-     'category': 'disease_data', 'species': 'Homo sapiens',
-     'tissue_model': 'human left-ventricular bulk tissue (HF / post-MI proxy)',
-     'contrast': 'HF_vs_NF (+ DCM_vs_NF, ICM_vs_NF contrasts, max-collapsed)',
-     'method': 'limma on log2(RPKM+1)', 'ortholog_chain': 'none (human)',
-     'fused': True, 'exploratory': False, 'supplementary_only': False, 'notes': ''},
-    {'id': 'gse243674', 'column': 'gse243674_rank', 'accession': 'GSE243674',
-     'category': 'disease_data', 'species': 'Homo sapiens',
-     'tissue_model': 'hiPSC-CM monolayer, 6 donors, anthracyclines + vehicle',
-     'contrast': '10 drug-vs-vehicle contrasts (max-collapsed)',
-     'method': 'DESeq2 Wald on hg38 gene counts', 'ortholog_chain': 'none (human)',
-     'fused': True, 'exploratory': False, 'supplementary_only': False, 'notes': ''},
-    {'id': 'gse128188', 'column': 'gse128188_rank', 'accession': 'GSE128188',
-     'category': 'disease_data', 'species': 'Homo sapiens',
-     'tissue_model': 'human paired left/right atrial appendage',
-     'contrast': 'AF_vs_SR', 'method': 'DESeq2 Wald on donor-pooled counts',
-     'ortholog_chain': 'none (human)', 'fused': True, 'exploratory': False,
-     'supplementary_only': False, 'notes': ''},
-    {'id': 'gse282618', 'column': 'gse282618_rank', 'accession': 'GSE282618',
-     'category': 'disease_data', 'species': 'Homo sapiens',
-     'tissue_model': 'human post-mortem left/right ventricle (hypertensive heart disease)',
-     'contrast': 'HHD_vs_control', 'method': 'DESeq2 Wald on subject-pooled counts',
-     'ortholog_chain': 'none (human)', 'fused': True, 'exploratory': True,
-     'supplementary_only': False, 'notes': 'exploratory: 3 cases / 2 controls'},
-    {'id': 'gse160516', 'column': 'gse160516_rank', 'accession': 'GSE160516',
-     'category': 'disease_data', 'species': 'Mus musculus',
-     'tissue_model': 'mouse MIRI (pooled IR vs Sham, Affymetrix Clariom S)',
-     'contrast': 'IR_vs_Sham (pooled 6h/24h/72h)',
-     'method': 'limma on the item\'s full-transcriptome mouse DEG table',
-     'ortholog_chain': 'mouse symbol -> homologene mouse2human (inTax 10090) -> human symbol -> frozen axis',
-     'fused': True, 'exploratory': False, 'supplementary_only': False,
-     'notes': ('animal DEG-only source; half-weight sensitivity column; the local DEG '
-               'interface carries no sample count')},
-    {'id': 'gse108940', 'column': 'gse108940_rank', 'accession': 'GSE108940',
-     'category': 'disease_data', 'species': 'Mus musculus',
-     'tissue_model': 'mouse MIRI (WT IR vs WT Sham, GPL7202)',
-     'contrast': 'WT_IR_vs_WT_Sham',
-     'method': 'limma on the corrected full-transcriptome mouse DEG table',
-     'ortholog_chain': 'mouse symbol -> homologene mouse2human (inTax 10090) -> human symbol -> frozen axis',
-     'fused': True, 'exploratory': False, 'supplementary_only': False,
-     'notes': ('animal DEG-only source; half-weight sensitivity column; n_samples from '
-               'the item build script design (6 IR + 6 sham)')},
-    {'id': 'dtoxs_ipsc', 'column': 'dtoxs_ipsc_rank', 'accession': 'GSE217421',
-     'category': 'pert_data', 'species': 'Homo sapiens',
-     'tissue_model': 'DToxS iPSC-CM (GSE217424 SuperSeries)',
-     'contrast': '22 cardiotoxic-positive comparison tables (DAU/DOX/EPI/IDA/TRA, max-collapsed)',
-     'method': 'upstream GeoMx/RNA-seq Calc DEG tables (logFC, PValue, FDR)',
-     'ortholog_chain': 'none (human)',
-     'fused': True, 'exploratory': False, 'supplementary_only': False,
-     'notes': 'no MTX table in this deposit; never re-downloaded'},
-    {'id': 'gse244740', 'column': 'gse244740_rank', 'accession': 'GSE244740',
-     'category': 'pert_data', 'species': 'Homo sapiens',
-     'tissue_model': 'ScreenSeq hiPSC-CM panel (Rosell-Hidalgo)',
-     'contrast': 'DOX / IDA / Mitoxantrone vs same-plate DMSO, all doses pooled (max-collapsed)',
-     'method': ('log2(CPM+1) over all source genes, two-sample Welch t-test, BH within '
-                'contrast (declared method; no moderation)'),
-     'ortholog_chain': 'none (human; Ensembl -> axis symbol)',
-     'fused': True, 'exploratory': False, 'supplementary_only': False,
-     'notes': 'DEG derived from the already-owned raw counts; 22 same-plate DMSO wells'},
-    {'id': 'gse137293', 'column': '', 'accession': 'GSE137293', 'category': 'disease_data',
-     'species': 'Sus scrofa', 'tissue_model': 'pig infarct scar vs border zone',
-     'contrast': 'scar_vs_border (not disease vs healthy)',
-     'method': 'listed only', 'normalization': '', 'ortholog_chain': 'none (supplementary)',
-     'fused': False, 'exploratory': False, 'supplementary_only': True,
-     'notes': 'supplementary evidence only: an injury-severity gradient, never fused'},
-    {'id': 'lincs_lds_1593', 'column': '', 'accession': 'LINCS-LDS-1593',
-     'category': 'pert_data', 'species': 'Homo sapiens',
-     'tissue_model': 'L1000-978 landmark panel', 'contrast': 'coverage note only',
-     'method': 'listed only', 'normalization': 'L1000-978', 'ortholog_chain': 'none',
-     'fused': False, 'exploratory': False, 'supplementary_only': True,
-     'notes': 'coverage note only (978 landmark genes); never a fusion source'},
-]
-EXPRESSION_IDS = ('gse141910', 'gse116250', 'gse243674', 'gse128188', 'gse282618')
-ANIMAL_IDS = ('gse160516', 'gse108940')
-PERT_IDS = ('dtoxs_ipsc', 'gse244740')
-FUSED_IDS = ('tenv',) + EXPRESSION_IDS + ANIMAL_IDS + PERT_IDS
-DEG_IDS = EXPRESSION_IDS + ANIMAL_IDS + PERT_IDS
+FIGURE_COLUMNS = ('record', 'panel', 'panel_title', 'title', 'axis', 'bin_left',
+                  'bin_right', 'bin_center', 'count', 'share', 'interval_low',
+                  'interval_high', 'median', 'inflection', 'inflection_n', 'note')
+FIGURE_TITLE = ('Released Stage 2 gene axes · rank-sum distribution over all '
+                'frozen-axis candidates with the G_2000 and G_5000 intervals')
+COMPOSITION_COLUMNS = ('axis', 'n_axis', 'record', 'group', 'n_genes', 'share', 'note')
 
 
-@dataclass
+@dataclass(frozen=True)
 class Config:
     """Every path the build reads or writes; all are repo-relative by default."""
+
     root: Path
     genes: Path
-    crosswalk: Path
-    hgnc: Path
     tenv_hvg: Path
-    orthologs: Path
     disease_root: Path
-    pert_root: Path
     output: Path
     figure_data: Path
-    intermediates: Path
-
-    def input_roles(self):
-        return [
-            ('frozen_axis', self.genes),
-            ('gene_crosswalk', self.crosswalk),
-            ('hgnc_complete_set', self.hgnc),
-            ('tenv_hvg_descriptive', self.tenv_hvg),
-            ('mouse_human_orthologs', self.orthologs),
-            *[(f'{source}_expr', self.disease_root / source.upper() / 'local/expr'
-               / f'{source.upper()}_log_expr.tsv.gz') for source in EXPRESSION_IDS],
-            *[(f'{source}_deg', self.disease_root / source.upper() / 'local/deg'
-               / f'{source.upper()}_deg.csv') for source in EXPRESSION_IDS],
-            ('gse160516_deg', self.disease_root / 'GSE160516/source/GSE160516_deg_results.csv'),
-            ('gse108940_deg', self.disease_root / 'GSE108940/source/GSE108940_WT_deg_results.csv'),
-            ('dtoxs_deg_tar', self.pert_root / 'DToxS-iPSC/source'
-             / 'GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz'),
-            ('gse244740_counts', self.pert_root / 'GSE244740/source'
-             / 'GSE244740_processed_data_counts.txt.gz'),
-            ('gse244740_series', self.pert_root / 'GSE244740/source'
-             / 'GSE244740_series_matrix.txt.gz'),
-        ]
+    axis_sizes: tuple = AXIS_SIZES
 
 
 def repo_root():
-    return next(parent for parent in Path(__file__).resolve().parents if (parent / '.git').exists())
+    return next(parent for parent in Path(__file__).resolve().parents
+                if (parent / '.git').exists())
 
 
-def default_config(root=None, output=None, figure_data=None, intermediates=None):
+def default_config(root=None, output=None, figure_data=None, axis_sizes=AXIS_SIZES):
     root = Path(root) if root else repo_root()
     step = root / 'stage2/01_bases'
     return Config(
         root=root,
         genes=step / 'output/gene-identity/genes.csv',
-        crosswalk=step / 'output/gene-identity/tables/gene_crosswalk.csv',
-        hgnc=root / 'pert_data/Annotation/source/hgnc_complete_set.txt',
         tenv_hvg=step / 'output/tenv-hvg/descriptive.csv',
-        orthologs=step / 'output/gene-axis/mouse_human_orthologs.csv',
-        disease_root=root / 'disease_data',
-        pert_root=root / 'pert_data',
+        disease_root=step / 'output/disease-deg',
         output=Path(output) if output else step / 'output/gene-axis',
-        figure_data=Path(figure_data) if figure_data else step / 'figure/data/gene_axis_source_summary.csv',
-        intermediates=Path(intermediates) if intermediates is not None
-        else step / 'execution/gene_axis',
+        figure_data=Path(figure_data) if figure_data
+        else step / 'figure/data' / f'{FIGURE_NAME}.csv',
+        axis_sizes=tuple(int(size) for size in axis_sizes),
     )
+
+
+def repo_relative(path, root):
+    """Lexical repo-relative path; an output outside the repository fails closed."""
+    lexical = Path(os.path.abspath(path))
+    try:
+        return lexical.relative_to(Path(os.path.abspath(root))).as_posix()
+    except ValueError as error:
+        raise ValueError(f'product path is outside the repository root: {path}') from error
 
 
 def sha256(path):
@@ -277,29 +118,11 @@ def sha256(path):
     return digest.hexdigest()
 
 
-def forbidden_input(path):
-    """Raise when a path would open a truth or Heliste label product.
-
-    The evidence product is label-free: the only tenv input is the published
-    descriptive HVG ranking. This guard makes the boundary executable and is
-    exercised by the leakage test.
-    """
-    parts = [part.lower() for part in Path(path).parts]
-    for token in FORBIDDEN:
-        if any(token in part for part in parts):
-            raise ValueError(f'forbidden label input: {path}')
-    return Path(path)
-
-
-def read_csv(path, **kwargs):
-    return pd.read_csv(forbidden_input(path), **kwargs)
-
-
 def write_frame(frame, path):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    text = frame.to_csv(index=False, lineterminator='\n', float_format='%.12g')
-    path.write_text(text)
+    path.write_text(frame.to_csv(index=False, lineterminator='\n',
+                                 float_format='%.17g'))
     return path
 
 
@@ -310,784 +133,708 @@ def write_json(payload, path):
     return path
 
 
-def _expression_metadata(path):
-    import gzip
-    with gzip.open(path, 'rt') as handle:
-        line = handle.readline().rstrip('\n')
-    metadata = {}
-    if line.startswith('#'):
-        for token in line[1:].split():
-            if '=' in token:
-                key, value = token.split('=', 1)
-                metadata[key] = value
-    return metadata
-
-
-def read_expression(path):
-    """Read a disease expression matrix and its declared metadata header."""
-    path = forbidden_input(path)
-    metadata = _expression_metadata(path)
-    with Path(path).open('rb') as raw:
-        import gzip
-        with gzip.open(raw, 'rt') as handle:
-            handle.readline()
-            frame = pd.read_csv(handle, sep='\t', index_col=0)
-    if frame.index.has_duplicates:
-        raise ValueError(f'duplicate gene symbols in {path}')
-    return metadata, frame
-
+# ---------------------------------------------------------------- input reads
 
 def read_axis(path):
-    axis = read_csv(path, dtype={'symbol': str, 'hgnc_id': str,
-                                 'ensembl_id': str, 'entrez_id': str})
-    if list(axis.columns[:2]) != ['gene_index', 'symbol'] or len(axis) != AXIS_SIZE:
-        raise ValueError('unexpected frozen axis layout')
-    if sorted(axis.gene_index.astype(int)) != list(range(AXIS_SIZE)):
-        raise ValueError('frozen axis gene_index is not 0..18163')
+    """Read the frozen axis and require the contiguous ``0..n-1`` gene_index order."""
+    axis = pd.read_csv(path, dtype={'symbol': str, 'hgnc_id': str,
+                                    'ensembl_id': str, 'match_type': str})
+    required = {'gene_index', 'symbol'}
+    if not required <= set(axis.columns):
+        raise ValueError(f'{path}: axis table requires {sorted(required)}')
+    gene_index = np.asarray(axis.gene_index, dtype=np.int64)
+    if len(gene_index) < 2 or not np.array_equal(
+            gene_index, np.arange(len(gene_index), dtype=np.int64)):
+        raise ValueError(f'{path}: axis gene_index is not the contiguous 0..n-1 order')
+    if axis.symbol.isna().any() or axis.symbol.duplicated().any():
+        raise ValueError(f'{path}: axis symbols must be unique and non-null')
     return axis
 
 
-def load_resolver(config):
-    axis = read_axis(config.genes)
-    crosswalk = read_csv(config.crosswalk, dtype=str, keep_default_na=False)
-    hgnc = read_csv(config.hgnc, sep='\t', dtype=str, keep_default_na=False,
-                    usecols=['hgnc_id', 'symbol', 'alias_symbol', 'prev_symbol',
-                             'ensembl_gene_id'])
-    return axis, SymbolResolver(axis, crosswalk.to_dict('records'), hgnc.to_dict('records'))
+def _published_digest(path, manifest_path, getter):
+    """Compare one input against its published manifest digest when one is present."""
+    manifest_path = Path(manifest_path)
+    if not manifest_path.is_file():
+        return None
+    manifest = json.loads(manifest_path.read_text())
+    declared = getter(manifest)
+    if not isinstance(declared, str) or len(declared) != 64:
+        raise ValueError(f'{manifest_path}: no usable digest for {path}')
+    actual = sha256(path)
+    if actual != declared:
+        raise ValueError(f'{path}: digest differs from its published manifest')
+    return actual
 
 
-def _alignment_rows(source_id, symbols, indices, categories):
-    return pd.DataFrame({'source': source_id, 'source_symbol': symbols,
-                         'gene_index': indices, 'resolution': categories})
+def read_tenv(path, axis_size):
+    """The published tenv-HVG dispersion rank: the seventh fusion source."""
+    frame = pd.read_csv(path, dtype={'gene_index': np.int64})
+    required = {'gene_index', 'rank'}
+    if not required <= set(frame.columns):
+        raise ValueError(f'{path}: tenv-HVG ranking requires {sorted(required)}')
+    gene_index = np.asarray(frame.gene_index, dtype=np.int64)
+    if len(frame) != axis_size or not np.array_equal(
+            gene_index, np.arange(axis_size, dtype=np.int64)):
+        raise ValueError(f'{path}: tenv-HVG ranking must cover the frozen axis')
+    rank = np.asarray(frame['rank'], dtype=np.int64)
+    if not np.array_equal(np.sort(rank), np.arange(1, axis_size + 1, dtype=np.int64)):
+        raise ValueError(f'{path}: tenv-HVG rank is not a complete 1..{axis_size} permutation')
+    _published_digest(path, Path(path).with_name('manifest.json'),
+                      lambda manifest: manifest.get('populations', {})
+                      .get('descriptive', {}).get('sha256'))
+    return frame
 
 
-def _deg_rank(measured_index, effect):
-    rank = rank_scores(measured_index, effect)
-    return complete_rank(measured_index, rank)
+def _require_digest_pinned(record, key):
+    """A record's provenance must be digest-pinned; no unverified path is accepted."""
+    if key not in record:
+        raise ValueError(f'{record.get("dataset_id", "?")}: record lacks {key}')
+    if key == 'inputs':
+        value = record['inputs']
+        if not isinstance(value, dict) or not value:
+            raise ValueError(f'{record["dataset_id"]}: inputs are not a pinned mapping')
+        for name, evidence in value.items():
+            digest = evidence if isinstance(evidence, str) else (
+                evidence.get('sha256') if isinstance(evidence, dict) else None)
+            if not isinstance(digest, str) or len(digest) != 64:
+                raise ValueError(f'{record["dataset_id"]}: input {name} has no sha256')
+        return
+    value = record[key]
+    if not isinstance(value, list) or not value:
+        raise ValueError(f'{record["dataset_id"]}: {key} are not a pinned list')
+    for evidence in value:
+        if (not isinstance(evidence, dict)
+                or not str(evidence.get('relative', ''))
+                or len(str(evidence.get('sha256', ''))) != 64):
+            raise ValueError(f'{record["dataset_id"]}: {key} entry has no relative + sha256')
 
 
-def process_expression_source(config, axis, resolver, spec, intermediates):
-    """Per-source HVG rank from the expression matrix and DEG rank from its DEG table."""
-    accession = spec['accession']
-    expr_path = config.disease_root / accession / 'local/expr' / f'{accession}_log_expr.tsv.gz'
-    deg_path = config.disease_root / accession / 'local/deg' / f'{accession}_deg.csv'
-    metadata, matrix = read_expression(expr_path)
-    symbols = [str(value) for value in matrix.index]
-    indices, categories = resolver.resolve_many(symbols)
-    alignment = _alignment_rows(spec['id'], symbols, indices, categories)
-    loss = resolver.loss_summary(indices, categories)
-    values = matrix.to_numpy(dtype=np.float64)
-    # The source's HVG ranking is over its whole measured transcriptome (every
-    # matrix row, including rows that do not resolve to the frozen axis); the
-    # source row order is the deterministic tie-break. Only after ranking are
-    # the declared top-K rows projected onto the axis, so hvg_share measures how
-    # much of the source's own variability evidence lands on the frozen axis.
-    hvg = normalized_dispersion(values, np.arange(len(symbols)))
-    hvg = hvg.assign(source_symbol=symbols, gene_index=indices)
-    hvg = hvg[['source_symbol', 'gene_index', 'n_obs', 'log_mean', 'log_dispersion',
-               'normalized_dispersion', 'rank']]
-    hvg_sets = transcriptome_hvg_sets(hvg['rank'].to_numpy(dtype=np.int64), indices,
-                                      TENV_HVG_KS)
-    n_axis_expression = int(len(np.unique(indices[indices >= 0])))
-    deltas = read_csv(deg_path, dtype={'gene_symbol': str, 'contrast': str})
-    deg_indices, deg_categories = resolver.resolve_many([str(v) for v in deltas.gene_symbol])
-    deg_rows = pd.DataFrame({'gene_index': deg_indices,
-                             'contrast': deltas.contrast.to_numpy(),
-                             'log2fc': pd.to_numeric(deltas.log2FC, errors='coerce').to_numpy(),
-                             'padj': pd.to_numeric(deltas.padj, errors='coerce').to_numpy()})
-    deg_rows = deg_rows[deg_rows.gene_index >= 0]
-    per_gene = per_gene_deg(deg_rows.gene_index, deg_rows.log2fc, deg_rows.padj,
-                            deg_rows.contrast)
-    measured = per_gene.gene_index.to_numpy(dtype=np.int64)
-    rank = _deg_rank(measured, per_gene.effect.to_numpy(dtype=np.float64))
-    significant = np.zeros(AXIS_SIZE, dtype=np.int64)
-    significant[per_gene.loc[per_gene.padj < PADJ_THRESHOLD, 'gene_index'].to_numpy(dtype=np.int64)] = 1
-    result = {'rank': rank, 'measured': len(measured), 'significant': significant,
-              'alignment': alignment, 'loss': loss, 'per_gene': per_gene,
-              'hvg': hvg, 'hvg_sets': hvg_sets, 'hvg_set': hvg_sets[SOURCE_HVG_K]['set'],
-              'metadata': metadata, 'n_source_genes': int(len(symbols)),
-              'n_samples': int(matrix.shape[1]), 'n_contrasts': int(deltas.contrast.nunique()),
-              'n_axis_expression': n_axis_expression}
-    if intermediates is not None:
-        write_frame(alignment, intermediates / 'sources' / f'{spec["id"]}_alignment.csv')
-        write_frame(hvg, intermediates / 'sources' / f'{spec["id"]}_hvg.csv')
-        write_frame(per_gene[['gene_index', 'contrast', 'log2fc', 'padj', 'effect',
-                              'significant', 'direction', 'n_contrasts_supporting']],
-                    intermediates / 'sources' / f'{spec["id"]}_deg.csv')
-    return result
+def validate_catalog_shape(category, catalog, axis_size):
+    """Fail closed on any catalogue that does not match the canonical #187-#189 shape.
 
-
-def process_animal_source(config, axis, resolver, spec, intermediates, orthologs):
-    """DEG-only mouse source: homologene mouse->human then the frozen-axis resolver."""
-    if spec['id'] == 'gse160516':
-        deg_path = config.disease_root / 'GSE160516/source/GSE160516_deg_results.csv'
-        columns = {'Gene': 'symbol', 'logFC': 'log2fc', 'adj.P.Val': 'padj'}
-    else:
-        deg_path = config.disease_root / 'GSE108940/source/GSE108940_WT_deg_results.csv'
-        columns = {'Gene': 'symbol', 'logFC': 'log2fc', 'adj.P.Val': 'padj'}
-    table = read_csv(deg_path, usecols=list(columns), dtype={list(columns)[0]: str})
-    table = table.rename(columns=columns)
-    table['log2fc'] = pd.to_numeric(table['log2fc'], errors='coerce')
-    table['padj'] = pd.to_numeric(table['padj'], errors='coerce')
-    mouse = [str(value) for value in table.symbol]
-    unique_mouse = sorted(set(mouse))
-    mapped = orthologs[orthologs.mouse_symbol.isin(unique_mouse)]
-    # One mouse symbol may map to several human symbols; resolve every human
-    # candidate and keep the mapping only when exactly one axis gene matches.
-    candidates = mapped.groupby('mouse_symbol').human_symbol.apply(list).to_dict()
-    mapping = {}
-    ambiguous = offaxis = unresolved = 0
-    for mouse_symbol, human_symbols in candidates.items():
-        hits = set()
-        for human in human_symbols:
-            index, _ = resolver.resolve(human)
-            if index >= 0:
-                hits.add(index)
-        if len(hits) == 1:
-            mapping[mouse_symbol] = next(iter(hits))
-        elif len(hits) > 1:
-            ambiguous += 1
-        else:
-            unresolved += 1
-    gene_indices = np.asarray([mapping.get(symbol, -1) for symbol in mouse], dtype=np.int64)
-    rows = pd.DataFrame({'gene_index': gene_indices, 'log2fc': table.log2fc.to_numpy(),
-                         'padj': table.padj.to_numpy(), 'contrast': 'miri'})
-    rows = rows[rows.gene_index >= 0]
-    per_gene = per_gene_deg(rows.gene_index, rows.log2fc, rows.padj, rows.contrast)
-    measured = per_gene.gene_index.to_numpy(dtype=np.int64)
-    rank = _deg_rank(measured, per_gene.effect.to_numpy(dtype=np.float64))
-    significant = np.zeros(AXIS_SIZE, dtype=np.int64)
-    significant[per_gene.loc[per_gene.padj < PADJ_THRESHOLD, 'gene_index'].to_numpy(dtype=np.int64)] = 1
-    mapping_frame = pd.DataFrame(sorted(mapping.items()), columns=['mouse_symbol', 'gene_index'])
-    result = {'rank': rank, 'measured': len(measured), 'significant': significant,
-              'per_gene': per_gene, 'alignment': mapping_frame,
-              'loss': {'n_mouse_symbols': len(unique_mouse),
-                       'n_mouse_symbols_with_ortholog': int(len(candidates)),
-                       'n_mouse_symbols_mapped_to_axis': int(len(mapping)),
-                       'n_ambiguous_mouse_symbols': ambiguous,
-                       'n_without_axis_hit': unresolved,
-                       'n_mouse_rows_dropped': int((gene_indices < 0).sum())},
-              'n_samples': 12 if spec['id'] == 'gse108940' else None,
-              'n_contrasts': 1, 'metadata': {}}
-    if intermediates is not None:
-        write_frame(mapping_frame, intermediates / 'sources' / f'{spec["id"]}_ortholog_mapping.csv')
-        write_frame(per_gene[['gene_index', 'contrast', 'log2fc', 'padj', 'effect',
-                              'significant', 'direction', 'n_contrasts_supporting']],
-                    intermediates / 'sources' / f'{spec["id"]}_deg.csv')
-    return result
-
-
-def ensembl_symbol_map(axis, config):
-    """Version-stripped Ensembl id -> frozen-axis symbol (axis table first, HGNC fallback)."""
-    mapping = {}
-    for ensembl, symbol in zip(axis.ensembl_id, axis.symbol):
-        if isinstance(ensembl, str) and ensembl:
-            mapping[ensembl.split('.')[0]] = symbol
-    by_hgnc = dict(zip(axis.hgnc_id, axis.symbol))
-    hgnc = read_csv(config.hgnc, sep='\t', dtype=str, keep_default_na=False,
-                    usecols=['hgnc_id', 'ensembl_gene_id'])
-    for hgnc_id, ensembl in zip(hgnc.hgnc_id, hgnc.ensembl_gene_id):
-        key = str(ensembl).split('.')[0]
-        if key and key not in mapping and hgnc_id in by_hgnc:
-            mapping[key] = by_hgnc[hgnc_id]
-    return mapping
-
-
-def process_pert_sources(config, axis, resolver, intermediates, cache_dir):
-    """The two cardiotoxicity sources already owned under ``pert_data/``."""
-    results = {}
-    dtoxs_frame, dtoxs_provenance = sources.dtoxs_contrasts(
-        config.pert_root / 'DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz',
-        cache_dir=cache_dir)
-    indices, categories = resolver.resolve_many([str(value) for value in dtoxs_frame.gene_symbol])
-    rows = pd.DataFrame({'gene_index': indices, 'contrast': dtoxs_frame.contrast.to_numpy(),
-                         'log2fc': dtoxs_frame.log2fc.to_numpy(),
-                         'padj': dtoxs_frame.padj.to_numpy()})
-    rows = rows[rows.gene_index >= 0]
-    per_gene = per_gene_deg(rows.gene_index, rows.log2fc, rows.padj, rows.contrast)
-    measured = per_gene.gene_index.to_numpy(dtype=np.int64)
-    rank = _deg_rank(measured, per_gene.effect.to_numpy(dtype=np.float64))
-    significant = np.zeros(AXIS_SIZE, dtype=np.int64)
-    significant[per_gene.loc[per_gene.padj < PADJ_THRESHOLD, 'gene_index'].to_numpy(dtype=np.int64)] = 1
-    results['dtoxs_ipsc'] = {
-        'rank': rank, 'measured': len(measured), 'significant': significant,
-        'per_gene': per_gene, 'n_contrasts': int(dtoxs_frame.contrast.nunique()),
-        'n_samples': int(dtoxs_provenance['n_distinct_wells']),
-        'loss': {'n_contrast_rows': len(dtoxs_frame),
-                 'n_rows_resolved': int((indices >= 0).sum()),
-                 'n_symbols_unresolved': int((indices < 0).sum())},
-        'provenance': dtoxs_provenance, 'metadata': {}}
-    if intermediates is not None:
-        write_frame(per_gene[['gene_index', 'contrast', 'log2fc', 'padj', 'effect',
-                              'significant', 'direction', 'n_contrasts_supporting']],
-                    intermediates / 'sources' / 'dtoxs_ipsc_deg.csv')
-
-    counts = config.pert_root / 'GSE244740/source/GSE244740_processed_data_counts.txt.gz'
-    series = config.pert_root / 'GSE244740/source/GSE244740_series_matrix.txt.gz'
-    gse_frame, gse_provenance = sources.gse244740_contrasts(
-        counts, series, ensembl_symbol_map(axis, config), cache_dir=cache_dir)
-    indices, categories = resolver.resolve_many([str(value) for value in gse_frame.gene_symbol])
-    rows = pd.DataFrame({'gene_index': indices, 'contrast': gse_frame.contrast.to_numpy(),
-                         'log2fc': gse_frame.log2fc.to_numpy(),
-                         'padj': gse_frame.padj.to_numpy()})
-    rows = rows[rows.gene_index >= 0]
-    per_gene = per_gene_deg(rows.gene_index, rows.log2fc, rows.padj, rows.contrast)
-    measured = per_gene.gene_index.to_numpy(dtype=np.int64)
-    rank = _deg_rank(measured, per_gene.effect.to_numpy(dtype=np.float64))
-    significant = np.zeros(AXIS_SIZE, dtype=np.int64)
-    significant[per_gene.loc[per_gene.padj < PADJ_THRESHOLD, 'gene_index'].to_numpy(dtype=np.int64)] = 1
-    results['gse244740'] = {
-        'rank': rank, 'measured': len(measured), 'significant': significant,
-        'per_gene': per_gene, 'n_contrasts': int(gse_frame.contrast.nunique()),
-        'n_samples': gse_provenance['n_wells'],
-        'loss': {'n_contrast_rows': len(gse_frame),
-                 'n_rows_resolved': int((indices >= 0).sum()),
-                 'n_symbols_unresolved': int((indices < 0).sum())},
-        'provenance': gse_provenance, 'metadata': {}}
-    if intermediates is not None:
-        write_frame(per_gene[['gene_index', 'contrast', 'log2fc', 'padj', 'effect',
-                              'significant', 'direction', 'n_contrasts_supporting']],
-                    intermediates / 'sources' / 'gse244740_deg.csv')
-    return results
-
-
-SUMMARY_COLUMNS = ('source', 'accession', 'category', 'species', 'tissue_model',
-                   'contrast', 'n_samples', 'n_contrasts', 'n_axis_expression',
-                   'n_axis_measured', 'axis_coverage_share', 'n_hvg', 'n_hvg_total',
-                   'n_hvg_on_axis', 'hvg_share', 'hvg_density', 'hvg_k', 'deg_up',
-                   'deg_down', 'deg_up_share', 'deg_down_share', 'deg_share', 'method',
-                   'normalization', 'ortholog_chain', 'fused', 'exploratory',
-                   'supplementary_only', 'notes')
-
-
-def _source_summary_row(spec, result, axis_size=AXIS_SIZE):
-    row = {'source': spec['id'], 'accession': spec['accession'],
-           'category': spec['category'], 'species': spec['species'],
-           'tissue_model': spec['tissue_model'], 'contrast': spec['contrast'],
-           'method': spec['method'], 'ortholog_chain': spec['ortholog_chain'],
-           'fused': spec['fused'], 'exploratory': spec['exploratory'],
-           'supplementary_only': spec['supplementary_only'], 'notes': spec['notes']}
-    if result is None:
-        for key in ('n_samples', 'n_contrasts', 'n_axis_expression', 'n_axis_measured',
-                    'axis_coverage_share', 'n_hvg', 'n_hvg_total', 'n_hvg_on_axis',
-                    'hvg_share', 'hvg_density', 'hvg_k', 'deg_up', 'deg_down',
-                    'deg_up_share', 'deg_down_share', 'deg_share'):
-            row[key] = None
-        row['normalization'] = spec.get('normalization', '')
-        return pd.Series(row, dtype=object)
-    per_gene = result.get('per_gene')
-    if per_gene is None:
-        significant_up = significant_down = None
-    else:
-        significant_up = int(((per_gene.padj < PADJ_THRESHOLD) & (per_gene.log2fc > 0)).sum())
-        significant_down = int(((per_gene.padj < PADJ_THRESHOLD) & (per_gene.log2fc < 0)).sum())
-    measured = result['measured']
-    hvg_sets = result.get('hvg_sets')
-    n_expression = result.get('n_axis_expression', measured)
-    if hvg_sets is not None:
-        declared = hvg_sets[SOURCE_HVG_K]
-        n_hvg_total = int(declared['n_total'])
-        n_hvg_on_axis = int(declared['n_on_axis'])
-        n_hvg = n_hvg_total
-        hvg_share = (n_hvg_on_axis / n_hvg_total) if n_hvg_total else None
-        hvg_density = (n_hvg_on_axis / n_expression) if n_expression else None
-    else:
-        n_hvg = n_hvg_total = n_hvg_on_axis = None
-        hvg_share = hvg_density = None
-    row.update({
-        'n_samples': result.get('n_samples'),
-        'n_contrasts': result.get('n_contrasts'),
-        'n_axis_expression': n_expression,
-        'n_axis_measured': measured,
-        'axis_coverage_share': measured / axis_size,
-        'n_hvg': n_hvg,
-        'n_hvg_total': n_hvg_total,
-        'n_hvg_on_axis': n_hvg_on_axis,
-        'hvg_share': hvg_share,
-        'hvg_density': hvg_density,
-        'hvg_k': SOURCE_HVG_K if n_hvg is not None else None,
-        'deg_up': significant_up, 'deg_down': significant_down,
-        'deg_up_share': significant_up / measured if significant_up is not None and measured else None,
-        'deg_down_share': significant_down / measured if significant_down is not None and measured else None,
-        'deg_share': ((significant_up + significant_down) / measured
-                      if significant_up is not None and measured else None),
-        'normalization': spec.get('normalization') or result.get('metadata', {}).get('normalization', ''),
-    })
-    return pd.Series(row, dtype=object)
-
-
-def _direction_arrays(results):
-    """Per-gene winning direction, max |log2FC| and exact-tie count across DEG sources.
-
-    The returned vectors are indexed by ``gene_index`` (0..18163). ``direction``
-    is the sign of the largest cross-source per-gene DEG effect (0 when no source
-    reports an effect); ``max_abs_effect`` is the gene's maximum |log2FC| over
-    the sources that report it (0 when none do). Exact cross-source effect ties
-    are counted and broken by the declared source order.
+    ``datasets`` must be the list of full records (no ``dataset_records``/id-map
+    fallback), every record must carry its own ``method``, a positive
+    ``n_case``/``n_control``, and digest-pinned provenance; the category must
+    carry ``catalog_sha256`` (verified by :class:`bases.disease_deg.DiseaseDeg`).
+    A catalog declaring the within-dataset rank contract must pin its derived
+    item-local inputs as ``derived_inputs``; the cardiotoxicity catalogs pin the
+    upstream item bytes as ``inputs`` and declare no rank contract.
     """
-    order = [source for source in DEG_IDS if source in results]
-    effects = np.zeros((AXIS_SIZE, len(order)), dtype=np.float64)
-    log2fc = np.zeros((AXIS_SIZE, len(order)), dtype=np.float64)
-    significant = np.zeros((AXIS_SIZE, len(order)), dtype=bool)
-    for column, name in enumerate(order):
-        per_gene = results[name]['per_gene']
-        index = per_gene.gene_index.to_numpy(dtype=np.int64)
-        effects[index, column] = per_gene.effect.to_numpy(dtype=np.float64)
-        log2fc[index, column] = per_gene.log2fc.to_numpy(dtype=np.float64)
-        significant[index, column] = per_gene.padj.to_numpy(dtype=np.float64) < PADJ_THRESHOLD
-    best = np.argmax(effects, axis=1)
-    best_effect = effects[np.arange(AXIS_SIZE), best]
-    best_log2fc = log2fc[np.arange(AXIS_SIZE), best]
-    ties = (np.isclose(effects, best_effect[:, None], rtol=0.0, atol=1e-12)).sum(axis=1) - 1
-    direction = np.where(best_effect > 0, np.sign(best_log2fc).astype(np.int64), 0)
-    max_abs_effect = np.nanmax(np.abs(log2fc), axis=1)
-    max_abs_effect = np.where(np.isfinite(max_abs_effect), max_abs_effect, 0.0)
-    return direction, max_abs_effect, ties, significant.any(axis=1)
+    if not isinstance(catalog.get('datasets'), list) or not catalog['datasets']:
+        raise ValueError(f'{category}: catalog datasets is not a non-empty list')
+    if len(str(catalog.get('catalog_sha256', ''))) != 64:
+        raise ValueError(f'{category}: catalog has no canonical catalog_sha256')
+    if int(catalog.get('axis_size', axis_size)) != axis_size:
+        raise ValueError(f'{category}: catalog axis_size differs from the frozen axis')
+    rank_contract = catalog.get('rank_contract')
+    for record in catalog['datasets']:
+        dataset_id = record.get('dataset_id')
+        if not dataset_id:
+            raise ValueError(f'{category}: a dataset record has no dataset_id')
+        for key in ('deg', 'rank', 'n_measured', 'n_significant'):
+            if key not in record:
+                raise ValueError(f'{category}/{dataset_id}: record lacks {key}')
+        # ADR 0068: every published dataset record states whether its measured
+        # effect scores carry an ordering. The fusion reads this field and never
+        # guesses it from the table.
+        if not isinstance(record.get('informative'), bool):
+            raise ValueError(f'{category}/{dataset_id}: record lacks a boolean informative')
+        method = record.get('method')
+        if not isinstance(method, dict) or not method:
+            raise ValueError(f'{category}/{dataset_id}: record lacks its own method')
+        for key in ('n_case', 'n_control'):
+            value = record.get(key)
+            if value is None or float(value) <= 0:
+                raise ValueError(f'{category}/{dataset_id}: {key} must be positive')
+        _require_digest_pinned(record, 'inputs')
+        if rank_contract == RANK_SCHEMA:
+            _require_digest_pinned(record, 'derived_inputs')
 
 
-def _overlap_rows(fused_rank, results, tenv_rank):
-    """Long overlap table: tenv sets, source-HVG sets, DEG pairs and intersections.
+def read_categories(config, axis_size):
+    """Read every category through ``bases.disease_deg.DiseaseDeg`` (digest-checked)."""
+    reader = DiseaseDeg(config.disease_root)
+    found = tuple(reader.categories())
+    if len(found) != len(CATEGORIES) or set(found) != set(CATEGORIES):
+        raise ValueError(f'expected the six declared categories {CATEGORIES}, found {found}')
+    categories = {}
+    for category in CATEGORIES:
+        catalog = reader.catalog(category)
+        validate_catalog_shape(category, catalog, axis_size)
+        selection = winning_tier(catalog)
+        manifest_path = config.disease_root / category / 'manifest.json'
+        category_manifest = json.loads(manifest_path.read_text())
+        if category_manifest.get('schema') not in CATEGORY_MANIFEST_SCHEMAS:
+            raise ValueError(f'{manifest_path}: unsupported category release schema')
+        if category_manifest.get('catalog_sha256') != catalog['catalog_sha256']:
+            raise ValueError(f'{manifest_path}: catalog digest differs from the catalog')
+        declared_outputs = category_manifest.get('outputs')
+        if not isinstance(declared_outputs, dict) or not declared_outputs:
+            raise ValueError(f'{manifest_path}: no declared outputs')
+        # ADR 0068: a record whose measured effect scores are all tied carries no
+        # ordering evidence. Its table/rank stay published, but it is not a
+        # fusion source; a category with no informative record is dropped from
+        # level 2 and from pN entirely.
+        informative_records = [record for record in selection['records']
+                               if record['informative'] is True]
+        excluded_records = [record for record in selection['records']
+                            if record['informative'] is not True]
+        ranks, measured_counts, datasets = [], [], []
+        for record in informative_records:
+            rank_path = config.disease_root / category / record['rank']
+            declared = declared_outputs.get(record['rank'])
+            declared_sha = (declared.get('sha256') if isinstance(declared, dict)
+                            else declared)
+            if not isinstance(declared_sha, str) or len(declared_sha) != 64:
+                raise ValueError(f'{category}/{record["dataset_id"]}: '
+                                 'rank is not a declared output')
+            if sha256(rank_path) != declared_sha:
+                raise ValueError(f'{category}/{record["dataset_id"]}: '
+                                 'rank digest differs from the category manifest')
+            frame = pd.read_csv(rank_path, dtype={'gene_index': np.int64},
+                                float_precision='round_trip')
+            if list(frame.columns) != ['gene_index', 'rank', 'rank_norm']:
+                raise ValueError(f'{category}/{record["dataset_id"]}: unexpected rank columns')
+            gene_index = np.asarray(frame.gene_index, dtype=np.int64)
+            if len(frame) != axis_size or not np.array_equal(
+                    gene_index, np.arange(axis_size, dtype=np.int64)):
+                raise ValueError(f'{category}/{record["dataset_id"]}: '
+                                 'rank frame does not cover the frozen axis')
+            n_measured = int(record['n_measured'])
+            rank = np.asarray(frame['rank'], dtype=np.int64)
+            expected = normalized_rank(rank, n_measured)
+            # The producers write rank_norm with finite print precision; the fusion
+            # itself recomputes rank / n_measured from the integer rank, never the
+            # printed column. The tolerance only guards the published contract.
+            if not np.allclose(np.asarray(frame.rank_norm, dtype=np.float64),
+                               expected, rtol=1e-9, atol=1e-12):
+                raise ValueError(f'{category}/{record["dataset_id"]}: '
+                                 'published rank_norm differs from rank / n_measured')
+            ranks.append(rank)
+            measured_counts.append(n_measured)
+            datasets.append({'dataset_id': record['dataset_id'],
+                             'tier': int(record['tier']),
+                             'evidence_type': record.get('evidence_type'),
+                             'n_measured': n_measured,
+                             'informative': True,
+                             'rank_sha256': declared_sha})
+        categories[category] = {
+            'catalog': catalog,
+            'selection': selection,
+            'ranks': ranks,
+            'n_measured': measured_counts,
+            'datasets': datasets,
+            'informative': bool(informative_records),
+            'excluded_datasets': [
+                {'dataset_id': record['dataset_id'],
+                 'tier': int(record['tier']),
+                 'n_measured': int(record['n_measured']),
+                 'informativeness': record.get('informativeness')}
+                for record in excluded_records],
+            'catalog_sha256': catalog['catalog_sha256'],
+            'manifest_sha256': sha256(manifest_path),
+            'catalog_sha256_file': sha256(config.disease_root / category / 'catalog.json'),
+        }
+    return categories
 
-    Every set is a ``gene_index`` set and ``fused_rank`` is gene-indexed, so the
-    reported rank positions are true fused ranks. Multi-way intersection rows
-    have identical operands, so Jaccard is undefined; they report the
-    intersection size and its fused ranks plus an explanatory ``note``, leaving
-    ``n_a``/``n_b``/``n_union``/``jaccard`` blank instead of a fake 1.0.
-    """
-    sets = {}
-    for k in TENV_HVG_KS:
-        sets[f'tenv_hvg_{k}'] = set(np.flatnonzero(hvg_membership(tenv_rank, k)))
-    for name in EXPRESSION_IDS:
-        if name in results:
-            for k in TENV_HVG_KS:
-                sets[f'{name}_hvg_{k}'] = set(np.flatnonzero(results[name]['hvg_sets'][k]['set']))
-    for name in DEG_IDS:
-        if name in results:
-            sets[f'{name}_deg'] = set(np.flatnonzero(results[name]['significant']))
-    rows = []
 
-    def add(kind, left, right):
-        metrics = overlap_metrics(sets[left], sets[right], fused_rank)
-        rows.append({'comparison': kind, 'set_a': left, 'set_b': right,
-                     'k_a': _set_k(left), 'k_b': _set_k(right), **metrics, 'note': ''})
+# ---------------------------------------------------------------- computation
 
-    for k in TENV_HVG_KS:
-        for name in DEG_IDS:
-            if name in results:
-                add('tenv_hvg_vs_source_deg', f'tenv_hvg_{k}', f'{name}_deg')
-    for k in TENV_HVG_KS:
-        for name in EXPRESSION_IDS:
-            if name in results:
-                add('tenv_hvg_vs_source_hvg', f'tenv_hvg_{k}', f'{name}_hvg_{k}')
-    names = [name for name in DEG_IDS if name in results]
-    for left_index, left in enumerate(names):
-        for right in names[left_index + 1:]:
-            add('source_pair_deg', f'{left}_deg', f'{right}_deg')
-    for label, members in (
-            ('all_source_deg', names),
-            ('all_source_deg_without_gse108940',
-             [name for name in names if name != 'gse108940']),
-            ('core_source_deg',
-             [name for name in ('gse141910', 'gse116250', 'gse243674', 'dtoxs_ipsc')
-              if name in names])):
-        intersection = (set.intersection(*[sets[f'{name}_deg'] for name in members])
-                        if members else set())
-        rows.append({'comparison': label, 'set_a': 'intersection', 'set_b': '',
-                     'k_a': None, 'k_b': None,
-                     'n_a': None, 'n_b': None,
-                     'n_intersection': len(intersection), 'n_union': None,
-                     'jaccard': None,
-                     **fused_rank_stats(intersection, fused_rank),
-                     'note': (f'multi-way intersection of {len(members)} DEG sources '
-                              f'({", ".join(members)}); Jaccard is undefined for identical '
-                              'operands, so only the intersection size and its fused ranks '
-                              'are reported')})
-    columns = ['comparison', 'set_a', 'set_b', 'k_a', 'k_b', 'n_a', 'n_b',
-               'n_intersection', 'n_union', 'jaccard', 'fused_rank_min',
-               'fused_rank_median', 'fused_rank_max', 'note']
-    return pd.DataFrame(rows, columns=columns), sets
+def rank_sum_curve(rank_sum):
+    """The sorted ascending rank-sum curve: x = rank position, y = rank_sum."""
+    rank_sum = np.asarray(rank_sum, dtype=np.float64)
+    ordered = np.sort(rank_sum)
+    return np.arange(1, len(ordered) + 1, dtype=np.int64), ordered
 
 
-def _set_k(name):
-    """Declared set size encoded in a set name ('' for DEG sets)."""
-    if name.startswith('tenv_hvg_'):
-        return int(name.rsplit('_', 1)[1])
-    if '_hvg_' in name:
-        return int(name.rsplit('_', 1)[1])
-    return ''
-
-
-def _answers(fused_rank, deg_count, sets, direction, significant):
-    """Numbers that answer #175's three questions, pinned in the manifest.
-
-    All vectors are gene-indexed; ``fused_rank`` is scattered back from the
-    sorted fused table, so the medians and the DEG-count comparison are true
-    fused-rank quantities rather than row positions.
-    """
-    def jaccard(left, right):
-        a, b = sets[left], sets[right]
-        return len(a & b) / len(a | b) if (a | b) else 0.0
-
-    hf = jaccard('gse141910_deg', 'gse116250_deg')
-    remodelling = jaccard('gse128188_deg', 'gse282618_deg')
-    cross = [jaccard(f'{left}_deg', f'{right}_deg')
-             for left in ('gse141910', 'gse116250') for right in ('gse128188', 'gse282618')]
-    tenv = {name: len(sets[f'tenv_hvg_{SOURCE_HVG_K}'] & sets[f'{name}_deg'])
-            for name in DEG_IDS if f'{name}_deg' in sets}
-    up = significant & (direction > 0)
-    down = significant & (direction < 0)
-    agreement = deg_count_agreement(fused_rank, deg_count, DIRECTION_SIZES)
+def compute(axis, tenv_frame, categories, axis_sizes):
+    """Apply the ADR 0066/0068 fusion and fill rule; returns every product payload."""
+    axis_size = len(axis)
+    gene_index = np.asarray(axis.gene_index, dtype=np.int64)
+    tenv_rank = np.asarray(tenv_frame['rank'], dtype=np.int64)
+    active = [category for category in CATEGORIES if categories[category]['informative']]
+    excluded = [category for category in CATEGORIES if category not in active]
+    level_one = {}
+    category_ranks, category_measured = [], []
+    for category in active:
+        entry = categories[category]
+        result = category_rank(entry['ranks'], entry['n_measured'],
+                               gene_index=gene_index, axis_size=axis_size)
+        level_one[category] = result
+        category_ranks.append(result['rank'])
+        category_measured.append(result['measured'])
+    fusion = fusion_rank_sum(category_ranks, category_measured, tenv_rank,
+                             categories=active, gene_index=gene_index,
+                             axis_size=axis_size, sizes=axis_sizes)
+    table = candidate_table(axis, tenv_rank,
+                            {category: level_one[category]['rank'] for category in active},
+                            category_measured, categories=active,
+                            gene_index=gene_index, sizes=axis_sizes)
+    axes = {}
+    for size in axis_sizes:
+        axes[int(size)] = axis_fill(tenv_rank, fusion['pn'][int(size)],
+                                    fusion['rank_sum'], n=int(size),
+                                    gene_index=gene_index,
+                                    n_sources=fusion['n_sources'])
+    intervals = {}
+    for size, genes in axes.items():
+        values = fusion['rank_sum'][genes]
+        intervals[size] = {'low': float(values.min()),
+                           'high': float(values.max()),
+                           'median': float(np.median(values))}
+    histogram = rank_sum_histogram(fusion['rank_sum'], low=0.0,
+                                   high=float(fusion['n_sources']), bins=HISTOGRAM_BINS)
+    curve_x, curve_y = rank_sum_curve(fusion['rank_sum'])
+    inflection = detect_inflection(curve_x, curve_y, min_n=INFLECTION_MIN_N)
+    replay_curves = [(curve_x, curve_y)]
+    for dropped in range(fusion['n_sources']):
+        sources = category_ranks + [tenv_rank]
+        replay_sum = np.zeros(axis_size, dtype=np.float64)
+        for index, rank in enumerate(sources):
+            if index == dropped:
+                continue
+            replay_sum += rank / float(axis_size)
+        replay_curves.append(rank_sum_curve(replay_sum))
+    stability = inflection_stability(replay_curves)
     return {
-        'q1_chronic_remodelling_vs_hf': {
-            'hf_pair_jaccard': hf,
-            'remodelling_pair_jaccard': remodelling,
-            'cross_mean_jaccard': float(np.mean(cross)),
-            'tenv_hvg_2000_intersection': tenv,
-            'interpretation': ('HF-source agreement is compared with the AF/HHD '
-                               '(chronic-remodelling) pair and the four cross pairs.'),
-        },
-        'q2_up_down_rank_symmetry': {
-            'n_up_significant': int(up.sum()), 'n_down_significant': int(down.sum()),
-            'median_fused_rank_up': float(np.median(fused_rank[up])) if up.any() else None,
-            'median_fused_rank_down': float(np.median(fused_rank[down])) if down.any() else None,
-            'up_down_definition': ('up/down = significant in any DEG source (padj < 0.05) '
-                                   'with the winning cross-source direction'),
-            'top_n_composition': {},
-        },
-        'q3_effect_replication_vs_deg_count': {
-            'n_genes_supported_by_any_deg': int((deg_count > 0).sum()),
-            'n_genes_supported_by_2plus': int((deg_count >= 2).sum()),
-            'tie_break': ('descending n_sources_deg_significant, ties broken by ascending '
-                          'fused_rank (a frozen gene_index tie-break gives Spearman 0.6791 '
-                          'and top-500 overlap 0.204 instead of the tracked values)'),
-            'top_n_agreement': agreement['top_n_agreement'],
-            'spearman_fused_vs_count_rank': agreement['spearman'],
-        },
+        'level_one': level_one,
+        'active_categories': active,
+        'excluded_categories': excluded,
+        'category_ranks': category_ranks,
+        'category_measured': category_measured,
+        'fusion': fusion,
+        'table': table,
+        'axes': axes,
+        'intervals': intervals,
+        'histogram': histogram,
+        'inflection': inflection,
+        'stability': stability,
     }
 
 
-def _figure_rows(fused, summary_rows, curve, inflection, overlap_matrix):
-    """Complete plotted values for the four-panel summary figure."""
-    rows = [{'record': 'figure', 'title': (
-        'Gene-axis decision evidence · per-source HVG/DEG support, fused rank-sum '
-        'knee, tenv non-HVG share and source overlap')}]
-    rows += [{'record': 'panel', 'panel': panel, 'panel_title': title}
-             for panel, title in (('a', 'Per-source HVG and DEG shares'),
-                                  ('b', 'Fused rank-sum distribution and candidate inflection'),
-                                  ('c', 'Tenv non-HVG share vs N'),
-                                  ('d', 'DEG / tenv-HVG source overlap (Jaccard)'))]
-    for row in summary_rows:
-        if not row.get('fused'):
-            continue
-        rows.append({'record': 'bar', 'panel': 'a', 'source': row['source'],
-                     'hvg_share': row.get('hvg_share'),
-                     'deg_up_share': row.get('deg_up_share'),
-                     'deg_down_share': row.get('deg_down_share')})
-    scores = fused.rank_sum.to_numpy(dtype=np.float64)
-    counts, edges = np.histogram(scores, bins=HISTOGRAM_BINS)
-    for position, count in enumerate(counts):
-        rows.append({'record': 'hist', 'panel': 'b',
-                     'bin_left': float(edges[position]),
-                     'bin_right': float(edges[position + 1]),
-                     'count': int(count)})
-    if inflection['inflection'] and inflection['n']:
-        ordered = fused.sort_values('fused_rank')
-        marker_score = float(ordered.rank_sum.iloc[inflection['n'] - 1])
-        note = f'Kneedle+second-difference candidate N={inflection["n"]}'
-    else:
-        marker_score = None
-        note = 'no inflection (Kneedle and second-difference criteria do not agree)'
-    rows.append({'record': 'marker', 'panel': 'b',
-                 'marker_n': inflection['n'], 'marker_score': marker_score,
-                 'note': note})
-    chosen = sorted({1, *range(CURVE_SAMPLE_STEP, len(fused), CURVE_SAMPLE_STEP),
-                     len(fused), *([inflection['n']] if inflection['n'] else [])})
-    curve_indexed = curve.set_index('n')
-    for k in TENV_HVG_KS:
-        for n in chosen:
-            rows.append({'record': 'curve', 'panel': 'c', 'k': k, 'n': int(n),
-                         'non_hvg_share': float(curve_indexed.loc[n, f'non_hvg_share_k{k}'])})
-    for cell in overlap_matrix:
-        rows.append({'record': 'matrix', 'panel': 'd',
-                     'row_source': cell['row_source'], 'col_source': cell['col_source'],
-                     'jaccard': cell['jaccard'],
-                     'n_intersection': cell['n_intersection']})
-    order = ['record', 'panel', 'panel_title', 'title', 'source', 'row_source',
-             'col_source', 'k', 'n', 'hvg_share', 'deg_up_share', 'deg_down_share',
-             'bin_left', 'bin_right', 'count', 'marker_n', 'marker_score',
-             'non_hvg_share', 'jaccard', 'n_intersection', 'note']
-    frame = pd.DataFrame(rows)
-    return frame.reindex(columns=[column for column in order if column in frame.columns])
+def composition_rows(source, axes, axis_sizes):
+    """Per-category and pN composition of both released axes.
 
-
-def _overlap_matrix(fused_rank, sets):
-    names = [f'tenv_hvg_{SOURCE_HVG_K}'] + [f'{name}_deg' for name in DEG_IDS]
-    rows = []
-    for left in names:
-        for right in names:
-            metrics = overlap_metrics(sets[left], sets[right], fused_rank)
-            rows.append({'row_source': left, 'col_source': right,
-                         'jaccard': metrics['jaccard'],
-                         'n_intersection': metrics['n_intersection']})
-    return rows
-
-
-def build(config):
-    """Compute and write the complete evidence product; returns its manifest."""
-    for role, path in config.input_roles():
-        forbidden_input(path)
-        if not Path(path).exists():
-            raise FileNotFoundError(f'missing input {role}: {path}')
-    axis, resolver = load_resolver(config)
-    orthologs = read_csv(config.orthologs, dtype={'mouse_symbol': str, 'human_symbol': str})
-    tenv = read_csv(config.tenv_hvg)
-    tenv = tenv.sort_values('gene_index')
-    tenv_rank = tenv['rank'].to_numpy(dtype=np.int64)
-    if sorted(tenv_rank.tolist()) != list(range(1, AXIS_SIZE + 1)):
-        raise ValueError('published tenv HVG ranking is not a complete 1..18164 ranking')
-    intermediates = config.intermediates
-    results = {'tenv': {'rank': tenv_rank, 'measured': AXIS_SIZE,
-                        'significant': np.zeros(AXIS_SIZE, dtype=np.int64),
-                        'n_axis_expression': AXIS_SIZE, 'n_samples': 4206,
-                        'n_contrasts': 0, 'metadata': {},
-                        'hvg_sets': transcriptome_hvg_sets(
-                            tenv_rank, np.arange(AXIS_SIZE), TENV_HVG_KS)}}
-    for spec in SOURCE_SPECS:
-        if spec['id'] in EXPRESSION_IDS:
-            results[spec['id']] = process_expression_source(
-                config, axis, resolver, spec, intermediates)
-        elif spec['id'] in ANIMAL_IDS:
-            results[spec['id']] = process_animal_source(
-                config, axis, resolver, spec, intermediates, orthologs)
-    results.update(process_pert_sources(config, axis, resolver, intermediates,
-                                        intermediates / 'sources' if intermediates else None))
-
-    ranks = {spec['id']: results[spec['id']]['rank'] for spec in SOURCE_SPECS
-             if spec['id'] in FUSED_IDS}
-    measured = {spec['id']: results[spec['id']]['measured'] for spec in SOURCE_SPECS
-                if spec['id'] in FUSED_IDS}
-    flags = {spec['id']: results[spec['id']]['significant'] for spec in SOURCE_SPECS
-             if spec['id'] in DEG_IDS}
-    fused = fuse_ranks(ranks, measured, axis_size=AXIS_SIZE, flags=flags)
-    fused = fused.rename(columns={spec['id']: spec['column'] for spec in SOURCE_SPECS
-                                  if spec['id'] in FUSED_IDS})
-    fused.insert(1, 'symbol', axis.symbol.to_numpy())
-    for k in TENV_HVG_KS:
-        fused[f'tenv_hvg_member_k{k}'] = hvg_membership(tenv_rank, k).astype(np.int64)
-    fused['tenv_hvg_member'] = fused[f'tenv_hvg_member_k{SOURCE_HVG_K}']
-    columns = ['gene_index', 'symbol', 'tenv_hvg_rank']
-    columns += [spec['column'] for spec in SOURCE_SPECS
-                if spec['fused'] and spec['id'] != 'tenv']
-    columns += ['rank_sum', 'rank_sum_animal_half', 'fused_rank', 'n_sources_measured',
-                'tenv_hvg_member', 'n_sources_deg_significant', 'fused_rank_animal_half']
-    columns += [f'tenv_hvg_member_k{k}' for k in TENV_HVG_KS]
-    fused = fused.reindex(columns=columns)
-    fused = fused.sort_values(['fused_rank', 'gene_index']).reset_index(drop=True)
-    # The tracked frame is sorted by fused_rank; every consumer below indexes by
-    # gene_index, so scatter the sorted columns back into frozen-axis order once.
-    fused_gene_index = fused.gene_index.to_numpy(dtype=np.int64)
-    fused_rank_by_gene = align_to_gene_index(fused.fused_rank.to_numpy(dtype=np.int64),
-                                             fused_gene_index)
-    deg_count_by_gene = align_to_gene_index(
-        fused.n_sources_deg_significant.to_numpy(dtype=np.int64), fused_gene_index)
-    fused_gene_order = np.argsort(fused_rank_by_gene, kind='stable')
-
-    overlap, sets = _overlap_rows(fused_rank_by_gene, results, tenv_rank)
-    direction, max_abs_effect, ties, significant_any = _direction_arrays(results)
-    composition = direction_composition(
-        fused_rank_by_gene, direction, max_abs_effect, DIRECTION_SIZES, tie_counts=ties)
-
-    ordered = fused.sort_values('fused_rank')
-    x = ordered.fused_rank.to_numpy(dtype=np.int64)
-    y = ordered.rank_sum.to_numpy(dtype=np.float64)
-    inflection = detect_inflection(x, y)
-    leave_one_out = []
-    for dropped in FUSED_IDS:
-        subset = {name: value for name, value in ranks.items() if name != dropped}
-        subset_measured = {name: value for name, value in measured.items() if name != dropped}
-        subset_flags = {name: value for name, value in flags.items() if name != dropped}
-        alternative = fuse_ranks(subset, subset_measured, axis_size=AXIS_SIZE,
-                                 flags=subset_flags)
-        alternative_order = alternative.sort_values('fused_rank')
-        found = detect_inflection(alternative_order.fused_rank.to_numpy(dtype=np.int64),
-                                  alternative_order.rank_sum.to_numpy(dtype=np.float64))
-        leave_one_out.append({'dropped_source': dropped, 'inflection': found['inflection'],
-                              'n': found['n']})
-    inflection['curve'] = {'x': INFLECTION_X, 'y': INFLECTION_Y, 'n': int(len(x))}
-    inflection['leave_one_source_out'] = leave_one_out
-
-    curve = tenv_non_hvg_curve(fused_gene_order, tenv_rank)
-    summary_rows = [_source_summary_row(spec, results.get(spec['id']))
-                    for spec in SOURCE_SPECS]
-    summary = pd.DataFrame(summary_rows, columns=list(SUMMARY_COLUMNS))
-    answers = _answers(fused_rank_by_gene, deg_count_by_gene, sets, direction,
-                       significant_any)
-    for size in DIRECTION_SIZES:
-        for rule in ('symmetric', 'max_abs_log2fc'):
-            rows = composition[(composition.n == size) & (composition.rule == rule)]
-            answers['q2_up_down_rank_symmetry']['top_n_composition']                 .setdefault(str(size), {})[rule] = {
-                    'n_up': int(rows.n_up.iloc[0]), 'n_down': int(rows.n_down.iloc[0]),
-                    'n_unsupported': int(rows.n_unsupported.iloc[0]),
-                    'up_share': float(rows.up_share.iloc[0]),
-                    'down_share': float(rows.down_share.iloc[0])}
-    matrix = _overlap_matrix(fused_rank_by_gene, sets)
-    figure = _figure_rows(fused, summary_rows, curve, inflection, matrix)
-
-    outputs = {
-        'source_summary.csv': summary,
-        'fused_rank.csv': fused,
-        'overlap.csv': overlap,
-        'tenv_non_hvg_curve.csv': curve,
-        'direction_summary.csv': composition,
-    }
-    config.output.mkdir(parents=True, exist_ok=True)
-    output_digests = {}
-    for name, frame in outputs.items():
-        path = write_frame(frame, config.output / name)
-        output_digests[f'output/gene-axis/{name}'] = {
-            'sha256': sha256(path), 'rows': int(len(frame))}
-    inflection_path = write_json(inflection, config.output / 'inflection.json')
-    output_digests['output/gene-axis/inflection.json'] = {
-        'sha256': sha256(inflection_path), 'rows': 1}
-    figure_path = write_frame(figure, config.figure_data)
-    output_digests[f'figure/data/{Path(config.figure_data).name}'] = {
-        'sha256': sha256(figure_path), 'rows': int(len(figure))}
-
-    manifest = {
-        'schema': SCHEMA,
-        'axis': {'size': AXIS_SIZE, 'gene_index': '0-based frozen row order',
-                 'genes_sha256': sha256(config.genes)},
-        'recipe': RECIPE,
-        'constants': {'tenv_hvg_ks': list(TENV_HVG_KS), 'source_hvg_k': SOURCE_HVG_K,
-                      'padj_threshold': PADJ_THRESHOLD, 'animal_half_weight': 0.5,
-                      'direction_sizes': list(DIRECTION_SIZES),
-                      'direction_rules': ['symmetric', 'max_abs_log2fc'],
-                      'hvg_share': 'n_hvg_on_axis / n_hvg_total',
-                      'hvg_density': 'n_hvg_on_axis / n_axis_expression',
-                      'deg_count_tie_break': 'descending n_sources_deg_significant, ties by ascending fused_rank',
-                      'fused_sources': [spec['id'] for spec in SOURCE_SPECS if spec['fused']],
-                      'animal_sources': list(ANIMAL_SOURCES)},
-        'inputs': {}, 'outputs': output_digests,
-        'sources': {}, 'counts': {}, 'answers': answers,
-        'environment': environment_facts(),
-        'ortholog_generator': {
-            'script': 'stage2/01_bases/execution/build_mouse_orthologs.R',
-            'sha256': sha256(step_path(config.root, 'execution/build_mouse_orthologs.R')),
-            'command': ('R_HOME=/home/chang/miniconda3/envs/arc/lib/R '
-                        '/home/chang/miniconda3/envs/arc/lib/R/bin/exec/R --no-save '
-                        '--slave --file=stage2/01_bases/execution/build_mouse_orthologs.R'),
-            'r_version': 'R version 4.4.1 (2024-06-14)',
-            'homologene_version': '1.4.68.19.3.27',
-            'org.Mm.eg.db_version': '3.20.0',
-            'candidate_policy': ('writes execution/gene_axis/mouse_human_orthologs.candidate.csv '
-                                 '(candidates stay outside formal output, ADR 0062), compares '
-                                 'its sha256 with the accepted table, and replaces the accepted '
-                                 'table only when byte-identical or when --accept is passed')},
-    }
-    for role, path in config.input_roles():
-        manifest['inputs'][repo_relative(path, config.root)] = {
-            'role': role, 'sha256': sha256(path)}
-    for spec in SOURCE_SPECS:
-        result = results.get(spec['id'])
-        if result is None:
-            continue
-        entry = {'measured': result['measured'],
-                 'n_axis_expression': result.get('n_axis_expression', result['measured']),
-                 'n_samples': result.get('n_samples'),
-                 'n_contrasts': result.get('n_contrasts')}
-        if 'loss' in result:
-            entry['alignment'] = result['loss']
-        manifest['sources'][spec['id']] = entry
-    manifest['counts'] = {
-        'n_axis': AXIS_SIZE,
-        'n_fused_sources': sum(1 for spec in SOURCE_SPECS if spec['fused']),
-        'n_deg_sources': len(DEG_IDS),
-        'n_genes_supported_by_any_deg': int((fused.n_sources_deg_significant > 0).sum()),
-        'n_genes_supported_by_all_deg': int(
-            (fused.n_sources_deg_significant == len(DEG_IDS)).sum()),
-        'overlap_rows': int(len(overlap)),
-        'direction_rows': int(len(composition)),
-        'source_summary_rows': int(len(summary)),
-        'tenv_non_hvg_rows': int(len(curve)),
-        'fused_rank_rows': int(len(fused)),
-        'inflection': inflection['inflection'],
-        'inflection_n': inflection['n'],
-    }
-    write_json(manifest, config.output / 'manifest.json')
-    return manifest
-
-
-def step_path(root, relative):
-    return Path(root) / 'stage2/01_bases' / relative
-
-
-def repo_relative(path, root):
-    """Lexical repo-relative path; symlinks are not resolved (worktree inputs).
-
-    Manifest entries must be repo-relative so ``--verify`` works both in this
-    worktree (where large inputs are read-only symlinks to the canonical
-    checkout) and in the canonical checkout itself.
+    A category excluded from the fusion (ADR 0068) keeps a row with zero axis
+    genes and an explicit note, so the table reads as "not fused", never as
+    "fused but measured nothing".
     """
-    import os
-    lexical = Path(os.path.abspath(path))
-    try:
-        return lexical.relative_to(Path(os.path.abspath(root))).as_posix()
-    except ValueError:
-        return lexical.as_posix()
+    active = set(source['active_categories'])
+    rows = []
+    for size in axis_sizes:
+        size = int(size)
+        genes = source['axes'][size]
+        composition = axis_composition(genes, source['category_measured'],
+                                       categories=source['active_categories'])
+        for category in CATEGORIES:
+            count = composition[category]
+            if category in active:
+                note = 'axis genes the category source measures'
+            else:
+                note = ('excluded from the fusion: every dataset is non-informative '
+                        '(all effect scores tied)')
+            rows.append({'axis': str(size), 'n_axis': size, 'record': 'composition',
+                         'group': category, 'n_genes': count,
+                         'share': count / size, 'note': note})
+        rows.append({'axis': str(size), 'n_axis': size, 'record': 'composition',
+                     'group': 'tenv_hvg_top_half', 'n_genes': size // 2,
+                     'share': 0.5,
+                     'note': 'declared 0.5*N tenv-HVG half of the axis'})
+        axis_counts = pn_distribution(source['table'][f'p{size}'].to_numpy()[genes],
+                                      n_sources=source['fusion']['n_sources'])
+        for value, count in enumerate(axis_counts.tolist()):
+            rows.append({'axis': str(size), 'n_axis': size, 'record': 'pN',
+                         'group': str(value), 'n_genes': count,
+                         'share': count / size, 'note': COMPOSITION_NOTE})
+        candidate_counts = pn_distribution(
+            source['table'][f'p{size}'].to_numpy(),
+            n_sources=source['fusion']['n_sources'])
+        for value, count in enumerate(candidate_counts.tolist()):
+            rows.append({'axis': str(size), 'n_axis': size, 'record': 'candidate_pN',
+                         'group': str(value),
+                         'n_genes': count,
+                         'share': count / len(source['table']),
+                         'note': COMPOSITION_NOTE})
+    return pd.DataFrame(rows, columns=list(COMPOSITION_COLUMNS))
+
+
+def figure_rows(source, axis_sizes):
+    """The complete plotted values of the rank-sum histogram evidence panel."""
+    histogram = source['histogram']
+    total = int(histogram['count'].sum())
+    rows = [{'record': 'figure', 'title': FIGURE_TITLE},
+            {'record': 'panel', 'panel': 'a',
+             'panel_title': 'rank_sum over all candidates with both axis intervals'}]
+    for row in histogram.itertuples(index=False):
+        rows.append({'record': 'hist',
+                     'bin_left': row.bin_left, 'bin_right': row.bin_right,
+                     'bin_center': row.bin_center, 'count': int(row.count),
+                     'share': int(row.count) / total})
+    for size in axis_sizes:
+        interval = source['intervals'][int(size)]
+        rows.append({'record': 'interval', 'axis': str(int(size)),
+                     'interval_low': interval['low'],
+                     'interval_high': interval['high'],
+                     'median': interval['median']})
+    inflection = source['inflection']
+    note = ('no inflection' if not inflection['inflection']
+            else f'candidate N={inflection["n"]}')
+    rows.append({'record': 'marker', 'inflection': inflection['inflection'],
+                 'inflection_n': inflection['n'] if inflection['n'] is not None else '',
+                 'note': note})
+    return pd.DataFrame(rows, columns=list(FIGURE_COLUMNS))
+
+
+# ---------------------------------------------------------------- release I/O
+
+def input_entries(config, axis_size):
+    """Every pinned input with its role and digest (repo-relative paths only)."""
+    entries = {}
+    for role, path in (('frozen_axis', config.genes), ('tenv_hvg_descriptive', config.tenv_hvg)):
+        entries[repo_relative(path, config.root)] = {
+            'role': role, 'sha256': sha256(path), 'bytes': path.stat().st_size}
+    reader = DiseaseDeg(config.disease_root)
+    for category in CATEGORIES:
+        directory = config.disease_root / category
+        for role, path in (('catalog', directory / 'catalog.json'),
+                           ('release_manifest', directory / 'manifest.json')):
+            entries[repo_relative(path, config.root)] = {
+                'role': f'{category}:{role}', 'sha256': sha256(path),
+                'bytes': path.stat().st_size}
+        catalog = reader.catalog(category)
+        selection = winning_tier(catalog)
+        for record in selection['records']:
+            if record['informative'] is not True:
+                continue  # excluded from the fusion; its bytes are still accepted
+            rank_path = directory / record['rank']
+            entries[repo_relative(rank_path, config.root)] = {
+                'role': f'{category}:{record["dataset_id"]}:rank',
+                'sha256': sha256(rank_path), 'bytes': rank_path.stat().st_size}
+    return dict(sorted(entries.items()))
+
+
+def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
+    axis_size = len(axis)
+    fusion = source['fusion']
+    table = source['table']
+    composition = composition_rows(source, source['axes'], axis_sizes)
+    axes_manifest, intersection = {}, None
+    for size in axis_sizes:
+        size = int(size)
+        genes = source['axes'][size]
+        composition_counts = axis_composition(
+            genes, source['category_measured'], categories=source['active_categories'])
+        counts = pn_distribution(fusion['pn'][size][genes],
+                                  n_sources=fusion['n_sources'])
+        axes_manifest[str(size)] = {
+            'n': int(len(genes)),
+            'file': f'gene_axis_{size}.csv',
+            'tenv_half': size // 2,
+            'fill_half': size // 2,
+            'rank_sum': source['intervals'][size],
+            'tenv_rank': {'min': int(tenv_frame['rank'].to_numpy()[genes].min()),
+                          'max': int(tenv_frame['rank'].to_numpy()[genes].max())},
+            'pN_distribution': {str(value): int(count)
+                                for value, count in enumerate(counts.tolist())},
+            'composition': {category: int(count)
+                            for category, count in composition_counts.items()},
+        }
+    left, right = axis_sizes[0], axis_sizes[1]
+    intersection = axis_intersection(source['axes'][left], source['axes'][right])
+    intersection = {'sizes': [int(left), int(right)], **intersection}
+    category_manifest = {}
+    for category in CATEGORIES:
+        entry = categories[category]
+        catalog = entry['catalog']
+        record = {
+            'label': CATEGORY_LABELS[category],
+            'product_dir': category,
+            'catalog_sha256': entry['catalog_sha256'],
+            'catalog_file_sha256': entry['catalog_sha256_file'],
+            'release_manifest_sha256': entry['manifest_sha256'],
+            'category_tier': catalog.get('tier'),
+            'winning_tier': entry['selection']['winning_tier'],
+            'winning_tier_rule': entry['selection']['rule'],
+            'retained_by_exception': entry['selection']['retained_by_exception'],
+            'excluded_tiers': entry['selection']['excluded_tiers'],
+            'informative': entry['informative'],
+            'excluded_datasets': entry['excluded_datasets'],
+            'datasets': entry['datasets'],
+            'n_measured_axis_genes': int(np.asarray(
+                source['category_measured'][
+                    source['active_categories'].index(category)]).sum()
+                if category in source['active_categories'] else 0),
+        }
+        if not entry['informative']:
+            # ADR 0068: no dataset in the category orders its measured genes, so
+            # the whole category is dropped from level 2 and from pN.
+            record['excluded_from_fusion'] = True
+            record['excluded_reason'] = (
+                'every dataset in the category is non-informative (all measured '
+                'effect scores tied); level-2 fusion and pN exclude the category')
+        category_manifest[category] = record
+    return {
+        'schema': SCHEMA,
+        'generated_by': 'stage2/01_bases/execution/build_gene_axis.py',
+        'release': {
+            'axis_sizes': [int(size) for size in axis_sizes],
+            'fill_rule': FILL_RULE,
+            'fill_fraction': 0.5,
+            'pN': (f'number of the {fusion["n_sources"]} fusion sources whose top-N set '
+                   'contains the gene; ordinal, not a continuous quality score'),
+            'pN_bounds': [0, int(fusion['n_sources'])],
+        },
+        'environment': environment_facts(),
+        'inputs': input_entries(config, axis_size),
+        'fusion': {
+            'n_sources': int(fusion['n_sources']),
+            'sources': list(source['active_categories']) + ['tenv_hvg'],
+            'n_declared_sources': N_FUSION_SOURCES,
+            'excluded_categories': list(source['excluded_categories']),
+            'exclusion_rule': ('a dataset whose measured effect scores are all tied is '
+                               'non-informative; a category with no informative dataset '
+                               'is excluded from level-2 rank_sum, pN and '
+                               'n_sources_measured (ADR 0068)'),
+            'normalization': ('level-1 rank_norm = rank / n_measured per dataset; '
+                              'level-2 each active source rank / frozen-axis size'),
+            'rank_sum': 'ascending is better; ties on gene_index',
+            'n_candidates': int(len(table)),
+        },
+        'tenv_hvg': {
+            'input': repo_relative(config.tenv_hvg, config.root),
+            'n_ranked': int(axis_size),
+            'source': 'published descriptive normalized-dispersion rank (never recomputed)',
+            'normalization': 'rank / frozen-axis size',
+        },
+        'categories': category_manifest,
+        'counts': {
+            'n_axis': int(axis_size),
+            'n_candidates': int(len(table)),
+            'rank_sum_min': float(fusion['rank_sum'].min()),
+            'rank_sum_median': float(np.median(fusion['rank_sum'])),
+            'rank_sum_max': float(fusion['rank_sum'].max()),
+            'pN_distribution': {
+                str(size): {str(value): int(count) for value, count in enumerate(
+                    pn_distribution(fusion['pn'][int(size)],
+                                    n_sources=fusion['n_sources']).tolist())}
+                for size in axis_sizes},
+            'n_sources_measured_distribution': {
+                str(value): int(count) for value, count in enumerate(
+                    np.bincount(np.asarray(table.n_sources_measured, dtype=np.int64),
+                                minlength=fusion['n_sources'] + 1).tolist())},
+        },
+        'axes': axes_manifest,
+        'intersection': intersection,
+        'composition': {
+            'file': COMPOSITION_NAME,
+            'note': COMPOSITION_NOTE,
+            'rows': int(len(composition)),
+        },
+        'diagnostics': {
+            'inflection': {
+                **{key: value for key, value in source['inflection'].items()},
+                'role': 'diagnostic only; N is declared and never read off the curve',
+                'stability': source['stability'],
+            },
+            'histogram': {
+                'file': f'figure/data/{FIGURE_NAME}.csv',
+                'low': 0.0, 'high': float(fusion['n_sources']), 'bins': HISTOGRAM_BINS,
+                'axis_intervals': {str(size): source['intervals'][size]
+                                   for size in axis_sizes},
+            },
+        },
+    }
 
 
 def environment_facts():
-    import platform
-    import scipy
     return {
         'python': platform.python_version(),
         'numpy': np.__version__,
         'pandas': pd.__version__,
-        'scipy': scipy.__version__,
-        'data_access': 'offline; no h5ad read, no truth or Heliste file opened',
-        'resource_caps': 'ulimit -v 8G, OMP_NUM_THREADS=2, run under /usr/bin/time -v',
+        'data_access': ('offline; reads only output/gene-identity, output/tenv-hvg and '
+                        'output/disease-deg; never recomputes the tenv-HVG ranking'),
+        'resource_contract': ('one heavy job at a time, 10 GiB RLIMIT_AS fallback, '
+                              'OMP_NUM_THREADS=2; peak RSS recorded by the driver'),
     }
 
 
+def product_paths(config, axis_sizes):
+    """Repo-relative names of every product (manifest keys)."""
+    output = repo_relative(config.output, config.root)
+    figure = repo_relative(config.figure_data, config.root)
+    names = {
+        'candidate': f'{output}/{CANDIDATE_NAME}',
+        'composition': f'{output}/{COMPOSITION_NAME}',
+        'manifest': f'{output}/manifest.json',
+        'figure': figure,
+    }
+    for size in axis_sizes:
+        names[f'axis_{int(size)}'] = f'{output}/gene_axis_{int(size)}.csv'
+    return names
+
+
+def _build_payload(config, payload_root):
+    """Build every product into ``payload_root`` (repo-relative mirror) and return the manifest."""
+    paths = product_paths(config, config.axis_sizes)
+    axis = read_axis(config.genes)
+    axis_size = len(axis)
+    tenv_frame = read_tenv(config.tenv_hvg, axis_size)
+    categories = read_categories(config, axis_size)
+    source = compute(axis, tenv_frame, categories, config.axis_sizes)
+
+    outputs = {}
+    candidate_path = payload_root / paths['candidate']
+    write_frame(source['table'], candidate_path)
+    outputs[paths['candidate']] = {'rows': int(len(source['table'])),
+                                   'sha256': sha256(candidate_path),
+                                   'columns': list(candidate_columns(config.axis_sizes))}
+    for size in config.axis_sizes:
+        size = int(size)
+        genes = source['axes'][size]
+        frame = pd.DataFrame({'gene_index': genes,
+                              'symbol': axis.symbol.to_numpy()[genes]})
+        path = payload_root / paths[f'axis_{size}']
+        write_frame(frame, path)
+        outputs[paths[f'axis_{size}']] = {'rows': int(len(frame)),
+                                          'sha256': sha256(path)}
+    composition = composition_rows(source, source['axes'], config.axis_sizes)
+    composition_path = payload_root / paths['composition']
+    write_frame(composition, composition_path)
+    outputs[paths['composition']] = {'rows': int(len(composition)),
+                                     'sha256': sha256(composition_path)}
+    figure = figure_rows(source, config.axis_sizes)
+    figure_path = payload_root / paths['figure']
+    write_frame(figure, figure_path)
+    outputs[paths['figure']] = {'rows': int(len(figure)),
+                                'sha256': sha256(figure_path)}
+
+    manifest = _axis_manifest(config, axis, tenv_frame, categories, source,
+                             config.axis_sizes)
+    manifest['outputs'] = dict(sorted(outputs.items()))
+    manifest_path = payload_root / paths['manifest']
+    write_json(manifest, manifest_path)
+    validate_staged(config, source, payload_root, manifest, axis_size)
+    return manifest
+
+
+def validate_staged(config, source, payload_root, manifest, axis_size):
+    """Structural acceptance of the candidate before it may replace the release."""
+    table = source['table']
+    if len(table) != axis_size:
+        raise ValueError('candidate table does not have one row per frozen-axis gene')
+    if list(table.columns) != list(candidate_columns(config.axis_sizes)):
+        raise ValueError('candidate table columns differ from the contract')
+    if table.gene_index.tolist() != list(range(axis_size)):
+        raise ValueError('candidate table is not in frozen gene_index order')
+    n_sources = int(manifest['fusion']['n_sources'])
+    for size in config.axis_sizes:
+        size = int(size)
+        column = f'p{size}'
+        if int(table[column].min()) < 0 or int(table[column].max()) > n_sources:
+            raise ValueError(f'{column} is outside 0..{n_sources}')
+        genes = source['axes'][size]
+        if len(genes) != size:
+            raise ValueError(f'G_{size} does not hold exactly {size} genes')
+        if not np.array_equal(genes, np.sort(genes)):
+            raise ValueError(f'G_{size} is not ordered by ascending gene_index')
+        if len(np.unique(genes)) != size or genes.min() < 0 or genes.max() >= axis_size:
+            raise ValueError(f'G_{size} is not a distinct subset of the frozen axis')
+        expected = axis_fill(np.asarray(source['table'].tenv_hvg_rank, dtype=np.int64),
+                             table[column].to_numpy(), table.rank_sum.to_numpy(),
+                             n=size, n_sources=n_sources)
+        if not np.array_equal(expected, genes):
+            raise ValueError(f'G_{size} does not follow the declared fill rule')
+    release.check_relative_paths(manifest)
+    for name, record in manifest['outputs'].items():
+        actual = sha256(payload_root / name)
+        if actual != record['sha256']:
+            raise ValueError(f'staged digest differs for {name}')
+    release.check_outputs(payload_root, manifest)
+
+
+def _stage_root(config):
+    return Path(config.root) / 'stage2/01_bases/execution/checkpoints'
+
+
+def publish(config):
+    """Build, validate and atomically replace the accepted release."""
+    paths = product_paths(config, config.axis_sizes)
+    staging = release.candidate(config.output, root=_stage_root(config))
+    try:
+        payload = staging / 'payload'
+        manifest = _build_payload(config, payload)
+        # Candidate-then-replace: only this ticket's products are swapped in. The
+        # pre-0066 gene-axis file set stays where it is until the removal ticket
+        # (#192) deletes it after acceptance (ADR 0066 Removals / ADR 0062), so
+        # the release directory is never renamed wholesale.
+        output_root = payload / repo_relative(config.output, config.root)
+        config.output.mkdir(parents=True, exist_ok=True)
+        for key in ('candidate', 'composition'):
+            os.replace(output_root / Path(paths[key]).name,
+                       config.output / Path(paths[key]).name)
+        for size in config.axis_sizes:
+            name = Path(paths[f'axis_{int(size)}']).name
+            os.replace(output_root / name, config.output / name)
+        config.figure_data.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(payload / paths['figure'], config.figure_data)
+        # The manifest is replaced last: it only announces products already in place.
+        os.replace(output_root / 'manifest.json', config.output / 'manifest.json')
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+    return summary(config, manifest)
+
+
 def verify(config):
-    """Rebuild the evidence in a temporary directory and check every digest."""
-    stored = json.loads((config.output / 'manifest.json').read_text())
-    if stored.get('schema') != SCHEMA:
-        raise ValueError('unknown gene-axis evidence schema')
-    for path, info in stored['inputs'].items():
-        current = sha256(Path(config.root) / path)
-        if current != info['sha256']:
-            raise ValueError(f'input digest differs: {path}')
-    output_digests = stored['outputs']
-    with tempfile.TemporaryDirectory() as temporary:
-        temporary = Path(temporary)
-        replay_output = temporary / 'gene-axis'
-        replay_figure = temporary / 'figure' / Path(config.figure_data).name
-        replay = replace(config, output=replay_output, figure_data=replay_figure,
-                         intermediates=None)
-        rebuilt = build(replay)
-    differences = []
-    for relative, info in output_digests.items():
-        if relative.startswith('output/gene-axis/'):
-            path = config.output / relative.split('output/gene-axis/')[1]
-        elif relative.startswith('figure/data/'):
-            path = config.figure_data
-        else:
-            raise ValueError(f'unknown evidence output: {relative}')
-        if sha256(path) != info['sha256']:
-            differences.append(relative)
-    rebuilt.pop('environment')
-    stored.pop('environment')
-    if rebuilt != stored:
-        differences.append('manifest.json')
-    if differences:
-        raise ValueError(f'gene-axis replay differs: {sorted(set(differences))}')
-    return {'result': 'PASS', 'schema': SCHEMA,
-            'inputs': len(stored['inputs']), 'outputs': len(output_digests),
-            'manifest_sha256': sha256(config.output / 'manifest.json'),
-            'inflection': stored['counts']['inflection'],
-            'inflection_n': stored['counts']['inflection_n'],
-            'n_axis': stored['counts']['n_axis']}
+    """Rebuild from the pinned inputs and compare the manifest and every digest."""
+    paths = product_paths(config, config.axis_sizes)
+    accepted_path = config.output / 'manifest.json'
+    if not accepted_path.is_file():
+        raise ValueError(f'no accepted gene-axis manifest at {accepted_path}')
+    accepted = json.loads(accepted_path.read_text())
+    if accepted.get('schema') != SCHEMA:
+        raise ValueError('unknown gene-axis release schema')
+    release.check_manifest(config.root, accepted)
+    for name, evidence in accepted['inputs'].items():
+        if sha256(config.root / name) != evidence['sha256']:
+            raise ValueError(f'pinned input digest differs: {name}')
+    staging = release.candidate(config.output, root=_stage_root(config))
+    try:
+        payload = staging / 'payload'
+        replayed = _build_payload(config, payload)
+        if replayed != accepted:
+            raise ValueError('replayed gene-axis manifest differs from the accepted release')
+        for name, record in accepted['outputs'].items():
+            if sha256(payload / name) != record['sha256']:
+                raise ValueError(f'replayed digest differs: {name}')
+        release.check_outputs(payload, accepted)
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+    return {
+        'result': 'PASS', 'schema': SCHEMA,
+        'manifest_sha256': sha256(accepted_path),
+        'inputs': len(accepted['inputs']),
+        'outputs': len(accepted['outputs']),
+        'axes': accepted['release']['axis_sizes'],
+        'intersection': accepted['intersection']['n_intersection'],
+        'inflection': accepted['diagnostics']['inflection']['inflection'],
+    }
+
+
+def summary(config, manifest):
+    import resource
+    return {
+        'result': 'PASS',
+        'schema': manifest['schema'],
+        'n_candidates': manifest['counts']['n_candidates'],
+        'axes': manifest['release']['axis_sizes'],
+        'intersection': manifest['intersection']['n_intersection'],
+        'n_sources': manifest['fusion']['n_sources'],
+        'excluded_categories': manifest['fusion']['excluded_categories'],
+        'inflection': manifest['diagnostics']['inflection']['inflection'],
+        'manifest_sha256': sha256(config.output / 'manifest.json'),
+        'outputs': {name: record['sha256'] for name, record in manifest['outputs'].items()},
+        'peak_rss_kib': int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss),
+    }
 
 
 def main():
@@ -1095,24 +842,18 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--root', type=Path)
     parser.add_argument('--genes', type=Path)
-    parser.add_argument('--crosswalk', type=Path)
-    parser.add_argument('--hgnc', type=Path)
     parser.add_argument('--tenv-hvg', type=Path)
-    parser.add_argument('--orthologs', type=Path)
     parser.add_argument('--disease-root', type=Path)
-    parser.add_argument('--pert-root', type=Path)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--figure-data', type=Path)
-    parser.add_argument('--intermediates', type=Path)
     parser.add_argument('--verify', action='store_true')
     parser.add_argument('--record', type=Path)
     args = parser.parse_args()
-    config = default_config(args.root, args.output, args.figure_data, args.intermediates)
-    overrides = {'genes': args.genes, 'crosswalk': args.crosswalk, 'hgnc': args.hgnc,
-                 'tenv_hvg': args.tenv_hvg, 'orthologs': args.orthologs,
-                 'disease_root': args.disease_root, 'pert_root': args.pert_root}
+    config = default_config(args.root, args.output, args.figure_data)
+    overrides = {'genes': args.genes, 'tenv_hvg': args.tenv_hvg,
+                 'disease_root': args.disease_root}
     config = replace(config, **{key: value for key, value in overrides.items() if value})
-    result = verify(config) if args.verify else build(config)
+    result = verify(config) if args.verify else publish(config)
     text = json.dumps(result, indent=2, sort_keys=True) + '\n'
     if args.record:
         args.record.parent.mkdir(parents=True, exist_ok=True)

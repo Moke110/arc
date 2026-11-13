@@ -1,0 +1,36 @@
+{
+  "action": "publish",
+  "output_root": "stage2/01_bases/output/disease-deg",
+  "products": {
+    "cardiotox": {
+      "counts": {
+        "classes_with_members": 36,
+        "codes": 101,
+        "entered_classes": 6,
+        "excluded_codes": 76,
+        "resolved": 69,
+        "unresolved": 32
+      },
+      "manifest_sha256": "06e4e08b631ec8a2e908bb52d3a61ba5c9e48c7ed124134d8b69ca3f422dff9b"
+    },
+    "cardiotox_TOP2": {
+      "counts": {
+        "datasets": 3,
+        "measured_gene_rows": 50955
+      },
+      "manifest_sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55"
+    },
+    "cardiotox_other": {
+      "counts": {
+        "datasets": 3,
+        "measured_gene_rows": 39698
+      },
+      "manifest_sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4"
+    }
+  },
+  "replay": null,
+  "resources": {
+    "python_peak_rss_kib": 1536824,
+    "r_peak_rss_kib": 891700
+  }
+}

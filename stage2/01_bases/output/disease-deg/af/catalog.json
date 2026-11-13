@@ -1,0 +1,101 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv",
+    "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "size": 18164
+  },
+  "axis_size": 18164,
+  "catalog_sha256": "c5706217b957501b6152512fbca078ba1f9ca35d4a21c9a5137f9796912346b2",
+  "category": "AF",
+  "datasets": [
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 17520,
+          "crosswalk_alias": 360,
+          "ensembl": 233,
+          "offaxis": 57,
+          "unmapped": 18430
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 18092,
+        "n_recovered_by_identifier": 465,
+        "n_resolved": 18113,
+        "n_source_rows": 36600,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 17520,
+          "crosswalk_alias": 128,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 18092,
+          "n_resolved": 17648,
+          "n_source_symbols": 36600,
+          "offaxis": 57,
+          "unmapped": 18895
+        }
+      },
+      "arm_or_class": "AF donors vs non-AF control donors (left-atrial CM)",
+      "category": "AF",
+      "contrasts": [
+        "AF-control"
+      ],
+      "dataset_id": "gse255612__af",
+      "deg": "gse255612__af.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/gse255612_deg.csv",
+          "sha256": "7cd553ab0c9ecab5e89d33f721e6b925919380c17ab3cf78ca4eccc35d0a8b35"
+        },
+        {
+          "relative": "local/pseudobulk/gse255612_donors.csv",
+          "sha256": "2f6064950b5f7f6242fcf04a9ced2e5d2e09e91c0d523efe608cdfba9ca53314"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": false,
+      "informativeness": {
+        "n_distinct_effect": 1,
+        "reason": "all 18092 measured effect scores are tied at 0.0; the within-dataset order is the gene_index tie-break, so the dataset carries no ordering evidence",
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
+      "inputs": {
+        "disease_data/GSE255612/local/deg/gse255612_deg.json": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
+        "disease_data/GSE255612/manifest.sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "normalised expression (log1p(CP10K))",
+        "design": "one joint fit ~0 + group over 34 donors",
+        "model": "limma on log2(mean_CP10K + 1) pseudobulk (moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human left-atrium 10x snRNA CM pseudobulk",
+      "n_axis_unmeasured": 72,
+      "n_case": 18,
+      "n_control": 16,
+      "n_measured": 18092,
+      "n_significant": 0,
+      "rank": "gse255612__af.rank.csv",
+      "shared_control_group": "gse255612:donor",
+      "source_item": "disease_data/GSE255612",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    }
+  ],
+  "directory": "af",
+  "evidence_type": "cm_pseudobulk",
+  "rank_contract": "stage2-disease-deg-v1",
+  "rejected": [
+    {
+      "candidate": "GSE128188",
+      "reason": "whole atrial appendage bulk tissue, not cardiomyocyte-derived"
+    }
+  ],
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 1
+}

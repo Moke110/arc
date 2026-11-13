@@ -1,6 +1,6 @@
 # Prepare the Stage 2 gene-axis decision without deciding the axis
 
-**Status:** accepted (2026-11-13).
+**Status:** superseded by [0066](0066-stage2-corpus-view-and-gene-axis.md) (2026-11-13).
 
 The Stage 2 exit is now fixed as **the predicted Δ on a selected gene axis, as accurate as
 possible** (`docs/roadmap.md`). The frozen 18,164-gene axis (ADR 0061) is not that selected

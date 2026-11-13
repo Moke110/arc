@@ -1,0 +1,116 @@
+{
+  "category": "nHF (NICM) / ICM (ICM, AMI)",
+  "contrasts": {
+    "AMI-Donor": {
+      "n_case": 5,
+      "n_control": 7
+    },
+    "ICM-Donor": {
+      "n_case": 5,
+      "n_control": 7
+    },
+    "NICM-Donor": {
+      "n_case": 6,
+      "n_control": 7
+    }
+  },
+  "deg": {
+    "n_source_genes": 29591,
+    "path": "local/deg/gse270788_deg.csv",
+    "rows": 88773,
+    "sha256": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12"
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "Donor",
+        "label": "NICM-Donor",
+        "numerator": "NICM"
+      },
+      {
+        "denominator": "Donor",
+        "label": "ICM-Donor",
+        "numerator": "ICM"
+      },
+      {
+        "denominator": "Donor",
+        "label": "AMI-Donor",
+        "numerator": "AMI"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "design_ambiguities": {
+    "AMI_time_window_basis": "author_declared (no per-sample time-since-infarct field)",
+    "arm_labels": "the deposited labels are Donor 7 / NICM 6 / ICM 5 / AMI 5; the survey/ticket statement Donor 6 / NICM 7 is not what the immutable metadata or series matrix says, so the deposited labels are used unchanged and the discrepancy is recorded, not relabelled",
+    "design": "one joint fit ~ 0 + arm over all 23 donor pseudobulks",
+    "donor_term": "no donor covariate: each donor belongs to exactly one arm, so a donor effect is nested in arm and not identifiable; the shared control structure is handled by the single joint fit",
+    "why_joint": "the NICM/ICM/AMI arms all use the same six Donor controls; three separate case-control fits would count the Donor signal three times and are not independent"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupAMI",
+      "groupDonor",
+      "groupICM",
+      "groupNICM"
+    ],
+    "contrasts": [
+      "NICM-Donor",
+      "ICM-Donor",
+      "AMI-Donor"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 29591,
+    "n_genes_tested": 29591,
+    "n_rows": 88773,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "gate": "cell.type.l1 == \"Cardiomyocyte\"",
+  "item": "GSE270788",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the disease arm vs Donor",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (TMM size factors, voom precision weights, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "pseudobulk": {
+    "cells_per_donor": {
+      "MA10": 563,
+      "MA11": 258,
+      "MA13": 104,
+      "MA14": 903,
+      "MA19": 732,
+      "MA20": 171,
+      "MA22": 515,
+      "MA23": 1576,
+      "MA24": 636,
+      "MA25": 749,
+      "MA26": 670,
+      "MA27": 644,
+      "MA28": 565,
+      "MA29": 1264,
+      "MA30": 1293,
+      "MA31": 216,
+      "MA32": 120,
+      "MA33": 1292,
+      "MA5": 94,
+      "MA6": 246,
+      "MA7": 52,
+      "MA8": 590,
+      "MA9": 550
+    },
+    "dtype": "integer counts summed per donor across that donor's CM cells",
+    "path": "local/pseudobulk/gse270788_cm_pseudobulk.csv.gz",
+    "sha256": "9603b8ed2fbb810205b9f5ceca1626321f0ee9b4f297d3830797e8fffe8a399f"
+  },
+  "schema": "stage2-item-deg-summary-v1"
+}

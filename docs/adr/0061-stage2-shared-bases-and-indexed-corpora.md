@@ -1,6 +1,6 @@
 # Consolidate Stage 2 foundations and indexed training corpora
 
-**Status:** accepted (2026-11-11). The user confirmed the complete design and authorized issue publication followed by implementation and deployment in a new chat.
+**Status:** accepted (2026-11-11). Amended by 0066: the single normalized `X`/`control`/`delta` training corpus is replaced by a raw `corpus/` plus per-axis views; gene identity is unchanged. The user confirmed the complete design and authorized issue publication followed by implementation and deployment in a new chat.
 
 ## Ownership and migration
 

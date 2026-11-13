@@ -1,0 +1,104 @@
+{
+  "category": "AF",
+  "contrasts": {
+    "AF-control": {
+      "n_case": 18,
+      "n_control": 16
+    }
+  },
+  "deg": {
+    "n_source_genes": 36600,
+    "path": "local/deg/gse255612_deg.csv",
+    "rows": 36600,
+    "sha256": "7cd553ab0c9ecab5e89d33f721e6b925919380c17ab3cf78ca4eccc35d0a8b35"
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "control",
+        "label": "AF-control",
+        "numerator": "AF"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "expression"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupAF",
+      "groupcontrol"
+    ],
+    "contrasts": [
+      "AF-control"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "expression",
+    "limma_version": "3.62.2",
+    "n_genes_input": 36600,
+    "n_genes_tested": 36600,
+    "n_rows": 36600,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "gate": "cell_type == \"Cardiomyocytes\"",
+  "item": "GSE255612",
+  "method": {
+    "contrast_direction": "positive log2FC = up in AF vs control",
+    "deposition": "normalised-expression deposit (log1p(CP10K)), not integer counts",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma on the log2-scale pseudobulk (moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "model_matrix": {
+    "path": "local/deg/gse255612_log_matrix.tsv.gz",
+    "sha256": "15f2363b20ae350d40246d5bc774918a79af7ddc76056bbff55da9a11f17dde9",
+    "transform": "log2(mean_CP10K + 1)"
+  },
+  "pseudobulk": {
+    "basis": "per-donor mean over CM cells of the linear CP10K value; the deposit is log1p(CP10K), expm1 recovers the linear value",
+    "cells_per_donor": {
+      "P1279_3n": 613,
+      "P1296_1n": 4520,
+      "P1334_3n": 881,
+      "P1357_2n": 1023,
+      "P1360_1n": 781,
+      "P1365_1n": 663,
+      "P1369_3n": 522,
+      "P1377_3n": 393,
+      "P1440_1n": 1149,
+      "P1465_1n": 1802,
+      "P1488_2n": 1996,
+      "P1490_3n": 1312,
+      "P1498_1n": 266,
+      "P1513_1n": 152,
+      "P1515_1n": 1006,
+      "P1540_3n": 886,
+      "P1543_1n": 1080,
+      "P1558_1n": 1438,
+      "P1561_1n": 130,
+      "P1570_1n": 500,
+      "P1582_1n": 135,
+      "P1588_1n": 1178,
+      "P1591_1n": 1211,
+      "P1593_1n": 751,
+      "P1603_1n": 562,
+      "P1610_1n": 314,
+      "P1623_1n": 763,
+      "P1626_1n": 1293,
+      "P1696_1n": 378,
+      "P1698_3n": 400,
+      "P1741_1n": 654,
+      "P1758_1n": 1133,
+      "P1762_1n": 642,
+      "P1789_1n": 1911
+    },
+    "path": "local/pseudobulk/gse255612_cm_pseudobulk.csv.gz",
+    "sha256": "8988afbebfbaff511471fe8f5dba7d8ffd6dc27a7172784079617b705b73470f"
+  },
+  "schema": "stage2-item-deg-summary-v1"
+}

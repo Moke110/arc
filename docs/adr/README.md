@@ -12,7 +12,7 @@ files its `See` section names.
 assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
 restore.
 
-The index covers every record in the directory, 0001–0065 (63 files; 0023 and 0050 are the
+The index covers every record in the directory, 0001–0067 (65 files; 0023 and 0050 are the
 gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
@@ -84,4 +84,7 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0062](0062-stage2-accepted-products-and-reproducible-figures.md) | Stage 2 stable accepted products, CSV-reproducible figures and separate audit evidence |
 | [0063](0063-tenv-comparison-direct-and-indirect-metrics.md) | Rebuilt tenv comparison: direct and indirect metrics, fold/seed index tables, stage palette, PRnet — *indirect metrics and figures superseded by 0064* |
 | [0064](0064-tenv-reliability-threshold-scan.md) | Score the tenv comparison by a predicted-effect threshold scan and a reliability score |
-| [0065](0065-stage2-gene-axis-decision-preparation.md) | Prepare the Stage 2 gene-axis decision: public disease sources, full-transcriptome DEGs and an unweighted rank-sum fusion, without deciding the axis |
+| [0065](0065-stage2-gene-axis-decision-preparation.md) | Prepare the Stage 2 gene-axis decision: public disease sources, full-transcriptome DEGs and an unweighted rank-sum fusion, without deciding the axis — *superseded by 0066* |
+| [0066](0066-stage2-corpus-view-and-gene-axis.md) | Stage 2 01_bases: raw counts, a raw corpus, gene-axis views and the released 2,000/5,000-gene axes |
+| [0067](0067-errata-to-0066-gse270788-arms-and-view-shares.md) | Errata to ADR 0066: GSE270788 arm sizes and released-axis CP10K shares |
+| [0068](0068-fusion-amendment-degenerate-sources-and-rank-norm.md) | Fusion amendment: non-informative sources excluded from fusion/`pN`, unmeasured `rank_norm`, and two removals |

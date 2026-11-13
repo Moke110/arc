@@ -1,0 +1,45 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv"
+  },
+  "catalog_sha256": "62aa91a8b234b6bfb5bd4b92a5d94676d05128bacf9156dcfbd5b7f97d54f803",
+  "category": "nHF",
+  "counts": {
+    "datasets": 2,
+    "n_measured": {
+      "gse270788__nicm": 17092,
+      "reichart-cm__dcm_genotype_negative": 17513
+    }
+  },
+  "inputs": {
+    "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+    "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb",
+    "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
+    "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66",
+    "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+  },
+  "outputs": {
+    "catalog.json": {
+      "sha256": "6b5e36bfbe4429019799a249981b8f9556e7578e819c8d450f214cc1f4989eb6"
+    },
+    "gse270788__nicm.deg.csv": {
+      "rows": 17092,
+      "sha256": "6b09a27a9892650a019cc85b129506cee373c23e0aec3652f6bb47b997984090"
+    },
+    "gse270788__nicm.rank.csv": {
+      "rows": 18164,
+      "sha256": "9089cf243e06510b1ca2731c50c2d73b9642fb612d1e43ee01d962e7e4eba5b8"
+    },
+    "reichart-cm__dcm_genotype_negative.deg.csv": {
+      "rows": 17513,
+      "sha256": "f154bfaa70859b1ff9e60f1b3bdefabee5f3aa8cc42f2e3740b406d5f011aa90"
+    },
+    "reichart-cm__dcm_genotype_negative.rank.csv": {
+      "rows": 18164,
+      "sha256": "a8a538a82ab9f49e874929fb4a890cb0b5a678099902e5d06d150b76fd2858c7"
+    }
+  },
+  "recipe": "execution/build_disease_deg.py publish --category nHF",
+  "schema": "stage2-disease-deg-release-v1"
+}

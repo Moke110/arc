@@ -1,0 +1,167 @@
+{
+  "axis": {
+    "ascending": true,
+    "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+    "gene_index_max": 18139,
+    "gene_index_min": 1,
+    "renumbered": false,
+    "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676",
+    "size": 5000
+  },
+  "basis": {
+    "definition": "share of the full-axis CP10K mass carried by the view genes: sum(counts[axis]) / sum(counts[full 18,164-gene axis]) pooled over the source profiles",
+    "design_record": {
+      "note": "the ADR figures came from an interim pre-#190 axis; the released-axis measured shares recorded above are authoritative for this product",
+      "shares": {
+        "2000": 0.129,
+        "5000": 0.363
+      },
+      "source": "ADR 0066 Corpus and view semantics"
+    },
+    "sources": {
+      "tahoe_bulk": {
+        "n_axis": 5000,
+        "share": 0.2473663902145978,
+        "treated_share": 0.24727881556806083
+      },
+      "tenv": {
+        "n_axis": 5000,
+        "share": 0.37427374787592954,
+        "treated_share": 0.3738461279584329
+      }
+    },
+    "treated_definition": "the same ratio restricted to treated profiles"
+  },
+  "control": {
+    "correspondence": "controls are corpus rows; matched_control_group is carried verbatim and the reader resolves it to row positions",
+    "delta": "delta = X - control, elementwise",
+    "rule": "control = arithmetic mean over the row's matched_control_group vehicle rows, each normalized on its own full-axis library total"
+  },
+  "counts": {
+    "axis_size": 18164,
+    "profiles_total": 71196,
+    "sources": {
+      "tahoe_bulk": 66718,
+      "tenv": 4478
+    },
+    "view_size": 5000
+  },
+  "environment": {
+    "anndata": "0.12.16",
+    "data_access": "offline; reads only output/corpus and output/gene-axis; streams 256-row batches, never a dense observation x axis matrix",
+    "h5py": "3.16.0",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "resource_contract": "one heavy job at a time; 10 GiB RLIMIT_AS fallback; OMP_NUM_THREADS=2; peak RSS recorded by the driver"
+  },
+  "fixture": false,
+  "generated_by": "stage2/01_bases/execution/build_view.py",
+  "inputs": {
+    "stage2/01_bases/output/corpus/manifest.json": {
+      "bytes": 4771,
+      "role": "corpus_release_manifest",
+      "sha256": "f8c35ccc8e12d0fc7325a5ec5c798a7d4e542e1fc28844807b40305e9d5d9f6d"
+    },
+    "stage2/01_bases/output/corpus/tahoe_bulk.h5ad": {
+      "bytes": 1322009369,
+      "role": "corpus:tahoe_bulk",
+      "sha256": "fa9deb5835895f442adfbef018f14bcc1d1a1725963369a168f360ae754dd9c9"
+    },
+    "stage2/01_bases/output/corpus/tenv.h5ad": {
+      "bytes": 73855737,
+      "role": "corpus:tenv",
+      "sha256": "024cbd065e440a746886651d205decdea7d7cf99ebb1394c48ff15cb0a411e6e"
+    },
+    "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
+      "bytes": 58530,
+      "role": "gene_axis:5000",
+      "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676"
+    },
+    "stage2/01_bases/output/gene-axis/manifest.json": {
+      "bytes": 27016,
+      "role": "gene_axis_release_manifest",
+      "sha256": "948f96875b89461b370ad5b44a99ec4c45cc369af1203e2c0fed1294a7a469e1"
+    }
+  },
+  "normalization": {
+    "denominator": "full frozen 18,164-gene axis; the view is never normalized on its own gene subset",
+    "formula": "log1p(count * 10000 / full_axis_library_total)",
+    "library_total": "sum of the profile's full 18,164-gene integer counts",
+    "source": "ADR 0061 frozen normalization, amended by ADR 0066 view semantics"
+  },
+  "outputs": {
+    "library_totals.csv": {
+      "bytes": 3727979,
+      "columns": [
+        "source",
+        "profile_id",
+        "role",
+        "library_total"
+      ],
+      "rows": 71196,
+      "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+    },
+    "tahoe_bulk.h5ad": {
+      "bytes": 3152087026,
+      "columns": 5000,
+      "dtype": "float32",
+      "rows": 66718,
+      "sha256": "02abaed932e3e0b82032e4ec78884531f9743d4143886f190752585e32c22905"
+    },
+    "tenv.h5ad": {
+      "bytes": 142266477,
+      "columns": 5000,
+      "dtype": "float32",
+      "rows": 4478,
+      "sha256": "e1a18a9acb75b610527bdd83bff31b27bbd8c71e8c4a8444f935f1f343dd47f3"
+    }
+  },
+  "recipe": "Stream each corpus source in bounded batches; compute each profile's full-axis library total; log1p(CP10K) on that total; subset the released axis's genes in ascending gene_index; control is the mean of the row's matched vehicle rows normalized the same way; delta = X - control. float32; no view-local re-normalization.",
+  "schema": "stage2-view-v1",
+  "sources": {
+    "tahoe_bulk": {
+      "axis_share_of_full_axis_cp10k": 0.2473663902145978,
+      "full_axis_library_total": {
+        "max": 33209864,
+        "median": 2286586.0,
+        "min": 556,
+        "sum": 195911772545
+      },
+      "matched_control_rows": 66718,
+      "matched_groups": 700,
+      "raw_profiles": 66718,
+      "rows": 66718,
+      "treated": 65318,
+      "treated_axis_share_of_full_axis_cp10k": 0.24727881556806083,
+      "vehicle": 1400
+    },
+    "tenv": {
+      "axis_share_of_full_axis_cp10k": 0.37427374787592954,
+      "full_axis_library_total": {
+        "max": 3978060,
+        "median": 879905.5,
+        "min": 6423,
+        "sum": 5083966198
+      },
+      "matched_control_rows": 4398,
+      "matched_groups": 16,
+      "raw_profiles": 4478,
+      "rows": 4478,
+      "treated": 4206,
+      "treated_axis_share_of_full_axis_cp10k": 0.3738461279584329,
+      "vehicle": 272
+    }
+  },
+  "view": {
+    "dtype": "float32",
+    "file_layout": "one h5ad per corpus source",
+    "layers": [
+      "control",
+      "delta"
+    ],
+    "matrix": "X",
+    "name": "view-5k",
+    "size": 5000
+  }
+}

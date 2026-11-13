@@ -55,7 +55,17 @@ def input_files(native, sources=SOURCES):
 
 
 def default_bindings(root, *, native=None, tables=None, tenv=None, tahoe=None):
-    """Bind independently owned raw releases without copying their payloads."""
+    """Bind independently owned raw releases without copying their payloads.
+
+    Legacy (ADR 0052) helper: the ADR 0066 rebuild replaced the
+    ``output/{tenv,tahoe}-raw-counts/`` interface with the single
+    ``output/raw_counts/`` release, so when called with no explicit bindings this
+    function still resolves the retired pre-0066 directories. Only
+    ``execution/tests/test_raw_provenance.py`` reaches that fallback; the live
+    driver ``build_raw_counts.py`` always passes explicit paths, and no shipped
+    reader imports this module. Kept as the historical replay boundary rather
+    than re-pointed, because the payload layout changed.
+    """
     output = Path(root) / "stage2/01_bases/output"
     legacy = Path(native) if native is not None else output / "tenv-raw-counts"
     if tables is not None:
@@ -432,7 +442,7 @@ def verify(native, release, fixture=False):
     return {"result": "PASS", "manifest_sha256": file_sha256(manifest_path), "sources": checks}
 
 
-def tahoe_axis_mapping(axis, crosswalk, gene_metadata):
+def tahoe_axis_mapping(axis, crosswalk, gene_metadata, fixture=False):
     """Return one evidenced source token per frozen gene, without expression access.
 
     ``native_column`` refers to immutable gene_metadata rows; gene_index is the
@@ -446,6 +456,6 @@ def tahoe_axis_mapping(axis, crosswalk, gene_metadata):
         gene_metadata = pd.read_parquet(gene_metadata)
     var = gene_metadata.rename(columns={'gene_symbol': 'native_symbol'}).copy()
     var.index = pd.Index(var.native_symbol.astype(str), name='symbol')
-    mapping = gene_mapping('tahoe', axis, var, crosswalk, False)
+    mapping = gene_mapping('tahoe', axis, var, crosswalk, fixture)
     mapping.insert(0, 'gene_index', np.arange(len(mapping), dtype='int32'))
     return mapping

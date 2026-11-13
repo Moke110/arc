@@ -1,0 +1,43 @@
+axis,n_axis,record,group,n_genes,share,note
+2000,2000,composition,nhf,1978,0.98899999999999999,axis genes the category source measures
+2000,2000,composition,icm,1908,0.95399999999999996,axis genes the category source measures
+2000,2000,composition,af,0,0,excluded from the fusion: every dataset is non-informative (all effect scores tied)
+2000,2000,composition,genetic_cardiomyopathy,1997,0.99850000000000005,axis genes the category source measures
+2000,2000,composition,cardiotox_TOP2,2000,1,axis genes the category source measures
+2000,2000,composition,cardiotox_other,1513,0.75649999999999995,axis genes the category source measures
+2000,2000,composition,tenv_hvg_top_half,1000,0.5,declared 0.5*N tenv-HVG half of the axis
+2000,2000,pN,0,0,0,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,pN,1,563,0.28149999999999997,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,pN,2,580,0.28999999999999998,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,pN,3,687,0.34350000000000003,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,pN,4,141,0.070499999999999993,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,pN,5,27,0.0135,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,pN,6,2,0.001,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,0,10125,0.5574212728473904,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,1,5136,0.28275710195992071,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,2,2046,0.11264038757982824,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,3,687,0.037822065624311826,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,4,141,0.0077626073552081037,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,5,27,0.0014864567275930411,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+2000,2000,candidate_pN,6,2,0.00011010790574763268,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,composition,nhf,4936,0.98719999999999997,axis genes the category source measures
+5000,5000,composition,icm,4751,0.95020000000000004,axis genes the category source measures
+5000,5000,composition,af,0,0,excluded from the fusion: every dataset is non-informative (all effect scores tied)
+5000,5000,composition,genetic_cardiomyopathy,4997,0.99939999999999996,axis genes the category source measures
+5000,5000,composition,cardiotox_TOP2,5000,1,axis genes the category source measures
+5000,5000,composition,cardiotox_other,3738,0.74760000000000004,axis genes the category source measures
+5000,5000,composition,tenv_hvg_top_half,2500,0.5,declared 0.5*N tenv-HVG half of the axis
+5000,5000,pN,0,0,0,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,pN,1,653,0.13059999999999999,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,pN,2,782,0.15640000000000001,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,pN,3,1804,0.36080000000000001,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,pN,4,1298,0.2596,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,pN,5,402,0.080399999999999999,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,pN,6,61,0.012200000000000001,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,0,3942,0.21702268222858401,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,1,5298,0.291675842325479,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,2,4355,0.23975996476547015,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,3,2808,0.15459149966967628,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,4,1298,0.071460030830213614,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,5,402,0.02213168905527417,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"
+5000,5000,candidate_pN,6,61,0.0033582911253027966,"pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score"

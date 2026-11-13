@@ -4,7 +4,7 @@ The disease-side inputs for the Stage 2 gene-axis decision preparation
 (ADR 0065) and the Stage 1 MIRI screen, split into one directory per **GEO
 series** (项) under the external-data provenance contract
 ([ADR 0030](../docs/adr/0030-external-data-provenance-and-step-layout.md)).
-Eight items are present. Each is:
+Eleven items are present. Each is:
 
 ```
 <GSE>/
@@ -40,6 +40,32 @@ before this round and expose only DEG tables (GSE137293 additionally ships its
 counts matrix); the five human series added for the gene-axis decision
 preparation ship both a DEG table and a normalized log expression matrix.
 
+### Retained, but **not** axis sources after the ADR 0066 rebuild
+
+ADR 0066 requires a `{disease}-DEG` axis source to be **cardiomyocyte-derived**
+(in-vitro CM/organoid/engineered-tissue bulk, or a single-cell CM pseudobulk).
+Whole-heart / whole-left-ventricle **tissue bulk** is ineligible even though it
+contains cardiomyocytes: its signal is dominated by cell-composition and fibrosis
+shifts that do not describe the cardiomyocyte. The six whole-tissue series below
+are therefore **retained** (items and their `source/`/`local/` provenance stay
+byte-unchanged, and they remain available to Stage 1 / other analyses) but they
+are **not** gene-axis sources and must not be re-admitted as one without a new
+ADR:
+
+| item | why not an axis source |
+|---|---|
+| `GSE141910/` | human LV whole-tissue bulk (HF vs NF) — cell-composition/fibrosis signal dominates |
+| `GSE116250/` | human LV whole-tissue bulk (HF/ICM vs NF) — same reason |
+| `GSE128188/` | human atrial appendage tissue bulk (AF vs SR) — not CM-derived |
+| `GSE282618/` | human post-mortem LV/RV tissue bulk (HHD vs control) — not CM-derived |
+| `GSE160516/` | mouse whole-LV tissue bulk MIRI — species and tissue-composition signal |
+| `GSE108940/` | mouse whole-LV tissue bulk MIRI — same reason |
+
+Their DEG tables still exist for their own purposes; the retired
+`mouse_human_orthologs.csv` / `build_mouse_orthologs.R` path went with the old
+gene-axis evidence (ADR 0066 *Removals*), so no Stage 2 step consumes a mouse
+ranking any more.
+
 ## Per-item conventions for the new series
 
 The five human series follow one interface, and it is the only thing the Stage 2
@@ -66,6 +92,107 @@ gene-axis step reads from an item (ADR 0065):
   carry a top-level file; `GSE243674` pins its expression outputs with a nested
   `local/expr/.gitignore` (`*` + `!.gitignore`). Every ignored path is declared in
   `local_additions[]`.
+
+## Stage 2 gene-axis CM sources (ticket #187, ADR 0066)
+
+Three items added for the Stage 2 gene axis are **cardiomyocyte-derived**, not
+whole tissue: two GEO single-cell deposits and one cellxgene object. Each follows
+the same five-member ADR 0030 contract, adds a CM-gate + per-donor pseudobulk
+derivation under `local/`, and publishes one compact DEG table per dataset into
+`stage2/01_bases/output/disease-deg/` (the step, not the item, owns the compact
+product):
+
+| item | deposit | CM gate | donors | feeds |
+|---|---|---|---|---|
+| `GSE270788/` | human LV 10x Multiome GEX SubSeries (23 per-GSM filtered h5 + cell metadata; `RAW.tar` never fetched) | `cell.type.l1 == "Cardiomyocyte"` (13,803 CM, 52–1,576/donor, all qualify) | 23 | `nHF` NICM; `ICM` ICM + AMI |
+| `GSE255612/` | human left-atrium 10x snRNA (mtx + genes axis + cell metadata) | `cell_type == "Cardiomyocytes"` (32,438 CM) | 34 (18 AF / 16 control) | `AF` |
+| `Reichart-CM/` | cellxgene CM-only h5ad (collection `e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb`, version `27fdbdf9-deae-4aed-bf7f-21964ee62137`; 311,418 cells) | CM-only object (`cell_type == "cardiac muscle cell"`) | 79 (52 DCM / 18 normal / 8 ARVC / 1 NCCM) | `nHF` genotype-negative DCM; ticket #188 export for `genetic_cardiomyopathy` |
+
+Conventions specific to these three items:
+
+- **`local/pseudobulk/`** — the per-donor pseudobulk, summed over each donor's CM
+  cells **before** any test. GSE270788 and Reichart-CM store integer counts;
+  GSE255612's deposit is log1p(CP10K) normalised expression (verified on every
+  cell: `sum(expm1(value)) == 1e4`), so its pseudobulk is the per-donor mean
+  CP10K. The matrices are declared additions and stay out of `source/`.
+- **`local/deg/<item>_deg.csv` + tracked `_deg.json`** — the item-local
+  full DEG table (long, one row per gene × contrast) and its tracked summary.
+  The DEG is the single live implementation in
+  `stage2/01_bases/output/api/bases/disease_deg.R` (limma: voom for counts,
+  `lmFit` for the log-scale deposit); the item scripts only bind inputs and run
+  it. GSE270788's three arms share one control set, so its table comes from
+  **one joint `~ 0 + arm` fit** over all 23 donors (three contrasts), not three
+  case-control fits.
+- **Tracked compact export** — `Reichart-CM/local/pseudobulk/…csv.gz` (axis genes
+  × 78 donors, integer counts) and `Reichart-CM/local/genotype/…csv` (per-donor
+  genotype split) are force-tracked because they are the ticket #188
+  `genetic_cardiomyopathy` input. The single NCCM donor is excluded from that
+  export; genotype-positive DCM and the 8 ARVC donors are exported, not used for
+  `nHF`.
+- **Erratum carried from #187.** GSE270788's deposited arm sizes are Donor 7 /
+  NICM 6 / ICM 5 / AMI 5 (both the cell metadata grouped by `sample` and the
+  series-matrix `!Sample_characteristics_ch1`), not the survey's `6 / 7`; the
+  deposit is used unchanged and ADR 0066's roster counts are superseded.
+
+`script/verify_all.sh` includes all three items; `bash script/verify.sh` in each
+item checks `source/` offline against its `manifest.sha256`.
+
+## Stage 2 isogenic CM models (ticket #188, ADR 0066)
+
+Six **isogenic hiPSC-CM bulk** models join the `genetic_cardiomyopathy`
+category, where the two Reichart genotype-split exports (genotype-positive DCM
+and ARVC donors) are the tier-1 human CM-pseudobulk datasets and the six
+in-vitro models enter at tier 2 under ADR 0066's **Isogenic exception**. Each
+item follows the same five-member ADR 0030 contract, and one shared adapter
+(`stage2/01_bases/output/api/bases/bulk_deg.py`) binds the deposited matrix +
+GEO series matrix and runs the one live DEG implementation
+(`output/api/bases/disease_deg.R`); the item script only declares its design.
+
+| item | deposit | design | published dataset |
+|---|---|---|---|
+| `GSE224129/` | MYBPC3 (cMyBP-C) HCM engineered cardiac tissue, isogenic +/+ (4), +/- (4), -/- (4); RSEM gene matrix | one joint `~0 + group`; `+/-` and `-/-` vs `+/+`, collapsed by maximum effect | `gse224129__mybpc3_hcm` |
+| `GSE234141/` | TTN truncating-variant DCM hiPSC-CM vs isogenic WT/WT, 2D monolayer and EHT, atrial- and ventricular-like, 3 replicates per cell (24 libraries) | one joint fit over 8 composite strata; four paired TTNtv-vs-WT contrasts, collapsed by maximum effect | `gse234141__ttntv_dcm` |
+| `GSE304575/` | LMNA p.His222Pro DCM hiPSC-CM vs CRISPR-corrected isogenic control (6/6) | `~0 + group`; one contrast | `gse304575__lmna_h222p_dcm` |
+| `GSE305648/` | RBM20 DCM hiPSC cardioids, WTC11: KO / PL / RQ / wildtype (3 each) | `~0 + group + batch` (batch rotated A/B/C); three mutant-vs-WT contrasts, collapsed by maximum effect | `gse305648__rbm20_dcm` |
+| `GSE253223/` | ARVC-model wild-type hiPSC-CM, siPKP2 (4/day) vs siNeg (1/day), days 2/4/6/8 | `~0 + group + day`; four harvest days pooled with day blocked; one knockdown contrast | `gse253223__pkp2_knockdown_arvc` |
+| `GSE194297/` | DMD point-mutation cardiac organoids day 56 vs CRISPR-corrected isogenic line (3/3) | `~0 + group`; one contrast | `gse194297__dmd_cardiomyopathy` |
+
+Conventions specific to these six items:
+
+- **`script/fetch.sh`** stores exactly two payloads per item: the deposited
+  expression matrix and the GEO series matrix (the sample titles/characteristics
+  that carry genotype, cell type, format, batch and harvest day). No other
+  payload is fetched; both are byte-size pinned and verified offline by
+  `script/verify.sh` against `manifest.sha256` over `source/`.
+- **Sample binding is by name, never by position.** The matrix column tokens are
+  matched to the series-matrix titles/descriptions with a recorded basis and a
+  fail-closed bijection check, so no library can be silently dropped or twice
+  matched.
+- **`local/deg/<item>_expr.tsv.gz` + `_samples.csv` + `_deg.csv`** are the
+  item-local regenerable derivation (matrix, design sheet, full long DEG table);
+  the **tracked** `local/deg/<item>_deg.json` summary records the deposit
+  digests, the sample-mapping basis, the isogenic-control arm, the
+  strata/pooling decision, the design and its contrasts with `n_case`/
+  `n_control`, the integerisation statistics when the deposit is not integer
+  (rule, maximum absolute deviation, library-size scale, and how many genes'
+  rounded rows are all-zero so the count model drops them), and the R/limma
+  versions.
+- **Integerisation is one shared, tested helper** (`bases.bulk_deg.integerise_counts`,
+  round to nearest with ties to even). It is used for `GSE224129` (RSEM
+  expected counts) and `GSE253223` (estimated counts); the other four deposits
+  are integer and go straight to the strict-count voom path. The shared
+  `disease_deg.R` count contract is **not** relaxed: #186/#187/#189 recorded
+  products depend on it. A deposit that is already normalised takes the
+  `lmFit` non-count path instead of being rounded.
+- **`Reichart-CM/`** keeps #187's tracked pseudobulk + genotype export
+  untouched; ticket #188 adds `script/build_genetic_deg.py`, which runs the same
+  live implementation over those **tracked** inputs (read-only, the pseudobulk is
+  not re-derived) and publishes the `dcm_genotype_positive-normal` (44 vs 18) and
+  `arvc-normal` (8 vs 18) contrasts into `local/deg/reichart-cm_genetic_deg.csv`
+  + a tracked `.json` summary.
+- **Registration**: all six items are in `script/verify_all.sh`'s
+  `expected_items` (additive), so a missing item or manifest turns the health
+  check red.
 
 ## Build recipes and pinned R
 

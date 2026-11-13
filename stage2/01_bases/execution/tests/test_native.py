@@ -28,3 +28,6 @@ class NativePreparationTest(unittest.TestCase):
                 self.assertEqual(read_elem(f['var']).hgnc_id.tolist(),['HGNC:1','HGNC:2'])
                 self.assertEqual(set(f['layers']),set())
             self.assertEqual(verify_tenv(source,hgnc,annotation,output)['result'],'PASS')
+
+if __name__ == "__main__":
+    unittest.main()

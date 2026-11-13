@@ -1,0 +1,63 @@
+{
+  "command": "verify",
+  "results": [
+    {
+      "category": "AF",
+      "manifest_sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507",
+      "outputs": [
+        "catalog.json",
+        "gse255612__af.deg.csv",
+        "gse255612__af.rank.csv"
+      ],
+      "result": "PASS"
+    },
+    {
+      "category": "ICM",
+      "manifest_sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936",
+      "outputs": [
+        "catalog.json",
+        "gse270788__ami.deg.csv",
+        "gse270788__ami.rank.csv",
+        "gse270788__icm.deg.csv",
+        "gse270788__icm.rank.csv"
+      ],
+      "result": "PASS"
+    },
+    {
+      "category": "genetic_cardiomyopathy",
+      "manifest_sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673",
+      "outputs": [
+        "catalog.json",
+        "gse194297__dmd_cardiomyopathy.deg.csv",
+        "gse194297__dmd_cardiomyopathy.rank.csv",
+        "gse224129__mybpc3_hcm.deg.csv",
+        "gse224129__mybpc3_hcm.rank.csv",
+        "gse234141__ttntv_dcm.deg.csv",
+        "gse234141__ttntv_dcm.rank.csv",
+        "gse253223__pkp2_knockdown_arvc.deg.csv",
+        "gse253223__pkp2_knockdown_arvc.rank.csv",
+        "gse304575__lmna_h222p_dcm.deg.csv",
+        "gse304575__lmna_h222p_dcm.rank.csv",
+        "gse305648__rbm20_dcm.deg.csv",
+        "gse305648__rbm20_dcm.rank.csv",
+        "reichart-cm__arvc.deg.csv",
+        "reichart-cm__arvc.rank.csv",
+        "reichart-cm__dcm_genotype_positive.deg.csv",
+        "reichart-cm__dcm_genotype_positive.rank.csv"
+      ],
+      "result": "PASS"
+    },
+    {
+      "category": "nHF",
+      "manifest_sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e",
+      "outputs": [
+        "catalog.json",
+        "gse270788__nicm.deg.csv",
+        "gse270788__nicm.rank.csv",
+        "reichart-cm__dcm_genotype_negative.deg.csv",
+        "reichart-cm__dcm_genotype_negative.rank.csv"
+      ],
+      "result": "PASS"
+    }
+  ]
+}

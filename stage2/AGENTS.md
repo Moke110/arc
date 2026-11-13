@@ -5,14 +5,22 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 
 ## Active steps
 
-- `01_bases/` — shared foundation: frozen identity, corpora, evaluator truth,
-  fold/seed products, metrics, palette and figure APIs. Every later step imports
-  this implementation instead of re-deriving it.
-  - Gene-axis decision preparation: the evidence product `output/gene-axis/`
-    (built by `execution/build_gene_axis.py`) reports per-source HVG/DEG shares,
-    the unweighted rank-sum fusion, the inflection answer, the tenv non-HVG curve
-    and direction composition for the axis decision — preparation under ADR 0065,
-    not a release: no `N`, quota, direction rule or animal weight (#173). Routing:
+- `01_bases/` — shared foundation (post-rebuild, ADR 0066, accepted by #192):
+  frozen identity, raw counts, corpus, model-facing views, disease DEGs, the two
+  released gene axes, fold/seed products, palette and the single public
+  reader/metric API. Every later step imports this implementation instead of
+  re-deriving it.
+  - Gene axis (ADR 0066): the step releases two axis versions, `G_2000` and
+    `G_5000`, from the per-well tenv-HVG dispersion and cardiomyocyte-derived
+    Control-vs-Disease DEGs fused at two levels (datasets inside a disease category,
+    then categories), selected by a 50/50 tenv-HVG / pN quota. `output/` is
+    `raw_counts/` → `corpus/` (integer raw counts, no normalization, no Δ) →
+    `view-2k/`/`view-5k/` (full-axis normalization, then subset; `X`, `control`,
+    `Δ`), with `disease-deg/` and `gene-axis/`. The pre-0066 measured truth,
+    successor envelope, superseded build chain and `log/` were deleted after the
+    #192 acceptance replays passed; `log/` was regenerated as the acceptance
+    record (`log/acceptance.md` + `inputs.json`). The evaluation redesign and the
+    `02_models_tenv` re-point remain deferred. Routing:
     `stage2/01_bases/AGENTS.md`.
 - `02_models_tenv/` — tenv model comparison (ADR 0064, superseding the indirect
   and figure portions of ADR 0063): the PRnet entrant and the `Mean` reference,

@@ -1,0 +1,260 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "MYBPC3_het-MYBPC3_wt": {
+      "denominator": "wt",
+      "n_case": 4,
+      "n_control": 4,
+      "numerator": "het"
+    },
+    "MYBPC3_hom-MYBPC3_wt": {
+      "denominator": "wt",
+      "n_case": 4,
+      "n_control": 4,
+      "numerator": "hom"
+    }
+  },
+  "deg": {
+    "bytes": 10218728,
+    "n_source_genes": 35597,
+    "path": "local/deg/GSE224129_deg.csv",
+    "rows": 71194,
+    "sha256": "463ddc2e9e2dee496d3a4ccabfe594095d2eb2dbe9ec56442dde9b822a159359"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 826308,
+      "feature_count": 58243,
+      "id_kind": "ensembl",
+      "path": "source/GSE224129_AHNNF3DMXX_rsem_GENE.txt.gz",
+      "sha256": "4630793f0f5546fc6c889f7c8a4be1bcd801a04377799c55f3f950d3a2e0fe96"
+    },
+    "series_matrix": {
+      "bytes": 3834,
+      "path": "source/GSE224129_series_matrix.txt.gz",
+      "sha256": "30f9c1663c1d6400f1e2500240cdf6b160d7adf7d65c27c093d54faa10fbee0e"
+    },
+    "values": {
+      "dropped_gene_ids": [
+        "ENSG00000169800",
+        "ENSG00000179412",
+        "ENSG00000189357",
+        "ENSG00000199562",
+        "ENSG00000201104",
+        "ENSG00000201654",
+        "ENSG00000202337",
+        "ENSG00000204450",
+        "ENSG00000204918",
+        "ENSG00000204919",
+        "ENSG00000205584",
+        "ENSG00000206600",
+        "ENSG00000206625",
+        "ENSG00000206785",
+        "ENSG00000206888",
+        "ENSG00000206899",
+        "ENSG00000206932",
+        "ENSG00000206965",
+        "ENSG00000207041",
+        "ENSG00000207062",
+        "ENSG00000207112",
+        "ENSG00000207113",
+        "ENSG00000207133",
+        "ENSG00000207187",
+        "ENSG00000207191",
+        "ENSG00000207264",
+        "ENSG00000207357",
+        "ENSG00000207367",
+        "ENSG00000207507",
+        "ENSG00000207524",
+        "ENSG00000212855",
+        "ENSG00000212856",
+        "ENSG00000213402",
+        "ENSG00000224107",
+        "ENSG00000224698",
+        "ENSG00000225327",
+        "ENSG00000225560",
+        "ENSG00000227117",
+        "ENSG00000227151",
+        "ENSG00000229454",
+        "ENSG00000229549",
+        "ENSG00000230549",
+        "ENSG00000230904",
+        "ENSG00000233222",
+        "ENSG00000234278",
+        "ENSG00000234289",
+        "ENSG00000234414",
+        "ENSG00000234431",
+        "ENSG00000236125",
+        "ENSG00000236424",
+        "ENSG00000237038",
+        "ENSG00000237278",
+        "ENSG00000237786",
+        "ENSG00000237847",
+        "ENSG00000238067",
+        "ENSG00000238122",
+        "ENSG00000241572",
+        "ENSG00000242865",
+        "ENSG00000242875",
+        "ENSG00000243888",
+        "ENSG00000244395",
+        "ENSG00000248313",
+        "ENSG00000249435",
+        "ENSG00000249481",
+        "ENSG00000250868",
+        "ENSG00000251510",
+        "ENSG00000252656",
+        "ENSG00000253629",
+        "ENSG00000254665",
+        "ENSG00000255870",
+        "ENSG00000259025",
+        "ENSG00000259769",
+        "ENSG00000260892",
+        "ENSG00000261523",
+        "ENSG00000261695",
+        "ENSG00000262528",
+        "ENSG00000263683",
+        "ENSG00000264031",
+        "ENSG00000265118",
+        "ENSG00000267059",
+        "ENSG00000267110",
+        "ENSG00000268009",
+        "ENSG00000268903",
+        "ENSG00000269110",
+        "ENSG00000269791",
+        "ENSG00000270301",
+        "ENSG00000272055",
+        "ENSG00000272541",
+        "ENSG00000273047",
+        "ENSG00000273591",
+        "ENSG00000273717",
+        "ENSG00000273940",
+        "ENSG00000274076",
+        "ENSG00000274186",
+        "ENSG00000274387",
+        "ENSG00000274424",
+        "ENSG00000274559",
+        "ENSG00000274852",
+        "ENSG00000275230",
+        "ENSG00000275297",
+        "ENSG00000275307",
+        "ENSG00000275557",
+        "ENSG00000275597",
+        "ENSG00000276522",
+        "ENSG00000276544",
+        "ENSG00000276562",
+        "ENSG00000276998",
+        "ENSG00000277313",
+        "ENSG00000277464",
+        "ENSG00000277774",
+        "ENSG00000278825",
+        "ENSG00000278942",
+        "ENSG00000279132",
+        "ENSG00000280110",
+        "ENSG00000282875",
+        "ENSG00000282994",
+        "ENSG00000284041",
+        "ENSG00000284042",
+        "ENSG00000284465"
+      ],
+      "library_size_after": {
+        "max": 30707357,
+        "median": 28405780,
+        "min": 24129832
+      },
+      "library_size_before": {
+        "max": 30707387.770000003,
+        "median": 28405768.979999997,
+        "min": 24129855.98
+      },
+      "max_abs_deviation": 0.5,
+      "mean_abs_deviation": 0.018004509840953746,
+      "n_genes_all_zero_after": 22646,
+      "n_genes_all_zero_before": 22527,
+      "n_genes_dropped_by_rounding": 119,
+      "n_non_integer_values": 52572,
+      "n_values": 698916,
+      "rule": "round to nearest integer, ties to even (numpy.rint)"
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "wt",
+        "label": "MYBPC3_het-MYBPC3_wt",
+        "numerator": "het"
+      },
+      {
+        "denominator": "wt",
+        "label": "MYBPC3_hom-MYBPC3_wt",
+        "numerator": "hom"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE224129_expr.tsv.gz",
+    "sha256": "5a758a80eb4c4cfbd369aba63150c1e0850d44a93a4576db1d23cc230be85a2c"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "grouphet",
+      "grouphom",
+      "groupwt"
+    ],
+    "contrasts": [
+      "MYBPC3_het-MYBPC3_wt",
+      "MYBPC3_hom-MYBPC3_wt"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 35597,
+    "n_genes_tested": 35597,
+    "n_rows": 71194,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE224129",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the MYBPC3 mutant arm (+/- or -/-) vs the isogenic cMyBP-C+/+ control",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 8,
+  "n_control": 4,
+  "samples": {
+    "covariates": [],
+    "group_counts": {
+      "het": 4,
+      "hom": 4,
+      "wt": 4
+    },
+    "group_source": "genotype",
+    "isogenic_control": {
+      "arm": "cMyBP-C+/+ ECT, 4 libraries",
+      "basis": "all three arms are the same DF19-9-11T.H iPSC background; CRISPR-Cas9 introduced heterozygous and homozygous MYBPC3 frame-shift alleles, and the +/+ arm is the isogenic control",
+      "deposit_evidence": "series-matrix !Sample_characteristics_ch1 \"genotype: cMyBP-C+/+\" (4 samples), \"+/-\" (4), \"-/-\" (4)"
+    },
+    "match_basis": "title_bracket",
+    "n": 12,
+    "path": "local/deg/GSE224129_samples.csv",
+    "sha256": "9b0785a64555cc4822d410cf8a12018648908682c94b592771a46e9247867bfd"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "two mutant genotype arms (heterozygous, homozygous) vs one isogenic +/+ control arm",
+    "pooled": true,
+    "why": "+/- and -/- are two doses of the same MYBPC3 lesion on one isogenic background: both contrasts come from one joint fit and collapse per gene by maximum effect (ticket-01 rule), not as two independent cohorts"
+  }
+}

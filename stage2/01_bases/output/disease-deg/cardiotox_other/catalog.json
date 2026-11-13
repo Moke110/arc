@@ -1,0 +1,447 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/tables/genes.csv",
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "catalog_sha256": "a3213815e9117595e79d028967ccc9d0637333e735e2a8e18d472042fb5922c7",
+  "category": "cardiotox_other",
+  "datasets": [
+    {
+      "accession": "GSE217421",
+      "alignment": {
+        "ambiguous": 18,
+        "canonical": 71914,
+        "crosswalk_alias": 2544,
+        "ensembl": 0,
+        "hgnc_alias": 1654,
+        "n_axis_genes_resolved": 13303,
+        "n_resolved": 76112,
+        "n_source_symbols": 86729,
+        "offaxis": 777,
+        "unmapped": 9822
+      },
+      "category": "cardiotox_other",
+      "class_id": "atc_l4:L01EA",
+      "class_label": "BCR-ABL tyrosine kinase inhibitors",
+      "class_slug": "atc_l4-L01EA",
+      "contrasts": [
+        {
+          "contrast": "atc_l4-L01EA|MSN01-03R|plate0|48h",
+          "n_case": 12,
+          "n_control": 7,
+          "stratum": "MSN01-03R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EA|MSN02-04R|plate0|48h",
+          "n_case": 2,
+          "n_control": 3,
+          "stratum": "MSN02-04R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EA|MSN05-01R|plate0|48h",
+          "n_case": 16,
+          "n_control": 10,
+          "stratum": "MSN05-01R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EA|MSN06-07R|plate0|48h",
+          "n_case": 11,
+          "n_control": 6,
+          "stratum": "MSN06-07R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EA|MSN08-13R|plate0|48h",
+          "n_case": 8,
+          "n_control": 8,
+          "stratum": "MSN08-13R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EA|MSN09-04R|plate0|48h",
+          "n_case": 15,
+          "n_control": 7,
+          "stratum": "MSN09-04R|plate0|48h"
+        }
+      ],
+      "dataset_id": "dtoxs_ipsc__atc_l4-L01EA",
+      "deg": "dtoxs_ipsc.atc_l4-L01EA.deg.csv",
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 12472,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
+      "inputs": {
+        "pert_data/Annotation/local/cm_compound_annotation.csv": {
+          "bytes": 116967,
+          "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+          "bytes": 536,
+          "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+          "bytes": 66887,
+          "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        },
+        "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+          "bytes": 14873682,
+          "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+        },
+        "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+          "bytes": 832969,
+          "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+        }
+      },
+      "member_drugs": [
+        "Bosutinib",
+        "Dasatinib",
+        "Imatinib",
+        "Nilotinib",
+        "Ponatinib"
+      ],
+      "member_source_ids": [
+        "BOS",
+        "DAS",
+        "IMA",
+        "NIL",
+        "PON"
+      ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
+      "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
+      "n_case": 64,
+      "n_case_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_contrasts": 6,
+      "n_control": 41,
+      "n_control_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_measured": 13303,
+      "n_significant": 1152,
+      "n_small_molecule_drugs": 5,
+      "rank": "dtoxs_ipsc.atc_l4-L01EA.rank.csv",
+      "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
+      "source_item": "pert_data/DToxS-iPSC",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "accession": "GSE217421",
+      "alignment": {
+        "ambiguous": 15,
+        "canonical": 59186,
+        "crosswalk_alias": 2085,
+        "ensembl": 0,
+        "hgnc_alias": 1344,
+        "n_axis_genes_resolved": 13056,
+        "n_resolved": 62615,
+        "n_source_symbols": 71185,
+        "offaxis": 638,
+        "unmapped": 7917
+      },
+      "category": "cardiotox_other",
+      "class_id": "atc_l4:L01EB",
+      "class_label": "Epidermal growth factor receptor (EGFR) tyrosine kinase inhibitors",
+      "class_slug": "atc_l4-L01EB",
+      "contrasts": [
+        {
+          "contrast": "atc_l4-L01EB|MSN01-03R|plate0|48h",
+          "n_case": 6,
+          "n_control": 7,
+          "stratum": "MSN01-03R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EB|MSN05-01R|plate0|48h",
+          "n_case": 7,
+          "n_control": 10,
+          "stratum": "MSN05-01R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EB|MSN06-07R|plate0|48h",
+          "n_case": 6,
+          "n_control": 6,
+          "stratum": "MSN06-07R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EB|MSN08-13R|plate0|48h",
+          "n_case": 7,
+          "n_control": 8,
+          "stratum": "MSN08-13R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EB|MSN09-04R|plate0|48h",
+          "n_case": 10,
+          "n_control": 7,
+          "stratum": "MSN09-04R|plate0|48h"
+        }
+      ],
+      "dataset_id": "dtoxs_ipsc__atc_l4-L01EB",
+      "deg": "dtoxs_ipsc.atc_l4-L01EB.deg.csv",
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 12966,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
+      "inputs": {
+        "pert_data/Annotation/local/cm_compound_annotation.csv": {
+          "bytes": 116967,
+          "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+          "bytes": 536,
+          "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+          "bytes": 66887,
+          "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        },
+        "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+          "bytes": 14873682,
+          "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+        },
+        "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+          "bytes": 832969,
+          "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+        }
+      },
+      "member_drugs": [
+        "Afatinib",
+        "Erlotinib",
+        "Gefitinib"
+      ],
+      "member_source_ids": [
+        "AFA",
+        "ERL",
+        "GEF"
+      ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
+      "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
+      "n_case": 36,
+      "n_case_basis": "sum of pooled wells over 5 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_contrasts": 5,
+      "n_control": 38,
+      "n_control_basis": "sum of pooled wells over 5 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_measured": 13056,
+      "n_significant": 1464,
+      "n_small_molecule_drugs": 3,
+      "rank": "dtoxs_ipsc.atc_l4-L01EB.rank.csv",
+      "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
+      "source_item": "pert_data/DToxS-iPSC",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "accession": "GSE217421",
+      "alignment": {
+        "ambiguous": 18,
+        "canonical": 72179,
+        "crosswalk_alias": 2540,
+        "ensembl": 0,
+        "hgnc_alias": 1658,
+        "n_axis_genes_resolved": 13339,
+        "n_resolved": 76377,
+        "n_source_symbols": 87335,
+        "offaxis": 790,
+        "unmapped": 10150
+      },
+      "category": "cardiotox_other",
+      "class_id": "atc_l4:L01EX",
+      "class_label": "Other protein kinase inhibitors",
+      "class_slug": "atc_l4-L01EX",
+      "contrasts": [
+        {
+          "contrast": "atc_l4-L01EX|MSN01-03R|plate0|48h",
+          "n_case": 12,
+          "n_control": 7,
+          "stratum": "MSN01-03R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EX|MSN02-04R|plate0|48h",
+          "n_case": 4,
+          "n_control": 3,
+          "stratum": "MSN02-04R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EX|MSN05-01R|plate0|48h",
+          "n_case": 20,
+          "n_control": 10,
+          "stratum": "MSN05-01R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EX|MSN06-07R|plate0|48h",
+          "n_case": 10,
+          "n_control": 6,
+          "stratum": "MSN06-07R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EX|MSN08-13R|plate0|48h",
+          "n_case": 14,
+          "n_control": 8,
+          "stratum": "MSN08-13R|plate0|48h"
+        },
+        {
+          "contrast": "atc_l4-L01EX|MSN09-04R|plate0|48h",
+          "n_case": 12,
+          "n_control": 7,
+          "stratum": "MSN09-04R|plate0|48h"
+        }
+      ],
+      "dataset_id": "dtoxs_ipsc__atc_l4-L01EX",
+      "deg": "dtoxs_ipsc.atc_l4-L01EX.deg.csv",
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 12975,
+        "reason": null,
+        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+      },
+      "inputs": {
+        "pert_data/Annotation/local/cm_compound_annotation.csv": {
+          "bytes": 116967,
+          "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+          "bytes": 536,
+          "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+          "bytes": 66887,
+          "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        },
+        "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+          "bytes": 14873682,
+          "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+        },
+        "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+          "bytes": 832969,
+          "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+        }
+      },
+      "member_drugs": [
+        "Cabozantinib",
+        "Pazopanib",
+        "Regorafenib",
+        "Sorafenib",
+        "Sunitinib",
+        "Vandetanib"
+      ],
+      "member_source_ids": [
+        "CAB",
+        "PAZ",
+        "REG",
+        "SOR",
+        "SUN",
+        "VAN"
+      ],
+      "method": {
+        "collapse": "per-gene maximum effect over the per-stratum pooled contrasts",
+        "deposition": "GSE217421 Conv read counts + shipped per-drug Calc tables (wells/QC)",
+        "design": "a class's member wells pooled into one CLASS arm vs the same cell line's DMSO CTRL wells per (cell line, plate) stratum",
+        "env": "conda:biomni_e1 (R 4.5.3, edgeR 4.8.2)",
+        "implementation": "cardiotox_edgeR.R (Program-Source-Codes pipeline)",
+        "model": "the deposit's pinned edgeR differential-comparison pipeline (Program-Source-Codes)",
+        "name": "DToxS pinned edgeR pooled class contrast",
+        "source_item": "pert_data/DToxS-iPSC",
+        "test": "edgeR exactTest on TMM-normalized counts with trended dispersion, remove_small filter, BH FDR (alpha 0.1)"
+      },
+      "model_system": "DToxS hiPSC-CM (GSE217424 SuperSeries; 48 h, 6 cell lines)",
+      "n_case": 72,
+      "n_case_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_contrasts": 6,
+      "n_control": 41,
+      "n_control_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_measured": 13339,
+      "n_significant": 1212,
+      "n_small_molecule_drugs": 6,
+      "rank": "dtoxs_ipsc.atc_l4-L01EX.rank.csv",
+      "shared_control_group": "DToxS-iPSC:plate DMSO wells (the shipped per-drug Calc tables share one same-plate CTRL set per cell line)",
+      "source_item": "pert_data/DToxS-iPSC",
+      "species": "Homo sapiens",
+      "tier": 2
+    }
+  ],
+  "evidence_type": "bulk",
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 2
+}

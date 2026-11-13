@@ -1,0 +1,166 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "TTNtv-WT.2d_atrial": {
+      "denominator": "2d_atrial_wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "2d_atrial_ttn"
+    },
+    "TTNtv-WT.2d_ventricular": {
+      "denominator": "2d_ventricular_wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "2d_ventricular_ttn"
+    },
+    "TTNtv-WT.eht_atrial": {
+      "denominator": "eht_atrial_wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "eht_atrial_ttn"
+    },
+    "TTNtv-WT.eht_ventricular": {
+      "denominator": "eht_ventricular_wt",
+      "n_case": 3,
+      "n_control": 3,
+      "numerator": "eht_ventricular_ttn"
+    }
+  },
+  "deg": {
+    "bytes": 20262195,
+    "n_source_genes": 35138,
+    "path": "local/deg/GSE234141_deg.csv",
+    "rows": 140552,
+    "sha256": "f4765e0f989f7b54436695f33ae4a4b8b5ed43be14fc2c6fa9b232fe1629533c"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 1123421,
+      "feature_count": 58243,
+      "id_kind": "ensembl",
+      "path": "source/GSE234141_counts.txt.gz",
+      "sha256": "8c836fcd25f2c172965a8c0bb3f96700e05a8c48cbd425b45a645b9bfed2687e"
+    },
+    "series_matrix": {
+      "bytes": 3460,
+      "path": "source/GSE234141_series_matrix.txt.gz",
+      "sha256": "2626aaf706f29f39bd68a372d08a01673ec92d50385bd47db9099f5b88ae702e"
+    },
+    "values": {
+      "library_size": {
+        "max": 40945707,
+        "median": 30736347,
+        "min": 8139973
+      },
+      "mode": "integer-as-deposited",
+      "n_values": 1397832
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "2d_ventricular_wt",
+        "label": "TTNtv-WT.2d_ventricular",
+        "numerator": "2d_ventricular_ttn"
+      },
+      {
+        "denominator": "2d_atrial_wt",
+        "label": "TTNtv-WT.2d_atrial",
+        "numerator": "2d_atrial_ttn"
+      },
+      {
+        "denominator": "eht_ventricular_wt",
+        "label": "TTNtv-WT.eht_ventricular",
+        "numerator": "eht_ventricular_ttn"
+      },
+      {
+        "denominator": "eht_atrial_wt",
+        "label": "TTNtv-WT.eht_atrial",
+        "numerator": "eht_atrial_ttn"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE234141_expr.tsv.gz",
+    "sha256": "2bcfaa1b13dea3178c051d0e2f9158f3745e323ca21d8c52599277a85abfda01"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "group2d_atrial_ttn",
+      "group2d_atrial_wt",
+      "group2d_ventricular_ttn",
+      "group2d_ventricular_wt",
+      "groupeht_atrial_ttn",
+      "groupeht_atrial_wt",
+      "groupeht_ventricular_ttn",
+      "groupeht_ventricular_wt"
+    ],
+    "contrasts": [
+      "TTNtv-WT.2d_ventricular",
+      "TTNtv-WT.2d_atrial",
+      "TTNtv-WT.eht_ventricular",
+      "TTNtv-WT.eht_atrial"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 35138,
+    "n_genes_tested": 35138,
+    "n_rows": 140552,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE234141",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the TTN truncating-variant arm vs the CRISPR-corrected isogenic WT/WT arm of the same format and cell type",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 12,
+  "n_control": 12,
+  "samples": {
+    "covariates": [],
+    "group_counts": {
+      "2d_atrial_ttn": 3,
+      "2d_atrial_wt": 3,
+      "2d_ventricular_ttn": 3,
+      "2d_ventricular_wt": 3,
+      "eht_atrial_ttn": 3,
+      "eht_atrial_wt": 3,
+      "eht_ventricular_ttn": 3,
+      "eht_ventricular_wt": 3
+    },
+    "group_source": [
+      "tissue",
+      "cell_type",
+      "genotype"
+    ],
+    "isogenic_control": {
+      "arm": "WT/WT isogenic line, 12 libraries (3 per format x cell-type stratum)",
+      "basis": "the deposit pairs a patient TTNtv iPSC line with its CRISPR/Cas9-corrected isogenic WT/WT line; the WT/WT libraries are the control in every stratum",
+      "deposit_evidence": "series-matrix !Sample_characteristics_ch1 \"genotype: WT/TTNtv (p.Ser21134Trpfs*25)\" and \"genotype: WT/WT\""
+    },
+    "match_basis": "description",
+    "n": 24,
+    "path": "local/deg/GSE234141_samples.csv",
+    "sha256": "a629640a35e46474bc39bfb6ff2105bdfba026a6082ed8fca126b3c5c7082073"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "four paired strata (2D vs EHT) x (ventricular-like vs atrial-like), each TTNtv vs WT, collapsed per gene by maximum effect",
+    "pooled": true,
+    "why": "format and cell type are culture/differentiation strata of one isogenic pair, not independent cohorts; each stratum keeps its own paired contrast inside one joint fit (shared dispersion) and the four are collapsed per gene by maximum effect, the ticket-01 rule for a multi-arm source"
+  }
+}

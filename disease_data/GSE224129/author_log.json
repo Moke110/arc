@@ -1,0 +1,53 @@
+{
+  "item": "GSE224129",
+  "category": "disease_data",
+  "purpose": "Human MYBPC3 (cMyBP-C) hypertrophic-cardiomyopathy engineered cardiac tissue (ECT) series for the Stage 2 gene axis genetic_cardiomyopathy category (ADR 0066): CRISPR-Cas9 heterozygous (+/-) and homozygous (-/-) frame-shift lines and the isogenic +/+ line on one DF19-9-11T.H iPSC background, 12 ECT libraries (4 per genotype). The item-local derivation integerises the deposited RSEM expected counts and fits one joint design to yield the two isogenic HCM contrasts.",
+  "retrieved_at": "2026-11-13T17:05+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE224129",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE224129",
+      "version": "GSE224129 (GPL24676 (Illumina NovaSeq 6000))",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP: the RSEM gene matrix GSE224129_AHNNF3DMXX_rsem_GENE.txt.gz and GSE224129_series_matrix.txt.gz, byte-size pinned; no other payload fetched)",
+      "path": "source/",
+      "files": 2,
+      "bytes": 830142,
+      "tree_sha256": "6cd74673ae1394ae6b0ff3b0f2cb0af4c657969c1fc4e3f48645341085a8bdfd"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE224129_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id, gene_symbol and one count column per library (feature x sample), handed to output/api/bases/disease_deg.R; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE224129_samples.csv",
+      "origin": "item-local fit design sheet: sample, group, declared blocking covariates, gsm and title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE224129_deg.csv",
+      "origin": "item-local full DEG table: one row per tested gene and contrast (71,194 rows, 35,597 source genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE224129_deg.json",
+      "origin": "tracked compact DEG summary: deposit digests, sample mapping basis, the isogenic-control record, the strata/pooling decision, the one-joint design and its contrasts with n_case/n_control, integerisation statistics (when used), limma/R versions and output digest",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg matrix, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-13T17:22+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE224129 \u2014 HCM MYBPC3 engineered cardiac tissue (cMyBP-C +/- and -/- vs +/+, isogenic). The deposit is open GEO access; two payloads are stored in source/ (the expression matrix and the GEO series matrix, both byte-size pinned in script/fetch.sh), nothing else is fetched. SAMPLE MAPPING: matrix columns are the sequencer tokens 2-00208xx E7; the GSM title bracket token [s200208xxE7] matches after removing punctuation and a leading s; the binding is by name (never by position) with a fail-closed bijection check, and every library is matched (no silent drop). DERIVATION: RSEM gene-level expected counts (non-integer values on a count scale: library sums 24.1-30.7M, max |x - round(x)| 0.5, 52,572 non-integer values) rounded to integers by the one shared helper bases.bulk_deg.integerise_counts; 119 genes whose rounded row is all-zero are recorded in the tracked summary and dropped by the count model, never silently filtered. DESIGN: one joint limma-voom fit ~0 + group over all 12 ECT libraries; contrasts MYBPC3_het-MYBPC3_wt and MYBPC3_hom-MYBPC3_wt, collapsed per gene by maximum effect into one published dataset (ticket-01 multi-contrast rule). ISOGENIC EXCEPTION: The two mutant arms are two doses of the same MYBPC3 lesion on one isogenic background, so both contrasts are read from one fit and collapsed by maximum effect rather than published as two independent datasets. The adapter is the single shared derivation stage2/01_bases/output/api/bases/bulk_deg.py and the single live DEG implementation output/api/bases/disease_deg.R (limma 3.62.2; R version 4.4.1 (2024-06-14)); the item script only binds its deposited bytes and its declared design. PUBLISHED: one item-local full DEG table and the tracked summary here; the step's output/disease-deg/genetic_cardiomyopathy/ publishes the compact table and within-dataset rank per source dataset (ticket #188, not the item). CONTRASTS: MYBPC3_het-MYBPC3_wt (4 case / 4 control); MYBPC3_hom-MYBPC3_wt (4 case / 4 control). BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 178,984 KiB, wall 5.2 s; a second independent run reproduced the DEG table byte-identically. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-13T17:22+08:00"
+}

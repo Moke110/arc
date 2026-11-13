@@ -296,15 +296,14 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 ### Stage 2 dataset corpus
 
 **Bases**:
-The retained Stage 2 foundation for shared gene identity, raw preparation, separate training corpora, measured tenv truth, training-only HVG selection and common evaluation semantics. Model setup and benchmark experiments are outside its current scope.
+The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-2k`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
 Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
 
-**Training corpus**:
-One of the separate tenv and Tahoe treated-well collections on the fixed CM gene axis, carrying normalized treated expression, matched-control expression and delta. Statistical significance labels remain separate from these corpora.
-
-The former five-source native corpus release is historical.
+**Corpus** (`output/corpus/`):
+The integer raw-count substrate on the frozen CM gene axis: one row per treated or vehicle profile, with identity, dose, role and matched-control group, and with no normalization, no delta and no gene subsetting. Every gene-axis view and every model view is built from it; the former normalized-corpus meaning is retired.
+_Avoid_: training corpus (the retired normalized collection), dataset corpus (the ADR 0033 native-axis per-source release)
 
 **Dataset corpus**:
 The information-maximal h5ad substrate between a raw downloaded dataset and a model's training input: one file per source dataset, raw counts in `X`, the source's **native** gene axis, every raw well including vehicle controls and technical blanks, and no model-facing filter, no integer encoding and no Δ. The historical five-source release comprised `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv` and `tahoe`; its tracked evidence is retained in Git history.
@@ -323,7 +322,7 @@ The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `s
 _Avoid_: source name, dataset name, accession
 
 **View**:
-A derived, model-facing h5ad that a consuming step builds from one or more corpora (one pharmacology tier, or a projection onto the CM gene axis); it is reproducible and disposable, and it is owned by the consumer that defines its rule — the corpus step never ships one.
+The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the fused six-source rank sum; the `AF` source is excluded as non-informative, ADR 0068), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
@@ -366,7 +365,8 @@ _Avoid_: matched control, Stage 1 baseline transcriptome
 ### Stage 2 benchmark
 
 **Tenv highly variable genes (tenv HVG)**:
-Genes on the full CM gene axis ranked by expression variability in a declared tenv population. This ranking has no upregulation or downregulation direction; perturbation direction belongs to a measured contrast.
+Genes on the frozen CM gene axis ranked by per-well expression dispersion across the **4,206 treated tenv wells** — the variability source of the gene axis, with no upregulation or downregulation direction. The train-only fold rankings in `output/tenv-hvg/` are a different population and are never an axis input.
+_Avoid_: tenv HVG (unqualified, when the train-only model-selection ranking is meant)
 
 **Stage 2 sample identity**:
 The stable identity of one retained perturbation observation, distinguishing separate source wells and, for Tahoe pseudobulk, the cell line within a well. Tenv significance labels describe a drug-parent–dose group rather than an individual sample.
@@ -645,106 +645,109 @@ The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue
 Two rows by four columns: `Precision@d`, `Recall@d`, `Spearman@d` and `Reliability@d` as curves over `d'` (with `F1@d` as a thin reference line on the Reliability panel), then `Reliability@d*` and `d*` bars, a macro three-class confusion heat map at `d*`, and the null-versus-changed Reliability split.
 
 
-### Stage 2 gene-axis decision preparation
+### Stage 2 gene axis
 
-Analysis vocabulary for the evidence that precedes the gene-axis decision (ADR 0065). These
-terms describe how the evidence is computed; none of them is an axis decision. `N`, the
-source quota, the direction rule and the animal weighting stay open (#173).
+Vocabulary for the two released gene axes `G_2000` and `G_5000`, the sources they are built
+from, and the corpus/view split that feeds the models. The axis decision itself is settled
+(ADR 0066); only the model-evaluation design is still open.
 
-**Gene-axis decision preparation**:
-The round of work that produces the evidence for narrowing the frozen 18,164-gene axis
-without choosing the narrow axis: the public disease sources under `disease_data/`, the
-already-local cardiotoxicity sources under `pert_data/`, and the evidence product
-`01_bases/output/gene-axis/` built by `01_bases/execution/build_gene_axis.py` from
-`01_bases/output/api/bases/gene_axis.py` on the unchanged frozen axis. It is preparation,
-not the gene-axis release (#174), and it decides no `N`, quota, direction rule or animal
-weight.
-_Avoid_: gene-axis selection, gene-axis release, new axis (for the preparation)
+**Gene axis** (`G_N`):
+The ordered gene set a Stage 2 perturbational model reads and predicts — `G_2000` and
+`G_5000`, each an ordered subset of the frozen 18,164 `gene_index` space ordered by ascending
+`gene_index`. It is not the frozen axis itself and its genes are never renumbered.
+_Avoid_: narrowed corpus axis, new identity axis
 
-**Disease source**:
-One fusion input of the gene-axis preparation: an external 项 under `disease_data/` that
-supplies a full-transcriptome signed DEG table (`local/deg/<GSE>_deg.csv`) and, where
-available, a normalized log expression matrix (`local/expr/<GSE>_log_expr.tsv.gz` with
-`local/expr/<GSE>_samples.csv`) — or the read-only cardiotoxicity adapter over
-`pert_data/DToxS-iPSC/` or `pert_data/GSE244740/` in
-`01_bases/execution/gene_axis_sources.py`. `disease_data/GSE137293/` is supplementary only
-and never a disease source; `pert_data/LINCS-LDS-1593/` is an L1000 coverage note only.
-_Avoid_: dataset, cohort, GSE (when meaning the source role)
+**Gene-axis candidate**:
+A frozen-axis gene that at least one of the seven sources measures or ranks; the rows of
+`output/gene-axis/candidate_rank_sum.csv`. tenv-HVG ranks all 18,164 genes, so the candidate
+set is the whole frozen axis.
+_Avoid_: gene universe, axis pool
+
+**{disease}-DEG**:
+A Control-vs-Disease differential-expression result from a **cardiomyocyte-derived** source —
+in-vitro CM/organoid/engineered-tissue bulk, or CM pseudobulk from single-cell data. Whole-heart
+tissue bulk is never one, however many cardiomyocytes it contains.
+_Avoid_: disease source (unqualified, when a whole-tissue bulk series is meant)
+
+**Disease category**:
+One of the six declared mechanism groups whose datasets fuse into one axis source: `nHF`,
+`ICM`, `AF`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
+fusion source however many datasets it holds.
+_Avoid_: disease label, cohort
+
+**nHF**:
+The non-specific human heart failure category — clinical, non-ischemic, non-hereditary human
+CM-pseudobulk samples: `GSE270788`'s NICM arm plus the Reichart donors without a declared
+pathogenic genotype.
+_Avoid_: NICM (when the category is meant)
+
+**ICM**:
+The ischemic cardiomyopathy category, merging chronic ischemic heart failure and acute MI
+samples into one ischemic continuum because no human deposit verifies a per-sample acute
+window.
+_Avoid_: IHF, MI/MIRI (the rejected chronic/acute split)
+
+**genetic_cardiomyopathy**:
+The hereditary myocardial disease category: genotype-positive human donors plus in-vitro
+isogenic hiPSC-CM models of HCM, DCM (TTN/LMNA/RBM20), ARVC and DMD.
+_Avoid_: hereditary CM (unqualified)
+
+**cardiotox_TOP2** / **cardiotox_other**:
+The two drug-cardiotoxicity categories: topoisomerase-II poisons, and every other mechanism
+class holding at least three small-molecule drugs. Antibody and peptide drugs are excluded.
+_Avoid_: chemotherapy toxicity (unqualified)
 
 **Source rank**:
-A source's own ordering of the frozen axis genes: its `deg_rank` from the continuous effect
-score `|log2FC| × -log10(padj)` for every disease, animal and `pert_data` source, or the
-published tenv HVG rank for the tenv source; a gene the source does not measure gets the
-worst rank `n_measured + 1`. Those are the `<source>_rank` columns of
-`01_bases/output/gene-axis/fused_rank.csv`. Where an expression matrix exists, the source's
-own **HVG rank** (Seurat-style normalized dispersion over the item's whole measured
-transcriptome) is also computed, but it is reported separately — `source_summary.csv`
-(`n_hvg`, `n_hvg_on_axis`, `hvg_share`, `hvg_density`), the tenv-HVG × source-HVG rows of
-`overlap.csv` and the per-source intermediates — not as the fusion column. Ranks are
-**within-source only**: effect sizes from different platforms are never compared directly.
+A dataset's within-dataset ordering of the frozen-axis genes by its continuous effect score
+`|log2FC| × −log10(padj)`, with a gene it does not measure at `n_measured + 1` and
+`rank_norm = rank / n_measured`; tenv-HVG contributes its dispersion rank under the same
+normalization. Ranks are never compared across datasets as if they were effect sizes.
 _Avoid_: global rank, meta-rank
 
-**Source HVG share**:
-The share of a source's **own declared HVG set** that lands on the frozen axis. The source's
-HVG ranking is computed over its whole measured transcriptome (all matrix rows it measures,
-not only the axis-mapped ones); its declared set at K=2000 is the top 2,000 source rows, and
-`hvg_share = n_hvg_on_axis / n_hvg_total` in
-`01_bases/output/gene-axis/source_summary.csv`, beside `n_hvg` (= the declared set size),
-`n_hvg_total`, `n_hvg_on_axis` and `n_axis_measured`. It says how much of a source's
-variability evidence lands on the axis; it is not an axis-selection score, and tenv's value
-is 1.0 by construction because its published ranking is already axis-restricted.
-_Avoid_: HVG overlap (when the share is meant), axis variability (the share is per source)
-
-**HVG density**:
-The share of a source's on-axis measured genes that are in its own declared HVG set:
-`hvg_density = n_hvg_on_axis / n_axis_expression` in
-`01_bases/output/gene-axis/source_summary.csv`. This is the number comparable across
-sources when asking how much of the axis a source's variability evidence covers; tenv's is
-2,000 / 18,164 = 0.1101.
-_Avoid_: HVG share (that one is per source set, not per axis)
+**Class source**:
+The single axis source a category contributes — the ascending order of `Σ rank_norm` over the
+datasets at that category's winning tier, ties broken by `gene_index`.
+_Avoid_: merged dataset, meta-analysis
 
 **Rank-sum fusion**:
-The declared unweighted combination of source ranks: per gene,
-`rank_sum = Σ rank_norm` over the sources, with `rank_norm = rank / n_measured` and an
-unmeasured source pinned to `rank_norm = 1.0` (the worst rank). No weights, no per-source
-quota and no animal down-weighting; the half-weight animal variant is only a sensitivity
-column (`rank_sum_animal_half`). It is recorded as `rank_sum` in
-`01_bases/output/gene-axis/fused_rank.csv`, is reproducible from its pinned inputs alone and
-sets no `N`.
-_Avoid_: weighted fusion, meta-analysis, Borda (unqualified)
+`rank_sum = Σ rank_norm` over the seven sources (six categories plus tenv-HVG), ascending,
+ties broken by `gene_index`; the `rank_sum` column of
+`output/gene-axis/candidate_rank_sum.csv`. It runs at two levels: datasets inside a category,
+then categories inside the axis.
+_Avoid_: weighted fusion, Borda (unqualified)
 
-**Fused rank**:
-The order of the frozen axis genes by ascending `rank_sum`, ties broken by the frozen
-`gene_index`: the `fused_rank` column of `01_bases/output/gene-axis/fused_rank.csv`, beside
-`n_sources_measured`. It ranks genes for the axis decision; it is not a released axis.
-_Avoid_: selected axis, new axis, gene-axis release
+**pN**:
+The number of the seven sources whose top-`N` set contains a gene, for `N ∈ {2000, 5000}` —
+the cross-source replication count that fills the axis's second half.
+_Avoid_: support count, vote
+
+**Axis fill rule**:
+`G_N` takes the top `0.5·N` tenv-HVG genes, then `0.5·N` more from the remaining candidates by
+`pN` descending, `rank_sum` ascending, `gene_index` ascending; the axes are not nested and the
+manifest reports their intersection.
+_Avoid_: top-N selection, elbow cut
 
 **Inflection point**:
-The candidate `N` on the fused-score curve identified by the declared criterion (Kneedle
-`S=1.0`, online variant, plus a second-difference peak, with leave-one-source-out
-stability): `01_bases/output/gene-axis/inflection.json`, which records the parameters and
-may report `"inflection": false`. The preparation never forces an `N`.
+The candidate `N` marked by the rank-sum curve's Kneedle plus second-difference criteria,
+reported with its parameters and stability and allowed to be `"inflection": false`. It is
+diagnostic only: the axis sizes are declared, not read off the curve.
 _Avoid_: optimal N, elbow (unqualified), cutoff
 
-**Tenv non-HVG share**:
-The share of a top-`N` fused selection that is **not** a member of a declared tenv HVG set
-`K ∈ {1000, 2000, 5000}` taken from the published `01_bases/output/tenv-hvg/descriptive.csv`
-ranking: the `non_hvg_share` curve over `N = 1..18164` in
-`01_bases/output/gene-axis/tenv_non_hvg_curve.csv`. It bounds how much of a candidate axis
-lies outside tenv variability evidence; it is descriptive, not a trainability guarantee.
-_Avoid_: tenv overlap, HVG loss (unqualified)
+**Gene-axis view** (`view-2k/`, `view-5k/`):
+The model-facing `X` / `control` / `Δ` trio built from the corpus by normalizing on the
+**full** 18,164-gene library total and then subsetting to `G_N` — one normalization, two gene
+subsets, never a view-local denominator.
+_Avoid_: corpus (for a view), subset matrix
 
-**Direction composition**:
-The up/down split of the top-`N` selection (`N ∈ {500, 1000, 2000, 3000, 5000}`) under two
-different orderings: `symmetric` = the first N genes by ascending `fused_rank`, and
-`max_abs_log2fc` = the N genes with the largest maximum cross-source `|log2FC|` (ties by
-ascending `fused_rank`). Each gene's sign is the sign of its maximum-effect per-gene DEG row
-across the DEG sources, so genes with no reported effect are `n_unsupported`; exact
-cross-source ties are recorded:
-`01_bases/output/gene-axis/direction_summary.csv`. It informs the direction rule that #173
-must still decide; it does not set that rule.
-_Avoid_: direction rule (that is #173's decision), |log2FC|-weighted share (the second rule
-ranks genes, it does not reweight the same top-N)
+**Raw-count release** (`raw_counts/`):
+tenv's native-gene raw counts with probe evidence and Tahoe's token evidence — the replayable
+bridge from immutable `source/` bytes to the frozen axis.
+_Avoid_: raw corpus
+
+**{N}k eval truth**:
+The evaluator-only ground truth a view will own (`2k_eval_truth/`, `5k_eval_truth/`) once the
+model-evaluation design is reworked; no truth is released until then.
+_Avoid_: tenv-truth (the retired full-axis release)
 
 
 ### Stage 1 evaluation

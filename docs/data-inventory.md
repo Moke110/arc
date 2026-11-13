@@ -78,6 +78,44 @@ Each external item is one directory per download source under ADR 0030: `script/
 | `disease_data/GSE160516/` | 2,030,663 | 2.0 MB | yes — GEO **GSE160516** (mouse, Clariom S) | re-download; `local/deg/` derived |
 
 
+### disease_data — Stage 2 CM sources (#187, ADR 0066)
+
+Three cardiomyocyte-derived items added for the Stage 2 gene axis. Each is an
+ADR 0030 item (tracked `script/`/`author_log.json`/`manifest.sha256`, ignored
+`source/` + declared `local/`); the CM-gated per-donor pseudobulk and the
+item-local DEG stay in `local/`, and the compact published product is the step's
+`output/disease-deg/`. `du -sb`, 2026-11-13.
+
+| 项 (item) | `du -sb` bytes | ≈ | reconstructible? (and from where) | backup expectation |
+|---|---:|---:|---|---|
+| `disease_data/GSE270788/` | 951,113,459 | 951.1 MB | yes — GEO **GSE270788** GEX SubSeries: 23 per-GSM `*_filtered_feature_bc_matrix.h5` (931,875,148 B) + cell metadata (1,272,635 B); `script/fetch.sh`. `local/` pseudobulk + DEG are derived | re-download `source/`; tracked summary/manifest in git; `local/` derived |
+| `disease_data/GSE255612/` | 1,032,251,016 | 1.03 GB | yes — GEO **GSE255612**: Scanpy mtx (1,003,414,933 B), feature axis (277,568 B) and cell metadata (8,846,174 B); `script/fetch.sh` (parallel ranges). `local/` pseudobulk + DEG derived | re-download `source/`; tracked summary/manifest in git |
+| `disease_data/Reichart-CM/` | 3,201,296,579 | 3.2 GB | yes — CELLxGENE object, collection `e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb`, version `27fdbdf9-deae-4aed-bf7f-21964ee62137` (CC BY 4.0), 3,194,863,189 B; `script/fetch.sh` | re-download; the **tracked** axis-aligned per-donor pseudobulk + genotype export (ticket #188 input) is in git |
+
+### disease_data — Stage 2 isogenic CM models (#188, ADR 0066)
+
+Six in-vitro hiPSC-CM bulk items added for the `genetic_cardiomyopathy`
+category. Each stores two byte-size-pinned payloads (the deposited expression
+matrix + the GEO series matrix) in `source/`; the item-local expression matrix,
+design sheet and full DEG table are derived under `local/deg/` with a tracked
+`_deg.json` summary, and the compact published product is the step's
+`output/disease-deg/genetic_cardiomyopathy/`. `du -sb`, 2026-11-13 (whole item
+directory, including the derived `local/` payloads).
+
+| 项 (item) | `du -sb` bytes | ≈ | reconstructible? (and from where) | backup expectation |
+|---|---:|---:|---|---|
+| `disease_data/GSE224129/` | 11,849,846 | 11.8 MB | yes — GEO **GSE224129** (GPL24676): RSEM gene matrix 826,308 B + series matrix 3,834 B; `script/fetch.sh` | re-download `source/`; tracked summary/manifest in git; `local/` derived |
+| `disease_data/GSE234141/` | 22,693,331 | 22.7 MB | yes — GEO **GSE234141** (GPL28337): counts 1,123,421 B + series matrix 3,460 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE304575/` | 6,430,249 | 6.4 MB | yes — GEO **GSE304575** (GPL24676): raw-count table 817,509 B + series matrix 3,382 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE305648/` | 19,583,646 | 19.6 MB | yes — GEO **GSE305648** (GPL30173): counts 765,978 B + series matrix 5,479 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE253223/` | 6,699,341 | 6.7 MB | yes — GEO **GSE253223** (GPL24676): estimated counts 1,526,983 B + series matrix 4,219 B; `script/fetch.sh` | re-download; `local/` derived |
+| `disease_data/GSE194297/` | 4,528,189 | 4.5 MB | yes — GEO **GSE194297** (GPL20301): absolute counts 342,625 B + series matrix 2,746 B; `script/fetch.sh` | re-download; `local/` derived |
+
+`disease_data/Reichart-CM/` gains one additive derivation for ticket #188
+(`script/build_genetic_deg.py` → ignored `local/deg/reichart-cm_genetic_deg.csv`
+plus a tracked `_deg.json` summary, ~4 MB on disk); its `source/` and #187 bytes
+are unchanged.
+
 ### drug_emb_model — 2 項 (930.1 MB)
 
 Unlike the other three categories these are **code libraries**: their `source/` trees are tracked; only the downloaded assets (`KPGT/source/models/`, `KPGT/source/feature_extract/`) are ignored.
@@ -119,36 +157,130 @@ Git; the retired comparison implementation is reachable only through Git history
 step. Recovering deleted ignored model fits would require retraining; no current
 build depends on them.
 
-Every accepted product now has one stable semantic path (`du -sb`,
-2026-11-12, refreshed after the #157 removals). Payloads total ≈20.9 GB; the
-tracked public implementation, records, figure and evidence add ≈10.6 MB.
-#157 removed 15.27 GB of rejected and disposable payload — the rejected
-historical v1 Tahoe h5ad (11.20 GB) and two superseded build-state directories
-(1.21 GB + 2.83 GB) — after the dependency proof recorded in
-`stage2/01_bases/log/157-removals.json`.
+Every accepted product now has one stable semantic path (`du -sb`; the retained
+rows below were measured 2026-11-12/13, historical sizes for removed payloads are
+kept only in git history). #157 removed 15.27 GB of rejected and disposable
+payload — the rejected historical v1 Tahoe h5ad (11.20 GB) and two superseded
+build-state directories (1.21 GB + 2.83 GB) — after its dependency proof. The
+ADR 0066 rebuild (#186-#192) then **deleted the pre-0066 products**
+`shared-expression/`, `training-corpora/`, `tenv-raw-counts/`,
+`tahoe-raw-counts/`, `tenv-truth/`, `tenv-truth-successor/`,
+`historical-training-release/` and the old `gene-axis/` file set, only after the
+#192 acceptance replays passed; the old→new mapping and digest evidence are in
+`stage2/01_bases/log/acceptance.md` + `inputs.json`. Git retains the compact
+files and all code; the ignored multi-GB payloads are re-creatable from the
+immutable `source/` trees below.
 
 | stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
 |---|---:|---|---|
 | `output/gene-identity/` | 16,638,438 | indexed identity (`genes.csv`, `manifest.json`) and the frozen `tables/` axis/crosswalk | compact source gene metadata, pinned HGNC annotation and the historical v1 mapping evidence |
-| `output/tenv-raw-counts/` | 79,376,992 | tenv integer counts, 4510 wells × 19613 native genes; probe evidence and seal | immutable GSE262419 source and annotation, `build_native.py` |
-| `output/tahoe-raw-counts/` | 2,957,405,982 | projected 18164-gene Tahoe integer pseudobulk counts, original token evidence and seal | immutable Tahoe source, `prepare_tahoe.py`; full build/source verification has its own acceptance record |
-| `output/shared-expression/` | 5,201,458,961 | verified CP10K/log1p shared projection, profiles, mappings and manifest | `build_shared.py` from the sealed raw counts; reconstruction intermediate retained because the training manifest seals it |
-| `output/training-corpora/` | 11,506,981,739 | current separate Tahoe (65318) and tenv (4206) normalized training h5ads, exclusions and seal | `build_corpora.py` from sealed raw counts and the shared release |
-| `output/historical-training-release/` | 486,898,232 | historical v1 truth-fit release: the tenv h5ad the truth fit depends on, its sealed manifest and the exclusion CSVs; the **rejected** v1 Tahoe payload was removed by #157 with its digest and rejection evidence retained | retained bytes; never a current training input |
-| `output/tenv-truth/` | 604,807,845 | independently fitted 1377 parent–dose tenv contrasts on exactly 18164 genes, statistic matrices and per-contrast payloads | bounded raw-count DESeq2 worker; truth acceptance has its own record |
-| `output/tenv-truth-successor/` | 897,211 | accepted exact-equivalence envelope for the current training release, re-issued at this path | `reissue_truth_successor.py`; requires the complete accepted truth verification and runtime seals |
-| `output/tenv-hvg/` | 6,243,580 | descriptive plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` from `training-corpora/tenv.h5ad`; held-out isolation re-checked |
+| `output/tenv-hvg/` | 6,243,580 | retained pre-0066 product: descriptive ranking (the tenv-HVG axis source) plus three train-only HVG rankings and deterministic parent-hash fold assignments | `build_hvg.py` — its pre-0066 input `training-corpora/tenv.h5ad` is retired; the same 4,206-well population is available from `output/corpus/tenv.h5ad` under the frozen normalization and the re-point is deferred (README *Retained tenv-HVG ranking*) |
 | `output/fold_n_seed/` | 1,159,437 | the accepted cold-drug assignment re-homed (#161) plus the ordered `folds.csv`/`seeds.csv` index tables and manifest | `build_fold_n_seed.py` from the sealed HVG cohort assignment; row-prefix selection only |
 | `output/palette/` | 3,204 | the stage palette: six hue families x nine shades as a hex table, its generation recipe and the colour roles (#162) | `output/api/bases/palette.py` `publish()`; the table is a pure function of the recorded recipe |
 | `output/api/` | 512,471 | the single public reader/metric implementation imported by build/audit/test code | tracked code, not payload (see `.gitignore` exception and #156 D1) |
-| `figure/` | 711,136 | diagnostic panel PNG, complete plotted-values CSV and the CSV-only renderer | regeneration reads only `figure/data/*.csv`; provenance from `log/diagnostic/` |
-| `log/` | 9,440,464 | acceptance/execution records, repo-health records, dissolved diagnostic and historical evidence, migration/audit records | tracked evidence |
+| `figure/` | 711,136 | `gene_axis_rank_sum_histogram.png`, its complete plotted-values CSV and the CSV-only renderer (the diagnostic PR figure was deleted by #192) | regeneration reads only `figure/data/*.csv` with `output/` products unreadable |
+| `log/` | ~4.1 MB | the post-0066 acceptance record `acceptance.md` + `inputs.json`, the tracked `raw_counts_provenance.json` (the two pre-0066 source-replay records restored from git history) and the per-slice `*_verify.json` replay records (the rest of the pre-0066 tree was deleted, not archived — ADR 0066) | tracked evidence |
+
+### Rebuild foundation products (#186, ADR 0066)
+
+The rebuild's `raw_counts/` -> `corpus/` chain is accepted (#192:
+`stage2/01_bases/log/acceptance.md`); the superseded raw, shared-expression and
+training products are deleted. Both new areas are gitignored payloads with
+tracked manifests, mapping evidence and exclusion table; `du -sb`, 2026-11-13.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/raw_counts/` | 3,037,082,960 | `tenv.h5ad` (4,510 wells x 19,613 native genes, int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 profiles x 18,164 axis genes, CSR int32), `token_mapping.csv`, `manifest.json` | `execution/build_raw_counts.py publish`: rehomes the source-accepted payloads and records `source-accepted-replay` provenance against the tracked `log/raw_counts_provenance.json` (the two pre-0066 source-replay acceptance records restored verbatim from git history plus the native tenv build manifest, digest-pinned). `--full-rebuild` rebuilds both from `pert_data/GSE262419/source` + `pert_data/Tahoe-100M/source` and replays from source (recorded ~4 h under the 10 GiB cap) |
+| `output/corpus/` | 1,395,893,021 | `tenv.h5ad` (4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv` (32 blanks + 300 invalid structures), `manifest.json` with the matched-control report; int32, no normalization, no delta | `execution/build_corpus.py publish` from `output/raw_counts/` + `pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet` |
+| `output/disease-deg/` | 63,635,080 | 63.6 MB | per category `nhf/`, `icm/`, `af/`, `genetic_cardiomyopathy/`: one rank-sorted compact `<dataset>.deg.csv` + full-axis `<dataset>.rank.csv` per dataset, plus `catalog.json` (canonical record list, `catalog_sha256`) and `manifest.json`; no top-level catalog (ticket #190 aggregates the per-category files). Thirteen datasets: GSE270788 NICM/ICM/AMI, Reichart genotype-negative DCM, Reichart genotype-positive DCM + ARVC, GSE255612 AF, and six isogenic models (GSE224129/234141/304575/305648/253223/194297); `genetic_cardiomyopathy/` is 29,961,789 B of it | `execution/build_disease_deg.py publish --all` from the pinned item-local DEG tables in `disease_data/{GSE270788,GSE255612,Reichart-CM,GSE224129,GSE234141,GSE304575,GSE305648,GSE253223,GSE194297}/local/deg/`; `verify --all` replays and compares every digest. The compact CSVs/catalogs/manifests are force-tracked; the item-local DEG/pseudobulk payloads stay ignored |
+
+Both products are replayed by their drivers' `verify` action (rebuild in
+`execution/checkpoints/` and compare every digest). The compact manifests,
+mapping evidence and exclusion table are force-tracked; the count payloads are
+gitignored.
+
+### Drug-cardiotoxicity class products (#189, ADR 0066)
+
+The `cardiotox_TOP2` / `cardiotox_other` class DEGs are **tracked compact
+tables**, not ignored payloads: each per-`(source, class)` DEG CSV is 1.9-2.8 MB
+and its full-axis rank CSV 0.38-0.43 MB, 15.7 MB in total across the three
+product directories. They are force-added because the repository-wide `*.csv`
+ignore rule would otherwise drop them.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/disease-deg/cardiotox/` | 57,716 | pinned crosswalk, classes, class members, excluded codes, per-source eligibility, rejected candidates and manifest | `execution/build_disease_deg_cardiotox.py publish` from the read-only GSE243674 / DToxS-iPSC / GSE244740 sources + `pert_data/Annotation/local/cm_compound_annotation.csv` |
+| `output/disease-deg/cardiotox_TOP2/` | 8,826,044 | three pooled class DEG tables + full-axis ranks, `catalog.json`, `manifest.json` | same driver; DToxS pinned edgeR pipeline, GSE243674 DESeq2 and the GSE244740 Welch test over pooled class wells |
+| `output/disease-deg/cardiotox_other/` | 6,795,074 | three DToxS non-TOP2 class DEG tables + full-axis ranks, `catalog.json`, `manifest.json` | same driver, DToxS pinned edgeR pipeline over pooled class wells |
+
+There is no gitignored cardiotox payload: the count/R intermediates exist only
+inside `execution/checkpoints/` while a candidate is built and are deleted after
+the candidate replaces the accepted product. `verify` replays the whole build
+from the pinned inputs and compares every digest; the peak RSS of the build
+(≈1.5 GiB Python, ≈0.9 GiB R) is recorded in the ticket record, not in a manifest.
+
+### Gene-axis release (#190, ADR 0066)
+
+The two released axes are **tracked compact evidence**, not ignored payloads:
+`candidate_rank_sum.csv` is 1.35 MB, the two axis files 23 kB + 58 kB, the
+composition table 5 kB and the manifest 25 kB; the figure CSV and PNG are 6 kB +
+83 kB. They are force-added because the repository-wide `*.csv` ignore rule would
+otherwise drop them. The pre-0066 `gene-axis/` file set (direction composition,
+unweighted quota-free fused table, animal half-weight column, tenv non-HVG curve,
+ortholog table, `inflection.json`, ~3.54 MB) was **deleted by #192** after
+acceptance; nothing read it. `du -sb`, 2026-11-13.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/gene-axis/` | 1,466,000 | released products only (`candidate_rank_sum.csv`, `gene_axis_2000.csv`, `gene_axis_5000.csv`, `axis_composition.csv`, `manifest.json`, ~1.46 MB) | `execution/build_gene_axis.py publish` from the read-only `output/disease-deg/**`, `output/tenv-hvg/descriptive.csv` and `output/gene-identity/genes.csv`; `--verify` replays and compares every digest |
+| `figure/gene_axis_rank_sum_histogram.png` | 82,830 | rank-sum histogram over all 18,164 candidates with both axes' `rank_sum` intervals marked (sha256 `49d1dc5d…`) | `figure/script/render_gene_axis_rank_sum_histogram.py` from `figure/data/gene_axis_rank_sum_histogram.csv` alone (`output/` unreadable) |
+| `figure/data/gene_axis_rank_sum_histogram.csv` | 6,483 | complete plotted values: histogram bins/shares, both axis intervals/medians and the inflection diagnostic marker | written by the build from the pinned inputs; tracked next to the PNG |
+
+The catalog inputs are the per-category `output/disease-deg/` products; the
+manifest pins 33 input digests (frozen axis, tenv-HVG ranking, six catalogs,
+six release manifests, 19 used rank frames) and 5 output digests, with no
+absolute paths. Build + replay peak RSS ≈140 MiB under the 10 GiB cap.
+
+### Model-facing views `view-2k/` / `view-5k/` (#191, ADR 0066)
+
+The two views are the models' `X`/`control`/`Δ` products: each corpus profile is
+normalized once on the **full** 18,164-gene library total (CP10K, natural
+`log1p`), then subset to one released axis's ascending `gene_index`; `control`
+is the mean of the row's matched vehicle rows normalized the same way and
+`Δ = X − control` exactly. The view never re-normalizes on its own subset. The
+float32 payloads are gitignored (normalized log values are near-incompressible)
+and only the small manifests plus the reader are tracked; `du -sb`, 2026-11-13.
+
+| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
+|---|---:|---|---|
+| `output/view-2k/` | 1,371,438,657 | `tenv.h5ad` (4,478 × 2,000 float32: `X`, `layers/control`, `layers/delta`), `tahoe_bulk.h5ad` (66,718 × 2,000), `library_totals.csv` (71,196 profiles' full-axis totals, 3.7 MB), `manifest.json` (5,752 B) | `execution/build_view.py publish` from the read-only `output/corpus/` + `output/gene-axis/`; `verify` replays both views and compares every digest |
+| `output/view-5k/` | 3,292,322,079 | `tenv.h5ad` (4,478 × 5,000), `tahoe_bulk.h5ad` (66,718 × 5,000), `library_totals.csv`, `manifest.json` (5,757 B) | same driver; candidates stage in `execution/checkpoints/` and are replaced only after verification |
+
+Measured cost of one publish run: 3 m 35 s, peak RSS 445,512 KiB; one `verify`
+replay: 3 m 29 s, peak RSS 443,036 KiB, both streaming 256-row corpus batches
+under the 10 GiB cap. The measured full-axis CP10K basis is recorded in each
+manifest: `tenv` **12.9299987%** (`G_2000`) / **37.2063189%** (`G_5000`) pooled over all
+rows (treated-only 12.9566820% / 37.1590893%), `tahoe_bulk` 10.4600758% /
+24.7819987%. ADR 0066's
+design-record 12.9% / 36.3% came from an interim pre-#190 axis; the measured
+released-axis value is authoritative and the one-normalization decision is
+unaffected (≈2.88× denominator ratio). Small-scale reproduction:
+
+```bash
+python stage2/01_bases/execution/build_view.py publish   # both views, candidate -> verify -> replace
+python stage2/01_bases/execution/build_view.py verify    # replay both, compare every digest
+```
+
+The two `manifest.json` files are force-tracked (they declare the payload
+digests, input digests and the measured basis); the h5ad payloads and
+`library_totals.csv` are ignored and reconstructible by the driver.
 
 Large h5ads, arrays and checkpoint shards stay ignored; compact input tables,
 the tracked `output/api` implementation and the records remain tracked. See
 `stage2/01_bases/README.md` for the current commands, accepted results,
 limitations and historical-versus-current provenance boundary, and
-`stage2/01_bases/log/156-migration-record.json` for the old→new binding.
+`stage2/01_bases/log/acceptance.md` + `inputs.json` for the post-0066 old→new
+binding and the recorded errata (GSE270788 roster; released-axis view basis).
 
 ### `stage2/02_models_tenv/` — accepted tenv matrix (2026-11-12, #165/#170)
 

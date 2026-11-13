@@ -1,0 +1,114 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "LMNA_H222P-corrected": {
+      "denominator": "corrected",
+      "n_case": 6,
+      "n_control": 6,
+      "numerator": "lmna_h222p"
+    }
+  },
+  "deg": {
+    "bytes": 4638883,
+    "n_source_genes": 36284,
+    "path": "local/deg/GSE304575_deg.csv",
+    "rows": 36284,
+    "sha256": "970749b9226fb589f82e8afc8d36e36d67eb3ebf9e79e33fc1480bc42ee09cba"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 817509,
+      "feature_count": 59050,
+      "id_kind": "symbol",
+      "path": "source/GSE304575_Raw_Counts_table.csv.gz",
+      "sha256": "bfd75fd16c8eeb222eb20d9da622fd00a53f125cddfc2106a328320386763ef3"
+    },
+    "series_matrix": {
+      "bytes": 3382,
+      "path": "source/GSE304575_series_matrix.txt.gz",
+      "sha256": "6c40e8b99241f9ed32cd9640519e80af74c958f0be1c978cd62823093b54fd72"
+    },
+    "values": {
+      "library_size": {
+        "max": 48148524,
+        "median": 40195758,
+        "min": 31512746
+      },
+      "mode": "integer-as-deposited",
+      "n_values": 708600
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "corrected",
+        "label": "LMNA_H222P-corrected",
+        "numerator": "lmna_h222p"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE304575_expr.tsv.gz",
+    "sha256": "b6aeb5013021eaa6042618ef67a1a390d86b8e01c99afd2522b2df1a695e389f"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupcorrected",
+      "grouplmna_h222p"
+    ],
+    "contrasts": [
+      "LMNA_H222P-corrected"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_genes_input": 36284,
+    "n_genes_tested": 36284,
+    "n_rows": 36284,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE304575",
+  "method": {
+    "contrast_direction": "positive log2FC = up in the LMNA p.His222Pro heterozygous arm vs the CRISPR-corrected isogenic control",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 6,
+  "n_control": 6,
+  "samples": {
+    "covariates": [],
+    "group_counts": {
+      "corrected": 6,
+      "lmna_h222p": 6
+    },
+    "group_source": "genotype",
+    "isogenic_control": {
+      "arm": "Corrected Isogenic control, 6 libraries",
+      "basis": "patient hiPSC-CM carrying LMNA c.665A>C p.His222Pro heterozygous, corrected with CRISPR/Cas9 to the isogenic control line",
+      "deposit_evidence": "series-matrix !Sample_characteristics_ch1 \"genotype: Corrected Isogenic control\" (6) and \"genotype: LMNAH222P\" (6); \"batch: 6/15/2023\" on all 12"
+    },
+    "match_basis": "description",
+    "n": 12,
+    "path": "local/deg/GSE304575_samples.csv",
+    "sha256": "3eae282a558ca2e957631dcd488d2ff6b0930a96ef7c3349f46dea40efecea0f"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "single case/control pair; no stratum to pool",
+    "pooled": false,
+    "why": "one genotype arm against one isogenic control arm; the only batch value is constant across all 12 libraries, so no blocking term is estimable or needed"
+  }
+}

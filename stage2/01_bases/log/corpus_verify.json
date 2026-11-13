@@ -1,0 +1,46 @@
+{
+  "action": "verify",
+  "controls": {
+    "tahoe_bulk": {
+      "matched_control_rows": 1400,
+      "matched_groups": 700,
+      "rule": "same plate and cell line; DMSO_TF vehicle",
+      "treated_without_control": 0,
+      "vehicle_groups": 700,
+      "vehicle_rows": 1400
+    },
+    "tenv": {
+      "matched_control_rows": 192,
+      "matched_groups": 16,
+      "rule": "same plate; same-plate DMSO vehicle",
+      "treated_without_control": 0,
+      "vehicle_groups": 32,
+      "vehicle_rows": 272
+    }
+  },
+  "counts": {
+    "axis_size": 18164,
+    "tahoe_bulk_profiles": 66718,
+    "tenv_profiles": 4478
+  },
+  "manifest_sha256": "f8c35ccc8e12d0fc7325a5ec5c798a7d4e542e1fc28844807b40305e9d5d9f6d",
+  "outputs": [
+    "exclusions.csv",
+    "tahoe_bulk.h5ad",
+    "tenv.h5ad"
+  ],
+  "sources": {
+    "tahoe_bulk": {
+      "profiles": 66718,
+      "raw_profiles": 67018,
+      "treated": 65318,
+      "vehicle": 1400
+    },
+    "tenv": {
+      "profiles": 4478,
+      "raw_profiles": 4510,
+      "treated": 4206,
+      "vehicle": 272
+    }
+  }
+}

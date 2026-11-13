@@ -1,6 +1,6 @@
 # Stage 2 accepted products and independently reproducible figures
 
-**Status:** accepted (2026-11-12).
+**Status:** accepted (2026-11-12). Amended by 0066 for the `stage2/01_bases/output/` layout.
 
 Stage 2 steps separate reusable accepted products, report figures, execution code and
 audit evidence. This replaces ADR 0030 contract two and its Stage 2 figure/log/checkpoint
