@@ -114,7 +114,13 @@ directory, including the derived `local/` payloads).
 `disease_data/Reichart-CM/` gains one additive derivation for ticket #188
 (`script/build_genetic_deg.py` → ignored `local/deg/reichart-cm_genetic_deg.csv`
 plus a tracked `_deg.json` summary, ~4 MB on disk); its `source/` and #187 bytes
-are unchanged.
+are unchanged. Measured 2026-11-14 after that derivation, its `du -sb` is
+3,207,685,803 B: the 3,201,296,579 B row above predates #188, and the 6,389,224 B
+difference is exactly the added `local/deg/` payloads
+(`reichart-cm_genetic_deg.csv` 4,336,159 B, `reichart-cm_genetic_matrix.tsv.gz`
+2,036,919 B, `reichart-cm_genetic_samples.csv` 1,953 B) plus tracked
+`script/build_genetic_deg.py` (8,719 B), `reichart-cm_genetic_deg.json` (3,623 B)
+and `author_log.json` growth (1,851 B).
 
 ### drug_emb_model — 2 項 (930.1 MB)
 
