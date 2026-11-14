@@ -56,7 +56,18 @@ download_ranges() {
     if [ $(( i % WORKERS )) -eq 0 ]; then wait; fi
   done
   wait
-  cat -- "$tmp"/part.* >"$dest.part"
+  # Concatenate in range order, never through a shell glob: `part.10` sorts
+  # before `part.2`, so a lexicographic glob corrupts any run with more than
+  # nine ranges (the size check still passes; only gzip -t catches it). The
+  # explicit index loop also fails closed when a range never landed.
+  : >"$dest.part"
+  local part=0
+  while [ "$part" -lt "$i" ]; do
+    local path="$tmp/part.$part"
+    [ -f "$path" ] || { echo "GSE255612: missing range part $part" >&2; exit 1; }
+    cat -- "$path" >>"$dest.part"
+    part=$(( part + 1 ))
+  done
   rm -rf -- "$tmp"
   local actual
   actual=$(wc -c <"$dest.part" | tr -d ' ')

@@ -20,6 +20,7 @@ Before loading datasets or training, read [`docs/agents/execution-environment.md
 
 - Read the owning `AGENTS.md` (routing) and `README.md` (summary) first; every external-data category and Stage 2 step carries both.
 - External data follows the four-provenance layout in ADR 0030 (`docs/adr/0030-external-data-provenance-and-step-layout.md`) — `script/`, `source/`, `local/`, plus tracked `author_log.json` and `manifest.sha256`. ADR 0030 is the law for that layout and the Stage 2 step layout. Never modify an item's `source/` tree; declared additions go in its `local/`.
+- A git worktree does not share gitignored payloads: an external item's `source/` and declared `local/` bytes exist only in the checkout that fetched or built them. Before removing a worktree, make sure the main checkout holds those payloads (fetch into it, or copy them over), then run `script/verify_all.sh` from the main checkout. The 2026-11-13 cleanup lost the `source/` and `local/` byte trees of nine `disease_data/` items this way — the tracked `manifest.sha256`/`script/fetch.sh` and the tracked `local/` summary JSONs re-materialise them (`script/verify.sh`, then the item's `build_*.py` derivations; #195).
 - Health checks from the repo root (all offline): `script/check_paths.sh`, `script/check_tracked.sh`, `script/verify_all.sh`.
 
 ## Reference docs
