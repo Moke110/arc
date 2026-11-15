@@ -1,7 +1,7 @@
 """External-contract tests for the verified gene-axis source metadata (#197).
 
 Only the mapping's published constants and its ``validate`` helper are exercised:
-the coverage contract against the five released disease-deg catalogs, the
+the coverage contract against the six released disease-deg catalogs, the
 required fields of every entry, and a handful of primary-source values a
 reviewer can re-verify against issue #197's comment. Nothing internal is
 asserted, and the module is pure data (it does no I/O), so the catalogs are read
@@ -20,7 +20,8 @@ sys.path.insert(0, str(EXECUTION))
 
 import gene_axis_source_metadata as metadata
 
-CATEGORIES = ('nhf', 'icm', 'genetic_cardiomyopathy', 'cardiotox_TOP2', 'cardiotox_other')
+CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy', 'cardiotox_TOP2',
+              'cardiotox_other')
 DISEASE_DEG = STEP / 'output' / 'disease-deg'
 TENV = 'tenv_hvg'
 ENTRY_FIELDS = {
@@ -31,7 +32,7 @@ REICHART_COLLECTION_ID = 'e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb'
 
 
 def published_dataset_ids():
-    """The dataset ids the five released catalogs publish, in catalog order."""
+    """The dataset ids the six released catalogs publish, in catalog order."""
     dataset_ids = []
     for category in CATEGORIES:
         catalog = json.loads((DISEASE_DEG / category / 'catalog.json').read_text(encoding='utf-8'))
@@ -44,8 +45,9 @@ class CoverageContractTest(unittest.TestCase):
         metadata.validate(published_dataset_ids() + [TENV])
 
     def test_key_set_is_exactly_the_published_datasets_plus_tenv(self):
+        """27 dataset rows across six categories, plus the tenv-HVG fusion row."""
         published = published_dataset_ids()
-        self.assertEqual(len(published), 18)
+        self.assertEqual(len(published), 27)
         self.assertEqual(set(metadata.SOURCES), set(published) | {TENV})
         self.assertEqual(len(metadata.SOURCES), len(set(published)) + 1)
 
@@ -110,7 +112,7 @@ class EntryContractTest(unittest.TestCase):
     def test_sample_size_notes_are_non_empty_when_present(self):
         notes = [entry['sample_size_note'] for entry in metadata.SOURCES.values()
                  if entry['sample_size_note'] is not None]
-        self.assertEqual(len(notes), 13, 'expected thirteen reconciled datasets')
+        self.assertEqual(len(notes), 18, 'expected eighteen reconciled datasets')
         for note in notes:
             self.assertIsInstance(note, str)
             self.assertTrue(note.strip())
@@ -180,6 +182,36 @@ class PrimarySourceSpotCheckTest(unittest.TestCase):
                 self.assertIsNone(entry['platform']['instrument'])
                 self.assertIn('no GEO platform', entry['platform_note'])
                 self.assertIn('do not name the instrument', entry['platform_note'])
+
+    def test_af_sources_are_the_four_published_af_datasets(self):
+        """AF returns (ADR 0071 decision 7) with one row per published AF dataset."""
+        af = sorted(dataset_id for dataset_id in metadata.SOURCES
+                    if dataset_id.endswith('__af'))
+        self.assertEqual(af, ['gse138252__af', 'gse238242__af', 'gse255612__af',
+                              'gse269882__af'])
+        for dataset_id in af:
+            with self.subTest(dataset_id=dataset_id):
+                entry = metadata.SOURCES[dataset_id]
+                self.assertTrue(entry['accession'].startswith('GSE'))
+                self.assertIn(entry['accession'], entry['source_url'])
+                self.assertTrue(entry['platform']['gpl'].startswith('GPL'))
+
+    def test_kuppe_mi_is_a_cellxgene_object_without_a_geo_platform(self):
+        entry = metadata.SOURCES['kuppe-mi__iz']
+        self.assertTrue(entry['accession'].startswith('cellxgene collection '))
+        self.assertIn('8191c283-0816-424b-9b61-c3e1d6258a77', entry['accession'])
+        self.assertIn('8191c283-0816-424b-9b61-c3e1d6258a77', entry['source_url'])
+        self.assertIsNone(entry['platform']['gpl'])
+        self.assertIsNone(entry['platform']['instrument'])
+        self.assertIn('no GEO platform', entry['platform_note'])
+
+    def test_gse165303_platform_is_the_gpl_record_not_the_item_label(self):
+        """The item's DEG summary says NovaSeq 6000; GPL20795 is HiSeq X Ten."""
+        entry = metadata.SOURCES['gse165303__dcm_lv_bulk']
+        self.assertEqual(entry['platform'],
+                         {'gpl': 'GPL20795', 'instrument': 'HiSeq X Ten'})
+        self.assertIn('NovaSeq 6000', entry['platform_note'],
+                      'the item label that disagrees must be recorded')
 
     def test_tenv_source_is_the_gse262419_corpus(self):
         entry = metadata.SOURCES[TENV]

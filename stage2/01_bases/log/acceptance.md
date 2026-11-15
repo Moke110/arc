@@ -579,3 +579,91 @@ exactly the eight #209-owned tests (six `DocxTests`, two
 `inputs.json.health.red_tests`); the two #210 figure replay tests are green and
 every other suite is green. `script/check_paths.sh`, `script/check_tracked.sh`
 and `script/verify_all.sh` PASS.
+
+## 11. Rule document v2 rebuild (#209, ADR 0071)
+
+Accepted 2026-11-15 on branch `ticket/209-docx-v2` (base `dev=e1a08da`, the tree
+that carries #210's re-pinned figure bytes). Contract: ADR 0071. The document is
+still a reading aid, not a manifest output, so no release product, manifest, axis
+or view changed.
+
+**What changed.** `execution/make_gene_axis_docx.py` is rebuilt around the v2
+rule: §1 取用规则 opens the document (DEG = `padj < 0.05` and `|log2FC| ≥ 2`,
+pass-any-contrast; DEG-only `1..n_DEG` source rank with `rank_norm = rank/n_DEG`;
+level-1 per-disease fusion; tier 1→2→3 collection with the axis-resolved 2,000
+stop; `f2000`/`rank_sum` level-2 fill with the tenv-HVG fallback). The retired
+`pN`, the measured-gene rank and the five-category phrasing are gone; `pN` appears
+only in the "已退役" explanation. 表 1 is the source dataset table (27 datasets +
+tenv-HVG, 28 rows), 表 2 is the new per-disease table (source-dataset count, tier
+path, DEG union, `DEG2000`, and a note column that states the cut or the
+shortfall), §4 the four misreading clarifications, §5 the coverage table in the
+published long format. The audited-and-excluded AF block and its closing
+paragraph are removed because `AF` returns; 表 2 records AF's single-gene
+`DEG2000` (`SLC9A7`, named from `output/disease-fusion/af.deg2000.csv` through
+the frozen axis identity table) and the three AF sources with `n_DEG = 0`.
+
+**Inputs.** The generator now reads 12 tracked inputs: the coverage CSV, the
+figure PNG, the six `output/disease-deg/<category>/catalog.json` files,
+`output/disease-fusion/catalog.json` (表 2's source, cross-checked against each
+category catalog's `n_deg`/`deg2000` and `len(datasets)`),
+`output/gene-identity/genes.csv` (the frozen identity table the catalogs declare
+as `axis.path`) and `output/gene-axis/manifest.json`. The manifest guard refuses
+any manifest whose `release.algorithm` is not `f2000-deg2000-v2`, so a pre-ADR
+0071 release cannot be rendered under the v2 rule. `make_gene_axis_docx.py`
+gained `--fusion-catalog`, `--axis` and `--manifest`; the six `--catalog` and the
+`--metadata` overrides are unchanged.
+
+**Coverage denominators.** `make_gene_axis_docx.COVERAGE_COLUMNS` is now
+imported from `bases.gene_axis.COVERAGE_COLUMNS` (the published long format), and
+the build refuses a coverage row whose denominator is not the v2 one: `N` for
+`tenv_hvg`, the disease's own `|DEG2000_d|` otherwise (nHF 1,661 / ICM 1,647 /
+AF 1 / genetic_cardiomyopathy 1,482 / cardiotox_TOP2 2,000 / cardiotox_other 297).
+
+**Source metadata.** `execution/gene_axis_source_metadata.py` grows from 19 to 28
+records (`gse35108__dcm_ipsc_cm`, `gse165303__dcm_lv_bulk`,
+`gse116250__hf_lv_bulk`, `gse141910__hf_lv_bulk`, `kuppe-mi__iz`,
+`gse255612__af`, `gse138252__af`, `gse238242__af`, `gse269882__af`). Accession,
+`n_samples` and the `GPL` record were re-read from NCBI E-utilities `esummary`
+(`db=gds`) and the sample-size reconciliation from each item's tracked
+`local/deg/*_deg.json` / `author_log.json`; 18 of the 28 records now carry a
+`sample_size_note`. Two item labels disagree with the GPL record they cite and
+the `platform_note` keeps both readings: `GSE165303`'s DEG summary calls
+`GPL20795` "Illumina NovaSeq 6000" while the record is **HiSeq X Ten**, and
+`GSE116250`'s calls `GPL16791` "Illumina HiSeq 2000" while the record is
+**Illumina HiSeq 2500**. `platform` carries the GPL record; the item label stays
+visible in the note. `Kuppe-MI` is a cellxgene object with no GEO platform.
+
+**Digest and replay.** The committed
+`output/gene-axis/gene_axis_fill_rule.docx` replayed byte-identically from its
+inputs: `2bbe1f0e1fc8e328c90288f27c1e338d9c50e564eefe30c2b012fece0091ed88`
+(92,412 B, #198/#199) → `e7fbc26a38ad005297989096ea2e4a5b087a69e7daf11d95757edbb7b6d37c61`
+(94,590 B). The build is byte-deterministic: three runs (two 2 s apart, one from
+`/tmp` with all absolute paths) produced the same digest, the DOCX zip is
+re-timed by `normalize_docx`, and the `python-docx` template's fixed
+`docProps/core.xml` timestamps (2013-12-23) leave no clock in the bytes. The
+replay is pinned by `test_gene_axis.DocxTests.test_committed_docx_replays_from_its_inputs`,
+which rebuilds from the 12 inputs into a temp dir and compares sha256.
+
+**Tests.** `test_gene_axis.DocxTests` and
+`test_gene_axis_source_metadata.CoverageContractTest` are re-pinned to the v2
+release: 28 source rows, 27 published dataset ids + tenv, 18 reconciled
+sample-size notes, the long-format coverage contract with the v2 denominators, the
+per-disease 表 2 contract, and a guard that the v2 rule is the document's opening
+section. The `test_af_excluded_table_contract` case is retired with the block and
+replaced by `test_disease_table_matches_the_published_catalogs`. Test inventory:
+**402 tests, 0 failures, 0 errors** (398 at base, −1 retired AF test, +2 表 2 /
+rule-section tests, +3 metadata spot checks); `test_gene_axis.py` and
+`test_gene_axis_source_metadata.py` together 11.0 s. The DOCX is not a manifest
+output, so `build_gene_axis.py --verify`, `build_view.py verify` and the two
+figure replays are untouched by this ticket. `script/check_paths.sh`,
+`script/check_tracked.sh` and `script/verify_all.sh` PASS on the merged tree.
+
+**Flags (not decided here).** (1) The #208 handover and spec #200 say "23
+published datasets"; the released catalogs publish **27** dataset rows (18 before
+#202–#206, +5 from #202/#203/#206, +4 AF from #204), which is what
+`metadata.validate` is driven by. The number in the handover is a pre-AF count.
+(2) `test_build_reads_the_five_catalog_paths_it_is_given` keeps its name (the red
+list in `inputs.json.health.red_tests` refers to it) although it now reads six.
+(3) The two item-labelled platform disagreements above are corrected in the
+document metadata only; the `disease_data/` item summaries still carry them and
+were not edited (out of this ticket's scope).

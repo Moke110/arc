@@ -3,7 +3,7 @@
 Everything is a hand-built 8-gene fixture except the real-file tests: the rule
 document and the two committed figure PNGs are regenerated from their tracked
 inputs and compared byte-for-byte, and the document's input wiring, its
-source-table/excluded-AF contracts and its sample-size footnote are asserted
+source-table/per-disease contracts and its sample-size footnote are asserted
 against the committed file. No release payload (h5ad, ``source/`` tree or
 gitignored intermediate) is read.
 
@@ -1215,20 +1215,25 @@ class DocxTests(unittest.TestCase):
     def test_committed_docx_replays_from_its_inputs(self):
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
         figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        fusion = STEP / 'output/disease-fusion/catalog.json'
+        axis = STEP / 'output/gene-identity/genes.csv'
+        manifest = STEP / 'output/gene-axis/manifest.json'
         catalogs = self.catalogs()
         committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
-        for path in (coverage, figure, committed, *catalogs.values()):
+        for path in (coverage, figure, fusion, axis, manifest, committed,
+                     *catalogs.values()):
             self.assertTrue(path.is_file(), f'missing docx input or output: {path}')
         import gene_axis_source_metadata as metadata
         import make_gene_axis_docx as docx_builder
         with tempfile.TemporaryDirectory() as temporary:
             rendered = Path(temporary) / 'gene_axis_fill_rule.docx'
-            docx_builder.build(coverage, figure, rendered,
-                               catalogs=catalogs, metadata=metadata)
+            docx_builder.build(coverage, figure, rendered, catalogs=catalogs,
+                               metadata=metadata, fusion_catalog=fusion,
+                               axis_path=axis, manifest_path=manifest)
             self.assertEqual(sha256_file(rendered), sha256_file(committed))
 
     def test_build_reads_the_five_catalog_paths_it_is_given(self):
-        """A changed catalog ``n_significant`` must reach the rendered cell."""
+        """A changed catalog ``n_deg`` must reach the rendered cell."""
         from docx import Document
         import make_gene_axis_docx as docx_builder
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
@@ -1244,7 +1249,7 @@ class DocxTests(unittest.TestCase):
             catalog = json.loads(catalogs['cardiotox_TOP2'].read_text(encoding='utf-8'))
             for dataset in catalog['datasets']:
                 if dataset['dataset_id'] == 'gse243674':
-                    dataset['n_significant'] = 12345
+                    dataset['n_deg'] = 12345
             catalogs['cardiotox_TOP2'].write_text(
                 json.dumps(catalog, indent=2, sort_keys=True) + '\n', encoding='utf-8')
             rendered = temporary / 'wired.docx'
@@ -1289,7 +1294,7 @@ class DocxTests(unittest.TestCase):
             catalog_path = temporary / 'nhf-catalog.json'
             shutil.copyfile(self.catalogs()['nhf'], catalog_path)
             catalog = json.loads(catalog_path.read_text(encoding='utf-8'))
-            catalog['datasets'][0]['n_significant'] = 424242
+            catalog['datasets'][0]['n_deg'] = 424242
             catalog_path.write_text(
                 json.dumps(catalog, indent=2, sort_keys=True) + '\n', encoding='utf-8')
             metadata_path = temporary / 'gene_axis_source_metadata.py'
@@ -1316,13 +1321,31 @@ class DocxTests(unittest.TestCase):
                              '--metadata was ignored')
 
     def test_coverage_table_columns_are_contracted(self):
+        """The long-format columns plus the v2 denominators, group by group."""
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
         import make_gene_axis_docx as docx_builder
         table = docx_builder.read_coverage(coverage)
         self.assertEqual(list(table.columns), list(docx_builder.COVERAGE_COLUMNS))
+        fusion = json.loads((STEP / 'output/disease-fusion/catalog.json').read_text(
+            encoding='utf-8'))
+        deg2000 = {record['category']: record['deg2000'] for record in fusion['diseases']}
+        for record in table.itertuples(index=False):
+            with self.subTest(N=record.N, group=record.group):
+                if record.group == 'tenv_hvg':
+                    self.assertEqual(record.denominator, record.N,
+                                     'tenv-HVG divides by its top-N set size')
+                else:
+                    label = gene_axis.CATEGORY_LABELS[record.group]
+                    self.assertEqual(record.denominator, deg2000[label],
+                                     'a disease divides by its own |DEG2000_d|')
+                self.assertEqual(record.n_axis, record.N, 'n_axis is the released axis size')
 
     def test_source_table_rows_match_catalogs(self):
-        """The first table is the released source dataset table, row for row."""
+        """The first table is the released source dataset table, row for row.
+
+        The v2 release publishes 27 dataset rows across six categories; the
+        tenv-HVG fusion row makes the 28th.
+        """
         from docx import Document
         import gene_axis_source_metadata as metadata
         import make_gene_axis_docx as docx_builder
@@ -1333,12 +1356,12 @@ class DocxTests(unittest.TestCase):
         table = document.tables[0]
         header = [cell.text for cell in table.rows[0].cells]
         self.assertEqual(header, list(docx_builder.SOURCE_TABLE_COLUMNS))
-        self.assertEqual(len(table.rows), 1 + 19, 'expected 19 source rows + header')
+        self.assertEqual(len(table.rows), 1 + 28, 'expected 28 source rows + header')
         expected = []
         for category in gene_axis.RELEASE_CATEGORIES:
             catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
             expected.extend((catalog['category'], dataset) for dataset in catalog['datasets'])
-        self.assertEqual(len(expected), 18)
+        self.assertEqual(len(expected), 27)
         for offset, (category_label, dataset) in enumerate(expected, start=1):
             cells = [cell.text for cell in table.rows[offset].cells]
             dataset_id = dataset['dataset_id']
@@ -1369,8 +1392,8 @@ class DocxTests(unittest.TestCase):
                 expected_accession = (f"{accession} ({source['accession_note']})"
                                       if source['accession_note'] else accession)
                 self.assertEqual(cells[1], expected_accession, 'accession column')
-                self.assertEqual(int(cells[6].replace(',', '')), dataset['n_significant'],
-                                 'CM DEG count column')
+                self.assertEqual(int(cells[6].replace(',', '')), dataset['n_deg'],
+                                 'CM DEG count column is the v2 DEG count, not n_significant')
         last = [cell.text for cell in table.rows[-1].cells]
         tenv = metadata.SOURCES[metadata.TENV_HVG]
         self.assertEqual(last[0], 'tenv-HVG (fusion source)')
@@ -1397,6 +1420,11 @@ class DocxTests(unittest.TestCase):
             '3,072': ('gse244740',),
             '79': ('reichart-cm__dcm_genotype_negative',
                    'reichart-cm__dcm_genotype_positive', 'reichart-cm__arvc'),
+            '17': ('gse35108__dcm_ipsc_cm',),
+            '177': ('gse165303__dcm_lv_bulk',),
+            '48': ('gse138252__af',),
+            '14': ('gse238242__af',),
+            '191,795': ('kuppe-mi__iz',),
         }
         for number, dataset_ids in groups.items():
             with self.subTest(number=number):
@@ -1413,42 +1441,69 @@ class DocxTests(unittest.TestCase):
                         self.assertTrue(note.strip(),
                                         f'{dataset_id}: blank sample_size_note')
 
-    def test_af_excluded_table_contract(self):
-        """The second table is the audited-and-excluded AF sources block."""
+    def test_disease_table_matches_the_published_catalogs(self):
+        """The second table is the per-disease DEG/DEG2000 record, row for row."""
         from docx import Document
         import make_gene_axis_docx as docx_builder
         committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
-        self.assertGreaterEqual(len(document.tables), 2, 'the document has no AF table')
+        self.assertGreaterEqual(len(document.tables), 2,
+                                'the document has no per-disease table')
         table = document.tables[1]
         header = [cell.text for cell in table.rows[0].cells]
-        self.assertEqual(header, list(docx_builder.AF_TABLE_COLUMNS))
-        self.assertEqual(len(table.rows), 1 + 5, 'expected 5 excluded-AF rows + header')
-        rows = [[cell.text for cell in row.cells] for row in table.rows[1:]]
-        self.assertEqual([row[0] for row in rows],
-                         ['GSE255612', 'GSE138252', 'GSE238242', 'GSE271229',
-                          'dbGaP phs003644'])
-        expected_deg = {
-            'GSE255612': ('0 in this pipeline', '0.7359', '2 in the paper',
-                          'LINC01257', 'ATRNL1'),
-            'GSE138252': ('2 (limma-voom)', '6 (edgeR QL)'),
-            'GSE238242': ('0 (min padj 0.217)',),
-            'GSE271229': ('not testable',),
-            'dbGaP phs003644': ('not downloadable',),
-        }
-        expected_reason = {
-            'GSE255612': 'no AF-specific signal',
-            'GSE138252': 'confound',
-            'GSE238242': 'no signal at n=4/3',
-            'GSE271229': 'no cell-type annotation',
-            'dbGaP phs003644': 'controlled access',
-        }
-        for row in rows:
-            with self.subTest(source=row[0]):
-                for fragment in expected_deg[row[0]]:
-                    self.assertIn(fragment, row[2], 'actual CM DEG count cell')
-                self.assertIn(expected_reason[row[0]], row[3], 'exclusion reason cell')
+        self.assertEqual(header, list(docx_builder.DISEASE_TABLE_COLUMNS))
+        self.assertEqual(len(table.rows), 1 + 6, 'expected 6 disease rows + header')
+        fusion = json.loads((STEP / 'output/disease-fusion/catalog.json').read_text(
+            encoding='utf-8'))
+        by_label = {record['category']: record for record in fusion['diseases']}
+        rows = {row.cells[0].text: [cell.text for cell in row.cells]
+                for row in table.rows[1:]}
+        self.assertEqual(list(rows), [gene_axis.CATEGORY_LABELS[category]
+                                      for category in gene_axis.RELEASE_CATEGORIES])
+        for category in gene_axis.RELEASE_CATEGORIES:
+            label = gene_axis.CATEGORY_LABELS[category]
+            catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
+            record = by_label[label]
+            cells = rows[label]
+            with self.subTest(disease=label):
+                self.assertEqual(int(cells[1]), record['declared_source_count'],
+                                 'source-dataset count')
+                self.assertEqual(int(cells[3].replace(',', '')), record['n_deg'],
+                                 'DEG union')
+                self.assertEqual(int(cells[4].replace(',', '')), record['deg2000'],
+                                 'DEG2000')
+                self.assertEqual(int(cells[4].replace(',', '')), catalog['deg2000'],
+                                 'the two published catalogs must agree')
+                tiers = sorted({entry['tier'] for entry in catalog['tier_sources']})
+                self.assertEqual(cells[2], ' → '.join(str(tier) for tier in tiers),
+                                 'tier path')
+        # The uncomfortable results are stated, never smoothed over.
+        self.assertIn('SLC9A7', rows['AF'][5], 'AF must name its single gene')
+        self.assertIn('未达到', rows['AF'][5])
+        self.assertIn('唯一达到', rows['cardiotox_TOP2'][5])
+        for short in ('nHF', 'ICM'):
+            self.assertIn('未达到', rows[short][5], f'{short} must state its shortfall')
+            self.assertIn('没有更低层可收', rows[short][5])
+
+    def test_rule_section_opens_the_document_with_the_v2_rule(self):
+        """A reader meets the v2 rule before any table, and never the pN rule."""
+        from docx import Document
+        import make_gene_axis_docx as docx_builder
+        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        document = Document(str(committed))
+        headings = [paragraph.text for paragraph in document.paragraphs
+                    if paragraph.style.name == 'Title'
+                    or paragraph.style.name.startswith('Heading')]
+        self.assertEqual(headings[0], docx_builder.TITLE)
+        self.assertEqual(headings[1], docx_builder.RULE_HEADING,
+                         'the v2 rule is the opening section')
+        text = '\n'.join(paragraph.text for paragraph in document.paragraphs)
+        for token in ('padj < 0.05', '|log2FC| ≥ 2', 'pass-any-contrast', 'DEG2000',
+                      'f2000', 'tenv-HVG', 'tier 1', 'tier 3'):
+            self.assertIn(token, text)
+        self.assertIn('pN 已退役', text)
+        self.assertNotIn('按 pN 降序', text, 'the retired selection must not be described')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 """Verified primary-source metadata for the gene-axis source table.
 
-One record per published gene-axis source: the 18 ``dataset_id`` values the five
+One record per published gene-axis source: the 27 ``dataset_id`` values the six
 released ``stage2/01_bases/output/disease-deg/<category>/catalog.json`` files
 declare, plus the ``tenv_hvg`` fusion row. This module is pure data keyed by
 ``dataset_id`` and is the only place the rule document's accession and sequencing
@@ -33,7 +33,15 @@ non-catalog sample-size cell has a single source.
 The four DToxS rows, the three GSE270788 rows and the three Reichart-CM rows
 share byte-identical accession/technology/source/platform blocks through the
 ``_DTOXS_CLASS`` / ``_GSE270788`` / ``_REICHART`` base records: one accession,
-several arms.
+several arms. Every other row is one accession and one arm.
+
+Two platform labels in the items' own tracked summaries disagree with the GPL
+record they cite, and ``platform_note`` records both readings rather than
+silently repeating either: ``GSE165303``'s DEG summary labels ``GPL20795``
+"Illumina NovaSeq 6000" while the ``GPL20795`` record is *HiSeq X Ten*, and
+``GSE116250``'s summary labels ``GPL16791`` "Illumina HiSeq 2000" while the
+``GPL16791`` record is *Illumina HiSeq 2500*. The GPL record is the platform
+claim, so ``platform`` carries it and the note states the item's label.
 
 Harvest method (recorded so a reviewer can re-run it):
 
@@ -44,9 +52,17 @@ Harvest method (recorded so a reviewer can re-run it):
   published supplementary metadata (``GSE270788_metadata.csv.gz`` for the
   ``HF.etiology`` donor arms; the DToxS ``Conv-DEG-Calc`` Calc-table headers for
   the post-QC well columns).
-* The cellxgene Curation API v1 collection endpoint for the Reichart-CM object.
+* The cellxgene Curation API v1 collection endpoint for the Reichart-CM object
+  and for the Kuppe-MI object.
 * NCBI PMC full-text XML (PMC9528698, Reichart et al., Science 2022) for the
   donor-cohort split.
+* For the nine rows #209 added, the platform half is re-read from the same
+  E-utilities ``esummary`` (``db=gds``) call on the dataset: the GSE record's
+  ``gpl`` and ``n_samples`` fields plus the ``GPL[ACCN] AND gpl[ETYP]`` record
+  title, and the sample-size half from the item's tracked
+  ``local/deg/*_deg.json`` / ``author_log.json`` (the 2020-batch slice of
+  GSE138252, the snRNA arm of GSE238242, the 500-CM-nuclei profile floor of
+  Kuppe-MI). No value below is copied from a ticket or a catalog's prose.
 
 Requests were limited to at most 3 per second with exponential backoff, and every
 response was cached under ``.scratch/source-verify/raw/``. No expression payload
@@ -128,6 +144,71 @@ SOURCES = {
             '79 = 78 exported (8 + 44 + 8 + 18) + 1 NCCM.'
         ),
     },
+    'gse35108__dcm_ipsc_cm': {
+        'accession': 'GSE35108',
+        'accession_note': None,
+        'technology': 'one-colour microarray (RMA log2; human patient-derived iPSC-CM)',
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE35108',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL6244',
+                     'instrument': '[HuGene-1_0-st] Affymetrix Human Gene 1.0 ST Array'},
+        'platform_note': (
+            'GEO series record and GPL6244 platform record ([HuGene-1_0-st] Affymetrix '
+            'Human Gene 1.0 ST Array [transcript (gene) version]); this is an array, so '
+            'the platform record names the array rather than a sequencer'
+        ),
+        'sample_size_note': (
+            'The series carries 17 GSMs, of which 8 are cardiomyocyte libraries in a 2x2 '
+            'genotype x Serca2a design (2 per cell); this repo arm is the 4 DCM vs 4 normal '
+            'CM libraries across both treatment strata, not all 17.'
+        ),
+    },
+    'gse165303__dcm_lv_bulk': {
+        'accession': 'GSE165303',
+        'accession_note': ('RNA-seq arm of a multi-assay series '
+                           '(HiChIP / Hi-C / ChIP-seq / ATAC-seq / RNA-seq)'),
+        'technology': 'bulk RNA-seq (human left-ventricle whole tissue, log2 normalised counts)',
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE165303',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL20795', 'instrument': 'HiSeq X Ten'},
+        'platform_note': (
+            'GEO series record and GPL20795 platform record (HiSeq X Ten); the item\'s own '
+            'DEG summary labels GPL20795 "Illumina NovaSeq 6000", which the GPL record does '
+            'not support, so the GPL record is the platform claim here'
+        ),
+        'sample_size_note': (
+            'The series carries 177 samples across the HiChIP / Hi-C / ChIP-seq / ATAC-seq / '
+            'RNA-seq arms; this repo arm is the 101-library bulk RNA-seq arm (50 DCM + 51 '
+            'non-failing), not the whole series.'
+        ),
+    },
+    'gse116250__hf_lv_bulk': {
+        'accession': 'GSE116250',
+        'accession_note': None,
+        'technology': 'bulk RNA-seq (human left-ventricular tissue, RPKM as deposited)',
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE116250',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
+        'platform_note': (
+            'GEO series record and GPL16791 platform record (Illumina HiSeq 2500); the '
+            'item\'s author_log calls the same GPL16791 "Illumina HiSeq 2000", so the GPL '
+            'record is the platform claim here'
+        ),
+        'sample_size_note': None,
+    },
+    'gse141910__hf_lv_bulk': {
+        'accession': 'GSE141910',
+        'accession_note': None,
+        'technology': ('bulk RNA-seq (human left-ventricular free-wall tissue, '
+                       'submitted voom log2)'),
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE141910',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
+        'platform_note': (
+            'GEO series record and GPL16791 platform record (Illumina HiSeq 2500)'
+        ),
+        'sample_size_note': None,
+    },
     # --- ICM: the same GSE270788 GEX arm, split by aetiology -------------------
     'gse270788__icm': {
         **_GSE270788,
@@ -141,6 +222,27 @@ SOURCES = {
         'sample_size_note': (
             'The series reports 46 GSMs = 23 GEX + 23 ATAC; this repo arm is the 5 AMI '
             'donors against the same 7 donor controls (HF.etiology), not the 46 libraries.'
+        ),
+    },
+    'kuppe-mi__iz': {
+        'accession': 'cellxgene collection 8191c283-0816-424b-9b61-c3e1d6258a77',
+        'accession_note': (
+            'cellxgene dataset 1c739a3e-c3f5-49d5-98e0-73975e751201, '
+            'version 4780eb7d-4c7c-4630-8705-471f0de8e27a'
+        ),
+        'technology': "10x 3' v3 snRNA-seq (CM pseudobulk, per donor-zone profile)",
+        'source_url': ('https://cellxgene.cziscience.com/collections/'
+                       '8191c283-0816-424b-9b61-c3e1d6258a77'),
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': None, 'instrument': None},
+        'platform_note': (
+            'no GEO platform: cellxgene h5ad object; the cellxgene record and the paper '
+            'name the 10x 3\' v3 chemistry but not the instrument'
+        ),
+        'sample_size_note': (
+            'The object carries 191,795 nuclei from 20 donors; this repo arm is the 4 '
+            'ischaemic-zone profiles (donors P2, P9, P10, P15) vs the 4 normal-heart profiles '
+            '(P1, P7, P8, P17) left by the 500-CM-nuclei profile floor, not the 20 donors.'
         ),
     },
     # --- genetic_cardiomyopathy ------------------------------------------------
@@ -223,6 +325,63 @@ SOURCES = {
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL20301', 'instrument': 'Illumina HiSeq 4000'},
         'platform_note': 'GEO series record and GPL20301 platform record (Illumina HiSeq 4000)',
+        'sample_size_note': None,
+    },
+    # --- AF: three tier-1 CM-specific sources, one tier-3 bulk atrial source ----
+    'gse255612__af': {
+        'accession': 'GSE255612',
+        'accession_note': None,
+        'technology': "10x 3' v3 snRNA-seq (left-atrium CM pseudobulk)",
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE255612',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        'platform_note': (
+            'GEO series record and GPL24676 platform record (Illumina NovaSeq 6000)'
+        ),
+        'sample_size_note': None,
+    },
+    'gse138252__af': {
+        'accession': 'GSE138252',
+        'accession_note': None,
+        'technology': 'bulk RNA-seq (PCM1+ cardiomyocyte nuclei, 2020 batch)',
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE138252',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
+        'platform_note': (
+            'GEO series record and GPL16791 platform record (Illumina HiSeq 2500)'
+        ),
+        'sample_size_note': (
+            'The series carries 48 GSMs / 38 distinct library columns across the 2020 matrix '
+            'and the 2021 addendum; this repo arm is the batch-matched 2020 left-atrial slice '
+            '(5 AF+HF vs 5 non-failing) and does not use the addendum\'s 6 HF-only + 14 '
+            'control libraries.'
+        ),
+    },
+    'gse238242__af': {
+        'accession': 'GSE238242',
+        'accession_note': None,
+        'technology': '10x multiome snRNA-seq (snRNA arm, author CM label)',
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE238242',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        'platform_note': (
+            'GEO series record and GPL24676 platform record (Illumina NovaSeq 6000)'
+        ),
+        'sample_size_note': (
+            'The series carries 14 GSMs = 7 snRNA + 7 snATAC libraries; this repo arm is the '
+            '3 persistent-AF vs 4 sinus-rhythm donors of the snRNA arm, not the 14 libraries.'
+        ),
+    },
+    'gse269882__af': {
+        'accession': 'GSE269882',
+        'accession_note': None,
+        'technology': 'bulk RNA-seq (human atrial appendage whole tissue)',
+        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE269882',
+        'verified_on': VERIFIED_ON,
+        'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
+        'platform_note': (
+            'GEO series record and GPL16791 platform record (Illumina HiSeq 2500)'
+        ),
         'sample_size_note': None,
     },
     # --- cardiotox_TOP2 --------------------------------------------------------
