@@ -1,0 +1,334 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv",
+    "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "size": 18164
+  },
+  "catalog_sha256": "454d6df24062f6e24f10f4f0313fe7ef6d71c2b9847f41a856f2d70c3e9da303",
+  "diseases": [
+    {
+      "category": "nHF",
+      "declared_source_count": 4,
+      "deg2000": 1056,
+      "deg2000_file": "nhf.deg2000.csv",
+      "directory": "nhf",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "informative_source_count": 2,
+      "n_deg": 1056,
+      "not_published": [
+        {
+          "dataset_id": "gse35108__dcm_ipsc_cm",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        },
+        {
+          "dataset_id": "gse165303__dcm_lv_bulk",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        }
+      ],
+      "published": true,
+      "reason": null,
+      "sources": [
+        {
+          "dataset_id": "gse270788__nicm",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 4,
+          "n_deg_in_deg2000": 4,
+          "tier": 1
+        },
+        {
+          "dataset_id": "reichart-cm__dcm_genotype_negative",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 1053,
+          "n_deg_in_deg2000": 1053,
+          "tier": 1
+        }
+      ],
+      "tier": 1,
+      "tiers_present": [
+        1
+      ]
+    },
+    {
+      "category": "ICM",
+      "declared_source_count": 3,
+      "deg2000": 2,
+      "deg2000_file": "icm.deg2000.csv",
+      "directory": "icm",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "informative_source_count": 2,
+      "n_deg": 2,
+      "not_published": [
+        {
+          "dataset_id": "kuppe-mi__iz",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        }
+      ],
+      "published": true,
+      "reason": null,
+      "sources": [
+        {
+          "dataset_id": "gse270788__icm",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 1,
+          "n_deg_in_deg2000": 1,
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse270788__ami",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 1,
+          "n_deg_in_deg2000": 1,
+          "tier": 1
+        }
+      ],
+      "tier": 1,
+      "tiers_present": [
+        1
+      ]
+    },
+    {
+      "category": "genetic_cardiomyopathy",
+      "declared_source_count": 8,
+      "deg2000": 1482,
+      "deg2000_file": "genetic_cardiomyopathy.deg2000.csv",
+      "directory": "genetic_cardiomyopathy",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "informative_source_count": 8,
+      "n_deg": 1482,
+      "not_published": [],
+      "published": true,
+      "reason": null,
+      "sources": [
+        {
+          "dataset_id": "reichart-cm__dcm_genotype_positive",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 46,
+          "n_deg_in_deg2000": 46,
+          "tier": 1
+        },
+        {
+          "dataset_id": "reichart-cm__arvc",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 27,
+          "n_deg_in_deg2000": 27,
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse224129__mybpc3_hcm",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 210,
+          "n_deg_in_deg2000": 210,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse234141__ttntv_dcm",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 115,
+          "n_deg_in_deg2000": 115,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse304575__lmna_h222p_dcm",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 19,
+          "n_deg_in_deg2000": 19,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse305648__rbm20_dcm",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 17,
+          "n_deg_in_deg2000": 17,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse253223__pkp2_knockdown_arvc",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 7,
+          "n_deg_in_deg2000": 7,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse194297__dmd_cardiomyopathy",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 1124,
+          "n_deg_in_deg2000": 1124,
+          "tier": 2
+        }
+      ],
+      "tier": 1,
+      "tiers_present": [
+        1,
+        2
+      ]
+    },
+    {
+      "category": "cardiotox_TOP2",
+      "declared_source_count": 3,
+      "deg2000": 2000,
+      "deg2000_file": "cardiotox_TOP2.deg2000.csv",
+      "directory": "cardiotox_TOP2",
+      "evidence_type": "bulk",
+      "excluded_sources": [],
+      "informative_source_count": 3,
+      "n_deg": 4363,
+      "not_published": [],
+      "published": true,
+      "reason": null,
+      "sources": [
+        {
+          "dataset_id": "gse243674",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 1592,
+          "n_deg_in_deg2000": 1024,
+          "tier": 2
+        },
+        {
+          "dataset_id": "dtoxs_ipsc",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 3597,
+          "n_deg_in_deg2000": 1758,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse244740",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 6,
+          "n_deg_in_deg2000": 6,
+          "tier": 2
+        }
+      ],
+      "tier": 2,
+      "tiers_present": [
+        2
+      ]
+    },
+    {
+      "category": "cardiotox_other",
+      "declared_source_count": 3,
+      "deg2000": 279,
+      "deg2000_file": "cardiotox_other.deg2000.csv",
+      "directory": "cardiotox_other",
+      "evidence_type": "bulk",
+      "excluded_sources": [],
+      "informative_source_count": 3,
+      "n_deg": 279,
+      "not_published": [],
+      "published": true,
+      "reason": null,
+      "sources": [
+        {
+          "dataset_id": "dtoxs_ipsc__atc_l4-L01EA",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 209,
+          "n_deg_in_deg2000": 209,
+          "tier": 2
+        },
+        {
+          "dataset_id": "dtoxs_ipsc__atc_l4-L01EB",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 74,
+          "n_deg_in_deg2000": 74,
+          "tier": 2
+        },
+        {
+          "dataset_id": "dtoxs_ipsc__atc_l4-L01EX",
+          "evidence_type": "bulk",
+          "flag_source": "collapsed_winning_contrast",
+          "informative": true,
+          "n_deg": 84,
+          "n_deg_in_deg2000": 84,
+          "tier": 2
+        }
+      ],
+      "tier": 2,
+      "tiers_present": [
+        2
+      ]
+    },
+    {
+      "category": "AF",
+      "declared_source_count": 4,
+      "deg2000": null,
+      "deg2000_file": null,
+      "directory": "af",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "informative_source_count": 0,
+      "n_deg": null,
+      "not_published": [
+        {
+          "dataset_id": "gse255612__af",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        },
+        {
+          "dataset_id": "gse138252__af",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        },
+        {
+          "dataset_id": "gse238242__af",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        },
+        {
+          "dataset_id": "gse269882__af",
+          "reason": "declared by the source registry; no accepted disease-deg product in this checkout"
+        }
+      ],
+      "published": false,
+      "reason": "declared but not published: the #8 republish must publish its disease-deg products, then this driver is re-run",
+      "sources": [],
+      "tier": 1,
+      "tiers_present": []
+    }
+  ],
+  "generated_by": "stage2/01_bases/execution/build_disease_fusion.py",
+  "limit": 2000,
+  "rank_contract": "stage2-disease-deg-v1",
+  "rank_semantics": "deg-only-v2",
+  "schema": "stage2-disease-fusion-v1",
+  "semantics": {
+    "deg": "a gene is a DEG of a source when padj < 0.05 AND |log2FC| >= 2 in a declared contrast (ADR 0071 decision 1); each source ranks its DEGs 1..n_DEG by descending effect with a gene_index tie-break and gives every other frozen-axis gene n_DEG + 1",
+    "deg2000": "the DEG-union genes whose disease rank is <= 2000 (the whole union when it is smaller); a DEG union occupies the first ranks, so |DEG2000| == min(|union|, 2000)",
+    "deg_union": "the genes that are a DEG in at least one informative source; its size is not padded and not constrained to 2,000",
+    "flag_derivation": "a published v2 table carries the pass-any-contrast deg flag (authoritative); a v1 table carries only the collapsed winning-contrast rows, so its v2 flag is re-derived from those rows and the ledger records flag_source = collapsed_winning_contrast",
+    "level_one": "disease_rank_sum = sum over the disease informative sources of rank_norm = rank / n_DEG; the disease rank is the ascending position of that sum with a gene_index tie-break",
+    "non_informative": "a source with n_DEG = 0 has no rank_norm (the ADR 0071 denominator is zero) and a source whose measured effects are all tied carries no ordering evidence; both are excluded from the sum and recorded with their reason (ADR 0068), so a NaN can never poison a disease sum"
+  }
+}

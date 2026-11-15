@@ -336,6 +336,14 @@ def read_categories(config, axis_size):
             # The producers write rank_norm with finite print precision; the fusion
             # itself recomputes rank / n_measured from the integer rank, never the
             # printed column. The tolerance only guards the published contract.
+            #
+            # ADR 0071 transition (#205): ``category_rank`` is now the v2 DEG-frame
+            # level-1 function (rank / n_DEG, non-DEGs at n_DEG + 1). The rank
+            # frames published today are still the v1 measured-gene frames, which
+            # are structurally a DEG frame in which every measured gene is a DEG,
+            # so the v1 frames are read here as that degenerate case and the
+            # published axes stay byte-identical. #207 wires the fusion to the DEG
+            # layer (the published ``deg`` flag and ``n_deg``); #208 re-publishes.
             if not np.allclose(np.asarray(frame.rank_norm, dtype=np.float64),
                                expected, rtol=1e-9, atol=1e-12):
                 raise ValueError(f'{category}/{record["dataset_id"]}: '
