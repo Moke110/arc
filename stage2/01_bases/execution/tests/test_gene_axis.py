@@ -1403,7 +1403,7 @@ class DocxTests(unittest.TestCase):
         self.assertIn('not a DEG source', last[6])
 
     def test_sample_size_footnote_cross_checks_the_mapping(self):
-        """The footnote's five sample-size bases must exist in the tracked notes."""
+        """The footnote's ten sample-size bases must exist in the tracked notes."""
         from docx import Document
         import gene_axis_source_metadata as metadata
         committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
