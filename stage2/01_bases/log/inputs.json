@@ -770,6 +770,7 @@
       },
       "manifest": "stage2/01_bases/output/view-2k/manifest.json",
       "manifest_sha256": "30d2447f090133f5f9c66d2730e9ccb44db9f74c46dcb4ca1a2834ff57787596",
+      "note": "one driver process publishes/replays both views; the wall and peak RSS above are the whole run, not per view",
       "outputs": {
         "library_totals.csv": {
           "bytes": 3727979,
@@ -797,12 +798,12 @@
           "sha256": "ff8212079ab8b5e8e90a0cb309b4b951f01995c4d05edee1295e8ea66eba027a"
         }
       },
-      "publish_elapsed_s": 207.5,
+      "publish_elapsed_s_both_views": 208.81,
       "publish_peak_rss_kib": 432420,
       "publish_record": "log/view_publish_verify.json",
       "replay_record": "log/view_verify.json",
       "result": "PASS",
-      "verify_elapsed_s": 208.7,
+      "verify_elapsed_s_both_views": 208.69,
       "verify_peak_rss_kib": 442364
     },
     "view_5k": {
@@ -832,6 +833,7 @@
       },
       "manifest": "stage2/01_bases/output/view-5k/manifest.json",
       "manifest_sha256": "4da06c5dbe33f2cbd4fbf1077fe6aa61988d46c85418cec92c55f193aa496caf",
+      "note": "one driver process publishes/replays both views; the wall and peak RSS above are the whole run, not per view",
       "outputs": {
         "library_totals.csv": {
           "bytes": 3727979,
@@ -859,12 +861,12 @@
           "sha256": "9c818600fd2fd8705d57247bc0acf5cc6dab7ee155a631a2a0cd9d5156adb501"
         }
       },
-      "publish_elapsed_s": 207.5,
+      "publish_elapsed_s_both_views": 208.81,
       "publish_peak_rss_kib": 432420,
       "publish_record": "log/view_publish_verify.json",
       "replay_record": "log/view_verify.json",
       "result": "PASS",
-      "verify_elapsed_s": 208.7,
+      "verify_elapsed_s_both_views": 208.69,
       "verify_peak_rss_kib": 442364
     }
   },
