@@ -1,4 +1,4 @@
-"""Tests for the two-level rank-sum fusion and the released axes.
+"""Tests for the cross-disease DEG fusion and the released axes (ADR 0071).
 
 Everything is a hand-built 8-gene fixture except the real-file tests: the rule
 document and the two committed figure PNGs are regenerated from their tracked
@@ -6,10 +6,13 @@ inputs and compared byte-for-byte, and the document's input wiring, its
 source-table/excluded-AF contracts and its sample-size footnote are asserted
 against the committed file. No release payload (h5ad, ``source/`` tree or
 gitignored intermediate) is read.
-The fusion, the axis fill rule, the readers and the document tables are
-exercised at the public API / product boundary; one seam only (ADR 0066 /
-spec). Determinism is tested by building the same fixture twice into scratch
-candidate roots and comparing every digest.
+
+The fusion, the ``f2000`` count, the axis fill rule (including the tenv-HVG
+fallback), the readers and the composition/coverage products are exercised at
+the public API / product boundary; one seam only (ADR 0071 / spec #200).
+Determinism is tested by building the same fixture twice into scratch candidate
+roots and comparing every digest. The retired ``pN`` has no column, field, reader
+or test here: a regression that reintroduces one is meant to fail.
 """
 import csv
 import hashlib
@@ -33,19 +36,21 @@ import public_api  # noqa: F401  (binds the single public implementation in outp
 import build_gene_axis as driver
 import render_gene_axis_rank_sum_histogram as renderer
 import render_gene_axis_source_topn_coverage as coverage_renderer
-from bases import deg_rank, gene_axis
-from bases.deg_rank import normalized_rank
-from bases.disease_deg import catalog_digest
+from bases import deg_rank, disease_deg, gene_axis
 from bases.gene_axis import (
-    # #206: the fixtures exercise the *released* five-category products; the
-    # declared roster is ``gene_axis.CATEGORIES`` (it gains ``af``, which #208
-    # publishes and moves into the release set).
-    AXIS_SIZES, CATEGORY_RANK_COLUMNS, CANDIDATE_COLUMNS, GeneAxis,
-    RELEASE_CATEGORIES as CATEGORIES,
-    category_rank, winning_tier,
+    # The fixtures exercise the *released* five-category products; the declared
+    # roster is ``gene_axis.CATEGORIES`` (it gains ``af``, which #208 publishes
+    # and moves into the release set).
+    ALGORITHM, CANDIDATE_COLUMNS, CATEGORY_LABELS,
+    CATEGORY_RANK_COLUMNS, COMPOSITION_COLUMNS, COVERAGE_COLUMNS, FILL_RULE,
+    GeneAxis, RELEASE_CATEGORIES as CATEGORIES,
+    axis_fill, candidate_columns, candidate_table, category_rank,
+    cross_disease_rank_sum, deg2000_composition, f2000_count,
+    f2000_distribution, source_topn_coverage,
 )
 
 AXIS_SYMBOLS = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7']
+AXIS_SIZE = len(AXIS_SYMBOLS)
 
 
 def axis_fixture():
@@ -55,19 +60,6 @@ def axis_fixture():
         'hgnc_id': [f'HGNC:{index + 1}' for index in range(len(AXIS_SYMBOLS))],
         'ensembl_id': [f'ENSG0000000000{index + 1}' for index in range(len(AXIS_SYMBOLS))],
     })
-
-
-def dataset_record(dataset_id, tier, isogenic=False, n_measured=8,
-                   informative=True):
-    record = {'dataset_id': dataset_id, 'tier': tier, 'n_measured': n_measured,
-              'informative': informative}
-    if not informative:
-        record['informativeness'] = {'rule': 'fixture', 'n_distinct_effect': 1,
-                                     'reason': 'all effect scores are tied'}
-    if isogenic:
-        record['isogenic_exception'] = {'applies': True, 'why': 'fixture isogenic pair'}
-    return record
-
 
 class ReExportContractTests(unittest.TestCase):
     """#186 contract: gene_axis re-exports the DEG/rank functions, never copies them."""
@@ -79,40 +71,6 @@ class ReExportContractTests(unittest.TestCase):
             self.assertIs(getattr(gene_axis, name), getattr(deg_rank, name),
                           f'bases.gene_axis.{name} is not bases.deg_rank.{name}')
 
-
-class WinningTierTests(unittest.TestCase):
-    """ADR 0066 priority tier + isogenic exception (which datasets a category fuses)."""
-
-    def test_lowest_tier_supplies_the_source(self):
-        catalog = {'datasets': [dataset_record('a', 1), dataset_record('b', 1),
-                                dataset_record('c', 2), dataset_record('d', 3)]}
-        selected = winning_tier(catalog)
-        self.assertEqual(selected['winning_tier'], 1)
-        self.assertEqual(selected['datasets'], ['a', 'b'])
-        self.assertEqual(selected['excluded_tiers'], [2, 3])
-        self.assertEqual(selected['retained_by_exception'], [])
-
-    def test_isogenic_exception_retains_higher_tier_models(self):
-        catalog = {'datasets': [
-            dataset_record('human_a', 1), dataset_record('human_b', 1),
-            dataset_record('isogenic_a', 2, isogenic=True),
-            dataset_record('isogenic_b', 2, isogenic=True),
-            dataset_record('other_invitro', 2),
-        ]}
-        selected = winning_tier(catalog)
-        self.assertEqual(selected['datasets'],
-                         ['human_a', 'human_b', 'isogenic_a', 'isogenic_b'])
-        self.assertEqual(selected['retained_by_exception'],
-                         ['isogenic_a', 'isogenic_b'])
-        # Every tier-2 record is retained by the isogenic exception, so no tier
-        # is excluded; the manifest must not call tier 2 excluded (ADR 0068).
-        self.assertEqual(selected['excluded_tiers'], [])
-
-    def test_missing_tier_fails_closed(self):
-        with self.assertRaises(ValueError):
-            winning_tier({'datasets': [{'dataset_id': 'a'}]})
-        with self.assertRaises(ValueError):
-            winning_tier({'datasets': []})
 
 
 class LevelOneTests(unittest.TestCase):
@@ -181,220 +139,269 @@ class LevelOneTests(unittest.TestCase):
             category_rank([], [])
 
 
-class LevelTwoTests(unittest.TestCase):
-    """Level 2: rank_sum over the six sources, ascending-is-better, pN, coverage."""
+
+class CrossDiseaseFusionTests(unittest.TestCase):
+    """Level 2: ``f2000`` counts diseases; ``rank_sum`` divides by the union size."""
 
     @staticmethod
-    def identity():
-        return np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
+    def frame(n_deg, ranks):
+        frame = np.full(AXIS_SIZE, n_deg + 1, dtype=np.int64)
+        for gene, rank in ranks.items():
+            frame[gene] = rank
+        return frame
 
-    def test_sum_of_six_normalized_ranks_and_gene_index_tie_break(self):
-        ranks = [self.identity().copy() for _ in CATEGORIES]
-        # one source puts gene 0 at rank 8 and gene 1 at rank 2; with the five
-        # identity categories plus tenv-HVG the integer sums are 13 and 12.
-        ranks[0] = np.array([8, 2, 3, 4, 5, 6, 7, 1], dtype=np.int64)
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
-        result = gene_axis.fusion_rank_sum(
-            ranks, measured, self.identity(), sizes=(2, 4))
+    def test_f2000_counts_diseases_not_datasets(self):
+        a = self.frame(2, {0: 1, 1: 2})
+        b = self.frame(2, {1: 1, 2: 2})
+        c = self.frame(1, {2: 1})
+        result = cross_disease_rank_sum([a, b, c], [2, 2, 1],
+                                        categories=('nhf', 'icm', 'af'))
+        np.testing.assert_array_equal(result['f2000'], [1, 2, 2, 0, 0, 0, 0, 0])
+        np.testing.assert_array_equal(
+            f2000_count([a, b, c], [2, 2, 1], categories=('nhf', 'icm', 'af')),
+            result['f2000'])
+        self.assertEqual(int(result['f2000'].max()), 2)
+        # one mask per active disease, in the requested order
+        self.assertEqual(len(result['deg2000']), 3)
+        np.testing.assert_array_equal(result['deg2000'][0], [True, True] + [False] * 6)
+
+    def test_rank_sum_uses_the_union_denominator_and_penalises_outside_genes(self):
+        a = self.frame(3, {0: 1, 1: 2, 2: 3})   # union 3, every member ranked
+        b = self.frame(2, {0: 2, 1: 1})         # union 2, every member ranked
+        result = cross_disease_rank_sum([a, b], [3, 2], categories=('nhf', 'icm'))
+        outside = 4 / 3 + 3 / 2                    # (n_d + 1) / n_d for both diseases
         np.testing.assert_allclose(
             result['rank_sum'],
-            np.array([13, 12, 18, 24, 30, 36, 42, 41]) / 8.0)
-        # equal rank sums are ordered by gene_index in the fusion (fill-rule test)
-        self.assertLess(result['rank_sum'][1], result['rank_sum'][0])
+            [1 / 3 + 2 / 2, 2 / 3 + 1 / 2, 3 / 3 + 3 / 2,
+             outside, outside, outside, outside, outside])
+        # A gene outside DEG2000_d contributes (n_d + 1) / n_d, never 0 and never
+        # an omitted term: every disease adds its own penalty.
+        self.assertGreater(result['rank_sum'][3], 4 / 3)
 
-    def test_pn_boundaries_zero_and_six(self):
-        ranks = [self.identity().copy() for _ in CATEGORIES]
-        ranks[0][:2] = [2, 1]
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
-        result = gene_axis.fusion_rank_sum(
-            ranks, measured, self.identity(), sizes=(1, 2, 4))
-        self.assertEqual(result['pn'][1].tolist(), [5, 1, 0, 0, 0, 0, 0, 0])
-        self.assertEqual(result['pn'][2].tolist(), [6, 6, 0, 0, 0, 0, 0, 0])
-        self.assertEqual(result['pn'][4].tolist(), [6, 6, 6, 6, 0, 0, 0, 0])
-        self.assertEqual(int(result['pn'][2].max()), 6)
-        self.assertEqual(int(result['pn'][2].min()), 0)
+    def test_rank_sum_denominator_is_the_union_size_not_the_deg2000_cut(self):
+        # The published frame is the DEG2000 window; the denominator is the
+        # disease's axis-resolved DEG-union size, so a union larger than the cut
+        # is expressible with a smaller limit.
+        frame = self.frame(3, {0: 1, 1: 2})
+        result = cross_disease_rank_sum([frame], [3], categories=('nhf',), limit=2)
+        np.testing.assert_array_equal(result['f2000'], [1, 1, 0, 0, 0, 0, 0, 0])
+        np.testing.assert_allclose(result['rank_sum'][:3],
+                                   [1 / 3, 2 / 3, 4 / 3])
+        # A member of the union that the 2,000-cap cut out must sit at n_deg + 1,
+        # not at its within-union rank.
+        bad = np.full(AXIS_SIZE, 4, dtype=np.int64)
+        bad[[0, 1, 2]] = [1, 2, 3]
+        with self.assertRaisesRegex(ValueError, 'n_deg\\+1'):
+            cross_disease_rank_sum([bad], [3], categories=('nhf',), limit=2)
 
-    def test_excluded_category_shrinks_the_pn_bound(self):
-        # ADR 0068: with one of the five categories non-informative, four
-        # categories + tenv-HVG make pN bounded by 5.
-        ranks = [self.identity().copy() for _ in CATEGORIES[:4]]
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES[:4]]
-        result = gene_axis.fusion_rank_sum(
-            ranks, measured, self.identity(), categories=CATEGORIES[:4],
-            sizes=(2,))
-        self.assertEqual(result['n_sources'], 5)
-        self.assertEqual(int(result['pn'][2].max()), 5)
-        self.assertEqual(int(result['n_sources_measured'].max()), 5)
-        # One rank per active category is required: four names, four ranks.
+    def test_tenv_is_not_a_rank_sum_term(self):
+        frame = self.frame(3, {0: 1, 1: 2, 2: 3})
+        axis = axis_fixture()
+        forward = np.arange(1, AXIS_SIZE + 1, dtype=np.int64)
+        reverse = np.arange(AXIS_SIZE, 0, -1, dtype=np.int64)
+        one = candidate_table(axis, forward, [frame], [3], categories=('nhf',))
+        two = candidate_table(axis, reverse, [frame], [3], categories=('nhf',))
+        np.testing.assert_allclose(one.rank_sum, two.rank_sum)
+        np.testing.assert_array_equal(one.f2000, two.f2000)
+        self.assertFalse(np.array_equal(one.tenv_hvg_rank, two.tenv_hvg_rank))
+
+    def test_out_of_contract_frames_fail_closed(self):
+        good = self.frame(3, {0: 1, 1: 2, 2: 3})
         with self.assertRaises(ValueError):
-            gene_axis.fusion_rank_sum(
-                ranks + [self.identity().copy()], measured + [np.ones(8, bool)],
-                self.identity(), categories=CATEGORIES[:4], sizes=(2,))
-
-    def test_n_sources_measured_counts_sources_not_datasets(self):
-        ranks = [self.identity().copy() for _ in CATEGORIES]
-        measured = [np.zeros(8, dtype=bool) for _ in CATEGORIES]
-        measured[0][0] = True
-        measured[3][0] = True
-        result = gene_axis.fusion_rank_sum(ranks, measured, self.identity(), sizes=(2,))
-        # tenv always measures the gene; two of the six categories do
-        self.assertEqual(result['n_sources_measured'].tolist(),
-                         [3, 1, 1, 1, 1, 1, 1, 1])
-
-    def test_rank_sum_is_ascending_is_better(self):
-        ranks = [self.identity().copy() for _ in CATEGORIES]
-        ranks[0] = self.identity()[::-1].copy()
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
-        result = gene_axis.fusion_rank_sum(ranks, measured, self.identity(), sizes=(2,))
-        order = np.argsort(result['rank_sum'], kind='stable')
-        self.assertEqual(int(order[0]), 0)   # every source ranks gene 0 first
-        self.assertEqual(int(order[-1]), 7)  # and gene 7 last
-        self.assertTrue(result['rank_sum'][order[0]] < result['rank_sum'][order[-1]])
-
-    def test_fusion_rejects_incomplete_source_ranks(self):
-        ranks = [self.identity().copy() for _ in CATEGORIES]
-        ranks[0][0] = 99
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
+            cross_disease_rank_sum([], [])                       # no disease
         with self.assertRaises(ValueError):
-            gene_axis.fusion_rank_sum(ranks, measured, self.identity(), sizes=(2,))
+            cross_disease_rank_sum([good], [])                   # missing n_deg
         with self.assertRaises(ValueError):
-            gene_axis.fusion_rank_sum(ranks[:5], measured[:5], self.identity(), sizes=(2,))
-        good = [self.identity().copy() for _ in CATEGORIES]
+            cross_disease_rank_sum([good], [3], categories=('nhf', 'icm'))
         with self.assertRaises(ValueError):
-            gene_axis.fusion_rank_sum(good, measured, np.array([1, 2, 3]), sizes=(2,))
+            cross_disease_rank_sum([good, good], [3, 3],
+                                   categories=('nhf', 'nhf'))    # repeated
+        with self.assertRaises(ValueError):
+            cross_disease_rank_sum([good], [3], categories=('unknown',))
+        with self.assertRaises(ValueError):
+            cross_disease_rank_sum([good[:4]], [3])              # wrong shape
+        with self.assertRaises(ValueError):
+            cross_disease_rank_sum([self.frame(3, {0: 1, 1: 2})], [0])
+        # A frame whose DEG2000 ranks are not a complete 1..k assignment.
+        with self.assertRaises(ValueError):
+            cross_disease_rank_sum([self.frame(3, {0: 2, 1: 3})], [3])
+
+    def test_fusion_is_deterministic(self):
+        frames = [self.frame(3, {0: 1, 1: 2, 2: 3}),
+                  self.frame(2, {2: 1, 3: 2})]
+        one = cross_disease_rank_sum(frames, [3, 2], categories=('nhf', 'icm'))
+        two = cross_disease_rank_sum(frames, [3, 2], categories=('nhf', 'icm'))
+        np.testing.assert_array_equal(one['rank_sum'], two['rank_sum'])
+        np.testing.assert_array_equal(one['f2000'], two['f2000'])
 
 
 class CandidateTableTests(unittest.TestCase):
-    """The master candidate table: one row per frozen-axis gene, all contracted columns."""
+    """The master table carries ``f2000`` and no retired ``pN`` column."""
 
     @staticmethod
-    def fusion_inputs():
-        identity = np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
-        ranks = [identity.copy() for _ in CATEGORIES]
-        ranks[0] = np.array([8, 2, 3, 4, 5, 6, 7, 1], dtype=np.int64)
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
-        return ranks, measured, identity.copy()
+    def frame(n_deg, ranks):
+        return CrossDiseaseFusionTests.frame(n_deg, ranks)
 
     def test_columns_rows_and_values(self):
         axis = axis_fixture()
-        ranks, measured, tenv = self.fusion_inputs()
-        table = gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2, 4))
-        self.assertEqual(list(table.columns), list(gene_axis.candidate_columns((2, 4))))
-        self.assertEqual(len(table), len(AXIS_SYMBOLS))
-        np.testing.assert_array_equal(table.gene_index.to_numpy(), np.arange(8))
-        self.assertEqual(table.symbol.tolist(), AXIS_SYMBOLS)
-        np.testing.assert_array_equal(table.tenv_hvg_rank.to_numpy(), tenv)
-        for column, rank in zip(CATEGORY_RANK_COLUMNS, ranks):
-            np.testing.assert_array_equal(table[column].to_numpy(), rank)
-        expected = gene_axis.fusion_rank_sum(
-            ranks, measured, tenv, sizes=(2, 4))
-        np.testing.assert_allclose(table.rank_sum.to_numpy(), expected['rank_sum'])
-        np.testing.assert_array_equal(
-            table.n_sources_measured.to_numpy(),
-            expected['n_sources_measured'])
-        np.testing.assert_array_equal(table.p2.to_numpy(), expected['pn'][2])
-        np.testing.assert_array_equal(table.p4.to_numpy(), expected['pn'][4])
+        tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
+        nhf = self.frame(3, {0: 1, 1: 2, 2: 3})
+        icm = self.frame(2, {4: 1, 0: 2})
+        table = candidate_table(axis, tenv, [nhf, icm], [3, 2],
+                                categories=('nhf', 'icm'))
+        self.assertEqual(list(table.columns), list(candidate_columns()))
+        self.assertNotIn('p2000', table.columns)
+        self.assertNotIn('p5000', table.columns)
+        self.assertNotIn('p2000', list(CANDIDATE_COLUMNS))
+        self.assertEqual(len(table), AXIS_SIZE)
+        self.assertEqual(table.gene_index.tolist(), list(range(AXIS_SIZE)))
+        self.assertEqual(table.tenv_hvg_rank.tolist(), tenv.tolist())
+        # DEG2000 ranks are published, non-members are empty.
+        self.assertEqual(table.nhf_rank.iloc[:3].tolist(), [1.0, 2.0, 3.0])
+        self.assertTrue(table.nhf_rank.iloc[3:].isna().all())
+        self.assertEqual(table.icm_rank.iloc[4], 1.0)
+        self.assertEqual(table.icm_rank.iloc[0], 2.0)
+        self.assertTrue(table.icm_rank.iloc[1:4].isna().all())
+        np.testing.assert_array_equal(table.f2000, [2, 1, 1, 0, 1, 0, 0, 0])
+        np.testing.assert_allclose(table.rank_sum[0], 1 / 3 + 2 / 2)
+        np.testing.assert_allclose(table.rank_sum[1], 2 / 3 + 3 / 2)
 
-    def test_unmeasured_mask_counts_sources_and_keeps_the_row(self):
+    def test_excluded_category_keeps_an_empty_column(self):
         axis = axis_fixture()
-        ranks, measured, tenv = self.fusion_inputs()
-        measured[0][3] = False
-        table = gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2,))
-        self.assertEqual(int(table.n_sources_measured[3]), 5)
-        self.assertIn(3, table.gene_index.tolist())
+        tenv = np.arange(1, AXIS_SIZE + 1, dtype=np.int64)
+        table = candidate_table(axis, tenv, [self.frame(2, {0: 1, 1: 2})], [2],
+                                categories=('nhf',))
+        for category in CATEGORIES:
+            self.assertIn(f'{category}_rank', table.columns)
+        self.assertTrue(table.icm_rank.isna().all())
+        self.assertEqual(int(table.f2000.max()), 1)
 
-    def test_axis_order_is_required(self):
+    def test_axis_order_and_tenv_permutation_are_required(self):
         axis = axis_fixture().iloc[::-1].reset_index(drop=True)
-        ranks, measured, tenv = self.fusion_inputs()
+        frame = self.frame(2, {0: 1, 1: 2})
         with self.assertRaises(ValueError):
-            gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2,))
+            candidate_table(axis, np.arange(1, 9), [frame], [2],
+                            categories=('nhf',))
+        with self.assertRaises(ValueError):
+            candidate_table(axis_fixture(),
+                            np.array([1, 1, 2, 3, 4, 5, 6, 7]), [frame], [2],
+                            categories=('nhf',))
 
 
 class AxisFillTests(unittest.TestCase):
-    """ADR 0066 axis fill rule: 0.5*N tenv-HVG then 0.5*N by pN / rank_sum / index."""
+    """The declared ``0.5*N + 0.5*N`` fill, its ordering and its fallback."""
 
-    @staticmethod
-    def fill_inputs():
-        # tenv-HVG ranks genes in reverse; the top 2 are 6,7 and the top 3 add 5
-        tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
-        rank_sum = np.array([0.50, 0.20, 0.20, 0.30, 0.10, 0.40, 0.05, 0.01])
-        p_n = {4: np.array([0, 0, 0, 4, 0, 5, 6, 6]),
-               6: np.array([4, 3, 2, 1, 5, 6, 6, 6])}
-        return tenv, rank_sum, p_n
+    TENV = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
 
-    def test_fill_takes_exactly_half_tenv_and_half_replication(self):
-        tenv, rank_sum, p_n = self.fill_inputs()
-        for n in (4, 6):
-            axis = gene_axis.axis_fill(tenv, p_n[n], rank_sum, n=n)
-            self.assertEqual(len(axis), n)
-            from_tenv = int((tenv[axis] <= n // 2).sum())
-            self.assertEqual(from_tenv, n // 2)
-            self.assertEqual(n - from_tenv, n // 2)
+    def fill(self, f2000, rank_sum, n, n_diseases=3):
+        return axis_fill(self.TENV, np.asarray(f2000, dtype=np.int64),
+                         np.asarray(rank_sum, dtype=np.float64), n=n,
+                         n_diseases=n_diseases)
 
-    def test_pN_descending_then_rank_sum_then_gene_index(self):
-        tenv, rank_sum, p_n = self.fill_inputs()
-        axis4 = gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=4)
-        # tenv top-2 are 6,7; of the remaining, gene 5 has the top p4 then gene 3
-        self.assertEqual(axis4.tolist(), [3, 5, 6, 7])
-        axis6 = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
-        # tenv top-3 are 5,6,7; fill takes gene 4 (p=5), then gene 0 (p=4)
-        # and gene 1 (p=3) by pN descending
-        self.assertEqual(axis6.tolist(), [0, 1, 4, 5, 6, 7])
+    def test_fill_takes_exactly_half_tenv_and_half_the_disease_order(self):
+        f2000 = [0, 2, 3, 1, 2, 1, 0, 0]
+        rank_sum = [7.0, 5.0, 4.0, 6.0, 5.5, 6.5, 7.5, 7.5]
+        result = self.fill(f2000, rank_sum, 4)
+        np.testing.assert_array_equal(result['axis'], [1, 2, 6, 7])
+        self.assertEqual(result['tenv_half'], 2)
+        self.assertEqual(result['from_deg2000'], 2)
+        self.assertEqual(result['fallback'], 0)
+        # G_6 keeps the same order: the disease half is a prefix, so the axes are
+        # nested when the fallback is unused.
+        larger = self.fill(f2000, rank_sum, 6)
+        np.testing.assert_array_equal(larger['axis'], [1, 2, 4, 5, 6, 7])
+        self.assertEqual(larger['from_deg2000'], 3)
+        self.assertEqual(larger['fallback'], 0)
 
-    def test_ties_break_on_rank_sum_then_gene_index(self):
-        tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
-        # four candidates tie on p; the fill order is rank_sum asc, then index
-        rank_sum = np.array([0.9, 0.2, 0.2, 0.1, 0.5, 0.5, 0.5, 0.5])
-        p_n = np.array([6, 6, 6, 6, 0, 6, 6, 6])
-        axis = gene_axis.axis_fill(tenv, p_n, rank_sum, n=4)
-        # tenv top-2 = genes 6,7; fill needs 2: gene 3 (rank_sum 0.1) then gene 1
-        # (rank_sum 0.2 ties gene 2 at 0.2, gene_index picks 1)
-        self.assertEqual(axis.tolist(), [1, 3, 6, 7])
+    def test_f2000_ties_break_on_rank_sum(self):
+        f2000 = [0, 0, 1, 0, 1, 1, 0, 0]
+        # All three disease candidates share f2000 = 1; the two best rank_sums win.
+        result = self.fill(f2000, [9, 9, 2.0, 9, 1.0, 1.5, 9, 9], 4)
+        np.testing.assert_array_equal(result['axis'], [4, 5, 6, 7])
+        self.assertEqual(result['from_deg2000'], 2)
+        self.assertNotIn(2, result['axis'].tolist())
 
-    def test_axes_are_not_nested_and_intersection_is_reported(self):
-        tenv, rank_sum, p_n = self.fill_inputs()
-        axis4 = gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=4)
-        axis6 = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
-        self.assertFalse(set(axis4) <= set(axis6))
-        self.assertFalse(set(axis6) <= set(axis4))
-        overlap = gene_axis.axis_intersection(axis4, axis6)
-        self.assertEqual(overlap['n_intersection'], 3)
-        self.assertEqual(overlap['n_union'], 7)
-        self.assertAlmostEqual(overlap['jaccard'], 3 / 7)
+    def test_rank_sum_ties_break_on_gene_index(self):
+        f2000 = [0, 0, 1, 0, 1, 1, 0, 0]
+        # Genes 2 and 4 tie on both keys at the boundary; gene_index orders them.
+        at_boundary = self.fill(f2000, [9, 9, 1.0, 9, 2.0, 1.0, 9, 9], 4)
+        np.testing.assert_array_equal(at_boundary['axis'], [2, 5, 6, 7])
+        asymmetric = self.fill(f2000, [9, 9, 1.0, 9, 1.0, 2.0, 9, 9], 4)
+        np.testing.assert_array_equal(asymmetric['axis'], [2, 4, 6, 7])
 
-    def test_axis_is_an_ascending_subset_of_the_frozen_space(self):
-        tenv, rank_sum, p_n = self.fill_inputs()
-        axis = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
-        self.assertEqual(axis.dtype, np.int64)
-        np.testing.assert_array_equal(axis, np.sort(axis))
-        self.assertEqual(len(set(axis.tolist())), len(axis))
-        self.assertGreaterEqual(int(axis.min()), 0)
-        self.assertLess(int(axis.max()), len(AXIS_SYMBOLS))
-        # never renumbered: the values are the original gene_index integers
-        self.assertIn(7, axis.tolist())
+    def test_exact_half_boundary_needs_no_fallback(self):
+        f2000 = [0, 0, 1, 0, 0, 1, 0, 0]
+        result = self.fill(f2000, [9, 9, 3.0, 9, 9, 4.0, 9, 9], 4)
+        self.assertEqual(result['from_deg2000'], 2)
+        self.assertEqual(result['fallback'], 0)
+        np.testing.assert_array_equal(result['axis'], [2, 5, 6, 7])
+
+    def test_fallback_uses_unused_tenv_genes_in_tenv_rank_order(self):
+        f2000 = [0, 0, 1, 0, 0, 0, 0, 0]
+        result = self.fill(f2000, [9, 9, 1.0, 9, 9, 9, 9, 9], 4)
+        # The only disease candidate is gene 2; the missing slot comes from the
+        # best-ranked unused tenv gene, gene 5 (tenv rank 3).
+        self.assertEqual(result['from_deg2000'], 1)
+        self.assertEqual(result['fallback'], 1)
+        np.testing.assert_array_equal(result['axis'], [2, 5, 6, 7])
+        larger = self.fill(f2000, [9, 9, 1.0, 9, 9, 9, 9, 9], 6)
+        self.assertEqual(larger['from_deg2000'], 1)
+        self.assertEqual(larger['fallback'], 2)
+        np.testing.assert_array_equal(larger['axis'], [2, 3, 4, 5, 6, 7])
+
+    def test_empty_deg2000_union_fills_entirely_from_tenv(self):
+        result = self.fill([0] * AXIS_SIZE, [9.0] * AXIS_SIZE, 4, n_diseases=0)
+        self.assertEqual(result['from_deg2000'], 0)
+        self.assertEqual(result['fallback'], 2)
+        np.testing.assert_array_equal(result['axis'], [4, 5, 6, 7])
+
+    def test_fallback_can_exhaust_every_unused_tenv_gene(self):
+        # N = the frozen axis and no DEG2000 at all: the second half consumes every
+        # unused tenv-HVG gene, so the axis is the whole frozen space.
+        result = self.fill([0] * AXIS_SIZE, [9.0] * AXIS_SIZE, AXIS_SIZE,
+                           n_diseases=0)
+        self.assertEqual(result['from_deg2000'], 0)
+        self.assertEqual(result['fallback'], AXIS_SIZE // 2)
+        np.testing.assert_array_equal(result['axis'], np.arange(AXIS_SIZE))
+
+    def test_a_gene_without_disease_evidence_never_enters_the_disease_half(self):
+        f2000 = [0, 0, 1, 0, 0, 0, 0, 0]
+        rank_sum = [0.1, 9, 9.9, 9, 9, 9, 9, 9]
+        # Gene 0 has the best rank_sum but no disease evidence: it is not a
+        # disease-half candidate, and the disease half's fallback is tenv-ordered
+        # (gene 5), so gene 0 is excluded even though its tenv rank is last.
+        result = self.fill(f2000, rank_sum, 4)
+        self.assertEqual(result['from_deg2000'], 1)
+        self.assertEqual(result['fallback'], 1)
+        self.assertNotIn(0, result['axis'].tolist())
+
+    def test_fill_is_deterministic(self):
+        f2000 = [0, 1, 1, 2, 0, 1, 0, 0]
+        rank_sum = [5, 4, 4, 1, 5, 4, 5, 5]
+        one = self.fill(f2000, rank_sum, 6)
+        two = self.fill(f2000, rank_sum, 6)
+        np.testing.assert_array_equal(one['axis'], two['axis'])
+        self.assertEqual(one['from_deg2000'], two['from_deg2000'])
+        self.assertEqual(one['fallback'], two['fallback'])
 
     def test_out_of_contract_fill_fails_closed(self):
-        tenv, rank_sum, p_n = self.fill_inputs()
+        f2000 = [0, 1, 1, 2, 0, 1, 0, 0]
+        rank_sum = [5, 4, 4, 1, 5, 4, 5, 5]
         with self.assertRaises(ValueError):
-            gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=7)  # odd N
+            self.fill(f2000, rank_sum, 7)                 # odd N
         with self.assertRaises(ValueError):
-            gene_axis.axis_fill(tenv, p_n[4], rank_sum, n=10)  # larger than axis
+            self.fill(f2000, rank_sum, 10)                # larger than the axis
         with self.assertRaises(ValueError):
-            gene_axis.axis_fill(tenv[:7], p_n[4][:7], rank_sum[:7], n=4)  # not the axis
-
-    def test_composition_and_pn_distribution(self):
-        tenv, rank_sum, p_n = self.fill_inputs()
-        axis = gene_axis.axis_fill(tenv, p_n[6], rank_sum, n=6)
-        measured = [np.zeros(8, dtype=bool) for _ in CATEGORIES]
-        measured[0][[0, 5, 7]] = True
-        measured[1][[1, 2]] = True
-        composition = gene_axis.axis_composition(axis, measured)
-        self.assertEqual(composition['nhf'], 3)     # genes 0, 5 and 7 are in G_6
-        self.assertEqual(composition['icm'], 1)     # gene 1
-        self.assertEqual(sum(composition.values()), 4)
-        counts = gene_axis.pn_distribution(p_n[6])
-        self.assertEqual(counts.tolist(), [0, 1, 1, 1, 1, 1, 3])
-        self.assertEqual(int(counts.sum()), len(AXIS_SYMBOLS))
+            axis_fill(self.TENV[:7], f2000[:7], rank_sum[:7], n=4)
+        with self.assertRaises(ValueError):
+            axis_fill(np.array([1, 1, 2, 3, 4, 5, 6, 7]), f2000, rank_sum, n=4)
+        with self.assertRaises(ValueError):
+            self.fill([0, 3, 0, 0, 0, 0, 0, 0], rank_sum, 4,
+                      n_diseases=2)   # f2000 > diseases
+        with self.assertRaises(ValueError):
+            self.fill([0, -1, 0, 0, 0, 0, 0, 0], rank_sum, 4)
+        with self.assertRaises(ValueError):
+            self.fill(f2000, [np.nan] * AXIS_SIZE, 4)
 
 
 class HistogramAndInflectionTests(unittest.TestCase):
@@ -455,28 +462,94 @@ class HistogramAndInflectionTests(unittest.TestCase):
 
 
 
+
+
 # ---- hermetic release fixture ------------------------------------------------
 
-IDENTITY = np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
-SECOND = np.array([8, 1, 2, 3, 4, 5, 6, 7], dtype=np.int64)
-FIXTURE_CATEGORIES = {
-    'nhf': [('nhf_a', 1, False, IDENTITY)],
-    'icm': [('icm_a', 1, False, IDENTITY)],
-    'genetic_cardiomyopathy': [
-        ('gcm_tier1', 1, False, IDENTITY),
-        ('gcm_isogenic', 2, True, SECOND),
-        ('gcm_dropped', 2, False, SECOND),
-    ],
-    'cardiotox_TOP2': [('top2_a', 2, False, IDENTITY)],
-    'cardiotox_other': [('other_a', 2, False, IDENTITY)],
-}
+#: The declared released axis sizes of the fixture (halves 2 and 3 genes).
 FIXTURE_AXIS_SIZES = (4, 6)
+#: tenv-HVG ranks: gene 7 is the strongest (rank 1), gene 0 the weakest.
 FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
 
+#: The default fixture: five released diseases, each a single informative source
+#: whose published ``DEG2000_d`` is ``(n_deg, {gene_index: disease_rank})``. The
+#: level-2 order is hand-computable: f2000 = [2, 2, 3, 2, 2, 1, 0, 0] and
+#: rank_sum = [6, 35/6, 5.5, 6.5, 37/6, 6.5, 7.5, 7.5].
+FIXTURE_DEG2000 = {
+    'nhf': (3, {0: 1, 1: 2, 2: 3}),
+    'icm': (3, {1: 1, 2: 2, 3: 3}),
+    'genetic_cardiomyopathy': (3, {2: 1, 3: 2, 4: 3}),
+    'cardiotox_TOP2': (2, {4: 1, 0: 2}),
+    'cardiotox_other': (1, {5: 1}),
+}
 
-def write_fixture(root, *, drop_method=False, drop_derived=False,
-                  noninformative=()):
-    """Write a hermetic mini repository: axis, tenv ranking and five catalogs."""
+
+def published_frame(n_deg, ranks):
+    """A complete frozen-axis DEG2000 frame: rank inside, ``n_deg + 1`` outside."""
+    frame = np.full(AXIS_SIZE, n_deg + 1, dtype=np.int64)
+    for gene, rank in ranks.items():
+        frame[gene] = rank
+    return frame
+
+
+def fusion_disease_record(directory, n_deg, ranks):
+    """One valid published disease record of the ``disease-fusion`` catalog."""
+    label = CATEGORY_LABELS[directory]
+    rows = pd.DataFrame({
+        'gene_index': np.array(list(ranks), dtype=np.int64),
+        'disease_rank': np.array(list(ranks.values()), dtype=np.int64),
+    })
+    rows = rows.loc[:, list(disease_deg.DEG2000_COLUMNS[:2])]
+    rows['disease_rank_sum'] = rows.disease_rank / 10.0
+    rows = rows.loc[:, list(disease_deg.DEG2000_COLUMNS)]
+    deg2000 = min(int(n_deg), int(disease_deg.DEG2000_LIMIT)) if n_deg else 0
+    record = {
+        'category': label, 'directory': directory, 'published': True, 'tier': 1,
+        'evidence_type': 'cm_pseudobulk',
+        'declared_source_count': 0 if n_deg == 0 else 1,
+        'informative_source_count': 0 if n_deg == 0 else 1,
+        'n_deg': int(n_deg), 'deg2000': int(deg2000),
+        'deg2000_file': f'{directory}.deg2000.csv',
+        'sources': ([] if n_deg == 0 else [{
+            'dataset_id': f'{directory}_a', 'tier': 1, 'informative': True,
+            'n_deg': int(n_deg), 'n_deg_in_deg2000': int(deg2000)}]),
+        'excluded_sources': [], 'not_published': [],
+    }
+    return record, rows
+
+
+def unpublished_disease_record(directory='af'):
+    """The declared-but-unpublished ``AF`` record (#206 tolerates it, #208 fills it)."""
+    return {
+        'category': CATEGORY_LABELS[directory], 'directory': directory,
+        'published': False, 'tier': None, 'evidence_type': None,
+        'declared_source_count': 1, 'informative_source_count': 0,
+        'n_deg': None, 'deg2000': None, 'deg2000_file': None,
+        'sources': [], 'excluded_sources': [],
+        'not_published': [{'dataset_id': f'{directory}_pending',
+                           'reason': 'no accepted product in this checkout'}],
+    }
+
+
+def fusion_catalog(genes_path, records):
+    """The published ``disease-fusion`` catalog over the fixture axis."""
+    return {
+        'schema': disease_deg.FUSION_SCHEMA,
+        'axis': {'path': 'stage2/01_bases/output/gene-identity/genes.csv',
+                 'sha256': hashlib.sha256(Path(genes_path).read_bytes()).hexdigest(),
+                 'size': AXIS_SIZE},
+        'limit': int(disease_deg.DEG2000_LIMIT),
+        'diseases': records,
+    }
+
+
+def write_fixture(root, *, deg2000=None, unpublished_af=True):
+    """Write a hermetic mini repository: the frozen axis, tenv-HVG and the fusion.
+
+    ``deg2000`` maps a released category to ``(n_deg, {gene_index: rank})``; a
+    category omitted from it is published with an empty ``DEG2000`` (the
+    representable zero-union disease). The default is :data:`FIXTURE_DEG2000`.
+    """
     root = Path(root)
     step = root / 'stage2/01_bases'
     genes = axis_fixture()
@@ -484,79 +557,63 @@ def write_fixture(root, *, drop_method=False, drop_derived=False,
     genes_path.parent.mkdir(parents=True, exist_ok=True)
     genes.to_csv(genes_path, index=False, lineterminator='\n')
     tenv = pd.DataFrame({
-        'gene_index': np.arange(len(AXIS_SYMBOLS)),
-        'log_mean': np.zeros(len(AXIS_SYMBOLS)),
-        'log_dispersion': np.zeros(len(AXIS_SYMBOLS)),
+        'gene_index': np.arange(AXIS_SIZE),
+        'log_mean': np.zeros(AXIS_SIZE),
+        'log_dispersion': np.zeros(AXIS_SIZE),
         'normalized_dispersion': -FIXTURE_TENV_RANK.astype(float),
         'rank': FIXTURE_TENV_RANK,
     })
     tenv_path = step / 'output/tenv-hvg/descriptive.csv'
     tenv_path.parent.mkdir(parents=True, exist_ok=True)
-    tenv.to_csv(tenv_path, index=False, line_terminator='\n') if False else tenv.to_csv(
-        tenv_path, index=False, lineterminator='\n')
-    disease = step / 'output/disease-deg'
-    for category, records in FIXTURE_CATEGORIES.items():
-        directory = disease / category
-        directory.mkdir(parents=True, exist_ok=True)
-        canon = category not in ('cardiotox_TOP2', 'cardiotox_other')
-        catalog_records, outputs = [], {}
-        for dataset_id, tier, isogenic, rank in records:
-            informative = dataset_id not in noninformative
-            rank_name = f'{dataset_id}.rank.csv'
-            frame = pd.DataFrame({'gene_index': np.arange(len(AXIS_SYMBOLS)),
-                                  'rank': rank,
-                                  'rank_norm': normalized_rank(rank, len(AXIS_SYMBOLS))})
-            frame.to_csv(directory / rank_name, index=False, lineterminator='\n')
-            outputs[rank_name] = {'sha256': hashlib.sha256(
-                (directory / rank_name).read_bytes()).hexdigest()}
-            record = {
-                'dataset_id': dataset_id, 'tier': tier,
-                'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
-                'n_measured': len(AXIS_SYMBOLS),
-                'n_significant': 2, 'n_case': 3, 'n_control': 3,
-                'informative': informative,
-                'informativeness': {'rule': 'fixture', 'n_distinct_effect': 2,
-                                    'reason': None},
-                'deg': f'{dataset_id}.deg.csv', 'rank': rank_name,
-                'method': {'model': 'fixture'},
-                'inputs': {'fixture_input.csv': {
-                    'sha256': hashlib.sha256(b'fixture-input').hexdigest()}},
-            }
-            if isogenic:
-                record['isogenic_exception'] = {'applies': True}
-            if canon:
-                record['derived_inputs'] = [{
-                    'relative': 'local/deg/fixture.csv',
-                    'sha256': hashlib.sha256(b'fixture-derived').hexdigest()}]
-            if drop_method and dataset_id == 'nhf_a':
-                record.pop('method')
-            if drop_derived and dataset_id == 'nhf_a':
-                record.pop('derived_inputs')
-            catalog_records.append(record)
-        catalog = {
-            'schema': 'stage2-disease-deg-catalog-v1',
-            'category': {'nhf': 'nHF'}.get(category, category),
-            'directory': category, 'axis_size': len(AXIS_SYMBOLS),
-            'tier': 1 if canon else 2,
-            'evidence_type': 'cm_pseudobulk' if canon else 'bulk',
-            'datasets': catalog_records,
-        }
-        if canon:
-            catalog['rank_contract'] = 'stage2-disease-deg-v1'
-        catalog['catalog_sha256'] = catalog_digest(catalog)
-        (directory / 'catalog.json').write_text(
-            json.dumps(catalog, indent=2, sort_keys=True) + '\n')
-        (directory / 'manifest.json').write_text(json.dumps({
-            'schema': 'stage2-disease-deg-release-v1',
-            'catalog_sha256': catalog['catalog_sha256'],
-            'outputs': dict(sorted(outputs.items())),
-        }, indent=2, sort_keys=True) + '\n')
+    tenv.to_csv(tenv_path, index=False, lineterminator='\n')
+    fusion_root = step / 'output/disease-fusion'
+    fusion_root.mkdir(parents=True, exist_ok=True)
+    definitions = dict(FIXTURE_DEG2000 if deg2000 is None else deg2000)
+    records, outputs = [], {}
+    for category in CATEGORIES:
+        n_deg, ranks = definitions.get(category, (0, {}))
+        record, rows = fusion_disease_record(category, n_deg, ranks)
+        path = fusion_root / record['deg2000_file']
+        rows.to_csv(path, index=False, lineterminator='\n')
+        outputs[record['deg2000_file']] = {
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+        records.append(record)
+    if unpublished_af:
+        records.append(unpublished_disease_record())
+    disease_deg.write_catalog(fusion_root / 'catalog.json',
+                              fusion_catalog(genes_path, records))
+    (fusion_root / 'manifest.json').write_text(json.dumps({
+        'schema': disease_deg.FUSION_RELEASE_SCHEMA,
+        'outputs': dict(sorted(outputs.items())),
+    }, indent=2, sort_keys=True) + '\n')
     return driver.default_config(
         root=root,
         output=step / 'output/gene-axis',
         figure_data=step / 'figure/data/gene_axis_rank_sum_histogram.csv',
         axis_sizes=FIXTURE_AXIS_SIZES)
 
+
+def rewrite_fusion_catalog(config, mutate):
+    """Rewrite the fixture fusion catalog through a mutation (re-signing it)."""
+    path = Path(config.fusion_root) / 'catalog.json'
+    catalog = json.loads(path.read_text())
+    catalog.pop('catalog_sha256', None)
+    mutate(catalog)
+    disease_deg.write_catalog(path, catalog)
+    return catalog
+
+
+def rewrite_fusion_output(config, name, mutate):
+    """Rewrite one fixture DEG2000 payload and re-pin it in the fusion manifest."""
+    path = Path(config.fusion_root) / name
+    frame = pd.read_csv(path)
+    frame = mutate(frame)
+    frame.to_csv(path, index=False, lineterminator='\n')
+    manifest_path = Path(config.fusion_root) / 'manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['outputs'][name] = {
+        'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
 
 def manifest_strings(value):
     if isinstance(value, str):
@@ -570,15 +627,16 @@ def manifest_strings(value):
             yield from manifest_strings(item)
 
 
+
 class DeclaredRosterTests(unittest.TestCase):
-    """#206: a declared category without accepted products does not break the build.
+    """The declared six-disease roster vs the five published disease products.
 
     ``gene_axis.CATEGORIES`` is the six-disease roster (AF returns); the committed
-    release is still the five categories whose disease-deg products exist. The
-    reader must tolerate the declared-but-unpublished ``af`` instead of failing
+    release is still the five categories whose disease-fusion products exist. The
+    driver must tolerate the declared-but-unpublished ``af`` instead of failing
     with "exactly the old five categories exist", while still failing closed on a
     missing released product, an undeclared product directory, or a declared
-    category whose products appeared before #208 moved it into the release.
+    category whose product appeared before #208 moved it into the release.
     """
 
     def test_af_is_declared_but_not_yet_released(self):
@@ -591,39 +649,74 @@ class DeclaredRosterTests(unittest.TestCase):
     def test_the_release_contract_keeps_the_five_released_categories(self):
         self.assertEqual(len(gene_axis.CATEGORY_RANK_COLUMNS), 5)
         self.assertNotIn('af_rank', gene_axis.CATEGORY_RANK_COLUMNS)
-        self.assertNotIn('%af_gN', gene_axis.COVERAGE_COLUMNS)
-        self.assertNotIn('af', gene_axis.COUNT_COLUMNS)
+        self.assertNotIn('af_rank', list(gene_axis.candidate_columns()))
+        # The retired pN columns have no successor in the v2 contract.
+        self.assertNotIn('p2000', list(gene_axis.CANDIDATE_COLUMNS))
+        self.assertNotIn('p5000', list(gene_axis.CANDIDATE_COLUMNS))
+        self.assertFalse(hasattr(gene_axis, 'fusion_rank_sum'))
+        self.assertFalse(hasattr(gene_axis, 'pn_distribution'))
+        self.assertFalse(hasattr(gene_axis, 'winning_tier'))
 
     def test_the_five_category_release_still_builds(self):
         with tempfile.TemporaryDirectory() as temporary:
             config = write_fixture(Path(temporary))
-            self.assertEqual(driver.publish(config)['result'], 'PASS')
+            result = driver.publish(config)
+            self.assertEqual(result['result'], 'PASS')
+            self.assertEqual(result['n_diseases'], 5)
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
-    def test_a_missing_released_category_fails_closed(self):
+    def test_a_missing_released_disease_fails_closed(self):
         with tempfile.TemporaryDirectory() as temporary:
             config = write_fixture(Path(temporary))
-            shutil.rmtree(config.disease_root / 'icm')
+            rewrite_fusion_catalog(
+                config, lambda catalog: catalog.__setitem__(
+                    'diseases', [record for record in catalog['diseases']
+                                 if record['directory'] != 'icm']))
             with self.assertRaisesRegex(ValueError, 'missing'):
                 driver.publish(config)
 
-    def test_an_undeclared_product_directory_fails_closed(self):
+    def test_an_undeclared_fusion_directory_fails_closed(self):
         with tempfile.TemporaryDirectory() as temporary:
             config = write_fixture(Path(temporary))
-            extra = config.disease_root / 'unknown_category'
-            extra.mkdir()
-            (extra / 'catalog.json').write_text('{}')
+
+            def add_unknown(catalog):
+                extra = json.loads(json.dumps(catalog['diseases'][0]))
+                extra['directory'] = 'unknown_category'
+                extra['category'] = 'unknown_category'
+                extra['deg2000_file'] = 'unknown_category.deg2000.csv'
+                catalog['diseases'].append(extra)
+
+            rewrite_fusion_catalog(config, add_unknown)
             with self.assertRaisesRegex(ValueError, 'undeclared'):
                 driver.publish(config)
 
-    def test_a_declared_unreleased_product_fails_with_the_208_pointer(self):
+    def test_a_declared_unreleased_disease_fails_with_the_208_pointer(self):
         with tempfile.TemporaryDirectory() as temporary:
             config = write_fixture(Path(temporary))
-            # The declared-but-unreleased category gets a product directory: the
-            # release set must be updated by #208's republish before it may build.
-            (config.disease_root / 'af').mkdir()
-            (config.disease_root / 'af' / 'catalog.json').write_text('{}')
+
+            def publish_af(catalog):
+                record = next(item for item in catalog['diseases']
+                              if item['directory'] == 'af')
+                record.update({
+                    'published': True, 'category': 'AF', 'tier': 1,
+                    'evidence_type': 'bulk', 'n_deg': 1, 'deg2000': 1,
+                    'deg2000_file': 'af.deg2000.csv',
+                    'declared_source_count': 1, 'informative_source_count': 1,
+                    'sources': [{'dataset_id': 'af_a', 'tier': 1,
+                                 'informative': True, 'n_deg': 1,
+                                 'n_deg_in_deg2000': 1}],
+                    'not_published': []})
+
+            rewrite_fusion_catalog(config, publish_af)
             with self.assertRaisesRegex(ValueError, 'RELEASE_CATEGORIES'):
+                driver.publish(config)
+
+    def test_a_different_frozen_axis_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            rewrite_fusion_catalog(
+                config, lambda catalog: catalog['axis'].__setitem__('sha256', '0' * 64))
+            with self.assertRaisesRegex(ValueError, 'different frozen-axis digest'):
                 driver.publish(config)
 
 
@@ -634,34 +727,70 @@ class ReleaseBuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             config = write_fixture(Path(temporary))
             result = driver.publish(config)
-            self.assertEqual(result['n_candidates'], len(AXIS_SYMBOLS))
+            self.assertEqual(result['algorithm'], ALGORITHM)
+            self.assertEqual(result['n_candidates'], AXIS_SIZE)
+            self.assertEqual(result['fallback_second_half_slots'], {'4': 0, '6': 0})
             reader = GeneAxis(config.output)
             manifest = reader.manifest()
             self.assertEqual(manifest['schema'], gene_axis.SCHEMA)
+            self.assertEqual(manifest['release']['algorithm'], ALGORITHM)
+            self.assertEqual(manifest['release']['fill_rule'], FILL_RULE)
+            self.assertIn('f2000', manifest['release'])
+            self.assertIn('rank_sum', manifest['release'])
             self.assertEqual(reader.axis_sizes(), FIXTURE_AXIS_SIZES)
             table = reader.candidate_table()
             self.assertEqual(list(table.columns),
-                             list(gene_axis.candidate_columns(FIXTURE_AXIS_SIZES)))
-            self.assertEqual(len(table), len(AXIS_SYMBOLS))
-            np.testing.assert_array_equal(reader.axis(4), np.array([0, 1, 6, 7]))
-            np.testing.assert_array_equal(reader.axis(6), np.array([2, 3, 4, 5, 6, 7]))
-            self.assertFalse(set(reader.axis(4)) <= set(reader.axis(6)))
-            self.assertEqual(manifest['intersection']['n_intersection'], 2)
+                             list(gene_axis.candidate_columns()))
+            self.assertEqual(len(table), AXIS_SIZE)
+            self.assertNotIn('p2000', table.columns)
+            self.assertNotIn('p5000', table.columns)
+            np.testing.assert_array_equal(table.f2000, [2, 2, 3, 2, 2, 1, 0, 0])
+            np.testing.assert_allclose(
+                table.rank_sum,
+                [6.0, 35 / 6, 5.5, 6.5, 37 / 6, 6.5, 7.5, 7.5])
+            np.testing.assert_array_equal(reader.axis(4), [1, 2, 6, 7])
+            np.testing.assert_array_equal(reader.axis(6), [0, 1, 2, 5, 6, 7])
+            self.assertEqual(manifest['axes']['4']['second_half'],
+                             {'from_deg2000': 2, 'tenv_hvg_fallback': 0,
+                              'n_deg2000_candidates': 6})
+            self.assertEqual(manifest['axes']['6']['second_half']['from_deg2000'], 3)
+            self.assertEqual(manifest['intersection']['n_intersection'], 4)
             self.assertEqual(manifest['intersection']['sizes'], [4, 6])
-            self.assertEqual(manifest['categories']['genetic_cardiomyopathy']
-                             ['winning_tier'], 1)
-            self.assertEqual(
-                manifest['categories']['genetic_cardiomyopathy']['retained_by_exception'],
-                ['gcm_isogenic'])
-            self.assertNotIn('gcm_dropped',
-                             [record['dataset_id'] for record in
-                              manifest['categories']['genetic_cardiomyopathy']['datasets']])
-            # 2 axes x (5 categories + tenv half + 7 pN values + 7 candidate pN)
-            self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 7 + 7))
+            self.assertEqual(manifest['fusion']['n_diseases'], 5)
+            self.assertEqual(manifest['fusion']['diseases'], list(CATEGORIES))
+            self.assertEqual(manifest['fusion']['excluded_diseases'], [])
+            self.assertEqual(manifest['categories']['nhf']['n_deg'], 3)
+            self.assertEqual(manifest['categories']['nhf']['deg2000'], 3)
+            self.assertEqual(manifest['fusion']['n_declared_diseases'], 6)
+            self.assertEqual(manifest['counts']['f2000_distribution'],
+                             {'0': 2, '1': 1, '2': 4, '3': 1, '4': 0, '5': 0})
+            # The composition carries the declared halves, the DEG2000 numerator
+            # and denominator, and the f2000 distribution; no pN record.
+            composition = reader.composition()
+            self.assertEqual(list(composition.columns), list(COMPOSITION_COLUMNS))
+            self.assertEqual(len(composition), 2 * (3 + 5 + 6))
+            self.assertEqual(set(composition.record), {'axis_fill', 'deg2000', 'f2000'})
+            axis2000 = composition[composition.axis.astype(str) == '4']
+            fallback = axis2000[(axis2000.record == 'axis_fill')
+                                & (axis2000.group == 'tenv_hvg_fallback')]
+            self.assertEqual(int(fallback.n_genes.iloc[0]), 0)
+            counts = axis2000[axis2000.record == 'f2000'].set_index('group')['n_genes']
+            self.assertEqual(int(counts.sum()), 4)
+            self.assertEqual(int(counts['0']), 2)   # genes 6,7 (tenv half only)
+            self.assertEqual(int(counts['2']), 1)   # gene 1
+            self.assertEqual(int(counts['3']), 1)   # gene 2
+            # Coverage: explicit numerator/denominator per axis and group.
             coverage = reader.coverage()
-            self.assertEqual(list(coverage.columns), list(gene_axis.COVERAGE_COLUMNS))
-            self.assertEqual(coverage.N.tolist(), list(FIXTURE_AXIS_SIZES))
-            self.assertEqual(coverage['%tenv_hvg_gN'].tolist(), [50.0, 100.0])
+            self.assertEqual(list(coverage.columns), list(COVERAGE_COLUMNS))
+            self.assertEqual(len(coverage), 2 * (1 + len(CATEGORIES)))
+            tenv = coverage[coverage.group == 'tenv_hvg']
+            self.assertEqual(tenv.denominator.tolist(), [4, 6])
+            self.assertEqual(tenv.numerator.tolist(), [2, 4])
+            self.assertEqual(tenv.rate.tolist(), [50.0, 66.67])
+            nhf = coverage[coverage.group == 'nhf']
+            self.assertEqual(nhf.denominator.tolist(), [3, 3])
+            self.assertEqual(nhf.numerator.tolist(), [2, 3])
+            # Files and absolute paths.
             self.assertIn('source_topn_coverage.csv',
                           ' '.join(manifest['outputs'].keys()))
             self.assertIn('gene_axis_source_topn_coverage.csv',
@@ -673,48 +802,64 @@ class ReleaseBuildTests(unittest.TestCase):
                              2 + len(FIXTURE_AXIS_SIZES) * (len(CATEGORIES) + 1))
             bars = coverage_figure[coverage_figure.record == 'bar']
             self.assertTrue((bars['count'] % 1 == 0).all())
-            self.assertTrue((bars['count'] >= 0).all())
             self.assertTrue(bars['rate'].between(0.0, 100.0).all())
-            self.assertEqual(bars[bars.source == 'tenv_hvg'].set_index('series')
-                             ['count'].to_dict(), {'G_4': 2, 'G_6': 6})
-            panels = coverage_figure[coverage_figure.record == 'panel']
-            self.assertEqual(panels['panel_title'].tolist(),
-                             ['Covered Gene Count', 'Top-N Coverage Rate'])
-            self.assertEqual(manifest['coverage']['figure']['panels'],
-                             [dict(panel) for panel in
-                              driver.SOURCE_COVERAGE_FIGURE_PANELS])
             for text in manifest_strings(manifest):
                 self.assertFalse(text.startswith('/'), f'absolute path in manifest: {text}')
+            serialised = json.dumps(manifest)
+            self.assertNotIn('p2000', serialised)
+            self.assertNotIn('p5000', serialised)
+            self.assertNotIn('"pN"', serialised)
+            self.assertNotIn('n_sources_measured', serialised)
 
-    def test_noninformative_category_is_excluded_from_fusion_and_pn(self):
+    def test_second_half_fallback_is_recorded_in_the_manifest(self):
+        empty = {category: (0, {}) for category in CATEGORIES}
+        empty['nhf'] = (1, {2: 1})
         with tempfile.TemporaryDirectory() as temporary:
-            config = write_fixture(Path(temporary), noninformative=('icm_a',))
-            driver.publish(config)
+            config = write_fixture(Path(temporary), deg2000=empty)
+            result = driver.publish(config)
+            self.assertEqual(result['fallback_second_half_slots'], {'4': 1, '6': 2})
             manifest = GeneAxis(config.output).manifest()
-            self.assertEqual(manifest['fusion']['n_sources'], 5)
-            self.assertEqual(manifest['fusion']['excluded_categories'], ['icm'])
-            self.assertEqual(manifest['fusion']['sources'],
-                             [category for category in CATEGORIES if category != 'icm']
-                             + ['tenv_hvg'])
-            self.assertFalse(manifest['categories']['icm']['informative'])
+            self.assertEqual(manifest['axes']['4']['second_half'],
+                             {'from_deg2000': 1, 'tenv_hvg_fallback': 1,
+                              'n_deg2000_candidates': 1})
+            self.assertEqual(manifest['axes']['6']['second_half'],
+                             {'from_deg2000': 1, 'tenv_hvg_fallback': 2,
+                              'n_deg2000_candidates': 1})
+            reader = GeneAxis(config.output)
+            np.testing.assert_array_equal(reader.axis(4), [2, 5, 6, 7])
+            np.testing.assert_array_equal(reader.axis(6), [2, 3, 4, 5, 6, 7])
+            composition = reader.composition()
+            for size, fallback in (('4', 1), ('6', 2)):
+                rows = composition[(composition.axis.astype(str) == size)
+                                   & (composition.record == 'axis_fill')
+                                   & (composition.group == 'tenv_hvg_fallback')]
+                self.assertEqual(int(rows.n_genes.iloc[0]), fallback)
+            # A fallback gene carries f2000 = 0; no disease gene was displaced.
+            table = reader.candidate_table()
+            self.assertEqual(int(table.f2000[2]), 1)
+            self.assertEqual(int((table.f2000 == 0).sum()), 7)
+
+    def test_excluded_disease_is_dropped_from_the_fusion_and_the_products(self):
+        empty = {category: (0, {}) for category in CATEGORIES}
+        empty['nhf'] = (2, {0: 1, 1: 2})
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary), deg2000=empty)
+            driver.publish(config)
+            reader = GeneAxis(config.output)
+            manifest = reader.manifest()
+            self.assertEqual(manifest['fusion']['n_diseases'], 1)
+            self.assertEqual(manifest['fusion']['excluded_diseases'],
+                             ['icm', 'genetic_cardiomyopathy', 'cardiotox_TOP2',
+                              'cardiotox_other'])
             self.assertTrue(manifest['categories']['icm']['excluded_from_fusion'])
-            self.assertEqual(manifest['categories']['icm']['excluded_datasets'][0]
-                             ['dataset_id'], 'icm_a')
-            self.assertEqual(manifest['release']['pN_bounds'], [0, 5])
-            table = GeneAxis(config.output).candidate_table()
-            self.assertTrue(table['icm_rank'].isna().all())
-            for size in FIXTURE_AXIS_SIZES:
-                self.assertLessEqual(int(table[f'p{size}'].max()), 5)
-                self.assertLessEqual(
-                    int(manifest['axes'][str(size)]['pN_distribution'].get('6', 0)), 0)
-            composition = GeneAxis(config.output).composition()
-            icm = composition[(composition.record == 'composition')
-                              & (composition.group == 'icm')]
-            self.assertTrue((icm.n_genes == 0).all())
-            self.assertTrue(icm.note.str.contains('excluded').all())
-            coverage = GeneAxis(config.output).coverage()
-            self.assertTrue(coverage['%icm_gN'].isna().all())
-            # Every other category still fuses: four + tenv.
+            self.assertIn('excluded_reason', manifest['categories']['icm'])
+            table = reader.candidate_table()
+            self.assertTrue(table.icm_rank.isna().all())
+            self.assertEqual(int(table.f2000.max()), 1)
+            coverage = reader.coverage()
+            icm = coverage[coverage.group == 'icm']
+            self.assertTrue(icm.numerator.isna().all())
+            self.assertTrue(icm.rate.isna().all())
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
     def test_publish_preserves_the_retired_gene_axis_file_set(self):
@@ -724,7 +869,7 @@ class ReleaseBuildTests(unittest.TestCase):
             legacy = config.output / 'fused_rank.csv'
             legacy.write_text('retired product\n')
             driver.publish(config)
-            self.assertTrue(legacy.is_file())  # removal is #192's job, not #190's
+            self.assertTrue(legacy.is_file())
 
     def test_publish_is_deterministic_across_roots(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
@@ -749,6 +894,20 @@ class ReleaseBuildTests(unittest.TestCase):
                 driver.verify(config)
             candidate.write_text(original)
 
+    def test_verify_refuses_a_pre_v2_release_with_a_self_describing_error(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            driver.publish(config)
+            manifest_path = config.output / 'manifest.json'
+            manifest = json.loads(manifest_path.read_text())
+            manifest['release'].pop('algorithm')
+            manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
+            with self.assertRaises(ValueError) as raised:
+                driver.verify(config)
+            message = str(raised.exception)
+            self.assertIn('predate the v2 f2000', message)
+            self.assertIn('#208 must republish', message)
+
     def test_failed_publish_keeps_the_accepted_release(self):
         with tempfile.TemporaryDirectory() as temporary:
             config = write_fixture(Path(temporary))
@@ -765,76 +924,126 @@ class ReleaseBuildTests(unittest.TestCase):
             tenv.write_text(original)
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
-    def test_uncontracted_catalog_shape_fails_closed(self):
+    def test_uncontracted_fusion_shape_fails_closed(self):
         with tempfile.TemporaryDirectory() as temporary:
-            config = write_fixture(Path(temporary), drop_method=True)
-            with self.assertRaises(ValueError):
+            config = write_fixture(Path(temporary))
+            rewrite_fusion_output(config, 'nhf.deg2000.csv',
+                                  lambda frame: frame.iloc[:-1])
+            with self.assertRaisesRegex(ValueError, 'rows'):
                 driver.publish(config)
-        with tempfile.TemporaryDirectory() as temporary:
-            config = write_fixture(Path(temporary), drop_derived=True)
-            with self.assertRaises(ValueError):
-                driver.publish(config)
-
 
 def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+
 class CoverageTests(unittest.TestCase):
-    """Each source's top-N coverage is a pure function of the axes and its rank."""
+    """Coverage and composition carry the DEG2000 numerator *and* denominator."""
 
     @staticmethod
-    def ranks():
-        return {'tenv_hvg': np.array([8, 7, 6, 5, 4, 3, 2, 1]),
-                'nhf': np.array([1, 2, 3, 4, 5, 6, 7, 8]),
-                'icm': None,
-                'genetic_cardiomyopathy': np.array([1, 2, 3, 4, 5, 6, 7, 8]),
-                'cardiotox_TOP2': np.array([2, 1, 4, 3, 6, 5, 8, 7]),
-                'cardiotox_other': np.array([4, 3, 2, 1, 8, 7, 6, 5])}
-
-    def test_percentages_and_empty_excluded_column(self):
+    def inputs():
         axes = {4: np.array([0, 1, 6, 7]), 6: np.array([2, 3, 4, 5, 6, 7])}
-        table = gene_axis.source_topn_coverage(axes, self.ranks(), sizes=(4, 6))
-        self.assertEqual(list(table.columns), list(gene_axis.COVERAGE_COLUMNS))
-        self.assertEqual(table.N.tolist(), [4, 6])
-        # tenv top-4 = genes 4..7 and G_4 holds 6,7 -> 2/4 = 50 %.
-        self.assertEqual(table['%tenv_hvg_gN'][0], 50.0)
-        # tenv top-6 = genes 2..7, exactly G_6 -> 100 %.
-        self.assertEqual(table['%tenv_hvg_gN'][1], 100.0)
-        # nhf ranks identity: top-4 = genes 0..3, G_4 holds 0,1 -> 50 %.
-        self.assertEqual(table['%nhf_gN'][0], 50.0)
-        self.assertTrue(table['%icm_gN'].isna().all())
+        tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
+        masks = [
+            np.isin(np.arange(AXIS_SIZE), (0, 1)),   # nhf
+            None,                                   # icm: excluded from the fusion
+            np.isin(np.arange(AXIS_SIZE), (2, 3, 4)),  # genetic_cardiomyopathy
+            np.isin(np.arange(AXIS_SIZE), (0, 4)),   # cardiotox_TOP2
+            np.isin(np.arange(AXIS_SIZE), (5,)),     # cardiotox_other
+        ]
+        sizes = [2, None, 3, 2, 1]
+        return axes, tenv, masks, sizes
 
-    def test_covered_counts_are_the_percentage_numerators(self):
-        axes = {4: np.array([0, 1, 6, 7]), 6: np.array([2, 3, 4, 5, 6, 7])}
-        ranks = self.ranks()
-        counts = gene_axis.source_topn_covered_counts(axes, ranks, sizes=(4, 6))
-        table = gene_axis.source_topn_coverage(axes, ranks, sizes=(4, 6))
-        self.assertEqual(list(counts.columns), list(gene_axis.COUNT_COLUMNS))
-        self.assertEqual(counts['tenv_hvg'].tolist(), [2, 6])
-        self.assertEqual(counts['nhf'].tolist(), [2, 4])
-        self.assertTrue(counts['icm'].isna().all())
-        for index, size in enumerate((4, 6)):
-            for name in ('tenv_hvg', 'nhf', 'genetic_cardiomyopathy',
-                         'cardiotox_TOP2', 'cardiotox_other'):
-                count = int(counts[name].iloc[index])
-                self.assertGreaterEqual(count, 0)
-                self.assertLessEqual(count, size)
-                self.assertEqual(table[f'%{name}_gN'].iloc[index],
-                                 round(100.0 * count / size, 2))
+    def test_coverage_carries_the_numerator_and_its_own_denominator(self):
+        axes, tenv, masks, _sizes = self.inputs()
+        table = source_topn_coverage(axes, tenv, masks, categories=CATEGORIES,
+                                     sizes=(4, 6))
+        self.assertEqual(list(table.columns), list(COVERAGE_COLUMNS))
+        self.assertEqual(len(table), 2 * (1 + len(CATEGORIES)))
+        rows = {record['group']: record for record in table.to_dict('records')
+                if record['N'] == 4}
+        # tenv-HVG keeps the top-N contract: |top_N(tenv) ∩ G_4| / N.
+        self.assertEqual(int(rows['tenv_hvg']['numerator']), 2)
+        self.assertEqual(int(rows['tenv_hvg']['denominator']), 4)
+        self.assertEqual(float(rows['tenv_hvg']['rate']), 50.0)
+        # A disease's denominator is its own DEG2000 size, not N and not the axis.
+        self.assertEqual(int(rows['nhf']['numerator']), 2)
+        self.assertEqual(int(rows['nhf']['denominator']), 2)
+        self.assertEqual(float(rows['nhf']['rate']), 100.0)
+        self.assertEqual(int(rows['genetic_cardiomyopathy']['numerator']), 0)
+        self.assertEqual(int(rows['genetic_cardiomyopathy']['denominator']), 3)
+        self.assertEqual(float(rows['genetic_cardiomyopathy']['rate']), 0.0)
+        self.assertEqual(int(rows['cardiotox_TOP2']['numerator']), 1)
+        self.assertEqual(int(rows['cardiotox_TOP2']['denominator']), 2)
+        self.assertEqual(int(rows['cardiotox_other']['numerator']), 0)
+        self.assertEqual(int(rows['cardiotox_other']['denominator']), 1)
+        # An excluded disease keeps an empty row, never a zero.
+        self.assertTrue(pd.isna(rows['icm']['numerator']))
+        self.assertTrue(pd.isna(rows['icm']['denominator']))
+        self.assertTrue(pd.isna(rows['icm']['rate']))
+        larger = {record['group']: record for record in table.to_dict('records')
+                  if record['N'] == 6}
+        self.assertEqual(int(larger['nhf']['numerator']), 0)
+        self.assertEqual(int(larger['genetic_cardiomyopathy']['numerator']), 3)
+        self.assertEqual(float(larger['genetic_cardiomyopathy']['rate']), 100.0)
+        for record in table.to_dict('records'):
+            if pd.isna(record['numerator']):
+                continue
+            self.assertLessEqual(int(record['numerator']), int(record['denominator']))
+            self.assertAlmostEqual(float(record['rate']),
+                                   round(100.0 * int(record['numerator'])
+                                         / int(record['denominator']), 2))
+
+    def test_deg2000_composition_reports_the_numerator_and_denominator(self):
+        _axes, _tenv, masks, sizes = self.inputs()
+        composition = deg2000_composition(np.array([0, 1, 6, 7]), masks, sizes,
+                                          categories=CATEGORIES)
+        self.assertEqual(composition['nhf'],
+                         {'n_covered': 2, 'n_deg2000': 2, 'share': 1.0})
+        self.assertIsNone(composition['icm'])
+        self.assertEqual(composition['genetic_cardiomyopathy'],
+                         {'n_covered': 0, 'n_deg2000': 3, 'share': 0.0})
+        self.assertEqual(composition['cardiotox_TOP2']['n_covered'], 1)
+        self.assertEqual(composition['cardiotox_other']['n_covered'], 0)
+
+    def test_f2000_distribution_is_bounded_by_the_active_disease_count(self):
+        np.testing.assert_array_equal(f2000_distribution(np.array([0, 1, 1, 2]), 2),
+                                      [1, 2, 1])
+        np.testing.assert_array_equal(f2000_distribution(np.array([0, 0]),
+                                                         n_diseases=1), [2, 0])
+        with self.assertRaises(ValueError):
+            f2000_distribution(np.array([0, 1, 2]), n_diseases=1)
+        with self.assertRaises(ValueError):
+            f2000_distribution(np.array([-1]))
 
     def test_out_of_contract_inputs_fail_closed(self):
-        axes = {4: np.array([0, 1, 6, 7])}
-        bad = self.ranks()
-        bad['tenv_hvg'] = np.array([1, 1, 2, 3, 4, 5, 6, 7])
+        axes, tenv, masks, sizes = self.inputs()
         with self.assertRaises(ValueError):
-            gene_axis.source_topn_coverage(axes, bad, sizes=(4,))
+            source_topn_coverage(axes, np.array([1, 1, 2, 3, 4, 5, 6, 7]),
+                                 masks, categories=CATEGORIES, sizes=(4, 6))
         with self.assertRaises(ValueError):
-            gene_axis.source_topn_coverage(axes, self.ranks(), sizes=(5,))
+            source_topn_coverage(axes, tenv, masks, categories=CATEGORIES, sizes=(5,))
         with self.assertRaises(ValueError):
-            gene_axis.source_topn_coverage(
-                axes, {'unknown': np.arange(1, 9)}, sizes=(4,))
-
+            source_topn_coverage(axes, tenv, masks[:4], categories=CATEGORIES,
+                                 sizes=(4,))
+        with self.assertRaises(ValueError):
+            source_topn_coverage(axes, tenv,
+                                 [np.zeros(AXIS_SIZE, dtype=bool)] * 5,
+                                 categories=CATEGORIES, sizes=(4,))
+        with self.assertRaises(ValueError):
+            source_topn_coverage(
+                {4: np.array([0, 1, 6, 7])}, tenv, masks,
+                categories=CATEGORIES, sizes=(4, 8))
+        with self.assertRaises(ValueError):
+            deg2000_composition(np.array([0, 1]), masks, [2, None, 3],
+                                categories=CATEGORIES)
+        with self.assertRaises(ValueError):
+            deg2000_composition(np.array([0, 1, 6, 7]),
+                                [np.isin(np.arange(AXIS_SIZE), (0, 1)), None,
+                                 np.isin(np.arange(AXIS_SIZE), (2, 3, 4)),
+                                 np.isin(np.arange(AXIS_SIZE), (0, 4)),
+                                 np.isin(np.arange(AXIS_SIZE), (5,))],
+                                [3, None, 3, 2, 1], categories=CATEGORIES)
 
 class FigureTests(unittest.TestCase):
     """The evidence PNG is a function of its plotted-values CSV alone."""
