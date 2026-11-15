@@ -10,14 +10,30 @@ and imports nothing outside the standard library.
 Every value below was looked up at the primary source on ``VERIFIED_ON`` and is
 never copied from a catalog's ``model_system`` prose. ``technology`` is the short
 table phrase the primary record supports, ``platform`` carries the GPL id and
-instrument behind that claim, and ``source_url`` is the record the row was
-checked against. ``accession_note`` records a series hierarchy where one exists
-and, for ``tenv_hvg``, why the row is accession-less. ``sample_size_note``
-records how the repo's ``n_case``/``n_control`` and the primary record's sample
-table reconcile wherever they are not directly comparable (a different counting
-basis, a subset of the series, or a split only derivable from the paper); it is
-``None`` where the primary count equals ``n_case + n_control``. The release's
-numbers are never changed here.
+instrument behind that claim, and ``platform_note`` states the platform evidence
+itself (the series record plus the GPL/instrument) or, where the primary record
+publishes no GEO platform, why the absence is real rather than a harvesting gap.
+``source_url`` is the record the row was checked against. ``accession_note``
+records a series hierarchy where one exists. ``sample_size_note`` records how the
+repo's ``n_case``/``n_control`` and the primary record's sample table reconcile
+wherever they are not directly comparable (a different counting basis, a subset
+of the series, or a split only derivable from the paper); it is ``None`` where
+the primary count equals ``n_case + n_control``. The release's numbers are never
+changed here.
+
+``tenv_hvg`` is accession-less by design: the tenv-HVG rank is the published
+descriptive per-well dispersion rank of the repo corpus built from ``GSE262419``
+(ADR 0066), so ``GSE262419`` is the corpus source, not an axis accession. The
+table cell carries only the short ``accession_note``; the long rationale lives
+here and in ``platform_note``. ``TENV_TREATED_WELLS``/``TENV_VEHICLE_WELLS`` are
+the published tenv corpus populations pinned in ``output/view-2k/manifest.json``
+``sources.tenv`` (4,478 rows = 4,206 treated + 272 vehicle wells), so the one
+non-catalog sample-size cell has a single source.
+
+The four DToxS rows, the three GSE270788 rows and the three Reichart-CM rows
+share byte-identical accession/technology/source/platform blocks through the
+``_DTOXS_CLASS`` / ``_GSE270788`` / ``_REICHART`` base records: one accession,
+several arms.
 
 Harvest method (recorded so a reviewer can re-run it):
 
@@ -45,25 +61,55 @@ from collections.abc import Iterable
 SCHEMA = 'stage2-gene-axis-source-metadata-v1'
 VERIFIED_ON = '2026-11-15'
 TENV_HVG = 'tenv_hvg'
+#: Published tenv corpus populations (``output/view-2k/manifest.json``
+#: ``sources.tenv``): 4,478 rows = ``TENV_TREATED_WELLS + TENV_VEHICLE_WELLS``.
+TENV_TREATED_WELLS = 4206
+TENV_VEHICLE_WELLS = 272
 
 _REICHART_COLLECTION = 'cellxgene collection e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb'
 _REICHART_URL = 'https://cellxgene.cziscience.com/collections/e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb'
 
 _ENTRY_FIELDS = (
     'accession', 'accession_note', 'technology', 'source_url',
-    'verified_on', 'platform', 'sample_size_note',
+    'verified_on', 'platform', 'platform_note', 'sample_size_note',
 )
 _PLATFORM_FIELDS = ('gpl', 'instrument')
+
+# --- shared base records: one accession, several released arms ---------------
+_GSE270788 = {
+    'accession': 'GSE270788',
+    'accession_note': 'SubSeries of SuperSeries GSE218392',
+    'technology': '10x Multiome snRNA-seq (GEX arm, CellRanger ARC)',
+    'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270788',
+    'verified_on': VERIFIED_ON,
+    'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+    'platform_note': ('GEO series record and GPL24676 platform record '
+                      '(Illumina NovaSeq 6000)'),
+}
+_REICHART = {
+    'accession': _REICHART_COLLECTION,
+    'technology': "10x 3' snRNA-seq (CM-only cellxgene object)",
+    'source_url': _REICHART_URL,
+    'verified_on': VERIFIED_ON,
+    'platform': {'gpl': None, 'instrument': None},
+    'platform_note': ('no GEO platform: cellxgene h5ad object; the cellxgene record '
+                      'and the paper do not name the instrument'),
+}
+_DTOXS_CLASS = {
+    'accession': 'GSE217421',
+    'accession_note': 'Conv arm of SuperSeries GSE217424',
+    'technology': 'bulk RNA-seq (hiPSC-CM plate wells, 48 h)',
+    'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217421',
+    'verified_on': VERIFIED_ON,
+    'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+    'platform_note': ('GEO series record and GPL24676 platform record '
+                      '(Illumina NovaSeq 6000)'),
+}
 
 SOURCES = {
     # --- nHF: GSE270788, a 10x Multiome series whose GEX arm the repo uses -----
     'gse270788__nicm': {
-        'accession': 'GSE270788',
-        'accession_note': 'SubSeries of SuperSeries GSE218392',
-        'technology': '10x Multiome snRNA-seq (GEX arm, CellRanger ARC)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270788',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        **_GSE270788,
         'sample_size_note': (
             'The series reports 46 GSMs = 23 GEX (snRNA) + 23 ATAC libraries; the repo arms '
             'count the 23 donors instead (deposit metadata HF.etiology: Donor 7, NICM 6, '
@@ -71,15 +117,11 @@ SOURCES = {
         ),
     },
     'reichart-cm__dcm_genotype_negative': {
-        'accession': _REICHART_COLLECTION,
+        **_REICHART,
         'accession_note': (
             'cellxgene dataset f7995301-7551-4e1d-8396-ffe3c9497ace, '
             'version 27fdbdf9-deae-4aed-bf7f-21964ee62137'
         ),
-        'technology': "10x 3' snRNA-seq (CM-only cellxgene object)",
-        'source_url': _REICHART_URL,
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': None, 'instrument': None},
         'sample_size_note': (
             'The collection carries 79 donors (61 failing + 18 controls); the repo arms are '
             'the 8 PV-negative DCM donors and the 18 controls stated in the paper, i.e. '
@@ -88,24 +130,14 @@ SOURCES = {
     },
     # --- ICM: the same GSE270788 GEX arm, split by aetiology -------------------
     'gse270788__icm': {
-        'accession': 'GSE270788',
-        'accession_note': 'SubSeries of SuperSeries GSE218392',
-        'technology': '10x Multiome snRNA-seq (GEX arm, CellRanger ARC)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270788',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        **_GSE270788,
         'sample_size_note': (
             'The series reports 46 GSMs = 23 GEX + 23 ATAC; this repo arm is the 5 ICM '
             'donors against the same 7 donor controls (HF.etiology), not the 46 libraries.'
         ),
     },
     'gse270788__ami': {
-        'accession': 'GSE270788',
-        'accession_note': 'SubSeries of SuperSeries GSE218392',
-        'technology': '10x Multiome snRNA-seq (GEX arm, CellRanger ARC)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270788',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        **_GSE270788,
         'sample_size_note': (
             'The series reports 46 GSMs = 23 GEX + 23 ATAC; this repo arm is the 5 AMI '
             'donors against the same 7 donor controls (HF.etiology), not the 46 libraries.'
@@ -113,12 +145,8 @@ SOURCES = {
     },
     # --- genetic_cardiomyopathy ------------------------------------------------
     'reichart-cm__dcm_genotype_positive': {
-        'accession': _REICHART_COLLECTION,
+        **_REICHART,
         'accession_note': 'cellxgene dataset f7995301-7551-4e1d-8396-ffe3c9497ace',
-        'technology': "10x 3' snRNA-seq (CM-only cellxgene object)",
-        'source_url': _REICHART_URL,
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': None, 'instrument': None},
         'sample_size_note': (
             'Partial match: the repo n_case=44 is derivable (61 failing - 8 PV-negative '
             '- 8 ARVC - 1 NCCM) but no fetched primary record states 44 directly; the '
@@ -126,12 +154,8 @@ SOURCES = {
         ),
     },
     'reichart-cm__arvc': {
-        'accession': _REICHART_COLLECTION,
+        **_REICHART,
         'accession_note': 'cellxgene dataset f7995301-7551-4e1d-8396-ffe3c9497ace',
-        'technology': "10x 3' snRNA-seq (CM-only cellxgene object)",
-        'source_url': _REICHART_URL,
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': None, 'instrument': None},
         'sample_size_note': (
             'Partial match: the repo n_case=8 is the object\'s implied ARVC donor count '
             '(61 - 8 PV-negative - 44 DCM-PV+ - 1 NCCM); the paper states PKP2 n=6 '
@@ -145,6 +169,8 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE224129',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        'platform_note': ('GEO series record and GPL24676 platform record '
+                          '(Illumina NovaSeq 6000)'),
         'sample_size_note': None,
     },
     'gse234141__ttntv_dcm': {
@@ -154,6 +180,7 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE234141',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL28337', 'instrument': 'DNBSEQ-G50'},
+        'platform_note': 'GEO series record and GPL28337 platform record (DNBSEQ-G50)',
         'sample_size_note': None,
     },
     'gse304575__lmna_h222p_dcm': {
@@ -163,6 +190,8 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE304575',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        'platform_note': ('GEO series record and GPL24676 platform record '
+                          '(Illumina NovaSeq 6000)'),
         'sample_size_note': None,
     },
     'gse305648__rbm20_dcm': {
@@ -172,6 +201,7 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE305648',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL30173', 'instrument': 'NextSeq 2000'},
+        'platform_note': 'GEO series record and GPL30173 platform record (NextSeq 2000)',
         'sample_size_note': None,
     },
     'gse253223__pkp2_knockdown_arvc': {
@@ -181,6 +211,8 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE253223',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        'platform_note': ('GEO series record and GPL24676 platform record '
+                          '(Illumina NovaSeq 6000)'),
         'sample_size_note': None,
     },
     'gse194297__dmd_cardiomyopathy': {
@@ -190,6 +222,7 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194297',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL20301', 'instrument': 'Illumina HiSeq 4000'},
+        'platform_note': 'GEO series record and GPL20301 platform record (Illumina HiSeq 4000)',
         'sample_size_note': None,
     },
     # --- cardiotox_TOP2 --------------------------------------------------------
@@ -200,6 +233,7 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE243674',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL21697', 'instrument': 'NextSeq 550'},
+        'platform_note': 'GEO series record and GPL21697 platform record (NextSeq 550)',
         'sample_size_note': (
             'The series reports 72 GSMs = 6 donors x 6 conditions x 2 time points; the repo '
             'contrast is the 3 h slice (4 anthracyclines x 6 donors = 24 case vs 6 vehicle), '
@@ -207,12 +241,8 @@ SOURCES = {
         ),
     },
     'dtoxs_ipsc': {
-        'accession': 'GSE217421',
+        **_DTOXS_CLASS,
         'accession_note': 'Conv arm of SuperSeries GSE217424; sibling DGE arm GSE217423',
-        'technology': 'bulk RNA-seq (hiPSC-CM plate wells, 48 h)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217421',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
         'sample_size_note': (
             'Well-vs-GSM basis: the series carries 1,171 GSMs (4 wells per drug x 6 iPSC-CM '
             'lines, 48 h); the repo 42/41 are the post-QC well columns of the deposit\'s own '
@@ -227,6 +257,8 @@ SOURCES = {
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE244740',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        'platform_note': ('GEO series record and GPL24676 platform record '
+                          '(Illumina NovaSeq 6000)'),
         'sample_size_note': (
             'The series reports 3,072 GSMs = 8 x 384-well plates (all 24 h); the repo uses '
             'Screening plate 3 (S4881Nr8) only: DOX 24 + IDA 24 + MTX 24 = 72 case and '
@@ -235,12 +267,7 @@ SOURCES = {
     },
     # --- cardiotox_other: the three DToxS drug classes ------------------------
     'dtoxs_ipsc__atc_l4-L01EA': {
-        'accession': 'GSE217421',
-        'accession_note': 'Conv arm of SuperSeries GSE217424',
-        'technology': 'bulk RNA-seq (hiPSC-CM plate wells, 48 h)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217421',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        **_DTOXS_CLASS,
         'sample_size_note': (
             'Well-vs-GSM basis: the series carries 1,171 GSMs; the repo 64/41 are the '
             'Calc-table well columns (12+2+16+11+8+15 = 64 case, 7+3+10+6+8+7 = 41 control) '
@@ -248,12 +275,7 @@ SOURCES = {
         ),
     },
     'dtoxs_ipsc__atc_l4-L01EB': {
-        'accession': 'GSE217421',
-        'accession_note': 'Conv arm of SuperSeries GSE217424',
-        'technology': 'bulk RNA-seq (hiPSC-CM plate wells, 48 h)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217421',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        **_DTOXS_CLASS,
         'sample_size_note': (
             'Well-vs-GSM basis: the series carries 1,171 GSMs; the repo 36/38 are the '
             'Calc-table well columns (6+0+7+6+7+10 = 36 case, 7+0+10+6+8+7 = 38 control), '
@@ -261,12 +283,7 @@ SOURCES = {
         ),
     },
     'dtoxs_ipsc__atc_l4-L01EX': {
-        'accession': 'GSE217421',
-        'accession_note': 'Conv arm of SuperSeries GSE217424',
-        'technology': 'bulk RNA-seq (hiPSC-CM plate wells, 48 h)',
-        'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217421',
-        'verified_on': VERIFIED_ON,
-        'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+        **_DTOXS_CLASS,
         'sample_size_note': (
             'Well-vs-GSM basis: the series carries 1,171 GSMs; the repo 72/41 are the '
             'Calc-table well columns (12+4+20+10+14+12 = 72 case, 7+3+10+6+8+7 = 41 control).'
@@ -275,19 +292,21 @@ SOURCES = {
     # --- tenv-HVG fusion row (not a DEG source) -------------------------------
     TENV_HVG: {
         'accession': None,
-        'accession_note': (
-            'No accession is declared in the gene axis: the tenv-HVG rank is the published '
-            'descriptive per-well dispersion rank of the repo corpus built from GSE262419 '
-            '(ADR 0066), so GSE262419 is the corpus source, not an axis accession.'
-        ),
+        'accession_note': '—（无 accession；语料源 GSE262419）',
         'technology': 'TempO-Seq targeted transcriptomic panel (96-well, HiSeq 2500)',
         'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419',
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
+        'platform_note': (
+            'GEO series record and GPL16791 platform record (Illumina HiSeq 2500); the row '
+            'has no axis accession because GSE262419 is the corpus source behind the '
+            'published tenv-HVG rank (ADR 0066), not an axis dataset'
+        ),
         'sample_size_note': (
-            'Not a contrast, so there is no n_case/n_control: the row ranks the 4,206 treated '
-            'wells of the GSE262419 corpus (4,558 GSMs over 16 plates; the corpus keeps 4,510 '
-            'native wells x 19,613 genes = 4,206 treated + 272 vehicle + 32 blanks).'
+            f'Not a contrast, so there is no n_case/n_control: the row ranks the '
+            f'{TENV_TREATED_WELLS:,} treated wells of the GSE262419 corpus (4,558 GSMs over '
+            f'16 plates; the corpus keeps 4,510 native wells x 19,613 genes = '
+            f'{TENV_TREATED_WELLS:,} treated + {TENV_VEHICLE_WELLS:,} vehicle + 32 blanks).'
         ),
     },
 }
@@ -300,8 +319,9 @@ def validate(dataset_ids: Iterable[str]) -> None:
     (the five catalogs' concatenation, in any order). It must contain no duplicate;
     its set must equal ``SOURCES``' key set — nothing missing, nothing extra; and
     every entry must be complete: an accession or a stated accession-less reason,
-    a non-empty technology, source URL and verification date, and a platform dict
-    with both ``gpl`` and ``instrument``.
+    a non-empty technology, source URL and verification date, a non-empty
+    ``platform_note`` (which, when both ``gpl`` and ``instrument`` are null, must
+    explain the absence), and a platform dict with both ``gpl`` and ``instrument``.
     """
     identifiers = list(dataset_ids)
     duplicates = sorted({dataset_id for dataset_id in identifiers
@@ -340,6 +360,11 @@ def validate(dataset_ids: Iterable[str]) -> None:
         for key, value in platform.items():
             if value is not None and not isinstance(value, str):
                 raise ValueError(f'{dataset_id}: platform[{key!r}] must be str or None')
+        # Every row needs the platform evidence, or an explicit statement that the
+        # primary record publishes none (the three Reichart-CM rows).
+        platform_note = entry['platform_note']
+        if not isinstance(platform_note, str) or not platform_note.strip():
+            raise ValueError(f'{dataset_id}: platform_note must be a non-empty string')
         sample_size_note = entry['sample_size_note']
         if sample_size_note is not None and not isinstance(sample_size_note, str):
             raise ValueError(f'{dataset_id}: sample_size_note must be str or None')

@@ -35,7 +35,7 @@
   },
   "document_reproduction": {
     "docx": "stage2/01_bases/output/gene-axis/gene_axis_fill_rule.docx",
-    "docx_sha256": "75a8dd20f133f0b50992450a9b83cae42d216e671f4bb66873db5fa460272437",
+    "docx_sha256": "2bbe1f0e1fc8e328c90288f27c1e338d9c50e564eefe30c2b012fece0091ed88",
     "generator": "stage2/01_bases/execution/make_gene_axis_docx.py",
     "inputs": [
       "stage2/01_bases/output/gene-axis/source_topn_coverage.csv",

@@ -504,9 +504,10 @@ Products (force-tracked compact CSVs; manifest sha256 `cfd3ba11…`):
 | `figure/gene_axis_source_topn_coverage.png` | — | `51ea4bc8…` |
 
 The human-facing rule document `output/gene-axis/gene_axis_fill_rule.docx`
-(sha256 `75a8dd20…`) opens with the source dataset information table (one row per
+(sha256 `2bbe1f0e…`) opens with the source dataset information table (one row per
 released dataset plus the tenv-HVG fusion source, with a footnote defining the
-CM DEG count and the contrast semantics), follows it with the audited-and-excluded
+CM DEG count, the contrast semantics and the five non-obvious sample-size
+bases), follows it with the audited-and-excluded
 AF sources table (five rows: design/n, actual CM DEG count and one-clause
 exclusion reason, closing on the declared-gap/re-admission statement), then
 restates this fill rule with its five common misreadings and carries the source
@@ -628,7 +629,8 @@ python stage2/01_bases/execution/make_gene_axis_docx.py        # rule document
 ```
 
 `execution/tests/test_gene_axis.py` is fixture-only (8-gene fixture) apart from
-three real-file replays (the rule document and the two figures): winning-tier
+four real-file replay groups (the rule document, its source-table/excluded-AF
+contracts, the docx input-wiring checks, and the two figures): winning-tier
 and isogenic-exception selection, level-1 single-dataset identity, level-1/2
 sums and `gene_index` ties, `pN` boundaries 0 and 6 (and 0..7 when every declared
 category is informative), degenerate-source exclusion from fusion/pN and the
@@ -641,9 +643,13 @@ stability, candidate-then-replace determinism (`--verify` replay), manifest
 relative-path hygiene, the two-panel figure CSV-only replay and its
 impossible-selection rejection, the two-panel source-coverage figure CSV-only
 replay and its impossible-panel/value rejection, the rule document's
-byte-identical replay and its source-table row contract, the `deg_rank`
+byte-identical replay, its source-table/excluded-AF contracts and its
+sample-size footnote cross-check, the docx input wiring (`--catalog` and
+`--metadata` are actually read), the `deg_rank`
 re-export identity, and preservation of
-the retired file set (50 tests). Build/verify peak RSS ≈140 MiB under the 10 GiB cap. The pre-0066 `gene-axis/` file set (direction
+the retired file set (55 tests). `execution/tests/test_gene_axis_source_metadata.py`
+holds the metadata mapping's coverage, required-field, platform-evidence and
+tenv-constant contracts (22 tests). Build/verify peak RSS ≈140 MiB under the 10 GiB cap. The pre-0066 `gene-axis/` file set (direction
 composition, unweighted quota-free fused table, animal half-weight column,
 tenv non-HVG curve, ortholog table, `inflection.json`) was retained on disk
 byte-identically until #192's acceptance passed and is now deleted (see

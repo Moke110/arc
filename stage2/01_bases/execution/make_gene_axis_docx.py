@@ -19,11 +19,14 @@ mirrors ``bases.gene_axis.FILL_RULE`` / the README.
         --out stage2/01_bases/output/gene-axis/gene_axis_fill_rule.docx
 
 The five catalogs default to the repo layout and can be overridden with
-``--catalog <category>=<path>``. The DOCX container is re-zipped with fixed entry
-timestamps, so two runs from the same inputs and the same ``python-docx``
+``--catalog <category>=<path>``. The metadata module defaults to the tracked
+``gene_axis_source_metadata`` and can be overridden with ``--metadata PATH``,
+which imports that file dynamically. The DOCX container is re-zipped with fixed
+entry timestamps, so two runs from the same inputs and the same ``python-docx``
 produce identical bytes.
 """
 import argparse
+import importlib.util
 import io
 import json
 import zipfile
@@ -35,7 +38,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Cm, Pt
 
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
-import gene_axis_source_metadata as metadata
+import gene_axis_source_metadata as source_metadata
+from gene_axis_source_metadata import TENV_TREATED_WELLS, TENV_VEHICLE_WELLS
 from bases import gene_axis
 
 TITLE = 'Stage 2 基因轴取用规则与来源覆盖（G_2000 / G_5000）'
@@ -141,29 +145,17 @@ SOURCE_TABLE_FOOTNOTE = (
     '不是 GEO 的 GSM 计数（例如 DToxS 提交了 1,171 个 GSM）。'
     '已审计并排除的来源 GSE255612 的 GEO overall_design 写 19/19，而其 metadata 与论文'
     '给出 18 AF / 16 control；发布数字不做改动（详见下方被审计排除的 AF 来源表）。'
+    '样本量口径：GSE270788 的 46 个 GSM 是 23 个 GEX + 23 个 ATAC 文库，本表只取 GEX 臂；'
+    'DToxS 提交 1,171 个 GSM，本表用每个对比的孔数（计算表的 post-QC 列）合并；'
+    'GSE243674 的 72 个 GSM 只用于 3 h 切片；GSE244740 的 3,072 个孔中只用 '
+    'Screening plate 3；Reichart-CM 的 79 个供体在 cellxgene 对象中。'
 )
-
-#: Vehicle phrase of each cardiotox catalog's own ``shared_control_group``
-#: wording, shortened only. The four DToxS datasets share one string; the
-#: catalogs carry no ``arm_or_class``, so the groups cell is generated from
-#: ``class_label`` / ``class_id`` / ``member_drugs`` plus one of these tokens.
-VEHICLE_TOKENS = {
-    'gse243674': 'same-time vehicle wells',
-    'dtoxs_ipsc': 'same-cell-line/plate DMSO wells',
-    'dtoxs_ipsc__atc_l4-L01EA': 'same-cell-line/plate DMSO wells',
-    'dtoxs_ipsc__atc_l4-L01EB': 'same-cell-line/plate DMSO wells',
-    'dtoxs_ipsc__atc_l4-L01EX': 'same-cell-line/plate DMSO wells',
-    'gse244740': 'same-plate DMSO wells at 24 h',
-}
 
 #: The tenv-HVG fusion row is not a case/control contrast. Its sample sizes are
 #: the published corpus populations pinned in ``output/view-2k/manifest.json``
 #: ``sources.tenv`` (treated = 4,206, vehicle = 272; also
-#: ``log/raw_counts_provenance.json``: 4,510 native wells kept). They are
-#: constants because the docx generator's replay inputs are the coverage CSV, the
-#: PNG and the five catalogs.
-TENV_TREATED_WELLS = 4206
-TENV_VEHICLE_WELLS = 272
+#: ``log/raw_counts_provenance.json``: 4,510 native wells kept). The two numbers
+#: are declared once, in ``gene_axis_source_metadata``, and imported here.
 TENV_HVG_ROW = {
     'category': 'tenv-HVG (fusion source)',
     'sample type': 'hiPSC-CM 96-well plate lysates (TempO-Seq corpus)',
@@ -201,6 +193,22 @@ def normalize_docx(path):
     return path
 
 
+def load_metadata_module(path):
+    """Import a ``gene_axis_source_metadata``-shaped module from an arbitrary file path.
+
+    This is the ``--metadata`` CLI input: loading by path (rather than by the
+    package name) lets the generator be pointed at a modified copy, which is how
+    the wiring test proves the argument is actually read.
+    """
+    path = Path(path)
+    spec = importlib.util.spec_from_file_location('gene_axis_source_metadata_input', path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f'{path}: cannot be imported as a Python module')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def read_coverage(path):
     """Read and validate the released coverage table (one row per axis)."""
     table = pd.read_csv(path)
@@ -211,7 +219,7 @@ def read_coverage(path):
     return table
 
 
-def _accession(source):
+def _accession_cell(source):
     """Render the accession column: the accession plus its series note if any."""
     accession = source['accession']
     note = source['accession_note']
@@ -220,34 +228,50 @@ def _accession(source):
     return f'{accession} ({note})' if note else accession
 
 
+def _shared_control_vehicle(shared_control_group):
+    """Derive the vehicle phrase from a cardiotox catalog's ``shared_control_group``.
+
+    ``"GSE243674:same-time vehicle wells (6 donors ...)"`` becomes
+    ``"same-time vehicle wells"``: the catalog publishes the wording, so keeping
+    no second hard-coded copy is what lets table wording drift fail a test.
+    """
+    _, separator, tail = shared_control_group.partition(':')
+    if not separator:
+        raise ValueError(f'shared_control_group has no ":" prefix: {shared_control_group!r}')
+    vehicle = tail.strip().split(' (', 1)[0]
+    if not vehicle:
+        raise ValueError(f'shared_control_group has no vehicle phrase: {shared_control_group!r}')
+    return vehicle
+
+
 def _groups(dataset):
     """Render the groups column: the catalog's arm, or the cardiotox class rule."""
     arm = dataset.get('arm_or_class')
     if arm is not None:
         return arm
-    vehicle = VEHICLE_TOKENS[dataset['dataset_id']]
+    vehicle = _shared_control_vehicle(dataset['shared_control_group'])
     drugs = ', '.join(dataset['member_drugs'])
     return f"{dataset['class_label']} ({dataset['class_id']}; {drugs}) vs {vehicle}"
 
 
-def _tenv_hvg_row():
+def _tenv_hvg_row(metadata):
     source = metadata.SOURCES[metadata.TENV_HVG]
     row = dict(TENV_HVG_ROW)
-    row['accession'] = _accession(source)
+    row['accession'] = _accession_cell(source)
     row['sequencing technology'] = source['technology']
     return row
 
 
-def read_source_table_rows(catalogs):
+def read_source_table_rows(catalogs, metadata):
     """Read the five released catalogs into the source table's 19 data rows.
 
-    ``catalogs`` maps category -> ``catalog.json`` path. Rows follow the released
-    ``gene_axis.CATEGORIES`` order and each catalog's ``datasets[]`` file order;
-    the tenv-HVG fusion row is appended last. Row counts, sample type, groups,
-    sample sizes and CM DEG counts come from the catalogs; only accession and
-    sequencing technology come from ``gene_axis_source_metadata``. The metadata
-    coverage is validated before any lookup, so a missing or extra dataset fails
-    the build with an explicit error.
+    ``catalogs`` maps category -> ``catalog.json`` path and ``metadata`` is the
+    verified mapping module. Rows follow the released ``gene_axis.CATEGORIES``
+    order and each catalog's ``datasets[]`` file order; the tenv-HVG fusion row is
+    appended last. Row counts, sample type, groups, sample sizes and CM DEG counts
+    come from the catalogs; only accession and sequencing technology come from
+    the mapping. The metadata coverage is validated before any lookup, so a
+    missing or extra dataset fails the build with an explicit error.
     """
     datasets = []
     dataset_ids = []
@@ -266,14 +290,14 @@ def read_source_table_rows(catalogs):
         source = metadata.SOURCES[dataset['dataset_id']]
         rows.append({
             'category': catalog['category'],
-            'accession': _accession(source),
+            'accession': _accession_cell(source),
             'sample type': dataset['model_system'],
             'groups': _groups(dataset),
             'sample sizes': f"{dataset['n_case']} / {dataset['n_control']}",
             'sequencing technology': source['technology'],
             'CM DEG count': f"{dataset['n_significant']:,}",
         })
-    rows.append(_tenv_hvg_row())
+    rows.append(_tenv_hvg_row(metadata))
     return rows
 
 
@@ -295,11 +319,32 @@ def _body(document, text, bold_lead=None):
     return paragraph
 
 
-def build(coverage_path, figure_path, output_path, catalogs=None):
+def _grid(document, columns, rows, font_size):
+    """Add one ``Table Grid`` table with a bold header and plain data rows."""
+    grid = document.add_table(rows=1 + len(rows), cols=len(columns))
+    grid.style = 'Table Grid'
+    for column, name in enumerate(columns):
+        cell = grid.cell(0, column)
+        cell.text = ''
+        run = cell.paragraphs[0].add_run(name)
+        run.bold = True
+        run.font.size = Pt(font_size)
+    for row_index, values in enumerate(rows, start=1):
+        for column, value in enumerate(values):
+            cell = grid.cell(row_index, column)
+            cell.text = ''
+            run = cell.paragraphs[0].add_run(value)
+            run.font.size = Pt(font_size)
+    return grid
+
+
+def build(coverage_path, figure_path, output_path, catalogs=None, metadata=None):
+    """Render the document; ``metadata`` defaults to the tracked mapping module."""
+    metadata = source_metadata if metadata is None else metadata
     if catalogs is None:
         catalogs = default_paths()['catalogs']
     table = read_coverage(coverage_path)
-    source_rows = read_source_table_rows(catalogs)
+    source_rows = read_source_table_rows(catalogs, metadata)
     document = Document()
     section = document.sections[0]
     section.left_margin = Cm(2.2)
@@ -318,38 +363,16 @@ def build(coverage_path, figure_path, output_path, catalogs=None):
     _heading(document, SOURCE_TABLE_HEADING)
     caption = document.add_paragraph(SOURCE_TABLE_CAPTION)
     caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    source_grid = document.add_table(rows=1 + len(source_rows), cols=len(SOURCE_TABLE_COLUMNS))
-    source_grid.style = 'Table Grid'
-    for column, name in enumerate(SOURCE_TABLE_COLUMNS):
-        cell = source_grid.cell(0, column)
-        cell.text = ''
-        run = cell.paragraphs[0].add_run(name)
-        run.bold = True
-        run.font.size = Pt(7.5)
-    for row_index, record in enumerate(source_rows, start=1):
-        for column, name in enumerate(SOURCE_TABLE_COLUMNS):
-            cell = source_grid.cell(row_index, column)
-            cell.text = ''
-            run = cell.paragraphs[0].add_run(record[name])
-            run.font.size = Pt(7.5)
+    _grid(document, SOURCE_TABLE_COLUMNS,
+          [[record[name] for name in SOURCE_TABLE_COLUMNS] for record in source_rows],
+          font_size=7.5)
     _body(document, SOURCE_TABLE_FOOTNOTE)
 
     caption = document.add_paragraph(AF_TABLE_CAPTION)
     caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    af_grid = document.add_table(rows=1 + len(AF_EXCLUDED), cols=len(AF_TABLE_COLUMNS))
-    af_grid.style = 'Table Grid'
-    for column, name in enumerate(AF_TABLE_COLUMNS):
-        cell = af_grid.cell(0, column)
-        cell.text = ''
-        run = cell.paragraphs[0].add_run(name)
-        run.bold = True
-        run.font.size = Pt(8.5)
-    for row_index, record in enumerate(AF_EXCLUDED, start=1):
-        for column, name in enumerate(AF_TABLE_COLUMNS):
-            cell = af_grid.cell(row_index, column)
-            cell.text = ''
-            run = cell.paragraphs[0].add_run(record[name])
-            run.font.size = Pt(8.5)
+    _grid(document, AF_TABLE_COLUMNS,
+          [[record[name] for name in AF_TABLE_COLUMNS] for record in AF_EXCLUDED],
+          font_size=8.5)
     _body(document, AF_CLOSING)
 
     _heading(document, '2. 取用规则（精确版本）')
@@ -364,21 +387,9 @@ def build(coverage_path, figure_path, output_path, catalogs=None):
     _heading(document, '4. 每个来源 top-N 基因的覆盖率')
     _body(document, COVERAGE_NOTE)
     columns = list(table.columns)
-    grid = document.add_table(rows=1 + len(table), cols=len(columns))
-    grid.style = 'Table Grid'
-    for column, name in enumerate(columns):
-        cell = grid.cell(0, column)
-        cell.text = ''
-        run = cell.paragraphs[0].add_run(name)
-        run.bold = True
-        run.font.size = Pt(8.5)
-    for row_index, record in enumerate(table.itertuples(index=False), start=1):
-        values = [str(int(record.N))] + [_percent(value) for value in record[1:]]
-        for column, value in enumerate(values):
-            cell = grid.cell(row_index, column)
-            cell.text = ''
-            run = cell.paragraphs[0].add_run(value)
-            run.font.size = Pt(8.5)
+    coverage_rows = [[str(int(record.N))] + [_percent(value) for value in record[1:]]
+                     for record in table.itertuples(index=False)]
+    _grid(document, columns, coverage_rows, font_size=8.5)
 
     _heading(document, '5. 证据图')
     document.add_picture(str(figure_path), width=Cm(15.5))
@@ -400,20 +411,7 @@ def build(coverage_path, figure_path, output_path, catalogs=None):
         ('figure/data/gene_axis_rank_sum_histogram.csv', '图中全部绘制值'),
         ('figure/gene_axis_rank_sum_histogram.png', '证据图'),
     )
-    assets_table = document.add_table(rows=1 + len(assets), cols=2)
-    assets_table.style = 'Table Grid'
-    for column, name in enumerate(('资产', '内容')):
-        cell = assets_table.cell(0, column)
-        cell.text = ''
-        run = cell.paragraphs[0].add_run(name)
-        run.bold = True
-        run.font.size = Pt(9)
-    for row_index, (name, detail) in enumerate(assets, start=1):
-        for column, value in enumerate((name, detail)):
-            cell = assets_table.cell(row_index, column)
-            cell.text = ''
-            run = cell.paragraphs[0].add_run(value)
-            run.font.size = Pt(9)
+    _grid(document, ('资产', '内容'), assets, font_size=9)
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -445,6 +443,10 @@ def main():
                         metavar='CATEGORY=PATH',
                         help='override one released catalog path (repeatable; default: '
                              f'the five repo catalogs {sorted(defaults["catalogs"])})')
+    parser.add_argument('--metadata', type=Path, default=None,
+                        metavar='PATH',
+                        help='override the tracked metadata-module path (imported from '
+                             f'that file; default: {Path(source_metadata.__file__).resolve()})')
     parser.add_argument('--out', type=Path, default=defaults['out'])
     args = parser.parse_args()
     catalogs = dict(defaults['catalogs'])
@@ -454,8 +456,11 @@ def main():
             parser.error(f'--catalog expects CATEGORY=PATH with CATEGORY in '
                          f'{sorted(catalogs)}, got {override!r}')
         catalogs[category] = Path(value)
-    path = build(args.coverage, args.figure, args.out, catalogs)
-    print(f'wrote {path} from {args.coverage}, {args.figure} and {len(catalogs)} catalogs')
+    metadata = (source_metadata if args.metadata is None
+                else load_metadata_module(args.metadata))
+    path = build(args.coverage, args.figure, args.out, catalogs, metadata=metadata)
+    print(f'wrote {path} from {args.coverage}, {args.figure}, {len(catalogs)} catalogs '
+          f'and {metadata.__file__}')
 
 
 if __name__ == '__main__':
