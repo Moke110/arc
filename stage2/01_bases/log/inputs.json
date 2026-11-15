@@ -964,6 +964,159 @@
     },
     "sha256": "00f3f48be03b47cd2a1ebcf9a1d15f24a439192bdc07cdb22651b45ff774f295"
   },
+  "republish_212": {
+    "base_dev": "a60c7043989833f54bfe8c8fc8f36adc0f69765e",
+    "branch": "ticket/212-republished-rationale",
+    "changed_declaration": {
+      "path": "stage2/01_bases/execution/disease_deg_sources.py",
+      "strings": [
+        "nHF GSE183852: 'CM labels live only inside 2.1-12 GB Seurat Robj objects; ad-hoc re-clustering is forbidden' -> the measured 70 v2 DEGs / 50 on-axis rationale",
+        "nHF third entry (GSE141910 / GSE116250 / GSE128188 / GSE282618): 'whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived' -> ADR 0071 tier-3 reality",
+        "ICM GSE298023: 'labels only inside a 4.0 GB .rds; ad-hoc re-clustering is forbidden' -> labels only inside an unopened 4.0 GB .rds, so no author CM gate was available and a marker-invented gate is not permitted"
+      ]
+    },
+    "contract": "ADR 0071 unchanged; a spec-owner-approved freeze lift that corrects the declaration data only (three rejected[] reason strings) and re-publishes the cascade disease-deg -> disease-fusion -> gene-axis -> both views.",
+    "date": "2026-11-15",
+    "digest_labels": "Every *_sha256 in this section is the sha256 of that file as committed; the digest a manifest pins for its payload is recorded inside the manifest itself (its `catalog_sha256` field), not repeated here.",
+    "grep_ad_hoc_reclustering_under_output": 0,
+    "measurements": {
+      "disease_deg_publish": {
+        "elapsed_s": 16.16,
+        "peak_rss_kib": 355532
+      },
+      "disease_deg_verify": {
+        "elapsed_s": 14.72,
+        "peak_rss_kib": 360592
+      },
+      "disease_fusion_publish": {
+        "elapsed_s": 1.06,
+        "peak_rss_kib": 141244
+      },
+      "disease_fusion_verify": {
+        "elapsed_s": 1.07,
+        "peak_rss_kib": 144464
+      },
+      "docx_rebuild": {
+        "elapsed_s": 0.55,
+        "peak_rss_kib": 129392
+      },
+      "gene_axis_publish": {
+        "elapsed_s": 0.32,
+        "peak_rss_kib": 132532
+      },
+      "gene_axis_verify": {
+        "elapsed_s": 0.32,
+        "peak_rss_kib": 135284
+      },
+      "view_publish": {
+        "elapsed_s": 216.03,
+        "peak_rss_kib": 441192
+      },
+      "view_verify": {
+        "elapsed_s": 217.12,
+        "peak_rss_kib": 458304
+      },
+      "wrapper": "execution/capped.sh RLIMIT_AS=10GiB, /usr/bin/time -v (systemd user bus unavailable)"
+    },
+    "products": {
+      "disease_deg": {
+        "icm": {
+          "catalog_bytes": 12181,
+          "catalog_file_sha256": "24a7b6635143d6cd68ee881ed78b4b195c6f6cade76e78a209b4366ec1172a6c",
+          "manifest_bytes": 2203,
+          "manifest_sha256": "f52d5b1581ac74620f85b3962f489c26bd762cd7ec894c4da2e6dfe1267c10c3",
+          "previous_catalog_bytes": 12010,
+          "previous_catalog_file_sha256": "258c5c63c6a486cee7e23e376ef9ce2140d54394dc644e2705317ad701305e7c",
+          "previous_manifest_sha256": "6968bd937ad4174595d11dc220c6ca96195e4e17478610a7a1ef18b225d4d884"
+        },
+        "nhf": {
+          "catalog_bytes": 25846,
+          "catalog_file_sha256": "97e11b810c07124b205710fa249202672ebb9294cc5f14be7a85ac11c1b05cff",
+          "manifest_bytes": 4283,
+          "manifest_sha256": "7277e52960d8f6292bf036c9cf49f292bd92e535842b75632c9f80625792e804",
+          "previous_catalog_bytes": 25175,
+          "previous_catalog_file_sha256": "cd44b1165c678c4dc360eec83cb2bd119cef9250f5eb0a028492f0c3b6c22a92",
+          "previous_manifest_sha256": "989079df9df9eea03b29ecb592a246c83872bb80b47bb53bb2a2eab9293297f4"
+        },
+        "previous_tree_bytes": 86213156,
+        "tree_bytes": 86213998,
+        "unchanged_byte_identical": {
+          "af": {
+            "catalog_file_sha256": "ced4158ac9be2ce11f1e873663dc0e3f426123e1db30deb1994df94bdd8e64b0",
+            "manifest_file_sha256": "b4cfbf292cc820e50b8acd5397b3a550c5d02dfe8750c0888c016b20be72a3a0"
+          },
+          "cardiotox_TOP2": {
+            "catalog_file_sha256": "92b18dbe71f2b06708da3063e5e405678774febe93a65fab8c034a8159748da5"
+          },
+          "cardiotox_other": {
+            "catalog_file_sha256": "f8a6b152295c2838032cffdd7b62ae384ffe6b2bd0338087cd7fa4984bb1c295"
+          },
+          "genetic_cardiomyopathy": {
+            "catalog_file_sha256": "0d3efcdbdba244d14e87f2b0585af7db137a0a63f2ba096ecde3ed990cc8400d",
+            "manifest_file_sha256": "fe05673ef3d7f8dfb16a0018c5d627a6fef6241c3ac99586c5bf67b7af29f32e"
+          }
+        }
+      },
+      "disease_fusion": {
+        "catalog_bytes": 14173,
+        "catalog_sha256": "5fdcb71299e9846a3bce49fe35e52283be45f416f5fe4f7fb68c56585339abba",
+        "manifest_bytes": 11038,
+        "manifest_sha256": "cf90150804251191ca3b54bbca482a850000cad4206cd3d87ac9d1987872117b",
+        "previous_manifest_sha256": "876cba1f3e5634101dc80a574a044e78d085f8e26f0a219c9ad8a514bd39ad94",
+        "tree_bytes": 227622
+      },
+      "gene_axis": {
+        "docx_bytes": 94590,
+        "docx_rebuild": "rebuilt from the corrected catalogs into a scratch dir and hashed: byte-identical, so no re-pin and no rebuild of the committed document",
+        "docx_sha256": "e7fbc26a38ad005297989096ea2e4a5b087a69e7daf11d95757edbb7b6d37c61",
+        "manifest_bytes": 28216,
+        "manifest_sha256": "a344f9e29c7c9eef2f78fa9ab17abce139533809cf83e1ae74af7befc82bbff3",
+        "outputs_unchanged": {
+          "axis_composition.csv": "51192501464dea8eaf6e9ba860f6d0c99fad2a6c1492f5ff2099973a0affb4f8",
+          "candidate_rank_sum.csv": "4c1a98d9f5c80b4bac5319c5b5e27fc62754048e31ed40874992ffed7462c208",
+          "figure/data/gene_axis_rank_sum_histogram.csv": "c402554ab82e437f03a17a67b88c71b4837ecc999d2abc9e5498dc500c28e3c0",
+          "figure/data/gene_axis_source_topn_coverage.csv": "00a043418fdd6ad2ff464d6d975a48017886429f9c3323ef4bdbf3a09777e2cb",
+          "figure/gene_axis_rank_sum_histogram.png": "874f602043dfc68fc454023c1a57c6413b09c295d8a47315dcd941c38ca46e8e",
+          "figure/gene_axis_source_topn_coverage.png": "37c24d1739813cb7e57d450367af2c40cc6402596b5af53a21820fe9e64f8872",
+          "gene_axis_2000.csv": "637bb8e11a986526fde41e1b013f5504bc375ffe39ed0202a3630743eb94e142",
+          "gene_axis_5000.csv": "6f467c2ccb802f638847fd3263b203a1daa88f05aedd2db4303d8526d296dd9a",
+          "source_topn_coverage.csv": "8db5fcbf058891f543d2c0469f07b9769b82cdc1956aa94754b6cffb83aff70d"
+        },
+        "previous_manifest_sha256": "c247dcc0449d13c0bba7da1b3cc878829ad4e44e3e27bb581212d846f8182e69",
+        "tree_bytes": 1036917
+      },
+      "view_2k": {
+        "manifest_bytes": 5756,
+        "manifest_sha256": "ac5a1a970106ed77e8835479245a4a3723cd2bf8b08c81cb0d814034ccbf2fa2",
+        "payloads_byte_identical": {
+          "library_totals.csv": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01",
+          "tahoe_bulk.h5ad": "88739added231e562359161a0fc274fe785d44aee885507b54a6d767fe9047e5",
+          "tenv.h5ad": "ff8212079ab8b5e8e90a0cb309b4b951f01995c4d05edee1295e8ea66eba027a"
+        },
+        "previous_manifest_sha256": "bb313a64617af16b1173dc8098bb2496e1826421791a135e798f34e3988859db",
+        "tree_bytes": 1324492857
+      },
+      "view_5k": {
+        "manifest_bytes": 5747,
+        "manifest_sha256": "4620805db1f368f3e0b5885a66a58e8059d7ad074ce8ecc07d99cd02314cfc0e",
+        "payloads_byte_identical": {
+          "library_totals.csv": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01",
+          "tahoe_bulk.h5ad": "5f16fdfbd7aacd1ae3b00e873850aadebaf165af95d3385762df04a0429788fd",
+          "tenv.h5ad": "9c818600fd2fd8705d57247bc0acf5cc6dab7ee155a631a2a0cd9d5156adb501"
+        },
+        "previous_manifest_sha256": "88f1774fb7aaf5ce714507c6271349f73831b114b35ad592ac75fe42bd8f0915",
+        "tree_bytes": 3155061833
+      }
+    },
+    "replay_records": [
+      "log/disease_deg_verify.json",
+      "log/disease_fusion_verify.json",
+      "log/gene_axis_verify.json",
+      "log/view_publish_verify.json",
+      "log/view_verify.json"
+    ],
+    "ticket": "#212"
+  },
   "retired_evidence_digests": {
     "stage2/01_bases/output/gene-axis/direction_summary.csv": {
       "bytes": 583,
@@ -1011,7 +1164,7 @@
     }
   },
   "schema": "stage2-bases-acceptance-inputs-v1",
-  "sealed_record_note": "Sealed record (note added 2026-11-15 by #211). This file is the machine-readable evidence of runs already performed; it is appended to, never rewritten. (1) The pre-v2 sections (everything before v2_republish / figure_repin) describe the ADR 0066 measured-gene-rank world and their pN / p2000 / p5000 entries are historical: pN was retired by ADR 0071 and replaced by f2000, so those numbers are kept as the record of what was published then, not as a live contract. (2) health.red_tests names test_gene_axis.DocxTests.test_build_reads_the_five_catalog_paths_it_is_given because that is the id the #208/#210 runs saw; #211 renamed the test to test_build_reads_the_six_catalog_paths_it_is_given (the release has six categories), and the old name here is history, not a live test id. Do not update either in place; a new run gets a new section.",
+  "sealed_record_note": "Sealed record (note added 2026-11-15 by #211). This file is the machine-readable evidence of runs already performed; it is appended to, never rewritten. (1) The pre-v2 sections (everything before v2_republish / figure_repin) describe the ADR 0066 measured-gene-rank world and their pN / p2000 / p5000 entries are historical: pN was retired by ADR 0071 and replaced by f2000, so those numbers are kept as the record of what was published then, not as a live contract. (2) health.red_tests names test_gene_axis.DocxTests.test_build_reads_the_five_catalog_paths_it_is_given because that is the id the #208/#210 runs saw; #211 renamed the test to test_build_reads_the_six_catalog_paths_it_is_given (the release has six categories), and the old name here is history, not a live test id. Do not update either in place; a new run gets a new section. (1) The #212 republish (key `republish_212`) supersedes the #208-era product digests in `products.*` and the #209-era `document_reproduction` entry: it corrected the three published `rejected[]` rationale strings in the declaration, re-published the cascade and refreshed the five `*_verify.json` replay records; the current product digests are in `republish_212`, and \u00a712 of `acceptance.md` is its gate.",
   "step": "stage2/01_bases",
   "superseded_digests": {
     "breakdown": {

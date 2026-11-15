@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "317cef43bcafb5213c0b721995604970d97d402d462182e6cb7582fbf33c3aec",
+  "catalog_sha256": "a57fc929c29cfa0da68a1d213c26d7f7ee6de6507447861099d3a326e4f8977b",
   "category": "nHF",
   "datasets": [
     {
@@ -501,7 +501,7 @@
   "rejected": [
     {
       "candidate": "GSE183852",
-      "reason": "eligible human LV CM source, but CM labels live only inside 2.1-12 GB Seurat Robj objects; ad-hoc re-clustering is forbidden"
+      "reason": "eligible human LV CM source, but a measured cost call, not a label-access barrier: the authors' 6.7 MB MOESM4 Cardiomyocytes sheet already carries the CM labels, and the v2 definition (padj < 0.05 and |log2FC| >= 2) yields 70 DEGs, 50 on the frozen axis (26,946 genes tested; the padj-only anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce) -- 2.5% of a 2,000-gene target, so an 8.1-12 GB Robj label extraction is not warranted. Its padj-only yield (4,927 on-axis) would only matter under a softer fold tier, which the v2 rule does not admit"
     },
     {
       "candidate": "cellxgene myocarditis CM object",
@@ -509,7 +509,7 @@
     },
     {
       "candidate": "GSE141910 / GSE116250 / GSE128188 / GSE282618",
-      "reason": "whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived"
+      "reason": "ADR 0071 tier 3 admits whole-tissue bulk: GSE141910 and GSE116250 are declared tier-3 nHF sources (with GSE165303) and GSE128188 is an owned tier-3 AF candidate AF did not need once its tier-1 sources were measured. Only GSE282618 stays un-admitted, for its 3-vs-2 exploratory design, not for its tissue class"
     },
     {
       "accession": "GSE185100",

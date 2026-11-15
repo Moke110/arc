@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "0e3dd3bd079e1419543ddac043c63d14c6ab1c8829ed8dbbd83f743cd604019a",
+  "catalog_sha256": "712b9e5058eb4e3449880881cf4bd2126454ebabccc52fe38b1469d6189365f9",
   "category": "ICM",
   "counts": {
     "datasets": 3,
@@ -22,7 +22,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "258c5c63c6a486cee7e23e376ef9ce2140d54394dc644e2705317ad701305e7c"
+      "sha256": "24a7b6635143d6cd68ee881ed78b4b195c6f6cade76e78a209b4366ec1172a6c"
     },
     "gse270788__ami.deg.csv": {
       "rows": 17092,

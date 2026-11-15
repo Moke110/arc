@@ -19,7 +19,7 @@
     },
     {
       "category": "ICM",
-      "manifest_sha256": "6968bd937ad4174595d11dc220c6ca96195e4e17478610a7a1ef18b225d4d884",
+      "manifest_sha256": "f52d5b1581ac74620f85b3962f489c26bd762cd7ec894c4da2e6dfe1267c10c3",
       "outputs": [
         "catalog.json",
         "gse270788__ami.deg.csv",
@@ -57,7 +57,7 @@
     },
     {
       "category": "nHF",
-      "manifest_sha256": "989079df9df9eea03b29ecb592a246c83872bb80b47bb53bb2a2eab9293297f4",
+      "manifest_sha256": "7277e52960d8f6292bf036c9cf49f292bd92e535842b75632c9f80625792e804",
       "outputs": [
         "catalog.json",
         "gse116250__hf_lv_bulk.deg.csv",

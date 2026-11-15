@@ -1,7 +1,8 @@
 # Stage 2 shared foundations
 
 **Accepted (2026-11-13, ADR 0066); disease side re-published 2026-11-15 (ADR 0071,
-#208).** This step's `output/` tree is the post-rebuild
+#208, with the v2 `rejected[]` rationale strings corrected and re-published by #212).**
+This step's `output/` tree is the post-rebuild
 foundation: `raw_counts/` -> `corpus/` -> `view-2k/`/`view-5k/`, with
 `disease-deg/`, `disease-fusion/` and the released `gene-axis/`
 (`candidate_rank_sum.csv`, `gene_axis_2000.csv`, `gene_axis_5000.csv`,
@@ -12,7 +13,7 @@ ADR 0066, `log/` is execution-run evidence rather than a change history: it was
 deleted and regenerated at acceptance. [`log/acceptance.md`](log/acceptance.md)
 is the acceptance record — replay results, digests, resource peaks, the "no
 retired path read" evidence and the old-to-new mapping; its pre-v2 sections are
-sealed history and its §10/§11 are the v2 republish gates. The per-slice sections
+sealed history and its §10–§12 are the v2 republish gates. The per-slice sections
 below keep each ticket's contract, now as accepted science.
 
 ## Rebuild foundation: `raw_counts/` and `corpus/` (ADR 0066, #186)
@@ -609,7 +610,7 @@ and `rank_sum` do not depend on `N`. The v1 `pN` fill was axis-matched
 manifest reports sizes, intersection, per-disease composition, input digests and
 the fill rule; no consumer re-derives it.
 
-Products (force-tracked compact CSVs; manifest sha256 `c247dcc0…`, 28,216 B):
+Products (force-tracked compact CSVs; manifest sha256 `a344f9e2…`, 28,216 B):
 
 | path | rows | digest |
 |---|---:|---|
@@ -820,12 +821,12 @@ payloads gitignored, manifests force-tracked):
 
 | path | rows × columns | bytes | sha256 |
 |---|---|---:|---|
-| `output/view-2k/manifest.json` | — | 5,756 | `bb313a64…` |
+| `output/view-2k/manifest.json` | — | 5,756 | `ac5a1a97…` |
 | `output/view-2k/tenv.h5ad` | 4,478 × 2,000 | 58,627,248 | `ff821207…` |
 | `output/view-2k/tahoe_bulk.h5ad` | 66,718 × 2,000 | 1,262,131,874 | `88739add…` |
 | — rows | tenv 4,206 treated + 272 vehicle; tahoe_bulk 65,318 treated + 1,400 vehicle | | |
 | `output/view-2k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
-| `output/view-5k/manifest.json` | — | 5,747 | `88f1774f…` |
+| `output/view-5k/manifest.json` | — | 5,747 | `4620805d…` |
 | `output/view-5k/tenv.h5ad` | 4,478 × 5,000 | 138,912,355 | `9c818600…` |
 | `output/view-5k/tahoe_bulk.h5ad` | 66,718 × 5,000 | 3,012,415,752 | `5f16fdfb…` |
 | `output/view-5k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
@@ -1008,6 +1009,27 @@ measured tenv shares were **15.0548953% / 37.4273748%** (treated-only 15.0892505
 The ~2.5x denominator argument is unchanged in every generation and the manifests
 record the released-axis values as authoritative. ADR 0066's figures are superseded,
 not re-based.
+
+**Rejected-source rationale (resolved by #212).** The `rejected[]` strings are
+declaration data in `execution/disease_deg_sources.py`, copied verbatim into each
+category's `catalog.json` and digest-pinned through the fusion, gene-axis and view
+manifests. Two of the strings carried over from the pre-v2 registry were false in
+the published products: `nHF`'s `GSE183852` entry claimed the CM labels live only
+inside 2.1–12 GB Seurat `Robj` objects and that re-clustering is forbidden (the
+authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet carries the labels, and the
+measured v2 yield is 70 DEGs / 50 on-axis), and `nHF`'s third entry rejected
+whole-tissue bulk for not being cardiomyocyte-derived (ADR 0071 tier 3 admits it).
+`ICM`'s `GSE298023` entry shared the false re-clustering wording. #211 could only
+correct the comment of record while the release was frozen; #212 lifted the
+freeze, rewrote the three strings in the declaration, and re-published the cascade
+(`disease-deg` → `disease-fusion` → `gene-axis` → both views). The catalogs now
+carry the measured reasons; no other declaration byte, axis gene set, view payload
+or rule-document byte changed (gate: [`log/acceptance.md`](log/acceptance.md) §12).
+The item-local
+`local/deg/*_deg.json` platform strings that #211 noted were **not** rebuilt here
+(they are unrelated item artifacts, and rebuilding them would move every catalog's
+pinned `derived_inputs` digests for no scientific gain); their author-log erratum
+notes still say "rewritten on the next DEG rebuild".
 
 **Cosmetic, unfixed (out of scope).** `bases/disease_deg.py` emits a pre-existing
 `SyntaxWarning: invalid escape sequence '\'` from a #187 docstring; it is cosmetic and

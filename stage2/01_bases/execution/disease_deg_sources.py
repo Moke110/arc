@@ -29,40 +29,56 @@ CATEGORIES = {
         'tier': 1,
         'evidence_type': 'cm_pseudobulk',
         'shared_control_group': ['gse270788:donor', 'reichart-cm:normal'],
-        # NOTE (docs sweep #211, 2026-11-15). The strings below are DECLARATION
-        # DATA: `build_disease_deg.py` copies them verbatim into the published
-        # nhf/ and icm/ `catalog.json`, whose digests the accepted disease-fusion,
-        # gene-axis and view manifests pin. They are therefore NOT edited here
-        # (that would desynchronise the frozen v2 release from its catalogs and
-        # fail `build_disease_deg.py verify`); this comment is the correction of
-        # record until the next disease-DEG republish rewrites them.
+        # NOTE (republish #212, 2026-11-15). The `rejected[]` strings below are
+        # DECLARATION DATA: `build_disease_deg.py` copies them verbatim into the
+        # published <category>/catalog.json, whose digests the disease-fusion,
+        # gene-axis and view manifests pin. #211 could correct only the comment
+        # of record because the products were frozen; #212 lifted the freeze,
+        # rewrote the data itself and re-published the cascade, so the catalogs
+        # now carry the corrected reasons and no erratum remains. This note only
+        # records why they read as they do.
         #
-        # GSE183852's real obstacle is measured, not the label-extraction claim
-        # below: its authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet carries the
-        # CM labels, and the v2 definition yields 70 DEGs (padj < 0.05 and
-        # |log2FC| >= 2), 50 of them on the frozen axis (26,946 genes tested; the
-        # padj-only anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce).
-        # Reading an already-annotated `meta.data` would not be re-clustering, so
-        # the "labels live only inside Robj objects / ad-hoc re-clustering is
-        # forbidden" reason misdescribes the trade-off: the 8.1-12 GB Robj label
-        # extraction is simply not worth 2.5% of a 2,000-gene target. Its
-        # padj-only yield (4,927 on-axis) would only matter under a softer fold
-        # tier, which the v2 rule does not admit -- so nHF closes at 1,661
-        # axis-resolved DEGs by decision, not by missing capability.
+        # GSE183852: the authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet already
+        # carries the CM labels, so reading its `meta.data` is not re-clustering;
+        # the v2 definition yields 70 DEGs (padj < 0.05 and |log2FC| >= 2), 50 of
+        # them on the frozen axis (26,946 genes tested; the padj-only anchors
+        # 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce). That is 2.5% of
+        # a 2,000-gene target, so an 8.1-12 GB Robj label extraction is not
+        # warranted. Its padj-only yield (4,927 on-axis) would only matter under
+        # a softer fold tier, which the v2 rule does not admit -- so nHF closes at
+        # 1,661 axis-resolved DEGs by decision, not by missing capability.
         #
-        # The third entry's "not cardiomyocyte-derived" ground is superseded by
-        # ADR 0071 tier 3: GSE141910, GSE116250 and GSE128188 are admitted (or
-        # available) as whole-tissue tier-3 sources, and GSE165303 joined them;
-        # only GSE282618 remains un-admitted, for its 3-vs-2 design.
+        # The third entry's pre-v2 "not cardiomyocyte-derived" ground is
+        # superseded by ADR 0071 tier 3: GSE141910 and GSE116250 are declared
+        # tier-3 nHF sources (GSE165303 joined them), GSE128188 is an owned tier-3
+        # AF candidate, and only GSE282618 remains un-admitted, for its 3-vs-2
+        # design.
+        #
+        # ICM's GSE298023 has the same shape as GSE183852: its author labels
+        # exist only inside an unopened 4.0 GB .rds, so the obstacle is that no
+        # author CM gate was available, not a prohibition on reading labels.
         'rejected': [
             {'candidate': 'GSE183852',
-             'reason': 'eligible human LV CM source, but CM labels live only inside '
-                       '2.1-12 GB Seurat Robj objects; ad-hoc re-clustering is forbidden'},
+             'reason': ('eligible human LV CM source, but a measured cost call, not a '
+                        'label-access barrier: the authors\' 6.7 MB MOESM4 '
+                        'Cardiomyocytes sheet already carries the CM labels, and the '
+                        'v2 definition (padj < 0.05 and |log2FC| >= 2) yields 70 DEGs, '
+                        '50 on the frozen axis (26,946 genes tested; the padj-only '
+                        'anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 '
+                        'reproduce) -- 2.5% of a 2,000-gene target, so an 8.1-12 GB '
+                        'Robj label extraction is not warranted. Its padj-only yield '
+                        '(4,927 on-axis) would only matter under a softer fold tier, '
+                        'which the v2 rule does not admit')},
             {'candidate': 'cellxgene myocarditis CM object',
              'reason': 'shares its normal donors with the Reichart object, so the two '
                        'cannot both count as independent sources'},
             {'candidate': 'GSE141910 / GSE116250 / GSE128188 / GSE282618',
-             'reason': 'whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived'},
+             'reason': ('ADR 0071 tier 3 admits whole-tissue bulk: GSE141910 and '
+                        'GSE116250 are declared tier-3 nHF sources (with GSE165303) '
+                        'and GSE128188 is an owned tier-3 AF candidate AF did not '
+                        'need once its tier-1 sources were measured. Only GSE282618 '
+                        'stays un-admitted, for its 3-vs-2 exploratory design, not '
+                        'for its tissue class')},
             {'candidate': 'GSE185100',
              'accession': 'GSE185100',
              'status': 'unverified_not_admitted',
@@ -86,7 +102,10 @@ CATEGORIES = {
         'shared_control_group': ['gse270788:donor'],
         'rejected': [
             {'candidate': 'GSE298023',
-             'reason': 'labels only inside a 4.0 GB .rds; ad-hoc re-clustering is forbidden'},
+             'reason': ('eligible human LV CM source, but its author cell labels exist '
+                        'only inside an unopened 4.0 GB .rds, so no author CM gate was '
+                        'available and a gate invented from markers is not permitted; '
+                        'the 1.8 GB per-sample 10x RAW.tar carries counts only')},
             {'candidate': 'GSE145154',
              'reason': 'no author cell labels and region-heterogeneous; re-clustering '
                        'not permitted'},
