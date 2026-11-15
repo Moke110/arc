@@ -75,9 +75,12 @@ downstream fusion.
    selected, in tenv-HVG rank order — never with genes that are not a DEG in any disease. The
    number of such fill genes is recorded in the release manifest.
 7. **AF returns.** `AF` is declared again with its CM-specific sources (`GSE255612`,
-   `GSE138252`, `GSE238242`) as tier 1 — their DEG union is 2 genes — and therefore descends to
-   tier 3 bulk atrial tissue (`GSE269882` as a new item; `GSE128188` already owned). The
-   category is published with a tier-3 evidence type on those sources.
+   `GSE138252`, `GSE238242`) as tier 1 — their measured DEG union under the live DEG worker is
+   a single gene (`SLC9A7`; the earlier audit's limma-voom + edgeR TMM run gave 2, and TMM is
+   the only difference, recorded as a sensitivity in the `GSE138252` item) — and therefore
+   descends to tier 3 bulk atrial tissue (`GSE269882` as a new item; `GSE128188` already
+   owned). The category is published with a tier-3 evidence type on those sources; its
+   `DEG2000` is the honest single-gene union, not a padded set.
 8. **Products.** Each published `<dataset>.deg.csv` carries a `deg` flag under the new
    definition and the dataset's DEG rank; the candidate table carries `f2000` (the `p2000`/
    `p5000` columns are removed); `axis_composition.csv`, `source_topn_coverage.csv`, the axes
