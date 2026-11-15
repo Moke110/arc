@@ -1,16 +1,16 @@
-"""Step-level acceptance invariants across the six released disease-deg catalogs.
+"""Step-level acceptance invariants across the five released disease-deg catalogs.
 
 This is #192's cross-category gate. The per-category tests (#187, #188, #189) each
 check their own catalog; this file checks the property that only becomes visible
-when all six are read together: one canonical ``stage2-disease-deg-catalog-v1``
+when all five are read together: one canonical ``stage2-disease-deg-catalog-v1``
 shape, a self-consistent ``catalog_sha256``, a declared case/control basis, and
 digest-pinned ``derived_inputs`` where a catalog declares them.
 
 **Documented cross-ticket shape variance (accepted, not silently tolerated).**
-The six catalogs were produced by two tickets and are *not* byte-for-byte the same
+The five catalogs were produced by two tickets and are *not* byte-for-byte the same
 shape. The test pins the variance explicitly, so a new third shape fails the gate:
 
-* ``af``/``icm``/``nhf``/``genetic_cardiomyopathy`` (#187/#188) declare
+* ``icm``/``nhf``/``genetic_cardiomyopathy`` (#187/#188) declare
   ``axis: {path: output/gene-identity/genes.csv, ...}`` (the published copy with
   ``gene_index``), a ``rank_contract`` block, a ``rejected`` list, ``inputs``
   values as **bare 64-hex sha256 strings**, and a ``derived_inputs`` list of
@@ -36,14 +36,13 @@ from pathlib import Path
 REPO = next(path for path in Path(__file__).resolve().parents if (path / ".git").exists())
 DISEASE_DEG = REPO / "stage2" / "01_bases" / "output" / "disease-deg"
 EXPECTED_CATEGORIES = (
-    "af",
     "icm",
     "nhf",
     "genetic_cardiomyopathy",
     "cardiotox_TOP2",
     "cardiotox_other",
 )
-TICKET_187_188 = {"af", "icm", "nhf", "genetic_cardiomyopathy"}
+TICKET_187_188 = {"icm", "nhf", "genetic_cardiomyopathy"}
 TICKET_189 = {"cardiotox_TOP2", "cardiotox_other"}
 SCHEMA = "stage2-disease-deg-catalog-v1"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")

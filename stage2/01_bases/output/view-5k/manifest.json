@@ -79,9 +79,9 @@
       "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676"
     },
     "stage2/01_bases/output/gene-axis/manifest.json": {
-      "bytes": 27016,
+      "bytes": 27846,
       "role": "gene_axis_release_manifest",
-      "sha256": "948f96875b89461b370ad5b44a99ec4c45cc369af1203e2c0fed1294a7a469e1"
+      "sha256": "cfd3ba118f51fd021a43ee70bb9b904e6b42e293f8735833b4dd51422c1a6317"
     }
   },
   "normalization": {

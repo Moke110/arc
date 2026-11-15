@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Build or replay the released Stage 2 gene axes ``G_2000`` / ``G_5000`` (ADR 0066).
 
-The products are the two-level rank-sum fusion of the six cardiomyocyte-derived
+The products are the two-level rank-sum fusion of the five cardiomyocyte-derived
 disease-DEG categories plus the published tenv-HVG ranking: the master candidate
-table, the two released axes, their manifest, the per-category composition table
-and the rank-sum histogram evidence panel. No corpus, view, model or truth is
+table, the two released axes, their manifest, the per-category composition table,
+the source top-N coverage table, the two-panel rank-sum evidence figure values and
+the two-panel source-coverage figure values. No corpus, view, model or truth is
 built; the disease-DEG products and the tenv-HVG ranking are read-only inputs.
 
 Every scientific definition lives in ``output/api/bases/gene_axis.py`` (the single
@@ -37,11 +38,12 @@ import public_api  # noqa: F401  (binds the single public implementation in outp
 from bases import release
 from bases.disease_deg import DiseaseDeg
 from bases.gene_axis import (
-    AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, CANDIDATE_COLUMNS, FILL_RULE,
-    N_FUSION_SOURCES, SCHEMA, axis_composition, axis_fill, axis_intersection,
-    candidate_columns, candidate_table, category_rank, detect_inflection, fusion_rank_sum,
-    inflection_stability, n_fusion_sources, pn_distribution, rank_sum_histogram,
-    winning_tier,
+    AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, CANDIDATE_COLUMNS, COVERAGE_COLUMNS,
+    FILL_RULE, N_FUSION_SOURCES, SCHEMA, axis_composition, axis_fill,
+    axis_intersection, candidate_columns, candidate_table, category_rank,
+    detect_inflection, fusion_rank_sum, inflection_stability, n_fusion_sources,
+    pn_distribution, rank_sum_histogram, source_topn_covered_counts,
+    source_topn_coverage, winning_tier,
 )
 from bases.deg_rank import SCHEMA as RANK_SCHEMA, normalized_rank
 
@@ -50,6 +52,7 @@ from bases.deg_rank import SCHEMA as RANK_SCHEMA, normalized_rank
 CATEGORY_MANIFEST_SCHEMAS = ('stage2-disease-deg-release-v1', 'stage2-cardiotox-class-v1')
 CANDIDATE_NAME = 'candidate_rank_sum.csv'
 COMPOSITION_NAME = 'axis_composition.csv'
+COVERAGE_NAME = 'source_topn_coverage.csv'
 FIGURE_NAME = 'gene_axis_rank_sum_histogram'
 HISTOGRAM_BINS = 70
 #: Inflection is diagnostic only; the declared decision range starts at N=100.
@@ -59,13 +62,35 @@ INFLECTION_MIN_N = 100
 RANK_SUM_MAX = float(N_FUSION_SOURCES)
 COMPOSITION_NOTE = ('pN is an ordinal cross-source replication count bounded by the '
                     'fused source count, not a continuous quality score')
+COVERAGE_NOTE = ("percent of each source's top-N set that G_N contains; both sets "
+                 'hold N genes, so a cell is at once the share of that source top-N '
+                 'the axis keeps and the share of the axis drawn from it; the source '
+                 'top-N sets overlap, so a row does not sum to 100')
 
+#: The evidence-figure plotted values: one panel per released axis, the gray
+#: candidate histogram and the count of that bin's candidates each axis selects.
 FIGURE_COLUMNS = ('record', 'panel', 'panel_title', 'title', 'axis', 'bin_left',
-                  'bin_right', 'bin_center', 'count', 'share', 'interval_low',
-                  'interval_high', 'median', 'inflection', 'inflection_n', 'note')
-FIGURE_TITLE = ('Released Stage 2 gene axes · rank-sum distribution over all '
-                'frozen-axis candidates with the G_2000 and G_5000 intervals')
+                  'bin_right', 'bin_center', 'count', 'selected')
+FIGURE_TITLE = ('Released Stage 2 gene axes · rank-sum distribution of the frozen-axis '
+                'candidates with each axis\'s selected genes')
 COMPOSITION_COLUMNS = ('axis', 'n_axis', 'record', 'group', 'n_genes', 'share', 'note')
+
+#: The source-coverage figure plotted values: one x group per fused source and one
+#: bar series per released axis. Panel ``a`` plots the absolute number of that
+#: source's top-N genes the axis contains (``count``) and panel ``b`` its rate
+#: (``rate``); both values are carried on every bar so a panel declares which
+#: column it draws.
+SOURCE_COVERAGE_FIGURE_NAME = 'gene_axis_source_topn_coverage'
+SOURCE_COVERAGE_FIGURE_COLUMNS = (
+    'record', 'panel', 'panel_title', 'y_label', 'value',
+    'series', 'series_label', 'source', 'source_label', 'count', 'rate')
+SOURCE_COVERAGE_FIGURE_PANELS = (
+    {'panel': 'a', 'title': 'Covered Gene Count', 'y_label': 'covered genes',
+     'value': 'count'},
+    {'panel': 'b', 'title': 'Top-N Coverage Rate', 'y_label': 'coverage rate (%)',
+     'value': 'rate'},
+)
+SOURCE_COVERAGE_FIGURE_LABELS = {'tenv_hvg': 'tenv-HVG', **CATEGORY_LABELS}
 
 
 @dataclass(frozen=True)
@@ -78,6 +103,7 @@ class Config:
     disease_root: Path
     output: Path
     figure_data: Path
+    source_coverage_figure: Path
     axis_sizes: tuple = AXIS_SIZES
 
 
@@ -86,17 +112,21 @@ def repo_root():
                 if (parent / '.git').exists())
 
 
-def default_config(root=None, output=None, figure_data=None, axis_sizes=AXIS_SIZES):
+def default_config(root=None, output=None, figure_data=None,
+                   source_coverage_figure=None, axis_sizes=AXIS_SIZES):
     root = Path(root) if root else repo_root()
     step = root / 'stage2/01_bases'
+    figure_data = (Path(figure_data) if figure_data
+                   else step / 'figure/data' / f'{FIGURE_NAME}.csv')
     return Config(
         root=root,
         genes=step / 'output/gene-identity/genes.csv',
         tenv_hvg=step / 'output/tenv-hvg/descriptive.csv',
         disease_root=step / 'output/disease-deg',
         output=Path(output) if output else step / 'output/gene-axis',
-        figure_data=Path(figure_data) if figure_data
-        else step / 'figure/data' / f'{FIGURE_NAME}.csv',
+        figure_data=figure_data,
+        source_coverage_figure=(Path(source_coverage_figure) if source_coverage_figure
+                                else figure_data.parent / f'{SOURCE_COVERAGE_FIGURE_NAME}.csv'),
         axis_sizes=tuple(int(size) for size in axis_sizes),
     )
 
@@ -118,11 +148,11 @@ def sha256(path):
     return digest.hexdigest()
 
 
-def write_frame(frame, path):
+def write_frame(frame, path, float_format='%.17g'):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(frame.to_csv(index=False, lineterminator='\n',
-                                 float_format='%.17g'))
+                                 float_format=float_format))
     return path
 
 
@@ -167,7 +197,7 @@ def _published_digest(path, manifest_path, getter):
 
 
 def read_tenv(path, axis_size):
-    """The published tenv-HVG dispersion rank: the seventh fusion source."""
+    """The published tenv-HVG dispersion rank: the sixth fusion source."""
     frame = pd.read_csv(path, dtype={'gene_index': np.int64})
     required = {'gene_index', 'rank'}
     if not required <= set(frame.columns):
@@ -256,7 +286,7 @@ def read_categories(config, axis_size):
     reader = DiseaseDeg(config.disease_root)
     found = tuple(reader.categories())
     if len(found) != len(CATEGORIES) or set(found) != set(CATEGORIES):
-        raise ValueError(f'expected the six declared categories {CATEGORIES}, found {found}')
+        raise ValueError(f'expected the five declared categories {CATEGORIES}, found {found}')
     categories = {}
     for category in CATEGORIES:
         catalog = reader.catalog(category)
@@ -402,6 +432,7 @@ def compute(axis, tenv_frame, categories, axis_sizes):
         'excluded_categories': excluded,
         'category_ranks': category_ranks,
         'category_measured': category_measured,
+        'tenv_rank': tenv_rank,
         'fusion': fusion,
         'table': table,
         'axes': axes,
@@ -458,30 +489,94 @@ def composition_rows(source, axes, axis_sizes):
     return pd.DataFrame(rows, columns=list(COMPOSITION_COLUMNS))
 
 
+def _source_ranks(source):
+    """The published rank of every fusion source, or ``None`` if it is excluded."""
+    ranks = {'tenv_hvg': source['tenv_rank']}
+    for category in CATEGORIES:
+        ranks[category] = (source['level_one'][category]['rank']
+                           if category in source['active_categories'] else None)
+    return ranks
+
+
+def coverage_rows(source, axis_sizes):
+    """Each source's top-``N`` coverage of both released axes (percent).
+
+    The source ranks are the published ones: tenv-HVG's dispersion rank and the
+    level-1 class rank of every informative category. A non-informative category
+    is fused by nothing (ADR 0068), so it contributes an empty column.
+    """
+    return source_topn_coverage(source['axes'], _source_ranks(source), sizes=axis_sizes)
+
+
+def covered_count_rows(source, axis_sizes):
+    """The integer covered gene count behind each coverage percentage."""
+    return source_topn_covered_counts(source['axes'], _source_ranks(source),
+                                      sizes=axis_sizes)
+
+
+def source_coverage_figure_rows(source, axis_sizes):
+    """The complete plotted values of the two-panel source-coverage figure.
+
+    One bar series per released axis (a bar's colour is its series) and one x
+    group per fused source. Every bar carries both the absolute count of that
+    source's top-``N`` genes the axis contains and its rate, so each panel record
+    declares which column it draws: panel ``a`` is the count and panel ``b`` the
+    rate. An excluded category has no count and therefore no bar; the released
+    roster has none.
+    """
+    counts = covered_count_rows(source, axis_sizes)
+    rates = {int(record['N']): record for record in
+             coverage_rows(source, axis_sizes).to_dict('records')}
+    rows = [{'record': 'panel', 'panel': panel['panel'],
+             'panel_title': panel['title'], 'y_label': panel['y_label'],
+             'value': panel['value']}
+            for panel in SOURCE_COVERAGE_FIGURE_PANELS]
+    for record in counts.to_dict('records'):
+        size = int(record['N'])
+        for name in ('tenv_hvg',) + tuple(source['active_categories']):
+            value = record[name]
+            if pd.isna(value):
+                continue
+            rows.append({'record': 'bar', 'series': f'G_{size}',
+                         'series_label': f'G_{size} (N = {size:,})',
+                         'source': name,
+                         'source_label': SOURCE_COVERAGE_FIGURE_LABELS[name],
+                         'count': int(value),
+                         'rate': float(rates[size][f'%{name}_gN'])})
+    frame = pd.DataFrame(rows, columns=list(SOURCE_COVERAGE_FIGURE_COLUMNS))
+    # The count is a gene count, so it is written as an integer (the panel rows
+    # leave it empty); the rate keeps two decimals.
+    frame['count'] = frame['count'].astype('Int64')
+    return frame
+
+
 def figure_rows(source, axis_sizes):
-    """The complete plotted values of the rank-sum histogram evidence panel."""
+    """The complete plotted values of the two-panel rank-sum evidence figure.
+
+    One panel per released axis. The gray bars are the frozen-axis candidates per
+    ``rank_sum`` bin and are identical in every panel; ``selected`` says how many
+    of that bin's candidates the panel's axis keeps (``sum(selected) == N``).
+    """
     histogram = source['histogram']
-    total = int(histogram['count'].sum())
-    rows = [{'record': 'figure', 'title': FIGURE_TITLE},
-            {'record': 'panel', 'panel': 'a',
-             'panel_title': 'rank_sum over all candidates with both axis intervals'}]
-    for row in histogram.itertuples(index=False):
-        rows.append({'record': 'hist',
-                     'bin_left': row.bin_left, 'bin_right': row.bin_right,
-                     'bin_center': row.bin_center, 'count': int(row.count),
-                     'share': int(row.count) / total})
-    for size in axis_sizes:
-        interval = source['intervals'][int(size)]
-        rows.append({'record': 'interval', 'axis': str(int(size)),
-                     'interval_low': interval['low'],
-                     'interval_high': interval['high'],
-                     'median': interval['median']})
-    inflection = source['inflection']
-    note = ('no inflection' if not inflection['inflection']
-            else f'candidate N={inflection["n"]}')
-    rows.append({'record': 'marker', 'inflection': inflection['inflection'],
-                 'inflection_n': inflection['n'] if inflection['n'] is not None else '',
-                 'note': note})
+    edges = np.append(histogram['bin_left'].to_numpy(dtype=float),
+                      float(histogram['bin_right'].iloc[-1]))
+    n_bins = len(histogram)
+    rank_sum = source['fusion']['rank_sum']
+    rows = [{'record': 'figure', 'title': FIGURE_TITLE}]
+    for index, size in enumerate(axis_sizes):
+        size = int(size)
+        panel = chr(ord('a') + index)
+        genes = source['axes'][size]
+        bins = np.clip(np.searchsorted(edges, rank_sum[genes], side='right') - 1,
+                       0, n_bins - 1)
+        selected = np.bincount(bins, minlength=n_bins)
+        rows.append({'record': 'panel', 'panel': panel, 'axis': str(size),
+                     'panel_title': f'N = {size}'})
+        for row, chosen in zip(histogram.itertuples(index=False), selected.tolist()):
+            rows.append({'record': 'hist', 'panel': panel,
+                         'bin_left': row.bin_left, 'bin_right': row.bin_right,
+                         'bin_center': row.bin_center, 'count': int(row.count),
+                         'selected': int(chosen)})
     return pd.DataFrame(rows, columns=list(FIGURE_COLUMNS))
 
 
@@ -518,6 +613,7 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
     fusion = source['fusion']
     table = source['table']
     composition = composition_rows(source, source['axes'], axis_sizes)
+    coverage = coverage_rows(source, axis_sizes)
     axes_manifest, intersection = {}, None
     for size in axis_sizes:
         size = int(size)
@@ -597,7 +693,8 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
                                'n_sources_measured (ADR 0068)'),
             'normalization': ('level-1 rank_norm = rank / n_measured per dataset; '
                               'level-2 each active source rank / frozen-axis size'),
-            'rank_sum': 'ascending is better; ties on gene_index',
+            'rank_sum': ('smaller is better (a descending value is better); '
+                          'ties on gene_index'),
             'n_candidates': int(len(table)),
         },
         'tenv_hvg': {
@@ -630,6 +727,28 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             'note': COMPOSITION_NOTE,
             'rows': int(len(composition)),
         },
+        'coverage': {
+            'file': COVERAGE_NAME,
+            'note': COVERAGE_NOTE,
+            'columns': list(COVERAGE_COLUMNS),
+            'rows': int(len(coverage)),
+            'sources': {
+                'tenv_hvg': 'published descriptive dispersion rank (never recomputed)',
+                'categories': 'level-1 class rank of each informative category',
+                'excluded': ('a non-informative category has no level-1 rank and '
+                             'keeps an empty column (ADR 0068)'),
+            },
+            'figure': {
+                'file': f'figure/data/{SOURCE_COVERAGE_FIGURE_NAME}.csv',
+                'panels': [dict(panel) for panel in SOURCE_COVERAGE_FIGURE_PANELS],
+                'value': ('count = |{g in G_N : rank_s(g) <= N}|; '
+                          'rate = 100 * count / N'),
+                'series': {f'G_{int(size)}': f'G_{int(size)} (N = {int(size):,})'
+                           for size in axis_sizes},
+                'sources': [SOURCE_COVERAGE_FIGURE_LABELS[name]
+                            for name in ('tenv_hvg',) + tuple(source['active_categories'])],
+            },
+        },
         'diagnostics': {
             'inflection': {
                 **{key: value for key, value in source['inflection'].items()},
@@ -639,6 +758,15 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             'histogram': {
                 'file': f'figure/data/{FIGURE_NAME}.csv',
                 'low': 0.0, 'high': float(fusion['n_sources']), 'bins': HISTOGRAM_BINS,
+                'panels': {str(int(size)): {
+                    'panel': chr(ord('a') + index),
+                    'panel_title': f'N = {int(size)}',
+                    'axis': f'gene_axis_{int(size)}.csv',
+                    'n_selected': int(size),
+                    'n_candidates': int(len(table)),
+                } for index, size in enumerate(axis_sizes)},
+                'selection': ('the colored segment of each bar is the number of that '
+                              "bin's candidates the panel's axis selects"),
                 'axis_intervals': {str(size): source['intervals'][size]
                                    for size in axis_sizes},
             },
@@ -662,11 +790,14 @@ def product_paths(config, axis_sizes):
     """Repo-relative names of every product (manifest keys)."""
     output = repo_relative(config.output, config.root)
     figure = repo_relative(config.figure_data, config.root)
+    source_coverage_figure = repo_relative(config.source_coverage_figure, config.root)
     names = {
         'candidate': f'{output}/{CANDIDATE_NAME}',
         'composition': f'{output}/{COMPOSITION_NAME}',
+        'coverage': f'{output}/{COVERAGE_NAME}',
         'manifest': f'{output}/manifest.json',
         'figure': figure,
+        'source_coverage_figure': source_coverage_figure,
     }
     for size in axis_sizes:
         names[f'axis_{int(size)}'] = f'{output}/gene_axis_{int(size)}.csv'
@@ -702,11 +833,29 @@ def _build_payload(config, payload_root):
     write_frame(composition, composition_path)
     outputs[paths['composition']] = {'rows': int(len(composition)),
                                      'sha256': sha256(composition_path)}
+    coverage = coverage_rows(source, config.axis_sizes)
+    coverage_path = payload_root / paths['coverage']
+    # Two decimals are the contract for this table: the cells are percentages
+    # rounded by ``source_topn_coverage``, so printing 17 significant digits
+    # would publish float representation noise (58.700000000000003).
+    write_frame(coverage, coverage_path, float_format='%.2f')
+    outputs[paths['coverage']] = {'rows': int(len(coverage)),
+                                  'sha256': sha256(coverage_path),
+                                  'columns': list(COVERAGE_COLUMNS)}
     figure = figure_rows(source, config.axis_sizes)
     figure_path = payload_root / paths['figure']
     write_frame(figure, figure_path)
     outputs[paths['figure']] = {'rows': int(len(figure)),
                                 'sha256': sha256(figure_path)}
+    source_coverage = source_coverage_figure_rows(source, config.axis_sizes)
+    source_coverage_path = payload_root / paths['source_coverage_figure']
+    # Two decimals are the contract for the rate column; the count column is
+    # integer and is unaffected by the float format.
+    write_frame(source_coverage, source_coverage_path, float_format='%.2f')
+    outputs[paths['source_coverage_figure']] = {
+        'rows': int(len(source_coverage)),
+        'sha256': sha256(source_coverage_path),
+        'columns': list(SOURCE_COVERAGE_FIGURE_COLUMNS)}
 
     manifest = _axis_manifest(config, axis, tenv_frame, categories, source,
                              config.axis_sizes)
@@ -744,6 +893,80 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
                              n=size, n_sources=n_sources)
         if not np.array_equal(expected, genes):
             raise ValueError(f'G_{size} does not follow the declared fill rule')
+    paths = product_paths(config, config.axis_sizes)
+    coverage = pd.read_csv(payload_root / paths['coverage'])
+    if list(coverage.columns) != list(COVERAGE_COLUMNS):
+        raise ValueError('coverage table columns differ from the contract')
+    if coverage['N'].tolist() != [int(size) for size in config.axis_sizes]:
+        raise ValueError('coverage table rows are not the released axis sizes')
+    for column in coverage.columns[1:]:
+        series = coverage[column].dropna()
+        if not series.between(0.0, 100.0).all():
+            raise ValueError(f'coverage {column} is outside 0..100 percent')
+    for category in manifest['fusion']['excluded_categories']:
+        if coverage[f'%{category}_gN'].notna().any():
+            raise ValueError(f'coverage for the excluded {category} is not empty')
+    figure = pd.read_csv(payload_root / paths['figure'])
+    if list(figure.columns) != list(FIGURE_COLUMNS):
+        raise ValueError('figure plotted-values columns differ from the contract')
+    panels = figure[figure.record == 'panel']
+    histogram = figure[figure.record == 'hist']
+    sizes = {row.panel: int(row.axis) for row in panels.itertuples(index=False)}
+    if sorted(sizes.values()) != [int(size) for size in config.axis_sizes]:
+        raise ValueError('figure panels do not match the released axis sizes')
+    if set(histogram.panel) != set(sizes):
+        raise ValueError('a figure panel has no plotted candidate histogram')
+    n_candidates = int(histogram[histogram.panel == panels.panel.iloc[0]]['count'].sum())
+    if n_candidates != axis_size:
+        raise ValueError('the figure histogram does not cover every candidate')
+    for panel, size in sizes.items():
+        rows = histogram[histogram.panel == panel]
+        if len(rows) != HISTOGRAM_BINS:
+            raise ValueError('a figure panel does not hold the declared bin count')
+        if rows.selected.sum() != size:
+            raise ValueError(f'figure panel {panel} does not select exactly N genes')
+        if (rows.selected > rows['count']).any():
+            raise ValueError('a figure bin selects more genes than it holds')
+    counts = covered_count_rows(source, config.axis_sizes)
+    rates = coverage_rows(source, config.axis_sizes)
+    coverage_figure = pd.read_csv(payload_root / paths['source_coverage_figure'])
+    if list(coverage_figure.columns) != list(SOURCE_COVERAGE_FIGURE_COLUMNS):
+        raise ValueError('source-coverage figure columns differ from the contract')
+    panels = list(coverage_figure[coverage_figure.record == 'panel']
+                  .itertuples(index=False))
+    if len(panels) != len(SOURCE_COVERAGE_FIGURE_PANELS):
+        raise ValueError('the source-coverage figure does not declare every panel')
+    for expected, actual in zip(SOURCE_COVERAGE_FIGURE_PANELS, panels):
+        if (actual.panel != expected['panel']
+                or actual.panel_title != expected['title']
+                or actual.y_label != expected['y_label']
+                or actual.value != expected['value']):
+            raise ValueError('a source-coverage panel differs from the contract')
+    bars = coverage_figure[coverage_figure.record == 'bar']
+    sources = ('tenv_hvg',) + tuple(source['active_categories'])
+    axis_series = {f'G_{int(size)}': int(size) for size in config.axis_sizes}
+    expected_bars = {(series, name) for series in axis_series for name in sources}
+    if (set(zip(bars.series, bars.source)) != expected_bars
+            or len(bars) != len(expected_bars)):
+        raise ValueError('the source-coverage figure does not plot every bar once')
+    if bars['count'].isna().any() or (bars['count'] < 0).any():
+        raise ValueError('a source-coverage count is negative or missing')
+    if (bars['count'] % 1 != 0).any():
+        raise ValueError('a source-coverage count is not an integer')
+    if bars['rate'].isna().any() or not bars['rate'].between(0.0, 100.0).all():
+        raise ValueError('a source-coverage rate is outside 0..100 percent')
+    published_counts = {f'G_{int(record["N"])}': record
+                         for record in counts.to_dict('records')}
+    published_rates = {f'G_{int(record["N"])}': record
+                       for record in rates.to_dict('records')}
+    for row in bars.itertuples(index=False):
+        if int(row.count) > axis_series[row.series]:
+            raise ValueError('a source-coverage count exceeds its axis size')
+        if int(row.count) != int(published_counts[row.series][row.source]):
+            raise ValueError('a source-coverage count differs from the published count')
+        rate = float(published_rates[row.series][f'%{row.source}_gN'])
+        if abs(float(row.rate) - rate) > 1e-9:
+            raise ValueError('a source-coverage rate differs from the published rate')
     release.check_relative_paths(manifest)
     for name, record in manifest['outputs'].items():
         actual = sha256(payload_root / name)
@@ -769,7 +992,7 @@ def publish(config):
         # the release directory is never renamed wholesale.
         output_root = payload / repo_relative(config.output, config.root)
         config.output.mkdir(parents=True, exist_ok=True)
-        for key in ('candidate', 'composition'):
+        for key in ('candidate', 'composition', 'coverage'):
             os.replace(output_root / Path(paths[key]).name,
                        config.output / Path(paths[key]).name)
         for size in config.axis_sizes:
@@ -777,6 +1000,9 @@ def publish(config):
             os.replace(output_root / name, config.output / name)
         config.figure_data.parent.mkdir(parents=True, exist_ok=True)
         os.replace(payload / paths['figure'], config.figure_data)
+        config.source_coverage_figure.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(payload / paths['source_coverage_figure'],
+                   config.source_coverage_figure)
         # The manifest is replaced last: it only announces products already in place.
         os.replace(output_root / 'manifest.json', config.output / 'manifest.json')
     finally:

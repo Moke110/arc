@@ -15,9 +15,11 @@ checkout does not carry a repo-relative literal for an item's gitignored
 per-worktree derived files). Every derived input is still pinned by sha256 in
 the published catalog/manifest.
 
-The ticket-187 categories are ``nHF``, ``ICM`` and ``AF`` only. The six isogenic
-models (#188), the drug-class sources (#189) and the Reichart genotype-positive /
-ARVC DEG (also #188) are other tickets and are not declared here.
+The ticket-187 categories are ``nHF`` and ``ICM`` only (the ``AF`` category was
+removed by ADR 0069 because its only dataset carried no ordering evidence). The
+six isogenic models (#188), the drug-class sources (#189) and the Reichart
+genotype-positive / ARVC DEG (also #188) are other tickets and are not declared
+here.
 """
 from __future__ import annotations
 
@@ -51,16 +53,6 @@ CATEGORIES = {
                        'not permitted'},
             {'candidate': 'GSE141910 / GSE116250',
              'reason': 'whole-tissue bulk, not cardiomyocyte-derived'},
-        ],
-    },
-    'AF': {
-        'directory': 'af',
-        'tier': 1,
-        'evidence_type': 'cm_pseudobulk',
-        'shared_control_group': ['gse255612:donor'],
-        'rejected': [
-            {'candidate': 'GSE128188',
-             'reason': 'whole atrial appendage bulk tissue, not cardiomyocyte-derived'},
         ],
     },
 }
@@ -177,33 +169,6 @@ DATASETS = [
             'design': ('one joint fit ~0 + status over normal / genotype-negative DCM / '
                        'genotype-positive DCM / ARVC; positive and ARVC donors share the fit '
                        'for dispersion but publish no DEG in this ticket'),
-            'test': 'moderated t',
-            'padj': 'Benjamini-Hochberg',
-        },
-    },
-    {
-        'dataset_id': 'gse255612__af',
-        'category': 'AF',
-        'source_item': 'disease_data/GSE255612',
-        'local_deg': 'local/deg/gse255612_deg.csv',
-        'local_summary': 'local/deg/gse255612_deg.json',
-        'cells_per_donor': 'local/pseudobulk/gse255612_donors.csv',
-        'arm_or_class': 'AF donors vs non-AF control donors (left-atrial CM)',
-        'species': 'Homo sapiens',
-        'model_system': 'human left-atrium 10x snRNA CM pseudobulk',
-        'evidence_type': 'cm_pseudobulk',
-        'tier': 1,
-        'genotype_status': 'not_declared',
-        'time_window_basis': None,
-        'exploratory': False,
-        'shared_control_group': 'gse255612:donor',
-        'n_case': 18,
-        'n_control': 16,
-        'contrasts': ['AF-control'],
-        'method': {
-            'deposition': 'normalised expression (log1p(CP10K))',
-            'model': 'limma on log2(mean_CP10K + 1) pseudobulk (moderated t)',
-            'design': 'one joint fit ~0 + group over 34 donors',
             'test': 'moderated t',
             'padj': 'Benjamini-Hochberg',
         },

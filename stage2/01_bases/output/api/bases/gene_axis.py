@@ -3,10 +3,11 @@
 This module owns every scientific definition of the released gene axis: the
 winning-tier selection inside a disease category, the level-1 category rank, the
 level-2 rank sum over the **fused** sources, the ``pN`` cross-source replication
-count, the ``0.5*N + 0.5*N`` axis fill rule, the rank-sum histogram and the
-diagnostic Kneedle + second-difference inflection. ``execution/build_gene_axis.py`` reads
-the pinned inputs and publishes the products; ``execution/tests/test_gene_axis.py``
-exercises these definitions on hermetic fixtures.
+count, the ``0.5*N + 0.5*N`` axis fill rule, the source top-``N`` coverage table,
+the rank-sum histogram and the diagnostic Kneedle + second-difference inflection.
+``execution/build_gene_axis.py`` reads the pinned inputs and publishes the
+products; ``execution/tests/test_gene_axis.py`` exercises these definitions on
+hermetic fixtures.
 
 It is a pure function module (ADR 0062): no file is opened here except through
 :class:`GeneAxis`, the public reader for the published ``output/gene-axis/``
@@ -47,12 +48,13 @@ from .deg_rank import (
 
 SCHEMA = 'stage2-gene-axis-release-v1'
 
-# The six declared disease categories, in ADR 0066 roster order. The product
-# directory is the catalog directory under ``output/disease-deg/``; it is also
-# the prefix of the candidate table's ``<category>_rank`` column.
-CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
+# The five declared disease categories, in ADR 0066 roster order minus ``af``
+# (removed by ADR 0069: its only dataset carried no ordering evidence). The
+# product directory is the catalog directory under ``output/disease-deg/``; it is
+# also the prefix of the candidate table's ``<category>_rank`` column.
+CATEGORIES = ('nhf', 'icm', 'genetic_cardiomyopathy',
               'cardiotox_TOP2', 'cardiotox_other')
-CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',
+CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM',
                    'genetic_cardiomyopathy': 'genetic_cardiomyopathy',
                    'cardiotox_TOP2': 'cardiotox_TOP2',
                    'cardiotox_other': 'cardiotox_other'}
@@ -62,7 +64,7 @@ CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in CATEGORIES)
 AXIS_SIZES = (2000, 5000)
 #: Half of an axis comes from tenv-HVG, half from cross-source replication.
 FILL_FRACTION = 0.5
-#: The declared maximum: six category class sources plus the published
+#: The declared maximum: five category class sources plus the published
 #: tenv-HVG ranking. A category whose records are all non-informative is dropped
 #: from the fusion (ADR 0068), so the *actual* source count is
 #: :func:`n_fusion_sources` over the informative categories and is published in
@@ -91,6 +93,17 @@ def candidate_columns(sizes=AXIS_SIZES):
 
 CANDIDATE_COLUMNS = candidate_columns()
 AXIS_COLUMNS = ('gene_index', 'symbol')
+#: The source top-``N`` coverage table: one row per released axis, one column per
+#: source (``tenv_hvg`` then the five categories in roster order). The header keeps
+#: the literal ``N`` so a single table can carry every released axis.
+COVERAGE_COLUMNS = ("N", "%tenv_hvg_gN") + tuple(
+    f"%{category}_gN" for category in CATEGORIES)
+
+#: The integer companion of :data:`COVERAGE_COLUMNS`: one row per released axis,
+#: one column per source, holding how many of that source's top-``N`` genes the
+#: axis contains. The columns are bare source names because the values are counts,
+#: not percentages.
+COUNT_COLUMNS = ("N", "tenv_hvg") + CATEGORIES
 
 FILL_RULE = (
     'G_N = the top 0.5*N genes of tenv-HVG (tenv_hvg_rank <= N/2), then 0.5*N '
@@ -425,6 +438,107 @@ def axis_composition(axis_genes, categories_measured, categories=None):
     return composition
 
 
+def _source_coverage_inputs(axes, source_ranks, sizes):
+    """Validate the source-coverage inputs shared by the count and percent tables.
+
+    Returns ``(sizes, ranks, genes)``: the requested axis sizes as ints, each
+    source's rank (``None`` for a category the fusion excludes) and the axis gene
+    indices per size.
+    """
+    sizes = tuple(int(size) for size in sizes)
+    ranks = {}
+    for name, rank in source_ranks.items():
+        if name != 'tenv_hvg' and name not in CATEGORIES:
+            raise ValueError(f'unknown coverage source: {name}')
+        if rank is None:
+            ranks[name] = None
+            continue
+        rank = np.asarray(rank, dtype=np.int64)
+        if rank.ndim != 1 or rank.size < 2:
+            raise ValueError(f'{name}: a source coverage rank must be a vector')
+        expected = np.arange(1, rank.size + 1, dtype=np.int64)
+        if not np.array_equal(np.sort(rank), expected):
+            raise ValueError(f'{name}: a source coverage rank must be a complete '
+                             '1..axis_size permutation')
+        ranks[name] = rank
+    ranked = {name: rank for name, rank in ranks.items() if rank is not None}
+    if not ranked:
+        raise ValueError('a coverage table needs at least one ranked source')
+    axis_size = int(next(iter(ranked.values())).size)
+    for name, rank in ranked.items():
+        if rank.size != axis_size:
+            raise ValueError(f'{name}: source ranks must cover the same frozen axis')
+    keyed = {int(key) for key in axes}
+    genes = {}
+    for size in sizes:
+        if size <= 0:
+            raise ValueError('a coverage axis size must be positive')
+        if size not in keyed:
+            raise ValueError(f'no released axis of size {size}')
+        genes[size] = np.asarray(axes[size], dtype=np.int64)
+        if genes[size].size != size:
+            raise ValueError(f'G_{size} does not hold exactly {size} genes')
+        if genes[size].min() < 0 or genes[size].max() >= axis_size:
+            raise ValueError(f'G_{size} is outside the frozen axis')
+    return sizes, ranks, genes
+
+
+def source_topn_covered_counts(axes, source_ranks, sizes=AXIS_SIZES):
+    """Each source's top-``N`` covered gene count on every released axis.
+
+    The integer companion of :func:`source_topn_coverage`: ``source_ranks`` maps
+    ``'tenv_hvg'`` and every category to a complete ``1..axis_size`` rank
+    permutation indexed by ``gene_index``, and a category the fusion excludes
+    (ADR 0068: every dataset non-informative) maps to ``None`` and keeps an empty
+    column. For one axis ``G_N`` and source ``s`` the cell is::
+
+        |{g in G_N : rank_s(g) <= N}|
+
+    Because both sets hold ``N`` genes, the count is at once how many of ``s``'s
+    top-``N`` genes the axis keeps and how many of the axis's genes come from that
+    source's top-``N`` set; the sets overlap across sources, so a row does not sum
+    to ``N``.
+    """
+    sizes, ranks, genes = _source_coverage_inputs(axes, source_ranks, sizes)
+    rows = []
+    for size in sizes:
+        row = {'N': size}
+        for name in ('tenv_hvg',) + CATEGORIES:
+            rank = ranks.get(name)
+            row[name] = (np.nan if rank is None
+                         else int((rank[genes[size]] <= size).sum()))
+        rows.append(row)
+    return pd.DataFrame(rows, columns=list(COUNT_COLUMNS))
+
+
+def source_topn_coverage(axes, source_ranks, sizes=AXIS_SIZES):
+    """Each source's top-``N`` coverage of every released axis, in percent.
+
+    ``source_ranks`` follows the contract of
+    :func:`source_topn_covered_counts`. For one axis ``G_N`` and source ``s`` the
+    cell is the percentage of ``s``'s top-``N`` set (``rank_s <= N``) that the
+    axis contains::
+
+        100 * |{g in G_N : rank_s(g) <= N}| / N
+
+    Because both sets hold ``N`` genes, the count is at once the share of the
+    source's top-``N`` the axis keeps and the share of the axis drawn from that
+    source's top-``N``; the sets overlap across sources, so a row does not sum to
+    100.
+    """
+    counts = source_topn_covered_counts(axes, source_ranks, sizes=sizes)
+    rows = []
+    for record in counts.to_dict('records'):
+        size = int(record['N'])
+        row = {'N': size}
+        for name in ('tenv_hvg',) + CATEGORIES:
+            value = record[name]
+            row[f'%{name}_gN'] = (np.nan if pd.isna(value)
+                                  else round(100.0 * int(value) / size, 2))
+        rows.append(row)
+    return pd.DataFrame(rows, columns=list(COVERAGE_COLUMNS))
+
+
 def pn_distribution(p_n, n_sources=N_FUSION_SOURCES):
     """Counts of genes at each ``pN`` value ``0..n_sources`` (ordinal, not a score).
 
@@ -442,12 +556,12 @@ def pn_distribution(p_n, n_sources=N_FUSION_SOURCES):
 def rank_sum_histogram(values, low=0.0, high=None, bins=70):
     """Histogram of ``rank_sum`` over all candidates, with fixed declared edges.
 
-    The evidence panel marks both released axes' ``rank_sum`` intervals on this
-    histogram. Fixed equal-width edges (bounded by the published source count,
-    ``0..n_sources`` in 70 bins) keep the plotted values deterministic and
-    comparable between replays; every candidate falls inside the interval and
-    every bin is emitted, including empty ones, so the CSV is the complete
-    plotted value set.
+    The evidence figure draws this histogram once per released axis and overlays
+    that axis's selected genes on every bar. Fixed equal-width edges (bounded by
+    the published source count, ``0..n_sources`` in 70 bins) keep the plotted
+    values deterministic and comparable between replays; every candidate falls
+    inside the interval and every bin is emitted, including empty ones, so the
+    CSV is the complete plotted value set.
     """
     values = np.asarray(values, dtype=np.float64)
     if values.ndim != 1 or values.size == 0:
@@ -705,3 +819,12 @@ class GeneAxis:
         """The per-category / pN composition table of both released axes."""
         path = self._verified('axis_composition.csv')
         return pd.read_csv(path)
+
+    def coverage(self):
+        """Each source's top-``N`` coverage of both released axes (percent)."""
+        path = self._verified('source_topn_coverage.csv')
+        table = pd.read_csv(path)
+        expected = list(COVERAGE_COLUMNS)
+        if list(table.columns) != expected:
+            raise ValueError(f'{path}: coverage table columns differ from the contract')
+        return table

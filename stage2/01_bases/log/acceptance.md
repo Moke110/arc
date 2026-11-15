@@ -1,4 +1,4 @@
-# Acceptance record — Stage 2 `01_bases` rebuild (#192, ADR 0066 / ADR 0062)
+# Acceptance record — Stage 2 `01_bases` rebuild (#192, ADR 0066 / ADR 0068 / ADR 0069 / ADR 0062)
 
 Accepted 2026-11-13 on branch `ticket/192-acceptance` (worktree `.scratch/worktrees/t192`,
 base `dev=cb72b92`). Re-accepted after the post-review fixes of #194 on branch
@@ -19,11 +19,11 @@ available, 12 GiB floor respected.
 |---|---|---|---:|---:|---:|
 | `output/raw_counts/` | `build_raw_counts.py verify` (`source-accepted-replay`) | `e02e5a1b…f6f406` | PASS | 15.9 s | 367 MiB |
 | `output/corpus/` | `build_corpus.py verify` | `f8c35ccc…9d5d9f6d` | PASS | 1 m 10.5 s | 462 MiB |
-| `output/disease-deg/{af,icm,nhf,genetic_cardiomyopathy}/` | `build_disease_deg.py verify --all` | AF `7f9ab6bd…`, ICM `1f453553…`, nHF `afb50564…`, genetic `304d8182…` | PASS (4/4) | 8.6 s | 293 MiB |
+| `output/disease-deg/{icm,nhf,genetic_cardiomyopathy}/` | `build_disease_deg.py verify --all` | ICM `1f453553…`, nHF `afb50564…`, genetic `304d8182…` | PASS (3/3) | 6.9 s | 282 MiB |
 | `output/disease-deg/{cardiotox,cardiotox_TOP2,cardiotox_other}/` | `build_disease_deg_cardiotox.py verify` (R: DESeq2/edgeR) | `06e4e08b…`, `5ef7fa40…`, `12a3e1ba…` | PASS (3/3) | 1 m 40.1 s | 1.47 GiB |
-| `output/gene-axis/` | `build_gene_axis.py --verify` | `948f9687…a469e1` | PASS | 0.4 s | 138 MiB |
-| `output/view-2k/` | `build_view.py verify` (payload published first) | `cb190846…25e950` | PASS | 3 m 35.0 s (both views) | 432 MiB |
-| `output/view-5k/` | `build_view.py verify` | `03f2a056…e698ea` | PASS | (both views) | (both views) |
+| `output/gene-axis/` | `build_gene_axis.py --verify` | `641057dd…aa3ac2` | PASS | 0.43 s | 140 MiB |
+| `output/view-2k/` | `build_view.py verify` (payload published first) | `72be67e1…f73d72` | PASS | 3 m 34.6 s (both views) | 449 MiB |
+| `output/view-5k/` | `build_view.py verify` | `70298831…2d5c60` | PASS | (both views) | (both views) |
 
 The two view payloads are gitignored and were absent from the fresh worktree, so
 `build_view.py publish` materialised them first (3 m 32.2 s, 427 MiB); the
@@ -32,10 +32,63 @@ and the subsequent `verify` replayed both views from the pinned corpus + axis.
 `output/tenv-hvg/` is a retained pre-0066 product, not rebuilt by this ticket
 (manifest `953103a1…`; see README *Retained tenv-HVG ranking*).
 
+**2026-11-14 gene-axis update.** The release gained
+`output/gene-axis/source_topn_coverage.csv` (each source's top-`N` coverage of
+both axes, percent columns) and the two-panel evidence figure (gray candidate
+histogram plus a colored selected-gene overlay, replacing the
+interval/median/inflection panel), and gained the human-facing
+`gene_axis_fill_rule.docx` (a reading aid, **not** a manifest output). The replay
+gate was re-run: `build_gene_axis.py --verify` PASS, 32 inputs / **6** outputs,
+manifest sha256 `df1179fd…4350fa`, 0.45 s / 142 MiB; the recorded
+`gene_axis_verify.json` is that run. The CSV-only renderer reproduces the new PNG
+byte-identically (`5c54608f…`), and `execution/make_gene_axis_docx.py`
+reproduces the DOCX byte-identically (`37882ca4…`) from the coverage CSV + PNG
+(both are test cases in `test_gene_axis`). Because both views pin the gene-axis
+release manifest as an input, they were re-published and re-verified against the
+new manifest: the view **payload digests are unchanged** (byte-identical h5ad and
+`library_totals.csv`; only the pinned input differs), the view manifests are now
+`1ea15c9c…` / `1747adfa…`, and both replays passed (`publish` 3 m 23.2 s /
+449 MiB, `verify` 3 m 32.5 s / 430 MiB; `log/view_publish_verify.json` and
+`log/view_verify.json` are that run).
+
+**2026-11-14 AF removal (ADR 0069) and final re-seal.** The `AF` category was
+removed from 01: `output/disease-deg/af/` is deleted, the DEG roster is
+`nHF`/`ICM`/`genetic_cardiomyopathy`, and the gene-axis roster is five categories
+plus tenv-HVG (candidate table 12 columns, `axis_composition.csv` 40 rows,
+`source_topn_coverage.csv` 7 columns, `fusion.excluded_categories: []`). The axes
+and rank sums are unchanged (`G_2000` `cb07535f…`, `G_5000` `15e5c49e…`,
+intersection 1,972, `rank_sum` 0.0237–5.8103). Final replays: gene axis
+`--verify` PASS, **30 inputs / 6 outputs**, manifest `641057dd…aa3ac2`, 0.43 s /
+140 MiB; disease DEG `verify --all` PASS (3/3), 6.9 s / 282 MiB; views
+`publish` 3 m 28.8 s / 429 MiB then `verify` 3 m 34.6 s / 449 MiB PASS with
+**unchanged payload digests** and manifests `72be67e1…` / `70298831…`. The rule
+document (`6bb82423…`) and the PNG (`5c54608f…`) replay byte-identically. The
+manifest's `fusion.rank_sum` wording is now
+`"smaller is better (a descending value is better); ties on gene_index"` — the
+same rule as before, but no longer readable as "higher is better".
+
 Record files: `raw_counts_verify.json`, `corpus_verify.json`,
 `disease_deg_verify.json`, `cardiotox_verify.json`, `gene_axis_verify.json`,
 `view_publish_verify.json`, `view_verify.json`; the machine-readable digest
 inventory is `inputs.json`.
+
+**2026-11-14 source-coverage figure.** The release gained
+`figure/data/gene_axis_source_topn_coverage.csv` and
+`figure/gene_axis_source_topn_coverage.png`, a two-panel grouped bar figure: one
+x group per fused source (`tenv-HVG` + the five categories; `af` is not a
+source, ADR 0069) and one bar per released axis (`G_2000` blue, `G_5000`
+orange). Panel a ("Covered Gene Count") draws the absolute covered gene count
+and panel b ("Top-N Coverage Rate") the same cells as percentages, both from
+`bases.gene_axis.source_topn_covered_counts` / `source_topn_coverage`; the
+integer count is the new public companion of the published percentage. The
+plotted values are a manifest output (14 rows). The replay gate was re-run:
+`build_gene_axis.py --verify` PASS, **30 inputs / 7 outputs**, manifest
+`cfd3ba11…1a6317`, 0.48 s / 139 MiB; the CSV-only renderer reproduces the PNG
+byte-identically (`51ea4bc8…`). Both views pin that manifest, so they were
+re-published and re-verified: payload digests **unchanged**, view manifests now
+`44f0c0df…` / `d7ac0227…`, both replays PASS (`publish` 3 m 27.5 s / 430 MiB,
+`verify` 3 m 30.5 s / 435 MiB; `log/view_publish_verify.json` and
+`log/view_verify.json` are those runs). `test_gene_axis` is now 49 tests.
 
 ### Structural and semantic checks exercised by the replays
 
@@ -54,12 +107,13 @@ inventory is `inputs.json`.
   carries explicit `informative`/`informativeness` evidence (ADR 0068) and only
   informative datasets enter level 1; level-1 inputs are the released rank frames.
 - `gene-axis`: level-1 dataset fusion inside each category, level-2 six-source
-  `rank_sum` (five informative categories + tenv-HVG; `af` excluded because its
-  only dataset is non-informative), `pN ∈ 0..6`; axes exactly 2,000/5,000
-  ascending **original** `gene_index` (never renumbered), fill `0.5·N` tenv-HVG
-  + `0.5·N` pN/rank_sum remainder; non-nested axes with reported intersection
-  **1,972**; `af_rank` empty in the candidate table; manifest digests and
-  18,164-row candidate table.
+  `rank_sum` (five categories + tenv-HVG, `fusion.excluded_categories: []`),
+  `pN ∈ 0..6`; axes exactly 2,000/5,000 ascending **original** `gene_index`
+  (never renumbered), fill `0.5·N` tenv-HVG + `0.5·N` pN/rank_sum remainder;
+  non-nested axes with reported intersection **1,972**; the source top-`N`
+  coverage table (two percent rows, 7 columns); the two-panel figure values
+  (`sum(selected) = N` per panel, `sum(count) = 18,164`); manifest digests and
+  the 18,164-row candidate table.
 - `view-*`: normalization on the **full-axis** library total then subset (never
   the view-local denominator); `control` = mean of the named matched-control
   rows; `Δ = X − control` exactly; `X/control/Δ` float32; obs carries row
@@ -69,7 +123,7 @@ inventory is `inputs.json`.
 
 Every retained reader module was exercised through its own test file under the
 `arc` env (all green): `test_raw_counts` (8), `test_corpus` (10), `test_view`
-(17), `test_gene_axis` (40), `test_deg_rank` (15), `test_disease_deg_human_sc`
+(17), `test_gene_axis` (45), `test_deg_rank` (15), `test_disease_deg_human_sc`
 (18), `test_disease_deg_isogenic` (35), `test_drug_classes` (17),
 `test_disease_deg_cardiotox` (11), `test_identity`, `test_fold_seed`,
 `test_palette`, `test_hvg` (2, after removing the retired metrics-QA assertion), `test_native`,
@@ -99,8 +153,13 @@ With every `output/` product directory made unreadable (`chmod a-r`; only
 `output/api` readable), the renderer
 `figure/script/render_gene_axis_rank_sum_histogram.py --csv
 figure/data/gene_axis_rank_sum_histogram.csv` re-rendered the committed PNG
-byte-identically: `3184b37f…3fcbe134` = `3184b37f…3fcbe134` (exit 0). The retired
-diagnostic PR figure and its renderer are deleted.
+byte-identically: `3184b37f…3fcbe134` = `3184b37f…3fcbe134` (exit 0; pre-redesign
+digest). The 2026-11-14 two-panel figure still replays from its CSV alone with
+`output/` unreadable (test case; digest `5c54608f…`). Separately, the rule
+document replays byte-identically from the coverage CSV + PNG —
+`execution/make_gene_axis_docx.py` → `gene_axis_fill_rule.docx` (`6bb82423…`) —
+but it is a document, not the evidence figure, and it does read the published
+coverage CSV. The retired diagnostic PR figure and its renderer are deleted.
 
 ## 5. "No retired path read" evidence
 
@@ -140,7 +199,8 @@ analogous deferred re-point documented in the README.
 
 The #194 fixes changed three products: every disease-DEG rank table (`rank_norm`
 for unmeasured genes), the gene-axis fusion (`af` excluded, `pN ∈ 0..6`, both axes
-and composition/histogram rebuilt) and both views (rebuilt from the new axes); the
+and composition/histogram rebuilt; superseded by the 2026-11-14 AF removal, ADR
+0069) and both views (rebuilt from the new axes); the
 raw-count release was re-sealed against the tracked provenance record without
 changing a payload byte. All six replay gates were re-run green at the times and
 peaks in §1, and the per-slice `*_verify.json` records were regenerated. The full
@@ -164,7 +224,7 @@ audit `PASS` and the stage3 source-first audit `PASS`.
 | `output/training-corpora/` (products) | `output/corpus/` + `output/view-2k/`/`view-5k/` |
 | `output/tenv-raw-counts/`, `output/tahoe-raw-counts/` (products) | `output/raw_counts/` — same payload bytes, one manifest |
 | `output/tenv-truth/`, `output/tenv-truth-successor/`, `output/historical-training-release/` (products) | none; evaluation redesign deferred; each view will own `{N}k_eval_truth/` |
-| old `output/gene-axis/` file set: `source_summary.csv`, `fused_rank.csv`, `overlap.csv`, `inflection.json`, `tenv_non_hvg_curve.csv`, `direction_summary.csv`, `mouse_human_orthologs.csv` (product) | `candidate_rank_sum.csv`, `gene_axis_{2000,5000}.csv`, `axis_composition.csv` (retired fusion semantics not resurrected) |
+| old `output/gene-axis/` file set: `source_summary.csv`, `fused_rank.csv`, `overlap.csv`, `inflection.json`, `tenv_non_hvg_curve.csv`, `direction_summary.csv`, `mouse_human_orthologs.csv` (product) | `candidate_rank_sum.csv`, `gene_axis_{2000,5000}.csv`, `axis_composition.csv` (retired fusion semantics not resurrected); added later: `source_topn_coverage.csv` and the human-facing `gene_axis_fill_rule.docx` (2026-11-14) |
 | truth/evaluation chain: `build_significance.py`, `bases/{significance,truth_build,truth_successor,evaluation,metrics,plots}.py`, `deseq2_contrasts.R` + sealed copy, `evaluate_predictions.py`, `replay_pr.py`, `verify_hvg_metrics.py`, `export_diagnostic_predictions.py`, `publish_diagnostic_figure.py`, `hvg_metrics.md`, `truth_successor.md`, `figure/diagnostic_tenv_pr.*`, their tests/fixtures (code) | none; reworked with the deferred evaluation design |
 | one-off migration/audit: `migrate_products.py`, `audit_metadata_bindings.py`, `verify_payload_digests.py` (code) | none; one-shot, records in git |
 | superseded build chain: `build_shared.py`, `build_corpora.py`, `verify_training_source.py`, `bases/corpora.py`, `build_native.py`, `prepare_tahoe.py`, `gene_axis_sources.py`, `figure/gene_axis_source_summary.*`, `build_mouse_orthologs.R` (code) | `build_raw_counts.py` (`publish`/`--full-rebuild`), `build_corpus.py`, `bases.raw_counts`, `bases.corpus`; mouse ortholog table has no surviving eligible source |
@@ -257,3 +317,36 @@ Run from the worktree root after the deletions and after `git merge dev`
   **PASS — 48/48 items**, 4 m 48.7 s, peak RSS 79,124 KiB. `free -g` available
   memory: 42 GiB before and 42 GiB after (the kernel reclaimed page cache; no
   pressure on the 12 GiB floor).
+
+**2026-11-15 rule-document source table, excluded-AF block and code-review
+follow-up (#198/#199).** `output/gene-axis/gene_axis_fill_rule.docx` replayed
+byte-identically from its inputs — the coverage CSV, the figure PNG, the five
+`output/disease-deg/<category>/catalog.json` files and the tracked
+`execution/gene_axis_source_metadata.py` — with the documented no-arg command,
+twice: 0.41 s wall, peak RSS 125,736 KiB, final sha256
+`2bbe1f0e1fc8e328c90288f27c1e338d9c50e564eefe30c2b012fece0091ed88`. Earlier
+docx digests (`37882ca4…`, `6bb82423…`, `044f7ece…`) are superseded and match no
+committed file. 表 1 has 19 rows (18 released datasets + tenv-HVG; columns
+`category / accession / sample type / groups / sample sizes / sequencing
+technology / CM DEG count`), and the six cardiotox `groups` cells are now derived
+from each catalog's own `shared_control_group` rather than a hard-coded token.
+Its footnote defines the CM DEG count (`n_significant`, best contrast, BH
+padj<0.05), the contrast semantics and the `GSE255612` 19/19-vs-18/16 mismatch,
+and states the five non-obvious sample-size bases (GSE270788 46 GSMs / DToxS
+1,171 GSMs / GSE243674 72 GSMs / GSE244740 3,072 wells / Reichart-CM 79 donors);
+表 2 lists the five audited-and-excluded AF sources and the closing paragraph
+declares `AF` a gap. The generator's five `--catalog` inputs and its new
+`--metadata` module input are proven read by wiring tests (a changed catalog
+`n_significant` and a changed `technology` each move the rendered cell). Test
+inventory: 266 step tests / 55 `test_gene_axis.py` / 22
+`test_gene_axis_source_metadata.py`; `test_gene_axis.py` alone 1.845 s, peak RSS
+194,324 KiB; the full directory 8.384 s, peak RSS 323,476 KiB. The DOCX is not a
+manifest output, so `build_gene_axis.py --verify` and `build_view.py verify` are
+unaffected; the integrator re-ran both PASS in the main checkout, which holds the
+gitignored payloads this worktree lacks. **Erratum:** the 2026-11-14 entries
+describe the docx replay as reading only the coverage CSV + PNG; since
+#197/#198 it also reads the five catalogs and the tracked metadata module, and
+their docx digests (`37882ca4…`, `6bb82423…`) are historical. No release
+product, manifest, axis or view changed. `docs/data-inventory.md`'s
+`output/gene-axis/` row was refreshed (`du -sb` 1,461,704; docx 92,412 B;
+`du -sb`, 2026-11-15).

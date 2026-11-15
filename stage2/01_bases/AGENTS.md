@@ -9,13 +9,14 @@ Routing for the accepted Stage 2 foundation. Read this, then the owning section 
 - [`log/acceptance.md`](log/acceptance.md) — acceptance replays, digests, resource
   peaks, the old→new mapping and "no retired path read" evidence.
 - [`log/README.md`](log/README.md) — the `log/*_verify.json` records and removal record.
-- ADRs: 0066 (contract), 0068 (fusion amendment), 0067 (errata), 0062 (products),
-  0061 (frozen axis), 0030 (external-data and step layout).
+- ADRs: 0066 (contract), 0068 (fusion amendment), 0067 (errata), 0069 (AF removal),
+  0062 (products), 0061 (frozen axis), 0030 (external-data and step layout).
 
 ## Products
 `output/raw_counts/` → `output/corpus/` → `output/view-2k/`, `output/view-5k/`;
-`output/disease-deg/**` (six categories + the `cardiotox/` crosswalk),
-`output/gene-axis/` (`G_2000`/`G_5000`), `output/gene-identity/`, `output/tenv-hvg/`,
+`output/disease-deg/**` (five categories + the `cardiotox/` crosswalk),
+`output/gene-axis/` (`G_2000`/`G_5000`, the source top-`N` coverage table and the
+human-facing `gene_axis_fill_rule.docx`), `output/gene-identity/`, `output/tenv-hvg/`,
 `output/fold_n_seed/`, `output/palette/` and `output/api/` (the single live public
 implementation).
 

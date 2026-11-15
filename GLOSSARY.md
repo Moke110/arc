@@ -322,7 +322,7 @@ The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `s
 _Avoid_: source name, dataset name, accession
 
 **View**:
-The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the fused six-source rank sum; the `AF` source is excluded as non-informative, ADR 0068), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
+The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the fused six-source rank sum; the `AF` category was removed by ADR 0069 and confirmed out by ADR 0070), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
@@ -658,7 +658,7 @@ The ordered gene set a Stage 2 perturbational model reads and predicts — `G_20
 _Avoid_: narrowed corpus axis, new identity axis
 
 **Gene-axis candidate**:
-A frozen-axis gene that at least one of the seven sources measures or ranks; the rows of
+A frozen-axis gene that at least one of the six sources measures or ranks; the rows of
 `output/gene-axis/candidate_rank_sum.csv`. tenv-HVG ranks all 18,164 genes, so the candidate
 set is the whole frozen axis.
 _Avoid_: gene universe, axis pool
@@ -670,9 +670,12 @@ tissue bulk is never one, however many cardiomyocytes it contains.
 _Avoid_: disease source (unqualified, when a whole-tissue bulk series is meant)
 
 **Disease category**:
-One of the six declared mechanism groups whose datasets fuse into one axis source: `nHF`,
-`ICM`, `AF`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
-fusion source however many datasets it holds.
+One of the five declared mechanism groups whose datasets fuse into one axis source: `nHF`,
+`ICM`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
+fusion source however many datasets it holds. The `AF` category was declared by ADR 0066 and
+removed by ADR 0069 because its only dataset carried no ordering evidence; the 2026-11-15
+CM-specific AF audit (ADR 0070) found no clinical AF dataset with AF-specific ordering, so
+`AF` stays out as a declared gap.
 _Avoid_: disease label, cohort
 
 **nHF**:
@@ -710,22 +713,48 @@ datasets at that category's winning tier, ties broken by `gene_index`.
 _Avoid_: merged dataset, meta-analysis
 
 **Rank-sum fusion**:
-`rank_sum = Σ rank_norm` over the seven sources (six categories plus tenv-HVG), ascending,
-ties broken by `gene_index`; the `rank_sum` column of
+`rank_sum = Σ rank_norm` over the six declared sources (five categories plus tenv-HVG),
+ascending, ties broken by `gene_index`; the `rank_sum` column of
 `output/gene-axis/candidate_rank_sum.csv`. It runs at two levels: datasets inside a category,
 then categories inside the axis.
 _Avoid_: weighted fusion, Borda (unqualified)
 
 **pN**:
-The number of the seven sources whose top-`N` set contains a gene, for `N ∈ {2000, 5000}` —
-the cross-source replication count that fills the axis's second half.
+The number of the fused sources (five categories plus tenv-HVG) whose
+top-`N` set contains a gene, for `N ∈ {2000, 5000}` — the cross-source replication count that
+fills the axis's second half. It is **not** `n_sources_measured`, the number of sources that
+measure the gene.
 _Avoid_: support count, vote
 
 **Axis fill rule**:
-`G_N` takes the top `0.5·N` tenv-HVG genes, then `0.5·N` more from the remaining candidates by
-`pN` descending, `rank_sum` ascending, `gene_index` ascending; the axes are not nested and the
-manifest reports their intersection.
+`G_N` takes the top `0.5·N` tenv-HVG genes, then `0.5·N` more from the **remaining** candidates
+(the step-1 genes are excluded) by `pN` descending, `rank_sum` ascending, `gene_index`
+ascending; `pN` is the axis-matched count (`p2000` for `G_2000`, `p5000` for `G_5000`). The
+union is published in ascending `gene_index` and never renumbered; the axes are not nested and
+the manifest reports their intersection.
 _Avoid_: top-N selection, elbow cut
+
+**Source top-N coverage**:
+The share of a source's top-`N` set that a released axis contains,
+`100 · |top_N(s) ∩ G_N| / N`, published as `output/gene-axis/source_topn_coverage.csv` (one
+row per axis, one column per source). Because both sets hold `N` genes, a cell is also the share of the axis drawn from that source's top-`N`; the source
+top-`N` sets overlap, so a row does not sum to 100.
+_Avoid_: source recall, contribution quota
+
+**Label-permutation null**:
+The null distribution of a dataset's axis-ordering statistic obtained by permuting its sample
+group labels (100 permutations, same DE model refit, top-`N` overlap with the released axes); a
+dataset newly admitted to the fusion must beat it. A uniform-random gene baseline is not a valid
+substitute: it flatters any dataset whose measurable genes happen to be large-effect genes (ADR
+0070).
+_Avoid_: random-gene null, permutation p (unqualified)
+
+**Source dataset table**:
+The table at the start of `gene_axis_fill_rule.docx`: one row per released axis dataset with its
+category, accession, sample type, groups, sample sizes, sequencing technology and the published
+CM DEG count (`catalog.json` `n_significant`), followed by the audited-and-excluded AF sources
+with their actual DEG counts.
+_Avoid_: dataset summary, metadata table
 
 **Inflection point**:
 The candidate `N` marked by the rank-sum curve's Kneedle plus second-difference criteria,
