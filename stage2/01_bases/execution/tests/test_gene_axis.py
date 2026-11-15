@@ -1,10 +1,13 @@
-"""Fixture-only tests for the two-level rank-sum fusion and the released axes.
+"""Tests for the two-level rank-sum fusion and the released axes.
 
-No real data is read: the axis, the per-dataset ranks, the tenv-HVG ranking and
-the published plotted values are hand-built 8-gene fixtures. The fusion, the
-axis fill rule and the readers are exercised at the public API boundary; one
-seam only (ADR 0066 / spec). Determinism is tested by building the same fixture
-twice into scratch candidate roots and comparing every digest.
+Everything is a hand-built 8-gene fixture except three real-file replay tests:
+the rule document and the two committed figure PNGs are regenerated from their
+tracked inputs and compared byte-for-byte with the committed products. No
+release payload (h5ad, ``source/`` tree or gitignored intermediate) is read.
+The fusion, the axis fill rule, the readers and the document tables are
+exercised at the public API / product boundary; one seam only (ADR 0066 /
+spec). Determinism is tested by building the same fixture twice into scratch
+candidate roots and comparing every digest.
 """
 import csv
 import hashlib
@@ -919,16 +922,21 @@ class SourceCoverageFigureTests(unittest.TestCase):
 class DocxTests(unittest.TestCase):
     """The rule document replays byte-identically from the released inputs."""
 
+    def catalogs(self):
+        return {category: STEP / 'output/disease-deg' / category / 'catalog.json'
+                for category in gene_axis.CATEGORIES}
+
     def test_committed_docx_replays_from_its_inputs(self):
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
         figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        catalogs = self.catalogs()
         committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
-        for path in (coverage, figure, committed):
+        for path in (coverage, figure, committed, *catalogs.values()):
             self.assertTrue(path.is_file(), f'missing docx input or output: {path}')
         import make_gene_axis_docx as docx_builder
         with tempfile.TemporaryDirectory() as temporary:
             rendered = Path(temporary) / 'gene_axis_fill_rule.docx'
-            docx_builder.build(coverage, figure, rendered)
+            docx_builder.build(coverage, figure, rendered, catalogs=catalogs)
             self.assertEqual(sha256_file(rendered), sha256_file(committed))
 
     def test_coverage_table_columns_are_contracted(self):
@@ -936,6 +944,56 @@ class DocxTests(unittest.TestCase):
         import make_gene_axis_docx as docx_builder
         table = docx_builder.read_coverage(coverage)
         self.assertEqual(list(table.columns), list(docx_builder.COVERAGE_COLUMNS))
+
+    def test_source_table_rows_match_catalogs(self):
+        """The first table is the released source dataset table, row for row."""
+        from docx import Document
+        import gene_axis_source_metadata as metadata
+        import make_gene_axis_docx as docx_builder
+        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
+        document = Document(str(committed))
+        self.assertGreaterEqual(len(document.tables), 1, 'the document has no tables')
+        table = document.tables[0]
+        header = [cell.text for cell in table.rows[0].cells]
+        self.assertEqual(header, list(docx_builder.SOURCE_TABLE_COLUMNS))
+        self.assertEqual(len(table.rows), 1 + 19, 'expected 19 source rows + header')
+        expected = []
+        for category in gene_axis.CATEGORIES:
+            catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
+            expected.extend((catalog['category'], dataset) for dataset in catalog['datasets'])
+        self.assertEqual(len(expected), 18)
+        for offset, (category_label, dataset) in enumerate(expected, start=1):
+            cells = [cell.text for cell in table.rows[offset].cells]
+            dataset_id = dataset['dataset_id']
+            source = metadata.SOURCES[dataset_id]
+            with self.subTest(dataset=dataset_id):
+                self.assertEqual(cells[0], category_label, 'category column')
+                self.assertEqual(cells[2], dataset['model_system'], 'sample type column')
+                groups = dataset.get('arm_or_class')
+                if groups is not None:
+                    self.assertEqual(cells[3], groups, 'groups column')
+                else:
+                    self.assertIn(dataset['class_label'], cells[3], 'class label')
+                    self.assertIn(dataset['class_id'], cells[3], 'class id')
+                    for drug in dataset['member_drugs']:
+                        self.assertIn(drug, cells[3], f'member drug {drug}')
+                    self.assertIn(' vs ', cells[3], 'vehicle contrast wording')
+                self.assertEqual(
+                    cells[4], f"{dataset['n_case']} / {dataset['n_control']}",
+                    'sample sizes column')
+                self.assertEqual(cells[5], source['technology'], 'sequencing technology column')
+                accession = source['accession']
+                expected_accession = (f"{accession} ({source['accession_note']})"
+                                      if source['accession_note'] else accession)
+                self.assertEqual(cells[1], expected_accession, 'accession column')
+                self.assertEqual(int(cells[6].replace(',', '')), dataset['n_significant'],
+                                 'CM DEG count column')
+        last = [cell.text for cell in table.rows[-1].cells]
+        tenv = metadata.SOURCES[metadata.TENV_HVG]
+        self.assertEqual(last[0], 'tenv-HVG (fusion source)')
+        self.assertIn(tenv['technology'], last[5])
+        self.assertIn('not a DEG source', last[6])
 
 
 if __name__ == '__main__':
