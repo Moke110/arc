@@ -29,10 +29,11 @@ against this module. The contract is deliberately pure and dataset-agnostic:
   a recorded reason, and excluded from fusion (ADR 0068, kept by ADR 0071).
 
 ``rank_scores``/``complete_rank``/``normalized_rank`` stay exported as generic
-rank primitives for the pre-v2 fusion reader (``bases.gene_axis``); the DEG
-contract itself is the ``*_deg_*`` family below. ``RANK_SEMANTICS`` names the
-semantics every published table's ``stats`` carries; ``SCHEMA`` stays the
-product-schema label until ticket 8 re-publishes the products. Ranks are
+rank primitives (no published product consumes them any more; ADR 0071 decision
+9 retires them with their readers). The DEG contract itself is the
+``*_deg_*`` family below. ``RANK_SEMANTICS`` names the semantics every published
+table's ``stats`` carries; ``SCHEMA`` is the product-schema label and is bumped
+to ``v2`` by #208, when the products are republished on this contract. Ranks are
 within-dataset only; they are never compared across datasets as if they were
 effect sizes.
 """
@@ -41,12 +42,13 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-# The published product schema label stays ``v1`` until ticket 8 re-publishes the
-# DEG products on the v2 contract; bumping it here would relabel products that are
-# not rebuilt yet and would weaken the gene-axis ``derived_inputs`` fail-closed
-# gate. The rank semantics are declared separately so a consumer can tell which
-# contract produced a table before that republish.
-SCHEMA = 'stage2-disease-deg-v1'
+# The published product schema label (#208): the products are republished on the
+# v2 DEG contract, so the label names that contract. A consumer that pins the
+# label (the category catalogs' ``rank_contract``, the fusion catalog's
+# ``rank_contract``) therefore refuses a v1 product instead of re-reading it
+# under the v2 rank semantics; the rank semantics are also carried separately as
+# ``RANK_SEMANTICS``.
+SCHEMA = 'stage2-disease-deg-v2'
 RANK_SEMANTICS = 'deg-only-v2'
 AXIS_SIZE = 18164
 PADJ_THRESHOLD = 0.05

@@ -4,7 +4,7 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
+  "catalog_sha256": "82de2eb614c286a1b50e1341bd1cc7f0a2d1f2eb61007b3d29dcdfcc7ad0fb72",
   "category": "cardiotox_TOP2",
   "datasets": [
     {
@@ -46,7 +46,7 @@
       "informativeness": {
         "n_distinct_effect": 17227,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
@@ -139,6 +139,8 @@
       "n_contrasts": 2,
       "n_control": 6,
       "n_control_basis": "per-contrast pooled wells, constant across 2 contrast(s)",
+      "n_deg": 1592,
+      "n_deg_in_deg2000": 1017,
       "n_measured": 18084,
       "n_significant": 10000,
       "n_small_molecule_drugs": 4,
@@ -211,7 +213,7 @@
       "informativeness": {
         "n_distinct_effect": 14691,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
@@ -304,6 +306,8 @@
       "n_contrasts": 6,
       "n_control": 41,
       "n_control_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_deg": 3763,
+      "n_deg_in_deg2000": 1779,
       "n_measured": 14707,
       "n_significant": 10291,
       "n_small_molecule_drugs": 4,
@@ -346,7 +350,7 @@
       "informativeness": {
         "n_distinct_effect": 13668,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE243674/local/deg/GSE243674_deg.json": {
@@ -437,6 +441,8 @@
       "n_contrasts": 1,
       "n_control": 22,
       "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 6,
+      "n_deg_in_deg2000": 6,
       "n_measured": 18164,
       "n_significant": 4917,
       "n_small_molecule_drugs": 3,
@@ -447,7 +453,35 @@
       "tier": 2
     }
   ],
+  "deg2000": 2000,
   "evidence_type": "bulk",
+  "n_deg": 4514,
   "schema": "stage2-disease-deg-catalog-v1",
-  "tier": 2
+  "tier": 2,
+  "tier_sources": [
+    {
+      "sources": [
+        "gse243674",
+        "dtoxs_ipsc",
+        "gse244740"
+      ],
+      "tier": 2
+    }
+  ],
+  "tiering": {
+    "criterion": "axis_resolved_deg_union",
+    "limit": 2000,
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "stop_reached": true,
+    "stopped_at_tier": 2,
+    "tier_union": [
+      {
+        "n_deg_union": 4514,
+        "tier": 2
+      }
+    ],
+    "tiers_entered": [
+      2
+    ]
+  }
 }

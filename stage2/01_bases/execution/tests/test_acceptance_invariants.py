@@ -1,16 +1,18 @@
-"""Step-level acceptance invariants across the five released disease-deg catalogs.
+"""Step-level acceptance invariants across the six released disease-deg catalogs.
 
-This is #192's cross-category gate. The per-category tests (#187, #188, #189) each
-check their own catalog; this file checks the property that only becomes visible
-when all five are read together: one canonical ``stage2-disease-deg-catalog-v1``
-shape, a self-consistent ``catalog_sha256``, a declared case/control basis, and
-digest-pinned ``derived_inputs`` where a catalog declares them.
+This is the cross-category gate (#192, extended by #208 to the six-disease roster).
+The per-category tests (#187, #188, #189, #208) each check their own catalog; this
+file checks the property that only becomes visible when all six are read together:
+one canonical ``stage2-disease-deg-catalog-v1`` shape, a self-consistent
+``catalog_sha256``, a declared case/control basis, and digest-pinned
+``derived_inputs`` where a catalog declares them.
 
 **Documented cross-ticket shape variance (accepted, not silently tolerated).**
-The five catalogs were produced by two tickets and are *not* byte-for-byte the same
-shape. The test pins the variance explicitly, so a new third shape fails the gate:
+The six catalogs were produced by two ticket families and are *not* byte-for-byte
+the same shape. The test pins the variance explicitly, so a new third shape fails
+the gate:
 
-* ``icm``/``nhf``/``genetic_cardiomyopathy`` (#187/#188) declare
+* ``af``/``icm``/``nhf``/``genetic_cardiomyopathy`` (#187/#188/#204/#208) declare
   ``axis: {path: output/gene-identity/genes.csv, ...}`` (the published copy with
   ``gene_index``), a ``rank_contract`` block, a ``rejected`` list, ``inputs``
   values as **bare 64-hex sha256 strings**, and a ``derived_inputs`` list of
@@ -36,13 +38,14 @@ from pathlib import Path
 REPO = next(path for path in Path(__file__).resolve().parents if (path / ".git").exists())
 DISEASE_DEG = REPO / "stage2" / "01_bases" / "output" / "disease-deg"
 EXPECTED_CATEGORIES = (
+    "af",
     "icm",
     "nhf",
     "genetic_cardiomyopathy",
     "cardiotox_TOP2",
     "cardiotox_other",
 )
-TICKET_187_188 = {"icm", "nhf", "genetic_cardiomyopathy"}
+TICKET_187_188 = {"af", "icm", "nhf", "genetic_cardiomyopathy"}
 TICKET_189 = {"cardiotox_TOP2", "cardiotox_other"}
 SCHEMA = "stage2-disease-deg-catalog-v1"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -72,7 +75,7 @@ class CatalogShapeTest(unittest.TestCase):
         for path in sorted(DISEASE_DEG.glob("*/catalog.json")):
             cls.catalogs[path.parent.name] = json.loads(path.read_text())
 
-    def test_all_six_categories_have_catalogs_and_nothing_else(self):
+    def test_all_categories_have_catalogs_and_nothing_else(self):
         self.assertEqual(set(self.catalogs), set(EXPECTED_CATEGORIES))
         self.assertEqual(len(self.catalogs), len(EXPECTED_CATEGORIES))
         self.assertTrue((DISEASE_DEG / "cardiotox" / "crosswalk.csv").is_file(),
@@ -100,8 +103,12 @@ class CatalogShapeTest(unittest.TestCase):
                     self.assertTrue(str(record["dataset_id"]))
 
     def test_informativeness_is_explicit_and_reasoned(self):
-        # ADR 0068: an all-tied dataset is published with informative: false and
-        # a recorded reason; the field is a boolean, never inferred downstream.
+        # ADR 0068 / ADR 0071: a dataset with no v2 DEG (or all-tied effects) is
+        # published with informative: false and a recorded reason; the field is a
+        # boolean, never inferred downstream. A zero-DEG dataset may still have
+        # many distinct effect scores -- its ordering evidence is absent because
+        # nothing is a DEG, not because the scores are tied -- so only the
+        # all-tied case is required to have n_distinct_effect == 1.
         for category, catalog in self.catalogs.items():
             for record in catalog["datasets"]:
                 with self.subTest(category=category, dataset=record["dataset_id"]):
@@ -115,7 +122,10 @@ class CatalogShapeTest(unittest.TestCase):
                     else:
                         self.assertIsInstance(details["reason"], str)
                         self.assertTrue(details["reason"])
-                        self.assertEqual(int(details["n_distinct_effect"]), 1)
+                        if int(record.get("n_deg", 0)) == 0:
+                            self.assertIn("none of the", details["reason"])
+                        else:
+                            self.assertEqual(int(details["n_distinct_effect"]), 1)
 
     def test_catalog_sha256_is_self_consistent_and_in_the_manifest(self):
         for category, catalog in self.catalogs.items():

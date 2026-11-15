@@ -415,29 +415,44 @@ class RankSemanticsTest(unittest.TestCase):
         return pd.read_csv(CATEGORY_DIR / self.records[dataset_id]['deg'],
                            float_precision='round_trip')
 
-    def test_effect_rank_and_rank_norm(self):
-        table = self.table('gse224129__mybpc3_hcm')
+    def test_effect_rank_and_deg_only_rank_norm(self):
+        # ADR 0071 v2: only DEGs are ranked 1..n_DEG; every other gene sits at
+        # n_DEG + 1 and rank_norm = rank / n_DEG (no n_measured denominator).
+        table = pd.read_csv(CATEGORY_DIR / self.records['gse224129__mybpc3_hcm']['deg'],
+                            float_precision='round_trip')
         padj = table.padj.to_numpy(dtype=np.float64)
         log2fc = table.log2fc.to_numpy(dtype=np.float64)
         expected = np.where(np.isnan(padj), 0.0, np.abs(log2fc) * -np.log10(padj))
         np.testing.assert_allclose(table.effect.to_numpy(dtype=np.float64), expected,
                                    rtol=0, atol=1e-12)
-        self.assertEqual(table['rank'].tolist(), list(range(1, len(table) + 1)))
+        deg = table.deg.to_numpy(dtype=bool)
+        n_deg = int(deg.sum())
+        self.assertGreater(n_deg, 0)
+        self.assertEqual(int((table.n_contrasts_deg > 0).sum()), n_deg)
+        ranks = table['rank'].to_numpy(dtype=np.int64)
+        self.assertEqual(sorted(ranks.tolist()),
+                         list(range(1, n_deg + 1)) + [n_deg + 1] * (len(table) - n_deg))
         np.testing.assert_allclose(table.rank_norm.to_numpy(dtype=np.float64),
-                                   table['rank'].to_numpy(dtype=np.float64) / len(table))
-        order = np.lexsort((table.gene_index.to_numpy(dtype=np.int64),
-                            -table.effect.to_numpy(dtype=np.float64)))
-        self.assertEqual(table.gene_index.to_numpy(dtype=np.int64).tolist(),
-                         table.gene_index.to_numpy(dtype=np.int64)[order].tolist())
+                                   ranks / float(n_deg))
+        # the DEGs are ordered by descending effect with a gene_index tie-break
+        order = np.lexsort((table.gene_index.to_numpy(dtype=np.int64)[deg],
+                            -table.effect.to_numpy(dtype=np.float64)[deg]))
+        np.testing.assert_array_equal(ranks[deg], np.arange(1, n_deg + 1))
+        np.testing.assert_array_equal(
+            table.gene_index.to_numpy(dtype=np.int64)[deg],
+            table.gene_index.to_numpy(dtype=np.int64)[deg][order])
 
-    def test_unmeasured_genes_get_n_measured_plus_one(self):
-        rank = pd.read_csv(CATEGORY_DIR / self.records['gse234141__ttntv_dcm']['rank'])
-        n_measured = self.records['gse234141__ttntv_dcm']['n_measured']
-        measured = rank[rank['rank'] <= n_measured]
-        unmeasured = rank[rank['rank'] > n_measured]
-        self.assertEqual(len(measured), n_measured)
-        self.assertEqual(set(unmeasured['rank'].unique()), {n_measured + 1})
-        self.assertEqual(len(measured) + len(unmeasured), deg_rank.AXIS_SIZE)
+    def test_non_deg_genes_get_n_deg_plus_one(self):
+        record = self.records['gse234141__ttntv_dcm']
+        rank = pd.read_csv(CATEGORY_DIR / record['rank'])
+        n_deg = int(record['n_deg'])
+        degs = rank[rank['rank'] <= n_deg]
+        non_degs = rank[rank['rank'] > n_deg]
+        self.assertEqual(len(degs), n_deg)
+        self.assertEqual(set(non_degs['rank'].unique()), {n_deg + 1})
+        self.assertEqual(len(degs) + len(non_degs), deg_rank.AXIS_SIZE)
+        np.testing.assert_allclose(non_degs.rank_norm.to_numpy(dtype=np.float64),
+                                   (n_deg + 1) / float(n_deg))
 
     def test_multi_contrast_collapse_keeps_the_maximum_effect_contrast(self):
         for dataset_id in MULTI_CONTRAST:
@@ -681,7 +696,11 @@ class DriverReplayTest(unittest.TestCase):
         self.assertEqual(record['isogenic_exception']['control_arm'], 'wt')
         self.assertTrue(catalog['isogenic_exception']['applies'])
         rank = pd.read_csv(candidate / record['rank'])
-        self.assertEqual(int(rank.loc[3, 'rank']), 4)
+        # G00001 and G00000 are the DEGs (ranks 1 and 2); every other gene sits
+        # at n_deg + 1 = 3 under the v2 DEG-only rank.
+        self.assertEqual(record['n_deg'], 2)
+        self.assertEqual(int(rank.loc[3, 'rank']), 3)
+        np.testing.assert_allclose(float(rank.loc[3, 'rank_norm']), 1.5)
 
     def test_undeclared_and_never_winning_contrasts_fail_verification(self):
         from bases import release as release_module

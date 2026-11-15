@@ -1,60 +1,120 @@
 {
   "axes": {
     "2000": {
-      "composition": {
-        "cardiotox_TOP2": 2000,
-        "cardiotox_other": 1513,
-        "genetic_cardiomyopathy": 1997,
-        "icm": 1908,
-        "nhf": 1978
+      "deg2000_composition": {
+        "af": {
+          "n_covered": 0,
+          "n_deg2000": 1,
+          "share": 0.0
+        },
+        "cardiotox_TOP2": {
+          "n_covered": 831,
+          "n_deg2000": 2000,
+          "share": 0.4155
+        },
+        "cardiotox_other": {
+          "n_covered": 199,
+          "n_deg2000": 297,
+          "share": 0.67003367003367
+        },
+        "genetic_cardiomyopathy": {
+          "n_covered": 635,
+          "n_deg2000": 1482,
+          "share": 0.4284750337381916
+        },
+        "icm": {
+          "n_covered": 550,
+          "n_deg2000": 1647,
+          "share": 0.3339404978749241
+        },
+        "nhf": {
+          "n_covered": 638,
+          "n_deg2000": 1661,
+          "share": 0.3841059602649007
+        }
+      },
+      "f2000_distribution": {
+        "0": 624,
+        "1": 258,
+        "2": 817,
+        "3": 248,
+        "4": 48,
+        "5": 5,
+        "6": 0
       },
       "file": "gene_axis_2000.csv",
       "fill_half": 1000,
       "n": 2000,
-      "pN_distribution": {
-        "0": 0,
-        "1": 563,
-        "2": 580,
-        "3": 687,
-        "4": 141,
-        "5": 27,
-        "6": 2
-      },
       "rank_sum": {
-        "high": 4.958709535344638,
-        "low": 0.023673199735741026,
-        "median": 1.7507157013873598
+        "high": 7.005472511709334,
+        "low": 2.662476414614876,
+        "median": 5.96103546108403
+      },
+      "second_half": {
+        "from_deg2000": 1000,
+        "n_deg2000_candidates": 4906,
+        "tenv_hvg_fallback": 0
       },
       "tenv_half": 1000,
       "tenv_rank": {
-        "max": 18163,
+        "max": 18082,
         "min": 1
       }
     },
     "5000": {
-      "composition": {
-        "cardiotox_TOP2": 5000,
-        "cardiotox_other": 3738,
-        "genetic_cardiomyopathy": 4997,
-        "icm": 4751,
-        "nhf": 4936
+      "deg2000_composition": {
+        "af": {
+          "n_covered": 1,
+          "n_deg2000": 1,
+          "share": 1.0
+        },
+        "cardiotox_TOP2": {
+          "n_covered": 1740,
+          "n_deg2000": 2000,
+          "share": 0.87
+        },
+        "cardiotox_other": {
+          "n_covered": 256,
+          "n_deg2000": 297,
+          "share": 0.8619528619528619
+        },
+        "genetic_cardiomyopathy": {
+          "n_covered": 1068,
+          "n_deg2000": 1482,
+          "share": 0.7206477732793523
+        },
+        "icm": {
+          "n_covered": 1042,
+          "n_deg2000": 1647,
+          "share": 0.6326654523375835
+        },
+        "nhf": {
+          "n_covered": 1151,
+          "n_deg2000": 1661,
+          "share": 0.6929560505719446
+        }
+      },
+      "f2000_distribution": {
+        "0": 1548,
+        "1": 2005,
+        "2": 1146,
+        "3": 248,
+        "4": 48,
+        "5": 5,
+        "6": 0
       },
       "file": "gene_axis_5000.csv",
       "fill_half": 2500,
       "n": 5000,
-      "pN_distribution": {
-        "0": 0,
-        "1": 653,
-        "2": 782,
-        "3": 1804,
-        "4": 1298,
-        "5": 402,
-        "6": 61
-      },
       "rank_sum": {
-        "high": 5.018498128165602,
-        "low": 0.023673199735741026,
-        "median": 2.0438780004404316
+        "high": 7.005472511709334,
+        "low": 2.662476414614876,
+        "median": 6.257257481785935
+      },
+      "second_half": {
+        "from_deg2000": 2500,
+        "n_deg2000_candidates": 4330,
+        "tenv_hvg_fallback": 0
       },
       "tenv_half": 2500,
       "tenv_rank": {
@@ -64,293 +124,433 @@
     }
   },
   "categories": {
+    "af": {
+      "deg2000": 1,
+      "deg2000_file": "af.deg2000.csv",
+      "deg2000_sha256": "5ed5cfa5359e12d8e9e4184d0ccf91e1b2b31b1d854603e5ef3593ad8a5156e3",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [
+        {
+          "dataset_id": "gse255612__af",
+          "n_deg": 0,
+          "reason": "none of the 18092 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse238242__af",
+          "n_deg": 0,
+          "reason": "none of the 12018 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse269882__af",
+          "n_deg": 0,
+          "reason": "none of the 15343 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 3
+        }
+      ],
+      "fusion_catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+      "informative_source_count": 1,
+      "label": "AF",
+      "n_deg": 1,
+      "product_dir": "af",
+      "published": true,
+      "sources": [
+        {
+          "dataset_id": "gse255612__af",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
+          "informative": false,
+          "n_deg": 0,
+          "n_deg_in_deg2000": 0,
+          "reason": "none of the 18092 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse138252__af",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 1,
+          "n_deg_in_deg2000": 1,
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse238242__af",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
+          "informative": false,
+          "n_deg": 0,
+          "n_deg_in_deg2000": 0,
+          "reason": "none of the 12018 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 1
+        },
+        {
+          "dataset_id": "gse269882__af",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": false,
+          "n_deg": 0,
+          "n_deg_in_deg2000": 0,
+          "reason": "none of the 15343 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 3
+        }
+      ],
+      "tier": 1,
+      "tiers_present": [
+        1,
+        3
+      ]
+    },
     "cardiotox_TOP2": {
-      "catalog_file_sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be",
-      "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
-      "category_tier": 2,
-      "datasets": [
+      "deg2000": 2000,
+      "deg2000_file": "cardiotox_TOP2.deg2000.csv",
+      "deg2000_sha256": "da1b10d4b79b125946b9a6e29f1506887c50fe0011354689ce3f57be95bde03e",
+      "evidence_type": "bulk",
+      "excluded_sources": [],
+      "fusion_catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+      "informative_source_count": 3,
+      "label": "cardiotox_TOP2",
+      "n_deg": 4514,
+      "product_dir": "cardiotox_TOP2",
+      "published": true,
+      "sources": [
         {
           "dataset_id": "gse243674",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 18084,
-          "rank_sha256": "f55e1a1130f81272e96d258b2f9b6a71179644e8bda3ac5af5436331cb83d840",
+          "n_deg": 1592,
+          "n_deg_in_deg2000": 1017,
           "tier": 2
         },
         {
           "dataset_id": "dtoxs_ipsc",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 14707,
-          "rank_sha256": "fe7c19ab639cd507493a3fe7b18ae93949047cb80f659ed55a75feca0c58370b",
+          "n_deg": 3763,
+          "n_deg_in_deg2000": 1779,
           "tier": 2
         },
         {
           "dataset_id": "gse244740",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 18164,
-          "rank_sha256": "edc1e5b88113a69b402025171ec4f8a48a8b47d7bc98bed0cce10a23b281e81a",
+          "n_deg": 6,
+          "n_deg_in_deg2000": 6,
           "tier": 2
         }
       ],
-      "excluded_datasets": [],
-      "excluded_tiers": [],
-      "informative": true,
-      "label": "cardiotox_TOP2",
-      "n_measured_axis_genes": 18164,
-      "product_dir": "cardiotox_TOP2",
-      "release_manifest_sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55",
-      "retained_by_exception": [],
-      "winning_tier": 2,
-      "winning_tier_rule": "minimum catalog tier, plus records whose isogenic_exception.applies is true (ADR 0066 Isogenic exception); excluded_tiers lists only tiers with no retained record"
+      "tier": 2,
+      "tiers_present": [
+        2
+      ]
     },
     "cardiotox_other": {
-      "catalog_file_sha256": "a065d98e8c5b6453fab1ccacab80f7112d3580569c89148dda9842c8db9e2dbb",
-      "catalog_sha256": "a3213815e9117595e79d028967ccc9d0637333e735e2a8e18d472042fb5922c7",
-      "category_tier": 2,
-      "datasets": [
+      "deg2000": 297,
+      "deg2000_file": "cardiotox_other.deg2000.csv",
+      "deg2000_sha256": "ea0bd2124512ec0002490ae7eada6a9d50f0e09bbb9ba2681ec4b81a2c5546e7",
+      "evidence_type": "bulk",
+      "excluded_sources": [],
+      "fusion_catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+      "informative_source_count": 3,
+      "label": "cardiotox_other",
+      "n_deg": 297,
+      "product_dir": "cardiotox_other",
+      "published": true,
+      "sources": [
         {
           "dataset_id": "dtoxs_ipsc__atc_l4-L01EA",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 13303,
-          "rank_sha256": "94fbd0fc76aa973468013ae480a0f70aaa437a6dec3dfb1d1860913ae460b8aa",
+          "n_deg": 227,
+          "n_deg_in_deg2000": 227,
           "tier": 2
         },
         {
           "dataset_id": "dtoxs_ipsc__atc_l4-L01EB",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 13056,
-          "rank_sha256": "d29376cc4ff754dff5ae348d549dc98942e5e2395a493f29ff61bf94fb346171",
+          "n_deg": 75,
+          "n_deg_in_deg2000": 75,
           "tier": 2
         },
         {
           "dataset_id": "dtoxs_ipsc__atc_l4-L01EX",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 13339,
-          "rank_sha256": "df6a6664fe39ca1c44bb14a33231988baf19f5acfd4e197ca55b44a494849d0a",
+          "n_deg": 89,
+          "n_deg_in_deg2000": 89,
           "tier": 2
         }
       ],
-      "excluded_datasets": [],
-      "excluded_tiers": [],
-      "informative": true,
-      "label": "cardiotox_other",
-      "n_measured_axis_genes": 13443,
-      "product_dir": "cardiotox_other",
-      "release_manifest_sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4",
-      "retained_by_exception": [],
-      "winning_tier": 2,
-      "winning_tier_rule": "minimum catalog tier, plus records whose isogenic_exception.applies is true (ADR 0066 Isogenic exception); excluded_tiers lists only tiers with no retained record"
+      "tier": 2,
+      "tiers_present": [
+        2
+      ]
     },
     "genetic_cardiomyopathy": {
-      "catalog_file_sha256": "d697f6c4b692be423763713737dc0e10410c8b05ec45766362685573d1c1dfe8",
-      "catalog_sha256": "b434dcf85459befcd0d3fd5ab59c4ecaf55c2ae1a1ccfddfccf2dd381995468b",
-      "category_tier": 1,
-      "datasets": [
+      "deg2000": 1482,
+      "deg2000_file": "genetic_cardiomyopathy.deg2000.csv",
+      "deg2000_sha256": "87cae813575f70855e742023cf741d6a0268c21da8199755e2eda089e3553c69",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "fusion_catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+      "informative_source_count": 8,
+      "label": "genetic_cardiomyopathy",
+      "n_deg": 1482,
+      "product_dir": "genetic_cardiomyopathy",
+      "published": true,
+      "sources": [
         {
           "dataset_id": "reichart-cm__dcm_genotype_positive",
           "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17513,
-          "rank_sha256": "89b96afeb6a8ac1d99946b5c83e5437d9a6a3c440f3274f53c45863f82b8bb43",
+          "n_deg": 46,
+          "n_deg_in_deg2000": 46,
           "tier": 1
         },
         {
           "dataset_id": "reichart-cm__arvc",
           "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17513,
-          "rank_sha256": "447a656d38f6553f3267a09050fcb8ad6d430ff2357b451f6581588c3b5cd2be",
+          "n_deg": 27,
+          "n_deg_in_deg2000": 27,
           "tier": 1
         },
         {
           "dataset_id": "gse224129__mybpc3_hcm",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17258,
-          "rank_sha256": "e3b94dc8d3061329152a222437861bca313c6b762fef23c690d34ee654f22658",
+          "n_deg": 210,
+          "n_deg_in_deg2000": 210,
           "tier": 2
         },
         {
           "dataset_id": "gse234141__ttntv_dcm",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17606,
-          "rank_sha256": "4f83e2feaeafa60fc5f337dba37ef0998ab46a7583dd2830fc5f8fd99fc470b7",
+          "n_deg": 116,
+          "n_deg_in_deg2000": 116,
           "tier": 2
         },
         {
           "dataset_id": "gse304575__lmna_h222p_dcm",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 16737,
-          "rank_sha256": "bbf7f1ed85b9156c6c644a69c58662b8d4ea13bb1a6c712ae1441bb2a31954c0",
+          "n_deg": 19,
+          "n_deg_in_deg2000": 19,
           "tier": 2
         },
         {
           "dataset_id": "gse305648__rbm20_dcm",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17741,
-          "rank_sha256": "2e985728f5d3ff830f0db6fd0637e16c739efb4c8d62dcbc2da76a22ae138707",
+          "n_deg": 17,
+          "n_deg_in_deg2000": 17,
           "tier": 2
         },
         {
           "dataset_id": "gse253223__pkp2_knockdown_arvc",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 16495,
-          "rank_sha256": "8937906130be868a0dcfaa2b6ba26f48dade88f473bbf2a8f3462922879b5da3",
+          "n_deg": 7,
+          "n_deg_in_deg2000": 7,
           "tier": 2
         },
         {
           "dataset_id": "gse194297__dmd_cardiomyopathy",
           "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 16409,
-          "rank_sha256": "d7164e19b7dd37db8a07ef88eeae179f8b224147737e5eb93b527c5e4286f993",
+          "n_deg": 1124,
+          "n_deg_in_deg2000": 1124,
           "tier": 2
         }
       ],
-      "excluded_datasets": [],
-      "excluded_tiers": [],
-      "informative": true,
-      "label": "genetic_cardiomyopathy",
-      "n_measured_axis_genes": 18148,
-      "product_dir": "genetic_cardiomyopathy",
-      "release_manifest_sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673",
-      "retained_by_exception": [
-        "gse224129__mybpc3_hcm",
-        "gse234141__ttntv_dcm",
-        "gse304575__lmna_h222p_dcm",
-        "gse305648__rbm20_dcm",
-        "gse253223__pkp2_knockdown_arvc",
-        "gse194297__dmd_cardiomyopathy"
-      ],
-      "winning_tier": 1,
-      "winning_tier_rule": "minimum catalog tier, plus records whose isogenic_exception.applies is true (ADR 0066 Isogenic exception); excluded_tiers lists only tiers with no retained record"
+      "tier": 1,
+      "tiers_present": [
+        1,
+        2
+      ]
     },
     "icm": {
-      "catalog_file_sha256": "b82673333dc137ef43a6237eb5eb04db8f0278b01097c6883d50b35d3692f290",
-      "catalog_sha256": "755971c79b60f5403fd7bfb9e430e329dbc37652b778a2b303fca09fcc88929e",
-      "category_tier": 1,
-      "datasets": [
+      "deg2000": 1647,
+      "deg2000_file": "icm.deg2000.csv",
+      "deg2000_sha256": "cb2684f77e0fce0af0d14cf9085bc69b06231b089b2db06950f28dd8344e6978",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "fusion_catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+      "informative_source_count": 3,
+      "label": "ICM",
+      "n_deg": 1647,
+      "product_dir": "icm",
+      "published": true,
+      "sources": [
         {
           "dataset_id": "gse270788__icm",
           "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17092,
-          "rank_sha256": "29f9376a61fb1a7425f228b82cabfe57194e1652df5621e8b53bc9108173bb56",
+          "n_deg": 1,
+          "n_deg_in_deg2000": 1,
           "tier": 1
         },
         {
           "dataset_id": "gse270788__ami",
           "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17092,
-          "rank_sha256": "f3648b62bff2fe6ef182d82687d971861b9bc3c6fa445424300bf61698778041",
+          "n_deg": 1,
+          "n_deg_in_deg2000": 1,
+          "tier": 1
+        },
+        {
+          "dataset_id": "kuppe-mi__iz",
+          "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 1646,
+          "n_deg_in_deg2000": 1646,
           "tier": 1
         }
       ],
-      "excluded_datasets": [],
-      "excluded_tiers": [],
-      "informative": true,
-      "label": "ICM",
-      "n_measured_axis_genes": 17092,
-      "product_dir": "icm",
-      "release_manifest_sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936",
-      "retained_by_exception": [],
-      "winning_tier": 1,
-      "winning_tier_rule": "minimum catalog tier, plus records whose isogenic_exception.applies is true (ADR 0066 Isogenic exception); excluded_tiers lists only tiers with no retained record"
+      "tier": 1,
+      "tiers_present": [
+        1
+      ]
     },
     "nhf": {
-      "catalog_file_sha256": "6b5e36bfbe4429019799a249981b8f9556e7578e819c8d450f214cc1f4989eb6",
-      "catalog_sha256": "62aa91a8b234b6bfb5bd4b92a5d94676d05128bacf9156dcfbd5b7f97d54f803",
-      "category_tier": 1,
-      "datasets": [
+      "deg2000": 1661,
+      "deg2000_file": "nhf.deg2000.csv",
+      "deg2000_sha256": "10d40a6ada96b5e23bb9d183e3fe4ad57f8498db0b2d5cc88f0bdb2983adedb6",
+      "evidence_type": "cm_pseudobulk",
+      "excluded_sources": [],
+      "fusion_catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+      "informative_source_count": 6,
+      "label": "nHF",
+      "n_deg": 1661,
+      "product_dir": "nhf",
+      "published": true,
+      "sources": [
         {
           "dataset_id": "gse270788__nicm",
           "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17092,
-          "rank_sha256": "9089cf243e06510b1ca2731c50c2d73b9642fb612d1e43ee01d962e7e4eba5b8",
+          "n_deg": 4,
+          "n_deg_in_deg2000": 4,
           "tier": 1
         },
         {
           "dataset_id": "reichart-cm__dcm_genotype_negative",
           "evidence_type": "cm_pseudobulk",
+          "flag_source": "published_deg_flag",
           "informative": true,
-          "n_measured": 17513,
-          "rank_sha256": "a8a538a82ab9f49e874929fb4a890cb0b5a678099902e5d06d150b76fd2858c7",
+          "n_deg": 1053,
+          "n_deg_in_deg2000": 1053,
           "tier": 1
+        },
+        {
+          "dataset_id": "gse35108__dcm_ipsc_cm",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 524,
+          "n_deg_in_deg2000": 524,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse165303__dcm_lv_bulk",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 29,
+          "n_deg_in_deg2000": 29,
+          "tier": 3
+        },
+        {
+          "dataset_id": "gse116250__hf_lv_bulk",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 43,
+          "n_deg_in_deg2000": 43,
+          "tier": 3
+        },
+        {
+          "dataset_id": "gse141910__hf_lv_bulk",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 100,
+          "n_deg_in_deg2000": 100,
+          "tier": 3
         }
       ],
-      "excluded_datasets": [],
-      "excluded_tiers": [],
-      "informative": true,
-      "label": "nHF",
-      "n_measured_axis_genes": 17883,
-      "product_dir": "nhf",
-      "release_manifest_sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e",
-      "retained_by_exception": [],
-      "winning_tier": 1,
-      "winning_tier_rule": "minimum catalog tier, plus records whose isogenic_exception.applies is true (ADR 0066 Isogenic exception); excluded_tiers lists only tiers with no retained record"
+      "tier": 1,
+      "tiers_present": [
+        1,
+        2,
+        3
+      ]
     }
   },
   "composition": {
+    "columns": [
+      "axis",
+      "n_axis",
+      "record",
+      "group",
+      "n_genes",
+      "denominator",
+      "share",
+      "note"
+    ],
     "file": "axis_composition.csv",
-    "note": "pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score",
-    "rows": 40
+    "note": "share = n_genes / denominator. record=axis_fill reports the declared 0.5*N tenv-HVG half, the disease-ordered half and the tenv-HVG fallback; record=deg2000 reports |DEG2000_d \u2229 G_N| over |DEG2000_d|; record=f2000 reports how many axis genes have each disease-replication count, over N.",
+    "rows": 32
   },
   "counts": {
+    "f2000_distribution": {
+      "0": 12882,
+      "1": 3835,
+      "2": 1146,
+      "3": 248,
+      "4": 48,
+      "5": 5,
+      "6": 0
+    },
     "n_axis": 18164,
     "n_candidates": 18164,
-    "n_sources_measured_distribution": {
-      "0": 0,
-      "1": 0,
-      "2": 15,
-      "3": 235,
-      "4": 749,
-      "5": 3827,
-      "6": 13338
-    },
-    "pN_distribution": {
-      "2000": {
-        "0": 10125,
-        "1": 5136,
-        "2": 2046,
-        "3": 687,
-        "4": 141,
-        "5": 27,
-        "6": 2
-      },
-      "5000": {
-        "0": 3942,
-        "1": 5298,
-        "2": 4355,
-        "3": 2808,
-        "4": 1298,
-        "5": 402,
-        "6": 61
-      }
-    },
-    "rank_sum_max": 5.810284078396829,
-    "rank_sum_median": 3.0118090728914337,
-    "rank_sum_min": 0.023673199735741026
+    "n_deg2000_candidates": 5282,
+    "n_deg2000_overlap_rows": 1806,
+    "rank_sum_max": 7.005472511709334,
+    "rank_sum_median": 7.005472511709334,
+    "rank_sum_min": 2.662476414614876
   },
   "coverage": {
     "columns": [
       "N",
-      "%tenv_hvg_gN",
-      "%nhf_gN",
-      "%icm_gN",
-      "%genetic_cardiomyopathy_gN",
-      "%cardiotox_TOP2_gN",
-      "%cardiotox_other_gN"
+      "n_axis",
+      "group",
+      "group_label",
+      "numerator",
+      "denominator",
+      "rate",
+      "note"
     ],
     "figure": {
       "file": "figure/data/gene_axis_source_topn_coverage.csv",
@@ -376,18 +576,19 @@
         "tenv-HVG",
         "nHF",
         "ICM",
+        "AF",
         "genetic_cardiomyopathy",
         "cardiotox_TOP2",
         "cardiotox_other"
       ],
-      "value": "count = |{g in G_N : rank_s(g) <= N}|; rate = 100 * count / N"
+      "value": "count = |DEG2000_d \u2229 G_N| (tenv-HVG: |top_N(tenv) \u2229 G_N|); rate = 100 * count / denominator"
     },
     "file": "source_topn_coverage.csv",
-    "note": "percent of each source's top-N set that G_N contains; both sets hold N genes, so a cell is at once the share of that source top-N the axis keeps and the share of the axis drawn from it; the source top-N sets overlap, so a row does not sum to 100",
-    "rows": 2,
+    "note": "one row per axis and fusion group; numerator/denominator are explicit and rate = 100 * numerator / denominator. tenv_hvg is |top_N(tenv) \u2229 G_N| / N; a disease is |DEG2000_d \u2229 G_N| / |DEG2000_d| (ADR 0071 decision 8). A group excluded from the fusion keeps an empty row.",
+    "rows": 14,
     "sources": {
-      "categories": "level-1 class rank of each informative category",
-      "excluded": "a non-informative category has no level-1 rank and keeps an empty column (ADR 0068)",
+      "categories": "each disease's published DEG2000 set and its size; numerator is |DEG2000_d \u2229 G_N|",
+      "excluded": "a disease with an empty DEG2000 has no coverage and keeps an empty row (ADR 0068)",
       "tenv_hvg": "published descriptive dispersion rank (never recomputed)"
     }
   },
@@ -395,19 +596,19 @@
     "histogram": {
       "axis_intervals": {
         "2000": {
-          "high": 4.958709535344638,
-          "low": 0.023673199735741026,
-          "median": 1.7507157013873598
+          "high": 7.005472511709334,
+          "low": 2.662476414614876,
+          "median": 5.96103546108403
         },
         "5000": {
-          "high": 5.018498128165602,
-          "low": 0.023673199735741026,
-          "median": 2.0438780004404316
+          "high": 7.005472511709334,
+          "low": 2.662476414614876,
+          "median": 6.257257481785935
         }
       },
       "bins": 70,
       "file": "figure/data/gene_axis_rank_sum_histogram.csv",
-      "high": 6.0,
+      "high": 8.0,
       "low": 0.0,
       "panels": {
         "2000": {
@@ -431,10 +632,10 @@
       "criterion": "Kneedle online S=1.0 (first interior maximum of the normalized arc above the chord) plus the second-difference peak of the same normalized curve inside the declared decision range [min_n, n]; both must agree within 25% and the knee must exceed 0.01 normalized units",
       "inflection": false,
       "kneedle": {
-        "arc": 0.21414678653722585,
-        "arc_max": 0.21414678653722585,
-        "knee_strength": 0.21414678653722585,
-        "n": 1496
+        "arc": 0.7115236095135308,
+        "arc_max": 0.7115236095135308,
+        "knee_strength": 0.7115236095135308,
+        "n": 1061
       },
       "n": null,
       "parameters": {
@@ -446,8 +647,8 @@
       },
       "role": "diagnostic only; N is declared and never read off the curve",
       "second_difference": {
-        "curvature": 0.009837500475701533,
-        "n": 18162
+        "curvature": 0.00271798679700741,
+        "n": 106
       },
       "stability": {
         "method": "leave-one-source-out; N within 10% of the primary",
@@ -458,10 +659,10 @@
           "criterion": "Kneedle online S=1.0 (first interior maximum of the normalized arc above the chord) plus the second-difference peak of the same normalized curve inside the declared decision range [min_n, n]; both must agree within 25% and the knee must exceed 0.01 normalized units",
           "inflection": false,
           "kneedle": {
-            "arc": 0.21414678653722585,
-            "arc_max": 0.21414678653722585,
-            "knee_strength": 0.21414678653722585,
-            "n": 1496
+            "arc": 0.7115236095135308,
+            "arc_max": 0.7115236095135308,
+            "knee_strength": 0.7115236095135308,
+            "n": 1061
           },
           "n": null,
           "parameters": {
@@ -472,8 +673,8 @@
             "sensitivity": 1.0
           },
           "second_difference": {
-            "curvature": 0.009837500475701533,
-            "n": 18162
+            "curvature": 0.00271798679700741,
+            "n": 106
           }
         },
         "stable": true
@@ -481,170 +682,73 @@
     }
   },
   "environment": {
-    "data_access": "offline; reads only output/gene-identity, output/tenv-hvg and output/disease-deg; never recomputes the tenv-HVG ranking",
+    "data_access": "offline; reads only output/gene-identity, output/tenv-hvg and output/disease-fusion; never recomputes the tenv-HVG ranking or the per-disease DEG2000 fusion",
     "numpy": "2.4.6",
     "pandas": "2.3.3",
     "python": "3.13.13",
     "resource_contract": "one heavy job at a time, 10 GiB RLIMIT_AS fallback, OMP_NUM_THREADS=2; peak RSS recorded by the driver"
   },
   "fusion": {
-    "excluded_categories": [],
-    "exclusion_rule": "a dataset whose measured effect scores are all tied is non-informative; a category with no informative dataset is excluded from level-2 rank_sum, pN and n_sources_measured (ADR 0068)",
-    "n_candidates": 18164,
-    "n_declared_sources": 6,
-    "n_sources": 6,
-    "normalization": "level-1 rank_norm = rank / n_measured per dataset; level-2 each active source rank / frozen-axis size",
-    "rank_sum": "smaller is better (a descending value is better); ties on gene_index",
-    "sources": [
+    "diseases": [
       "nhf",
       "icm",
+      "af",
       "genetic_cardiomyopathy",
       "cardiotox_TOP2",
-      "cardiotox_other",
-      "tenv_hvg"
-    ]
+      "cardiotox_other"
+    ],
+    "excluded_diseases": [],
+    "f2000_bounds": [
+      0,
+      6
+    ],
+    "n_candidates": 18164,
+    "n_declared_diseases": 6,
+    "n_diseases": 6,
+    "rank_semantics": "DEG2000 disease rank / DEG-union size (ADR 0071 decision 5); a gene outside DEG2000_d contributes (n_d + 1) / n_d",
+    "rank_sum_sources": "the active diseases only; tenv-HVG is not a rank_sum term (it supplies the axis first half)"
   },
   "generated_by": "stage2/01_bases/execution/build_gene_axis.py",
   "inputs": {
-    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/catalog.json": {
-      "bytes": 18909,
-      "role": "cardiotox_TOP2:catalog",
-      "sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be"
+    "stage2/01_bases/output/disease-fusion/af.deg2000.csv": {
+      "bytes": 51,
+      "role": "af:deg2000",
+      "sha256": "5ed5cfa5359e12d8e9e4184d0ccf91e1b2b31b1d854603e5ef3593ad8a5156e3"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/dtoxs_ipsc.atc_l4-L01DB.rank.csv": {
-      "bytes": 428446,
-      "role": "cardiotox_TOP2:dtoxs_ipsc:rank",
-      "sha256": "fe7c19ab639cd507493a3fe7b18ae93949047cb80f659ed55a75feca0c58370b"
+    "stage2/01_bases/output/disease-fusion/cardiotox_TOP2.deg2000.csv": {
+      "bytes": 57368,
+      "role": "cardiotox_TOP2:deg2000",
+      "sha256": "da1b10d4b79b125946b9a6e29f1506887c50fe0011354689ce3f57be95bde03e"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/gse243674.atc_l4-L01DB.rank.csv": {
-      "bytes": 431807,
-      "role": "cardiotox_TOP2:gse243674:rank",
-      "sha256": "f55e1a1130f81272e96d258b2f9b6a71179644e8bda3ac5af5436331cb83d840"
+    "stage2/01_bases/output/disease-fusion/cardiotox_other.deg2000.csv": {
+      "bytes": 8321,
+      "role": "cardiotox_other:deg2000",
+      "sha256": "ea0bd2124512ec0002490ae7eada6a9d50f0e09bbb9ba2681ec4b81a2c5546e7"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/gse244740.atc_l4-L01DB.rank.csv": {
-      "bytes": 431872,
-      "role": "cardiotox_TOP2:gse244740:rank",
-      "sha256": "edc1e5b88113a69b402025171ec4f8a48a8b47d7bc98bed0cce10a23b281e81a"
+    "stage2/01_bases/output/disease-fusion/catalog.json": {
+      "bytes": 14173,
+      "role": "disease_fusion_catalog",
+      "sha256": "5fdcb71299e9846a3bce49fe35e52283be45f416f5fe4f7fb68c56585339abba"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/manifest.json": {
-      "bytes": 5353,
-      "role": "cardiotox_TOP2:release_manifest",
-      "sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55"
+    "stage2/01_bases/output/disease-fusion/genetic_cardiomyopathy.deg2000.csv": {
+      "bytes": 42129,
+      "role": "genetic_cardiomyopathy:deg2000",
+      "sha256": "87cae813575f70855e742023cf741d6a0268c21da8199755e2eda089e3553c69"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_other/catalog.json": {
-      "bytes": 18058,
-      "role": "cardiotox_other:catalog",
-      "sha256": "a065d98e8c5b6453fab1ccacab80f7112d3580569c89148dda9842c8db9e2dbb"
+    "stage2/01_bases/output/disease-fusion/icm.deg2000.csv": {
+      "bytes": 47020,
+      "role": "icm:deg2000",
+      "sha256": "cb2684f77e0fce0af0d14cf9085bc69b06231b089b2db06950f28dd8344e6978"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EA.rank.csv": {
-      "bytes": 427040,
-      "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EA:rank",
-      "sha256": "94fbd0fc76aa973468013ae480a0f70aaa437a6dec3dfb1d1860913ae460b8aa"
+    "stage2/01_bases/output/disease-fusion/manifest.json": {
+      "bytes": 11038,
+      "role": "disease_fusion_release_manifest",
+      "sha256": "876cba1f3e5634101dc80a574a044e78d085f8e26f0a219c9ad8a514bd39ad94"
     },
-    "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EB.rank.csv": {
-      "bytes": 426431,
-      "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EB:rank",
-      "sha256": "d29376cc4ff754dff5ae348d549dc98942e5e2395a493f29ff61bf94fb346171"
-    },
-    "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EX.rank.csv": {
-      "bytes": 427070,
-      "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EX:rank",
-      "sha256": "df6a6664fe39ca1c44bb14a33231988baf19f5acfd4e197ca55b44a494849d0a"
-    },
-    "stage2/01_bases/output/disease-deg/cardiotox_other/manifest.json": {
-      "bytes": 4452,
-      "role": "cardiotox_other:release_manifest",
-      "sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/catalog.json": {
-      "bytes": 30773,
-      "role": "genetic_cardiomyopathy:catalog",
-      "sha256": "d697f6c4b692be423763713737dc0e10410c8b05ec45766362685573d1c1dfe8"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse194297__dmd_cardiomyopathy.rank.csv": {
-      "bytes": 557306,
-      "role": "genetic_cardiomyopathy:gse194297__dmd_cardiomyopathy:rank",
-      "sha256": "d7164e19b7dd37db8a07ef88eeae179f8b224147737e5eb93b527c5e4286f993"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse224129__mybpc3_hcm.rank.csv": {
-      "bytes": 558135,
-      "role": "genetic_cardiomyopathy:gse224129__mybpc3_hcm:rank",
-      "sha256": "e3b94dc8d3061329152a222437861bca313c6b762fef23c690d34ee654f22658"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse234141__ttntv_dcm.rank.csv": {
-      "bytes": 558445,
-      "role": "genetic_cardiomyopathy:gse234141__ttntv_dcm:rank",
-      "sha256": "4f83e2feaeafa60fc5f337dba37ef0998ab46a7583dd2830fc5f8fd99fc470b7"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse253223__pkp2_knockdown_arvc.rank.csv": {
-      "bytes": 557352,
-      "role": "genetic_cardiomyopathy:gse253223__pkp2_knockdown_arvc:rank",
-      "sha256": "8937906130be868a0dcfaa2b6ba26f48dade88f473bbf2a8f3462922879b5da3"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse304575__lmna_h222p_dcm.rank.csv": {
-      "bytes": 557595,
-      "role": "genetic_cardiomyopathy:gse304575__lmna_h222p_dcm:rank",
-      "sha256": "bbf7f1ed85b9156c6c644a69c58662b8d4ea13bb1a6c712ae1441bb2a31954c0"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse305648__rbm20_dcm.rank.csv": {
-      "bytes": 558625,
-      "role": "genetic_cardiomyopathy:gse305648__rbm20_dcm:rank",
-      "sha256": "2e985728f5d3ff830f0db6fd0637e16c739efb4c8d62dcbc2da76a22ae138707"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/manifest.json": {
-      "bytes": 5311,
-      "role": "genetic_cardiomyopathy:release_manifest",
-      "sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/reichart-cm__arvc.rank.csv": {
-      "bytes": 558414,
-      "role": "genetic_cardiomyopathy:reichart-cm__arvc:rank",
-      "sha256": "447a656d38f6553f3267a09050fcb8ad6d430ff2357b451f6581588c3b5cd2be"
-    },
-    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/reichart-cm__dcm_genotype_positive.rank.csv": {
-      "bytes": 558414,
-      "role": "genetic_cardiomyopathy:reichart-cm__dcm_genotype_positive:rank",
-      "sha256": "89b96afeb6a8ac1d99946b5c83e5437d9a6a3c440f3274f53c45863f82b8bb43"
-    },
-    "stage2/01_bases/output/disease-deg/icm/catalog.json": {
-      "bytes": 6892,
-      "role": "icm:catalog",
-      "sha256": "b82673333dc137ef43a6237eb5eb04db8f0278b01097c6883d50b35d3692f290"
-    },
-    "stage2/01_bases/output/disease-deg/icm/gse270788__ami.rank.csv": {
-      "bytes": 557937,
-      "role": "icm:gse270788__ami:rank",
-      "sha256": "f3648b62bff2fe6ef182d82687d971861b9bc3c6fa445424300bf61698778041"
-    },
-    "stage2/01_bases/output/disease-deg/icm/gse270788__icm.rank.csv": {
-      "bytes": 557937,
-      "role": "icm:gse270788__icm:rank",
-      "sha256": "29f9376a61fb1a7425f228b82cabfe57194e1652df5621e8b53bc9108173bb56"
-    },
-    "stage2/01_bases/output/disease-deg/icm/manifest.json": {
-      "bytes": 1653,
-      "role": "icm:release_manifest",
-      "sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936"
-    },
-    "stage2/01_bases/output/disease-deg/nhf/catalog.json": {
-      "bytes": 7004,
-      "role": "nhf:catalog",
-      "sha256": "6b5e36bfbe4429019799a249981b8f9556e7578e819c8d450f214cc1f4989eb6"
-    },
-    "stage2/01_bases/output/disease-deg/nhf/gse270788__nicm.rank.csv": {
-      "bytes": 557937,
-      "role": "nhf:gse270788__nicm:rank",
-      "sha256": "9089cf243e06510b1ca2731c50c2d73b9642fb612d1e43ee01d962e7e4eba5b8"
-    },
-    "stage2/01_bases/output/disease-deg/nhf/manifest.json": {
-      "bytes": 1963,
-      "role": "nhf:release_manifest",
-      "sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e"
-    },
-    "stage2/01_bases/output/disease-deg/nhf/reichart-cm__dcm_genotype_negative.rank.csv": {
-      "bytes": 558414,
-      "role": "nhf:reichart-cm__dcm_genotype_negative:rank",
-      "sha256": "a8a538a82ab9f49e874929fb4a890cb0b5a678099902e5d06d150b76fd2858c7"
+    "stage2/01_bases/output/disease-fusion/nhf.deg2000.csv": {
+      "bytes": 47522,
+      "role": "nhf:deg2000",
+      "sha256": "10d40a6ada96b5e23bb9d183e3fe4ad57f8498db0b2d5cc88f0bdb2983adedb6"
     },
     "stage2/01_bases/output/gene-identity/genes.csv": {
       "bytes": 930854,
@@ -658,12 +762,12 @@
     }
   },
   "intersection": {
-    "jaccard": 0.3922036595067621,
-    "n_intersection": 1972,
+    "jaccard": 0.4,
+    "n_intersection": 2000,
     "n_left": 2000,
     "n_right": 5000,
-    "n_union": 5028,
-    "share_of_smaller": 0.986,
+    "n_union": 5000,
+    "share_of_smaller": 1.0,
     "sizes": [
       2000,
       5000
@@ -672,7 +776,7 @@
   "outputs": {
     "stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv": {
       "rows": 143,
-      "sha256": "4ac96696a9f37403ad7f2c4779a06590ba2a47b14757b28dbfadc7365f6e69fb"
+      "sha256": "c402554ab82e437f03a17a67b88c71b4837ecc999d2abc9e5498dc500c28e3c0"
     },
     "stage2/01_bases/figure/data/gene_axis_source_topn_coverage.csv": {
       "columns": [
@@ -688,12 +792,22 @@
         "count",
         "rate"
       ],
-      "rows": 14,
-      "sha256": "b405b5f19617da9eb608b79515d6990d58864cb7936ebee5d188151d0666a72e"
+      "rows": 16,
+      "sha256": "103073c110a1924ee3adf75f365809b4012eda54e90f297d5492b742f860cb8f"
     },
     "stage2/01_bases/output/gene-axis/axis_composition.csv": {
-      "rows": 40,
-      "sha256": "6985ae921dcffac3503a3cafe4c1b534f209ecb785e6c292415925f38a73dbfd"
+      "columns": [
+        "axis",
+        "n_axis",
+        "record",
+        "group",
+        "n_genes",
+        "denominator",
+        "share",
+        "note"
+      ],
+      "rows": 32,
+      "sha256": "51192501464dea8eaf6e9ba860f6d0c99fad2a6c1492f5ff2099973a0affb4f8"
     },
     "stage2/01_bases/output/gene-axis/candidate_rank_sum.csv": {
       "columns": [
@@ -702,57 +816,60 @@
         "tenv_hvg_rank",
         "nhf_rank",
         "icm_rank",
+        "af_rank",
         "genetic_cardiomyopathy_rank",
         "cardiotox_TOP2_rank",
         "cardiotox_other_rank",
         "rank_sum",
-        "n_sources_measured",
-        "p2000",
-        "p5000"
+        "f2000"
       ],
       "rows": 18164,
-      "sha256": "ba328172dae4e0e8b739b12008199982d48b9fee2e708abf8abe2f877dc5747f"
+      "sha256": "4c1a98d9f5c80b4bac5319c5b5e27fc62754048e31ed40874992ffed7462c208"
     },
     "stage2/01_bases/output/gene-axis/gene_axis_2000.csv": {
       "rows": 2000,
-      "sha256": "cb07535f4f3ba4225a7f3466db4de14a3b4655a6a5d0e371da604ef0c9688d38"
+      "sha256": "637bb8e11a986526fde41e1b013f5504bc375ffe39ed0202a3630743eb94e142"
     },
     "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
       "rows": 5000,
-      "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676"
+      "sha256": "6f467c2ccb802f638847fd3263b203a1daa88f05aedd2db4303d8526d296dd9a"
     },
     "stage2/01_bases/output/gene-axis/source_topn_coverage.csv": {
       "columns": [
         "N",
-        "%tenv_hvg_gN",
-        "%nhf_gN",
-        "%icm_gN",
-        "%genetic_cardiomyopathy_gN",
-        "%cardiotox_TOP2_gN",
-        "%cardiotox_other_gN"
+        "n_axis",
+        "group",
+        "group_label",
+        "numerator",
+        "denominator",
+        "rate",
+        "note"
       ],
-      "rows": 2,
-      "sha256": "27e3a50dcaaed9bc8f2d8469aadaa85073507989b1eb934139432e434458360b"
+      "rows": 14,
+      "sha256": "8db5fcbf058891f543d2c0469f07b9769b82cdc1956aa94754b6cffb83aff70d"
     }
   },
   "release": {
+    "algorithm": "f2000-deg2000-v2",
     "axis_sizes": [
       2000,
       5000
     ],
+    "f2000": "f2000(g) is the number of active diseases whose published DEG2000_d contains g; it is the axis disease-side selection signal and replaces the retired pN. It is a count of diseases, not a rank or a score.",
+    "fallback": "a gene that is not a DEG in any disease enters the axis only as a tenv-HVG fallback gene, selected in ascending tenv-HVG rank order after every available f2000 >= 1 candidate; the manifest records how many second-half slots came from that fallback.",
+    "fallback_second_half_slots": {
+      "2000": 0,
+      "5000": 0
+    },
     "fill_fraction": 0.5,
-    "fill_rule": "G_N = the top 0.5*N genes of tenv-HVG (tenv_hvg_rank <= N/2), then 0.5*N more from the remaining candidates ordered by pN descending, rank_sum ascending, gene_index ascending; the union is published ordered by ascending gene_index and is never renumbered.",
-    "pN": "number of the 6 fusion sources whose top-N set contains the gene; ordinal, not a continuous quality score",
-    "pN_bounds": [
-      0,
-      6
-    ]
+    "fill_rule": "G_N = the top 0.5*N genes of tenv-HVG (tenv_hvg_rank <= N/2), then 0.5*N more from the remaining candidates that have f2000 >= 1, ordered by f2000 descending, rank_sum ascending, gene_index ascending; a gene with f2000 = 0 is never selected by the disease half. When fewer than 0.5*N remaining candidates have f2000 >= 1, the shortfall is filled from the unused tenv-HVG genes (the remaining candidates not already selected) in ascending tenv-HVG rank order -- never from a gene on disease evidence it does not have -- and the count is recorded in the release manifest. The union is published ordered by ascending gene_index and is never renumbered.",
+    "rank_sum": "rank_sum(g) = sum over the active diseases of rank_d(g) / n_d, where n_d is the disease axis-resolved DEG-union size and rank_d(g) is the disease's published DEG2000 rank when g is in DEG2000_d and n_d + 1 otherwise. Ascending is better; ties break on gene_index. tenv-HVG is not a term: it supplies the first axis half."
   },
   "schema": "stage2-gene-axis-release-v1",
   "tenv_hvg": {
     "input": "stage2/01_bases/output/tenv-hvg/descriptive.csv",
     "n_ranked": 18164,
-    "normalization": "rank / frozen-axis size",
+    "role": "first axis half (tenv_hvg_rank <= N/2) and the fallback order; not a rank_sum term",
     "source": "published descriptive normalized-dispersion rank (never recomputed)"
   }
 }

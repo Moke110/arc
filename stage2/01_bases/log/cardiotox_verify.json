@@ -1,36 +1,47 @@
 {
-  "action": "publish",
+  "action": "verify",
   "output_root": "stage2/01_bases/output/disease-deg",
-  "products": {
+  "products": {},
+  "replay": {
     "cardiotox": {
-      "counts": {
-        "classes_with_members": 36,
-        "codes": 101,
-        "entered_classes": 6,
-        "excluded_codes": 76,
-        "resolved": 69,
-        "unresolved": 32
-      },
-      "manifest_sha256": "06e4e08b631ec8a2e908bb52d3a61ba5c9e48c7ed124134d8b69ca3f422dff9b"
+      "manifest_sha256": "06e4e08b631ec8a2e908bb52d3a61ba5c9e48c7ed124134d8b69ca3f422dff9b",
+      "outputs": [
+        "class_members.csv",
+        "classes.csv",
+        "crosswalk.csv",
+        "eligibility.csv",
+        "excluded.csv",
+        "rejected.csv"
+      ]
     },
     "cardiotox_TOP2": {
-      "counts": {
-        "datasets": 3,
-        "measured_gene_rows": 50955
-      },
-      "manifest_sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55"
+      "manifest_sha256": "fc161b3a4b9f6e1942eabbb89d2398232c2454704da9ecc4c3cb2b04b2083489",
+      "outputs": [
+        "catalog.json",
+        "dtoxs_ipsc.atc_l4-L01DB.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01DB.rank.csv",
+        "gse243674.atc_l4-L01DB.deg.csv",
+        "gse243674.atc_l4-L01DB.rank.csv",
+        "gse244740.atc_l4-L01DB.deg.csv",
+        "gse244740.atc_l4-L01DB.rank.csv"
+      ]
     },
     "cardiotox_other": {
-      "counts": {
-        "datasets": 3,
-        "measured_gene_rows": 39698
-      },
-      "manifest_sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4"
-    }
+      "manifest_sha256": "d83f70f55eddecec430818acdc9b51f0b0fff339e6366bebe174f53f2513ea2c",
+      "outputs": [
+        "catalog.json",
+        "dtoxs_ipsc.atc_l4-L01EA.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01EA.rank.csv",
+        "dtoxs_ipsc.atc_l4-L01EB.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01EB.rank.csv",
+        "dtoxs_ipsc.atc_l4-L01EX.deg.csv",
+        "dtoxs_ipsc.atc_l4-L01EX.rank.csv"
+      ]
+    },
+    "result": "PASS"
   },
-  "replay": null,
   "resources": {
-    "python_peak_rss_kib": 1536824,
-    "r_peak_rss_kib": 891700
+    "python_peak_rss_kib": 1537736,
+    "r_peak_rss_kib": 892016
   }
 }

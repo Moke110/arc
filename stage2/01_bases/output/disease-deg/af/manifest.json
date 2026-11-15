@@ -1,0 +1,67 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv"
+  },
+  "catalog_sha256": "9560cd3be07a8d0356650c34952f867f6f1aeb6266411dd82ff51620fee64c00",
+  "category": "AF",
+  "counts": {
+    "datasets": 4,
+    "n_measured": {
+      "gse138252__af": 13238,
+      "gse238242__af": 12018,
+      "gse255612__af": 18092,
+      "gse269882__af": 15343
+    }
+  },
+  "inputs": {
+    "disease_data/GSE138252/local/deg/GSE138252_deg.json": "06a6df6800b764959a6184bed539b563fb07dd9913c5d135939bb52606a8ab6d",
+    "disease_data/GSE138252/manifest.sha256": "6377052381eb31f1a5ec05ec26f818aab5359d030c8d551064be31d37db00a27",
+    "disease_data/GSE238242/local/deg/GSE238242_deg.json": "7f47dd1e102d4b6a5d5690f8fd80c907b9510e59d684046ef0a97abe9ec018d6",
+    "disease_data/GSE238242/manifest.sha256": "fc6329e85508ef85f562059db6d502c71537534db88f93c7fbfb21105ef9adaf",
+    "disease_data/GSE255612/local/deg/gse255612_deg.json": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
+    "disease_data/GSE255612/manifest.sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93",
+    "disease_data/GSE269882/local/deg/GSE269882_deg.json": "2c1c8d5581f66ef58faaae8d0ad816a09c7cbe8ccc45651bb69a3f2379ded364",
+    "disease_data/GSE269882/manifest.sha256": "48b0457603554a46ac2bf4adb8ff2a421bded276ec71a74a905bf6e2abc99e02",
+    "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+  },
+  "outputs": {
+    "catalog.json": {
+      "sha256": "ced4158ac9be2ce11f1e873663dc0e3f426123e1db30deb1994df94bdd8e64b0"
+    },
+    "gse138252__af.deg.csv": {
+      "rows": 13238,
+      "sha256": "027c0ff6c58d2dde324553f8d053f4ded4ead9db79d5d0c246c4a91581b3fe36"
+    },
+    "gse138252__af.rank.csv": {
+      "rows": 18164,
+      "sha256": "b00cd76fd1b48d515fdfacdcb20a6b5c2eb8edbee32a2f1957a82dd341089186"
+    },
+    "gse238242__af.deg.csv": {
+      "rows": 12018,
+      "sha256": "1f0a7fe5c358b101b47e37c0bc583a495b3fd9b0362ee0244b99b49001b4930c"
+    },
+    "gse238242__af.rank.csv": {
+      "rows": 18164,
+      "sha256": "92a93ec3d33ac188fe49d23c4ab694e9c2ffd21c2ea9627a9e8a4fe5116563d2"
+    },
+    "gse255612__af.deg.csv": {
+      "rows": 18092,
+      "sha256": "dfe0f760df1b4c8cdaa5bcc2657f1e0a2bbb889a30101242d7ddfcafa3e8e6a8"
+    },
+    "gse255612__af.rank.csv": {
+      "rows": 18164,
+      "sha256": "92a93ec3d33ac188fe49d23c4ab694e9c2ffd21c2ea9627a9e8a4fe5116563d2"
+    },
+    "gse269882__af.deg.csv": {
+      "rows": 15343,
+      "sha256": "1d9c26f18a403bb9fa8c45e40d2ae83d57f2d7997a3164b4ec2d929769effef9"
+    },
+    "gse269882__af.rank.csv": {
+      "rows": 18164,
+      "sha256": "92a93ec3d33ac188fe49d23c4ab694e9c2ffd21c2ea9627a9e8a4fe5116563d2"
+    }
+  },
+  "recipe": "execution/build_disease_deg.py publish --category AF",
+  "schema": "stage2-disease-deg-release-v1"
+}

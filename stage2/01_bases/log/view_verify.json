@@ -5,16 +5,16 @@
       "basis": {
         "tahoe_bulk": {
           "n_axis": 2000,
-          "share": 0.10831776790302737,
-          "treated_share": 0.10827505340419144
+          "share": 0.07891310829444366,
+          "treated_share": 0.07888563393649367
         },
         "tenv": {
           "n_axis": 2000,
-          "share": 0.15054895276469343,
-          "treated_share": 0.1508925048906103
+          "share": 0.13162691370042032,
+          "treated_share": 0.13207212206789914
         }
       },
-      "manifest_sha256": "44f0c0df756cd8259d8d599943ef2e286f12975ef3afe47e484a8315a7149825",
+      "manifest_sha256": "30d2447f090133f5f9c66d2730e9ccb44db9f74c46dcb4ca1a2834ff57787596",
       "name": "view-2k",
       "outputs": {
         "library_totals.csv": {
@@ -29,25 +29,25 @@
           "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
         },
         "tahoe_bulk.h5ad": {
-          "bytes": 1312787850,
+          "bytes": 1262131874,
           "columns": 2000,
           "rows": 66718,
-          "sha256": "8ed8655b543d9c167b04933aa9c9b5cc5980f4ffdfc6baed5a5eea93d3395ea4"
+          "sha256": "88739added231e562359161a0fc274fe785d44aee885507b54a6d767fe9047e5"
         },
         "tenv.h5ad": {
-          "bytes": 59912368,
+          "bytes": 58627248,
           "columns": 2000,
           "rows": 4478,
-          "sha256": "c02f320c5caca8a3ddaf93943aedc8a5ffdf518007d30e32a47e108862b50e9c"
+          "sha256": "ff8212079ab8b5e8e90a0cb309b4b951f01995c4d05edee1295e8ea66eba027a"
         }
       },
       "path": "stage2/01_bases/output/view-2k",
-      "peak_rss_kib": 444952,
+      "peak_rss_kib": 442364,
       "size": 2000,
       "sources": {
         "tahoe_bulk": {
-          "basis_share": 0.10831776790302737,
-          "basis_share_treated": 0.10827505340419144,
+          "basis_share": 0.07891310829444366,
+          "basis_share_treated": 0.07888563393649367,
           "library_total": {
             "max": 33209864,
             "median": 2286586.0,
@@ -57,8 +57,8 @@
           "rows": 66718
         },
         "tenv": {
-          "basis_share": 0.15054895276469343,
-          "basis_share_treated": 0.1508925048906103,
+          "basis_share": 0.13162691370042032,
+          "basis_share_treated": 0.13207212206789914,
           "library_total": {
             "max": 3978060,
             "median": 879905.5,
@@ -73,16 +73,16 @@
       "basis": {
         "tahoe_bulk": {
           "n_axis": 5000,
-          "share": 0.2473663902145978,
-          "treated_share": 0.24727881556806083
+          "share": 0.16762579625712304,
+          "treated_share": 0.167557486602166
         },
         "tenv": {
           "n_axis": 5000,
-          "share": 0.37427374787592954,
-          "treated_share": 0.3738461279584329
+          "share": 0.338379147893776,
+          "treated_share": 0.3378954490137068
         }
       },
-      "manifest_sha256": "d7ac02270f6cff4faac6f669878beeb627bf7c4a8d7c37f954f2698095eaeb6e",
+      "manifest_sha256": "4da06c5dbe33f2cbd4fbf1077fe6aa61988d46c85418cec92c55f193aa496caf",
       "name": "view-5k",
       "outputs": {
         "library_totals.csv": {
@@ -97,25 +97,25 @@
           "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
         },
         "tahoe_bulk.h5ad": {
-          "bytes": 3152087026,
+          "bytes": 3012415752,
           "columns": 5000,
           "rows": 66718,
-          "sha256": "02abaed932e3e0b82032e4ec78884531f9743d4143886f190752585e32c22905"
+          "sha256": "5f16fdfbd7aacd1ae3b00e873850aadebaf165af95d3385762df04a0429788fd"
         },
         "tenv.h5ad": {
-          "bytes": 142266477,
+          "bytes": 138912355,
           "columns": 5000,
           "rows": 4478,
-          "sha256": "e1a18a9acb75b610527bdd83bff31b27bbd8c71e8c4a8444f935f1f343dd47f3"
+          "sha256": "9c818600fd2fd8705d57247bc0acf5cc6dab7ee155a631a2a0cd9d5156adb501"
         }
       },
       "path": "stage2/01_bases/output/view-5k",
-      "peak_rss_kib": 444952,
+      "peak_rss_kib": 442364,
       "size": 5000,
       "sources": {
         "tahoe_bulk": {
-          "basis_share": 0.2473663902145978,
-          "basis_share_treated": 0.24727881556806083,
+          "basis_share": 0.16762579625712304,
+          "basis_share_treated": 0.167557486602166,
           "library_total": {
             "max": 33209864,
             "median": 2286586.0,
@@ -125,8 +125,8 @@
           "rows": 66718
         },
         "tenv": {
-          "basis_share": 0.37427374787592954,
-          "basis_share_treated": 0.3738461279584329,
+          "basis_share": 0.338379147893776,
+          "basis_share_treated": 0.3378954490137068,
           "library_total": {
             "max": 3978060,
             "median": 879905.5,

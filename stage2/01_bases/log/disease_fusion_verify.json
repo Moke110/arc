@@ -1,0 +1,16 @@
+{
+  "command": "verify",
+  "results": {
+    "manifest_sha256": "876cba1f3e5634101dc80a574a044e78d085f8e26f0a219c9ad8a514bd39ad94",
+    "outputs": [
+      "af.deg2000.csv",
+      "cardiotox_TOP2.deg2000.csv",
+      "cardiotox_other.deg2000.csv",
+      "catalog.json",
+      "genetic_cardiomyopathy.deg2000.csv",
+      "icm.deg2000.csv",
+      "nhf.deg2000.csv"
+    ],
+    "result": "PASS"
+  }
+}

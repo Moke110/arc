@@ -11,9 +11,10 @@ public boundary for that product family:
   guessed.
 * ``build_dataset_products`` — collapse an item-local per-contrast DEG table with
   the ticket-01 contract (:func:`bases.deg_rank.dataset_deg_rank`), carry the
-  winning contrast's ``stat``/``p_value``/``base_mean`` and the frozen
-  ``gene_symbol``, and return the compact table, the full-axis rank frame and the
-  statistics.
+  winning contrast's ``stat``/``p_value``/``base_mean``, the pass-any-contrast
+  ``deg`` flag and the frozen ``gene_symbol``, and return the compact table, the
+  full-axis DEG-only rank frame and the statistics (ADR 0071 v2, republished by
+  #208).
 * ``genotype_split`` — the genotype-first donor split the Reichart source
   declares (positive donors leave ``nHF``; the single NCCM donor is not used).
 * ``contrast_selection`` — the one-joint-design arm collapse: one fit produces
@@ -83,9 +84,15 @@ LOCAL_SCHEMA = 'stage2-item-deg-v1'
 
 LOCAL_DEG_COLUMNS = ('source_gene_id', 'gene_symbol', 'contrast', 'log2fc', 'stat',
                      'p_value', 'padj', 'base_mean')
+#: The published compact-table columns (ADR 0071 v2, #208). ``deg`` is the
+#: authoritative pass-any-contrast DEG flag, ``n_contrasts_deg`` counts the
+#: contrasts that pass it, ``rank`` is the DEG-only rank (a DEG at ``1..n_DEG``,
+#: every other gene at ``n_DEG + 1``) and ``rank_norm = rank / n_DEG``. The
+#: retired measured-gene rank and its ``n_measured`` denominator are gone.
 DEG_COLUMNS = ('gene_index', 'gene_symbol', 'contrast', 'log2fc', 'stat', 'p_value',
-               'padj', 'base_mean', 'direction', 'significant', 'n_contrasts',
-               'n_contrasts_supporting', 'effect', 'rank', 'rank_norm')
+               'padj', 'base_mean', 'direction', 'significant', 'deg',
+               'n_contrasts', 'n_contrasts_supporting', 'n_contrasts_deg',
+               'effect', 'rank', 'rank_norm')
 RANK_COLUMNS = ('gene_index', 'rank', 'rank_norm')
 
 #: ADR 0071 decision 4: the per-disease level-1 fusion keeps at most the first
@@ -270,8 +277,9 @@ def build_dataset_products(local_deg, resolver, axis_symbols, dataset_id,
     ``local_deg`` is an item-local per-contrast table (``LOCAL_DEG_COLUMNS``);
     ``resolver``/``axis_symbols`` bind the frozen axis. Returns
     ``(table, rank, stats, alignment_report)`` where ``table`` follows
-    ``DEG_COLUMNS`` sorted by rank and ``rank`` follows ``RANK_COLUMNS`` over the
-    whole frozen axis (unmeasured genes at ``n_measured + 1``).
+    ``DEG_COLUMNS`` sorted by the DEG-only rank and ``rank`` follows
+    ``RANK_COLUMNS`` over the whole frozen axis (a DEG at ``1..n_DEG``, every
+    other gene at ``n_DEG + 1``; ADR 0071 decision 3, #208).
     """
     aligned, report = align_source_table(local_deg, resolver)
     stats_rows = winning_contrast_rows(aligned)
@@ -286,6 +294,8 @@ def build_dataset_products(local_deg, resolver, axis_symbols, dataset_id,
                         index=np.arange(axis_size, dtype=np.int64))
     table['gene_symbol'] = table.gene_index.map(symbols)
     table = table[list(DEG_COLUMNS)]
+    table['deg'] = table['deg'].astype(bool)
+    table['n_contrasts_deg'] = table['n_contrasts_deg'].astype(np.int64)
     table = table.sort_values(['rank', 'gene_index'], kind='stable').reset_index(drop=True)
     stats = dict(stats)
     stats.update({'dataset_id': dataset_id, 'alignment': report,
@@ -294,7 +304,17 @@ def build_dataset_products(local_deg, resolver, axis_symbols, dataset_id,
 
 
 def validate_table(table, axis_size=AXIS_SIZE):
-    """Validate a published compact DEG table against the ticket-01 contract."""
+    """Validate a published compact DEG table against the ADR 0071 v2 contract.
+
+    The table must carry the v2 :data:`DEG_COLUMNS`, one row per measured gene in
+    the frozen axis, the pass-any-contrast ``deg`` flag (matching the published
+    ``n_contrasts_deg``), the DEG-only rank (a DEG at ``1..n_DEG``, every other
+    gene at ``n_DEG + 1``) and ``rank_norm = rank / n_DEG``. The effect score and
+    the rank are re-derived from the published ``log2fc``/``padj``/``deg`` so a
+    tampered table cannot pass; a zero-DEG dataset is representable (every rank is
+    ``1`` and ``rank_norm`` is ``NaN``), because it is still published as a
+    non-informative source (ADR 0068).
+    """
     table = pd.DataFrame(table)
     if tuple(table.columns) != DEG_COLUMNS:
         raise ValueError(f'DEG table columns differ from the contract: {list(table.columns)}')
@@ -304,20 +324,82 @@ def validate_table(table, axis_size=AXIS_SIZE):
         raise ValueError('DEG table repeats a gene_index')
     if table.gene_index.min() < 0 or table.gene_index.max() >= axis_size:
         raise ValueError('DEG table gene_index outside the frozen axis')
-    if not table['rank'].tolist() == list(range(1, len(table) + 1)):
-        raise ValueError('DEG table is not sorted by the within-dataset rank')
-    if not np.allclose(table.rank_norm.to_numpy(), table['rank'].to_numpy() / len(table)):
-        raise ValueError('DEG table rank_norm is not rank / n_measured')
-    order = np.lexsort((table.gene_index.to_numpy(dtype=np.int64),
-                        -table.effect.to_numpy(dtype=np.float64)))
+    deg = table['deg'].to_numpy(dtype=bool)
+    n_contrasts_deg = table.n_contrasts_deg.to_numpy(dtype=np.int64)
+    if (n_contrasts_deg < 0).any():
+        raise ValueError('DEG table has a negative DEG-contrast count')
+    if not np.array_equal(deg, n_contrasts_deg > 0):
+        raise ValueError('DEG table deg flag disagrees with n_contrasts_deg')
+    if (table.n_contrasts.to_numpy(dtype=np.int64) < n_contrasts_deg).any():
+        raise ValueError('DEG table n_contrasts is below n_contrasts_deg')
+    n_deg = int(deg.sum())
+    ranks = table['rank'].to_numpy(dtype=np.int64)
+    rank_norm = table['rank_norm'].to_numpy(dtype=np.float64)
+    if n_deg:
+        expected = np.concatenate((np.arange(1, n_deg + 1, dtype=np.int64),
+                                   np.full(len(table) - n_deg, n_deg + 1,
+                                           dtype=np.int64)))
+        if not np.array_equal(np.sort(ranks), expected):
+            raise ValueError('DEG table rank frame is not 1..n_DEG plus n_DEG+1')
+        if not np.allclose(rank_norm, ranks / float(n_deg)):
+            raise ValueError('DEG table rank_norm is not rank / n_DEG')
+    else:
+        if not (ranks == 1).all():
+            raise ValueError('a zero-DEG table must rank every gene at 1')
+        if not np.isnan(rank_norm).all():
+            raise ValueError('a zero-DEG table has no finite rank_norm')
+    effect = deg_effect(table.log2fc.to_numpy(dtype=np.float64),
+                        table.padj.to_numpy(dtype=np.float64))
+    if not np.allclose(table.effect.to_numpy(dtype=np.float64), effect):
+        raise ValueError('DEG table effect is not |log2FC| * -log10(padj)')
+    if not np.array_equal(ranks, deg_only_rank(table.gene_index.to_numpy(dtype=np.int64),
+                                               effect, deg)):
+        raise ValueError('DEG table is not ranked by effect with the DEG-only rank')
     if table.gene_index.to_numpy(dtype=np.int64).tolist() != \
-            table.gene_index.to_numpy(dtype=np.int64)[order].tolist():
-        raise ValueError('DEG table is not ordered by effect with gene_index tie-break')
+            table.sort_values(['rank', 'gene_index'], kind='stable').gene_index.tolist():
+        raise ValueError('DEG table is not sorted by the DEG-only rank')
     return table
 
 
+def _rank_frame_n_deg(ranks, rank_norm):
+    """Recover ``n_DEG`` from a published v2 rank frame and validate it.
+
+    A v2 frame carries a DEG's ``1..n_DEG`` rank and ``n_DEG + 1`` for every other
+    gene, so the maximum rank is ``n_DEG + 1`` unless every axis gene is a DEG
+    (``max = n_DEG``). Both readings are tested against the published
+    ``rank_norm = rank / n_DEG`` and exactly one is consistent.
+    """
+    ranks = np.asarray(ranks, dtype=np.int64)
+    rank_norm = np.asarray(rank_norm, dtype=np.float64)
+    if ranks.size == 0 or np.any(ranks < 1):
+        raise ValueError('rank frame has a rank below 1')
+    maximum = int(ranks.max())
+    for candidate in (maximum - 1, maximum):
+        if candidate < 0:
+            continue
+        if candidate == 0:
+            if bool((ranks == 1).all()) and bool(np.isnan(rank_norm).all()):
+                return 0
+            continue
+        expected = np.concatenate((np.arange(1, candidate + 1, dtype=np.int64),
+                                   np.full(ranks.size - candidate, candidate + 1,
+                                           dtype=np.int64)))
+        if expected.size != ranks.size:
+            continue
+        if np.array_equal(np.sort(ranks), expected) and np.allclose(
+                rank_norm, ranks / float(candidate)):
+            return int(candidate)
+    raise ValueError('rank frame is not a v2 DEG-only 1..n_DEG / n_DEG+1 assignment')
+
+
 def validate_rank(rank, axis_size=AXIS_SIZE):
-    """Validate a published full-axis rank frame."""
+    """Validate a published full-axis v2 rank frame (ADR 0071 decision 3).
+
+    One row per frozen-axis gene in ``0..axis_size-1`` order, a DEG at ``1..n_DEG``
+    and every other gene at ``n_DEG + 1``, with ``rank_norm = rank / n_DEG``. A
+    zero-DEG frame (all ranks ``1``, ``rank_norm`` NaN) is valid but
+    non-informative.
+    """
     rank = pd.DataFrame(rank)
     if tuple(rank.columns) != RANK_COLUMNS:
         raise ValueError(f'rank frame columns differ from the contract: {list(rank.columns)}')
@@ -325,10 +407,8 @@ def validate_rank(rank, axis_size=AXIS_SIZE):
         raise ValueError(f'rank frame must hold {axis_size} genes, found {len(rank)}')
     if rank.gene_index.tolist() != list(range(axis_size)):
         raise ValueError('rank frame is not the frozen 0..18163 order')
-    measured = rank['rank'] <= rank['rank'].max()
-    if (rank['rank'] < 1).any():
-        raise ValueError('rank frame has a rank below 1')
-    n_measured = int((rank['rank'] != rank['rank'].max()).sum())
+    _rank_frame_n_deg(rank['rank'].to_numpy(dtype=np.int64),
+                      rank.rank_norm.to_numpy(dtype=np.float64))
     return rank
 
 

@@ -52,19 +52,24 @@ class ClassDegTest(unittest.TestCase):
         self.axis = axis_fixture()
         self.resolver = resolver_fixture()
 
-    def test_multi_contrast_collapse_and_rank_contract(self):
+    def test_multi_contrast_collapse_and_deg_only_rank_contract(self):
         table, rank, stats = cardiotox.class_deg(contrast_rows(), self.resolver,
                                                  axis_size=8)
         self.assertEqual(stats["n_measured"], 2)
         self.assertEqual(stats["n_unmeasured"], 6)
-        self.assertEqual(stats["rank_norm_denominator"], "n_measured")
+        # ADR 0071 decision 3: the denominator is the DEG count, never n_measured.
+        self.assertEqual(stats["rank_norm_denominator"], "n_deg")
+        self.assertEqual(stats["n_deg"], 1)
+        self.assertEqual(stats["nondeg_rank"], 2)
         gene1 = table[table.gene_index.eq(1)].iloc[0]
         # |2| * -log10(1e-4) = 8 for class|a; |-3| * -log10(1e-3) = 9 for class|b.
         self.assertEqual(gene1.contrast, "class|b")
         np.testing.assert_allclose(gene1.effect, 9.0)
         self.assertEqual(int(gene1.direction), -1)
         self.assertEqual(int(gene1["rank"]), 1)
-        np.testing.assert_allclose(gene1.rank_norm, 0.5)
+        np.testing.assert_allclose(gene1.rank_norm, 1.0)  # rank 1 / n_deg 1
+        self.assertTrue(bool(gene1.deg))
+        self.assertEqual(int(gene1.n_contrasts_deg), 2)
         # The winning contrast's statistic/p-value/expression level are carried.
         np.testing.assert_allclose(gene1.stat, -8.0)
         np.testing.assert_allclose(gene1.p_value, 1e-8)
@@ -72,17 +77,17 @@ class ClassDegTest(unittest.TestCase):
         gene2 = table[table.gene_index.eq(2)].iloc[0]
         self.assertEqual(gene2.contrast, "class|a")  # NA padj is non-significant
         self.assertFalse(bool(gene2.significant))
+        self.assertFalse(bool(gene2.deg))
         self.assertEqual(int(gene2.direction), 0)
 
-    def test_unmeasured_genes_get_n_measured_plus_one(self):
+    def test_non_deg_genes_get_n_deg_plus_one(self):
         table, rank, stats = cardiotox.class_deg(contrast_rows(), self.resolver,
                                                  axis_size=8)
         self.assertEqual(len(rank), 8)
-        self.assertEqual(rank["rank"].tolist(), [3, 1, 2, 3, 3, 3, 3, 3])
-        # n_measured = 2, unmeasured rank 3: rank_norm = 3/2 = 1.5 (ADR 0066).
+        # Only gene 1 is a DEG; every other frozen-axis gene sits at n_deg + 1 = 2.
+        self.assertEqual(rank["rank"].tolist(), [2, 1, 2, 2, 2, 2, 2, 2])
         np.testing.assert_allclose(rank.rank_norm.tolist(),
-                                   [1.5, 0.5, 1.0, 1.5, 1.5, 1.5, 1.5, 1.5])
-        self.assertEqual(int(stats["unmeasured_rank"]), 3)
+                                   [2.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
 
     def test_alignment_losses_are_recorded(self):
         table, _, stats = cardiotox.class_deg(contrast_rows(), self.resolver,
@@ -120,6 +125,8 @@ class PublishedTableTest(unittest.TestCase):
         self.assertEqual(frame.gene_symbol.tolist()[:2], ["G1", "G2"])
         self.assertTrue(frame.direction.dtype.kind in "iu")
         self.assertTrue(frame["rank"].dtype.kind in "iu")
+        self.assertTrue(frame.deg.dtype == bool)
+        self.assertTrue(frame.n_contrasts_deg.dtype.kind in "iu")
 
     def test_rank_table_covers_the_full_axis(self):
         path = self.root / "rank.csv"
@@ -198,9 +205,10 @@ class CatalogShapeTest(unittest.TestCase):
             "dtoxs_ipsc", "atc_l4:L01EA", "BCR-ABL tyrosine kinase inhibitors",
             ["Bosutinib", "Dasatinib", "Imatinib"], ["BOS", "DAS", "IMA"],
             [{"contrast": "x|a", "stratum": "a", "n_case": 7, "n_control": 6}],
-            {"n_measured": 2, "n_significant": 0, "alignment": {"n_resolved": 2},
-             "informative": True, "informativeness_rule": "fixture",
-             "n_distinct_effect": 2, "informativeness_reason": None},
+            {"n_measured": 2, "n_deg": 1, "n_significant": 0,
+             "alignment": {"n_resolved": 2}, "informative": True,
+             "informativeness_rule": "fixture", "n_distinct_effect": 2,
+             "informativeness_reason": None},
             "x.deg.csv", "x.rank.csv", {}, {"name": "test", "implementation": "t"})
         entry["category"] = "cardiotox_other"
         self.record = {"deg": "x.deg.csv", "rank_name": "x.rank.csv",
@@ -253,7 +261,7 @@ class DatasetEntryTest(unittest.TestCase):
             ["Doxorubicin", "Idarubicin", "Mitoxantrone"],
             [{"contrast": "x|plate", "stratum": "plate", "n_case": 72,
               "n_control": 22}],
-            {"n_measured": 10, "n_significant": 1, "alignment": {},
+            {"n_measured": 10, "n_deg": 4, "n_significant": 1, "alignment": {},
              "informative": True, "informativeness_rule": "fixture",
              "n_distinct_effect": 2, "informativeness_reason": None},
             "x.deg.csv", "x.rank.csv", {}, {"name": "t"})
@@ -268,7 +276,7 @@ class DatasetEntryTest(unittest.TestCase):
             ["Bosutinib", "Dasatinib", "Imatinib"], ["BOS", "DAS", "IMA"],
             [{"contrast": "x|a", "stratum": "a", "n_case": 7, "n_control": 6},
              {"contrast": "x|b", "stratum": "b", "n_case": 9, "n_control": 8}],
-            {"n_measured": 15000, "n_significant": 400,
+            {"n_measured": 15000, "n_deg": 400, "n_significant": 400,
              "alignment": {"n_resolved": 15000}, "informative": True,
              "informativeness_rule": "fixture", "n_distinct_effect": 2,
              "informativeness_reason": None}, "d.deg.csv", "d.rank.csv", {},
