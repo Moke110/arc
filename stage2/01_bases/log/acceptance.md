@@ -1,5 +1,19 @@
 # Acceptance record — Stage 2 `01_bases` rebuild (#192, ADR 0066 / ADR 0068 / ADR 0069 / ADR 0062)
 
+> **Sealed record (note added 2026-11-15 by #211).** Everything in this file that
+> predates **§10** describes the ADR 0066 measured-gene-rank world and is kept
+> byte-for-byte as history: its `pN`/`p2000`/`p5000` numbers, its five-category
+> roster, its 1,972-gene non-nested intersection and its `Top-N Coverage Rate`
+> label are what was published *then*. `pN` was retired by ADR 0071 and replaced
+> by `f2000`, `AF` returned, the axes are now nested and the coverage figure's
+> panel-b is `Coverage of Each Group`. Do not update those sections; a new run
+> gets a new section, and the live contract is [`../README.md`](../README.md) plus
+> ADR 0071. Two names in the pre-v2 text are stale by design for the same reason:
+> the test `test_build_reads_the_five_catalog_paths_it_is_given` was renamed to
+> `..._six_...` by #211 (the release has six categories) — see the flags at the end
+> of §11 — and `inputs.json.health.red_tests` keeps the old id because it records
+> the #208/#210 run.
+>
 > **v2 republish (#208, 2026-11-15).** The product digests in §1, §5b and
 > §6 are the #192/#194 record and are superseded by the ADR 0071 v2
 > republish: see **§10** for the six-category disease-DEG, six-disease
@@ -664,6 +678,13 @@ published datasets"; the released catalogs publish **27** dataset rows (18 befor
 `metadata.validate` is driven by. The number in the handover is a pre-AF count.
 (2) `test_build_reads_the_five_catalog_paths_it_is_given` keeps its name (the red
 list in `inputs.json.health.red_tests` refers to it) although it now reads six.
+**Resolved by #211:** the test is renamed `..._six_catalog_paths...`; this log and
+`inputs.json.health.red_tests` keep the old id because they are sealed records of
+the #208/#210 runs (see the sealed-record note at the top).
 (3) The two item-labelled platform disagreements above are corrected in the
 document metadata only; the `disease_data/` item summaries still carry them and
 were not edited (out of this ticket's scope).
+**Partly resolved by #211:** the two items' `author_log.json` and their DEG-build
+scripts now carry the GPL record (`GPL20795` = HiSeq X Ten, `GPL16791` = Illumina
+HiSeq 2500), and the published `local/deg/*_deg.json` bytes are left as-is because
+they are digest-pinned by the accepted disease-DEG catalogs.

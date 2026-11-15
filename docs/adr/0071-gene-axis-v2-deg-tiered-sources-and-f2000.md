@@ -1,8 +1,10 @@
 # Gene-axis v2: tiered source collection, DEG-only rank fusion and the f2000 fill rule
 
-**Status:** proposed (2026-11-15). Supersedes ADR 0066's *Source eligibility*,
-*Priority*, *Candidate table and the two-level rank-sum fusion*; keeps ADR 0068's
-non-informative-source rule; re-admits `AF`, superseding ADR 0069 and ADR 0070.
+**Status:** accepted (2026-11-15; the record was published as *proposed* and is accepted
+with the v2 release — #208 republished the products, #209 the rule document, #210 the
+figures, #211 the vocabulary and this ledger correction). Supersedes ADR 0066's *Source
+eligibility*, *Priority*, *Candidate table and the two-level rank-sum fusion*; keeps ADR
+0068's non-informative-source rule; re-admits `AF`, superseding ADR 0069 and ADR 0070.
 Reference: the user decision of 2026-11-15 ("DEG 用 padj<0.05 & FC>=4；按 tier 顺序搜集，
 tier1/2 累计 ≥2,000 DEG 就停；只让 DEG 且 disease 内前 2000 进下游；轴用 f2000 而不是 pN").
 
@@ -65,15 +67,44 @@ downstream fusion.
    is the ascending position with `gene_index` tie-break. `DEG2000_d` = the genes that are a
    DEG in at least one of the disease's sources **and** whose disease rank is `≤ 2,000` (all of
    them when the disease has fewer than 2,000 DEGs).
-5. **Cross-disease fusion (level 2).** `rank_sum = Σ_disease rank_d / n_d` where `n_d` is the
-   disease's DEG count and a gene outside `DEG2000_d` takes `(n_d + 1) / n_d`. `f2000` = the
-   number of diseases whose `DEG2000_d` contains the gene. `f2000` replaces `pN`.
+5. **Cross-disease fusion (level 2).** `rank_sum = Σ_disease rank_d / n_d` over the **six
+   disease terms only** (`nHF`, `ICM`, `AF`, `genetic_cardiomyopathy`, `cardiotox_TOP2`,
+   `cardiotox_other`), where `n_d` is the disease's DEG count and a gene outside `DEG2000_d`
+   takes `(n_d + 1) / n_d`. `f2000` = the number of diseases whose `DEG2000_d` contains the
+   gene; `f2000` replaces `pN`.
+
+   **tenv-HVG is not a `rank_sum` term.** The spec (#200) and ticket #207's acceptance text
+   still spoke of `rank_sum` "over seven sources", because ADR 0066 counted six categories
+   plus tenv-HVG as seven equal-weight votes. That framing died with `pN`: tenv-HVG supplies
+   the axis's *first half* outright (decision 6), so counting it again inside `rank_sum`
+   would weight it twice and mix a per-well dispersion rank into a disease-evidence sum. The
+   released rule therefore sums **six** terms: the released sums run `2.6625`–`7.0055` over the
+   two axes (manifest `axes.<N>.rank_sum`), where the upper end is the `f2000 = 0` constant
+   described next, not ADR 0068's seven-source `[0, 7]`.
+
+   **Scale caveat (measured, not a defect).** `rank_sum`'s absolute scale is dominated by the
+   smallest-`n_d` disease: `AF`'s `n_d = 1` makes every non-`SLC9A7` gene pay exactly `2.0` in
+   that term, about `2×` the combined contribution of the five large-`n_d` diseases (each
+   ≈`1 + 1/n_d`). That is why the rank-sum histogram has one spike at ≈`7.0` — it is the
+   `f2000 = 0` mass sitting at the constant maximum, an artefact of AF's one-gene denominator,
+   not evidence that the fusion fails to discriminate. Within an `f2000` stratum the AF term
+   is a constant for every non-AF gene, so ordering is essentially unaffected; and the axis
+   selects on `f2000` first.
 6. **Axis fill.** For each `N ∈ {2000, 5000}`: the first `0.5·N` genes are the tenv-HVG top
    `0.5·N` (unchanged); the second `0.5·N` are the remaining candidates ordered by **`f2000`
    descending, `rank_sum` ascending, `gene_index` ascending**. When fewer than `0.5·N`
    candidates have `f2000 ≥ 1`, the remaining slots are filled with tenv-HVG genes not yet
    selected, in tenv-HVG rank order — never with genes that are not a DEG in any disease. The
    number of such fill genes is recorded in the release manifest.
+
+   The fallback is **implemented and exercised by tests but 0 in this release**: 4,906 and
+   4,330 `f2000 ≥ 1` candidates compete for the 1,000 and 2,500 second-half slots, so every
+   disease-half gene carries disease evidence (`axes.<N>.second_half.tenv_hvg_fallback = 0`).
+
+   Because both selection keys are `N`-independent, the axes are **nested**:
+   `G_2000 ⊂ G_5000` (the release measures `|G_2000 ∩ G_5000| = 2,000`, Jaccard 0.4). The v1
+   `pN` fill was axis-matched (`p2000` for one axis, `p5000` for the other), so its axes were
+   *not* nested — a property change worth stating rather than inferring.
 7. **AF returns.** `AF` is declared again with its CM-specific sources (`GSE255612`,
    `GSE138252`, `GSE238242`) as tier 1 — their measured DEG union under the live DEG worker is
    a single gene (`SLC9A7`; the earlier audit's limma-voom + edgeR TMM run gave 2, and TMM is
@@ -82,12 +113,17 @@ downstream fusion.
    owned). The category is published with a tier-3 evidence type on those sources; its
    `DEG2000` is the honest single-gene union, not a padded set.
 8. **Products.** Each published `<dataset>.deg.csv` carries a `deg` flag under the new
-   definition and the dataset's DEG rank; the candidate table carries `f2000` (the `p2000`/
-   `p5000` columns are removed); `axis_composition.csv`, `source_topn_coverage.csv`, the axes
-   and the rule document are rebuilt; the rule document opens with the new build rule and its
-   second table lists, per disease, the number of source datasets, the total DEG count and the
-   `DEG2000` count. The source-coverage figure is rebuilt on `DEG2000` (see 0066's figure
-   contract for the two-panel layout).
+   definition (`n_contrasts_deg` beside it) and the dataset's DEG rank; the candidate table
+   carries `f2000` (the `p2000`/`p5000` columns are removed); `axis_composition.csv`,
+   `source_topn_coverage.csv`, the axes and the rule document are rebuilt; the rule document
+   opens with the new build rule and its second table lists, per disease, the number of source
+   datasets, the total DEG count and the `DEG2000` count. `source_topn_coverage.csv` keeps its
+   **v1 filename** but changes shape: long format (`N, n_axis, group, group_label, numerator,
+   denominator, rate, note`) with the group's own denominator, because a disease's coverage is
+   `|DEG2000_d ∩ G_N| / |DEG2000_d|` and not `… / N`. Renaming the file would have re-pinned
+   the gene-axis manifest, both view manifests and a republish; the name is retained for
+   compatibility and the content is the v2 `DEG2000` table. The source-coverage figure is
+   rebuilt on `DEG2000` (see 0066's figure contract for the two-panel layout).
 9. **Removals.** The `pN`-based candidate columns, the old `source_topn_coverage.csv` schema
    and any measured-gene rank product are removed with their readers and tests (ADR 0062/0066
    deletion convention); git retains the code.
@@ -111,16 +147,34 @@ downstream fusion.
   re-published on the new axes. Re-pointing `02_models_tenv` stays deferred (ADR 0066).
 - The category rosters change: `AF` returns; `nHF` and `AF` gain tier-2/tier-3 sources; `ICM`
   gains the Kuppe MI `IZ vs CTRL` contrast and stops at tier 1.
-- The final six-disease roster (#206) and its measured axis-resolved ledger:
+- The final six-disease roster (#206) and its measured axis-resolved ledger. Two cardiotox
+  numbers are **corrected here** (#211) against the values this record was drafted with; the
+  correction is a flag-source change, not a data change (see below):
 
-  | category | tiers entered | cumulative DEG union after each tier | stop |
-  |---|---|---|---|
-  | `nHF` | 1 -> 2 -> 3 | 1,056 -> 1,553 -> 1,661 | tier 3, short of 2,000 by 339 (accepted: no in-band candidate remains, GSE183852 closed) |
-  | `ICM` | 1 | 1,647 | tier 1, short by 353 (no tier-2/3 candidate) |
-  | `AF` | 1 -> 3 | 1 (SLC9A7) -> 1 | tier 3, single-gene union (`DEG2000_AF = {SLC9A7}`) |
-  | `genetic_cardiomyopathy` | 1 -> 2 | 59 -> 1,482 | tier 2, short by 518 (no tier-3 candidate) |
-  | `cardiotox_TOP2` | 2 | 4,363 | tier 2, reaches the limit; `DEG2000` = 2,000 |
-  | `cardiotox_other` | 2 | 279 | tier 2, short by 1,721 |
+  | category | tiers entered | cumulative DEG union after each tier | `DEG2000` | stop |
+  |---|---|---|---|---|
+  | `nHF` | 1 -> 2 -> 3 | 1,056 -> 1,553 -> 1,661 | 1,661 | tier 3, short of 2,000 by 339 (accepted: no in-band candidate remains, GSE183852 closed) |
+  | `ICM` | 1 | 1,647 | 1,647 | tier 1, short by 353 (no tier-2/3 candidate) |
+  | `AF` | 1 -> 3 | 1 (SLC9A7) -> 1 | 1 | tier 3, single-gene union (`DEG2000_AF = {SLC9A7}`) |
+  | `genetic_cardiomyopathy` | 1 -> 2 | 59 -> 1,482 | 1,482 | tier 2, short by 518 (no tier-3 candidate) |
+  | `cardiotox_TOP2` | 2 | **4,514** (drafted: 4,363) | 2,000 | tier 2, reaches the limit; `DEG2000` = 2,000 |
+  | `cardiotox_other` | 2 | **297** (drafted: 279) | 297 | tier 2, short by 1,721 |
+
+  `DEG2000` is therefore 7,088 rows over 5,282 distinct genes (1,806 overlap rows; the
+  gene-axis manifest's `counts.n_deg2000_overlap_rows`), and only `cardiotox_TOP2` reaches the
+  2,000 cut.
+
+  **Old-vs-new derivation of the two corrected numbers.** This record's draft was measured on
+  the pre-#208 published tables, which carried **one collapsed winning-contrast row per gene**
+  (ADR 0066's maximum-effect collapse at the table level). The v2 product publishes the
+  authoritative **pass-any-contrast `deg` flag** — a gene is a DEG when *any* declared contrast
+  passes `padj < 0.05` and `|log2FC| >= 2` — so a gene whose non-winning contrast passed the
+  threshold is now a DEG and the union widens by +151 / +18. The old convention is exactly
+  reproducible from the new tables by dropping the `deg` column and re-collapsing to the
+  winning contrast, which reproduces 4,363 and 279 (recorded and re-derived in
+  `stage2/01_bases/log/acceptance.md` §10.3): the ledger numbers were not wrong measurements,
+  they measured the retired flag source. `DEG2000` rows move by the same +18 (7,070 -> 7,088);
+  `nHF`, `ICM`, `AF` and `genetic_cardiomyopathy` match the draft exactly.
 
   `nHF`'s and `ICM`'s shortfalls are the honest result of the declared sources, not a
   collection gap: `DEG2000` is the whole union for both, which the build rule permits.

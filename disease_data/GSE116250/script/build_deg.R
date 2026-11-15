@@ -127,7 +127,9 @@ src_digests <- list(
 summary <- list(
   accession = "GSE116250",
   species = "Homo sapiens",
-  platform = "Illumina HiSeq 2000 (GPL16791), hg19 / Ensembl GRCh37.82 Cufflinks RPKM",
+  # GPL16791 is "Illumina HiSeq 2500" (GEO platform record); the pre-#211
+  # string said "Illumina HiSeq 2000" and was corrected in the #211 docs sweep.
+  platform = "Illumina HiSeq 2500 (GPL16791), hg19 / Ensembl GRCh37.82 Cufflinks RPKM",
   tissue_model = "human left-ventricular bulk tissue",
   contrast = "HF_vs_NF",
   contrast_description = paste0(

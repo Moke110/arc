@@ -5,6 +5,15 @@ an external item. Reference: ADR request of 2026-11-14 to re-admit `AF` with `GS
 CM DEG source after the "AF data search" session, ADR 0066 *Source eligibility*, ADR 0068
 *Degenerate sources*, ADR 0069 *Remove the AF category*, and the audit decision ADR 0070.
 
+**Superseded by ADR 0071 (2026-11-15), for its decision only.** The audit's *conclusion* — no
+clinical AF dataset carries AF-specific ordering strong enough to make a fusion source — is
+what ADR 0071 overturns: `AF` is published with three CM-specific tier-1 sources and a tier-3
+atrial-bulk descent, and its honest `DEG2000` is the single gene `SLC9A7`. The audit's
+*measurements* are still the source of record for the items it examined (they are cited by
+ADR 0071 decision 7 and by the `AF` category catalog's exclusion reasons), so it is kept
+rather than deleted. Read it as the input that ADR 0071 overrode, never as a live argument for
+keeping `AF` out.
+
 ## Question
 
 ADR 0069 removed the `AF` category because its only dataset, `GSE255612` (`gse255612__af`), was

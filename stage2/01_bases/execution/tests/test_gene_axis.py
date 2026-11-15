@@ -1232,8 +1232,14 @@ class DocxTests(unittest.TestCase):
                                axis_path=axis, manifest_path=manifest)
             self.assertEqual(sha256_file(rendered), sha256_file(committed))
 
-    def test_build_reads_the_five_catalog_paths_it_is_given(self):
-        """A changed catalog ``n_deg`` must reach the rendered cell."""
+    def test_build_reads_the_six_catalog_paths_it_is_given(self):
+        """A changed catalog ``n_deg`` must reach the rendered cell.
+
+        Renamed in #211: ``RELEASE_CATEGORIES`` has held six categories since
+        ADR 0071 (`AF` returned), so the old "five" name described the retired
+        roster. ``log/inputs.json`` and ``log/acceptance.md`` keep the old name
+        because they are sealed records of earlier runs.
+        """
         from docx import Document
         import make_gene_axis_docx as docx_builder
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'

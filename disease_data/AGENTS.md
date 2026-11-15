@@ -1,26 +1,30 @@
 # AGENTS.md — disease_data
 
-Eleven external 项 (ADR 0030). Each holds `script/` (fetch/build/verify recipes + the
+Twenty-three external 项 (ADR 0030). Each holds `script/` (fetch/build/verify recipes + the
 shared R helpers), `source/` (upstream GEO bytes, gitignored and immutable),
 `local/` (declared additions: the full-transcriptome DEG CSV + tracked DEG JSON, and
 the normalized log-expression pair where the series ships one), tracked
 `author_log.json`, `manifest.sha256` over `source/`, and an item `.gitignore`.
 Category overview and conventions: `README.md`. Layout contract: ADR 0030.
 
-**Not gene-axis sources (ADR 0066).** These six items are whole-tissue bulk
-(human LV/atrial or mouse whole-LV) and are retained but ineligible as
-cardiomyocyte-derived `{disease}-DEG` axis sources; their signal is dominated by
-cell composition/fibrosis, not the cardiomyocyte: `GSE141910` (human LV bulk),
-`GSE116250` (human LV bulk), `GSE128188` (human atrial tissue bulk), `GSE282618`
-(human post-mortem LV/RV bulk), `GSE160516` and `GSE108940` (mouse whole-LV bulk
-MIRI). Do not re-admit them to a Stage 2 axis without a new ADR; the axis sources
-are the CM pseudobulk (`GSE270788`, `GSE255612`, `Reichart-CM`, `Kuppe-MI`) and
-isogenic CM bulk models listed below.
+**Tiered admission to the gene axis (ADR 0071, superseding ADR 0066's
+exclusion).** Whole-tissue bulk is no longer ineligible by rule: ADR 0071 admits
+human atria/ventricle bulk at **tier 3**, entered only after tiers 1–2 fall short
+of 2,000 axis-resolved DEGs, with the tier recorded. The published tier-3 sources
+are `GSE165303`, `GSE116250` and `GSE141910` (`nHF`) and `GSE269882` (`AF`);
+`GSE128188` is an owned tier-3 candidate that is not declared (it was not needed
+once AF's tier-1 sources were measured). Four items remain outside the axis for
+reasons that are not tissue class: `GSE282618` (human HHD bulk, 3 vs 2 exploratory
+subjects — never admitted), `GSE137293` (pig infarct border zone, supplementary
+evidence only) and the two mouse whole-LV MIRI series `GSE160516` / `GSE108940`
+(Stage-1 L1000 rank references, not human gene-axis DEGs). Do not describe the
+six whole-tissue human items as a single ineligible block; only `GSE282618` is
+still unexploited, and only because its design is too small.
 - `GSE108940/` — mouse MIRI (*Mus musculus*, GPL7202 Agilent 4×44K); limma WT I/R vs Sham; mouse→human homologene `inTax=10090`; L1000-978 Stage-1-only; provenance corrected in #176 (adds TP53 UP).
-- `GSE116250/` — human LV HF 37 DCM + 13 ICM vs 14 NF (50/14); limma on log2(RPKM+1); full DEG + expression; HF cheapest anchor and post-MI (ICM) proxy.
-- `GSE128188/` — human AF 5 vs 5 SR (paired LA+RA, 20 libraries); DESeq2 on donor-pooled counts; full DEG + expression; the >5% AF category.
+- `GSE116250/` — human LV HF 37 DCM + 13 ICM vs 14 NF (50/14); limma on log2(RPKM+1); full DEG + expression; **tier-3** `nHF` source under ADR 0071 (43 axis-resolved v2 DEGs); also the post-MI (ICM) proxy.
+- `GSE128188/` — human AF 5 vs 5 SR (paired LA+RA, 20 libraries); DESeq2 on donor-pooled counts; full DEG + expression; owned **tier-3** AF candidate, not declared under ADR 0071 (AF stopped after its tier-1 sources).
 - `GSE137293/` — pig infarct scar vs border zone (severity gradient, not disease-vs-healthy); Welch t-test; supplementary only, never an axis source.
-- `GSE141910/` — human LV HF 200 (DCM/HCM/PPCM) vs 166 NF; limma on deposited voom abundance; full DEG + expression; HF primary anchor.
+- `GSE141910/` — human LV HF 200 (DCM/HCM/PPCM) vs 166 NF; limma on deposited voom abundance; full DEG + expression; **tier-3** `nHF` source under ADR 0071 (100 axis-resolved v2 DEGs).
 - `GSE160516/` — mouse MIRI (Affymetrix Clariom S); limma pooled I/R vs Sham; Stage 1 primary rank reference; L1000-978 Stage-1-only.
 - `GSE243674/` — human hiPSC-CM anthracyclines + vehicle, 72 wells; DESeq2 10 drug×time-vs-vehicle contrasts; full DEG + expression; chemo-cardiotoxicity.
 - `GSE282618/` — human HHD 3 vs 2 subjects (exploratory); DESeq2 on subject-pooled counts; full DEG + expression; borderline >5% HHD category.
@@ -40,12 +44,13 @@ isogenic CM bulk models listed below.
 - `Reichart-CM/` — non-GEO cellxgene CM-only object (collection e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb, 311,418 cells / 79 donors), named by object identity; donors split by `Primary.Genetic.Diagnosis`; genotype-negative DCM donors feed `nHF`, and the tracked axis-aligned per-donor pseudobulk + genotype table is the ticket #188 `genetic_cardiomyopathy` input (single NCCM donor excluded). Ticket #188 adds `script/build_genetic_deg.py`, which derives the genotype-positive-DCM and ARVC contrasts from that tracked export read-only (no pseudobulk re-derivation), with the derived table in `local/deg/reichart-cm_genetic_deg.csv` and a tracked `.json` summary.
 - `Kuppe-MI/` — non-GEO cellxgene object (collection `8191c283-0816-424b-9b61-c3e1d6258a77`, version `4780eb7d-4c7c-4630-8705-471f0de8e27a`; 191,795 nuclei / 20 donors / 28,380 features, left-ventricle snRNA), named by object identity; author CM gate `cell_type_original == "Cardiomyocyte"` (64,510 nuclei) and pseudobulk per (donor, zone) from the authors' `major_labl` (CTRL/IZ/BZ/RZ/FZ, 25 profiles); the 500-CM-nuclei profile floor leaves 18 profiles and one joint `~0 + zone` limma-voom fit with `duplicateCorrelation(block = donor)` publishes the `IZ-CTRL` contrast (4 IZ donors vs the 4 normal donors; 3,099 v2 DEGs genome-wide, 1,646 on the frozen axis under the pinned arc limma); the other zone contrasts stay recorded artifacts. **tier-1** `ICM` source under ADR 0071; the deposit carries no time-since-infarct field, so acute-vs-chronic is recorded as undeclared.
 
-The five human series follow the gene-axis interface: `local/deg/<GSE>_deg.csv` (full
-transcriptome, signed effect + BH padj + case/control n; gitignored, regenerable) and the
-tracked `local/deg/<GSE>_deg.json` summary, plus `local/expr/<GSE>_log_expr.tsv.gz` and
-`local/expr/<GSE>_samples.csv`. The three Stage-1 MIRI L1000 lists (`local/deg/*.json`) are
-unchanged in role and Stage-1-only; never an axis source. `GSE160516`/`GSE108940` contribute
-their full-transcriptome `source/*_deg_results.csv` (DEG-only) instead.
+The human series that go through the in-item DEG build follow the gene-axis interface:
+`local/deg/<GSE>_deg.csv` (full transcriptome, signed effect + BH padj + case/control n;
+gitignored, regenerable) and the tracked `local/deg/<GSE>_deg.json` summary, plus
+`local/expr/<GSE>_log_expr.tsv.gz` and `local/expr/<GSE>_samples.csv` where the series
+ships one. The three Stage-1 MIRI L1000 lists (`local/deg/*.json`) are unchanged in role and
+Stage-1-only; never an axis source. `GSE160516`/`GSE108940` contribute their
+full-transcriptome `source/*_deg_results.csv` (DEG-only) instead.
 
 Pinned R: human builds with `/home/chang/miniconda3/envs/biomni_e1/bin/Rscript`; the
 GSE108940 mouse remap with `R_HOME=/home/chang/miniconda3/envs/arc/lib/R

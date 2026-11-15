@@ -356,7 +356,10 @@ def main():
         'model_basis': SPEC['model_basis'],
         'series': {
             'title': series.get('title', [''])[0],
-            'platform': 'GPL20795 (Illumina NovaSeq 6000)',
+            # GPL20795 is "Illumina HiSeq X Ten" (GEO platform record); the
+            # pre-#211 string said "Illumina NovaSeq 6000" and was corrected in
+            # the #211 docs sweep.
+            'platform': 'GPL20795 (Illumina HiSeq X Ten)',
             'assay': 'bulk RNA-seq',
             'total_libraries_in_series': int(series_total),
             'total_libraries_on_gpl20795': int(len(fields['title'][0])),
