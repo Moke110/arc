@@ -1,0 +1,83 @@
+{
+  "category": "disease_data",
+  "hashed_at": "2026-11-15T18:38+08:00",
+  "item": "GSE138252",
+  "local_additions": [
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local full DEG table for the published AF-CTL contrast: one row per tested gene (source_gene_id = gene symbol, log2FC, moderated t, p, BH padj, AveExpr); regenerable, never tracked (item .gitignore)",
+      "path": "local/deg/GSE138252_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "tracked compact DEG summary: the verified 48-GSM/38-column design and its explanation, the LA/2020-batch chamber-and-batch decision, the AF+HF confound and the HF-only diagnostic, the 18-column -> GSM map, the v2 DEG counts, the pooled-controls sensitivity and the recorded TMM/edgeR-Q1 alternatives",
+      "path": "local/deg/GSE138252_deg.json"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit input: gene x library raw integer counts for the 5 AF + 5 control LA libraries, with the reproducible fixed-mtime gzip; regenerable, never tracked",
+      "path": "local/deg/GSE138252_expr.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit design sheet: GSM -> AF/CTL, region, batch and upstream matrix column; regenerable, never tracked (global *.csv rule)",
+      "path": "local/deg/GSE138252_samples.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "sensitivity fit input: the same libraries plus the five 2021-batch new-heart LA controls; regenerable, never tracked",
+      "path": "local/deg/GSE138252_pooled_expr.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "sensitivity design sheet with the batch covariate; regenerable, never tracked",
+      "path": "local/deg/GSE138252_pooled_samples.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "sensitivity DEG table (5 AF vs 10 controls, ~0 + group + batch); regenerable, never tracked",
+      "path": "local/deg/GSE138252_pooled_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "HF-only diagnostic fit input (3 LA HF vs 5 2021-batch LA controls); regenerable, never tracked",
+      "path": "local/deg/GSE138252_hfonly_expr.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "HF-only diagnostic design sheet; regenerable, never tracked",
+      "path": "local/deg/GSE138252_hfonly_samples.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "HF-only diagnostic DEG table, recorded to show HF alone produces at least as many DEGs as AF+HF; never published as an AF result",
+      "path": "local/deg/GSE138252_hfonly_deg.csv"
+    },
+    {
+      "generated_by": "hand-written (no generated content)",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg additions",
+      "path": ".gitignore"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "GEO ACCESSION: GSE138252, PCM1+ cardiomyocyte-nuclei bulk RNA-seq, 48 GSMs / 38 library columns. VERIFIED DESIGN: the series summary states PCM1-based cardiomyocyte-specific nuclear isolation, every GSM's extract protocol says PCM1+ cardiomyocyte nuclei, and the `molecule subtype` characteristic is 'Cardiomyoyte-specific nuclear RNA' (sic), so this is CM-nuclear bulk, not whole tissue. The primary payload is the 2020-batch matrix (56,609 genes x 18 human atrial libraries: LA 5 AF + 5 CTL, RA 5 AF + 3 CTL); GSM4103429 (h76ra) has no expression row; the 2021 addendum re-sequences four 2020 hearts and adds 6 HF-only libraries and 14 controls, and the 2785 matrix is a 6-column technical-replicate subset, so 48 GSMs -> 38 distinct library columns. CHOSEN MODEL: left atrium, 2020 batch only, 5 AF vs 5 CTL (batch-matched; region is the dominant variance axis and the AF arm exists only in the 2020 batch). CONFOUND: the AF arm is AF + end-stage HF and the controls are non-failing donor hearts, so AF-CTL is AF+HF vs NF; the HF-only arm is batch-separated from AF, so an AF-vs-HF contrast is not identifiable. MEASURED v2 DEGs: 1 (SLC9A7 up, padj 0.0404), 1 gene at padj<0.05, 62 at padj<0.10. The pre-existing audit's limma-voom WITH edgeR TMM gives 2 (SLC9A7, LRRC10) and its edgeR QL gives 6; TMM is the only difference and it is recorded as a sensitivity, never published, because the pinned arc R env ships limma but not edgeR and the one live implementation uses voom's own library-size normalisation (Lead's one-live-implementation ruling). BUILD: capped 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 191 MB, wall 4.5 s. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py; a second build is byte-identical.",
+  "purpose": "Human atrial cardiomyocyte-nuclei (PCM1+ FANS-sorted) bulk RNA-seq source for the Stage 2 gene axis under ADR 0071: the left-atrium, 2020-batch 5 AF vs 5 control contrast, fitted with the one live DEG implementation (limma-voom). Tier-1 AF source because the libraries are cardiomyocyte nuclei, not whole tissue.",
+  "retrieved_at": "2026-11-15T18:35+08:00",
+  "sources": [
+    {
+      "bytes": 2810882,
+      "files": 4,
+      "id": "GSE138252",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh (curl from the GEO FTP series matrix/ and suppl/ directories): the series matrix plus the three series-level supplementary count matrices, byte-identical to the FTP listing. The deposit has no per-sample supplementary file.",
+      "path": "source/",
+      "species": "Homo sapiens (human)",
+      "tree_sha256": "6377052381eb31f1a5ec05ec26f818aab5359d030c8d551064be31d37db00a27",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE138252",
+      "version": "GSE138252"
+    }
+  ],
+  "verified_at": "2026-11-15T18:38+08:00",
+  "verify_result": "pass"
+}

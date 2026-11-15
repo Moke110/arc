@@ -1,0 +1,327 @@
+{
+  "category": "AF",
+  "contrasts": {
+    "pAF-SR": {
+      "denominator": "SR",
+      "n_case": 5,
+      "n_control": 9,
+      "numerator": "pAF"
+    },
+    "persAF-SR": {
+      "denominator": "SR",
+      "n_case": 5,
+      "n_control": 9,
+      "numerator": "persAF"
+    },
+    "poAF-SR": {
+      "denominator": "SR",
+      "n_case": 8,
+      "n_control": 9,
+      "numerator": "poAF"
+    }
+  },
+  "deg": {
+    "bytes": 8103006,
+    "n_source_genes": 20720,
+    "path": "local/deg/GSE269882_deg.csv",
+    "rows": 62160,
+    "sha256": "ccc82a3f640e926d7ff9f0c7d6bda0f0455fa39b42083d44f8c5af890d435e70"
+  },
+  "deg_counts": {
+    "collapsed": {
+      "deg_genes": [],
+      "n_deg": 0,
+      "n_down": 0,
+      "n_genes": 20720,
+      "n_padj_only_genes": 0,
+      "n_up": 0
+    },
+    "definition": "padj < 0.05 AND |log2FC| >= 2.0 in any declared contrast (ADR 0071 pass-any), direction carried from the winning contrast",
+    "per_contrast": {
+      "pAF-SR": {
+        "max_abs_log2fc": 3.24783192210792,
+        "min_padj": 0.971589711640424,
+        "n_deg": 0,
+        "n_down": 0,
+        "n_padj_lt_010": 0,
+        "n_padj_only": 0,
+        "n_rows": 20720,
+        "n_up": 0
+      },
+      "persAF-SR": {
+        "max_abs_log2fc": 4.12786766801018,
+        "min_padj": 0.998086232934843,
+        "n_deg": 0,
+        "n_down": 0,
+        "n_padj_lt_010": 0,
+        "n_padj_only": 0,
+        "n_rows": 20720,
+        "n_up": 0
+      },
+      "poAF-SR": {
+        "max_abs_log2fc": 4.1435059059981,
+        "min_padj": 0.999974543736101,
+        "n_deg": 0,
+        "n_down": 0,
+        "n_padj_lt_010": 0,
+        "n_padj_only": 0,
+        "n_rows": 20720,
+        "n_up": 0
+      }
+    }
+  },
+  "deposition": {
+    "counts": {
+      "bytes": 1352166,
+      "genes": 57500,
+      "kind": "raw integer counts",
+      "path": "source/GSE269882_countdata_all.csv.gz",
+      "samples": 27,
+      "sha256": "40e60d3efe99dae19cf4b8c3ce262e29cd17deb4a4a9947c6b672f77fb3f3ef1"
+    },
+    "series_matrix": {
+      "bytes": 3636,
+      "path": "source/GSE269882_series_matrix.txt.gz",
+      "sha256": "3f9bc1b1f11a7ed96dcc80569f2494ad9a2477450d14359617abff4e900fdad2"
+    },
+    "tpm": {
+      "bytes": 2875477,
+      "columns_sum_to_1e6": true,
+      "cross_check": {
+        "reading": "the deposited TPM and raw counts agree on the sample profiles (rank correlation near 1)",
+        "vs_count_cpm_delta_spearman": 0.9347,
+        "vs_count_limma_log2fc_persAF_spearman": 0.8995
+      },
+      "genes": 57500,
+      "path": "source/GSE269882_TPM_values.csv.gz",
+      "sha256": "c8208900c9f1573cdcf1a31e2bc637d69e5c5072ed420b22418ea52a79e29b49",
+      "used_for": "cross-check only; the DEG input is the raw counts, because the count model is the documented one"
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "SR",
+        "label": "persAF-SR",
+        "numerator": "persAF"
+      },
+      {
+        "denominator": "SR",
+        "label": "pAF-SR",
+        "numerator": "pAF"
+      },
+      {
+        "denominator": "SR",
+        "label": "poAF-SR",
+        "numerator": "poAF"
+      }
+    ],
+    "factor": "group",
+    "filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "evidence_type": "bulk",
+  "expr": {
+    "path": "local/deg/GSE269882_expr.tsv.gz",
+    "sha256": "5d82b3e7ae3a8bcd81fb8aedfcdce2307bbccdf5e3f886ad171eb29e5ddbf0dc"
+  },
+  "fit_summary": {
+    "pooled": {
+      "block": {},
+      "coefficient_names": [
+        "groupAF",
+        "groupSR"
+      ],
+      "consensus_correlation": {},
+      "contrasts": [
+        "AF-SR"
+      ],
+      "factor": "group",
+      "filter": {
+        "large_n": 10,
+        "min_count": 10,
+        "min_prop": 0.7,
+        "min_total_count": 15
+      },
+      "formula": "~0 + group",
+      "implementation": "output/api/bases/disease_deg.R",
+      "kind": "counts",
+      "limma_version": "3.62.2",
+      "n_blocks": {},
+      "n_genes_dropped": 38153,
+      "n_genes_input": 19347,
+      "n_genes_matrix": 57500,
+      "n_genes_tested": 19347,
+      "n_rows": 19347,
+      "r_version": "R version 4.4.1 (2024-06-14)"
+    },
+    "staged": {
+      "block": {},
+      "coefficient_names": [
+        "grouppAF",
+        "grouppersAF",
+        "grouppoAF",
+        "groupSR"
+      ],
+      "consensus_correlation": {},
+      "contrasts": [
+        "persAF-SR",
+        "pAF-SR",
+        "poAF-SR"
+      ],
+      "factor": "group",
+      "filter": {
+        "large_n": 10,
+        "min_count": 10,
+        "min_prop": 0.7,
+        "min_total_count": 15
+      },
+      "formula": "~0 + group",
+      "implementation": "output/api/bases/disease_deg.R",
+      "kind": "counts",
+      "limma_version": "3.62.2",
+      "n_blocks": {},
+      "n_genes_dropped": 36780,
+      "n_genes_input": 20720,
+      "n_genes_matrix": 57500,
+      "n_genes_tested": 20720,
+      "n_rows": 62160,
+      "r_version": "R version 4.4.1 (2024-06-14)"
+    }
+  },
+  "item": "GSE269882",
+  "method": {
+    "deposition": "raw integer counts",
+    "derivation": "disease_data/GSE269882/script/build_deg.py",
+    "derivation_sha256": "60b7b9fdd89dd074e9e89563cba3fa97ce2f401313c3b6b573768a876b669eec",
+    "filter": "edgeR filterByExpr rule written out in the live worker",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "f83fde941363382a161a9dd8be72daeffc8384966c17ae814b23173b77ba1115",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom's own library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "model_system": "human right-atrial-appendage whole-tissue bulk RNA-seq (not cardiomyocyte-specific)",
+  "n_case": 18,
+  "n_control": 9,
+  "null_outcome_statement": "no gene reaches padj < 0.05 in any declared staged contrast under the live implementation; the item publishes the honest zero (no threshold loosening, no padj-only counting, no arm selection by outcome)",
+  "samples": {
+    "group_counts": {
+      "SR": 9,
+      "pAF": 5,
+      "persAF": 5,
+      "poAF": 8
+    },
+    "match_basis": "patient number in the matrix column header joined to the title",
+    "n": 27,
+    "path": "local/deg/GSE269882_samples.csv",
+    "sha256": "4047381c537d4cbabed5895c9368f59948d17671856581b85f37444daee6089c"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "sensitivity": {
+    "audit_model_alternative_edger_ql": {
+      "method": "edgeR quasi-likelihood F-test with TMM on the same filtered matrix (the pre-existing audit environment has edgeR; the live worker does not)",
+      "min_fdr_by_arm": {
+        "paroxysmal AF": 0.555,
+        "persistent AF": 0.069,
+        "post-operative AF": 0.049
+      },
+      "n_deg_v2_by_arm": {
+        "paroxysmal AF": 0,
+        "persistent AF": 0,
+        "post-operative AF": 2
+      },
+      "reading": "a liberal alternative test finds at most two marginal genes, all in the post-operative arm; not published",
+      "status": "not_published"
+    },
+    "pooled_AF_vs_SR": {
+      "contrast": "AF-SR with the three AF arms pooled (18 vs 9), separate fit",
+      "min_padj": 0.999872744266856,
+      "n_deg": 0,
+      "n_padj_only": 0,
+      "note": "the staged design is the declared one; pooling does not change the conclusion"
+    }
+  },
+  "series": {
+    "arm_prose_discrepancy": "the pre-existing AF audit recorded SR 10 / post-operative AF 7; the deposited series matrix says SR 9 / post-operative AF 8, and this item follows the deposit",
+    "arms": {
+      "SR": 9,
+      "pAF": 5,
+      "persAF": 5,
+      "poAF": 8
+    },
+    "arms_as_verified": {
+      "paroxysmal AF": 5,
+      "persistent AF": 5,
+      "post-operative AF": 8,
+      "sinus rhythm": 9
+    },
+    "assay": "bulk RNA-seq, unique exon-mapped reads (featureCounts), GRCh38",
+    "column_join": "the matrix columns are patient numbers; they are joined to the series titles by `patient nr. N` and verified with the sex probes",
+    "platform": "GPL16791 (Illumina HiSeq 2500)",
+    "sex_label_verification": {
+      "discordant": [
+        {
+          "annotated": "female",
+          "expression": "male",
+          "patient": "1409",
+          "xist_log2cpm": 0.328,
+          "y_log2cpm": 5.406
+        }
+      ],
+      "method": "per-column sex from the XIST / (RPS4Y1, DDX3Y, UTY, KDM5D) log2(CPM+1) contrast; a female profile has XIST > 3 and Y < 4",
+      "n_agree": 26,
+      "n_columns": 27,
+      "reading": "26/27 agree, so the patient-number column labels are sound; the one discordance is an annotated-female column whose expression is male (recorded, not corrected: sex is not a design factor here)"
+    },
+    "staging": {
+      "arms": {
+        "paroxysmal AF": "AF episodes that terminate spontaneously",
+        "persistent AF": "AF present continuously (>7 days in the source cohort description); the persistent arm",
+        "post-operative AF": "AF arising after cardiac surgery; kept as its own declared arm, not merged into the persistent group"
+      },
+      "decision": "the three AF arms are declared as separate contrasts against the sinus-rhythm arm inside one joint fit, so the staging is carried rather than averaged into a single case group",
+      "pooled_sensitivity": "all 18 AF libraries vs 9 sinus rhythm, measured separately"
+    },
+    "tissue": "human right atrial appendage biopsy (whole tissue)",
+    "title": [
+      "right atrial appendage, persistent AF, patient nr. 1747",
+      "right atrial appendage, persistent AF, patient nr. 2060",
+      "right atrial appendage, persistent AF, patient nr. 2097",
+      "right atrial appendage, persistent AF, patient nr. 2202",
+      "right atrial appendage, persistent AF, patient nr. 2205",
+      "right atrial appendage, paroxysmal AF, patient nr. 1067",
+      "right atrial appendage, paroxysmal AF, patient nr. 1230",
+      "right atrial appendage, paroxysmal AF, patient nr. 1381",
+      "right atrial appendage, paroxysmal AF, patient nr. 1529",
+      "right atrial appendage, paroxysmal AF, patient nr. 1535",
+      "right atrial appendage, sinus rhythm, patient nr. 1191",
+      "right atrial appendage, sinus rhythm, patient nr. 1291",
+      "right atrial appendage, sinus rhythm, patient nr. 1309",
+      "right atrial appendage, sinus rhythm, patient nr. 1322",
+      "right atrial appendage, sinus rhythm, patient nr. 1380",
+      "right atrial appendage, sinus rhythm, patient nr. 1391",
+      "right atrial appendage, sinus rhythm, patient nr. 1398",
+      "right atrial appendage, sinus rhythm, patient nr. 1426",
+      "right atrial appendage, sinus rhythm, patient nr. 1430",
+      "right atrial appendage, post-operative AF, patient nr. 1246",
+      "right atrial appendage, post-operative AF, patient nr. 1258",
+      "right atrial appendage, post-operative AF, patient nr. 1267",
+      "right atrial appendage, post-operative AF, patient nr. 1280",
+      "right atrial appendage, post-operative AF, patient nr. 1346",
+      "right atrial appendage, post-operative AF, patient nr. 1377",
+      "right atrial appendage, post-operative AF, patient nr. 1394",
+      "right atrial appendage, post-operative AF, patient nr. 1409"
+    ],
+    "total_libraries": 27
+  },
+  "tier": 3,
+  "tier_note": "ADR 0071 admits GSE269882 **only as tier 3** (whole-tissue bulk, not cardiomyocyte-specific), superseding the ADR 0070 whole-tissue exclusion; the ADR 0070 audit note is not reused as eligibility evidence. This is NOT GSE271229: that accession is a left-atrial snRNA series with no author cell-type annotation, audited and rejected separately."
+}
