@@ -4,10 +4,12 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
+  "catalog_sha256": "82de2eb614c286a1b50e1341bd1cc7f0a2d1f2eb61007b3d29dcdfcc7ad0fb72",
   "counts": {
     "datasets": 3,
-    "measured_gene_rows": 50955
+    "deg2000": 2000,
+    "measured_gene_rows": 50955,
+    "n_deg": 4514
   },
   "environment": {
     "numpy": "2.4.6",
@@ -85,39 +87,39 @@
   },
   "outputs": {
     "catalog.json": {
-      "bytes": 18909,
+      "bytes": 20674,
       "rows": 3,
-      "sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be"
+      "sha256": "92b18dbe71f2b06708da3063e5e405678774febe93a65fab8c034a8159748da5"
     },
     "dtoxs_ipsc.atc_l4-L01DB.deg.csv": {
-      "bytes": 2102478,
+      "bytes": 2200737,
       "rows": 14707,
-      "sha256": "db1ab77af1c632acf7323f20d5b6c03935201720f4496be3a1ffaf8db38233e5"
+      "sha256": "4505b5de25db0efdabd3a95e5ce9c68c2fe2ea0264a1fd5f3b15003a7dd77627"
     },
     "dtoxs_ipsc.atc_l4-L01DB.rank.csv": {
-      "bytes": 428446,
+      "bytes": 409335,
       "rows": 18164,
-      "sha256": "fe7c19ab639cd507493a3fe7b18ae93949047cb80f659ed55a75feca0c58370b"
+      "sha256": "8e054a522e15527519808dfacc310624de607bfea234d6d28f13156d467874b7"
     },
     "gse243674.atc_l4-L01DB.deg.csv": {
-      "bytes": 2666367,
+      "bytes": 2784880,
       "rows": 18084,
-      "sha256": "740776031c84696ad37cc2d8a2d68c7e79b6528951599fb903b113843be7318e"
+      "sha256": "4b5f8261c47203660ff6bcec710d5dfa4639b29a861dd0e8e7ded5d80a3a8cca"
     },
     "gse243674.atc_l4-L01DB.rank.csv": {
-      "bytes": 431807,
+      "bytes": 407140,
       "rows": 18164,
-      "sha256": "f55e1a1130f81272e96d258b2f9b6a71179644e8bda3ac5af5436331cb83d840"
+      "sha256": "91a0b7c339a7bd676918ee142ddd549e6aa165e3adfbf28b058812f2bfd27dec"
     },
     "gse244740.atc_l4-L01DB.deg.csv": {
-      "bytes": 2778575,
+      "bytes": 2844211,
       "rows": 18164,
-      "sha256": "3bda7c9bea0208a40d2cfea79dacfa6ac4b1b2de6540916eed08094423cb12e3"
+      "sha256": "d4837f969c129dd8bb7fff391fbd5e2a3714ca9d227bf4c183d1f36f37739592"
     },
     "gse244740.atc_l4-L01DB.rank.csv": {
-      "bytes": 431872,
+      "bytes": 352182,
       "rows": 18164,
-      "sha256": "edc1e5b88113a69b402025171ec4f8a48a8b47d7bc98bed0cce10a23b281e81a"
+      "sha256": "0814dc48bc51ecd2354d44f7e965fcd8a7af6ad09524f32bca785dbe308d6568"
     }
   },
   "product": "cardiotox_TOP2",

@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "b434dcf85459befcd0d3fd5ab59c4ecaf55c2ae1a1ccfddfccf2dd381995468b",
+  "catalog_sha256": "88f996f3634c6a02d9c7d12dfb2336764450488907b05b2988a3d67c2f783948",
   "category": "genetic_cardiomyopathy",
   "datasets": [
     {
@@ -51,7 +51,7 @@
       "informativeness": {
         "n_distinct_effect": 17457,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
@@ -70,6 +70,8 @@
       "n_axis_unmeasured": 651,
       "n_case": 44,
       "n_control": 18,
+      "n_deg": 46,
+      "n_deg_in_deg2000": 46,
       "n_measured": 17513,
       "n_significant": 6829,
       "rank": "reichart-cm__dcm_genotype_positive.rank.csv",
@@ -122,7 +124,7 @@
       "informativeness": {
         "n_distinct_effect": 17408,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
@@ -141,6 +143,8 @@
       "n_axis_unmeasured": 651,
       "n_case": 8,
       "n_control": 18,
+      "n_deg": 27,
+      "n_deg_in_deg2000": 27,
       "n_measured": 17513,
       "n_significant": 2507,
       "rank": "reichart-cm__arvc.rank.csv",
@@ -197,7 +201,7 @@
       "informativeness": {
         "n_distinct_effect": 16439,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE224129/local/deg/GSE224129_deg.json": "fcdd34d6154f17c17a5e704a8131d44364297a21f51d835a1c936e664020663c",
@@ -221,6 +225,8 @@
       "n_axis_unmeasured": 906,
       "n_case": 8,
       "n_control": 4,
+      "n_deg": 210,
+      "n_deg_in_deg2000": 210,
       "n_measured": 17258,
       "n_significant": 3321,
       "rank": "gse224129__mybpc3_hcm.rank.csv",
@@ -284,7 +290,7 @@
       "informativeness": {
         "n_distinct_effect": 16979,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE234141/local/deg/GSE234141_deg.json": "33b2e03fa6df8e13c1bc6d5575ac69a35485ff802369e42fde077b08bc0df12e",
@@ -307,6 +313,8 @@
       "n_axis_unmeasured": 558,
       "n_case": 12,
       "n_control": 12,
+      "n_deg": 116,
+      "n_deg_in_deg2000": 116,
       "n_measured": 17606,
       "n_significant": 121,
       "rank": "gse234141__ttntv_dcm.rank.csv",
@@ -368,7 +376,7 @@
       "informativeness": {
         "n_distinct_effect": 16180,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE304575/local/deg/GSE304575_deg.json": "839659aca1245f535a2cbcf643cf39ac72cd60415d0f03866201fc1986a827a8",
@@ -391,6 +399,8 @@
       "n_axis_unmeasured": 1427,
       "n_case": 6,
       "n_control": 6,
+      "n_deg": 19,
+      "n_deg_in_deg2000": 19,
       "n_measured": 16737,
       "n_significant": 35,
       "rank": "gse304575__lmna_h222p_dcm.rank.csv",
@@ -453,7 +463,7 @@
       "informativeness": {
         "n_distinct_effect": 17387,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE305648/local/deg/GSE305648_deg.json": "5fe09fd154850411840646304e91bf5869cf363cbd91e1f6cc48f3d3fb9b0d78",
@@ -476,6 +486,8 @@
       "n_axis_unmeasured": 423,
       "n_case": 9,
       "n_control": 3,
+      "n_deg": 17,
+      "n_deg_in_deg2000": 17,
       "n_measured": 17741,
       "n_significant": 29,
       "rank": "gse305648__rbm20_dcm.rank.csv",
@@ -539,7 +551,7 @@
       "informativeness": {
         "n_distinct_effect": 16137,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE253223/local/deg/GSE253223_deg.json": "e7cd26411ae07a71af070dfce92d7b5f45ccb512025a0a5509db4d02cc25ceae",
@@ -563,6 +575,8 @@
       "n_axis_unmeasured": 1669,
       "n_case": 16,
       "n_control": 4,
+      "n_deg": 7,
+      "n_deg_in_deg2000": 7,
       "n_measured": 16495,
       "n_significant": 83,
       "rank": "gse253223__pkp2_knockdown_arvc.rank.csv",
@@ -626,7 +640,7 @@
       "informativeness": {
         "n_distinct_effect": 16046,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE194297/local/deg/GSE194297_deg.json": "51a174b356ec0d3b4c83d3f8c4125bce4153b2bd96ac67d5ef604f1e7b1512b1",
@@ -649,6 +663,8 @@
       "n_axis_unmeasured": 1755,
       "n_case": 3,
       "n_control": 3,
+      "n_deg": 1124,
+      "n_deg_in_deg2000": 1124,
       "n_measured": 16409,
       "n_significant": 4439,
       "rank": "gse194297__dmd_cardiomyopathy.rank.csv",
@@ -665,13 +681,15 @@
       "time_window_basis": null
     }
   ],
+  "deg2000": 1482,
   "directory": "genetic_cardiomyopathy",
   "evidence_type": "cm_pseudobulk",
   "isogenic_exception": {
     "applies": true,
     "statement": "ADR 0066 Isogenic exception: the six in-vitro hiPSC-CM models carry a patient genotype with an isogenic control and are kept as their own evidence type inside this category even though a human CM-pseudobulk cohort (Reichart-CM) exists for the same category: a mixed-etiology clinical cohort and a single-genotype isogenic model answer different questions, and collapsing them loses the causal signature. The category therefore has one tier-1 human CM-pseudobulk pair (Reichart genotype-positive DCM + ARVC) and six tier-2 isogenic bulk datasets; `tier` records the winning tier and each dataset record carries its own `evidence_type` and `tier`."
   },
-  "rank_contract": "stage2-disease-deg-v1",
+  "n_deg": 1482,
+  "rank_contract": "stage2-disease-deg-v2",
   "rejected": [
     {
       "candidate": "GSE140965",
@@ -695,5 +713,46 @@
     }
   ],
   "schema": "stage2-disease-deg-catalog-v1",
-  "tier": 1
+  "tier": 1,
+  "tier_sources": [
+    {
+      "sources": [
+        "reichart-cm__dcm_genotype_positive",
+        "reichart-cm__arvc"
+      ],
+      "tier": 1
+    },
+    {
+      "sources": [
+        "gse224129__mybpc3_hcm",
+        "gse234141__ttntv_dcm",
+        "gse304575__lmna_h222p_dcm",
+        "gse305648__rbm20_dcm",
+        "gse253223__pkp2_knockdown_arvc",
+        "gse194297__dmd_cardiomyopathy"
+      ],
+      "tier": 2
+    }
+  ],
+  "tiering": {
+    "criterion": "axis_resolved_deg_union",
+    "limit": 2000,
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "stop_reached": false,
+    "stopped_at_tier": 2,
+    "tier_union": [
+      {
+        "n_deg_union": 59,
+        "tier": 1
+      },
+      {
+        "n_deg_union": 1482,
+        "tier": 2
+      }
+    ],
+    "tiers_entered": [
+      1,
+      2
+    ]
+  }
 }

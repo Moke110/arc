@@ -83,13 +83,13 @@ ALGORITHM = 'f2000-deg2000-v2'
 CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
               'cardiotox_TOP2', 'cardiotox_other')
 #: The declared categories whose disease-fusion products are not published yet,
-#: so they cannot be part of the committed gene-axis release. #206 adds ``af``
-#: to the roster; #208 publishes its products and empties this tuple, at which
-#: point ``RELEASE_CATEGORIES`` becomes ``CATEGORIES``.
-UNPUBLISHED_CATEGORIES = ('af',)
-#: The categories the committed release is built from: the declared roster minus
-#: the not-yet-published ``UNPUBLISHED_CATEGORIES``. This is the column set of
-#: the published products until #208's republish.
+#: so they cannot be part of the gene-axis release. #206 added ``af`` to the
+#: roster; #208 published all six disease products and emptied this tuple, so
+#: ``RELEASE_CATEGORIES`` is now the full ``CATEGORIES`` roster.
+UNPUBLISHED_CATEGORIES = ()
+#: The categories the release is built from: the declared roster minus the
+#: not-yet-published ``UNPUBLISHED_CATEGORIES`` (empty since #208, so this is the
+#: full six-disease roster). This is the column set of the published products.
 RELEASE_CATEGORIES = tuple(category for category in CATEGORIES
                            if category not in UNPUBLISHED_CATEGORIES)
 CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',

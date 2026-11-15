@@ -52,13 +52,17 @@ class DegTableContractTest(unittest.TestCase):
     def test_published_table_schema(self):
         self.assertEqual(tuple(self.table.columns), disease_deg.DEG_COLUMNS)
         self.assertEqual(len(self.table), 4)
-        self.assertEqual(self.table.gene_index.tolist(), [1, 5, 2, 3])
-        self.assertEqual(self.table['rank'].tolist(), [1, 2, 3, 4])
-        np.testing.assert_allclose(self.table.rank_norm.to_numpy(), [0.25, 0.5, 0.75, 1.0])
+        # ADR 0071 v2: only gene 1 is a DEG under padj < 0.05 AND |log2FC| >= 2
+        # (gene 5 has |log2FC| = 1.5, gene 3 has a missing padj), so the table is
+        # sorted by the DEG-only rank and then gene_index.
+        self.assertEqual(self.table.gene_index.tolist(), [1, 2, 3, 5])
+        self.assertEqual(self.table['rank'].tolist(), [1, 2, 2, 2])
+        np.testing.assert_allclose(self.table.rank_norm.to_numpy(), [1.0, 2.0, 2.0, 2.0])
         self.assertEqual(self.table.gene_symbol.tolist(),
-                         ['G00001', 'G00005', 'G00002', 'G00003'])
-        # |log2FC| * -log10(padj): gene 0 = 2 * 4 = 8; gene 4 = 1.5 * 3 = 4.5.
-        np.testing.assert_allclose(self.table.effect.to_numpy(), [8.0, 4.5, 2.0, 0.0])
+                         ['G00001', 'G00002', 'G00003', 'G00005'])
+        np.testing.assert_array_equal(self.table.deg.to_numpy(), [True, False, False, False])
+        # |log2FC| * -log10(padj): gene 1 = 2 * 4 = 8; gene 5 = 1.5 * 3 = 4.5.
+        np.testing.assert_allclose(self.table.effect.to_numpy(), [8.0, 2.0, 0.0, 4.5])
 
     def test_na_padj_is_measured_but_non_significant(self):
         row = self.table[self.table.gene_index == 3].iloc[0]
@@ -67,12 +71,13 @@ class DegTableContractTest(unittest.TestCase):
         self.assertEqual(float(row.effect), 0.0)
         self.assertTrue(np.isnan(row.padj))
 
-    def test_unmeasured_gene_gets_n_measured_plus_one(self):
+    def test_non_deg_gene_gets_n_deg_plus_one(self):
         self.assertEqual(self.stats['n_measured'], 4)
-        self.assertEqual(self.stats['unmeasured_rank'], 5)
-        self.assertEqual(int(self.rank.loc[0, 'rank']), 5)
-        # unmeasured rank n+1 over n_measured = 4 -> 5/4 (ADR 0066), not 1.0
-        self.assertEqual(float(self.rank.loc[0, 'rank_norm']), 1.25)
+        self.assertEqual(self.stats['n_deg'], 1)
+        self.assertEqual(self.stats['nondeg_rank'], 2)
+        self.assertEqual(int(self.rank.loc[0, 'rank']), 2)
+        # non-DEG rank n_DEG+1 over n_DEG = 1 -> 2/1 (ADR 0071 decision 3)
+        self.assertEqual(float(self.rank.loc[0, 'rank_norm']), 2.0)
         self.assertEqual(int(self.rank.loc[1, 'rank']), 1)
         self.assertEqual(len(self.rank), fixtures.AXIS_SIZE)
         self.assertEqual(self.rank.gene_index.tolist(), list(range(fixtures.AXIS_SIZE)))

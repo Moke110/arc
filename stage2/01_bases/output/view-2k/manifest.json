@@ -2,10 +2,10 @@
   "axis": {
     "ascending": true,
     "file": "stage2/01_bases/output/gene-axis/gene_axis_2000.csv",
-    "gene_index_max": 18100,
-    "gene_index_min": 2,
+    "gene_index_max": 18155,
+    "gene_index_min": 4,
     "renumbered": false,
-    "sha256": "cb07535f4f3ba4225a7f3466db4de14a3b4655a6a5d0e371da604ef0c9688d38",
+    "sha256": "637bb8e11a986526fde41e1b013f5504bc375ffe39ed0202a3630743eb94e142",
     "size": 2000
   },
   "basis": {
@@ -21,13 +21,13 @@
     "sources": {
       "tahoe_bulk": {
         "n_axis": 2000,
-        "share": 0.10831776790302737,
-        "treated_share": 0.10827505340419144
+        "share": 0.07891310829444366,
+        "treated_share": 0.07888563393649367
       },
       "tenv": {
         "n_axis": 2000,
-        "share": 0.15054895276469343,
-        "treated_share": 0.1508925048906103
+        "share": 0.13162691370042032,
+        "treated_share": 0.13207212206789914
       }
     },
     "treated_definition": "the same ratio restricted to treated profiles"
@@ -74,14 +74,14 @@
       "sha256": "024cbd065e440a746886651d205decdea7d7cf99ebb1394c48ff15cb0a411e6e"
     },
     "stage2/01_bases/output/gene-axis/gene_axis_2000.csv": {
-      "bytes": 23375,
+      "bytes": 23258,
       "role": "gene_axis:2000",
-      "sha256": "cb07535f4f3ba4225a7f3466db4de14a3b4655a6a5d0e371da604ef0c9688d38"
+      "sha256": "637bb8e11a986526fde41e1b013f5504bc375ffe39ed0202a3630743eb94e142"
     },
     "stage2/01_bases/output/gene-axis/manifest.json": {
-      "bytes": 27846,
+      "bytes": 28204,
       "role": "gene_axis_release_manifest",
-      "sha256": "cfd3ba118f51fd021a43ee70bb9b904e6b42e293f8735833b4dd51422c1a6317"
+      "sha256": "078f604afd9396a615b802132edca974671dbe9adc65d9d7f0812a354707e8f7"
     }
   },
   "normalization": {
@@ -103,25 +103,25 @@
       "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
     },
     "tahoe_bulk.h5ad": {
-      "bytes": 1312787850,
+      "bytes": 1262131874,
       "columns": 2000,
       "dtype": "float32",
       "rows": 66718,
-      "sha256": "8ed8655b543d9c167b04933aa9c9b5cc5980f4ffdfc6baed5a5eea93d3395ea4"
+      "sha256": "88739added231e562359161a0fc274fe785d44aee885507b54a6d767fe9047e5"
     },
     "tenv.h5ad": {
-      "bytes": 59912368,
+      "bytes": 58627248,
       "columns": 2000,
       "dtype": "float32",
       "rows": 4478,
-      "sha256": "c02f320c5caca8a3ddaf93943aedc8a5ffdf518007d30e32a47e108862b50e9c"
+      "sha256": "ff8212079ab8b5e8e90a0cb309b4b951f01995c4d05edee1295e8ea66eba027a"
     }
   },
   "recipe": "Stream each corpus source in bounded batches; compute each profile's full-axis library total; log1p(CP10K) on that total; subset the released axis's genes in ascending gene_index; control is the mean of the row's matched vehicle rows normalized the same way; delta = X - control. float32; no view-local re-normalization.",
   "schema": "stage2-view-v1",
   "sources": {
     "tahoe_bulk": {
-      "axis_share_of_full_axis_cp10k": 0.10831776790302737,
+      "axis_share_of_full_axis_cp10k": 0.07891310829444366,
       "full_axis_library_total": {
         "max": 33209864,
         "median": 2286586.0,
@@ -133,11 +133,11 @@
       "raw_profiles": 66718,
       "rows": 66718,
       "treated": 65318,
-      "treated_axis_share_of_full_axis_cp10k": 0.10827505340419144,
+      "treated_axis_share_of_full_axis_cp10k": 0.07888563393649367,
       "vehicle": 1400
     },
     "tenv": {
-      "axis_share_of_full_axis_cp10k": 0.15054895276469343,
+      "axis_share_of_full_axis_cp10k": 0.13162691370042032,
       "full_axis_library_total": {
         "max": 3978060,
         "median": 879905.5,
@@ -149,7 +149,7 @@
       "raw_profiles": 4478,
       "rows": 4478,
       "treated": 4206,
-      "treated_axis_share_of_full_axis_cp10k": 0.1508925048906103,
+      "treated_axis_share_of_full_axis_cp10k": 0.13207212206789914,
       "vehicle": 272
     }
   },

@@ -4,10 +4,12 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "a3213815e9117595e79d028967ccc9d0637333e735e2a8e18d472042fb5922c7",
+  "catalog_sha256": "da92c3851a709e430d2ec64bc70090bf482e252239777bde16efff8697bac92e",
   "counts": {
     "datasets": 3,
-    "measured_gene_rows": 39698
+    "deg2000": 297,
+    "measured_gene_rows": 39698,
+    "n_deg": 297
   },
   "environment": {
     "numpy": "2.4.6",
@@ -65,39 +67,39 @@
   },
   "outputs": {
     "catalog.json": {
-      "bytes": 18058,
+      "bytes": 19861,
       "rows": 3,
-      "sha256": "a065d98e8c5b6453fab1ccacab80f7112d3580569c89148dda9842c8db9e2dbb"
+      "sha256": "f8a6b152295c2838032cffdd7b62ae384ffe6b2bd0338087cd7fa4984bb1c295"
     },
     "dtoxs_ipsc.atc_l4-L01EA.deg.csv": {
-      "bytes": 1885707,
+      "bytes": 1963238,
       "rows": 13303,
-      "sha256": "d0dc1203c046ac81b01c01a5bd4e5c09fb2252c5bc50ff84f33913fced4ad916"
+      "sha256": "adccf418d91423cab2bb895aef81cdee77205a615cc2f62e1fef613e8528565e"
     },
     "dtoxs_ipsc.atc_l4-L01EA.rank.csv": {
-      "bytes": 427040,
+      "bytes": 388632,
       "rows": 18164,
-      "sha256": "94fbd0fc76aa973468013ae480a0f70aaa437a6dec3dfb1d1860913ae460b8aa"
+      "sha256": "e4c16e9e84b4d9fbaae09247a08f9587d6fee73ed26e70592b02f5eefcaf9ab7"
     },
     "dtoxs_ipsc.atc_l4-L01EB.deg.csv": {
-      "bytes": 1862724,
+      "bytes": 1926234,
       "rows": 13056,
-      "sha256": "94e6b297e950394c768f4d864860ef3226b13c081d0d494188d75080cc6c80b5"
+      "sha256": "a1eb76649a1ba035b5e22385c256df41d3b0014fe82d809060fe0dbd636077c4"
     },
     "dtoxs_ipsc.atc_l4-L01EB.rank.csv": {
-      "bytes": 426431,
+      "bytes": 370224,
       "rows": 18164,
-      "sha256": "d29376cc4ff754dff5ae348d549dc98942e5e2395a493f29ff61bf94fb346171"
+      "sha256": "7b26ed48b206e03166106944ad6cfc037961528e0a1ecff70c4c47b0f65bd63c"
     },
     "dtoxs_ipsc.atc_l4-L01EX.deg.csv": {
-      "bytes": 1894108,
+      "bytes": 1958585,
       "rows": 13339,
-      "sha256": "7feaf0f7e335bfa9078ee7bbfdf827b7a285f90d847c7f28dfdba8942f57d033"
+      "sha256": "bee85603734b69ba983562fd4db0711805d31a9097c341543bc95b1d131da030"
     },
     "dtoxs_ipsc.atc_l4-L01EX.rank.csv": {
-      "bytes": 427070,
+      "bytes": 370429,
       "rows": 18164,
-      "sha256": "df6a6664fe39ca1c44bb14a33231988baf19f5acfd4e197ca55b44a494849d0a"
+      "sha256": "5c70f424d5ff66fe975b78649ff1b1472913462fd9d1dfd018ab2a24af36d8be"
     }
   },
   "product": "cardiotox_other",

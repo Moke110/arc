@@ -1,5 +1,11 @@
 # Acceptance record — Stage 2 `01_bases` rebuild (#192, ADR 0066 / ADR 0068 / ADR 0069 / ADR 0062)
 
+> **v2 republish (#208, 2026-11-15).** The product digests in §1, §5b and
+> §6 are the #192/#194 record and are superseded by the ADR 0071 v2
+> republish: see **§10** for the six-category disease-DEG, six-disease
+> fusion, `f2000` axis and re-pinned views, and `inputs.json` for the
+> machine-readable old-to-new digest mapping.
+
 Accepted 2026-11-13 on branch `ticket/192-acceptance` (worktree `.scratch/worktrees/t192`,
 base `dev=cb72b92`). Re-accepted after the post-review fixes of #194 on branch
 `fix/194-products` (worktree `.scratch/worktrees/fix194a`, base `dev=d5512dd`); the
@@ -350,3 +356,161 @@ their docx digests (`37882ca4…`, `6bb82423…`) are historical. No release
 product, manifest, axis or view changed. `docs/data-inventory.md`'s
 `output/gene-axis/` row was refreshed (`du -sb` 1,461,704; docx 92,412 B;
 `du -sb`, 2026-11-15).
+
+## 10. Gene-axis v2 republish gate (#208, ADR 0071)
+
+Accepted 2026-11-15 on branch `ticket/208-republish-acceptance` (base `dev=ed31945`).
+Contract: ADR 0071 (DEG-only tiered sources, `DEG2000`/`f2000`) supersedes the
+ADR 0066 measured-gene rank and `pN`; ADR 0068's non-informative-source rule is
+kept; publication is ADR 0062 candidate-then-replace. The product-schema label in
+`bases.deg_rank` moves `stage2-disease-deg-v1 -> stage2-disease-deg-v2`: the
+published compact table now carries the authoritative pass-any-contrast `deg`
+flag and `n_contrasts_deg`, the DEG-only `rank`/`rank_norm = rank/n_DEG`, and no
+measured-gene denominator. The gene-axis release keeps its schema label and adds
+`release.algorithm = f2000-deg2000-v2`; a pre-v2 manifest is refused by
+`build_gene_axis.py --verify` with a self-describing error. Every driver was run
+under `execution/capped.sh` with `/usr/bin/time -v`, one heavy job at a time;
+the R products used `/home/chang/miniconda3/envs/biomni_e1/bin/Rscript`
+(R 4.5.3, edgeR 4.8.2, DESeq2 1.50.2).
+
+### 10.1 Replay gate
+
+| product | driver / mode | result | publish wall / peak RSS | verify wall / peak RSS |
+|---|---|---:|---:|---:|
+| disease-deg registry (nHF, ICM, AF, genetic_cardiomyopathy) | `build_disease_deg.py publish --all / verify --all` | PASS | 0:13.24 / 345 MiB | 0:14.54 / 338 MiB |
+| disease-deg cardiotox (cardiotox, cardiotox_TOP2, cardiotox_other) | `build_disease_deg_cardiotox.py publish / verify (R DESeq2/edgeR)` | PASS | 1:39.77 / 1501 MiB | 1:35.79 / 1502 MiB |
+| disease-fusion (six diseases) | `build_disease_fusion.py publish / verify` | PASS | 0:01.13 / 138 MiB | 0:01.13 / 138 MiB |
+| gene-axis (G_2000, G_5000, candidate, composition, coverage) | `build_gene_axis.py (publish) / --verify` | PASS | 0:00.35 / 129 MiB | 0:00.33 / 131 MiB |
+| view-2k / view-5k | `build_view.py publish / verify` | PASS | 3:28.81 / 422 MiB | 3:28.69 / 432 MiB |
+
+Six of the ten steps were `publish` (the accepted products were replaced) and
+then replayed with `verify` byte-identically; every recorded
+`*_verify.json` is the verify run. The cardiotox step samples the whole process
+group (Python + R): peak group RSS 1,502,868 KiB during publish and 1,427,692 KiB
+during verify; the views stream the corpus in bounded batches (peak group RSS
+451,708 / 452,700 KiB). `raw_counts/` and `corpus/` were **not** rebuilt: their
+manifests still hash `e02e5a1b…f6f406` and `f8c35ccc…9d5d9f6d`, the recorded
+#192 digests, so no raw count or corpus byte changed.
+
+### 10.2 Six-category disease-DEG products
+
+| category | datasets | DEG union | DEG2000 | tiers entered |
+|---|---:|---:|---:|---|
+| `nhf` | 6 | 1661 | 1661 | [1, 2, 3] |
+| `icm` | 3 | 1647 | 1647 | [1] |
+| `af` | 4 | 1 | 1 | [1, 3] |
+| `genetic_cardiomyopathy` | 8 | 1482 | 1482 | [1, 2] |
+| `cardiotox_TOP2` | 3 | 4514 | 2000 | [2] |
+| `cardiotox_other` | 3 | 297 | 297 | [2] |
+
+The unions reproduce the ADR 0071 ledger exactly for `nHF` (1,056 -> 1,553 ->
+1,661), `ICM` (1,647), `AF` (1, `SLC9A7`, tiers 1 -> 3) and
+`genetic_cardiomyopathy` (59 -> 1,482). The two cardiotox classes deviate and the
+deviation is the flag source, not a data change (§10.3): 4,363 -> **4,514** and
+279 -> **297**, each reproduced exactly by re-deriving the retired
+winning-contrast convention from the new tables. `DEG2000` is therefore 7,088
+rows over 5,282 distinct genes (1,806 duplicate rows), and only
+`cardiotox_TOP2` is cut (4,514 -> 2,000). All nine previously unpublished
+sources are now published (`gse35108__dcm_ipsc_cm`, `gse165303__dcm_lv_bulk`,
+`gse116250__hf_lv_bulk`, `gse141910__hf_lv_bulk`, `kuppe-mi__iz`, and the four
+AF sources), and the cardiotox classes publish their own `tiering` record.
+
+### 10.3 Recorded deviations from the ADR 0071 ledger
+
+| product | ADR 0071 ledger | measured | delta | explanation |
+|---|---:|---:|---:|---|
+| cardiotox_TOP2 (DEG union) | 4363 | 4514 | +151 | the ADR ledger was measured on the pre-#208 published tables, which carried only the collapsed winning-contrast row per gene; the v2 product publishes the authoritative pass-any-contrast deg flag, and a gene whose non-winning contrast passed the threshold is now a DEG (flag_source published_deg_flag). Re-deriving the old convention from the new tables reproduces exactly 4,363, so the delta is the flag source, not a data change. |
+| cardiotox_other (DEG union) | 279 | 297 | +18 | same flag-source correction as cardiotox_TOP2. |
+| DEG2000 rows (six diseases) | 7070 | 7088 | +18 | the same two cardiotox flag corrections; every other category matches the ADR ledger exactly (nHF 1,661 / ICM 1,647 / AF 1 / genetic 1,482, cardiotox_TOP2 still cut to 2,000). |
+
+### 10.4 Released axes `G_2000` / `G_5000` (f2000 fill)
+
+| axis | tenv-HVG first half | second half from DEG2000 | tenv-HVG fallback | axis `f2000` distribution |
+|---|---:|---:|---:|---|
+| `G_2000` | 1,000 | 1,000 | 0 | 0:624, 1:258, 2:817, 3:248, 4:48, 5:5, 6:0 |
+| `G_5000` | 2,500 | 2,500 | 0 | 0:1548, 1:2005, 2:1146, 3:248, 4:48, 5:5, 6:0 |
+
+Both axes fill their second half entirely from `DEG2000` (4,906 / 4,330
+candidates available for 1,000 / 2,500 slots), so the tenv-HVG fallback is
+implemented, exercised by tests, and 0 in both axes. `f2000` is 0 for 12,882 of
+18,164 candidates, 1 for 3,835, 2 for 1,146, 3 for 248, 4 for 48 and 5 for 5
+(no candidate is a DEG in all six diseases). Because `f2000` and `rank_sum` do
+not depend on `N`, the axes are nested: `G_2000` is a subset of `G_5000`
+(|intersection| = 2,000, Jaccard 0.4); the retired v1 `pN` fill made them
+non-nested. `AF` is present in the release (candidate column, catalog, coverage
+row); its single `DEG2000` gene is in `G_5000` but not `G_2000` because the
+1,000 `G_2000` disease slots are all `f2000 >= 2` genes.
+
+### 10.5 DEG2000 coverage and composition
+
+`axis_composition.csv` carries the declared halves, the fallback and the `f2000`
+distribution with explicit denominators; `source_topn_coverage.csv` is long
+format with numerator / denominator / rate per fusion group:
+
+| axis | group | numerator | denominator | rate (%) |
+|---|---|---:|---:|---:|
+| `G_2000` | `tenv_hvg` | 1079 | 2000 | 53.95 |
+| `G_2000` | `nhf` | 638 | 1661 | 38.41 |
+| `G_2000` | `icm` | 550 | 1647 | 33.39 |
+| `G_2000` | `af` | 0 | 1 | 0.00 |
+| `G_2000` | `genetic_cardiomyopathy` | 635 | 1482 | 42.85 |
+| `G_2000` | `cardiotox_TOP2` | 831 | 2000 | 41.55 |
+| `G_2000` | `cardiotox_other` | 199 | 297 | 67.00 |
+| `G_5000` | `tenv_hvg` | 3068 | 5000 | 61.36 |
+| `G_5000` | `nhf` | 1151 | 1661 | 69.30 |
+| `G_5000` | `icm` | 1042 | 1647 | 63.27 |
+| `G_5000` | `af` | 1 | 1 | 100.00 |
+| `G_5000` | `genetic_cardiomyopathy` | 1068 | 1482 | 72.06 |
+| `G_5000` | `cardiotox_TOP2` | 1740 | 2000 | 87.00 |
+| `G_5000` | `cardiotox_other` | 256 | 297 | 86.20 |
+
+### 10.6 No retired path is read or published
+
+* `candidate_rank_sum.csv` columns: symbol, gene_index, tenv_hvg_rank, nhf_rank, icm_rank, af_rank, genetic_cardiomyopathy_rank, cardiotox_TOP2_rank, cardiotox_other_rank, rank_sum, f2000 —
+  no `p2000`/`p5000`, no `n_sources_measured`.
+* the gene-axis manifest carries no `pN` field (checked over the serialised
+  manifest) and the driver reads only `output/disease-fusion/` through
+  `DiseaseFusion`; it never opens a within-dataset rank frame.
+* every published `<dataset>.deg.csv` carries `deg` + `n_contrasts_deg`, and every
+  `.rank.csv` ranks only the DEGs (`n_DEG + 1` for every other gene), checked for
+  all 23 published datasets.
+* the two cardiotox class catalogs now carry `n_deg`/`deg2000`/`tiering` from
+  `bases.disease_deg.tier_ledger`; the registry catalogs carry the same record
+  plus `rank_contract = stage2-disease-deg-v2`.
+* views are re-pinned on the new axis manifest; the corpus and raw-count
+  manifests are byte-unchanged.
+
+### 10.7 Superseded digests and files
+
+`inputs.json.superseded_digests` holds every old digest of a file whose bytes
+changed (88 tracked paths: 82 product payloads, 2 figure plotted-value
+CSVs and the four public API modules; plus 21 newly published product files), the
+view payload digests and the figure/document entries. `log/README.md` lists the record files, including
+the new `disease_fusion_verify.json`.
+
+### 10.8 Handover
+
+* **#209**: rebuild `gene_axis_fill_rule.docx` (v2 rule, per-disease table, six
+  categories, AF included, new source rows) and extend
+  `execution/gene_axis_source_metadata.py` with the five new source rows plus the
+  AF sources; re-pin the six `DocxTests` and the two
+  `test_gene_axis_source_metadata` coverage tests.
+* **#210**: re-render and re-pin the source-coverage PNG from the regenerated
+  DEG2000 plotted values. The rank-sum histogram PNG has **no owning ticket** and
+  needs the same re-render/re-pin or retirement.
+* **#211**: docs sweep (README/AGENTS/GLOSSARY still describe `pN`, five
+  categories and the measured-gene rank), the ADR 0071 ledger correction
+  (cardiotox 4,514 / 297), and the spec #200 / #207 "seven sources" wording.
+
+### 10.9 Health
+
+On the merged tree, `python -m unittest discover -s stage2/01_bases/execution/tests`
+gives **398 tests: 5 failures + 5 errors**, all in the #209
+docx/source-metadata and #210 figure byte re-pin suites (exactly the ten tests
+listed in `inputs.json.health.red_tests`); every other suite is green, including
+the two suites that were red on `dev` before this ticket
+(`test_disease_deg_cardiotox`, `test_disease_deg_human_sc`,
+`test_disease_deg_isogenic` — now v2 assertions). `script/check_paths.sh` PASS
+(all three audits), `script/check_tracked.sh` PASS, `script/verify_all.sh` PASS
+54/54. The tree is clean after the merge; no item `source/` or `local/` payload
+was written by the republish.

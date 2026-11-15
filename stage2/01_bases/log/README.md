@@ -10,12 +10,13 @@ requires the recorded source-replay evidence to travel with the regenerated reco
 | path | contents |
 |---|---|
 | [`acceptance.md`](acceptance.md) | the acceptance record: per-product replay results and digests, resource peaks, "no retired path read" evidence, old-to-new mapping, recorded errata and the #173 decision answers |
-| [`inputs.json`](inputs.json) | machine-readable input/output digests per product, replay commands and resource measurements, the retired evidence digests preserved across deletion, and the figure-reproduction result |
+| [`inputs.json`](inputs.json) | machine-readable input/output digests per product, replay commands and resource measurements, the retired evidence digests preserved across deletion, the figure-reproduction result, the #208 v2 republish gate (`v2_republish`) and every superseded digest (`superseded_digests`) |
 | [`raw_counts_provenance.json`](raw_counts_provenance.json) | the two pre-0066 source-replay acceptance records and the native tenv build manifest restored verbatim from git history, digest-pinned by the raw-count release manifest |
 | `raw_counts_verify.json` | `build_raw_counts.py verify` replay output (manifest digest + counts) |
 | `corpus_verify.json` | `build_corpus.py verify` replay output |
-| `disease_deg_verify.json` | `build_disease_deg.py verify --all` replay output (four categories) |
+| `disease_deg_verify.json` | `build_disease_deg.py verify --all` replay output (the four registry categories: nHF, ICM, AF, genetic_cardiomyopathy) |
 | `cardiotox_verify.json` | `build_disease_deg_cardiotox.py verify` replay output (three products) |
+| `disease_fusion_verify.json` | `build_disease_fusion.py verify` replay output (six diseases, v2 DEG2000) |
 | `gene_axis_verify.json` | `build_gene_axis.py --verify` replay output |
 | `view_publish_verify.json` | `build_view.py publish` result (materialises the gitignored view payloads; manifests byte-identical to the tracked ones) |
 | `view_verify.json` | `build_view.py verify` replay output for both views |

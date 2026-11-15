@@ -2,20 +2,38 @@
   "command": "verify",
   "results": [
     {
+      "category": "AF",
+      "manifest_sha256": "b4cfbf292cc820e50b8acd5397b3a550c5d02dfe8750c0888c016b20be72a3a0",
+      "outputs": [
+        "catalog.json",
+        "gse138252__af.deg.csv",
+        "gse138252__af.rank.csv",
+        "gse238242__af.deg.csv",
+        "gse238242__af.rank.csv",
+        "gse255612__af.deg.csv",
+        "gse255612__af.rank.csv",
+        "gse269882__af.deg.csv",
+        "gse269882__af.rank.csv"
+      ],
+      "result": "PASS"
+    },
+    {
       "category": "ICM",
-      "manifest_sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936",
+      "manifest_sha256": "6968bd937ad4174595d11dc220c6ca96195e4e17478610a7a1ef18b225d4d884",
       "outputs": [
         "catalog.json",
         "gse270788__ami.deg.csv",
         "gse270788__ami.rank.csv",
         "gse270788__icm.deg.csv",
-        "gse270788__icm.rank.csv"
+        "gse270788__icm.rank.csv",
+        "kuppe-mi__iz.deg.csv",
+        "kuppe-mi__iz.rank.csv"
       ],
       "result": "PASS"
     },
     {
       "category": "genetic_cardiomyopathy",
-      "manifest_sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673",
+      "manifest_sha256": "fe05673ef3d7f8dfb16a0018c5d627a6fef6241c3ac99586c5bf67b7af29f32e",
       "outputs": [
         "catalog.json",
         "gse194297__dmd_cardiomyopathy.deg.csv",
@@ -39,11 +57,19 @@
     },
     {
       "category": "nHF",
-      "manifest_sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e",
+      "manifest_sha256": "989079df9df9eea03b29ecb592a246c83872bb80b47bb53bb2a2eab9293297f4",
       "outputs": [
         "catalog.json",
+        "gse116250__hf_lv_bulk.deg.csv",
+        "gse116250__hf_lv_bulk.rank.csv",
+        "gse141910__hf_lv_bulk.deg.csv",
+        "gse141910__hf_lv_bulk.rank.csv",
+        "gse165303__dcm_lv_bulk.deg.csv",
+        "gse165303__dcm_lv_bulk.rank.csv",
         "gse270788__nicm.deg.csv",
         "gse270788__nicm.rank.csv",
+        "gse35108__dcm_ipsc_cm.deg.csv",
+        "gse35108__dcm_ipsc_cm.rank.csv",
         "reichart-cm__dcm_genotype_negative.deg.csv",
         "reichart-cm__dcm_genotype_negative.rank.csv"
       ],

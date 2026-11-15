@@ -755,8 +755,9 @@ class FusionDriverTests(unittest.TestCase):
         directories = [record['directory'] for record in catalog['diseases']]
         published = [record['directory'] for record in catalog['diseases']
                      if record['published']]
-        self.assertTrue(set(('nhf', 'icm', 'genetic_cardiomyopathy',
-                             'cardiotox_TOP2', 'cardiotox_other')) <= set(published))
+        self.assertEqual(set(published),
+                         {'nhf', 'icm', 'af', 'genetic_cardiomyopathy',
+                          'cardiotox_TOP2', 'cardiotox_other'})
         for directory in published:
             rows = reader.deg2000(directory)
             record = reader.record(directory)
@@ -768,33 +769,13 @@ class FusionDriverTests(unittest.TestCase):
             record = reader.record(directory)
             self.assertEqual(record['deg2000'] or 0,
                              min(record['n_deg'] or 0, disease_deg.DEG2000_LIMIT))
-        # #206 declares two nHF tier-3 sources (GSE116250, GSE141910) whose
-        # disease-deg products are published by #208, so the committed fusion
-        # catalog's declared/not_published roster deliberately lags the registry
-        # until that republish re-runs this driver. Rebuild from the same accepted
-        # products and require every fused number and every published ledger to be
-        # unchanged; the only tolerated delta is the declared roster, pinned here.
+        # #208 published every declared source, so the committed fusion catalog
+        # must equal a fresh rebuild from the same accepted products: no declared
+        # roster lag and no not_published entry survives.
         with tempfile.TemporaryDirectory() as temporary:
             driver.build(context, Path(temporary))
             rebuilt = disease_deg.read_catalog(Path(temporary) / 'catalog.json')
-        accepted = {record['directory']: record for record in catalog['diseases']}
-        replayed = {record['directory']: record for record in rebuilt['diseases']}
-        self.assertEqual(set(accepted), set(replayed))
-        for directory, record in accepted.items():
-            other = replayed[directory]
-            for key in ('published', 'tier', 'evidence_type', 'informative_source_count',
-                        'n_deg', 'deg2000', 'deg2000_file', 'sources',
-                        'excluded_sources', 'tiers_present', 'reason'):
-                self.assertEqual(record[key], other[key], (directory, key))
-            if directory != 'nhf':
-                self.assertEqual(record['not_published'], other['not_published'],
-                                 directory)
-        lagged = ({entry['dataset_id'] for entry in replayed['nhf']['not_published']}
-                  - {entry['dataset_id'] for entry in accepted['nhf']['not_published']})
-        self.assertEqual(lagged, {'gse116250__hf_lv_bulk', 'gse141910__hf_lv_bulk'},
-                         'the #206 roster additions must be the only fusion-catalog lag')
-        self.assertEqual(replayed['nhf']['declared_source_count'],
-                         accepted['nhf']['declared_source_count'] + 2)
+        self.assertEqual(catalog, rebuilt)
 
 
 if __name__ == '__main__':
