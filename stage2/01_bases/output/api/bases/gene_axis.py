@@ -57,33 +57,46 @@ from .deg_rank import (
 
 SCHEMA = 'stage2-gene-axis-release-v1'
 
-# The five declared disease categories, in ADR 0066 roster order minus ``af``
-# (removed by ADR 0069: its only dataset carried no ordering evidence). The
-# product directory is the catalog directory under ``output/disease-deg/``; it is
-# also the prefix of the candidate table's ``<category>_rank`` column.
-CATEGORIES = ('nhf', 'icm', 'genetic_cardiomyopathy',
+# The **declared** six-disease roster (ADR 0071 decision 7 re-admits ``AF``):
+# ``nHF``, ``ICM``, ``AF``, ``genetic_cardiomyopathy``, ``cardiotox_TOP2`` and
+# ``cardiotox_other``. The product directory is the catalog directory under
+# ``output/disease-deg/``; it is also the prefix of the candidate table's
+# ``<category>_rank`` column.
+CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
               'cardiotox_TOP2', 'cardiotox_other')
-CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM',
+#: The declared categories whose disease-deg products are not published yet, so
+#: they cannot be part of the committed gene-axis release. #206 adds ``af`` to the
+#: roster; #208 publishes its products and empties this tuple, at which point
+#: ``RELEASE_CATEGORIES`` becomes ``CATEGORIES``. Keeping the distinction explicit
+#: is what lets the reader tolerate a declared category with no accepted product
+#: instead of hard-failing on "exactly the old five categories exist" (#206).
+UNPUBLISHED_CATEGORIES = ('af',)
+#: The categories the committed release is built from: the declared roster minus
+#: the not-yet-published ``UNPUBLISHED_CATEGORIES``. This is the column set of the
+#: published products until #208's republish.
+RELEASE_CATEGORIES = tuple(category for category in CATEGORIES
+                           if category not in UNPUBLISHED_CATEGORIES)
+CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',
                    'genetic_cardiomyopathy': 'genetic_cardiomyopathy',
                    'cardiotox_TOP2': 'cardiotox_TOP2',
                    'cardiotox_other': 'cardiotox_other'}
-CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in CATEGORIES)
+CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in RELEASE_CATEGORIES)
 
 #: Declared released axis sizes (ADR 0066). N is chosen, never read off a curve.
 AXIS_SIZES = (2000, 5000)
 #: Half of an axis comes from tenv-HVG, half from cross-source replication.
 FILL_FRACTION = 0.5
-#: The declared maximum: five category class sources plus the published
+#: The declared maximum: the released category class sources plus the published
 #: tenv-HVG ranking. A category whose records are all non-informative is dropped
 #: from the fusion (ADR 0068), so the *actual* source count is
 #: :func:`n_fusion_sources` over the informative categories and is published in
 #: the release manifest; ``pN`` is bounded by that count, not by this maximum.
-N_FUSION_SOURCES = len(CATEGORIES) + 1
+N_FUSION_SOURCES = len(RELEASE_CATEGORIES) + 1
 
 
 def n_fusion_sources(categories=None):
     """The number of sources actually fused: the given categories plus tenv-HVG."""
-    categories = CATEGORIES if categories is None else tuple(categories)
+    categories = RELEASE_CATEGORIES if categories is None else tuple(categories)
     if not categories:
         return 1
     if len(set(categories)) != len(categories):
@@ -103,16 +116,16 @@ def candidate_columns(sizes=AXIS_SIZES):
 CANDIDATE_COLUMNS = candidate_columns()
 AXIS_COLUMNS = ('gene_index', 'symbol')
 #: The source top-``N`` coverage table: one row per released axis, one column per
-#: source (``tenv_hvg`` then the five categories in roster order). The header keeps
+#: source (``tenv_hvg`` then the released categories in roster order). The header keeps
 #: the literal ``N`` so a single table can carry every released axis.
 COVERAGE_COLUMNS = ("N", "%tenv_hvg_gN") + tuple(
-    f"%{category}_gN" for category in CATEGORIES)
+    f"%{category}_gN" for category in RELEASE_CATEGORIES)
 
 #: The integer companion of :data:`COVERAGE_COLUMNS`: one row per released axis,
 #: one column per source, holding how many of that source's top-``N`` genes the
 #: axis contains. The columns are bare source names because the values are counts,
 #: not percentages.
-COUNT_COLUMNS = ("N", "tenv_hvg") + CATEGORIES
+COUNT_COLUMNS = ("N", "tenv_hvg") + RELEASE_CATEGORIES
 
 FILL_RULE = (
     'G_N = the top 0.5*N genes of tenv-HVG (tenv_hvg_rank <= N/2), then 0.5*N '
@@ -231,8 +244,9 @@ def fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
     set; ``n_sources_measured`` counts the fused sources that measure it
     (tenv-HVG ranks every frozen-axis gene, so it always contributes one).
 
-    ``categories`` is the active (informative) category subset in :data:`CATEGORIES`
-    order; a category whose every dataset is non-informative is passed by
+    ``categories`` is the active (informative) category subset in
+    :data:`RELEASE_CATEGORIES` order; a category whose every dataset is
+    non-informative is passed by
     omission and is excluded from ``rank_sum``, ``pN`` and ``n_sources_measured``
     (ADR 0068). ``category_ranks`` are the level-1 category ranks (one complete
     permutation per active category), ``categories_measured`` the corresponding
@@ -241,7 +255,7 @@ def fusion_rank_sum(category_ranks, categories_measured, tenv_rank,
     'n_sources', 'categories'}`` where ``pn`` maps each requested ``N`` to its
     integer vector.
     """
-    categories = tuple(CATEGORIES if categories is None else categories)
+    categories = tuple(RELEASE_CATEGORIES if categories is None else categories)
     n_sources = n_fusion_sources(categories)
     if len(category_ranks) != len(categories):
         raise ValueError(
@@ -305,13 +319,13 @@ def candidate_table(axis, tenv_rank, category_ranks, categories_measured,
     if isinstance(category_ranks, dict):
         ranks_by_category = {str(key): np.asarray(value, dtype=np.int64)
                              for key, value in category_ranks.items()}
-        active = tuple(CATEGORIES if categories is None else categories)
+        active = tuple(RELEASE_CATEGORIES if categories is None else categories)
         if set(ranks_by_category) != set(active):
             raise ValueError('category rank mapping does not match the active categories')
         rank_list = [ranks_by_category[category] for category in active]
         measured_list = list(categories_measured)
     else:
-        active = tuple(CATEGORIES if categories is None else categories)
+        active = tuple(RELEASE_CATEGORIES if categories is None else categories)
         if len(category_ranks) != len(active):
             raise ValueError('a candidate table needs one rank per active category')
         ranks_by_category = {category: np.asarray(rank, dtype=np.int64)
@@ -323,7 +337,7 @@ def candidate_table(axis, tenv_rank, category_ranks, categories_measured,
                              axis_size=axis_size, sizes=sizes)
     columns = {'symbol': axis.symbol.to_numpy(), 'gene_index': gene_index,
                'tenv_hvg_rank': np.asarray(tenv_rank, dtype=np.int64)}
-    for category in CATEGORIES:
+    for category in RELEASE_CATEGORIES:
         if category in ranks_by_category:
             columns[f'{category}_rank'] = ranks_by_category[category]
         else:
@@ -407,15 +421,15 @@ def axis_composition(axis_genes, categories_measured, categories=None):
     """How many axis genes each category source measures (the composition table).
 
     ``categories_measured`` is aligned with ``categories`` (default
-    :data:`CATEGORIES`). A category that is not in the alignument — or whose
-    aligned mask is ``None`` — was excluded from the fusion and contributes
+    :data:`RELEASE_CATEGORIES`). A category that is not in the alignument — or
+    whose aligned mask is ``None`` — was excluded from the fusion and contributes
     ``0`` (ADR 0068).
     """
-    categories = tuple(CATEGORIES if categories is None else categories)
+    categories = tuple(RELEASE_CATEGORIES if categories is None else categories)
     if len(categories_measured) != len(categories):
         raise ValueError('a composition needs one mask per active category')
     axis_genes = np.asarray(axis_genes, dtype=np.int64)
-    composition = {category: 0 for category in CATEGORIES}
+    composition = {category: 0 for category in RELEASE_CATEGORIES}
     for category, mask in zip(categories, categories_measured):
         if mask is None:
             continue
@@ -440,7 +454,7 @@ def _source_coverage_inputs(axes, source_ranks, sizes):
     sizes = tuple(int(size) for size in sizes)
     ranks = {}
     for name, rank in source_ranks.items():
-        if name != 'tenv_hvg' and name not in CATEGORIES:
+        if name != 'tenv_hvg' and name not in RELEASE_CATEGORIES:
             raise ValueError(f'unknown coverage source: {name}')
         if rank is None:
             ranks[name] = None
@@ -495,7 +509,7 @@ def source_topn_covered_counts(axes, source_ranks, sizes=AXIS_SIZES):
     rows = []
     for size in sizes:
         row = {'N': size}
-        for name in ('tenv_hvg',) + CATEGORIES:
+        for name in ('tenv_hvg',) + RELEASE_CATEGORIES:
             rank = ranks.get(name)
             row[name] = (np.nan if rank is None
                          else int((rank[genes[size]] <= size).sum()))
@@ -523,7 +537,7 @@ def source_topn_coverage(axes, source_ranks, sizes=AXIS_SIZES):
     for record in counts.to_dict('records'):
         size = int(record['N'])
         row = {'N': size}
-        for name in ('tenv_hvg',) + CATEGORIES:
+        for name in ('tenv_hvg',) + RELEASE_CATEGORIES:
             value = record[name]
             row[f'%{name}_gN'] = (np.nan if pd.isna(value)
                                   else round(100.0 * int(value) / size, 2))

@@ -39,6 +39,7 @@ from bases import release
 from bases.disease_deg import DiseaseDeg
 from bases.gene_axis import (
     AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, CANDIDATE_COLUMNS, COVERAGE_COLUMNS,
+    RELEASE_CATEGORIES,
     FILL_RULE, N_FUSION_SOURCES, SCHEMA, axis_composition, axis_fill,
     axis_intersection, candidate_columns, candidate_table, category_rank,
     detect_inflection, fusion_rank_sum, inflection_stability, n_fusion_sources,
@@ -282,13 +283,33 @@ def validate_catalog_shape(category, catalog, axis_size):
 
 
 def read_categories(config, axis_size):
-    """Read every category through ``bases.disease_deg.DiseaseDeg`` (digest-checked)."""
+    """Read every released category through ``bases.disease_deg.DiseaseDeg``.
+
+    ``bases.gene_axis.CATEGORIES`` is the **declared** six-disease roster; a
+    category without an accepted disease-deg product is declared but cannot be
+    part of the release (AF after #206, until #208 publishes it). The gate is
+    therefore "every released category exists, every present category is
+    declared, and no declared-but-unreleased category has a product yet", not
+    "exactly the old five directories exist" (#206's robustness fix).
+    """
     reader = DiseaseDeg(config.disease_root)
     found = tuple(reader.categories())
-    if len(found) != len(CATEGORIES) or set(found) != set(CATEGORIES):
-        raise ValueError(f'expected the five declared categories {CATEGORIES}, found {found}')
+    unknown = sorted(set(found) - set(CATEGORIES))
+    if unknown:
+        raise ValueError(f'undeclared disease-deg product directories present: '
+                         f'{unknown}; the declared roster is {CATEGORIES}')
+    missing = sorted(set(RELEASE_CATEGORIES) - set(found))
+    if missing:
+        raise ValueError(f'expected the released categories {RELEASE_CATEGORIES}, '
+                         f'missing {missing}')
+    unpublished = sorted(set(found) - set(RELEASE_CATEGORIES))
+    if unpublished:
+        raise ValueError(
+            f'the declared categories {unpublished} have products but are not in '
+            'gene_axis.RELEASE_CATEGORIES; #208 must publish them as one release '
+            '(move them out of UNPUBLISHED_CATEGORIES) before the axes can be rebuilt')
     categories = {}
-    for category in CATEGORIES:
+    for category in RELEASE_CATEGORIES:
         catalog = reader.catalog(category)
         validate_catalog_shape(category, catalog, axis_size)
         selection = winning_tier(catalog)
@@ -390,8 +411,10 @@ def compute(axis, tenv_frame, categories, axis_sizes):
     axis_size = len(axis)
     gene_index = np.asarray(axis.gene_index, dtype=np.int64)
     tenv_rank = np.asarray(tenv_frame['rank'], dtype=np.int64)
-    active = [category for category in CATEGORIES if categories[category]['informative']]
-    excluded = [category for category in CATEGORIES if category not in active]
+    active = [category for category in RELEASE_CATEGORIES
+              if categories[category]['informative']]
+    excluded = [category for category in RELEASE_CATEGORIES
+                if category not in active]
     level_one = {}
     category_ranks, category_measured = [], []
     for category in active:
@@ -465,7 +488,7 @@ def composition_rows(source, axes, axis_sizes):
         genes = source['axes'][size]
         composition = axis_composition(genes, source['category_measured'],
                                        categories=source['active_categories'])
-        for category in CATEGORIES:
+        for category in RELEASE_CATEGORIES:
             count = composition[category]
             if category in active:
                 note = 'axis genes the category source measures'
@@ -500,7 +523,7 @@ def composition_rows(source, axes, axis_sizes):
 def _source_ranks(source):
     """The published rank of every fusion source, or ``None`` if it is excluded."""
     ranks = {'tenv_hvg': source['tenv_rank']}
-    for category in CATEGORIES:
+    for category in RELEASE_CATEGORIES:
         ranks[category] = (source['level_one'][category]['rank']
                            if category in source['active_categories'] else None)
     return ranks
@@ -597,7 +620,7 @@ def input_entries(config, axis_size):
         entries[repo_relative(path, config.root)] = {
             'role': role, 'sha256': sha256(path), 'bytes': path.stat().st_size}
     reader = DiseaseDeg(config.disease_root)
-    for category in CATEGORIES:
+    for category in RELEASE_CATEGORIES:
         directory = config.disease_root / category
         for role, path in (('catalog', directory / 'catalog.json'),
                            ('release_manifest', directory / 'manifest.json')):
@@ -647,7 +670,7 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
     intersection = axis_intersection(source['axes'][left], source['axes'][right])
     intersection = {'sizes': [int(left), int(right)], **intersection}
     category_manifest = {}
-    for category in CATEGORIES:
+    for category in RELEASE_CATEGORIES:
         entry = categories[category]
         catalog = entry['catalog']
         record = {
