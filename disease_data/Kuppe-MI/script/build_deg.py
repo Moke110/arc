@@ -47,7 +47,9 @@ Usage (arc python, after script/build_pseudobulk.py):
 """
 from __future__ import annotations
 
+import gzip
 import hashlib
+import io
 import json
 import sys
 from pathlib import Path
@@ -103,6 +105,14 @@ MODEL_DESCRIPTION = (
     'limma-voom (voom library-size normalisation, moderated t) with donor '
     'blocking: duplicateCorrelation(block=donor) on the joint ~0 + zone design, '
     'applied to both voom and lmFit')
+
+
+def write_gzip_text(path, text):
+    """Write gzip bytes with a fixed mtime so a rebuild is byte-identical (ADR 0030)."""
+    buffer = io.BytesIO()
+    with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as handle:
+        handle.write(text.encode())
+    Path(path).write_bytes(buffer.getvalue())
 
 
 def sha256(path):
@@ -163,7 +173,7 @@ def main():
     matrix = pseudobulk[['source_gene_id', 'gene_symbol']].copy()
     for profile in samples['sample']:
         matrix[profile] = pseudobulk[profile]
-    matrix.to_csv(MATRIX, index=False, sep='\t', compression='gzip')
+    write_gzip_text(MATRIX, matrix.to_csv(index=False, sep='\t'))
     summary = disease_deg.run_deg_worker(MATRIX, SAMPLES, DESIGN, ZONE_DEG)
     table = pd.read_csv(ZONE_DEG)
     missing = set(disease_deg.LOCAL_DEG_COLUMNS) - set(table.columns)

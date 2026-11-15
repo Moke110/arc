@@ -37,7 +37,9 @@ Usage (arc python, after script/fetch.sh && script/verify.sh):
 """
 from __future__ import annotations
 
+import gzip
 import hashlib
+import io
 import json
 import sys
 from pathlib import Path
@@ -67,6 +69,14 @@ EXPECTED_NUCLEI = 191795
 EXPECTED_CM_NUCLEI = 64510
 EXPECTED_FEATURES = 28380
 EXPECTED_DONORS = 20
+
+
+def write_gzip_text(path, text):
+    """Write gzip bytes with a fixed mtime so a rebuild is byte-identical (ADR 0030)."""
+    buffer = io.BytesIO()
+    with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as handle:
+        handle.write(text.encode())
+    Path(path).write_bytes(buffer.getvalue())
 
 
 def sha256(path):
@@ -207,7 +217,7 @@ def main():
     LOCAL.joinpath('pseudobulk').mkdir(parents=True, exist_ok=True)
     pseudobulk_path = LOCAL / 'pseudobulk' / 'kuppe-mi_cm_pseudobulk.csv.gz'
     profiles_path = LOCAL / 'pseudobulk' / 'kuppe-mi_profiles.csv'
-    frame.to_csv(pseudobulk_path, index=False, compression='gzip')
+    write_gzip_text(pseudobulk_path, frame.to_csv(index=False))
     profile_frame.to_csv(profiles_path, index=False)
     summary = {
         'schema': SCHEMA,
