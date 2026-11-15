@@ -317,12 +317,28 @@ _Avoid_: corpus stats, dataset summary
 The frozen 18,164-symbol four-source intersection named by latest HGNC symbol — the shared axis a CM benchmark or CM-model view projects onto, not a corpus gene universe (each corpus keeps its source's native axis).
 _Avoid_: corpus gene set, CM universe
 
+**DEG (gene axis, v2)**:
+A gene of one disease source dataset that passes `padj < 0.05` **and** `|log2FC| ≥ 2` (FC ≥ 4) in at least one of that dataset's contrasts; the multi-contrast collapse keeps the maximum-effect contrast. It replaces the Stage 2 01_bases v1 meaning, in which every measured gene carried a within-dataset rank. The tenv-HVG ranking is not a DEG source.
+_Avoid_: significant gene (unqualified), hit, DE gene
+
+**Source tier** (gene axis):
+The ordered evidence class a disease source belongs to: **tier 1** human atria/ventricle with cardiomyocyte specificity (CM pseudobulk or CM-nuclear bulk); **tier 2** hiPSC/hESC-CM cells, organoids or engineered tissue (for `nHF`/`ICM`/`AF` only models of the clinical, non-genetic form — mutation models belong to `genetic_cardiomyopathy`); **tier 3** human atria/ventricle bulk tissue, not cardiomyocyte-specific. A disease collects sources in tier order and stops descending once its DEG union reaches 2,000.
+_Avoid_: priority (the retired 0066 name), level
+
+**DEG2000**:
+Per disease: the genes that are a DEG in at least one of the disease's sources **and** whose within-disease fused rank is ≤ 2,000 (all of them when the disease has fewer than 2,000 DEGs). Only `DEG2000` genes enter the cross-disease fusion and the axis.
+_Avoid_: top-2000 DEGs (ambiguous with a per-source top set), disease DEG signature
+
+**f2000**:
+The number of diseases whose `DEG2000` contains a gene — the axis's disease-side selection signal, replacing the retired `pN`. It is a count of diseases, not a quality score and not a continuous rank.
+_Avoid_: pN, disease frequency, overlap count (unqualified)
+
 **Dataset id**:
 The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv`, `tahoe` — carried in each h5ad's `dataset_id` column. The GEO accession or atlas name stays the provenance anchor on the raw folder; historical records that predate the 2026-11 rename keep `screen_ctox`, `temp_env` and `dtoxs_cm`.
 _Avoid_: source name, dataset name, accession
 
 **View**:
-The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the fused six-source rank sum; the `AF` category was removed by ADR 0069 and confirmed out by ADR 0070), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
+The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the `f2000`-first, tenv-HVG-second fill of ADR 0071, which re-admits `AF` and replaces ADR 0066's `pN` selection; ADR 0069/0070 removed `AF` under the retired rule), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
