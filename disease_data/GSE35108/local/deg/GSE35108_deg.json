@@ -1,0 +1,183 @@
+{
+  "category": "nHF",
+  "contrasts": {
+    "DCM_Serca2a-Normal_Serca2a": {
+      "denominator": "Normal_Serca2a",
+      "n_case": 2,
+      "n_control": 2,
+      "numerator": "DCM_Serca2a"
+    },
+    "DCM_control-Normal_control": {
+      "denominator": "Normal_control",
+      "n_case": 2,
+      "n_control": 2,
+      "numerator": "DCM_control"
+    }
+  },
+  "deg": {
+    "bytes": 4779702,
+    "n_source_genes": 19036,
+    "path": "local/deg/GSE35108_deg.csv",
+    "rows": 38072,
+    "sha256": "31418b327fe53f4653d727afe44ab6a40b50808da07e81294e88ed093efb5ac3"
+  },
+  "deg_counts": {
+    "collapsed": {
+      "n_deg": 553,
+      "n_down": 165,
+      "n_genes": 19036,
+      "n_padj_only_genes": 12664,
+      "n_up": 388
+    },
+    "definition": "padj < 0.05 AND |log2FC| >= 2.0 in the contrast (ADR 0071); a gene is a DEG when any declared contrast passes, collapsible per gene",
+    "per_contrast": {
+      "DCM_Serca2a-Normal_Serca2a": {
+        "n_deg": 446,
+        "n_down": 115,
+        "n_padj_only": 10299,
+        "n_rows": 19036,
+        "n_up": 331
+      },
+      "DCM_control-Normal_control": {
+        "n_deg": 357,
+        "n_down": 121,
+        "n_padj_only": 8982,
+        "n_rows": 19036,
+        "n_up": 236
+      }
+    }
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 2302867,
+      "path": "source/GSE35108_series_matrix.txt.gz",
+      "probe_count": 33297,
+      "sha256": "b1bce98678a631f7a2f91983f97f00b6bb8b1eb9758d13cef52732bba0faa07b"
+    },
+    "platform_annot": {
+      "annotation_rows": 33298,
+      "bytes": 7193437,
+      "path": "source/GPL6244.annot.gz",
+      "sha256": "99ee70f87e02c75ff1c8dc57b6c40c0482c7ef2760e004301315ac34344ac6dc"
+    },
+    "values": {
+      "max": 14.41318,
+      "median": 8.399583,
+      "min": 3.467503,
+      "mode": "normalised-expression-as-deposited (RMA log2, one-colour array)",
+      "n_non_positive": 0,
+      "n_values": 152288,
+      "normalisation": "RMA (Affymetrix Expression Console, per !Sample_data_processing)",
+      "one_colour": true
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "Normal_control",
+        "label": "DCM_control-Normal_control",
+        "numerator": "DCM_control"
+      },
+      {
+        "denominator": "Normal_Serca2a",
+        "label": "DCM_Serca2a-Normal_Serca2a",
+        "numerator": "DCM_Serca2a"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "expression"
+  },
+  "evidence_type": "bulk",
+  "expr": {
+    "path": "local/deg/GSE35108_expr.tsv.gz",
+    "sha256": "4f66e20faccef91be319fe7b6f5e62b9cd1aad146e94a7dc9ddff8eb7e040e84"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupDCM_control",
+      "groupDCM_Serca2a",
+      "groupNormal_control",
+      "groupNormal_Serca2a"
+    ],
+    "contrasts": [
+      "DCM_control-Normal_control",
+      "DCM_Serca2a-Normal_Serca2a"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "expression",
+    "limma_version": "3.62.2",
+    "n_genes_input": 19036,
+    "n_genes_tested": 19036,
+    "n_rows": 38072,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE35108",
+  "method": {
+    "collapse": "one probe per gene symbol: the probe with the maximum mean expression across the 8 selected CM libraries; probes with no gene symbol or a multi-symbol annotation (containing \"///\") are not used",
+    "contrast_direction": "positive log2FC = up in the patient DCM iPSC-CM arm vs the normal iPSC-CM arm within the same treatment stratum",
+    "deposition": "deposited RMA log2 expression (one-colour array)",
+    "derivation": "disease_data/GSE35108/script/build_deg.py",
+    "derivation_sha256": "1ad953ea4bb871d1a965051295fd53229e59b0fad0316da6c12e39022a97d86b",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma on the deposited log2 matrix (moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 4,
+  "n_control": 4,
+  "non_genetic_model_basis": "patient-derived DCM iPSC-CM lines compared with normal iPSC-CM lines; no mutation was introduced and no isogenic control is deposited, so this is the clinical (non-mutation-modelled) iPSC-CM form that ADR 0071 admits to nHF tier 2",
+  "probe_collapse": {
+    "n_genes": 19036,
+    "n_probes": 33297,
+    "n_probes_dropped_by_collapse": 1016,
+    "n_probes_multi_or_missing_symbol": 13245,
+    "n_probes_with_single_symbol": 20052,
+    "rule": "one probe per gene symbol: the probe with the maximum mean expression across the 8 selected CM libraries; probes with no gene symbol or a multi-symbol annotation (containing \"///\") are not used"
+  },
+  "samples": {
+    "group_counts": {
+      "DCM_Serca2a": 2,
+      "DCM_control": 2,
+      "Normal_Serca2a": 2,
+      "Normal_control": 2
+    },
+    "group_source": "characteristics (cell type, genotype/variation, gene therapy)",
+    "match_basis": "geo_accession",
+    "n": 8,
+    "path": "local/deg/GSE35108_samples.csv",
+    "sha256": "94be2aa3fd7d9b15469bb04b1fef8403a65ad6c622325f5801df9e695a82229c"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "sensitivity": {
+    "contrast": "DCM_control-Normal_control",
+    "n_case": 2,
+    "n_control": 2,
+    "n_deg": 357,
+    "n_padj_only": 8484,
+    "note": "an item-local sensitivity fit of the untreated 2 vs 2 stratum only; it is not a declared contrast of the published dataset",
+    "why": "the untreated 2 vs 2 stratum is the primary disease contrast"
+  },
+  "series": {
+    "assay": "one-colour Affymetrix Gene 1.0 ST array (RMA log2 expression)",
+    "cm_libraries": 8,
+    "excluded_libraries": 9,
+    "exclusion_reason": "the deposit also profiles fibroblast, H7 hESC and undifferentiated iPSC lines; only the cardiomyocyte libraries carry the disease contrast",
+    "patient_vs_control": "patient-derived familial-DCM iPSC-CM lines vs normal iPSC-CM lines; not isogenic and no causal variant is declared in the deposit, so genotype and line identity are confounded (recorded, not corrected)",
+    "platform": "GPL6244",
+    "platform_title": "[HuGene-1_0-st] Affymetrix Human Gene 1.0 ST Array [transcript (gene) version]",
+    "title": "Expression data from patient iPSC and iPSC-derived cardiomyocytes",
+    "total_libraries": 17
+  },
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "the deposit is a 2x2 genotype x Serca2a gene-therapy design; both genotype contrasts are declared and collapse per gene by maximum effect (ticket-01 rule), not averaged into one main effect",
+    "pooled": true,
+    "why": "the Serca2a treatment is applied symmetrically to both genotypes, so each treatment stratum carries a valid DCM-vs-normal contrast; the untreated stratum is the primary disease contrast and its DEG count is recorded as a sensitivity in the tracked summary"
+  },
+  "tier": 2
+}

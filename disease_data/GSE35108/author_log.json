@@ -1,0 +1,53 @@
+{
+  "item": "GSE35108",
+  "category": "disease_data",
+  "purpose": "Patient-derived DCM iPSC-cardiomyocytes vs normal iPSC-cardiomyocytes, one-colour Affymetrix Human Gene 1.0 ST array (GPL6244), modelled on the deposited RMA log2 scale. A tier-2 nHF source for the Stage 2 gene axis (ADR 0071): the patient-derived, non-mutation-modelled iPSC-CM form that a clinical category admits at tier 2.",
+  "retrieved_at": "2026-11-15T14:55+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE35108",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE35108",
+      "version": "GSE35108 (GPL6244 [HuGene-1_0-st] Affymetrix Human Gene 1.0 ST Array [transcript (gene) version])",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP): the series matrix GSE35108_series_matrix.txt.gz and the platform annotation GPL6244.annot.gz, both byte-size pinned; no other payload fetched",
+      "path": "source/",
+      "files": 2,
+      "bytes": 9496304,
+      "tree_sha256": "671a2af899ef28fa75e8b237d6d5fd3f18f3c8a4b275e2471fdb670f6070d4f7"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE35108_expr.tsv.gz",
+      "origin": "item-local fit input after probe->gene collapse: source_gene_id (the representative Affymetrix transcript cluster), gene_symbol and one RMA log2 column per cardiomyocyte library; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE35108_samples.csv",
+      "origin": "item-local fit design sheet: sample (GSM), group, title, cell_type, genotype, gene_therapy, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE35108_deg.csv",
+      "origin": "item-local full DEG table: one row per gene per declared contrast (38072 rows, 19036 genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE35108_deg.json",
+      "origin": "tracked compact DEG summary: deposition digests, the verified series design (17 libraries, 8 CM, 2x2 genotype x Serca2a), the probe-collapse record, the two declared contrasts with n_case/n_control, the strata decision, the untreated-only sensitivity, limma/R versions and output digests",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg expression, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-15T15:06+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE35108 - Expression data from patient iPSC and iPSC-derived cardiomyocytes (Sun et al., Sci Transl Med 2012; PMID 22517884); GPL6244 [HuGene-1_0-st] Affymetrix Human Gene 1.0 ST array, one-colour. TWO PAYLOADS in source/: the series matrix (2,302,867 B: the deposited RMA log2 expression matrix plus the !Sample_* design block) and the GPL6244 annotation (7,193,437 B: the transcript-cluster -> Entrez gene-symbol table the array needs). SERIES DESIGN VERIFIED AGAINST THE DEPOSIT (not against the ticket prose): the series has 17 libraries, of which 9 are fibroblast / H7 hESC / undifferentiated iPSC lines (not cardiomyocytes) and 8 are cardiomyocytes. The 8 CM libraries are a 2x2 design of genotype (Normal iPSC / DCM iPSC) x adenoviral Serca2a gene therapy (control / Serca2a), 2 libraries per cell: Normal_control GSM862170-862171, Normal_Serca2a GSM862172-862173, DCM_control GSM862174-862175, DCM_Serca2a GSM862176-862177. The ticket prose 'n=17' is the whole series, not the contrast: the cardiomyocyte arms are 2 vs 2 within each treatment stratum (4 DCM / 4 normal libraries overall). The deposit is RMA-normalised log2 expression (!Sample_data_processing; values 3.4675-14.4132, no non-positive value), so it is modelled as-is with limma lmFit (the documented normalised-expression path), never re-normalised from the CEL files. PROBE COLLAPSE: GPL6244 maps the 33,297 deposited transcript clusters to 20,052 probes with an unambiguous single gene symbol; 13,245 probes have no symbol or a multi-symbol ('///') annotation and are not used; the max-mean-expression probe represents each of the 19,036 genes (1,016 probes dropped by the collapse). PROVENANCE: patient-derived familial-DCM iPSC-CM vs normal iPSC-CM lines - a clinical, non-genetic-model comparison (no mutation was introduced and no isogenic control is deposited), so it is the tier-2 form ADR 0071 admits to nHF; the lines are different individuals, so genotype and line identity are confounded (recorded, not corrected). DESIGN: one joint limma lmFit ~0 + group over all 8 CM libraries; contrasts DCM_control-Normal_control and DCM_Serca2a-Normal_Serca2a (each 2 vs 2), collapsed per gene by maximum effect (ticket-01 multi-contrast rule); n_case 4, n_control 4. The untreated 2 vs 2 stratum was refitted alone as a declared sensitivity (local v2 DEG count 357). V2 DEG COUNTS (padj<0.05 AND |log2FC|>=2): per contrast 357 (untreated) and 446 (Serca2a); 553 genes collapsed across the two contrasts (388 up / 165 down). PUBLISHED: the item-local full DEG table and the tracked summary here; the step's output/disease-deg/nhf/ products are published by the later republish ticket. BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 334,892 KiB, wall 3.1 s, limma 3.62.2 / R 4.4.1. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py.",
+  "hashed_at": "2026-11-15T15:06+08:00"
+}

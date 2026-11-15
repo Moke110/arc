@@ -38,6 +38,20 @@ CATEGORIES = {
                        'cannot both count as independent sources'},
             {'candidate': 'GSE141910 / GSE116250 / GSE128188 / GSE282618',
              'reason': 'whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived'},
+            {'candidate': 'GSE185100',
+             'accession': 'GSE185100',
+             'status': 'unverified_not_admitted',
+             'size': ('757 MB RAW.tar (722 MB of per-sample processed tars; the two '
+                      'recordings disagree)'),
+             'donor_counts': ('4 early-onset DCM vs 3 non-diseased LV-apex donors '
+                              '(pediatric, 4-14 y)'),
+             'reason': ('recorded unverified and not admitted (#203): the NCBI FTP '
+                        'throttled the 757 MB RAW.tar to roughly 50 KB/s and the '
+                        'download was abandoned, so the deposit was never opened. The '
+                        'series is also 4 vs 3 donors of a pediatric early-onset '
+                        'cohort, which could not meet the evidence bar even if the '
+                        'archive were readable. Nothing was downloaded and no gene-axis '
+                        'evidence is derived from it.')},
         ],
     },
     'ICM': {
@@ -558,6 +572,97 @@ DATASETS.extend([
             'deposition': 'integer counts',
             'model': 'limma-voom (voom library-size normalisation, moderated t)',
             'design': 'one joint fit ~0 + group over all 6 organoid libraries; single contrast',
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+])
+
+# --- ticket #203: nHF tier-2 / tier-3 sources --------------------------------
+# GSE35108 is the tier-2 (patient-derived iPSC-CM) source and GSE165303 the tier-3
+# (whole left-ventricle bulk) source ADR 0071 gives nHF. Both are admitted only
+# after their series design was verified against the deposit (see each item's
+# author_log.json): GSE35108 is 8 cardiomyocyte libraries in a 2x2 genotype x
+# Serca2a design, not the series' 17 samples; GSE165303 is 101 RNA-seq libraries
+# = 50 DCM + 51 non-failing, not "101 DCM samples".
+DATASETS.extend([
+    {
+        'dataset_id': 'gse35108__dcm_ipsc_cm',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE35108',
+        'local_deg': 'local/deg/GSE35108_deg.csv',
+        'local_summary': 'local/deg/GSE35108_deg.json',
+        'arm_or_class': ('patient-derived DCM iPSC-CM (4 libraries) vs normal iPSC-CM '
+                         '(4 libraries) in a 2x2 genotype x Serca2a design'),
+        'species': 'Homo sapiens',
+        'model_system': ('human patient-derived iPSC-CM monolayer (DCM vs normal), '
+                         'one-colour Affymetrix GPL6244 RMA log2 array'),
+        'evidence_type': 'bulk',
+        'tier': 2,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse35108:normal_ipsc_cm',
+        'n_case': 4,
+        'n_control': 4,
+        'contrasts': ['DCM_control-Normal_control', 'DCM_Serca2a-Normal_Serca2a'],
+        'non_genetic_model_basis': (
+            'patient-derived familial-DCM iPSC-CM lines compared with normal iPSC-CM '
+            'lines; no mutation was introduced and no isogenic control is deposited, so '
+            'this is the clinical (non-mutation-modelled) iPSC-CM form ADR 0071 admits '
+            'to a clinical category at tier 2'),
+        'strata': {
+            'decision': ('two treatment strata of the same genotype contrast (untreated, '
+                         'and after adenoviral Serca2a gene therapy), each 2 vs 2; '
+                         'collapsed per gene by maximum effect'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('the gene therapy is applied symmetrically to both genotypes, so each '
+                    'stratum carries a valid DCM-vs-normal contrast; the untreated stratum '
+                    'is the primary disease contrast and its DEG count is recorded as a '
+                    'sensitivity in the item summary'),
+        },
+        'method': {
+            'deposition': 'RMA log2 expression as deposited (one-colour array)',
+            'collapse': ('the max-mean-expression GPL6244 probe represents each gene '
+                         '(19,036 genes from 20,052 single-symbol probes; multi-symbol '
+                         'and unsymbolised probes unused)'),
+            'model': 'limma on the deposited log2 matrix (moderated t)',
+            'design': ('one joint fit ~0 + group over the 8 cardiomyocyte libraries; two '
+                       'DCM-vs-normal contrasts, one per treatment stratum'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse165303__dcm_lv_bulk',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE165303',
+        'local_deg': 'local/deg/GSE165303_deg.csv',
+        'local_summary': 'local/deg/GSE165303_deg.json',
+        'arm_or_class': 'DCM left-ventricle tissue (50 donors) vs non-failing LV (51 donors)',
+        'species': 'Homo sapiens',
+        'model_system': ('human left-ventricle bulk tissue (whole tissue, not '
+                         'cardiomyocyte-specific), bulk RNA-seq'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse165303:non_failing_lv',
+        'n_case': 50,
+        'n_control': 51,
+        'contrasts': ['DCM-NF'],
+        'model_basis': (
+            'whole left-ventricle tissue bulk: not cardiomyocyte-specific, so it is a '
+            'tier-3 source only and enters nHF only after tiers 1-2 fall short of 2,000 '
+            'DEGs (ADR 0071)'),
+        'method': {
+            'deposition': ('log2(normalised counts) as deposited, with a fixed floor at '
+                           '3.821687527 (35.2% of cells); not raw counts'),
+            'model': 'limma on the deposited log2 matrix (moderated t)',
+            'design': ('one joint fit ~0 + group over all 101 RNA-seq libraries; no '
+                       'clinical covariate is deposited'),
             'test': 'moderated t',
             'padj': 'Benjamini-Hochberg',
         },

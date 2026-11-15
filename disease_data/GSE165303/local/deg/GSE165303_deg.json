@@ -1,0 +1,162 @@
+{
+  "author_table_check": {
+    "author_n_padj_only": 13227,
+    "author_n_v2": 91,
+    "limma_n_v2": 29,
+    "log2fc_pearson": 0.8607355182421027,
+    "log2fc_spearman": 0.94031017959896,
+    "n_rows_joined": 50762,
+    "n_v2_shared": 21,
+    "note": "the deposit carries the authors' DESeq2 result; the declared DEGs are recomputed by this repository's one live implementation (limma on the deposited log2 matrix), and this block records agreement only"
+  },
+  "category": "nHF",
+  "contrasts": {
+    "DCM-NF": {
+      "denominator": "NF",
+      "n_case": 50,
+      "n_control": 51,
+      "numerator": "DCM"
+    }
+  },
+  "deg": {
+    "bytes": 6362848,
+    "n_source_genes": 50762,
+    "path": "local/deg/GSE165303_deg.csv",
+    "rows": 50762,
+    "sha256": "4e2e39231df34c02c5c5ebc536331856b2e9142e9b3faecd7e7d2d935b50da5b"
+  },
+  "deg_counts": {
+    "collapsed": {
+      "n_deg": 29
+    },
+    "definition": "padj < 0.05 AND |log2FC| >= 2.0 (ADR 0071)",
+    "per_contrast": {
+      "DCM-NF": {
+        "n_deg": 29,
+        "n_down": 10,
+        "n_padj_only": 12397,
+        "n_rows": 50762,
+        "n_up": 19
+      }
+    }
+  },
+  "deposition": {
+    "gene_ids": {
+      "alignment_basis": "Entrez symbol first (the deposited Symbol column), versioned Ensembl id as the fallback",
+      "id_column": "ENSEMBLE",
+      "n_rows": 50762,
+      "n_with_symbol": 50762,
+      "n_without_symbol_falls_back_to_id": 0,
+      "symbol_column": "Symbol"
+    },
+    "master_table": {
+      "bytes": 20040757,
+      "columns": 109,
+      "gene_rows": 50762,
+      "path": "source/GSE165303_RNA-Seq_master_table.txt.gz",
+      "sha256": "d50ef019c0bcb1c3eacff5c73e03e35eb5c4637efc92435c931ede50fe2a7a29"
+    },
+    "series_matrix": {
+      "bytes": 12562,
+      "path": "source/GSE165303-GPL20795_series_matrix.txt.gz",
+      "sha256": "0b8e793b20c152e8d635f835bbe62049342e0c540be2099ffdec3fed6aedb04d"
+    },
+    "values": {
+      "evidence": "2**value tracks the deposited DESeq2 baseMean (Pearson r = 0.999999 over the 5,408 genes with baseMean > 1,000), so the columns are log2 normalised counts, not raw counts",
+      "floor_fraction": 0.3519403888696659,
+      "floor_linear_scale": 14.139777634026132,
+      "floor_value": 3.821687527,
+      "high_expression_correlation": 0.9999999676704495,
+      "high_expression_genes": 5408,
+      "max": 23.13767678,
+      "median": 4.681279237,
+      "min": 3.821687527,
+      "mode": "log2(normalised counts) as deposited, with a fixed floor; the exact upstream size-factor/pseudocount formula is not documented in GEO",
+      "n_floor_cells": 1804385,
+      "n_genes": 50762,
+      "n_values": 5126962
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "NF",
+        "label": "DCM-NF",
+        "numerator": "DCM"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "expression"
+  },
+  "evidence_type": "bulk",
+  "expr": {
+    "path": "local/deg/GSE165303_expr.tsv.gz",
+    "sha256": "d6ef3b5b20b964b568d75346dc2827c36e83022e07d3a58e16418d1b48aab0a6"
+  },
+  "fit_summary": {
+    "coefficient_names": [
+      "groupDCM",
+      "groupNF"
+    ],
+    "contrasts": [
+      "DCM-NF"
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "expression",
+    "limma_version": "3.62.2",
+    "n_genes_input": 50762,
+    "n_genes_tested": 50762,
+    "n_rows": 50762,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE165303",
+  "method": {
+    "contrast_direction": "positive log2FC = up in DCM left-ventricle tissue vs non-failing",
+    "deposition": "log2(normalised counts) as deposited (floored matrix)",
+    "derivation": "disease_data/GSE165303/script/build_deg.py",
+    "derivation_sha256": "9dd5b9e106ac0cb8d32ba9423f20006c099813c2308dc2abe8ab9b4753209e70",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "limma_version": "3.62.2",
+    "model": "limma on the deposited log2 matrix (moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "model_basis": "whole left-ventricle tissue bulk: not cardiomyocyte-specific, so it is a tier-3 source only (ADR 0071) and enters nHF after tiers 1-2 fall short of 2,000 DEGs",
+  "n_case": 50,
+  "n_control": 51,
+  "samples": {
+    "group_counts": {
+      "DCM": 50,
+      "NF": 51
+    },
+    "group_source": "sample title prefix (DCM-/NF-)",
+    "match_basis": "series-matrix RNA-seq sample title -> master-table column",
+    "n": 101,
+    "path": "local/deg/GSE165303_samples.csv",
+    "sha256": "12479583106768a80fc792239bdb19cfbc8751d7451b5976e12f6784a6f2070d"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "series": {
+    "assay": "bulk RNA-seq",
+    "case_definition": "DCM (dilated cardiomyopathy) patient LV",
+    "control_definition": "non-failing (NF) donor LV",
+    "non_rna_libraries": 46,
+    "platform": "GPL20795 (Illumina NovaSeq 6000)",
+    "rna_libraries": 101,
+    "tissue": "human left-ventricle tissue (Duke Human Heart Repository; !Sample_growth_protocol_ch1); non-failing donor LV as control",
+    "title": "Reprogramming of three-dimensional chromatin architecture   drives human dilated cardiomyopathy",
+    "total_libraries_in_series": 177,
+    "total_libraries_on_gpl20795": 147
+  },
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "single case/control contrast; the deposit carries no clinical covariate",
+    "pooled": false,
+    "why": "the GPL20795 series matrix declares only tissue (heart), assay (RNA-Seq) and the DCM/NF sample title; no age, sex or cause field is deposited, so no covariate can be blocked without importing external metadata"
+  },
+  "tier": 3
+}
