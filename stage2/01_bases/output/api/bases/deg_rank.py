@@ -1,8 +1,7 @@
-"""Disease-DEG table/rank contract for the Stage 2 gene axis (ADR 0066).
+"""Disease-DEG table/rank contract for the Stage 2 gene axis (ADR 0066, ADR 0071).
 
-Tickets #187/#188/#189 produce one compact DEG table and one within-dataset rank
-per source dataset against this module; the fusion ticket (#190) consumes those
-ranks. The contract is deliberately pure and dataset-agnostic:
+Each source dataset publishes one compact DEG table and one within-dataset rank
+against this module. The contract is deliberately pure and dataset-agnostic:
 
 * **alignment** — a source symbol resolves to one frozen ``gene_index`` through
   canonical symbol, the pinned identity crosswalk's alias/previous evidence, the
@@ -13,29 +12,48 @@ ranks. The contract is deliberately pure and dataset-agnostic:
   tiny ``padj`` values are floored so the score stays finite.
 * **multi-contrast collapse** — a gene's score is the **maximum** over its
   contrasts; direction and p-value come from that winning contrast.
-* **within-dataset rank** — measured genes rank 1..``n_measured`` by descending
-  effect score with ``gene_index`` as the deterministic tie-break; a gene the
-  dataset does not measure gets ``n_measured + 1``.
-* **rank normalization** — ``rank_norm = rank / n_measured`` for every gene;
-  an unmeasured gene's raw rank is ``n_measured + 1``, so its normalized value
-  is ``(n_measured + 1) / n_measured``. The denominator is the measured-gene
-  count, never the significant-DEG count.
-* **informativeness** — a dataset whose measured effect scores are all tied has
-  no informative ordering (its rank is the ``gene_index`` tie-break). It is
-  published with ``informative: false`` and a recorded reason, and excluded
-  from the level-2 fusion and ``pN`` (ADR 0068).
+* **DEG flag (v2)** — a gene is a DEG of its dataset when one of its contrasts
+  passes ``padj < 0.05`` **and** ``|log2FC| >= 2`` (:func:`deg_flag`). The flag
+  is pass-any-contrast, ``NA``/non-finite ``padj`` is non-significant, the
+  winning contrast is still the maximum-effect one, and direction is carried,
+  not filtered on (ADR 0071 *DEG definition*).
+* **within-dataset DEG rank (v2)** — a dataset's **DEGs** rank ``1..n_DEG`` by
+  descending effect score with ``gene_index`` as the deterministic tie-break; a
+  gene that is not a DEG in that dataset gets ``n_DEG + 1``.
+* **rank normalization (v2)** — ``rank_norm = rank / n_DEG`` for every gene, so
+  a non-DEG's value is ``(n_DEG + 1) / n_DEG``. The denominator is the DEG count,
+  never the measured-gene count, which is retired (ADR 0071 decision 3).
+* **informativeness** — a dataset with no DEGs, or whose measured effect scores
+  are all tied, has no informative ordering (its rank only repeats a constant or
+  the ``gene_index`` tie-break). It is published with ``informative: false`` and
+  a recorded reason, and excluded from fusion (ADR 0068, kept by ADR 0071).
 
-Ranks are within-dataset only; they are never compared across datasets as if
-they were effect sizes.
+``rank_scores``/``complete_rank``/``normalized_rank`` stay exported as generic
+rank primitives for the pre-v2 fusion reader (``bases.gene_axis``); the DEG
+contract itself is the ``*_deg_*`` family below. ``RANK_SEMANTICS`` names the
+semantics every published table's ``stats`` carries; ``SCHEMA`` stays the
+product-schema label until ticket 8 re-publishes the products. Ranks are
+within-dataset only; they are never compared across datasets as if they were
+effect sizes.
 """
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 
+# The published product schema label stays ``v1`` until ticket 8 re-publishes the
+# DEG products on the v2 contract; bumping it here would relabel products that are
+# not rebuilt yet and would weaken the gene-axis ``derived_inputs`` fail-closed
+# gate. The rank semantics are declared separately so a consumer can tell which
+# contract produced a table before that republish.
 SCHEMA = 'stage2-disease-deg-v1'
+RANK_SEMANTICS = 'deg-only-v2'
 AXIS_SIZE = 18164
 PADJ_THRESHOLD = 0.05
+# ADR 0071 *DEG definition*: padj < 0.05 AND |log2FC| >= 2 (FC >= 4). The padj
+# test is strict and the effect-size test is inclusive, so padj == 0.05 is not a
+# DEG while |log2FC| == 2 is one.
+DEG_LOG2FC_THRESHOLD = 2.0
 # -log10(0) is infinite; padj values are floored so the effect score stays finite
 # and rank order is deterministic.
 PADJ_FLOOR = 1e-300
@@ -224,13 +242,42 @@ def deg_effect(log2fc, padj):
     return np.maximum(score, 0.0)
 
 
+def deg_flag(log2fc, padj):
+    """Boolean DEG flag per ``(gene, contrast)`` row: the v2 definition (ADR 0071).
+
+    A row is a DEG when ``padj < PADJ_THRESHOLD`` **and**
+    ``|log2FC| >= DEG_LOG2FC_THRESHOLD`` in the same contrast. Both are required:
+    a large fold change with a non-significant (or missing) adjusted p-value is
+    not a DEG, and neither is a significant small effect.
+
+    ``NA``/non-finite ``padj`` is non-significant — the source's test did not
+    report one (DESeq2 independent filtering) — and a non-finite ``log2FC``
+    cannot pass the effect-size test. Direction is not filtered on: an
+    up-regulated and a down-regulated gene are equally DEGs.
+    """
+    log2fc = np.asarray(log2fc, dtype=np.float64)
+    padj = np.asarray(padj, dtype=np.float64)
+    if log2fc.shape != padj.shape:
+        raise ValueError('log2FC and padj must have the same shape')
+    significant = np.isfinite(padj) & (padj < PADJ_THRESHOLD)
+    large_effect = np.isfinite(log2fc) & (np.abs(log2fc) >= DEG_LOG2FC_THRESHOLD)
+    return significant & large_effect
+
+
 def per_gene_deg(gene_index, log2fc, padj, contrast=None):
     """Collapse per-contrast DEG rows to one row per axis gene.
 
     The continuous score of a gene is the **maximum** over its contrasts
     (declared collapse rule). The reported direction and p-value come from that
     winning contrast; ``n_contrasts_supporting`` counts contrasts with
-    ``padj < PADJ_THRESHOLD``. Ties on the effect score break lexicographically
+    ``padj < PADJ_THRESHOLD``.
+
+    The ``deg`` column is the v2 DEG flag (ADR 0071): true when **any** contrast
+    passes :func:`deg_flag`, i.e. ``padj < 0.05`` and ``|log2FC| >= 2`` together;
+    ``n_contrasts_deg`` counts the contrasts that pass. The winning contrast is
+    unaffected by the DEG flag — collapse always keeps the maximum-effect
+    contrast, so a gene can be a DEG through one contrast while its reported
+    statistics come from another. Ties on the effect score break lexicographically
     by contrast label, then by input order, so the result is deterministic.
 
     ``contrast`` is optional; when omitted every row is one contrast.
@@ -244,13 +291,17 @@ def per_gene_deg(gene_index, log2fc, padj, contrast=None):
         contrast = np.asarray(contrast, dtype=object)
     effect = deg_effect(log2fc, padj)
     frame = pd.DataFrame({'gene_index': gene_index, 'contrast': contrast,
-                          'log2fc': log2fc, 'padj': padj, 'effect': effect})
+                          'log2fc': log2fc, 'padj': padj, 'effect': effect,
+                          'deg': deg_flag(log2fc, padj)})
     frame = frame.sort_values(['gene_index', 'effect', 'contrast'],
                               ascending=[True, False, True], kind='stable')
     best = frame.drop_duplicates('gene_index', keep='first')
     supporting = frame.assign(significant=(frame.padj < PADJ_THRESHOLD))
     counts = supporting.groupby('gene_index', sort=True).significant.sum()
+    grouped = frame.groupby('gene_index', sort=True)
     best = best.assign(n_contrasts_supporting=best.gene_index.map(counts).astype(np.int64))
+    best = best.assign(deg=best.gene_index.map(grouped.deg.any()).astype(bool),
+                       n_contrasts_deg=best.gene_index.map(grouped.deg.sum()).astype(np.int64))
     sign = np.sign(best.log2fc.to_numpy(dtype=np.float64))
     direction = np.where(np.isfinite(sign) & (best.padj < PADJ_THRESHOLD), sign, 0.0)
     best = best.assign(significant=best.padj < PADJ_THRESHOLD,
@@ -259,7 +310,12 @@ def per_gene_deg(gene_index, log2fc, padj, contrast=None):
 
 
 def complete_rank(measured_gene_index, measured_rank, axis_size=AXIS_SIZE):
-    """Raw rank vector over the whole axis; unmeasured genes get n_measured + 1."""
+    """Raw rank vector over the whole axis; unranked genes get ``n + 1``.
+
+    Generic pre-v2 primitive (kept for ``bases.gene_axis`` until its v2 ticket):
+    ``measured`` is any set of ``n`` ranked genes and the fill for everything
+    else is ``n + 1``. The v2 DEG contract uses :func:`complete_deg_rank`.
+    """
     measured_gene_index = np.asarray(measured_gene_index, dtype=np.int64)
     measured_rank = np.asarray(measured_rank, dtype=np.int64)
     n_measured = len(measured_gene_index)
@@ -271,15 +327,12 @@ def complete_rank(measured_gene_index, measured_rank, axis_size=AXIS_SIZE):
 
 
 def normalized_rank(rank, n_measured):
-    """``rank / n_measured`` for every gene, per ADR 0066 *Rank normalization*.
+    """``rank / n`` for every gene — generic pre-v2 primitive.
 
-    A measured gene has ``rank`` in ``1..n_measured``; a gene the dataset does
-    not measure has ``rank = n_measured + 1`` (see :func:`complete_rank`), so its
-    normalized value is ``(n_measured + 1) / n_measured`` — slightly worse than
-    every measured gene, never clamped to exactly 1.0. Clamping would let an
-    unmeasured gene tie the last measured gene and would contradict the ADR
-    formula; the denominator stays the measured-gene count, never the
-    significant-DEG count.
+    Kept for the pre-v2 fusion reader (``bases.gene_axis``); the v2 DEG contract
+    uses :func:`normalized_deg_rank`, whose denominator is the DEG count and
+    which is defined for a dataset with no DEGs. ``n_measured`` must be
+    positive here, so a zero-count frame is rejected rather than divided by 0.
     """
     rank = np.asarray(rank, dtype=np.float64)
     n_measured = float(n_measured)
@@ -290,25 +343,101 @@ def normalized_rank(rank, n_measured):
     return rank / n_measured
 
 
+def deg_only_rank(gene_index, effect, deg):
+    """Rank ``1..n_DEG`` over the DEGs only; every non-DEG gets ``n_DEG + 1``.
+
+    The v2 within-dataset rank (ADR 0071 decision 3): only genes flagged ``deg``
+    are ordered, by descending effect score with ``gene_index`` as the
+    deterministic tie-break. The returned vector aligns with the input rows: a
+    DEG carries its rank in ``1..n_DEG`` and a gene that is not a DEG carries
+    ``n_DEG + 1``. With no DEGs every row gets ``1`` (``n_DEG + 1``), which is
+    the degenerate ordering the informativeness rule reports on.
+    """
+    gene_index = np.asarray(gene_index, dtype=np.int64)
+    effect = np.asarray(effect, dtype=np.float64)
+    deg = np.asarray(deg, dtype=bool)
+    if not (len(gene_index) == len(effect) == len(deg)):
+        raise ValueError('gene index, effect and DEG flag must have the same length')
+    n_deg = int(deg.sum())
+    rank = np.full(len(gene_index), n_deg + 1, dtype=np.int64)
+    if n_deg:
+        selected = np.flatnonzero(deg)
+        scores = np.where(np.isfinite(effect[selected]), effect[selected], -np.inf)
+        order = np.lexsort((gene_index[selected], -scores))
+        rank[selected[order]] = np.arange(1, n_deg + 1, dtype=np.int64)
+    return rank
+
+
+def complete_deg_rank(deg_gene_index, deg_rank, n_deg, axis_size=AXIS_SIZE):
+    """DEG-only raw rank over the whole frozen axis; non-DEGs get ``n_DEG + 1``.
+
+    ``deg_gene_index``/``deg_rank`` are the dataset's DEGs and their ``1..n_DEG``
+    ranks; every other axis gene — measured but not a DEG, and unmeasured alike —
+    carries ``n_DEG + 1``, because the v2 rank has no other denominator or
+    ordering to offer them (ADR 0071 decision 3).
+    """
+    deg_gene_index = np.asarray(deg_gene_index, dtype=np.int64)
+    deg_rank = np.asarray(deg_rank, dtype=np.int64)
+    n_deg = int(n_deg)
+    if n_deg < 0:
+        raise ValueError('n_deg must be non-negative')
+    if len(deg_gene_index) != len(deg_rank) or len(deg_gene_index) != n_deg:
+        raise ValueError('the DEG rank must cover exactly n_DEG genes')
+    if n_deg and not np.array_equal(np.sort(deg_rank),
+                                    np.arange(1, n_deg + 1, dtype=np.int64)):
+        raise ValueError('DEG ranks must be exactly 1..n_DEG')
+    full = np.full(int(axis_size), n_deg + 1, dtype=np.int64)
+    full[deg_gene_index] = deg_rank
+    return full
+
+
+def normalized_deg_rank(rank, n_deg):
+    """``rank / n_DEG`` for every gene, per ADR 0071 decision 3.
+
+    A DEG has ``rank`` in ``1..n_DEG``; a gene that is not a DEG has
+    ``rank = n_DEG + 1`` (see :func:`complete_deg_rank`), so its normalized
+    value is ``(n_DEG + 1) / n_DEG`` — worse than every DEG, never clamped to
+    ``1.0``. The denominator is the **DEG** count, never the measured-gene count.
+
+    ``n_DEG == 0`` has no defined normalized rank (the ADR denominator is
+    zero), so the value is ``NaN`` for every gene rather than an invented
+    finite number. Such a dataset is non-informative and is excluded from
+    fusion, so the ``NaN`` is published but never summed (ADR 0068/0071).
+    """
+    rank = np.asarray(rank, dtype=np.float64)
+    n_deg = int(n_deg)
+    if n_deg < 0:
+        raise ValueError('n_deg must be non-negative')
+    if n_deg == 0:
+        return np.full(rank.shape, np.nan, dtype=np.float64)
+    return rank / float(n_deg)
+
+
 INFORMATIVENESS_RULE = (
-    'a dataset is informative when its measured genes carry more than one '
-    'distinct continuous effect score; when every measured effect is tied the '
-    'within-dataset order degenerates to gene_index and the dataset carries no '
-    'ordering evidence (ADR 0068)')
+    'a dataset is informative when it has at least one DEG under the v2 '
+    'definition and its measured genes carry more than one distinct continuous '
+    'effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a '
+    'dataset whose measured effects are all tied ranks by gene_index alone, so '
+    'either carries no ordering evidence (ADR 0068, kept by ADR 0071)')
 
 
-def dataset_informativeness(effect):
+def dataset_informativeness(effect, deg=None):
     """Decide whether a measured dataset carries an informative ordering.
 
-    The narrow, data-driven rule (ADR 0068; #185 User Story 22, ADR 0066
-    *Candidate table*): a dataset that measures genes but whose continuous
-    effect scores are all tied has no ordering information. Its published
-    DEG/rank table is still valid — the rank then follows the declared
-    ``gene_index`` tie-break — but the dataset must not count as a fusion
-    source. A dataset with two or more distinct effect scores is informative.
+    The narrow, data-driven rule (ADR 0068, kept by ADR 0071): a dataset that
+    measures genes but has no DEG, or whose continuous effect scores are all
+    tied, has no ordering information. Its published DEG/rank table is still
+    valid — every gene then sits at the v2 ``n_DEG + 1`` rank, or the order is
+    the declared ``gene_index`` tie-break — but the dataset must not count as a
+    fusion source. A dataset with at least one DEG and two or more distinct
+    effect scores is informative.
 
-    Returns ``{'informative', 'n_measured', 'n_distinct_effect', 'reason'}``
-    where ``reason`` is ``None`` for an informative dataset.
+    ``deg`` is the per-gene v2 DEG flag (:func:`deg_flag`); when omitted only the
+    ADR 0068 effect test applies, which is kept for callers that have not
+    computed the flag.
+
+    Returns ``{'informative', 'n_measured', 'n_deg', 'n_distinct_effect',
+    'reason'}`` where ``reason`` is ``None`` for an informative dataset.
     """
     effect = np.asarray(effect, dtype=np.float64)
     if effect.ndim != 1:
@@ -317,14 +446,30 @@ def dataset_informativeness(effect):
         raise ValueError('informativeness needs at least one measured gene')
     if not np.isfinite(effect).all():
         raise ValueError('effect scores must be finite')
+    if deg is None:
+        flags = np.ones(effect.size, dtype=bool)
+        n_deg = None
+    else:
+        flags = np.asarray(deg, dtype=bool)
+        if flags.shape != effect.shape:
+            raise ValueError('the DEG flag must align with the effect scores')
+        n_deg = int(flags.sum())
     distinct = int(np.unique(effect).size)
-    informative = distinct > 1
-    reason = None if informative else (
-        f'all {effect.size} measured effect scores are tied at '
-        f'{float(effect[0])!r}; the within-dataset order is the gene_index '
-        f'tie-break, so the dataset carries no ordering evidence')
+    informative = distinct > 1 and bool(flags.any())
+    reason = None
+    if not informative:
+        if n_deg == 0:
+            reason = (f'none of the {effect.size} measured genes is a DEG under the '
+                      f'v2 definition (padj < {PADJ_THRESHOLD} and '
+                      f'|log2FC| >= {DEG_LOG2FC_THRESHOLD}), so every gene ranks at '
+                      f'n_DEG + 1 = 1 and the dataset carries no ordering evidence')
+        else:
+            reason = (f'all {effect.size} measured effect scores are tied at '
+                      f'{float(effect[0])!r}; the within-dataset order is the '
+                      f'gene_index tie-break, so the dataset carries no ordering '
+                      f'evidence')
     return {'informative': bool(informative), 'n_measured': int(effect.size),
-            'n_distinct_effect': distinct, 'reason': reason}
+            'n_deg': n_deg, 'n_distinct_effect': distinct, 'reason': reason}
 
 
 
@@ -356,19 +501,28 @@ def align_table(resolver, rows, symbol_column='symbol'):
 
 
 def dataset_deg_rank(rows, axis_size=AXIS_SIZE):
-    """Collapse per-contrast rows and publish the within-dataset DEG rank.
+    """Collapse per-contrast rows and publish the within-dataset DEG rank (v2).
 
     ``rows`` needs ``gene_index``, ``log2fc`` and ``padj`` columns, plus an
     optional ``contrast`` label. Rows with a non-finite ``log2fc`` are not
     measurements and are dropped. Returns ``(table, rank, stats)``:
 
-    * ``table`` — one row per measured gene, sorted by ``gene_index``, with the
-      winning contrast's ``log2fc``/``padj``/``direction``/``significant``,
-      ``n_contrasts`` and ``n_contrasts_supporting`` plus ``effect`` and ``rank``.
+    * ``table`` — one row per measured gene, sorted by the DEG rank then
+      ``gene_index``, carrying the winning contrast's
+      ``log2fc``/``padj``/``direction``/``significant``, the ``deg`` flag and
+      ``n_contrasts_deg``, the ``n_contrasts``/``n_contrasts_supporting`` counts,
+      ``effect`` and the DEG-only ``rank``/``rank_norm``.
     * ``rank`` — a frozen-axis-length frame (``gene_index``, ``rank``,
-      ``rank_norm``) covering all ``axis_size`` genes, unmeasured at
-      ``n_measured + 1``.
-    * ``stats`` — measured/unmeasured counts and the rank_norm denominator.
+      ``rank_norm``) covering all ``axis_size`` genes: a DEG at its ``1..n_DEG``
+      rank and every other gene at ``n_DEG + 1``.
+    * ``stats`` — measured and DEG counts, the retired-vs-new denominators and
+      the informativeness verdict.
+
+    ``rank_norm`` is ``rank / n_DEG``; the measured-gene rank and its
+    ``n_measured`` denominator are retired (ADR 0071 decision 3). A dataset with
+    zero DEGs ranks every gene at ``n_DEG + 1 = 1``, publishes ``rank_norm`` as
+    NaN (the ADR denominator is zero) and records itself non-informative rather
+    than failing (ADR 0068, ticket #201).
     """
     rows = pd.DataFrame(rows)
     required = {'gene_index', 'log2fc', 'padj'}
@@ -392,28 +546,39 @@ def dataset_deg_rank(rows, axis_size=AXIS_SIZE):
         table = table.assign(contrast='contrast')
     table['n_contrasts'] = table.gene_index.map(
         pd.Series(gene_index[measured]).value_counts()).astype(np.int64)
-    table['rank'] = rank_scores(table.gene_index.to_numpy(),
-                                table.effect.to_numpy())
     n_measured = len(table)
-    table['rank_norm'] = table['rank'].to_numpy(dtype=np.float64) / n_measured
+    n_deg = int(table.deg.sum())
+    table['rank'] = deg_only_rank(table.gene_index.to_numpy(),
+                                  table.effect.to_numpy(),
+                                  table.deg.to_numpy())
+    table['rank_norm'] = normalized_deg_rank(table['rank'].to_numpy(), n_deg)
+    table = table[['gene_index', 'contrast', 'log2fc', 'padj', 'effect',
+                   'direction', 'significant', 'deg', 'n_contrasts',
+                   'n_contrasts_supporting', 'n_contrasts_deg', 'rank',
+                   'rank_norm']]
     table = table.sort_values(['rank', 'gene_index'], kind='stable').reset_index(drop=True)
-    full_rank = complete_rank(table.gene_index.to_numpy(), table['rank'].to_numpy(),
-                              axis_size=axis_size)
-    full_rank_norm = normalized_rank(full_rank, n_measured)
+    degs = table[table.deg]
+    full_rank = complete_deg_rank(degs.gene_index.to_numpy(),
+                                  degs['rank'].to_numpy(), n_deg,
+                                  axis_size=axis_size)
+    full_rank_norm = normalized_deg_rank(full_rank, n_deg)
     rank = pd.DataFrame({'gene_index': np.arange(axis_size, dtype=np.int64),
                          'rank': full_rank,
                          'rank_norm': full_rank_norm})
-    informativeness = dataset_informativeness(table.effect.to_numpy())
+    informativeness = dataset_informativeness(table.effect.to_numpy(),
+                                              table.deg.to_numpy())
     stats = {
         'schema': SCHEMA,
+        'rank_semantics': RANK_SEMANTICS,
         'axis_size': int(axis_size),
         'n_contrasts': int(len(rows)),
         'n_measured': int(n_measured),
         'n_unmeasured': int(axis_size - n_measured),
         'n_dropped_nonfinite_log2fc': int((~measured).sum()),
         'n_significant': int(table.significant.sum()),
-        'rank_norm_denominator': 'n_measured',
-        'unmeasured_rank': int(n_measured + 1),
+        'n_deg': n_deg,
+        'rank_norm_denominator': 'n_deg',
+        'nondeg_rank': int(n_deg + 1),
         'informative': informativeness['informative'],
         'informativeness_reason': informativeness['reason'],
         'n_distinct_effect': informativeness['n_distinct_effect'],
