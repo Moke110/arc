@@ -317,3 +317,20 @@ Run from the worktree root after the deletions and after `git merge dev`
   **PASS — 48/48 items**, 4 m 48.7 s, peak RSS 79,124 KiB. `free -g` available
   memory: 42 GiB before and 42 GiB after (the kernel reclaimed page cache; no
   pressure on the 12 GiB floor).
+
+**2026-11-15 rule-document source table (#198).** The rule document
+`output/gene-axis/gene_axis_fill_rule.docx` gained a source dataset information
+table as its first section: 18 rows (one per released dataset, in the five
+catalogs' order) plus a tenv-HVG fusion row, columns `category / accession /
+sample type / groups / sample sizes / sequencing technology / CM DEG count`, and
+one footnote defining the CM DEG count (`catalog.json` `n_significant`, best
+contrast, BH padj<0.05), the cardiotox vehicle-vs-compound and isogenic contrast
+semantics, and the `GSE255612` GEO `overall_design` 19/19-vs-18/16 mismatch (the
+release's numbers are unchanged). The existing five sections are renumbered
+2..6. The document was regenerated twice byte-identically from its inputs; new
+sha256 `044f7ece07d57a8130b5ea3d5b5ad0941a18df35e16fc1c3fdaf5ba08d8d0402`. The
+generator now reads the five `output/disease-deg/<category>/catalog.json` inputs
+plus `execution/gene_axis_source_metadata.py` (#197): ADR 0070's Consequences
+line says "two catalog inputs", which was an early estimate — the implementation
+uses five (recorded here; the accepted ADR is not edited). No release product,
+manifest or view changed: the docx is a reading aid, not a manifest output.

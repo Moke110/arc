@@ -35,11 +35,17 @@
   },
   "document_reproduction": {
     "docx": "stage2/01_bases/output/gene-axis/gene_axis_fill_rule.docx",
-    "docx_sha256": "6bb8242397483697866ebb43ab5fe2ba431ff79353aeac1cae804a3eb45efc4b",
+    "docx_sha256": "044f7ece07d57a8130b5ea3d5b5ad0941a18df35e16fc1c3fdaf5ba08d8d0402",
     "generator": "stage2/01_bases/execution/make_gene_axis_docx.py",
     "inputs": [
       "stage2/01_bases/output/gene-axis/source_topn_coverage.csv",
-      "stage2/01_bases/figure/gene_axis_rank_sum_histogram.png"
+      "stage2/01_bases/figure/gene_axis_rank_sum_histogram.png",
+      "stage2/01_bases/output/disease-deg/nhf/catalog.json",
+      "stage2/01_bases/output/disease-deg/icm/catalog.json",
+      "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/catalog.json",
+      "stage2/01_bases/output/disease-deg/cardiotox_TOP2/catalog.json",
+      "stage2/01_bases/output/disease-deg/cardiotox_other/catalog.json",
+      "stage2/01_bases/execution/gene_axis_source_metadata.py"
     ],
     "note": "human-facing reading aid; not a manifest output, no release consumer reads it"
   },
