@@ -6,6 +6,12 @@ rewriting either record. Reference: the re-admission request of 2026-11-14, ADR 
 eligibility*, the user rule that only data able to resolve cardiomyocytes specifically may
 qualify, and the audit note `docs/research/stage2-af-source-audit.md`.
 
+*Superseded (2026-11-15) by [ADR 0071](0071-gene-axis-v2-deg-tiered-sources-and-f2000.md):
+`AF` is re-admitted (its tier-1 CM sources plus a tier-3 atrial bulk descent), and the
+whole-tissue exclusion this record relies on no longer exists.* The audit itself is still
+cited by ADR 0071 for the source measurements; only the decision to keep `AF` out is
+historical.
+
 ## Why this record exists
 
 ADR 0069 removed `AF` because its only dataset carried no ordering evidence. The user then asked

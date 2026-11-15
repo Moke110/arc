@@ -35,13 +35,16 @@ share byte-identical accession/technology/source/platform blocks through the
 ``_DTOXS_CLASS`` / ``_GSE270788`` / ``_REICHART`` base records: one accession,
 several arms. Every other row is one accession and one arm.
 
-Two platform labels in the items' own tracked summaries disagree with the GPL
-record they cite, and ``platform_note`` records both readings rather than
-silently repeating either: ``GSE165303``'s DEG summary labels ``GPL20795``
-"Illumina NovaSeq 6000" while the ``GPL20795`` record is *HiSeq X Ten*, and
-``GSE116250``'s summary labels ``GPL16791`` "Illumina HiSeq 2000" while the
-``GPL16791`` record is *Illumina HiSeq 2500*. The GPL record is the platform
-claim, so ``platform`` carries it and the note states the item's label.
+Two platform labels in the items' own tracked DEG summaries disagreed with the
+GPL record they cite, and ``platform_note`` records the history rather than
+silently repeating either reading: ``GSE165303``'s DEG summary labels
+``GPL20795`` "Illumina NovaSeq 6000" while the ``GPL20795`` record is *HiSeq X
+Ten*, and ``GSE116250``'s summary labels ``GPL16791`` "Illumina HiSeq 2000"
+while the ``GPL16791`` record is *Illumina HiSeq 2500*. The GPL record is the
+platform claim, so ``platform`` carries it; #211 corrected the two items'
+``author_log.json`` and their DEG-build scripts, and the published
+``local/deg/*_deg.json`` bytes keep the pre-correction string because they are
+digest-pinned by the accepted disease-DEG catalogs (see the notes below).
 
 Harvest method (recorded so a reviewer can re-run it):
 
@@ -172,9 +175,10 @@ SOURCES = {
         'verified_on': VERIFIED_ON,
         'platform': {'gpl': 'GPL20795', 'instrument': 'HiSeq X Ten'},
         'platform_note': (
-            'GEO series record and GPL20795 platform record (HiSeq X Ten); the item\'s own '
-            'DEG summary labels GPL20795 "Illumina NovaSeq 6000", which the GPL record does '
-            'not support, so the GPL record is the platform claim here'
+            'GEO series record and GPL20795 platform record (HiSeq X Ten); the item\'s '
+            'published DEG summary still labels GPL20795 "Illumina NovaSeq 6000", which '
+            'the GPL record does not support, so the GPL record is the platform claim '
+            'here (#211 corrected the item\'s author_log.json and script/build_deg.py)'
         ),
         'sample_size_note': (
             'The series carries 177 samples across the HiChIP / Hi-C / ChIP-seq / ATAC-seq / '
@@ -191,8 +195,9 @@ SOURCES = {
         'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
         'platform_note': (
             'GEO series record and GPL16791 platform record (Illumina HiSeq 2500); the '
-            'item\'s author_log calls the same GPL16791 "Illumina HiSeq 2000", so the GPL '
-            'record is the platform claim here'
+            'item\'s published DEG summary still calls the same GPL16791 "Illumina HiSeq '
+            '2000", so the GPL record is the platform claim here (#211 corrected the '
+            'item\'s author_log.json and script/build_deg.R)'
         ),
         'sample_size_note': None,
     },

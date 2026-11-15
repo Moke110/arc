@@ -29,6 +29,31 @@ CATEGORIES = {
         'tier': 1,
         'evidence_type': 'cm_pseudobulk',
         'shared_control_group': ['gse270788:donor', 'reichart-cm:normal'],
+        # NOTE (docs sweep #211, 2026-11-15). The strings below are DECLARATION
+        # DATA: `build_disease_deg.py` copies them verbatim into the published
+        # nhf/ and icm/ `catalog.json`, whose digests the accepted disease-fusion,
+        # gene-axis and view manifests pin. They are therefore NOT edited here
+        # (that would desynchronise the frozen v2 release from its catalogs and
+        # fail `build_disease_deg.py verify`); this comment is the correction of
+        # record until the next disease-DEG republish rewrites them.
+        #
+        # GSE183852's real obstacle is measured, not the label-extraction claim
+        # below: its authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet carries the
+        # CM labels, and the v2 definition yields 70 DEGs (padj < 0.05 and
+        # |log2FC| >= 2), 50 of them on the frozen axis (26,946 genes tested; the
+        # padj-only anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce).
+        # Reading an already-annotated `meta.data` would not be re-clustering, so
+        # the "labels live only inside Robj objects / ad-hoc re-clustering is
+        # forbidden" reason misdescribes the trade-off: the 8.1-12 GB Robj label
+        # extraction is simply not worth 2.5% of a 2,000-gene target. Its
+        # padj-only yield (4,927 on-axis) would only matter under a softer fold
+        # tier, which the v2 rule does not admit -- so nHF closes at 1,661
+        # axis-resolved DEGs by decision, not by missing capability.
+        #
+        # The third entry's "not cardiomyocyte-derived" ground is superseded by
+        # ADR 0071 tier 3: GSE141910, GSE116250 and GSE128188 are admitted (or
+        # available) as whole-tissue tier-3 sources, and GSE165303 joined them;
+        # only GSE282618 remains un-admitted, for its 3-vs-2 design.
         'rejected': [
             {'candidate': 'GSE183852',
              'reason': 'eligible human LV CM source, but CM labels live only inside '
@@ -767,13 +792,14 @@ CATEGORIES['AF'] = {
             'note': ('measured with the one live DEG implementation under ADR 0071\'s '
                      'definition (padj < 0.05 and |log2FC| >= 2): GSE255612 0 (its '
                      'existing v1-contract table), GSE138252 1 (SLC9A7), GSE238242 0. '
-                     'ADR 0071 states a 2-gene union; that number is the pre-existing '
-                     'audit\'s limma-voom + edgeR TMM result, and TMM is the only '
-                     'difference (the pinned arc R env ships limma but not edgeR, so the '
-                     'live worker uses voom\'s own library-size normalisation). The TMM '
-                     'alternative is recorded as a logged sensitivity in the GSE138252 '
-                     'item summary, never as the published number. #206/#211 must '
-                     'reconcile the ADR text with the live-worker count.'),
+                     'Reconciled by #211: ADR 0071 decision 7 now states this '
+                     'live-worker single-gene union (SLC9A7), and the pre-existing '
+                     'audit\'s 2-gene figure -- its limma-voom + edgeR TMM result, TMM '
+                     'being the only difference, since the pinned arc R env ships limma '
+                     'but not edgeR and the live worker therefore uses voom\'s own '
+                     'library-size normalisation -- is recorded there and in the '
+                     'GSE138252 item summary as a sensitivity, never as the published '
+                     'number.'),
         },
         'tier_3': {
             'sources': ['gse269882__af'],

@@ -12,11 +12,15 @@ files its `See` section names.
 assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
 restore.
 
-The index covers every record in the directory, 0001–0070 (68 files; 0023 and 0050 are the
+The index covers every record in the directory, 0001–0071 (69 files; 0023 and 0050 are the
 gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
 details in 0038–0041. ADR 0043 reopens the corpus as source measurements without endpoint gates; ADR 0044 subsequently replaces universal-corpus-first planning with source-first corpora.
+ADR 0071 is the current gene-axis contract and supersedes ADR 0066's *Source eligibility*,
+*Priority* and *Candidate table and the two-level rank-sum fusion*, and supersedes ADR
+0069/0070 (its `AF` removal is reversed). Each of those four records carries a status-line
+pointer to 0071; their bodies are unchanged, per the convention above.
 
 | # | Decision |
 |---|---|

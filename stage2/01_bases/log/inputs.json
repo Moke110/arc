@@ -1011,6 +1011,7 @@
     }
   },
   "schema": "stage2-bases-acceptance-inputs-v1",
+  "sealed_record_note": "Sealed record (note added 2026-11-15 by #211). This file is the machine-readable evidence of runs already performed; it is appended to, never rewritten. (1) The pre-v2 sections (everything before v2_republish / figure_repin) describe the ADR 0066 measured-gene-rank world and their pN / p2000 / p5000 entries are historical: pN was retired by ADR 0071 and replaced by f2000, so those numbers are kept as the record of what was published then, not as a live contract. (2) health.red_tests names test_gene_axis.DocxTests.test_build_reads_the_five_catalog_paths_it_is_given because that is the id the #208/#210 runs saw; #211 renamed the test to test_build_reads_the_six_catalog_paths_it_is_given (the release has six categories), and the old name here is history, not a live test id. Do not update either in place; a new run gets a new section.",
   "step": "stage2/01_bases",
   "superseded_digests": {
     "breakdown": {
