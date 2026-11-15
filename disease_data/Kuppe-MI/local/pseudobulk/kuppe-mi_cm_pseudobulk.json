@@ -1,0 +1,201 @@
+{
+  "cm_cells_per_zone": {
+    "BZ": 10594,
+    "CTRL": 18310,
+    "FZ": 7599,
+    "IZ": 4866,
+    "RZ": 23141
+  },
+  "collection_id": "8191c283-0816-424b-9b61-c3e1d6258a77",
+  "counts": "integer counts summed per (donor, zone) profile from raw/X over that profile's CM nuclei, before any testing",
+  "dataset_id": "1c739a3e-c3f5-49d5-98e0-73975e751201",
+  "dataset_version_id": "4780eb7d-4c7c-4630-8705-471f0de8e27a",
+  "gate": "cell_type_original == \"Cardiomyocyte\"",
+  "item": "Kuppe-MI",
+  "n_cells": 191795,
+  "n_cm_cells": 64510,
+  "n_donors": 20,
+  "n_features": 28380,
+  "n_profiles": 25,
+  "profiles": [
+    {
+      "disease": "myocardial infarction",
+      "donor": "P10",
+      "n_cm": 999,
+      "profile": "P10|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P11",
+      "n_cm": 2487,
+      "profile": "P11|RZ",
+      "zone": "RZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P12",
+      "n_cm": 1791,
+      "profile": "P12|BZ",
+      "zone": "BZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P13",
+      "n_cm": 41,
+      "profile": "P13|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P14",
+      "n_cm": 3804,
+      "profile": "P14|FZ",
+      "zone": "FZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P15",
+      "n_cm": 582,
+      "profile": "P15|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P16",
+      "n_cm": 42,
+      "profile": "P16|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "normal",
+      "donor": "P17",
+      "n_cm": 3996,
+      "profile": "P17|CTRL",
+      "zone": "CTRL"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P18",
+      "n_cm": 314,
+      "profile": "P18|FZ",
+      "zone": "FZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P19",
+      "n_cm": 415,
+      "profile": "P19|FZ",
+      "zone": "FZ"
+    },
+    {
+      "disease": "normal",
+      "donor": "P1",
+      "n_cm": 3880,
+      "profile": "P1|CTRL",
+      "zone": "CTRL"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P20",
+      "n_cm": 359,
+      "profile": "P20|FZ",
+      "zone": "FZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P2",
+      "n_cm": 4990,
+      "profile": "P2|BZ",
+      "zone": "BZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P2",
+      "n_cm": 1140,
+      "profile": "P2|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P2",
+      "n_cm": 4796,
+      "profile": "P2|RZ",
+      "zone": "RZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P3",
+      "n_cm": 3813,
+      "profile": "P3|BZ",
+      "zone": "BZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P3",
+      "n_cm": 110,
+      "profile": "P3|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P3",
+      "n_cm": 3243,
+      "profile": "P3|RZ",
+      "zone": "RZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P4",
+      "n_cm": 54,
+      "profile": "P4|FZ",
+      "zone": "FZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P5",
+      "n_cm": 2653,
+      "profile": "P5|FZ",
+      "zone": "FZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P6",
+      "n_cm": 4346,
+      "profile": "P6|RZ",
+      "zone": "RZ"
+    },
+    {
+      "disease": "normal",
+      "donor": "P7",
+      "n_cm": 6478,
+      "profile": "P7|CTRL",
+      "zone": "CTRL"
+    },
+    {
+      "disease": "normal",
+      "donor": "P8",
+      "n_cm": 3956,
+      "profile": "P8|CTRL",
+      "zone": "CTRL"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P9",
+      "n_cm": 1952,
+      "profile": "P9|IZ",
+      "zone": "IZ"
+    },
+    {
+      "disease": "myocardial infarction",
+      "donor": "P9",
+      "n_cm": 8269,
+      "profile": "P9|RZ",
+      "zone": "RZ"
+    }
+  ],
+  "profiles_sha256": "2b3f2ed4383499ddf17182d3f37205d5da8cc894e58bf2df23a13cd27bd9a14b",
+  "pseudobulk_sha256": "b7977e9fd0ce5927846b4c2b9e561dfbd778e2da41b6e478a11f1cbf6604d254",
+  "schema": "stage2-item-cm-pseudobulk-v1",
+  "zone_column": "major_labl"
+}

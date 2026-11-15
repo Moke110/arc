@@ -1,0 +1,372 @@
+{
+  "alignment": {
+    "alignment_categories": {
+      "canonical": 15408,
+      "crosswalk_alias": 111,
+      "ensembl": 2,
+      "offaxis": 448,
+      "unmapped": 7041
+    },
+    "n_ambiguous_kept": 0,
+    "n_axis_genes_resolved": 15519,
+    "n_recovered_by_identifier": 112,
+    "n_resolved": 15521,
+    "n_source_rows": 23010,
+    "symbol_first_pass": {
+      "ambiguous": 0,
+      "canonical": 15408,
+      "crosswalk_alias": 0,
+      "ensembl": 1,
+      "hgnc_alias": 0,
+      "n_axis_genes_resolved": 15519,
+      "n_resolved": 15409,
+      "n_source_symbols": 23010,
+      "offaxis": 448,
+      "unmapped": 7153
+    }
+  },
+  "artifact_contrasts": [
+    "BZ-CTRL",
+    "RZ-CTRL",
+    "FZ-CTRL"
+  ],
+  "category": "ICM",
+  "contrasts": {
+    "IZ-CTRL": {
+      "case_donors": [
+        "P10",
+        "P15",
+        "P2",
+        "P9"
+      ],
+      "control_donors": [
+        "P1",
+        "P17",
+        "P7",
+        "P8"
+      ],
+      "n_case": 4,
+      "n_control": 4
+    }
+  },
+  "deg": {
+    "n_source_genes": 23010,
+    "path": "local/deg/kuppe-mi_deg.csv",
+    "rows": 23010,
+    "sha256": "5eda8a5808e24bdf8c41cf79224d0164dd2c9ad90a619825ba371e6926792d66"
+  },
+  "deg_counts": {
+    "all_contrasts": {
+      "BZ-CTRL": {
+        "n_down": 0,
+        "n_padj_lt_0.05": 1,
+        "n_tested": 23010,
+        "n_up": 1,
+        "n_v2_deg": 1,
+        "published": false
+      },
+      "FZ-CTRL": {
+        "n_down": 0,
+        "n_padj_lt_0.05": 7,
+        "n_tested": 23010,
+        "n_up": 5,
+        "n_v2_deg": 5,
+        "published": false
+      },
+      "IZ-CTRL": {
+        "n_down": 1440,
+        "n_padj_lt_0.05": 5649,
+        "n_tested": 23010,
+        "n_up": 1659,
+        "n_v2_deg": 3099,
+        "published": true
+      },
+      "RZ-CTRL": {
+        "n_down": 1,
+        "n_padj_lt_0.05": 2,
+        "n_tested": 23010,
+        "n_up": 1,
+        "n_v2_deg": 2,
+        "published": false
+      }
+    },
+    "axis": {
+      "n_axis_genes": 18164,
+      "n_down": 267,
+      "n_padj_lt_0.05": 3999,
+      "n_tested": 15521,
+      "n_up": 1379,
+      "n_v2_deg": 1646
+    },
+    "axis_definition": "frozen 18,164-gene axis, resolved by bases.disease_deg",
+    "published_contrast": {
+      "n_down": 1440,
+      "n_padj_lt_0.05": 5649,
+      "n_tested": 23010,
+      "n_up": 1659,
+      "n_v2_deg": 3099,
+      "published": true
+    }
+  },
+  "design": {
+    "block": "donor",
+    "contrasts": [
+      {
+        "denominator": "CTRL",
+        "label": "IZ-CTRL",
+        "numerator": "IZ"
+      },
+      {
+        "denominator": "CTRL",
+        "label": "BZ-CTRL",
+        "numerator": "BZ"
+      },
+      {
+        "denominator": "CTRL",
+        "label": "RZ-CTRL",
+        "numerator": "RZ"
+      },
+      {
+        "denominator": "CTRL",
+        "label": "FZ-CTRL",
+        "numerator": "FZ"
+      }
+    ],
+    "factor": "zone",
+    "filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "formula": "~0 + zone",
+    "kind": "counts",
+    "normalisation": "voom"
+  },
+  "design_ambiguities": {
+    "published_contrast": "only IZ-CTRL is published: the ischaemic zone is the authors' infarct-zone annotation and the contrast the ADR 0071 ICM evidence rests on; BZ/RZ/FZ are fitted for dispersion and recorded as artifacts",
+    "repeated_donors": "a donor contributes up to three zone profiles, so the profiles are not independent; duplicateCorrelation(block=donor) is estimated on the joint design and applied to voom and lmFit",
+    "time_window": "the deposit carries no per-donor time-since-infarct field, so acute-vs-chronic is not declared; the record is time_window_basis: not_declared",
+    "zone_not_donor": "profiles are per (donor, zone), not per donor: an infarct heart contributes its IZ/BZ/RZ/FZ CM nuclei as separate profiles, which is what makes the IZ-vs-CTRL contrast possible; a donor-level pooled contrast was measured and kept out of the axis (3 DEGs)"
+  },
+  "fit_summary": {
+    "block": "donor",
+    "coefficient_names": [
+      "zoneBZ",
+      "zoneCTRL",
+      "zoneFZ",
+      "zoneIZ",
+      "zoneRZ"
+    ],
+    "consensus_correlation": 0.5778,
+    "contrasts": [
+      "IZ-CTRL",
+      "BZ-CTRL",
+      "RZ-CTRL",
+      "FZ-CTRL"
+    ],
+    "factor": "zone",
+    "filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "formula": "~0 + zone",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_blocks": 14,
+    "n_genes_dropped": 5370,
+    "n_genes_input": 23010,
+    "n_genes_matrix": 28380,
+    "n_genes_tested": 23010,
+    "n_rows": 92040,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "gate": "cell_type_original == \"Cardiomyocyte\" (author CM label; 64,510 nuclei)",
+  "item": "Kuppe-MI",
+  "matrix": {
+    "path": "local/deg/kuppe-mi_pseudobulk_matrix.tsv.gz",
+    "sha256": "d192bb7cdbbc354028db3c437deb34ba7f2c7601a98cfa27fafb467c3ef16024"
+  },
+  "method": {
+    "block": "donor",
+    "contrast_direction": "positive log2FC = up in the IZ (ischaemic zone) CM profiles vs the control-heart CM profiles",
+    "count_filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "f83fde941363382a161a9dd8be72daeffc8384966c17ae814b23173b77ba1115",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t) with donor blocking: duplicateCorrelation(block=donor) on the joint ~0 + zone design, applied to both voom and lmFit",
+    "normalisation": "voom",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "profile_floor": {
+    "dropped_profiles": [
+      {
+        "donor": "P13",
+        "n_cm": 41,
+        "profile": "P13|IZ",
+        "zone": "IZ"
+      },
+      {
+        "donor": "P16",
+        "n_cm": 42,
+        "profile": "P16|IZ",
+        "zone": "IZ"
+      },
+      {
+        "donor": "P18",
+        "n_cm": 314,
+        "profile": "P18|FZ",
+        "zone": "FZ"
+      },
+      {
+        "donor": "P19",
+        "n_cm": 415,
+        "profile": "P19|FZ",
+        "zone": "FZ"
+      },
+      {
+        "donor": "P20",
+        "n_cm": 359,
+        "profile": "P20|FZ",
+        "zone": "FZ"
+      },
+      {
+        "donor": "P3",
+        "n_cm": 110,
+        "profile": "P3|IZ",
+        "zone": "IZ"
+      },
+      {
+        "donor": "P4",
+        "n_cm": 54,
+        "profile": "P4|FZ",
+        "zone": "FZ"
+      }
+    ],
+    "n_profiles_fitted": 18,
+    "n_profiles_total": 25,
+    "rule": "profile n_cm >= 500",
+    "zone_profile_counts": {
+      "BZ": 3,
+      "CTRL": 4,
+      "FZ": 2,
+      "IZ": 4,
+      "RZ": 5
+    }
+  },
+  "pseudobulk": {
+    "dtype": "integer counts summed per (donor, zone) profile over that profile's CM nuclei",
+    "n_genes": 28380,
+    "n_profiles": 25,
+    "path": "local/pseudobulk/kuppe-mi_cm_pseudobulk.csv.gz",
+    "sha256": "b7977e9fd0ce5927846b4c2b9e561dfbd778e2da41b6e478a11f1cbf6604d254"
+  },
+  "published_contrast": "IZ-CTRL",
+  "samples": {
+    "cm_nuclei_per_profile": {
+      "P10|IZ": 999,
+      "P11|RZ": 2487,
+      "P12|BZ": 1791,
+      "P14|FZ": 3804,
+      "P15|IZ": 582,
+      "P17|CTRL": 3996,
+      "P1|CTRL": 3880,
+      "P2|BZ": 4990,
+      "P2|IZ": 1140,
+      "P2|RZ": 4796,
+      "P3|BZ": 3813,
+      "P3|RZ": 3243,
+      "P5|FZ": 2653,
+      "P6|RZ": 4346,
+      "P7|CTRL": 6478,
+      "P8|CTRL": 3956,
+      "P9|IZ": 1952,
+      "P9|RZ": 8269
+    },
+    "donors_per_arm": {
+      "CTRL": [
+        "P1",
+        "P17",
+        "P7",
+        "P8"
+      ],
+      "IZ": [
+        "P10",
+        "P15",
+        "P2",
+        "P9"
+      ]
+    },
+    "group_counts": {
+      "BZ": 3,
+      "CTRL": 4,
+      "FZ": 2,
+      "IZ": 4,
+      "RZ": 5
+    },
+    "n": 18,
+    "path": "local/deg/kuppe-mi_samples.csv",
+    "sha256": "bebb0420eaeb828bdd8b9748840bc49472707507e606651701e8d1e9d9f14a3c"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "spec": {
+    "block": "donor",
+    "category": "ICM",
+    "contrasts": [
+      {
+        "denominator": "CTRL",
+        "label": "IZ-CTRL",
+        "numerator": "IZ"
+      },
+      {
+        "denominator": "CTRL",
+        "label": "BZ-CTRL",
+        "numerator": "BZ"
+      },
+      {
+        "denominator": "CTRL",
+        "label": "RZ-CTRL",
+        "numerator": "RZ"
+      },
+      {
+        "denominator": "CTRL",
+        "label": "FZ-CTRL",
+        "numerator": "FZ"
+      }
+    ],
+    "factor": "zone",
+    "filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "formula": "~0 + zone",
+    "item": "Kuppe-MI",
+    "kind": "counts",
+    "normalisation": "voom",
+    "tier": 1
+  },
+  "tier": 1,
+  "zone_artifact": {
+    "contrasts": [
+      "BZ-CTRL",
+      "FZ-CTRL",
+      "IZ-CTRL",
+      "RZ-CTRL"
+    ],
+    "path": "local/deg/kuppe-mi_zone_deg.csv",
+    "rows": 92040,
+    "sha256": "82435a69820676d6592f4aeea5bd5187cf1020c8be29ee832deed9b066b32923"
+  },
+  "zone_column": "major_labl"
+}
