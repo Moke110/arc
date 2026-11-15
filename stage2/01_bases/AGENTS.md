@@ -15,6 +15,7 @@ Routing for the accepted Stage 2 foundation. Read this, then the owning section 
 ## Products
 `output/raw_counts/` → `output/corpus/` → `output/view-2k/`, `output/view-5k/`;
 `output/disease-deg/**` (five categories + the `cardiotox/` crosswalk),
+`output/disease-fusion/` (the ADR 0071 per-disease level-1 rank + `DEG2000`),
 `output/gene-axis/` (`G_2000`/`G_5000`, the source top-`N` coverage table and the
 human-facing `gene_axis_fill_rule.docx`), `output/gene-identity/`, `output/tenv-hvg/`,
 `output/fold_n_seed/`, `output/palette/` and `output/api/` (the single live public

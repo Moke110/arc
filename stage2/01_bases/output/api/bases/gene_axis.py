@@ -1,4 +1,4 @@
-"""Two-level rank-sum fusion and the released Stage 2 axes (ADR 0066).
+"""Two-level rank-sum fusion and the released Stage 2 axes (ADR 0066, ADR 0071).
 
 This module owns every scientific definition of the released gene axis: the
 winning-tier selection inside a disease category, the level-1 category rank, the
@@ -9,14 +9,21 @@ the rank-sum histogram and the diagnostic Kneedle + second-difference inflection
 products; ``execution/tests/test_gene_axis.py`` exercises these definitions on
 hermetic fixtures.
 
+Level 1 is the ADR 0071 v2 contract (#205): each source contributes its
+**DEG-only** rank (``rank / n_DEG``; a non-DEG carries ``(n_DEG + 1) / n_DEG``),
+implemented once in :func:`bases.disease_deg.level_one_rank` and re-exported here
+as :func:`category_rank`. The measured-gene rank of ADR 0066 is retired; the
+generic rank primitives stay exported for pre-v2 readers (ADR 0071 decision 9
+removes them with their readers).
+
 It is a pure function module (ADR 0062): no file is opened here except through
 :class:`GeneAxis`, the public reader for the published ``output/gene-axis/``
 release. Nothing here chooses an axis size: ``N`` is declared (2,000 and 5,000)
 and the inflection diagnostic never selects it.
 
-Vocabulary follows ADR 0066 and ``GLOSSARY.md`` -> *Stage 2 gene axis*:
-``Source rank``, ``Class source``, ``Rank-sum fusion``, ``pN``, ``Axis fill
-rule``, ``Inflection point``.
+Vocabulary follows ADR 0066 / ADR 0071 and ``GLOSSARY.md`` -> *Stage 2 gene
+axis*: ``Source rank``, ``Class source``, ``Rank-sum fusion``, ``pN``,
+``Axis fill rule``, ``Inflection point``, ``DEG (gene axis, v2)``, ``DEG2000``.
 
 Index convention: every per-gene vector is indexed by the frozen ``gene_index``
 (``0..axis_size-1``). A released axis is an ascending ordering of original
@@ -30,6 +37,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+from . import disease_deg
 
 # The #186 contract: ``bases.gene_axis`` re-exports the DEG/rank functions now
 # owned by ``bases.deg_rank`` (one live implementation, no second copy).
@@ -164,57 +173,40 @@ def winning_tier(catalog):
     }
 
 
-def category_rank(ranks, n_measured, gene_index=None, axis_size=None):
-    """Level 1: a category's source rank from its datasets' within-dataset ranks.
+def category_rank(ranks, n_deg, gene_index=None, axis_size=None):
+    """Level 1: a category's source rank from its datasets' **DEG-only** ranks.
 
-    ADR 0066 *Candidate table and the two-level rank-sum fusion*::
+    ADR 0071 decisions 3 and 4 (this replaced the retired measured-gene contract
+    of ADR 0066; #205)::
 
-        level-1 sum = sum(rank_norm)  over the datasets at the winning tier
+        level-1 sum = sum(rank_norm)  over the category's informative datasets
         category rank = position in ascending level-1 sum, ties by gene_index
 
-    ``rank_norm`` is recomputed from the raw rank and the dataset's
-    ``n_measured`` with :func:`bases.deg_rank.normalized_rank` (every gene is
-    ``rank/n_measured``; an unmeasured gene's rank is ``n_measured + 1``, so its
-    value is ``(n_measured + 1)/n_measured``) so a category never trusts a
-    hand-edited normalized value. Every dataset rank vector covers the frozen
-    axis (``gene_index`` order) and is a complete ``1..n_measured+1`` assignment.
+    Each ``ranks`` entry is a dataset's full frozen-axis **DEG rank frame**: its
+    DEGs carry ``1..n_DEG`` and every other gene carries ``n_DEG + 1``
+    (:func:`bases.deg_rank.complete_deg_rank`), and the matching ``n_deg`` entry is
+    that dataset's DEG count. ``rank_norm`` is ``rank / n_DEG``
+    (:func:`bases.deg_rank.normalized_deg_rank`), so a non-DEG contributes
+    ``(n_DEG + 1) / n_DEG`` — strictly worse than every DEG of that source and
+    never clamped to 1.0. The denominator is the **DEG** count; the measured-gene
+    rank and its ``n_measured`` denominator are retired (ADR 0071 decision 3).
 
-    Returns ``{'rank', 'sum', 'measured', 'n_datasets'}``: a 1-based
-    ``1..axis_size`` permutation, the level-1 ``sum(rank_norm)``, and a boolean
-    "this source measures the gene" mask (measured by at least one dataset).
+    A dataset with ``n_DEG = 0`` has no defined ``rank_norm``; it is
+    non-informative and this function rejects it rather than dividing by zero.
+    The caller excludes it and records the exclusion (ADR 0068), exactly as the
+    disease contract does (:func:`bases.disease_deg.fuse_disease`). The shared
+    implementation is :func:`bases.disease_deg.level_one_rank`.
+
+    Returns ``{'rank', 'sum', 'deg', 'measured', 'n_datasets'}``: a 1-based
+    ``1..axis_size`` permutation, the level-1 ``sum(rank_norm)``, the DEG-union
+    mask (a DEG in at least one dataset) and the dataset count. ``measured`` is
+    the retired v1 name for that same union mask, kept because a pre-v2 reader
+    still reads it; ``deg`` is the v2 name.
     """
-    ranks = [np.asarray(rank, dtype=np.int64) for rank in ranks]
-    n_measured = [int(value) for value in n_measured]
-    if not ranks:
-        raise ValueError('a category needs at least one dataset rank')
-    if len(ranks) != len(n_measured):
-        raise ValueError('every dataset rank needs its n_measured')
-    axis_size = int(axis_size if axis_size is not None else len(ranks[0]))
-    gene_index = (np.arange(axis_size, dtype=np.int64) if gene_index is None
-                  else np.asarray(gene_index, dtype=np.int64))
-    if gene_index.shape != (axis_size,):
-        raise ValueError('gene_index must cover the frozen axis')
-    total = np.zeros(axis_size, dtype=np.float64)
-    measured = np.zeros(axis_size, dtype=bool)
-    for rank, n in zip(ranks, n_measured):
-        if rank.shape != (axis_size,):
-            raise ValueError('a dataset rank vector must cover the frozen axis')
-        if n <= 0:
-            raise ValueError('a dataset needs at least one measured gene')
-        if rank.min() < 1 or rank.max() > n + 1:
-            raise ValueError('a dataset rank must be in 1..n_measured+1')
-        # A complete frozen-axis rank frame: measured genes get exactly 1..n and
-        # every unmeasured gene gets n+1 (ADR 0066 / bases.deg_rank contract).
-        if int((rank <= n).sum()) != n or np.any(rank > n + 1):
-            raise ValueError('a dataset rank frame is not a complete 1..n_measured+1 assignment')
-        if not np.array_equal(np.sort(rank[rank <= n]), np.arange(1, n + 1)):
-            raise ValueError('measured ranks must be exactly 1..n_measured')
-        measured |= rank <= n
-        total += normalized_rank(rank, n)
-    order = np.lexsort((gene_index, total))
-    rank = np.empty(axis_size, dtype=np.int64)
-    rank[order] = np.arange(1, axis_size + 1, dtype=np.int64)
-    return {'rank': rank, 'sum': total, 'measured': measured, 'n_datasets': len(ranks)}
+    result = disease_deg.level_one_rank(ranks, n_deg, gene_index=gene_index,
+                                        axis_size=axis_size)
+    return {'rank': result['rank'], 'sum': result['sum'], 'deg': result['deg'],
+            'measured': result['deg'], 'n_datasets': result['n_sources']}
 
 
 def _complete_rank(rank, axis_size, label):

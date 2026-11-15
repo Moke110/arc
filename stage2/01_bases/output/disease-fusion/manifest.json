@@ -1,0 +1,186 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv"
+  },
+  "catalog_sha256": "454d6df24062f6e24f10f4f0313fe7ef6d71c2b9847f41a856f2d70c3e9da303",
+  "counts": {
+    "deg2000": 4819,
+    "diseases": 6,
+    "published": 5
+  },
+  "inputs": {
+    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/catalog.json": {
+      "bytes": 18909,
+      "role": "cardiotox_TOP2:catalog",
+      "sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/dtoxs_ipsc.atc_l4-L01DB.deg.csv": {
+      "bytes": 2102478,
+      "role": "cardiotox_TOP2:dtoxs_ipsc:deg",
+      "sha256": "db1ab77af1c632acf7323f20d5b6c03935201720f4496be3a1ffaf8db38233e5"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/gse243674.atc_l4-L01DB.deg.csv": {
+      "bytes": 2666367,
+      "role": "cardiotox_TOP2:gse243674:deg",
+      "sha256": "740776031c84696ad37cc2d8a2d68c7e79b6528951599fb903b113843be7318e"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/gse244740.atc_l4-L01DB.deg.csv": {
+      "bytes": 2778575,
+      "role": "cardiotox_TOP2:gse244740:deg",
+      "sha256": "3bda7c9bea0208a40d2cfea79dacfa6ac4b1b2de6540916eed08094423cb12e3"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_TOP2/manifest.json": {
+      "bytes": 5353,
+      "role": "cardiotox_TOP2:release_manifest",
+      "sha256": "5ef7fa404f90bb6c899159f548d79629d531262663d21bc68f6417d8f2d42c55"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_other/catalog.json": {
+      "bytes": 18058,
+      "role": "cardiotox_other:catalog",
+      "sha256": "a065d98e8c5b6453fab1ccacab80f7112d3580569c89148dda9842c8db9e2dbb"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EA.deg.csv": {
+      "bytes": 1885707,
+      "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EA:deg",
+      "sha256": "d0dc1203c046ac81b01c01a5bd4e5c09fb2252c5bc50ff84f33913fced4ad916"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EB.deg.csv": {
+      "bytes": 1862724,
+      "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EB:deg",
+      "sha256": "94e6b297e950394c768f4d864860ef3226b13c081d0d494188d75080cc6c80b5"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_other/dtoxs_ipsc.atc_l4-L01EX.deg.csv": {
+      "bytes": 1894108,
+      "role": "cardiotox_other:dtoxs_ipsc__atc_l4-L01EX:deg",
+      "sha256": "7feaf0f7e335bfa9078ee7bbfdf827b7a285f90d847c7f28dfdba8942f57d033"
+    },
+    "stage2/01_bases/output/disease-deg/cardiotox_other/manifest.json": {
+      "bytes": 4452,
+      "role": "cardiotox_other:release_manifest",
+      "sha256": "12a3e1babf67dab5ccc032a266e68dfa0faacc96f86267fd0c69a6cbc736f8d4"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/catalog.json": {
+      "bytes": 30773,
+      "role": "genetic_cardiomyopathy:catalog",
+      "sha256": "d697f6c4b692be423763713737dc0e10410c8b05ec45766362685573d1c1dfe8"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse194297__dmd_cardiomyopathy.deg.csv": {
+      "bytes": 3049216,
+      "role": "genetic_cardiomyopathy:gse194297__dmd_cardiomyopathy:deg",
+      "sha256": "fe5872cb4c1bc7517c3c0d52e71f878373e974f9b571bb530bf9da8e07073b61"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse224129__mybpc3_hcm.deg.csv": {
+      "bytes": 3260005,
+      "role": "genetic_cardiomyopathy:gse224129__mybpc3_hcm:deg",
+      "sha256": "c907dada58afd12707f694ba4748739652cc5e395ee92d36f8017f3fc1a16e64"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse234141__ttntv_dcm.deg.csv": {
+      "bytes": 3300812,
+      "role": "genetic_cardiomyopathy:gse234141__ttntv_dcm:deg",
+      "sha256": "523770af2c2c391988378b2bf728dae216d788468dc6793ccb47997a184dcc77"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse253223__pkp2_knockdown_arvc.deg.csv": {
+      "bytes": 2998811,
+      "role": "genetic_cardiomyopathy:gse253223__pkp2_knockdown_arvc:deg",
+      "sha256": "b1e2a4b7ed78209b9d598d1846da995161641dad18fb623795fd8069d5426b9a"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse304575__lmna_h222p_dcm.deg.csv": {
+      "bytes": 3194674,
+      "role": "genetic_cardiomyopathy:gse304575__lmna_h222p_dcm:deg",
+      "sha256": "38c8af0d76e9d4ec91df7f94b0f6323373d8337fc28c5e28ac6d69754b427d72"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/gse305648__rbm20_dcm.deg.csv": {
+      "bytes": 3196628,
+      "role": "genetic_cardiomyopathy:gse305648__rbm20_dcm:deg",
+      "sha256": "017bef2393c50784ef249609cd91081cea4e7c600459eae15aaed4766cf02cf6"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/manifest.json": {
+      "bytes": 5311,
+      "role": "genetic_cardiomyopathy:release_manifest",
+      "sha256": "304d8182d987d02eb3b5341f0781a741b377ce190cc9c461f63d289736064673"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/reichart-cm__arvc.deg.csv": {
+      "bytes": 3149315,
+      "role": "genetic_cardiomyopathy:reichart-cm__arvc:deg",
+      "sha256": "67641adfb357f2906744f8f885624408748e8263afa58698a4c3f7cdae719801"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/reichart-cm__dcm_genotype_positive.deg.csv": {
+      "bytes": 3451726,
+      "role": "genetic_cardiomyopathy:reichart-cm__dcm_genotype_positive:deg",
+      "sha256": "a0502753ddc4562d94011f3c8e05ebb41d175d48c690091ffd7d5fd933f96525"
+    },
+    "stage2/01_bases/output/disease-deg/icm/catalog.json": {
+      "bytes": 6892,
+      "role": "icm:catalog",
+      "sha256": "b82673333dc137ef43a6237eb5eb04db8f0278b01097c6883d50b35d3692f290"
+    },
+    "stage2/01_bases/output/disease-deg/icm/gse270788__ami.deg.csv": {
+      "bytes": 3074416,
+      "role": "icm:gse270788__ami:deg",
+      "sha256": "147d475bd8aaebd9dfac7847bab0f8f22c01fe127ab03239198c4f7e0cefc528"
+    },
+    "stage2/01_bases/output/disease-deg/icm/gse270788__icm.deg.csv": {
+      "bytes": 3087923,
+      "role": "icm:gse270788__icm:deg",
+      "sha256": "4fb82b0b24b6ef5b06e96d711f6f5ae5f7c326f7a9bdc4c63410abae97f10470"
+    },
+    "stage2/01_bases/output/disease-deg/icm/manifest.json": {
+      "bytes": 1653,
+      "role": "icm:release_manifest",
+      "sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936"
+    },
+    "stage2/01_bases/output/disease-deg/nhf/catalog.json": {
+      "bytes": 7004,
+      "role": "nhf:catalog",
+      "sha256": "6b5e36bfbe4429019799a249981b8f9556e7578e819c8d450f214cc1f4989eb6"
+    },
+    "stage2/01_bases/output/disease-deg/nhf/gse270788__nicm.deg.csv": {
+      "bytes": 3064667,
+      "role": "nhf:gse270788__nicm:deg",
+      "sha256": "6b09a27a9892650a019cc85b129506cee373c23e0aec3652f6bb47b997984090"
+    },
+    "stage2/01_bases/output/disease-deg/nhf/manifest.json": {
+      "bytes": 1963,
+      "role": "nhf:release_manifest",
+      "sha256": "afb505649e5b2899aeea33c59790b77c6214b8af7ea52780a66e059ec2c52b4e"
+    },
+    "stage2/01_bases/output/disease-deg/nhf/reichart-cm__dcm_genotype_negative.deg.csv": {
+      "bytes": 3443142,
+      "role": "nhf:reichart-cm__dcm_genotype_negative:deg",
+      "sha256": "f154bfaa70859b1ff9e60f1b3bdefabee5f3aa8cc42f2e3740b406d5f011aa90"
+    },
+    "stage2/01_bases/output/gene-identity/genes.csv": {
+      "bytes": 930854,
+      "role": "frozen_axis",
+      "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
+    }
+  },
+  "limit": 2000,
+  "outputs": {
+    "cardiotox_TOP2.deg2000.csv": {
+      "rows": 2000,
+      "sha256": "7f72b8d2d361655a6af402c7b9112c5b8607cfbe13205bc4e5ec725271840416"
+    },
+    "cardiotox_other.deg2000.csv": {
+      "rows": 279,
+      "sha256": "8c00af4e9b9a7e2503f5f6227f34c156ba9a6aba74612648886f3c6baa9f713b"
+    },
+    "catalog.json": {
+      "sha256": "32f191f9c3bcc9deee7c7f94529def3d626dd97ce5ed646a4655bfefb3918d2d"
+    },
+    "genetic_cardiomyopathy.deg2000.csv": {
+      "rows": 1482,
+      "sha256": "e6295c40d6ea1c9f066c20db815e1717fb6022fb1d117577ab41d9cd8880a475"
+    },
+    "icm.deg2000.csv": {
+      "rows": 2,
+      "sha256": "4fa4f8327d4f30e09d0eb97cc0e3aca46bb419f41967e0abe37ac9d67926a804"
+    },
+    "nhf.deg2000.csv": {
+      "rows": 1056,
+      "sha256": "52d37a9a171f87d3542dce1ca13abeb40ced77891931ca7a0e0fa526488f75d6"
+    }
+  },
+  "recipe": "execution/build_disease_fusion.py publish",
+  "schema": "stage2-disease-fusion-release-v1"
+}

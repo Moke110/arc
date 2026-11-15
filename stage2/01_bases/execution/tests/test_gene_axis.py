@@ -112,7 +112,7 @@ class WinningTierTests(unittest.TestCase):
 
 
 class LevelOneTests(unittest.TestCase):
-    """Level 1: sum(rank_norm) inside one category, ties by gene_index."""
+    """Level 1 over the v2 DEG frames: sum(rank/n_DEG), ties by gene_index."""
 
     def test_single_dataset_category_is_its_own_order(self):
         ranks = np.array([8, 1, 7, 2, 6, 3, 5, 4], dtype=np.int64)
@@ -120,6 +120,9 @@ class LevelOneTests(unittest.TestCase):
         np.testing.assert_array_equal(result['rank'], ranks)
         self.assertEqual(result['n_datasets'], 1)
         self.assertTrue(result['measured'].all())
+        # ``deg`` is the v2 name for the same union mask; ``measured`` is the
+        # retired ADR 0066 name a pre-v2 reader still imports.
+        self.assertIs(result['deg'], result['measured'])
 
     def test_sum_of_normalized_ranks_and_gene_index_tie_break(self):
         # A = 1..8, B = 8,1,2,...,7 over 8 measured genes. Sum/8:
@@ -132,14 +135,30 @@ class LevelOneTests(unittest.TestCase):
         np.testing.assert_allclose(
             result['sum'], np.array([9, 3, 5, 7, 9, 11, 13, 15]) / 8.0)
 
-    def test_unmeasured_gene_contributes_exactly_one(self):
+    def test_non_deg_contributes_n_deg_plus_one_over_n_deg(self):
+        # Six DEGs rank 1..6; the two other genes carry n_DEG + 1 = 7, so their
+        # rank_norm is 7/6 (ADR 0071 decision 3), never clamped to 1.0.
         ranks = np.array([1, 2, 3, 4, 5, 6, 7, 7], dtype=np.int64)
         result = category_rank([ranks], [6])
-        # unmeasured rank 7 / n_measured 6 = 7/6 (ADR 0066), never 1.0
         np.testing.assert_allclose(result['sum'], [1/6, 2/6, 3/6, 4/6, 5/6, 1.0, 7/6, 7/6])
         np.testing.assert_array_equal(result['rank'], np.arange(1, 9))
         np.testing.assert_array_equal(
-            result['measured'], [True, True, True, True, True, True, False, False])
+            result['deg'], [True, True, True, True, True, True, False, False])
+
+    def test_zero_deg_source_is_rejected_as_non_informative(self):
+        # ADR 0071 makes rank_norm undefined for n_DEG = 0; the caller must
+        # exclude the source and record the exclusion (ADR 0068).
+        with self.assertRaises(ValueError) as raised:
+            category_rank([np.array([1, 1, 1, 1, 1, 1, 1, 1])], [0])
+        self.assertIn('n_DEG = 0', str(raised.exception))
+
+    def test_incomplete_deg_frame_fails_closed(self):
+        # Two genes sit at n_DEG + 1 although n_DEG = 6 claims six DEGs.
+        with self.assertRaises(ValueError):
+            category_rank([np.array([1, 2, 3, 4, 5, 7, 7, 7])], [6])
+        # A rank beyond n_DEG + 1.
+        with self.assertRaises(ValueError):
+            category_rank([np.array([1, 2, 3, 4, 5, 6, 7, 9])], [6])
 
     def test_level_one_rank_is_a_complete_permutation(self):
         a = np.arange(1, 9, dtype=np.int64)
@@ -154,6 +173,8 @@ class LevelOneTests(unittest.TestCase):
             category_rank([np.array([1, 2, 3, 4, 5, 6, 7, 9])], [8])
         with self.assertRaises(ValueError):
             category_rank([np.array([1, 2, 3, 4, 5, 6, 7, 8])], [0])
+        with self.assertRaises(ValueError):
+            category_rank([], [])
 
 
 class LevelTwoTests(unittest.TestCase):

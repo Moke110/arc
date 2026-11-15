@@ -371,6 +371,56 @@ ADR 0062: reusable accepted products under `output/`, report figures and their
 complete plotted values under `figure/`, reproducible execution/audit code and
 tests under `execution/`, and every record under `log/`.
 
+### Per-disease fusion: level-1 rank and `DEG2000` (#205, ADR 0071)
+
+The disease half of the v2 axis is DEG-only. Each accepted per-category product
+is read back, each source's published compact table is reduced to its v2 DEG-only
+rank (DEGs `1..n_DEG` by descending effect with the `gene_index` tie-break; every
+other frozen-axis gene `n_DEG + 1`; `rank_norm = rank / n_DEG`), and the disease
+fuses its informative sources at level 1:
+
+```
+disease_rank_sum = Σ_source rank_norm
+disease rank     = ascending position of the sum, ties by gene_index
+DEG union        = genes that are a DEG in at least one informative source
+DEG2000_d        = DEG union ∩ (disease rank <= 2,000)   # all of it when smaller
+```
+
+A source with `n_DEG = 0` has no `rank_norm` (the ADR 0071 denominator is zero)
+and a source whose measured effects are all tied carries no ordering evidence;
+both are **excluded from the sum and recorded with their reason** (ADR 0068), so a
+`NaN` can never silently drop a gene from a disease. Because a DEG's normalized
+rank is `<= 1` while a non-DEG's is `(n_DEG + 1) / n_DEG > 1` in every source, the
+DEG union occupies exactly the first disease ranks and `|DEG2000_d|` is always
+`min(|union|, 2,000)`.
+
+| path under `output/disease-fusion/` | contents | reader |
+|---|---|---|
+| `catalog.json` | per disease: `tier`, `evidence_type`, `declared_source_count`, `informative_source_count`, `n_deg` (DEG-union size), `deg2000` (`DEG2000_d` size), the per-source ledger (`n_deg`, `n_deg_in_deg2000`), `excluded_sources` with reason and `not_published` declared sources | `bases.disease_deg.DiseaseFusion` |
+| `<directory>.deg2000.csv` | `gene_index, disease_rank, disease_rank_sum`, one row per `DEG2000_d` gene in rank order (a header-only file for an empty union) | `bases.disease_deg.DiseaseFusion.deg2000` |
+| `manifest.json` | candidate-then-replace release manifest (inputs, outputs, digests) | same |
+
+Public implementation: `output/api/bases/disease_deg.py` —
+`source_deg_rank`, `level_one_rank` (also re-exported as
+`bases.gene_axis.category_rank`, the single live level-1 implementation),
+`fuse_disease`, `deg2000_rows`, `validate_catalog`/`build_catalog` (the
+`tier`/`evidence_type`/`n_deg`/`deg2000`/`tiering` category-catalog shape and its
+validation) and the `DiseaseFusion` reader.
+
+```bash
+python stage2/01_bases/execution/build_disease_fusion.py publish
+python stage2/01_bases/execution/build_disease_fusion.py verify
+```
+
+The driver is roster-neutral: it fuses whatever `output/disease-deg/` has
+accepted and lists the rest of `execution/disease_deg_sources.py`'s declaration as
+`not_published`. The tier-order / stop rule, the final roster and the `tiering`
+record are ticket #206; the per-category re-publish that fills the remaining
+sources is ticket #208, after which this driver is re-run. A v2 published table's
+pass-any `deg` flag is authoritative; the current v1 tables carry only the
+collapsed winning-contrast row, so their v2 flag is derived from that row and the
+ledger records `flag_source = collapsed_winning_contrast`.
+
 ## Layout after the rebuild
 
 ```
@@ -383,6 +433,7 @@ output/
   corpus/         # 18,164-axis integer counts, roles and matched-control groups
   tenv-hvg/       # retained pre-0066 descriptive and train-only rankings
   disease-deg/    # per-dataset DEG tables and within-dataset ranks (level-1 inputs)
+  disease-fusion/ # per-disease level-1 rank_sum + DEG2000 cut (ADR 0071 level 1)
   gene-axis/      # candidate_rank_sum.csv, gene_axis_{2000,5000}.csv,
                   #   axis_composition.csv, source_topn_coverage.csv,
                   #   gene_axis_fill_rule.docx, manifest.json
@@ -780,6 +831,7 @@ from the repository root):
 | `corpus/` | `bases.corpus.open_corpus` (`counts`/`batches`, `matched_control_rows`, `control_groups`) |
 | `view-2k/`, `view-5k/` | `bases.view.open_view` (`ViewSource` with `X`, `control`, `delta` windows and `library_totals`) |
 | `disease-deg/` | `bases.disease_deg.DiseaseDeg` (`categories`, `datasets`, `table`, `rank`, `eligibility`; digest-checked per read) |
+| `disease-fusion/` | `bases.disease_deg.DiseaseFusion` (`catalog`, `manifest`, `diseases`, `record`, `deg2000`; digest-checked per read) |
 | `gene-axis/` | `bases.gene_axis.GeneAxis` (`axis`, `candidate_table`, `composition`, `coverage`, `digests`) |
 | `gene-identity/` | `bases.identity` |
 
