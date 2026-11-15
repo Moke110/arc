@@ -366,7 +366,7 @@ def run_deg_worker(matrix, samples, design, out_csv, r_home=None, timeout=7200):
 
 
 def category_root(output_root, directory):
-    """The accepted product directory of one disease category (\`\`nhf\`\`, \`\`icm\`\`, ...)."""
+    """The accepted product directory of one disease category (``nhf``, ``icm``, ...)."""
     return Path(output_root) / directory
 
 
@@ -493,7 +493,7 @@ class DiseaseDeg:
 
     # ---- structure -----------------------------------------------------
     def categories(self):
-        """Product directory names (``af``, ``icm``, ``nhf``), sorted."""
+        """Product directory names (``icm``, ``nhf``, ...), sorted."""
         found = []
         for path in sorted(self.root.iterdir()):
             if path.is_dir() and (path / 'catalog.json').is_file():

@@ -2,16 +2,6 @@
   "command": "verify",
   "results": [
     {
-      "category": "AF",
-      "manifest_sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507",
-      "outputs": [
-        "catalog.json",
-        "gse255612__af.deg.csv",
-        "gse255612__af.rank.csv"
-      ],
-      "result": "PASS"
-    },
-    {
       "category": "ICM",
       "manifest_sha256": "1f45355355d1306da062d94e5cf9b97bcf0c97c6eec8417c7da7b00626da9936",
       "outputs": [

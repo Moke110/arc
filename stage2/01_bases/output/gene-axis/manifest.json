@@ -2,7 +2,6 @@
   "axes": {
     "2000": {
       "composition": {
-        "af": 0,
         "cardiotox_TOP2": 2000,
         "cardiotox_other": 1513,
         "genetic_cardiomyopathy": 1997,
@@ -34,7 +33,6 @@
     },
     "5000": {
       "composition": {
-        "af": 0,
         "cardiotox_TOP2": 5000,
         "cardiotox_other": 3738,
         "genetic_cardiomyopathy": 4997,
@@ -66,35 +64,6 @@
     }
   },
   "categories": {
-    "af": {
-      "catalog_file_sha256": "581f201ddc6a524ae16a39944f81b82b929e66e470ae667946d88d913768dec0",
-      "catalog_sha256": "c5706217b957501b6152512fbca078ba1f9ca35d4a21c9a5137f9796912346b2",
-      "category_tier": 1,
-      "datasets": [],
-      "excluded_datasets": [
-        {
-          "dataset_id": "gse255612__af",
-          "informativeness": {
-            "n_distinct_effect": 1,
-            "reason": "all 18092 measured effect scores are tied at 0.0; the within-dataset order is the gene_index tie-break, so the dataset carries no ordering evidence",
-            "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
-          },
-          "n_measured": 18092,
-          "tier": 1
-        }
-      ],
-      "excluded_from_fusion": true,
-      "excluded_reason": "every dataset in the category is non-informative (all measured effect scores tied); level-2 fusion and pN exclude the category",
-      "excluded_tiers": [],
-      "informative": false,
-      "label": "AF",
-      "n_measured_axis_genes": 0,
-      "product_dir": "af",
-      "release_manifest_sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507",
-      "retained_by_exception": [],
-      "winning_tier": 1,
-      "winning_tier_rule": "minimum catalog tier, plus records whose isogenic_exception.applies is true (ADR 0066 Isogenic exception); excluded_tiers lists only tiers with no retained record"
-    },
     "cardiotox_TOP2": {
       "catalog_file_sha256": "bf22a21ccf3237c698118f1078258830a240fa97e0a56acdf6212e5d169103be",
       "catalog_sha256": "437b20bc936fc84a1d2334b9eba26bc83ab23bfee22452b3ec61483df0445d5e",
@@ -335,7 +304,7 @@
   "composition": {
     "file": "axis_composition.csv",
     "note": "pN is an ordinal cross-source replication count bounded by the fused source count, not a continuous quality score",
-    "rows": 42
+    "rows": 40
   },
   "counts": {
     "n_axis": 18164,
@@ -373,6 +342,55 @@
     "rank_sum_median": 3.0118090728914337,
     "rank_sum_min": 0.023673199735741026
   },
+  "coverage": {
+    "columns": [
+      "N",
+      "%tenv_hvg_gN",
+      "%nhf_gN",
+      "%icm_gN",
+      "%genetic_cardiomyopathy_gN",
+      "%cardiotox_TOP2_gN",
+      "%cardiotox_other_gN"
+    ],
+    "figure": {
+      "file": "figure/data/gene_axis_source_topn_coverage.csv",
+      "panels": [
+        {
+          "panel": "a",
+          "title": "Covered Gene Count",
+          "value": "count",
+          "y_label": "covered genes"
+        },
+        {
+          "panel": "b",
+          "title": "Top-N Coverage Rate",
+          "value": "rate",
+          "y_label": "coverage rate (%)"
+        }
+      ],
+      "series": {
+        "G_2000": "G_2000 (N = 2,000)",
+        "G_5000": "G_5000 (N = 5,000)"
+      },
+      "sources": [
+        "tenv-HVG",
+        "nHF",
+        "ICM",
+        "genetic_cardiomyopathy",
+        "cardiotox_TOP2",
+        "cardiotox_other"
+      ],
+      "value": "count = |{g in G_N : rank_s(g) <= N}|; rate = 100 * count / N"
+    },
+    "file": "source_topn_coverage.csv",
+    "note": "percent of each source's top-N set that G_N contains; both sets hold N genes, so a cell is at once the share of that source top-N the axis keeps and the share of the axis drawn from it; the source top-N sets overlap, so a row does not sum to 100",
+    "rows": 2,
+    "sources": {
+      "categories": "level-1 class rank of each informative category",
+      "excluded": "a non-informative category has no level-1 rank and keeps an empty column (ADR 0068)",
+      "tenv_hvg": "published descriptive dispersion rank (never recomputed)"
+    }
+  },
   "diagnostics": {
     "histogram": {
       "axis_intervals": {
@@ -390,7 +408,24 @@
       "bins": 70,
       "file": "figure/data/gene_axis_rank_sum_histogram.csv",
       "high": 6.0,
-      "low": 0.0
+      "low": 0.0,
+      "panels": {
+        "2000": {
+          "axis": "gene_axis_2000.csv",
+          "n_candidates": 18164,
+          "n_selected": 2000,
+          "panel": "a",
+          "panel_title": "N = 2000"
+        },
+        "5000": {
+          "axis": "gene_axis_5000.csv",
+          "n_candidates": 18164,
+          "n_selected": 5000,
+          "panel": "b",
+          "panel_title": "N = 5000"
+        }
+      },
+      "selection": "the colored segment of each bar is the number of that bin's candidates the panel's axis selects"
     },
     "inflection": {
       "criterion": "Kneedle online S=1.0 (first interior maximum of the normalized arc above the chord) plus the second-difference peak of the same normalized curve inside the declared decision range [min_n, n]; both must agree within 25% and the knee must exceed 0.01 normalized units",
@@ -453,15 +488,13 @@
     "resource_contract": "one heavy job at a time, 10 GiB RLIMIT_AS fallback, OMP_NUM_THREADS=2; peak RSS recorded by the driver"
   },
   "fusion": {
-    "excluded_categories": [
-      "af"
-    ],
+    "excluded_categories": [],
     "exclusion_rule": "a dataset whose measured effect scores are all tied is non-informative; a category with no informative dataset is excluded from level-2 rank_sum, pN and n_sources_measured (ADR 0068)",
     "n_candidates": 18164,
-    "n_declared_sources": 7,
+    "n_declared_sources": 6,
     "n_sources": 6,
     "normalization": "level-1 rank_norm = rank / n_measured per dataset; level-2 each active source rank / frozen-axis size",
-    "rank_sum": "ascending is better; ties on gene_index",
+    "rank_sum": "smaller is better (a descending value is better); ties on gene_index",
     "sources": [
       "nhf",
       "icm",
@@ -473,16 +506,6 @@
   },
   "generated_by": "stage2/01_bases/execution/build_gene_axis.py",
   "inputs": {
-    "stage2/01_bases/output/disease-deg/af/catalog.json": {
-      "bytes": 3672,
-      "role": "af:catalog",
-      "sha256": "581f201ddc6a524ae16a39944f81b82b929e66e470ae667946d88d913768dec0"
-    },
-    "stage2/01_bases/output/disease-deg/af/manifest.json": {
-      "bytes": 1330,
-      "role": "af:release_manifest",
-      "sha256": "7f9ab6bd343aef48b923a0e2dbd3de5b08aa1a93b77e1d457d015526003d7507"
-    },
     "stage2/01_bases/output/disease-deg/cardiotox_TOP2/catalog.json": {
       "bytes": 18909,
       "role": "cardiotox_TOP2:catalog",
@@ -648,12 +671,29 @@
   },
   "outputs": {
     "stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv": {
-      "rows": 75,
-      "sha256": "5dac4376deff481e78ad2b9395b85a76599f411b63b2b77b452a3e07f65182b8"
+      "rows": 143,
+      "sha256": "4ac96696a9f37403ad7f2c4779a06590ba2a47b14757b28dbfadc7365f6e69fb"
+    },
+    "stage2/01_bases/figure/data/gene_axis_source_topn_coverage.csv": {
+      "columns": [
+        "record",
+        "panel",
+        "panel_title",
+        "y_label",
+        "value",
+        "series",
+        "series_label",
+        "source",
+        "source_label",
+        "count",
+        "rate"
+      ],
+      "rows": 14,
+      "sha256": "b405b5f19617da9eb608b79515d6990d58864cb7936ebee5d188151d0666a72e"
     },
     "stage2/01_bases/output/gene-axis/axis_composition.csv": {
-      "rows": 42,
-      "sha256": "4f89aab8cccf45c441a65adae91aef1e0761755d893abd02595b9b641c9ff424"
+      "rows": 40,
+      "sha256": "6985ae921dcffac3503a3cafe4c1b534f209ecb785e6c292415925f38a73dbfd"
     },
     "stage2/01_bases/output/gene-axis/candidate_rank_sum.csv": {
       "columns": [
@@ -662,7 +702,6 @@
         "tenv_hvg_rank",
         "nhf_rank",
         "icm_rank",
-        "af_rank",
         "genetic_cardiomyopathy_rank",
         "cardiotox_TOP2_rank",
         "cardiotox_other_rank",
@@ -672,7 +711,7 @@
         "p5000"
       ],
       "rows": 18164,
-      "sha256": "7e1417b59571110e3ecf6bc416e57c9c63c1253210d7c3b4e19b28c87a2c2a3f"
+      "sha256": "ba328172dae4e0e8b739b12008199982d48b9fee2e708abf8abe2f877dc5747f"
     },
     "stage2/01_bases/output/gene-axis/gene_axis_2000.csv": {
       "rows": 2000,
@@ -681,6 +720,19 @@
     "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
       "rows": 5000,
       "sha256": "15e5c49e3926bd33481a89fa6e7504e314c309ef20f3ef8a52d1d1c9c1eb6676"
+    },
+    "stage2/01_bases/output/gene-axis/source_topn_coverage.csv": {
+      "columns": [
+        "N",
+        "%tenv_hvg_gN",
+        "%nhf_gN",
+        "%icm_gN",
+        "%genetic_cardiomyopathy_gN",
+        "%cardiotox_TOP2_gN",
+        "%cardiotox_other_gN"
+      ],
+      "rows": 2,
+      "sha256": "27e3a50dcaaed9bc8f2d8469aadaa85073507989b1eb934139432e434458360b"
     }
   },
   "release": {

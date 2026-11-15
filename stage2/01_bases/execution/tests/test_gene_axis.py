@@ -25,6 +25,7 @@ sys.path.insert(0, str(STEP / 'figure/script'))
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 import build_gene_axis as driver
 import render_gene_axis_rank_sum_histogram as renderer
+import render_gene_axis_source_topn_coverage as coverage_renderer
 from bases import deg_rank, gene_axis
 from bases.deg_rank import normalized_rank
 from bases.disease_deg import catalog_digest
@@ -149,53 +150,54 @@ class LevelOneTests(unittest.TestCase):
 
 
 class LevelTwoTests(unittest.TestCase):
-    """Level 2: rank_sum over the seven sources, ascending-is-better, pN, coverage."""
+    """Level 2: rank_sum over the six sources, ascending-is-better, pN, coverage."""
 
     @staticmethod
     def identity():
         return np.arange(1, len(AXIS_SYMBOLS) + 1, dtype=np.int64)
 
-    def test_sum_of_seven_normalized_ranks_and_gene_index_tie_break(self):
+    def test_sum_of_six_normalized_ranks_and_gene_index_tie_break(self):
         ranks = [self.identity().copy() for _ in CATEGORIES]
-        # one source puts gene 0 at rank 8 and gene 1 at rank 2: the integer
-        # sums 8+6*1 and 2+6*2 both equal 14, and genes 6/7 also tie at 49
+        # one source puts gene 0 at rank 8 and gene 1 at rank 2; with the five
+        # identity categories plus tenv-HVG the integer sums are 13 and 12.
         ranks[0] = np.array([8, 2, 3, 4, 5, 6, 7, 1], dtype=np.int64)
         measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
         result = gene_axis.fusion_rank_sum(
             ranks, measured, self.identity(), sizes=(2, 4))
         np.testing.assert_allclose(
             result['rank_sum'],
-            np.array([14, 14, 21, 28, 35, 42, 49, 49]) / 8.0)
+            np.array([13, 12, 18, 24, 30, 36, 42, 41]) / 8.0)
         # equal rank sums are ordered by gene_index in the fusion (fill-rule test)
-        self.assertEqual(result['rank_sum'][0], result['rank_sum'][1])
+        self.assertLess(result['rank_sum'][1], result['rank_sum'][0])
 
-    def test_pn_boundaries_zero_and_seven(self):
+    def test_pn_boundaries_zero_and_six(self):
         ranks = [self.identity().copy() for _ in CATEGORIES]
         ranks[0][:2] = [2, 1]
         measured = [np.ones(8, dtype=bool) for _ in CATEGORIES]
         result = gene_axis.fusion_rank_sum(
             ranks, measured, self.identity(), sizes=(1, 2, 4))
-        self.assertEqual(result['pn'][1].tolist(), [6, 1, 0, 0, 0, 0, 0, 0])
-        self.assertEqual(result['pn'][2].tolist(), [7, 7, 0, 0, 0, 0, 0, 0])
-        self.assertEqual(result['pn'][4].tolist(), [7, 7, 7, 7, 0, 0, 0, 0])
-        self.assertEqual(int(result['pn'][2].max()), 7)
+        self.assertEqual(result['pn'][1].tolist(), [5, 1, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(result['pn'][2].tolist(), [6, 6, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(result['pn'][4].tolist(), [6, 6, 6, 6, 0, 0, 0, 0])
+        self.assertEqual(int(result['pn'][2].max()), 6)
         self.assertEqual(int(result['pn'][2].min()), 0)
 
     def test_excluded_category_shrinks_the_pn_bound(self):
-        # ADR 0068: five informative categories + tenv-HVG make pN bounded by 6.
-        ranks = [self.identity().copy() for _ in CATEGORIES[:5]]
-        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES[:5]]
+        # ADR 0068: with one of the five categories non-informative, four
+        # categories + tenv-HVG make pN bounded by 5.
+        ranks = [self.identity().copy() for _ in CATEGORIES[:4]]
+        measured = [np.ones(8, dtype=bool) for _ in CATEGORIES[:4]]
         result = gene_axis.fusion_rank_sum(
-            ranks, measured, self.identity(), categories=CATEGORIES[:5],
+            ranks, measured, self.identity(), categories=CATEGORIES[:4],
             sizes=(2,))
-        self.assertEqual(result['n_sources'], 6)
-        self.assertEqual(int(result['pn'][2].max()), 6)
-        self.assertEqual(int(result['n_sources_measured'].max()), 6)
-        # One rank per active category is required: five names, five ranks.
+        self.assertEqual(result['n_sources'], 5)
+        self.assertEqual(int(result['pn'][2].max()), 5)
+        self.assertEqual(int(result['n_sources_measured'].max()), 5)
+        # One rank per active category is required: four names, four ranks.
         with self.assertRaises(ValueError):
             gene_axis.fusion_rank_sum(
                 ranks + [self.identity().copy()], measured + [np.ones(8, bool)],
-                self.identity(), categories=CATEGORIES[:5], sizes=(2,))
+                self.identity(), categories=CATEGORIES[:4], sizes=(2,))
 
     def test_n_sources_measured_counts_sources_not_datasets(self):
         ranks = [self.identity().copy() for _ in CATEGORIES]
@@ -266,7 +268,7 @@ class CandidateTableTests(unittest.TestCase):
         ranks, measured, tenv = self.fusion_inputs()
         measured[0][3] = False
         table = gene_axis.candidate_table(axis, tenv, ranks, measured, sizes=(2,))
-        self.assertEqual(int(table.n_sources_measured[3]), 6)
+        self.assertEqual(int(table.n_sources_measured[3]), 5)
         self.assertIn(3, table.gene_index.tolist())
 
     def test_axis_order_is_required(self):
@@ -284,8 +286,8 @@ class AxisFillTests(unittest.TestCase):
         # tenv-HVG ranks genes in reverse; the top 2 are 6,7 and the top 3 add 5
         tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
         rank_sum = np.array([0.50, 0.20, 0.20, 0.30, 0.10, 0.40, 0.05, 0.01])
-        p_n = {4: np.array([0, 0, 0, 4, 0, 5, 7, 7]),
-               6: np.array([4, 3, 2, 1, 5, 7, 7, 7])}
+        p_n = {4: np.array([0, 0, 0, 4, 0, 5, 6, 6]),
+               6: np.array([4, 3, 2, 1, 5, 6, 6, 6])}
         return tenv, rank_sum, p_n
 
     def test_fill_takes_exactly_half_tenv_and_half_replication(self):
@@ -311,7 +313,7 @@ class AxisFillTests(unittest.TestCase):
         tenv = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
         # four candidates tie on p; the fill order is rank_sum asc, then index
         rank_sum = np.array([0.9, 0.2, 0.2, 0.1, 0.5, 0.5, 0.5, 0.5])
-        p_n = np.array([7, 7, 7, 7, 0, 7, 7, 7])
+        p_n = np.array([6, 6, 6, 6, 0, 6, 6, 6])
         axis = gene_axis.axis_fill(tenv, p_n, rank_sum, n=4)
         # tenv top-2 = genes 6,7; fill needs 2: gene 3 (rank_sum 0.1) then gene 1
         # (rank_sum 0.2 ties gene 2 at 0.2, gene_index picks 1)
@@ -355,12 +357,11 @@ class AxisFillTests(unittest.TestCase):
         measured[0][[0, 5, 7]] = True
         measured[1][[1, 2]] = True
         composition = gene_axis.axis_composition(axis, measured)
-        self.assertEqual(composition['nhf'], 3)     # genes 0, 5 and 7
+        self.assertEqual(composition['nhf'], 3)     # genes 0, 5 and 7 are in G_6
         self.assertEqual(composition['icm'], 1)     # gene 1
-        self.assertEqual(composition['af'], 0)
         self.assertEqual(sum(composition.values()), 4)
         counts = gene_axis.pn_distribution(p_n[6])
-        self.assertEqual(counts.tolist(), [0, 1, 1, 1, 1, 1, 0, 3])
+        self.assertEqual(counts.tolist(), [0, 1, 1, 1, 1, 1, 3])
         self.assertEqual(int(counts.sum()), len(AXIS_SYMBOLS))
 
 
@@ -429,7 +430,6 @@ SECOND = np.array([8, 1, 2, 3, 4, 5, 6, 7], dtype=np.int64)
 FIXTURE_CATEGORIES = {
     'nhf': [('nhf_a', 1, False, IDENTITY)],
     'icm': [('icm_a', 1, False, IDENTITY)],
-    'af': [('af_a', 1, False, IDENTITY)],
     'genetic_cardiomyopathy': [
         ('gcm_tier1', 1, False, IDENTITY),
         ('gcm_isogenic', 2, True, SECOND),
@@ -444,7 +444,7 @@ FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
 
 def write_fixture(root, *, drop_method=False, drop_derived=False,
                   noninformative=()):
-    """Write a hermetic mini repository: axis, tenv ranking and six catalogs."""
+    """Write a hermetic mini repository: axis, tenv ranking and five catalogs."""
     root = Path(root)
     step = root / 'stage2/01_bases'
     genes = axis_fixture()
@@ -567,38 +567,65 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertNotIn('gcm_dropped',
                              [record['dataset_id'] for record in
                               manifest['categories']['genetic_cardiomyopathy']['datasets']])
-            # 2 axes x (6 categories + tenv half + 8 pN values + 8 candidate pN)
-            self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 8 + 8))
+            # 2 axes x (5 categories + tenv half + 7 pN values + 7 candidate pN)
+            self.assertEqual(len(reader.composition()), 2 * (len(CATEGORIES) + 1 + 7 + 7))
+            coverage = reader.coverage()
+            self.assertEqual(list(coverage.columns), list(gene_axis.COVERAGE_COLUMNS))
+            self.assertEqual(coverage.N.tolist(), list(FIXTURE_AXIS_SIZES))
+            self.assertEqual(coverage['%tenv_hvg_gN'].tolist(), [50.0, 100.0])
+            self.assertIn('source_topn_coverage.csv',
+                          ' '.join(manifest['outputs'].keys()))
+            self.assertIn('gene_axis_source_topn_coverage.csv',
+                          ' '.join(manifest['outputs'].keys()))
+            coverage_figure = pd.read_csv(config.source_coverage_figure)
+            self.assertEqual(list(coverage_figure.columns),
+                             list(driver.SOURCE_COVERAGE_FIGURE_COLUMNS))
+            self.assertEqual(len(coverage_figure),
+                             2 + len(FIXTURE_AXIS_SIZES) * (len(CATEGORIES) + 1))
+            bars = coverage_figure[coverage_figure.record == 'bar']
+            self.assertTrue((bars['count'] % 1 == 0).all())
+            self.assertTrue((bars['count'] >= 0).all())
+            self.assertTrue(bars['rate'].between(0.0, 100.0).all())
+            self.assertEqual(bars[bars.source == 'tenv_hvg'].set_index('series')
+                             ['count'].to_dict(), {'G_4': 2, 'G_6': 6})
+            panels = coverage_figure[coverage_figure.record == 'panel']
+            self.assertEqual(panels['panel_title'].tolist(),
+                             ['Covered Gene Count', 'Top-N Coverage Rate'])
+            self.assertEqual(manifest['coverage']['figure']['panels'],
+                             [dict(panel) for panel in
+                              driver.SOURCE_COVERAGE_FIGURE_PANELS])
             for text in manifest_strings(manifest):
                 self.assertFalse(text.startswith('/'), f'absolute path in manifest: {text}')
 
     def test_noninformative_category_is_excluded_from_fusion_and_pn(self):
         with tempfile.TemporaryDirectory() as temporary:
-            config = write_fixture(Path(temporary), noninformative=('af_a',))
+            config = write_fixture(Path(temporary), noninformative=('icm_a',))
             driver.publish(config)
             manifest = GeneAxis(config.output).manifest()
-            self.assertEqual(manifest['fusion']['n_sources'], 6)
-            self.assertEqual(manifest['fusion']['excluded_categories'], ['af'])
+            self.assertEqual(manifest['fusion']['n_sources'], 5)
+            self.assertEqual(manifest['fusion']['excluded_categories'], ['icm'])
             self.assertEqual(manifest['fusion']['sources'],
-                             [category for category in CATEGORIES if category != 'af']
+                             [category for category in CATEGORIES if category != 'icm']
                              + ['tenv_hvg'])
-            self.assertFalse(manifest['categories']['af']['informative'])
-            self.assertTrue(manifest['categories']['af']['excluded_from_fusion'])
-            self.assertEqual(manifest['categories']['af']['excluded_datasets'][0]
-                             ['dataset_id'], 'af_a')
-            self.assertEqual(manifest['release']['pN_bounds'], [0, 6])
+            self.assertFalse(manifest['categories']['icm']['informative'])
+            self.assertTrue(manifest['categories']['icm']['excluded_from_fusion'])
+            self.assertEqual(manifest['categories']['icm']['excluded_datasets'][0]
+                             ['dataset_id'], 'icm_a')
+            self.assertEqual(manifest['release']['pN_bounds'], [0, 5])
             table = GeneAxis(config.output).candidate_table()
-            self.assertTrue(table['af_rank'].isna().all())
+            self.assertTrue(table['icm_rank'].isna().all())
             for size in FIXTURE_AXIS_SIZES:
-                self.assertLessEqual(int(table[f'p{size}'].max()), 6)
+                self.assertLessEqual(int(table[f'p{size}'].max()), 5)
                 self.assertLessEqual(
-                    int(manifest['axes'][str(size)]['pN_distribution'].get('7', 0)), 0)
+                    int(manifest['axes'][str(size)]['pN_distribution'].get('6', 0)), 0)
             composition = GeneAxis(config.output).composition()
-            af = composition[(composition.record == 'composition')
-                             & (composition.group == 'af')]
-            self.assertTrue((af.n_genes == 0).all())
-            self.assertTrue(af.note.str.contains('excluded').all())
-            # Every other category still fuses: five + tenv.
+            icm = composition[(composition.record == 'composition')
+                              & (composition.group == 'icm')]
+            self.assertTrue((icm.n_genes == 0).all())
+            self.assertTrue(icm.note.str.contains('excluded').all())
+            coverage = GeneAxis(config.output).coverage()
+            self.assertTrue(coverage['%icm_gN'].isna().all())
+            # Every other category still fuses: four + tenv.
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
     def test_publish_preserves_the_retired_gene_axis_file_set(self):
@@ -664,23 +691,79 @@ def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+class CoverageTests(unittest.TestCase):
+    """Each source's top-N coverage is a pure function of the axes and its rank."""
+
+    @staticmethod
+    def ranks():
+        return {'tenv_hvg': np.array([8, 7, 6, 5, 4, 3, 2, 1]),
+                'nhf': np.array([1, 2, 3, 4, 5, 6, 7, 8]),
+                'icm': None,
+                'genetic_cardiomyopathy': np.array([1, 2, 3, 4, 5, 6, 7, 8]),
+                'cardiotox_TOP2': np.array([2, 1, 4, 3, 6, 5, 8, 7]),
+                'cardiotox_other': np.array([4, 3, 2, 1, 8, 7, 6, 5])}
+
+    def test_percentages_and_empty_excluded_column(self):
+        axes = {4: np.array([0, 1, 6, 7]), 6: np.array([2, 3, 4, 5, 6, 7])}
+        table = gene_axis.source_topn_coverage(axes, self.ranks(), sizes=(4, 6))
+        self.assertEqual(list(table.columns), list(gene_axis.COVERAGE_COLUMNS))
+        self.assertEqual(table.N.tolist(), [4, 6])
+        # tenv top-4 = genes 4..7 and G_4 holds 6,7 -> 2/4 = 50 %.
+        self.assertEqual(table['%tenv_hvg_gN'][0], 50.0)
+        # tenv top-6 = genes 2..7, exactly G_6 -> 100 %.
+        self.assertEqual(table['%tenv_hvg_gN'][1], 100.0)
+        # nhf ranks identity: top-4 = genes 0..3, G_4 holds 0,1 -> 50 %.
+        self.assertEqual(table['%nhf_gN'][0], 50.0)
+        self.assertTrue(table['%icm_gN'].isna().all())
+
+    def test_covered_counts_are_the_percentage_numerators(self):
+        axes = {4: np.array([0, 1, 6, 7]), 6: np.array([2, 3, 4, 5, 6, 7])}
+        ranks = self.ranks()
+        counts = gene_axis.source_topn_covered_counts(axes, ranks, sizes=(4, 6))
+        table = gene_axis.source_topn_coverage(axes, ranks, sizes=(4, 6))
+        self.assertEqual(list(counts.columns), list(gene_axis.COUNT_COLUMNS))
+        self.assertEqual(counts['tenv_hvg'].tolist(), [2, 6])
+        self.assertEqual(counts['nhf'].tolist(), [2, 4])
+        self.assertTrue(counts['icm'].isna().all())
+        for index, size in enumerate((4, 6)):
+            for name in ('tenv_hvg', 'nhf', 'genetic_cardiomyopathy',
+                         'cardiotox_TOP2', 'cardiotox_other'):
+                count = int(counts[name].iloc[index])
+                self.assertGreaterEqual(count, 0)
+                self.assertLessEqual(count, size)
+                self.assertEqual(table[f'%{name}_gN'].iloc[index],
+                                 round(100.0 * count / size, 2))
+
+    def test_out_of_contract_inputs_fail_closed(self):
+        axes = {4: np.array([0, 1, 6, 7])}
+        bad = self.ranks()
+        bad['tenv_hvg'] = np.array([1, 1, 2, 3, 4, 5, 6, 7])
+        with self.assertRaises(ValueError):
+            gene_axis.source_topn_coverage(axes, bad, sizes=(4,))
+        with self.assertRaises(ValueError):
+            gene_axis.source_topn_coverage(axes, self.ranks(), sizes=(5,))
+        with self.assertRaises(ValueError):
+            gene_axis.source_topn_coverage(
+                axes, {'unknown': np.arange(1, 9)}, sizes=(4,))
+
+
 class FigureTests(unittest.TestCase):
     """The evidence PNG is a function of its plotted-values CSV alone."""
 
     @staticmethod
     def synthetic_rows():
         rows = [{'record': 'figure', 'title': 'fixture'},
-                {'record': 'panel', 'panel': 'a', 'panel_title': 'rank-sum histogram'}]
-        for index in range(4):
-            rows.append({'record': 'hist', 'bin_left': index, 'bin_right': index + 1,
-                         'bin_center': index + 0.5, 'count': 10 + index,
-                         'share': (10 + index) / 46})
-        for axis, low, high, median in (('2000', 0.5, 2.0, 1.0),
-                                        ('5000', 0.9, 3.0, 1.8)):
-            rows.append({'record': 'interval', 'axis': axis, 'interval_low': low,
-                         'interval_high': high, 'median': median})
-        rows.append({'record': 'marker', 'inflection': False, 'inflection_n': '',
-                     'note': 'no inflection'})
+                {'record': 'panel', 'panel': 'a', 'axis': '4',
+                 'panel_title': 'N = 4'},
+                {'record': 'panel', 'panel': 'b', 'axis': '6',
+                 'panel_title': 'N = 6'}]
+        counts = (10, 11, 12, 13)
+        for panel, selected in (('a', (1, 1, 1, 1)), ('b', (2, 2, 1, 1))):
+            for index, (count, chosen) in enumerate(zip(counts, selected)):
+                rows.append({'record': 'hist', 'panel': panel,
+                             'bin_left': index, 'bin_right': index + 1,
+                             'bin_center': index + 0.5, 'count': count,
+                             'selected': chosen})
         return rows
 
     def test_renderer_rejects_incomplete_csv(self):
@@ -689,6 +772,29 @@ class FigureTests(unittest.TestCase):
             path.write_text('record,panel,panel_title,title\nfigure,,,,x\n')
             with self.assertRaises(ValueError):
                 renderer.load(path)
+
+    def test_renderer_rejects_impossible_selection(self):
+        def write(rows, path):
+            fields = sorted({key for row in rows for key in row})
+            with path.open('w', newline='') as handle:
+                writer = csv.DictWriter(handle, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows(rows)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            over = self.synthetic_rows()
+            over[-1]['selected'] = over[-1]['count'] + 1
+            write(over, temporary / 'over.csv')
+            with self.assertRaises(ValueError):
+                renderer.load(temporary / 'over.csv')
+            short = self.synthetic_rows()
+            for row in short:
+                if row.get('panel') == 'a' and row.get('record') == 'hist':
+                    row['selected'] = 0
+            write(short, temporary / 'short.csv')
+            with self.assertRaises(ValueError):
+                renderer.load(temporary / 'short.csv')
 
     def test_synthetic_csv_renders_byte_identically_twice(self):
         rows = self.synthetic_rows()
@@ -722,6 +828,114 @@ class FigureTests(unittest.TestCase):
         self.assertNotIn('read_excel', source)
         self.assertNotIn("palette.csv", source)
         self.assertNotIn("manifest.json", source)
+
+
+class SourceCoverageFigureTests(unittest.TestCase):
+    """The two-panel source-coverage PNG is a function of its plotted-values CSV alone."""
+
+    @staticmethod
+    def synthetic_rows():
+        rows = [{'record': 'panel', 'panel': 'a',
+                 'panel_title': 'Covered Gene Count', 'y_label': 'covered genes',
+                 'value': 'count'},
+                {'record': 'panel', 'panel': 'b',
+                 'panel_title': 'Top-N Coverage Rate',
+                 'y_label': 'coverage rate (%)', 'value': 'rate'}]
+        for series, label, counts, rates in (
+                ('G_4', 'G_4 (N = 4)', (2, 1), (50.0, 25.0)),
+                ('G_6', 'G_6 (N = 6)', (6, 4), (100.0, 66.67))):
+            for source, source_label, count, rate in zip(
+                    ('tenv_hvg', 'nhf'), ('tenv-HVG', 'nHF'), counts, rates):
+                rows.append({'record': 'bar', 'series': series,
+                             'series_label': label, 'source': source,
+                             'source_label': source_label,
+                             'count': str(count), 'rate': str(rate)})
+        return rows
+
+    @staticmethod
+    def write(rows, path):
+        fields = list(dict.fromkeys(key for row in rows for key in row))
+        with Path(path).open('w', newline='') as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def test_renderer_rejects_incomplete_or_impossible_csv(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            empty = temporary / 'empty.csv'
+            empty.write_text('record,panel,panel_title,y_label,value,series,'
+                             'series_label,source,source_label,count,rate\n')
+            with self.assertRaises(ValueError):
+                coverage_renderer.load(empty)
+            # Bars without the panel records that say what to draw.
+            self.write(self.synthetic_rows()[2:], temporary / 'panels.csv')
+            with self.assertRaises(ValueError):
+                coverage_renderer.load(temporary / 'panels.csv')
+            self.write(self.synthetic_rows()[:-1], temporary / 'missing.csv')
+            with self.assertRaises(ValueError):
+                coverage_renderer.load(temporary / 'missing.csv')
+            # A panel that names a column the bars do not carry.
+            rows = self.synthetic_rows()
+            rows[0]['value'] = 'unknown'
+            self.write(rows, temporary / 'column.csv')
+            with self.assertRaises(ValueError):
+                coverage_renderer.load(temporary / 'column.csv')
+            for name, key, value in (('negative', 'count', '-1'),
+                                     ('fractional', 'count', '1.5'),
+                                     ('rate', 'rate', '101')):
+                rows = self.synthetic_rows()
+                rows[2][key] = value
+                self.write(rows, temporary / f'{name}.csv')
+                with self.assertRaises(ValueError):
+                    coverage_renderer.load(temporary / f'{name}.csv')
+
+    def test_synthetic_csv_renders_byte_identically_twice(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            path = temporary / 'figure.csv'
+            self.write(self.synthetic_rows(), path)
+            first, second = temporary / 'first.png', temporary / 'second.png'
+            coverage_renderer.render(*coverage_renderer.load(path), first)
+            coverage_renderer.render(*coverage_renderer.load(path), second)
+            self.assertEqual(sha256_file(first), sha256_file(second))
+
+    def test_committed_figure_replays_from_its_csv_alone(self):
+        csv_path = STEP / 'figure/data/gene_axis_source_topn_coverage.csv'
+        png_path = STEP / 'figure/gene_axis_source_topn_coverage.png'
+        self.assertTrue(csv_path.is_file(), f'missing plotted-values CSV: {csv_path}')
+        self.assertTrue(png_path.is_file(), f'missing committed figure: {png_path}')
+        with tempfile.TemporaryDirectory() as temporary:
+            copied = Path(temporary) / 'figure.csv'
+            copied.write_bytes(csv_path.read_bytes())
+            rendered = Path(temporary) / 'rendered.png'
+            coverage_renderer.render(*coverage_renderer.load(copied), rendered)
+            self.assertEqual(sha256_file(rendered), sha256_file(png_path))
+        source = Path(coverage_renderer.__file__).read_text(encoding='utf-8')
+        for token in ('read_csv', 'read_excel', 'palette.csv', 'manifest.json'):
+            self.assertNotIn(token, source)
+
+
+class DocxTests(unittest.TestCase):
+    """The rule document replays byte-identically from the released inputs."""
+
+    def test_committed_docx_replays_from_its_inputs(self):
+        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        for path in (coverage, figure, committed):
+            self.assertTrue(path.is_file(), f'missing docx input or output: {path}')
+        import make_gene_axis_docx as docx_builder
+        with tempfile.TemporaryDirectory() as temporary:
+            rendered = Path(temporary) / 'gene_axis_fill_rule.docx'
+            docx_builder.build(coverage, figure, rendered)
+            self.assertEqual(sha256_file(rendered), sha256_file(committed))
+
+    def test_coverage_table_columns_are_contracted(self):
+        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
+        import make_gene_axis_docx as docx_builder
+        table = docx_builder.read_coverage(coverage)
+        self.assertEqual(list(table.columns), list(docx_builder.COVERAGE_COLUMNS))
 
 
 if __name__ == '__main__':

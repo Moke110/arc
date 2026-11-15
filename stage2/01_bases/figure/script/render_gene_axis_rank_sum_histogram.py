@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Render the released gene-axis rank-sum evidence panel from its plotted-values CSV.
+"""Render the released gene-axis rank-sum evidence figure from its plotted-values CSV.
 
 This is a publication script, not scientific code: it reads only
 ``figure/data/gene_axis_rank_sum_histogram.csv`` and writes the PNG. It never
 opens ``output/`` products, matrices, checkpoints or truth, and it recomputes no
-metric. The CSV carries every plotted value -- the rank-sum histogram bins over
-all frozen-axis candidates, both released axes' ``rank_sum`` intervals with their
-medians, and the explicit inflection diagnostic marker (or its ``no inflection``
-note) -- so this renderer needs no other input.
+metric. The CSV carries every plotted value -- the candidate histogram over all
+frozen-axis candidates, one panel per released axis, and how many of each bin's
+candidates that axis selects -- so this renderer needs no other input.
 
     python3 stage2/01_bases/figure/script/render_gene_axis_rank_sum_histogram.py \
         --csv stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv \
@@ -31,6 +30,7 @@ import matplotlib  # noqa: E402  (backend must be set before pyplot)
 
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt  # noqa: E402
+from matplotlib.patches import Patch  # noqa: E402
 
 # The stage palette is a pure public implementation (ADR 0063): importing it
 # reads no product, so the renderer still needs only its plotted-values CSV.
@@ -39,14 +39,25 @@ if str(_API_ROOT) not in sys.path:
     sys.path.insert(0, str(_API_ROOT))
 from bases.palette import FILL_SHADE, LINE_SHADE, color  # noqa: E402
 
-RECORDS = ('figure', 'panel', 'hist', 'interval', 'marker')
-HISTOGRAM_FILL = color('gray', FILL_SHADE)
-INTERVAL_COLORS = (color('blue', FILL_SHADE), color('orange', FILL_SHADE))
-INTERVAL_LINES = (color('blue', LINE_SHADE), color('orange', LINE_SHADE))
+RECORDS = ('figure', 'panel', 'hist')
+CANDIDATE_COLOR = color('gray', FILL_SHADE)
+SELECTED_COLOR = color('orange', LINE_SHADE)
+CANDIDATE_LABEL = 'gene candidates'
+SELECTED_LABEL = 'selected genes'
+#: The x-axis annotation the released figure carries (2026-11-14 design request).
+X_LABEL = 'rank_sum (descending is better)'
+Y_LABEL = 'genes'
 
 
 def load(path):
-    """Read and validate the complete plotted-values table."""
+    """Read and validate the complete plotted-values table.
+
+    Returns ``(title, panels, histograms)``: the figure title, the panel records
+    in CSV order (``panel``, ``axis``, ``panel_title``) and, per panel id, the
+    bin list ``(left, right, count, selected)``. The renderer refuses a table
+    whose panels disagree on their bins, whose bars select more genes than they
+    hold, or whose selected totals are not each panel's declared ``N``.
+    """
     with open(path, newline='') as handle:
         rows = list(csv.DictReader(handle))
     if not rows:
@@ -57,68 +68,82 @@ def load(path):
     figures = [row for row in rows if row['record'] == 'figure']
     if len(figures) != 1 or not figures[0]['title']:
         raise ValueError('exactly one figure record with a title is required')
-    panels = [row for row in rows if row['record'] == 'panel']
-    if len(panels) != 1 or not panels[0]['panel_title']:
-        raise ValueError('exactly one panel record with a title is required')
-    histogram = []
+    panels = []
     for row in rows:
-        if row['record'] != 'hist':
+        if row['record'] != 'panel':
             continue
-        left, right, count = float(row['bin_left']), float(row['bin_right']), int(row['count'])
-        if right <= left or count < 0:
-            raise ValueError('histogram bin is malformed')
-        histogram.append((left, right, count))
-    if not histogram:
-        raise ValueError('the rank-sum histogram values are missing')
-    intervals = []
-    for row in rows:
-        if row['record'] != 'interval':
-            continue
-        low = float(row['interval_low'])
-        high = float(row['interval_high'])
-        median = float(row['median'])
-        if not low <= median <= high:
-            raise ValueError('an axis interval does not contain its median')
-        intervals.append({'axis': row['axis'], 'low': low, 'high': high,
-                          'median': median})
-    if len(intervals) != 2 or len({item['axis'] for item in intervals}) != 2:
-        raise ValueError('exactly two distinct axis intervals are required')
-    markers = [row for row in rows if row['record'] == 'marker']
-    if len(markers) != 1:
-        raise ValueError('exactly one inflection marker record is required')
-    marker_row = markers[0]
-    inflection = str(marker_row['inflection']).strip().lower() == 'true'
-    marker = {'inflection': inflection,
-              'n': int(marker_row['inflection_n']) if marker_row['inflection_n'] else None,
-              'note': marker_row['note']}
-    if inflection and marker['n'] is None:
-        raise ValueError('an accepted inflection needs its candidate N')
-    return figures[0]['title'], panels[0]['panel_title'], histogram, intervals, marker
+        panel_id = (row['panel'] or '').strip()
+        size = (row['axis'] or '').strip()
+        panel_title = (row['panel_title'] or '').strip()
+        if not panel_id or not size.isdigit() or int(size) <= 0 or not panel_title:
+            raise ValueError('a panel record is malformed')
+        if panel_id in {panel['panel'] for panel in panels}:
+            raise ValueError('panel ids must be unique')
+        panels.append({'panel': panel_id, 'axis': int(size),
+                       'panel_title': panel_title})
+    if not panels:
+        raise ValueError('at least one panel record is required')
+    histograms = {}
+    for panel in panels:
+        bins = []
+        for row in rows:
+            if row['record'] != 'hist':
+                continue
+            if (row['panel'] or '').strip() != panel['panel']:
+                continue
+            left = float(row['bin_left'])
+            right = float(row['bin_right'])
+            count = int(row['count'])
+            selected = int(row['selected'])
+            if right <= left:
+                raise ValueError('a histogram bin is malformed')
+            if count < 0 or selected < 0 or selected > count:
+                raise ValueError('a histogram bin has an impossible selected count')
+            bins.append((left, right, count, selected))
+        if not bins:
+            raise ValueError(f"panel {panel['panel']} has no histogram rows")
+        histograms[panel['panel']] = bins
+    edges = [(left, right) for left, right, _, _ in histograms[panels[0]['panel']]]
+    for panel in panels:
+        panel_edges = [(left, right)
+                       for left, right, _, _ in histograms[panel['panel']]]
+        if panel_edges != edges:
+            raise ValueError('every panel must share the same candidate bins')
+        counts = sum(count for _, _, count, _ in histograms[panel['panel']])
+        if counts <= 0:
+            raise ValueError('the candidate histogram is empty')
+        selected = sum(chosen for _, _, _, chosen in histograms[panel['panel']])
+        if selected != panel['axis']:
+            raise ValueError(f"panel {panel['panel']} does not select exactly N genes")
+    return figures[0]['title'], panels, histograms
 
 
-def render(title, panel_title, histogram, intervals, marker, output):
-    """Draw the one-panel evidence figure with fixed publication geometry."""
+def render(title, panels, histograms, output):
+    """Draw the multi-panel evidence figure with fixed publication geometry."""
     output = Path(output)
     if output.suffix != '.png':
         raise ValueError('a .png output path is required')
     output.parent.mkdir(parents=True, exist_ok=True)
-    figure, axis = plt.subplots(figsize=(9.6, 5.6), layout='constrained')
+    figure, axes = plt.subplots(1, len(panels), figsize=(5.6 * len(panels), 4.4),
+                                layout='constrained', squeeze=False)
     try:
-        left = [item[0] for item in histogram]
-        width = [item[1] - item[0] for item in histogram]
-        axis.bar(left, [item[2] for item in histogram], width=width,
-                 align='edge', color=HISTOGRAM_FILL, edgecolor='none',
-                 label='frozen-axis candidates')
-        for item, fill, line in zip(intervals, INTERVAL_COLORS, INTERVAL_LINES):
-            axis.axvspan(item['low'], item['high'], color=fill, alpha=0.30,
-                         label=f"G_{item['axis']} rank_sum interval")
-            axis.axvline(item['median'], color=line, linewidth=1.4, linestyle='--')
-        axis.set(xlabel='rank_sum (ascending is better)',
-                 ylabel='genes', title=panel_title)
-        axis.grid(alpha=0.18, axis='y')
-        axis.legend(frameon=False, fontsize=8, loc='upper right')
-        axis.text(0.02, 0.95, marker['note'], transform=axis.transAxes,
-                  va='top', fontsize=8.5)
+        for axis, panel in zip(axes[0], panels):
+            bins = histograms[panel['panel']]
+            left = [item[0] for item in bins]
+            width = [item[1] - item[0] for item in bins]
+            counts = [item[2] for item in bins]
+            selected = [item[3] for item in bins]
+            # The gray candidate bar is the panel's base; the colored segment
+            # hangs from each bar's top down to the unselected remainder.
+            axis.bar(left, counts, width=width, align='edge', color=CANDIDATE_COLOR,
+                     edgecolor='none')
+            axis.bar(left, selected,
+                     bottom=[count - chosen for count, chosen in zip(counts, selected)],
+                     width=width, align='edge', color=SELECTED_COLOR, edgecolor='none')
+            axis.set(title=panel['panel_title'], xlabel=X_LABEL, ylabel=Y_LABEL)
+            axis.legend(handles=[Patch(color=CANDIDATE_COLOR, label=CANDIDATE_LABEL),
+                                 Patch(color=SELECTED_COLOR, label=SELECTED_LABEL)],
+                        frameon=False, fontsize=8, loc='upper right')
         figure.suptitle(title, fontsize=11.5)
         figure.savefig(output, dpi=160)
     finally:

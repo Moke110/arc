@@ -1,0 +1,15 @@
+record,panel,panel_title,y_label,value,series,series_label,source,source_label,count,rate
+panel,a,Covered Gene Count,covered genes,count,,,,,,
+panel,b,Top-N Coverage Rate,coverage rate (%),rate,,,,,,
+bar,,,,,G_2000,"G_2000 (N = 2,000)",tenv_hvg,tenv-HVG,1174,58.70
+bar,,,,,G_2000,"G_2000 (N = 2,000)",nhf,nHF,632,31.60
+bar,,,,,G_2000,"G_2000 (N = 2,000)",icm,ICM,651,32.55
+bar,,,,,G_2000,"G_2000 (N = 2,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,748,37.40
+bar,,,,,G_2000,"G_2000 (N = 2,000)",cardiotox_TOP2,cardiotox_TOP2,578,28.90
+bar,,,,,G_2000,"G_2000 (N = 2,000)",cardiotox_other,cardiotox_other,712,35.60
+bar,,,,,G_5000,"G_5000 (N = 5,000)",tenv_hvg,tenv-HVG,3275,65.50
+bar,,,,,G_5000,"G_5000 (N = 5,000)",nhf,nHF,2321,46.42
+bar,,,,,G_5000,"G_5000 (N = 5,000)",icm,ICM,2350,47.00
+bar,,,,,G_5000,"G_5000 (N = 5,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,2611,52.22
+bar,,,,,G_5000,"G_5000 (N = 5,000)",cardiotox_TOP2,cardiotox_TOP2,2224,44.48
+bar,,,,,G_5000,"G_5000 (N = 5,000)",cardiotox_other,cardiotox_other,2416,48.32

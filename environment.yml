@@ -33,6 +33,8 @@ dependencies:
   - openpyxl
   - xlrd
   - pyarrow
+  # Document deliverables: the gene-axis rule report (stage2/01_bases)
+  - python-docx
   # Jupyter (screen.ipynb orchestrator, reproductions)
   - jupyter
   - notebook
