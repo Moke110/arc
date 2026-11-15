@@ -504,12 +504,14 @@ Products (force-tracked compact CSVs; manifest sha256 `cfd3ba11…`):
 | `figure/gene_axis_source_topn_coverage.png` | — | `51ea4bc8…` |
 
 The human-facing rule document `output/gene-axis/gene_axis_fill_rule.docx`
-(sha256 `044f7ece…`) opens with the source dataset information table (one row per
+(sha256 `75a8dd20…`) opens with the source dataset information table (one row per
 released dataset plus the tenv-HVG fusion source, with a footnote defining the
-CM DEG count and the contrast semantics), then restates this fill rule with its
-five common misreadings and carries the source coverage table and the evidence
-figure. `execution/make_gene_axis_docx.py` regenerates it byte-identically from
-`source_topn_coverage.csv`, the PNG, the five
+CM DEG count and the contrast semantics), follows it with the audited-and-excluded
+AF sources table (five rows: design/n, actual CM DEG count and one-clause
+exclusion reason, closing on the declared-gap/re-admission statement), then
+restates this fill rule with its five common misreadings and carries the source
+coverage table and the evidence figure. `execution/make_gene_axis_docx.py`
+regenerates it byte-identically from `source_topn_coverage.csv`, the PNG, the five
 `output/disease-deg/<category>/catalog.json` files and
 `execution/gene_axis_source_metadata.py` (the container is re-zipped with fixed
 entry timestamps; `python-docx` is listed in `environment.yml`). It is a reading

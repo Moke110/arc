@@ -995,6 +995,43 @@ class DocxTests(unittest.TestCase):
         self.assertIn(tenv['technology'], last[5])
         self.assertIn('not a DEG source', last[6])
 
+    def test_af_excluded_table_contract(self):
+        """The second table is the audited-and-excluded AF sources block."""
+        from docx import Document
+        import make_gene_axis_docx as docx_builder
+        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
+        document = Document(str(committed))
+        self.assertGreaterEqual(len(document.tables), 2, 'the document has no AF table')
+        table = document.tables[1]
+        header = [cell.text for cell in table.rows[0].cells]
+        self.assertEqual(header, list(docx_builder.AF_TABLE_COLUMNS))
+        self.assertEqual(len(table.rows), 1 + 5, 'expected 5 excluded-AF rows + header')
+        rows = [[cell.text for cell in row.cells] for row in table.rows[1:]]
+        self.assertEqual([row[0] for row in rows],
+                         ['GSE255612', 'GSE138252', 'GSE238242', 'GSE271229',
+                          'dbGaP phs003644'])
+        expected_deg = {
+            'GSE255612': ('0 in this pipeline', '0.7359', '2 in the paper',
+                          'LINC01257', 'ATRNL1'),
+            'GSE138252': ('2 (limma-voom)', '6 (edgeR QL)'),
+            'GSE238242': ('0 (min padj 0.217)',),
+            'GSE271229': ('not testable',),
+            'dbGaP phs003644': ('not downloadable',),
+        }
+        expected_reason = {
+            'GSE255612': 'no AF-specific signal',
+            'GSE138252': 'confound',
+            'GSE238242': 'no signal at n=4/3',
+            'GSE271229': 'no cell-type annotation',
+            'dbGaP phs003644': 'controlled access',
+        }
+        for row in rows:
+            with self.subTest(source=row[0]):
+                for fragment in expected_deg[row[0]]:
+                    self.assertIn(fragment, row[2], 'actual CM DEG count cell')
+                self.assertIn(expected_reason[row[0]], row[3], 'exclusion reason cell')
+
 
 if __name__ == '__main__':
     unittest.main()
