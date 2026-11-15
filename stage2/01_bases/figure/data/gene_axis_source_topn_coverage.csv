@@ -1,6 +1,6 @@
 record,panel,panel_title,y_label,value,series,series_label,source,source_label,count,rate
 panel,a,Covered Gene Count,covered genes,count,,,,,,
-panel,b,Top-N Coverage Rate,coverage rate (%),rate,,,,,,
+panel,b,Coverage of Each Group,share of group covered (%),rate,,,,,,
 bar,,,,,G_2000,"G_2000 (N = 2,000)",tenv_hvg,tenv-HVG,1079,53.95
 bar,,,,,G_2000,"G_2000 (N = 2,000)",nhf,nHF,638,38.41
 bar,,,,,G_2000,"G_2000 (N = 2,000)",icm,ICM,550,33.39

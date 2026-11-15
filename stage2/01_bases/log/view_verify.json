@@ -14,7 +14,7 @@
           "treated_share": 0.13207212206789914
         }
       },
-      "manifest_sha256": "30d2447f090133f5f9c66d2730e9ccb44db9f74c46dcb4ca1a2834ff57787596",
+      "manifest_sha256": "bb313a64617af16b1173dc8098bb2496e1826421791a135e798f34e3988859db",
       "name": "view-2k",
       "outputs": {
         "library_totals.csv": {
@@ -42,7 +42,7 @@
         }
       },
       "path": "stage2/01_bases/output/view-2k",
-      "peak_rss_kib": 442364,
+      "peak_rss_kib": 437520,
       "size": 2000,
       "sources": {
         "tahoe_bulk": {
@@ -82,7 +82,7 @@
           "treated_share": 0.3378954490137068
         }
       },
-      "manifest_sha256": "4da06c5dbe33f2cbd4fbf1077fe6aa61988d46c85418cec92c55f193aa496caf",
+      "manifest_sha256": "88f1774fb7aaf5ce714507c6271349f73831b114b35ad592ac75fe42bd8f0915",
       "name": "view-5k",
       "outputs": {
         "library_totals.csv": {
@@ -110,7 +110,7 @@
         }
       },
       "path": "stage2/01_bases/output/view-5k",
-      "peak_rss_kib": 442364,
+      "peak_rss_kib": 437520,
       "size": 5000,
       "sources": {
         "tahoe_bulk": {

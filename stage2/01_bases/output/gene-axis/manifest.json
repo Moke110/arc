@@ -563,9 +563,9 @@
         },
         {
           "panel": "b",
-          "title": "Top-N Coverage Rate",
+          "title": "Coverage of Each Group",
           "value": "rate",
-          "y_label": "coverage rate (%)"
+          "y_label": "share of group covered (%)"
         }
       ],
       "series": {
@@ -793,7 +793,7 @@
         "rate"
       ],
       "rows": 16,
-      "sha256": "103073c110a1924ee3adf75f365809b4012eda54e90f297d5492b742f860cb8f"
+      "sha256": "00a043418fdd6ad2ff464d6d975a48017886429f9c3323ef4bdbf3a09777e2cb"
     },
     "stage2/01_bases/output/gene-axis/axis_composition.csv": {
       "columns": [

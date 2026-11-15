@@ -44,8 +44,11 @@ CANDIDATE_COLOR = color('gray', FILL_SHADE)
 SELECTED_COLOR = color('orange', LINE_SHADE)
 CANDIDATE_LABEL = 'gene candidates'
 SELECTED_LABEL = 'selected genes'
-#: The x-axis annotation the released figure carries (2026-11-14 design request).
-X_LABEL = 'rank_sum (descending is better)'
+#: The x-axis annotation the released figure carries. The released rule is
+#: ``RANK_SUM_RULE``: rank 1 is the strongest DEG, a gene outside ``DEG2000_d``
+#: pays ``(n_d + 1) / n_d``, so a smaller sum is better (ascending). The v1
+#: "(descending is better)" wording contradicted that rule.
+X_LABEL = 'rank_sum (lower is better)'
 Y_LABEL = 'genes'
 
 

@@ -5,6 +5,13 @@
 > republish: see **§10** for the six-category disease-DEG, six-disease
 > fusion, `f2000` axis and re-pinned views, and `inputs.json` for the
 > machine-readable old-to-new digest mapping.
+>
+> **Figure re-pin (#210, 2026-11-15).** The two gene-axis PNG digests and the
+> panel labels in §4 and in the 2026-11-14 figure paragraphs are superseded:
+> both PNGs are re-rendered and re-pinned from their committed v2 plotted
+> values, the coverage panel-b and rank-sum x labels are corrected, and both
+> views are re-published on the new gene-axis manifest — see **§10.10** and
+> `inputs.json.figure_repin`.
 
 Accepted 2026-11-13 on branch `ticket/192-acceptance` (worktree `.scratch/worktrees/t192`,
 base `dev=cb72b92`). Re-accepted after the post-review fixes of #194 on branch
@@ -514,3 +521,61 @@ the two suites that were red on `dev` before this ticket
 (all three audits), `script/check_tracked.sh` PASS, `script/verify_all.sh` PASS
 54/54. The tree is clean after the merge; no item `source/` or `local/` payload
 was written by the republish.
+
+### 10.10 Figure re-pin and label correction (#210, 2026-11-15)
+
+Both committed gene-axis PNGs were stale against the v2 plotted values that
+§10.1 regenerated. They are re-rendered from their own tracked CSVs with the
+committed renderers and re-pinned; the CSV-only replay assertion now passes for
+both, and no plotted value changed.
+
+| figure | plotted values | PNG (old → new) | replay |
+|---|---|---|---|
+| `gene_axis_source_topn_coverage.png` | `figure/data/gene_axis_source_topn_coverage.csv` `103073c1…` → `00a04341…` (panel-b label only) | `51ea4bc8…` → `37c24d17…` | byte-identical (`SourceCoverageFigureTests`) |
+| `gene_axis_rank_sum_histogram.png` | unchanged `c402554a…` | `5c54608f…` → `874f6020…` | byte-identical (`FigureTests`) |
+
+**Labels corrected.** Two labels that the v1 wording made untrue:
+
+- Panel b of the coverage figure was `Top-N Coverage Rate` (y = `coverage rate
+  (%)`). The v1 denominator was `N` for every source; the v2 denominator is the
+  group's own set — `|DEG2000_d|` for a disease (`af` 1, `cardiotox_other` 297,
+  `genetic_cardiomyopathy` 1,482, `icm` 1,647, `nhf` 1,661, `cardiotox_TOP2`
+  2,000) and `N` only for `tenv-HVG` (ADR 0071 decision 8). Under the old title
+  `AF`'s 1-of-1 `G_5000` cell read as a 100% "Top-N" coverage. The panel is now
+  `Coverage of Each Group` (y = `share of group covered (%)`). The label lives
+  in `SOURCE_COVERAGE_FIGURE_PANELS`, so the plotted-values CSV and
+  `manifest.coverage.figure.panels` carry it too: gene-axis manifest `078f604a…`
+  → `c247dcc0…`, `--verify` PASS, 10 inputs / 7 outputs, 0.33 s / 131 MiB. Every
+  axis and coverage payload digest is byte-unchanged (`source_topn_coverage.csv`
+  stays `8db5fcbf…`).
+- The rank-sum figure's x annotation was `rank_sum (descending is better)`,
+  contradicting the released `RANK_SUM_RULE` ("Ascending is better": rank 1 is
+  the strongest DEG and a gene outside `DEG2000_d` pays `(n_d + 1) / n_d`); the
+  plotted selected genes sit at low `rank_sum`. It now reads `rank_sum (lower is
+  better)`. Only the renderer constant changed.
+
+Because both views pin the gene-axis release manifest, they were re-published
+and re-verified against the new one: the view **payload digests are
+byte-unchanged** (`tahoe_bulk.h5ad`, `tenv.h5ad`, `library_totals.csv`; only the
+pinned input differs). Manifests: `view-2k` `30d2447f…` → `bb313a64…`,
+`view-5k` `4da06c5d…` → `88f1774f…`; `publish` 3 m 29.1 s / 430 MiB, `verify`
+3 m 31.9 s / 427 MiB, both PASS (`log/view_publish_verify.json` and
+`log/view_verify.json` are those runs). The gitignored corpus payloads were
+materialised into the worktree by symlink to the main checkout — the documented
+#195 trap — and died with the worktree; no item `source/` or `local/` byte was
+written.
+
+**Observation (not a rendering change).** The six-term `rank_sum` is nearly
+constant for the 12,882 `f2000 = 0` candidates: a gene outside a disease's
+`DEG2000` pays `(n_d + 1) / n_d` in every term, and `AF`'s `n_d = 1` makes its
+term exactly 2.0 for every non-AF gene, so those candidates pile into one bin at
+≈7.0 — the figure's single spike. The figure plots the committed values
+honestly; the thinness is the rule's arithmetic (ADR 0071), not the renderer.
+
+**Health.** On the merged tree, `python -m unittest discover -s
+stage2/01_bases/execution/tests` gives **398 tests: 3 failures + 5 errors**,
+exactly the eight #209-owned tests (six `DocxTests`, two
+`test_gene_axis_source_metadata.CoverageContractTest`, listed in
+`inputs.json.health.red_tests`); the two #210 figure replay tests are green and
+every other suite is green. `script/check_paths.sh`, `script/check_tracked.sh`
+and `script/verify_all.sh` PASS.
