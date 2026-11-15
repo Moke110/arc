@@ -668,3 +668,57 @@ DATASETS.extend([
         },
     },
 ])
+
+# --- ticket #202: ICM tier-1 Kuppe-MI (IZ vs CTRL) ---------------------------
+# The cellxgene Kuppe MI all-snRNA object supplies ICM's human cardiomyocyte
+# pseudobulk evidence at tier 1 — ADR 0071's "ICM gains the Kuppe MI IZ vs CTRL
+# contrast ... and stops at tier 1". The object is gated on its own CM label and
+# the profiles are per (donor, zone), not per donor: an infarct heart contributes
+# its ischaemic-zone CM nuclei as one profile, which is what makes the
+# ischaemic-zone-vs-control-heart contrast possible. A 500-CM-nuclei profile floor
+# removes the sparse donor-zone profiles, one joint ~0 + zone fit estimates
+# dispersion over all five zones, and the repeated donor profiles are blocked with
+# duplicateCorrelation(block = donor). Only the IZ-vs-CTRL contrast publishes a
+# DEG; the border/remote/fibrotic-zone contrasts are fitted for dispersion and
+# recorded as artifacts in the item summary. The deposit carries no per-donor
+# time-since-infarct field, so acute-vs-chronic stays undeclared (see
+# `time_window_note`), not asserted.
+CATEGORIES['ICM']['shared_control_group'] = (
+    list(CATEGORIES['ICM']['shared_control_group']) + ['kuppe-mi:normal'])
+DATASETS.append({
+    'dataset_id': 'kuppe-mi__iz',
+    'category': 'ICM',
+    'source_item': 'disease_data/Kuppe-MI',
+    'local_deg': 'local/deg/kuppe-mi_deg.csv',
+    'local_summary': 'local/deg/kuppe-mi_deg.json',
+    'cells_per_donor': 'local/pseudobulk/kuppe-mi_profiles.csv',
+    'arm_or_class': ('IZ (ischaemic zone) cardiomyocyte profiles of 4 infarct donors '
+                     '(P2, P9, P10, P15) vs the 4 normal-heart CM profiles '
+                     '(P1, P7, P8, P17), after the 500-CM-nuclei profile floor'),
+    'species': 'Homo sapiens',
+    'model_system': ("human left-ventricle 10x 3' v3 snRNA CM pseudobulk, one profile "
+                     'per (donor, zone) of the infarcted heart'),
+    'evidence_type': 'cm_pseudobulk',
+    'tier': 1,
+    'genotype_status': 'not_declared',
+    'time_window_basis': None,
+    'time_window_note': ('the deposit carries no per-donor time-since-infarct field, so the '
+                         'deposit does not separate acute from chronic MI; the record is '
+                         'undeclared, never asserted'),
+    'exploratory': False,
+    'shared_control_group': 'kuppe-mi:normal',
+    'n_case': 4,
+    'n_control': 4,
+    'contrasts': ['IZ-CTRL'],
+    'method': {
+        'deposition': 'integer counts (cellxgene raw.X)',
+        'model': ('limma-voom (voom library-size normalisation, moderated t) with donor '
+                  'blocking: duplicateCorrelation(block = donor) on the joint design'),
+        'design': ('one joint fit ~0 + zone over the 18 (donor, zone) profiles that pass the '
+                   '500-CM-nuclei floor (CTRL 4 / IZ 4 / BZ 3 / RZ 5 / FZ 2); this dataset '
+                   'selects the IZ vs CTRL contrast, the other three zone contrasts are '
+                   'artifact rows of the same fit'),
+        'test': 'moderated t',
+        'padj': 'Benjamini-Hochberg',
+    },
+})

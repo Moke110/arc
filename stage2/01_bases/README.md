@@ -174,6 +174,19 @@ the R of the conda env running the build (`<prefix>/lib/R`), otherwise the
 control set, so all three contrasts come from **one joint `~ 0 + arm` fit**
 over the 23 donor pseudobulk profiles rather than three case-control fits.
 
+Two optional design-spec fields extend the same worker without changing the
+defaults (#202): `"block"` names a sample-sheet column and puts one consensus
+intra-block correlation from `duplicateCorrelation()` into both `voom()` and
+`lmFit()`, for sources where one subject contributes repeated profiles
+(`disease_data/Kuppe-MI`'s donor x zone pseudobulk: the four infarct-heart IZ
+profiles against the four normal-heart profiles, with the donor's other zone
+profiles in the same joint `~ 0 + zone` fit); `"filter"` applies the
+`edgeR::filterByExpr` rule (`min_count`/`min_total_count`/`large_n`/`min_prop`)
+as a gene filter, written out in the worker because the pinned `arc` R env ships
+limma but not edgeR. The filter only removes genes (the all-zero-row drop is
+always applied) and reports the dropped count in the `DEG_SUMMARY` line; the
+count contract itself (integer, non-negative counts) is unchanged.
+
 **GSE270788 arm-size erratum (recorded in issue #187 and in the item author
 log).** The ticket body and ADR 0066 say `Donor 6 / NICM 7`; the immutable
 deposit says **Donor 7 / NICM 6 / ICM 5 / AMI 5** (both

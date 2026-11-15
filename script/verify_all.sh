@@ -120,6 +120,7 @@ main() {
     disease_data/GSE304575
     disease_data/GSE305648
     disease_data/GSE35108
+    disease_data/Kuppe-MI
     disease_data/Reichart-CM
     drug_emb_model/HG
     drug_emb_model/KPGT

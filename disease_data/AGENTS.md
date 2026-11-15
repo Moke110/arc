@@ -14,8 +14,8 @@ cell composition/fibrosis, not the cardiomyocyte: `GSE141910` (human LV bulk),
 `GSE116250` (human LV bulk), `GSE128188` (human atrial tissue bulk), `GSE282618`
 (human post-mortem LV/RV bulk), `GSE160516` and `GSE108940` (mouse whole-LV bulk
 MIRI). Do not re-admit them to a Stage 2 axis without a new ADR; the axis sources
-are the CM pseudobulk (`GSE270788`, `GSE255612`, `Reichart-CM`) and isogenic CM
-bulk models listed below.
+are the CM pseudobulk (`GSE270788`, `GSE255612`, `Reichart-CM`, `Kuppe-MI`) and
+isogenic CM bulk models listed below.
 - `GSE108940/` — mouse MIRI (*Mus musculus*, GPL7202 Agilent 4×44K); limma WT I/R vs Sham; mouse→human homologene `inTax=10090`; L1000-978 Stage-1-only; provenance corrected in #176 (adds TP53 UP).
 - `GSE116250/` — human LV HF 37 DCM + 13 ICM vs 14 NF (50/14); limma on log2(RPKM+1); full DEG + expression; HF cheapest anchor and post-MI (ICM) proxy.
 - `GSE128188/` — human AF 5 vs 5 SR (paired LA+RA, 20 libraries); DESeq2 on donor-pooled counts; full DEG + expression; the >5% AF category.
@@ -35,6 +35,7 @@ bulk models listed below.
 - `GSE253223/` — human wild-type hiPSC-CM, acquired PKP2 siRNA knockdown (4/day) vs non-targeting siRNA (1/day), days 2/4/6/8; `~0 + group + day` with the days pooled and day blocked; an ARVC-loss **knockdown**, not a patient variant (recorded); feeds `genetic_cardiomyopathy`.
 - `GSE194297/` — human DMD point-mutation cardiac organoids (day 56) vs the CRISPR/Cas-corrected isogenic line (3/3); single `~0 + group` contrast; feeds `genetic_cardiomyopathy`.
 - `Reichart-CM/` — non-GEO cellxgene CM-only object (collection e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb, 311,418 cells / 79 donors), named by object identity; donors split by `Primary.Genetic.Diagnosis`; genotype-negative DCM donors feed `nHF`, and the tracked axis-aligned per-donor pseudobulk + genotype table is the ticket #188 `genetic_cardiomyopathy` input (single NCCM donor excluded). Ticket #188 adds `script/build_genetic_deg.py`, which derives the genotype-positive-DCM and ARVC contrasts from that tracked export read-only (no pseudobulk re-derivation), with the derived table in `local/deg/reichart-cm_genetic_deg.csv` and a tracked `.json` summary.
+- `Kuppe-MI/` — non-GEO cellxgene object (collection `8191c283-0816-424b-9b61-c3e1d6258a77`, version `4780eb7d-4c7c-4630-8705-471f0de8e27a`; 191,795 nuclei / 20 donors / 28,380 features, left-ventricle snRNA), named by object identity; author CM gate `cell_type_original == "Cardiomyocyte"` (64,510 nuclei) and pseudobulk per (donor, zone) from the authors' `major_labl` (CTRL/IZ/BZ/RZ/FZ, 25 profiles); the 500-CM-nuclei profile floor leaves 18 profiles and one joint `~0 + zone` limma-voom fit with `duplicateCorrelation(block = donor)` publishes the `IZ-CTRL` contrast (4 IZ donors vs the 4 normal donors; 3,099 v2 DEGs genome-wide, 1,646 on the frozen axis under the pinned arc limma); the other zone contrasts stay recorded artifacts. **tier-1** `ICM` source under ADR 0071; the deposit carries no time-since-infarct field, so acute-vs-chronic is recorded as undeclared.
 
 The five human series follow the gene-axis interface: `local/deg/<GSE>_deg.csv` (full
 transcriptome, signed effect + BH padj + case/control n; gitignored, regenerable) and the
