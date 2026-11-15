@@ -1,7 +1,7 @@
 {
   "command": "verify",
   "results": {
-    "manifest_sha256": "876cba1f3e5634101dc80a574a044e78d085f8e26f0a219c9ad8a514bd39ad94",
+    "manifest_sha256": "cf90150804251191ca3b54bbca482a850000cad4206cd3d87ac9d1987872117b",
     "outputs": [
       "af.deg2000.csv",
       "cardiotox_TOP2.deg2000.csv",

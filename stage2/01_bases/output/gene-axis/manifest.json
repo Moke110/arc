@@ -743,7 +743,7 @@
     "stage2/01_bases/output/disease-fusion/manifest.json": {
       "bytes": 11038,
       "role": "disease_fusion_release_manifest",
-      "sha256": "876cba1f3e5634101dc80a574a044e78d085f8e26f0a219c9ad8a514bd39ad94"
+      "sha256": "cf90150804251191ca3b54bbca482a850000cad4206cd3d87ac9d1987872117b"
     },
     "stage2/01_bases/output/disease-fusion/nhf.deg2000.csv": {
       "bytes": 47522,

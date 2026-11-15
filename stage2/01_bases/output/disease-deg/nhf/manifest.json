@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "317cef43bcafb5213c0b721995604970d97d402d462182e6cb7582fbf33c3aec",
+  "catalog_sha256": "a57fc929c29cfa0da68a1d213c26d7f7ee6de6507447861099d3a326e4f8977b",
   "category": "nHF",
   "counts": {
     "datasets": 6,
@@ -33,7 +33,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "cd44b1165c678c4dc360eec83cb2bd119cef9250f5eb0a028492f0c3b6c22a92"
+      "sha256": "97e11b810c07124b205710fa249202672ebb9294cc5f14be7a85ac11c1b05cff"
     },
     "gse116250__hf_lv_bulk.deg.csv": {
       "rows": 15727,

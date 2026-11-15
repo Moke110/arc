@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "0e3dd3bd079e1419543ddac043c63d14c6ab1c8829ed8dbbd83f743cd604019a",
+  "catalog_sha256": "712b9e5058eb4e3449880881cf4bd2126454ebabccc52fe38b1469d6189365f9",
   "category": "ICM",
   "datasets": [
     {
@@ -257,7 +257,7 @@
   "rejected": [
     {
       "candidate": "GSE298023",
-      "reason": "labels only inside a 4.0 GB .rds; ad-hoc re-clustering is forbidden"
+      "reason": "eligible human LV CM source, but its author cell labels exist only inside an unopened 4.0 GB .rds, so no author CM gate was available and a gate invented from markers is not permitted; the 1.8 GB per-sample 10x RAW.tar carries counts only"
     },
     {
       "candidate": "GSE145154",

@@ -140,9 +140,9 @@
       "sha256": "f1e683666fdc5b1d8fe189c7ea2a0568b61560fa10c6f3d931cfbdb10c60db79"
     },
     "stage2/01_bases/output/disease-deg/icm/catalog.json": {
-      "bytes": 12010,
+      "bytes": 12181,
       "role": "icm:catalog",
-      "sha256": "258c5c63c6a486cee7e23e376ef9ce2140d54394dc644e2705317ad701305e7c"
+      "sha256": "24a7b6635143d6cd68ee881ed78b4b195c6f6cade76e78a209b4366ec1172a6c"
     },
     "stage2/01_bases/output/disease-deg/icm/gse270788__ami.deg.csv": {
       "bytes": 2846302,
@@ -162,12 +162,12 @@
     "stage2/01_bases/output/disease-deg/icm/manifest.json": {
       "bytes": 2203,
       "role": "icm:release_manifest",
-      "sha256": "6968bd937ad4174595d11dc220c6ca96195e4e17478610a7a1ef18b225d4d884"
+      "sha256": "f52d5b1581ac74620f85b3962f489c26bd762cd7ec894c4da2e6dfe1267c10c3"
     },
     "stage2/01_bases/output/disease-deg/nhf/catalog.json": {
-      "bytes": 25175,
+      "bytes": 25846,
       "role": "nhf:catalog",
-      "sha256": "cd44b1165c678c4dc360eec83cb2bd119cef9250f5eb0a028492f0c3b6c22a92"
+      "sha256": "97e11b810c07124b205710fa249202672ebb9294cc5f14be7a85ac11c1b05cff"
     },
     "stage2/01_bases/output/disease-deg/nhf/gse116250__hf_lv_bulk.deg.csv": {
       "bytes": 2871479,
@@ -197,7 +197,7 @@
     "stage2/01_bases/output/disease-deg/nhf/manifest.json": {
       "bytes": 4283,
       "role": "nhf:release_manifest",
-      "sha256": "989079df9df9eea03b29ecb592a246c83872bb80b47bb53bb2a2eab9293297f4"
+      "sha256": "7277e52960d8f6292bf036c9cf49f292bd92e535842b75632c9f80625792e804"
     },
     "stage2/01_bases/output/disease-deg/nhf/reichart-cm__dcm_genotype_negative.deg.csv": {
       "bytes": 3558217,

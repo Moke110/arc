@@ -26,6 +26,14 @@
 > values, the coverage panel-b and rank-sum x labels are corrected, and both
 > views are re-published on the new gene-axis manifest — see **§10.10** and
 > `inputs.json.figure_repin`.
+>
+> **Rejected-rationale republish (#212, 2026-11-15).** The disease-DEG,
+> disease-fusion, gene-axis and view digests quoted in §10 and §10.10 are
+> superseded by the approved freeze lift that corrected three published
+> `rejected[]` rationale strings and re-published the cascade: see **§12** and
+> `inputs.json.republish_212`. The axis gene sets, the view payloads, the
+> coverage/axis products and the rule document are byte-identical; only the
+> `nhf`/`icm` catalogs and the manifests that pin them moved.
 
 Accepted 2026-11-13 on branch `ticket/192-acceptance` (worktree `.scratch/worktrees/t192`,
 base `dev=cb72b92`). Re-accepted after the post-review fixes of #194 on branch
@@ -688,3 +696,142 @@ were not edited (out of this ticket's scope).
 scripts now carry the GPL record (`GPL20795` = HiSeq X Ten, `GPL16791` = Illumina
 HiSeq 2500), and the published `local/deg/*_deg.json` bytes are left as-is because
 they are digest-pinned by the accepted disease-DEG catalogs.
+
+## 12. Rejected-rationale republish (#212, ADR 0071)
+
+Accepted 2026-11-15 on branch `ticket/212-republished-rationale` (base
+`dev=a60c704`), merged `--no-ff` into `dev`. This is a spec-owner-approved
+**freeze lift** on a complete, green v2 release: no science changes, no new
+product, only the three `rejected[]` rationale strings that the v2 catalogs had
+copied verbatim from the pre-v2 registry and that were false in the published
+products. #211 corrected the declaration *comment* and left the data alone to
+protect the freeze; #212 rewrote the data and re-published the cascade.
+
+**The three strings (declaration, and therefore the published catalogs).**
+
+1. `nHF` / `GSE183852` — before: *"eligible human LV CM source, but CM labels live
+   only inside 2.1-12 GB Seurat Robj objects; ad-hoc re-clustering is forbidden"*.
+   After: *"eligible human LV CM source, but a measured cost call, not a
+   label-access barrier: the authors' 6.7 MB MOESM4 Cardiomyocytes sheet already
+   carries the CM labels, and the v2 definition (padj < 0.05 and |log2FC| >= 2)
+   yields 70 DEGs, 50 on the frozen axis (26,946 genes tested; the padj-only
+   anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce) -- 2.5% of a
+   2,000-gene target, so an 8.1-12 GB Robj label extraction is not warranted. Its
+   padj-only yield (4,927 on-axis) would only matter under a softer fold tier,
+   which the v2 rule does not admit"*.
+2. `nHF` third entry (`GSE141910 / GSE116250 / GSE128188 / GSE282618`) — before:
+   *"whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived"*. After:
+   *"ADR 0071 tier 3 admits whole-tissue bulk: GSE141910 and GSE116250 are
+   declared tier-3 nHF sources (with GSE165303) and GSE128188 is an owned tier-3
+   AF candidate AF did not need once its tier-1 sources were measured. Only
+   GSE282618 stays un-admitted, for its 3-vs-2 exploratory design, not for its
+   tissue class"*.
+3. `ICM` / `GSE298023` — before: *"labels only inside a 4.0 GB .rds; ad-hoc
+   re-clustering is forbidden"*. After: *"eligible human LV CM source, but its
+   author cell labels exist only inside an unopened 4.0 GB .rds, so no author CM
+   gate was available and a gate invented from markers is not permitted; the
+   1.8 GB per-sample 10x RAW.tar carries counts only"*.
+
+Entry 3 is a **third** string beyond the two named in the ticket: the `ICM`
+catalog carried a *different* pre-v2 reason with the same false
+"ad-hoc re-clustering" construction, and the ticket's own acceptance requires
+the phrase to disappear from `output/`, so it was corrected in the same edit.
+Everything else in the declaration is byte-identical.
+
+**Cascade.** Each step was re-published with the documented driver under
+`execution/capped.sh` + `/usr/bin/time -v`, one job at a time, and verified:
+
+| product | before | after | bytes |
+|---|---|---|---|
+| `disease-deg/nhf/catalog.json` | `cd44b116…` | `97e11b810c07124b205710fa249202672ebb9294cc5f14be7a85ac11c1b05cff` | 25,175 -> 25,846 |
+| `disease-deg/icm/catalog.json` | `258c5c63…` | `24a7b6635143d6cd68ee881ed78b4b195c6f6cade76e78a209b4366ec1172a6c` | 12,010 -> 12,181 |
+| `disease-deg/nhf/manifest.json` | `989079df…` | `7277e52960d8f6292bf036c9cf49f292bd92e535842b75632c9f80625792e804` | 4,283 (same) |
+| `disease-deg/icm/manifest.json` | `6968bd93…` | `f52d5b1581ac74620f85b3962f489c26bd762cd7ec894c4da2e6dfe1267c10c3` | 2,203 (same) |
+| `disease-deg/{af,genetic_cardiomyopathy}/{catalog,manifest}.json` | `ced4158a…` / `b4cfbf29…`, `0d3efcdb…` / `fe05673e…` | **byte-identical** | — |
+| `disease-deg/` tree | 86,213,156 | 86,213,998 | +842 |
+| `disease-fusion/catalog.json` | `5fdcb712…` | **byte-identical** | 14,173 |
+| `disease-fusion/manifest.json` | `876cba1f…` | `cf90150804251191ca3b54bbca482a850000cad4206cd3d87ac9d1987872117b` | 11,038 |
+| `disease-fusion/` tree | 227,622 | 227,622 | — |
+| `gene-axis/manifest.json` | `c247dcc0…` | `a344f9e29c7c9eef2f78fa9ab17abce139533809cf83e1ae74af7befc82bbff3` | 28,216 |
+| `gene-axis/` 7 outputs | `4c1a98d9…`, `637bb8e1…`, `6f467c2c…`, `51192501…`, `8db5fcbf…` + both figure CSVs/PNGs | **byte-identical** | — |
+| `gene-axis/` tree | 1,036,917 | 1,036,917 | — |
+| `view-2k/manifest.json` | `bb313a64…` | `ac5a1a970106ed77e8835479245a4a3723cd2bf8b08c81cb0d814034ccbf2fa2` | 5,756 |
+| `view-5k/manifest.json` | `88f1774f…` | `4620805db1f368f3e0b5885a66a58e8059d7ad074ce8ecc07d99cd02314cfc0e` | 5,747 |
+| `view-2k/`, `view-5k/` payloads | `ff821207…`/`9c818600…` (tenv), `88739add…`/`5f16fdfb…` (tahoe), `dfaa5d7e…` (`library_totals.csv`) | **byte-identical** | trees 1,324,492,857 / 3,155,061,833 |
+| `gene-axis/gene_axis_fill_rule.docx` | `e7fbc26a…`, 94,590 B | **byte-identical** (rebuilt from the corrected catalogs into a scratch dir and hashed) | — |
+
+Why the tail moves by digest only: the corrected strings are catalog *data*, so
+the `nhf`/`icm` catalogs and their manifests change; the fusion catalog does not
+embed catalog digests, so only its manifest moves; the axis gene sets are
+unchanged, so every gene-axis output and the rule document are byte-identical and
+the view payloads are unchanged — only the pinning manifests move
+(`disease-fusion/manifest.json` -> `gene-axis/manifest.json` ->
+`view-{2k,5k}/manifest.json`), which is why the views still had to be re-published
+and re-verified.
+
+**Measurements** (branch tree, `execution/capped.sh` RLIMIT_AS=10 GiB,
+`/usr/bin/time -v`; the systemd user bus was unavailable, so the portable cap
+applied):
+
+| job | wall | peak RSS |
+|---|---|---|
+| `build_disease_deg.py publish --all` | 16.2 s | 355,532 KiB |
+| `build_disease_deg.py verify --all` | 14.7 s | 360,592 KiB |
+| `build_disease_fusion.py publish` | 1.1 s | 141,244 KiB |
+| `build_disease_fusion.py verify` | 1.1 s | 144,464 KiB |
+| `build_gene_axis.py` (publish) | 0.3 s | 132,532 KiB |
+| `build_gene_axis.py --verify` | 0.3 s | 135,284 KiB |
+| `make_gene_axis_docx.py` (replay check) | 0.6 s | 129,392 KiB |
+| `build_view.py publish` | 3 m 36.0 s | 441,192 KiB |
+| `build_view.py verify` | 3 m 37.1 s | 458,304 KiB |
+| full suite `unittest discover` | 12.6 s | 315,088 KiB |
+
+The five `log/*_verify.json` replay records were refreshed from these runs
+(`disease_deg_verify.json`, `disease_fusion_verify.json`, `gene_axis_verify.json`,
+`view_publish_verify.json`, `view_verify.json`); `cardiotox_verify.json` is
+unchanged because the cardiotox products did not move.
+
+**Docs re-measured against the files** (no value copied from a report): the
+`disease-deg/` `du -sb` in `docs/data-inventory.md` (86,213,156 -> 86,213,998),
+the gene-axis manifest digest in `stage2/01_bases/README.md`
+(`c247dcc0…` -> `a344f9e2…`, 28,216 B), and the two view manifest digests
+(`bb313a64…` -> `ac5a1a97…`, `88f1774f…` -> `4620805d…`). Every other quoted
+product digest (axis files, figure CSVs/PNGs, the rule document, the fusion
+catalog, `disease-deg`/`disease-fusion`/`gene-axis`/view tree sizes) was
+re-measured and is unchanged. There is no root `README.md` in this repository
+(it was removed when the docs became `AGENTS.md`-first), so no root-README digest
+exists to update.
+
+**Grep gate.** `ad-hoc re-clustering` under `stage2/01_bases/output/`: **0**
+matches (before: 2 — `nhf/catalog.json`, `icm/catalog.json`). `not
+cardiomyocyte-derived` remains only where it is a true statement and not the
+ground of a record that v2 changed: the `ICM` third entry and the
+`genetic_cardiomyopathy` fourth entry still quote it; both categories' rejection
+grounds are rosters/tiers, and those two strings were left untouched per the
+ticket's two-string scope (flagged, not silently edited).
+
+**Gate on merged `dev`** (main checkout, from the repo root): `python -m unittest
+discover -s stage2/01_bases/execution/tests` → **402 tests, 0 failures, 0
+errors** (no test pinned the old strings, so none had to change);
+`build_disease_deg.py verify --all`, `build_disease_fusion.py verify`,
+`build_gene_axis.py --verify` and `build_view.py verify` (both views) → PASS;
+`script/verify_all.sh` → **54/54**; `script/check_paths.sh` and
+`script/check_tracked.sh` → PASS; `git status` clean and `main` still
+`83aede2`. The tracked tree the gate runs on is byte-identical to the gated
+branch tree (`dev` was the branch base and the merge was `--no-ff` with no other
+commit between them).
+
+**Flags (not decided here).** (1) `docs/data-inventory.md`'s `figure/` row still
+quotes `du -sb` 100,506 — a #210 leftover, outside this cascade: the tracked
+content is 164,771 B (two PNGs, two plotted-value CSVs, two renderers) and the
+main-checkout `du -sb` is 198,874 B because it includes the ignored
+`figure/script/__pycache__`; whichever convention the inventory wants is a docs
+decision. (2) `inputs.json.products.*` and `inputs.json.document_reproduction`
+keep their #208/#209-era digests by the append-only rule; `republish_212` carries
+the current ones and the sealed-record note points at it. (3) The item-local
+`local/deg/{GSE116250,GSE165303}_deg.json` platform strings that #211 noted were
+deliberately **not** rebuilt here: they are unrelated item artifacts, and
+rebuilding them would move every catalog's pinned `derived_inputs` digests for no
+scientific gain. (4) `script/check_paths.sh` cannot pass inside a worktree (the
+gitignored `source/` trees are absent); it is a main-checkout gate and was run
+there on the merged tree.
