@@ -1,0 +1,174 @@
+{
+  "arm": "snRNA only (the 7 snATAC libraries are not fetched or used)",
+  "author_annotation": {
+    "cell_types": [
+      "Adipo",
+      "CM",
+      "EC",
+      "Endocardial",
+      "FB",
+      "Lymphoid",
+      "Mast",
+      "Mesothelial",
+      "Myeloid",
+      "Neuron",
+      "PC",
+      "SMC"
+    ],
+    "cm_fraction": 0.25438,
+    "cm_nuclei": 3049,
+    "nuclei": 11986,
+    "source": "GSE238242_snAF.metadata.tsv.gz",
+    "statement": "the cell table is an author file shipping beside the count archives; the per-cell clustering/integration that produced it is not in the deposit (no Seurat/ArchR object, no h5ad), so the labels can be trusted but not re-derived or re-checked"
+  },
+  "cell_type_column": "cell_type",
+  "cell_type_label": "CM",
+  "deposition": {
+    "metadata": {
+      "bytes": 74550,
+      "path": "source/GSE238242_snAF.metadata.tsv.gz",
+      "sha256": "9211a2ee1a77a2587828bd5082b9dddf43c36482d05a697e9f6fe9c7e3287425"
+    },
+    "rna_tables": {
+      "GSM7660990": {
+        "bytes": 9441961,
+        "path": "source/GSM7660990_CF69RNA.counts.tsv.gz",
+        "sha256": "4da6c388cc7dfe2bb795fef48e71a520dc9d8c255ff03753eb801714d627a07e"
+      },
+      "GSM7660991": {
+        "bytes": 7136770,
+        "path": "source/GSM7660991_CF77RNA.counts.tsv.gz",
+        "sha256": "fedfa3024481a2a414039ad564831ee64fb32f8a0d8d09f8480f746bec1172d7"
+      },
+      "GSM7660992": {
+        "bytes": 3547052,
+        "path": "source/GSM7660992_CF89RNA.counts.tsv.gz",
+        "sha256": "a792bf59b21b1e046a8035dc7d9204d0d8e27f1d2b25f172083d6e6b4fc7013f"
+      },
+      "GSM7660993": {
+        "bytes": 5856219,
+        "path": "source/GSM7660993_CF91RNA.counts.tsv.gz",
+        "sha256": "5c02550cf712dde4c86604ebb3f64160aefc70ac53a067700ef694e3effd71b4"
+      },
+      "GSM7660994": {
+        "bytes": 5468856,
+        "path": "source/GSM7660994_CF93RNA.counts.tsv.gz",
+        "sha256": "e2e597bc4b9a18154bf0d8f70646ac568b0d48d35a6a943c12dc0f86c3f690fa"
+      },
+      "GSM7660995": {
+        "bytes": 8797614,
+        "path": "source/GSM7660995_CF97RNA.counts.tsv.gz",
+        "sha256": "a65811ef20ff0231cb52d00618006c791c6ed02e8b0e19d216ce6cf34db57fd0"
+      },
+      "GSM7660996": {
+        "bytes": 5107455,
+        "path": "source/GSM7660996_CF102RNA.counts.tsv.gz",
+        "sha256": "23e370893e9f3528165b5de8bfe4af8d5111c85f2ee3a8300edcac7d0eb7c3bc"
+      }
+    }
+  },
+  "item": "GSE238242",
+  "libraries": {
+    "GSM7660990": "CF69",
+    "GSM7660991": "CF77",
+    "GSM7660992": "CF89",
+    "GSM7660993": "CF91",
+    "GSM7660994": "CF93",
+    "GSM7660995": "CF97",
+    "GSM7660996": "CF102"
+  },
+  "pseudobulk": {
+    "genes": 38231,
+    "matrix_bytes": 405958,
+    "matrix_path": "local/pseudobulk/GSE238242_cm_pseudobulk.csv.gz",
+    "matrix_sha256": "e22a4e4cae4e9466349947462e6d85667edeb58cd2b86e64801007fbb6d64bc3",
+    "profile_rows": [
+      {
+        "cm_nuclei": 282,
+        "donor": "CF69",
+        "genes_detected": 24614,
+        "gsm": "GSM7660990",
+        "library_size": 4137134,
+        "nuclei_in_matrix": 2259,
+        "profile": "CF69",
+        "rhythm": "SR",
+        "sex": "F"
+      },
+      {
+        "cm_nuclei": 418,
+        "donor": "CF77",
+        "genes_detected": 25959,
+        "gsm": "GSM7660991",
+        "library_size": 4585124,
+        "nuclei_in_matrix": 2044,
+        "profile": "CF77",
+        "rhythm": "SR",
+        "sex": "M"
+      },
+      {
+        "cm_nuclei": 206,
+        "donor": "CF89",
+        "genes_detected": 22186,
+        "gsm": "GSM7660992",
+        "library_size": 2032816,
+        "nuclei_in_matrix": 1087,
+        "profile": "CF89",
+        "rhythm": "SR",
+        "sex": "F"
+      },
+      {
+        "cm_nuclei": 488,
+        "donor": "CF91",
+        "genes_detected": 24859,
+        "gsm": "GSM7660993",
+        "library_size": 4579250,
+        "nuclei_in_matrix": 1850,
+        "profile": "CF91",
+        "rhythm": "SR",
+        "sex": "M"
+      },
+      {
+        "cm_nuclei": 545,
+        "donor": "CF93",
+        "genes_detected": 27189,
+        "gsm": "GSM7660994",
+        "library_size": 10137407,
+        "nuclei_in_matrix": 1284,
+        "profile": "CF93",
+        "rhythm": "AF",
+        "sex": "M"
+      },
+      {
+        "cm_nuclei": 647,
+        "donor": "CF97",
+        "genes_detected": 27265,
+        "gsm": "GSM7660995",
+        "library_size": 10501541,
+        "nuclei_in_matrix": 2398,
+        "profile": "CF97",
+        "rhythm": "AF",
+        "sex": "M"
+      },
+      {
+        "cm_nuclei": 463,
+        "donor": "CF102",
+        "genes_detected": 26671,
+        "gsm": "GSM7660996",
+        "library_size": 8512577,
+        "nuclei_in_matrix": 1064,
+        "profile": "CF102",
+        "rhythm": "AF",
+        "sex": "M"
+      }
+    ],
+    "profiles": 7,
+    "profiles_path": "local/pseudobulk/GSE238242_profiles.csv",
+    "profiles_sha256": "ad9d2ea58a2d335dcd303f41a8af7d94604076fc6e14a96c8ae9a6030263f082",
+    "rule": "sum of each donor's CM raw integer counts (the sufficient statistic for a count model); no per-cell normalisation and no mean of normalised values, which would add a normalisation choice"
+  },
+  "rhythm_counts": {
+    "AF": 3,
+    "SR": 4
+  },
+  "schema": "stage2-item-cm-pseudobulk-v1"
+}

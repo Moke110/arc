@@ -722,3 +722,216 @@ DATASETS.append({
         'padj': 'Benjamini-Hochberg',
     },
 })
+
+# --- ticket #204: AF returns (tier-1 CM-specific sources + tier-3 bulk) ------
+# ADR 0071 decision 7 re-admits AF after ADR 0069/0070 removed it: its CM-specific
+# sources (GSE255612, GSE138252, GSE238242) are tier 1 and their measured DEG union
+# is far short of 2,000, so the category descends to tier-3 whole-atrial bulk
+# (GSE269882; GSE128188 is already owned). Every path below is item-relative; the
+# driver composes the repo-relative path, so no gitignored `local/` literal points
+# at the checkout. GSE255612's record is restored unchanged from before ADR 0069:
+# its DEG item is not rebuilt by this ticket.
+CATEGORIES['AF'] = {
+    'directory': 'af',
+    'tier': 1,
+    'evidence_type': 'cm_pseudobulk',
+    'shared_control_group': ['gse255612:donor', 'gse138252:control_la',
+                             'gse238242:sr', 'gse269882:sinus_rhythm'],
+    'rejected': [
+        {'candidate': 'GSE271229',
+         'accession': 'GSE271229',
+         'status': 'not_admitted',
+         'reason': ('left-atrial snRNA-seq (9 donors: 3 no-AF / 3 paroxysmal / 3 '
+                    'persistent) whose deposit ships NO author cell-type annotation — '
+                    'only per-sample CellRanger barcodes/features/matrix triples and an '
+                    'empty series-matrix data table. A CM gate would have to be invented '
+                    'from markers, which is forbidden, so the DEG step is not testable. '
+                    'This is a different accession from GSE269882, not an alias of it.')},
+        {'candidate': 'dbGaP phs003644',
+         'status': 'not_downloadable',
+         'reason': 'controlled access; not fetched'},
+    ],
+    'tier3_owned': [
+        {'candidate': 'GSE128188',
+         'item': 'disease_data/GSE128188',
+         'reason': ('already owned human atrial bulk item (AF 5 vs 5 SR, paired LA+RA). '
+                    'ADR 0071 admits whole-tissue bulk only at tier 3, so this is a '
+                    'candidate for the #206 roster; it is not a rejection and it is not '
+                    'declared here because #204 builds only the three new items.')},
+    ],
+    'tiering': {
+        'tier_1': {
+            'sources': ['gse255612__af', 'gse138252__af', 'gse238242__af'],
+            'measured_union_v2_deg': 1,
+            'measured_union_genes': ['SLC9A7'],
+            'note': ('measured with the one live DEG implementation under ADR 0071\'s '
+                     'definition (padj < 0.05 and |log2FC| >= 2): GSE255612 0 (its '
+                     'existing v1-contract table), GSE138252 1 (SLC9A7), GSE238242 0. '
+                     'ADR 0071 states a 2-gene union; that number is the pre-existing '
+                     'audit\'s limma-voom + edgeR TMM result, and TMM is the only '
+                     'difference (the pinned arc R env ships limma but not edgeR, so the '
+                     'live worker uses voom\'s own library-size normalisation). The TMM '
+                     'alternative is recorded as a logged sensitivity in the GSE138252 '
+                     'item summary, never as the published number. #206/#211 must '
+                     'reconcile the ADR text with the live-worker count.'),
+        },
+        'tier_3': {
+            'sources': ['gse269882__af'],
+            'measured_union_v2_deg': 0,
+            'note': ('GSE269882 is whole-tissue right-atrial-appendage bulk and is '
+                     'admitted only at tier 3; its three staged AF-vs-SR contrasts and '
+                     'the pooled sensitivity all give 0 v2 DEGs under the live worker. '
+                     'GSE128188 (owned, undeclared here) is the other tier-3 candidate.'),
+        },
+        'stop_decision': ('tier 1 union 1 < 2,000, so the collection descends to tier 3; '
+                          'the tier-3 union is 0, so AF\'s total axis-resolved DEG union '
+                          'is the tier-1 gene set (1 gene under the live worker). The '
+                          'category is published with the tier-3 evidence type recorded '
+                          'on GSE269882.'),
+    },
+}
+
+DATASETS.extend([
+    {
+        'dataset_id': 'gse255612__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE255612',
+        'local_deg': 'local/deg/gse255612_deg.csv',
+        'local_summary': 'local/deg/gse255612_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse255612_donors.csv',
+        'arm_or_class': 'AF donors vs non-AF control donors (left-atrial CM)',
+        'species': 'Homo sapiens',
+        'model_system': 'human left-atrium 10x snRNA CM pseudobulk',
+        'evidence_type': 'cm_pseudobulk',
+        'tier': 1,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse255612:donor',
+        'n_case': 18,
+        'n_control': 16,
+        'contrasts': ['AF-control'],
+        'method': {
+            'deposition': 'normalised expression (log1p(CP10K))',
+            'model': 'limma on log2(mean_CP10K + 1) pseudobulk (moderated t)',
+            'design': 'one joint fit ~0 + group over 34 donors',
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse138252__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE138252',
+        'local_deg': 'local/deg/GSE138252_deg.csv',
+        'local_summary': 'local/deg/GSE138252_deg.json',
+        'arm_or_class': ('left-atrium AF+HF (5 libraries) vs non-failing control '
+                         '(5 libraries), 2020 sequencing batch only'),
+        'species': 'Homo sapiens',
+        'model_system': ('human atrial PCM1+ cardiomyocyte-nuclei bulk RNA-seq '
+                         '(CM-nuclear bulk, not whole tissue)'),
+        'evidence_type': 'bulk',
+        'tier': 1,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse138252:control_la',
+        'n_case': 5,
+        'n_control': 5,
+        'contrasts': ['AF-CTL'],
+        'model_basis': ('cardiomyocyte-derived (PCM1+ FANS-sorted nuclei), so tier 1 '
+                        'under ADR 0071 even though the model is a bulk library; the '
+                        'AF+HF-vs-non-failing confound is recorded in the item summary'),
+        'strata': {
+            'decision': ('left atrium, 2020 batch only: the AF arm exists only in that '
+                         'batch, so a batch-matched control arm is the primary contrast '
+                         'and a pooled-controls fit is a declared sensitivity'),
+            'pooled': False,
+            'blocking_covariates': [],
+            'why': ('region is the dominant variance axis in this series and pooling '
+                    'chambers loses power; the RA arm is sex-confounded'),
+        },
+        'method': {
+            'deposition': 'raw integer gene-body counts',
+            'model': "limma-voom (voom's own library-size normalisation, moderated t)",
+            'design': ('one joint fit ~0 + group over the 5 AF + 5 control LA libraries '
+                       'of the 2020 batch (edgeR filterByExpr rule)'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse238242__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE238242',
+        'local_deg': 'local/deg/GSE238242_deg.csv',
+        'local_summary': 'local/deg/GSE238242_deg.json',
+        'cells_per_donor': 'local/pseudobulk/GSE238242_profiles.csv',
+        'arm_or_class': ('persistent-AF donors (3) vs sinus-rhythm donors (4), '
+                         'left-atrial-appendage CM pseudobulk'),
+        'species': 'Homo sapiens',
+        'model_system': ('human left-atrial-appendage 10x multiome snRNA arm, author '
+                         'CM label, per-donor CM count pseudobulk'),
+        'evidence_type': 'cm_pseudobulk',
+        'tier': 1,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse238242:sr',
+        'n_case': 3,
+        'n_control': 4,
+        'contrasts': ['AF-SR'],
+        'method': {
+            'deposition': 'raw integer counts (dense TSV, genes x nuclei)',
+            'model': ("limma-voom (voom's own library-size normalisation, moderated t) "
+                      'on the per-donor sum-of-CM-counts pseudobulk'),
+            'design': ('one joint fit ~0 + group over the 7 donor pseudobulk profiles '
+                       '(4 SR / 3 persistent AF)'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse269882__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE269882',
+        'local_deg': 'local/deg/GSE269882_deg.csv',
+        'local_summary': 'local/deg/GSE269882_deg.json',
+        'arm_or_class': ('the three staged AF arms (persistent 5, paroxysmal 5, '
+                         'post-operative 8) vs the 9 sinus-rhythm libraries'),
+        'species': 'Homo sapiens',
+        'model_system': ('human right-atrial-appendage whole-tissue bulk RNA-seq '
+                         '(not cardiomyocyte-specific)'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse269882:sinus_rhythm',
+        'n_case': 18,
+        'n_control': 9,
+        'contrasts': ['persAF-SR', 'pAF-SR', 'poAF-SR'],
+        'model_basis': ('whole right-atrial-appendage tissue: not cardiomyocyte-specific, '
+                        'so it is a tier-3 source only and enters AF only after tiers 1-2 '
+                        'fall short of 2,000 DEGs (ADR 0071), which supersedes the ADR '
+                        '0070 whole-tissue exclusion'),
+        'strata': {
+            'decision': ('the three diagnosis arms are declared as separate contrasts '
+                         'against sinus rhythm inside one joint fit; the staging is '
+                         'carried, never averaged into one case group, and the '
+                         'post-operative arm is its own declared arm'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('a pooled all-AF-vs-SR fit is measured as a declared sensitivity '
+                    'and does not change the conclusion (0 v2 DEGs)'),
+        },
+        'method': {
+            'deposition': 'raw integer counts (featureCounts, GRCh38)',
+            'model': "limma-voom (voom's own library-size normalisation, moderated t)",
+            'design': ('one joint fit ~0 + group over all 27 libraries with the four '
+                       'diagnosis arms; three staged AF-vs-SR contrasts'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+])

@@ -1,0 +1,235 @@
+{
+  "category": "AF",
+  "contrasts": {
+    "AF-SR": {
+      "denominator": "SR (sinus rhythm)",
+      "direction": "positive log2FC = up in persistent AF",
+      "n_case": 3,
+      "n_control": 4,
+      "numerator": "AF (persistent)"
+    }
+  },
+  "deg": {
+    "bytes": 1712058,
+    "n_source_genes": 15545,
+    "path": "local/deg/GSE238242_deg.csv",
+    "rows": 15545,
+    "sha256": "521b50ea68c6a9fcb36080800e0dea71b1ae6fa6e6211bc8d53598304667cf3a"
+  },
+  "deg_counts": {
+    "collapsed": {
+      "deg_genes": [],
+      "n_deg": 0,
+      "n_down": 0,
+      "n_genes": 15545,
+      "n_padj_only_genes": 0,
+      "n_up": 0
+    },
+    "definition": "padj < 0.05 AND |log2FC| >= 2.0 in the declared contrast (ADR 0071)",
+    "per_contrast": {
+      "AF-SR": {
+        "min_padj": 0.231357445127533,
+        "n_deg": 0,
+        "n_down": 0,
+        "n_padj_lt_010": 0,
+        "n_padj_only": 0,
+        "n_rows": 15545,
+        "n_up": 0
+      }
+    }
+  },
+  "deposition": {
+    "metadata": {
+      "bytes": 74550,
+      "path": "source/GSE238242_snAF.metadata.tsv.gz",
+      "sha256": "9211a2ee1a77a2587828bd5082b9dddf43c36482d05a697e9f6fe9c7e3287425"
+    },
+    "rna_tables": {
+      "GSM7660990": {
+        "bytes": 9441961,
+        "path": "source/GSM7660990_CF69RNA.counts.tsv.gz",
+        "sha256": "4da6c388cc7dfe2bb795fef48e71a520dc9d8c255ff03753eb801714d627a07e"
+      },
+      "GSM7660991": {
+        "bytes": 7136770,
+        "path": "source/GSM7660991_CF77RNA.counts.tsv.gz",
+        "sha256": "fedfa3024481a2a414039ad564831ee64fb32f8a0d8d09f8480f746bec1172d7"
+      },
+      "GSM7660992": {
+        "bytes": 3547052,
+        "path": "source/GSM7660992_CF89RNA.counts.tsv.gz",
+        "sha256": "a792bf59b21b1e046a8035dc7d9204d0d8e27f1d2b25f172083d6e6b4fc7013f"
+      },
+      "GSM7660993": {
+        "bytes": 5856219,
+        "path": "source/GSM7660993_CF91RNA.counts.tsv.gz",
+        "sha256": "5c02550cf712dde4c86604ebb3f64160aefc70ac53a067700ef694e3effd71b4"
+      },
+      "GSM7660994": {
+        "bytes": 5468856,
+        "path": "source/GSM7660994_CF93RNA.counts.tsv.gz",
+        "sha256": "e2e597bc4b9a18154bf0d8f70646ac568b0d48d35a6a943c12dc0f86c3f690fa"
+      },
+      "GSM7660995": {
+        "bytes": 8797614,
+        "path": "source/GSM7660995_CF97RNA.counts.tsv.gz",
+        "sha256": "a65811ef20ff0231cb52d00618006c791c6ed02e8b0e19d216ce6cf34db57fd0"
+      },
+      "GSM7660996": {
+        "bytes": 5107455,
+        "path": "source/GSM7660996_CF102RNA.counts.tsv.gz",
+        "sha256": "23e370893e9f3528165b5de8bfe4af8d5111c85f2ee3a8300edcac7d0eb7c3bc"
+      }
+    },
+    "series_matrix": {
+      "bytes": 3276,
+      "path": "source/GSE238242_series_matrix.txt.gz",
+      "sha256": "71827167857596792a250919869efb72892529360337bc33ac8e68c5445edea0"
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "SR",
+        "label": "AF-SR",
+        "numerator": "AF"
+      }
+    ],
+    "factor": "group",
+    "filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "evidence_type": "cm_pseudobulk",
+  "expr": {
+    "path": "local/deg/GSE238242_expr.tsv.gz",
+    "sha256": "3d81ecabbb4ffdd67578e1dd645afe293f564029765d9ce21ac25a3f359dd857"
+  },
+  "fit_summary": {
+    "block": {},
+    "coefficient_names": [
+      "groupAF",
+      "groupSR"
+    ],
+    "consensus_correlation": {},
+    "contrasts": [
+      "AF-SR"
+    ],
+    "factor": "group",
+    "filter": {
+      "large_n": 10,
+      "min_count": 10,
+      "min_prop": 0.7,
+      "min_total_count": 15
+    },
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 22686,
+    "n_genes_input": 15545,
+    "n_genes_matrix": 38231,
+    "n_genes_tested": 15545,
+    "n_rows": 15545,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE238242",
+  "method": {
+    "deposition": "raw integer counts (dense TSV, genes x nuclei)",
+    "derivation": "disease_data/GSE238242/script/build_deg.py",
+    "derivation_sha256": "d87d50a36ef722181e3bac35d10ac5101ee200e2a1abc355f33a316c2925bb0b",
+    "filter": "edgeR filterByExpr rule written out in the live worker",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "f83fde941363382a161a9dd8be72daeffc8384966c17ae814b23173b77ba1115",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom's own library-size normalisation, moderated t)",
+    "pseudobulk": "sum of each donor's CM raw integer counts (the sufficient statistic for a count model); no per-cell normalisation and no mean of normalised values, which would add a normalisation choice",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "model_system": "human left-atrial-appendage 10x multiome snRNA, author CM label, per-donor CM count pseudobulk",
+  "n_case": 3,
+  "n_control": 4,
+  "null_outcome_statement": "the measured v2 DEG count is zero: no gene reaches padj < 0.05 in the 3-vs-4-donor contrast, so the item publishes the null explicitly instead of loosening the threshold, counting padj-only genes, or adding non-CM cells",
+  "pseudobulk": {
+    "genes": 38231,
+    "path": "local/pseudobulk/GSE238242_cm_pseudobulk.csv.gz",
+    "profiles": 7,
+    "profiles_path": "local/pseudobulk/GSE238242_profiles.csv",
+    "profiles_sha256": "ad9d2ea58a2d335dcd303f41a8af7d94604076fc6e14a96c8ae9a6030263f082",
+    "rule": "sum of each donor's CM raw integer counts (the sufficient statistic for a count model); no per-cell normalisation and no mean of normalised values, which would add a normalisation choice",
+    "sha256": "e22a4e4cae4e9466349947462e6d85667edeb58cd2b86e64801007fbb6d64bc3"
+  },
+  "samples": {
+    "cm_nuclei": {
+      "CF102": 463,
+      "CF69": 282,
+      "CF77": 418,
+      "CF89": 206,
+      "CF91": 488,
+      "CF93": 545,
+      "CF97": 647
+    },
+    "group_counts": {
+      "AF": 3,
+      "SR": 4
+    },
+    "match_basis": "author cell table `sample` column joined to the file names",
+    "n": 7,
+    "path": "local/deg/GSE238242_samples.csv",
+    "sha256": "93212ae1d0d35cec8a192638b6ac5993cc4f69a259eae411f6b68104ee4b0f87"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "sensitivity": {
+    "audit_filter_variants": {
+      "method": "the pre-existing AF source audit's filter variants on the same CM pseudobulk (limma on log2(CPM+1), BH): CPM >= 1 in >= 3/7, >= 7/7 and trend=TRUE all give 0 genes at padj<0.05",
+      "min_padj_by_filter": {
+        "ge_3_of_7": 0.22,
+        "ge_7_of_7": 0.15,
+        "trend": 0.177
+      },
+      "padj_lt_005": 0,
+      "provenance": ".scratch/af-source-audit/GSE238242/REPORT.md (untracked audit of 2026-11-14)",
+      "reading": "the null is not a filtering artefact"
+    }
+  },
+  "series": {
+    "atac_libraries_not_fetched": 7,
+    "author_cell_annotation": {
+      "cell_types": [
+        "Adipo",
+        "CM",
+        "EC",
+        "Endocardial",
+        "FB",
+        "Lymphoid",
+        "Mast",
+        "Mesothelial",
+        "Myeloid",
+        "Neuron",
+        "PC",
+        "SMC"
+      ],
+      "cm_fraction": 0.25438,
+      "cm_nuclei": 3049,
+      "nuclei": 11986,
+      "source": "GSE238242_snAF.metadata.tsv.gz",
+      "statement": "the cell table is an author file shipping beside the count archives; the per-cell clustering/integration that produced it is not in the deposit (no Seurat/ArchR object, no h5ad), so the labels can be trusted but not re-derived or re-checked"
+    },
+    "conclusion": "the series title/overall design state persistent AF vs sinus rhythm, left atrial appendage; the deposit has no paroxysmal arm",
+    "design": "single nuclei from left atrial appendages, persistent AF vs sinus rhythm",
+    "excluded_libraries_reason": "the ATAC arm (~130 MB of the 187 MB RAW.tar) is not part of an RNA DEG source and was never downloaded",
+    "platform": "GPL24676 (Illumina NovaSeq 6000)",
+    "rna_libraries": 7,
+    "tissue": "left atrial appendage",
+    "title": "Atrial fibrillation variant-to-gene prioritization through cross-ancestry eQTL and single-nucleus multiomic analyses",
+    "total_libraries": 14
+  },
+  "tier": 1
+}
