@@ -6,6 +6,11 @@ the user decision of 2026-11-14 ("given that AF has no source, remove it from 01
 ADR 0066 *Disease categories*, ADR 0068 *Why this record exists*, and ADR 0030 for the
 external item layout.
 
+*Superseded (2026-11-15) by [ADR 0071](0071-gene-axis-v2-deg-tiered-sources-and-f2000.md):
+`AF` is re-admitted with CM-specific tier-1 sources and a tier-3 atrial-bulk descent.* This
+record is read as history, not as a live contract; its rank-sum wording correction below is
+kept because the record is quoted elsewhere.
+
 ## Why this record exists
 
 ADR 0066 declared six cardiomyocyte-derived disease categories, including `AF`
@@ -76,6 +81,13 @@ unchanged. The candidate table, composition table, coverage table and manifest c
 - The 2026-11-14 gene-axis evidence also replaces the ambiguous manifest phrase
   `"ascending is better"` with `"smaller is better (a descending value is better)"`; that is
   a wording clarification of the same rule, not a second decision.
+  **Corrected 2026-11-15 (#210/#211).** That replacement was itself wrong: `rank_sum` is a
+  sum of descending-strength ranks, so **ascending is better** and "a descending value is
+  better" states the opposite of the rule. ADR 0071's manifest says `Ascending is better`,
+  the axis fill sorts `rank_sum` ascending, and the rank-sum figure's x annotation — which
+  had carried the same inverted phrase — was corrected to `rank_sum (lower is better)` in
+  #210. Read this bullet's parenthetical as struck; the rule never changed, the two wordings
+  describing it did.
 
 ## See
 

@@ -1,0 +1,74 @@
+{
+  "category": "disease_data",
+  "hashed_at": "2026-11-15T15:42+08:00",
+  "item": "Kuppe-MI",
+  "local_additions": [
+    {
+      "generated_by": "script/build_pseudobulk.py",
+      "origin": "per-(donor, zone) CM pseudobulk: the deposited integer counts (cellxgene raw.X) summed over each profile's CM nuclei before any testing; 28,380 genes x 25 donor-zone profiles. Regenerable, never tracked (item .gitignore).",
+      "path": "local/pseudobulk/kuppe-mi_cm_pseudobulk.csv.gz"
+    },
+    {
+      "generated_by": "script/build_pseudobulk.py",
+      "origin": "per-profile sheet: profile, donor, zone, disease, CM nuclei, total counts and n_genes_detected for the 25 donor-zone profiles; the DEG step's profile/CM-count input. Regenerable, never tracked (item .gitignore).",
+      "path": "local/pseudobulk/kuppe-mi_profiles.csv"
+    },
+    {
+      "generated_by": "script/build_pseudobulk.py",
+      "origin": "tracked summary: the CM gate (cell_type_original == Cardiomyocyte, 64,510 of 191,795 nuclei), the 20 donors, the authors' zone column (major_labl) and the per-zone CM counts, the 25 profiles and the pseudobulk/profiles digests",
+      "path": "local/pseudobulk/kuppe-mi_cm_pseudobulk.json"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit input: source_gene_id (Ensembl), gene_symbol (the deposit's feature_name) and one column per fitted profile in sample-sheet order; regenerable, never tracked (item .gitignore)",
+      "path": "local/deg/kuppe-mi_pseudobulk_matrix.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit design sheet: profile (donor|zone), zone group, donor blocking column and CM nuclei, for the 18 profiles that pass the 500-CM-nuclei floor; regenerable, never tracked (item .gitignore)",
+      "path": "local/deg/kuppe-mi_samples.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "the one joint fit's full long table: every tested gene x the four zone-vs-CTRL contrasts (IZ, BZ, RZ, FZ); BZ/RZ/FZ are artifacts recorded by the item, only IZ-CTRL is published; regenerable, never tracked (item .gitignore)",
+      "path": "local/deg/kuppe-mi_zone_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local published DEG table: one row per tested gene for the IZ-vs-CTRL contrast (source_gene_id Ensembl, gene_symbol, log2fc, moderated t, p_value, BH padj, base_mean); 23010 rows, regenerable, never tracked (item .gitignore)",
+      "path": "local/deg/kuppe-mi_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "tracked compact DEG summary: the CM gate, the 500-CM-nuclei profile floor and the profiles it drops, the 18-profile ~0 + zone design with duplicateCorrelation(block=donor), the IZ-CTRL case/control donors, per-contrast DEG counts, the frozen-axis cross-check, limma/R versions and output digests",
+      "path": "local/deg/kuppe-mi_deg.json"
+    },
+    {
+      "generated_by": "hand-written (no generated content)",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/pseudobulk and local/deg additions (the tracked summaries stay in git)",
+      "path": ".gitignore"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "ACCESSION: CELLxGENE collection 8191c283-0816-424b-9b61-c3e1d6258a77, dataset 1c739a3e-c3f5-49d5-98e0-73975e751201, version 4780eb7d-4c7c-4630-8705-471f0de8e27a 'All-snRNA-Spatial multi-omic map of human myocardial infarction' (Kuppe et al., Nature 2022, PMID 35948637, PMCID PMC9364862, doi 10.1038/s41586-022-05060-x). VERIFIED AGAINST THE DEPOSIT: the object is 191,795 nuclei x 28,380 Ensembl features, 20 donors, left ventricle, 10x 3' v3 snRNA (suspension_type nucleus), raw_data_location raw.X, schema 7.1.0; the curation record's cell_count/feature_count/donor_id and the asset's 1,862,945,764 B match the download byte for byte (head and tail byte ranges re-checked against the asset endpoint). CM GATE: the authors' cell_type_original == 'Cardiomyocyte' selects 64,510 of 191,795 nuclei; nothing is re-clustered. ZONES: the authors' major_labl column assigns every nucleus to CTRL / IZ / BZ / RZ / FZ (control heart / ischaemic zone / border zone / remote zone / fibrotic zone), so one infarct heart contributes several zone profiles; the pseudobulk is therefore per (donor, zone) - 25 profiles - and NOT pooled per donor. Pooling a donor's zones was measured during the #202 audit and is recorded here as the rejected alternative: the donor-level all-zone contrast gives 3 DEGs across the 20 donors (0 with a >=500 or >=1000 CM-nuclei donor filter), i.e. it washes the signal out. PSEUDOBULK: integer counts summed per profile over that profile's CM nuclei from raw/X (the deposited count matrix), streamed in 4,000-nucleus chunks, non-CM entries skipped at the entry level; the 25 x 28,380 matrix reproduces the #202 audit's pb_counts_zone.csv exactly (global cell-by-cell equality), which pins the gate, the zone definition and the summation. CM FLOOR: a profile enters the fit only with at least 500 CM nuclei, which drops 7 sparse donor-zone profiles (P13|IZ 41, P16|IZ 42, P3|IZ 110, P4|FZ 54, P18|FZ 314, P20|FZ 359, P19|FZ 415) and leaves 18 profiles: CTRL 4 / IZ 4 / BZ 3 / RZ 5 / FZ 2. CONTRAST: the published axis contrast is IZ vs CTRL - the ischaemic zone of the infarcted hearts (donors P2, P9, P10 and P15, the four with >= 500 IZ CM nuclei) against the four normal hearts (P1, P7, P8, P17). The choice is justified by the deposit's own zone annotation: IZ is the authors' infarct-zone label, and it is the contrast ADR 0071 names for ICM. Alternative recorded-not-taken: BZ 3 donors (1 DEG), RZ 5 donors (2 DEG) and FZ 2 donors (5 DEG) are far weaker and rest on fewer donors; they stay in the same joint fit for dispersion and are recorded as artifact rows of local/deg/kuppe-mi_zone_deg.csv. MODEL: one joint fit ~0 + zone over the 18 profiles through the one live implementation stage2/01_bases/output/api/bases/disease_deg.R (limma-voom, voom library-size normalisation, moderated t, BH) with duplicateCorrelation(block = donor) - four donors contribute two or three zone profiles, so the repeated profiles are not independent and the consensus intra-donor correlation (0.578) is given to both voom and lmFit; a gene filter with the edgeR::filterByExpr rule (the pinned arc R env ships limma but no edgeR, so the rule is written out in the worker) keeps 23,010 of 28,380 genes, the same set edgeR selects on this matrix. R 4.4.1 / limma 3.62.2. MEASURED V2 DEG COUNT (padj<0.05 and |log2FC|>=2): genome-wide 23,010 tested, 5,649 at padj<0.05, 3,099 v2 DEGs (1,659 up / 1,440 down); on the frozen 18,164-gene axis (15,521 of the 23,010 ids resolve) 3,999 at padj<0.05 and 1,646 v2 DEGs (1,379 up / 267 down). AUDIT CROSS-CHECK: the #202 audit's numbers were 5,675 padj<0.05 / 3,075 v2 genome-wide and 3,669 / 1,360 on the axis (856 up / 504 down), from an edgeR pipeline (filterByExpr + TMM + limma 3.66.0/edgeR 4.8.2). This item's fit reproduces the audit's GENOME-WIDE counts to within 1% (3,099 vs 3,075) but not its axis count or direction composition: the difference is TMM, not limma (re-running the audit's own pipeline on these profiles reproduces 5,675/3,075/1,361 exactly; the same fit without TMM in the pinned arc limma gives 5,569/3,033 and 1,632 on the axis, and this item's fit gives 5,649/3,099/1,646). TMM moves the whole IZ-vs-CTRL log2FC distribution by about -0.4 because the IZ profiles are the only zone whose TMM factors sit at ~1.32 (all other zones ~0.91-0.96), which turns a balanced up/down split into a majority-down one. The repo's one live implementation documents voom's own library-size normalisation and does not re-implement TMM, so this item publishes the live-implementation numbers; the TMM alternative is recorded here and in the ticket report so the downstream republish ticket (#208) and ADR 0071 can decide which normalisation the ICM source states. The design (CM gate, (donor, zone) profiles, 500-CM floor, 4-vs-4 IZ/CTRL contrast, donor blocking) is identical under both. CATEGORY: the item feeds ICM, as issue #202 and ADR 0071 assign it; the deposit does not carry a per-donor time-since-infarct field, so the acute-vs-chronic split cannot be verified here and is recorded as undeclared, never asserted (the deposit is labelled 'myocardial infarction', not 'acute MI'). TIER: tier 1 - human-sample CM pseudobulk. BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; pseudobulk peak RSS 724,064 KiB (~707 MiB), wall 15.9 s (385,330,426 raw/X entries streamed in 4,000-nucleus chunks); DEG peak RSS 266,640 KiB (~260 MiB), wall 21.7 s (run-to-run RSS and wall vary by a few percent). Both builds are byte-identical across runs (the gzip writers use a fixed mtime), so the tracked digests replay. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_pseudobulk.py -> script/build_deg.py; the tracked summaries pin every digest.",
+  "purpose": "Human left-ventricle single-nucleus source for the Stage 2 gene axis (ADR 0066/0071): the CELLxGENE 'All-snRNA' object of the Kuppe et al. myocardial-infarction map. Cardiomyocytes are gated on the authors' cell_type_original label, pseudobulked per (donor, zone), and the ischaemic-zone (IZ) CM profiles of four infarct donors are compared with the four normal-heart CM profiles by one limma-voom fit with donor blocking. It is the tier-1 human CM-pseudobulk source ADR 0071 gives ICM.",
+  "retrieved_at": "2026-11-15T15:36+08:00",
+  "sources": [
+    {
+      "asset_url": "https://datasets.cellxgene.cziscience.com/4780eb7d-4c7c-4630-8705-471f0de8e27a.h5ad",
+      "bytes": 1862945764,
+      "files": 1,
+      "id": "cellxgene:8191c283-0816-424b-9b61-c3e1d6258a77/1c739a3e-c3f5-49d5-98e0-73975e751201",
+      "kind": "dataset",
+      "license": "not declared in the CELLxGENE curation record (the collection record carries no licence field); the source publication (Kuppe et al., Nature 2022, doi 10.1038/s41586-022-05060-x, PMC9364862) is (c) Springer Nature Limited 2022 and is in the PMC Open Access Subset for research re-use with acknowledgement. Recorded as undeclared, not as CC BY",
+      "method": "script/fetch.sh (curl from datasets.cellxgene.cziscience.com, 1,862,945,764 B, byte-identical; the object is stored under its version id; no other file is stored)",
+      "path": "source/",
+      "species": "Homo sapiens (human)",
+      "tree_sha256": "1c1d40a6cfa1ef3592f0ab92925e82ce00dec664596c5427a1e91b2b8d59afee",
+      "url": "https://cellxgene.cziscience.com/collections/8191c283-0816-424b-9b61-c3e1d6258a77",
+      "version": "CELLxGENE dataset version 4780eb7d-4c7c-4630-8705-471f0de8e27a (dataset 1c739a3e-c3f5-49d5-98e0-73975e751201); collection 8191c283-0816-424b-9b61-c3e1d6258a77 'Spatial multi-omic map of human myocardial infarction'; object 'All-snRNA-Spatial multi-omic map of human myocardial infarction', 191,795 nuclei, 28,380 features, schema 7.1.0, dataset revised 2026-06-11"
+    }
+  ],
+  "verified_at": "2026-11-15T15:42+08:00",
+  "verify_result": "pass"
+}

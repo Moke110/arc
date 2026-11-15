@@ -5,7 +5,7 @@
     "size": 18164
   },
   "axis_size": 18164,
-  "catalog_sha256": "755971c79b60f5403fd7bfb9e430e329dbc37652b778a2b303fca09fcc88929e",
+  "catalog_sha256": "712b9e5058eb4e3449880881cf4bd2126454ebabccc52fe38b1469d6189365f9",
   "category": "ICM",
   "datasets": [
     {
@@ -59,7 +59,7 @@
       "informativeness": {
         "n_distinct_effect": 15475,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
@@ -77,6 +77,8 @@
       "n_axis_unmeasured": 1072,
       "n_case": 5,
       "n_control": 7,
+      "n_deg": 1,
+      "n_deg_in_deg2000": 1,
       "n_measured": 17092,
       "n_significant": 1,
       "rank": "gse270788__icm.rank.csv",
@@ -137,7 +139,7 @@
       "informativeness": {
         "n_distinct_effect": 15376,
         "reason": null,
-        "rule": "a dataset is informative when its measured genes carry more than one distinct continuous effect score; when every measured effect is tied the within-dataset order degenerates to gene_index and the dataset carries no ordering evidence (ADR 0068)"
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
         "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
@@ -155,6 +157,8 @@
       "n_axis_unmeasured": 1072,
       "n_case": 5,
       "n_control": 7,
+      "n_deg": 1,
+      "n_deg_in_deg2000": 1,
       "n_measured": 17092,
       "n_significant": 2,
       "rank": "gse270788__ami.rank.csv",
@@ -163,15 +167,97 @@
       "species": "Homo sapiens",
       "tier": 1,
       "time_window_basis": "author_declared"
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 15408,
+          "crosswalk_alias": 111,
+          "ensembl": 2,
+          "offaxis": 448,
+          "unmapped": 7041
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 15519,
+        "n_recovered_by_identifier": 112,
+        "n_resolved": 15521,
+        "n_source_rows": 23010,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 15408,
+          "crosswalk_alias": 0,
+          "ensembl": 1,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 15519,
+          "n_resolved": 15409,
+          "n_source_symbols": 23010,
+          "offaxis": 448,
+          "unmapped": 7153
+        }
+      },
+      "arm_or_class": "IZ (ischaemic zone) cardiomyocyte profiles of 4 infarct donors (P2, P9, P10, P15) vs the 4 normal-heart CM profiles (P1, P7, P8, P17), after the 500-CM-nuclei profile floor",
+      "category": "ICM",
+      "contrasts": [
+        "IZ-CTRL"
+      ],
+      "dataset_id": "kuppe-mi__iz",
+      "deg": "kuppe-mi__iz.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/kuppe-mi_deg.csv",
+          "sha256": "5eda8a5808e24bdf8c41cf79224d0164dd2c9ad90a619825ba371e6926792d66"
+        },
+        {
+          "relative": "local/pseudobulk/kuppe-mi_profiles.csv",
+          "sha256": "2b3f2ed4383499ddf17182d3f37205d5da8cc894e58bf2df23a13cd27bd9a14b"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 15519,
+        "reason": null,
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/Kuppe-MI/local/deg/kuppe-mi_deg.json": "c8eb21888c6cbc16d09fb4e4a2ace7e64f73693a206d1be429fd7a1e770e0841",
+        "disease_data/Kuppe-MI/manifest.sha256": "1c1d40a6cfa1ef3592f0ab92925e82ce00dec664596c5427a1e91b2b8d59afee"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "integer counts (cellxgene raw.X)",
+        "design": "one joint fit ~0 + zone over the 18 (donor, zone) profiles that pass the 500-CM-nuclei floor (CTRL 4 / IZ 4 / BZ 3 / RZ 5 / FZ 2); this dataset selects the IZ vs CTRL contrast, the other three zone contrasts are artifact rows of the same fit",
+        "model": "limma-voom (voom library-size normalisation, moderated t) with donor blocking: duplicateCorrelation(block = donor) on the joint design",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human left-ventricle 10x 3' v3 snRNA CM pseudobulk, one profile per (donor, zone) of the infarcted heart",
+      "n_axis_unmeasured": 2645,
+      "n_case": 4,
+      "n_control": 4,
+      "n_deg": 1646,
+      "n_deg_in_deg2000": 1646,
+      "n_measured": 15519,
+      "n_significant": 3998,
+      "rank": "kuppe-mi__iz.rank.csv",
+      "shared_control_group": "kuppe-mi:normal",
+      "source_item": "disease_data/Kuppe-MI",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
     }
   ],
+  "deg2000": 1647,
   "directory": "icm",
   "evidence_type": "cm_pseudobulk",
-  "rank_contract": "stage2-disease-deg-v1",
+  "n_deg": 1647,
+  "rank_contract": "stage2-disease-deg-v2",
   "rejected": [
     {
       "candidate": "GSE298023",
-      "reason": "labels only inside a 4.0 GB .rds; ad-hoc re-clustering is forbidden"
+      "reason": "eligible human LV CM source, but its author cell labels exist only inside an unopened 4.0 GB .rds, so no author CM gate was available and a gate invented from markers is not permitted; the 1.8 GB per-sample 10x RAW.tar carries counts only"
     },
     {
       "candidate": "GSE145154",
@@ -183,5 +269,31 @@
     }
   ],
   "schema": "stage2-disease-deg-catalog-v1",
-  "tier": 1
+  "tier": 1,
+  "tier_sources": [
+    {
+      "sources": [
+        "gse270788__icm",
+        "gse270788__ami",
+        "kuppe-mi__iz"
+      ],
+      "tier": 1
+    }
+  ],
+  "tiering": {
+    "criterion": "axis_resolved_deg_union",
+    "limit": 2000,
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "stop_reached": false,
+    "stopped_at_tier": 1,
+    "tier_union": [
+      {
+        "n_deg_union": 1647,
+        "tier": 1
+      }
+    ],
+    "tiers_entered": [
+      1
+    ]
+  }
 }

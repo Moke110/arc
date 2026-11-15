@@ -1,0 +1,53 @@
+{
+  "item": "GSE165303",
+  "category": "disease_data",
+  "purpose": "Human left-ventricle bulk RNA-seq, 50 DCM patients vs 51 non-failing donors, modelled on the deposited log2 normalised-count matrix. A tier-3 nHF source for the Stage 2 gene axis (ADR 0071): whole-tissue bulk, not cardiomyocyte-specific, so it is entered only after tiers 1-2 fall short.",
+  "retrieved_at": "2026-11-15T15:03+08:00",
+  "sources": [
+    {
+      "kind": "dataset",
+      "id": "GSE165303",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE165303",
+      "version": "GSE165303 (GPL20795 Illumina HiSeq X Ten; RNA-seq arm)",
+      "license": "unknown",
+      "species": "Homo sapiens (human)",
+      "method": "script/fetch.sh (curl from the GEO FTP): the RNA-seq master table GSE165303_RNA-Seq_master_table.txt.gz and the GPL20795 series matrix GSE165303-GPL20795_series_matrix.txt.gz, both byte-size pinned; the 17.6 GB RAW.tar and merged bigwigs carry no bulk RNA-seq count matrix and are deliberately not fetched",
+      "path": "source/",
+      "files": 2,
+      "bytes": 20053319,
+      "tree_sha256": "529b7a4a9828398546f718dd010d39ec97f23954181eb8ba3c7dabebf426095a"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE165303_expr.tsv.gz",
+      "origin": "item-local fit input: source_gene_id (versioned Ensembl id), gene_symbol (the deposit's Symbol column) and one log2 normalised-count column per RNA-seq library; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE165303_samples.csv",
+      "origin": "item-local fit design sheet: sample (DCM-n / NF-n), group, gsm, title, in matrix column order; regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE165303_deg.csv",
+      "origin": "item-local full DEG table: one row per gene for the single declared contrast (50762 rows, 50762 genes); regenerable, never tracked (item .gitignore)",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE165303_deg.json",
+      "origin": "tracked compact DEG summary: deposition digests, the verified series design (101 RNA-seq libraries = 50 DCM + 51 NF left-ventricle bulk), the deposited-scale evidence, the single ~0 + group contrast with n_case/n_control, the authors' DESeq2 cross-check, limma/R versions and output digests",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg expression, sample-sheet and DEG table (the tracked summary JSON stays in git)",
+      "generated_by": "hand-written (no generated content)"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-15T15:06+08:00",
+  "verify_result": "pass",
+  "notes": "ACCESSION: GSE165303 - Reprogramming of three-dimensional chromatin architecture drives human dilated cardiomyopathy (Feng et al., Circulation 2022; PMID 35400201). TWO PAYLOADS in source/: the RNA-seq master table (20,040,757 B: 50,762 genes x 101 libraries plus the authors' DESeq2 result columns and a Symbol column) and the GPL20795 series matrix (12,562 B: the deposit's own sample block). SERIES DESIGN VERIFIED AGAINST THE DEPOSIT (not against the ticket prose): the series profiled 177 libraries across HiChIP / Hi-C / ChIP-seq / ATAC-seq / RNA-seq; the RNA-seq arm is 101 BULK LEFT-VENTRICLE libraries - 50 DCM + 51 non-failing (the ticket prose '101 bulk DCM samples' is wrong: 101 is the RNA-seq total and 50 are DCM). Every RNA-seq library in the GPL20795 series matrix is bound to its master-table column by title (DCM-n_RNA -> DCM-n), and the 50/51 arm sizes are asserted before the fit. Tissue provenance: !Sample_growth_protocol_ch1 states left-ventricular samples from DCM patients at surgery and non-failing donor LV as controls (Duke Human Heart Repository). DEPOSITED SCALE: the sample columns are log2(normalised counts) as deposited (the paper's Figure 1D legend), not raw counts: 2**value tracks the deposited DESeq2 baseMean at Pearson r = 0.99999997 over the 5,408 genes with baseMean > 1,000, the values span 3.8217-23.1377, and a hard floor at 3.821687527 (= 14.1398 on the linear scale) is applied to 1,804,385 of 5,126,962 cells (35.2%). The exact upstream size-factor / pseudocount formula is not stated in the GEO record, so the deposit is modelled as-is with limma lmFit (the documented normalised-expression path), never re-normalised or integerised. The authors' own DESeq2 columns (baseMean/log2FoldChange/lfcSE/stat/pvalue/padj) are recorded only as a cross-check: author padj<0.05 = 13,227 and author v2 = 91, while this repository's one live implementation yields 29 (log2FC Spearman 0.940, 21 v2 genes shared). ALIGNMENT: the deposited Symbol column is used symbol-first with the versioned Ensembl id as fallback (50,762/50,762 rows carry a symbol). DESIGN: ~0 + group with the single declared contrast DCM-NF; n_case 50, n_control 51; the deposit carries no age/sex/cause field, so no covariate is blocked (recorded). TIER: whole left-ventricle tissue bulk, not cardiomyocyte-specific - tier 3 under ADR 0071. V2 DEG COUNT (padj<0.05 AND |log2FC|>=2): 29 (19 up / 10 down), 12,397 genes at padj<0.05. PUBLISHED: the item-local full DEG table and the tracked summary here; the step's output/disease-deg/nhf/ products are published by the later republish ticket. BUILD: capped at 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 438,780 KiB, wall 10.0 s, limma 3.62.2 / R 4.4.1. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py. PLATFORM ERRATUM (#211): the GPL20795 record is Illumina HiSeq X Ten, not \"Illumina NovaSeq 6000\"; this author log and script/build_deg.py carry the GPL record, while the already-built local/deg/GSE165303_deg.json keeps the pre-correction string because its bytes are digest-pinned by the accepted disease-DEG catalog (rewritten on the next DEG rebuild).",
+  "hashed_at": "2026-11-15T15:06+08:00"
+}

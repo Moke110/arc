@@ -1,0 +1,68 @@
+{
+  "category": "disease_data",
+  "hashed_at": "2026-11-15T18:38+08:00",
+  "item": "GSE238242",
+  "local_additions": [
+    {
+      "generated_by": "script/build_pseudobulk.py",
+      "origin": "per-donor CM pseudobulk: the deposited raw integer counts summed over each donor's author-labelled CM nuclei before any testing (38,231 genes x 7 donors), written with a fixed-mtime gzip; regenerable, never tracked (item .gitignore)",
+      "path": "local/pseudobulk/GSE238242_cm_pseudobulk.csv.gz"
+    },
+    {
+      "generated_by": "script/build_pseudobulk.py",
+      "origin": "per-donor sheet: profile, GSM, rhythm, CM nuclei, library size, genes detected, nuclei in matrix and sex; regenerable, never tracked (item .gitignore)",
+      "path": "local/pseudobulk/GSE238242_profiles.csv"
+    },
+    {
+      "generated_by": "script/build_pseudobulk.py",
+      "origin": "tracked pseudobulk summary: the CM gate (3,049 of 11,986 nuclei), the author annotation provenance caveat, the 7 donors' CM counts, the sum-of-raw-counts rule and the pseudobulk/profiles digests",
+      "path": "local/pseudobulk/GSE238242_cm_pseudobulk.json"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local full DEG table for the published AF-SR contrast (one row per tested gene); regenerable, never tracked",
+      "path": "local/deg/GSE238242_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "tracked compact DEG summary: the verified 7-RNA/7-ATAC deposit design, the CM pseudobulk, the single AF-vs-SR contrast, the honest zero v2 DEG count with its minimum padj, and the audit filter-variant sensitivity",
+      "path": "local/deg/GSE238242_deg.json"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit input: the 38,231 x 7 integer CM pseudobulk with the reproducible fixed-mtime gzip; regenerable, never tracked",
+      "path": "local/deg/GSE238242_expr.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit design sheet: donor -> AF/SR plus CM nuclei and sex; regenerable, never tracked",
+      "path": "local/deg/GSE238242_samples.csv"
+    },
+    {
+      "generated_by": "hand-written (no generated content)",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/pseudobulk and local/deg additions",
+      "path": ".gitignore"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "GEO ACCESSION: GSE238242, 10x multiome (paired snATAC + snRNA), 14 libraries, left atrial appendage, persistent AF vs sinus rhythm. VERIFIED DESIGN: 14 GSMs = 7 snRNA + 7 snATAC; the snRNA arm is 4 SR / 3 persistent-AF donors (CF69, CF77, CF89, CF91 / CF93, CF97, CF102). Only the snRNA arm is fetched (~45 MB of the 187 MB RAW.tar; the ~130 MB ATAC arm is not downloaded). The author cell table GSE238242_snAF.metadata.tsv.gz carries one row per nucleus with cell_type/sample/sex/Rhythm; the author label cell_type == 'CM' gates 3,049 of 11,986 nuclei and the per-donor sum of raw counts is the pseudobulk (reproduced cell-for-cell against the pre-existing audit's cm_pseudobulk_counts.tsv, max abs diff 0). The annotation is a flat author table whose clustering is not in the deposit (no Seurat/ArchR object or h5ad), so the labels can be trusted but not re-derived; recorded. MEASURED v2 DEGs: 0 (no gene at padj<0.05; minimum padj 0.231; 0 at padj<0.10) - the honest null for 3 vs 4 donors, published rather than loosened. FILTER VARIANT SENSITIVITY (pre-existing audit): CPM>=1 in >=3/7, >=7/7 and trend=TRUE all give 0 at padj<0.05. BUILD: capped 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; pseudobulk peak RSS 2,474 MB, wall 14 s; DEG peak RSS 137 MB, wall 1 s. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_pseudobulk.py -> script/build_deg.py; a second build is byte-identical.",
+  "purpose": "Human left-atrial-appendage 10x multiome snRNA source for the Stage 2 gene axis under ADR 0071: author CM label, per-donor CM count pseudobulk, persistent AF vs sinus rhythm. Tier-1 AF source; the expected and measured v2 DEG count is zero.",
+  "retrieved_at": "2026-11-15T18:35+08:00",
+  "sources": [
+    {
+      "bytes": 45433753,
+      "files": 9,
+      "id": "GSE238242",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh (curl from the GEO series matrix/ and suppl/ directories and from GEO's per-sample supplementary directories): the series matrix, the author cell table and the seven snRNA count tables, byte-identical to the GSE238242_RAW.tar members. The ~130 MB snATAC arm is not fetched.",
+      "path": "source/",
+      "species": "Homo sapiens (human)",
+      "tree_sha256": "fc6329e85508ef85f562059db6d502c71537534db88f93c7fbfb21105ef9adaf",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE238242",
+      "version": "GSE238242"
+    }
+  ],
+  "verified_at": "2026-11-15T18:38+08:00",
+  "verify_result": "pass"
+}

@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
-"""Build or replay the released Stage 2 gene axes ``G_2000`` / ``G_5000`` (ADR 0066).
+"""Build or replay the released Stage 2 gene axes ``G_2000`` / ``G_5000`` (ADR 0066, ADR 0071).
 
-The products are the two-level rank-sum fusion of the five cardiomyocyte-derived
-disease-DEG categories plus the published tenv-HVG ranking: the master candidate
-table, the two released axes, their manifest, the per-category composition table,
-the source top-N coverage table, the two-panel rank-sum evidence figure values and
-the two-panel source-coverage figure values. No corpus, view, model or truth is
-built; the disease-DEG products and the tenv-HVG ranking are read-only inputs.
+The products are the cross-disease fusion of the published per-disease ``DEG2000``
+sets plus the published tenv-HVG ranking: the master candidate table, the two
+released axes, their manifest, the per-axis composition table, the source
+coverage table, the two-panel rank-sum evidence figure values and the two-panel
+source-coverage figure values. No corpus, view, model or truth is built; the
+disease-fusion products (#205) and the tenv-HVG ranking are read-only inputs.
+
+The disease side is **DEG-only** (ADR 0071): each disease contributes its
+published ``DEG2000``, the axis disease half is ordered by ``f2000`` then
+``rank_sum`` and any shortfall is filled from unused tenv-HVG genes (never from a
+gene on disease evidence it does not have). The retired ``pN`` count is not read,
+written or bounded here.
 
 Every scientific definition lives in ``output/api/bases/gene_axis.py`` (the single
 public implementation, ADR 0062); this driver only reads the pinned inputs,
@@ -18,7 +24,9 @@ applies those definitions and publishes the products.
 Publication is candidate-then-replace (ADR 0062): a complete candidate is built
 outside ``output/``, validated, and only then swapped in; a failed build leaves
 the accepted release usable. ``--verify`` rebuilds from the pinned inputs into a
-scratch candidate and compares the manifest and every output digest.
+scratch candidate and compares the manifest and every output digest. The
+committed release predates the v2 rule until #208 republishes it, so ``--verify``
+refuses it with a self-describing message instead of an ambiguous byte mismatch.
 """
 import argparse
 import hashlib
@@ -36,20 +44,16 @@ import pandas as pd
 
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases import release
-from bases.disease_deg import DiseaseDeg
+from bases.disease_deg import DEG2000_COLUMNS, DEG2000_LIMIT, DiseaseFusion
 from bases.gene_axis import (
-    AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, CANDIDATE_COLUMNS, COVERAGE_COLUMNS,
-    FILL_RULE, N_FUSION_SOURCES, SCHEMA, axis_composition, axis_fill,
-    axis_intersection, candidate_columns, candidate_table, category_rank,
-    detect_inflection, fusion_rank_sum, inflection_stability, n_fusion_sources,
-    pn_distribution, rank_sum_histogram, source_topn_covered_counts,
-    source_topn_coverage, winning_tier,
+    ALGORITHM, AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, COMPOSITION_COLUMNS,
+    COVERAGE_COLUMNS, F2000_RULE, FALLBACK_RULE, FILL_RULE, RANK_SUM_RULE,
+    RELEASE_CATEGORIES, SCHEMA, axis_fill, axis_intersection, candidate_columns,
+    candidate_table, cross_disease_rank_sum, deg2000_composition, deg2000_frame,
+    detect_inflection, f2000_distribution, inflection_stability, rank_sum_histogram,
+    source_topn_coverage,
 )
-from bases.deg_rank import SCHEMA as RANK_SCHEMA, normalized_rank
 
-#: The two accepted category product families that can contribute a level-1 source:
-#: the #187/#188 within-dataset release and the #189 cardiotoxicity class release.
-CATEGORY_MANIFEST_SCHEMAS = ('stage2-disease-deg-release-v1', 'stage2-cardiotox-class-v1')
 CANDIDATE_NAME = 'candidate_rank_sum.csv'
 COMPOSITION_NAME = 'axis_composition.csv'
 COVERAGE_NAME = 'source_topn_coverage.csv'
@@ -57,29 +61,30 @@ FIGURE_NAME = 'gene_axis_rank_sum_histogram'
 HISTOGRAM_BINS = 70
 #: Inflection is diagnostic only; the declared decision range starts at N=100.
 INFLECTION_MIN_N = 100
-#: Declared maximum source count (before excluding non-informative categories);
-#: the published histogram is bounded by the actual fused count instead.
-RANK_SUM_MAX = float(N_FUSION_SOURCES)
-COMPOSITION_NOTE = ('pN is an ordinal cross-source replication count bounded by the '
-                    'fused source count, not a continuous quality score')
-COVERAGE_NOTE = ("percent of each source's top-N set that G_N contains; both sets "
-                 'hold N genes, so a cell is at once the share of that source top-N '
-                 'the axis keeps and the share of the axis drawn from it; the source '
-                 'top-N sets overlap, so a row does not sum to 100')
+COMPOSITION_NOTE = (
+    'share = n_genes / denominator. record=axis_fill reports the declared 0.5*N '
+    'tenv-HVG half, the disease-ordered half and the tenv-HVG fallback; '
+    'record=deg2000 reports |DEG2000_d ∩ G_N| over |DEG2000_d|; record=f2000 '
+    'reports how many axis genes have each disease-replication count, over N.')
+COVERAGE_NOTE = (
+    'one row per axis and fusion group; numerator/denominator are explicit and '
+    'rate = 100 * numerator / denominator. tenv_hvg is |top_N(tenv) ∩ G_N| / N; '
+    'a disease is |DEG2000_d ∩ G_N| / |DEG2000_d| (ADR 0071 decision 8). A group '
+    'excluded from the fusion keeps an empty row.')
 
 #: The evidence-figure plotted values: one panel per released axis, the gray
 #: candidate histogram and the count of that bin's candidates each axis selects.
 FIGURE_COLUMNS = ('record', 'panel', 'panel_title', 'title', 'axis', 'bin_left',
                   'bin_right', 'bin_center', 'count', 'selected')
 FIGURE_TITLE = ('Released Stage 2 gene axes · rank-sum distribution of the frozen-axis '
-                'candidates with each axis\'s selected genes')
-COMPOSITION_COLUMNS = ('axis', 'n_axis', 'record', 'group', 'n_genes', 'share', 'note')
+                "candidates with each axis's selected genes")
 
-#: The source-coverage figure plotted values: one x group per fused source and one
-#: bar series per released axis. Panel ``a`` plots the absolute number of that
-#: source's top-N genes the axis contains (``count``) and panel ``b`` its rate
-#: (``rate``); both values are carried on every bar so a panel declares which
-#: column it draws.
+#: The source-coverage figure plotted values: one x group per fusion group and one
+#: bar series per released axis. Panel ``a`` plots the absolute DEG2000 numerator
+#: the axis contains (``count``) and panel ``b`` its rate against the group's own
+#: denominator (``rate``); both values are carried on every bar so a panel
+#: declares which column it draws. The plotted values are the coverage table's
+#: numerator/rate columns, so the figure and the table cannot disagree.
 SOURCE_COVERAGE_FIGURE_NAME = 'gene_axis_source_topn_coverage'
 SOURCE_COVERAGE_FIGURE_COLUMNS = (
     'record', 'panel', 'panel_title', 'y_label', 'value',
@@ -87,8 +92,11 @@ SOURCE_COVERAGE_FIGURE_COLUMNS = (
 SOURCE_COVERAGE_FIGURE_PANELS = (
     {'panel': 'a', 'title': 'Covered Gene Count', 'y_label': 'covered genes',
      'value': 'count'},
-    {'panel': 'b', 'title': 'Top-N Coverage Rate', 'y_label': 'coverage rate (%)',
-     'value': 'rate'},
+    # The rate's denominator is no longer N for every group: it is |DEG2000_d|
+    # for a disease and N only for tenv-HVG (ADR 0071 decision 8), so the v1
+    # "Top-N" wording misdescribes six of the seven groups.
+    {'panel': 'b', 'title': 'Coverage of Each Group',
+     'y_label': 'share of group covered (%)', 'value': 'rate'},
 )
 SOURCE_COVERAGE_FIGURE_LABELS = {'tenv_hvg': 'tenv-HVG', **CATEGORY_LABELS}
 
@@ -100,7 +108,7 @@ class Config:
     root: Path
     genes: Path
     tenv_hvg: Path
-    disease_root: Path
+    fusion_root: Path
     output: Path
     figure_data: Path
     source_coverage_figure: Path
@@ -122,7 +130,7 @@ def default_config(root=None, output=None, figure_data=None,
         root=root,
         genes=step / 'output/gene-identity/genes.csv',
         tenv_hvg=step / 'output/tenv-hvg/descriptive.csv',
-        disease_root=step / 'output/disease-deg',
+        fusion_root=step / 'output/disease-fusion',
         output=Path(output) if output else step / 'output/gene-axis',
         figure_data=figure_data,
         source_coverage_figure=(Path(source_coverage_figure) if source_coverage_figure
@@ -197,7 +205,7 @@ def _published_digest(path, manifest_path, getter):
 
 
 def read_tenv(path, axis_size):
-    """The published tenv-HVG dispersion rank: the sixth fusion source."""
+    """The published tenv-HVG dispersion rank: the axis's first-half source."""
     frame = pd.read_csv(path, dtype={'gene_index': np.int64})
     required = {'gene_index', 'rank'}
     if not required <= set(frame.columns):
@@ -215,157 +223,110 @@ def read_tenv(path, axis_size):
     return frame
 
 
-def _require_digest_pinned(record, key):
-    """A record's provenance must be digest-pinned; no unverified path is accepted."""
-    if key not in record:
-        raise ValueError(f'{record.get("dataset_id", "?")}: record lacks {key}')
-    if key == 'inputs':
-        value = record['inputs']
-        if not isinstance(value, dict) or not value:
-            raise ValueError(f'{record["dataset_id"]}: inputs are not a pinned mapping')
-        for name, evidence in value.items():
-            digest = evidence if isinstance(evidence, str) else (
-                evidence.get('sha256') if isinstance(evidence, dict) else None)
-            if not isinstance(digest, str) or len(digest) != 64:
-                raise ValueError(f'{record["dataset_id"]}: input {name} has no sha256')
-        return
-    value = record[key]
-    if not isinstance(value, list) or not value:
-        raise ValueError(f'{record["dataset_id"]}: {key} are not a pinned list')
-    for evidence in value:
-        if (not isinstance(evidence, dict)
-                or not str(evidence.get('relative', ''))
-                or len(str(evidence.get('sha256', ''))) != 64):
-            raise ValueError(f'{record["dataset_id"]}: {key} entry has no relative + sha256')
+def read_fusion(config, axis_size):
+    """Read the published per-disease ``DEG2000`` products through ``DiseaseFusion``.
 
+    ADR 0071 decisions 4/5: the axis disease side is built from each disease's
+    published ``DEG2000`` -- the tiered, axis-resolved level-1 fusion product --
+    never from a within-dataset measured-gene rank frame or from ADR 0066's
+    minimum-tier dataset selection. Every released category must be published;
+    a declared-but-unpublished category (``AF`` until #208) is tolerated, and a
+    published category outside :data:`RELEASE_CATEGORIES` fails with the #208
+    pointer instead of silently entering the axis. A published disease with an
+    empty ``DEG2000`` is representable and is excluded from the fusion with its
+    reason recorded (ADR 0068 has no ordering evidence to fuse).
 
-def validate_catalog_shape(category, catalog, axis_size):
-    """Fail closed on any catalogue that does not match the canonical #187-#189 shape.
-
-    ``datasets`` must be the list of full records (no ``dataset_records``/id-map
-    fallback), every record must carry its own ``method``, a positive
-    ``n_case``/``n_control``, and digest-pinned provenance; the category must
-    carry ``catalog_sha256`` (verified by :class:`bases.disease_deg.DiseaseDeg`).
-    A catalog declaring the within-dataset rank contract must pin its derived
-    item-local inputs as ``derived_inputs``; the cardiotoxicity catalogs pin the
-    upstream item bytes as ``inputs`` and declare no rank contract.
+    Returns ``{'catalog', 'manifest', 'catalog_file_sha256',
+    'manifest_file_sha256', 'diseases', 'excluded'}``; ``diseases`` maps a
+    released category to its complete frozen-axis ``DEG2000`` rank frame (the
+    published ``disease_rank`` inside ``DEG2000_d``, ``n_deg + 1`` elsewhere), the
+    union/DEG2000 sizes and the file digest.
     """
-    if not isinstance(catalog.get('datasets'), list) or not catalog['datasets']:
-        raise ValueError(f'{category}: catalog datasets is not a non-empty list')
-    if len(str(catalog.get('catalog_sha256', ''))) != 64:
-        raise ValueError(f'{category}: catalog has no canonical catalog_sha256')
-    if int(catalog.get('axis_size', axis_size)) != axis_size:
-        raise ValueError(f'{category}: catalog axis_size differs from the frozen axis')
-    rank_contract = catalog.get('rank_contract')
-    for record in catalog['datasets']:
-        dataset_id = record.get('dataset_id')
-        if not dataset_id:
-            raise ValueError(f'{category}: a dataset record has no dataset_id')
-        for key in ('deg', 'rank', 'n_measured', 'n_significant'):
-            if key not in record:
-                raise ValueError(f'{category}/{dataset_id}: record lacks {key}')
-        # ADR 0068: every published dataset record states whether its measured
-        # effect scores carry an ordering. The fusion reads this field and never
-        # guesses it from the table.
-        if not isinstance(record.get('informative'), bool):
-            raise ValueError(f'{category}/{dataset_id}: record lacks a boolean informative')
-        method = record.get('method')
-        if not isinstance(method, dict) or not method:
-            raise ValueError(f'{category}/{dataset_id}: record lacks its own method')
-        for key in ('n_case', 'n_control'):
-            value = record.get(key)
-            if value is None or float(value) <= 0:
-                raise ValueError(f'{category}/{dataset_id}: {key} must be positive')
-        _require_digest_pinned(record, 'inputs')
-        if rank_contract == RANK_SCHEMA:
-            _require_digest_pinned(record, 'derived_inputs')
-
-
-def read_categories(config, axis_size):
-    """Read every category through ``bases.disease_deg.DiseaseDeg`` (digest-checked)."""
-    reader = DiseaseDeg(config.disease_root)
-    found = tuple(reader.categories())
-    if len(found) != len(CATEGORIES) or set(found) != set(CATEGORIES):
-        raise ValueError(f'expected the five declared categories {CATEGORIES}, found {found}')
-    categories = {}
-    for category in CATEGORIES:
-        catalog = reader.catalog(category)
-        validate_catalog_shape(category, catalog, axis_size)
-        selection = winning_tier(catalog)
-        manifest_path = config.disease_root / category / 'manifest.json'
-        category_manifest = json.loads(manifest_path.read_text())
-        if category_manifest.get('schema') not in CATEGORY_MANIFEST_SCHEMAS:
-            raise ValueError(f'{manifest_path}: unsupported category release schema')
-        if category_manifest.get('catalog_sha256') != catalog['catalog_sha256']:
-            raise ValueError(f'{manifest_path}: catalog digest differs from the catalog')
-        declared_outputs = category_manifest.get('outputs')
-        if not isinstance(declared_outputs, dict) or not declared_outputs:
-            raise ValueError(f'{manifest_path}: no declared outputs')
-        # ADR 0068: a record whose measured effect scores are all tied carries no
-        # ordering evidence. Its table/rank stay published, but it is not a
-        # fusion source; a category with no informative record is dropped from
-        # level 2 and from pN entirely.
-        informative_records = [record for record in selection['records']
-                               if record['informative'] is True]
-        excluded_records = [record for record in selection['records']
-                            if record['informative'] is not True]
-        ranks, measured_counts, datasets = [], [], []
-        for record in informative_records:
-            rank_path = config.disease_root / category / record['rank']
-            declared = declared_outputs.get(record['rank'])
-            declared_sha = (declared.get('sha256') if isinstance(declared, dict)
-                            else declared)
-            if not isinstance(declared_sha, str) or len(declared_sha) != 64:
-                raise ValueError(f'{category}/{record["dataset_id"]}: '
-                                 'rank is not a declared output')
-            if sha256(rank_path) != declared_sha:
-                raise ValueError(f'{category}/{record["dataset_id"]}: '
-                                 'rank digest differs from the category manifest')
-            frame = pd.read_csv(rank_path, dtype={'gene_index': np.int64},
-                                float_precision='round_trip')
-            if list(frame.columns) != ['gene_index', 'rank', 'rank_norm']:
-                raise ValueError(f'{category}/{record["dataset_id"]}: unexpected rank columns')
-            gene_index = np.asarray(frame.gene_index, dtype=np.int64)
-            if len(frame) != axis_size or not np.array_equal(
-                    gene_index, np.arange(axis_size, dtype=np.int64)):
-                raise ValueError(f'{category}/{record["dataset_id"]}: '
-                                 'rank frame does not cover the frozen axis')
-            n_measured = int(record['n_measured'])
-            rank = np.asarray(frame['rank'], dtype=np.int64)
-            expected = normalized_rank(rank, n_measured)
-            # The producers write rank_norm with finite print precision; the fusion
-            # itself recomputes rank / n_measured from the integer rank, never the
-            # printed column. The tolerance only guards the published contract.
-            if not np.allclose(np.asarray(frame.rank_norm, dtype=np.float64),
-                               expected, rtol=1e-9, atol=1e-12):
-                raise ValueError(f'{category}/{record["dataset_id"]}: '
-                                 'published rank_norm differs from rank / n_measured')
-            ranks.append(rank)
-            measured_counts.append(n_measured)
-            datasets.append({'dataset_id': record['dataset_id'],
-                             'tier': int(record['tier']),
-                             'evidence_type': record.get('evidence_type'),
-                             'n_measured': n_measured,
-                             'informative': True,
-                             'rank_sha256': declared_sha})
-        categories[category] = {
-            'catalog': catalog,
-            'selection': selection,
-            'ranks': ranks,
-            'n_measured': measured_counts,
-            'datasets': datasets,
-            'informative': bool(informative_records),
-            'excluded_datasets': [
-                {'dataset_id': record['dataset_id'],
-                 'tier': int(record['tier']),
-                 'n_measured': int(record['n_measured']),
-                 'informativeness': record.get('informativeness')}
-                for record in excluded_records],
-            'catalog_sha256': catalog['catalog_sha256'],
-            'manifest_sha256': sha256(manifest_path),
-            'catalog_sha256_file': sha256(config.disease_root / category / 'catalog.json'),
+    reader = DiseaseFusion(config.fusion_root)
+    catalog = reader.catalog()
+    fusion_manifest = reader.manifest()
+    if int(catalog['axis']['size']) != int(axis_size):
+        raise ValueError('the disease-fusion catalog was built on a different frozen axis')
+    if sha256(config.genes) != catalog['axis']['sha256']:
+        raise ValueError(
+            'the disease-fusion catalog pins a different frozen-axis digest than '
+            f'{config.genes}')
+    if int(catalog.get('limit', -1)) != int(DEG2000_LIMIT):
+        raise ValueError(f'the disease-fusion DEG2000 limit must be {DEG2000_LIMIT}')
+    by_directory = {record['directory']: record for record in catalog['diseases']}
+    published = {directory for directory, record in by_directory.items()
+                 if record['published']}
+    unknown = sorted(published - set(CATEGORIES))
+    if unknown:
+        raise ValueError(
+            f'undeclared disease-fusion product directories present: {unknown}; '
+            f'the declared roster is {CATEGORIES}')
+    missing = sorted(set(RELEASE_CATEGORIES) - published)
+    if missing:
+        raise ValueError(
+            f'the disease-fusion catalog is missing the released diseases {missing}; '
+            '#208 must publish their DEG2000 products before the axes can be rebuilt')
+    unpublished = sorted(published - set(RELEASE_CATEGORIES))
+    if unpublished:
+        raise ValueError(
+            f'the declared diseases {unpublished} have disease-fusion products but '
+            'are not in gene_axis.RELEASE_CATEGORIES; #208 must publish them as one '
+            'release (move them out of UNPUBLISHED_CATEGORIES) before the axes can '
+            'be rebuilt')
+    declared_outputs = fusion_manifest.get('outputs')
+    if not isinstance(declared_outputs, dict) or not declared_outputs:
+        raise ValueError(f'{config.fusion_root}/manifest.json declares no outputs')
+    diseases, excluded = {}, []
+    for category in RELEASE_CATEGORIES:
+        record = by_directory[category]
+        n_deg = int(record['n_deg'])
+        deg2000 = int(record['deg2000'])
+        if n_deg <= 0 or deg2000 <= 0:
+            excluded.append({'directory': category, 'label': CATEGORY_LABELS[category],
+                             'n_deg': n_deg, 'deg2000': deg2000})
+            continue
+        if deg2000 != min(n_deg, DEG2000_LIMIT):
+            raise ValueError(
+                f'{category}: published deg2000 must be min(n_deg, {DEG2000_LIMIT})')
+        name = record['deg2000_file']
+        declared = declared_outputs.get(name)
+        digest = declared.get('sha256') if isinstance(declared, dict) else declared
+        if not isinstance(digest, str) or len(digest) != 64:
+            raise ValueError(f'{category}: {name} is not a declared fusion output')
+        rows = reader.deg2000(category)  # digest-checked against the fusion manifest
+        if list(rows.columns) != list(DEG2000_COLUMNS):
+            raise ValueError(f'{category}: {name} has unexpected columns')
+        if len(rows) != deg2000:
+            raise ValueError(f'{category}: {name} holds {len(rows)} rows, expected {deg2000}')
+        genes = np.asarray(rows.gene_index, dtype=np.int64)
+        ranks = np.asarray(rows.disease_rank, dtype=np.int64)
+        if genes.min() < 0 or genes.max() >= int(axis_size):
+            raise ValueError(f'{category}: {name} holds a gene_index outside the frozen axis')
+        if len(np.unique(genes)) != len(genes):
+            raise ValueError(f'{category}: {name} repeats a gene_index')
+        if not np.array_equal(np.sort(ranks),
+                              np.arange(1, deg2000 + 1, dtype=np.int64)):
+            raise ValueError(f'{category}: {name} ranks must be exactly 1..{deg2000}')
+        frame = np.full(int(axis_size), n_deg + 1, dtype=np.int64)
+        frame[genes] = ranks
+        frame = deg2000_frame(frame, n_deg, int(axis_size), category)
+        diseases[category] = {
+            'record': record, 'n_deg': n_deg, 'deg2000': deg2000,
+            'rank': frame, 'mask': frame <= deg2000,
+            'deg2000_file': name, 'deg2000_sha256': digest,
         }
-    return categories
+    if not diseases:
+        raise ValueError(
+            'no released disease has a published DEG2000; the axes cannot be built '
+            '(every released category is empty)')
+    return {
+        'catalog': catalog,
+        'manifest': fusion_manifest,
+        'catalog_file_sha256': sha256(config.fusion_root / 'catalog.json'),
+        'manifest_file_sha256': sha256(config.fusion_root / 'manifest.json'),
+        'diseases': diseases,
+        'excluded': excluded,
+    }
 
 
 # ---------------------------------------------------------------- computation
@@ -377,172 +338,180 @@ def rank_sum_curve(rank_sum):
     return np.arange(1, len(ordered) + 1, dtype=np.int64), ordered
 
 
-def compute(axis, tenv_frame, categories, axis_sizes):
-    """Apply the ADR 0066/0068 fusion and fill rule; returns every product payload."""
+def compute(axis, tenv_frame, fusion, axis_sizes):
+    """Apply the ADR 0071 cross-disease fusion and fill rule; returns every payload."""
     axis_size = len(axis)
     gene_index = np.asarray(axis.gene_index, dtype=np.int64)
     tenv_rank = np.asarray(tenv_frame['rank'], dtype=np.int64)
-    active = [category for category in CATEGORIES if categories[category]['informative']]
-    excluded = [category for category in CATEGORIES if category not in active]
-    level_one = {}
-    category_ranks, category_measured = [], []
-    for category in active:
-        entry = categories[category]
-        result = category_rank(entry['ranks'], entry['n_measured'],
-                               gene_index=gene_index, axis_size=axis_size)
-        level_one[category] = result
-        category_ranks.append(result['rank'])
-        category_measured.append(result['measured'])
-    fusion = fusion_rank_sum(category_ranks, category_measured, tenv_rank,
-                             categories=active, gene_index=gene_index,
-                             axis_size=axis_size, sizes=axis_sizes)
-    table = candidate_table(axis, tenv_rank,
-                            {category: level_one[category]['rank'] for category in active},
-                            category_measured, categories=active,
-                            gene_index=gene_index, sizes=axis_sizes)
-    axes = {}
+    active = [category for category in RELEASE_CATEGORIES
+              if category in fusion['diseases']]
+    excluded = [category for category in RELEASE_CATEGORIES
+                if category not in fusion['diseases']]
+    frames = [fusion['diseases'][category]['rank'] for category in active]
+    n_deg = [fusion['diseases'][category]['n_deg'] for category in active]
+    level_two = cross_disease_rank_sum(frames, n_deg, categories=active,
+                                       gene_index=gene_index, axis_size=axis_size)
+    table = candidate_table(axis, tenv_rank, frames, n_deg, categories=active,
+                            gene_index=gene_index)
+    axes, fill = {}, {}
     for size in axis_sizes:
-        axes[int(size)] = axis_fill(tenv_rank, fusion['pn'][int(size)],
-                                    fusion['rank_sum'], n=int(size),
-                                    gene_index=gene_index,
-                                    n_sources=fusion['n_sources'])
+        result = axis_fill(tenv_rank, level_two['f2000'], level_two['rank_sum'],
+                           n=int(size), gene_index=gene_index,
+                           n_diseases=len(active))
+        axes[int(size)] = result['axis']
+        fill[int(size)] = result
     intervals = {}
     for size, genes in axes.items():
-        values = fusion['rank_sum'][genes]
+        values = level_two['rank_sum'][genes]
         intervals[size] = {'low': float(values.min()),
                            'high': float(values.max()),
                            'median': float(np.median(values))}
-    histogram = rank_sum_histogram(fusion['rank_sum'], low=0.0,
-                                   high=float(fusion['n_sources']), bins=HISTOGRAM_BINS)
-    curve_x, curve_y = rank_sum_curve(fusion['rank_sum'])
+    histogram_high = float(np.ceil(level_two['rank_sum'].max()))
+    histogram = rank_sum_histogram(level_two['rank_sum'], low=0.0,
+                                   high=histogram_high, bins=HISTOGRAM_BINS)
+    curve_x, curve_y = rank_sum_curve(level_two['rank_sum'])
     inflection = detect_inflection(curve_x, curve_y, min_n=INFLECTION_MIN_N)
     replay_curves = [(curve_x, curve_y)]
-    for dropped in range(fusion['n_sources']):
-        sources = category_ranks + [tenv_rank]
-        replay_sum = np.zeros(axis_size, dtype=np.float64)
-        for index, rank in enumerate(sources):
-            if index == dropped:
-                continue
-            replay_sum += rank / float(axis_size)
+    for dropped in range(len(active)):
+        replay_sum = level_two['rank_sum'] - frames[dropped] / float(n_deg[dropped])
         replay_curves.append(rank_sum_curve(replay_sum))
     stability = inflection_stability(replay_curves)
     return {
-        'level_one': level_one,
         'active_categories': active,
         'excluded_categories': excluded,
-        'category_ranks': category_ranks,
-        'category_measured': category_measured,
-        'tenv_rank': tenv_rank,
-        'fusion': fusion,
+        'frames': frames,
+        'n_deg': n_deg,
+        'level_two': level_two,
         'table': table,
         'axes': axes,
+        'fill': fill,
         'intervals': intervals,
+        'histogram_high': histogram_high,
         'histogram': histogram,
         'inflection': inflection,
         'stability': stability,
+        'tenv_rank': tenv_rank,
     }
 
 
-def composition_rows(source, axes, axis_sizes):
-    """Per-category and pN composition of both released axes.
+def _deg2000_masks(source):
+    """One DEG2000 mask per **released** category, ``None`` for an excluded one."""
+    return [source['level_two']['deg2000'][source['active_categories'].index(category)]
+            if category in source['active_categories'] else None
+            for category in RELEASE_CATEGORIES]
 
-    A category excluded from the fusion (ADR 0068) keeps a row with zero axis
-    genes and an explicit note, so the table reads as "not fused", never as
-    "fused but measured nothing".
+
+def _deg2000_sizes(source):
+    """One DEG2000 denominator per **released** category, ``None`` for an excluded one."""
+    return [int(source['level_two']['deg2000'][
+                source['active_categories'].index(category)].sum())
+            if category in source['active_categories'] else None
+            for category in RELEASE_CATEGORIES]
+
+
+def composition_rows(source, axis_sizes):
+    """Per-axis fill, ``DEG2000`` composition and ``f2000`` distribution.
+
+    ``record=axis_fill`` states the declared ``0.5*N`` tenv-HVG half, the
+    disease-ordered half and the tenv-HVG fallback count; ``record=deg2000``
+    states each disease's ``|DEG2000_d ∩ G_N|`` over ``|DEG2000_d|``;
+    ``record=f2000`` states how many axis genes carry each disease count. A
+    disease excluded from the fusion keeps a row with empty cells and an explicit
+    note, so the table reads as "not fused", never as "fused but measured
+    nothing".
     """
-    active = set(source['active_categories'])
+    active = list(source['active_categories'])
+    masks = _deg2000_masks(source)
+    sizes = _deg2000_sizes(source)
     rows = []
     for size in axis_sizes:
         size = int(size)
         genes = source['axes'][size]
-        composition = axis_composition(genes, source['category_measured'],
-                                       categories=source['active_categories'])
-        for category in CATEGORIES:
-            count = composition[category]
-            if category in active:
-                note = 'axis genes the category source measures'
-            else:
-                note = ('excluded from the fusion: every dataset is non-informative '
-                        '(all effect scores tied)')
-            rows.append({'axis': str(size), 'n_axis': size, 'record': 'composition',
-                         'group': category, 'n_genes': count,
-                         'share': count / size, 'note': note})
-        rows.append({'axis': str(size), 'n_axis': size, 'record': 'composition',
-                     'group': 'tenv_hvg_top_half', 'n_genes': size // 2,
-                     'share': 0.5,
-                     'note': 'declared 0.5*N tenv-HVG half of the axis'})
-        axis_counts = pn_distribution(source['table'][f'p{size}'].to_numpy()[genes],
-                                      n_sources=source['fusion']['n_sources'])
-        for value, count in enumerate(axis_counts.tolist()):
-            rows.append({'axis': str(size), 'n_axis': size, 'record': 'pN',
-                         'group': str(value), 'n_genes': count,
-                         'share': count / size, 'note': COMPOSITION_NOTE})
-        candidate_counts = pn_distribution(
-            source['table'][f'p{size}'].to_numpy(),
-            n_sources=source['fusion']['n_sources'])
-        for value, count in enumerate(candidate_counts.tolist()):
-            rows.append({'axis': str(size), 'n_axis': size, 'record': 'candidate_pN',
-                         'group': str(value),
-                         'n_genes': count,
-                         'share': count / len(source['table']),
-                         'note': COMPOSITION_NOTE})
-    return pd.DataFrame(rows, columns=list(COMPOSITION_COLUMNS))
-
-
-def _source_ranks(source):
-    """The published rank of every fusion source, or ``None`` if it is excluded."""
-    ranks = {'tenv_hvg': source['tenv_rank']}
-    for category in CATEGORIES:
-        ranks[category] = (source['level_one'][category]['rank']
-                           if category in source['active_categories'] else None)
-    return ranks
+        fill = source['fill'][size]
+        half = size // 2
+        rows.append({'axis': str(size), 'n_axis': size, 'record': 'axis_fill',
+                     'group': 'tenv_hvg_first_half', 'n_genes': half,
+                     'denominator': size, 'share': half / size,
+                     'note': 'declared 0.5*N tenv-HVG half (tenv_hvg_rank <= N/2)'})
+        rows.append({'axis': str(size), 'n_axis': size, 'record': 'axis_fill',
+                     'group': 'deg2000_second_half',
+                     'n_genes': fill['from_deg2000'], 'denominator': size,
+                     'share': fill['from_deg2000'] / size,
+                     'note': ('second-half genes selected from DEG2000 by f2000 '
+                              'descending, rank_sum ascending, gene_index ascending')})
+        rows.append({'axis': str(size), 'n_axis': size, 'record': 'axis_fill',
+                     'group': 'tenv_hvg_fallback',
+                     'n_genes': fill['fallback'], 'denominator': size,
+                     'share': fill['fallback'] / size,
+                     'note': ('second-half slots filled from unused tenv-HVG genes in '
+                              'ascending tenv-HVG rank order (no disease evidence)')})
+        composition = deg2000_composition(genes, masks, sizes,
+                                          categories=RELEASE_CATEGORIES)
+        for category in RELEASE_CATEGORIES:
+            entry = composition[category]
+            if entry is None:
+                rows.append({'axis': str(size), 'n_axis': size, 'record': 'deg2000',
+                             'group': category, 'n_genes': None,
+                             'denominator': None, 'share': None,
+                             'note': ('excluded from the fusion: the disease has no '
+                                      'DEG2000, so no axis composition is defined')})
+                continue
+            rows.append({'axis': str(size), 'n_axis': size, 'record': 'deg2000',
+                         'group': category, 'n_genes': entry['n_covered'],
+                         'denominator': entry['n_deg2000'], 'share': entry['share'],
+                         'note': ('|DEG2000_d ∩ G_N| / |DEG2000_d| for '
+                                  f'{CATEGORY_LABELS[category]}')})
+        counts = f2000_distribution(source['level_two']['f2000'][genes],
+                                    n_diseases=len(active))
+        for value, count in enumerate(counts.tolist()):
+            rows.append({'axis': str(size), 'n_axis': size, 'record': 'f2000',
+                         'group': str(value), 'n_genes': int(count),
+                         'denominator': size, 'share': int(count) / size,
+                         'note': F2000_RULE})
+    frame = pd.DataFrame(rows, columns=list(COMPOSITION_COLUMNS))
+    for column in ('n_genes', 'denominator'):
+        frame[column] = pd.array(frame[column], dtype='Int64')
+    return frame
 
 
 def coverage_rows(source, axis_sizes):
-    """Each source's top-``N`` coverage of both released axes (percent).
+    """Each fusion group's coverage of both released axes, with both numbers.
 
-    The source ranks are the published ones: tenv-HVG's dispersion rank and the
-    level-1 class rank of every informative category. A non-informative category
-    is fused by nothing (ADR 0068), so it contributes an empty column.
+    The source ranks are the published tenv-HVG dispersion rank and each
+    disease's published ``DEG2000`` mask; a non-fused disease contributes an
+    empty row (ADR 0068).
     """
-    return source_topn_coverage(source['axes'], _source_ranks(source), sizes=axis_sizes)
-
-
-def covered_count_rows(source, axis_sizes):
-    """The integer covered gene count behind each coverage percentage."""
-    return source_topn_covered_counts(source['axes'], _source_ranks(source),
-                                      sizes=axis_sizes)
+    return source_topn_coverage(source['axes'], source['tenv_rank'],
+                                _deg2000_masks(source),
+                                categories=RELEASE_CATEGORIES, sizes=axis_sizes)
 
 
 def source_coverage_figure_rows(source, axis_sizes):
     """The complete plotted values of the two-panel source-coverage figure.
 
     One bar series per released axis (a bar's colour is its series) and one x
-    group per fused source. Every bar carries both the absolute count of that
-    source's top-``N`` genes the axis contains and its rate, so each panel record
-    declares which column it draws: panel ``a`` is the count and panel ``b`` the
-    rate. An excluded category has no count and therefore no bar; the released
-    roster has none.
+    group per fusion group. Every bar carries both the ``DEG2000`` numerator the
+    axis contains and the rate against that group's own denominator, so each
+    panel record declares which column it draws: panel ``a`` is the count and
+    panel ``b`` the rate. An excluded group has no numerator and therefore no
+    bar.
     """
-    counts = covered_count_rows(source, axis_sizes)
-    rates = {int(record['N']): record for record in
-             coverage_rows(source, axis_sizes).to_dict('records')}
+    coverage = coverage_rows(source, axis_sizes)
     rows = [{'record': 'panel', 'panel': panel['panel'],
              'panel_title': panel['title'], 'y_label': panel['y_label'],
              'value': panel['value']}
             for panel in SOURCE_COVERAGE_FIGURE_PANELS]
-    for record in counts.to_dict('records'):
+    for record in coverage.to_dict('records'):
         size = int(record['N'])
-        for name in ('tenv_hvg',) + tuple(source['active_categories']):
-            value = record[name]
-            if pd.isna(value):
-                continue
-            rows.append({'record': 'bar', 'series': f'G_{size}',
-                         'series_label': f'G_{size} (N = {size:,})',
-                         'source': name,
-                         'source_label': SOURCE_COVERAGE_FIGURE_LABELS[name],
-                         'count': int(value),
-                         'rate': float(rates[size][f'%{name}_gN'])})
+        name = record['group']
+        if pd.isna(record['numerator']):
+            continue
+        rows.append({'record': 'bar', 'series': f'G_{size}',
+                     'series_label': f'G_{size} (N = {size:,})',
+                     'source': name,
+                     'source_label': SOURCE_COVERAGE_FIGURE_LABELS[name],
+                     'count': int(record['numerator']),
+                     'rate': float(record['rate'])})
     frame = pd.DataFrame(rows, columns=list(SOURCE_COVERAGE_FIGURE_COLUMNS))
     # The count is a gene count, so it is written as an integer (the panel rows
     # leave it empty); the rate keeps two decimals.
@@ -561,7 +530,7 @@ def figure_rows(source, axis_sizes):
     edges = np.append(histogram['bin_left'].to_numpy(dtype=float),
                       float(histogram['bin_right'].iloc[-1]))
     n_bins = len(histogram)
-    rank_sum = source['fusion']['rank_sum']
+    rank_sum = source['level_two']['rank_sum']
     rows = [{'record': 'figure', 'title': FIGURE_TITLE}]
     for index, size in enumerate(axis_sizes):
         size = int(size)
@@ -582,149 +551,159 @@ def figure_rows(source, axis_sizes):
 
 # ---------------------------------------------------------------- release I/O
 
-def input_entries(config, axis_size):
+def input_entries(config, fusion):
     """Every pinned input with its role and digest (repo-relative paths only)."""
     entries = {}
-    for role, path in (('frozen_axis', config.genes), ('tenv_hvg_descriptive', config.tenv_hvg)):
+    for role, path in (('frozen_axis', config.genes),
+                       ('tenv_hvg_descriptive', config.tenv_hvg),
+                       ('disease_fusion_catalog', config.fusion_root / 'catalog.json'),
+                       ('disease_fusion_release_manifest',
+                        config.fusion_root / 'manifest.json')):
         entries[repo_relative(path, config.root)] = {
             'role': role, 'sha256': sha256(path), 'bytes': path.stat().st_size}
-    reader = DiseaseDeg(config.disease_root)
-    for category in CATEGORIES:
-        directory = config.disease_root / category
-        for role, path in (('catalog', directory / 'catalog.json'),
-                           ('release_manifest', directory / 'manifest.json')):
-            entries[repo_relative(path, config.root)] = {
-                'role': f'{category}:{role}', 'sha256': sha256(path),
-                'bytes': path.stat().st_size}
-        catalog = reader.catalog(category)
-        selection = winning_tier(catalog)
-        for record in selection['records']:
-            if record['informative'] is not True:
-                continue  # excluded from the fusion; its bytes are still accepted
-            rank_path = directory / record['rank']
-            entries[repo_relative(rank_path, config.root)] = {
-                'role': f'{category}:{record["dataset_id"]}:rank',
-                'sha256': sha256(rank_path), 'bytes': rank_path.stat().st_size}
+    for category in RELEASE_CATEGORIES:
+        record = fusion['diseases'].get(category)
+        if record is None:
+            continue  # an excluded disease contributes no payload
+        path = config.fusion_root / record['deg2000_file']
+        entries[repo_relative(path, config.root)] = {
+            'role': f'{category}:deg2000', 'sha256': sha256(path),
+            'bytes': path.stat().st_size}
     return dict(sorted(entries.items()))
 
 
-def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
+def _axis_manifest(config, axis, tenv_frame, fusion, source, axis_sizes):
     axis_size = len(axis)
-    fusion = source['fusion']
+    fusion_result = source['level_two']
     table = source['table']
-    composition = composition_rows(source, source['axes'], axis_sizes)
+    active = list(source['active_categories'])
+    n_diseases = len(active)
+    composition = composition_rows(source, axis_sizes)
     coverage = coverage_rows(source, axis_sizes)
-    axes_manifest, intersection = {}, None
+    axes_manifest = {}
     for size in axis_sizes:
         size = int(size)
         genes = source['axes'][size]
-        composition_counts = axis_composition(
-            genes, source['category_measured'], categories=source['active_categories'])
-        counts = pn_distribution(fusion['pn'][size][genes],
-                                  n_sources=fusion['n_sources'])
+        fill = source['fill'][size]
+        composition_counts = deg2000_composition(
+            genes, _deg2000_masks(source), _deg2000_sizes(source),
+            categories=RELEASE_CATEGORIES)
+        counts = f2000_distribution(fusion_result['f2000'][genes],
+                                    n_diseases=n_diseases)
         axes_manifest[str(size)] = {
             'n': int(len(genes)),
             'file': f'gene_axis_{size}.csv',
             'tenv_half': size // 2,
             'fill_half': size // 2,
+            'second_half': {
+                'from_deg2000': int(fill['from_deg2000']),
+                'tenv_hvg_fallback': int(fill['fallback']),
+                'n_deg2000_candidates': int(fill['n_deg2000_candidates']),
+            },
             'rank_sum': source['intervals'][size],
             'tenv_rank': {'min': int(tenv_frame['rank'].to_numpy()[genes].min()),
                           'max': int(tenv_frame['rank'].to_numpy()[genes].max())},
-            'pN_distribution': {str(value): int(count)
-                                for value, count in enumerate(counts.tolist())},
-            'composition': {category: int(count)
-                            for category, count in composition_counts.items()},
+            'f2000_distribution': {str(value): int(count)
+                                   for value, count in enumerate(counts.tolist())},
+            'deg2000_composition': {
+                category: (None if composition_counts[category] is None else {
+                    'n_covered': int(composition_counts[category]['n_covered']),
+                    'n_deg2000': int(composition_counts[category]['n_deg2000']),
+                    'share': float(composition_counts[category]['share'])})
+                for category in RELEASE_CATEGORIES},
         }
     left, right = axis_sizes[0], axis_sizes[1]
     intersection = axis_intersection(source['axes'][left], source['axes'][right])
     intersection = {'sizes': [int(left), int(right)], **intersection}
     category_manifest = {}
-    for category in CATEGORIES:
-        entry = categories[category]
-        catalog = entry['catalog']
-        record = {
+    for category in RELEASE_CATEGORIES:
+        record = fusion['diseases'].get(category)
+        published = fusion['catalog']['diseases']
+        catalog_record = next(item for item in published
+                              if item['directory'] == category)
+        entry = {
             'label': CATEGORY_LABELS[category],
             'product_dir': category,
-            'catalog_sha256': entry['catalog_sha256'],
-            'catalog_file_sha256': entry['catalog_sha256_file'],
-            'release_manifest_sha256': entry['manifest_sha256'],
-            'category_tier': catalog.get('tier'),
-            'winning_tier': entry['selection']['winning_tier'],
-            'winning_tier_rule': entry['selection']['rule'],
-            'retained_by_exception': entry['selection']['retained_by_exception'],
-            'excluded_tiers': entry['selection']['excluded_tiers'],
-            'informative': entry['informative'],
-            'excluded_datasets': entry['excluded_datasets'],
-            'datasets': entry['datasets'],
-            'n_measured_axis_genes': int(np.asarray(
-                source['category_measured'][
-                    source['active_categories'].index(category)]).sum()
-                if category in source['active_categories'] else 0),
+            'published': bool(record is not None),
+            'n_deg': (None if record is None else int(record['n_deg'])),
+            'deg2000': (None if record is None else int(record['deg2000'])),
+            'informative_source_count': int(catalog_record['informative_source_count']),
+            'evidence_type': catalog_record.get('evidence_type'),
+            'tier': catalog_record.get('tier'),
+            'tiers_present': catalog_record.get('tiers_present'),
+            'deg2000_file': (None if record is None else record['deg2000_file']),
+            'deg2000_sha256': (None if record is None else record['deg2000_sha256']),
+            'fusion_catalog_sha256': fusion['catalog'].get('catalog_sha256'),
+            'sources': [dict(source_record) for source_record in
+                        catalog_record.get('sources', [])],
+            'excluded_sources': [dict(item) for item in
+                                 catalog_record.get('excluded_sources', [])],
         }
-        if not entry['informative']:
-            # ADR 0068: no dataset in the category orders its measured genes, so
-            # the whole category is dropped from level 2 and from pN.
-            record['excluded_from_fusion'] = True
-            record['excluded_reason'] = (
-                'every dataset in the category is non-informative (all measured '
-                'effect scores tied); level-2 fusion and pN exclude the category')
-        category_manifest[category] = record
+        if record is None:
+            entry['excluded_from_fusion'] = True
+            entry['excluded_reason'] = (
+                'the published disease has an empty DEG2000 (no informative '
+                'source), so level-2 fusion and f2000 exclude it (ADR 0068)')
+        category_manifest[category] = entry
     return {
         'schema': SCHEMA,
         'generated_by': 'stage2/01_bases/execution/build_gene_axis.py',
         'release': {
+            'algorithm': ALGORITHM,
             'axis_sizes': [int(size) for size in axis_sizes],
             'fill_rule': FILL_RULE,
             'fill_fraction': 0.5,
-            'pN': (f'number of the {fusion["n_sources"]} fusion sources whose top-N set '
-                   'contains the gene; ordinal, not a continuous quality score'),
-            'pN_bounds': [0, int(fusion['n_sources'])],
+            'f2000': F2000_RULE,
+            'rank_sum': RANK_SUM_RULE,
+            'fallback': FALLBACK_RULE,
+            'fallback_second_half_slots': {
+                str(int(size)): int(source['fill'][int(size)]['fallback'])
+                for size in axis_sizes},
         },
         'environment': environment_facts(),
-        'inputs': input_entries(config, axis_size),
+        'inputs': input_entries(config, fusion),
         'fusion': {
-            'n_sources': int(fusion['n_sources']),
-            'sources': list(source['active_categories']) + ['tenv_hvg'],
-            'n_declared_sources': N_FUSION_SOURCES,
-            'excluded_categories': list(source['excluded_categories']),
-            'exclusion_rule': ('a dataset whose measured effect scores are all tied is '
-                               'non-informative; a category with no informative dataset '
-                               'is excluded from level-2 rank_sum, pN and '
-                               'n_sources_measured (ADR 0068)'),
-            'normalization': ('level-1 rank_norm = rank / n_measured per dataset; '
-                              'level-2 each active source rank / frozen-axis size'),
-            'rank_sum': ('smaller is better (a descending value is better); '
-                          'ties on gene_index'),
+            'n_diseases': int(n_diseases),
+            'diseases': active,
+            'n_declared_diseases': len(CATEGORIES),
+            'excluded_diseases': list(source['excluded_categories']),
+            'rank_sum_sources': ('the active diseases only; tenv-HVG is not a '
+                                 'rank_sum term (it supplies the axis first half)'),
+            'rank_semantics': ('DEG2000 disease rank / DEG-union size (ADR 0071 '
+                               'decision 5); a gene outside DEG2000_d contributes '
+                               '(n_d + 1) / n_d'),
+            'f2000_bounds': [0, int(n_diseases)],
             'n_candidates': int(len(table)),
         },
         'tenv_hvg': {
             'input': repo_relative(config.tenv_hvg, config.root),
             'n_ranked': int(axis_size),
             'source': 'published descriptive normalized-dispersion rank (never recomputed)',
-            'normalization': 'rank / frozen-axis size',
+            'role': ('first axis half (tenv_hvg_rank <= N/2) and the fallback order; '
+                     'not a rank_sum term'),
         },
         'categories': category_manifest,
         'counts': {
             'n_axis': int(axis_size),
             'n_candidates': int(len(table)),
-            'rank_sum_min': float(fusion['rank_sum'].min()),
-            'rank_sum_median': float(np.median(fusion['rank_sum'])),
-            'rank_sum_max': float(fusion['rank_sum'].max()),
-            'pN_distribution': {
-                str(size): {str(value): int(count) for value, count in enumerate(
-                    pn_distribution(fusion['pn'][int(size)],
-                                    n_sources=fusion['n_sources']).tolist())}
-                for size in axis_sizes},
-            'n_sources_measured_distribution': {
+            'rank_sum_min': float(fusion_result['rank_sum'].min()),
+            'rank_sum_median': float(np.median(fusion_result['rank_sum'])),
+            'rank_sum_max': float(fusion_result['rank_sum'].max()),
+            'f2000_distribution': {
                 str(value): int(count) for value, count in enumerate(
-                    np.bincount(np.asarray(table.n_sources_measured, dtype=np.int64),
-                                minlength=fusion['n_sources'] + 1).tolist())},
+                    f2000_distribution(fusion_result['f2000'],
+                                       n_diseases=n_diseases).tolist())},
+            'n_deg2000_candidates': int((fusion_result['f2000'] >= 1).sum()),
+            'n_deg2000_overlap_rows': int(
+                sum(int(record['deg2000']) for record in fusion['diseases'].values())
+                - int((fusion_result['f2000'] >= 1).sum())),
         },
         'axes': axes_manifest,
         'intersection': intersection,
         'composition': {
             'file': COMPOSITION_NAME,
             'note': COMPOSITION_NOTE,
+            'columns': list(COMPOSITION_COLUMNS),
             'rows': int(len(composition)),
         },
         'coverage': {
@@ -734,15 +713,16 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             'rows': int(len(coverage)),
             'sources': {
                 'tenv_hvg': 'published descriptive dispersion rank (never recomputed)',
-                'categories': 'level-1 class rank of each informative category',
-                'excluded': ('a non-informative category has no level-1 rank and '
-                             'keeps an empty column (ADR 0068)'),
+                'categories': ("each disease's published DEG2000 set and its size; "
+                               'numerator is |DEG2000_d ∩ G_N|'),
+                'excluded': ('a disease with an empty DEG2000 has no coverage and '
+                             'keeps an empty row (ADR 0068)'),
             },
             'figure': {
                 'file': f'figure/data/{SOURCE_COVERAGE_FIGURE_NAME}.csv',
                 'panels': [dict(panel) for panel in SOURCE_COVERAGE_FIGURE_PANELS],
-                'value': ('count = |{g in G_N : rank_s(g) <= N}|; '
-                          'rate = 100 * count / N'),
+                'value': ('count = |DEG2000_d ∩ G_N| (tenv-HVG: |top_N(tenv) ∩ G_N|); '
+                          'rate = 100 * count / denominator'),
                 'series': {f'G_{int(size)}': f'G_{int(size)} (N = {int(size):,})'
                            for size in axis_sizes},
                 'sources': [SOURCE_COVERAGE_FIGURE_LABELS[name]
@@ -757,7 +737,8 @@ def _axis_manifest(config, axis, tenv_frame, categories, source, axis_sizes):
             },
             'histogram': {
                 'file': f'figure/data/{FIGURE_NAME}.csv',
-                'low': 0.0, 'high': float(fusion['n_sources']), 'bins': HISTOGRAM_BINS,
+                'low': 0.0, 'high': float(source['histogram_high']),
+                'bins': HISTOGRAM_BINS,
                 'panels': {str(int(size)): {
                     'panel': chr(ord('a') + index),
                     'panel_title': f'N = {int(size)}',
@@ -780,7 +761,8 @@ def environment_facts():
         'numpy': np.__version__,
         'pandas': pd.__version__,
         'data_access': ('offline; reads only output/gene-identity, output/tenv-hvg and '
-                        'output/disease-deg; never recomputes the tenv-HVG ranking'),
+                        'output/disease-fusion; never recomputes the tenv-HVG ranking '
+                        'or the per-disease DEG2000 fusion'),
         'resource_contract': ('one heavy job at a time, 10 GiB RLIMIT_AS fallback, '
                               'OMP_NUM_THREADS=2; peak RSS recorded by the driver'),
     }
@@ -810,15 +792,15 @@ def _build_payload(config, payload_root):
     axis = read_axis(config.genes)
     axis_size = len(axis)
     tenv_frame = read_tenv(config.tenv_hvg, axis_size)
-    categories = read_categories(config, axis_size)
-    source = compute(axis, tenv_frame, categories, config.axis_sizes)
+    fusion = read_fusion(config, axis_size)
+    source = compute(axis, tenv_frame, fusion, config.axis_sizes)
 
     outputs = {}
     candidate_path = payload_root / paths['candidate']
     write_frame(source['table'], candidate_path)
     outputs[paths['candidate']] = {'rows': int(len(source['table'])),
                                    'sha256': sha256(candidate_path),
-                                   'columns': list(candidate_columns(config.axis_sizes))}
+                                   'columns': list(candidate_columns())}
     for size in config.axis_sizes:
         size = int(size)
         genes = source['axes'][size]
@@ -828,16 +810,17 @@ def _build_payload(config, payload_root):
         write_frame(frame, path)
         outputs[paths[f'axis_{size}']] = {'rows': int(len(frame)),
                                           'sha256': sha256(path)}
-    composition = composition_rows(source, source['axes'], config.axis_sizes)
+    composition = composition_rows(source, config.axis_sizes)
     composition_path = payload_root / paths['composition']
     write_frame(composition, composition_path)
     outputs[paths['composition']] = {'rows': int(len(composition)),
-                                     'sha256': sha256(composition_path)}
+                                     'sha256': sha256(composition_path),
+                                     'columns': list(COMPOSITION_COLUMNS)}
     coverage = coverage_rows(source, config.axis_sizes)
     coverage_path = payload_root / paths['coverage']
-    # Two decimals are the contract for this table: the cells are percentages
-    # rounded by ``source_topn_coverage``, so printing 17 significant digits
-    # would publish float representation noise (58.700000000000003).
+    # Two decimals are the contract for the rate column: the cells are
+    # percentages rounded by ``source_topn_coverage``, so printing 17 significant
+    # digits would publish float representation noise (58.700000000000003).
     write_frame(coverage, coverage_path, float_format='%.2f')
     outputs[paths['coverage']] = {'rows': int(len(coverage)),
                                   'sha256': sha256(coverage_path),
@@ -857,8 +840,8 @@ def _build_payload(config, payload_root):
         'sha256': sha256(source_coverage_path),
         'columns': list(SOURCE_COVERAGE_FIGURE_COLUMNS)}
 
-    manifest = _axis_manifest(config, axis, tenv_frame, categories, source,
-                             config.axis_sizes)
+    manifest = _axis_manifest(config, axis, tenv_frame, fusion, source,
+                              config.axis_sizes)
     manifest['outputs'] = dict(sorted(outputs.items()))
     manifest_path = payload_root / paths['manifest']
     write_json(manifest, manifest_path)
@@ -869,18 +852,29 @@ def _build_payload(config, payload_root):
 def validate_staged(config, source, payload_root, manifest, axis_size):
     """Structural acceptance of the candidate before it may replace the release."""
     table = source['table']
+    active = list(source['active_categories'])
+    n_diseases = len(active)
     if len(table) != axis_size:
         raise ValueError('candidate table does not have one row per frozen-axis gene')
-    if list(table.columns) != list(candidate_columns(config.axis_sizes)):
+    if list(table.columns) != list(candidate_columns()):
         raise ValueError('candidate table columns differ from the contract')
+    if 'p2000' in table.columns or 'p5000' in table.columns:
+        raise ValueError('the candidate table still carries a retired pN column')
     if table.gene_index.tolist() != list(range(axis_size)):
         raise ValueError('candidate table is not in frozen gene_index order')
-    n_sources = int(manifest['fusion']['n_sources'])
+    if int(table.f2000.min()) < 0 or int(table.f2000.max()) > n_diseases:
+        raise ValueError(f'f2000 is outside 0..{n_diseases}')
+    if not pd.api.types.is_integer_dtype(table.f2000):
+        raise ValueError('f2000 must be an integer count')
+    for category in RELEASE_CATEGORIES:
+        column = table[f'{category}_rank']
+        if category in active:
+            if not column.notna().any():
+                raise ValueError(f'{category}_rank is empty for a fused disease')
+        elif column.notna().any():
+            raise ValueError(f'the excluded {category}_rank column is not empty')
     for size in config.axis_sizes:
         size = int(size)
-        column = f'p{size}'
-        if int(table[column].min()) < 0 or int(table[column].max()) > n_sources:
-            raise ValueError(f'{column} is outside 0..{n_sources}')
         genes = source['axes'][size]
         if len(genes) != size:
             raise ValueError(f'G_{size} does not hold exactly {size} genes')
@@ -889,23 +883,82 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
         if len(np.unique(genes)) != size or genes.min() < 0 or genes.max() >= axis_size:
             raise ValueError(f'G_{size} is not a distinct subset of the frozen axis')
         expected = axis_fill(np.asarray(source['table'].tenv_hvg_rank, dtype=np.int64),
-                             table[column].to_numpy(), table.rank_sum.to_numpy(),
-                             n=size, n_sources=n_sources)
-        if not np.array_equal(expected, genes):
+                             table.f2000.to_numpy(),
+                             table.rank_sum.to_numpy(),
+                             n=size, n_diseases=n_diseases)
+        if not np.array_equal(expected['axis'], genes):
             raise ValueError(f'G_{size} does not follow the declared fill rule')
+        entry = manifest['axes'][str(size)]
+        if entry['second_half']['from_deg2000'] != expected['from_deg2000']:
+            raise ValueError(f'G_{size} reports the wrong DEG2000 second-half count')
+        if entry['second_half']['tenv_hvg_fallback'] != expected['fallback']:
+            raise ValueError(f'G_{size} reports the wrong tenv-HVG fallback count')
+        if (entry['second_half']['from_deg2000']
+                + entry['second_half']['tenv_hvg_fallback'] != size // 2):
+            raise ValueError(f'G_{size} second-half counts do not fill 0.5*N')
+        if manifest['release']['fallback_second_half_slots'][str(size)] != expected['fallback']:
+            raise ValueError(f'G_{size} fallback count differs from the release record')
+        # A gene with f2000 = 0 may only be in the tenv half or the fallback.
+        chosen = np.setdiff1d(genes, np.flatnonzero(
+            np.asarray(source['table'].tenv_hvg_rank, dtype=np.int64) <= size // 2))
+        if (table.f2000.to_numpy()[chosen] == 0).sum() != expected['fallback']:
+            raise ValueError(f'G_{size} admits a non-DEG gene outside the fallback')
     paths = product_paths(config, config.axis_sizes)
     coverage = pd.read_csv(payload_root / paths['coverage'])
     if list(coverage.columns) != list(COVERAGE_COLUMNS):
         raise ValueError('coverage table columns differ from the contract')
-    if coverage['N'].tolist() != [int(size) for size in config.axis_sizes]:
-        raise ValueError('coverage table rows are not the released axis sizes')
-    for column in coverage.columns[1:]:
-        series = coverage[column].dropna()
-        if not series.between(0.0, 100.0).all():
-            raise ValueError(f'coverage {column} is outside 0..100 percent')
-    for category in manifest['fusion']['excluded_categories']:
-        if coverage[f'%{category}_gN'].notna().any():
+    if list(dict.fromkeys(coverage['N'].tolist())) != [
+            int(size) for size in config.axis_sizes]:
+        raise ValueError('coverage table rows are not the released axis sizes in order')
+    if len(coverage) != len(config.axis_sizes) * (1 + len(RELEASE_CATEGORIES)):
+        raise ValueError('coverage table does not hold one row per axis and group')
+    fused = coverage.dropna(subset=['numerator'])
+    if len(fused):
+        if (fused['numerator'] > fused['denominator']).any():
+            raise ValueError('a coverage numerator exceeds its denominator')
+        if not fused['rate'].between(0.0, 100.0).all():
+            raise ValueError('a coverage rate is outside 0..100 percent')
+        expected_rate = (100.0 * fused['numerator'].astype(float)
+                         / fused['denominator'].astype(float)).round(2)
+        if (np.abs(fused['rate'].astype(float) - expected_rate) > 1e-9).any():
+            raise ValueError('a coverage rate is not numerator / denominator')
+    tenv_rows = coverage[coverage.group == 'tenv_hvg']
+    if (tenv_rows['denominator'].astype(int) != tenv_rows['N'].astype(int)).any():
+        raise ValueError('the tenv-HVG coverage denominator must be N')
+    for category in RELEASE_CATEGORIES:
+        rows = coverage[coverage.group == category]
+        if len(rows) != len(config.axis_sizes):
+            raise ValueError(f'coverage lacks a row per axis for {category}')
+        if category in active:
+            if rows['numerator'].isna().any():
+                raise ValueError(f'coverage for the fused {category} is empty')
+            sizes = _deg2000_sizes(source)
+            denominator = sizes[RELEASE_CATEGORIES.index(category)]
+            if (rows['denominator'].astype(int) != denominator).any():
+                raise ValueError(f'coverage for {category} does not use |DEG2000_d|')
+        elif rows['numerator'].notna().any():
             raise ValueError(f'coverage for the excluded {category} is not empty')
+    composition = pd.read_csv(payload_root / paths['composition'])
+    if list(composition.columns) != list(COMPOSITION_COLUMNS):
+        raise ValueError('composition table columns differ from the contract')
+    if set(composition.record) != {'axis_fill', 'deg2000', 'f2000'}:
+        raise ValueError('composition table does not carry the contracted records')
+    for size in config.axis_sizes:
+        rows = composition[composition.axis.astype(str) == str(int(size))]
+        fill = rows[rows.record == 'axis_fill'].set_index('group')
+        second = source['fill'][int(size)]
+        if int(fill.loc['deg2000_second_half', 'n_genes']) != second['from_deg2000']:
+            raise ValueError('composition reports the wrong DEG2000 second-half count')
+        if int(fill.loc['tenv_hvg_fallback', 'n_genes']) != second['fallback']:
+            raise ValueError('composition reports the wrong tenv-HVG fallback count')
+        if int(fill['n_genes'].sum()) != int(size):
+            raise ValueError('the axis_fill composition does not cover the axis')
+        counts = rows[rows.record == 'f2000']
+        if int(counts['n_genes'].sum()) != int(size):
+            raise ValueError('the f2000 composition does not cover the axis')
+        deg2000 = rows[rows.record == 'deg2000']
+        if len(deg2000) != len(RELEASE_CATEGORIES):
+            raise ValueError('the composition lacks a DEG2000 row per released disease')
     figure = pd.read_csv(payload_root / paths['figure'])
     if list(figure.columns) != list(FIGURE_COLUMNS):
         raise ValueError('figure plotted-values columns differ from the contract')
@@ -927,8 +980,6 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
             raise ValueError(f'figure panel {panel} does not select exactly N genes')
         if (rows.selected > rows['count']).any():
             raise ValueError('a figure bin selects more genes than it holds')
-    counts = covered_count_rows(source, config.axis_sizes)
-    rates = coverage_rows(source, config.axis_sizes)
     coverage_figure = pd.read_csv(payload_root / paths['source_coverage_figure'])
     if list(coverage_figure.columns) != list(SOURCE_COVERAGE_FIGURE_COLUMNS):
         raise ValueError('source-coverage figure columns differ from the contract')
@@ -943,7 +994,7 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
                 or actual.value != expected['value']):
             raise ValueError('a source-coverage panel differs from the contract')
     bars = coverage_figure[coverage_figure.record == 'bar']
-    sources = ('tenv_hvg',) + tuple(source['active_categories'])
+    sources = ('tenv_hvg',) + tuple(active)
     axis_series = {f'G_{int(size)}': int(size) for size in config.axis_sizes}
     expected_bars = {(series, name) for series in axis_series for name in sources}
     if (set(zip(bars.series, bars.source)) != expected_bars
@@ -955,18 +1006,14 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
         raise ValueError('a source-coverage count is not an integer')
     if bars['rate'].isna().any() or not bars['rate'].between(0.0, 100.0).all():
         raise ValueError('a source-coverage rate is outside 0..100 percent')
-    published_counts = {f'G_{int(record["N"])}': record
-                         for record in counts.to_dict('records')}
-    published_rates = {f'G_{int(record["N"])}': record
-                       for record in rates.to_dict('records')}
+    published = {(int(record['N']), record['group']): record
+                 for record in coverage.to_dict('records')}
     for row in bars.itertuples(index=False):
-        if int(row.count) > axis_series[row.series]:
-            raise ValueError('a source-coverage count exceeds its axis size')
-        if int(row.count) != int(published_counts[row.series][row.source]):
-            raise ValueError('a source-coverage count differs from the published count')
-        rate = float(published_rates[row.series][f'%{row.source}_gN'])
-        if abs(float(row.rate) - rate) > 1e-9:
-            raise ValueError('a source-coverage rate differs from the published rate')
+        record = published[(int(row.series.split('_')[1]), row.source)]
+        if int(row.count) != int(record['numerator']):
+            raise ValueError('a source-coverage bar differs from the published numerator')
+        if abs(float(row.rate) - float(record['rate'])) > 1e-9:
+            raise ValueError('a source-coverage bar differs from the published rate')
     release.check_relative_paths(manifest)
     for name, record in manifest['outputs'].items():
         actual = sha256(payload_root / name)
@@ -986,10 +1033,7 @@ def publish(config):
     try:
         payload = staging / 'payload'
         manifest = _build_payload(config, payload)
-        # Candidate-then-replace: only this ticket's products are swapped in. The
-        # pre-0066 gene-axis file set stays where it is until the removal ticket
-        # (#192) deletes it after acceptance (ADR 0066 Removals / ADR 0062), so
-        # the release directory is never renamed wholesale.
+        # Candidate-then-replace: only this ticket's products are swapped in.
         output_root = payload / repo_relative(config.output, config.root)
         config.output.mkdir(parents=True, exist_ok=True)
         for key in ('candidate', 'composition', 'coverage'):
@@ -1011,7 +1055,16 @@ def publish(config):
 
 
 def verify(config):
-    """Rebuild from the pinned inputs and compare the manifest and every digest."""
+    """Rebuild from the pinned inputs and compare the manifest and every digest.
+
+    A release whose manifest predates the v2 ``f2000`` algorithm (its
+    ``release.algorithm`` is absent or different, e.g. the committed v1 release
+    with ``p2000``/``p5000`` candidate columns) is refused with a
+    self-describing error before the rebuild: the products are stale by design
+    until #208 republishes them, and an ambiguous digest mismatch would hide
+    that. The verify path is never weakened: once the manifest carries the v2
+    algorithm, the full replay comparison runs unchanged.
+    """
     paths = product_paths(config, config.axis_sizes)
     accepted_path = config.output / 'manifest.json'
     if not accepted_path.is_file():
@@ -1019,6 +1072,16 @@ def verify(config):
     accepted = json.loads(accepted_path.read_text())
     if accepted.get('schema') != SCHEMA:
         raise ValueError('unknown gene-axis release schema')
+    algorithm = (accepted.get('release') or {}).get('algorithm')
+    if algorithm != ALGORITHM:
+        raise ValueError(
+            'the committed gene-axis products predate the v2 f2000 algorithm: '
+            f'release.algorithm is {algorithm!r}, expected {ALGORITHM!r}. The '
+            'committed release was built under the retired v1 pN fill rule (its '
+            'candidate table carries p2000/p5000 and its source-coverage table '
+            'uses the measured-gene schema), so a replay cannot match by design. '
+            '#208 must republish output/gene-axis/ with build_gene_axis.py before '
+            '--verify can pass; this ticket does not touch the accepted products.')
     release.check_manifest(config.root, accepted)
     for name, evidence in accepted['inputs'].items():
         if sha256(config.root / name) != evidence['sha256']:
@@ -1036,7 +1099,7 @@ def verify(config):
     finally:
         shutil.rmtree(staging, ignore_errors=True)
     return {
-        'result': 'PASS', 'schema': SCHEMA,
+        'result': 'PASS', 'schema': SCHEMA, 'algorithm': ALGORITHM,
         'manifest_sha256': sha256(accepted_path),
         'inputs': len(accepted['inputs']),
         'outputs': len(accepted['outputs']),
@@ -1051,11 +1114,13 @@ def summary(config, manifest):
     return {
         'result': 'PASS',
         'schema': manifest['schema'],
+        'algorithm': manifest['release']['algorithm'],
         'n_candidates': manifest['counts']['n_candidates'],
         'axes': manifest['release']['axis_sizes'],
         'intersection': manifest['intersection']['n_intersection'],
-        'n_sources': manifest['fusion']['n_sources'],
-        'excluded_categories': manifest['fusion']['excluded_categories'],
+        'n_diseases': manifest['fusion']['n_diseases'],
+        'excluded_diseases': manifest['fusion']['excluded_diseases'],
+        'fallback_second_half_slots': manifest['release']['fallback_second_half_slots'],
         'inflection': manifest['diagnostics']['inflection']['inflection'],
         'manifest_sha256': sha256(config.output / 'manifest.json'),
         'outputs': {name: record['sha256'] for name, record in manifest['outputs'].items()},
@@ -1069,7 +1134,7 @@ def main():
     parser.add_argument('--root', type=Path)
     parser.add_argument('--genes', type=Path)
     parser.add_argument('--tenv-hvg', type=Path)
-    parser.add_argument('--disease-root', type=Path)
+    parser.add_argument('--fusion-root', type=Path)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--figure-data', type=Path)
     parser.add_argument('--verify', action='store_true')
@@ -1077,7 +1142,7 @@ def main():
     args = parser.parse_args()
     config = default_config(args.root, args.output, args.figure_data)
     overrides = {'genes': args.genes, 'tenv_hvg': args.tenv_hvg,
-                 'disease_root': args.disease_root}
+                 'fusion_root': args.fusion_root}
     config = replace(config, **{key: value for key, value in overrides.items() if value})
     result = verify(config) if args.verify else publish(config)
     text = json.dumps(result, indent=2, sort_keys=True) + '\n'

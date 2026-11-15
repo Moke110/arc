@@ -7,6 +7,12 @@ edited, because accepted records are historical. Reference: spec #185 User Story
 ("a dataset that found almost nothing is not inflated to the weight of one that moved half
 its transcriptome"), ADR 0066 *Candidate table*, and the post-code-review finding #194.
 
+*Amended later, text unchanged.* **ADR 0071 keeps this record's non-informative-source rule
+as-is** and supersedes its rank normalization (the measured-gene denominator becomes the
+DEG-only `n_DEG`), its `pN`/`n_sources_measured` pair (replaced by `f2000`) and its
+"seven equal-weight sources" framing (`rank_sum` now has six disease terms and tenv-HVG is
+not one of them).
+
 ## Why this record exists
 
 The two-axis review of the Stage 2 rebuild (#194) found that one declared fusion source

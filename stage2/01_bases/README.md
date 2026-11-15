@@ -1,15 +1,19 @@
 # Stage 2 shared foundations
 
-**Accepted (2026-11-13, ADR 0066).** This step's `output/` tree is the post-rebuild
+**Accepted (2026-11-13, ADR 0066); disease side re-published 2026-11-15 (ADR 0071,
+#208, with the v2 `rejected[]` rationale strings corrected and re-published by #212).**
+This step's `output/` tree is the post-rebuild
 foundation: `raw_counts/` -> `corpus/` -> `view-2k/`/`view-5k/`, with
-`disease-deg/` and the released `gene-axis/` (`candidate_rank_sum.csv`,
-`gene_axis_2000.csv`, `gene_axis_5000.csv`, `axis_composition.csv`,
-`source_topn_coverage.csv`, `gene_axis_fill_rule.docx`, `manifest.json`). The measured truth, the successor envelope, the diagnostic PR
+`disease-deg/`, `disease-fusion/` and the released `gene-axis/`
+(`candidate_rank_sum.csv`, `gene_axis_2000.csv`, `gene_axis_5000.csv`,
+`axis_composition.csv`, `source_topn_coverage.csv`, `gene_axis_fill_rule.docx`,
+`manifest.json`). The measured truth, the successor envelope, the diagnostic PR
 figure and the superseded build chain are **deleted**; git retains the code. Per
 ADR 0066, `log/` is execution-run evidence rather than a change history: it was
 deleted and regenerated at acceptance. [`log/acceptance.md`](log/acceptance.md)
 is the acceptance record — replay results, digests, resource peaks, the "no
-retired path read" evidence and the old-to-new mapping. The per-slice sections
+retired path read" evidence and the old-to-new mapping; its pre-v2 sections are
+sealed history and its §10–§12 are the v2 republish gates. The per-slice sections
 below keep each ticket's contract, now as accepted science.
 
 ## Rebuild foundation: `raw_counts/` and `corpus/` (ADR 0066, #186)
@@ -92,52 +96,79 @@ The compact manifests, the exclusion table and the mapping evidence
 tracked; the multi-hundred-MB count payloads are gitignored and registered in
 `docs/data-inventory.md`.
 
-### DEG-table/rank contract (for tickets #187-#190)
+### DEG-table/rank contract (for tickets #187-#190, v2 in #208)
 
 `output/api/bases/deg_rank.py` publishes once the pure functions the disease
 tickets import: `SymbolResolver`/`align_table` (symbol -> frozen `gene_index`;
 ambiguous, off-axis and unmapped symbols are recorded, never guessed),
 `deg_effect` (`|log2FC| * -log10(padj)`; `NA` padj is non-significant),
-`per_gene_deg` (multi-contrast maximum collapse) and `dataset_deg_rank`
-(within-dataset rank, unmeasured = `n_measured + 1`,
-`rank_norm = rank / n_measured`, `gene_index` tie-break). `bases.gene_axis`
+`per_gene_deg` (multi-contrast maximum collapse), the v2 **pass-any-contrast**
+`deg` flag (`padj < 0.05` **and** `|log2FC| >= 2` in at least one declared
+contrast) and `dataset_deg_rank` (DEG-only within-dataset rank: DEGs `1..n_DEG`,
+every other frozen-axis gene `n_DEG + 1`, `rank_norm = rank / n_DEG`,
+`gene_index` tie-break). The schema label moved `stage2-disease-deg-v1 ->
+stage2-disease-deg-v2`. `bases.gene_axis`
 keeps the `deg_rank` re-export contract the accepted gene-axis evidence and
 `test_gene_axis.py` assert by identity.
 
-### Disease DEGs: `nHF`, `ICM` (ADR 0066, #187; `AF` removed by ADR 0069)
+### Disease DEGs: six categories (ADR 0066 #187-#189; v2 by ADR 0071, #208)
 
-The disease side of the gene axis has landed for the two ticket-187 human
-cardiomyocyte-derived categories. The `AF` category was removed by ADR 0069
-because its only dataset (`GSE255612`) carried no ordering evidence (all
-measured effect scores tied); the item and its evidence still exist outside 01,
-but 01 no longer declares or publishes it. One product directory per category under
-`output/disease-deg/` holds the compact Control-vs-Disease table and the
-within-dataset rank of every source dataset (the level-1 inputs the fusion
-ticket #190 consumes), plus the category catalog and release manifest:
+The disease side publishes one product directory per category — `nhf`, `icm`,
+`af`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`, plus the
+`cardiotox/` crosswalk — holding the compact Control-vs-Disease table and the
+DEG-only within-dataset rank of every source dataset (the level-1 inputs the
+fusion consumes), plus the category catalog and release manifest. The `AF`
+category is published again: ADR 0069/0070 removed it, ADR 0071 re-admits it.
+Roster in this release: **27 published datasets** (18 before #202-#206, +5 new
+bases from #202/#203/#206, +4 AF from #204) across the six categories:
+`nhf` 6 sources, `icm` 3, `af` 4, `genetic_cardiomyopathy` 8, `cardiotox_TOP2` 3,
+`cardiotox_other` 3.
 
 | path | contents | reader |
 |---|---|---|
-| `output/disease-deg/nhf/` | `gse270788__nicm.*`, `reichart-cm__dcm_genotype_negative.*`, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
-| `output/disease-deg/icm/` | `gse270788__icm.*`, `gse270788__ami.*`, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/nhf/` | six `*.deg.csv` + `*.rank.csv` pairs, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/icm/` | three pairs, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/af/` | four pairs, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/genetic_cardiomyopathy/` | eight pairs, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
+| `output/disease-deg/cardiotox_TOP2/`, `cardiotox_other/` | three class sources each, `catalog.json`, `manifest.json` | `bases.disease_deg.DiseaseDeg` |
 
 `<dataset>.deg.csv` is one row per measured axis gene (sorted by the
 within-dataset rank) with `gene_index`, `gene_symbol`, `contrast`, `log2fc`,
-`stat`, `p_value`, `padj`, `base_mean`, `direction`, `significant`,
-`n_contrasts`, `n_contrasts_supporting`, `effect`, `rank` and `rank_norm`.
-`<dataset>.rank.csv` is the full frozen-axis frame `{gene_index, rank,
-rank_norm}` (18,164 rows, unmeasured genes at `n_measured + 1` with
-`rank_norm = (n_measured + 1) / n_measured`, per ADR 0066 *Rank
-normalization* — never clamped to exactly 1.0). The effect score, maximum collapse, `NA`-padj and
+`stat`, `p_value`, `padj`, `base_mean`, `direction`, `significant`, **`deg`**
+(the authoritative pass-any-contrast v2 flag), `n_contrasts`,
+`n_contrasts_supporting`, **`n_contrasts_deg`**, `effect`, `rank` and
+`rank_norm`. Note that the published `contrast` label is still the
+maximum-effect (winning) contrast per gene — the flag, not the label, is what
+decides DEG membership under v2. `<dataset>.rank.csv` is the full frozen-axis
+frame `{gene_index, rank, rank_norm}` (18,164 rows, non-DEG genes at
+`n_DEG + 1` with `rank_norm = (n_DEG + 1) / n_DEG` — never clamped to exactly
+1.0, and a `n_DEG = 0` source ranks every gene at 1 and is excluded as
+non-informative). The effect score, maximum collapse, `NA`-padj and
 tie-break rules are ticket #186's `bases.deg_rank` contract; the published
 tables are written at 17 significant digits so their bytes encode the exact
 order the rank was derived from.
+
+Each category `catalog.json` is the canonical `stage2-disease-deg-catalog-v1`
+shape (the label is unchanged; the record inside is v2): `category`,
+`directory`, `evidence_type`, `tier`, `n_deg` (axis-resolved DEG-union size),
+`deg2000` (`DEG2000_d` size), `datasets[]` (per-source `tier`, `evidence_type`,
+`n_deg`, `n_deg_in_deg2000`, `informative` + `informativeness`, `n_measured`,
+`n_axis_unmeasured`, `n_significant`, `contrasts`, `inputs`, `derived_inputs`),
+`rejected`, and — for every published category — the computed `tiering` record
+(`criterion: axis_resolved_deg_union`, `limit`, `stop_reached`, `stopped_at_tier`,
+`tiers_entered`, `tier_union`) plus `tier_sources` (the declared per-tier source
+ladder). Both are derived from the declared per-source tiers by
+`bases.disease_deg.tier_ledger`, never hand-written.
 
 ```python
 import sys; sys.path.insert(0, 'stage2/01_bases/output/api')
 from bases.disease_deg import DiseaseDeg
 db = DiseaseDeg('stage2/01_bases/output/disease-deg')
-db.categories()                       # ['icm', 'nhf']
-db.datasets('nHF')                    # ['gse270788__nicm', 'reichart-cm__dcm_genotype_negative']
+db.categories()                       # ['af', 'cardiotox_TOP2', 'cardiotox_other',
+                                      #  'genetic_cardiomyopathy', 'icm', 'nhf']
+db.datasets('nHF')                    # ['gse270788__nicm', 'reichart-cm__dcm_genotype_negative',
+                                      #  'gse35108__dcm_ipsc_cm', 'gse165303__dcm_lv_bulk',
+                                      #  'gse116250__hf_lv_bulk', 'gse141910__hf_lv_bulk']
 table = db.table('nHF', 'gse270788__nicm')   # compact DEG table, rank-sorted
 rank = db.rank('nHF', 'gse270788__nicm')     # 18,164-row frozen-axis rank frame
 db.eligibility('ICM', 'gse270788__ami')      # tier/evidence/shared-control/time-window record
@@ -150,8 +181,9 @@ derived artefacts as `derived_inputs` (`{relative, sha256}`, relative to the ADR
 paths are composed at build time from `source_item` + the relative name and are
 never emitted as repo-relative literals (keeps `script/check_paths.sh` green in
 a merged checkout). Every record also carries `n_case`/`n_control` for its
-contrast (a bulk/pseudobulk DEG always has both arms). The four datasets and
-their declared eligibility:
+contrast (a bulk/pseudobulk DEG always has both arms). The four #187 datasets and
+their declared eligibility (the other 23 published datasets, from #188/#189/#202-
+#206, are listed per category in the catalogs and in the fusion ledger below):
 
 | category | dataset | evidence | tier | case/control | file |
 |---|---|---|---|---|---|
@@ -173,6 +205,19 @@ the R of the conda env running the build (`<prefix>/lib/R`), otherwise the
 `Rscript` on `PATH`. GSE270788's three arms share one
 control set, so all three contrasts come from **one joint `~ 0 + arm` fit**
 over the 23 donor pseudobulk profiles rather than three case-control fits.
+
+Two optional design-spec fields extend the same worker without changing the
+defaults (#202): `"block"` names a sample-sheet column and puts one consensus
+intra-block correlation from `duplicateCorrelation()` into both `voom()` and
+`lmFit()`, for sources where one subject contributes repeated profiles
+(`disease_data/Kuppe-MI`'s donor x zone pseudobulk: the four infarct-heart IZ
+profiles against the four normal-heart profiles, with the donor's other zone
+profiles in the same joint `~ 0 + zone` fit); `"filter"` applies the
+`edgeR::filterByExpr` rule (`min_count`/`min_total_count`/`large_n`/`min_prop`)
+as a gene filter, written out in the worker because the pinned `arc` R env ships
+limma but not edgeR. The filter only removes genes (the all-zero-row drop is
+always applied) and reports the dropped count in the `DEG_SUMMARY` line; the
+count contract itself (integer, non-negative counts) is unchanged.
 
 **GSE270788 arm-size erratum (recorded in issue #187 and in the item author
 log).** The ticket body and ADR 0066 say `Donor 6 / NICM 7`; the immutable
@@ -358,6 +403,66 @@ ADR 0062: reusable accepted products under `output/`, report figures and their
 complete plotted values under `figure/`, reproducible execution/audit code and
 tests under `execution/`, and every record under `log/`.
 
+### Per-disease fusion: level-1 rank and `DEG2000` (#205, ADR 0071)
+
+The disease half of the v2 axis is DEG-only. Each accepted per-category product
+is read back, each source's published compact table is reduced to its v2 DEG-only
+rank (DEGs `1..n_DEG` by descending effect with the `gene_index` tie-break; every
+other frozen-axis gene `n_DEG + 1`; `rank_norm = rank / n_DEG`), and the disease
+fuses its informative sources at level 1:
+
+```
+disease_rank_sum = Σ_source rank_norm
+disease rank     = ascending position of the sum, ties by gene_index
+DEG union        = genes that are a DEG in at least one informative source
+DEG2000_d        = DEG union ∩ (disease rank <= 2,000)   # all of it when smaller
+```
+
+A source with `n_DEG = 0` has no `rank_norm` (the ADR 0071 denominator is zero)
+and a source whose measured effects are all tied carries no ordering evidence;
+both are **excluded from the sum and recorded with their reason** (ADR 0068), so a
+`NaN` can never silently drop a gene from a disease. Because a DEG's normalized
+rank is `<= 1` while a non-DEG's is `(n_DEG + 1) / n_DEG > 1` in every source, the
+DEG union occupies exactly the first disease ranks and `|DEG2000_d|` is always
+`min(|union|, 2,000)`.
+
+| path under `output/disease-fusion/` | contents | reader |
+|---|---|---|
+| `catalog.json` | schema `stage2-disease-fusion-v1`, `rank_contract: stage2-disease-deg-v2`, `rank_semantics: deg-only-v2`, `limit`, the frozen-axis pin, and per disease: `tier`, `evidence_type`, `declared_source_count`, `informative_source_count`, `n_deg` (DEG-union size), `deg2000` (`DEG2000_d` size), the per-source ledger (`n_deg`, `n_deg_in_deg2000`, `tier`, `flag_source`), `excluded_sources` with reason and `not_published` declared sources | `bases.disease_deg.DiseaseFusion` |
+| `<directory>.deg2000.csv` | `gene_index, disease_rank, disease_rank_sum`, one row per `DEG2000_d` gene in rank order (a header-only file for an empty union) | `bases.disease_deg.DiseaseFusion.deg2000` |
+| `manifest.json` | schema `stage2-disease-fusion-release-v1`, candidate-then-replace manifest (inputs, outputs, digests, `counts` = 6 diseases / 6 published / 7,088 `DEG2000` rows) | same |
+
+The released ledger (per disease: sources / tiers entered / DEG union / `DEG2000`)
+is `nHF` 6 / 1→2→3 / 1,661 / 1,661, `ICM` 3 / 1 / 1,647 / 1,647, `AF` 4 / 1→3 /
+1 / 1 (`SLC9A7`), `genetic_cardiomyopathy` 8 / 1→2 / 1,482 / 1,482,
+`cardiotox_TOP2` 3 / 2 / 4,514 / 2,000 and `cardiotox_other` 3 / 2 / 297 / 297.
+Only `cardiotox_TOP2` reaches the 2,000 cut; the others publish their whole union,
+which the build rule permits. `DEG2000` totals 7,088 rows over 5,282 distinct
+genes. ADR 0071's drafted ledger carried 4,363 / 279 for the two cardiotox
+classes; the published values are larger because the v2 flag is
+pass-any-contrast rather than the collapsed winning-contrast row (see
+[`log/acceptance.md`](log/acceptance.md) §10.3, which reproduces the old numbers by
+dropping the `deg` column).
+
+Public implementation: `output/api/bases/disease_deg.py` —
+`source_deg_rank`, `level_one_rank` (also re-exported as
+`bases.gene_axis.category_rank`, the single live level-1 implementation),
+`fuse_disease`, `deg2000_rows`, `validate_catalog`/`build_catalog` (the
+`tier`/`evidence_type`/`n_deg`/`deg2000`/`tiering` category-catalog shape and its
+validation), `tier_ledger` (the tier-stop rule and the `tiering`/`tier_sources`
+record) and the `DiseaseFusion` reader.
+
+```bash
+python stage2/01_bases/execution/build_disease_fusion.py publish
+python stage2/01_bases/execution/build_disease_fusion.py verify
+```
+
+The driver is roster-neutral: it fuses whatever `output/disease-deg/` has
+accepted and lists the rest of `execution/disease_deg_sources.py`'s declaration as
+`not_published`. Every published v2 table carries the authoritative pass-any
+`deg` flag, so the ledger records `flag_source = published_deg_flag`; a table
+without the flag (a pre-#208 v1 table) is refused rather than re-derived.
+
 ## Layout after the rebuild
 
 ```
@@ -370,6 +475,7 @@ output/
   corpus/         # 18,164-axis integer counts, roles and matched-control groups
   tenv-hvg/       # retained pre-0066 descriptive and train-only rankings
   disease-deg/    # per-dataset DEG tables and within-dataset ranks (level-1 inputs)
+  disease-fusion/ # per-disease level-1 rank_sum + DEG2000 cut (ADR 0071 level 1)
   gene-axis/      # candidate_rank_sum.csv, gene_axis_{2000,5000}.csv,
                   #   axis_composition.csv, source_topn_coverage.csv,
                   #   gene_axis_fill_rule.docx, manifest.json
@@ -408,213 +514,241 @@ absent. The builder still expects a training-style h5ad (`obs` with `sample_id`,
 documented deferred re-point (ADR 0066 *Deferred*) and the accepted
 `descriptive.csv` bytes and digests stay what the gene axis pins — the default no
 longer names a retired payload.
-## Released gene axes `G_2000` / `G_5000` (#190, ADR 0066)
+## Released gene axes `G_2000` / `G_5000` (#190 / #207, ADR 0066 + ADR 0071)
 
 `output/gene-axis/` is the **released** two-version gene axis: the master candidate
 table, the two ordered axis files, their manifest, the per-category composition
-table, the source top-`N` coverage table, the human-facing rule document and the
-two-panel rank-sum evidence figure. The axes are built from the six
-cardiomyocyte-derived disease-DEG categories (`output/disease-deg/`) fused at two
-levels with the published tenv-HVG ranking. Nothing is recomputed here: the
-disease-DEG ranks, the tenv-HVG ranking and the frozen 18,164-gene identity are
-read-only inputs, and no corpus, view, model or truth is opened.
+table, the source coverage table, the human-facing rule document and the two-panel
+rank-sum evidence figure. The disease side is the **v2 rule of ADR 0071**:
+DEG-only, tiered sources collected per disease and fused at two levels, with
+`f2000` (not `pN`) selecting the axis's second half. The schema label stays
+`stage2-gene-axis-release-v1` and the manifest declares
+`release.algorithm = f2000-deg2000-v2`; a pre-v2 manifest is refused by
+`build_gene_axis.py --verify` with a self-describing error. Nothing is recomputed
+here: the published `DEG2000` tables and disease ranks, the tenv-HVG ranking and
+the frozen 18,164-gene identity are read-only inputs, and no corpus, view, model or
+truth is opened.
 
-Public implementation: `output/api/bases/gene_axis.py` — the pure fusion/axis
-definitions (`winning_tier`, `category_rank`, `fusion_rank_sum`,
-`candidate_table`, `axis_fill`, `axis_intersection`, `axis_composition`,
-`source_topn_coverage`, `source_topn_covered_counts`, `pn_distribution`,
-`rank_sum_histogram`, `kneedle_knee`,
+Public implementation: `output/api/bases/gene_axis.py` — the pure v2 fusion/axis
+definitions (`candidate_columns`, `category_rank`, `deg2000_frame`,
+`f2000_count`, `cross_disease_rank_sum`, `candidate_table`, `axis_fill`,
+`axis_intersection`, `deg2000_composition`, `f2000_distribution`,
+`source_topn_coverage`, `rank_sum_histogram`, `kneedle_knee`,
 `second_difference_peak`, `detect_inflection`, `inflection_stability`) and the
-digest-checked `GeneAxis` reader (`axis`, `candidate_table`, `composition`,
-`coverage`). It also keeps the #186 re-export contract:
-`SymbolResolver`, `complete_rank`, `deg_effect`, `per_gene_deg`, `rank_scores`,
-`ALIGNMENT_CATEGORIES`, `PADJ_FLOOR`, `PADJ_THRESHOLD`, `normalized_rank` and
-`AXIS_SIZE` are the same objects as in `bases.deg_rank`. Driver:
-`execution/build_gene_axis.py publish|verify` (candidate-then-replace, replay
-comparison of the manifest and every output digest).
+digest-checked `GeneAxis` reader (`manifest`, `axis_sizes`, `digests`,
+`candidate_table`, `axis_frame`, `axis`, `composition`, `coverage`). It also keeps
+the #186 re-export contract: `SymbolResolver`, `complete_rank`, `deg_effect`,
+`per_gene_deg`, `rank_scores`, `ALIGNMENT_CATEGORIES`, `PADJ_FLOOR`,
+`PADJ_THRESHOLD`, `normalized_rank` and `AXIS_SIZE` are the same objects as in
+`bases.deg_rank`, and the v1 names (`winning_tier`, `fusion_rank_sum`,
+`pn_distribution`, `source_topn_covered_counts`, the `p2000`/`p5000`/
+`n_sources_measured` columns) are **removed** — `test_gene_axis.py` asserts their
+absence so they cannot creep back. Driver: `execution/build_gene_axis.py
+publish|verify` (candidate-then-replace, replay comparison of the manifest and
+every output digest).
 
-**Two-level rank-sum fusion.** Within a category, the *winning tier* is the
-category's minimum declared `tier`, and every dataset at that tier contributes
-its within-dataset rank; ADR 0066's *Isogenic exception* additionally keeps a
-record whose `isogenic_exception.applies` is true even above the winning tier,
-so `genetic_cardiomyopathy` fuses its two tier-1 human CM-pseudobulk datasets
-**plus** its six tier-2 isogenic hiPSC-CM models (winning tier 1, six records
-retained by exception). Level 1 is the ascending `sum(rank_norm)` over those
-datasets with `gene_index` tie-break; level 2 is
-`rank_sum = sum(rank_norm)` over the **fused** category class ranks and the
-tenv-HVG rank, **each normalized by the frozen-axis size** (`rank / 18164`;
-ADR 0066 "each normalized by the frozen-axis size", GLOSSARY *Source rank*:
-"tenv-HVG contributes its dispersion rank under the same normalization"). `pN`
-counts how many of the fused sources place a gene in their top-`N` set;
-`n_sources_measured` counts the fused sources that measure it.
+**Two-level rank-sum fusion (ADR 0071).** Level 1 runs inside a disease: each
+informative source contributes its DEG-only `rank_norm` (`1..n_DEG` by descending
+effect, `gene_index` tie-break; every other frozen-axis gene `n_DEG + 1`;
+`rank_norm = rank / n_DEG`), and the disease's rank is the ascending position of
+`sum(rank_norm)`. Every declared source of the disease contributes — the tiers are
+a *collection* order that decides when to stop adding sources, not a filter on the
+fusion; `genetic_cardiomyopathy` therefore fuses its two tier-1 Reichart exports
+**plus** its six tier-2 isogenic hiPSC-CM models, and `nHF` fuses its six sources
+across tiers 1-3. Level 2 is `rank_sum = Σ_d rank_d / n_d` over the **six disease
+terms only**, where `n_d` is the disease's axis-resolved DEG-union size and a gene
+outside `DEG2000_d` takes `(n_d + 1) / n_d`. tenv-HVG is **not** a term (it
+supplies the axis's first half), `rank_sum` is **ascending-is-better**, and
+`f2000` = the number of diseases whose `DEG2000_d` contains the gene is the
+disease-side selection signal that replaced `pN`.
 
-**Non-informative sources (ADR 0068, AF removed by ADR 0069).** A dataset that
-measures genes but whose continuous effect scores are **all tied** carries no
-ordering evidence: its rank degenerates to the `gene_index` tie-break. The `AF`
-category's only dataset, `gse255612__af`, was exactly that case — all 18,092
-measured genes have `padj ≡ 1`, so every effect score was 0 — and ADR 0069
-removed the whole category from 01 instead of re-publishing its table. The rule
-remains implemented and tested: a non-informative dataset is not a fusion source,
-and a category with no informative dataset is excluded from level-2 `rank_sum`,
-`pN` and `n_sources_measured` (the manifest would list it under
-`fusion.excluded_categories`). The released fusion declares five categories plus
-tenv-HVG and every one is informative, so the manifest records
-`fusion.n_sources: 6`, `fusion.excluded_categories: []` and
-`release.pN_bounds: [0, 6]`.
+**Non-informative sources (ADR 0068, kept by ADR 0071).** A dataset that measures
+genes but whose continuous effect scores are **all tied**, or that has no DEG at
+all (every gene then ranks at `n_DEG + 1 = 1`), carries no ordering evidence.
+The rule remains implemented and tested: such a dataset is not a fusion source and
+is recorded with its reason, and a disease with no informative source is excluded
+from `rank_sum` and `f2000` (the manifest would list it under
+`fusion.excluded_diseases`). In this release `AF` shows both faces of the rule:
+three of its four sources (`gse255612__af`, `gse238242__af`, `gse269882__af`) have
+0 v2 DEGs and are excluded with recorded reasons, while `gse138252__af` has one
+(`SLC9A7`) and carries the whole category. The manifest records
+`fusion.n_declared_diseases: 6`, `fusion.n_diseases: 6`,
+`fusion.excluded_diseases: []` and `release.f2000_bounds: [0, 6]`.
 
 **Axis fill rule.** `G_N` takes the top `0.5*N` tenv-HVG genes
 (`tenv_hvg_rank <= N/2`; the rank is a complete `1..18,164` permutation, so this
 is exactly `0.5*N` genes), then `0.5*N` more from the **remaining** candidates —
-the step-1 genes are excluded, otherwise the 50/50 split breaks — by `pN`
-descending, `rank_sum` ascending, `gene_index` ascending. The three keys mean:
+the step-1 genes are excluded, otherwise the 50/50 split breaks — that have
+`f2000 >= 1`, ordered by `f2000` descending, `rank_sum` ascending, `gene_index`
+ascending. The three keys mean:
 
-- `pN` is the number of the **six fused sources** whose top-`N` set holds the gene
-  (`N` matching the axis: `p2000` for `G_2000`, `p5000` for `G_5000`). It is
-  **not** `n_sources_measured` (the number of sources that measure the gene):
-  the two columns agree on only 2 of 18,164 rows at `p2000` and 96 at `p5000`, and
-  substituting one for the other changes 289 / 425 axis genes.
-- `rank_sum` is **smaller is better** (a descending value is better); sorting it
-  the other way would change 300 / 1,004 axis genes.
-- `gene_index` ascending is contractual because `rank_sum` is a sum of integer
-  ranks and repeats often (among the remaining candidates at `N=2,000`, 2,038
-  values are shared by 4,341 genes). For both released sizes the `0.5*N` boundary
-  falls on a unique `(pN, rank_sum)` key, so the published axes do not depend on
-  the tie-break; the published table is already in ascending-`gene_index` order,
-  which makes a stable sort equivalent to the explicit key.
+- `f2000` is a count of **diseases** (`0..6`), not of sources and not of
+  top-`N` sets: it counts how many diseases published the gene in their
+  `DEG2000`. It replaced `pN` because `pN` counted a source's *top-`N` overlap*
+  over a measured-gene rank — an object the DEG-only rule no longer produces.
+- `rank_sum` is **ascending is better** (a lower value selects first): rank 1 is
+  the strongest DEG and a gene outside `DEG2000_d` pays `(n_d + 1) / n_d > 1` in
+  that term. Its absolute scale is dominated by the smallest-`n_d` disease —
+  `AF`'s `n_d = 1` makes every non-`SLC9A7` gene pay exactly `2.0`, about `2×` the
+  five large-`n_d` terms combined — which is why the evidence figure has one spike
+  at ≈`7.0` (the `f2000 = 0` mass at the constant maximum). That is an artefact of
+  AF's one-gene denominator, not a fusion failure: within an `f2000` stratum the
+  AF term is a constant for every non-AF gene, so ordering is unaffected.
+- `gene_index` ascending is the deterministic last key.
+
+When fewer than `0.5*N` remaining candidates have `f2000 >= 1`, the shortfall is
+filled from unused tenv-HVG genes in ascending tenv-HVG rank order — never from a
+gene on disease evidence it does not have. The fallback is **implemented and
+exercised by tests but 0 in this release** (4,906 / 4,330 eligible candidates for
+1,000 / 2,500 slots; `axes.<N>.second_half.tenv_hvg_fallback = 0`).
 
 Both axes are ascending-`gene_index` subsets of the frozen space with the
-original integers — never renumbered — and they are **not nested**:
-`G_2000 ∩ G_5000 = 1,972` (Jaccard 0.3922; 98.60% of `G_2000` lies inside
-`G_5000`, both axes carry genes the other does not). The manifest reports sizes,
-intersection, per-category composition, input digests and the fill rule; no
-consumer re-derives it.
+original integers — never renumbered — and they are **nested**: `G_2000 ⊂ G_5000`
+(the manifest measures `|G_2000 ∩ G_5000| = 2,000`, Jaccard 0.4), because `f2000`
+and `rank_sum` do not depend on `N`. The v1 `pN` fill was axis-matched
+(`p2000` for one axis, `p5000` for the other), so its axes were *not* nested. The
+manifest reports sizes, intersection, per-disease composition, input digests and
+the fill rule; no consumer re-derives it.
 
-Products (force-tracked compact CSVs; manifest sha256 `cfd3ba11…`):
+Products (force-tracked compact CSVs; manifest sha256 `a344f9e2…`, 28,216 B):
 
 | path | rows | digest |
 |---|---:|---|
-| `output/gene-axis/candidate_rank_sum.csv` | 18,164 | `ba328172…` |
-| `output/gene-axis/gene_axis_2000.csv` | 2,000 | `cb07535f…` |
-| `output/gene-axis/gene_axis_5000.csv` | 5,000 | `15e5c49e…` |
-| `output/gene-axis/axis_composition.csv` | 40 | `6985ae92…` |
-| `output/gene-axis/source_topn_coverage.csv` | 2 | `27e3a50d…` |
-| `figure/data/gene_axis_rank_sum_histogram.csv` | 143 | `4ac96696…` |
-| `figure/gene_axis_rank_sum_histogram.png` | — | `5c54608f…` |
-| `figure/data/gene_axis_source_topn_coverage.csv` | 14 | `b405b5f1…` |
-| `figure/gene_axis_source_topn_coverage.png` | — | `51ea4bc8…` |
+| `output/gene-axis/candidate_rank_sum.csv` | 18,164 | `4c1a98d9…` |
+| `output/gene-axis/gene_axis_2000.csv` | 2,000 | `637bb8e1…` |
+| `output/gene-axis/gene_axis_5000.csv` | 5,000 | `6f467c2c…` |
+| `output/gene-axis/axis_composition.csv` | 32 | `51192501…` |
+| `output/gene-axis/source_topn_coverage.csv` | 14 | `8db5fcbf…` |
+| `figure/data/gene_axis_rank_sum_histogram.csv` | 143 | `c402554a…` |
+| `figure/gene_axis_rank_sum_histogram.png` | — | `874f6020…` |
+| `figure/data/gene_axis_source_topn_coverage.csv` | 16 | `00a04341…` |
+| `figure/gene_axis_source_topn_coverage.png` | — | `37c24d17…` |
 
 The human-facing rule document `output/gene-axis/gene_axis_fill_rule.docx`
-(sha256 `2bbe1f0e…`) opens with the source dataset information table (one row per
-released dataset plus the tenv-HVG fusion source, with a footnote defining the
-CM DEG count, the contrast semantics and the five non-obvious sample-size
-bases), follows it with the audited-and-excluded
-AF sources table (five rows: design/n, actual CM DEG count and one-clause
-exclusion reason, closing on the declared-gap/re-admission statement), then
-restates this fill rule with its five common misreadings and carries the source
-coverage table and the evidence figure. `execution/make_gene_axis_docx.py`
-regenerates it byte-identically from `source_topn_coverage.csv`, the PNG, the five
+(sha256 `e7fbc26a…`, 94,590 B) opens with the v2 build rule (`padj < 0.05` and
+`|log2FC| >= 2`, pass-any-contrast; DEG-only source rank; level-1 fusion; the
+tier-1→2→3 collection with the axis-resolved 2,000 stop; the `f2000`/`rank_sum`
+fill and the tenv-HVG fallback), then the source dataset table (表 1: 28 rows =
+27 published datasets + the tenv-HVG fusion source, with a footnote defining the
+v2 CM DEG count, the contrast semantics and the ten non-obvious sample-size
+bases), 表 2 (one row per disease: source-dataset count, tier path, DEG union,
+`DEG2000` and a note stating the cut or the shortfall), the four misreading
+clarifications, the coverage table in the published long format and the evidence
+figure. `execution/make_gene_axis_docx.py` regenerates it byte-identically from
+`source_topn_coverage.csv`, the PNG, the six
 `output/disease-deg/<category>/catalog.json` files and
 `execution/gene_axis_source_metadata.py` (the container is re-zipped with fixed
 entry timestamps; `python-docx` is listed in `environment.yml`). It is a reading
 aid, not a manifest output: no release consumer reads it.
 
-The candidate table carries `symbol`, `gene_index`, `tenv_hvg_rank`, the five
-`<category>_rank` columns, `rank_sum`, `n_sources_measured`, `p2000`, `p5000`
-(all `pN` in `0..6`; `n_sources_measured` in `2..6`). `rank_sum` ranges 0.0237–5.8103 (median 3.0118).
-Cross-source replication is coarse by design: over all candidates `p2000` is
-10,125 genes at 0, 5,136 at 1, 2,046 at 2, 687 at 3, 141 at 4, 27 at 5 and 2 at
-6; `p5000` is 3,942/5,298/4,355/2,808/1,298/402/61 for `pN` 0–6. Inside `G_2000`
-the `pN` distribution is 563/580/687/141/27/2 for `pN` 1–6 (none at 0); inside
-`G_5000` it is 653/782/1,804/1,298/402/61. The composition table publishes both
-distributions so `pN` is not read as a continuous quality score.
-Per-category composition of `G_2000` / `G_5000` (axis genes the source measures):
-`nhf` 1,978 / 4,936, `icm` 1,908 / 4,751, `genetic_cardiomyopathy` 1,997 / 4,997,
-`cardiotox_TOP2` 2,000 / 5,000, `cardiotox_other` 1,513 / 3,738; the tenv-HVG
-halves are 1,000 / 2,500.
+The candidate table carries `symbol`, `gene_index`, `tenv_hvg_rank`, the six
+`<category>_rank` columns (DEG2000 rank, blank outside `DEG2000_d`), `rank_sum`
+and `f2000`; it carries no `p2000`/`p5000`/`n_sources_measured`. `rank_sum` ranges
+2.6624–7.0054 and `f2000` over all candidates is 12,882 genes at 0, 3,835 at 1,
+1,146 at 2, 248 at 3, 48 at 4, 5 at 5 and none at 6. Inside `G_2000` the `f2000`
+distribution is 624/258/817/248/48/5/0 and inside `G_5000`
+1,548/2,005/1,146/248/48/5/0 for `f2000` 0–6 (`f2000 = 0` genes are tenv-HVG-half
+genes). `axis_composition.csv` publishes the declared halves, the (zero) fallback,
+that distribution and the per-disease `DEG2000` coverage. Per-disease coverage of
+`G_2000` / `G_5000` (`|DEG2000_d ∩ G_N| / |DEG2000_d|`): `nhf` 638/1,661 (38.41%)
+and 1,151/1,661 (69.30%), `icm` 550/1,647 (33.39%) and 1,042/1,647 (63.27%),
+`af` 0/1 and 1/1, `genetic_cardiomyopathy` 635/1,482 (42.85%) and 1,068/1,482
+(72.06%), `cardiotox_TOP2` 831/2,000 (41.55%) and 1,740/2,000 (87.00%),
+`cardiotox_other` 199/297 (67.00%) and 256/297 (86.20%).
 
-**Top-N source coverage.** Each fusion source's top-`N` set is the `N` genes
-with `rank_s <= N` in the candidate table; the five active `<category>_rank`
-columns and `tenv_hvg_rank` are complete `1..18,164` permutations, so each set
-holds exactly `N` genes (for the five category sources every one of those genes
-is measured; `tenv-HVG` ranks the full frozen axis), matching the `pN`
-definition. Intersecting a top-`N` set with the released axis gives the coverage
-below. The two sets carry the same number of genes, so a count is both the share
-of the source's top-`N` the axis keeps and the share of the axis drawn from that
-source's top-`N`; the sets overlap across sources (a gene can sit in several —
-that is what `pN` counts), so the rows do not sum to 100%. For reference, a
-random
-`N`-gene set covers `N/18,164` = 11.01% (`G_2000`) / 27.53% (`G_5000`) of an
-axis of the same size. The tables are descriptive, computed from
-`candidate_rank_sum.csv` and `gene_axis_{2000,5000}.csv` only; they are not an
-axis-selection criterion. The same numbers are the published
-`output/gene-axis/source_topn_coverage.csv` (rows `N = 2000, 5000`; columns
-`N, %tenv_hvg_gN, %nhf_gN, %icm_gN, %genetic_cardiomyopathy_gN,
-%cardiotox_TOP2_gN, %cardiotox_other_gN`) and are reproduced in the rule
+**`DEG2000` coverage (the long-format table).** The v2 coverage table
+`output/gene-axis/source_topn_coverage.csv` keeps its **v1 filename** for
+compatibility with the pinned manifests — renaming it would re-pin the gene-axis
+manifest, both view manifests and force a republish — but its content is the v2
+`DEG2000` table, in **long format** with an explicit denominator per row:
+`N, n_axis, group, group_label, numerator, denominator, rate, note` (14 rows: two
+axes × seven groups). The numerator is `|DEG2000_d ∩ G_N|` for a disease and
+`|top_N(tenv) ∩ G_N|` for `tenv_hvg`; the denominator is `|DEG2000_d|` for a
+disease and `N` for `tenv_hvg`; `rate = 100 * numerator / denominator`. The v1
+wide format (`%<source>_gN` columns) divided everything by `N`, which made AF's
+one gene read as a 100% top-`N` coverage; the long format states each group's own
+set size instead. Because the denominator is each group's own set, the rows are
+shares of that set, not of the axis; a group with an empty `DEG2000` would keep an
+empty row (ADR 0068) and none does in this release. The table is descriptive and
+not an axis-selection criterion, and the same numbers are reproduced in the rule
 document.
 
-`G_2000`, coverage of each source's top-2,000:
+`G_2000`, coverage of each group's own set:
 
-| source | top-2,000 | in `G_2000` | coverage |
+| group | numerator | denominator | rate |
 |---|---:|---:|---:|
-| `nhf` | 2,000 | 632 | 31.60% |
-| `icm` | 2,000 | 651 | 32.55% |
-| `genetic_cardiomyopathy` | 2,000 | 748 | 37.40% |
-| `cardiotox_TOP2` | 2,000 | 578 | 28.90% |
-| `cardiotox_other` | 2,000 | 712 | 35.60% |
-| `tenv-HVG` | 2,000 | 1,174 | 58.70% |
+| `nhf` | 638 | 1,661 | 38.41% |
+| `icm` | 550 | 1,647 | 33.39% |
+| `af` | 0 | 1 | 0.00% |
+| `genetic_cardiomyopathy` | 635 | 1,482 | 42.85% |
+| `cardiotox_TOP2` | 831 | 2,000 | 41.55% |
+| `cardiotox_other` | 199 | 297 | 67.00% |
+| `tenv_hvg` | 1,079 | 2,000 | 53.95% |
 
-`G_5000`, coverage of each source's top-5,000:
+`G_5000`, the same seven groups:
 
-| source | top-5,000 | in `G_5000` | coverage |
+| group | numerator | denominator | rate |
 |---|---:|---:|---:|
-| `nhf` | 5,000 | 2,321 | 46.42% |
-| `icm` | 5,000 | 2,350 | 47.00% |
-| `genetic_cardiomyopathy` | 5,000 | 2,611 | 52.22% |
-| `cardiotox_TOP2` | 5,000 | 2,224 | 44.48% |
-| `cardiotox_other` | 5,000 | 2,416 | 48.32% |
-| `tenv-HVG` | 5,000 | 3,275 | 65.50% |
+| `nhf` | 1,151 | 1,661 | 69.30% |
+| `icm` | 1,042 | 1,647 | 63.27% |
+| `af` | 1 | 1 | 100.00% |
+| `genetic_cardiomyopathy` | 1,068 | 1,482 | 72.06% |
+| `cardiotox_TOP2` | 1,740 | 2,000 | 87.00% |
+| `cardiotox_other` | 256 | 297 | 86.20% |
+| `tenv_hvg` | 3,068 | 5,000 | 61.36% |
 
-`tenv-HVG` is the only source with guaranteed axis membership: the fill rule
-places its top `N/2` (`1,000` / `2,500`) first and `174` / `775` more enter via
-the `pN`/`rank_sum` half; the five category sources have no guaranteed gene.
+`tenv-HVG` is the only group with guaranteed axis membership: the fill rule
+places its top `N/2` (`1,000` / `2,500`) first and `79` / `568` more enter via the
+`f2000`/`rank_sum` half; no disease has a guaranteed gene. `AF`'s `0/1` and `1/1`
+are the honest single-gene denominator: its one `DEG2000` gene (`SLC9A7`) is in
+`G_5000` but not `G_2000`, because every one of `G_2000`'s 1,000 disease-half slots
+is an `f2000 >= 2` gene.
 
 **Source-coverage figure.** `figure/gene_axis_source_topn_coverage.png` is a
-two-panel figure (2026-11-14 design request). Both panels draw the same layout:
-one x group per fused source (`tenv-HVG` then the five categories; `af` is not a
-source, ADR 0069) and two adjacent bars per group, one per released axis, the
-bar's identity and colour encoding that axis (`G_2000` blue, `G_5000` orange);
-groups keep a gap and the bars inside a group touch. Panel **a** ("Covered Gene
-Count", y = covered genes) plots the number of that source's top-`N` genes the
-axis contains — the numerator of the percentages above (`G_2000`
-1,174/632/651/748/578/712; `G_5000` 3,275/2,321/2,350/2,611/2,224/2,416) — and
-panel **b** ("Top-N Coverage Rate", y = coverage rate (%)) plots the same cells
-as rates (`G_2000` 58.70/31.60/32.55/37.40/28.90/35.60; `G_5000`
-65.50/46.42/47.00/52.22/44.48/48.32). The two values are
-`|{g in G_N : rank_s(g) <= N}|` and `100 * count / N` from
-`bases.gene_axis.source_topn_covered_counts` / `source_topn_coverage`; the
+two-panel figure (2026-11-14 design request; labels corrected in #210). Both
+panels draw the same layout: one x group per fusion group (`tenv-HVG` then the six
+diseases, `af` included) and two adjacent bars per group, one per released axis,
+the bar's identity and colour encoding that axis (`G_2000` blue, `G_5000`
+orange); groups keep a gap and the bars inside a group touch. Panel **a**
+("Covered Gene Count", y = covered genes) plots the numerator (`G_2000`
+1,079/638/550/0/635/831/199; `G_5000` 3,068/1,151/1,042/1/1,068/1,740/256) and
+panel **b** ("Coverage of Each Group", y = share of group covered (%)) plots the
+same cells over each group's own denominator (`G_2000`
+53.95/38.41/33.39/0.00/42.85/41.55/67.00; `G_5000`
+61.36/69.30/63.27/100.00/72.06/87.00/86.20). The v1 panel title was
+`Top-N Coverage Rate`, which was untrue once the denominator became the group's own
+set — AF's `1-of-1` cell would have read as a 100% "top-`N`" coverage. The values
+are `|DEG2000_d ∩ G_N|` and `100 * numerator / denominator` from
+`bases.gene_axis.source_topn_coverage`; the
 complete plotted values are `figure/data/gene_axis_source_topn_coverage.csv`
 (both columns per bar, each panel record naming the column it draws), and the
 CSV-only renderer `figure/script/render_gene_axis_source_topn_coverage.py`
-reproduces the PNG byte for byte (sha256 `51ea4bc8…`) without opening `output/`.
+reproduces the PNG byte for byte (sha256 `37c24d17…`) without opening `output/`.
 
 **Evidence figure and inflection.** `figure/gene_axis_rank_sum_histogram.png`
 is a two-panel figure, one panel per released axis (`N = 2000`, `N = 5000`;
-2026-11-14 redesign). Both panels draw the identical gray candidate histogram
-("gene candidates") over all 18,164 `rank_sum` candidates, and from every bar's
-top downward the colored share of that bin the axis selects ("selected genes";
-the colored total is `N`). No other plot-area element is drawn. Its complete
-plotted values are `figure/data/gene_axis_rank_sum_histogram.csv`; the CSV-only
-renderer `figure/script/render_gene_axis_rank_sum_histogram.py` reproduces the
-PNG byte for byte (sha256 `5c54608f…`) without opening `output/`. The axes'
-`rank_sum` intervals (`G_2000` 0.0237–4.9587, median 1.7507; `G_5000`
-0.0237–5.0185, median 2.0439) stay in the manifest (`axes.<N>.rank_sum`) but are
-no longer drawn. The Kneedle +
+2026-11-14 redesign, x annotation corrected in #210). Both panels draw the
+identical gray candidate histogram ("gene candidates") over all 18,164 `rank_sum`
+candidates, and from every bar's top downward the colored share of that bin the
+axis selects ("selected genes"; the colored total is `N`). No other plot-area
+element is drawn. Its complete plotted values are
+`figure/data/gene_axis_rank_sum_histogram.csv`; the CSV-only renderer
+`figure/script/render_gene_axis_rank_sum_histogram.py` reproduces the PNG byte for
+byte (sha256 `874f6020…`) without opening `output/`. The x annotation reads
+`rank_sum (lower is better)`: ascending is better, and the pre-#210 label said the
+opposite. The axes' `rank_sum` intervals stay in the
+manifest (`axes.<N>.rank_sum`: `G_2000` 2.6625–7.0055, median 5.9610; `G_5000`
+2.6625–7.0055, median 6.2573) but are no longer drawn. The single spike at
+≈`7.0` is the `f2000 = 0` mass at the constant maximum of the six-term sum (AF's
+`n_d = 1` term costs every non-`SLC9A7` gene exactly `2.0`); it is the rule's
+arithmetic, not a rendering or fusion defect. The Kneedle +
 second-difference diagnostic is **reported as a diagnostic only**: Kneedle
-(`S=1.0`, first interior arc maximum) puts a candidate at `N=1496`, the
-second-difference peak at `N=18162`; they do not agree, so
+(`S=1.0`, first interior arc maximum) puts a candidate at `N=1061`, the
+second-difference peak at `N=106`; they do not agree, so
 `diagnostics.inflection = false` with its full parameters, and six
-leave-one-source-out replays all reach the same decision (`stable: true`). It
-never chooses `N`.
+leave-one-disease-out replays all reach the same decision (`stable: true`; the
+manifest's `stability.method` records `leave-one-source-out`). It never chooses
+`N`.
 
 ```bash
 python stage2/01_bases/execution/build_gene_axis.py            # publish
@@ -629,27 +763,29 @@ python stage2/01_bases/execution/make_gene_axis_docx.py        # rule document
 ```
 
 `execution/tests/test_gene_axis.py` is fixture-only (8-gene fixture) apart from
-four real-file replay groups (the rule document, its source-table/excluded-AF
-contracts, the docx input-wiring checks, and the two figures): winning-tier
-and isogenic-exception selection, level-1 single-dataset identity, level-1/2
-sums and `gene_index` ties, `pN` boundaries 0 and 6 (and 0..7 when every declared
-category is informative), degenerate-source exclusion from fusion/pN and the
-`n_sources_measured`, `0.5*N + 0.5*N` fill,
-pN/rank_sum/gene_index ordering, non-nested axes and intersection,
-ascending-in-frozen-space axes, source top-`N` coverage (percentages, the empty
-excluded column, out-of-contract ranks fail closed), the count table being the
-percentages' exact numerators, histogram and inflection
-stability, candidate-then-replace determinism (`--verify` replay), manifest
-relative-path hygiene, the two-panel figure CSV-only replay and its
-impossible-selection rejection, the two-panel source-coverage figure CSV-only
-replay and its impossible-panel/value rejection, the rule document's
-byte-identical replay, its source-table/excluded-AF contracts and its
-sample-size footnote cross-check, the docx input wiring (`--catalog` and
-`--metadata` are actually read), the `deg_rank`
-re-export identity, and preservation of
-the retired file set (55 tests). `execution/tests/test_gene_axis_source_metadata.py`
+four real-file replay groups (the rule document, its source-table/disease-table
+contracts, the docx input-wiring checks, and the two figures): level-1
+single-dataset identity, the `Σ rank_norm` sum with `gene_index` ties, the
+non-DEG `(n_DEG + 1) / n_DEG` rule, zero-DEG and out-of-contract frames failing
+closed, `f2000` counting diseases (not datasets) and `tenv` provably **not** a
+`rank_sum` term, the union-size denominator, the `0.5*N + 0.5*N` fill with
+`f2000`-desc-/`rank_sum`-asc ties and `gene_index` as the last key, the tenv-HVG
+fallback (exact half boundary, unused-tenv order, exhaustion, and never admitting
+a gene with no disease evidence), nested axes and the intersection, the six
+declared categories and their release contract, `DEG2000` coverage carrying its
+own denominator, the `f2000` distribution bound, histogram and inflection
+stability, candidate-then-replace determinism (`--verify` replay), the pre-v2
+manifest refusal, manifest relative-path hygiene, the two-panel figure CSV-only
+replay and its impossible-selection rejection, the two-panel source-coverage
+figure CSV-only replay and its impossible-panel/value rejection, the rule
+document's byte-identical replay, its source-table and per-disease 表 2 contracts
+and its sample-size footnote cross-check, the docx input wiring (`--catalog` and
+`--metadata` are actually read), the retirement assertions (the v1 names are
+absent and the retired gene-axis file set stays retired), and the `deg_rank`
+re-export identity (67 tests).
+`execution/tests/test_gene_axis_source_metadata.py`
 holds the metadata mapping's coverage, required-field, platform-evidence and
-tenv-constant contracts (22 tests). Build/verify peak RSS ≈140 MiB under the 10 GiB cap. The pre-0066 `gene-axis/` file set (direction
+tenv-constant contracts (25 tests). Build/verify peak RSS ≈140 MiB under the 10 GiB cap. The pre-0066 `gene-axis/` file set (direction
 composition, unweighted quota-free fused table, animal half-weight column,
 tenv non-HVG curve, ortholog table, `inflection.json`) was retained on disk
 byte-identically until #192's acceptance passed and is now deleted (see
@@ -668,15 +804,15 @@ view semantics*). No `{N}k_eval_truth/` directory is created here: the
 evaluation redesign owns each view's truth later.
 
 **Measured denominator basis (released axes, this build).** The tenv axis
-carries **15.0548953%** (`G_2000`) and **37.4273748%** (`G_5000`) of the
-full-axis CP10K mass, pooled over all 4,478 profiles (treated-only 15.0892505% /
-37.3846128%); `tahoe_bulk` carries 10.8317768% / 24.7366390%. A view-local denominator would change the
-per-gene input baseline by about 2.49× between the two axes and turn
+carries **13.1626914%** (`G_2000`) and **33.8379148%** (`G_5000`) of the
+full-axis CP10K mass, pooled over all 4,478 profiles (treated-only 13.2072122% /
+33.7895449%); `tahoe_bulk` carries 7.8913108% / 16.7625796%. A view-local denominator would change the
+per-gene input baseline by about 2.57× between the two axes and turn
 `mean|Δ|` into an artifact of the denominator, which is why the one
 normalization is on the **full axis, not the view**. ADR 0066's design-record
 figures 12.9% / 36.3% came from an **interim pre-#190** axis; the measured value
 recorded in each manifest is authoritative, and the decision is unaffected
-(≈2.49× measured vs the ADR's implied ≈2.81×). Each manifest also records every
+(≈2.57× measured vs the ADR's implied ≈2.81×). Each manifest also records every
 profile's full-axis library total through `sources.<source>.full_axis_library_total`
 and `library_totals.csv`.
 
@@ -685,17 +821,20 @@ payloads gitignored, manifests force-tracked):
 
 | path | rows × columns | bytes | sha256 |
 |---|---|---:|---|
-| `output/view-2k/manifest.json` | — | 5,754 | `44f0c0df…` |
-| `output/view-2k/tenv.h5ad` | 4,478 × 2,000 | 59,912,368 | `c02f320c…` |
-| `output/view-2k/tahoe_bulk.h5ad` | 66,718 × 2,000 | 1,312,787,850 | `8ed8655b…` |
+| `output/view-2k/manifest.json` | — | 5,756 | `ac5a1a97…` |
+| `output/view-2k/tenv.h5ad` | 4,478 × 2,000 | 58,627,248 | `ff821207…` |
+| `output/view-2k/tahoe_bulk.h5ad` | 66,718 × 2,000 | 1,262,131,874 | `88739add…` |
 | — rows | tenv 4,206 treated + 272 vehicle; tahoe_bulk 65,318 treated + 1,400 vehicle | | |
 | `output/view-2k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
-| `output/view-5k/manifest.json` | — | 5,753 | `d7ac0227…` |
-| `output/view-5k/tenv.h5ad` | 4,478 × 5,000 | 142,266,477 | `e1a18a9a…` |
-| `output/view-5k/tahoe_bulk.h5ad` | 66,718 × 5,000 | 3,152,087,026 | `02abaed9…` |
+| `output/view-5k/manifest.json` | — | 5,747 | `4620805d…` |
+| `output/view-5k/tenv.h5ad` | 4,478 × 5,000 | 138,912,355 | `9c818600…` |
+| `output/view-5k/tahoe_bulk.h5ad` | 66,718 × 5,000 | 3,012,415,752 | `5f16fdfb…` |
 | `output/view-5k/library_totals.csv` | 71,196 | 3,727,979 | `dfaa5d7e…` |
 
-`du -sb`: `view-2k/` 1,376,433,951 B, `view-5k/` 3,298,087,235 B. Each h5ad
+`du -sb`: `view-2k/` 1,324,492,857 B, `view-5k/` 3,155,061,833 B; the payload
+bytes are the v2 axes' (the axis gene set changed, so `X`/`var` changed with it),
+and only the manifests' pinned gene-axis input differs between the #208 and #210
+re-publishes. Each h5ad
 carries `X` (float32), `layers/control` and `layers/delta`; `obs` carries the
 corpus row identity (`role`, plate/cell line, compound name, desalted parent
 InChIKey/SMILES, source item + item-manifest digest, `dose_um`, source dose
@@ -767,6 +906,7 @@ from the repository root):
 | `corpus/` | `bases.corpus.open_corpus` (`counts`/`batches`, `matched_control_rows`, `control_groups`) |
 | `view-2k/`, `view-5k/` | `bases.view.open_view` (`ViewSource` with `X`, `control`, `delta` windows and `library_totals`) |
 | `disease-deg/` | `bases.disease_deg.DiseaseDeg` (`categories`, `datasets`, `table`, `rank`, `eligibility`; digest-checked per read) |
+| `disease-fusion/` | `bases.disease_deg.DiseaseFusion` (`catalog`, `manifest`, `diseases`, `record`, `deg2000`; digest-checked per read) |
 | `gene-axis/` | `bases.gene_axis.GeneAxis` (`axis`, `candidate_table`, `composition`, `coverage`, `digests`) |
 | `gene-identity/` | `bases.identity` |
 
@@ -783,7 +923,7 @@ the CSV-only renderer is `figure/script/render_gene_axis_rank_sum_histogram.py`.
 Re-rendering reads only that CSV (plus the pure `bases.palette` colour function)
 and reproduces the committed PNG with the product payloads unreadable. The rule
 document `output/gene-axis/gene_axis_fill_rule.docx` is generated by
-`execution/make_gene_axis_docx.py` from the coverage CSV, the PNG, the five
+`execution/make_gene_axis_docx.py` from the coverage CSV, the PNG, the six
 `output/disease-deg/<category>/catalog.json` files and
 `execution/gene_axis_source_metadata.py` (byte-identical replay; it reads
 published products and one tracked metadata module, unlike the evidence
@@ -807,6 +947,7 @@ python stage2/01_bases/execution/build_raw_counts.py verify       # ~15 s
 python stage2/01_bases/execution/build_corpus.py verify           # ~1 m 11 s
 python stage2/01_bases/execution/build_disease_deg.py verify --all
 python stage2/01_bases/execution/build_disease_deg_cardiotox.py verify
+python stage2/01_bases/execution/build_disease_fusion.py verify
 python stage2/01_bases/execution/build_gene_axis.py --verify
 python stage2/01_bases/execution/build_view.py verify             # ~3.5 m
 ```
@@ -861,11 +1002,34 @@ grouping. ADR text is not edited here; the erratum is to be landed as a docs-onl
 (0067) by the Lead, with the evidence paragraph in `log/acceptance.md`.
 
 **View basis.** ADR 0066 *Corpus and view semantics* quotes 12.9% / 36.3% of full-axis
-CP10K for `G_2000`/`G_5000` from an interim pre-#190 axis. On the released axes
-(after the #194 fusion amendment and both view rebuilds) the measured tenv shares are
-**15.0548953% / 37.4273748%** (treated-only 15.0892505% / 37.3846128%); the 2.5x
-denominator argument is unchanged and the manifests record the released-axis values as
-authoritative. ADR 0066's figures are superseded, not re-based.
+CP10K for `G_2000`/`G_5000` from an interim pre-#190 axis. On the post-#194 axes the
+measured tenv shares were **15.0548953% / 37.4273748%** (treated-only 15.0892505% /
+37.3846128%); the ADR 0071 v2 axes re-measure **13.1626914% / 33.8379148%**
+(treated-only 13.2072122% / 33.7895449%), which is what the current manifests record.
+The ~2.5x denominator argument is unchanged in every generation and the manifests
+record the released-axis values as authoritative. ADR 0066's figures are superseded,
+not re-based.
+
+**Rejected-source rationale (resolved by #212).** The `rejected[]` strings are
+declaration data in `execution/disease_deg_sources.py`, copied verbatim into each
+category's `catalog.json` and digest-pinned through the fusion, gene-axis and view
+manifests. Two of the strings carried over from the pre-v2 registry were false in
+the published products: `nHF`'s `GSE183852` entry claimed the CM labels live only
+inside 2.1–12 GB Seurat `Robj` objects and that re-clustering is forbidden (the
+authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet carries the labels, and the
+measured v2 yield is 70 DEGs / 50 on-axis), and `nHF`'s third entry rejected
+whole-tissue bulk for not being cardiomyocyte-derived (ADR 0071 tier 3 admits it).
+`ICM`'s `GSE298023` entry shared the false re-clustering wording. #211 could only
+correct the comment of record while the release was frozen; #212 lifted the
+freeze, rewrote the three strings in the declaration, and re-published the cascade
+(`disease-deg` → `disease-fusion` → `gene-axis` → both views). The catalogs now
+carry the measured reasons; no other declaration byte, axis gene set, view payload
+or rule-document byte changed (gate: [`log/acceptance.md`](log/acceptance.md) §12).
+The item-local
+`local/deg/*_deg.json` platform strings that #211 noted were **not** rebuilt here
+(they are unrelated item artifacts, and rebuilding them would move every catalog's
+pinned `derived_inputs` digests for no scientific gain); their author-log erratum
+notes still say "rewritten on the next DEG rebuild".
 
 **Cosmetic, unfixed (out of scope).** `bases/disease_deg.py` emits a pre-existing
 `SyntaxWarning: invalid escape sequence '\'` from a #187 docstring; it is cosmetic and
@@ -874,20 +1038,25 @@ owned by a follow-up.
 ## Accepted results and limits
 
 - Replay is byte-identical for every released product (see `log/acceptance.md`); the
-  two axes are **not nested** (1,972 shared genes) and every axis index is in the
-  frozen 18,164 space.
+  two axes are **nested** (`G_2000 ⊂ G_5000`, 2,000 shared genes, Jaccard 0.4) and
+  every axis index is in the frozen 18,164 space.
 - `corpus/` carries no normalization, no delta and no HVG subsetting; `view-*` normalizes
   once on the **full-axis** library total and then subsets, so `X`/`control`/`Δ` share one
   scale across axes (ADR 0066).
-- The axis is a selection on measurements, not a biological claim; `pN ∈ 0..6` is coarse,
-  and the six fused sources are not statistically independent (shared `GSE270788` and
-  Reichart controls, declared not corrected).
+- The axis is a selection on measurements, not a biological claim; `f2000 ∈ 0..6` is
+  coarse, `rank_sum`'s scale is dominated by `AF`'s one-gene denominator (see the fill
+  rule above), and the six diseases are not statistically independent (shared
+  `GSE270788` and Reichart controls, declared not corrected).
 - `02_models_tenv` still reads the retired `training-corpora/tenv.h5ad`; re-pointing it at
   `view-2k/`/`view-5k/` and re-running its accepted matrix are **deferred** (ADR 0066
   *Deferred*), as is the evaluation redesign and recomputing the tenv-HVG ranking from the
   corpus (the default `--training` already names that live payload).
-- Cell-type labels for some candidate sources live in large serialized R objects; those
-  sources remain declared gaps rather than being re-clustered ad hoc.
+- `GSE183852` remains the one closed `nHF` candidate: its authors' 6.7 MB `MOESM4`
+  `Cardiomyocytes` sheet does carry the CM labels (so reading its `meta.data` would not be
+  re-clustering), and the v2 definition measures 70 DEGs there, 50 on the frozen axis —
+  2.5% of a 2,000-gene target, so the 8.1-12 GB `Robj` label extraction is not worth
+  running. `nHF` therefore publishes its whole 1,661-gene union. Its padj-only yield
+  (4,927 on-axis) would only matter under a softer fold tier, which v2 does not admit.
 
 ## Historical boundary
 

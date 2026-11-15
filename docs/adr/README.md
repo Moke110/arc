@@ -12,11 +12,15 @@ files its `See` section names.
 assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
 restore.
 
-The index covers every record in the directory, 0001–0070 (68 files; 0023 and 0050 are the
+The index covers every record in the directory, 0001–0071 (69 files; 0023 and 0050 are the
 gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
 details in 0038–0041. ADR 0043 reopens the corpus as source measurements without endpoint gates; ADR 0044 subsequently replaces universal-corpus-first planning with source-first corpora.
+ADR 0071 is the current gene-axis contract and supersedes ADR 0066's *Source eligibility*,
+*Priority* and *Candidate table and the two-level rank-sum fusion*, and supersedes ADR
+0069/0070 (its `AF` removal is reversed). Each of those four records carries a status-line
+pointer to 0071; their bodies are unchanged, per the convention above.
 
 | # | Decision |
 |---|---|
@@ -90,3 +94,4 @@ details in 0038–0041. ADR 0043 reopens the corpus as source measurements witho
 | [0068](0068-fusion-amendment-degenerate-sources-and-rank-norm.md) | Fusion amendment: non-informative sources excluded from fusion/`pN`, unmeasured `rank_norm`, and two removals |
 | [0069](0069-remove-af-category-from-01-bases.md) | Remove the `AF` category from Stage 2 `01_bases`: drop the non-informative disease-DEG product and its gene-axis column/row surface |
 | [0070](0070-af-stays-out-of-the-gene-axis.md) | AF stays out of the gene axis: the clinical CM-specific audit; informativeness is necessary but not sufficient (*amends 0068, confirms 0069*) |
+| [0071](0071-gene-axis-v2-deg-tiered-sources-and-f2000.md) | Gene-axis v2: tiered source collection, DEG-only rank fusion, `DEG2000`/`f2000` and the tenv-HVG fallback (*supersedes 0066 eligibility/fusion, 0069/0070 AF removal*) |

@@ -106,18 +106,24 @@ main() {
     disease_data/GSE116250
     disease_data/GSE128188
     disease_data/GSE137293
+    disease_data/GSE138252
     disease_data/GSE141910
     disease_data/GSE160516
+    disease_data/GSE165303
     disease_data/GSE194297
     disease_data/GSE224129
     disease_data/GSE234141
+    disease_data/GSE238242
     disease_data/GSE243674
     disease_data/GSE253223
     disease_data/GSE255612
+    disease_data/GSE269882
     disease_data/GSE270788
     disease_data/GSE282618
     disease_data/GSE304575
     disease_data/GSE305648
+    disease_data/GSE35108
+    disease_data/Kuppe-MI
     disease_data/Reichart-CM
     drug_emb_model/HG
     drug_emb_model/KPGT

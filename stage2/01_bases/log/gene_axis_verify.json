@@ -1,12 +1,13 @@
 {
+  "algorithm": "f2000-deg2000-v2",
   "axes": [
     2000,
     5000
   ],
   "inflection": false,
-  "inputs": 30,
-  "intersection": 1972,
-  "manifest_sha256": "cfd3ba118f51fd021a43ee70bb9b904e6b42e293f8735833b4dd51422c1a6317",
+  "inputs": 10,
+  "intersection": 2000,
+  "manifest_sha256": "a344f9e29c7c9eef2f78fa9ab17abce139533809cf83e1ae74af7befc82bbff3",
   "outputs": 7,
   "result": "PASS",
   "schema": "stage2-gene-axis-release-v1"

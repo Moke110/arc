@@ -2,40 +2,51 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "755971c79b60f5403fd7bfb9e430e329dbc37652b778a2b303fca09fcc88929e",
+  "catalog_sha256": "712b9e5058eb4e3449880881cf4bd2126454ebabccc52fe38b1469d6189365f9",
   "category": "ICM",
   "counts": {
-    "datasets": 2,
+    "datasets": 3,
     "n_measured": {
       "gse270788__ami": 17092,
-      "gse270788__icm": 17092
+      "gse270788__icm": 17092,
+      "kuppe-mi__iz": 15519
     }
   },
   "inputs": {
     "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
     "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb",
+    "disease_data/Kuppe-MI/local/deg/kuppe-mi_deg.json": "c8eb21888c6cbc16d09fb4e4a2ace7e64f73693a206d1be429fd7a1e770e0841",
+    "disease_data/Kuppe-MI/manifest.sha256": "1c1d40a6cfa1ef3592f0ab92925e82ce00dec664596c5427a1e91b2b8d59afee",
     "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "b82673333dc137ef43a6237eb5eb04db8f0278b01097c6883d50b35d3692f290"
+      "sha256": "24a7b6635143d6cd68ee881ed78b4b195c6f6cade76e78a209b4366ec1172a6c"
     },
     "gse270788__ami.deg.csv": {
       "rows": 17092,
-      "sha256": "147d475bd8aaebd9dfac7847bab0f8f22c01fe127ab03239198c4f7e0cefc528"
+      "sha256": "ca18b0de65f4b91b90ccce89e55e2b5b7ed1bc2e6b2c811b4fa6b21af31c4f4c"
     },
     "gse270788__ami.rank.csv": {
       "rows": 18164,
-      "sha256": "f3648b62bff2fe6ef182d82687d971861b9bc3c6fa445424300bf61698778041"
+      "sha256": "57135b4f452ac3a86501030351690425ea9ce67bbdd1f135065f7ddf0d45a3eb"
     },
     "gse270788__icm.deg.csv": {
       "rows": 17092,
-      "sha256": "4fb82b0b24b6ef5b06e96d711f6f5ae5f7c326f7a9bdc4c63410abae97f10470"
+      "sha256": "707452eee378be6415811a1ce3f18c568ac2f011ef80155dd791b9f160779e26"
     },
     "gse270788__icm.rank.csv": {
       "rows": 18164,
-      "sha256": "29f9376a61fb1a7425f228b82cabfe57194e1652df5621e8b53bc9108173bb56"
+      "sha256": "89cfde3a175afe3eccbc49b402ad520c6c00956174fff6e6188cb062ff4f37b1"
+    },
+    "kuppe-mi__iz.deg.csv": {
+      "rows": 15519,
+      "sha256": "00823b74a6d7b906c5a104b2902137877784910240f40a7a68daba0fdaf20ac3"
+    },
+    "kuppe-mi__iz.rank.csv": {
+      "rows": 18164,
+      "sha256": "bd094b32521d00fd9b95a4e4efc675647e1d7ab29500a09c4e3c25ca38700044"
     }
   },
   "recipe": "execution/build_disease_deg.py publish --category ICM",

@@ -60,7 +60,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from . import deg_rank, r_env
+from . import deg_rank, disease_deg, r_env
 from .release import (ReleaseError, candidate, check_manifest, output_digests,
                       read_json, replace, sha256, write_json)
 
@@ -678,10 +678,13 @@ def _format(value):
 # --------------------------------------------------------------------------- #
 # published tables
 # --------------------------------------------------------------------------- #
+# The v2 published compact-table contract (#208, ADR 0071): the authoritative
+# pass-any-contrast ``deg`` flag, the DEG-only rank and ``rank_norm = rank/n_DEG``.
+# The retired measured-gene rank/denominator is gone.
 DEG_COLUMNS = ["gene_index", "gene_symbol", "contrast", "log2fc", "stat",
                "p_value", "padj", "base_mean", "direction", "significant",
-               "n_contrasts", "n_contrasts_supporting", "effect", "rank",
-               "rank_norm"]
+               "deg", "n_contrasts", "n_contrasts_supporting",
+               "n_contrasts_deg", "effect", "rank", "rank_norm"]
 RANK_COLUMNS = ["gene_index", "rank", "rank_norm"]
 
 
@@ -733,8 +736,10 @@ def write_deg_table(path, table, axis):
         "base_mean": table.base_mean.map(_format),
         "direction": table.direction.astype(np.int64),
         "significant": table.significant.astype(bool),
+        "deg": table.deg.astype(bool),
         "n_contrasts": table.n_contrasts.astype(np.int64),
         "n_contrasts_supporting": table.n_contrasts_supporting.astype(np.int64),
+        "n_contrasts_deg": table.n_contrasts_deg.astype(np.int64),
         "effect": table.effect.map(_format),
         "rank": table["rank"].astype(np.int64),
         "rank_norm": table.rank_norm.map(_format),
@@ -1265,11 +1270,50 @@ def _catalog_entry(record):
     return dict(record["entry"])
 
 
+def category_tier_ledger(category, records):
+    """The v2 tier ledger and level-1 ``DEG2000`` of one cardiotox class (#208).
+
+    Every cardiotox class source is declared at tier 2, so the ladder is one rung;
+    the record is still computed by the shared disease contract
+    (:func:`bases.disease_deg.tier_ledger` / :func:`bases.disease_deg.fuse_disease`)
+    rather than written by hand, exactly as the registry categories do. The
+    per-source ``n_deg_in_deg2000`` is written back onto the catalog entries.
+    """
+    declared = [{"dataset_id": record["entry"]["dataset_id"],
+                 "tier": int(record["entry"]["tier"])} for record in records]
+    measured, prepared = {}, []
+    for record in records:
+        dataset_id = record["entry"]["dataset_id"]
+        derived = disease_deg.source_deg_rank(record["table"])
+        mask = np.asarray(derived["rank"], dtype=np.int64) <= int(derived["n_deg"])
+        measured[dataset_id] = {"deg": np.flatnonzero(mask).astype(np.int64),
+                                "n_deg": int(derived["n_deg"]),
+                                "informative": bool(derived["informative"])}
+        prepared.append({"dataset_id": dataset_id,
+                         "tier": int(record["entry"]["tier"]),
+                         "rank": np.asarray(derived["rank"], dtype=np.int64),
+                         "n_deg": int(derived["n_deg"]),
+                         "informative": bool(derived["informative"]),
+                         "informativeness_reason": derived["reason"]})
+    ledger = disease_deg.tier_ledger(category, declared, measured)
+    fusion = disease_deg.fuse_disease(prepared, axis_size=AXIS_SIZE)
+    if int(fusion["n_deg"]) != int(ledger["n_deg"]):
+        raise CardiotoxError(
+            f"{category}: the tier ledger union ({ledger['n_deg']}) differs from "
+            f"the fusion union ({fusion['n_deg']})")
+    by_id = {row["dataset_id"]: row for row in fusion["sources"]}
+    for record in records:
+        record["entry"]["n_deg_in_deg2000"] = int(
+            by_id[record["entry"]["dataset_id"]]["n_deg_in_deg2000"])
+    return ledger, fusion
+
+
 def write_category_product(root, category, records, inputs, environment,
                            axis_digest):
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
     outputs = {}
+    ledger, fusion = category_tier_ledger(category, records)
     for record in records:
         write_deg_table(root / record["deg"], record["table"], record["axis"])
         write_rank_table(root / record["rank_name"], record["rank"])
@@ -1284,6 +1328,12 @@ def write_category_product(root, category, records, inputs, environment,
         "tier": 2,
         "evidence_type": "bulk",
         "datasets": [_catalog_entry(record) for record in records],
+        # ADR 0071 decisions 2/4 (#208): the declared tier ladder, the
+        # axis-resolved stop record and the level-1 DEG union/`DEG2000` sizes.
+        "n_deg": int(fusion["n_deg"]),
+        "deg2000": int(fusion["deg2000"]),
+        "tiering": ledger["tiering"],
+        "tier_sources": ledger["tier_sources"],
     }
     # A JSON file cannot contain its own file digest. ``catalog_sha256`` is the
     # digest of the canonical catalog bytes *without* that field, so a consumer
@@ -1301,7 +1351,9 @@ def write_category_product(root, category, records, inputs, environment,
         "axis": {"path": AXIS, "sha256": axis_digest, "size": AXIS_SIZE},
         "inputs": inputs,
         "outputs": outputs,
-        "counts": {"datasets": len(records), "measured_gene_rows": int(measured)},
+        "counts": {"datasets": len(records), "measured_gene_rows": int(measured),
+                   "n_deg": int(fusion["n_deg"]),
+                   "deg2000": int(fusion["deg2000"])},
         "catalog_sha256": catalog_sha256,
         "environment": environment,
     }
@@ -1360,6 +1412,7 @@ def _dataset_entry(source, class_id, class_label, member_drugs, member_source_id
         "contrasts": contrasts,
         "n_contrasts": int(len(contrasts)),
         "n_measured": int(stats["n_measured"]),
+        "n_deg": int(stats["n_deg"]),
         "n_significant": int(stats["n_significant"]),
         # ADR 0068: all-tied effect scores carry no ordering evidence; the record
         # is still published but the gene-axis fusion excludes it.

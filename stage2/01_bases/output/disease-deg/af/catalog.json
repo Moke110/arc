@@ -1,0 +1,394 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/genes.csv",
+    "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
+    "size": 18164
+  },
+  "axis_size": 18164,
+  "catalog_sha256": "9560cd3be07a8d0356650c34952f867f6f1aeb6266411dd82ff51620fee64c00",
+  "category": "AF",
+  "datasets": [
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 17520,
+          "crosswalk_alias": 360,
+          "ensembl": 233,
+          "offaxis": 57,
+          "unmapped": 18430
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 18092,
+        "n_recovered_by_identifier": 465,
+        "n_resolved": 18113,
+        "n_source_rows": 36600,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 17520,
+          "crosswalk_alias": 128,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 18092,
+          "n_resolved": 17648,
+          "n_source_symbols": 36600,
+          "offaxis": 57,
+          "unmapped": 18895
+        }
+      },
+      "arm_or_class": "AF donors vs non-AF control donors (left-atrial CM)",
+      "category": "AF",
+      "contrasts": [
+        "AF-control"
+      ],
+      "dataset_id": "gse255612__af",
+      "deg": "gse255612__af.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/gse255612_deg.csv",
+          "sha256": "7cd553ab0c9ecab5e89d33f721e6b925919380c17ab3cf78ca4eccc35d0a8b35"
+        },
+        {
+          "relative": "local/pseudobulk/gse255612_donors.csv",
+          "sha256": "2f6064950b5f7f6242fcf04a9ced2e5d2e09e91c0d523efe608cdfba9ca53314"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": false,
+      "informativeness": {
+        "n_distinct_effect": 1,
+        "reason": "none of the 18092 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/GSE255612/local/deg/gse255612_deg.json": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
+        "disease_data/GSE255612/manifest.sha256": "6b9aa8f5d3cfb953fa79dd4a47395b5a9cd6736b410b9d6bd36b735bd882fd93"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "normalised expression (log1p(CP10K))",
+        "design": "one joint fit ~0 + group over 34 donors",
+        "model": "limma on log2(mean_CP10K + 1) pseudobulk (moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human left-atrium 10x snRNA CM pseudobulk",
+      "n_axis_unmeasured": 72,
+      "n_case": 18,
+      "n_control": 16,
+      "n_deg": 0,
+      "n_deg_in_deg2000": 0,
+      "n_measured": 18092,
+      "n_significant": 0,
+      "rank": "gse255612__af.rank.csv",
+      "shared_control_group": "gse255612:donor",
+      "source_item": "disease_data/GSE255612",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 12957,
+          "crosswalk_alias": 288,
+          "offaxis": 84,
+          "unmapped": 4816
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 13238,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 13245,
+        "n_source_rows": 18145,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 12957,
+          "crosswalk_alias": 288,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 13238,
+          "n_resolved": 13245,
+          "n_source_symbols": 18145,
+          "offaxis": 84,
+          "unmapped": 4816
+        }
+      },
+      "arm_or_class": "left-atrium AF+HF (5 libraries) vs non-failing control (5 libraries), 2020 sequencing batch only",
+      "category": "AF",
+      "contrasts": [
+        "AF-CTL"
+      ],
+      "dataset_id": "gse138252__af",
+      "deg": "gse138252__af.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE138252_deg.csv",
+          "sha256": "a8c1e50fdba694fb09b0134e8229f6484b15c4e40aab225c0e4d84b5d4ee83fb"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 13238,
+        "reason": null,
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/GSE138252/local/deg/GSE138252_deg.json": "06a6df6800b764959a6184bed539b563fb07dd9913c5d135939bb52606a8ab6d",
+        "disease_data/GSE138252/manifest.sha256": "6377052381eb31f1a5ec05ec26f818aab5359d030c8d551064be31d37db00a27"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "raw integer gene-body counts",
+        "design": "one joint fit ~0 + group over the 5 AF + 5 control LA libraries of the 2020 batch (edgeR filterByExpr rule)",
+        "model": "limma-voom (voom's own library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_basis": "cardiomyocyte-derived (PCM1+ FANS-sorted nuclei), so tier 1 under ADR 0071 even though the model is a bulk library; the AF+HF-vs-non-failing confound is recorded in the item summary",
+      "model_system": "human atrial PCM1+ cardiomyocyte-nuclei bulk RNA-seq (CM-nuclear bulk, not whole tissue)",
+      "n_axis_unmeasured": 4926,
+      "n_case": 5,
+      "n_control": 5,
+      "n_deg": 1,
+      "n_deg_in_deg2000": 1,
+      "n_measured": 13238,
+      "n_significant": 1,
+      "rank": "gse138252__af.rank.csv",
+      "shared_control_group": "gse138252:control_la",
+      "source_item": "disease_data/GSE138252",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [],
+        "decision": "left atrium, 2020 batch only: the AF arm exists only in that batch, so a batch-matched control arm is the primary contrast and a pooled-controls fit is a declared sensitivity",
+        "pooled": false,
+        "why": "region is the dominant variance axis in this series and pooling chambers loses power; the RA arm is sex-confounded"
+      },
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 11958,
+          "crosswalk_alias": 62,
+          "offaxis": 11,
+          "unmapped": 3514
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 12018,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 12020,
+        "n_source_rows": 15545,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 11958,
+          "crosswalk_alias": 62,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 12018,
+          "n_resolved": 12020,
+          "n_source_symbols": 15545,
+          "offaxis": 11,
+          "unmapped": 3514
+        }
+      },
+      "arm_or_class": "persistent-AF donors (3) vs sinus-rhythm donors (4), left-atrial-appendage CM pseudobulk",
+      "category": "AF",
+      "contrasts": [
+        "AF-SR"
+      ],
+      "dataset_id": "gse238242__af",
+      "deg": "gse238242__af.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE238242_deg.csv",
+          "sha256": "521b50ea68c6a9fcb36080800e0dea71b1ae6fa6e6211bc8d53598304667cf3a"
+        },
+        {
+          "relative": "local/pseudobulk/GSE238242_profiles.csv",
+          "sha256": "ad9d2ea58a2d335dcd303f41a8af7d94604076fc6e14a96c8ae9a6030263f082"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": false,
+      "informativeness": {
+        "n_distinct_effect": 12018,
+        "reason": "none of the 12018 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/GSE238242/local/deg/GSE238242_deg.json": "7f47dd1e102d4b6a5d5690f8fd80c907b9510e59d684046ef0a97abe9ec018d6",
+        "disease_data/GSE238242/manifest.sha256": "fc6329e85508ef85f562059db6d502c71537534db88f93c7fbfb21105ef9adaf"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "raw integer counts (dense TSV, genes x nuclei)",
+        "design": "one joint fit ~0 + group over the 7 donor pseudobulk profiles (4 SR / 3 persistent AF)",
+        "model": "limma-voom (voom's own library-size normalisation, moderated t) on the per-donor sum-of-CM-counts pseudobulk",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_system": "human left-atrial-appendage 10x multiome snRNA arm, author CM label, per-donor CM count pseudobulk",
+      "n_axis_unmeasured": 6146,
+      "n_case": 3,
+      "n_control": 4,
+      "n_deg": 0,
+      "n_deg_in_deg2000": 0,
+      "n_measured": 12018,
+      "n_significant": 0,
+      "rank": "gse238242__af.rank.csv",
+      "shared_control_group": "gse238242:sr",
+      "source_item": "disease_data/GSE238242",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "crosswalk_alias": 540,
+          "ensembl": 45498,
+          "offaxis": 8808,
+          "unmapped": 7314
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 15343,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 46038,
+        "n_source_rows": 62160,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 0,
+          "crosswalk_alias": 540,
+          "ensembl": 45498,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 15343,
+          "n_resolved": 46038,
+          "n_source_symbols": 62160,
+          "offaxis": 8808,
+          "unmapped": 7314
+        }
+      },
+      "arm_or_class": "the three staged AF arms (persistent 5, paroxysmal 5, post-operative 8) vs the 9 sinus-rhythm libraries",
+      "category": "AF",
+      "contrasts": [
+        "persAF-SR",
+        "pAF-SR",
+        "poAF-SR"
+      ],
+      "dataset_id": "gse269882__af",
+      "deg": "gse269882__af.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE269882_deg.csv",
+          "sha256": "ccc82a3f640e926d7ff9f0c7d6bda0f0455fa39b42083d44f8c5af890d435e70"
+        }
+      ],
+      "evidence_type": "bulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": false,
+      "informativeness": {
+        "n_distinct_effect": 15343,
+        "reason": "none of the 15343 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/GSE269882/local/deg/GSE269882_deg.json": "2c1c8d5581f66ef58faaae8d0ad816a09c7cbe8ccc45651bb69a3f2379ded364",
+        "disease_data/GSE269882/manifest.sha256": "48b0457603554a46ac2bf4adb8ff2a421bded276ec71a74a905bf6e2abc99e02"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "raw integer counts (featureCounts, GRCh38)",
+        "design": "one joint fit ~0 + group over all 27 libraries with the four diagnosis arms; three staged AF-vs-SR contrasts",
+        "model": "limma-voom (voom's own library-size normalisation, moderated t)",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_basis": "whole right-atrial-appendage tissue: not cardiomyocyte-specific, so it is a tier-3 source only and enters AF only after tiers 1-2 fall short of 2,000 DEGs (ADR 0071), which supersedes the ADR 0070 whole-tissue exclusion",
+      "model_system": "human right-atrial-appendage whole-tissue bulk RNA-seq (not cardiomyocyte-specific)",
+      "n_axis_unmeasured": 2821,
+      "n_case": 18,
+      "n_control": 9,
+      "n_deg": 0,
+      "n_deg_in_deg2000": 0,
+      "n_measured": 15343,
+      "n_significant": 0,
+      "rank": "gse269882__af.rank.csv",
+      "shared_control_group": "gse269882:sinus_rhythm",
+      "source_item": "disease_data/GSE269882",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [],
+        "decision": "the three diagnosis arms are declared as separate contrasts against sinus rhythm inside one joint fit; the staging is carried, never averaged into one case group, and the post-operative arm is its own declared arm",
+        "pooled": true,
+        "why": "a pooled all-AF-vs-SR fit is measured as a declared sensitivity and does not change the conclusion (0 v2 DEGs)"
+      },
+      "tier": 3,
+      "time_window_basis": null
+    }
+  ],
+  "deg2000": 1,
+  "directory": "af",
+  "evidence_type": "cm_pseudobulk",
+  "n_deg": 1,
+  "rank_contract": "stage2-disease-deg-v2",
+  "rejected": [
+    {
+      "accession": "GSE271229",
+      "candidate": "GSE271229",
+      "reason": "left-atrial snRNA-seq (9 donors: 3 no-AF / 3 paroxysmal / 3 persistent) whose deposit ships NO author cell-type annotation \u2014 only per-sample CellRanger barcodes/features/matrix triples and an empty series-matrix data table. A CM gate would have to be invented from markers, which is forbidden, so the DEG step is not testable. This is a different accession from GSE269882, not an alias of it.",
+      "status": "not_admitted"
+    },
+    {
+      "candidate": "dbGaP phs003644",
+      "reason": "controlled access; not fetched",
+      "status": "not_downloadable"
+    }
+  ],
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 1,
+  "tier_sources": [
+    {
+      "sources": [
+        "gse255612__af",
+        "gse138252__af",
+        "gse238242__af"
+      ],
+      "tier": 1
+    },
+    {
+      "sources": [
+        "gse269882__af"
+      ],
+      "tier": 3
+    }
+  ],
+  "tiering": {
+    "criterion": "axis_resolved_deg_union",
+    "limit": 2000,
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "stop_reached": false,
+    "stopped_at_tier": 3,
+    "tier_union": [
+      {
+        "n_deg_union": 1,
+        "tier": 1
+      },
+      {
+        "n_deg_union": 1,
+        "tier": 3
+      }
+    ],
+    "tiers_entered": [
+      1,
+      3
+    ]
+  }
+}

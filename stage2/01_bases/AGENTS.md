@@ -9,16 +9,26 @@ Routing for the accepted Stage 2 foundation. Read this, then the owning section 
 - [`log/acceptance.md`](log/acceptance.md) — acceptance replays, digests, resource
   peaks, the old→new mapping and "no retired path read" evidence.
 - [`log/README.md`](log/README.md) — the `log/*_verify.json` records and removal record.
-- ADRs: 0066 (contract), 0068 (fusion amendment), 0067 (errata), 0069 (AF removal),
-  0062 (products), 0061 (frozen axis), 0030 (external-data and step layout).
+- ADRs: 0071 (the current gene-axis contract — DEG-only tiered sources,
+  `DEG2000`/`f2000`), 0066 (the amended contract), 0068 (fusion amendment kept),
+  0067 (errata), 0069/0070 (`AF` removals, superseded by 0071), 0062 (products),
+  0061 (frozen axis), 0030 (external-data and step layout).
 
 ## Products
 `output/raw_counts/` → `output/corpus/` → `output/view-2k/`, `output/view-5k/`;
-`output/disease-deg/**` (five categories + the `cardiotox/` crosswalk),
-`output/gene-axis/` (`G_2000`/`G_5000`, the source top-`N` coverage table and the
+`output/disease-deg/**` (six categories + the `cardiotox/` crosswalk),
+`output/disease-fusion/` (the ADR 0071 per-disease level-1 rank + `DEG2000`),
+`output/gene-axis/` (`G_2000`/`G_5000`, the `DEG2000` coverage table and the
 human-facing `gene_axis_fill_rule.docx`), `output/gene-identity/`, `output/tenv-hvg/`,
 `output/fold_n_seed/`, `output/palette/` and `output/api/` (the single live public
 implementation).
+
+**One v1 filename is deliberate.** `output/gene-axis/source_topn_coverage.csv`
+keeps its v1 *name* but carries v2 *semantics*: long format
+(`N, n_axis, group, group_label, numerator, denominator, rate, note`) with each
+group's own denominator, i.e. the `DEG2000` coverage table, not a top-`N` table.
+Renaming it would re-pin the gene-axis manifest, both view manifests and force a
+republish, so the name is retained for compatibility — do not "fix" it.
 
 ## Rules
 - Bind `output/api/bases/*` through `execution/public_api.py`; never copy a module.

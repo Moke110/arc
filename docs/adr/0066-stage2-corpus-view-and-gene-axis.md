@@ -8,6 +8,13 @@ and successor-envelope products together with this step's committed `log/` conve
 0030's external-item provenance contract and ADR 0062's candidate-then-replace acceptance
 rule still apply.
 
+*Amended later, text unchanged (accepted records are historical).* ADR 0068 changed the
+fusion's non-informative-source rule and rank normalization; ADR 0069/0070 removed the `AF`
+category; **ADR 0071 supersedes this record's *Source eligibility*, *Priority* and
+*Candidate table and the two-level rank-sum fusion*** — the measured-gene rank, `pN`, the
+seven-fusion-source framing (six categories plus tenv-HVG) and the exclusion of whole-tissue
+bulk — and the corpus/view semantics above it remain in force.
+
 ## Why this record exists
 
 Two things changed at once.

@@ -1,0 +1,68 @@
+{
+  "category": "disease_data",
+  "hashed_at": "2026-11-15T18:38+08:00",
+  "item": "GSE269882",
+  "local_additions": [
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local full DEG table: one row per tested gene per declared staged contrast (three contrasts), source_gene_id = Ensembl; regenerable, never tracked",
+      "path": "local/deg/GSE269882_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "tracked compact DEG summary: the verified 27-library arm split (SR 9 / poAF 8 / pAF 5 / persAF 5), the patient-number column join and its sex-probe verification, the three declared staged AF-vs-SR contrasts, the tier-3 admission note, the honest zero v2 DEG count, the pooled-AF sensitivity and the edgeR-Q1 alternative",
+      "path": "local/deg/GSE269882_deg.json"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit input: the 57,500 x 27 raw integer count matrix in series order, with the reproducible fixed-mtime gzip; regenerable, never tracked",
+      "path": "local/deg/GSE269882_expr.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "item-local fit design sheet: patient -> arm/diagnosis/sex/age/GSM; regenerable, never tracked",
+      "path": "local/deg/GSE269882_samples.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "pooled sensitivity fit input (18 AF vs 9 SR); regenerable, never tracked",
+      "path": "local/deg/GSE269882_pooled_expr.tsv.gz"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "pooled sensitivity design sheet; regenerable, never tracked",
+      "path": "local/deg/GSE269882_pooled_samples.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "pooled sensitivity DEG table; regenerable, never tracked",
+      "path": "local/deg/GSE269882_pooled_deg.csv"
+    },
+    {
+      "generated_by": "hand-written (no generated content)",
+      "origin": "ADR 0030 item ignore declaration for the regenerable local/deg additions",
+      "path": ".gitignore"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "GEO ACCESSION: GSE269882, right atrial appendage bulk RNA-seq, Illumina HiSeq 2500, 27 libraries. VERIFIED DESIGN: the series matrix gives sinus rhythm 9, post-operative AF 8, paroxysmal AF 5, persistent AF 5 (the pre-existing audit recorded SR 10 / poAF 7; the deposit says 9 / 8 and this item follows the deposit). The count matrix columns are patient numbers in a different order from the series; the join is by patient number and is verified with the XIST/RPS4Y1/DDX3Y/UTY/KDM5D sex probes (26 of 27 labels agree; the annotated-female patient 1409 has a male expression profile, recorded not corrected). TIER: admitted only as tier 3 (whole-tissue bulk) under ADR 0071, which supersedes the ADR 0070 whole-tissue exclusion; this is NOT GSE271229 (a separate left-atrial snRNA series with no author cell-type annotation, audited and rejected). MEASURED v2 DEGs: 0 in all three declared staged contrasts (minimum padj 0.972 / 0.998 / 0.99997) and 0 in the pooled-AF sensitivity; the honest zero is published. The deposited TPM matrix is fetched as a cross-check (Spearman 0.90-0.93 against the count-model effects) but the DEG input is the raw counts. BUILD: capped 10 GiB RLIMIT_AS, OMP_NUM_THREADS=2; peak RSS 272 MB, wall 8.8 s. REPRODUCTION: script/fetch.sh -> script/verify.sh -> script/build_deg.py; a second build is byte-identical.",
+  "purpose": "Human right-atrial-appendage whole-tissue bulk RNA-seq source for the Stage 2 gene axis under ADR 0071: the three staged AF arms vs sinus rhythm. Tier-3 AF source (whole-tissue bulk, not cardiomyocyte-specific); the measured v2 DEG count is zero.",
+  "retrieved_at": "2026-11-15T18:35+08:00",
+  "sources": [
+    {
+      "bytes": 4231279,
+      "files": 3,
+      "id": "GSE269882",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh (curl from the GEO FTP series matrix/ and suppl/ directories): the series matrix, the raw featureCounts matrix and the deposited TPM matrix, byte-identical to the FTP listing.",
+      "path": "source/",
+      "species": "Homo sapiens (human)",
+      "tree_sha256": "48b0457603554a46ac2bf4adb8ff2a421bded276ec71a74a905bf6e2abc99e02",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE269882",
+      "version": "GSE269882"
+    }
+  ],
+  "verified_at": "2026-11-15T18:38+08:00",
+  "verify_result": "pass"
+}

@@ -296,7 +296,7 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 ### Stage 2 dataset corpus
 
 **Bases**:
-The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-2k`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
+The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-2k`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
 Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
@@ -317,12 +317,28 @@ _Avoid_: corpus stats, dataset summary
 The frozen 18,164-symbol four-source intersection named by latest HGNC symbol — the shared axis a CM benchmark or CM-model view projects onto, not a corpus gene universe (each corpus keeps its source's native axis).
 _Avoid_: corpus gene set, CM universe
 
+**DEG (gene axis, v2)**:
+A gene of one disease source dataset that passes `padj < 0.05` **and** `|log2FC| ≥ 2` (FC ≥ 4) in at least one of that dataset's contrasts; the multi-contrast collapse keeps the maximum-effect contrast. It replaces the Stage 2 01_bases v1 meaning, in which every measured gene carried a within-dataset rank. The tenv-HVG ranking is not a DEG source.
+_Avoid_: significant gene (unqualified), hit, DE gene
+
+**Source tier** (gene axis):
+The ordered evidence class a disease source belongs to: **tier 1** human atria/ventricle with cardiomyocyte specificity (CM pseudobulk or CM-nuclear bulk); **tier 2** hiPSC/hESC-CM cells, organoids or engineered tissue (for `nHF`/`ICM`/`AF` only models of the clinical, non-genetic form — mutation models belong to `genetic_cardiomyopathy`); **tier 3** human atria/ventricle bulk tissue, not cardiomyocyte-specific. A disease collects sources in tier order and stops descending once its DEG union reaches 2,000.
+_Avoid_: priority (the retired 0066 name), level
+
+**DEG2000**:
+Per disease: the genes that are a DEG in at least one of the disease's sources **and** whose within-disease fused rank is ≤ 2,000 (all of them when the disease has fewer than 2,000 DEGs). Only `DEG2000` genes enter the cross-disease fusion and the axis.
+_Avoid_: top-2000 DEGs (ambiguous with a per-source top set), disease DEG signature
+
+**f2000**:
+The number of diseases whose `DEG2000` contains a gene — the axis's disease-side selection signal, replacing the retired `pN`. It is a count of diseases, not a quality score and not a continuous rank.
+_Avoid_: pN, disease frequency, overlap count (unqualified)
+
 **Dataset id**:
 The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `sctox`, `tenv`, `tahoe` — carried in each h5ad's `dataset_id` column. The GEO accession or atlas name stays the provenance anchor on the raw folder; historical records that predate the 2026-11 rename keep `screen_ctox`, `temp_env` and `dtoxs_cm`.
 _Avoid_: source name, dataset name, accession
 
 **View**:
-The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the fused six-source rank sum; the `AF` category was removed by ADR 0069 and confirmed out by ADR 0070), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
+The model-facing h5ad the Bases step ships from the integer corpus: `output/view-2k/` and `output/view-5k/`, each `tenv.h5ad` + `tahoe_bulk.h5ad` with `X` (log1p CP10K on the full 18,164-gene library total), a `control` layer (mean of the row's matched vehicle rows, normalized the same way) and a `delta` layer (`X − control`). Each view is the ascending-`gene_index` subset on a released axis (`G_2000`/`G_5000`, 2,000/5,000 genes from the `f2000`-first, tenv-HVG-second fill of ADR 0071, which re-admits `AF` and replaces ADR 0066's `pN` selection; ADR 0069/0070 removed `AF` under the retired rule), so one corpus normalization feeds two gene subsets. The former rule that a view was a consumer-owned disposable projection and the corpus step never shipped one is superseded by ADR 0066.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
@@ -648,8 +664,10 @@ Two rows by four columns: `Precision@d`, `Recall@d`, `Spearman@d` and `Reliabili
 ### Stage 2 gene axis
 
 Vocabulary for the two released gene axes `G_2000` and `G_5000`, the sources they are built
-from, and the corpus/view split that feeds the models. The axis decision itself is settled
-(ADR 0066); only the model-evaluation design is still open.
+from, and the corpus/view split that feeds the models. The axis decision itself is settled —
+the corpus/view split by ADR 0066, the disease side by ADR 0071 (DEG-only, tiered sources,
+`DEG2000`/`f2000`), which supersedes ADR 0066's measured-gene rank and `pN`; only the
+model-evaluation design is still open.
 
 **Gene axis** (`G_N`):
 The ordered gene set a Stage 2 perturbational model reads and predicts — `G_2000` and
@@ -658,25 +676,28 @@ The ordered gene set a Stage 2 perturbational model reads and predicts — `G_20
 _Avoid_: narrowed corpus axis, new identity axis
 
 **Gene-axis candidate**:
-A frozen-axis gene that at least one of the six sources measures or ranks; the rows of
-`output/gene-axis/candidate_rank_sum.csv`. tenv-HVG ranks all 18,164 genes, so the candidate
-set is the whole frozen axis.
+A frozen-axis gene under consideration for the axis — the rows of
+`output/gene-axis/candidate_rank_sum.csv`, one per frozen gene. tenv-HVG ranks all 18,164
+genes, so every frozen gene is a candidate; a candidate is not thereby a DEG, and `f2000` is
+0 for most of them.
 _Avoid_: gene universe, axis pool
 
 **{disease}-DEG**:
-A Control-vs-Disease differential-expression result from a **cardiomyocyte-derived** source —
-in-vitro CM/organoid/engineered-tissue bulk, or CM pseudobulk from single-cell data. Whole-heart
-tissue bulk is never one, however many cardiomyocytes it contains.
-_Avoid_: disease source (unqualified, when a whole-tissue bulk series is meant)
+A Control-vs-Disease differential-expression result from a source admitted under ADR 0071's
+tiers — CM pseudobulk from single-cell data, CM-nuclear bulk, in-vitro CM/organoid/engineered
+tissue, or (tier 3 only, after tiers 1–2 fall short of 2,000 DEGs) human atria/ventricle bulk
+tissue that is not cardiomyocyte-specific. A whole-tissue bulk series is a tier-3 DEG source,
+never a tier-1 or tier-2 one; ADR 0071 supersedes ADR 0066's blanket exclusion of it.
+_Avoid_: disease source (unqualified, when a particular tier is meant)
 
 **Disease category**:
-One of the five declared mechanism groups whose datasets fuse into one axis source: `nHF`,
-`ICM`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
-fusion source however many datasets it holds. The `AF` category was declared by ADR 0066 and
-removed by ADR 0069 because its only dataset carried no ordering evidence; the 2026-11-15
-CM-specific AF audit (ADR 0070) found no clinical AF dataset with AF-specific ordering, so
-`AF` stays out as a declared gap.
-_Avoid_: disease label, cohort
+One of the six declared mechanism groups whose datasets fuse into one disease term: `nHF`,
+`ICM`, `AF`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
+fusion term however many datasets it holds. `AF` was declared by ADR 0066, removed by
+ADR 0069/0070, and re-admitted by ADR 0071 with CM-specific tier-1 sources and a tier-3 atrial
+bulk descent; its published `DEG2000` is the honest one-gene union (`SLC9A7`), not a padded
+set.
+_Avoid_: disease label, cohort, source (a category is not a source)
 
 **nHF**:
 The non-specific human heart failure category — clinical, non-ischemic, non-hereditary human
@@ -701,45 +722,65 @@ class holding at least three small-molecule drugs. Antibody and peptide drugs ar
 _Avoid_: chemotherapy toxicity (unqualified)
 
 **Source rank**:
-A dataset's within-dataset ordering of the frozen-axis genes by its continuous effect score
-`|log2FC| × −log10(padj)`, with a gene it does not measure at `n_measured + 1` and
-`rank_norm = rank / n_measured`; tenv-HVG contributes its dispersion rank under the same
-normalization. Ranks are never compared across datasets as if they were effect sizes.
-_Avoid_: global rank, meta-rank
+A dataset's within-dataset ordering of its **DEGs** by the effect score
+`|log2FC| × −log10(padj)` — DEGs rank `1..n_DEG`, every other frozen-axis gene gets
+`n_DEG + 1`, and `rank_norm = rank / n_DEG`. The denominator is the DEG count, never the
+measured-gene count: a dataset with three DEGs supplies three ordered genes and a wall of
+`(n_DEG + 1) / n_DEG`, not a complete 18,164-gene ordering (ADR 0071 decision 3, superseding
+ADR 0066/0068's measured-gene rank). A source with `n_DEG = 0` has no `rank_norm` at all and
+is not a fusion source. tenv-HVG is not a DEG source and is never ranked this way — it
+contributes its dispersion rank to the axis's first half only. Ranks are never compared
+across datasets as if they were effect sizes.
+_Avoid_: global rank, meta-rank, measured-gene rank (retired)
 
 **Class source**:
-The single axis source a category contributes — the ascending order of `Σ rank_norm` over the
-datasets at that category's winning tier, ties broken by `gene_index`.
+The single disease term a category contributes — the ascending order of `Σ rank_norm` over
+the category's informative sources at the tiers it entered, ties broken by `gene_index`.
 _Avoid_: merged dataset, meta-analysis
 
 **Rank-sum fusion**:
-`rank_sum = Σ rank_norm` over the six declared sources (five categories plus tenv-HVG),
-ascending, ties broken by `gene_index`; the `rank_sum` column of
-`output/gene-axis/candidate_rank_sum.csv`. It runs at two levels: datasets inside a category,
-then categories inside the axis.
-_Avoid_: weighted fusion, Borda (unqualified)
+`rank_sum = Σ_d rank_d / n_d` over the **six disease terms only** (`nHF`, `ICM`, `AF`,
+`genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`), where `rank_d` is the
+disease's published `DEG2000` rank and a gene outside `DEG2000_d` pays `(n_d + 1) / n_d`;
+ascending is better, ties broken by `gene_index`. It is the `rank_sum` column of
+`output/gene-axis/candidate_rank_sum.csv` and runs at two levels: sources inside a disease,
+then diseases inside the axis. tenv-HVG is **not** a term — it supplies the axis's first half.
+Its absolute scale is dominated by the smallest-`n_d` disease (`AF`, `n_d = 1`, so every
+non-`SLC9A7` gene pays exactly `2.0` in that term); that is an artefact of the denominator,
+not a fusion failure, and within an `f2000` stratum the term is a constant for non-AF genes,
+so ordering is essentially unaffected (ADR 0071 *Consequences*).
+_Avoid_: weighted fusion, Borda (unqualified), seven-source sum (the retired v1 framing)
 
-**pN**:
-The number of the fused sources (five categories plus tenv-HVG) whose
-top-`N` set contains a gene, for `N ∈ {2000, 5000}` — the cross-source replication count that
-fills the axis's second half. It is **not** `n_sources_measured`, the number of sources that
-measure the gene.
-_Avoid_: support count, vote
+**pN** (retired 2026-11-15):
+The v1 cross-source replication count: how many of the fused sources (five categories plus
+tenv-HVG) had a gene in their top-`N` set, for `N ∈ {2000, 5000}`. It is **gone** — the
+`p2000`/`p5000` columns, their readers, their tests and the measured-gene rank they were
+computed from are removed (ADR 0071 decision 9). It is replaced by `f2000`, which counts only
+diseases whose published `DEG2000` contains the gene and never counts tenv-HVG. Any v1 text,
+figure or log that still shows `pN` is a sealed historical record; do not reintroduce the
+term into a live product.
+_Avoid_: pN (for the live signal), support count, vote
 
 **Axis fill rule**:
-`G_N` takes the top `0.5·N` tenv-HVG genes, then `0.5·N` more from the **remaining** candidates
-(the step-1 genes are excluded) by `pN` descending, `rank_sum` ascending, `gene_index`
-ascending; `pN` is the axis-matched count (`p2000` for `G_2000`, `p5000` for `G_5000`). The
-union is published in ascending `gene_index` and never renumbered; the axes are not nested and
-the manifest reports their intersection.
-_Avoid_: top-N selection, elbow cut
+`G_N` takes the top `0.5·N` tenv-HVG genes (`tenv_hvg_rank <= N/2`), then `0.5·N` more from
+the **remaining** candidates (the step-1 genes are excluded) that have `f2000 >= 1`, by
+`f2000` descending, `rank_sum` ascending, `gene_index` ascending. When fewer than `0.5·N`
+remaining candidates have `f2000 >= 1`, the shortfall is filled from unused tenv-HVG genes in
+ascending tenv-HVG rank order — never from a gene on disease evidence it does not have — and
+the count is recorded in the release manifest (0 second-half slots in the published release).
+The two keys are `N`-independent, so the axes are **nested** (`G_2000 ⊂ G_5000`); the union is
+published in ascending `gene_index` and never renumbered.
+_Avoid_: top-N selection, elbow cut, non-nested axes (the retired v1 property)
 
 **Source top-N coverage**:
-The share of a source's top-`N` set that a released axis contains,
-`100 · |top_N(s) ∩ G_N| / N`, published as `output/gene-axis/source_topn_coverage.csv` (one
-row per axis, one column per source). Because both sets hold `N` genes, a cell is also the share of the axis drawn from that source's top-`N`; the source
-top-`N` sets overlap, so a row does not sum to 100.
-_Avoid_: source recall, contribution quota
+Per fusion group, the share of that group's own set a released axis contains —
+`100 · |top_N(s) ∩ G_N| / N` for tenv-HVG and `100 · |DEG2000_d ∩ G_N| / |DEG2000_d|` for a
+disease, published in **long format** as `output/gene-axis/source_topn_coverage.csv`
+(`N, n_axis, group, group_label, numerator, denominator, rate, note`: one row per axis and
+group, with the denominator explicit so a one-gene disease reads as `1/1`, not as a 100%
+top-`N` coverage). The filename is v1 and is retained for compatibility with the pinned
+manifests; its content is the v2 `DEG2000` coverage table.
+_Avoid_: source recall, contribution quota, `%<source>_gN` columns (the retired wide format)
 
 **Label-permutation null**:
 The null distribution of a dataset's axis-ordering statistic obtained by permuting its sample
@@ -752,8 +793,8 @@ _Avoid_: random-gene null, permutation p (unqualified)
 **Source dataset table**:
 The table at the start of `gene_axis_fill_rule.docx`: one row per released axis dataset with its
 category, accession, sample type, groups, sample sizes, sequencing technology and the published
-CM DEG count (`catalog.json` `n_significant`), followed by the audited-and-excluded AF sources
-with their actual DEG counts.
+v2 DEG count (`catalog.json` `n_deg`, never the padj-only `n_significant`), plus the tenv-HVG
+fusion row.
 _Avoid_: dataset summary, metadata table
 
 **Inflection point**:

@@ -29,15 +29,70 @@ CATEGORIES = {
         'tier': 1,
         'evidence_type': 'cm_pseudobulk',
         'shared_control_group': ['gse270788:donor', 'reichart-cm:normal'],
+        # NOTE (republish #212, 2026-11-15). The `rejected[]` strings below are
+        # DECLARATION DATA: `build_disease_deg.py` copies them verbatim into the
+        # published <category>/catalog.json, whose digests the disease-fusion,
+        # gene-axis and view manifests pin. #211 could correct only the comment
+        # of record because the products were frozen; #212 lifted the freeze,
+        # rewrote the data itself and re-published the cascade, so the catalogs
+        # now carry the corrected reasons and no erratum remains. This note only
+        # records why they read as they do.
+        #
+        # GSE183852: the authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet already
+        # carries the CM labels, so reading its `meta.data` is not re-clustering;
+        # the v2 definition yields 70 DEGs (padj < 0.05 and |log2FC| >= 2), 50 of
+        # them on the frozen axis (26,946 genes tested; the padj-only anchors
+        # 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce). That is 2.5% of
+        # a 2,000-gene target, so an 8.1-12 GB Robj label extraction is not
+        # warranted. Its padj-only yield (4,927 on-axis) would only matter under
+        # a softer fold tier, which the v2 rule does not admit -- so nHF closes at
+        # 1,661 axis-resolved DEGs by decision, not by missing capability.
+        #
+        # The third entry's pre-v2 "not cardiomyocyte-derived" ground is
+        # superseded by ADR 0071 tier 3: GSE141910 and GSE116250 are declared
+        # tier-3 nHF sources (GSE165303 joined them), GSE128188 is an owned tier-3
+        # AF candidate, and only GSE282618 remains un-admitted, for its 3-vs-2
+        # design.
+        #
+        # ICM's GSE298023 has the same shape as GSE183852: its author labels
+        # exist only inside an unopened 4.0 GB .rds, so the obstacle is that no
+        # author CM gate was available, not a prohibition on reading labels.
         'rejected': [
             {'candidate': 'GSE183852',
-             'reason': 'eligible human LV CM source, but CM labels live only inside '
-                       '2.1-12 GB Seurat Robj objects; ad-hoc re-clustering is forbidden'},
+             'reason': ('eligible human LV CM source, but a measured cost call, not a '
+                        'label-access barrier: the authors\' 6.7 MB MOESM4 '
+                        'Cardiomyocytes sheet already carries the CM labels, and the '
+                        'v2 definition (padj < 0.05 and |log2FC| >= 2) yields 70 DEGs, '
+                        '50 on the frozen axis (26,946 genes tested; the padj-only '
+                        'anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 '
+                        'reproduce) -- 2.5% of a 2,000-gene target, so an 8.1-12 GB '
+                        'Robj label extraction is not warranted. Its padj-only yield '
+                        '(4,927 on-axis) would only matter under a softer fold tier, '
+                        'which the v2 rule does not admit')},
             {'candidate': 'cellxgene myocarditis CM object',
              'reason': 'shares its normal donors with the Reichart object, so the two '
                        'cannot both count as independent sources'},
             {'candidate': 'GSE141910 / GSE116250 / GSE128188 / GSE282618',
-             'reason': 'whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived'},
+             'reason': ('ADR 0071 tier 3 admits whole-tissue bulk: GSE141910 and '
+                        'GSE116250 are declared tier-3 nHF sources (with GSE165303) '
+                        'and GSE128188 is an owned tier-3 AF candidate AF did not '
+                        'need once its tier-1 sources were measured. Only GSE282618 '
+                        'stays un-admitted, for its 3-vs-2 exploratory design, not '
+                        'for its tissue class')},
+            {'candidate': 'GSE185100',
+             'accession': 'GSE185100',
+             'status': 'unverified_not_admitted',
+             'size': ('757 MB RAW.tar (722 MB of per-sample processed tars; the two '
+                      'recordings disagree)'),
+             'donor_counts': ('4 early-onset DCM vs 3 non-diseased LV-apex donors '
+                              '(pediatric, 4-14 y)'),
+             'reason': ('recorded unverified and not admitted (#203): the NCBI FTP '
+                        'throttled the 757 MB RAW.tar to roughly 50 KB/s and the '
+                        'download was abandoned, so the deposit was never opened. The '
+                        'series is also 4 vs 3 donors of a pediatric early-onset '
+                        'cohort, which could not meet the evidence bar even if the '
+                        'archive were readable. Nothing was downloaded and no gene-axis '
+                        'evidence is derived from it.')},
         ],
     },
     'ICM': {
@@ -47,7 +102,10 @@ CATEGORIES = {
         'shared_control_group': ['gse270788:donor'],
         'rejected': [
             {'candidate': 'GSE298023',
-             'reason': 'labels only inside a 4.0 GB .rds; ad-hoc re-clustering is forbidden'},
+             'reason': ('eligible human LV CM source, but its author cell labels exist '
+                        'only inside an unopened 4.0 GB .rds, so no author CM gate was '
+                        'available and a gate invented from markers is not permitted; '
+                        'the 1.8 GB per-sample 10x RAW.tar carries counts only')},
             {'candidate': 'GSE145154',
              'reason': 'no author cell labels and region-heterogeneous; re-clustering '
                        'not permitted'},
@@ -558,6 +616,484 @@ DATASETS.extend([
             'deposition': 'integer counts',
             'model': 'limma-voom (voom library-size normalisation, moderated t)',
             'design': 'one joint fit ~0 + group over all 6 organoid libraries; single contrast',
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+])
+
+# --- ticket #203: nHF tier-2 / tier-3 sources --------------------------------
+# GSE35108 is the tier-2 (patient-derived iPSC-CM) source and GSE165303 the tier-3
+# (whole left-ventricle bulk) source ADR 0071 gives nHF. Both are admitted only
+# after their series design was verified against the deposit (see each item's
+# author_log.json): GSE35108 is 8 cardiomyocyte libraries in a 2x2 genotype x
+# Serca2a design, not the series' 17 samples; GSE165303 is 101 RNA-seq libraries
+# = 50 DCM + 51 non-failing, not "101 DCM samples".
+DATASETS.extend([
+    {
+        'dataset_id': 'gse35108__dcm_ipsc_cm',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE35108',
+        'local_deg': 'local/deg/GSE35108_deg.csv',
+        'local_summary': 'local/deg/GSE35108_deg.json',
+        'arm_or_class': ('patient-derived DCM iPSC-CM (4 libraries) vs normal iPSC-CM '
+                         '(4 libraries) in a 2x2 genotype x Serca2a design'),
+        'species': 'Homo sapiens',
+        'model_system': ('human patient-derived iPSC-CM monolayer (DCM vs normal), '
+                         'one-colour Affymetrix GPL6244 RMA log2 array'),
+        'evidence_type': 'bulk',
+        'tier': 2,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse35108:normal_ipsc_cm',
+        'n_case': 4,
+        'n_control': 4,
+        'contrasts': ['DCM_control-Normal_control', 'DCM_Serca2a-Normal_Serca2a'],
+        'non_genetic_model_basis': (
+            'patient-derived familial-DCM iPSC-CM lines compared with normal iPSC-CM '
+            'lines; no mutation was introduced and no isogenic control is deposited, so '
+            'this is the clinical (non-mutation-modelled) iPSC-CM form ADR 0071 admits '
+            'to a clinical category at tier 2'),
+        'strata': {
+            'decision': ('two treatment strata of the same genotype contrast (untreated, '
+                         'and after adenoviral Serca2a gene therapy), each 2 vs 2; '
+                         'collapsed per gene by maximum effect'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('the gene therapy is applied symmetrically to both genotypes, so each '
+                    'stratum carries a valid DCM-vs-normal contrast; the untreated stratum '
+                    'is the primary disease contrast and its DEG count is recorded as a '
+                    'sensitivity in the item summary'),
+        },
+        'method': {
+            'deposition': 'RMA log2 expression as deposited (one-colour array)',
+            'collapse': ('the max-mean-expression GPL6244 probe represents each gene '
+                         '(19,036 genes from 20,052 single-symbol probes; multi-symbol '
+                         'and unsymbolised probes unused)'),
+            'model': 'limma on the deposited log2 matrix (moderated t)',
+            'design': ('one joint fit ~0 + group over the 8 cardiomyocyte libraries; two '
+                       'DCM-vs-normal contrasts, one per treatment stratum'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse165303__dcm_lv_bulk',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE165303',
+        'local_deg': 'local/deg/GSE165303_deg.csv',
+        'local_summary': 'local/deg/GSE165303_deg.json',
+        'arm_or_class': 'DCM left-ventricle tissue (50 donors) vs non-failing LV (51 donors)',
+        'species': 'Homo sapiens',
+        'model_system': ('human left-ventricle bulk tissue (whole tissue, not '
+                         'cardiomyocyte-specific), bulk RNA-seq'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse165303:non_failing_lv',
+        'n_case': 50,
+        'n_control': 51,
+        'contrasts': ['DCM-NF'],
+        'model_basis': (
+            'whole left-ventricle tissue bulk: not cardiomyocyte-specific, so it is a '
+            'tier-3 source only and enters nHF only after tiers 1-2 fall short of 2,000 '
+            'DEGs (ADR 0071)'),
+        'method': {
+            'deposition': ('log2(normalised counts) as deposited, with a fixed floor at '
+                           '3.821687527 (35.2% of cells); not raw counts'),
+            'model': 'limma on the deposited log2 matrix (moderated t)',
+            'design': ('one joint fit ~0 + group over all 101 RNA-seq libraries; no '
+                       'clinical covariate is deposited'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+])
+
+# --- ticket #202: ICM tier-1 Kuppe-MI (IZ vs CTRL) ---------------------------
+# The cellxgene Kuppe MI all-snRNA object supplies ICM's human cardiomyocyte
+# pseudobulk evidence at tier 1 — ADR 0071's "ICM gains the Kuppe MI IZ vs CTRL
+# contrast ... and stops at tier 1". The object is gated on its own CM label and
+# the profiles are per (donor, zone), not per donor: an infarct heart contributes
+# its ischaemic-zone CM nuclei as one profile, which is what makes the
+# ischaemic-zone-vs-control-heart contrast possible. A 500-CM-nuclei profile floor
+# removes the sparse donor-zone profiles, one joint ~0 + zone fit estimates
+# dispersion over all five zones, and the repeated donor profiles are blocked with
+# duplicateCorrelation(block = donor). Only the IZ-vs-CTRL contrast publishes a
+# DEG; the border/remote/fibrotic-zone contrasts are fitted for dispersion and
+# recorded as artifacts in the item summary. The deposit carries no per-donor
+# time-since-infarct field, so acute-vs-chronic stays undeclared (see
+# `time_window_note`), not asserted.
+CATEGORIES['ICM']['shared_control_group'] = (
+    list(CATEGORIES['ICM']['shared_control_group']) + ['kuppe-mi:normal'])
+DATASETS.append({
+    'dataset_id': 'kuppe-mi__iz',
+    'category': 'ICM',
+    'source_item': 'disease_data/Kuppe-MI',
+    'local_deg': 'local/deg/kuppe-mi_deg.csv',
+    'local_summary': 'local/deg/kuppe-mi_deg.json',
+    'cells_per_donor': 'local/pseudobulk/kuppe-mi_profiles.csv',
+    'arm_or_class': ('IZ (ischaemic zone) cardiomyocyte profiles of 4 infarct donors '
+                     '(P2, P9, P10, P15) vs the 4 normal-heart CM profiles '
+                     '(P1, P7, P8, P17), after the 500-CM-nuclei profile floor'),
+    'species': 'Homo sapiens',
+    'model_system': ("human left-ventricle 10x 3' v3 snRNA CM pseudobulk, one profile "
+                     'per (donor, zone) of the infarcted heart'),
+    'evidence_type': 'cm_pseudobulk',
+    'tier': 1,
+    'genotype_status': 'not_declared',
+    'time_window_basis': None,
+    'time_window_note': ('the deposit carries no per-donor time-since-infarct field, so the '
+                         'deposit does not separate acute from chronic MI; the record is '
+                         'undeclared, never asserted'),
+    'exploratory': False,
+    'shared_control_group': 'kuppe-mi:normal',
+    'n_case': 4,
+    'n_control': 4,
+    'contrasts': ['IZ-CTRL'],
+    'method': {
+        'deposition': 'integer counts (cellxgene raw.X)',
+        'model': ('limma-voom (voom library-size normalisation, moderated t) with donor '
+                  'blocking: duplicateCorrelation(block = donor) on the joint design'),
+        'design': ('one joint fit ~0 + zone over the 18 (donor, zone) profiles that pass the '
+                   '500-CM-nuclei floor (CTRL 4 / IZ 4 / BZ 3 / RZ 5 / FZ 2); this dataset '
+                   'selects the IZ vs CTRL contrast, the other three zone contrasts are '
+                   'artifact rows of the same fit'),
+        'test': 'moderated t',
+        'padj': 'Benjamini-Hochberg',
+    },
+})
+
+# --- ticket #204: AF returns (tier-1 CM-specific sources + tier-3 bulk) ------
+# ADR 0071 decision 7 re-admits AF after ADR 0069/0070 removed it: its CM-specific
+# sources (GSE255612, GSE138252, GSE238242) are tier 1 and their measured DEG union
+# is far short of 2,000, so the category descends to tier-3 whole-atrial bulk
+# (GSE269882; GSE128188 is already owned). Every path below is item-relative; the
+# driver composes the repo-relative path, so no gitignored `local/` literal points
+# at the checkout. GSE255612's record is restored unchanged from before ADR 0069:
+# its DEG item is not rebuilt by this ticket.
+CATEGORIES['AF'] = {
+    'directory': 'af',
+    'tier': 1,
+    'evidence_type': 'cm_pseudobulk',
+    'shared_control_group': ['gse255612:donor', 'gse138252:control_la',
+                             'gse238242:sr', 'gse269882:sinus_rhythm'],
+    'rejected': [
+        {'candidate': 'GSE271229',
+         'accession': 'GSE271229',
+         'status': 'not_admitted',
+         'reason': ('left-atrial snRNA-seq (9 donors: 3 no-AF / 3 paroxysmal / 3 '
+                    'persistent) whose deposit ships NO author cell-type annotation — '
+                    'only per-sample CellRanger barcodes/features/matrix triples and an '
+                    'empty series-matrix data table. A CM gate would have to be invented '
+                    'from markers, which is forbidden, so the DEG step is not testable. '
+                    'This is a different accession from GSE269882, not an alias of it.')},
+        {'candidate': 'dbGaP phs003644',
+         'status': 'not_downloadable',
+         'reason': 'controlled access; not fetched'},
+    ],
+    'tier3_owned': [
+        {'candidate': 'GSE128188',
+         'item': 'disease_data/GSE128188',
+         'reason': ('already owned human atrial bulk item (AF 5 vs 5 SR, paired LA+RA). '
+                    'ADR 0071 admits whole-tissue bulk only at tier 3, so this is a '
+                    'candidate for the #206 roster; it is not a rejection and it is not '
+                    'declared here because #204 builds only the three new items.')},
+    ],
+    'tiering': {
+        'tier_1': {
+            'sources': ['gse255612__af', 'gse138252__af', 'gse238242__af'],
+            'measured_union_v2_deg': 1,
+            'measured_union_genes': ['SLC9A7'],
+            'note': ('measured with the one live DEG implementation under ADR 0071\'s '
+                     'definition (padj < 0.05 and |log2FC| >= 2): GSE255612 0 (its '
+                     'existing v1-contract table), GSE138252 1 (SLC9A7), GSE238242 0. '
+                     'Reconciled by #211: ADR 0071 decision 7 now states this '
+                     'live-worker single-gene union (SLC9A7), and the pre-existing '
+                     'audit\'s 2-gene figure -- its limma-voom + edgeR TMM result, TMM '
+                     'being the only difference, since the pinned arc R env ships limma '
+                     'but not edgeR and the live worker therefore uses voom\'s own '
+                     'library-size normalisation -- is recorded there and in the '
+                     'GSE138252 item summary as a sensitivity, never as the published '
+                     'number.'),
+        },
+        'tier_3': {
+            'sources': ['gse269882__af'],
+            'measured_union_v2_deg': 0,
+            'note': ('GSE269882 is whole-tissue right-atrial-appendage bulk and is '
+                     'admitted only at tier 3; its three staged AF-vs-SR contrasts and '
+                     'the pooled sensitivity all give 0 v2 DEGs under the live worker. '
+                     'GSE128188 (owned, undeclared here) is the other tier-3 candidate.'),
+        },
+        'stop_decision': ('tier 1 union 1 < 2,000, so the collection descends to tier 3; '
+                          'the tier-3 union is 0, so AF\'s total axis-resolved DEG union '
+                          'is the tier-1 gene set (1 gene under the live worker). The '
+                          'category is published with the tier-3 evidence type recorded '
+                          'on GSE269882.'),
+    },
+}
+
+DATASETS.extend([
+    {
+        'dataset_id': 'gse255612__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE255612',
+        'local_deg': 'local/deg/gse255612_deg.csv',
+        'local_summary': 'local/deg/gse255612_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse255612_donors.csv',
+        'arm_or_class': 'AF donors vs non-AF control donors (left-atrial CM)',
+        'species': 'Homo sapiens',
+        'model_system': 'human left-atrium 10x snRNA CM pseudobulk',
+        'evidence_type': 'cm_pseudobulk',
+        'tier': 1,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse255612:donor',
+        'n_case': 18,
+        'n_control': 16,
+        'contrasts': ['AF-control'],
+        'method': {
+            'deposition': 'normalised expression (log1p(CP10K))',
+            'model': 'limma on log2(mean_CP10K + 1) pseudobulk (moderated t)',
+            'design': 'one joint fit ~0 + group over 34 donors',
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse138252__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE138252',
+        'local_deg': 'local/deg/GSE138252_deg.csv',
+        'local_summary': 'local/deg/GSE138252_deg.json',
+        'arm_or_class': ('left-atrium AF+HF (5 libraries) vs non-failing control '
+                         '(5 libraries), 2020 sequencing batch only'),
+        'species': 'Homo sapiens',
+        'model_system': ('human atrial PCM1+ cardiomyocyte-nuclei bulk RNA-seq '
+                         '(CM-nuclear bulk, not whole tissue)'),
+        'evidence_type': 'bulk',
+        'tier': 1,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse138252:control_la',
+        'n_case': 5,
+        'n_control': 5,
+        'contrasts': ['AF-CTL'],
+        'model_basis': ('cardiomyocyte-derived (PCM1+ FANS-sorted nuclei), so tier 1 '
+                        'under ADR 0071 even though the model is a bulk library; the '
+                        'AF+HF-vs-non-failing confound is recorded in the item summary'),
+        'strata': {
+            'decision': ('left atrium, 2020 batch only: the AF arm exists only in that '
+                         'batch, so a batch-matched control arm is the primary contrast '
+                         'and a pooled-controls fit is a declared sensitivity'),
+            'pooled': False,
+            'blocking_covariates': [],
+            'why': ('region is the dominant variance axis in this series and pooling '
+                    'chambers loses power; the RA arm is sex-confounded'),
+        },
+        'method': {
+            'deposition': 'raw integer gene-body counts',
+            'model': "limma-voom (voom's own library-size normalisation, moderated t)",
+            'design': ('one joint fit ~0 + group over the 5 AF + 5 control LA libraries '
+                       'of the 2020 batch (edgeR filterByExpr rule)'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse238242__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE238242',
+        'local_deg': 'local/deg/GSE238242_deg.csv',
+        'local_summary': 'local/deg/GSE238242_deg.json',
+        'cells_per_donor': 'local/pseudobulk/GSE238242_profiles.csv',
+        'arm_or_class': ('persistent-AF donors (3) vs sinus-rhythm donors (4), '
+                         'left-atrial-appendage CM pseudobulk'),
+        'species': 'Homo sapiens',
+        'model_system': ('human left-atrial-appendage 10x multiome snRNA arm, author '
+                         'CM label, per-donor CM count pseudobulk'),
+        'evidence_type': 'cm_pseudobulk',
+        'tier': 1,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse238242:sr',
+        'n_case': 3,
+        'n_control': 4,
+        'contrasts': ['AF-SR'],
+        'method': {
+            'deposition': 'raw integer counts (dense TSV, genes x nuclei)',
+            'model': ("limma-voom (voom's own library-size normalisation, moderated t) "
+                      'on the per-donor sum-of-CM-counts pseudobulk'),
+            'design': ('one joint fit ~0 + group over the 7 donor pseudobulk profiles '
+                       '(4 SR / 3 persistent AF)'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse269882__af',
+        'category': 'AF',
+        'source_item': 'disease_data/GSE269882',
+        'local_deg': 'local/deg/GSE269882_deg.csv',
+        'local_summary': 'local/deg/GSE269882_deg.json',
+        'arm_or_class': ('the three staged AF arms (persistent 5, paroxysmal 5, '
+                         'post-operative 8) vs the 9 sinus-rhythm libraries'),
+        'species': 'Homo sapiens',
+        'model_system': ('human right-atrial-appendage whole-tissue bulk RNA-seq '
+                         '(not cardiomyocyte-specific)'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse269882:sinus_rhythm',
+        'n_case': 18,
+        'n_control': 9,
+        'contrasts': ['persAF-SR', 'pAF-SR', 'poAF-SR'],
+        'model_basis': ('whole right-atrial-appendage tissue: not cardiomyocyte-specific, '
+                        'so it is a tier-3 source only and enters AF only after tiers 1-2 '
+                        'fall short of 2,000 DEGs (ADR 0071), which supersedes the ADR '
+                        '0070 whole-tissue exclusion'),
+        'strata': {
+            'decision': ('the three diagnosis arms are declared as separate contrasts '
+                         'against sinus rhythm inside one joint fit; the staging is '
+                         'carried, never averaged into one case group, and the '
+                         'post-operative arm is its own declared arm'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('a pooled all-AF-vs-SR fit is measured as a declared sensitivity '
+                    'and does not change the conclusion (0 v2 DEGs)'),
+        },
+        'method': {
+            'deposition': 'raw integer counts (featureCounts, GRCh38)',
+            'model': "limma-voom (voom's own library-size normalisation, moderated t)",
+            'design': ('one joint fit ~0 + group over all 27 libraries with the four '
+                       'diagnosis arms; three staged AF-vs-SR contrasts'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+])
+
+# --- ticket #206: nHF tier-3 bulk roster + the six-category tier ladders ------
+# ADR 0071 decision 2 collects each category's sources in ascending tier order.
+# The ladder is derived from each record's own `tier` (no second declaration):
+#   nHF   1 = gse270788__nicm + reichart genotype-negative
+#         2 = gse35108__dcm_ipsc_cm
+#         3 = gse165303__dcm_lv_bulk + GSE116250 + GSE141910
+#   ICM   1 = gse270788__icm + gse270788__ami + kuppe-mi__iz
+#   AF    1 = gse255612__af + gse138252__af + gse238242__af   (no tier-2 source)
+#         3 = gse269882__af
+#   genetic_cardiomyopathy  1 = the two Reichart exports
+#                           2 = the six isogenic hiPSC-CM models
+#   cardiotox_TOP2 / cardiotox_other  2 = their pooled class sources (the
+#         category begins at tier 2; `bases.cardiotox` declares those sources)
+# The stop rule and its axis-resolved criterion live once, in
+# `bases.disease_deg.TIER_STOP_RULE` / `tier_ledger`; `build_disease_deg.py ledger`
+# computes a category's cumulative axis-resolved union and stop point from these
+# declarations, and the publish path writes the resulting `tiering` record.
+# nHF's ceiling is accepted (ADR 0071 decision-2 note, 2026-11-15): GSE183852 is
+# closed on both routes (measured 70 v2 DEGs / 50 on the axis; an 8.1-12 GB Seurat
+# Robj label extraction is not warranted), so nHF tops out at ~1,661 axis DEGs and
+# `DEG2000_nHF` is the whole union rather than a 2,000-gene cut.
+DATASETS.extend([
+    {
+        'dataset_id': 'gse116250__hf_lv_bulk',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE116250',
+        'local_deg': 'local/deg/GSE116250_deg.csv',
+        'local_summary': 'local/deg/GSE116250_deg.json',
+        # The #179-era HF item deposits the shared DEG table with its own column
+        # names; the canonical contract is applied by `bases.disease_deg.read_local_deg`.
+        'local_deg_columns': {'log2FC': 'log2fc', 'mean_expr': 'base_mean'},
+        'arm_or_class': ('heart failure (50: 37 dilated + 13 ischaemic cardiomyopathy) vs '
+                         'non-failing left ventricle (14 donors), three fitted arm contrasts'),
+        'species': 'Homo sapiens',
+        'model_system': ('human left-ventricular bulk tissue (whole tissue, not '
+                         'cardiomyocyte-specific), bulk RNA-seq'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse116250:nf',
+        'n_case': 50,
+        'n_control': 14,
+        'contrasts': ['HF_vs_NF', 'DCM_vs_NF', 'ICM_vs_NF'],
+        'model_basis': ('whole left-ventricular tissue bulk: not cardiomyocyte-specific, '
+                        'so it is a tier-3 source only and enters nHF only after tiers '
+                        '1-2 fall short of 2,000 axis-resolved DEGs (ADR 0071)'),
+        'strata': {
+            'decision': ('one joint fit ~0 + group over the 64 libraries (14 NF / 37 DCM / '
+                         '13 ICM) publishes the primary HF_vs_NF contrast and the two arm '
+                         'contrasts as contrast rows of the same fit; the multi-contrast '
+                         'collapse keeps the maximum-effect contrast per gene and the DEG '
+                         'flag is pass-any-contrast'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('the three labels are arms of one model, not independent sources; the '
+                    'tier-3 contribution is their pass-any-contrast v2 DEG union (43 '
+                    'axis DEGs measured, 144 genome-wide). The 13-donor ICM arm is an '
+                    'end-stage remodelling proxy, recorded here and never re-used as the '
+                    'ICM category source, whose evidence is tier-1 CM pseudobulk'),
+        },
+        'method': {
+            'deposition': ('RPKM as deposited (Cufflinks / GRCh37.82), analysed as '
+                           'log2(RPKM + 1); the submitters removed mitochondrial genes'),
+            'model': ('limma on the deposited log2(RPKM + 1) matrix; Ensembl annotations '
+                      'collapsed to HGNC symbols by maximum mean expression'),
+            'design': ('one joint fit ~0 + group over all 64 libraries with group in '
+                       '{NF, DCM, ICM}; three contrasts (HF_vs_NF primary)'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse141910__hf_lv_bulk',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE141910',
+        'local_deg': 'local/deg/GSE141910_deg.csv',
+        'local_summary': 'local/deg/GSE141910_deg.json',
+        'local_deg_columns': {'log2FC': 'log2fc', 'mean_expr': 'base_mean'},
+        'arm_or_class': 'heart failure (200: 166 DCM / 28 HCM / 6 PPCM) vs non-failing LV (166 donors)',
+        'species': 'Homo sapiens',
+        'model_system': ('human left-ventricular free-wall bulk tissue (whole tissue, not '
+                         'cardiomyocyte-specific), bulk RNA-seq, MAGNet consortium'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse141910:nf',
+        'n_case': 200,
+        'n_control': 166,
+        'contrasts': ['HF_vs_NF'],
+        'model_basis': ('whole left-ventricular free-wall bulk: not cardiomyocyte-specific, '
+                        'so it is a tier-3 source only and enters nHF only after tiers 1-2 '
+                        'fall short of 2,000 axis-resolved DEGs (ADR 0071)'),
+        'strata': {
+            'decision': ('single pooled HF-vs-NF contrast; the deposited etiology labels '
+                         '(DCM/HCM/PPCM) are recorded but not modelled'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('the item is the programme\'s HF primary anchor; the 28 hereditary HCM '
+                    'donors inside the 200 HF samples are a recorded limitation of the '
+                    'pooled contrast, not a genetic-cardiomyopathy source (that category '
+                    'uses the genotype-declared cohorts)'),
+        },
+        'method': {
+            'deposition': ('the submitters\' log2-scale voom-transformed abundance as '
+                           'deposited (no raw counts are deposited)'),
+            'model': ('limma on the deposited log2 abundance; HGNC symbols collapsed by '
+                      'maximum mean expression with the retired Ensembl v67 ids kept as '
+                      'an identifier fallback'),
+            'design': 'one joint fit ~0 + group over all 366 libraries; one contrast',
             'test': 'moderated t',
             'padj': 'Benjamini-Hochberg',
         },
