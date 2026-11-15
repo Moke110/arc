@@ -7,7 +7,7 @@
   "inflection": false,
   "inputs": 10,
   "intersection": 2000,
-  "manifest_sha256": "078f604afd9396a615b802132edca974671dbe9adc65d9d7f0812a354707e8f7",
+  "manifest_sha256": "c247dcc0449d13c0bba7da1b3cc878829ad4e44e3e27bb581212d846f8182e69",
   "outputs": 7,
   "result": "PASS",
   "schema": "stage2-gene-axis-release-v1"

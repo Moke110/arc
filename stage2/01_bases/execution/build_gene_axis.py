@@ -92,8 +92,11 @@ SOURCE_COVERAGE_FIGURE_COLUMNS = (
 SOURCE_COVERAGE_FIGURE_PANELS = (
     {'panel': 'a', 'title': 'Covered Gene Count', 'y_label': 'covered genes',
      'value': 'count'},
-    {'panel': 'b', 'title': 'Top-N Coverage Rate', 'y_label': 'coverage rate (%)',
-     'value': 'rate'},
+    # The rate's denominator is no longer N for every group: it is |DEG2000_d|
+    # for a disease and N only for tenv-HVG (ADR 0071 decision 8), so the v1
+    # "Top-N" wording misdescribes six of the seven groups.
+    {'panel': 'b', 'title': 'Coverage of Each Group',
+     'y_label': 'share of group covered (%)', 'value': 'rate'},
 )
 SOURCE_COVERAGE_FIGURE_LABELS = {'tenv_hvg': 'tenv-HVG', **CATEGORY_LABELS}
 
