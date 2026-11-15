@@ -318,42 +318,35 @@ Run from the worktree root after the deletions and after `git merge dev`
   memory: 42 GiB before and 42 GiB after (the kernel reclaimed page cache; no
   pressure on the 12 GiB floor).
 
-**2026-11-15 rule-document source table (#198).** The rule document
-`output/gene-axis/gene_axis_fill_rule.docx` gained a source dataset information
-table as its first section: 18 rows (one per released dataset, in the five
-catalogs' order) plus a tenv-HVG fusion row, columns `category / accession /
-sample type / groups / sample sizes / sequencing technology / CM DEG count`, and
-one footnote defining the CM DEG count (`catalog.json` `n_significant`, best
-contrast, BH padj<0.05), the cardiotox vehicle-vs-compound and isogenic contrast
-semantics, and the `GSE255612` GEO `overall_design` 19/19-vs-18/16 mismatch (the
-release's numbers are unchanged). The existing five sections are renumbered
-2..6. The document was regenerated twice byte-identically from its inputs; new
-sha256 `044f7ece07d57a8130b5ea3d5b5ad0941a18df35e16fc1c3fdaf5ba08d8d0402`. The
-generator now reads the five `output/disease-deg/<category>/catalog.json` inputs
-plus `execution/gene_axis_source_metadata.py` (#197): ADR 0070's Consequences
-line says "two catalog inputs", which was an early estimate — the implementation
-uses five (recorded here; the accepted ADR is not edited). No release product,
-manifest or view changed: the docx is a reading aid, not a manifest output.
-
-**2026-11-15 rule-document excluded-AF block (#199).** Section 1 of
-`output/gene-axis/gene_axis_fill_rule.docx` now closes with the
-audited-and-excluded AF sources block: centered caption 表 2, a `Table Grid`
-table with columns `source / design (n) / actual CM DEG count / exclusion
-reason`, five fixed rows (`GSE255612` 0 in this pipeline / 2 in the paper;
-`GSE138252` 2 limma-voom / 6 edgeR QL; `GSE238242` 0 at 4 SR / 3 AF; `GSE271229`
-not testable for lack of cell-type annotation; dbGaP `phs003644` controlled
-access), then one closing paragraph stating that `AF` is a declared gap like
-`HHD`/`PPCM` ("AF 有来源，但没有任何来源带有 AF 特异的 CM 排序") and that
-re-admission needs a CM-specific AF dataset whose ordering beats the
-label-permutation null. The rows are module constants that name
-`docs/research/stage2-af-source-audit.md` and ADR 0070, so the audit's prose
-formatting cannot change the docx bytes; no `Heading 1` was added (sections stay
-2..6) and the `GSE255612` 19/19-vs-18/16 sentence remains only in the source-table
-footnote. The document was regenerated twice byte-identically; new sha256
-`75a8dd20f133f0b50992450a9b83cae42d216e671f4bb66873db5fa460272437`. New docx
-test `test_af_excluded_table_contract` opens the committed file and asserts the
-second table's header, its 5 rows, the source order and each row's audit DEG
-count and exclusion reason. `docs/data-inventory.md`'s `output/gene-axis/`
-`du -sb` total and generator-input sentence were refreshed (1,461,595; coverage
-CSV + figure PNG + the five catalogs + `execution/gene_axis_source_metadata.py`).
-No release product, manifest, axis or view changed.
+**2026-11-15 rule-document source table, excluded-AF block and code-review
+follow-up (#198/#199).** `output/gene-axis/gene_axis_fill_rule.docx` replayed
+byte-identically from its inputs — the coverage CSV, the figure PNG, the five
+`output/disease-deg/<category>/catalog.json` files and the tracked
+`execution/gene_axis_source_metadata.py` — with the documented no-arg command,
+twice: 0.41 s wall, peak RSS 125,736 KiB, final sha256
+`2bbe1f0e1fc8e328c90288f27c1e338d9c50e564eefe30c2b012fece0091ed88`. Earlier
+docx digests (`37882ca4…`, `6bb82423…`, `044f7ece…`) are superseded and match no
+committed file. 表 1 has 19 rows (18 released datasets + tenv-HVG; columns
+`category / accession / sample type / groups / sample sizes / sequencing
+technology / CM DEG count`), and the six cardiotox `groups` cells are now derived
+from each catalog's own `shared_control_group` rather than a hard-coded token.
+Its footnote defines the CM DEG count (`n_significant`, best contrast, BH
+padj<0.05), the contrast semantics and the `GSE255612` 19/19-vs-18/16 mismatch,
+and states the five non-obvious sample-size bases (GSE270788 46 GSMs / DToxS
+1,171 GSMs / GSE243674 72 GSMs / GSE244740 3,072 wells / Reichart-CM 79 donors);
+表 2 lists the five audited-and-excluded AF sources and the closing paragraph
+declares `AF` a gap. The generator's five `--catalog` inputs and its new
+`--metadata` module input are proven read by wiring tests (a changed catalog
+`n_significant` and a changed `technology` each move the rendered cell). Test
+inventory: 266 step tests / 55 `test_gene_axis.py` / 22
+`test_gene_axis_source_metadata.py`; `test_gene_axis.py` alone 1.845 s, peak RSS
+194,324 KiB; the full directory 8.384 s, peak RSS 323,476 KiB. The DOCX is not a
+manifest output, so `build_gene_axis.py --verify` and `build_view.py verify` are
+unaffected; the integrator re-ran both PASS in the main checkout, which holds the
+gitignored payloads this worktree lacks. **Erratum:** the 2026-11-14 entries
+describe the docx replay as reading only the coverage CSV + PNG; since
+#197/#198 it also reads the five catalogs and the tracked metadata module, and
+their docx digests (`37882ca4…`, `6bb82423…`) are historical. No release
+product, manifest, axis or view changed. `docs/data-inventory.md`'s
+`output/gene-axis/` row was refreshed (`du -sb` 1,461,704; docx 92,412 B;
+`du -sb`, 2026-11-15).

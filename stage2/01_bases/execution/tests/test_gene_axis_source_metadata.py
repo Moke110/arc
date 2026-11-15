@@ -25,7 +25,7 @@ DISEASE_DEG = STEP / 'output' / 'disease-deg'
 TENV = 'tenv_hvg'
 ENTRY_FIELDS = {
     'accession', 'accession_note', 'technology', 'source_url',
-    'verified_on', 'platform', 'sample_size_note',
+    'verified_on', 'platform', 'platform_note', 'sample_size_note',
 }
 REICHART_COLLECTION_ID = 'e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb'
 
@@ -88,18 +88,49 @@ class EntryContractTest(unittest.TestCase):
                 accession = (entry['accession'] or '').strip()
                 accession_note = (entry['accession_note'] or '').strip()
                 self.assertTrue(accession or accession_note)
-                for field in ('technology', 'source_url'):
+                for field in ('technology', 'source_url', 'platform_note'):
                     self.assertIsInstance(entry[field], str)
                     self.assertTrue(entry[field].strip())
                 self.assertTrue(entry['source_url'].startswith('https://'))
                 self.assertTrue(entry['sample_size_note'] is None
-                                or isinstance(entry['sample_size_note'], str))
+                                or (isinstance(entry['sample_size_note'], str)
+                                    and entry['sample_size_note'].strip()))
+
+    def test_platform_note_backs_or_explains_the_platform_evidence(self):
+        for dataset_id, entry in metadata.SOURCES.items():
+            with self.subTest(dataset_id=dataset_id):
+                platform, note = entry['platform'], entry['platform_note']
+                self.assertEqual(bool(platform['gpl']), bool(platform['instrument']))
+                if platform['gpl'] is None:
+                    self.assertIn('no GEO platform', note)
+                else:
+                    self.assertIn(platform['gpl'], note)
+                    self.assertIn(platform['instrument'], note)
+
+    def test_sample_size_notes_are_non_empty_when_present(self):
+        notes = [entry['sample_size_note'] for entry in metadata.SOURCES.values()
+                 if entry['sample_size_note'] is not None]
+        self.assertEqual(len(notes), 13, 'expected thirteen reconciled datasets')
+        for note in notes:
+            self.assertIsInstance(note, str)
+            self.assertTrue(note.strip())
+
+    def test_tenv_sample_size_constants_match_the_published_view_manifest(self):
+        manifest = json.loads((STEP / 'output/view-2k/manifest.json').read_text(
+            encoding='utf-8'))
+        tenv = manifest['sources']['tenv']
+        self.assertEqual(metadata.TENV_TREATED_WELLS, tenv['treated'])
+        self.assertEqual(metadata.TENV_VEHICLE_WELLS, tenv['vehicle'])
+        self.assertEqual(metadata.TENV_TREATED_WELLS + metadata.TENV_VEHICLE_WELLS,
+                         tenv['rows'])
 
     def test_tenv_is_explicitly_accession_less_with_a_stated_reason(self):
         entry = metadata.SOURCES[TENV]
         self.assertIsNone(entry['accession'])
         self.assertIsInstance(entry['accession_note'], str)
         self.assertIn('GSE262419', entry['accession_note'])
+        self.assertLessEqual(len(entry['accession_note']), 60,
+                             'the table cell stays short; the rationale lives in the docstring')
 
     def test_tenv_is_the_only_entry_without_an_accession(self):
         accession_less = [dataset_id for dataset_id, entry in metadata.SOURCES.items()
@@ -147,12 +178,38 @@ class PrimarySourceSpotCheckTest(unittest.TestCase):
                 self.assertIn(REICHART_COLLECTION_ID, entry['source_url'])
                 self.assertIsNone(entry['platform']['gpl'])
                 self.assertIsNone(entry['platform']['instrument'])
+                self.assertIn('no GEO platform', entry['platform_note'])
+                self.assertIn('do not name the instrument', entry['platform_note'])
 
     def test_tenv_source_is_the_gse262419_corpus(self):
         entry = metadata.SOURCES[TENV]
         self.assertIn('GSE262419', entry['source_url'])
         self.assertEqual(entry['platform'],
                          {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'})
+
+
+class ValidateFailureTest(unittest.TestCase):
+    """The validate failures a reviewer can re-trigger, including their wording."""
+
+    def test_coverage_mismatch_error_names_the_schema(self):
+        with self.assertRaises(ValueError) as caught:
+            metadata.validate(published_dataset_ids() + [TENV, 'gse999999__not_released'])
+        self.assertIn(metadata.SCHEMA, str(caught.exception))
+
+    def test_validate_rejects_a_blank_platform_note(self):
+        broken = copy.deepcopy(metadata.SOURCES)
+        broken['gse243674']['platform_note'] = '   '
+        with mock.patch.dict(metadata.SOURCES, broken, clear=True):
+            with self.assertRaises(ValueError):
+                metadata.validate(published_dataset_ids() + [TENV])
+
+    def test_validate_rejects_a_null_platform_without_an_explanation(self):
+        broken = copy.deepcopy(metadata.SOURCES)
+        broken['gse243674']['platform'] = {'gpl': None, 'instrument': None}
+        broken['gse243674']['platform_note'] = ''
+        with mock.patch.dict(metadata.SOURCES, broken, clear=True):
+            with self.assertRaises(ValueError):
+                metadata.validate(published_dataset_ids() + [TENV])
 
 
 if __name__ == '__main__':

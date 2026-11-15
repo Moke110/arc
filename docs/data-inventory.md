@@ -230,18 +230,20 @@ from the pinned inputs and compares every digest; the peak RSS of the build
 The two released axes are **tracked compact evidence**, not ignored payloads:
 `candidate_rank_sum.csv` is 1.25 MB, the two axis files 23 kB + 59 kB, the
 composition table 5.6 kB, the source coverage table 179 B, the rule document
-89 kB and the manifest 27 kB; the figure CSV and PNG are 10 kB + 60 kB. They are
-force-added because the repository-wide `*.csv` ignore rule would otherwise drop
+92.4 kB (92,412 B) and the manifest 27 kB; the figure CSV and PNG are 10 kB +
+60 kB. They are force-added because the repository-wide `*.csv` ignore rule
+would otherwise drop
 them. The pre-0066 `gene-axis/` file set (direction composition,
 unweighted quota-free fused table, animal half-weight column, tenv non-HVG curve,
 ortholog table, `inflection.json`, ~3.54 MB) was **deleted by #192** after
-acceptance; nothing read it. `du -sb`, 2026-11-14 (figure redesign: two panels,
-selected-gene overlay; `.docx` added; `AF` removed from the five-category roster,
-ADR 0069).
+acceptance; nothing read it. `du -sb`, 2026-11-15 (source dataset table with its
+sample-size footnote and the audited-and-excluded AF block added after the
+2026-11-14 figure redesign: two panels, selected-gene overlay; `.docx` added;
+`AF` removed from the five-category roster, ADR 0069).
 
 | stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
 |---|---:|---|---|
-| `output/gene-axis/` | 1,461,595 | released products (`candidate_rank_sum.csv`, `gene_axis_2000.csv`, `gene_axis_5000.csv`, `axis_composition.csv`, `source_topn_coverage.csv`, `manifest.json`) plus the human-facing `gene_axis_fill_rule.docx`, ~1.46 MB; five categories since ADR 0069 | `execution/build_gene_axis.py publish` from the read-only `output/disease-deg/**`, `output/tenv-hvg/descriptive.csv` and `output/gene-identity/genes.csv`; `--verify` replays and compares every digest. The DOCX is separate: `execution/make_gene_axis_docx.py` from the coverage CSV, the figure PNG, the five `output/disease-deg/<category>/catalog.json` files and `execution/gene_axis_source_metadata.py`, and no release consumer reads it |
+| `output/gene-axis/` | 1,461,704 | released products (`candidate_rank_sum.csv`, `gene_axis_2000.csv`, `gene_axis_5000.csv`, `axis_composition.csv`, `source_topn_coverage.csv`, `manifest.json`) plus the human-facing `gene_axis_fill_rule.docx`, ~1.46 MB; five categories since ADR 0069 | `execution/build_gene_axis.py publish` from the read-only `output/disease-deg/**`, `output/tenv-hvg/descriptive.csv` and `output/gene-identity/genes.csv`; `--verify` replays and compares every digest. The DOCX is separate: `execution/make_gene_axis_docx.py` from the coverage CSV, the figure PNG, the five `output/disease-deg/<category>/catalog.json` files and `execution/gene_axis_source_metadata.py`, and no release consumer reads it |
 | `figure/gene_axis_rank_sum_histogram.png` | 59,582 | two-panel evidence figure (one panel per released axis, `N = 2000`/`N = 5000`): the identical gray candidate histogram plus, from each bar's top downward, the colored share of that bin the axis selects (sha256 `5c54608f…`) | `figure/script/render_gene_axis_rank_sum_histogram.py` from `figure/data/gene_axis_rank_sum_histogram.csv` alone (`output/` unreadable) |
 | `figure/data/gene_axis_rank_sum_histogram.csv` | 10,250 | complete plotted values: the figure/panel records, the candidate histogram bins/counts and each panel's selected-gene count per bin | written by the build from the pinned inputs; tracked next to the PNG |
 

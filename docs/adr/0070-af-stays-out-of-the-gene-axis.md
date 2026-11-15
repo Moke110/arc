@@ -100,3 +100,11 @@ dataset whose measurable genes happen to be large-effect genes.
 - `docs/research/stage2-af-source-audit.md` — the full audit (candidates, methods, numbers)
 - `docs/research/stage2-gene-axis-cm-source-survey.md` — the earlier CM-source survey
 - `stage2/01_bases/README.md` — the five-category contract and the docx's source table
+
+## Erratum (2026-11-15)
+
+The Consequences section's "two catalog inputs" was an early estimate. The implemented docx
+replay reads the **five** `output/disease-deg/<category>/catalog.json` inputs plus the tracked
+`stage2/01_bases/execution/gene_axis_source_metadata.py` module (issue #197), and the document
+under test is `output/gene-axis/gene_axis_fill_rule.docx`. The decision above is unaffected; this
+accepted record is not rewritten.

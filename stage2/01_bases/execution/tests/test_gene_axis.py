@@ -1,9 +1,11 @@
 """Tests for the two-level rank-sum fusion and the released axes.
 
-Everything is a hand-built 8-gene fixture except three real-file replay tests:
-the rule document and the two committed figure PNGs are regenerated from their
-tracked inputs and compared byte-for-byte with the committed products. No
-release payload (h5ad, ``source/`` tree or gitignored intermediate) is read.
+Everything is a hand-built 8-gene fixture except the real-file tests: the rule
+document and the two committed figure PNGs are regenerated from their tracked
+inputs and compared byte-for-byte, and the document's input wiring, its
+source-table/excluded-AF contracts and its sample-size footnote are asserted
+against the committed file. No release payload (h5ad, ``source/`` tree or
+gitignored intermediate) is read.
 The fusion, the axis fill rule, the readers and the document tables are
 exercised at the public API / product boundary; one seam only (ADR 0066 /
 spec). Determinism is tested by building the same fixture twice into scratch
@@ -12,6 +14,8 @@ candidate roots and comparing every digest.
 import csv
 import hashlib
 import json
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -919,8 +923,22 @@ class SourceCoverageFigureTests(unittest.TestCase):
             self.assertNotIn(token, source)
 
 
+
+
+def source_table_row(document, catalogs, dataset_id):
+    """Return the cells of ``dataset_id``'s source-table row (row order = catalog order)."""
+    offset = 0
+    for category in gene_axis.CATEGORIES:
+        catalog = json.loads(Path(catalogs[category]).read_text(encoding='utf-8'))
+        for dataset in catalog['datasets']:
+            if dataset['dataset_id'] == dataset_id:
+                return [cell.text for cell in document.tables[0].rows[1 + offset].cells]
+            offset += 1
+    raise AssertionError(f'{dataset_id} is not in the concatenated catalogs')
+
+
 class DocxTests(unittest.TestCase):
-    """The rule document replays byte-identically from the released inputs."""
+    """The rule document replays byte-identically and every table cell is contracted."""
 
     def catalogs(self):
         return {category: STEP / 'output/disease-deg' / category / 'catalog.json'
@@ -933,11 +951,101 @@ class DocxTests(unittest.TestCase):
         committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         for path in (coverage, figure, committed, *catalogs.values()):
             self.assertTrue(path.is_file(), f'missing docx input or output: {path}')
+        import gene_axis_source_metadata as metadata
         import make_gene_axis_docx as docx_builder
         with tempfile.TemporaryDirectory() as temporary:
             rendered = Path(temporary) / 'gene_axis_fill_rule.docx'
-            docx_builder.build(coverage, figure, rendered, catalogs=catalogs)
+            docx_builder.build(coverage, figure, rendered,
+                               catalogs=catalogs, metadata=metadata)
             self.assertEqual(sha256_file(rendered), sha256_file(committed))
+
+    def test_build_reads_the_five_catalog_paths_it_is_given(self):
+        """A changed catalog ``n_significant`` must reach the rendered cell."""
+        from docx import Document
+        import make_gene_axis_docx as docx_builder
+        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            catalogs = {}
+            for category, path in self.catalogs().items():
+                copied = temporary / category / 'catalog.json'
+                copied.parent.mkdir(parents=True)
+                shutil.copyfile(path, copied)
+                catalogs[category] = copied
+            catalog = json.loads(catalogs['cardiotox_TOP2'].read_text(encoding='utf-8'))
+            for dataset in catalog['datasets']:
+                if dataset['dataset_id'] == 'gse243674':
+                    dataset['n_significant'] = 12345
+            catalogs['cardiotox_TOP2'].write_text(
+                json.dumps(catalog, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+            rendered = temporary / 'wired.docx'
+            docx_builder.build(coverage, figure, rendered, catalogs=catalogs)
+            document = Document(str(rendered))
+            cells = source_table_row(document, catalogs, 'gse243674')
+            self.assertEqual(cells[6].replace(',', ''), '12345',
+                             'the build ignored the catalog path it was handed')
+
+    def test_build_reads_the_metadata_module_it_is_given(self):
+        """A changed technology string must reach the rendered cell."""
+        from docx import Document
+        import make_gene_axis_docx as docx_builder
+        module_path = EXECUTION / 'gene_axis_source_metadata.py'
+        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        tracked = "'bulk RNA-seq (hiPSC-CM monolayer, 3 h / 24 h)'"
+        probe = "'bulk RNA-seq (hiPSC-CM monolayer, 3 h / 24 h; metadata probe)'"
+        source = module_path.read_text(encoding='utf-8')
+        self.assertEqual(source.count(tracked), 1, 'fixture assumption: one matching technology')
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            copied = temporary / 'gene_axis_source_metadata.py'
+            copied.write_text(source.replace(tracked, probe), encoding='utf-8')
+            metadata = docx_builder.load_metadata_module(copied)
+            rendered = temporary / 'wired.docx'
+            docx_builder.build(coverage, figure, rendered,
+                               catalogs=self.catalogs(), metadata=metadata)
+            document = Document(str(rendered))
+            cells = source_table_row(document, self.catalogs(), 'gse243674')
+            self.assertEqual(cells[5], probe.strip("'"),
+                             'the build ignored the metadata module it was handed')
+
+    def test_cli_catalog_and_metadata_overrides_are_read(self):
+        """The ``--catalog``/``--metadata`` CLI inputs reach the document too."""
+        from docx import Document
+        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        tracked = "'bulk RNA-seq (hiPSC-CM monolayer, 3 h / 24 h)'"
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            catalog_path = temporary / 'nhf-catalog.json'
+            shutil.copyfile(self.catalogs()['nhf'], catalog_path)
+            catalog = json.loads(catalog_path.read_text(encoding='utf-8'))
+            catalog['datasets'][0]['n_significant'] = 424242
+            catalog_path.write_text(
+                json.dumps(catalog, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+            metadata_path = temporary / 'gene_axis_source_metadata.py'
+            metadata_path.write_text(
+                (EXECUTION / 'gene_axis_source_metadata.py')
+                .read_text(encoding='utf-8')
+                .replace(tracked, tracked[:-2] + "; cli probe)'"),
+                encoding='utf-8')
+            out = temporary / 'cli.docx'
+            result = subprocess.run(
+                [sys.executable, str(EXECUTION / 'make_gene_axis_docx.py'),
+                 '--coverage', str(coverage), '--figure', str(figure),
+                 '--catalog', f'nhf={catalog_path}',
+                 '--metadata', str(metadata_path), '--out', str(out)],
+                capture_output=True, text=True, timeout=300)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            document = Document(str(out))
+            first_dataset = json.loads(
+                self.catalogs()['nhf'].read_text(encoding='utf-8'))['datasets'][0]
+            cells = source_table_row(document, self.catalogs(), first_dataset['dataset_id'])
+            self.assertEqual(cells[6].replace(',', ''), '424242', '--catalog was ignored')
+            cells = source_table_row(document, self.catalogs(), 'gse243674')
+            self.assertEqual(cells[5], tracked.strip("'")[:-1] + '; cli probe)',
+                             '--metadata was ignored')
 
     def test_coverage_table_columns_are_contracted(self):
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
@@ -974,11 +1082,17 @@ class DocxTests(unittest.TestCase):
                 if groups is not None:
                     self.assertEqual(cells[3], groups, 'groups column')
                 else:
-                    self.assertIn(dataset['class_label'], cells[3], 'class label')
-                    self.assertIn(dataset['class_id'], cells[3], 'class id')
-                    for drug in dataset['member_drugs']:
-                        self.assertIn(drug, cells[3], f'member drug {drug}')
-                    self.assertIn(' vs ', cells[3], 'vehicle contrast wording')
+                    # Cardiotox rows: class label/id/drugs plus the vehicle phrase the
+                    # catalog's own ``shared_control_group`` publishes.
+                    shared = dataset['shared_control_group']
+                    _, separator, tail = shared.partition(':')
+                    self.assertTrue(separator, f'{dataset_id}: no ":" in shared_control_group')
+                    vehicle = tail.strip().split(' (', 1)[0]
+                    expected_groups = (
+                        f"{dataset['class_label']} ({dataset['class_id']}; "
+                        f"{', '.join(dataset['member_drugs'])}) vs {vehicle}")
+                    self.assertEqual(cells[3], expected_groups,
+                                     'groups cell must derive from the catalog')
                 self.assertEqual(
                     cells[4], f"{dataset['n_case']} / {dataset['n_control']}",
                     'sample sizes column')
@@ -992,8 +1106,44 @@ class DocxTests(unittest.TestCase):
         last = [cell.text for cell in table.rows[-1].cells]
         tenv = metadata.SOURCES[metadata.TENV_HVG]
         self.assertEqual(last[0], 'tenv-HVG (fusion source)')
+        self.assertLessEqual(len(last[1]), 60, 'tenv accession cell must stay short')
+        self.assertIn('GSE262419', last[1])
         self.assertIn(tenv['technology'], last[5])
         self.assertIn('not a DEG source', last[6])
+
+    def test_sample_size_footnote_cross_checks_the_mapping(self):
+        """The footnote's five sample-size bases must exist in the tracked notes."""
+        from docx import Document
+        import gene_axis_source_metadata as metadata
+        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
+        document = Document(str(committed))
+        footnote = next((paragraph.text for paragraph in document.paragraphs
+                         if '样本量口径' in paragraph.text), None)
+        self.assertIsNotNone(footnote, 'the source-table footnote lacks the sample-size basis')
+        groups = {
+            '46': ('gse270788__nicm', 'gse270788__icm', 'gse270788__ami'),
+            '1,171': ('dtoxs_ipsc', 'dtoxs_ipsc__atc_l4-L01EA',
+                      'dtoxs_ipsc__atc_l4-L01EB', 'dtoxs_ipsc__atc_l4-L01EX'),
+            '72': ('gse243674',),
+            '3,072': ('gse244740',),
+            '79': ('reichart-cm__dcm_genotype_negative',
+                   'reichart-cm__dcm_genotype_positive', 'reichart-cm__arvc'),
+        }
+        for number, dataset_ids in groups.items():
+            with self.subTest(number=number):
+                self.assertIn(number, footnote, f'footnote lacks the {number} basis')
+                notes = [metadata.SOURCES[dataset_id]['sample_size_note']
+                         for dataset_id in dataset_ids]
+                self.assertTrue(
+                    any(note and number in note for note in notes),
+                    f'the mapping notes no longer record {number}')
+                for dataset_id in dataset_ids:
+                    note = metadata.SOURCES[dataset_id]['sample_size_note']
+                    if note is not None:
+                        self.assertIsInstance(note, str)
+                        self.assertTrue(note.strip(),
+                                        f'{dataset_id}: blank sample_size_note')
 
     def test_af_excluded_table_contract(self):
         """The second table is the audited-and-excluded AF sources block."""
