@@ -37,7 +37,11 @@ from bases import deg_rank, gene_axis
 from bases.deg_rank import normalized_rank
 from bases.disease_deg import catalog_digest
 from bases.gene_axis import (
-    AXIS_SIZES, CATEGORIES, CATEGORY_RANK_COLUMNS, CANDIDATE_COLUMNS, GeneAxis,
+    # #206: the fixtures exercise the *released* five-category products; the
+    # declared roster is ``gene_axis.CATEGORIES`` (it gains ``af``, which #208
+    # publishes and moves into the release set).
+    AXIS_SIZES, CATEGORY_RANK_COLUMNS, CANDIDATE_COLUMNS, GeneAxis,
+    RELEASE_CATEGORIES as CATEGORIES,
     category_rank, winning_tier,
 )
 
@@ -566,6 +570,63 @@ def manifest_strings(value):
             yield from manifest_strings(item)
 
 
+class DeclaredRosterTests(unittest.TestCase):
+    """#206: a declared category without accepted products does not break the build.
+
+    ``gene_axis.CATEGORIES`` is the six-disease roster (AF returns); the committed
+    release is still the five categories whose disease-deg products exist. The
+    reader must tolerate the declared-but-unpublished ``af`` instead of failing
+    with "exactly the old five categories exist", while still failing closed on a
+    missing released product, an undeclared product directory, or a declared
+    category whose products appeared before #208 moved it into the release.
+    """
+
+    def test_af_is_declared_but_not_yet_released(self):
+        self.assertIn('af', gene_axis.CATEGORIES)
+        self.assertNotIn('af', gene_axis.RELEASE_CATEGORIES)
+        self.assertEqual(gene_axis.RELEASE_CATEGORIES,
+                         tuple(c for c in gene_axis.CATEGORIES if c != 'af'))
+        self.assertTrue(set(gene_axis.RELEASE_CATEGORIES) < set(gene_axis.CATEGORIES))
+
+    def test_the_release_contract_keeps_the_five_released_categories(self):
+        self.assertEqual(len(gene_axis.CATEGORY_RANK_COLUMNS), 5)
+        self.assertNotIn('af_rank', gene_axis.CATEGORY_RANK_COLUMNS)
+        self.assertNotIn('%af_gN', gene_axis.COVERAGE_COLUMNS)
+        self.assertNotIn('af', gene_axis.COUNT_COLUMNS)
+
+    def test_the_five_category_release_still_builds(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            self.assertEqual(driver.publish(config)['result'], 'PASS')
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+
+    def test_a_missing_released_category_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            shutil.rmtree(config.disease_root / 'icm')
+            with self.assertRaisesRegex(ValueError, 'missing'):
+                driver.publish(config)
+
+    def test_an_undeclared_product_directory_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            extra = config.disease_root / 'unknown_category'
+            extra.mkdir()
+            (extra / 'catalog.json').write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'undeclared'):
+                driver.publish(config)
+
+    def test_a_declared_unreleased_product_fails_with_the_208_pointer(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            # The declared-but-unreleased category gets a product directory: the
+            # release set must be updated by #208's republish before it may build.
+            (config.disease_root / 'af').mkdir()
+            (config.disease_root / 'af' / 'catalog.json').write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'RELEASE_CATEGORIES'):
+                driver.publish(config)
+
+
 class ReleaseBuildTests(unittest.TestCase):
     """Candidate-then-replace publication, replay determinism and the reader seam."""
 
@@ -949,7 +1010,7 @@ class SourceCoverageFigureTests(unittest.TestCase):
 def source_table_row(document, catalogs, dataset_id):
     """Return the cells of ``dataset_id``'s source-table row (row order = catalog order)."""
     offset = 0
-    for category in gene_axis.CATEGORIES:
+    for category in gene_axis.RELEASE_CATEGORIES:
         catalog = json.loads(Path(catalogs[category]).read_text(encoding='utf-8'))
         for dataset in catalog['datasets']:
             if dataset['dataset_id'] == dataset_id:
@@ -963,7 +1024,7 @@ class DocxTests(unittest.TestCase):
 
     def catalogs(self):
         return {category: STEP / 'output/disease-deg' / category / 'catalog.json'
-                for category in gene_axis.CATEGORIES}
+                for category in gene_axis.RELEASE_CATEGORIES}
 
     def test_committed_docx_replays_from_its_inputs(self):
         coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
@@ -1088,7 +1149,7 @@ class DocxTests(unittest.TestCase):
         self.assertEqual(header, list(docx_builder.SOURCE_TABLE_COLUMNS))
         self.assertEqual(len(table.rows), 1 + 19, 'expected 19 source rows + header')
         expected = []
-        for category in gene_axis.CATEGORIES:
+        for category in gene_axis.RELEASE_CATEGORIES:
             catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
             expected.extend((catalog['category'], dataset) for dataset in catalog['datasets'])
         self.assertEqual(len(expected), 18)

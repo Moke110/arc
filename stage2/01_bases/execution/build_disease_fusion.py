@@ -116,6 +116,10 @@ FUSION_SEMANTICS = {
                         'collapsed winning-contrast rows, so its v2 flag is '
                         're-derived from those rows and the ledger records '
                         'flag_source = collapsed_winning_contrast'),
+    # #206: the tier-order/stop criterion is published with the catalog so a reader
+    # cannot apply the retired genome-wide reading. The same text is carried by each
+    # category catalog's `tiering.rule`.
+    'tier_stop': disease_deg.TIER_STOP_RULE,
 }
 
 

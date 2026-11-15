@@ -15,11 +15,19 @@ through :mod:`bases.disease_deg`, writes a candidate outside ``output/``
 category. ``verify`` replays the build from the pinned inputs and compares the
 manifest and every output digest; the accepted release is never written.
 
+The published catalog carries the ADR 0071 v2 fields (``n_deg``, ``deg2000``,
+``tiering`` and the declared ``tier_sources`` ladder) once the driver runs: the
+tier order and the axis-resolved stop rule are applied by
+:func:`bases.disease_deg.tier_ledger` over the sources this driver just measured,
+so the record is never hand-written (ticket #206; products are republished by
+#208).
+
 Usage (from the repository root, with the shared ``arc`` env's ``python``)::
 
     python stage2/01_bases/execution/build_disease_deg.py publish --category nHF
     ... publish --all
     ... verify  --all
+    ... ledger  --all        # print each category's tier ledger; writes no product
 
 ``--input-root``/``--sources`` exist so the hermetic tests can run the same
 driver over a fixture tree and a fixture source declaration.
@@ -33,6 +41,7 @@ from importlib.machinery import SourceFileLoader
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve()
@@ -123,6 +132,125 @@ def source_inputs(context, dataset):
     return inputs, derived
 
 
+def read_category_sources(context, category, resolver):
+    """Read, select, align and v2-rank every declared source of one category.
+
+    One read path for both the product build and the tier ledger, so the
+    declaration, the ladder and the published tables cannot drift. Each record
+    carries the item-local table (canonical columns through the declaration's
+    optional ``local_deg_columns`` alias), its axis-aligned rows, the alignment
+    report and the v2 DEG-only table (``bases.deg_rank.dataset_deg_rank``, which
+    carries the authoritative pass-any-contrast ``deg`` flag).
+    """
+    prepared = []
+    for dataset in context.sources.datasets(category):
+        local = disease_deg.read_local_deg(
+            item_input(context, dataset, dataset['local_deg']),
+            aliases=dataset.get('local_deg_columns'))
+        local = disease_deg.contrast_selection(local, dataset['dataset_id'],
+                                               dataset['contrasts'])
+        aligned, report = disease_deg.align_source_table(local, resolver)
+        v2_table, _v2_rank, v2_stats = disease_deg.dataset_deg_rank(
+            aligned[['gene_index', 'log2fc', 'padj', 'contrast']])
+        prepared.append({'dataset': dataset, 'local': local, 'aligned': aligned,
+                         'alignment_report': report, 'v2_table': v2_table,
+                         'v2_stats': v2_stats})
+    return prepared
+
+
+def source_deg_sets(prepared):
+    """The measured v2 DEG set of every source, as :func:`tier_ledger` input.
+
+    The set is the published-table convention of
+    :func:`bases.disease_deg.source_deg_rank` applied to the v2 table (the
+    authoritative ``deg`` flag), so it is the same set the republished product
+    and its fusion will carry, resolved to the frozen axis by ``gene_index``.
+    """
+    measured = {}
+    for item in prepared:
+        derived = disease_deg.source_deg_rank(item['v2_table'])
+        mask = np.asarray(derived['rank'], dtype=np.int64) <= int(derived['n_deg'])
+        measured[item['dataset']['dataset_id']] = {
+            'deg': np.flatnonzero(mask).astype(np.int64),
+            'n_deg': int(derived['n_deg']),
+            'informative': bool(derived['informative'])}
+    return measured
+
+
+def published_source_sets(context, category):
+    """The measured v2 DEG set of every *published* source of one category.
+
+    Fallback for a category whose sources this registry does not declare (the
+    cardiotox classes, whose declaration lives in :mod:`bases.cardiotox` and whose
+    accepted products are complete): read the digest-checked published tables and
+    apply the same :func:`bases.disease_deg.source_deg_rank` convention.
+    """
+    root = disease_deg.category_root(context.output, category)
+    catalog = json.loads((root / 'catalog.json').read_text())
+    manifest = release.read_json(root / 'manifest.json')
+    outputs = manifest.get('outputs') or {}
+    datasets = catalog['datasets']
+    measured = {}
+    for record in datasets:
+        name = record['deg']
+        declared = outputs.get(name)
+        expected = declared.get('sha256') if isinstance(declared, dict) else declared
+        if not isinstance(expected, str) or len(expected) != 64:
+            raise release.ReleaseError(
+                f'{category}/{record["dataset_id"]}: {name} is not a declared output')
+        path = root / name
+        if sha256(path) != expected:
+            raise release.ReleaseError(
+                f'{category}/{record["dataset_id"]}: {name} digest differs from the '
+                'category manifest')
+        derived = disease_deg.source_deg_rank(
+            pd.read_csv(path, float_precision='round_trip'))
+        mask = np.asarray(derived['rank'], dtype=np.int64) <= int(derived['n_deg'])
+        measured[record['dataset_id']] = {
+            'deg': np.flatnonzero(mask).astype(np.int64),
+            'n_deg': int(derived['n_deg']),
+            'informative': bool(derived['informative'])}
+    return datasets, measured
+
+
+def category_ledger(context, category):
+    """Compute one category's tier-order/stop ledger from its declared sources.
+
+    Registry-declared categories are measured from their item-local tables (the
+    full declared roster, including products not yet published); a category whose
+    declaration lives outside this registry (the cardiotox classes) is measured
+    from its accepted products. Nothing is published: this is the audit/print
+    path behind ``build_disease_deg.py ledger`` and the same computation the
+    publish path writes into the catalog.
+    """
+    axis_path = context.input(AXIS_RELATIVE)
+    axis = disease_deg.read_axis(axis_path)
+    # Accept a registry label (nHF) or a product directory (nhf); a category whose
+    # declaration lives outside this registry (the cardiotox classes) keeps its
+    # product name.
+    label = category
+    for key, record in context.sources.CATEGORIES.items():
+        if (record.get('directory') or key) == category:
+            label = key
+            break
+    if any(record['category'] == label for record in context.sources.DATASETS):
+        resolver = disease_deg.build_resolver(axis, disease_deg.read_crosswalk(
+            context.input(CROSSWALK_RELATIVE)))
+        prepared = read_category_sources(context, label, resolver)
+        declared = context.sources.datasets(label)
+        measured = source_deg_sets(prepared)
+    else:
+        declared, measured = published_source_sets(context, category)
+    ledger = disease_deg.tier_ledger(label, declared, measured)
+    return {'category': label,
+            'directory': category,
+            'tiering': ledger['tiering'],
+            'tier_sources': ledger['tier_sources'],
+            'n_deg': ledger['n_deg'],
+            'deg2000': ledger['deg2000'],
+            'sources': ledger['sources']}
+
+
 def build_category(context, candidate, category):
     """Write one category's candidate directory; return its manifest."""
     candidate = Path(candidate)
@@ -133,14 +261,23 @@ def build_category(context, candidate, category):
     resolver = disease_deg.build_resolver(axis, crosswalk)
     symbols = axis.symbol.to_numpy(dtype=object)
     category_record = context.sources.category_record(category)
+    declared = context.sources.datasets(category)
+    prepared = read_category_sources(context, category, resolver)
     records, outputs, inputs = [], {}, {}
-    for dataset in context.sources.datasets(category):
-        local = disease_deg.read_local_deg(
-            item_input(context, dataset, dataset['local_deg']))
-        local = disease_deg.contrast_selection(local, dataset['dataset_id'],
-                                               dataset['contrasts'])
+    fusion_inputs = []
+    for item in prepared:
+        dataset = item['dataset']
         table, rank, stats, report = disease_deg.build_dataset_products(
-            local, resolver, symbols, dataset['dataset_id'])
+            item['local'], resolver, symbols, dataset['dataset_id'])
+        # The v2 source rank the tier ledger and the disease fusion consume; the
+        # published table/rank above are still the current (pre-#208) product.
+        derived = disease_deg.source_deg_rank(item['v2_table'])
+        fusion_inputs.append({
+            'dataset_id': dataset['dataset_id'], 'tier': dataset['tier'],
+            'rank': derived['rank'], 'n_deg': derived['n_deg'],
+            'informative': bool(derived['informative']),
+            'informativeness_reason': derived['reason'],
+        })
         disease_deg.validate_table(table)
         disease_deg.validate_rank(rank)
         deg_name = f"{dataset['dataset_id']}.deg.csv"
@@ -190,8 +327,10 @@ def build_category(context, candidate, category):
             'derived_inputs': derived_inputs,
         }
         # Optional declared evidence the canonical shape tolerates: the ADR 0066
-        # isogenic-exception record and the multi-arm strata/pooling decision.
-        for optional in ('isogenic_exception', 'strata'):
+        # isogenic-exception record, the multi-arm strata/pooling decision and the
+        # ADR 0071 tier-2 non-genetic model basis / tier-3 whole-tissue basis.
+        for optional in ('isogenic_exception', 'strata', 'non_genetic_model_basis',
+                         'model_basis'):
             if optional in dataset:
                 record[optional] = dataset[optional]
         records.append(record)
@@ -204,11 +343,27 @@ def build_category(context, candidate, category):
     inputs[context.relative(axis_path)] = axis_sha
     if crosswalk_path.is_file():
         inputs[context.relative(crosswalk_path)] = sha256(crosswalk_path)
+    # ADR 0071 decision 2 (#206): the tier ladder, the cumulative axis-resolved
+    # DEG union after each tier and the stop point are computed from the declared
+    # per-source tiers and the measured DEG sets, then published on the catalog.
+    ledger = disease_deg.tier_ledger(category, declared, source_deg_sets(prepared))
+    fusion = disease_deg.fuse_disease(fusion_inputs, axis_size=len(axis))
+    if fusion['n_deg'] != ledger['n_deg']:
+        raise release.ReleaseError(
+            f'{category}: the tier ledger union ({ledger["n_deg"]}) differs from the '
+            f'fusion union ({fusion["n_deg"]})')
+    fusion_ledger = {row['dataset_id']: row for row in fusion['sources']}
+    source_deg = {dataset_id: {'n_deg': int(row['n_deg']),
+                               'n_deg_in_deg2000': int(row['n_deg_in_deg2000'])}
+                  for dataset_id, row in fusion_ledger.items()}
     catalog = disease_deg.build_catalog(
         category, category_record['directory'], category_record['tier'],
         category_record['evidence_type'], axis, axis_sha, records,
         rejected=category_record['rejected'],
-        isogenic_exception=category_record.get('isogenic_exception'))
+        isogenic_exception=category_record.get('isogenic_exception'),
+        n_deg=fusion['n_deg'], deg2000=fusion['deg2000'],
+        tiering=ledger['tiering'], tier_sources=ledger['tier_sources'],
+        source_deg=source_deg)
     catalog_file = candidate / 'catalog.json'
     catalog_sha = disease_deg.write_catalog(catalog_file, catalog)
     outputs['catalog.json'] = {'sha256': sha256(catalog_file)}
@@ -265,6 +420,14 @@ def _verify_directory(path):
         for name in (record['deg'], record['rank']):
             if sha256(path / name) != expected[name]:
                 raise release.ReleaseError(f'{dataset}: {name} digest differs')
+    if 'tiering' in catalog:
+        # #206: a catalog that carries the tier ladder/stop record is validated
+        # against the full v2 contract (the published products before #208 carry
+        # only the v1 shape and skip this).
+        try:
+            disease_deg.validate_catalog(catalog)
+        except ValueError as error:
+            raise release.ReleaseError(f'{path.name}: {error}') from None
     return manifest, catalog
 
 
@@ -313,7 +476,7 @@ def replay_category(context, category):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('publish', 'verify'))
+    parser.add_argument('command', choices=('publish', 'verify', 'ledger'))
     parser.add_argument('--category', action='append', default=[],
                         help='disease category (repeatable)')
     parser.add_argument('--all', action='store_true', help='every ticket-187 category')
@@ -328,9 +491,24 @@ def main(argv=None):
                       Path(args.input_root) if args.input_root else REPO, sources)
     categories = list(args.category)
     if args.all:
-        categories = sorted(sources.CATEGORIES)
+        if args.command == 'ledger':
+            # Every category with a declaration or accepted products: the
+            # registry's product directories plus the published categories whose
+            # declaration lives elsewhere (the cardiotox classes). The crosswalk
+            # directory is not a category.
+            registry = {(record.get('directory') or label)
+                        for label, record in sources.CATEGORIES.items()}
+            categories = sorted(registry | set(
+                disease_deg.DiseaseDeg(context.output).categories()))
+        else:
+            categories = sorted(sources.CATEGORIES)
     if not categories:
         parser.error('pass --category or --all')
+    if args.command == 'ledger':
+        results = [category_ledger(context, category) for category in categories]
+        print(json.dumps({'command': 'ledger', 'results': results},
+                         indent=2, sort_keys=True))
+        return 0
     results = []
     for category in categories:
         if args.command == 'publish':

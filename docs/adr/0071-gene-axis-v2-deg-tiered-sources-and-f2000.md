@@ -38,9 +38,25 @@ downstream fusion.
      ADR 0066's isogenic exception, not to a clinical category;
    - **tier 3** — human atria/ventricle bulk tissue, not cardiomyocyte-specific.
 
-   After finishing a tier, the disease's DEG union (resolved to the frozen axis) is measured;
-   when it reaches **2,000** the collection stops and lower tiers are not entered. The tier,
-   the per-tier union size and the stop/descend decision are recorded per disease.
+   After finishing a tier, the disease's DEG union is measured **resolved to the frozen
+   18,164-gene axis** (axis-resolved, not genome-wide); when it reaches **2,000** the
+   collection stops and lower tiers are not entered. The tier, the per-tier union size and
+   the stop/descend decision are recorded per disease.
+
+   The axis-resolved reading is load-bearing and is applied uniformly to every category
+   (#206): a source DEG that resolves off the axis can never enter `DEG2000` or any axis
+   built from it, so counting it toward the stop test would stop collection while the usable
+   coverage is still short. The genome-wide reading was considered and rejected; the numbers
+   that differ are Kuppe-MI (3,099 genome-wide vs 1,646 on the axis — genome-wide, ICM would
+   "reach" 2,000 from one source without having 2,000 usable genes; axis-resolved its union is
+   1,647 and the category still stops at tier 1 only because no in-band candidate remains),
+   GSE116250 (144 vs 43) and GSE141910 (124 vs 100). The axis-resolved reading is also the
+   conservative one: it is harder to reach, so it can only cause more collection, never less.
+   A category whose sources start at tier 2 (the `cardiotox_*` classes) enters there; a tier
+   with no declared source (AF's tier 2) is absent from the ladder. The ordered ladder, the
+   cumulative per-tier union and the stop point are computed from the declared per-source
+   tiers and published as the category catalog's `tiering`/`tier_sources` record
+   (`bases.disease_deg.tier_ledger`), never hand-written.
 3. **Per-source DEG rank.** Inside a dataset, DEGs rank `1..n_DEG` by descending effect
    `|log2FC|·−log10(padj)` with `gene_index` as the deterministic tie-break; a gene that is
    not a DEG in that dataset gets `n_DEG + 1`; `rank_norm = rank / n_DEG`. The denominator is
@@ -91,7 +107,20 @@ downstream fusion.
 - The disease half of both axes changes; `G_2000` / `G_5000` digests change, and both views are
   re-published on the new axes. Re-pointing `02_models_tenv` stays deferred (ADR 0066).
 - The category rosters change: `AF` returns; `nHF` and `AF` gain tier-2/tier-3 sources; `ICM`
-  gains the Kuppe MI `IZ vs CTRL` contrast (3,075 DEGs, 1,360 on the axis) and stops at tier 1.
+  gains the Kuppe MI `IZ vs CTRL` contrast and stops at tier 1.
+- The final six-disease roster (#206) and its measured axis-resolved ledger:
+
+  | category | tiers entered | cumulative DEG union after each tier | stop |
+  |---|---|---|---|
+  | `nHF` | 1 -> 2 -> 3 | 1,056 -> 1,553 -> 1,661 | tier 3, short of 2,000 by 339 (accepted: no in-band candidate remains, GSE183852 closed) |
+  | `ICM` | 1 | 1,647 | tier 1, short by 353 (no tier-2/3 candidate) |
+  | `AF` | 1 -> 3 | 1 (SLC9A7) -> 1 | tier 3, single-gene union (`DEG2000_AF = {SLC9A7}`) |
+  | `genetic_cardiomyopathy` | 1 -> 2 | 59 -> 1,482 | tier 2, short by 518 (no tier-3 candidate) |
+  | `cardiotox_TOP2` | 2 | 4,363 | tier 2, reaches the limit; `DEG2000` = 2,000 |
+  | `cardiotox_other` | 2 | 279 | tier 2, short by 1,721 |
+
+  `nHF`'s and `ICM`'s shortfalls are the honest result of the declared sources, not a
+  collection gap: `DEG2000` is the whole union for both, which the build rule permits.
 - ADR 0066's sentence "whole-heart or whole-left-ventricle tissue bulk is **not** eligible" is
   superseded: such sources are tier 3 and are entered only when tiers 1–2 fall short of 2,000
   DEGs, with their evidence type recorded.

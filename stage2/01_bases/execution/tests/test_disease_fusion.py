@@ -457,8 +457,11 @@ def valid_catalog(**overrides):
         'datasets': [
             {'dataset_id': 'a', 'tier': 1, 'informative': True, 'n_deg': 900,
              'n_deg_in_deg2000': 900},
+            # #206: an nHF tier-2 record must declare the clinical, non-genetic basis.
             {'dataset_id': 'b', 'tier': 2, 'informative': True, 'n_deg': 1800,
-             'n_deg_in_deg2000': 1400},
+             'n_deg_in_deg2000': 1400, 'genotype_status': 'not_declared',
+             'non_genetic_model_basis': 'fixture: patient-derived iPSC-CM, no mutation '
+                                        'introduced and no isogenic control'},
         ],
     }
     catalog.update(overrides)
@@ -554,10 +557,25 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                                {'tier': 2, 'n_deg_union': 2199}],
                 'stopped_at_tier': 2, 'stop_reached': True,
                 'limit': disease_deg.DEG2000_LIMIT}))
-        with self.assertRaises(ValueError):  # tiers not entered in order
+        # #206: a category whose evidence begins at tier 2 (the cardiotox classes)
+        # legitimately enters there; descending tiers are still refused.
+        cardiotox = valid_catalog(category='cardiotox_TOP2', tier=2, tiering={
+            'tiers_entered': [2],
+            'tier_union': [{'tier': 2, 'n_deg_union': 2199}],
+            'stopped_at_tier': 2, 'stop_reached': True,
+            'limit': disease_deg.DEG2000_LIMIT})
+        cardiotox['datasets'] = [
+            {'dataset_id': 'a', 'tier': 2, 'informative': True, 'n_deg': 900,
+             'n_deg_in_deg2000': 900},
+            {'dataset_id': 'b', 'tier': 2, 'informative': True, 'n_deg': 1800,
+             'n_deg_in_deg2000': 1400},
+        ]
+        disease_deg.validate_catalog(cardiotox)
+        with self.assertRaises(ValueError):  # tiers not entered in ascending order
             disease_deg.validate_catalog(valid_catalog(tiering={
-                'tiers_entered': [2],
-                'tier_union': [{'tier': 2, 'n_deg_union': 2199}],
+                'tiers_entered': [3, 2],
+                'tier_union': [{'tier': 3, 'n_deg_union': 1000},
+                               {'tier': 2, 'n_deg_union': 2199}],
                 'stopped_at_tier': 2, 'stop_reached': True,
                 'limit': disease_deg.DEG2000_LIMIT}))
         with self.assertRaises(ValueError):  # shrinking cumulative union
@@ -599,7 +617,10 @@ class CategoryCatalogShapeTests(unittest.TestCase):
 
     def test_build_catalog_publishes_and_validates_the_v2_fields(self):
         records = [{'dataset_id': 'a', 'tier': 1, 'informative': True},
-                   {'dataset_id': 'b', 'tier': 2, 'informative': True}]
+                   {'dataset_id': 'b', 'tier': 2, 'informative': True,
+                    'genotype_status': 'not_declared',
+                    'non_genetic_model_basis': 'fixture: patient-derived iPSC-CM, '
+                                               'no mutation introduced'}]
         catalog = disease_deg.build_catalog(
             'nHF', 'nhf', 1, 'cm_pseudobulk', pd.DataFrame(), '1' * 64, records,
             n_deg=2199, deg2000=2000, tiering=valid_catalog()['tiering'],
@@ -747,7 +768,33 @@ class FusionDriverTests(unittest.TestCase):
             record = reader.record(directory)
             self.assertEqual(record['deg2000'] or 0,
                              min(record['n_deg'] or 0, disease_deg.DEG2000_LIMIT))
-        self.assertEqual(driver.replay(context)['result'], 'PASS')
+        # #206 declares two nHF tier-3 sources (GSE116250, GSE141910) whose
+        # disease-deg products are published by #208, so the committed fusion
+        # catalog's declared/not_published roster deliberately lags the registry
+        # until that republish re-runs this driver. Rebuild from the same accepted
+        # products and require every fused number and every published ledger to be
+        # unchanged; the only tolerated delta is the declared roster, pinned here.
+        with tempfile.TemporaryDirectory() as temporary:
+            driver.build(context, Path(temporary))
+            rebuilt = disease_deg.read_catalog(Path(temporary) / 'catalog.json')
+        accepted = {record['directory']: record for record in catalog['diseases']}
+        replayed = {record['directory']: record for record in rebuilt['diseases']}
+        self.assertEqual(set(accepted), set(replayed))
+        for directory, record in accepted.items():
+            other = replayed[directory]
+            for key in ('published', 'tier', 'evidence_type', 'informative_source_count',
+                        'n_deg', 'deg2000', 'deg2000_file', 'sources',
+                        'excluded_sources', 'tiers_present', 'reason'):
+                self.assertEqual(record[key], other[key], (directory, key))
+            if directory != 'nhf':
+                self.assertEqual(record['not_published'], other['not_published'],
+                                 directory)
+        lagged = ({entry['dataset_id'] for entry in replayed['nhf']['not_published']}
+                  - {entry['dataset_id'] for entry in accepted['nhf']['not_published']})
+        self.assertEqual(lagged, {'gse116250__hf_lv_bulk', 'gse141910__hf_lv_bulk'},
+                         'the #206 roster additions must be the only fusion-catalog lag')
+        self.assertEqual(replayed['nhf']['declared_source_count'],
+                         accepted['nhf']['declared_source_count'] + 2)
 
 
 if __name__ == '__main__':

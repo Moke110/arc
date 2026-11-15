@@ -266,8 +266,10 @@ def read_source_table_rows(catalogs, metadata):
     """Read the five released catalogs into the source table's 19 data rows.
 
     ``catalogs`` maps category -> ``catalog.json`` path and ``metadata`` is the
-    verified mapping module. Rows follow the released ``gene_axis.CATEGORIES``
-    order and each catalog's ``datasets[]`` file order; the tenv-HVG fusion row is
+    verified mapping module. Rows follow the released
+    ``gene_axis.RELEASE_CATEGORIES`` order (the declared roster's ``af`` joins it
+    in #209's rebuild) and each catalog's ``datasets[]`` file order; the tenv-HVG
+    fusion row is
     appended last. Row counts, sample type, groups, sample sizes and CM DEG counts
     come from the catalogs; only accession and sequencing technology come from
     the mapping. The metadata coverage is validated before any lookup, so a
@@ -275,7 +277,7 @@ def read_source_table_rows(catalogs, metadata):
     """
     datasets = []
     dataset_ids = []
-    for category in gene_axis.CATEGORIES:
+    for category in gene_axis.RELEASE_CATEGORIES:
         path = Path(catalogs[category])
         catalog = json.loads(path.read_text(encoding='utf-8'))
         if catalog.get('category') != gene_axis.CATEGORY_LABELS[category]:
@@ -428,7 +430,7 @@ def default_paths():
         'coverage': step / 'output/gene-axis/source_topn_coverage.csv',
         'figure': step / 'figure/gene_axis_rank_sum_histogram.png',
         'catalogs': {category: step / 'output/disease-deg' / category / 'catalog.json'
-                     for category in gene_axis.CATEGORIES},
+                     for category in gene_axis.RELEASE_CATEGORIES},
         'out': step / 'output/gene-axis/gene_axis_fill_rule.docx',
     }
 

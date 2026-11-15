@@ -935,3 +935,122 @@ DATASETS.extend([
         },
     },
 ])
+
+# --- ticket #206: nHF tier-3 bulk roster + the six-category tier ladders ------
+# ADR 0071 decision 2 collects each category's sources in ascending tier order.
+# The ladder is derived from each record's own `tier` (no second declaration):
+#   nHF   1 = gse270788__nicm + reichart genotype-negative
+#         2 = gse35108__dcm_ipsc_cm
+#         3 = gse165303__dcm_lv_bulk + GSE116250 + GSE141910
+#   ICM   1 = gse270788__icm + gse270788__ami + kuppe-mi__iz
+#   AF    1 = gse255612__af + gse138252__af + gse238242__af   (no tier-2 source)
+#         3 = gse269882__af
+#   genetic_cardiomyopathy  1 = the two Reichart exports
+#                           2 = the six isogenic hiPSC-CM models
+#   cardiotox_TOP2 / cardiotox_other  2 = their pooled class sources (the
+#         category begins at tier 2; `bases.cardiotox` declares those sources)
+# The stop rule and its axis-resolved criterion live once, in
+# `bases.disease_deg.TIER_STOP_RULE` / `tier_ledger`; `build_disease_deg.py ledger`
+# computes a category's cumulative axis-resolved union and stop point from these
+# declarations, and the publish path writes the resulting `tiering` record.
+# nHF's ceiling is accepted (ADR 0071 decision-2 note, 2026-11-15): GSE183852 is
+# closed on both routes (measured 70 v2 DEGs / 50 on the axis; an 8.1-12 GB Seurat
+# Robj label extraction is not warranted), so nHF tops out at ~1,661 axis DEGs and
+# `DEG2000_nHF` is the whole union rather than a 2,000-gene cut.
+DATASETS.extend([
+    {
+        'dataset_id': 'gse116250__hf_lv_bulk',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE116250',
+        'local_deg': 'local/deg/GSE116250_deg.csv',
+        'local_summary': 'local/deg/GSE116250_deg.json',
+        # The #179-era HF item deposits the shared DEG table with its own column
+        # names; the canonical contract is applied by `bases.disease_deg.read_local_deg`.
+        'local_deg_columns': {'log2FC': 'log2fc', 'mean_expr': 'base_mean'},
+        'arm_or_class': ('heart failure (50: 37 dilated + 13 ischaemic cardiomyopathy) vs '
+                         'non-failing left ventricle (14 donors), three fitted arm contrasts'),
+        'species': 'Homo sapiens',
+        'model_system': ('human left-ventricular bulk tissue (whole tissue, not '
+                         'cardiomyocyte-specific), bulk RNA-seq'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse116250:nf',
+        'n_case': 50,
+        'n_control': 14,
+        'contrasts': ['HF_vs_NF', 'DCM_vs_NF', 'ICM_vs_NF'],
+        'model_basis': ('whole left-ventricular tissue bulk: not cardiomyocyte-specific, '
+                        'so it is a tier-3 source only and enters nHF only after tiers '
+                        '1-2 fall short of 2,000 axis-resolved DEGs (ADR 0071)'),
+        'strata': {
+            'decision': ('one joint fit ~0 + group over the 64 libraries (14 NF / 37 DCM / '
+                         '13 ICM) publishes the primary HF_vs_NF contrast and the two arm '
+                         'contrasts as contrast rows of the same fit; the multi-contrast '
+                         'collapse keeps the maximum-effect contrast per gene and the DEG '
+                         'flag is pass-any-contrast'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('the three labels are arms of one model, not independent sources; the '
+                    'tier-3 contribution is their pass-any-contrast v2 DEG union (43 '
+                    'axis DEGs measured, 144 genome-wide). The 13-donor ICM arm is an '
+                    'end-stage remodelling proxy, recorded here and never re-used as the '
+                    'ICM category source, whose evidence is tier-1 CM pseudobulk'),
+        },
+        'method': {
+            'deposition': ('RPKM as deposited (Cufflinks / GRCh37.82), analysed as '
+                           'log2(RPKM + 1); the submitters removed mitochondrial genes'),
+            'model': ('limma on the deposited log2(RPKM + 1) matrix; Ensembl annotations '
+                      'collapsed to HGNC symbols by maximum mean expression'),
+            'design': ('one joint fit ~0 + group over all 64 libraries with group in '
+                       '{NF, DCM, ICM}; three contrasts (HF_vs_NF primary)'),
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+    {
+        'dataset_id': 'gse141910__hf_lv_bulk',
+        'category': 'nHF',
+        'source_item': 'disease_data/GSE141910',
+        'local_deg': 'local/deg/GSE141910_deg.csv',
+        'local_summary': 'local/deg/GSE141910_deg.json',
+        'local_deg_columns': {'log2FC': 'log2fc', 'mean_expr': 'base_mean'},
+        'arm_or_class': 'heart failure (200: 166 DCM / 28 HCM / 6 PPCM) vs non-failing LV (166 donors)',
+        'species': 'Homo sapiens',
+        'model_system': ('human left-ventricular free-wall bulk tissue (whole tissue, not '
+                         'cardiomyocyte-specific), bulk RNA-seq, MAGNet consortium'),
+        'evidence_type': 'bulk',
+        'tier': 3,
+        'genotype_status': 'not_declared',
+        'time_window_basis': None,
+        'exploratory': False,
+        'shared_control_group': 'gse141910:nf',
+        'n_case': 200,
+        'n_control': 166,
+        'contrasts': ['HF_vs_NF'],
+        'model_basis': ('whole left-ventricular free-wall bulk: not cardiomyocyte-specific, '
+                        'so it is a tier-3 source only and enters nHF only after tiers 1-2 '
+                        'fall short of 2,000 axis-resolved DEGs (ADR 0071)'),
+        'strata': {
+            'decision': ('single pooled HF-vs-NF contrast; the deposited etiology labels '
+                         '(DCM/HCM/PPCM) are recorded but not modelled'),
+            'pooled': True,
+            'blocking_covariates': [],
+            'why': ('the item is the programme\'s HF primary anchor; the 28 hereditary HCM '
+                    'donors inside the 200 HF samples are a recorded limitation of the '
+                    'pooled contrast, not a genetic-cardiomyopathy source (that category '
+                    'uses the genotype-declared cohorts)'),
+        },
+        'method': {
+            'deposition': ('the submitters\' log2-scale voom-transformed abundance as '
+                           'deposited (no raw counts are deposited)'),
+            'model': ('limma on the deposited log2 abundance; HGNC symbols collapsed by '
+                      'maximum mean expression with the retired Ensembl v67 ids kept as '
+                      'an identifier fallback'),
+            'design': 'one joint fit ~0 + group over all 366 libraries; one contrast',
+            'test': 'moderated t',
+            'padj': 'Benjamini-Hochberg',
+        },
+    },
+])
