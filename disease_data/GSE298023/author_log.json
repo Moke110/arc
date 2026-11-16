@@ -1,0 +1,47 @@
+{
+  "category": "disease_data",
+  "item": "GSE298023",
+  "local_additions": [
+    {
+      "generated_by": "script/build_pseudobulk.R",
+      "origin": "Sparse integer counts summed across author ident==Cardiomyocytes cells per heart_number, repeated regions pooled once",
+      "path": "local/pseudobulk/gse298023_cm_pseudobulk.tsv"
+    },
+    {
+      "generated_by": "script/build_pseudobulk.R",
+      "origin": "Author heart_number,condition,run_number and region; per-heart CM count and exact run pattern",
+      "path": "local/pseudobulk/gse298023_donors.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "Shared limma-voom joint group+run-pattern fit: DCM-NF and ICM-NF",
+      "path": "local/deg/gse298023_deg.csv"
+    },
+    {
+      "generated_by": "script/build_deg.py",
+      "origin": "Tracked exact inputs,design,contrasts,method and output digest",
+      "path": "local/deg/gse298023_deg.json"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "Primary paper https://doi.org/10.1186/s13073-025-01580-z . Author ident gate selects16734CM of142024cells; actual17author heart IDs:6DCM,7ICM,4NF. Older7DCM sample-list hypothesis is not retained. Three ICM hearts have repeated scar/nonscar profiles, pooled before testing. NF assigned by author object, no new sex-demultiplexing. NF onlyrun2; disease/runpattern joint model remains full-rank because disease arms also occur inrun2. Region composition, undeclared genotype and clinical covariates remain limitations. Bounded readRDS succeeded under10GiB; release the normalised/scaled assay before sparse aggregation; never densify cell\u00d7gene counts.",
+  "purpose": "ADR0073 complete-source nHF and ICM tier1 evidence; author CM gate, one profile per author heart.",
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 4289920683,
+      "files": 1,
+      "id": "GSE298023",
+      "kind": "GEO",
+      "license": "Original publication/deposit terms; not independently re-licensed",
+      "method": "script/fetch.sh; exact official4,289,920,683byte Seurat object, immutable after acquisition",
+      "path": "source/",
+      "species": "Homo sapiens",
+      "tree_sha256": "c3fd20bdf48ba1888f2dc4d1ba0211298493b68babea7183bbf40a997f4d78ee",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE298023",
+      "version": "GSE298023_HH_dataset_seurat_object_2026.rds; upstream Last-Modified2026-10-28"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}

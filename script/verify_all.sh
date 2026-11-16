@@ -120,6 +120,7 @@ main() {
     disease_data/GSE183852
     disease_data/GSE221945
     disease_data/GSE248187
+    disease_data/GSE298023
     disease_data/GSE329393
     disease_data/GSE194297
     disease_data/GSE224129

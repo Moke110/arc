@@ -1,0 +1,116 @@
+{
+  "category": "nHF / ICM",
+  "contrasts": {
+    "DCM-NF": {
+      "n_case": 6,
+      "n_control": 4
+    },
+    "ICM-NF": {
+      "n_case": 7,
+      "n_control": 4
+    }
+  },
+  "deg": {
+    "bytes": 6925145,
+    "n_source_genes": 30717,
+    "path": "local/deg/gse298023_deg.csv",
+    "rows": 61434,
+    "sha256": "ecbab0b262b0b0e1d8769475576f14123d06fcded4dc8d6d5d0a261284538c15"
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "NF",
+        "label": "DCM-NF",
+        "numerator": "DCM"
+      },
+      {
+        "denominator": "NF",
+        "label": "ICM-NF",
+        "numerator": "ICM"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group + batch",
+    "kind": "counts"
+  },
+  "donors": {
+    "path": "local/pseudobulk/gse298023_donors.csv",
+    "sha256": "196b44e1be0f4ca8e4988af79e829162c0e4df4e50864dce94be745c72f38813"
+  },
+  "fit_summary": {
+    "block": {},
+    "coefficient_names": [
+      "groupDCM",
+      "groupICM",
+      "groupNF",
+      "batchrun_1_2",
+      "batchrun_2",
+      "batchrun_3"
+    ],
+    "consensus_correlation": {},
+    "contrasts": [
+      "DCM-NF",
+      "ICM-NF"
+    ],
+    "factor": "group",
+    "filter": {},
+    "formula": "~0 + group + batch",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 2821,
+    "n_genes_input": 30717,
+    "n_genes_matrix": 33538,
+    "n_genes_tested": 30717,
+    "n_rows": 61434,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "gate": "author ident == Cardiomyocytes",
+  "item": "GSE298023",
+  "limitations": [
+    "Author heart_number defines the independent donor, including pooled male/female NF assignments already in the deposited object; no new sex-demultiplexing or marker gate.",
+    "Sum repeated scar/nonscar profiles before fitting; no region-level pseudoreplication. Region composition remains a recorded ICM limitation.",
+    "NF is run2 only. Disease cohorts also include run2, so disease is estimable with the run-pattern nuisance factor; mixed-run Heart03 gets its own run_1_2 pattern. No unsupported clinical covariates or genotype exclusion."
+  ],
+  "method": {
+    "adapter_sha256": "ace0e4e75a3bf537cb537d4b05f1f3df75bcc5e42aa032b7e8bafc5319ce317b",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
+    "limma_version": "3.62.2",
+    "model": "limma-voom; moderated t; BH adjusted p values",
+    "pseudobulk_adapter_sha256": "5765aa32185950cd860c4dd2eceae4582279df183326d430afad3dcd52e6d7cf",
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "pseudobulk": {
+    "cells_per_donor": {
+      "Heart_01": 3013,
+      "Heart_02": 763,
+      "Heart_03": 1253,
+      "Heart_04": 531,
+      "Heart_05": 338,
+      "Heart_06": 462,
+      "Heart_07": 1374,
+      "Heart_08": 464,
+      "Heart_09": 833,
+      "Heart_10": 524,
+      "Heart_11": 640,
+      "Heart_12": 760,
+      "Heart_13": 935,
+      "Heart_14": 837,
+      "Heart_15": 1103,
+      "Heart_16": 709,
+      "Heart_17": 2195
+    },
+    "dtype": "integer counts summed per author heart_number over CM cells and repeated scar/nonscar regions",
+    "path": "local/pseudobulk/gse298023_cm_pseudobulk.tsv",
+    "sha256": "77ed09304839ce49d1960fdb7555a8e743eea6fbd454b4c729b723e5ab0127da"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "source": {
+    "bytes": 4289920683,
+    "path": "source/GSE298023_HH_dataset_seurat_object_2026.rds",
+    "sha256": "78b3667f3715ed847fd2229dcb8000867bc2b90f79f70795551433ebd51e6cb4"
+  }
+}

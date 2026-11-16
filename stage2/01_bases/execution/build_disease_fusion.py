@@ -1,67 +1,24 @@
 #!/usr/bin/env python
-"""Publish/replay the per-disease level-1 fusion and ``DEG1000`` cut (ADR 0071).
+"""Publish/replay complete tier-first disease unions and DEG1000 (ADR 0073).
 
-The disease-half contract of the v2 gene axis: every disease category fuses its
-source DEG sets at level 1 and keeps the first 2,000 genes of its DEG union.
-ADR 0071 decisions 3 and 4; the pure definitions live in
-``output/api/bases/disease_deg.py`` (``source_deg_rank``, ``level_one_rank``,
-``fuse_disease``), so this driver only reads the accepted per-category products,
-applies those definitions and publishes the artefacts.
+Each disease retains every informative-source DEG on the frozen axis. Actual
+DEG support determines ``source_tier_highest`` (minimum numeric tier); the full
+union is ordered by tier, unweighted source rank sum, then gene_index. The first
+min(1000, n_d) genes form DEG1000, with no padding. The uniform n_d >= 100 gate
+retains excluded diseases' evidence and reasons.
 
-Product layout (one directory per disease family)::
+The candidate product contains a catalog and manifest, plus each disease's
+``<directory>.union.csv`` and ``<directory>.deg1000.csv``. Both tables preserve
+gene_index, continuous disease_rank, disease_rank_sum, source_tier_highest and
+supporting_sources. Empty unions have header-only tables. Public readers verify
+full-union source support, tier order, ranks and the exact DEG1000 cutoff.
 
-    output/disease-fusion/
-        catalog.json                 # per disease: counts, ledger, exclusions
-        manifest.json                # candidate-then-replace release manifest
-        <directory>.deg1000.csv      # gene_index, disease_rank, disease_rank_sum
+All qualifying declared tiers are collected upstream without a count stop.
+This driver reads those category products and the source declaration; it never
+admits sources or changes per-source tests. ``--input-root`` and ``--sources``
+allow isolated candidates and hermetic fixtures to use the same public seam.
 
-``catalog.json`` (``stage2-disease-fusion-v1``) is self-describing: it names the
-frozen axis and its digest, the declared ``limit`` (2,000), the fusion
-semantics, and one record per disease category::
-
-    {
-      "category": "nHF",                  # declared label, null if unpublished
-      "directory": "nhf",                 # product directory under disease-deg/
-      "published": true,                  # an accepted disease-deg product exists
-      "tier": 1,                          # declared winning tier (1..3)
-      "evidence_type": "cm_pseudobulk",
-      "declared_source_count": 4,         # registry-declared sources
-      "informative_source_count": 2,      # sources fused at level 1
-      "n_deg": 1057,                      # DEG-union size (total DEG)
-      "deg1000": 1057,                    # |DEG1000_d| == min(n_deg, 2000)
-      "deg1000_file": "nhf.deg1000.csv",
-      "sources": [                        # per-source ledger
-        {"dataset_id": "gse270788__nicm", "tier": 1, "informative": true,
-         "n_deg": 4, "n_deg_in_deg1000": 4, "evidence_type": "cm_pseudobulk",
-         "flag_source": "collapsed_winning_contrast"}
-      ],
-      "excluded_sources": [               # published but non-informative
-        {"dataset_id": "...", "tier": 1, "n_deg": 0, "reason": "..."}
-      ],
-      "not_published": [                  # declared but no accepted product yet
-        {"dataset_id": "...", "reason": "declared by the source registry; no
-         published disease-deg product in this checkout"}
-      ],
-      "tiers_present": [1],
-      "reason": null                      # set only for an uninformative disease
-    }
-
-``<directory>.deg1000.csv`` is the per-gene ``DEG1000_d`` table: one row per
-gene of the disease's DEG union whose disease rank is ``<= 2,000`` (all of them
-when the union is smaller), ordered by ``disease_rank``. ``disease_rank_sum`` is
-the level-1 ``Σ rank_norm`` that produced the rank. A disease with an empty union
-still publishes a header-only file, so "no DEG" is representable rather than
-absent.
-
-The driver is deliberately roster-neutral: it fuses whatever sources the
-``output/disease-deg/`` products declare and reports the rest of the source
-registry (``disease_deg_sources.py``) as ``not_published``. The tier-order / stop
-rule and the final roster are ticket #206's job, and the republish of the
-per-category products (which fills the remaining sources) is ticket #8's; re-run
-this driver after that republish. ``--sources``/``--input-root`` exist so the
-hermetic tests can run the same driver over a fixture tree and declaration.
-
-Usage (from the repository root, with the shared ``arc`` env's ``python``)::
+Usage from the repository root with the shared arc environment::
 
     python stage2/01_bases/execution/build_disease_fusion.py publish
     python stage2/01_bases/execution/build_disease_fusion.py verify

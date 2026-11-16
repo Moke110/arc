@@ -336,3 +336,5 @@ Each item has immutable source bytes, offline verification, declared local
 derivations and digest-pinned fetch/build recipes. Author-table adapters retain
 full tested rows and author statistics; they do not assert a local raw-count
 refit or infer independent donors from library counts.
+
+GSE298023 is also reconstructed from the official 2026 Seurat object (4,289,920,683 bytes), using author `ident == Cardiomyocytes` and `heart_number` identities. Sparse integer counts are summed per donor across repeated scar/nonscar regions before one joint run-pattern-adjusted DCM/ICM-vs-NF fit. Actual CM-positive cohorts are 6 DCM, 7 ICM and 4 NF; controls are shared across the two disease records. The raw 142,024-cell matrix stays sparse; normalised/scaled assays are released before aggregation. The unchanged 10 GiB cap is required; rebuilding uses `script/build_pseudobulk.R` then `script/build_deg.py`.

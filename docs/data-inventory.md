@@ -425,3 +425,5 @@ the exact bytes and fetch recipe. Their ignored full DEG CSVs are regenerated
 by the declared `script/build_deg.py`; tracked summaries pin output digests.
 Preserve or re-materialize these bytes in the main checkout before deleting
 the implementation worktree.
+
+GSE298023 retains the ignored official 2026 Seurat RDS (4,289,920,683 bytes; SHA256 `78b3667f3715ed847fd2229dcb8000867bc2b90f79f70795551433ebd51e6cb4`). `script/fetch.sh` resumes acquisition and verifies it offline. Declared ignored per-heart CM pseudobulk/count and DEG files are rebuilt by its two source-owned generators; source bytes must survive worktree cleanup.
