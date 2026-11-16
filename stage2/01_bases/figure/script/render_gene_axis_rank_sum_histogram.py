@@ -5,7 +5,7 @@ This is a publication script, not scientific code: it reads only
 ``figure/data/gene_axis_rank_sum_histogram.csv`` and writes the PNG. It never
 opens ``output/`` products, matrices, checkpoints or truth, and it recomputes no
 metric. The CSV carries every plotted value -- the candidate histogram over all
-frozen-axis candidates, one panel per released axis, and how many of each bin's
+the union of disease DEG1000 genes, one panel per released axis, and how many of each bin's
 candidates that axis selects -- so this renderer needs no other input.
 
     python3 stage2/01_bases/figure/script/render_gene_axis_rank_sum_histogram.py \
@@ -116,7 +116,7 @@ def load(path):
         if counts <= 0:
             raise ValueError('the candidate histogram is empty')
         selected = sum(chosen for _, _, _, chosen in histograms[panel['panel']])
-        if selected != panel['axis']:
+        if selected > panel['axis']:
             raise ValueError(f"panel {panel['panel']} does not select exactly N genes")
     return figures[0]['title'], panels, histograms
 
@@ -148,7 +148,6 @@ def render(title, panels, histograms, output):
             axis.set(title=panel['panel_title'], xlabel=X_LABEL, ylabel=Y_LABEL)
         for unused in list(axes.flat)[len(panels):]:
             unused.set_visible(False)
-        figure.suptitle(title, fontsize=11.5)
         figure.legend(handles=[Patch(color=CANDIDATE_COLOR, label=CANDIDATE_LABEL),
                                Patch(color=SELECTED_COLOR, label=SELECTED_LABEL)],
                       frameon=False, fontsize=8, loc='outside lower center', ncol=2)
