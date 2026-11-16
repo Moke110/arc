@@ -714,9 +714,7 @@ The pre-successor ADR 0071 release had six terms including two mechanism classes
 _Avoid_: disease label, cohort, source (a category is not a source)
 
 **nHF**:
-The non-specific human heart failure category — clinical, non-ischemic, non-hereditary human
-CM-pseudobulk samples: `GSE270788`'s NICM arm plus the Reichart donors without a declared
-pathogenic genotype.
+The non-specific human heart failure category: qualifying clinical non-ischemic CM evidence, compatible non-genetic CM models and human ventricular bulk under the source-tier rules. Explicit genotype-split cohorts include the Reichart donors without a declared pathogenic genotype; other source-specific genotype uncertainty remains declared rather than inferred.
 _Avoid_: NICM (when the category is meant)
 
 **ICM**:
