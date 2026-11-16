@@ -42,17 +42,17 @@ import pandas as pd
 from anndata.io import read_elem, write_elem
 
 from . import corpus as corpus_release
-from .gene_axis import GeneAxis
+from .gene_axis import ALGORITHM as AXIS_ALGORITHM, GeneAxis
 from .release import (ReleaseError, check_manifest, output_digests, publish,
                       read_json, replay, sha256, write_json)
 
-SCHEMA = "stage2-view-v1"
+SCHEMA = "stage2-view-v2"
 BATCH = 256
 AXIS_SIZE = corpus_release.AXIS_SIZE
 LAYERS = ("control", "delta")
 PRODUCT_FILES = ("tenv.h5ad", "tahoe_bulk.h5ad", "library_totals.csv")
 TOTALS_COLUMNS = ("source", "profile_id", "role", "library_total")
-VIEW_NAMES = {2000: "view-2k", 5000: "view-5k"}
+VIEW_NAMES = {2000: "view-2k", 3000: "view-3k", 4000: "view-4k", 5000: "view-5k"}
 REQUIRED_OBS = (
     "role", "source_item", "source_item_manifest_sha256", "source_row", "plate",
     "cell_line", "cell_line_id", "compound_name", "vehicle", "dose_um",
@@ -385,7 +385,7 @@ def build(candidate, *, corpus_dir, axis_dir, size, name=None, repo_root=None,
         "control": CONTROL,
         "inputs": dict(sorted(inputs.items())),
         "outputs": dict(sorted(outputs.items())),
-        "axis": {"size": size, "file": axis_key,
+        "axis": {"size": size, "file": axis_key, "algorithm": AXIS_ALGORITHM,
                  "sha256": inputs[axis_key]["sha256"],
                  "gene_index_min": int(genes.min()),
                  "gene_index_max": int(genes.max()),
@@ -424,6 +424,8 @@ def verify(candidate, fixture=False):
     manifest = read_json(manifest_path)
     if manifest.get("schema") != SCHEMA:
         raise ViewError("unexpected view schema")
+    if manifest.get("axis", {}).get("algorithm") != AXIS_ALGORITHM:
+        raise ViewError("unexpected view axis algorithm")
     if bool(manifest.get("fixture")) is not bool(fixture):
         raise ViewError("view fixture flag differs from the verification mode")
     size = int(manifest["view"]["size"])
@@ -624,6 +626,8 @@ class View:
             manifest = read_json(path)
             if manifest.get("schema") != SCHEMA:
                 raise ViewError(f"{path}: unexpected view schema")
+            if manifest.get("axis", {}).get("algorithm") != AXIS_ALGORITHM:
+                raise ViewError(f"{path}: unexpected view axis algorithm")
             self._manifest = manifest
         return self._manifest
 

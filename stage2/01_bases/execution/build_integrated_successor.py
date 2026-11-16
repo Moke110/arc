@@ -87,7 +87,7 @@ def candidate_receipt(candidate):
     step = candidate / STEP
     fusion = disease_deg.DiseaseFusion(step / 'output/disease-fusion')
     catalog = fusion.catalog()
-    roster = {row['directory']: {'n_deg': row['n_deg'], 'deg2000': row['deg2000'],
+    roster = {row['directory']: {'n_deg': row['n_deg'], 'deg1000': row['deg1000'],
                                  'eligible': row['eligible'],
                                  'exclusion_reason': row['exclusion_reason']}
               for row in catalog['diseases']}
@@ -97,9 +97,12 @@ def candidate_receipt(candidate):
     manifest = axis.manifest()
     if manifest['fusion']['diseases'] != [name for name in roster if roster[name]['eligible']]:
         raise release.ReleaseError('axis participation differs from measured eligibility')
-    left, right = axis.axis(2000), axis.axis(5000)
-    if len(left) != 2000 or len(right) != 5000 or not set(left) <= set(right):
-        raise release.ReleaseError('candidate axes must be exact and nested')
+    previous = set()
+    for size in gene_axis.AXIS_SIZES:
+        current = set(axis.axis(size))
+        if len(current) != size or not previous <= current:
+            raise release.ReleaseError('candidate axes must be exact and nested')
+        previous = current
     manifests = {}
     for path in sorted((step / 'output').glob('**/manifest.json')):
         if any(part in ('api',) for part in path.parts):
@@ -131,7 +134,7 @@ def run(action, candidate):
     (fusion_driver.publish if action == 'publish' else fusion_driver.replay)(fcontext)
     config = axis_driver.default_config(candidate)
     (axis_driver.publish if action == 'publish' else axis_driver.verify)(config)
-    for size in (2000, 5000):
+    for size in gene_axis.AXIS_SIZES:
         print(f'{action} view {size}', flush=True)
         kwargs = dict(corpus_dir=step / 'output/corpus', axis_dir=step / 'output/gene-axis',
                       size=size, name=f'view-{size // 1000}k', repo_root=candidate)

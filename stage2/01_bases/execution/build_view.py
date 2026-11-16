@@ -29,7 +29,7 @@ from bases import view
 
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(path for path in Path(__file__).resolve().parents if (path / ".git").exists())
-VIEW_OUTPUTS = {2000: STEP / "output/view-2k", 5000: STEP / "output/view-5k"}
+VIEW_OUTPUTS = {size: STEP / f"output/view-{size // 1000}k" for size in view.VIEW_NAMES}
 
 
 def view_name(size):
