@@ -44,7 +44,8 @@ import pandas as pd
 
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases import release
-from bases.disease_deg import DEG2000_COLUMNS, DEG2000_LIMIT, DiseaseFusion
+from bases.disease_deg import (DEG2000_COLUMNS, DEG2000_LIMIT, DiseaseFusion,
+                               disease_eligibility)
 from bases.gene_axis import (
     ALGORITHM, AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, COMPOSITION_COLUMNS,
     COVERAGE_COLUMNS, F2000_RULE, FALLBACK_RULE, FILL_RULE, RANK_SUM_RULE,
@@ -281,9 +282,14 @@ def read_fusion(config, axis_size):
         record = by_directory[category]
         n_deg = int(record['n_deg'])
         deg2000 = int(record['deg2000'])
-        if n_deg <= 0 or deg2000 <= 0:
+        admission = disease_eligibility(n_deg)
+        # Old releases retain their original meaning until the coherent successor
+        # is published; the explicit policy marks ADR 0072 candidate products.
+        gated = catalog.get('eligibility_min_deg') is not None
+        if (gated and not admission['eligible']) or n_deg <= 0 or deg2000 <= 0:
             excluded.append({'directory': category, 'label': CATEGORY_LABELS[category],
-                             'n_deg': n_deg, 'deg2000': deg2000})
+                             'n_deg': n_deg, 'deg2000': deg2000,
+                             **admission})
             continue
         if deg2000 != min(n_deg, DEG2000_LIMIT):
             raise ValueError(

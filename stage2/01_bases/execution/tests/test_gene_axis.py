@@ -619,6 +619,52 @@ def manifest_strings(value):
 
 
 
+class EligibleDiseaseReleaseTests(unittest.TestCase):
+    def test_new_catalog_excludes_small_diseases_from_every_axis_contribution(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            genes = pd.DataFrame({'gene_index': np.arange(120),
+                                  'symbol': [f'G{i}' for i in range(120)]})
+            genes.to_csv(config.genes, index=False)
+            tenv = pd.DataFrame({'gene_index': np.arange(120),
+                                'rank': np.arange(1, 121),
+                                'normalized_dispersion': np.arange(120, 0, -1)})
+            tenv.to_csv(config.tenv_hvg, index=False)
+            counts = dict.fromkeys(CATEGORIES, 100)
+            counts.update(af=1, icm=99, genetic_cardiomyopathy=0)
+            records, outputs = [], {}
+            for directory, count in counts.items():
+                record, rows = fusion_disease_record(
+                    directory, count, {gene: gene + 1 for gene in range(count)})
+                record.update(disease_deg.disease_eligibility(count))
+                records.append(record)
+                path = config.fusion_root / record['deg2000_file']
+                rows.to_csv(path, index=False)
+                outputs[path.name] = {'sha256': driver.sha256(path)}
+            catalog = fusion_catalog(config.genes, records)
+            catalog['axis']['size'] = 120
+            catalog['eligibility_min_deg'] = 100
+            disease_deg.write_catalog(config.fusion_root / 'catalog.json', catalog)
+            driver.write_json({'schema': disease_deg.FUSION_RELEASE_SCHEMA,
+                               'outputs': outputs}, config.fusion_root / 'manifest.json')
+            fusion = driver.read_fusion(config, 120)
+            self.assertEqual(set(fusion['diseases']),
+                             {'nhf', 'cardiotox_TOP2', 'cardiotox_other'})
+            self.assertEqual({row['directory'] for row in fusion['excluded']},
+                             {'af', 'icm', 'genetic_cardiomyopathy'})
+            result = driver.compute(genes, tenv, fusion, (4, 6))
+            table = result['table']
+            self.assertEqual(table.loc[0, 'rank_sum'], 0.03)
+            self.assertEqual(table.loc[0, 'f2000'], 3)
+            self.assertAlmostEqual(table.loc[119, 'rank_sum'], 3.03)
+            self.assertTrue(table.af_rank.isna().all())
+            self.assertTrue(table.icm_rank.isna().all())
+            reader = disease_deg.DiseaseFusion(config.fusion_root)
+            self.assertEqual(reader.deg2000('af').gene_index.tolist(), [0])
+            self.assertEqual(driver.publish(config)['n_diseases'], 3)
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+
+
 class DeclaredRosterTests(unittest.TestCase):
     """The six-disease roster is the released roster after #208.
 

@@ -274,6 +274,7 @@ def disease_record(directory, entry, sources, axis_size):
     label, declared_record = registry_category(sources, directory)
     if entry is None:
         return {
+            **disease_deg.disease_eligibility(None, published=False),
             'category': label,
             'directory': directory,
             'published': False,
@@ -316,6 +317,7 @@ def disease_record(directory, entry, sources, axis_size):
     tiers_present = sorted({int(row['tier']) for row in ledger
                             if row['tier'] is not None})
     record = {
+        **disease_deg.disease_eligibility(fusion['n_deg']),
         'category': entry['catalog'].get('category'),
         'directory': directory,
         'published': True,
@@ -383,6 +385,7 @@ def build(context, staging):
         'rank_contract': disease_deg.RANK_SCHEMA,
         'rank_semantics': disease_deg.RANK_SEMANTICS,
         'limit': disease_deg.DEG2000_LIMIT,
+        'eligibility_min_deg': disease_deg.DISEASE_MIN_DEGS,
         'semantics': dict(FUSION_SEMANTICS),
         'diseases': diseases,
     }
