@@ -9,6 +9,13 @@
 # timed command explicitly:
 #   execution/capped.sh /usr/bin/time -v /home/chang/miniconda3/envs/arc/bin/python ...
 set -euo pipefail
+# Recheck shared VM headroom at the actual heavy-command boundary.
+available_gib="$(free -g | awk '/^Mem:/ {print $7}')"
+if ! [[ "$available_gib" =~ ^[0-9]+$ ]] || [ "$available_gib" -lt 12 ]; then
+  echo "Refusing heavy command: require at least 12 GiB available RAM (free -g reports ${available_gib:-unknown}). Wait for other jobs and retry." >&2
+  exit 75
+fi
+export PYTHONDONTWRITEBYTECODE=1
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 NUMEXPR_NUM_THREADS=2
 if systemd-run --user --scope -p MemoryMax=10G -p MemorySwapMax=8G -- true >/dev/null 2>&1; then
   echo "caps: systemd-run user scope MemoryMax=10G MemorySwapMax=8G threads=2" >&2

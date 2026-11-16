@@ -120,3 +120,20 @@ three recorded CSV plot-value tables and the pure shared palette implementation.
 
 The matrix code is under validation; the formal 90-run comparison has not yet
 been accepted. Previous accepted results and the old step remain available.
+
+Interrupted same-identity `--resume` now preserves the entire prior run under
+candidate `attempts/` before a clean restart. A trained run awaiting replay uses
+only the replay entry point, with pre-replay terminal evidence retained; a
+complete run with corrupt digests still fails closed. Failed replay recovery is
+recorded and can subsequently restart the same registered identity.
+Publication preflights every destination, stages digest-verified copies, and
+journals installation renames with rollback. A terminated installation is rolled
+back from its journal before another publication attempt. The heavy-command
+boundary refuses to start below 12 GiB available memory. Native imports and their
+sibling imports disable bytecode additions in immutable source trees.
+
+Tracked metric CSVs include all six methods, explicitly including cold-drug
+Mean_drug as N/A. Truth-constant parent identities, undefined denominators and
+constant prediction counts are recorded with plot values and displayed as figure
+annotations. Prediction-constant counts count seed-parent vectors; deterministic
+Mean methods have a single vector per parent. True constants retain error scores.

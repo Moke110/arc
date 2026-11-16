@@ -15,6 +15,14 @@ HUES=dict(PRnet='blue',TranSiGen='orange',MLP_Morgan='green',Mean='gray',Mean_ce
 ORDER=list(HUES)
 
 
+def metric_annotation(row):
+    """All status/count text comes from the tracked plot-value row."""
+    if not bool(row.applicable):return 'N/A: '+str(row.reason)
+    return ('n='+str(int(row.n_parents))+'; undefined='+str(int(row.n_undefined))+
+            '; truth constant='+str(int(row.n_constant_truth))+
+            '; pred constant='+str(int(row.n_constant_prediction)))
+
+
 def render(data,out):
     data=Path(data);out=Path(out);out.mkdir(parents=True,exist_ok=True)
     plt.rcParams.update({'font.size':9,'axes.spines.top':False,'axes.spines.right':False,'savefig.dpi':140})
@@ -25,9 +33,15 @@ def render(data,out):
             ax=axes[i,j];rows=values[(values.scenario==scenario)&(values.metric==metric)].set_index('method')
             methods=[m for m in ORDER if m in rows.index]
             ax.bar(range(len(methods)),[rows.loc[m,'value'] for m in methods],color=[palette.color(HUES[m],6) for m in methods],edgecolor=[palette.color(HUES[m],2) for m in methods])
-            ax.set_xticks(range(len(methods)),methods,rotation=50,ha='right');ax.set_title(scenario+' · Δ '+metric.upper())
+            labels=[]
+            for k,m in enumerate(methods):
+                row=rows.loc[m]
+                labels.append(m+'\n'+('N/A' if not bool(row.applicable) else 'n='+str(int(row.n_parents))+' u='+str(int(row.n_undefined))+' t='+str(int(row.n_constant_truth))+' p='+str(int(row.n_constant_prediction))))
+                if not bool(row.applicable):ax.text(k,0,'N/A\n'+str(row.reason),rotation=90,ha='center',va='bottom',fontsize=6)
+            ax.set_xticks(range(len(methods)),labels,rotation=50,ha='right',fontsize=7);ax.set_title(scenario+' · Δ '+metric.upper())
             ax.axhline(float(rows.zero.iloc[0]),color=palette.color('gray',4),lw=.6)
             ax.grid(axis='y',alpha=.15)
+    fig.suptitle('Equal-weight parent metrics; n=defined parents, u=undefined; t=constant truth parents, p=constant prediction seed-parent vectors. IDs/reasons in CSV')
     fig.savefig(out/'metrics.png');plt.close(fig)
     pairs=pd.read_csv(data/'paired_differences_values.csv')
     fig,axes=plt.subplots(2,4,figsize=(19,10),constrained_layout=True)
@@ -37,9 +51,13 @@ def render(data,out):
             for k,row in enumerate(rows.itertuples()):
                 color=palette.color(HUES[row.candidate],2)
                 ax.plot([row.low,row.high],[k,k],color=color,lw=2);ax.plot(row.estimate,k,'o',color=color,ms=4)
-            ax.set_yticks(range(len(rows)),[r.candidate+' − '+r.reference for r in rows.itertuples()],fontsize=7)
+            ax.set_yticks(range(len(rows)),[r.candidate+' − '+r.reference+' [pred const '+str(int(r.candidate_constant_prediction))+'/'+str(int(r.reference_constant_prediction))+']' for r in rows.itertuples()],fontsize=7)
             if len(rows):ax.axvline(float(rows.zero.iloc[0]),color=palette.color('gray',4),lw=.7)
-            ax.set_title(scenario+' · Δ '+metric.upper());ax.grid(axis='x',alpha=.15)
+            excluded=int(rows.n_excluded_constant.iloc[0]) if len(rows) else 0
+            unavailable=str(rows.unavailable_reference.iloc[0]) if len(rows) and pd.notna(rows.unavailable_reference.iloc[0]) else ''
+            ax.set_title(scenario+' · Δ '+metric.upper()+'; excluded='+str(excluded),fontsize=9)
+            if unavailable:ax.set_xlabel('N/A: '+unavailable,fontsize=7)
+            ax.grid(axis='x',alpha=.15)
     fig.suptitle('Paired drug bootstrap: candidate minus reference, 95% CI (errors: negative is better)')
     fig.savefig(out/'paired_differences.png');plt.close(fig)
     curves=pd.read_csv(data/'learning_curve_values.csv')

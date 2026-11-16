@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import numpy as np
 import torch
+from .native_import import no_source_bytecode
 
 SCRIPT_HASH = '4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5'
 SOURCE_HASH = 'c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7'
@@ -31,7 +32,8 @@ class Adapter:
         try:
             spec = importlib.util.spec_from_file_location('_tenv5k_native_transigen', path)
             module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+            with no_source_bytecode():
+                spec.loader.exec_module(module)
             self.native = module.TranSiGen
         finally:
             sys.path.pop(0)

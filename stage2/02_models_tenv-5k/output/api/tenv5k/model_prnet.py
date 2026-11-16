@@ -18,6 +18,7 @@ from torch.nn import functional as F
 from .inputs import Inputs, sha256
 from .learning import EarlyStopping, fixed_rng
 from .protocol import score_prediction
+from .native_import import no_source_bytecode
 
 UPSTREAM = 'f19174bde3ed2633f54c7831799cc38c4ffc7a0d'
 SOURCE_DIGEST = '024f39a07e2887fea45a42f60b07b3ba17dc7501f134285ff72798eacb8bea3e'
@@ -47,7 +48,8 @@ def build_model(source, seed, device='cpu'):
     torch.manual_seed(seed)
     spec = importlib.util.spec_from_file_location('tenv5k_native_prnet', path)
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    with no_source_bytecode():
+        spec.loader.exec_module(module)
     model = module.PGM(5000, 64, 10, [128], 64, [128], 2048, .05)
     def initialize(layer):
         if isinstance(layer, torch.nn.Linear):

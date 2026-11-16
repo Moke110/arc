@@ -24,4 +24,25 @@ class MatrixTests(unittest.TestCase):
         with self.assertRaises(ValueError): matrix.require_complete(plan=matrix.plan(),found=matrix.plan()[:-1])
         with self.assertRaises(ValueError): matrix.require_complete(plan=matrix.plan(),found=matrix.plan()[:-1]+matrix.plan()[:1])
 
+    def test_resume_preserves_interrupted_evidence_and_replays_trained_identity(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);run=matrix.plan()[0];target=matrix.run_path(root,run);target.mkdir(parents=True)
+            (target/'partial.bin').write_bytes(b'precious interrupted evidence')
+            args=SimpleNamespace(candidate=root,device='cpu')
+            action=matrix.recover_existing(args,run,'input',lambda:None)
+            self.assertEqual(action,'train')
+            self.assertFalse(target.exists())
+            self.assertEqual(next((root/'attempts').rglob('partial.bin')).read_bytes(),b'precious interrupted evidence')
+            target.mkdir(parents=True)
+            config={**run,'device':'cpu','smoke_rows':None,'max_epochs':1000,'patience':50,'strict_lower':True}
+            (target/'config.json').write_text(json.dumps(config))
+            (target/'terminal.json').write_text(json.dumps(dict(status='trained-awaiting-fresh-process-replay',smoke=False)))
+            calls=[]
+            with patch.object(matrix,'verify_run',return_value=config):
+                self.assertEqual(matrix.recover_existing(args,run,'input',lambda:calls.append('replay-only')),'complete')
+            self.assertEqual(calls,['replay-only'])
+            self.assertTrue(list((root/'attempts').rglob('terminal.before-replay.json')))
+
 if __name__=='__main__':unittest.main()

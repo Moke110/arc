@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 
 STEP=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(STEP/'output/api'))
@@ -74,6 +75,47 @@ def source_paths(args):
     return dict(prnet=args.prnet_source,transigen=args.transigen_source,mlp=STEP/'output/api/tenv5k')
 
 
+def recover_existing(args,run,input_digest,replay_only):
+    """Resume exact identities; retain interrupted bytes before a clean retry."""
+    target=run_path(args.candidate,run)
+    terminal_path=target/'terminal.json'
+    try:terminal=json.loads(terminal_path.read_text()) if terminal_path.exists() else {}
+    except json.JSONDecodeError:terminal={}
+    if terminal.get('status')=='complete':
+        verify_run(target,run,input_digest,args.device)
+        return 'complete'
+    config_path=target/'config.json'
+    try:config=json.loads(config_path.read_text()) if config_path.exists() else None
+    except json.JSONDecodeError:config=None  # Interrupted write: retained verbatim below.
+    if config is not None:
+        expected={**run,'device':args.device,'smoke_rows':None,'max_epochs':1000,'patience':50,'strict_lower':True}
+        if any(config.get(k)!=v for k,v in expected.items()):raise ValueError('cannot recover a different/smoke run identity')
+    attempts=Path(args.candidate)/'attempts'/run['scenario']/run['adapter']/str(run['fold'])/str(run['seed'])
+    attempts.mkdir(parents=True,exist_ok=True)
+    number=1
+    while (attempts/('attempt-'+str(number).zfill(4))).exists():number+=1
+    attempt=attempts/('attempt-'+str(number).zfill(4))
+    if terminal.get('status')=='trained-awaiting-fresh-process-replay':
+        if config is None:raise ValueError('trained run lacks registered config')
+        attempt.mkdir()
+        shutil.copy2(terminal_path,attempt/'terminal.before-replay.json')
+        (attempt/'recovery.json').write_text(json.dumps(dict(action='replay-only',run=run,input_manifest_sha256=input_digest),indent=2)+'\n')
+        try:
+            replay_only()
+            verify_run(target,run,input_digest,args.device)
+        except BaseException as error:
+            # Preserve original evidence and allow a subsequent same-identity retry.
+            if terminal_path.exists():shutil.copy2(terminal_path,attempt/'terminal.after-failed-replay.json')
+            terminal_path.write_text(json.dumps(dict(status='failed',error='replay recovery: '+str(error)),indent=2)+'\n')
+            raise
+        return 'complete'
+    # A complete-but-corrupt run never reaches this branch; partial/failed runs
+    # restart under the identical frozen plan and keep their entire former tree.
+    os.rename(target,attempt)
+    (attempt/'recovery.json').write_text(json.dumps(dict(action='restart-same-identity',run=run,input_manifest_sha256=input_digest),indent=2)+'\n')
+    return 'train'
+
+
 def execute(args):
     args.candidate.mkdir(parents=True,exist_ok=True)
     frozen=frozen_plan(args);path=args.candidate/'plan.json'
@@ -85,8 +127,12 @@ def execute(args):
         target=run_path(args.candidate,run)
         if target.exists():
             if not args.resume:raise ValueError('candidate run already exists')
-            verify_run(target,run,frozen['input_manifest_sha256'],args.device)
-            continue
+            replay_command=[args.python,str(STEP/'execution'/(run['adapter']+'.py')),
+                            '--inputs',str(args.inputs),'--candidate',str(target),
+                            '--source',str(source_paths(args)[run['adapter']]),'--replay-only']
+            action=recover_existing(args,run,frozen['input_manifest_sha256'],
+                                    lambda:subprocess.run([str(STEP/'execution/capped.sh'),*replay_command],check=True))
+            if action=='complete':continue
         target.parent.mkdir(parents=True,exist_ok=True)
         timing=args.candidate/'resources'/('/'.join(map(str,run.values())).replace('/','-')+'.time')
         timing.parent.mkdir(exist_ok=True)
@@ -133,7 +179,7 @@ def evaluate(args,destination):
                         terminal=json.loads((root/'terminal.json').read_text())
                         if terminal['best_epoch']!=int(curve.loc[curve.validation_mse.idxmin(),'epoch']):raise ValueError('best checkpoint history mismatch')
                         for key,value in run.items():curve[key]=value
-                        curve['method']=method;curve['best_epoch']=terminal['best_epoch'];curves.append(curve)
+                        curve['method']=method;curve['best_epoch']=terminal['best_epoch'];curve['status']='complete';curves.append(curve)
                     identity=pd.read_csv(root/'identity.csv').profile_id.astype(str).tolist()
                     rows=data.rows(scenario,fold,'test')
                     if identity!=list(data.obs.index[rows]):raise ValueError('test order changed')
@@ -147,12 +193,34 @@ def evaluate(args,destination):
     require_complete(plan=plan(),found=found)
     raw=pd.concat(parent_rows,ignore_index=True);parents=seed_average(raw)
     pairs=paired_comparisons(parents,seed=data.config['statistical_seed'])
+    for column in ('candidate_constant_prediction','reference_constant_prediction'):
+        pairs[column]=0
+    pairs['constant_truth_ids']=''
+    pairs['unavailable_reference']=''
+    pairs['status']='complete'
+    for index,pair in pairs.iterrows():
+        scenario_rows=parents[parents.scenario==pair.scenario]
+        pairs.at[index,'candidate_constant_prediction']=int(scenario_rows[scenario_rows.method==pair.candidate].constant_prediction_count.sum())
+        pairs.at[index,'reference_constant_prediction']=int(scenario_rows[scenario_rows.method==pair.reference].constant_prediction_count.sum())
+        pairs.at[index,'constant_truth_ids']=';'.join(sorted(scenario_rows[scenario_rows.constant_truth].drug_parent.unique()))
+        if pair.scenario=='cold-drug':pairs.at[index,'unavailable_reference']='Mean_drug: unseen test drug'
     summaries=[]
     for (scenario,method),rows in parents.groupby(['scenario','method']):
         for metric in METRICS:
             valid=rows[metric].notna()
             summaries.append(dict(scenario=scenario,method=method,metric=metric,value=float(rows.loc[valid,metric].mean()),
-                n_parents=int(valid.sum()),n_total=len(rows),n_undefined=int((~valid).sum()),zero=0.))
+                n_parents=int(valid.sum()),n_total=len(rows),n_undefined=int((~valid).sum()),zero=0.,
+                applicable=True,status='complete',n_constant_truth=int(rows.constant_truth.sum()),
+                n_constant_prediction=int(rows.constant_prediction_count.sum()),
+                constant_truth_ids=';'.join(sorted(rows.loc[rows.constant_truth,'drug_parent'])),
+                reason='truth constant: correlations/R2 undefined; error metrics retained'))
+    # Inapplicability is a recorded report row, never an invisible missing method.
+    cold=parents[(parents.scenario=='cold-drug')&(parents.method=='Mean')]
+    for metric in METRICS:
+        summaries.append(dict(scenario='cold-drug',method='Mean_drug',metric=metric,value=float('nan'),
+            n_parents=0,n_total=len(cold),n_undefined=len(cold),zero=0.,applicable=False,status='not-applicable',
+            n_constant_truth=int(cold.constant_truth.sum()),n_constant_prediction=0,
+            constant_truth_ids=';'.join(sorted(cold.loc[cold.constant_truth,'drug_parent'])),reason='unseen test drug; no fallback'))
     raw.to_csv(destination/'per_parent_seed.csv',index=False);parents.to_csv(destination/'per_parent.csv',index=False)
     pd.concat(well_rows,ignore_index=True).to_csv(destination/'per_well.csv',index=False)
     pd.DataFrame(summaries).to_csv(destination/'metrics_values.csv',index=False)
@@ -185,24 +253,73 @@ def accept(args):
     print(json.dumps(result),flush=True)
 
 
+def _tree_identity(path):
+    path=Path(path)
+    if path.is_file(): return {'.':digest(path)}
+    return {str(p.relative_to(path)):digest(p) for p in path.rglob('*') if p.is_file()}
+
+
+def _rollback_publication(journal):
+    """Restore the previous destinations, including after interrupted renames."""
+    state=json.loads(journal.read_text())
+    for entry in reversed(state['entries']):
+        target=Path(entry['target']);backup=Path(entry['backup'])
+        if backup.exists():
+            if target.is_dir():shutil.rmtree(target)
+            elif target.exists():target.unlink()
+            target.parent.mkdir(parents=True,exist_ok=True)
+            os.rename(backup,target)
+        elif not entry['existed'] and not Path(entry['staged']).exists():
+            if target.is_dir():shutil.rmtree(target)
+            elif target.exists():target.unlink()
+    journal.unlink()
+    shutil.rmtree(state['transaction'],ignore_errors=True)
+
+
 def publish(args):
-    """Only a fully accepted candidate can replace stable products."""
+    """Preflight all destinations; stage verified copies; rollback any install failure."""
     if not (args.candidate/'acceptance.json').is_file():raise ValueError('candidate not accepted')
-    # Preserve public API ownership; publish independent stable payload directories.
-    for source,target in [(args.candidate/'runs',STEP/'output/runs'),(args.candidate/'comparison',STEP/'output/comparison')]:
-        if target.exists():
-            old={str(p.relative_to(target)):digest(p) for p in target.rglob('*') if p.is_file()}
-            new={str(p.relative_to(source)):digest(p) for p in source.rglob('*') if p.is_file()}
-            if old!=new:raise ValueError('refuse to overwrite different accepted products')
-        else:shutil.copytree(source,target)
-    (STEP/'figure/data').mkdir(parents=True,exist_ok=True)
-    for name in ('metrics_values.csv','paired_differences_values.csv','learning_curve_values.csv'):
-        shutil.copy2(args.candidate/'comparison'/name,STEP/'figure/data'/name)
-    for p in (args.candidate/'figures').iterdir():shutil.copy2(p,STEP/'figure'/p.name)
-    (STEP/'log').mkdir(exist_ok=True)
-    shutil.copy2(args.candidate/'acceptance.json',STEP/'log/231-acceptance.json')
-    shutil.copy2(args.candidate/'plan.json',STEP/'log/231-plan.json')
-    shutil.copytree(args.candidate/'resources',STEP/'log/resources',dirs_exist_ok=True)
+    journal=STEP.parent/'.tenv5k-publication-journal.json'
+    if journal.exists():_rollback_publication(journal)
+    destinations=[(args.candidate/'runs',STEP/'output/runs',True),
+                  (args.candidate/'comparison',STEP/'output/comparison',True)]
+    destinations += [(args.candidate/'comparison'/name,STEP/'figure/data'/name,False)
+                     for name in ('metrics_values.csv','paired_differences_values.csv','learning_curve_values.csv')]
+    destinations += [(p,STEP/'figure'/p.name,False) for p in sorted((args.candidate/'figures').iterdir())]
+    destinations += [(args.candidate/'acceptance.json',STEP/'log/231-acceptance.json',False),
+                     (args.candidate/'plan.json',STEP/'log/231-plan.json',False),
+                     (args.candidate/'resources',STEP/'log/resources',False)]
+    # All refusal paths precede even the first stable-path mutation.
+    for source,target,immutable in destinations:
+        if not source.exists():raise ValueError('missing publication source: '+str(source))
+        if target.exists() and source.is_dir()!=target.is_dir():raise ValueError('publication destination type changed: '+str(target))
+        if immutable and target.exists() and _tree_identity(target)!=_tree_identity(source):
+            raise ValueError('refuse to overwrite different accepted products: '+str(target))
+    transaction=Path(tempfile.mkdtemp(prefix='.tenv5k-publish-',dir=STEP.parent))
+    entries=[]
+    try:
+        for index,(source,target,_) in enumerate(destinations):
+            staged=transaction/('staged-'+str(index));backup=transaction/('backup-'+str(index))
+            if source.is_dir():shutil.copytree(source,staged)
+            else:shutil.copy2(source,staged)
+            if _tree_identity(staged)!=_tree_identity(source):raise ValueError('staged publication digest differs')
+            entries.append(dict(target=str(target),staged=str(staged),backup=str(backup),existed=target.exists()))
+        # Journal survives a terminated installer; the next attempt restores first.
+        pending=transaction/'journal.pending'
+        with pending.open('w') as stream:
+            stream.write(json.dumps(dict(transaction=str(transaction),entries=entries),indent=2)+'\n')
+            stream.flush();os.fsync(stream.fileno())
+        os.rename(pending,journal)
+        for entry in entries:
+            target=Path(entry['target']);target.parent.mkdir(parents=True,exist_ok=True)
+            if target.exists():os.replace(target,entry['backup'])
+            os.replace(entry['staged'],target)
+        journal.unlink()
+    except BaseException:
+        if journal.exists():_rollback_publication(journal)
+        raise
+    finally:
+        shutil.rmtree(transaction,ignore_errors=True)
 
 
 def main():
