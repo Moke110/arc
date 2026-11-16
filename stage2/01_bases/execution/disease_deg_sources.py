@@ -15,11 +15,9 @@ checkout does not carry a repo-relative literal for an item's gitignored
 per-worktree derived files). Every derived input is still pinned by sha256 in
 the published catalog/manifest.
 
-The ticket-187 categories are ``nHF`` and ``ICM`` only (the ``AF`` category was
-removed by ADR 0069 because its only dataset carried no ordering evidence). The
-six isogenic models (#188), the drug-class sources (#189) and the Reichart
-genotype-positive / ARVC DEG (also #188) are other tickets and are not declared
-here.
+The registry declares nHF, ICM, AF and genetic_cardiomyopathy; the unified
+TOX category is declared by its independent pre-DEG admission ledger. ADR 0073
+collects every qualifying declared source, with dated finite reassessments below.
 """
 from __future__ import annotations
 
@@ -29,43 +27,7 @@ CATEGORIES = {
         'tier': 1,
         'evidence_type': 'cm_pseudobulk',
         'shared_control_group': ['gse270788:donor', 'reichart-cm:normal'],
-        'rejected': [
-            {'candidate': 'GSE183852',
-             'reason': ('eligible human LV CM source, but a measured cost call, not a '
-                        'label-access barrier: the authors\' 6.7 MB MOESM4 '
-                        'Cardiomyocytes sheet already carries the CM labels, and the '
-                        'v2 definition (padj < 0.05 and |log2FC| >= 2) yields 70 DEGs, '
-                        '50 on the frozen axis (26,946 genes tested; the padj-only '
-                        'anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 '
-                        'reproduce) -- 2.5% of a 2,000-gene target, so an 8.1-12 GB '
-                        'Robj label extraction is not warranted. Its padj-only yield '
-                        '(4,927 on-axis) would only matter under a softer fold tier, '
-                        'which the v2 rule does not admit')},
-            {'candidate': 'cellxgene myocarditis CM object',
-             'reason': 'shares its normal donors with the Reichart object, so the two '
-                       'cannot both count as independent sources'},
-            {'candidate': 'GSE141910 / GSE116250 / GSE128188 / GSE282618',
-             'reason': ('ADR 0071 tier 3 admits whole-tissue bulk: GSE141910 and '
-                        'GSE116250 are declared tier-3 nHF sources (with GSE165303) '
-                        'and GSE128188 is an owned tier-3 AF candidate AF did not '
-                        'need once its tier-1 sources were measured. Only GSE282618 '
-                        'stays un-admitted, for its 3-vs-2 exploratory design, not '
-                        'for its tissue class')},
-            {'candidate': 'GSE185100',
-             'accession': 'GSE185100',
-             'status': 'unverified_not_admitted',
-             'size': ('757 MB RAW.tar (722 MB of per-sample processed tars; the two '
-                      'recordings disagree)'),
-             'donor_counts': ('4 early-onset DCM vs 3 non-diseased LV-apex donors '
-                              '(pediatric, 4-14 y)'),
-             'reason': ('recorded unverified and not admitted (#203): the NCBI FTP '
-                        'throttled the 757 MB RAW.tar to roughly 50 KB/s and the '
-                        'download was abandoned, so the deposit was never opened. The '
-                        'series is also 4 vs 3 donors of a pediatric early-onset '
-                        'cohort, which could not meet the evidence bar even if the '
-                        'archive were readable. Nothing was downloaded and no gene-axis '
-                        'evidence is derived from it.')},
-        ],
+        'rejected': [],  # Current finite reassessment is declared below.
     },
     'ICM': {
         'directory': 'icm',
@@ -81,8 +43,6 @@ CATEGORIES = {
             {'candidate': 'GSE145154',
              'reason': 'no author cell labels and region-heterogeneous; re-clustering '
                        'not permitted'},
-            {'candidate': 'GSE141910 / GSE116250',
-             'reason': 'whole-tissue bulk, not cardiomyocyte-derived'},
         ],
     },
 }
@@ -236,32 +196,17 @@ CATEGORIES['genetic_cardiomyopathy'] = {
     'isogenic_exception': {
         'applies': True,
         'statement': (
-            'ADR 0066 Isogenic exception: the six in-vitro hiPSC-CM models carry a patient '
+            'ADR 0066 Isogenic exception: the declared in-vitro hiPSC-CM models carry a disease '
             'genotype with an isogenic control and are kept as their own evidence type inside '
             'this category even though a human CM-pseudobulk cohort (Reichart-CM) exists for '
             'the same category: a mixed-etiology clinical cohort and a single-genotype '
             'isogenic model answer different questions, and collapsing them loses the causal '
             'signature. The category therefore has one tier-1 human CM-pseudobulk pair '
-            '(Reichart genotype-positive DCM + ARVC) and six tier-2 isogenic bulk datasets; '
+            '(Reichart genotype-positive DCM + ARVC) and tier-2 isogenic bulk datasets; '
             '`tier` records the winning tier and each dataset record carries its own '
             '`evidence_type` and `tier`.'),
     },
-    'rejected': [
-        {'candidate': 'GSE140965',
-         'reason': 'eligible isogenic HCM MYBPC3 deposit, but its control sets are batch '
-                   'confounded and the six isogenic models already cover MYBPC3 HCM'},
-        {'candidate': 'GSE251993 / GSE262876 / GSE274124 / GSE221945 / GSE329393',
-         'reason': 'eligible isogenic bulk models, but the declared roster fixes the six '
-                   'isogenic accessions; admitting more would exceed the survey fetch list'},
-        {'candidate': 'GSE289628 / GSE248187',
-         'reason': 'ARVC DSP models: GSE289628 is confounded by AAV6-vs-siRNA vehicle and '
-                   'GSE248187 deposits a DEG table only, so no counts could be re-fit'},
-        {'candidate': 'GSE141910 / GSE116250 / GSE128188 / GSE282618',
-         'reason': 'whole-heart/whole-ventricle bulk tissue, not cardiomyocyte-derived'},
-        {'candidate': 'Reichart-CM single NCCM donor',
-         'reason': 'ADR 0066 does not use the NCCM donor; it is excluded from the tracked '
-                   'export and appears in no dataset of this category'},
-    ],
+    'rejected': [],  # Current finite reassessment is declared below.
 }
 
 DATASETS.extend([
@@ -686,8 +631,8 @@ DATASETS.extend([
 
 # --- ticket #202: ICM tier-1 Kuppe-MI (IZ vs CTRL) ---------------------------
 # The cellxgene Kuppe MI all-snRNA object supplies ICM's human cardiomyocyte
-# pseudobulk evidence at tier 1 — ADR 0071's "ICM gains the Kuppe MI IZ vs CTRL
-# contrast ... and stops at tier 1". The object is gated on its own CM label and
+# pseudobulk evidence at tier 1. ADR 0073 also collects qualifying lower tiers.
+# The object is gated on its own CM label and
 # the profiles are per (donor, zone), not per donor: an infarct heart contributes
 # its ischaemic-zone CM nuclei as one profile, which is what makes the
 # ischaemic-zone-vs-control-heart contrast possible. A 500-CM-nuclei profile floor
@@ -740,9 +685,9 @@ DATASETS.append({
 
 # --- ticket #204: AF returns (tier-1 CM-specific sources + tier-3 bulk) ------
 # ADR 0071 decision 7 re-admits AF after ADR 0069/0070 removed it: its CM-specific
-# sources (GSE255612, GSE138252, GSE238242) are tier 1 and their measured DEG union
-# is far short of 2,000, so the category descends to tier-3 whole-atrial bulk
-# (GSE269882; GSE128188 is already owned). Every path below is item-relative; the
+# sources (GSE255612, GSE138252, GSE238242) are tier 1; the whole-atrial bulk
+# sources enter at tier 3 independently of their yield under ADR 0073.
+# Every path below is item-relative; the
 # driver composes the repo-relative path, so no gitignored `local/` literal points
 # at the checkout. GSE255612's record is restored unchanged from before ADR 0069:
 # its DEG item is not rebuilt by this ticket.
@@ -928,9 +873,8 @@ DATASETS.extend([
         'n_control': 9,
         'contrasts': ['persAF-SR', 'pAF-SR', 'poAF-SR'],
         'model_basis': ('whole right-atrial-appendage tissue: not cardiomyocyte-specific, '
-                        'so it is a tier-3 source only and enters AF only after tiers 1-2 '
-                        'fall short of 2,000 DEGs (ADR 0071), which supersedes the ADR '
-                        '0070 whole-tissue exclusion'),
+                        'so it is a tier-3 source; ADR 0073 collects every qualifying tier, '
+                        'superseding the old count-based stopping condition'),
         'strata': {
             'decision': ('the three diagnosis arms are declared as separate contrasts '
                          'against sinus rhythm inside one joint fit; the staging is '
@@ -952,27 +896,9 @@ DATASETS.extend([
     },
 ])
 
-# --- ticket #206: nHF tier-3 bulk roster + the six-category tier ladders ------
-# ADR 0071 decision 2 collects each category's sources in ascending tier order.
-# The ladder is derived from each record's own `tier` (no second declaration):
-#   nHF   1 = gse270788__nicm + reichart genotype-negative
-#         2 = gse35108__dcm_ipsc_cm
-#         3 = gse165303__dcm_lv_bulk + GSE116250 + GSE141910
-#   ICM   1 = gse270788__icm + gse270788__ami + kuppe-mi__iz
-#   AF    1 = gse255612__af + gse138252__af + gse238242__af   (no tier-2 source)
-#         3 = gse269882__af
-#   genetic_cardiomyopathy  1 = the two Reichart exports
-#                           2 = the six isogenic hiPSC-CM models
-#   cardiotox_TOP2 / cardiotox_other  2 = their pooled class sources (the
-#         category begins at tier 2; `bases.cardiotox` declares those sources)
-# The stop rule and its axis-resolved criterion live once, in
-# `bases.disease_deg.TIER_COLLECTION_RULE` / `tier_ledger`; `build_disease_deg.py ledger`
-# computes a category's cumulative axis-resolved union across every declared tier from these
-# declarations, and the publish path writes the resulting `tiering` record.
-# nHF's ceiling is accepted (ADR 0071 decision-2 note, 2026-11-15): GSE183852 is
-# closed on both routes (measured 70 v2 DEGs / 50 on the axis; an 8.1-12 GB Seurat
-# Robj label extraction is not warranted), so nHF tops out at ~1,661 axis DEGs and
-# `DEG2000_nHF` is the whole union rather than a 2,000-gene cut.
+# The ladder is derived from each record's tier; the public tier_ledger records
+# the complete cumulative axis-resolved union. Source admission does not depend
+# on DEG yield. Historical measured ADR0071 records above remain labelled history.
 DATASETS.extend([
     {
         'dataset_id': 'gse116250__hf_lv_bulk',
@@ -1342,3 +1268,15 @@ CATEGORIES['genetic_cardiomyopathy']['source_review'] = {'reviewed_on': '2026-11
               'reason': 'Single NCCM donor excluded by existing cohort admission; no new '
                         'independent case-control evidence.',
               'disposition': 'not_admitted'}]}
+
+# Every retained finite rejection also appears in the dated public review.
+# Admission records above preserve richer method/provenance evidence.
+for _category in CATEGORIES.values():
+    _review = _category.setdefault('source_review', {
+        'reviewed_on': '2026-11-16', 'policy': 'all_qualifying_declared_sources',
+        'records': []})
+    _review.setdefault('scope', 'Previously screened, rejected and owned source inventory; no claim of unbounded public discovery')
+    _reviewed = {row['candidate'] for row in _review['records']}
+    for _rejection in _category.get('rejected', []):
+        if _rejection['candidate'] not in _reviewed:
+            _review['records'].append(dict(_rejection, disposition='not_admitted'))

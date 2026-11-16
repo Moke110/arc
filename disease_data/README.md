@@ -315,3 +315,24 @@ cumulative axis-resolved 2,000-DEG stop. `GSE243674/local/tox_evidence/` contain
 independent regulatory evidence snapshots, reproducible with its
 `script/fetch_tox_evidence.py`; these are declared local additions, separate from
 its unchanged GEO source bytes.
+
+## Complete-source reassessment (ADR 0073, #221)
+
+The current registry collects all qualifying tiers without a DEG-count stop.
+The earlier ADR 0066 whole-tissue exclusions and ADR 0071 stopping rationale
+above describe the historical builds; current human atrial/ventricular bulk
+qualifies at tier 3, including AF GSE128188 and the GSE116250 ICM arm.
+The dated source-review records in the Stage 2 source registry retain finite
+primary-source admission, rejection, uncertainty and reentry evidence.
+
+| added item | input and analysis | disease/tier |
+|---|---|---|
+| GSE183852 | Full author Cardiomyocytes DCM/Donor DESeq2 table; missing padj retained, no local refit | nHF / 1 |
+| GSE248187 | Full author DSP-knockout EHT/isogenic edgeR test table | genetic / 2 |
+| GSE221945 | Full author TBX5 G145R Brugada/corrected DESeq2 table, effect sign reversed | genetic / 2 |
+| GSE329393 | Deposited RBM20 counts, matched-family joint limma-voom fit, exact approved HGNC Entrez mapping | genetic / 2 |
+
+Each item has immutable source bytes, offline verification, declared local
+derivations and digest-pinned fetch/build recipes. Author-table adapters retain
+full tested rows and author statistics; they do not assert a local raw-count
+refit or infer independent donors from library counts.
