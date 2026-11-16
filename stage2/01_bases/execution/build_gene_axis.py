@@ -517,7 +517,10 @@ def figure_rows(source, axis_sizes):
     ``rank_sum`` bin and are identical in every panel; ``selected`` says how many
     of that bin's candidates the panel's axis keeps (``sum(selected) == N``).
     """
-    histogram = source['histogram']
+    eligible = source['level_two']['f1000'] > 0
+    histogram = source['histogram'].copy()
+    edges_all = np.append(histogram.bin_left.to_numpy(), histogram.bin_right.iloc[-1])
+    histogram['count'] = np.histogram(source['level_two']['rank_sum'][eligible], bins=edges_all)[0]
     edges = np.append(histogram['bin_left'].to_numpy(dtype=float),
                       float(histogram['bin_right'].iloc[-1]))
     n_bins = len(histogram)
@@ -527,6 +530,7 @@ def figure_rows(source, axis_sizes):
         size = int(size)
         panel = chr(ord('a') + index)
         genes = source['axes'][size]
+        genes = genes[eligible[genes]]
         bins = np.clip(np.searchsorted(edges, rank_sum[genes], side='right') - 1,
                        0, n_bins - 1)
         selected = np.bincount(bins, minlength=n_bins)
