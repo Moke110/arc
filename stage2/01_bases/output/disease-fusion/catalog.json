@@ -4,16 +4,19 @@
     "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "size": 18164
   },
-  "catalog_sha256": "38bef5ca6df8813e4869a3d850a3c2ee8865e2746932ce4722af0d59ea2883fd",
+  "catalog_sha256": "14737430625f48471caa21d8696f39225abca9c14bb31615000d7c785a1669bf",
   "diseases": [
     {
+      "axis_resolved_deg_union": 1661,
       "category": "nHF",
       "declared_source_count": 6,
       "deg2000": 1661,
       "deg2000_file": "nhf.deg2000.csv",
       "directory": "nhf",
+      "eligible": true,
       "evidence_type": "cm_pseudobulk",
       "excluded_sources": [],
+      "exclusion_reason": null,
       "informative_source_count": 6,
       "n_deg": 1661,
       "not_published": [],
@@ -83,13 +86,16 @@
       ]
     },
     {
+      "axis_resolved_deg_union": 1647,
       "category": "ICM",
       "declared_source_count": 3,
       "deg2000": 1647,
       "deg2000_file": "icm.deg2000.csv",
       "directory": "icm",
+      "eligible": true,
       "evidence_type": "cm_pseudobulk",
       "excluded_sources": [],
+      "exclusion_reason": null,
       "informative_source_count": 3,
       "n_deg": 1647,
       "not_published": [],
@@ -130,11 +136,13 @@
       ]
     },
     {
+      "axis_resolved_deg_union": 1,
       "category": "AF",
       "declared_source_count": 4,
       "deg2000": 1,
       "deg2000_file": "af.deg2000.csv",
       "directory": "af",
+      "eligible": false,
       "evidence_type": "cm_pseudobulk",
       "excluded_sources": [
         {
@@ -156,6 +164,7 @@
           "tier": 3
         }
       ],
+      "exclusion_reason": "axis-resolved DEG union 1 is below 100 (ADR 0072); upstream evidence and DEG2000 are retained",
       "informative_source_count": 1,
       "n_deg": 1,
       "not_published": [],
@@ -209,13 +218,16 @@
       ]
     },
     {
+      "axis_resolved_deg_union": 1482,
       "category": "genetic_cardiomyopathy",
       "declared_source_count": 8,
       "deg2000": 1482,
       "deg2000_file": "genetic_cardiomyopathy.deg2000.csv",
       "directory": "genetic_cardiomyopathy",
+      "eligible": true,
       "evidence_type": "cm_pseudobulk",
       "excluded_sources": [],
+      "exclusion_reason": null,
       "informative_source_count": 8,
       "n_deg": 1482,
       "not_published": [],
@@ -302,91 +314,136 @@
       ]
     },
     {
-      "category": "cardiotox_TOP2",
-      "declared_source_count": 3,
+      "axis_resolved_deg_union": 9589,
+      "category": "TOX",
+      "declared_source_count": 12,
       "deg2000": 2000,
-      "deg2000_file": "cardiotox_TOP2.deg2000.csv",
-      "directory": "cardiotox_TOP2",
+      "deg2000_file": "tox.deg2000.csv",
+      "directory": "tox",
+      "eligible": true,
       "evidence_type": "bulk",
-      "excluded_sources": [],
-      "informative_source_count": 3,
-      "n_deg": 4514,
+      "excluded_sources": [
+        {
+          "dataset_id": "gse244740",
+          "n_deg": 0,
+          "reason": "none of the 18164 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
+          "tier": 2
+        }
+      ],
+      "exclusion_reason": null,
+      "informative_source_count": 11,
+      "n_deg": 9589,
       "not_published": [],
       "published": true,
       "reason": null,
       "sources": [
+        {
+          "dataset_id": "dtoxs_ipsc",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 603,
+          "n_deg_in_deg2000": 386,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse106297",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 1185,
+          "n_deg_in_deg2000": 541,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse157282",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 914,
+          "n_deg_in_deg2000": 517,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse232331",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 1835,
+          "n_deg_in_deg2000": 871,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse235470",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 4675,
+          "n_deg_in_deg2000": 1395,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse242692",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 2336,
+          "n_deg_in_deg2000": 883,
+          "tier": 2
+        },
         {
           "dataset_id": "gse243674",
           "evidence_type": "bulk",
           "flag_source": "published_deg_flag",
           "informative": true,
           "n_deg": 1592,
-          "n_deg_in_deg2000": 1017,
-          "tier": 2
-        },
-        {
-          "dataset_id": "dtoxs_ipsc",
-          "evidence_type": "bulk",
-          "flag_source": "published_deg_flag",
-          "informative": true,
-          "n_deg": 3763,
-          "n_deg_in_deg2000": 1779,
+          "n_deg_in_deg2000": 807,
           "tier": 2
         },
         {
           "dataset_id": "gse244740",
           "evidence_type": "bulk",
           "flag_source": "published_deg_flag",
-          "informative": true,
-          "n_deg": 6,
-          "n_deg_in_deg2000": 6,
-          "tier": 2
-        }
-      ],
-      "tier": 2,
-      "tiers_present": [
-        2
-      ]
-    },
-    {
-      "category": "cardiotox_other",
-      "declared_source_count": 3,
-      "deg2000": 297,
-      "deg2000_file": "cardiotox_other.deg2000.csv",
-      "directory": "cardiotox_other",
-      "evidence_type": "bulk",
-      "excluded_sources": [],
-      "informative_source_count": 3,
-      "n_deg": 297,
-      "not_published": [],
-      "published": true,
-      "reason": null,
-      "sources": [
-        {
-          "dataset_id": "dtoxs_ipsc__atc_l4-L01EA",
-          "evidence_type": "bulk",
-          "flag_source": "published_deg_flag",
-          "informative": true,
-          "n_deg": 227,
-          "n_deg_in_deg2000": 227,
+          "informative": false,
+          "n_deg": 0,
+          "n_deg_in_deg2000": 0,
+          "reason": "none of the 18164 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence",
           "tier": 2
         },
         {
-          "dataset_id": "dtoxs_ipsc__atc_l4-L01EB",
+          "dataset_id": "gse247541",
           "evidence_type": "bulk",
           "flag_source": "published_deg_flag",
           "informative": true,
-          "n_deg": 75,
-          "n_deg_in_deg2000": 75,
+          "n_deg": 126,
+          "n_deg_in_deg2000": 29,
           "tier": 2
         },
         {
-          "dataset_id": "dtoxs_ipsc__atc_l4-L01EX",
+          "dataset_id": "gse255505",
           "evidence_type": "bulk",
           "flag_source": "published_deg_flag",
           "informative": true,
-          "n_deg": 89,
-          "n_deg_in_deg2000": 89,
+          "n_deg": 3881,
+          "n_deg_in_deg2000": 1335,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse262419",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 44,
+          "n_deg_in_deg2000": 9,
+          "tier": 2
+        },
+        {
+          "dataset_id": "gse313746",
+          "evidence_type": "bulk",
+          "flag_source": "published_deg_flag",
+          "informative": true,
+          "n_deg": 3588,
+          "n_deg_in_deg2000": 1385,
           "tier": 2
         }
       ],
@@ -396,6 +453,7 @@
       ]
     }
   ],
+  "eligibility_min_deg": 100,
   "generated_by": "stage2/01_bases/execution/build_disease_fusion.py",
   "limit": 2000,
   "rank_contract": "stage2-disease-deg-v2",
@@ -408,6 +466,6 @@
     "flag_derivation": "a published v2 table carries the pass-any-contrast deg flag (authoritative); a v1 table carries only the collapsed winning-contrast rows, so its v2 flag is re-derived from those rows and the ledger records flag_source = collapsed_winning_contrast",
     "level_one": "disease_rank_sum = sum over the disease informative sources of rank_norm = rank / n_DEG; the disease rank is the ascending position of that sum with a gene_index tie-break",
     "non_informative": "a source with n_DEG = 0 has no rank_norm (the ADR 0071 denominator is zero) and a source whose measured effects are all tied carries no ordering evidence; both are excluded from the sum and recorded with their reason (ADR 0068), so a NaN can never poison a disease sum",
-    "tier_stop": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled."
+    "tier_stop": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled."
   }
 }

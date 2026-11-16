@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "88f996f3634c6a02d9c7d12dfb2336764450488907b05b2988a3d67c2f783948",
+  "catalog_sha256": "09f470730b746d5ea2fa6600cf1f81e8227f59ef4de13d9dcd046d5bcf76da79",
   "category": "genetic_cardiomyopathy",
   "counts": {
     "datasets": 8,
@@ -37,7 +37,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "0d3efcdbdba244d14e87f2b0585af7db137a0a63f2ba096ecde3ed990cc8400d"
+      "sha256": "1cbe4c8807c60ccb780aeeb4358ade0ed97a0d96f5b8650cadc3ff125cfeb37a"
     },
     "gse194297__dmd_cardiomyopathy.deg.csv": {
       "rows": 16409,

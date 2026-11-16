@@ -1,15 +1,13 @@
 N,n_axis,group,group_label,numerator,denominator,rate,note
-2000,2000,tenv_hvg,tenv-HVG,1079,2000,53.95,tenv-HVG top-N: |{g in G_N : tenv_hvg_rank(g) <= N}| / N
-2000,2000,nhf,nHF,638,1661,38.41,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-2000,2000,icm,ICM,550,1647,33.39,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-2000,2000,af,AF,0,1,0.00,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-2000,2000,genetic_cardiomyopathy,genetic_cardiomyopathy,635,1482,42.85,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-2000,2000,cardiotox_TOP2,cardiotox_TOP2,831,2000,41.55,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-2000,2000,cardiotox_other,cardiotox_other,199,297,67.00,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-5000,5000,tenv_hvg,tenv-HVG,3068,5000,61.36,tenv-HVG top-N: |{g in G_N : tenv_hvg_rank(g) <= N}| / N
-5000,5000,nhf,nHF,1151,1661,69.30,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-5000,5000,icm,ICM,1042,1647,63.27,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-5000,5000,af,AF,1,1,100.00,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-5000,5000,genetic_cardiomyopathy,genetic_cardiomyopathy,1068,1482,72.06,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-5000,5000,cardiotox_TOP2,cardiotox_TOP2,1740,2000,87.00,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
-5000,5000,cardiotox_other,cardiotox_other,256,297,86.20,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+2000,2000,tenv_hvg,tenv-HVG,1085,2000,54.25,tenv-HVG top-N: |{g in G_N : tenv_hvg_rank(g) <= N}| / N
+2000,2000,nhf,nHF,684,1661,41.18,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+2000,2000,icm,ICM,551,1647,33.45,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+2000,2000,af,AF,,,,"excluded from cross-disease fusion by eligibility; no participating DEG2000, so no coverage is defined"
+2000,2000,genetic_cardiomyopathy,genetic_cardiomyopathy,672,1482,45.34,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+2000,2000,tox,TOX,766,2000,38.30,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+5000,5000,tenv_hvg,tenv-HVG,3005,5000,60.10,tenv-HVG top-N: |{g in G_N : tenv_hvg_rank(g) <= N}| / N
+5000,5000,nhf,nHF,1018,1661,61.29,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+5000,5000,icm,ICM,872,1647,52.94,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+5000,5000,af,AF,,,,"excluded from cross-disease fusion by eligibility; no participating DEG2000, so no coverage is defined"
+5000,5000,genetic_cardiomyopathy,genetic_cardiomyopathy,960,1482,64.78,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|
+5000,5000,tox,TOX,1989,2000,99.45,DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|

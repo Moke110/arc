@@ -1,7 +1,7 @@
 # Stage 2 shared foundations
 
-**Accepted (2026-11-13, ADR 0066); disease side re-published 2026-11-15 (ADR 0071,
-#208, with the v2 `rejected[]` rationale strings corrected and re-published by #212).**
+**Accepted foundation (2026-11-13, ADR 0066); disease side superseded by the
+coherently verified ADR 0072 release on 2026-11-16 (#213–#219).**
 This step's `output/` tree is the post-rebuild
 foundation: `raw_counts/` -> `corpus/` -> `view-2k/`/`view-5k/`, with
 `disease-deg/`, `disease-fusion/` and the released `gene-axis/`
@@ -13,7 +13,8 @@ ADR 0066, `log/` is execution-run evidence rather than a change history: it was
 deleted and regenerated at acceptance. [`log/acceptance.md`](log/acceptance.md)
 is the acceptance record — replay results, digests, resource peaks, the "no
 retired path read" evidence and the old-to-new mapping; its pre-v2 sections are
-sealed history and its §10–§12 are the v2 republish gates. The per-slice sections
+sealed history, its §10–§12 are the v2 republish gates, and §13 is the ADR 0072
+coherent successor acceptance. The per-slice sections
 below keep each ticket's contract, now as accepted science.
 
 ## Rebuild foundation: `raw_counts/` and `corpus/` (ADR 0066, #186)
@@ -113,12 +114,10 @@ keeps the `deg_rank` re-export contract the accepted gene-axis evidence and
 
 ### Disease DEGs and the successor roster
 
-The accepted pre-successor output is the ADR 0071 six-category release. The
-ADR 0072 integrated successor is measured and verified separately, pending
-coherent promotion. Its five declared categories are `nhf`, `icm`, `af`,
+The accepted ADR 0072 release has five declared categories: `nhf`, `icm`, `af`,
 `genetic_cardiomyopathy` and `tox`, with 33 dataset records. AF remains declared
 but fails the uniform disease gate. The table below describes successor paths;
-legacy TOP2/other directories belong to the pre-successor release only.
+the legacy TOP2/other category releases are preserved in git history.
 
 | path | contents | reader |
 |---|---|---|
@@ -325,7 +324,7 @@ padded. After completing this process, the uniform disease gate admits a union
 of at least 100 genes to cross-disease fusion. Excluded diseases retain upstream
 products, ranks, DEG2000 and explicit exclusion reasons.
 
-The measured integrated candidate contains:
+The accepted integrated release contains:
 
 | disease | sources | DEG union | DEG2000 | cross disease eligible |
 |---|---:|---:|---:|---|
@@ -338,8 +337,7 @@ The measured integrated candidate contains:
 AF's retained gene is SLC9A7. Retaining that evidence does not add a rank term or
 f2000 count. `bases.disease_fusion.DiseaseFusion` reads each disease's level-1
 rank and DEG2000, including retained excluded categories. Eligibility is explicit
-in the fusion catalog. Legacy accepted output remains readable by its own
-manifest roster until coherent successor promotion.
+in the fusion catalog. Historical releases remain readable by their own manifest rosters.
 
 ## Layout after the rebuild
 
@@ -734,8 +732,8 @@ finite set is neither a negative label nor a claim of exhaustive drug research.
 ### Unified TOX measurement candidate (#216)
 
 `execution/build_tox.py publish|verify` computes only
-`execution/checkpoints/unified-tox/tox/`; it does not replace the released
-mechanism-class products. Run through `execution/capped.sh /usr/bin/time -v`
+`execution/checkpoints/unified-tox/tox/`; acceptance promotes its verified
+contents to `output/disease-deg/tox/` with the complete downstream release. Run through `execution/capped.sh /usr/bin/time -v`
 with the R configuration above. `verify` re-fits every entered dataset from the
 pinned measurements into separate scratch space and compares all output and
 manifest digests. Complete all sources in a tier before testing the cumulative
@@ -751,5 +749,5 @@ tests are retained. Additional count sources use the shared limma-voom worker;
 FPKM is explicitly log2(FPKM+1) on the existing expression-limma path, while
 fractional estimated counts use the existing documented integerisation helper
 with deviation/scale statistics. Runtime peaks remain in the work directory,
-outside deterministic scientific payloads. Integrated publication, axes and
-views follow only after successor acceptance.
+outside deterministic scientific payloads. The integrated driver publishes and
+replays the coherent disease, fusion, axis and view generation.

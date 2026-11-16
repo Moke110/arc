@@ -51,71 +51,83 @@ def source_plan(ledger):
     return sorted(plan, key=lambda s: (s['tier'], s['source']))
 
 
+def _gse243674_membership(repo, members, identity):
+    rows = []
+    columns = pd.read_csv(repo / cardiotox.GSE243674_COUNTS, sep=' ', nrows=0).columns[1:]
+    panel = cardiotox._well_meta(columns)
+    for time_h in sorted(panel.time_h.unique()):
+        part = panel[panel.time_h.eq(time_h)]
+        controls = part[part.token.eq('VEH')]
+        treated = part[part.token.isin(members)]
+        if treated.empty:
+            continue
+        if controls.empty or not set(treated.donor) <= set(controls.donor):
+            raise ReleaseError('GSE243674 lacks matched donor/time vehicle')
+        for row in part.itertuples(index=False):
+            role = 'treated' if row.token in members else 'vehicle' if row.token == 'VEH' else 'excluded'
+            rows.append(dict(sample=row.well, source_id=row.token,
+                             parent_inchikey=identity.get(row.token, ''),
+                             role=role, donor=str(row.donor), time_h=int(time_h),
+                             stratum=f'{time_h}h', matched_controls=sorted(controls.well),
+                             reason='admitted exposure' if role == 'treated' else
+                             'same-time vehicle' if role == 'vehicle' else 'drug not independently admitted'))
+    return rows
+
+
+def _gse244740_membership(repo, members, identity):
+    rows = []
+    panel = cardiotox.gse244740_panel(repo / cardiotox.GSE244740_SERIES)
+    for plate in sorted(set(panel.loc[panel.compound.isin(members), 'plate'])):
+        part = panel[panel.plate.eq(plate)]
+        controls = sorted(part.loc[part.compound.eq('DMSO'), 'well'])
+        if not controls:
+            raise ReleaseError('GSE244740 admitted exposure lacks same-plate DMSO')
+        for row in part.itertuples(index=False):
+            role = 'treated' if row.compound in members else 'vehicle' if row.compound == 'DMSO' else 'excluded'
+            rows.append(dict(sample=row.well, source_id=row.compound,
+                             parent_inchikey=identity.get(row.compound, ''),
+                             role=role, plate=plate, stratum=f'plate{plate}',
+                             time=row.time, dose_index=row.dose_index,
+                             matched_controls=controls,
+                             reason='admitted exposure' if role == 'treated' else
+                             'same-plate DMSO' if role == 'vehicle' else 'drug not independently admitted'))
+    return rows
+
+
+def _dtoxs_ipsc_membership(repo, members, identity):
+    rows = []
+    strata = cardiotox.dtox_pooled_strata(repo / cardiotox.DTOXS_DEG_TAR, members)
+    for (cell, plate, hour), record in strata.items():
+        stratum = f'{cell}|plate{plate}|{hour}h'
+        for code, wells in [('CTRL', record['controls'])] + list(record['treated'].items()):
+            for well in wells:
+                rows.append(dict(sample=well, source_id=code,
+                                 parent_inchikey=identity.get(code, ''),
+                                 role='vehicle' if code == 'CTRL' else 'treated',
+                                 stratum=stratum, cell_line=cell, plate=plate, time_h=hour,
+                                 matched_controls=record['controls'],
+                                 reason='source-pipeline QC-retained well'))
+    selected = {row['sample'] for row in rows}
+    with gzip.open(repo / cardiotox.DTOXS_COUNTS, 'rt') as handle:
+        all_wells = handle.readline().rstrip('\n').split('\t')
+    for well in all_wells:
+        if well not in selected:
+            code = well.split('.')[0]
+            rows.append(dict(sample=well, source_id=code, role='excluded',
+                             parent_inchikey=identity.get(code, ''),
+                             stratum='', matched_controls=[],
+                             reason='not independently admitted or absent from source QC-retained matched strata'))
+    return rows
+
+
 def legacy_membership(repo, source, drugs):
-    """Audit the actual pooled source wells, including non-admitted exclusions."""
-    repo = Path(repo)
+    """Audit pooled source wells with the same adapter used for measurements."""
+    adapter = _LEGACY_ADAPTERS.get(source)
+    if adapter is None:
+        raise ReleaseError('not an original TOX source: ' + source)
     members = set(drugs.source_id.astype(str))
     identity = drugs.set_index('source_id').parent_inchikey.to_dict()
-    rows = []
-    if source == 'gse243674':
-        columns = pd.read_csv(repo / cardiotox.GSE243674_COUNTS, sep=' ', nrows=0).columns[1:]
-        panel = cardiotox._well_meta(columns)
-        for time_h in sorted(panel.time_h.unique()):
-            part = panel[panel.time_h.eq(time_h)]
-            controls = part[part.token.eq('VEH')]
-            treated = part[part.token.isin(members)]
-            if treated.empty:
-                continue
-            if controls.empty or not set(treated.donor) <= set(controls.donor):
-                raise ReleaseError('GSE243674 lacks matched donor/time vehicle')
-            for row in part.itertuples(index=False):
-                role = 'treated' if row.token in members else 'vehicle' if row.token == 'VEH' else 'excluded'
-                rows.append(dict(sample=row.well, source_id=row.token,
-                                 parent_inchikey=identity.get(row.token, ''),
-                                 role=role, donor=str(row.donor), time_h=int(time_h),
-                                 stratum=f'{time_h}h', matched_controls=sorted(controls.well),
-                                 reason='admitted exposure' if role == 'treated' else
-                                 'same-time vehicle' if role == 'vehicle' else 'drug not independently admitted'))
-    elif source == 'gse244740':
-        panel = cardiotox.gse244740_panel(repo / cardiotox.GSE244740_SERIES)
-        for plate in sorted(set(panel.loc[panel.compound.isin(members), 'plate'])):
-            part = panel[panel.plate.eq(plate)]
-            controls = sorted(part.loc[part.compound.eq('DMSO'), 'well'])
-            if not controls:
-                raise ReleaseError('GSE244740 admitted exposure lacks same-plate DMSO')
-            for row in part.itertuples(index=False):
-                role = 'treated' if row.compound in members else 'vehicle' if row.compound == 'DMSO' else 'excluded'
-                rows.append(dict(sample=row.well, source_id=row.compound,
-                                 parent_inchikey=identity.get(row.compound, ''),
-                                 role=role, plate=plate, stratum=f'plate{plate}',
-                                 time=row.time, dose_index=row.dose_index,
-                                 matched_controls=controls,
-                                 reason='admitted exposure' if role == 'treated' else
-                                 'same-plate DMSO' if role == 'vehicle' else 'drug not independently admitted'))
-    elif source == 'dtoxs_ipsc':
-        strata = cardiotox.dtox_pooled_strata(repo / cardiotox.DTOXS_DEG_TAR, members)
-        for (cell, plate, hour), record in strata.items():
-            stratum = f'{cell}|plate{plate}|{hour}h'
-            for code, wells in [('CTRL', record['controls'])] + list(record['treated'].items()):
-                for well in wells:
-                    rows.append(dict(sample=well, source_id=code,
-                                     parent_inchikey=identity.get(code, ''),
-                                     role='vehicle' if code == 'CTRL' else 'treated',
-                                     stratum=stratum, cell_line=cell, plate=plate, time_h=hour,
-                                     matched_controls=record['controls'],
-                                     reason='source-pipeline QC-retained well'))
-        selected = {row['sample'] for row in rows}
-        with gzip.open(repo / cardiotox.DTOXS_COUNTS, 'rt') as handle:
-            all_wells = handle.readline().rstrip('\n').split('\t')
-        for well in all_wells:
-            if well not in selected:
-                code = well.split('.')[0]
-                rows.append(dict(sample=well, source_id=code, role='excluded',
-                                 parent_inchikey=identity.get(code, ''),
-                                 stratum='', matched_controls=[],
-                                 reason='not independently admitted or absent from source QC-retained matched strata'))
-    else:
-        raise ReleaseError('not an original TOX source: ' + source)
+    rows = adapter[1](Path(repo), members, identity)
     observed = {r['source_id'] for r in rows if r['role'] == 'treated'}
     missing = sorted(members - observed)
     if missing:
@@ -230,32 +242,49 @@ def assemble_candidate(output, sources, axis, inputs, axis_digest, resolver=None
     return catalog
 
 
+def _gse243674_contrasts(repo, members, workdir):
+    frame, contrasts, metrics = cardiotox.gse243674_class_contrasts(repo, members, 'TOX', workdir)
+    method = dict(name='donor-paired DESeq2', model='~ donor + group',
+                  test='Wald; unshrunken log2FC; BH and independent filtering',
+                  pooling='all admitted drugs per original time, same-time vehicle')
+    inputs = [cardiotox.GSE243674_COUNTS, cardiotox.HGNC, cardiotox.DESEQ2_SCRIPT]
+    return frame, contrasts, metrics, method, inputs
+
+
+def _dtoxs_ipsc_contrasts(repo, members, workdir):
+    frame, contrasts, metrics = cardiotox.dtoxs_class_contrasts(
+        repo, cardiotox.read_dtoxs_counts(repo), members, 'TOX', workdir)
+    method = dict(name='deposition pinned edgeR',
+                  test='TMM; trended dispersion; exactTest; remove_small; BH',
+                  pooling='all admitted QC-retained drugs within cell-line/plate/time strata')
+    inputs = [cardiotox.DTOXS_COUNTS, cardiotox.DTOXS_DEG_TAR,
+              cardiotox.DTOXS_PROGRAMS, cardiotox.DTOXS_DESIGN, cardiotox.EDGE_R_SCRIPT]
+    return frame, contrasts, metrics, method, inputs
+
+
+def _gse244740_contrasts(repo, members, workdir):
+    frame, contrasts, metrics = cardiotox.gse244740_class_contrasts(repo, members, 'TOX')
+    method = dict(name='ScreenSeq pooled Welch',
+                  test='Welch on log2(CPM+1); source-full library; BH per contrast',
+                  pooling='all admitted drug doses within plate vs same-plate DMSO')
+    inputs = [cardiotox.GSE244740_COUNTS, cardiotox.GSE244740_SERIES]
+    return frame, contrasts, metrics, method, inputs
+
+
+_LEGACY_ADAPTERS = {
+    'gse243674': (_gse243674_contrasts, _gse243674_membership),
+    'dtoxs_ipsc': (_dtoxs_ipsc_contrasts, _dtoxs_ipsc_membership),
+    'gse244740': (_gse244740_contrasts, _gse244740_membership),
+}
+
+
 def source_contrasts(repo, spec, workdir):
     """Compute a dataset once from the independently admitted member union."""
     repo, workdir = Path(repo), Path(workdir)
     source, drugs = spec['source'], spec['drugs']
     members = drugs.source_id.astype(str).tolist()
-    if source == 'gse243674':
-        frame, contrasts, metrics = cardiotox.gse243674_class_contrasts(repo, members, 'TOX', workdir)
-        method = dict(name='donor-paired DESeq2', model='~ donor + group',
-                      test='Wald; unshrunken log2FC; BH and independent filtering',
-                      pooling='all admitted drugs per original time, same-time vehicle')
-        inputs = [cardiotox.GSE243674_COUNTS, cardiotox.HGNC, cardiotox.DESEQ2_SCRIPT]
-    elif source == 'dtoxs_ipsc':
-        frame, contrasts, metrics = cardiotox.dtoxs_class_contrasts(
-            repo, cardiotox.read_dtoxs_counts(repo), members, 'TOX', workdir)
-        method = dict(name='deposition pinned edgeR',
-                      test='TMM; trended dispersion; exactTest; remove_small; BH',
-                      pooling='all admitted QC-retained drugs within cell-line/plate/time strata')
-        inputs = [cardiotox.DTOXS_COUNTS, cardiotox.DTOXS_DEG_TAR,
-                  cardiotox.DTOXS_PROGRAMS, cardiotox.DTOXS_DESIGN, cardiotox.EDGE_R_SCRIPT]
-    elif source == 'gse244740':
-        frame, contrasts, metrics = cardiotox.gse244740_class_contrasts(repo, members, 'TOX')
-        method = dict(name='ScreenSeq pooled Welch',
-                      test='Welch on log2(CPM+1); source-full library; BH per contrast',
-                      pooling='all admitted drug doses within plate vs same-plate DMSO')
-        inputs = [cardiotox.GSE244740_COUNTS, cardiotox.GSE244740_SERIES]
-    else:
+    adapter = _LEGACY_ADAPTERS.get(source)
+    if adapter is None:
         from . import tox_sources
         frame, contrasts, metadata = tox_sources.source_contrasts(repo, source, drugs, workdir)
         return dict(source=source, tier=spec['tier'], item=spec['item'],
@@ -264,6 +293,7 @@ def source_contrasts(repo, spec, workdir):
                     member_source_ids=members,
                     audit=metadata['audit'], method=metadata['method'],
                     inputs=metadata['inputs']), metadata.get('metrics', {})
+    frame, contrasts, metrics, method, inputs = adapter[0](repo, members, workdir)
     audit = legacy_membership(repo, source, drugs)
     return dict(source=source, tier=spec['tier'], item=spec['item'],
                 contrasts=frame, contrast_records=contrasts,
