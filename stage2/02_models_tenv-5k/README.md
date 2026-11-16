@@ -42,3 +42,23 @@ hashes and shared identities. The real 30-entry Mean slice completed with 25
 applicable runs and five N/A entries. See `log/acceptance.md` for bounded validation
 and resource evidence. This establishes shared inputs and baselines, not the final
 90-run model comparison.
+
+TranSiGen uses the ordinary upstream `train_TranSiGen.py` configuration:
+5000→1200 encoder, latent100, decoder800, Morgan2048→400 embedding,
+beta0.1, dropout0.1, batch64, Adam lr0.001/weight_decay0.00001, no scheduler.
+The 5000-gene dimension, shared Morgan fingerprints, random initialization and
+shared split/stopping replace script inputs/defaults; native selective Xavier
+initialization, summed VAE objective and CPU latent sampling remain unchanged.
+Singleton final training batches are skipped as upstream; evaluation retains them.
+Inference directly calls native `forward(x1, features)[3]`, so treated labels and
+the target reconstruction branch never consume prediction RNG. Fixed seed,
+row order and batch64 apply identically to validation, prediction and reload.
+Source code is hash-checked before construction; no pretrained asset is loaded.
+
+`execution/transigen.py --inputs <freeze> --source <TranSiGen/source>
+--candidate <empty directory> --scenario cold-drug --fold 0 --seed 17`
+builds a candidate and launches a fresh Python process for exact sampled replay.
+Use `--smoke-rows 8 --max-epochs 2` for bounded integration checks; smoke status
+is explicit and cannot substitute for a formal matrix entry. `--replay-only`
+performs no training. Native-source tests accept `TRANSIGEN_SOURCE` when the
+immutable payload is materialized in another checkout.
