@@ -125,6 +125,285 @@
     "original_main_shared_inode_files": 6147,
     "source_tree_edits": false
   },
+  "main_deployment_verification": {
+    "bounded_public_views": {
+      "checks": [
+        {
+          "axis": 2000,
+          "rows": [
+            0,
+            4543,
+            33359,
+            66717
+          ],
+          "shape": [
+            66718,
+            2000
+          ],
+          "source": "tahoe_bulk"
+        },
+        {
+          "axis": 2000,
+          "rows": [
+            0,
+            17,
+            2239,
+            4477
+          ],
+          "shape": [
+            4478,
+            2000
+          ],
+          "source": "tenv"
+        },
+        {
+          "axis": 3000,
+          "rows": [
+            0,
+            4543,
+            33359,
+            66717
+          ],
+          "shape": [
+            66718,
+            3000
+          ],
+          "source": "tahoe_bulk"
+        },
+        {
+          "axis": 3000,
+          "rows": [
+            0,
+            17,
+            2239,
+            4477
+          ],
+          "shape": [
+            4478,
+            3000
+          ],
+          "source": "tenv"
+        },
+        {
+          "axis": 4000,
+          "rows": [
+            0,
+            4543,
+            33359,
+            66717
+          ],
+          "shape": [
+            66718,
+            4000
+          ],
+          "source": "tahoe_bulk"
+        },
+        {
+          "axis": 4000,
+          "rows": [
+            0,
+            17,
+            2239,
+            4477
+          ],
+          "shape": [
+            4478,
+            4000
+          ],
+          "source": "tenv"
+        },
+        {
+          "axis": 5000,
+          "rows": [
+            0,
+            4543,
+            33359,
+            66717
+          ],
+          "shape": [
+            66718,
+            5000
+          ],
+          "source": "tahoe_bulk"
+        },
+        {
+          "axis": 5000,
+          "rows": [
+            0,
+            17,
+            2239,
+            4477
+          ],
+          "shape": [
+            4478,
+            5000
+          ],
+          "source": "tenv"
+        }
+      ],
+      "cross_axis_metadata_totals_values_exact": true,
+      "status": "PASS"
+    },
+    "bytes": {
+      "foundation_unchanged": true,
+      "payload_bytes": 13342475946,
+      "payload_files": 108,
+      "source": {
+        "bytes": 464551241331,
+        "files": 6228,
+        "hashed": 81,
+        "inherited": 6147
+      }
+    },
+    "date": "2026-11-16",
+    "dev_merge": "4315ab8700c637543a63f49c114046621d47c220",
+    "evidence": {
+      "main-bounded-readers.json": {
+        "bytes": 1608,
+        "sha256": "c862fc68efefeff599e5da41ef89cd3d00277c5e6ce65217bec350cac15fc43c"
+      },
+      "main-bounded.log": {
+        "bytes": 954,
+        "elapsed": "0:04.97",
+        "max_rss_kib": 478556,
+        "sha256": "f3c69af9b396cfe703e630a5a154be21d67c1408368ab8c98203f801fd33ff56"
+      },
+      "main-bytes-verified.json": {
+        "bytes": 196,
+        "sha256": "983d0e406855cc2c8b8bd6b3bb540e87beb9f98167fd62e28f32a39af6a46639"
+      },
+      "main-check-paths.log": {
+        "bytes": 1770,
+        "elapsed": "0:18.09",
+        "max_rss_kib": 6728,
+        "sha256": "ee049e4796f4b127d896a9d41a35c1dbc56269168726f0160fecccc4cef46c1f"
+      },
+      "main-check-tracked.log": {
+        "bytes": 1524,
+        "elapsed": "0:02.95",
+        "max_rss_kib": 4604,
+        "sha256": "8e9e793a73eb465eeca453041fb75687d1eee7b58e270b117d8eac17a92fc792"
+      },
+      "main-formal-closure.json": {
+        "bytes": 2832,
+        "sha256": "1986b5c1d86d6c478eec336e3202ff4739ebb7336a6b37fab1b3c50f1e83eeae"
+      },
+      "main-formal.log": {
+        "bytes": 3718,
+        "elapsed": "0:10.08",
+        "max_rss_kib": 210932,
+        "sha256": "644562116fc3ba8952ec394bb72e3595e485f35e699495cd91a364b3a648c5a7"
+      },
+      "main-foundation-before.json": {
+        "bytes": 3253,
+        "sha256": "be93d090e7b588b3c6ea4b498ad67d6c95a7361c77e746da9a149d4722b4d129"
+      },
+      "main-install.log": {
+        "bytes": 901,
+        "elapsed": "0:23.68",
+        "max_rss_kib": 33884,
+        "sha256": "552b65206677da64921aa69f19c40791193913198a0d0016ae2060621ded8e68"
+      },
+      "main-materialization.json": {
+        "bytes": 45,
+        "sha256": "5856d90d0a3c0b4402f531c0f11486188185fdf283bbff1696f617217b494c26"
+      },
+      "main-verify.log": {
+        "bytes": 922,
+        "elapsed": "0:13.93",
+        "max_rss_kib": 40656,
+        "sha256": "53a5b65999f1e7ea02a2726cc673ce4d87d2d465c21c211ac6eb3f61f8792e4f"
+      },
+      "review-spec-ce25775.md": {
+        "bytes": 2421,
+        "sha256": "0a77e0e430b6f84814679540c9dcb104cca52cd1d358d603fc36041332192023"
+      },
+      "review-standards.md": {
+        "bytes": 1301,
+        "sha256": "5e212ad320bbfca5f7da52b6cd96f45deff41769a36cb24f3fa33e97a84c462a"
+      }
+    },
+    "evidence_location": "/tmp/arc-spec220 (outside repository; content digests recorded here)",
+    "final_reviews": {
+      "resolved_p2": 1,
+      "spec": "PASS-zero-open-findings",
+      "standards": "PASS-zero-open-findings"
+    },
+    "health": {
+      "check_paths": "PASS",
+      "check_tracked": "PASS-zero-holes",
+      "verify_all": "Inherited completed isolated-release PASS 66/66: exact current verifier/code/manifest tree identity, all 6228 source paths/digests, 6147 unchanged post-health device/inode/size/mtime_ns/ctime_ns proofs and 81 actual new/nonshared hashes. No redundant 464GB reread."
+    },
+    "initial_main_merge": "9096c974c9e38a89419bc49993d38665208caafb",
+    "limitations": "Previously recorded interruption and resource-monitor gaps remain unchanged; no uninterrupted monitoring claim. The initial source-path helper and bounded-reader property assertions were corrected outside repository before successful final gates.",
+    "materialization": {
+      "already_exact": 77,
+      "installed": 31
+    },
+    "public_chain": {
+      "affected_manifest_count": 11,
+      "canonical_files_digest_checked": 299,
+      "dataset_records": 41,
+      "diseases": {
+        "af": {
+          "deg1000": 25,
+          "eligible": false,
+          "exclusion_reason": "axis-resolved DEG union 25 is below 100 (ADR 0072); upstream evidence and DEG1000 are retained",
+          "n_deg": 25
+        },
+        "genetic_cardiomyopathy": {
+          "deg1000": 1000,
+          "eligible": true,
+          "exclusion_reason": null,
+          "n_deg": 4399
+        },
+        "icm": {
+          "deg1000": 1000,
+          "eligible": true,
+          "exclusion_reason": null,
+          "n_deg": 1671
+        },
+        "nhf": {
+          "deg1000": 1000,
+          "eligible": true,
+          "exclusion_reason": null,
+          "n_deg": 1785
+        },
+        "tox": {
+          "deg1000": 1000,
+          "eligible": true,
+          "exclusion_reason": null,
+          "n_deg": 9589
+        }
+      },
+      "document_input_pins": 29,
+      "document_output_pins": 3,
+      "exact_nested_axes": {
+        "2000": 2000,
+        "3000": 3000,
+        "4000": 4000,
+        "5000": 5000
+      },
+      "manifests": {
+        "stage2/01_bases/output/corpus/manifest.json": "f8c35ccc8e12d0fc7325a5ec5c798a7d4e542e1fc28844807b40305e9d5d9f6d",
+        "stage2/01_bases/output/disease-deg/af/manifest.json": "1add346c60008f290767106c224926698f0672e0ce2ce5fd5f426403eaf404ef",
+        "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/manifest.json": "e44d9274c5dac32d0395a0339312e3474a5dd753632afae1921f2d1a3b21ffae",
+        "stage2/01_bases/output/disease-deg/icm/manifest.json": "4e97cb6c022cf95a0534d6f3344dd252c790e3d0bec8d90745f8c900487cc19e",
+        "stage2/01_bases/output/disease-deg/nhf/manifest.json": "0c9e4eb66207fd6bffca1bd22f6300b85d2cbfc6c084e7ebb4fd0d645be50b21",
+        "stage2/01_bases/output/disease-deg/tox/manifest.json": "3c93d84089bf51b4a74f012d17ac6986bf43ebe4c6406fec8e1985125d7cbc37",
+        "stage2/01_bases/output/disease-fusion/manifest.json": "f871d423870df0d60a72aa27796ff0d1184b8c19b7df93b3a3fda6748a05c4ca",
+        "stage2/01_bases/output/gene-axis/manifest.json": "187de15ed2eecbd6357cad6fa2aef2c792f4eafe1fdd4467cde4370b64ea2ff8",
+        "stage2/01_bases/output/gene-identity/manifest.json": "5f7517c34d7fda2ff61993b625086bd3a5db1de51c097b6cf9f87aec7bf98ade",
+        "stage2/01_bases/output/tenv-hvg/manifest.json": "953103a1093e4364158075553dcb036c560c14fa61ea95fa8f4157a8a881c3a6",
+        "stage2/01_bases/output/view-2k/manifest.json": "94454e4fd418a984a12034164bd48f510e64520a8ec288bcf959f567018e2b19",
+        "stage2/01_bases/output/view-3k/manifest.json": "2a103b54471719963d6ea968bdda0cb5507abdb51c5889e80beff27346d11f2d",
+        "stage2/01_bases/output/view-4k/manifest.json": "0495397f997efd92c188111f0b78810abb48837dd2330f60d99e25d088cff154",
+        "stage2/01_bases/output/view-5k/manifest.json": "7ba2bde3c20cdcf9036d88c9ac344991657448319b2811f51b2fe47c59c8c11d"
+      },
+      "old_live_docx_absent": true,
+      "status": "PASS-promoted-release-chain"
+    }
+  },
   "payloads": [
     {
       "bytes": 6678914,
@@ -689,7 +968,7 @@
     "exit_status": 0,
     "peak_rss_kib": 19200
   },
-  "remaining_workflow": "Complete independent final review of acceptance/review-fix delta, merge review fix to dev, deploy dev to main, verify materialized main source/product chain, push only main, close issues, then safely clean spec worktrees. No PR.",
+  "remaining_workflow": "Main materialization and acceptance gates are complete. This execution-evidence update is committed on the ticket branch and merged via dev into main. Subsequent main-only remote push verification and issue-closure evidence are recorded in GitHub closure comments; this receipt does not assert future remote actions.",
   "replay_proofs": {
     "stage2/01_bases/log/four_axes_candidate.json": {
       "sha256": "84a6ff75dd1e6b919c9303af86b4d4c83574aba1a9ad704912ae2f278ca2df72"
@@ -724,7 +1003,7 @@
     "snapshot_samples": 563,
     "wsl_cgroup_memory_current_bytes_max": 49387524096
   },
-  "review_checkpoint": "Independent Standards review found one P2 across three author logs; corrected in 9ba8faa. Spec review found no substantiated defects. Final acceptance/fix delta review remains pending; deployment, push and issue closure remain pending.",
+  "review_checkpoint": "Independent final Standards and Spec reviews PASS with zero open findings through ce25775. The sole Standards P2 was resolved in 9ba8faa; final acceptance/provenance delta independently checked. Main materialization and public closure verified after dev-to-main merge 9096c974c9e38a89419bc49993d38665208caafb.",
   "review_fix": {
     "date": "2026-11-16",
     "dependent_product_author_log_pins": 0,
@@ -787,7 +1066,7 @@
   },
   "schema": "stage2-full-source-acceptance-v1",
   "specification": "https://github.com/Moke110/arc/issues/220",
-  "status": "accepted-isolated-release-review-fix-applied-pending-final-delta-review-and-dev-main-deployment",
+  "status": "accepted-release-main-materialization-verified",
   "tests": {
     "cases": 372,
     "files": 27,
