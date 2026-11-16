@@ -14,17 +14,17 @@ Historically set up (run cards are retained in Git history):
 - `CMonge/` — Conditional Monge Gap (MIT); RDKit structure + categorical `drug-dose`, bundled demo data.
 - `DECANT/` — DECANT (MIT); configurable genes, dose context, no data/weights.
 - `PerturbDiff/` — native setup and tenv admission evidence are retained in Git history.
+- `TranSiGen/` — TranSiGen (MIT); random-initialized native Stage 2 single-dose 5k entrant under ADR 0074; retained pretrained assets are not used.
 
 Reference-only:
 
 - `WAVE/` — WAVE (MIT); 978 default, **no dose input** → fails revised G2.
 - `ExPO/` — ExPO (MIT); **978 only** in published scope → fails revised G1.
 - `State/` — Arc State (non-commercial weights); Tahoe one-hot limits cold drug.
-- `TranSiGen/` — TranSiGen (MIT); kept for Stage 1 provenance.
 - `XPert/` — author-provided Stage 1 XPert library; no public download.
 
 Layout: ADR 0030. Category overview, exclusion table and the manual-download
 procedure: `README.md`. Every item carries `manifest.sha256` (453.0 GB hashed,
 27/27 verified); `script/verify.sh` checks it offline.
 
-Current Stage 2 retains only [`01_bases`](../stage2/01_bases/README.md). Model setup and benchmark runners were removed; verify retained external sources with each item’s `script/verify.sh`.
+Stage 2 comparison adapters live in [`02_models_tenv-5k`](../stage2/02_models_tenv-5k/README.md); verify retained external sources with each item’s `script/verify.sh`.

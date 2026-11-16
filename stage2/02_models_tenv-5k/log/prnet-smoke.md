@@ -18,11 +18,17 @@ RAM/GPU monitor, systemd MemoryMax10G/SwapMax8G and `/usr/bin/time -v`.
 
 | scenario | epochs | best epoch | validation treated MSE | parameter update | fresh-process replay | wall s | peak RSS KiB |
 |---|---:|---:|---:|---|---|---:|---:|
-| cold-drug | 2 | 2 | 0.9271705746607016 | yes | exact native Normal prediction | 7.73 | 1100752 |
-| warm-start | 2 | 2 | 0.9107131868913882 | yes | exact native Normal prediction | 5.39 | 1115988 |
+| cold-drug | 2 | 2 | 0.9273850760671009 | yes | exact native Normal prediction | 8.85 | 1115404 |
+| warm-start | 2 | 2 | 0.9110232924374674 | yes | exact native Normal prediction | 5.94 | 1091244 |
 
-Smoke candidates are preserved outside the tree at `/tmp/arc-prnet-smoke-cold`
-and `/tmp/arc-prnet-smoke-warm`; they are disposable bounded evidence, not accepted
+Smoke candidates are preserved outside the tree at `/tmp/arc-prnet-smoke-cold-final`
+and `/tmp/arc-prnet-smoke-warm-final`; they are disposable bounded evidence, not accepted
 model products or matrix entries. Best checkpoint restored before prediction.
 Formal runs still require all shared rows, patience50/max1000 and #231 matrix
 acceptance. No upstream checkpoint, old mean-output adapter or Stage3 code used.
+
+Final six seam tests passed under the same cap, 938248KiB peak/2.01s: failure
+formal-budget writes terminal failure with no prediction/manifest; checkpoint best
+epoch equals the recorded curve minimum; configuration tampering fails acceptance.
+The final smoke above reran after matching upstream seed-reset immediately before
+custom initialization. Both final CLIs included exact fresh-process replay.
