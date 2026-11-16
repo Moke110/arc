@@ -23,15 +23,15 @@ def name_key(value):
 
 def assess_drugs(records, annotation, evidence):
     """Return one auditable admission decision per source code, before DEG work."""
-    rows = []
+    rows, seen = [], set()
     for record in records:
+        identity = (record['source'], record['source_id'])
+        if identity in seen:
+            raise ReleaseError('duplicate TOX source drug code')
+        seen.add(identity)
         row = dict(record)
         name = name_key(row['drug_name'])
         matches = annotation[annotation.lookup_name.map(name_key).eq(name)]
-        if not matches.empty:
-            own = matches[matches.dataset_inchikey.fillna('').ne('')]
-            if not own.empty:
-                matches = own
         keys = set(matches.parent_inchikey.fillna('')) - {''}
         row.update(parent_inchikey='', small_molecule=False, evidence_label='pending',
                    evidence=[], disposition='excluded', reason='unresolved chemical identity',
@@ -95,13 +95,19 @@ def build_ledger(repo, output):
                  drugs=frame.to_dict(orient='records'))
     output.mkdir(parents=True, exist_ok=True)
     write_json(output / 'admission.json', value)
+    write_json(output / 'manifest.json', dict(schema='stage2-tox-admission-manifest-v1',
+               admission_sha256=sha256(output / 'admission.json')))
     return value
 
 
 class ToxAdmission:
     """Digest-checkable consumer seam for the frozen pre-analysis decision ledger."""
     def __init__(self, path, repo=None):
-        self.value = read_json(Path(path) / 'admission.json')
+        path = Path(path)
+        manifest = read_json(path / 'manifest.json')
+        if manifest.get('schema') != 'stage2-tox-admission-manifest-v1' or sha256(path / 'admission.json') != manifest.get('admission_sha256'):
+            raise ReleaseError('TOX admission payload changed')
+        self.value = read_json(path / 'admission.json')
         if self.value['schema'] != 'stage2-tox-admission-v1':
             raise ReleaseError('unknown TOX admission schema')
         if repo is not None:

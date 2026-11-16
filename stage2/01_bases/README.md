@@ -1065,3 +1065,20 @@ unweighted quota-free/direction-composition axis evidence are retired science: d
 resurrect their semantics. Their ADRs (0061/0062/0063/0065) and the research notes under
 `docs/research/` keep their original bytes as history; this README describes only the
 post-rebuild tree.
+
+## Unified TOX independent admission candidate (ADR 0072)
+
+Before TOX DEG analysis, run `execution/build_tox_admission.py publish` and
+`verify` under the arc environment. This metadata-only build writes
+`execution/checkpoints/tox-admission/{admission,manifest}.json`, preserving the
+accepted disease release. It consumes `execution/tox_drug_evidence.json` and
+`tox_source_admission.json`, pins their primary evidence bytes and chemical
+annotation, and reads no new DEG result. `bases.tox_admission.ToxAdmission`
+checks the candidate payload digest and optionally every input digest;
+`drugs(source, admitted_only=True)` is the pooling-membership contract.
+Names with conflicting structural identities fail closed. Independent author
+negative labels, unresolved structures, antibodies/peptides and pending evidence
+never enter TOX. A source marked admitted is eligible for tiered analysis, not
+proof of a positive result. The ledger records finite discovery scope, excluded
+platform duplicates and the LINCS full-transcriptome factual correction without
+expanding the accepted source tiers.

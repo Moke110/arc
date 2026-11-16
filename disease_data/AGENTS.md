@@ -58,3 +58,6 @@ GSE108940 mouse remap with `R_HOME=/home/chang/miniconda3/envs/arc/lib/R
 `script/verify_all.sh` verifies every item offline. The five new series were selected by
 `docs/research/stage2-stage3-gene-axis-datasets.md`; their rank-aggregation evidence is
 `docs/research/stage2-stage3-gene-axis-rank-aggregation.md`.
+
+- `GSE106297/`, `GSE157282/` — human stem-cell CM DOX/vehicle FPKM sources; ADR 0072 TOX admission, log2(FPKM+1) non-count analysis.
+- `GSE232331/`, `GSE235470/`, `GSE242692/`, `GSE255505/`, `GSE313746/` — ADR 0072 TOX tier-2 count sources; source designs and controls in each `author_log.json`.

@@ -1,0 +1,29 @@
+{
+  "category": "disease_data",
+  "item": "GSE235470",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "purpose": "ADR0072 unified TOX source reassessment before DEG",
+  "reassessment": {
+    "design": "Salmon gene counts; hiPSC cardiac spheroids CM/EC/CF8:1:1, freeDOX5uM48h vs DMSO3/3; SPEDOX protein formulation excluded from unformulated small-molecule exposure",
+    "disposition": "admitted",
+    "tier": 2,
+    "uncertainty": "new DEG yield not used for admission; source-specific design must be bound before analysis"
+  },
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 858729,
+      "files": 2,
+      "id": "GSE235470",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh",
+      "path": "source/",
+      "tree_sha256": "90beeb35739c785c4f808ba520c5bf3f0cf4df5085384c17f1cd00229dd697a7",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE235470"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}
