@@ -1314,3 +1314,15 @@ for _label, _arm, _n in [('nHF', 'DCM', 6), ('ICM', 'ICM', 7)]:
                     'https://doi.org/10.1186/s13073-025-01580-z'],
         'provenance': 'disease_data/GSE298023/author_log.json',
         'uncertainty': 'No genotype or clinical-covariate stratification; NF onlyrun2, adjusted via observed run pattern; ICM scar composition pooled per donor'})
+
+# The finite legacy survey also considered an animal-only infarction model.
+_animal_review = {
+    'candidate': 'GSE185289', 'disposition': 'not_admitted',
+    'reason': 'Pig LAD infarction with only two infarcted animals; not a qualifying human ICM tier source. Human CM and bulk evidence are now available; no species or source-quality relaxation.',
+    'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185289',
+    'inventory_evidence': 'docs/research/stage2-gene-axis-cm-source-survey.md',
+    'reentry': 'Requires a separately accepted animal/orthology admission contract, outside ADR0073'}
+CATEGORIES['ICM']['rejected'].append({k:v for k,v in _animal_review.items() if k != 'disposition'})
+CATEGORIES['ICM']['source_review']['records'].append(_animal_review)
+for _category in CATEGORIES.values():
+    _category['source_review']['inventory_source'] = 'docs/research/stage2-gene-axis-cm-source-survey.md'
