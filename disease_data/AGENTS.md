@@ -64,3 +64,5 @@ GSE108940 mouse remap with `R_HOME=/home/chang/miniconda3/envs/arc/lib/R
 - `GSE248187/` — complete author human DSP-knockout EHT-vs-isogenic edgeR table; genetic tier 2.
 - `GSE221945/` — complete author TBX5 G145R Brugada-vs-corrected DESeq2 table; genetic tier 2, sign oriented to disease minus corrected.
 - `GSE329393/` — RBM20 mutant-vs-family-matched corrected CM counts; one joint limma-voom model, two within-family contrasts; genetic tier 2.
+
+- `GSE298023/` — official 2026 Seurat source; author CM gate and heart IDs, sparse donor pooling across repeated regions; one joint run-pattern-adjusted limma-voom fit, nHF (6 DCM/4 NF) and ICM (7/4) at tier 1.
