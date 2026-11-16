@@ -1,4 +1,5 @@
 """ADR 0072 successor contracts at the public product boundary."""
+import json
 import sys
 import subprocess
 import tempfile
@@ -30,12 +31,12 @@ class SuccessorContractTests(unittest.TestCase):
             self.assertIn('candidate exists', result.stderr)
             self.assertEqual(sentinel.read_text(), 'authoritative bytes')
 
-    def test_retained_release_reader_uses_its_manifest_roster(self):
-        reader = gene_axis.GeneAxis(EXECUTION.parent / 'output/gene-axis')
-        table = reader.candidate_table()
-        roster = reader.manifest()['categories']
-        self.assertEqual({column[:-5] for column in table if column.endswith('_rank')
-                          and column != 'tenv_hvg_rank'}, set(roster))
+    def test_reader_refuses_retired_schema_instead_of_adapting_legacy_roster(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'manifest.json').write_text(json.dumps({'schema': 'stage2-gene-axis-release-v1'}))
+            with self.assertRaisesRegex(ValueError, 'schema'):
+                gene_axis.GeneAxis(root).candidate_table()
 
 
 if __name__ == '__main__':

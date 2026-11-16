@@ -45,7 +45,7 @@ SELECTED_COLOR = color('orange', LINE_SHADE)
 CANDIDATE_LABEL = 'gene candidates'
 SELECTED_LABEL = 'selected genes'
 #: The x-axis annotation the released figure carries. The released rule is
-#: ``RANK_SUM_RULE``: rank 1 is the strongest DEG, a gene outside ``DEG2000_d``
+#: ``RANK_SUM_RULE``: rank 1 is the strongest DEG, a gene outside ``DEG1000_d``
 #: pays ``(n_d + 1) / n_d``, so a smaller sum is better (ascending). The v1
 #: "(descending is better)" wording contradicted that rule.
 X_LABEL = 'rank_sum (lower is better)'
@@ -127,10 +127,12 @@ def render(title, panels, histograms, output):
     if output.suffix != '.png':
         raise ValueError('a .png output path is required')
     output.parent.mkdir(parents=True, exist_ok=True)
-    figure, axes = plt.subplots(1, len(panels), figsize=(5.6 * len(panels), 4.4),
+    columns = min(2, len(panels))
+    rows = (len(panels) + columns - 1) // columns
+    figure, axes = plt.subplots(rows, columns, figsize=(5.6 * columns, 4.4 * rows),
                                 layout='constrained', squeeze=False)
     try:
-        for axis, panel in zip(axes[0], panels):
+        for axis, panel in zip(axes.flat, panels):
             bins = histograms[panel['panel']]
             left = [item[0] for item in bins]
             width = [item[1] - item[0] for item in bins]
@@ -147,6 +149,8 @@ def render(title, panels, histograms, output):
             axis.legend(handles=[Patch(color=CANDIDATE_COLOR, label=CANDIDATE_LABEL),
                                  Patch(color=SELECTED_COLOR, label=SELECTED_LABEL)],
                         frameon=False, fontsize=8, loc='upper right')
+        for unused in list(axes.flat)[len(panels):]:
+            unused.set_visible(False)
         figure.suptitle(title, fontsize=11.5)
         figure.savefig(output, dpi=160)
     finally:
