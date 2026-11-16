@@ -45,7 +45,7 @@ RECORDS = ('panel', 'bar')
 #: The numeric columns a panel may draw; every bar carries both.
 VALUE_COLUMNS = ('count', 'rate')
 #: One palette family per released axis, in bar-series order.
-SERIES_FAMILIES = ('blue', 'orange')
+SERIES_FAMILIES = ('blue', 'orange', 'green', 'purple')
 #: Bars inside a group touch (no gap); groups keep a 0.2-wide gap.
 GROUP_WIDTH = 0.8
 

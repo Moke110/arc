@@ -553,6 +553,45 @@ for _entry in SOURCES.values():
         _entry['platform_note'] += ' ' + _entry['platform']['gpl'] + ' ' + _entry['platform']['instrument']
 
 
+# ADR0073 reopened sources. Primary series/GPL records and author tables reviewed
+# 2026-11-16; counts below describe the declared analysis unit, not whole series.
+SOURCES['gse116250__icm_lv_bulk'] = dict(SOURCES['gse116250__hf_lv_bulk'],
+    verified_on='2026-11-16', sample_size_note='ICM arm:13 patients versus14 non-failing; shared NF controls with the independent DCM arm are declared, not counted as additional donors.')
+
+
+def _successor_source(accession, technology, gpl, instrument, sample_note):
+    return {'accession': accession, 'accession_note': None, 'technology': technology,
+            'source_url': f'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={accession}',
+            'verified_on': '2026-11-16', 'platform': {'gpl': gpl, 'instrument': instrument},
+            'platform_note': f'Official GEO series platform and instrument records: {gpl} {instrument}; matched human RNA analysis arm only.',
+            'sample_size_note': sample_note}
+
+
+SOURCES.update({
+    'gse128188__af': _successor_source('GSE128188', 'bulk RNA-seq (human atrial appendage)',
+        'GPL18573', 'Illumina NextSeq 500',
+        '5 AF versus5 sinus-rhythm donors; paired LA/RA libraries pooled per donor,20 libraries total.'),
+    'gse183852__dcm_cm': _successor_source('GSE183852', 'single-nucleus RNA-seq (author cardiomyocyte full statistics)',
+        'GPL24676', 'Illumina NovaSeq 6000',
+        'Official snRNA arm13 DCM/25 donor libraries; full author Cardiomyocytes table retained. Library counts are not asserted to be unique donor counts; no local refit claimed.'),
+    'gse298023__dcm_cm': _successor_source('GSE298023', '10x single-nucleus RNA-seq (author CM donor pseudobulk)',
+        'GPL24676', 'Illumina NovaSeq 6000',
+        '6 DCM hearts versus4 NF; author Cardiomyocytes labels, donor-pooled counts and run-pattern-adjusted joint model.'),
+    'gse298023__icm_cm': _successor_source('GSE298023', '10x single-nucleus RNA-seq (author CM donor pseudobulk)',
+        'GPL24676', 'Illumina NovaSeq 6000',
+        '7 unique ICM hearts versus4 NF; repeated scar/non-scar regions pooled once per heart, shared NF controls declared.'),
+    'gse329393__rbm20': _successor_source('GSE329393', 'bulk RNA-seq (RBM20 hiPSC-CM)',
+        'GPL24676', 'Illumina NovaSeq 6000',
+        '6 mutant versus10 corrected libraries across2 matched families; joint family-specific contrasts, not16 independent donors.'),
+    'gse248187__dsp_eht': _successor_source('GSE248187', 'bulk RNA-seq (human DSP knockout EHT author edgeR statistics)',
+        'GPL24676', 'Illumina NovaSeq 6000',
+        '3 DSP knockout versus3 isogenic-control human EHT libraries; other rat arms excluded; complete author test retained without count refit.'),
+    'gse221945__tbx5_brs': _successor_source('GSE221945', 'bulk RNA-seq (TBX5 hiPSC-CM author DESeq2 statistics)',
+        'GPL21290', 'Illumina HiSeq 3000',
+        '4 Brugada versus4 corrected isogenic libraries explicitly named in the complete author test; remaining population controls and knockout libraries excluded.'),
+})
+
+
 def validate(dataset_ids: Iterable[str]) -> None:
     """Raise ``ValueError`` unless ``dataset_ids`` exactly matches the published coverage.
 

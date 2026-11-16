@@ -94,22 +94,28 @@
     "sha256": "4f66e20faccef91be319fe7b6f5e62b9cd1aad146e94a7dc9ddff8eb7e040e84"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "groupDCM_control",
       "groupDCM_Serca2a",
       "groupNormal_control",
       "groupNormal_Serca2a"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "DCM_control-Normal_control",
       "DCM_Serca2a-Normal_Serca2a"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "expression",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 0,
     "n_genes_input": 19036,
+    "n_genes_matrix": 19036,
     "n_genes_tested": 19036,
     "n_rows": 38072,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -122,7 +128,7 @@
     "derivation": "disease_data/GSE35108/script/build_deg.py",
     "derivation_sha256": "1ad953ea4bb871d1a965051295fd53229e59b0fad0316da6c12e39022a97d86b",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma on the deposited log2 matrix (moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",

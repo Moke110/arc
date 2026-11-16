@@ -29,21 +29,27 @@
     "joint_design": "one joint fit ~0 + status over normal / genotype-negative DCM / genotype-positive DCM / ARVC; only the genotype-negative DCM vs normal contrast is published here"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "grouparvc",
       "groupdcm_genotype_negative",
       "groupdcm_genotype_positive",
       "groupnormal"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "dcm_genotype_negative-normal"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "counts",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 651,
     "n_genes_input": 17513,
+    "n_genes_matrix": 18164,
     "n_genes_tested": 17513,
     "n_rows": 17513,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -58,7 +64,7 @@
   "method": {
     "contrast_direction": "positive log2FC = up in genotype-negative DCM vs normal",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "c1d46ea51daaec506d0e395c3f0c7e085b26972d826dfb053dd7cea5e7db9fb8",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma-voom (voom library-size normalisation, moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",

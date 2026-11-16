@@ -55,19 +55,25 @@
     "sha256": "b6aeb5013021eaa6042618ef67a1a390d86b8e01c99afd2522b2df1a695e389f"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "groupcorrected",
       "grouplmna_h222p"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "LMNA_H222P-corrected"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "counts",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 22766,
     "n_genes_input": 36284,
+    "n_genes_matrix": 59050,
     "n_genes_tested": 36284,
     "n_rows": 36284,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -77,9 +83,9 @@
     "contrast_direction": "positive log2FC = up in the LMNA p.His222Pro heterozygous arm vs the CRISPR-corrected isogenic control",
     "deposition": "integer counts",
     "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
-    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "derivation_sha256": "f6e3decee7f974498d7691fb21d93e7859f7395bcbbe377a6696c5314dc0a4c6",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma-voom (voom library-size normalisation, moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",

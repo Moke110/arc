@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish or replay the Stage 2 model-facing views ``view-2k/`` / ``view-5k/`` (ADR 0066, #191).
+"""Publish or replay the four Stage 2 model-facing views (ADR 0073).
 
 Each view is the corpus normalized once on the **full 18,164-gene library total**
 (CP10K, then ``log1p``), then subset to one released axis's genes, with
@@ -15,7 +15,7 @@ live once in ``output/api/bases/view.py``.
 
 Publication is candidate-then-replace (ADR 0062): each view is built in a
 candidate under ``execution/checkpoints/``, verified, and only then swapped in;
-a failed build leaves the accepted release usable. ``verify`` replays both views
+a failed build leaves the accepted release usable. ``verify`` replays all four views
 from the pinned corpus and axis inputs and compares the manifest and every output
 digest. One view at a time; the corpus is streamed in bounded batches.
 """
@@ -29,7 +29,7 @@ from bases import view
 
 STEP = Path(__file__).resolve().parents[1]
 REPO = next(path for path in Path(__file__).resolve().parents if (path / ".git").exists())
-VIEW_OUTPUTS = {2000: STEP / "output/view-2k", 5000: STEP / "output/view-5k"}
+VIEW_OUTPUTS = {size: STEP / f"output/view-{size // 1000}k" for size in view.VIEW_NAMES}
 
 
 def view_name(size):

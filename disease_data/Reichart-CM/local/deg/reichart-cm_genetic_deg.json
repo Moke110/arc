@@ -43,22 +43,28 @@
     "shared_controls": "both genetic contrasts use the same 18 normal donors, which are also nHF's Reichart controls; the normal signal is therefore counted in both categories (declared, not corrected)"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "grouparvc",
       "groupdcm_genotype_negative",
       "groupdcm_genotype_positive",
       "groupnormal"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "dcm_genotype_positive-normal",
       "arvc-normal"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "counts",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 651,
     "n_genes_input": 17513,
+    "n_genes_matrix": 18164,
     "n_genes_tested": 17513,
     "n_rows": 35026,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -80,9 +86,9 @@
   "method": {
     "contrast_direction": "positive log2FC = up in the genotype-positive DCM (or ARVC) donors vs the object's normal donors",
     "derivation": "disease_data/Reichart-CM/script/build_genetic_deg.py",
-    "derivation_sha256": "f077ea42b0b9dafbbea70ba13981f73dddfb6aac17a9299431ebb42d3476ebde",
+    "derivation_sha256": "249fc90ebec13cd293f9a345c1f9e14208e96927b9a52242e7509e157818a7c9",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma-voom (voom library-size normalisation, moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",

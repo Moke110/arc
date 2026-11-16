@@ -84,7 +84,7 @@ def main():
     for donor in genotypes.donor_id:
         matrix[donor] = pseudobulk[donor]
     matrix.to_csv(LOCAL / 'deg' / 'reichart-cm_pseudobulk_matrix.tsv.gz',
-                  index=False, sep='\t', compression='gzip')
+                  index=False, sep='\t', compression={'method': 'gzip', 'mtime': 0})
     matrix_path = LOCAL / 'deg' / 'reichart-cm_pseudobulk_matrix.tsv.gz'
     summary = disease_deg.run_deg_worker(matrix_path, SAMPLES, DESIGN, DEG)
     table = pd.read_csv(DEG)
