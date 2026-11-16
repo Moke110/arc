@@ -1,6 +1,7 @@
 # Disease eligibility and a unified TOX category
 
-**Status:** accepted design (2026-11-16), awaiting implementation.
+**Status:** accepted design (2026-11-16); implementation measured and verified as a
+successor candidate by #214–#217, pending coherent release acceptance and promotion.
 The user confirmed the complete shared understanding and authorized specification
 and ticket publication, with implementation/deployment deferred to a new session. Specification: [#213](https://github.com/Moke110/arc/issues/213).
 Amends ADR 0071's disease roster,
@@ -102,3 +103,15 @@ remain authoritative until this successor is implemented and verified.
   a fresh external drug-evidence review remains implementation work.
 - Source of decisions: user confirmations in the 2026-11-16 grill-with-docs
   discussion covering the six numbered questions; no new DEG analysis was run.
+
+## Measured successor candidate 2026 11 16
+
+The independently replayed #217 candidate measures nHF 1,661/1,661, ICM
+1,647/1,647, AF 1/1, genetic_cardiomyopathy 1,482/1,482 and TOX 9,589/2,000
+(axis-resolved DEG union / DEG2000). Four diseases pass the gate; AF retains
+SLC9A7 but contributes no cross-disease rank or f2000 term. TOX has twelve
+independent dataset sources. The axes contain exactly 2,000 and 5,000 ascending
+frozen indices, are nested, and need zero tenv-HVG fallback slots. These are
+measured candidate results, not a statement that accepted output was promoted.
+Acceptance and deployment are owned by #219; earlier design expectations and
+historical ADR 0071 counts above remain as decision context.

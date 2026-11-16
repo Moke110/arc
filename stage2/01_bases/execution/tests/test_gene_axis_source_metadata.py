@@ -1,7 +1,7 @@
 """External-contract tests for the verified gene-axis source metadata (#197).
 
 Only the mapping's published constants and its ``validate`` helper are exercised:
-the coverage contract against the six released disease-deg catalogs, the
+the coverage contract against the five declared disease-deg catalogs, the
 required fields of every entry, and a handful of primary-source values a
 reviewer can re-verify against issue #197's comment. Nothing internal is
 asserted, and the module is pure data (it does no I/O), so the catalogs are read
@@ -9,6 +9,7 @@ here, from disk, the same way the docx generator will read them.
 """
 import copy
 import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -20,9 +21,8 @@ sys.path.insert(0, str(EXECUTION))
 
 import gene_axis_source_metadata as metadata
 
-CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy', 'cardiotox_TOP2',
-              'cardiotox_other')
-DISEASE_DEG = STEP / 'output' / 'disease-deg'
+CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy', 'tox')
+DISEASE_DEG = Path(os.environ.get('ARC_DOCX_STEP', STEP)) / 'output' / 'disease-deg'
 TENV = 'tenv_hvg'
 ENTRY_FIELDS = {
     'accession', 'accession_note', 'technology', 'source_url',
@@ -32,7 +32,7 @@ REICHART_COLLECTION_ID = 'e75342a8-0f3b-4ec5-8ee1-245a23e0f7cb'
 
 
 def published_dataset_ids():
-    """The dataset ids the six released catalogs publish, in catalog order."""
+    """The dataset ids the five declared catalogs publish, in catalog order."""
     dataset_ids = []
     for category in CATEGORIES:
         catalog = json.loads((DISEASE_DEG / category / 'catalog.json').read_text(encoding='utf-8'))
@@ -45,9 +45,9 @@ class CoverageContractTest(unittest.TestCase):
         metadata.validate(published_dataset_ids() + [TENV])
 
     def test_key_set_is_exactly_the_published_datasets_plus_tenv(self):
-        """27 dataset rows across six categories, plus the tenv-HVG fusion row."""
+        """33 dataset rows across five categories, plus the tenv-HVG fusion row."""
         published = published_dataset_ids()
-        self.assertEqual(len(published), 27)
+        self.assertEqual(len(published), 33)
         self.assertEqual(set(metadata.SOURCES), set(published) | {TENV})
         self.assertEqual(len(metadata.SOURCES), len(set(published)) + 1)
 
@@ -86,7 +86,7 @@ class EntryContractTest(unittest.TestCase):
             with self.subTest(dataset_id=dataset_id):
                 self.assertEqual(set(entry), ENTRY_FIELDS)
                 self.assertEqual(set(entry['platform']), {'gpl', 'instrument'})
-                self.assertEqual(entry['verified_on'], metadata.VERIFIED_ON)
+                self.assertIn(entry['verified_on'], (metadata.VERIFIED_ON, '2026-11-16'))
                 accession = (entry['accession'] or '').strip()
                 accession_note = (entry['accession_note'] or '').strip()
                 self.assertTrue(accession or accession_note)
@@ -112,7 +112,7 @@ class EntryContractTest(unittest.TestCase):
     def test_sample_size_notes_are_non_empty_when_present(self):
         notes = [entry['sample_size_note'] for entry in metadata.SOURCES.values()
                  if entry['sample_size_note'] is not None]
-        self.assertEqual(len(notes), 18, 'expected eighteen reconciled datasets')
+        self.assertEqual(len(notes), 24, 'expected twenty-four reconciled datasets')
         for note in notes:
             self.assertIsInstance(note, str)
             self.assertTrue(note.strip())

@@ -9,14 +9,14 @@ Routing for the accepted Stage 2 foundation. Read this, then the owning section 
 - [`log/acceptance.md`](log/acceptance.md) — acceptance replays, digests, resource
   peaks, the old→new mapping and "no retired path read" evidence.
 - [`log/README.md`](log/README.md) — the `log/*_verify.json` records and removal record.
-- ADRs: 0071 (the current gene-axis contract — DEG-only tiered sources,
+- ADRs: 0072 (uniform disease gate and unified TOX successor), 0071 (the current gene-axis contract — DEG-only tiered sources,
   `DEG2000`/`f2000`), 0066 (the amended contract), 0068 (fusion amendment kept),
   0067 (errata), 0069/0070 (`AF` removals, superseded by 0071), 0062 (products),
   0061 (frozen axis), 0030 (external-data and step layout).
 
 ## Products
 `output/raw_counts/` → `output/corpus/` → `output/view-2k/`, `output/view-5k/`;
-`output/disease-deg/**` (six categories + the `cardiotox/` crosswalk),
+`output/disease-deg/**` (five declared successor categories; legacy output keeps its manifest roster until promotion),
 `output/disease-fusion/` (the ADR 0071 per-disease level-1 rank + `DEG2000`),
 `output/gene-axis/` (`G_2000`/`G_5000`, the `DEG2000` coverage table and the
 human-facing `gene_axis_fill_rule.docx`), `output/gene-identity/`, `output/tenv-hvg/`,
