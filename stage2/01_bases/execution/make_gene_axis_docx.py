@@ -420,7 +420,7 @@ def _grid(document, columns, rows, font_size):
     grid.style = 'Table Grid'
     grid.autofit = False
     widths = ([1.6, 2.1, 3.0, 3.8, 1.4, 3.8, 1.3] if tuple(columns) == SOURCE_TABLE_COLUMNS
-              else [2.2, 1.4, 1.4, 1.6, 1.6, 1.4, 8.4] if tuple(columns) == DISEASE_TABLE_COLUMNS
+              else [2.2, 1.8, 1.2, 1.6, 1.6, 1.6, 8.0] if tuple(columns) == DISEASE_TABLE_COLUMNS
               else [2.0, 5.4, 3.2, 3.2, 3.2] if tuple(columns) == COVERAGE_TABLE_COLUMNS
               else [6.0, 12.0])
     if widths:

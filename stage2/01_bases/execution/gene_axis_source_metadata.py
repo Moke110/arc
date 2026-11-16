@@ -1,8 +1,8 @@
 """Verified primary-source metadata for the gene-axis source table.
 
-One record per published gene-axis source: the 33 ``dataset_id`` values the five
+One record per published gene-axis source: the 41 ``dataset_id`` values the five
 released ``stage2/01_bases/output/disease-deg/<category>/catalog.json`` files
-declare, plus the ``tenv_hvg`` fusion row. This module is pure data keyed by
+declare, plus the separate ``tenv_hvg`` non-disease row. This module is pure data keyed by
 ``dataset_id`` and is the only place the rule document's accession and sequencing
 technology columns read from (ticket #198 renders the table). It performs no I/O
 and imports nothing outside the standard library.
@@ -419,9 +419,11 @@ SOURCES = {
         'platform_note': ('GEO series record and GPL24676 platform record '
                           '(Illumina NovaSeq 6000)'),
         'sample_size_note': (
-            'The series reports 3,072 GSMs = 8 x 384-well plates (all 24 h); the repo uses '
-            'Screening plate 3 (S4881Nr8) only: DOX 24 + IDA 24 + MTX 24 = 72 case and '
-            'DMSO 22 control.'
+            'The series reports 3,072 GSMs = 8 x 384-well plates (all 24 h). '
+            'The unified TOX source pools 32 admitted drugs within each of eight disjoint '
+            'plate strata versus same-plate DMSO: 1,920 treated wells and 536 control wells '
+            'in total. Per-contrast counts and the summed-well basis are retained in the '
+            'catalog; these are wells, not independent donors.'
         ),
     },
     # --- tenv-HVG fusion row (not a DEG source) -------------------------------

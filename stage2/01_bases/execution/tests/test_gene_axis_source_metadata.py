@@ -183,11 +183,11 @@ class PrimarySourceSpotCheckTest(unittest.TestCase):
                 self.assertIn('no GEO platform', entry['platform_note'])
                 self.assertIn('do not name the instrument', entry['platform_note'])
 
-    def test_af_sources_are_the_four_published_af_datasets(self):
-        """AF returns (ADR 0071 decision 7) with one row per published AF dataset."""
+    def test_af_sources_are_the_five_published_af_datasets(self):
+        """The all-tier release retains one row per admitted AF dataset."""
         af = sorted(dataset_id for dataset_id in metadata.SOURCES
                     if dataset_id.endswith('__af'))
-        self.assertEqual(af, ['gse138252__af', 'gse238242__af', 'gse255612__af',
+        self.assertEqual(af, ['gse128188__af', 'gse138252__af', 'gse238242__af', 'gse255612__af',
                               'gse269882__af'])
         for dataset_id in af:
             with self.subTest(dataset_id=dataset_id):
