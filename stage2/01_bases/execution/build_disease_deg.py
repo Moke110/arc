@@ -17,7 +17,7 @@ manifest and every output digest; the accepted release is never written.
 
 The published catalog carries the ADR 0071 v2 fields (``n_deg``, ``deg2000``,
 ``tiering`` and the declared ``tier_sources`` ladder) once the driver runs: the
-tier order and the axis-resolved stop rule are applied by
+all-source tier order and the complete axis-resolved union are recorded by
 :func:`bases.disease_deg.tier_ledger` over the sources this driver just measured,
 so the record is never hand-written (ticket #206; products are republished by
 #208).
@@ -214,7 +214,7 @@ def published_source_sets(context, category):
 
 
 def category_ledger(context, category):
-    """Compute one category's tier-order/stop ledger from its declared sources.
+    """Compute one category's complete-source tier ledger from its declared sources.
 
     Registry-declared categories are measured from their item-local tables (the
     full declared roster, including products not yet published); a category whose
@@ -344,7 +344,7 @@ def build_category(context, candidate, category):
     if crosswalk_path.is_file():
         inputs[context.relative(crosswalk_path)] = sha256(crosswalk_path)
     # ADR 0071 decision 2 (#206): the tier ladder, the cumulative axis-resolved
-    # DEG union after each tier and the stop point are computed from the declared
+    # DEG union after every declared tier is computed from the declared
     # per-source tiers and the measured DEG sets, then published on the catalog.
     ledger = disease_deg.tier_ledger(category, declared, source_deg_sets(prepared))
     fusion = disease_deg.fuse_disease(fusion_inputs, axis_size=len(axis))
@@ -364,6 +364,8 @@ def build_category(context, candidate, category):
         n_deg=fusion['n_deg'], deg2000=fusion['deg2000'],
         tiering=ledger['tiering'], tier_sources=ledger['tier_sources'],
         source_deg=source_deg)
+    if 'source_review' in category_record:
+        catalog['source_review'] = category_record['source_review']
     catalog_file = candidate / 'catalog.json'
     catalog_sha = disease_deg.write_catalog(catalog_file, catalog)
     outputs['catalog.json'] = {'sha256': sha256(catalog_file)}
@@ -421,7 +423,7 @@ def _verify_directory(path):
             if sha256(path / name) != expected[name]:
                 raise release.ReleaseError(f'{dataset}: {name} digest differs')
     if 'tiering' in catalog:
-        # #206: a catalog that carries the tier ladder/stop record is validated
+        # ADR 0073: a catalog that carries the complete tier ladder is validated
         # against the full v2 contract (the published products before #208 carry
         # only the v1 shape and skip this).
         try:

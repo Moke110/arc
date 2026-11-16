@@ -1,0 +1,29 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "TBX5_G145R-corrected": {
+      "n_case": 4,
+      "n_control": 4
+    }
+  },
+  "deg": {
+    "bytes": 3009861,
+    "n_source_genes": 21721,
+    "path": "local/deg/GSE221945_deg.csv",
+    "rows": 21721,
+    "sha256": "160ccf7f5403879c7091c2fda1396446fde8ad46906f441695fc4b9ac147a0bb"
+  },
+  "deposition": {
+    "bytes": 1717914,
+    "path": "source/GSE221945_Isogenic_vs_Brugada_min5_DESeq2.csv.gz",
+    "sha256": "a1f4ebf5b3dfa8435c9f79fe550fda36cc8b8013266a6574d035fedbb948fe7a"
+  },
+  "limitations": [
+    "Four mutant and four corrected RNA libraries per exact table columns; not eight independent patients.",
+    "Series overall_design says3 corrected lines but sample matrix and differential table contain4 libraries; exact measured libraries retained.",
+    "Author min5 tested-gene filter preserved; no local count fit or population-control/knockout contrast added."
+  ],
+  "method": "Complete deposited DESeq2 Wald test; log2FoldChange and stat sign reversed from isogenic-minus-Brugada to Brugada-minus-corrected; p values unchanged",
+  "series": "GSE221945",
+  "species": "Homo sapiens"
+}

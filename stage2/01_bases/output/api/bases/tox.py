@@ -19,7 +19,7 @@ RECIPE = ('Pool independently admitted small-molecule drugs vs matched vehicle '
           'and donor handling; collapse once per independent dataset with '
           'maximum effect and pass-any-contrast padj<0.05 & abs(log2FC)>=2; '
           'one DEG-only rank per dataset, rank_norm=rank/n_deg; finish each '
-          'tier before applying cumulative frozen-axis DEG-union >=2000 stop.')
+          'declared qualifying tier without a DEG-count stopping condition.')
 
 
 def source_plan(ledger):
@@ -303,7 +303,7 @@ def source_contrasts(repo, spec, workdir):
 
 
 def build_candidate(repo, output, workdir=None):
-    """Recompute a staged TOX release, completing each tier before its stop test."""
+    """Recompute all independently admitted TOX sources across every declared tier."""
     repo, output = Path(repo), Path(output)
     workdir = Path(workdir) if workdir else output.parent / (output.name + '-work')
     workdir.mkdir(parents=True, exist_ok=True)
@@ -342,8 +342,6 @@ def build_candidate(repo, output, workdir=None):
             records.append(record)
             metrics[spec['source']] = runtime
             print(f"TOX source done: {spec['source']} n_deg={stats['n_deg']}", flush=True)
-        if len(union) >= disease_deg.DEG2000_LIMIT:
-            break
     catalog = assemble_candidate(output, records, axis, inputs, sha256(repo / cardiotox.AXIS),
                                  resolver=resolver, admission=admission,
                                  environment=dict(cardiotox.python_environment(),

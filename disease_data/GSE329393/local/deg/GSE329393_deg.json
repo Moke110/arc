@@ -1,0 +1,142 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "RBM20_DCM-corrected": {
+      "denominator": "ctrl9",
+      "n_case": 3,
+      "n_control": 5,
+      "numerator": "mut9"
+    },
+    "RBM20_LVNC-corrected": {
+      "denominator": "ctrl6",
+      "n_case": 3,
+      "n_control": 5,
+      "numerator": "mut6"
+    }
+  },
+  "deg": {
+    "bytes": 6733965,
+    "n_source_genes": 27235,
+    "path": "local/deg/GSE329393_deg.csv",
+    "rows": 54470,
+    "sha256": "92af365b7a25960a11c13208a026cc980932494a9660cdfb65dc5a09d90433e8"
+  },
+  "deposition": {
+    "matrix": {
+      "bytes": 563478,
+      "feature_count": 28395,
+      "id_kind": "entrez",
+      "path": "local/deg/GSE329393_counts.tsv.gz",
+      "sha256": "4e81bf978c299e35da4cc5fcf94bcf99a32e582c3662ccca3ffde9e65c16436e"
+    },
+    "series_matrix": {
+      "bytes": 4173,
+      "path": "source/GSE329393_series_matrix.txt.gz",
+      "sha256": "98570415473a718bf42b3eb002f51002bef0863b6ad2a27e0486233ce6a0db89"
+    },
+    "values": {
+      "library_size": {
+        "max": 28019401,
+        "median": 21696636,
+        "min": 1653593
+      },
+      "mode": "integer-as-deposited",
+      "n_values": 454320
+    }
+  },
+  "design": {
+    "contrasts": [
+      {
+        "denominator": "ctrl6",
+        "label": "RBM20_LVNC-corrected",
+        "numerator": "mut6"
+      },
+      {
+        "denominator": "ctrl9",
+        "label": "RBM20_DCM-corrected",
+        "numerator": "mut9"
+      }
+    ],
+    "factor": "group",
+    "formula": "~0 + group",
+    "kind": "counts"
+  },
+  "expr": {
+    "path": "local/deg/GSE329393_expr.tsv.gz",
+    "sha256": "9fec693071a5a0b37814d0d48def958f65a8789c43d070d3b4b84fd67de02ae8"
+  },
+  "fit_summary": {
+    "block": {},
+    "coefficient_names": [
+      "groupctrl6",
+      "groupctrl9",
+      "groupmut6",
+      "groupmut9"
+    ],
+    "consensus_correlation": {},
+    "contrasts": [
+      "RBM20_LVNC-corrected",
+      "RBM20_DCM-corrected"
+    ],
+    "factor": "group",
+    "filter": {},
+    "formula": "~0 + group",
+    "implementation": "output/api/bases/disease_deg.R",
+    "kind": "counts",
+    "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 1160,
+    "n_genes_input": 27235,
+    "n_genes_matrix": 28395,
+    "n_genes_tested": 27235,
+    "n_rows": 54470,
+    "r_version": "R version 4.4.1 (2024-06-14)"
+  },
+  "item": "GSE329393",
+  "method": {
+    "contrast_direction": "positive log2FC = mutant minus matched-family CRISPR-corrected control",
+    "deposition": "integer counts",
+    "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
+    "derivation_sha256": "f6e3decee7f974498d7691fb21d93e7859f7395bcbbe377a6696c5314dc0a4c6",
+    "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
+    "item_adapter_sha256": "e5e0fe5cb4ef541b3fb7a10a2aa3bf6940416ebd7409a07e38401e09c78f0f41",
+    "limma_version": "3.62.2",
+    "model": "limma-voom (voom library-size normalisation, moderated t)",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "test": "moderated t, BH-adjusted p-value"
+  },
+  "n_case": 6,
+  "n_control": 10,
+  "samples": {
+    "covariates": [],
+    "group_counts": {
+      "ctrl6": 5,
+      "ctrl9": 5,
+      "mut6": 3,
+      "mut9": 3
+    },
+    "group_source": "genotype",
+    "isogenic_control": {
+      "arm": "5 corrected libraries per family",
+      "basis": "GEO genotype6crispr/9crispr vs6RBM/9RBM, patient-specific CRISPR corrected controls"
+    },
+    "match_basis": "description",
+    "n": 16,
+    "path": "local/deg/GSE329393_samples.csv",
+    "sha256": "c12e8ffc231410447736b69e36997e7ef985ceea558da894e6c4e9b15cf53db9"
+  },
+  "schema": "stage2-item-deg-summary-v1",
+  "strata": {
+    "blocking_covariates": [],
+    "decision": "one fit four family/genotype groups; two matched-family contrasts collapse as one dataset",
+    "pooled": false,
+    "why": "family and genotype represented jointly, no cross-family comparison or duplicate dataset votes"
+  },
+  "symbol_annotation": {
+    "binding": "exact numeric Entrez ID to unique approved HGNC symbol; missing/ambiguous empty",
+    "n_source_ids_unmapped_or_ambiguous": 1423,
+    "path": "pert_data/Annotation/source/hgnc_complete_set.txt",
+    "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+  }
+}

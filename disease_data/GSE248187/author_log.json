@@ -1,0 +1,36 @@
+{
+  "item": "GSE248187",
+  "category": "disease_data",
+  "retrieved_at": "2026-11-16",
+  "purpose": "Human isogenic DSP knockout EHT full author differential test for genetic cardiomyopathy, tier2. Reopened full-statistic evidence under ADR0073.",
+  "sources": [
+    {
+      "name": "GSE248187_DSP_EHTs_Differential_Expression_Table.txt.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE248nnn/GSE248187/suppl/GSE248187_DSP_EHTs_Differential_Expression_Table.txt.gz",
+      "sha256": "46a79a7d684e539e3cd751eae81398e75d6d0a7b176a8077b29039f70dcf9bda",
+      "bytes": 1521590,
+      "path": "source/GSE248187_DSP_EHTs_Differential_Expression_Table.txt.gz"
+    },
+    {
+      "name": "GSE248187.xml",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11213508/fullTextXML",
+      "sha256": "3aac314799acf90648dcf2bb06d68aaf2b079da3a47e2c5f776d2ee4d08f6e7d",
+      "bytes": 175730,
+      "path": "source/GSE248187.xml"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE248187_deg.csv",
+      "generated_by": "script/build_deg.py",
+      "origin": "Full author edgeR table, every row preserved; no refit."
+    },
+    {
+      "path": "local/deg/GSE248187_deg.json",
+      "generated_by": "script/build_deg.py",
+      "origin": "Tracked digest and source/model limitations."
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "Primary paper PMC11213508 verifies human DSP knockout/isogenic control EHT comparison,3 RNA libraries per arm, supporting fibroblasts. Other deposited DSP/JUP/PKP2 tables use rat NRVM and are not ingested. Author LR statistic is not a signed t statistic. All author adjusted p values and log2 fold changes preserved."
+}

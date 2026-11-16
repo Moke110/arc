@@ -1,0 +1,58 @@
+{
+  "item": "GSE329393",
+  "category": "disease_data",
+  "retrieved_at": "2026-11-16",
+  "purpose": "Matched-family RBM20 mutant versus CRISPR-corrected hiPSC-CM, two contrasts one independent dataset under ADR0073.",
+  "sources": [
+    {
+      "name": "GSE329393_raw_counts.tsv.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE329nnn/GSE329393/suppl/GSE329393_raw_counts.tsv.gz",
+      "sha256": "8dbee713d12059b279ed02cc2ec62af639c1f8baaae15eed121b710b1ea85f90",
+      "bytes": 591619,
+      "path": "source/GSE329393_raw_counts.tsv.gz"
+    },
+    {
+      "name": "GSE329393_series_matrix.txt.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE329nnn/GSE329393/matrix/GSE329393_series_matrix.txt.gz",
+      "sha256": "98570415473a718bf42b3eb002f51002bef0863b6ad2a27e0486233ce6a0db89",
+      "bytes": 4173,
+      "path": "source/GSE329393_series_matrix.txt.gz"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE329393_counts.tsv.gz",
+      "generated_by": "script/build_deg.py",
+      "origin": "Deterministic preparation and one shared limma-voom fit; full transcriptome."
+    },
+    {
+      "path": "local/deg/GSE329393_expr.tsv.gz",
+      "generated_by": "script/build_deg.py",
+      "origin": "Deterministic preparation and one shared limma-voom fit; full transcriptome."
+    },
+    {
+      "path": "local/deg/GSE329393_samples.csv",
+      "generated_by": "script/build_deg.py",
+      "origin": "Deterministic preparation and one shared limma-voom fit; full transcriptome."
+    },
+    {
+      "path": "local/deg/GSE329393_deg.csv",
+      "generated_by": "script/build_deg.py",
+      "origin": "Deterministic preparation and one shared limma-voom fit; full transcriptome."
+    },
+    {
+      "path": "local/deg/GSE329393_deg.json",
+      "generated_by": "script/build_deg.py",
+      "origin": "Deterministic preparation and one shared limma-voom fit; full transcriptome."
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "Numeric first-column IDs are Entrez despite deposited ensembl_gene_id heading; hgnc_symbol annotation removed only from fit matrix, upstream bytes unchanged. Samples bind exact primary Library name descriptions,5 corrected versus3 mutant in each family. One joint fit4groups, family-matched contrasts; never claim independent patient counts. Single batch27/07/2024. Reentry from fixed roster exclusion, unchanged isogenic exception. Deposited hgnc_symbol is entirely NA. Postfit source ID annotation uses only unique approved HGNC Entrez matches from pinned repository Annotation/hgnc_complete_set; missing or ambiguous IDs retain empty symbols and are explicitly counted. Cross-item annotation input is read-only and its digest is recorded in the tracked summary. Capped actual fit peak189728KiB,2.55s; two earlier shared-worker runs reproduced numeric results, final symbol-bound output requires replay.",
+  "cross_item_inputs": [
+    {
+      "path": "pert_data/Annotation/source/hgnc_complete_set.txt",
+      "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91",
+      "usage": "read-only unique approved Entrez-to-symbol annotation"
+    }
+  ]
+}

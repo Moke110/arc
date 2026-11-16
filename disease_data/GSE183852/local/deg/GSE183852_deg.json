@@ -1,0 +1,44 @@
+{
+  "category": "nHF",
+  "contrasts": {
+    "DCM-Donor": {
+      "denominator": "Donor",
+      "n_case": 13,
+      "n_control": 25,
+      "numerator": "DCM"
+    }
+  },
+  "deg": {
+    "bytes": 1894163,
+    "n_source_genes": 26946,
+    "path": "local/deg/GSE183852_deg.csv",
+    "rows": 26946,
+    "sha256": "5d001a62b3622d9e0e9a62c00cf59eda2906bf2c52a43a4fda940fe446debc8f"
+  },
+  "deg_counts": {
+    "collapsed": {
+      "n_deg": 70,
+      "n_down": 10,
+      "n_genes": 26946,
+      "n_up": 60
+    },
+    "definition": "padj < 0.05 AND |log2FC| >= 2"
+  },
+  "deposition": {
+    "bytes": 6678914,
+    "path": "source/44161_2022_28_MOESM4_ESM.xlsx",
+    "sha256": "4dc5a8197a855bd2394423c72b86076518233c510a480c2f98c2681bc9b554b1",
+    "sheet": "Cardiomyocytes"
+  },
+  "limitations": [
+    "13 DCM/25 donor are snRNA libraries from GEO; no re-estimation of donor independence.",
+    "No genotype stratification or raw-count test refit was performed.",
+    "Workbook contains no per-cell labels or unadjusted p values/stat/base mean; absent fields remain empty.",
+    "Cell-level R objects remain outside this pinned author-statistic adapter."
+  ],
+  "method": "Author DESeq2 statistics preserved; no local raw-count refit",
+  "missing_padj": 4461,
+  "platform": "10x human LV snRNA-seq; published cardiomyocyte pseudobulk DESeq2",
+  "series": "GSE183852",
+  "species": "Homo sapiens"
+}
