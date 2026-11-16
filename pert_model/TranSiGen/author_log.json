@@ -1,7 +1,7 @@
 {
   "item": "TranSiGen",
   "category": "pert_model",
-  "purpose": "Reference-only perturbation model (kept for Stage 1 provenance): TranSiGen transcriptome generative model",
+  "purpose": "TranSiGen transcriptome generative model: Stage 1 provenance and random-initialized Stage 2 single-dose 5k entrant (ADR 0074)",
   "retrieved_at": "2026-09-01T00:00+08:00",
   "sources": [
     {
@@ -34,6 +34,6 @@
   "manifest": "manifest.sha256",
   "verified_at": "2026-10-30T22:11+08:00",
   "verify_result": "pass",
-  "notes": "Reference-only, kept for Stage 1 provenance; not a Stage 2 entrant. The nested .git (57,920,438 B) was the only nested git directory in pert_model and was removed in ticket 04 after its commit e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a (branch main, last commit 2025-01-21 \"Add files via upload\") was recorded here; the remote was https://github.com/myzhengSIMM/TranSiGen. source/data/ (LINCS2020 splits/embeddings + PRISM + TranSiGen.jpg) is repository content; source/results/ is the separately obtained checkpoint/result set.",
+  "notes": "Historically reference-only for Stage 1 provenance; admitted under ADR 0074 to the Stage 2 single-dose 5k comparison using random initialization and shared Morgan2048, without pretrained assets or dose input. The nested .git (57,920,438 B) was the only nested git directory in pert_model and was removed in ticket 04 after its commit e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a (branch main, last commit 2025-01-21 \"Add files via upload\") was recorded here; the remote was https://github.com/myzhengSIMM/TranSiGen. source/data/ (LINCS2020 splits/embeddings + PRISM + TranSiGen.jpg) is repository content; source/results/ is the separately obtained checkpoint/result set.",
   "hashed_at": "2026-10-30T22:11+08:00"
 }
