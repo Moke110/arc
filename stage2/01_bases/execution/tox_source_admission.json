@@ -1,5 +1,6 @@
 {
   "discovery": {
+    "closed_sources": 12,
     "prior_reviews": [
       "docs/research/stage2-gene-axis-cm-source-survey.md",
       "docs/research/stage2-stage3-gene-axis-datasets.md"
@@ -10,7 +11,7 @@
     "reviewed_at": "2026-11-16",
     "scope": "finite reassessment of both existing source surveys, current panels and supplemental GEO query; not a claim of exhaustive future discovery",
     "tier_policy": "complete all admitted sources within tier before measuring cumulative distinct frozen-axis DEGs; stop descent only at>=2000; new DEG never admission evidence",
-    "unreviewed_or_uncertain": "uncertain drug-property evidence remains pending, never inferred from panel, class or DEG"
+    "unreviewed_or_uncertain": "Fixed twelve qualifying source designs; assess all panel records by the same pinned independent author/regulatory facts. No panel-wide positive inference; unresolved identity is excluded, no matched positive property evidence remains pending with finite reviewed-fact scope."
   },
   "schema": "stage2-tox-source-review-v1",
   "sources": [
@@ -23,9 +24,11 @@
       ],
       "item": "pert_data/DToxS-iPSC",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "same_experiment": "GSE217421 Conv and GSE217423 DGE; Conv only, one vote",
       "source": "dtoxs_ipsc",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217421"
     },
     {
       "accession": "GSE106297",
@@ -43,8 +46,10 @@
       ],
       "item": "disease_data/GSE106297",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse106297",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE106297"
     },
     {
       "accession": "GSE157282",
@@ -62,8 +67,10 @@
       ],
       "item": "disease_data/GSE157282",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse157282",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE157282"
     },
     {
       "accession": "GSE232331",
@@ -89,8 +96,10 @@
       ],
       "item": "disease_data/GSE232331",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse232331",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE232331"
     },
     {
       "accession": "GSE235470",
@@ -112,8 +121,10 @@
       ],
       "item": "disease_data/GSE235470",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse235470",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE235470"
     },
     {
       "accession": "GSE242692",
@@ -131,8 +142,10 @@
       ],
       "item": "disease_data/GSE242692",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse242692",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE242692"
     },
     {
       "accession": "GSE243674",
@@ -165,8 +178,10 @@
       ],
       "item": "disease_data/GSE243674",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse243674",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE243674"
     },
     {
       "accession": "GSE244740",
@@ -177,12 +192,14 @@
       ],
       "item": "pert_data/GSE244740",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse244740",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE244740"
     },
     {
       "accession": "GSE255505",
-      "design": "estimated raw counts (fractional); shared integerisation helper, SCVI-273 WT1uM24h vs DMSO3/3; no donor replication asserted",
+      "design": "deposited estimated raw counts with fractional entries, SCVI-273 WT1uM24h vs DMSO3/3; preserve measurement semantics and apply existing supported source-specific analysis; no donor replication asserted",
       "disposition": "admitted",
       "drugs": [
         {
@@ -196,8 +213,10 @@
       ],
       "item": "disease_data/GSE255505",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse255505",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE255505"
     },
     {
       "accession": "GSE313746",
@@ -215,8 +234,10 @@
       ],
       "item": "disease_data/GSE313746",
       "reason": "human stem-cell cardiomyocyte/engineered tissue measurement with independent positive DOX or panel identities and matched vehicle",
+      "reviewed_at": "2026-11-16",
       "source": "gse313746",
-      "tier": 2
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE313746"
     },
     {
       "disposition": "excluded",
@@ -224,8 +245,10 @@
       "inputs": [],
       "rationale": "DGE RNA of same DToxS experiment as GSE217421; never an independent vote",
       "reason": "duplicate-platform",
+      "reviewed_at": "2026-11-16",
       "source": "gse217423",
-      "tier": null
+      "tier": null,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217423"
     },
     {
       "disposition": "excluded",
@@ -233,8 +256,10 @@
       "inputs": [],
       "rationale": "isolated mouse cardiomyocytes",
       "reason": "nonhuman",
+      "reviewed_at": "2026-11-16",
       "source": "gse223698",
-      "tier": null
+      "tier": null,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE223698"
     },
     {
       "disposition": "excluded",
@@ -242,26 +267,65 @@
       "inputs": [],
       "rationale": "AC16 transformed cardiac cell line, not defined human heart tier1 or stem-cell tier2",
       "reason": "outside-existing-tiers",
+      "reviewed_at": "2026-11-16",
       "source": "gse247245",
-      "tier": null
+      "tier": null,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247245"
     },
     {
-      "disposition": "pending",
+      "accession": "GSE247541",
+      "design": "raw RNA-seq counts; three DMSO and three replicates per each four author-positive drugs, preserve source treatment/dose/time",
+      "disposition": "admitted",
+      "drug_panel": {
+        "characteristic": "treatment",
+        "controls": [
+          "DMSO",
+          "VEH",
+          "PBS",
+          "NoTreatment"
+        ],
+        "dose_suffix": false,
+        "path": "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz"
+      },
       "drugs": [],
-      "inputs": [],
-      "rationale": "COVID antiviral panel membership does not establish cardiotoxic drug property; old outside-union scope alone no longer sufficient; no independently supported admitted drug identified in this finite review",
-      "reason": "independent-positive-drug-evidence-not-established",
+      "inputs": [
+        "pert_data/GSE247541/manifest.sha256",
+        "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz"
+      ],
+      "item": "pert_data/GSE247541",
+      "reason": "independently positive identity-resolved drug subset with matched vehicle; panel membership is not positivity",
+      "reviewed_at": "2026-11-16",
       "source": "gse247541",
-      "tier": null
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247541"
     },
     {
-      "disposition": "pending",
+      "accession": "GSE262419",
+      "design": "whole-transcriptome TempO-Seq; admitted identity subset only, same-plate matched DMSO vehicle under existing corpus metadata, preserve plate/cell-line/time and all qualifying doses; VEH and technical Blank are not drug candidates; one independent source vote",
+      "disposition": "admitted",
+      "drug_panel": {
+        "characteristic": "treatment",
+        "controls": [
+          "DMSO",
+          "VEH",
+          "PBS",
+          "NoTreatment",
+          "Blank"
+        ],
+        "dose_suffix": true,
+        "path": "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz"
+      },
       "drugs": [],
-      "inputs": [],
-      "rationale": "environmental chemical panel and perturbation strength do not establish cardiotoxic drug property; retain corpus role, no automatic entire panel admission",
-      "reason": "independent-positive-drug-evidence-not-established",
+      "inputs": [
+        "pert_data/GSE262419/manifest.sha256",
+        "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz"
+      ],
+      "item": "pert_data/GSE262419",
+      "reason": "independently positive identity-resolved drug subset with matched vehicle; panel membership is not positivity",
+      "reviewed_at": "2026-11-16",
       "source": "gse262419",
-      "tier": null
+      "tier": 2,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419"
     },
     {
       "disposition": "excluded",
@@ -269,8 +333,10 @@
       "inputs": [],
       "rationale": "guinea pig miRNA, not human full transcriptome",
       "reason": "nonhuman-and-mirna",
+      "reviewed_at": "2026-11-16",
       "source": "gse263950",
-      "tier": null
+      "tier": null,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE263950"
     },
     {
       "disposition": "excluded",
@@ -278,8 +344,10 @@
       "inputs": [],
       "rationale": "ATAC arm of related experiment, not independent RNA source",
       "reason": "non-rna",
+      "reviewed_at": "2026-11-16",
       "source": "gse291260",
-      "tier": null
+      "tier": null,
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE291260"
     },
     {
       "disposition": "excluded",
@@ -290,6 +358,7 @@
       ],
       "rationale": "Factual correction: ReadMe and eight38478-gene raw Read-Counts matrices show3prime-DGE full transcriptome, NOT L1000-978. Four54-62yo cultured adult PromoCell human cardiomyocyte donors; neither defined human atria/ventricle CM-specific tier1 nor stem-cell tier2; no tier expansion",
       "reason": "outside-existing-tiers",
+      "reviewed_at": "2026-11-16",
       "source": "lincs_lds1593",
       "tier": null
     }

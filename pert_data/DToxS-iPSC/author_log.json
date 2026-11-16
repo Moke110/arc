@@ -1,25 +1,276 @@
 {
-  "item": "DToxS-iPSC",
   "category": "pert_data",
+  "hashed_at": "2026-10-30T22:05+08:00",
+  "item": "DToxS-iPSC",
+  "local_additions": [
+    {
+      "bytes": 215941,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Afatinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "d89b790c06bc15a0d48333b0b9132787f6de92ee9bd51f5aa40adfe38bf686d0",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fd638e5e-8032-e7ca-0179-95e96ab5d387.xml"
+    },
+    {
+      "bytes": 461008,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Axitinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "ae009592a5233d5a534ea6b9162db72d54c8f3ac61fc7dd42cba9c284b45f6a5",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/84137882-e000-47da-bd5b-fa76ab3c76f9.xml"
+    },
+    {
+      "bytes": 510833,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Bosutinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "31ec13cf02ee81f145cd44f0742030b24d774e09c772206bb80e39d77bb571fc",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/adc84ad5-a04d-4fee-9ba8-91f7abd928e3.xml"
+    },
+    {
+      "bytes": 508610,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Cabozantinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "5d7f83c143b75e4f2cb9fb81864415b6882bc050499df398a150f11fa2219a55",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3850cce2-6137-42e5-a792-d318c4a4b3b5.xml"
+    },
+    {
+      "bytes": 205442,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Ceritinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "493f730fc4de0f444c1e8d573830f4f1c4ce95aa42ed08f1507b95e723c4cca8",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fff5d805-4ffd-4e8e-8e63-6f129697563e.xml"
+    },
+    {
+      "bytes": 623157,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Crizotinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "0dd2828e40c41797c0fabf98c175dc9304c2d4ee137e8911507b3faa2f4a8d44",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/2a51b0de-47d6-455e-a94c-d2c737b04ff7.xml"
+    },
+    {
+      "bytes": 338449,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Cyclosporine.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "7e06780d01138e76b425e09fbd7ca9ff5098be253e9375f2fe13cb44a6d77158",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/1952d4c7-a40e-4924-b669-c41400774cb9.xml"
+    },
+    {
+      "bytes": 527893,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Dabrafenib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "bb96336976f6f013be41317f171017260efb7b04f82b4d0d85c310016351fcc8",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fee1e6b1-e1a5-4254-9f2e-a70e0f8dbdea.xml"
+    },
+    {
+      "bytes": 137425,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Diclofenac.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "74fedc5fcdd1cd86bdffe750aa7b8770ebdbca6f157a2d1d116da41874c777f3",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/26e44aa5-cfcd-f10b-e063-6394a90a4dcf.xml"
+    },
+    {
+      "bytes": 275976,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Estradiol.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "76c3ea15476a5aa65eea9e79af909f13f0aa251528c5fcb484c21e459af55516",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6c5c47ab-28ee-11e1-bfc2-0800200c9a66.xml"
+    },
+    {
+      "bytes": 114624,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Flecainide.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "258f41507c436b8cea7f21c38fb5f8063ce7b755875a07a37d0e13f64827117c",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ee9595d5-08a1-4529-9215-ddc3c7f929c4.xml"
+    },
+    {
+      "bytes": 81566,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Milrinone.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "0ba01d0e0849ea9ff2dd36b501a099fc9c968cba8ba2d9d494a842744ffd74d8",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/07dddead-22ed-004c-e063-6294a90a76fc.xml"
+    },
+    {
+      "bytes": 407284,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Nilotinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "3da95778abf37460dec251f4f2419224a85754a8c74370e1a802e9664632a786",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/98b197ea-bca4-427e-8737-97f70a3262bc.xml"
+    },
+    {
+      "bytes": 99388,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Olmesartan.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "86785582996c241490df3946dc34c29150589f4ec61be7e58e12d1f8a144b115",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/37e59db2-6d89-4593-ad00-35d77ab9d013.xml"
+    },
+    {
+      "bytes": 248309,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Pazopanib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "3715629a6d69d0879a0f34d97de725599730672a993861faef724218f7d96e9c",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/115eb5bb-1403-fb3d-e063-6394a90ad320.xml"
+    },
+    {
+      "bytes": 60161,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Phenylephrine.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "d06e6e343a8e170cf2594f7511e07bbe3f0c69da7a54df9e29cae11817bce72c",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c2ba1b3e-94bc-494d-b0fe-4ab9dd61dddc.xml"
+    },
+    {
+      "bytes": 460274,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Ponatinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "8cea257ce5bf607530296469c96fe9f0c33632ea31df7bf3671975c25bc2bb6f",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/16d804b6-4957-43ee-b18c-3b36ec37c5ac.xml"
+    },
+    {
+      "bytes": 82418,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Prednisolone.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "6d48b8f7bcaf8741c135fdf2293a3fdbcd93f48d63f9e38282685acc3a2a2e2a",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/96de9cad-2fb7-4947-87ae-4db57563a83a.xml"
+    },
+    {
+      "bytes": 322393,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Regorafenib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "19a136b38f2808cf7566a15470af75e19e8c3d224bec7b3da4ab96d8190cb7a4",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/824f19c9-0546-4a8a-8d8f-c4055c04f7c7.xml"
+    },
+    {
+      "bytes": 217899,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Sorafenib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "f0a4974ad6b0dcc5bf22700494cf4694282a39c0d155283c93b2ead5f2a365f8",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/faa9d847-2cd5-6538-e053-6394a90aa92b.xml"
+    },
+    {
+      "bytes": 765605,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Tofacitinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "2de03ef78a7efa43828a7201b282b0cf605820d8bc02cef855ab0b62197ced2c",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/cf74ba2f-afc5-4baa-8594-979c889a5831.xml"
+    },
+    {
+      "bytes": 533861,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Trametinib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "3a2cfc4509f9c0066f92593d64c4a402db5732bcfe9e3ad791df1549ac570f4a",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/0002ad27-779d-42ab-83b5-bc65453412a1.xml"
+    },
+    {
+      "bytes": 208227,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Vandetanib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "20be014598739359ae6d4088b541ccd772b350dfc84a3c5e1c6ee2efb09f8476",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/e5721cb8-4185-47b9-bbb3-1c587e558a03.xml"
+    },
+    {
+      "bytes": 208182,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/Vemurafenib.xml",
+      "retrieved_at": "2026-11-16",
+      "sha256": "7faa9da0607cf73858bce125f3cf79a1acc9f4c7fe3554c185aeb1f08cb7346d",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/38eea320-7e0c-485a-bc30-98c3c45e2763.xml"
+    },
+    {
+      "bytes": 22815,
+      "generator": "script/fetch_tox_evidence.py",
+      "kind": "independent primary cardiotoxicity evidence snapshot",
+      "note": "DEG-independent official SPL or original-author abstract; eligibility rationale in execution/tox_drug_evidence.json",
+      "path": "pert_data/DToxS-iPSC/local/tox_evidence/case-records.json",
+      "retrieved_at": "2026-11-16",
+      "sha256": "a12a751610096a2922f31790587250ff6d84e19e245c5f74c2230e0fd0fc6314",
+      "source_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:34497169%20OR%20EXT_ID:41987407%20OR%20EXT_ID:31534088&format=json&resultType=core"
+    }
+  ],
+  "manifest": "manifest.sha256",
   "purpose": "DToxS iPSC-cardomyocyte CM GEO deposit (GSE217424 SuperSeries)",
   "retrieved_at": "2026-08-12T13:48+08:00",
   "sources": [
     {
-      "kind": "dataset",
+      "bytes": 2657111110,
+      "files": 17,
       "id": "GSE217424 (SuperSeries: GSE217421 + GSE217423)",
-      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217424",
-      "version": "GSE217424",
+      "kind": "dataset",
       "license": "unknown",
       "method": "script/download.sh (wget from the GEO FTP series directories)",
       "path": "source/",
-      "files": 17,
-      "bytes": 2657111110,
-      "tree_sha256": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515"
+      "tree_sha256": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE217424",
+      "version": "GSE217424"
     }
   ],
-  "local_additions": [],
-  "manifest": "manifest.sha256",
   "verified_at": "2026-10-30T22:05+08:00",
-  "verify_result": "pass",
-  "hashed_at": "2026-10-30T22:05+08:00"
+  "verify_result": "pass"
 }

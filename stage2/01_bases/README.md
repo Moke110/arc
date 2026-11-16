@@ -1082,3 +1082,12 @@ never enter TOX. A source marked admitted is eligible for tiered analysis, not
 proof of a positive result. The ledger records finite discovery scope, excluded
 platform duplicates and the LINCS full-transcriptome factual correction without
 expanding the accepted source tiers.
+
+The finite ADR 0072 source review admits twelve tier-2 designs, including the
+reassessed antiviral source GSE247541 and the independently supported drug subset
+of GSE262419. All panel identities remain inspectable; shared evidence transfers
+only by full parent identity. DToxS official-label and primary-case snapshots are
+declared under `pert_data/DToxS-iPSC/local/tox_evidence/`; the fetch recipe verifies
+their pinned bytes. Case attribution uncertainty is retained. Pending panel
+records carry the reviewed evidence-set pointer and date; missing support in this
+finite set is neither a negative label nor a claim of exhaustive drug research.

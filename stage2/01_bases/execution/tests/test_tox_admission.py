@@ -24,6 +24,16 @@ class AdmissionTest(unittest.TestCase):
         self.assertEqual(result.iloc[0].disposition, 'admitted')
         self.assertEqual(result.iloc[0].evidence_label, 'positive')
 
+    def test_peptide_identity_remains_excluded_under_an_alias(self):
+        annotation = pd.DataFrame([dict(lookup_name=n, parent_inchikey='PEPTIDE', atc='', moa='')
+                                   for n in ['Cyclosporine', 'Cyclosporin A']])
+        fact = dict(parent_inchikey='PEPTIDE', label='positive', url='https://example.org',
+                    locator='label', retrieved_at='2026-11-16', rationale='risk', uncertainty='risk')
+        result = tox_admission.assess_drugs([dict(source='panel', source_id='alias', drug_name='Cyclosporin A')],
+                                          annotation, [fact])
+        self.assertFalse(result.iloc[0].small_molecule)
+        self.assertEqual(result.iloc[0].disposition, 'excluded')
+
     def test_duplicate_source_code_is_rejected_instead_of_double_voting(self):
         records = [dict(source='one', source_id='x', drug_name='A')] * 2
         annotation = pd.DataFrame([dict(lookup_name='A', dataset_inchikey='',
@@ -40,6 +50,52 @@ class AdmissionTest(unittest.TestCase):
                                           pd.DataFrame(rows), [fact])
         self.assertEqual(result.iloc[0].disposition, 'excluded')
         self.assertIn('identity', result.iloc[0].reason)
+
+    def test_reassessed_panels_enter_by_independent_identity_evidence(self):
+        import gzip
+        import io
+        import tarfile
+        from bases import cardiotox
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            def put(name, text):
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                if name.endswith('.gz'):
+                    with gzip.open(path, 'wt') as handle:
+                        handle.write(text)
+                else:
+                    path.write_text(text)
+            put(cardiotox.DTOXS_SERIES, '!Sample_characteristics_ch1\t"treatment condition: X"\n!Sample_characteristics_ch1\t"drug name: known"\n')
+            path = root / cardiotox.DTOXS_PARAMS
+            path.parent.mkdir(parents=True, exist_ok=True)
+            payload = b'Group\tDrug\tType\na\tX\ta\n'
+            with tarfile.open(path, 'w:gz') as archive:
+                info = tarfile.TarInfo('Conv-RNAseq-Drug-Groups.tsv')
+                info.size = len(payload)
+                archive.addfile(info, io.BytesIO(payload))
+            put(cardiotox.GSE244740_SERIES, '!Sample_description\t"p_w"\n!Sample_characteristics_ch1\t"treatment: DMSO, 0"\n!Sample_characteristics_ch1\t"time: 24h"\n')
+            put('panel.txt.gz', '!Sample_characteristics_ch1\t"treatment: known_0.2_uM"\t"treatment: unknown_1_uM"\t"treatment: DMSO"\n')
+            annotation = pd.DataFrame([dict(lookup_name=n, parent_inchikey=k, atc='', moa='')
+                                       for n,k in [('known','KEY'),('unknown','OTHER')]])
+            put(tox_admission.ANNOTATION, annotation.to_csv(index=False))
+            fact = dict(parent_inchikey='KEY', label='positive', url='https://example.org/primary',
+                        locator='reference', retrieved_at='2026-11-16', rationale='positive label', uncertainty='risk')
+            put(tox_admission.EVIDENCE, json.dumps(dict(drugs=[fact], pinned_sources=[], reviewed_at='2026-11-16', review_scope='fixed independent reference labels')))
+            source = dict(source='reassessed', disposition='admitted', tier=2,
+                          drug_panel=dict(path='panel.txt.gz', characteristic='treatment', dose_suffix=True))
+            put(tox_admission.SOURCES, json.dumps(dict(sources=[source], discovery={})))
+            output = root / 'candidate'
+            tox_admission.build_ledger(root, output)
+            reader = tox_admission.ToxAdmission(output, root)
+            drugs = reader.drugs('reassessed').set_index('drug_name')
+            self.assertEqual(set(drugs.index), {'known', 'unknown'})
+            self.assertEqual(drugs.loc['known','disposition'], 'admitted')
+            self.assertEqual(drugs.loc['unknown','disposition'], 'pending')
+            self.assertIn('panel.txt.gz', reader.value['inputs'])
+            self.assertEqual(drugs.loc['unknown','reviewed_at'], '2026-11-16')
+            self.assertEqual(drugs.loc['unknown','review_scope'], 'fixed independent reference labels')
+            self.assertEqual(drugs.loc['unknown','reviewed_evidence'], tox_admission.EVIDENCE)
 
     def test_reader_rejects_modified_admission_payload(self):
         with tempfile.TemporaryDirectory() as directory:

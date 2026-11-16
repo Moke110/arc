@@ -6,6 +6,7 @@ between sources only for the same full parent InChIKey. Missing or conflicting
 labels stay pending. The old mechanism-class API remains readable until release.
 """
 from pathlib import Path
+import gzip
 import re
 import pandas as pd
 from .release import ReleaseError, read_json, sha256, write_json
@@ -24,6 +25,8 @@ def name_key(value):
 def assess_drugs(records, annotation, evidence):
     """Return one auditable admission decision per source code, before DEG work."""
     rows, seen = [], set()
+    non_small_keys = set(annotation.loc[annotation.lookup_name.map(name_key).isin(NON_SMALL_MOLECULES),
+                                        'parent_inchikey'].fillna('')) - {''}
     for record in records:
         identity = (record['source'], record['source_id'])
         if identity in seen:
@@ -41,7 +44,7 @@ def assess_drugs(records, annotation, evidence):
             row['parent_inchikey'] = key
             row['atc'] = '; '.join(sorted(set(matches.atc.fillna('')) - {''}))
             row['moa'] = '; '.join(sorted(set(matches.moa.fillna('')) - {''}))
-            row['small_molecule'] = name not in NON_SMALL_MOLECULES
+            row['small_molecule'] = name not in NON_SMALL_MOLECULES and key not in non_small_keys
             facts = [dict(e) for e in evidence if e.get('parent_inchikey') == key]
             for fact in facts:
                 if not all(fact.get(k) for k in ('url', 'locator', 'retrieved_at', 'rationale', 'uncertainty')):
@@ -79,12 +82,34 @@ def build_ledger(repo, output):
     panel = cardiotox.gse244740_panel(repo / cardiotox.GSE244740_SERIES)
     records.extend(dict(source='gse244740', source_id=name, drug_name=name)
                    for name in sorted(set(panel.compound) - {'DMSO', 'NoTreatment'}))
+    panel_inputs = []
     for source in sources['sources']:
+        panel = source.get('drug_panel')
+        if panel is not None:
+            panel_inputs.append(panel['path'])
+            with gzip.open(repo / panel['path'], 'rt') as handle:
+                names = set()
+                for line in handle:
+                    if not line.startswith('!Sample_characteristics_ch1\t'):
+                        continue
+                    values = [v.strip().strip(chr(34)) for v in line.rstrip().split('\t')[1:]]
+                    prefix = panel['characteristic'] + ': '
+                    if values and all(v.startswith(prefix) for v in values):
+                        names.update(v[len(prefix):] for v in values)
+            if not names:
+                raise ReleaseError('TOX source panel lacks declared treatment metadata')
+            if panel.get('dose_suffix'):
+                names = {re.sub(r'_[0-9.]+_uM$', '', n) for n in names}
+            names -= set(panel.get('controls', ['DMSO', 'Control', 'NoTreatment']))
+            records.extend(dict(source=source['source'], source_id=n, drug_name=n) for n in sorted(names))
         records.extend(dict(source=source['source'], **drug) for drug in source.get('drugs', []))
     frame = assess_drugs(records, annotation, evidence['drugs'])
+    frame['reviewed_at'] = evidence['reviewed_at']
+    frame['review_scope'] = evidence['review_scope']
+    frame['reviewed_evidence'] = EVIDENCE
     inputs = [EVIDENCE, SOURCES, ANNOTATION, cardiotox.DTOXS_SERIES,
               cardiotox.DTOXS_PARAMS, cardiotox.GSE244740_SERIES]
-    inputs += evidence['pinned_sources']
+    inputs += evidence['pinned_sources'] + panel_inputs
     inputs += [p for source in sources['sources'] for p in source.get('inputs', [])]
     value = dict(schema='stage2-tox-admission-v1', disease='TOX',
                  definition='transcriptional response to independently supported cardiotoxic small-molecule drugs; no toxicity assertion at each exposure',

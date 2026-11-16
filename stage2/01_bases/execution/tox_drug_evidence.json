@@ -483,13 +483,512 @@
       "retrieved_at": "2026-11-16",
       "uncertainty": "clinical cardiotoxicity risk; no condition-specific phenotype assertion",
       "url": "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=f4312095-3c21-296b-e053-2995a90a0d9c&type=display"
+    },
+    {
+      "drug_name": "apilimod",
+      "label": "positive",
+      "locator": "Series_summary: four antiviral drugs exhibit cardiotoxicity at clinically relevant doses",
+      "parent_inchikey": "HSKAZIJJKRAJAV-KOEQRZSOSA-N",
+      "pinned_path": "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz",
+      "rationale": "explicit author-positive functional cardiotoxicity property, independent of new TOX DEG",
+      "retrieved_at": "2026-11-16",
+      "uncertainty": "author in-vitro hPSC-CM risk demonstration; no claim all doses toxic or uniform clinical risk",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247541"
+    },
+    {
+      "drug_name": "remdesivir",
+      "label": "positive",
+      "locator": "Series_summary: four antiviral drugs exhibit cardiotoxicity at clinically relevant doses",
+      "parent_inchikey": "RWWYLEGWBNMMLJ-YSOARWBDSA-N",
+      "pinned_path": "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz",
+      "rationale": "explicit author-positive functional cardiotoxicity property, independent of new TOX DEG",
+      "retrieved_at": "2026-11-16",
+      "uncertainty": "author in-vitro hPSC-CM risk demonstration; no claim all doses toxic or uniform clinical risk",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247541"
+    },
+    {
+      "drug_name": "ritonavir",
+      "label": "positive",
+      "locator": "Series_summary: four antiviral drugs exhibit cardiotoxicity at clinically relevant doses",
+      "parent_inchikey": "NCDNCNXCDXHOMX-XGKFQTDJSA-N",
+      "pinned_path": "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz",
+      "rationale": "explicit author-positive functional cardiotoxicity property, independent of new TOX DEG",
+      "retrieved_at": "2026-11-16",
+      "uncertainty": "author in-vitro hPSC-CM risk demonstration; no claim all doses toxic or uniform clinical risk",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247541"
+    },
+    {
+      "drug_name": "lopinavir",
+      "label": "positive",
+      "locator": "Series_summary: four antiviral drugs exhibit cardiotoxicity at clinically relevant doses",
+      "parent_inchikey": "KJHKTHWMRKYKJE-SUGCFTRWSA-N",
+      "pinned_path": "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz",
+      "rationale": "explicit author-positive functional cardiotoxicity property, independent of new TOX DEG",
+      "retrieved_at": "2026-11-16",
+      "uncertainty": "author in-vitro hPSC-CM risk demonstration; no claim all doses toxic or uniform clinical risk",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247541"
+    },
+    {
+      "drug_name": "Afatinib",
+      "label": "positive",
+      "label_effective_date": "20251113",
+      "locator": "2.3 and 6.1; Left Ventricular Dysfunction counseling",
+      "parent_inchikey": "ULXXDDBFHOBEHA-CWDCEQMOSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Afatinib.xml",
+      "rationale": "The label requires permanent discontinuation for symptomatic left ventricular dysfunction and reports ventricular dysfunction in treated patients.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fd638e5e-8032-e7ca-0179-95e96ab5d387.xml"
+    },
+    {
+      "drug_name": "Axitinib",
+      "label": "positive",
+      "label_effective_date": "20250219",
+      "locator": "5.5 Cardiac Failure",
+      "parent_inchikey": "RITAVMQDGBJQJZ-FMIVXFBMSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Axitinib.xml",
+      "rationale": "Single-agent controlled data and warning identify cardiac failure, including fatal events.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/84137882-e000-47da-bd5b-fa76ab3c76f9.xml"
+    },
+    {
+      "drug_name": "Bosutinib",
+      "label": "positive",
+      "label_effective_date": "20260310",
+      "locator": "5.4 Cardiovascular Toxicity",
+      "parent_inchikey": "UBPYILGKFZZVDX-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Bosutinib.xml",
+      "rationale": "The label expressly attributes cardiac failure, left ventricular dysfunction and ischemic cardiac events to bosutinib.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/adc84ad5-a04d-4fee-9ba8-91f7abd928e3.xml"
+    },
+    {
+      "drug_name": "Cabozantinib",
+      "label": "positive",
+      "label_effective_date": "20251019",
+      "locator": "5.5 Cardiac Failure",
+      "parent_inchikey": "ONIQOQHATWINJY-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Cabozantinib.xml",
+      "rationale": "The single-agent warning identifies severe and fatal cardiac failure.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3850cce2-6137-42e5-a792-d318c4a4b3b5.xml"
+    },
+    {
+      "drug_name": "Ceritinib",
+      "label": "positive",
+      "label_effective_date": "20261028",
+      "locator": "5.4 QT Interval Prolongation; 5.6 Bradycardia",
+      "parent_inchikey": "VERWOWGGCGHDQE-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Ceritinib.xml",
+      "rationale": "The label identifies drug-associated QT prolongation and bradycardia; these are independent functional cardiac risks.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fff5d805-4ffd-4e8e-8e63-6f129697563e.xml"
+    },
+    {
+      "drug_name": "Crizotinib",
+      "label": "positive",
+      "label_effective_date": "20261029",
+      "locator": "5.3 QT Interval Prolongation; 5.4 Bradycardia",
+      "parent_inchikey": "KTEIFNKAUNYNJU-GFCCVEGCSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Crizotinib.xml",
+      "rationale": "The label identifies QT prolongation and symptomatic bradycardia during crizotinib treatment.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/2a51b0de-47d6-455e-a94c-d2c737b04ff7.xml"
+    },
+    {
+      "drug_name": "Dabrafenib",
+      "label": "positive",
+      "label_effective_date": "20260520",
+      "locator": "12.2 Pharmacodynamics, Cardiac Electrophysiology",
+      "parent_inchikey": "BFSMGDJOXZAERB-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Dabrafenib.xml",
+      "rationale": "Single-agent clinical data report QTc of at least 500 ms and increases exceeding 60 ms; the cardiomyopathy combination warning alone was not used for attribution.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fee1e6b1-e1a5-4254-9f2e-a70e0f8dbdea.xml"
+    },
+    {
+      "drug_name": "Diclofenac",
+      "label": "positive",
+      "label_effective_date": "20261105",
+      "locator": "Boxed warning; WARNINGS, Cardiovascular Thrombotic Events and Heart Failure and Edema",
+      "parent_inchikey": "DCOPUUMXTXDBNB-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Diclofenac.xml",
+      "rationale": "The systemic diclofenac label warns of myocardial infarction and worsening heart failure; this supports cardiac risk without mechanism inference.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/26e44aa5-cfcd-f10b-e063-6394a90a4dcf.xml"
+    },
+    {
+      "doi": "10.1536/ihj.21-130",
+      "drug_name": "Erlotinib",
+      "label": "positive",
+      "locator": "resultList.result record matching PMID 34497169, abstractText (original author abstract)",
+      "original_report_url": "https://pubmed.ncbi.nlm.nih.gov/34497169/",
+      "parent_inchikey": "AAKJLRGGTJKAMG-UHFFFAOYSA-N",
+      "pin_note": "Authoritative Europe PMC core record contains original primary abstract. Publisher PDF attempts are not used as evidence.",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/case-records.json",
+      "pinned_record_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:34497169%20OR%20EXT_ID:41987407%20OR%20EXT_ID:31534088&format=json&resultType=core",
+      "publication_date": "2021-09-07",
+      "rationale": "Biopsy-supported cardiomyopathy attributed to erlotinib in an original clinical case report.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Case-report evidence; causal certainty and generalizability remain limited.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34497169/"
+    },
+    {
+      "drug_name": "Estradiol",
+      "label": "pending",
+      "label_effective_date": "20261106",
+      "locator": "Boxed warning; 5.1 Cardiovascular Disorders; 14.3 WHI; PMID 29407091 and PMCID PMC10964748",
+      "parent_inchikey": "VOXZDWNPVJITMN-ZBRFXRBCSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Estradiol.xml",
+      "rationale": "Reviewed label cardiac infarction evidence concerns conjugated equine estrogens plus medroxyprogesterone, not resolved estradiol alone; estrogen-alone CHD result is neutral. Primary estradiol cardiac experiments show context-dependent physiology or protection. These do not establish an unambiguous positive property for this identity.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Independent review completed; available evidence is insufficient or attribution is conflicting, not a negative-control label.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6c5c47ab-28ee-11e1-bfc2-0800200c9a66.xml"
+    },
+    {
+      "drug_name": "Flecainide",
+      "label": "positive",
+      "label_effective_date": "20260611",
+      "locator": "WARNINGS, Mortality and Heart Failure",
+      "parent_inchikey": "DJBNUMBKLMJRSA-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Flecainide.xml",
+      "rationale": "The label reports excess death or nonfatal cardiac arrest in randomized CAST data and negative-inotropic heart-failure risk.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ee9595d5-08a1-4529-9215-ddc3c7f929c4.xml"
+    },
+    {
+      "doi": "10.2169/internalmedicine.7140-26",
+      "drug_name": "Gefitinib",
+      "label": "positive",
+      "locator": "resultList.result record matching PMID 41987407, abstractText (original author abstract)",
+      "original_report_url": "https://pubmed.ncbi.nlm.nih.gov/41987407/",
+      "parent_inchikey": "XGALLCVXEZPNRQ-UHFFFAOYSA-N",
+      "pin_note": "Authoritative Europe PMC core record contains original primary abstract. Publisher PDF attempts are not used as evidence.",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/case-records.json",
+      "pinned_record_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:34497169%20OR%20EXT_ID:41987407%20OR%20EXT_ID:31534088&format=json&resultType=core",
+      "publication_date": "2026-04-14",
+      "rationale": "An original case reports heart failure improving after gefitinib withdrawal and recurring upon rechallenge.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Single-patient evidence, with prior osimertinib exposure; dechallenge/rechallenge supports attribution but does not estimate incidence.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/41987407/"
+    },
+    {
+      "drug_name": "Milrinone",
+      "label": "positive",
+      "label_effective_date": "20260727",
+      "locator": "WARNINGS; ADVERSE REACTIONS, Cardiovascular Effects",
+      "parent_inchikey": "PZRHRDRVRGEVNW-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Milrinone.xml",
+      "rationale": "The label identifies increased ventricular ectopy, life-threatening ventricular arrhythmias, and excess mortality during long-term oral exposure.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/07dddead-22ed-004c-e063-6294a90a76fc.xml"
+    },
+    {
+      "drug_name": "Nilotinib",
+      "label": "positive",
+      "label_effective_date": "20260720",
+      "locator": "Boxed warning; 5.3 QT Prolongation; 12.2 Cardiac Electrophysiology",
+      "parent_inchikey": "HHZIURLSWUIHRB-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Nilotinib.xml",
+      "rationale": "The label documents concentration-dependent QT prolongation and potentially fatal rhythm disturbances.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/98b197ea-bca4-427e-8737-97f70a3262bc.xml"
+    },
+    {
+      "drug_name": "Olmesartan",
+      "label": "pending",
+      "label_effective_date": "20261110",
+      "locator": "6.2 Post-Marketing Experience, cardiovascular-risk findings",
+      "parent_inchikey": "VTRAEEWXHOVJFV-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Olmesartan.xml",
+      "rationale": "The label reports a signal in diabetic high-dose users but expressly states that overall evidence is inconclusive and raises credibility concerns. Do not convert this uncertain association to established positive risk.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Independent review completed; available evidence is insufficient or attribution is conflicting, not a negative-control label.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/37e59db2-6d89-4593-ad00-35d77ab9d013.xml"
+    },
+    {
+      "drug_name": "Pazopanib",
+      "label": "positive",
+      "label_effective_date": "20260923",
+      "locator": "5.2 QT Prolongation and Torsades de Pointes; 5.3 Cardiac Dysfunction",
+      "parent_inchikey": "CUIHSIWYWATEQL-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Pazopanib.xml",
+      "rationale": "The label identifies torsades, reduced ventricular ejection fraction and heart failure in treated patients.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/115eb5bb-1403-fb3d-e063-6394a90ad320.xml"
+    },
+    {
+      "drug_name": "Phenylephrine",
+      "label": "positive",
+      "label_effective_date": "20260119",
+      "locator": "5.1 Exacerbation of Angina, Heart Failure, or Pulmonary Arterial Hypertension; 5.2 Bradycardia",
+      "parent_inchikey": "SONNWYBIRXJNDC-VIFPVBQESA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Phenylephrine.xml",
+      "rationale": "The injection label identifies angina precipitation, worsening underlying heart failure, marked bradycardia and reduced cardiac output.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c2ba1b3e-94bc-494d-b0fe-4ab9dd61dddc.xml"
+    },
+    {
+      "drug_name": "Ponatinib",
+      "label": "positive",
+      "label_effective_date": "20260814",
+      "locator": "Boxed warning; 5.3 Heart Failure",
+      "parent_inchikey": "PHXJVRSECIGDHY-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Ponatinib.xml",
+      "rationale": "The label warns of severe and fatal heart failure, alongside arterial occlusive events.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/16d804b6-4957-43ee-b18c-3b36ec37c5ac.xml"
+    },
+    {
+      "drug_name": "Prednisolone",
+      "label": "positive",
+      "label_effective_date": "20260904",
+      "locator": "ADVERSE REACTIONS, Cardiovascular",
+      "parent_inchikey": "OIGNJSKKLXVSLS-VWUMJDOOSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Prednisolone.xml",
+      "rationale": "The label lists hypertrophic cardiomyopathy in premature infants. Evidence is population-specific and does not imply universal toxicity.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/96de9cad-2fb7-4947-87ae-4db57563a83a.xml"
+    },
+    {
+      "drug_name": "Regorafenib",
+      "label": "positive",
+      "label_effective_date": "20260209",
+      "locator": "5.7 Cardiac Ischemia and Infarction",
+      "parent_inchikey": "FNHKPVJBJVTLMP-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Regorafenib.xml",
+      "rationale": "The label identifies increased myocardial ischemia and infarction during regorafenib treatment.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/824f19c9-0546-4a8a-8d8f-c4055c04f7c7.xml"
+    },
+    {
+      "doi": "10.2169/internalmedicine.3528-19",
+      "drug_name": "Ruxolitinib",
+      "label": "positive",
+      "locator": "resultList.result record matching PMID 31534088, abstractText (original author abstract)",
+      "original_report_url": "https://pubmed.ncbi.nlm.nih.gov/31534088/",
+      "parent_inchikey": "HFNKQEVNSGCOJV-OAHLLOKOSA-N",
+      "pin_note": "Authoritative Europe PMC core record contains original primary abstract. Publisher PDF attempts are not used as evidence.",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/case-records.json",
+      "pinned_record_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:34497169%20OR%20EXT_ID:41987407%20OR%20EXT_ID:31534088&format=json&resultType=core",
+      "publication_date": "2019-09-18",
+      "rationale": "An original autopsy-supported case attributes possible left ventricular dysfunction to long-term ruxolitinib and reports cardiac histopathology.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Authors acknowledge potential contributions from atrial fibrillation and kidney disease and incomplete exclusion by angiography; use as traceable positive with explicitly low causal certainty, not a class-only warning.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/31534088/"
+    },
+    {
+      "drug_name": "Sorafenib",
+      "label": "positive",
+      "label_effective_date": "20260728",
+      "locator": "5.1 Cardiovascular Events; 5.9 QT Interval Prolongation",
+      "parent_inchikey": "MLDQJTXFUGDVEO-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Sorafenib.xml",
+      "rationale": "The label identifies myocardial ischemia or infarction, heart failure and QT-associated ventricular arrhythmia risk.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/faa9d847-2cd5-6538-e053-6394a90aa92b.xml"
+    },
+    {
+      "drug_name": "Tofacitinib",
+      "label": "positive",
+      "label_effective_date": "20261110",
+      "locator": "Boxed warning; 5.4 Major Adverse Cardiovascular Events",
+      "parent_inchikey": "UJLAWZDWDVHWOW-YPMHNXCESA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Tofacitinib.xml",
+      "rationale": "A randomized safety study of tofacitinib itself found increased cardiovascular death and myocardial infarction versus TNF blockers; no class-only extrapolation is used.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/cf74ba2f-afc5-4baa-8594-979c889a5831.xml"
+    },
+    {
+      "drug_name": "Trametinib",
+      "label": "positive",
+      "label_effective_date": "20260507",
+      "locator": "5.5 Cardiomyopathy",
+      "parent_inchikey": "LIRYPHYGHXZJBZ-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Trametinib.xml",
+      "rationale": "The label expressly states that cardiomyopathy including cardiac failure can occur with trametinib.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/0002ad27-779d-42ab-83b5-bc65453412a1.xml"
+    },
+    {
+      "drug_name": "Vandetanib",
+      "label": "positive",
+      "label_effective_date": "20261030",
+      "locator": "Boxed warning; 5.1 QT Prolongation and Torsades de Pointes; 5.6 Heart Failure",
+      "parent_inchikey": "UHTHHESEBZOYNR-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Vandetanib.xml",
+      "rationale": "The label identifies torsades, sudden death and potentially irreversible heart failure in treated patients.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/e5721cb8-4185-47b9-bbb3-1c587e558a03.xml"
+    },
+    {
+      "drug_name": "Vemurafenib",
+      "label": "positive",
+      "label_effective_date": "20260828",
+      "locator": "5.5 QT Prolongation",
+      "parent_inchikey": "GPXBXXGIAQBQNI-UHFFFAOYSA-N",
+      "pinned_path": "pert_data/DToxS-iPSC/local/tox_evidence/Vemurafenib.xml",
+      "rationale": "Concentration-dependent QT prolongation occurred in a clinical substudy, with potential ventricular arrhythmia risk.",
+      "retrieved_at": "2026-11-16",
+      "searched_sources": [
+        "Official DailyMed active SPL query by generic name",
+        "Full selected official label; targeted primary case search when label insufficient"
+      ],
+      "uncertainty": "Drug-level risk is supported; no claim of toxicity at every qualifying experimental dose/time. Label risk may be uncommon or population-specific.",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/38eea320-7e0c-485a-bc30-98c3c45e2763.xml"
     }
   ],
   "pinned_sources": [
     "disease_data/GSE243674/local/tox_evidence/ELLENCE_2025.pdf",
     "disease_data/GSE243674/local/tox_evidence/daunorubicin_DailyMed.html",
-    "pert_data/GSE244740/source/Rosell-Hidalgo_2023_Table1.pdf"
+    "pert_data/DToxS-iPSC/local/tox_evidence/Afatinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Axitinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Bosutinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Cabozantinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Ceritinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Crizotinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Cyclosporine.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Dabrafenib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Diclofenac.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Estradiol.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Flecainide.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Milrinone.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Nilotinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Olmesartan.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Pazopanib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Phenylephrine.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Ponatinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Prednisolone.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Regorafenib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Sorafenib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Tofacitinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Trametinib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Vandetanib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/Vemurafenib.xml",
+    "pert_data/DToxS-iPSC/local/tox_evidence/case-records.json",
+    "pert_data/GSE244740/source/Rosell-Hidalgo_2023_Table1.pdf",
+    "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz"
   ],
+  "review_scope": "Rosell-Hidalgo42 reference labels, DNR/EPI regulatory evidence, all27 previously pending DToxS identities targeted official label/primary report review, and GSE247541 author-positive labels; remaining panel identity facts assessed against this pinned independent evidence set, never new DEG.",
   "reviewed_at": "2026-11-16",
   "schema": "stage2-tox-independent-evidence-v1"
 }
