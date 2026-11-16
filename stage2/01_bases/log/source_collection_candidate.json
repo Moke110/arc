@@ -1,0 +1,117 @@
+{
+  "collection_policy": "all_qualifying_declared_sources",
+  "date": "2026-11-16",
+  "formal_release": "ADR0072 accepted outputs untouched; all build destinations were isolated candidates",
+  "health": "Complete repository health suite remains final225 acceptance; no unmeasured green claim",
+  "independent_replay": {
+    "gse298023": "PASS sourceRDS -> sparse donor pseudobulk -> joint model, all four derived output byte digests equal",
+    "registry": "PASS all four categories, complete output digest comparisons",
+    "tox": "PASS all twelve source fits and candidate digest comparisons"
+  },
+  "manifests": {
+    "af": "d427606ed4aa9ee7cbc28ba06035154e09be2cefbf7e174d928e6733dcb144a7",
+    "genetic_cardiomyopathy": "da72e32f0337787debfc5e4992226565a4173fa16eb7023f5ec387c406557601",
+    "icm": "9a468ec017fcdc9800d7be9c065d5940b9ba26263819f34aae538f156181d49a",
+    "nhf": "0be6acf689736ae2a9fbbcf11746abb2221230e9f50b0ba8812e5701b0f8ec29",
+    "tox": "c29b25bdf16fa56cd56ac73b71570b3341fb6a3801bc7112e2f28ea2c65853b2"
+  },
+  "metrics": {
+    "gse298023-deg": {
+      "elapsed": "0:04.84",
+      "peak_rss_kib": 178420
+    },
+    "gse298023-deg-replay": {
+      "elapsed": "0:03.84",
+      "peak_rss_kib": 178452
+    },
+    "gse298023-inspection": {
+      "elapsed": "1:04.11",
+      "peak_rss_kib": 10477836
+    },
+    "gse298023-pseudobulk": {
+      "elapsed": "1:03.90",
+      "peak_rss_kib": 10478536
+    },
+    "gse298023-pseudobulk-replay": {
+      "elapsed": "1:14.05",
+      "peak_rss_kib": 10485256
+    },
+    "tox221-publish": {
+      "elapsed": "2:07.19",
+      "peak_rss_kib": 1461692
+    },
+    "tox221-replay": {
+      "elapsed": "2:15.15",
+      "peak_rss_kib": 1461580
+    }
+  },
+  "payload_preservation": {
+    "bytes": 4324391132,
+    "files": 23,
+    "verification": "All original versus independently preserved source/local copy SHA256 pairs equal; main-checkout promotion/verification still required before deleting implementation worktree"
+  },
+  "public_reader": {
+    "categories": [
+      {
+        "category": "af",
+        "datasets": 5,
+        "n_deg": 25,
+        "policy": "all_qualifying_declared_sources",
+        "tiers": [
+          1,
+          3
+        ]
+      },
+      {
+        "category": "genetic_cardiomyopathy",
+        "datasets": 11,
+        "n_deg": 4399,
+        "policy": "all_qualifying_declared_sources",
+        "tiers": [
+          1,
+          2
+        ]
+      },
+      {
+        "category": "icm",
+        "datasets": 5,
+        "n_deg": 1671,
+        "policy": "all_qualifying_declared_sources",
+        "tiers": [
+          1,
+          3
+        ]
+      },
+      {
+        "category": "nhf",
+        "datasets": 8,
+        "n_deg": 1785,
+        "policy": "all_qualifying_declared_sources",
+        "tiers": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "category": "tox",
+        "datasets": 12,
+        "n_deg": 9589,
+        "policy": "all_qualifying_declared_sources",
+        "tiers": [
+          2
+        ]
+      }
+    ],
+    "result": "PASS"
+  },
+  "resource_cap": {
+    "memory_gib": 10,
+    "one_heavy_job": true,
+    "swap_gib": 8,
+    "threads": 2
+  },
+  "schema": "stage2-full-source-candidate-evidence-v1",
+  "status": "verified isolated source-collection candidate; final successor publication is ticket225",
+  "ticket": 221
+}
