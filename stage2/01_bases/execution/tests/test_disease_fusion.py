@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Per-disease level-1 fusion, ``DEG2000`` and the catalog shape (#205).
+"""Per-disease level-1 fusion, ``DEG1000`` and the catalog shape (#205).
 
 Covers the ADR 0071 decisions 3 and 4 from the outside:
 
@@ -8,11 +8,11 @@ Covers the ADR 0071 decisions 3 and 4 from the outside:
   the v1 collapsed winning-contrast rows);
 * ``level_one_rank``/``fuse_disease`` sum ``rank / n_DEG`` over the informative
   sources, rank with the ``gene_index`` tie-break, exclude zero-DEG sources with
-  a recorded reason (never a NaN), and cut ``DEG2000`` at exactly the declared
+  a recorded reason (never a NaN), and cut ``DEG1000`` at exactly the declared
   limit — all of it when the union is smaller;
 * the AF extreme case (one informative source, ``n_DEG = 1``) and the empty
   union are representable, including through the published driver;
-* the category catalog shape (``tier``/``evidence_type``/``n_deg``/``deg2000``
+* the category catalog shape (``tier``/``evidence_type``/``n_deg``/``deg1000``
   and a consistent ``tiering`` record), the emitted ``output/disease-fusion/``
   product and its replay are validated, path-free and deterministic.
 
@@ -311,7 +311,7 @@ class LevelOneFusionTests(unittest.TestCase):
         # A gene that is no DEG in either source contributes 2 * 3/2 = 3.0.
         np.testing.assert_allclose(fusion['sum'][0], 3.0)
         self.assertEqual(int(fusion['n_deg']), 2)
-        self.assertEqual(fusion['deg2000'], 2)
+        self.assertEqual(fusion['deg1000'], 2)
         self.assertTrue(np.isfinite(fusion['sum']).all())
 
     def test_non_deg_term_is_n_deg_plus_one_over_n_deg(self):
@@ -334,7 +334,7 @@ class LevelOneFusionTests(unittest.TestCase):
         self.assertIn('is a DEG', excluded[0]['reason'])
         ledger = {row['dataset_id']: row for row in fusion['sources']}
         self.assertFalse(ledger['zero']['informative'])
-        self.assertEqual(ledger['zero']['n_deg_in_deg2000'], 0)
+        self.assertEqual(ledger['zero']['n_deg_in_deg1000'], 0)
         self.assertTrue(ledger['b']['informative'])
 
     def test_zero_deg_never_poisons_a_sum_with_a_real_source(self):
@@ -350,14 +350,14 @@ class LevelOneFusionTests(unittest.TestCase):
         fusion = disease_deg.fuse_disease([self.source('zero', [(1, 0.4, 0.5)])])
         self.assertFalse(fusion['informative'])
         self.assertEqual(fusion['n_deg'], 0)
-        self.assertEqual(fusion['deg2000'], 0)
+        self.assertEqual(fusion['deg1000'], 0)
         self.assertIsNone(fusion['rank'])
         self.assertIsNone(fusion['sum'])
         self.assertFalse(fusion['deg_union'].any())
-        self.assertFalse(fusion['deg2000_mask'].any())
+        self.assertFalse(fusion['deg1000_mask'].any())
         self.assertIn('no informative source', fusion['reason'])
-        rows = disease_deg.deg2000_rows(fusion)
-        self.assertEqual(list(rows.columns), list(disease_deg.DEG2000_COLUMNS))
+        rows = disease_deg.deg1000_rows(fusion)
+        self.assertEqual(list(rows.columns), list(disease_deg.DEG1000_COLUMNS))
         self.assertTrue(rows.empty)
 
     def test_singleton_disease_publishes_its_one_gene(self):
@@ -366,9 +366,9 @@ class LevelOneFusionTests(unittest.TestCase):
         self.assertTrue(fusion['informative'])
         self.assertEqual(fusion['n_sources_informative'], 1)
         self.assertEqual(fusion['n_deg'], 1)
-        self.assertEqual(fusion['deg2000'], 1)
+        self.assertEqual(fusion['deg1000'], 1)
         self.assertEqual(int(fusion['rank'][7]), 1)
-        rows = disease_deg.deg2000_rows(fusion)
+        rows = disease_deg.deg1000_rows(fusion)
         self.assertEqual(rows.gene_index.tolist(), [7])
         self.assertEqual(rows.disease_rank.tolist(), [1])
         self.assertEqual(rows.disease_rank_sum.tolist(), [1.0])
@@ -388,23 +388,23 @@ class LevelOneFusionTests(unittest.TestCase):
         union_ranks = fusion['rank'][fusion['deg_union']]
         self.assertEqual(sorted(union_ranks.tolist()),
                          list(range(1, fusion['n_deg'] + 1)))
-        self.assertEqual(fusion['deg2000'], min(fusion['n_deg'],
-                                                disease_deg.DEG2000_LIMIT))
+        self.assertEqual(fusion['deg1000'], min(fusion['n_deg'],
+                                                disease_deg.DEG1000_LIMIT))
 
 
 class DiseaseAdmissionTests(unittest.TestCase):
-    def test_gate_uses_distinct_axis_union_after_fusion_and_preserves_deg2000(self):
+    def test_gate_uses_distinct_axis_union_after_fusion_and_preserves_deg1000(self):
         for count, eligible in [(0, False), (1, False), (99, False),
                                 (100, True), (2001, True)]:
             with self.subTest(count=count):
                 ranks = np.full(AXIS_SIZE, count + 1, dtype=np.int64)
                 ranks[:count] = np.arange(1, count + 1)
                 result = disease_deg.fuse_disease([
-                    {'dataset_id': 'first', 'rank': ranks, 'n_deg': count},
-                    {'dataset_id': 'overlap', 'rank': ranks, 'n_deg': count}])
+                    {'dataset_id': 'first', 'tier': 1, 'rank': ranks, 'n_deg': count},
+                    {'dataset_id': 'overlap', 'tier': 1, 'rank': ranks, 'n_deg': count}])
                 self.assertEqual(result['axis_resolved_deg_union'], count)
                 self.assertEqual(result['eligible'], eligible)
-                self.assertEqual(len(disease_deg.deg2000_rows(result)), min(count, 2000))
+                self.assertEqual(len(disease_deg.deg1000_rows(result)), min(count, 1000))
                 self.assertEqual(result['exclusion_reason'] is None, eligible)
 
     def test_off_axis_and_overlapping_measurements_do_not_inflate_admission(self):
@@ -417,7 +417,7 @@ class DiseaseAdmissionTests(unittest.TestCase):
             local, disease_deg.SymbolResolver(axis), axis.symbol, 'source')
         self.assertEqual(report['n_axis_genes_resolved'], 99)
         result = disease_deg.fuse_disease([
-            {'dataset_id': 'source', 'rank': rank['rank'], 'n_deg': stats['n_deg']}])
+            {'dataset_id': 'source', 'tier': 1, 'rank': rank['rank'], 'n_deg': stats['n_deg']}])
         self.assertEqual(result['axis_resolved_deg_union'], 99)
         self.assertFalse(result['eligible'])
 
@@ -427,14 +427,14 @@ class DiseaseAdmissionTests(unittest.TestCase):
         second = np.full(AXIS_SIZE, 61, dtype=np.int64)
         second[40:100] = np.arange(1, 61)
         result = disease_deg.fuse_disease([
-            {'dataset_id': 'first', 'rank': first, 'n_deg': 60},
-            {'dataset_id': 'second', 'rank': second, 'n_deg': 60}])
+            {'dataset_id': 'first', 'tier': 1, 'rank': first, 'n_deg': 60},
+            {'dataset_id': 'second', 'tier': 1, 'rank': second, 'n_deg': 60}])
         self.assertEqual(result['n_deg'], 100)
         self.assertTrue(result['eligible'])
 
 
-class Deg2000TruncationTests(unittest.TestCase):
-    """The declared 2,000 cut is exact: 2,199 -> 2,000, 120 -> 120, subset always."""
+class Deg1000TruncationTests(unittest.TestCase):
+    """The declared 1,000 cut is exact: 2,199 -> 1,000, 120 -> 120, subset always."""
 
     @staticmethod
     def synthetic_source(n_deg, offset=0, n_genes=AXIS_SIZE):
@@ -448,28 +448,28 @@ class Deg2000TruncationTests(unittest.TestCase):
     def test_truncation_at_exactly_the_declared_limit(self):
         fusion = disease_deg.fuse_disease([self.synthetic_source(2199)])
         self.assertEqual(fusion['n_deg'], 2199)
-        self.assertEqual(fusion['deg2000'], disease_deg.DEG2000_LIMIT)
-        self.assertEqual(int(fusion['deg2000_mask'].sum()), 2000)
-        self.assertTrue((fusion['deg2000_mask'] <= fusion['deg_union']).all())
-        rows = disease_deg.deg2000_rows(fusion)
-        self.assertEqual(len(rows), 2000)
-        self.assertEqual(rows.disease_rank.tolist(), list(range(1, 2001)))
+        self.assertEqual(fusion['deg1000'], disease_deg.DEG1000_LIMIT)
+        self.assertEqual(int(fusion['deg1000_mask'].sum()), 1000)
+        self.assertTrue((fusion['deg1000_mask'] <= fusion['deg_union']).all())
+        rows = disease_deg.deg1000_rows(fusion)
+        self.assertEqual(len(rows), 1000)
+        self.assertEqual(rows.disease_rank.tolist(), list(range(1, 1001)))
         self.assertEqual(rows.disease_rank_sum.tolist(),
-                         [rank / 2199 for rank in range(1, 2001)])
+                         [rank / 2199 for rank in range(1, 1001)])
 
     def test_smaller_union_publishes_all_of_it(self):
         fusion = disease_deg.fuse_disease([self.synthetic_source(120)])
         self.assertEqual(fusion['n_deg'], 120)
-        self.assertEqual(fusion['deg2000'], 120)
-        rows = disease_deg.deg2000_rows(fusion)
+        self.assertEqual(fusion['deg1000'], 120)
+        rows = disease_deg.deg1000_rows(fusion)
         self.assertEqual(len(rows), 120)
         self.assertTrue(set(rows.gene_index) <= set(np.flatnonzero(
             fusion['deg_union']).tolist()))
 
     def test_boundary_at_the_limit_keeps_everything(self):
-        fusion = disease_deg.fuse_disease([self.synthetic_source(2000)])
-        self.assertEqual(fusion['deg2000'], 2000)
-        self.assertEqual(len(disease_deg.deg2000_rows(fusion)), 2000)
+        fusion = disease_deg.fuse_disease([self.synthetic_source(1000)])
+        self.assertEqual(fusion['deg1000'], 1000)
+        self.assertEqual(len(disease_deg.deg1000_rows(fusion)), 1000)
 
 
 # ---------------------------------------------------------------- catalog shape
@@ -486,7 +486,7 @@ def valid_catalog(**overrides):
         'catalog_sha256': '0' * 64,
         'rank_contract': disease_deg.RANK_SCHEMA,
         'n_deg': 2199,
-        'deg2000': 2000,
+        'deg1000': 1000,
         'tiering': {
             'tiers_entered': [1, 2],
             'tier_union': [{'tier': 1, 'n_deg_union': 900},
@@ -495,10 +495,10 @@ def valid_catalog(**overrides):
         },
         'datasets': [
             {'dataset_id': 'a', 'tier': 1, 'informative': True, 'n_deg': 900,
-             'n_deg_in_deg2000': 900},
+             'n_deg_in_deg1000': 900},
             # #206: an nHF tier-2 record must declare the clinical, non-genetic basis.
             {'dataset_id': 'b', 'tier': 2, 'informative': True, 'n_deg': 1800,
-             'n_deg_in_deg2000': 1400, 'genotype_status': 'not_declared',
+             'n_deg_in_deg1000': 700, 'genotype_status': 'not_declared',
              'non_genetic_model_basis': 'fixture: patient-derived iPSC-CM, no mutation '
                                         'introduced and no isogenic control'},
         ],
@@ -526,7 +526,7 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                                      'eligible': True, 'exclusion_reason': None})
 
     def test_missing_field_fails_closed(self):
-        for key in ('tier', 'evidence_type', 'n_deg', 'deg2000', 'tiering'):
+        for key in ('tier', 'evidence_type', 'n_deg', 'deg1000', 'tiering'):
             catalog = valid_catalog()
             catalog.pop(key)
             with self.assertRaises(ValueError, msg=key):
@@ -538,44 +538,44 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                 disease_deg.validate_catalog(valid_catalog(tier=value))
         disease_deg.validate_catalog(valid_catalog(tier=3))
 
-    def test_deg2000_must_be_min_of_union_and_limit(self):
+    def test_deg1000_must_be_min_of_union_and_limit(self):
         with self.assertRaises(ValueError):
-            disease_deg.validate_catalog(valid_catalog(deg2000=1999))
+            disease_deg.validate_catalog(valid_catalog(deg1000=1999))
         with self.assertRaises(ValueError):
-            disease_deg.validate_catalog(valid_catalog(n_deg=120, deg2000=200))
-        catalog = valid_catalog(n_deg=120, deg2000=120, tiering={
+            disease_deg.validate_catalog(valid_catalog(n_deg=120, deg1000=200))
+        catalog = valid_catalog(n_deg=120, deg1000=120, tiering={
             'tiers_entered': [1],
             'tier_union': [{'tier': 1, 'n_deg_union': 120}],
             'collection_policy': disease_deg.COLLECTION_POLICY,
         })
         catalog['datasets'] = [
             {'dataset_id': 'a', 'tier': 1, 'informative': True, 'n_deg': 90,
-             'n_deg_in_deg2000': 90},
+             'n_deg_in_deg1000': 90},
             {'dataset_id': 'b', 'tier': 1, 'informative': True, 'n_deg': 50,
-             'n_deg_in_deg2000': 30},
+             'n_deg_in_deg1000': 30},
         ]
         disease_deg.validate_catalog(catalog)
 
     def test_ledger_is_bounded_by_the_source_and_the_cut(self):
         catalog = valid_catalog()
-        catalog['datasets'][0]['n_deg_in_deg2000'] = 901
+        catalog['datasets'][0]['n_deg_in_deg1000'] = 901
         with self.assertRaises(ValueError):
             disease_deg.validate_catalog(catalog)
         catalog = valid_catalog()
-        catalog['datasets'][1]['n_deg_in_deg2000'] = 2001
+        catalog['datasets'][1]['n_deg_in_deg1000'] = 2001
         with self.assertRaises(ValueError):
             disease_deg.validate_catalog(catalog)
 
     def test_union_bounds_and_coverage(self):
         with self.assertRaises(ValueError):
             disease_deg.validate_catalog(valid_catalog(
-                n_deg=800, deg2000=800, tiering={
+                n_deg=800, deg1000=800, tiering={
                     'tiers_entered': [1],
                     'tier_union': [{'tier': 1, 'n_deg_union': 800}],
                     'collection_policy': disease_deg.COLLECTION_POLICY,}))
         with self.assertRaises(ValueError):
             disease_deg.validate_catalog(valid_catalog(
-                n_deg=2800, deg2000=2000, tiering={
+                n_deg=2800, deg1000=1000, tiering={
                     'tiers_entered': [1, 2],
                     'tier_union': [{'tier': 1, 'n_deg_union': 1000},
                                    {'tier': 2, 'n_deg_union': 2800}],
@@ -609,9 +609,9 @@ class CategoryCatalogShapeTests(unittest.TestCase):
             'collection_policy': disease_deg.COLLECTION_POLICY,})
         cardiotox['datasets'] = [
             {'dataset_id': 'a', 'tier': 2, 'informative': True, 'n_deg': 900,
-             'n_deg_in_deg2000': 900},
+             'n_deg_in_deg1000': 900},
             {'dataset_id': 'b', 'tier': 2, 'informative': True, 'n_deg': 1800,
-             'n_deg_in_deg2000': 1400},
+             'n_deg_in_deg1000': 700},
         ]
         disease_deg.validate_catalog(cardiotox)
         with self.assertRaises(ValueError):  # tiers not entered in ascending order
@@ -630,19 +630,19 @@ class CategoryCatalogShapeTests(unittest.TestCase):
     def test_non_informative_source_is_outside_the_union_bounds(self):
         # A tied-effects source keeps its DEG table but is excluded from the
         # fusion, so its larger DEG set does not bound the published union.
-        catalog = valid_catalog(n_deg=100, deg2000=100, tiering={
+        catalog = valid_catalog(n_deg=100, deg1000=100, tiering={
             'tiers_entered': [1],
             'tier_union': [{'tier': 1, 'n_deg_union': 100}],
             'collection_policy': disease_deg.COLLECTION_POLICY,
         })
         catalog['datasets'] = [
             {'dataset_id': 'kept', 'tier': 1, 'informative': True, 'n_deg': 100,
-             'n_deg_in_deg2000': 100},
+             'n_deg_in_deg1000': 100},
             {'dataset_id': 'tied', 'tier': 1, 'informative': False, 'n_deg': 500,
-             'n_deg_in_deg2000': 0},
+             'n_deg_in_deg1000': 0},
         ]
         disease_deg.validate_catalog(catalog)
-        catalog['datasets'][1]['n_deg_in_deg2000'] = 1
+        catalog['datasets'][1]['n_deg_in_deg1000'] = 1
         with self.assertRaises(ValueError):
             disease_deg.validate_catalog(catalog)
         catalog['datasets'][1].pop('informative')
@@ -663,13 +663,13 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                                                'no mutation introduced'}]
         catalog = disease_deg.build_catalog(
             'nHF', 'nhf', 1, 'cm_pseudobulk', pd.DataFrame(), '1' * 64, records,
-            n_deg=2199, deg2000=2000, tiering=valid_catalog()['tiering'],
-            source_deg={'a': {'n_deg': 900, 'n_deg_in_deg2000': 900},
-                        'b': {'n_deg': 1800, 'n_deg_in_deg2000': 1400}})
+            n_deg=2199, deg1000=1000, tiering=valid_catalog()['tiering'],
+            source_deg={'a': {'n_deg': 900, 'n_deg_in_deg1000': 900},
+                        'b': {'n_deg': 1800, 'n_deg_in_deg1000': 700}})
         self.assertEqual(catalog['n_deg'], 2199)
-        self.assertEqual(catalog['deg2000'], 2000)
+        self.assertEqual(catalog['deg1000'], 1000)
         self.assertEqual(catalog['datasets'][0]['n_deg'], 900)
-        self.assertEqual(catalog['datasets'][1]['n_deg_in_deg2000'], 1400)
+        self.assertEqual(catalog['datasets'][1]['n_deg_in_deg1000'], 700)
         disease_deg.validate_catalog(catalog)
         with self.assertRaises(ValueError):  # partial fusion fields
             disease_deg.build_catalog('nHF', 'nhf', 1, 'bulk', pd.DataFrame(),
@@ -677,8 +677,8 @@ class CategoryCatalogShapeTests(unittest.TestCase):
         with self.assertRaises(ValueError):  # a declared dataset without a ledger
             disease_deg.build_catalog(
                 'nHF', 'nhf', 1, 'bulk', pd.DataFrame(), '1' * 64, records,
-                n_deg=2199, deg2000=2000, tiering=valid_catalog()['tiering'],
-                source_deg={'a': {'n_deg': 900, 'n_deg_in_deg2000': 900}})
+                n_deg=2199, deg1000=1000, tiering=valid_catalog()['tiering'],
+                source_deg={'a': {'n_deg': 900, 'n_deg_in_deg1000': 900}})
 
 
 # ---------------------------------------------------------------- driver
@@ -702,7 +702,7 @@ class FusionDriverTests(unittest.TestCase):
             self.assertFalse(af['eligible'])
             self.assertEqual(af['axis_resolved_deg_union'], 1)
             self.assertIn('100', af['exclusion_reason'])
-            self.assertEqual(reader.deg2000('af').gene_index.tolist(), [7])
+            self.assertEqual(reader.deg1000('af').gene_index.tolist(), [7])
             self.assertEqual(driver.replay(context)['result'], 'PASS')
 
     def test_catalog_records_the_fusion_numbers_and_ledger(self):
@@ -716,7 +716,7 @@ class FusionDriverTests(unittest.TestCase):
             self.assertEqual(nhf['declared_source_count'], 3)  # two + one missing
             self.assertEqual(nhf['informative_source_count'], 1)
             self.assertEqual(nhf['n_deg'], 2)
-            self.assertEqual(nhf['deg2000'], 2)
+            self.assertEqual(nhf['deg1000'], 2)
             self.assertEqual([row['dataset_id'] for row in nhf['excluded_sources']],
                              ['nhf_zero'])
             self.assertIn('is a DEG', nhf['excluded_sources'][0]['reason'])
@@ -724,28 +724,28 @@ class FusionDriverTests(unittest.TestCase):
                              ['nhf_declared_missing'])
             ledger = {row['dataset_id']: row for row in nhf['sources']}
             self.assertEqual(ledger['nhf_a']['n_deg'], 2)
-            self.assertEqual(ledger['nhf_a']['n_deg_in_deg2000'], 2)
+            self.assertEqual(ledger['nhf_a']['n_deg_in_deg1000'], 2)
             self.assertEqual(ledger['nhf_zero']['n_deg'], 0)
-            self.assertEqual(ledger['nhf_zero']['n_deg_in_deg2000'], 0)
+            self.assertEqual(ledger['nhf_zero']['n_deg_in_deg1000'], 0)
             # ICM: two informative sources; the tie breaks by gene_index.
             icm = records['icm']
             self.assertEqual(icm['informative_source_count'], 2)
             self.assertEqual(icm['n_deg'], 2)
-            self.assertEqual(icm['deg2000'], 2)
+            self.assertEqual(icm['deg1000'], 2)
             # AF: one source, one DEG -- the degenerate singleton is well formed.
             af = records['af']
             self.assertEqual(af['n_deg'], 1)
-            self.assertEqual(af['deg2000'], 1)
-            rows = disease_deg.DiseaseFusion(context.output).deg2000('af')
+            self.assertEqual(af['deg1000'], 1)
+            rows = disease_deg.DiseaseFusion(context.output).deg1000('af')
             self.assertEqual(rows.gene_index.tolist(), [7])
             self.assertEqual(rows.disease_rank.tolist(), [1])
-            # Empty union: published, header-only DEG2000 file.
+            # Empty union: published, header-only DEG1000 file.
             empty = records['empty']
             self.assertTrue(empty['published'])
             self.assertEqual(empty['n_deg'], 0)
-            self.assertEqual(empty['deg2000'], 0)
+            self.assertEqual(empty['deg1000'], 0)
             self.assertTrue(disease_deg.DiseaseFusion(
-                context.output).deg2000('empty').empty)
+                context.output).deg1000('empty').empty)
             # Declared but unpublished category stays visible.
             unpublished = records['unpublished']
             self.assertFalse(unpublished['published'])
@@ -788,10 +788,10 @@ class FusionDriverTests(unittest.TestCase):
             for record in catalog['diseases']:
                 if not record['published']:
                     continue
-                rows = reader.deg2000(record['directory'])
+                rows = reader.deg1000(record['directory'])
                 self.assertEqual(list(rows.columns),
-                                 list(disease_deg.DEG2000_COLUMNS))
-                self.assertEqual(len(rows), record['deg2000'])
+                                 list(disease_deg.DEG1000_COLUMNS))
+                self.assertEqual(len(rows), record['deg1000'])
 
     def test_publish_is_deterministic_across_roots(self):
         with tempfile.TemporaryDirectory() as first, \
@@ -805,7 +805,7 @@ class FusionDriverTests(unittest.TestCase):
     def test_tampering_is_detected(self):
         with tempfile.TemporaryDirectory() as temporary:
             context, _ = self.publish(Path(temporary))
-            target = context.output / 'nhf.deg2000.csv'
+            target = context.output / 'nhf.deg1000.csv'
             original = target.read_text()
             target.write_text(original + '\n')
             with self.assertRaises(ValueError):
@@ -820,7 +820,7 @@ class FusionDriverTests(unittest.TestCase):
                                  sources=disease_deg_sources)
         reader = disease_deg.DiseaseFusion(RESULT_ROOT)
         catalog = reader.catalog()
-        self.assertEqual(catalog['limit'], disease_deg.DEG2000_LIMIT)
+        self.assertEqual(catalog['limit'], disease_deg.DEG1000_LIMIT)
         self.assertEqual(catalog['axis']['size'], AXIS_SIZE)
         directories = [record['directory'] for record in catalog['diseases']]
         published = [record['directory'] for record in catalog['diseases']
@@ -830,37 +830,23 @@ class FusionDriverTests(unittest.TestCase):
                      'cardiotox_TOP2', 'cardiotox_other'})
         self.assertEqual(set(published), expected)
         for directory in published:
-            rows = reader.deg2000(directory)
+            rows = reader.deg1000(directory)
             record = reader.record(directory)
-            self.assertEqual(len(rows), record['deg2000'])
-            if record['deg2000']:
+            self.assertEqual(len(rows), record['deg1000'])
+            if record['deg1000']:
                 self.assertEqual(rows.disease_rank.tolist(),
-                                 list(range(1, record['deg2000'] + 1)))
+                                 list(range(1, record['deg1000'] + 1)))
         for directory in directories:
             record = reader.record(directory)
-            self.assertEqual(record['deg2000'] or 0,
-                             min(record['n_deg'] or 0, disease_deg.DEG2000_LIMIT))
+            self.assertEqual(record['deg1000'] or 0,
+                             min(record['n_deg'] or 0, disease_deg.DEG1000_LIMIT))
         # #208 published every declared source, so the committed fusion catalog
         # must equal a fresh rebuild from the same accepted products: no declared
         # roster lag and no not_published entry survives.
         with tempfile.TemporaryDirectory() as temporary:
             driver.build(context, Path(temporary))
             rebuilt = disease_deg.read_catalog(Path(temporary) / 'catalog.json')
-        if 'eligibility_min_deg' not in catalog:
-            rebuilt.pop('eligibility_min_deg', None)
-            rebuilt.pop('catalog_sha256', None)
-            old = dict(catalog)
-            old.pop('catalog_sha256', None)
-            # #216 removed the legacy class example from this generic rule.
-            old['semantics'] = dict(old['semantics'])
-            old['semantics']['tier_stop'] = old['semantics']['tier_stop'].replace(
-                ' (the cardiotox classes)', '')
-            for record in rebuilt['diseases']:
-                for key in ('axis_resolved_deg_union', 'eligible', 'exclusion_reason'):
-                    record.pop(key, None)
-            self.assertEqual(old, rebuilt)
-        else:
-            self.assertEqual(catalog, rebuilt)
+        self.assertEqual(catalog, rebuilt)
 
 
 if __name__ == '__main__':

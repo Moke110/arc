@@ -214,14 +214,14 @@ def assemble_candidate(output, sources, axis, inputs, axis_digest, resolver=None
         raise ReleaseError('TOX candidate contains no independently admitted dataset')
     fusion = disease_deg.fuse_disease(prepared, axis_size=axis_size)
     ledger = disease_deg.tier_ledger('TOX', records, measured)
-    disease_deg.deg2000_rows(fusion).to_csv(root / 'tox.deg2000.csv', index=False,
+    disease_deg.deg1000_rows(fusion).to_csv(root / 'tox.deg1000.csv', index=False,
                                            float_format='%.17g', lineterminator='\n')
-    outputs['tox.deg2000.csv'] = {'sha256': sha256(root / 'tox.deg2000.csv')}
+    outputs['tox.deg1000.csv'] = {'sha256': sha256(root / 'tox.deg1000.csv')}
     per_source = {row['dataset_id']: row for row in fusion['sources']}
     catalog = disease_deg.build_catalog(
         'TOX', 'tox', min(record['tier'] for record in records), 'bulk', axis,
         axis_digest, records, axis_size=axis_size, n_deg=fusion['n_deg'],
-        deg2000=fusion['deg2000'], tiering=ledger['tiering'],
+        deg1000=fusion['deg1000'], tiering=ledger['tiering'],
         tier_sources=ledger['tier_sources'], source_deg=per_source)
     # The shared builder's historical path predates the tables/ directory.
     catalog['axis']['path'] = cardiotox.AXIS
@@ -232,7 +232,7 @@ def assemble_candidate(output, sources, axis, inputs, axis_digest, resolver=None
         outputs['admission.json'] = {'sha256': sha256(root / 'admission.json')}
     manifest = disease_deg.assemble_manifest(
         'TOX', RECIPE, inputs, outputs,
-        {'datasets': len(records), 'n_deg': fusion['n_deg'], 'deg2000': fusion['deg2000']},
+        {'datasets': len(records), 'n_deg': fusion['n_deg'], 'deg1000': fusion['deg1000']},
         catalog_sha)
     manifest['axis'] = dict(path=cardiotox.AXIS, sha256=axis_digest, size=axis_size)
     if environment is not None:
@@ -382,10 +382,10 @@ class ToxCandidate:
             raise ReleaseError('TOX membership audit digest changed')
         return read_json(self.root / entry['audit'])
 
-    def deg2000(self):
-        path = self.root / 'tox.deg2000.csv'
+    def deg1000(self):
+        path = self.root / 'tox.deg1000.csv'
         if sha256(path) != self.manifest['outputs'][path.name]['sha256']:
-            raise ReleaseError('TOX DEG2000 digest changed')
+            raise ReleaseError('TOX DEG1000 digest changed')
         return pd.read_csv(path, float_precision='round_trip')
 
     def digests(self):

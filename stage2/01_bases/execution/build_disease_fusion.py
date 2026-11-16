@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Publish/replay the per-disease level-1 fusion and ``DEG2000`` cut (ADR 0071).
+"""Publish/replay the per-disease level-1 fusion and ``DEG1000`` cut (ADR 0071).
 
 The disease-half contract of the v2 gene axis: every disease category fuses its
 source DEG sets at level 1 and keeps the first 2,000 genes of its DEG union.
@@ -13,7 +13,7 @@ Product layout (one directory per disease family)::
     output/disease-fusion/
         catalog.json                 # per disease: counts, ledger, exclusions
         manifest.json                # candidate-then-replace release manifest
-        <directory>.deg2000.csv      # gene_index, disease_rank, disease_rank_sum
+        <directory>.deg1000.csv      # gene_index, disease_rank, disease_rank_sum
 
 ``catalog.json`` (``stage2-disease-fusion-v1``) is self-describing: it names the
 frozen axis and its digest, the declared ``limit`` (2,000), the fusion
@@ -28,11 +28,11 @@ semantics, and one record per disease category::
       "declared_source_count": 4,         # registry-declared sources
       "informative_source_count": 2,      # sources fused at level 1
       "n_deg": 1057,                      # DEG-union size (total DEG)
-      "deg2000": 1057,                    # |DEG2000_d| == min(n_deg, 2000)
-      "deg2000_file": "nhf.deg2000.csv",
+      "deg1000": 1057,                    # |DEG1000_d| == min(n_deg, 2000)
+      "deg1000_file": "nhf.deg1000.csv",
       "sources": [                        # per-source ledger
         {"dataset_id": "gse270788__nicm", "tier": 1, "informative": true,
-         "n_deg": 4, "n_deg_in_deg2000": 4, "evidence_type": "cm_pseudobulk",
+         "n_deg": 4, "n_deg_in_deg1000": 4, "evidence_type": "cm_pseudobulk",
          "flag_source": "collapsed_winning_contrast"}
       ],
       "excluded_sources": [               # published but non-informative
@@ -46,7 +46,7 @@ semantics, and one record per disease category::
       "reason": null                      # set only for an uninformative disease
     }
 
-``<directory>.deg2000.csv`` is the per-gene ``DEG2000_d`` table: one row per
+``<directory>.deg1000.csv`` is the per-gene ``DEG1000_d`` table: one row per
 gene of the disease's DEG union whose disease rank is ``<= 2,000`` (all of them
 when the union is smaller), ordered by ``disease_rank``. ``disease_rank_sum`` is
 the level-1 ``Σ rank_norm`` that produced the rank. A disease with an empty union
@@ -99,13 +99,15 @@ FUSION_SEMANTICS = {
             'every other frozen-axis gene n_DEG + 1'),
     'level_one': ('disease_rank_sum = sum over the disease informative sources of '
                   'rank_norm = rank / n_DEG; the disease rank is the ascending '
-                  'position of that sum with a gene_index tie-break'),
+                  'position ordered by source_tier_highest, that sum and gene_index'),
+    'source_tier_highest': ('minimum numeric tier over informative sources where the '
+                            'gene is DEG-positive; mere measurement gives no support'),
     'deg_union': ('the genes that are a DEG in at least one informative source; '
-                  'its size is not padded and not constrained to 2,000'),
-    'deg2000': (f'the DEG-union genes whose disease rank is <= '
-                f'{disease_deg.DEG2000_LIMIT} (the whole union when it is '
+                  'its size is not padded or constrained by the DEG1000 cutoff'),
+    'deg1000': (f'the DEG-union genes whose disease rank is <= '
+                f'{disease_deg.DEG1000_LIMIT} (the whole union when it is '
                 'smaller); a DEG union occupies the first ranks, so '
-                f'|DEG2000| == min(|union|, {disease_deg.DEG2000_LIMIT})'),
+                f'|DEG1000| == min(|union|, {disease_deg.DEG1000_LIMIT})'),
     'non_informative': ('a source with n_DEG = 0 has no rank_norm (the ADR 0071 '
                         'denominator is zero) and a source whose measured effects '
                         'are all tied carries no ordering evidence; both are '
@@ -186,10 +188,14 @@ def published_categories(context):
         if not catalog_file.is_file():
             continue  # the cardiotox/ crosswalk, not a disease product
         catalog = disease_deg.read_catalog(catalog_file)
+        if catalog.get('schema') != disease_deg.CATALOG_SCHEMA:
+            raise release.ReleaseError(f'{directory.name}: stale disease catalog schema')
         manifest_file = directory / 'manifest.json'
         if not manifest_file.is_file():
             raise release.ReleaseError(f'{directory.name}: no release manifest')
         manifest = release.read_json(manifest_file)
+        if manifest.get('schema') != disease_deg.RELEASE_SCHEMA:
+            raise release.ReleaseError(f'{directory.name}: stale disease release schema')
         if manifest.get('catalog_sha256') != catalog['catalog_sha256']:
             raise release.ReleaseError(
                 f'{directory.name}: catalog digest differs from its manifest')
@@ -284,8 +290,9 @@ def disease_record(directory, entry, sources, axis_size):
             'declared_source_count': len(declared),
             'informative_source_count': 0,
             'n_deg': None,
-            'deg2000': None,
-            'deg2000_file': None,
+            'deg1000': None,
+            'deg1000_file': None,
+            'union_file': None,
             'sources': [],
             'excluded_sources': [],
             'not_published': [
@@ -326,8 +333,9 @@ def disease_record(directory, entry, sources, axis_size):
         'declared_source_count': len(set(declared) | set(published_ids)),
         'informative_source_count': fusion['n_sources_informative'],
         'n_deg': fusion['n_deg'],
-        'deg2000': fusion['deg2000'],
-        'deg2000_file': f'{directory}.deg2000.csv',
+        'deg1000': fusion['deg1000'],
+        'deg1000_file': f'{directory}.deg1000.csv',
+        'union_file': f'{directory}.union.csv',
         'sources': ledger,
         'excluded_sources': fusion['excluded_sources'],
         'not_published': not_published,
@@ -338,7 +346,7 @@ def disease_record(directory, entry, sources, axis_size):
 
 
 def build(context, staging):
-    """Write the candidate fusion catalog, manifest and per-disease DEG2000 tables."""
+    """Write the candidate fusion catalog, manifest and per-disease DEG1000 tables."""
     staging = Path(staging)
     axis_path = context.input(AXIS_RELATIVE)
     axis_size = len(disease_deg.read_axis(axis_path))
@@ -357,8 +365,14 @@ def build(context, staging):
         diseases.append(record)
         if entry is None:
             continue
-        rows = disease_deg.deg2000_rows(fusion)
-        name = record['deg2000_file']
+        union = disease_deg.union_rows(fusion)
+        union_name = record['union_file']
+        union.to_csv(staging / union_name, index=False, lineterminator='\n',
+                     float_format='%.17g')
+        outputs[union_name] = {'sha256': sha256(staging / union_name),
+                               'rows': int(len(union))}
+        rows = disease_deg.deg1000_rows(fusion)
+        name = record['deg1000_file']
         rows.to_csv(staging / name, index=False, lineterminator='\n',
                     float_format='%.17g')
         outputs[name] = {'sha256': sha256(staging / name), 'rows': int(len(rows))}
@@ -384,7 +398,7 @@ def build(context, staging):
                  'size': int(axis_size)},
         'rank_contract': disease_deg.RANK_SCHEMA,
         'rank_semantics': disease_deg.RANK_SEMANTICS,
-        'limit': disease_deg.DEG2000_LIMIT,
+        'limit': disease_deg.DEG1000_LIMIT,
         'eligibility_min_deg': disease_deg.DISEASE_MIN_DEGS,
         'semantics': dict(FUSION_SEMANTICS),
         'diseases': diseases,
@@ -397,13 +411,13 @@ def build(context, staging):
         'schema': disease_deg.FUSION_RELEASE_SCHEMA,
         'recipe': 'execution/build_disease_fusion.py publish',
         'axis': {'path': AXIS_RELATIVE},
-        'limit': disease_deg.DEG2000_LIMIT,
+        'limit': disease_deg.DEG1000_LIMIT,
         'inputs': dict(sorted(inputs.items())),
         'outputs': dict(sorted(outputs.items())),
         'counts': {
             'diseases': len(diseases),
             'published': sum(1 for record in diseases if record['published']),
-            'deg2000': sum(record['deg2000'] or 0 for record in diseases),
+            'deg1000': sum(record['deg1000'] or 0 for record in diseases),
         },
         'catalog_sha256': catalog_sha,
     }
@@ -429,24 +443,29 @@ def _verify_directory(path):
     for record in catalog['diseases']:
         if not record['published']:
             continue
-        name = record['deg2000_file']
+        name = record['deg1000_file']
         frame = pd.read_csv(path / name,
                             dtype={'gene_index': 'int64', 'disease_rank': 'int64'})
-        if list(frame.columns) != list(disease_deg.DEG2000_COLUMNS):
-            raise release.ReleaseError(f'{name}: unexpected DEG2000 columns')
-        if len(frame) != record['deg2000']:
+        if list(frame.columns) != list(disease_deg.DEG1000_COLUMNS):
+            raise release.ReleaseError(f'{name}: unexpected DEG1000 columns')
+        if len(frame) != record['deg1000']:
             raise release.ReleaseError(
-                f'{name}: rows differ from the declared DEG2000 size')
-        if record['deg2000']:
-            if frame.disease_rank.tolist() != list(range(1, record['deg2000'] + 1)):
+                f'{name}: rows differ from the declared DEG1000 size')
+        if record['deg1000']:
+            if frame.disease_rank.tolist() != list(range(1, record['deg1000'] + 1)):
                 raise release.ReleaseError(
-                    f'{name}: rows are not in disease-rank order 1..deg2000')
+                    f'{name}: rows are not in disease-rank order 1..deg1000')
             if not frame.gene_index.is_unique:
                 raise release.ReleaseError(f'{name}: repeats a gene_index')
         elif len(frame):
             raise release.ReleaseError(f'{name}: an empty union publishes no row')
         if sha256(path / name) != expected[name]:
             raise release.ReleaseError(f'{name}: digest differs from the manifest')
+    reader = disease_deg.DiseaseFusion(path)
+    for record in catalog['diseases']:
+        if record['published']:
+            reader.union(record['directory'])
+            reader.deg1000(record['directory'])
     return manifest, catalog
 
 
@@ -466,14 +485,14 @@ def publish(context):
     accepted = reader.manifest()
     for record in catalog['diseases']:
         if record['published']:
-            reader.deg2000(record['directory'])
+            reader.deg1000(record['directory'])
     return {'result': 'PASS',
             'catalog_sha256': catalog['catalog_sha256'],
             'manifest_sha256': sha256(context.output / 'manifest.json'),
             'diseases': len(catalog['diseases']),
             'published': sum(1 for record in catalog['diseases']
                              if record['published']),
-            'deg2000': accepted['counts']['deg2000']}
+            'deg1000': accepted['counts']['deg1000']}
 
 
 def replay(context):

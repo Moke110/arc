@@ -107,13 +107,13 @@ class CandidateTest(unittest.TestCase):
             self.assertEqual(reader.datasets('TOX'), ['studyA', 'studyB'])
             catalog = reader.catalog('TOX')
             self.assertEqual(catalog['n_deg'], 3)
-            self.assertEqual(catalog['deg2000'], 3)
+            self.assertEqual(catalog['deg1000'], 3)
             self.assertFalse(catalog['eligible'])
             self.assertEqual(len(reader.table('TOX', 'studyA')), 2)
             self.assertEqual(reader.rank('TOX', 'studyA')['rank'].tolist()[:8],
                              [3, 1, 2, 3, 3, 3, 3, 3])
             self.assertEqual(len(tox.ToxCandidate(root).audit('studyA')), 4)
-            self.assertEqual(tox.ToxCandidate(root).deg2000().gene_index.tolist(), [2, 1, 3])
+            self.assertEqual(tox.ToxCandidate(root).deg1000().gene_index.tolist(), [2, 1, 3])
             tox.assemble_candidate(root / 'replay', records, axis, {}, 'f' * 64)
             self.assertEqual(tox.ToxCandidate(root).digests(),
                              tox.ToxCandidate(root / 'replay').digests())
