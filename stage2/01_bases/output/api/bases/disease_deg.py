@@ -106,8 +106,8 @@ FUSION_RELEASE_SCHEMA = 'stage2-disease-fusion-release-v1'
 DEG2000_COLUMNS = ('gene_index', 'disease_rank', 'disease_rank_sum')
 #: The declared ``tiering`` record shape the category catalog carries (#205
 #: publishes the shape; #206 fills in the roster decision).
-TIERING_KEYS = ('tiers_entered', 'tier_union', 'stopped_at_tier', 'stop_reached',
-                'limit')
+TIERING_KEYS = ('tiers_entered', 'tier_union', 'collection_policy')
+COLLECTION_POLICY = 'all_qualifying_declared_sources'
 SOURCE_LEDGER_KEYS = ('dataset_id', 'tier', 'informative', 'n_deg',
                       'n_deg_in_deg2000')
 
@@ -128,29 +128,12 @@ TIER_CRITERION = 'axis_resolved_deg_union'
 #: registry declaration) may carry (#206).
 TIER_LADDER_KEYS = ('tier', 'sources')
 
-#: The ADR 0071 decision-2 tier-order and stop rule as published text (#206).
-#: The load-bearing reading is the **axis-resolved** criterion: every product of
-#: this pipeline is rows on the frozen 18,164-gene axis, so a source DEG that
-#: resolves off the axis can never enter ``DEG2000`` or any axis built from it,
-#: and counting it toward the 2,000-gene stop test would stop collection while
-#: the usable coverage is still short. The genome-wide reading was considered and
-#: rejected: Kuppe-MI measures 3,099 DEGs genome-wide but 1,646 on the axis
-#: (genome-wide ICM would "reach" 2,000 from one source without having 2,000
-#: usable genes), GSE116250 144 vs 43 and GSE141910 124 vs 100. The conservation
-#: is deliberate: the axis-resolved reading is harder to reach, so it can only
-#: cause more collection, never less.
-TIER_STOP_RULE = (
-    'the tier-stop criterion is the disease DEG union resolved to the frozen '
-    '18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis '
-    'cannot enter DEG2000 or any axis built from it, so it does not count toward '
-    'the 2,000-gene stop test. Sources are collected in ascending tier order; a '
-    'tier with no declared source is absent from the ladder (AF declares tier 1 '
-    'and tier 3, no tier 2), and a category whose evidence begins at tier 2 '
-    'enters there. The cumulative axis-resolved union is '
-    'measured after each tier and collection stops at the first tier whose union '
-    'reaches the limit; a declared source in a deeper tier after a completed tier '
-    'that already reached the limit is refused rather than admitted. Only declared '
-    'sources are collected, so a tier between two entered tiers is never back-filled.')
+#: ADR 0073: record every declared tier regardless of cumulative DEG yield.
+TIER_COLLECTION_RULE = (
+    'Collect all qualifying declared sources in ascending tier order; measure the '
+    'complete cumulative disease DEG union on the frozen axis (axis-resolved, '
+    'not genome-wide) after each tier. No DEG-count stopping condition applies. '
+    'Missing tiers are absent, never back-filled with invented sources.')
 
 GENOTYPE_GROUPS = ('dcm_genotype_negative', 'dcm_genotype_positive', 'arvc',
                    'normal', 'nccm')
@@ -846,39 +829,12 @@ def validate_clinical_tier_basis(category, record):
 
 
 def tier_ledger(category, datasets, source_deg, limit=DEG2000_LIMIT):
-    """Apply the ADR 0071 tier-order and axis-resolved stop rule (#206).
+    """Collect every declared qualifying source and record cumulative axis unions.
 
-    ``datasets`` is a category's declared source records (each carrying
-    ``dataset_id`` and ``tier``, plus the clinical tier-2 basis fields when the
-    category is clinical). ``source_deg`` maps every declared ``dataset_id`` to
-    its **measured** DEG set on the frozen axis::
-
-        {'deg': <iterable of frozen-axis gene_index, or a boolean axis mask>,
-         'n_deg': <count>, 'informative': <bool>}
-
-    The union is accumulated per tier in ascending tier order over the
-    **axis-resolved** DEG sets (``TIER_STOP_RULE``), never a genome-wide count:
-    a gene that did not resolve to ``gene_index`` cannot be in any set here.
-    Non-informative sources (ADR 0068: no DEG, or every effect tied) are recorded
-    at their tier but contribute no gene, exactly as in :func:`fuse_disease`.
-
-    Returns ``{'tiering', 'tier_sources', 'n_deg', 'deg2000', 'sources'}``:
-
-    * ``tiering`` is the contract record (``TIERING_KEYS`` plus the declared
-      ``criterion`` marker and the published ``rule`` text);
-    * ``tier_sources`` is the entered ladder (each tier and its source ids), so a
-      catalog can publish the declaration the record came from;
-    * ``n_deg``/``deg2000`` are the union size and ``min(union, limit)``;
-    * ``sources`` is the per-source ledger ``{dataset_id, tier, informative,
-      n_deg}``.
-
-    A declared source in a deeper tier after a completed tier whose union already
-    reached the limit is **refused** with an error naming the source, because the
-    stop rule means collection never enters that tier.
+    ``limit`` is only the temporary fusion-cut parameter, independent of source
+    collection. ADR 0073 removes all count-based collection stopping conditions.
+    Non-informative sources remain in the ledger but contribute no union genes.
     """
-    limit = int(limit)
-    if limit <= 0:
-        raise ValueError('the tier-stop limit must be positive')
     ladder = tier_ladder(datasets)
     declared = [record['dataset_id'] for record in datasets]
     missing = [dataset_id for dataset_id in declared if dataset_id not in source_deg]
@@ -898,34 +854,20 @@ def tier_ledger(category, datasets, source_deg, limit=DEG2000_LIMIT):
         measured[dataset_id] = (genes, informative)
         sources.append({'dataset_id': dataset_id, 'tier': int(by_id[dataset_id]['tier']),
                         'informative': informative, 'n_deg': int(len(genes))})
-    entered, tier_union, stopped = [], [], False
-    stopped_at_tier = None
+    entered, tier_union = [], []
     for rung in ladder:
-        if stopped:
-            raise ValueError(
-                f'{category}: source {rung["sources"][0]} at tier {rung["tier"]} lies '
-                f'in a deeper tier than the completed tier {stopped_at_tier}, whose '
-                f'axis-resolved union already reached the {limit}-gene limit; the '
-                'stop rule refuses it (ADR 0071 decision 2)')
         for dataset_id in rung['sources']:
             genes, informative = measured[dataset_id]
             if informative:
                 union.update(int(gene) for gene in genes)
         entered.append(int(rung['tier']))
         tier_union.append({'tier': int(rung['tier']), 'n_deg_union': int(len(union))})
-        if len(union) >= limit:
-            stopped = True
-            stopped_at_tier = int(rung['tier'])
-    if stopped_at_tier is None:
-        stopped_at_tier = entered[-1]
     record = {
         'tiers_entered': entered,
         'tier_union': tier_union,
-        'stopped_at_tier': int(stopped_at_tier),
-        'stop_reached': bool(stopped),
-        'limit': limit,
+        'collection_policy': COLLECTION_POLICY,
         'criterion': TIER_CRITERION,
-        'rule': TIER_STOP_RULE,
+        'rule': TIER_COLLECTION_RULE,
     }
     n_deg = int(len(union))
     _validate_tiering(record, n_deg)
@@ -978,23 +920,7 @@ def _tier(value, label):
 
 
 def _validate_tiering(tiering, n_deg):
-    """Validate the declared ``tiering`` record against the published union size.
-
-    Shape (ADR 0071 decision 2, filled in by ticket #206)::
-
-        {'tiers_entered': [1, 2], 'tier_union': [{'tier': 1, 'n_deg_union': 900},
-         {'tier': 2, 'n_deg_union': 2100}], 'stopped_at_tier': 2,
-         'stop_reached': True, 'limit': 2000}
-
-    The record is internally consistent when the tiers were entered in ascending
-    order (starting at the category's first declared tier: `AF` starts at 1 and
-    jumps to 3, and TOX legitimately begins at tier 2), the
-    cumulative union never shrinks, the last per-tier union is the published
-    DEG-union size, ``stopped_at_tier`` is the last entered tier, ``stop_reached``
-    is exactly "the union reached the limit", and no tier below the frontier
-    already met it. When the record carries the #206 ``criterion``/``rule`` text,
-    the criterion must be the declared axis-resolved one.
-    """
+    """Validate the ADR 0073 all-source ledger and full axis-resolved union."""
     if not isinstance(tiering, dict):
         raise ValueError('tiering must be a record')
     missing = [key for key in TIERING_KEYS if key not in tiering]
@@ -1029,19 +955,10 @@ def _validate_tiering(tiering, n_deg):
         raise ValueError(
             'the last per-tier DEG union must equal the published DEG union '
             f'({sizes[-1]} != {n_deg})')
-    _tier(tiering['stopped_at_tier'], 'tiering.stopped_at_tier')
-    if tiering['stopped_at_tier'] != tiers[-1]:
-        raise ValueError('tiering.stopped_at_tier must be the last entered tier')
-    if tiering['limit'] != DEG2000_LIMIT:
-        raise ValueError(f'tiering.limit must be the declared {DEG2000_LIMIT}')
-    if not isinstance(tiering['stop_reached'], bool):
-        raise ValueError('tiering.stop_reached must be boolean')
-    reached = sizes[-1] >= DEG2000_LIMIT
-    if tiering['stop_reached'] != reached:
-        raise ValueError('tiering.stop_reached must equal "the union reached the limit"')
-    if len(sizes) > 1 and any(size >= DEG2000_LIMIT for size in sizes[:-1]):
-        raise ValueError('a tier below the frontier already met the limit; the '
-                         'collection should have stopped there')
+    if tiering['collection_policy'] != COLLECTION_POLICY:
+        raise ValueError('tiering.collection_policy must collect all qualifying declared sources')
+    if {'stopped_at_tier', 'stop_reached', 'limit'} & set(tiering):
+        raise ValueError('obsolete count-stopping fields are not a collection contract')
     return tiering
 
 

@@ -89,7 +89,7 @@ class TierLadderTests(unittest.TestCase):
     def test_the_six_category_registry_declares_its_tiers(self):
         expected = {
             'nHF': [1, 2, 3],
-            'ICM': [1],
+            'ICM': [1, 3],
             'AF': [1, 3],
             'genetic_cardiomyopathy': [1, 2],
         }
@@ -98,14 +98,14 @@ class TierLadderTests(unittest.TestCase):
             self.assertEqual([rung['tier'] for rung in ladder], tiers, category)
         by_tier = {rung['tier']: rung['sources']
                    for rung in disease_deg.tier_ladder(disease_deg_sources.datasets('nHF'))}
-        self.assertEqual(len(by_tier[1]), 2)
+        self.assertEqual(len(by_tier[1]), 3)
         self.assertEqual(len(by_tier[2]), 1)
         self.assertEqual(len(by_tier[3]), 3)
         self.assertIn('gse165303__dcm_lv_bulk', by_tier[3])
         self.assertIn('gse116250__hf_lv_bulk', by_tier[3])
         self.assertIn('gse141910__hf_lv_bulk', by_tier[3])
         af = disease_deg.tier_ladder(disease_deg_sources.datasets('AF'))
-        self.assertEqual([len(rung['sources']) for rung in af], [3, 1])
+        self.assertEqual([len(rung['sources']) for rung in af], [3, 2])
 
 
 class TierStopRuleTests(unittest.TestCase):
@@ -117,16 +117,14 @@ class TierStopRuleTests(unittest.TestCase):
                         {'a': measured(1, 2), 'b': measured(3)})['tiering']
         self.assertEqual(record['tiers_entered'], [1, 2])
         self.assertEqual([row['n_deg_union'] for row in record['tier_union']], [2, 3])
-        self.assertFalse(record['stop_reached'])
-        self.assertEqual(record['stopped_at_tier'], 2)
+        self.assertEqual(record['collection_policy'], disease_deg.COLLECTION_POLICY)
 
     def test_tier_one_at_or_above_the_limit_stops_the_descent(self):
         datasets = [dataset('a', 1)]
         record = ledger('genetic_cardiomyopathy', datasets,
                         {'a': measured(*range(LIMIT))})['tiering']
         self.assertEqual(record['tiers_entered'], [1])
-        self.assertTrue(record['stop_reached'])
-        self.assertEqual(record['stopped_at_tier'], 1)
+        self.assertEqual(record['collection_policy'], disease_deg.COLLECTION_POLICY)
         self.assertEqual(record['tier_union'][-1]['n_deg_union'], LIMIT)
 
     def test_tier_two_short_enters_tier_three(self):
@@ -135,13 +133,14 @@ class TierStopRuleTests(unittest.TestCase):
                         {'a': measured(1), 'b': measured(2), 'c': measured(3)})['tiering']
         self.assertEqual(record['tiers_entered'], [1, 2, 3])
         self.assertEqual([row['n_deg_union'] for row in record['tier_union']], [1, 2, 3])
-        self.assertFalse(record['stop_reached'])
+        self.assertEqual(record['collection_policy'], disease_deg.COLLECTION_POLICY)
 
-    def test_a_source_below_a_completed_tier_that_met_the_limit_is_refused(self):
-        datasets = [dataset('done', 1), dataset('deeper', 2)]
-        with self.assertRaisesRegex(ValueError, 'deeper.*refuses|refused'):
-            ledger('genetic_cardiomyopathy', datasets,
-                   {'done': measured(*range(LIMIT)), 'deeper': measured(LIMIT + 1)})
+    def test_a_source_after_two_thousand_is_collected(self):
+        result = ledger('genetic_cardiomyopathy',
+                        [dataset('done', 1), dataset('deeper', 2)],
+                        {'done': measured(*range(LIMIT)), 'deeper': measured(LIMIT + 1)})
+        self.assertEqual(result['n_deg'], 2001)
+        self.assertEqual(result['tiering']['tiers_entered'], [1, 2])
 
     def test_a_tier_between_two_entered_tiers_is_not_back_filled(self):
         datasets = [dataset('a', 1), dataset('c', 3)]
@@ -149,7 +148,6 @@ class TierStopRuleTests(unittest.TestCase):
                         {'a': measured(7), 'c': measured()})['tiering']
         self.assertEqual(record['tiers_entered'], [1, 3])
         self.assertEqual([row['n_deg_union'] for row in record['tier_union']], [1, 1])
-        self.assertEqual(record['stopped_at_tier'], 3)
 
     def test_non_informative_sources_are_recorded_but_add_no_gene(self):
         datasets = [dataset('a', 1), dataset('b', 3)]
@@ -170,11 +168,11 @@ class TierStopRuleTests(unittest.TestCase):
         # does not stop collection; the same signal on 2,000 axis genes would.
         short = ledger('genetic_cardiomyopathy', [dataset('a', 1)],
                        {'a': measured(*range(1600))})['tiering']
-        self.assertFalse(short['stop_reached'])
+        self.assertEqual(short['collection_policy'], disease_deg.COLLECTION_POLICY)
         self.assertEqual(short['tier_union'][-1]['n_deg_union'], 1600)
         reached = ledger('genetic_cardiomyopathy', [dataset('a', 1)],
                          {'a': measured(*range(LIMIT))})['tiering']
-        self.assertTrue(reached['stop_reached'])
+        self.assertEqual(reached['collection_policy'], disease_deg.COLLECTION_POLICY)
 
     def test_boolean_axis_mask_and_gene_index_vector_agree(self):
         mask = np.zeros(disease_deg.AXIS_SIZE, dtype=bool)
@@ -200,7 +198,7 @@ class TierStopRuleTests(unittest.TestCase):
         record = ledger('AF', [dataset('a', 1)], {'a': measured(1)})['tiering']
         self.assertEqual(record['criterion'], disease_deg.TIER_CRITERION)
         self.assertIn('axis-resolved, not genome-wide', record['rule'])
-        self.assertEqual(record['limit'], LIMIT)
+        self.assertNotIn('limit', record)
 
 
 class ClinicalTierBasisTests(unittest.TestCase):
@@ -298,7 +296,7 @@ class CatalogTieringTests(unittest.TestCase):
         catalog = self.catalog('cardiotox_TOP2', [dataset('t', 2)],
                                {'t': measured(*range(LIMIT + 1))}, tier=2)
         self.assertEqual(catalog['tiering']['tiers_entered'], [2])
-        self.assertTrue(catalog['tiering']['stop_reached'])
+        self.assertEqual(catalog['tiering']['collection_policy'], disease_deg.COLLECTION_POLICY)
         self.assertEqual(catalog['deg2000'], LIMIT)
 
     def test_clinical_tier_two_records_are_gated_in_the_catalog(self):

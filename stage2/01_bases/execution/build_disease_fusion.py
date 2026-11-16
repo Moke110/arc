@@ -119,7 +119,7 @@ FUSION_SEMANTICS = {
     # #206: the tier-order/stop criterion is published with the catalog so a reader
     # cannot apply the retired genome-wide reading. The same text is carried by each
     # category catalog's `tiering.rule`.
-    'tier_stop': disease_deg.TIER_STOP_RULE,
+    'source_collection': disease_deg.TIER_COLLECTION_RULE,
 }
 
 

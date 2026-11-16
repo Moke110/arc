@@ -699,8 +699,7 @@ DATASETS.extend([
         'contrasts': ['DCM-NF'],
         'model_basis': (
             'whole left-ventricle tissue bulk: not cardiomyocyte-specific, so it is a '
-            'tier-3 source only and enters nHF only after tiers 1-2 fall short of 2,000 '
-            'DEGs (ADR 0071)'),
+            'tier-3 source; ADR 0073 collects it regardless of higher-tier yield'),
         'method': {
             'deposition': ('log2(normalised counts) as deposited, with a fixed floor at '
                            '3.821687527 (35.2% of cells); not raw counts'),
@@ -795,7 +794,7 @@ CATEGORIES['AF'] = {
          'status': 'not_downloadable',
          'reason': 'controlled access; not fetched'},
     ],
-    'tier3_owned': [
+    'historical_tier3_owned': [
         {'candidate': 'GSE128188',
          'item': 'disease_data/GSE128188',
          'reason': ('already owned human atrial bulk item (AF 5 vs 5 SR, paired LA+RA). '
@@ -803,7 +802,7 @@ CATEGORIES['AF'] = {
                     'candidate for the #206 roster; it is not a rejection and it is not '
                     'declared here because #204 builds only the three new items.')},
     ],
-    'tiering': {
+    'historical_tiering': {
         'tier_1': {
             'sources': ['gse255612__af', 'gse138252__af', 'gse238242__af'],
             'measured_union_v2_deg': 1,
@@ -828,7 +827,7 @@ CATEGORIES['AF'] = {
                      'the pooled sensitivity all give 0 v2 DEGs under the live worker. '
                      'GSE128188 (owned, undeclared here) is the other tier-3 candidate.'),
         },
-        'stop_decision': ('tier 1 union 1 < 2,000, so the collection descends to tier 3; '
+        'historical_stop_decision': ('tier 1 union 1 < 2,000, so the collection descends to tier 3; '
                           'the tier-3 union is 0, so AF\'s total axis-resolved DEG union '
                           'is the tier-1 gene set (1 gene under the live worker). The '
                           'category is published with the tier-3 evidence type recorded '
@@ -995,8 +994,8 @@ DATASETS.extend([
 #   cardiotox_TOP2 / cardiotox_other  2 = their pooled class sources (the
 #         category begins at tier 2; `bases.cardiotox` declares those sources)
 # The stop rule and its axis-resolved criterion live once, in
-# `bases.disease_deg.TIER_STOP_RULE` / `tier_ledger`; `build_disease_deg.py ledger`
-# computes a category's cumulative axis-resolved union and stop point from these
+# `bases.disease_deg.TIER_COLLECTION_RULE` / `tier_ledger`; `build_disease_deg.py ledger`
+# computes a category's cumulative axis-resolved union across every declared tier from these
 # declarations, and the publish path writes the resulting `tiering` record.
 # nHF's ceiling is accepted (ADR 0071 decision-2 note, 2026-11-15): GSE183852 is
 # closed on both routes (measured 70 v2 DEGs / 50 on the axis; an 8.1-12 GB Seurat
@@ -1027,8 +1026,7 @@ DATASETS.extend([
         'n_control': 14,
         'contrasts': ['HF_vs_NF', 'DCM_vs_NF', 'ICM_vs_NF'],
         'model_basis': ('whole left-ventricular tissue bulk: not cardiomyocyte-specific, '
-                        'so it is a tier-3 source only and enters nHF only after tiers '
-                        '1-2 fall short of 2,000 axis-resolved DEGs (ADR 0071)'),
+                        'so it is a tier-3 source; ADR 0073 collects every qualifying tier '),
         'strata': {
             'decision': ('one joint fit ~0 + group over the 64 libraries (14 NF / 37 DCM / '
                          '13 ICM) publishes the primary HF_vs_NF contrast and the two arm '
@@ -1075,8 +1073,7 @@ DATASETS.extend([
         'n_control': 166,
         'contrasts': ['HF_vs_NF'],
         'model_basis': ('whole left-ventricular free-wall bulk: not cardiomyocyte-specific, '
-                        'so it is a tier-3 source only and enters nHF only after tiers 1-2 '
-                        'fall short of 2,000 axis-resolved DEGs (ADR 0071)'),
+                        'so it is a tier-3 source; all qualifying tiers are collected (ADR 0073)'),
         'strata': {
             'decision': ('single pooled HF-vs-NF contrast; the deposited etiology labels '
                          '(DCM/HCM/PPCM) are recorded but not modelled'),
@@ -1099,3 +1096,83 @@ DATASETS.extend([
         },
     },
 ])
+
+
+# ADR 0073 complete collection reopens the owned, formerly deferred AF source.
+DATASETS.append({
+    'dataset_id': 'gse128188__af', 'category': 'AF',
+    'source_item': 'disease_data/GSE128188',
+    'local_deg': 'local/deg/GSE128188_deg.csv',
+    'local_summary': 'local/deg/GSE128188_deg.json',
+    'local_deg_columns': {'log2FC': 'log2fc', 'baseMean': 'base_mean'},
+    'arm_or_class': 'AF vs sinus rhythm; paired LA+RA counts pooled per donor',
+    'species': 'Homo sapiens', 'model_system': 'human paired atrial appendage bulk RNA-seq',
+    'evidence_type': 'bulk', 'tier': 3, 'genotype_status': 'not_declared',
+    'time_window_basis': None, 'exploratory': False,
+    'shared_control_group': 'gse128188:sr', 'n_case': 5, 'n_control': 5,
+    'contrasts': ['AF_vs_SR'],
+    'model_basis': 'human atrial whole-tissue bulk; all qualifying tier-3 evidence collected (ADR 0073)',
+    'method': {'deposition': 'integer counts', 'model': 'donor-pooled DESeq2 ~ group',
+               'test': 'Wald; unshrunken log2FC', 'padj': 'Benjamini-Hochberg'},
+    'strata': {'decision': 'sum each donor paired LA+RA counts before disease comparison',
+               'pooled': True, 'blocking_covariates': [],
+               'why': 'AF status is donor-level; donor fixed effects are confounded with disease'},
+})
+
+CATEGORIES['AF']['source_review'] = {
+    'reviewed_on': '2026-11-16', 'policy': 'all_qualifying_declared_sources',
+    'scope': 'Existing pinned source survey, rejected/screened records and owned external items; not a claim of exhaustive public discovery',
+    'records': [
+        {'candidate': 'GSE128188', 'disposition': 'admitted', 'tier': 3,
+         'reason': 'Previously deferred owned human atrial bulk; 5 AF/5 SR donors, paired appendages pooled before DESeq2; no quality exclusion applies',
+         'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE128188',
+         'provenance': 'disease_data/GSE128188/author_log.json'},
+        {'candidate': 'GSE271229', 'disposition': 'not_admitted',
+         'reason': 'Reviewed author-label requirement retained; unannotated cell matrices do not supply a CM gate'},
+        {'candidate': 'dbGaP phs003644', 'disposition': 'not_downloadable',
+         'reason': 'Controlled access remains outside fetched evidence'},
+    ]}
+
+# The already pinned patient ICM arm qualifies independently within ICM at tier 3.
+# Its shared NF controls with the nHF source remain explicit; cross-disease
+# independence is not claimed or corrected by the fusion.
+_icm_bulk = dict(next(row for row in DATASETS if row['dataset_id'] == 'gse116250__hf_lv_bulk'))
+_icm_bulk.update(dataset_id='gse116250__icm_lv_bulk', category='ICM', n_case=13,
+                 contrasts=['ICM_vs_NF'],
+                 arm_or_class='13 patient ICM vs 14 non-failing LV donors',
+                 model_basis='human ICM left-ventricular whole-tissue bulk, tier 3; complete qualifying collection under ADR 0073')
+_icm_bulk['strata'] = dict(decision='ICM_vs_NF arm of the existing joint three-group limma fit',
+                          pooled=False, blocking_covariates=[],
+                          why='same dataset contributes once within ICM; NF controls shared with its nHF record')
+DATASETS.append(_icm_bulk)
+CATEGORIES['ICM']['source_review'] = {
+    'reviewed_on': '2026-11-16', 'policy': 'all_qualifying_declared_sources',
+    'records': [{'candidate': 'GSE116250 ICM arm', 'disposition': 'admitted', 'tier': 3,
+                 'reason': 'Actual patient ICM vs NF human LV bulk; historical tier1 sufficiency is not an admission exclusion',
+                 'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE116250',
+                 'provenance': 'disease_data/GSE116250/author_log.json'}]}
+
+DATASETS.append({
+    'dataset_id': 'gse183852__dcm_cm', 'category': 'nHF',
+    'source_item': 'disease_data/GSE183852',
+    'local_deg': 'local/deg/GSE183852_deg.csv',
+    'local_summary': 'local/deg/GSE183852_deg.json',
+    'arm_or_class': 'author Cardiomyocytes DCM vs Donor DESeq2 table',
+    'species': 'Homo sapiens', 'model_system': 'human LV cardiomyocyte snRNA-seq',
+    'evidence_type': 'cm_pseudobulk', 'tier': 1, 'genotype_status': 'not_declared',
+    'time_window_basis': None, 'exploratory': False,
+    'shared_control_group': 'gse183852:donor', 'n_case': 13, 'n_control': 25,
+    'contrasts': ['DCM-Donor'],
+    'model_basis': 'Full author cell-type-specific DE table retained; 13/25 are snRNA libraries, not asserted unique donors; no raw-count refit or per-cell annotation',
+    'method': {'deposition': 'full 26946-row author Cardiomyocytes workbook sheet',
+               'model': 'author DESeq2; statistics preserved',
+               'test': 'author differential expression statistics',
+               'padj': 'author adjusted p values; missing values remain missing'},
+})
+CATEGORIES['nHF']['rejected'] = [r for r in CATEGORIES['nHF']['rejected'] if r['candidate'] != 'GSE183852']
+CATEGORIES['nHF']['source_review'] = {
+    'reviewed_on': '2026-11-16', 'policy': 'all_qualifying_declared_sources',
+    'records': [{'candidate': 'GSE183852', 'disposition': 'admitted', 'tier': 1,
+                 'reason': 'Full author per-gene CM DE table permits exact threshold/rank replay without Robj extraction; low yield is not exclusion',
+                 'source': 'https://doi.org/10.1038/s44161-022-00028-6',
+                 'provenance': 'disease_data/GSE183852/author_log.json'}]}

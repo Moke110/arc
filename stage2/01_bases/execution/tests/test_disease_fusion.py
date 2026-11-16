@@ -491,9 +491,7 @@ def valid_catalog(**overrides):
             'tiers_entered': [1, 2],
             'tier_union': [{'tier': 1, 'n_deg_union': 900},
                            {'tier': 2, 'n_deg_union': 2199}],
-            'stopped_at_tier': 2,
-            'stop_reached': True,
-            'limit': disease_deg.DEG2000_LIMIT,
+            'collection_policy': disease_deg.COLLECTION_POLICY,
         },
         'datasets': [
             {'dataset_id': 'a', 'tier': 1, 'informative': True, 'n_deg': 900,
@@ -548,9 +546,7 @@ class CategoryCatalogShapeTests(unittest.TestCase):
         catalog = valid_catalog(n_deg=120, deg2000=120, tiering={
             'tiers_entered': [1],
             'tier_union': [{'tier': 1, 'n_deg_union': 120}],
-            'stopped_at_tier': 1,
-            'stop_reached': False,
-            'limit': disease_deg.DEG2000_LIMIT,
+            'collection_policy': disease_deg.COLLECTION_POLICY,
         })
         catalog['datasets'] = [
             {'dataset_id': 'a', 'tier': 1, 'informative': True, 'n_deg': 90,
@@ -576,16 +572,14 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                 n_deg=800, deg2000=800, tiering={
                     'tiers_entered': [1],
                     'tier_union': [{'tier': 1, 'n_deg_union': 800}],
-                    'stopped_at_tier': 1, 'stop_reached': False,
-                    'limit': disease_deg.DEG2000_LIMIT}))
+                    'collection_policy': disease_deg.COLLECTION_POLICY,}))
         with self.assertRaises(ValueError):
             disease_deg.validate_catalog(valid_catalog(
                 n_deg=2800, deg2000=2000, tiering={
                     'tiers_entered': [1, 2],
                     'tier_union': [{'tier': 1, 'n_deg_union': 1000},
                                    {'tier': 2, 'n_deg_union': 2800}],
-                    'stopped_at_tier': 2, 'stop_reached': True,
-                    'limit': disease_deg.DEG2000_LIMIT}))
+                    'collection_policy': disease_deg.COLLECTION_POLICY,}))
 
     def test_tiering_must_agree_with_the_published_union(self):
         def tiering(**changes):
@@ -598,24 +592,21 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                             {'tier': 2, 'n_deg_union': 2100}])))
         with self.assertRaises(ValueError):  # stopped_at_tier not the last tier
             disease_deg.validate_catalog(valid_catalog(tiering=tiering(
-                stopped_at_tier=1)))
+                collection_policy='partial')))
         with self.assertRaises(ValueError):  # stop_reached disagrees with the union
             disease_deg.validate_catalog(valid_catalog(tiering=tiering(
                 stop_reached=False)))
-        with self.assertRaises(ValueError):  # a lower tier already met the limit
-            disease_deg.validate_catalog(valid_catalog(tiering={
-                'tiers_entered': [1, 2],
-                'tier_union': [{'tier': 1, 'n_deg_union': 2100},
-                               {'tier': 2, 'n_deg_union': 2199}],
-                'stopped_at_tier': 2, 'stop_reached': True,
-                'limit': disease_deg.DEG2000_LIMIT}))
+        disease_deg.validate_catalog(valid_catalog(tiering={
+            'tiers_entered': [1, 2],
+            'tier_union': [{'tier': 1, 'n_deg_union': 2100},
+                           {'tier': 2, 'n_deg_union': 2199}],
+            'collection_policy': disease_deg.COLLECTION_POLICY}))
         # #206: a category whose evidence begins at tier 2 (the cardiotox classes)
         # legitimately enters there; descending tiers are still refused.
         cardiotox = valid_catalog(category='cardiotox_TOP2', tier=2, tiering={
             'tiers_entered': [2],
             'tier_union': [{'tier': 2, 'n_deg_union': 2199}],
-            'stopped_at_tier': 2, 'stop_reached': True,
-            'limit': disease_deg.DEG2000_LIMIT})
+            'collection_policy': disease_deg.COLLECTION_POLICY,})
         cardiotox['datasets'] = [
             {'dataset_id': 'a', 'tier': 2, 'informative': True, 'n_deg': 900,
              'n_deg_in_deg2000': 900},
@@ -628,15 +619,13 @@ class CategoryCatalogShapeTests(unittest.TestCase):
                 'tiers_entered': [3, 2],
                 'tier_union': [{'tier': 3, 'n_deg_union': 1000},
                                {'tier': 2, 'n_deg_union': 2199}],
-                'stopped_at_tier': 2, 'stop_reached': True,
-                'limit': disease_deg.DEG2000_LIMIT}))
+                'collection_policy': disease_deg.COLLECTION_POLICY,}))
         with self.assertRaises(ValueError):  # shrinking cumulative union
             disease_deg.validate_catalog(valid_catalog(tiering={
                 'tiers_entered': [1, 2],
                 'tier_union': [{'tier': 1, 'n_deg_union': 2200},
                                {'tier': 2, 'n_deg_union': 2199}],
-                'stopped_at_tier': 2, 'stop_reached': True,
-                'limit': disease_deg.DEG2000_LIMIT}))
+                'collection_policy': disease_deg.COLLECTION_POLICY,}))
 
     def test_non_informative_source_is_outside_the_union_bounds(self):
         # A tied-effects source keeps its DEG table but is excluded from the
@@ -644,8 +633,7 @@ class CategoryCatalogShapeTests(unittest.TestCase):
         catalog = valid_catalog(n_deg=100, deg2000=100, tiering={
             'tiers_entered': [1],
             'tier_union': [{'tier': 1, 'n_deg_union': 100}],
-            'stopped_at_tier': 1, 'stop_reached': False,
-            'limit': disease_deg.DEG2000_LIMIT,
+            'collection_policy': disease_deg.COLLECTION_POLICY,
         })
         catalog['datasets'] = [
             {'dataset_id': 'kept', 'tier': 1, 'informative': True, 'n_deg': 100,
