@@ -5,6 +5,21 @@
   "purpose": "Human isogenic DSP knockout EHT full author differential test for genetic cardiomyopathy, tier2. Reopened full-statistic evidence under ADR0073.",
   "sources": [
     {
+      "name": "GSE248187 acquired source tree",
+      "path": "source/",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE248187",
+      "version": "Acquired 2026-11-16 snapshot; upstream revision identifier not recorded. Exact acquired GEO and publication asset versions are pinned by the per-file SHA256 values and manifest.",
+      "retrieved_at": "2026-11-16",
+      "method": "script/fetch.sh -> script/fetch.py; URLs and expected SHA256 values pinned per file. Offline review verification used unchanged copies from the accepted acquisition checkout; no redownload.",
+      "files": 2,
+      "bytes": 1697320,
+      "tree_sha256": "36cc8b0c317ae69bffa60db523e118d86bf691d8d523340abd01d7d8ba62b1c4",
+      "tree_sha256_method": "SHA256 of manifest lines sorted by source-relative path, each encoded as <hash>  <path> followed by LF (ADR0030 clarification 5).",
+      "manifest_sha256": "9a464719d4bc0694b11e6549a76382492c9bb26af2d2ae496c26c748ed3d24c9",
+      "manifest_path_sorted": false,
+      "summary_scope": "Complete manifest-backed source/ tree; includes the individual asset rows below. Do not sum sources[].bytes."
+    },
+    {
       "name": "GSE248187_DSP_EHTs_Differential_Expression_Table.txt.gz",
       "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE248nnn/GSE248187/suppl/GSE248187_DSP_EHTs_Differential_Expression_Table.txt.gz",
       "sha256": "46a79a7d684e539e3cd751eae81398e75d6d0a7b176a8077b29039f70dcf9bda",
@@ -32,5 +47,15 @@
     }
   ],
   "manifest": "manifest.sha256",
-  "notes": "Primary paper PMC11213508 verifies human DSP knockout/isogenic control EHT comparison,3 RNA libraries per arm, supporting fibroblasts. Other deposited DSP/JUP/PKP2 tables use rat NRVM and are not ingested. Author LR statistic is not a signed t statistic. All author adjusted p values and log2 fold changes preserved."
+  "notes": "Primary paper PMC11213508 verifies human DSP knockout/isogenic control EHT comparison,3 RNA libraries per arm, supporting fibroblasts. Other deposited DSP/JUP/PKP2 tables use rat NRVM and are not ingested. Author LR statistic is not a signed t statistic. All author adjusted p values and log2 fold changes preserved.",
+  "verified_at": "2026-11-16T11:51:20+00:00",
+  "verify_result": "pass",
+  "verification": {
+    "command": "bash script/verify.sh",
+    "working_directory": "disease_data/GSE248187",
+    "mode": "offline",
+    "exit_code": 0,
+    "files_verified": 2,
+    "result": "All manifest source-file SHA256 checks passed; source file sizes agree with existing per-file acquisition metadata. Tree digest uses path-sorted manifest bytes; manifest file is unchanged."
+  }
 }
