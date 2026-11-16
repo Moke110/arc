@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Stage/replay a coherent ADR 0072 candidate without touching accepted products.
+"""Stage/replay a coherent ADR 0073 candidate without touching accepted products.
 
 The workspace mirrors repository-relative input names, so every resulting pin
 also resolves after acceptance. Input snapshots use hard links and are read-only
 by convention; publication writes only newly built candidate product directories.
-TOX is consumed from the independently measured, verified #216 candidate.
+TOX is consumed from an independently measured and verified candidate.
 """
 import argparse
 import errno
