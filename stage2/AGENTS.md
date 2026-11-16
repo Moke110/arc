@@ -5,28 +5,16 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 
 ## Active steps
 
-- `01_bases/` — shared foundation (post-rebuild, ADR 0066 / ADR 0071, accepted by
-  #192 and re-published by #208): frozen identity, raw counts, corpus, model-facing
-  views, disease DEGs, the per-disease fusion, the two released gene axes,
-  fold/seed products, palette and the single public reader/metric API. Every later
-  step imports this implementation instead of re-deriving it.
-  - Gene axis (ADR 0071, superseding ADR 0066's disease side): the step releases
-    two axis versions, `G_2000` and `G_5000`, from the per-well tenv-HVG dispersion
-    and the DEG-only Control-vs-Disease sources collected in tier order (`padj <
-    0.05` and `|log2FC| >= 2`, pass-any-contrast). `rank_sum` fuses the six disease
-    terms at two levels (sources inside a disease, then diseases) and each axis is
-    filled 50/50 — tenv-HVG first half, `f2000`-descending `/`rank_sum`-ascending
-    second half — with the tenv-HVG fallback implemented but 0 in this release and
-    the axes nested. `pN`, the measured-gene rank and the five-category roster are
-    retired. `output/` is `raw_counts/` → `corpus/` (integer raw counts, no
-    normalization, no Δ) → `view-2k/`/`view-5k/` (full-axis normalization, then
-    subset; `X`, `control`, `Δ`), with `disease-deg/`, `disease-fusion/` and
-    `gene-axis/`. The pre-0066 measured truth, successor envelope, superseded
-    build chain and `log/` were deleted after the #192 acceptance replays passed;
-    `log/` was regenerated as the acceptance record (`log/acceptance.md` +
-    `inputs.json`) and keeps its pre-v2 sections as sealed history. The evaluation
-    redesign and the `02_models_tenv` re-point remain deferred. Routing:
-    `stage2/01_bases/AGENTS.md`.
+- `01_bases/` — shared foundation (ADR 0066 integer corpus; ADR 0073 disease/axis
+  contract): frozen identity, raw counts, corpus, four model-facing views,
+  complete disease source evidence, tier-first DEG1000 fusion, 2k/3k/4k/5k nested
+  gene axes, fold/seed products, palette and the single public API. Later steps
+  import it rather than re-deriving it. Axes use half tenv-HVG, half unused
+  f1000-first/rank_sum-ordered disease candidates, with explicit HVG fallback.
+  Views normalize on the full frozen axis before subsetting and retain matched
+  control/delta semantics. The human rule DOCX is at the step root.
+  Evaluation redesign and the `02_models_tenv` re-point remain deferred.
+  Routing: `stage2/01_bases/AGENTS.md`.
 - `02_models_tenv/` — tenv model comparison (ADR 0064, superseding the indirect
   and figure portions of ADR 0063): the PRnet entrant and the `Mean` reference,
   trained and evaluated on `tenv`. Bounded fit/predict admission is #163; the

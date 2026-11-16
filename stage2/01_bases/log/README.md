@@ -1,4 +1,4 @@
-# log/ — bases acceptance evidence (post-0066)
+# log/ — bases acceptance evidence
 
 ADR 0066 applies the repository rule strictly here: `log/` is execution-run
 intermediate output and verification evidence, **not** a history of directory
@@ -17,10 +17,10 @@ requires the recorded source-replay evidence to travel with the regenerated reco
 | `disease_deg_verify.json` | `build_disease_deg.py verify --all` replay output (the four registry categories: nHF, ICM, AF, genetic_cardiomyopathy) |
 | `cardiotox_verify.json` | `build_disease_deg_cardiotox.py verify` replay output (three products) |
 | `tox_candidate_verify.json` | ADR 0072 #216 staged twelve-dataset TOX measurement candidate: fresh source replay, counts, digests and resource peaks; not the accepted successor release |
-| `disease_fusion_verify.json` | `build_disease_fusion.py verify` replay output (six diseases, v2 DEG2000) |
+| `disease_fusion_verify.json` | historical ADR 0071 six-disease fusion replay; superseded by current full-source acceptance |
 | `gene_axis_verify.json` | `build_gene_axis.py --verify` replay output |
 | `view_publish_verify.json` | `build_view.py publish` result (materialises the gitignored view payloads; manifests byte-identical to the tracked ones) |
-| `view_verify.json` | `build_view.py verify` replay output for both views |
+| `view_verify.json` | historical two-view replay; superseded by current four-view receipt |
 
 Disposable build state lives in `execution/checkpoints/`, never inside `output/`.
 
@@ -47,3 +47,14 @@ evaluation products have no surviving consumer (the old→new mapping is in
 affected public-contract tests, three offline health checks, exact human artifact
 reproduction and main-checkout byte preservation. The successor sections of
 `acceptance.md` and `inputs.json` supersede historical six-category records.
+
+## Current ADR 0073 coherent acceptance
+
+- `full_source_acceptance.json`: #225 complete five-category/fusion/four-axis/eight-payload release, exact manifests and unchanged corpus bytes, affected tests, offline health and source/payload preservation.
+- `source_collection_candidate.json` and `tier_first_fusion_candidate.json`: full-source and tier-first fusion candidate evidence from #221/#222.
+- `source_derivation_replay.json`: sixteen genuine per-item refits, current R-worker pins, identical scientific CSV/sample bytes and deterministic gzip intermediates.
+- `four_axes_candidate.json`: #223 independent upstream and per-view replays, bounded public-reader checks, exact axes/nesting/fallback, payload map and recovery evidence.
+- `gene_axis_document_verify.json`: root DOCX and both figure hashes, canonical input/tool pins, deterministic byte replay and every one of thirteen inspected pages.
+
+The older entries/sections above describe their own dated releases. They keep
+historical names and counts; current contracts/paths are in `../README.md`.
