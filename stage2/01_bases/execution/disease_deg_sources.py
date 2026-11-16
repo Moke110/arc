@@ -29,34 +29,6 @@ CATEGORIES = {
         'tier': 1,
         'evidence_type': 'cm_pseudobulk',
         'shared_control_group': ['gse270788:donor', 'reichart-cm:normal'],
-        # NOTE (republish #212, 2026-11-15). The `rejected[]` strings below are
-        # DECLARATION DATA: `build_disease_deg.py` copies them verbatim into the
-        # published <category>/catalog.json, whose digests the disease-fusion,
-        # gene-axis and view manifests pin. #211 could correct only the comment
-        # of record because the products were frozen; #212 lifted the freeze,
-        # rewrote the data itself and re-published the cascade, so the catalogs
-        # now carry the corrected reasons and no erratum remains. This note only
-        # records why they read as they do.
-        #
-        # GSE183852: the authors' 6.7 MB `MOESM4` `Cardiomyocytes` sheet already
-        # carries the CM labels, so reading its `meta.data` is not re-clustering;
-        # the v2 definition yields 70 DEGs (padj < 0.05 and |log2FC| >= 2), 50 of
-        # them on the frozen axis (26,946 genes tested; the padj-only anchors
-        # 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce). That is 2.5% of
-        # a 2,000-gene target, so an 8.1-12 GB Robj label extraction is not
-        # warranted. Its padj-only yield (4,927 on-axis) would only matter under
-        # a softer fold tier, which the v2 rule does not admit -- so nHF closes at
-        # 1,661 axis-resolved DEGs by decision, not by missing capability.
-        #
-        # The third entry's pre-v2 "not cardiomyocyte-derived" ground is
-        # superseded by ADR 0071 tier 3: GSE141910 and GSE116250 are declared
-        # tier-3 nHF sources (GSE165303 joined them), GSE128188 is an owned tier-3
-        # AF candidate, and only GSE282618 remains un-admitted, for its 3-vs-2
-        # design.
-        #
-        # ICM's GSE298023 has the same shape as GSE183852: its author labels
-        # exist only inside an unopened 4.0 GB .rds, so the obstacle is that no
-        # author CM gate was available, not a prohibition on reading labels.
         'rejected': [
             {'candidate': 'GSE183852',
              'reason': ('eligible human LV CM source, but a measured cost call, not a '
@@ -1038,8 +1010,8 @@ DATASETS.extend([
             'why': ('the three labels are arms of one model, not independent sources; the '
                     'tier-3 contribution is their pass-any-contrast v2 DEG union (43 '
                     'axis DEGs measured, 144 genome-wide). The 13-donor ICM arm is an '
-                    'end-stage remodelling proxy, recorded here and never re-used as the '
-                    'ICM category source, whose evidence is tier-1 CM pseudobulk'),
+                    'end-stage patient ICM comparison; ADR 0073 also records it once in '
+                    'the ICM category at tier 3, with the shared NF controls explicit'),
         },
         'method': {
             'deposition': ('RPKM as deposited (Cufflinks / GRCh37.82), analysed as '
@@ -1176,3 +1148,197 @@ CATEGORIES['nHF']['source_review'] = {
                  'reason': 'Full author per-gene CM DE table permits exact threshold/rank replay without Robj extraction; low yield is not exclusion',
                  'source': 'https://doi.org/10.1038/s44161-022-00028-6',
                  'provenance': 'disease_data/GSE183852/author_log.json'}]}
+
+# Finite ADR 0073 re-review: count sufficiency and age alone do not exclude a source.
+CATEGORIES['nHF']['rejected'] = [
+    {'candidate': 'cellxgene myocarditis CM object',
+     'reason': 'Shares normal donors with Reichart; not an independent additional source'},
+    {'candidate': 'GSE282618',
+     'reason': 'HHD exploratory 3-vs-2 subject design, not a declared nHF disease cohort'},
+    {'candidate': 'GSE185100', 'status': 'author_cm_input_unavailable',
+     'reason': 'GEO supplies count matrices but no author per-cell CM assignment. The publication-linked analysis repository references local integrated objects and full CM test tables that are not deposited there. The portal selected/rounded export does not provide a complete unrounded test table. No marker-derived gate or reclustering is substituted; age and low estimated yield are not exclusion grounds.',
+     'reentry': 'Versioned author CM barcode assignments with counts, or complete author CM DCM-vs-ND logFC/padj statistics'}]
+CATEGORIES['nHF']['source_review']['records'].append({
+    'candidate': 'GSE185100', 'disposition': 'not_admitted_author_cm_input_unavailable',
+    'reason': CATEGORIES['nHF']['rejected'][-1]['reason'],
+    'reentry': CATEGORIES['nHF']['rejected'][-1]['reentry'],
+    'sources': ['https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185100',
+                'https://doi.org/10.1161/CIRCULATIONAHA.121.057763',
+                'https://github.com/neda-mehdiabadi/Fetal-Gene-Program-snRNAseq',
+                'https://github.com/neda-mehdiabadi/HeartExplorer'],
+    'uncertainty': 'Author objects may be obtainable elsewhere; current finite public inventory does not expose the required inputs. Portal certificate chain fails default verification.'})
+
+# Reopened isogenic sources after finite primary-input review (ADR 0073).
+DATASETS.extend([{'dataset_id': 'gse248187__dsp_eht',
+  'category': 'genetic_cardiomyopathy',
+  'source_item': 'disease_data/GSE248187',
+  'local_deg': 'local/deg/GSE248187_deg.csv',
+  'local_summary': 'local/deg/GSE248187_deg.json',
+  'arm_or_class': 'Human DSP knockout EHT versus isogenic control',
+  'species': 'Homo sapiens',
+  'model_system': 'Human DSP knockout EHT versus isogenic control',
+  'evidence_type': 'bulk',
+  'tier': 2,
+  'genotype_status': 'pathogenic',
+  'time_window_basis': None,
+  'exploratory': False,
+  'shared_control_group': 'gse248187:isogenic',
+  'n_case': 3,
+  'n_control': 3,
+  'contrasts': ['DSP_KO-isogenic'],
+  'isogenic_exception': {'applies': True,
+                         'control_arm': 'isogenic control',
+                         'why': 'Unchanged ADR0066 causal isogenic-model exception; reopened under '
+                                'ADR0073 complete qualifying-source collection.'},
+  'method': {'deposition': 'See pinned item summary and author_log for full input/test provenance',
+             'model': 'Complete author edgeR test',
+             'design': 'Human DSP knockout EHT versus isogenic control',
+             'test': 'Author likelihood ratio',
+             'padj': 'Benjamini-Hochberg'}},
+ {'dataset_id': 'gse221945__tbx5_brs',
+  'category': 'genetic_cardiomyopathy',
+  'source_item': 'disease_data/GSE221945',
+  'local_deg': 'local/deg/GSE221945_deg.csv',
+  'local_summary': 'local/deg/GSE221945_deg.json',
+  'arm_or_class': 'TBX5G145R Brugada hiPSC-CM versus corrected isogenic control',
+  'species': 'Homo sapiens',
+  'model_system': 'TBX5G145R Brugada hiPSC-CM versus corrected isogenic control',
+  'evidence_type': 'bulk',
+  'tier': 2,
+  'genotype_status': 'pathogenic',
+  'time_window_basis': None,
+  'exploratory': False,
+  'shared_control_group': 'gse221945:isogenic',
+  'n_case': 4,
+  'n_control': 4,
+  'contrasts': ['TBX5_G145R-corrected'],
+  'isogenic_exception': {'applies': True,
+                         'control_arm': 'corrected isogenic control',
+                         'why': 'Unchanged ADR0066 causal isogenic-model exception; reopened under '
+                                'ADR0073 complete qualifying-source collection.'},
+  'method': {'deposition': 'See pinned item summary and author_log for full input/test provenance',
+             'model': 'Complete author DESeq2 Wald test, sign reversed to disease-minus-corrected',
+             'design': 'TBX5G145R Brugada hiPSC-CM versus corrected isogenic control',
+             'test': 'Author Wald',
+             'padj': 'Benjamini-Hochberg'}},
+ {'dataset_id': 'gse329393__rbm20',
+  'category': 'genetic_cardiomyopathy',
+  'source_item': 'disease_data/GSE329393',
+  'local_deg': 'local/deg/GSE329393_deg.csv',
+  'local_summary': 'local/deg/GSE329393_deg.json',
+  'arm_or_class': 'RBM20 mutant hiPSC-CM versus family-matched corrected controls',
+  'species': 'Homo sapiens',
+  'model_system': 'RBM20 mutant hiPSC-CM versus family-matched corrected controls',
+  'evidence_type': 'bulk',
+  'tier': 2,
+  'genotype_status': 'pathogenic',
+  'time_window_basis': None,
+  'exploratory': False,
+  'shared_control_group': 'gse329393:isogenic',
+  'n_case': 6,
+  'n_control': 10,
+  'contrasts': ['RBM20_LVNC-corrected', 'RBM20_DCM-corrected'],
+  'isogenic_exception': {'applies': True,
+                         'control_arm': 'family-matched corrected controls',
+                         'why': 'Unchanged ADR0066 causal isogenic-model exception; reopened under '
+                                'ADR0073 complete qualifying-source collection.'},
+  'method': {'deposition': 'See pinned item summary and author_log for full input/test provenance',
+             'model': 'limma-voom',
+             'design': 'RBM20 mutant hiPSC-CM versus family-matched corrected controls',
+             'test': 'moderated t',
+             'padj': 'Benjamini-Hochberg'}}])
+CATEGORIES['genetic_cardiomyopathy']['rejected'] = [{'candidate': 'GSE262876',
+  'reason': 'Primary paper limitations identify one noncarrier and one D389V subject, with '
+            'isogenic CRISPR comparisons still needed; donor background is confounded with '
+            'genotype despite GEO abstract wording.',
+  'source': 'https://doi.org/10.3390/cells13221913',
+  'reentry': 'Verified genotype-matched isogenic comparison'},
+ {'candidate': 'GSE274124',
+  'reason': 'Patient iPSC31 versus unrelated WTC11 control; no isogenic correction, so '
+            'donor-background confounding fails the causal isogenic exception.',
+  'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274124',
+  'reentry': 'Isogenic corrected/introduced genotype or independently admissible patient-CM '
+             'cohort'},
+ {'candidate': 'GSE251993',
+  'reason': 'Deposited raw_counts table has fractional values on an undeclared scale (column '
+            'sums107.36–384.74, maximum18.52). It cannot be treated as raw counts or assumed log2 '
+            'abundance without changing the effect threshold meaning.',
+  'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE251993',
+  'reentry': 'Author-defined expression units, valid raw counts, or full per-gene differential '
+             'tests'},
+ {'candidate': 'GSE140965',
+  'reason': 'Deposited matrix has35 columns versus30 GSM, duplicated control names and extra '
+            'Ex27Het groups; primary sample/control/batch mapping does not bind all columns. No '
+            'positional matching or unsupported batch correction is invented.',
+  'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE140965',
+  'reentry': 'Author sample/control/batch mapping or complete differential test statistics'},
+ {'candidate': 'GSE289628',
+  'reason': 'AAV6-versus-siRNA vehicle is confounded with DSP intervention; unchanged '
+            'causal-control restriction retained.',
+  'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE289628'},
+ {'candidate': 'Reichart-CM single NCCM donor',
+  'reason': 'Single NCCM donor excluded by existing cohort admission; no new independent '
+            'case-control evidence.'}]
+CATEGORIES['genetic_cardiomyopathy']['source_review'] = {'reviewed_on': '2026-11-16',
+ 'policy': 'all_qualifying_declared_sources',
+ 'scope': 'Existing screened/rejected genetic candidate inventory; primary metadata and actual '
+          'deposited tables checked, no sufficiency or fixed-roster exclusion',
+ 'records': [{'candidate': 'GSE248187',
+              'disposition': 'admitted',
+              'tier': 2,
+              'provenance': 'disease_data/GSE248187/author_log.json',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE248187',
+              'reason': 'Human DSP knockout EHT versus isogenic control'},
+             {'candidate': 'GSE221945',
+              'disposition': 'admitted',
+              'tier': 2,
+              'provenance': 'disease_data/GSE221945/author_log.json',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE221945',
+              'reason': 'TBX5G145R Brugada hiPSC-CM versus corrected isogenic control'},
+             {'candidate': 'GSE329393',
+              'disposition': 'admitted',
+              'tier': 2,
+              'provenance': 'disease_data/GSE329393/author_log.json',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE329393',
+              'reason': 'RBM20 mutant hiPSC-CM versus family-matched corrected controls'},
+             {'candidate': 'GSE262876',
+              'reason': 'Primary paper limitations identify one noncarrier and one D389V subject, '
+                        'with isogenic CRISPR comparisons still needed; donor background is '
+                        'confounded with genotype despite GEO abstract wording.',
+              'source': 'https://doi.org/10.3390/cells13221913',
+              'reentry': 'Verified genotype-matched isogenic comparison',
+              'disposition': 'not_admitted'},
+             {'candidate': 'GSE274124',
+              'reason': 'Patient iPSC31 versus unrelated WTC11 control; no isogenic correction, so '
+                        'donor-background confounding fails the causal isogenic exception.',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274124',
+              'reentry': 'Isogenic corrected/introduced genotype or independently admissible '
+                         'patient-CM cohort',
+              'disposition': 'not_admitted'},
+             {'candidate': 'GSE251993',
+              'reason': 'Deposited raw_counts table has fractional values on an undeclared scale '
+                        '(column sums107.36–384.74, maximum18.52). It cannot be treated as raw '
+                        'counts or assumed log2 abundance without changing the effect threshold '
+                        'meaning.',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE251993',
+              'reentry': 'Author-defined expression units, valid raw counts, or full per-gene '
+                         'differential tests',
+              'disposition': 'not_admitted'},
+             {'candidate': 'GSE140965',
+              'reason': 'Deposited matrix has35 columns versus30 GSM, duplicated control names and '
+                        'extra Ex27Het groups; primary sample/control/batch mapping does not bind '
+                        'all columns. No positional matching or unsupported batch correction is '
+                        'invented.',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE140965',
+              'reentry': 'Author sample/control/batch mapping or complete differential test '
+                         'statistics',
+              'disposition': 'not_admitted'},
+             {'candidate': 'GSE289628',
+              'reason': 'AAV6-versus-siRNA vehicle is confounded with DSP intervention; unchanged '
+                        'causal-control restriction retained.',
+              'source': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE289628',
+              'disposition': 'not_admitted'},
+             {'candidate': 'Reichart-CM single NCCM donor',
+              'reason': 'Single NCCM donor excluded by existing cohort admission; no new '
+                        'independent case-control evidence.',
+              'disposition': 'not_admitted'}]}

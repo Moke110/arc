@@ -15,7 +15,8 @@ import openpyxl
 ITEM = Path(__file__).resolve().parent.parent
 
 def digest(path):
-    return hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 def build(source, out):
     out.mkdir(parents=True, exist_ok=True)
