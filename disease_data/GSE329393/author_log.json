@@ -5,6 +5,21 @@
   "purpose": "Matched-family RBM20 mutant versus CRISPR-corrected hiPSC-CM, two contrasts one independent dataset under ADR0073.",
   "sources": [
     {
+      "name": "GSE329393 acquired source tree",
+      "path": "source/",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE329393",
+      "version": "Acquired 2026-11-16 snapshot; upstream revision identifier not recorded. Exact acquired GEO and publication asset versions are pinned by the per-file SHA256 values and manifest.",
+      "retrieved_at": "2026-11-16",
+      "method": "script/fetch.sh -> script/fetch.py; URLs and expected SHA256 values pinned per file. Offline review verification used unchanged copies from the accepted acquisition checkout; no redownload.",
+      "files": 2,
+      "bytes": 595792,
+      "tree_sha256": "d5b7a4ef7762accb6b9bef88a7dac567b8b92ca246df7aa17ec027824c3c54c0",
+      "tree_sha256_method": "SHA256 of manifest lines sorted by source-relative path, each encoded as <hash>  <path> followed by LF (ADR0030 clarification 5).",
+      "manifest_sha256": "d5b7a4ef7762accb6b9bef88a7dac567b8b92ca246df7aa17ec027824c3c54c0",
+      "manifest_path_sorted": true,
+      "summary_scope": "Complete manifest-backed source/ tree; includes the individual asset rows below. Do not sum sources[].bytes."
+    },
+    {
       "name": "GSE329393_raw_counts.tsv.gz",
       "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE329nnn/GSE329393/suppl/GSE329393_raw_counts.tsv.gz",
       "sha256": "8dbee713d12059b279ed02cc2ec62af639c1f8baaae15eed121b710b1ea85f90",
@@ -54,5 +69,15 @@
       "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91",
       "usage": "read-only unique approved Entrez-to-symbol annotation"
     }
-  ]
+  ],
+  "verified_at": "2026-11-16T11:51:20+00:00",
+  "verify_result": "pass",
+  "verification": {
+    "command": "bash script/verify.sh",
+    "working_directory": "disease_data/GSE329393",
+    "mode": "offline",
+    "exit_code": 0,
+    "files_verified": 2,
+    "result": "All manifest source-file SHA256 checks passed; source file sizes agree with existing per-file acquisition metadata. Tree digest uses path-sorted manifest bytes; manifest file is unchanged."
+  }
 }
