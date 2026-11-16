@@ -1,34 +1,30 @@
 # AGENTS.md — disease_data
 
-Twenty-three external 项 (ADR 0030). Each holds `script/` (fetch/build/verify recipes + the
+External 项 follow ADR 0030. Each holds `script/` (fetch/build/verify recipes + the
 shared R helpers), `source/` (upstream GEO bytes, gitignored and immutable),
 `local/` (declared additions: the full-transcriptome DEG CSV + tracked DEG JSON, and
 the normalized log-expression pair where the series ships one), tracked
 `author_log.json`, `manifest.sha256` over `source/`, and an item `.gitignore`.
 Category overview and conventions: `README.md`. Layout contract: ADR 0030.
 
-**Tiered admission to the gene axis (ADR 0071, superseding ADR 0066's
-exclusion).** Whole-tissue bulk is no longer ineligible by rule: ADR 0071 admits
-human atria/ventricle bulk at **tier 3**, entered only after tiers 1–2 fall short
-of 2,000 axis-resolved DEGs, with the tier recorded. The published tier-3 sources
-are `GSE165303`, `GSE116250` and `GSE141910` (`nHF`) and `GSE269882` (`AF`);
-`GSE128188` is an owned tier-3 candidate that is not declared (it was not needed
-once AF's tier-1 sources were measured). Four items remain outside the axis for
-reasons that are not tissue class: `GSE282618` (human HHD bulk, 3 vs 2 exploratory
-subjects — never admitted), `GSE137293` (pig infarct border zone, supplementary
-evidence only) and the two mouse whole-LV MIRI series `GSE160516` / `GSE108940`
-(Stage-1 L1000 rank references, not human gene-axis DEGs). Do not describe the
-six whole-tissue human items as a single ineligible block; only `GSE282618` is
-still unexploited, and only because its design is too small.
+**Tiered admission (ADR 0073).** Collect every qualifying declared tier,
+independently of cumulative DEG yield. Human CM pseudobulk is tier 1;
+non-genetic patient CM models and the declared causal isogenic exception are
+tier 2; human atrial/ventricular whole-tissue bulk is tier 3. The source registry
+and its dated reassessment records in
+`stage2/01_bases/execution/disease_deg_sources.py` own current admission.
+`GSE128188` contributes AF bulk and the `GSE116250` ICM arm contributes once to
+ICM, with controls shared explicitly across diseases. Source quality restrictions
+remain in force; Stage-1 animal MIRI references are not human axis sources.
 - `GSE108940/` — mouse MIRI (*Mus musculus*, GPL7202 Agilent 4×44K); limma WT I/R vs Sham; mouse→human homologene `inTax=10090`; L1000-978 Stage-1-only; provenance corrected in #176 (adds TP53 UP).
 - `GSE116250/` — human LV HF 37 DCM + 13 ICM vs 14 NF (50/14); limma on log2(RPKM+1); full DEG + expression; **tier-3** `nHF` source under ADR 0071 (43 axis-resolved v2 DEGs); also the post-MI (ICM) proxy.
-- `GSE128188/` — human AF 5 vs 5 SR (paired LA+RA, 20 libraries); DESeq2 on donor-pooled counts; full DEG + expression; owned **tier-3** AF candidate, not declared under ADR 0071 (AF stopped after its tier-1 sources).
+- `GSE128188/` — human AF 5 vs 5 SR (paired LA+RA, 20 libraries); DESeq2 on donor-pooled counts; full DEG + expression; declared **tier-3** AF source under ADR 0073.
 - `GSE137293/` — pig infarct scar vs border zone (severity gradient, not disease-vs-healthy); Welch t-test; supplementary only, never an axis source.
 - `GSE141910/` — human LV HF 200 (DCM/HCM/PPCM) vs 166 NF; limma on deposited voom abundance; full DEG + expression; **tier-3** `nHF` source under ADR 0071 (100 axis-resolved v2 DEGs).
 - `GSE160516/` — mouse MIRI (Affymetrix Clariom S); limma pooled I/R vs Sham; Stage 1 primary rank reference; L1000-978 Stage-1-only.
 - `GSE243674/` — human hiPSC-CM anthracyclines + vehicle, 72 wells; DESeq2 10 drug×time-vs-vehicle contrasts; full DEG + expression; chemo-cardiotoxicity.
 - `GSE282618/` — human HHD 3 vs 2 subjects (exploratory); DESeq2 on subject-pooled counts; full DEG + expression; borderline >5% HHD category.
-- `GSE165303/` — human **left-ventricle bulk** RNA-seq, 101 libraries = 50 DCM vs 51 non-failing (the series' RNA arm; the ticket prose "101 DCM" was wrong); deposited log2(normalised counts) with a fixed floor, modelled as-is with limma `lmFit`; full DEG + expression; **tier-3** `nHF` source under ADR 0071 (whole-tissue bulk enters only after tiers 1-2 fall short of 2,000 DEGs, which supersedes the ADR 0066 exclusion for tier 3).
+- `GSE165303/` — human **left-ventricle bulk** RNA-seq, 101 libraries = 50 DCM vs 51 non-failing (the series' RNA arm; the ticket prose "101 DCM" was wrong); deposited log2(normalised counts) with a fixed floor, modelled as-is with limma `lmFit`; full DEG + expression; **tier-3** `nHF` source under ADR 0071 (ADR 0073 collects all qualifying tiers).
 - `GSE270788/` — human LV 10x Multiome GEX SubSeries (Amrute 2024; SuperSeries GSE218392); author CM gate `cell.type.l1 == "Cardiomyocyte"` (13,803 CM / 23 donors, 52–1,576 per donor); per-donor CM pseudobulk then one joint `~0 + arm` limma-voom fit (NICM/ICM/AMI vs the shared Donor controls); feeds `nHF` (NICM) and `ICM` (ICM+AMI). Erratum: deposit arm sizes are Donor 7 / NICM 6 / ICM 5 / AMI 5, not the ticket's 6/7 (#187 comment).
 - `GSE255612/` — human left-atrium 10x snRNA (18 AF / 16 control donors); author CM gate `cell_type == "Cardiomyocytes"` (32,438 CM); the deposit is log1p(CP10K) normalised expression, so the per-donor mean-CP10K pseudobulk is tested with limma (documented linear model, not a count model); feeds `AF`.
 - `GSE138252/` — human atrial **PCM1+ FANS-sorted cardiomyocyte-nuclei** bulk RNA-seq (CM-nuclear bulk, not whole tissue). The 48 GSMs map to 38 library columns: the 2020-batch matrix has 18 atrial libraries (LA 5 AF + 5 control, RA 5 AF + 3 control), GSM4103429 has no expression row, and the 2021 addendum re-sequences four 2020 hearts plus 6 HF-only libraries; the 2785 matrix is a 6-column technical-replicate subset. Published contrast = left atrium, 2020 batch only, 5 AF vs 5 control (the AF arm is AF+HF vs non-failing heart; recorded). One live-implementation limma-voom fit; **1 v2 DEG** (SLC9A7) under the live worker (the audit's TMM alternative gives 2, logged as a sensitivity); **tier-1** `AF` source under ADR 0071.
@@ -61,3 +57,10 @@ GSE108940 mouse remap with `R_HOME=/home/chang/miniconda3/envs/arc/lib/R
 
 - `GSE106297/`, `GSE157282/` — human stem-cell CM DOX/vehicle FPKM sources; ADR 0072 TOX admission, log2(FPKM+1) non-count analysis.
 - `GSE232331/`, `GSE235470/`, `GSE242692/`, `GSE255505/`, `GSE313746/` — ADR 0072 TOX tier-2 count sources; source designs and controls in each `author_log.json`.
+
+## Full-source reassessment inputs (ADR 0073)
+
+- `GSE183852/` — complete author cardiomyocyte DCM-vs-donor DESeq2 table, including non-DEGs and missing adjusted p values; nHF tier 1. The stated 13/25 are snRNA libraries, with donor/genotype independence limitations retained.
+- `GSE248187/` — complete author human DSP-knockout EHT-vs-isogenic edgeR table; genetic tier 2.
+- `GSE221945/` — complete author TBX5 G145R Brugada-vs-corrected DESeq2 table; genetic tier 2, sign oriented to disease minus corrected.
+- `GSE329393/` — RBM20 mutant-vs-family-matched corrected CM counts; one joint limma-voom model, two within-family contrasts; genetic tier 2.
