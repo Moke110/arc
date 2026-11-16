@@ -43,6 +43,28 @@ applicable runs and five N/A entries. See `log/acceptance.md` for bounded valida
 and resource evidence. This establishes shared inputs and baselines, not the final
 90-run model comparison.
 
+PRnet native slice (#228): `execution/prnet.py --inputs <prepared> --candidate
+<empty directory> --source <immutable pert_model/PRnet/source> --scenario
+cold-drug --fold 0 --seed 17 --device cpu` trains the registered Sci-Plex5k
+architecture from random weights. Its sole chemical interface change is shared
+binary Morgan2048 replacing upstream feature Morgan1024; the constant
+`log10(1 + 1 µM)` multiplier remains explicit. GaussianNLL training and the native
+noise-plus-output-Normal draw are retained. Batch512, Adam1e-3/weight_decay1e-8,
+and ReduceLROnPlateau(.5, patience5, min_lr1e-8) follow Sci-Plex; validation uses
+fixed seed22617, ordered complete validation, strict MSE improvement, patience50,
+max1000 and best restoration. A singleton final training batch joins the previous
+batch for BatchNorm. Source digests, adaptations, input identity, order and seeds
+are frozen in each checkpoint configuration.
+
+The CLI then launches `--replay-only` in a fresh process; this entry never trains.
+Completion requires exact native sampled prediction replay on the recorded device
+and Python/Torch/NumPy environment. Candidate outputs include checkpoint,
+prediction, identity, per-well/per-drug scores, learning curve, configuration,
+environment, resource/terminal records and hashes. Failed candidates have terminal
+failure and no accepted publication. `--smoke-rows 8 --max-epochs 2` is an explicitly
+marked bounded smoke, never a formal matrix run. Shared learner lifecycle lives
+in `tenv5k.learner`; model adapters own native loss, initialization and sampling.
+
 TranSiGen uses the ordinary upstream `train_TranSiGen.py` configuration:
 5000→1200 encoder, latent100, decoder800, Morgan2048→400 embedding,
 beta0.1, dropout0.1, batch64, Adam lr0.001/weight_decay0.00001, no scheduler.
