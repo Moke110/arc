@@ -1,3 +1,9 @@
+> **Current generation: ADR 0073 (#220–#225, 2026-11-16).** See §14 and
+> [`full_source_acceptance.json`](full_source_acceptance.json). Sections §1–§13
+> below are sealed predecessor measurements, retained unchanged; their old paths,
+> counts and formulas do not define the current release. Deployment follows
+> independent review and the repository dev→main workflow.
+
 # Acceptance record — Stage 2 `01_bases` rebuild (#192, ADR 0066 / ADR 0068 / ADR 0069 / ADR 0062)
 
 > **Sealed record (note added 2026-11-15 by #211).** Everything in this file that
@@ -883,3 +889,51 @@ inventory, verified source against target. The main live old release remains
 untouched until independent deployment. No model was repointed or retrained;
 evaluation redesign #193 remains deferred. Earlier acceptance sections and
 execution receipts are sealed historical evidence.
+
+## 14. Full-source tier-first four-axis acceptance (#225, ADR 0073)
+
+The isolated coherent release passed all scientific, document, contract and
+repository health gates on 2026-11-16. Independent review and main deployment
+remain separate workflow steps; the machine receipt records their checkpoint.
+
+- Five diseases retain 41 dataset records (8 nHF, 5 ICM, 5 AF, 11 genetic,
+  12 TOX), not 41 independent physical studies. Full union sizes are
+  1785 / 1671 / 25 / 4399 / 9589. Four diseases pass the uniform 100-gene gate;
+  AF retains all 25 genes with an exclusion reason. Each eligible disease's
+  tier-first cut has exactly 1000 genes, while complete union/source evidence
+  remains published.
+- All 2k/3k/4k/5k axes are exact and nested, measured fallback is zero for
+  each, and f1000 ranges 0..4. Eight normalized corpus payloads independently
+  replayed byte-for-byte, with bounded common-gene/control/delta and full-axis
+  library-total checks. Unrelated raw-count/corpus/HVG/identity bytes are unchanged.
+- Source derivation evidence records 16 genuine refits (75.68 s, maximum
+  438612 KiB RSS), 39 identical scientific CSV/sample files and deterministic
+  replay of three gzip intermediates. New author-table sources remain author
+  statistics, not claimed local count-model refits.
+- The first long integrated publish received SIGTERM during the final size;
+  no cause is established. The existing public 5k publish recovered in
+  2:16.22 / 444324 KiB. Independent 2k/3k/4k/5k replay passed in
+  1:18.05 / 1:37.83 / 1:58.72 / 2:20.53. No failed whole-chain PASS is claimed.
+- Both figure PNGs and the relocated root DOCX reproduce exactly. All 13 real
+  document pages were rendered and visually inspected; 41 disease records plus
+  one separately labelled tenv-HVG row are present. The old live DOCX copy is
+  removed. Input/output/tool/QA hashes are in `gene_axis_document_verify.json`.
+- All 372 tests in 27 separately capped files pass without skips, including
+  all five new source-item adapter suites. The two stale accepted genetic
+  roster assertions were red, then migrated to the exact eleven-record roster;
+  the original six isogenic model assertions are retained.
+- `check_paths.sh`, `check_tracked.sh` and `verify_all.sh` all pass. The last
+  ran alone: 66/66 items, 6228 manifest files, 464551241331 immutable source
+  bytes, 5:50.88 wall and 79220 KiB process RSS. Its 10 GiB scope also accounts
+  page cache, which is not the same metric as process RSS. Resource sampling
+  had a documented gap; uninterrupted coverage is not claimed.
+- All 108 deduplicated source/local/view deployment-map records
+  (13342475946 bytes) are hash-verified in this release tree. Main materialization
+  must verify mapped bytes and either inherit post-health unchanged source
+  inode/stat identities or hash non-shared/changed files before cleanup.
+
+`full_source_acceptance.json` composes the exact manifest/input chain, health,
+source proof, human artifact pins and resource observations. The classified
+full-repository reference audit is `legacy_reference_audit.json`; remaining
+matches are sealed history, migration vocabulary, rejection tests or unrelated
+hash substrings. No live old alias, schema field or product remains.
