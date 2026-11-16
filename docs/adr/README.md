@@ -12,13 +12,14 @@ files its `See` section names.
 assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
 restore.
 
-The index covers every record in the directory, 0001–0071 (69 files; 0023 and 0050 are the
+The index covers every record in the directory, 0001–0073 (71 files; 0023 and 0050 are the
 gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
 details in 0038–0041. ADR 0043 reopens the corpus as source measurements without endpoint gates; ADR 0044 subsequently replaces universal-corpus-first planning with source-first corpora.
-ADR 0072 amends the disease eligibility and TOX roster of ADR 0071; its measured
-successor remains separate until coherent release acceptance. ADR 0071 is the base gene-axis contract and supersedes ADR 0066's *Source eligibility*,
+ADR 0073 accepts full-source collection, tier-first DEG1000/f1000 and four axis sizes;
+its implementation and measured release are pending. ADR 0072 amends the disease eligibility
+and TOX roster of ADR 0071 and is the current coherently accepted measured release. ADR 0071 is the base gene-axis contract and supersedes ADR 0066's *Source eligibility*,
 *Priority* and *Candidate table and the two-level rank-sum fusion*, and supersedes ADR
 0069/0070 (its `AF` removal is reversed). Each of those four records carries a status-line
 pointer to 0071; their bodies are unchanged, per the convention above.
@@ -96,4 +97,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0069](0069-remove-af-category-from-01-bases.md) | Remove the `AF` category from Stage 2 `01_bases`: drop the non-informative disease-DEG product and its gene-axis column/row surface |
 | [0070](0070-af-stays-out-of-the-gene-axis.md) | AF stays out of the gene axis: the clinical CM-specific audit; informativeness is necessary but not sufficient (*amends 0068, confirms 0069*) |
 | [0071](0071-gene-axis-v2-deg-tiered-sources-and-f2000.md) | Gene-axis v2: tiered source collection, DEG-only rank fusion, `DEG2000`/`f2000` and the tenv-HVG fallback (*supersedes 0066 eligibility/fusion, 0069/0070 AF removal*) |
-| [0072](0072-disease-eligibility-and-unified-tox.md) | Disease eligibility at 100 axis-resolved DEGs, retained AF evidence and dataset-level unified TOX (*accepted design; successor not yet released*) |
+| [0072](0072-disease-eligibility-and-unified-tox.md) | Disease eligibility at 100 axis-resolved DEGs, retained AF evidence and dataset-level unified TOX (*measured successor accepted 2026-11-16*) |
+| [0073](0073-full-source-tier-first-deg1000-and-four-axes.md) | Full-source collection, highest DEG source tier, tier-first DEG1000/f1000, four nested axes/views and portrait category-split rule DOCX (*accepted design; implementation pending*) |

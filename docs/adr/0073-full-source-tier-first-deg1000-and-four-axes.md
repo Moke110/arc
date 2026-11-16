@@ -1,0 +1,36 @@
+# Full-source tier-first DEG1000 and four gene axes
+
+**Status:** accepted design (2026-11-16); implementation and measured release pending.
+
+ADR 0071's cumulative 2,000-DEG source stopping rule can hide qualifying lower-tier evidence, while its pooled rank can favor a weaker evidence tier. Collect all qualifying declared tiers, retain each disease's complete axis-resolved DEG union, and prioritize the strongest source tier before cutting DEG1000. This amends ADRs 0071/0072's collection, disease ordering, truncation and axis-size contracts; the accepted ADR 0072 products remain authoritative until the successor passes coherent acceptance.
+
+## Decisions
+
+1. **Complete collection.** Review every declared disease's source discovery, screened/rejected candidates and available tier 1/2/3 sources. Reopen candidates deferred solely by the old stopping rule and supplement discovery where needed to cover all qualifying tiers. Never stop because a cumulative union reaches 1,000 or 2,000. Preserve source quality, CM specificity, clinical non-genetic tier-2 admission, independent-dataset identity, TOX drug evidence and immutable-source provenance rules. Exhaustive collection means complete qualifying evidence, not admission of every search result or inclusion of a source twice.
+2. **Complete DEG evidence and highest tier.** Retain every distinct admitted informative-source DEG resolved to the frozen 18,164-gene axis, including genes outside the eventual top 1,000. For each disease/gene, `source_tier_highest` is the minimum numeric tier among sources in which that gene is actually a DEG; a gene DEG-positive at tiers 1 and 2 records 1. Mere measurement, a missing-gene penalty or a non-informative source does not confer tier support. Non-DEGs have no highest DEG tier. Preserve traceability to supporting source records and validate missing/invalid tiers rather than guessing.
+3. **Tier-first disease rank.** Keep per-source DEG tests and ranks unchanged. Compute `disease_rank_sum = sum_source(rank / n_source_DEG)` over informative sources, with each missing/non-DEG rank equal to `n_source_DEG + 1`. Order the complete disease DEG union by `source_tier_highest` ascending, `disease_rank_sum` ascending, then original `gene_index` ascending. Publish contiguous disease ranks 1 through `n_d`, where `n_d` is the full union size. The rank sum remains an unweighted numeric score: tier priority is an explicit separate ordering key, not an added score weight.
+4. **DEG1000 and f1000.** `DEG1000_d` contains the first `min(1000, n_d)` genes under decision 3, with no padding. Only eligible diseases contribute to `f1000(g)`, the number of their DEG1000 sets containing g. Keep the uniform full-union eligibility gate `n_d >= 100`, including exactly 100; retain excluded diseases' upstream evidence and reason. Empty unions are representable without division by zero; AF is evaluated by the gate rather than permanently hard-coded out.
+5. **Cross-disease fusion.** Keep `rank_sum(g) = sum_eligible_d rank_d(g) / n_d`. Inside DEG1000, `rank_d` is the tier-first disease rank; outside it, use `n_d + 1`, including an actual DEG ranked 1,001 or later. The denominator is the complete disease union, never 1,000 or the truncated set size. tenv-HVG is not a disease rank-sum term.
+6. **Four axes and views.** For `N in {2000, 3000, 4000, 5000}`, first take the top N/2 tenv-HVG genes. Fill the second half from unused genes with `f1000 >= 1`, ordered by `f1000` descending, cross-disease `rank_sum` ascending, then `gene_index` ascending. Fill any shortfall with unused tenv-HVG genes in HVG order and record the count for every N. DEG1000 restricts the disease-driven half, not the HVG half or fallback. Release four exact-size nested axes in ascending frozen `gene_index`, without renumbering, and four matching 2k/3k/4k/5k views containing tenv and tahoe_bulk. Keep full-axis CP10K/log1p normalization and matched-control/delta semantics unchanged. Rebuild affected 2k/5k products as well as the new sizes; do not fabricate larger axes by truncating an older release.
+7. **One live successor contract.** Migrate active APIs, columns, files, catalogs, algorithm/schema markers, validators, manifests, source hit counts, coverage statistics, figure inputs and consumers from DEG2000/f2000 to DEG1000/f1000, with no legacy aliases in the final release. Preserve historical ADR bodies, measured acceptance evidence and sealed research results as history. The coverage filename need not be renamed: its explicit denominators and DEG1000 meaning must be current. Stage intermediate changes on an integration branch/candidate tree and keep the accepted release usable until the entire successor is verified.
+8. **Human-facing evidence.** Rebuild coverage and rank-sum figures for all four axes from tracked CSVs. Regenerate the rule DOCX at `stage2/01_bases/gene_axis_fill_rule.docx`, in portrait A4; split table 1 into one explicitly labelled subtable per category, retaining every source record and the separately identified tenv-HVG non-disease evidence. Update all formulas, counts, exclusions, fallback counts, captions and reproduction instructions from the coherent rebuilt release. Update generator defaults, references and provenance/digest checks; remove the old live DOCX location. Render and inspect every page before acceptance.
+
+## Consequences and acceptance
+
+Changing collection can change the full union and all fusion terms, not merely the cutoff. A higher-tier DEG must outrank a lower-tier-only DEG even when its numeric rank sum is worse. Keep the untruncated per-gene tier/rank evidence so exclusion at rank 1,001 is auditable. No old numerical result is a promised successor result.
+
+Use existing public disease/fusion/axis/view readers and publish/verify boundaries. Cover all-tier collection even after crossing 2,000; tier overlap and non-DEG measurement; tier-first rank and deterministic ties; 0/99/100/999/1000/1001 union/cut boundaries; full-union denominators; exclusion behavior; f1000 counts; all four exact nested axes, half allocations and fallback; bounded view reads and common-gene normalization; stale digest rejection; deterministic product/figure/DOCX reproduction. Finish with the three repository offline health checks, separately under the established resource limits. No data analysis, payload rebuild or training is authorized by the planning publication itself.
+
+## See
+
+- [ADR 0071](0071-gene-axis-v2-deg-tiered-sources-and-f2000.md)
+- [ADR 0072](0072-disease-eligibility-and-unified-tox.md)
+- [Glossary](../../GLOSSARY.md)
+- [Bases routing](../../stage2/01_bases/AGENTS.md)
+- [Execution constraints](../agents/execution-environment.md)
+- [Specification #220](https://github.com/Moke110/arc/issues/220)
+- [Implementation #221](https://github.com/Moke110/arc/issues/221) — Stage2 01: 完整收集所有合格 tier 来源并发布全 DEG 并集证据
+- [Implementation #222](https://github.com/Moke110/arc/issues/222) — Stage2 01: 记录最高 DEG 来源 tier 并发布 tier 优先 DEG1000 disease fusion
+- [Implementation #223](https://github.com/Moke110/arc/issues/223) — Stage2 01: 以 f1000 发布四档嵌套基因轴与对应 corpus views
+- [Implementation #224](https://github.com/Moke110/arc/issues/224) — Stage2 01: 重建四档证据图并迁移纵向 A4 基因轴规则文档
+- [Implementation #225](https://github.com/Moke110/arc/issues/225) — Stage2 01: 重放并验收 DEG1000 四档轴完整发布链
