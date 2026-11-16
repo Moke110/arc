@@ -1253,7 +1253,7 @@ class DocxTests(unittest.TestCase):
         axis = DOCUMENT_STEP / 'output/gene-identity/genes.csv'
         manifest = DOCUMENT_STEP / 'output/gene-axis/manifest.json'
         catalogs = self.catalogs()
-        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'gene_axis_fill_rule.docx'
         for path in (coverage, figure, fusion, axis, manifest, committed,
                      *catalogs.values()):
             self.assertTrue(path.is_file(), f'missing docx input or output: {path}')
@@ -1398,19 +1398,19 @@ class DocxTests(unittest.TestCase):
         from docx import Document
         import gene_axis_source_metadata as metadata
         import make_gene_axis_docx as docx_builder
-        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
         self.assertGreaterEqual(len(document.tables), 1, 'the document has no tables')
         table = document.tables[0]
         header = [cell.text for cell in table.rows[0].cells]
         self.assertEqual(header, list(docx_builder.SOURCE_TABLE_COLUMNS))
-        self.assertEqual(len(source_document_rows(document)), 34, 'expected 34 source rows')
+        self.assertEqual(len(source_document_rows(document)), 42, 'expected 41 source rows plus tenv-HVG')
         expected = []
         for category in gene_axis.RELEASE_CATEGORIES:
             catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
             expected.extend((catalog['category'], dataset) for dataset in catalog['datasets'])
-        self.assertEqual(len(expected), 33)
+        self.assertEqual(len(expected), 41)
         for offset, (category_label, dataset) in enumerate(expected, start=1):
             cells = [cell.text for cell in source_document_rows(document)[offset - 1].cells]
             dataset_id = dataset['dataset_id']
@@ -1442,7 +1442,7 @@ class DocxTests(unittest.TestCase):
         from docx import Document
         import gene_axis_source_metadata as metadata
         import make_gene_axis_docx as docx_builder
-        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
         footnote = next((paragraph.text for paragraph in document.paragraphs
@@ -1455,7 +1455,7 @@ class DocxTests(unittest.TestCase):
         """The second table is the per-disease DEG/DEG1000 record, row for row."""
         from docx import Document
         import make_gene_axis_docx as docx_builder
-        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
         self.assertGreaterEqual(len(document.tables), 2,
@@ -1488,21 +1488,20 @@ class DocxTests(unittest.TestCase):
                 tiers = sorted({entry['tier'] for entry in catalog['tier_sources']})
                 self.assertEqual(cells[2], ' → '.join(str(tier) for tier in tiers),
                                  'tier path')
-        # The uncomfortable results are stated, never smoothed over.
-        self.assertIn('SLC9A7', rows['AF'][6], 'AF must name its single gene')
-        self.assertIn('未达到', rows['AF'][6])
-        self.assertEqual(rows['AF'][5], 'no')
-        self.assertIn('100', rows['AF'][6])
-        self.assertIn('唯一达到', rows['TOX'][6])
-        for short in ('nHF', 'ICM'):
-            self.assertIn('未达到', rows[short][6], f'{short} must state its shortfall')
-            self.assertIn('没有更低层可收', rows[short][6])
+        # Data-dependent exclusions and cuts are rendered from this release.
+        for label, record in by_label.items():
+            self.assertEqual(rows[label][5], 'yes' if record['eligible'] else 'no')
+            if not record['eligible']:
+                self.assertIn('100', rows[label][6])
+            if record['deg1000'] < gene_axis.DEG1000_LIMIT:
+                self.assertIn('未达到', rows[label][6])
+                self.assertIn('已遍历全部合格声明层级', rows[label][6])
 
     def test_rule_section_opens_the_document_with_the_v2_rule(self):
         """A reader meets the v2 rule before any table, and never the pN rule."""
         from docx import Document
         import make_gene_axis_docx as docx_builder
-        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'gene_axis_fill_rule.docx'
         document = Document(str(committed))
         headings = [paragraph.text for paragraph in document.paragraphs
                     if paragraph.style.name == 'Title'

@@ -77,7 +77,7 @@ COVERAGE_NOTE = (
 #: candidate histogram and the count of that bin's candidates each axis selects.
 FIGURE_COLUMNS = ('record', 'panel', 'panel_title', 'title', 'axis', 'bin_left',
                   'bin_right', 'bin_center', 'count', 'selected')
-FIGURE_TITLE = ('Released Stage 2 gene axes · rank-sum distribution of the frozen-axis '
+FIGURE_TITLE = ('DEG1000 f1000 gene axes · rank-sum distribution of frozen-axis '
                 "candidates with each axis's selected genes")
 
 #: The source-coverage figure plotted values: one x group per fusion group and one
@@ -91,12 +91,12 @@ SOURCE_COVERAGE_FIGURE_COLUMNS = (
     'record', 'panel', 'panel_title', 'y_label', 'value',
     'series', 'series_label', 'source', 'source_label', 'count', 'rate')
 SOURCE_COVERAGE_FIGURE_PANELS = (
-    {'panel': 'a', 'title': 'Covered Gene Count', 'y_label': 'covered genes',
+    {'panel': 'a', 'title': 'DEG1000 and HVG Covered Gene Count', 'y_label': 'covered genes',
      'value': 'count'},
     # The rate's denominator is no longer N for every group: it is |DEG1000_d|
     # for a disease and N only for tenv-HVG (ADR 0071 decision 8), so the v1
     # "Top-N" wording misdescribes six of the seven groups.
-    {'panel': 'b', 'title': 'Coverage of Each Group',
+    {'panel': 'b', 'title': 'DEG1000 and HVG Group Coverage',
      'y_label': 'share of group covered (%)', 'value': 'rate'},
 )
 SOURCE_COVERAGE_FIGURE_LABELS = {'tenv_hvg': 'tenv-HVG', **CATEGORY_LABELS}
