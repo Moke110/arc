@@ -29,4 +29,6 @@ fetch() { # fetch <url> <name>
 fetch "${BASE}/suppl/${GSE}_processed_data_counts.txt.gz" "${GSE}_processed_data_counts.txt.gz"
 # series matrix: GEO matrix file (.../matrix/)
 fetch "${BASE}/matrix/${GSE}_series_matrix.txt.gz" "${GSE}_series_matrix.txt.gz"
+# Author-hosted primary paper: Table 1 independently labels the reference panel.
+fetch "https://news.cyprotex.com/hubfs/Downloads/Articles%20and%20white%20papers/In-depth%20mechanistic%20analysis%20including%20high-throughput%20RNA%20sequencing%20in%20the%20prediction%20of%20functional%20and%20structural%20cardiotoxicants%20using%20hiPSC%20card.pdf" "Rosell-Hidalgo_2023_Table1.pdf"
 echo "done: $OUT"
