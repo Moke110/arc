@@ -96,8 +96,9 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
-  # Active Stage 2 roots, in the order the routing document lists them.
-  local active_roots=(01_bases 02_models_tenv)
+  # Accepted steps and the approved successor under construction (ADR 0074).
+  # Allowing its paths does not accept its candidate or retire the old step.
+  local active_roots=(01_bases 02_models_tenv 02_models_tenv-5k)
 
   # Layout guard: fail closed on retired step entries.  Only the active step
   # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
