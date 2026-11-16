@@ -176,3 +176,14 @@ stage1/xpert-fda-miri-v2/12_drug_survey/reports@20.html
 # ADR 0062 / #162: test fixtures are the recorded plot values that prove a
 # figure is a function of those values, so they are tracked next to their PNGs.
 !/stage2/01_bases/execution/tests/fixtures/*.csv
+
+# Single-dose tenv5k successor: public code is tracked, candidates disposable.
+!/stage2/02_models_tenv-5k/output/
+/stage2/02_models_tenv-5k/output/*
+!/stage2/02_models_tenv-5k/output/api/
+!/stage2/02_models_tenv-5k/output/api/**
+/stage2/02_models_tenv-5k/output/api/**/__pycache__/
+/stage2/02_models_tenv-5k/output/api/**/*.py[cod]
+/stage2/02_models_tenv-5k/execution/checkpoints/
+!/stage2/02_models_tenv-5k/figure/data/*.csv
+!/stage2/02_models_tenv-5k/log/frozen-inputs/*.csv

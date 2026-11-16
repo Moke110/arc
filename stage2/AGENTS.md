@@ -51,3 +51,8 @@ candidate leaves the accepted products available. Retain only accepted final pro
 remove obsolete payloads after acceptance and reference migration, preserving required
 provenance and audit evidence. Historical sealed records keep their original bytes and
 paths; log a migration mapping. External `source/` trees and Stage 1 remain untouched.
+
+The approved successor `02_models_tenv-5k/` is under construction under ADR 0074
+and #226. It owns the single-dose shared inputs, native-model comparison and
+parent-level Δ evaluation. The old accepted step stays available until #231's
+complete successor acceptance and explicit retirement mapping.
