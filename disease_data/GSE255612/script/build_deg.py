@@ -85,7 +85,7 @@ def main():
     })
     for position, donor in enumerate(donors.donor_id):
         logged[donor] = np.log2(values[:, position] + 1.0)
-    logged.to_csv(MATRIX, index=False, compression='gzip', sep='\t')
+    logged.to_csv(MATRIX, index=False, compression={'method': 'gzip', 'mtime': 0}, sep='\t')
     summary = disease_deg.run_deg_worker(MATRIX, SAMPLES, DESIGN, DEG)
     table = pd.read_csv(DEG)
     missing = set(disease_deg.LOCAL_DEG_COLUMNS) - set(table.columns)

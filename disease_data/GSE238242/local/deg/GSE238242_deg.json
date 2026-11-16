@@ -146,7 +146,7 @@
     "derivation_sha256": "d87d50a36ef722181e3bac35d10ac5101ee200e2a1abc355f33a316c2925bb0b",
     "filter": "edgeR filterByExpr rule written out in the live worker",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "f83fde941363382a161a9dd8be72daeffc8384966c17ae814b23173b77ba1115",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma-voom (voom's own library-size normalisation, moderated t)",
     "pseudobulk": "sum of each donor's CM raw integer counts (the sufficient statistic for a count model); no per-cell normalisation and no mean of normalised values, which would add a normalisation choice",
