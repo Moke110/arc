@@ -16,7 +16,7 @@
     ],
     "reviewed_at": "2026-11-16",
     "scope": "finite reassessment of both existing source surveys, current panels and supplemental GEO query; not a claim of exhaustive future discovery",
-    "tier_policy": "complete all admitted sources within tier before measuring cumulative distinct frozen-axis DEGs; stop descent only at>=2000; new DEG never admission evidence",
+    "tier_policy": "collect every independently admitted qualifying source across all declared tiers; record complete cumulative frozen-axis DEG unions without a count stopping condition; new DEG never admission evidence",
     "unreviewed_or_uncertain": "Fixed twelve qualifying source designs; assess all panel records by the same pinned independent author/regulatory facts. No panel-wide positive inference; unresolved identity is excluded, no matched positive property evidence remains pending with finite reviewed-fact scope."
   },
   "disease": "TOX",
@@ -11496,7 +11496,7 @@
       "sha256": "f73ce26303f9bd5a90dd2cbf63bb269d3e76f0f3d25077d5b207270a720d2f04"
     },
     "stage2/01_bases/execution/tox_source_admission.json": {
-      "sha256": "3f549fc0c9d76cdca67311ee93a154189831265b96aac0b35e813b0bd7baf12b"
+      "sha256": "d0b875676d45fe79af0ab328e68551d6d53ec501090ecfd92b58c384198ed161"
     }
   },
   "schema": "stage2-tox-admission-v1",

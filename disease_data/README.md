@@ -4,7 +4,7 @@ The disease-side inputs for the Stage 2 gene-axis decision preparation
 (ADR 0065) and the Stage 1 MIRI screen, split into one directory per **GEO
 series** (项) under the external-data provenance contract
 ([ADR 0030](../docs/adr/0030-external-data-provenance-and-step-layout.md)).
-Eleven items are present. Each is:
+The routing index and offline verifier enumerate the current items. The initial eight-series inventory below is historical; later source sections record additions. Each item follows:
 
 ```
 <GSE>/
@@ -19,10 +19,9 @@ Eleven items are present. Each is:
 
 `script/verify.sh` checks each `manifest.sha256` offline, and a missing manifest
 is a failure. Run `script/verify_all.sh` from the repository root to verify every
-external item; the `disease_data/` category has eight items and
-78,661,383 B (75.0 MiB) of `source/` bytes.
+external item. Counts/bytes in the initial inventory below describe that historical acquisition, not the current complete-source release.
 
-## The eight 项
+## Initial eight-series acquisition (historical)
 
 | item | organism / platform | role and comparison | n | `source/` bytes |
 |---|---|---|---|---|
@@ -310,8 +309,7 @@ metadata, fetch recipes, offline manifests and per-item design records:
 
 All seven are tier 2. Admission does not assert a DEG yield or a toxicity phenotype
 at every dose/time. Per-source stratification and existing statistical tests remain
-analysis requirements. The source ladder completes a tier before measuring the
-cumulative axis-resolved 2,000-DEG stop. `GSE243674/local/tox_evidence/` contains
+analysis requirements. Under ADR 0073 the source ladder processes every qualifying declared tier without a DEG-count stop; the former stopping rule is historical. `GSE243674/local/tox_evidence/` contains
 independent regulatory evidence snapshots, reproducible with its
 `script/fetch_tox_evidence.py`; these are declared local additions, separate from
 its unchanged GEO source bytes.

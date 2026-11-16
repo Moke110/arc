@@ -1,4 +1,4 @@
-"""Accepted ADR 0072 five-category product contracts at the public file boundary.
+"""Accepted ADR 0073 five-category product contracts at the public file boundary.
 
 Non-TOX records retain bare input digests and item-local derived inputs; TOX
 pins measured source inputs directly as {bytes, sha256} records.
@@ -19,7 +19,7 @@ EXPECTED_CATEGORIES = (
     "tox",
 )
 NON_TOX = {"af", "icm", "nhf", "genetic_cardiomyopathy"}
-SCHEMA = "stage2-disease-deg-catalog-v1"
+SCHEMA = "stage2-disease-deg-catalog-v2"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 RECORD_FIELDS = {
     "dataset_id", "category", "evidence_type", "tier", "deg", "rank",
@@ -28,8 +28,8 @@ RECORD_FIELDS = {
     # carry an ordering, so the fusion never has to guess it.
     "informative", "informativeness",
 }
-LEGACY_CATALOG_KEYS = {"test_method", "dataset_records"}
-LEGACY_RECORD_KEYS = {"test_method", "dataset_records"}
+LEGACY_CATALOG_KEYS = {"test_method", "dataset_records", "deg2000"}
+LEGACY_RECORD_KEYS = {"test_method", "dataset_records", "n_deg_in_deg2000"}
 
 
 def catalog_digest(catalog):

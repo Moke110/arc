@@ -1,6 +1,6 @@
 # Full-source tier-first DEG1000 and four gene axes
 
-**Status:** accepted design (2026-11-16); implementation and measured release pending.
+**Status:** accepted and coherently measured (2026-11-16, #220–#225).
 
 ADR 0071's cumulative 2,000-DEG source stopping rule can hide qualifying lower-tier evidence, while its pooled rank can favor a weaker evidence tier. Collect all qualifying declared tiers, retain each disease's complete axis-resolved DEG union, and prioritize the strongest source tier before cutting DEG1000. This amends ADRs 0071/0072's collection, disease ordering, truncation and axis-size contracts; the accepted ADR 0072 products remain authoritative until the successor passes coherent acceptance.
 
@@ -20,6 +20,24 @@ ADR 0071's cumulative 2,000-DEG source stopping rule can hide qualifying lower-t
 Changing collection can change the full union and all fusion terms, not merely the cutoff. A higher-tier DEG must outrank a lower-tier-only DEG even when its numeric rank sum is worse. Keep the untruncated per-gene tier/rank evidence so exclusion at rank 1,001 is auditable. No old numerical result is a promised successor result.
 
 Use existing public disease/fusion/axis/view readers and publish/verify boundaries. Cover all-tier collection even after crossing 2,000; tier overlap and non-DEG measurement; tier-first rank and deterministic ties; 0/99/100/999/1000/1001 union/cut boundaries; full-union denominators; exclusion behavior; f1000 counts; all four exact nested axes, half allocations and fallback; bounded view reads and common-gene normalization; stale digest rejection; deterministic product/figure/DOCX reproduction. Finish with the three repository offline health checks, separately under the established resource limits. No data analysis, payload rebuild or training is authorized by the planning publication itself.
+
+## Measured publication (2026-11-16)
+
+The implementation successor releases 41 dataset records across five diseases
+(nHF 8, ICM 5, AF 5, genetic 11, TOX 12), with explicit shared-control/source
+identity rather than an independence claim. Complete axis-resolved DEG unions
+are respectively 1785, 1671, 25, 4399 and 9589; each eligible disease retains
+1000 tier-first DEGs. AF's 25 are preserved but fail the uniform gate.
+All four exact nested axes and eight corresponding corpus-view payloads are
+released; measured `f1000` spans 0..4 and each axis's HVG fallback is zero.
+
+Independent source, fusion, axis and per-view replays, unchanged corpus bytes,
+contract tests and repository health are pinned by
+[`full_source_acceptance.json`](../../stage2/01_bases/log/full_source_acceptance.json).
+The relocated portrait A4 DOCX has thirteen individually inspected pages and
+its own deterministic artifact/tool receipt. Earlier ADR bodies and original
+measured acceptance sections remain historical; the live contract is the
+[current Bases README](../../stage2/01_bases/README.md).
 
 ## See
 

@@ -2,42 +2,51 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "09f470730b746d5ea2fa6600cf1f81e8227f59ef4de13d9dcd046d5bcf76da79",
+  "catalog_sha256": "819945a02d96215a5be1192a4eac7443850e40356a719dff2aa82f336a4910cb",
   "category": "genetic_cardiomyopathy",
   "counts": {
-    "datasets": 8,
+    "datasets": 11,
     "n_measured": {
       "gse194297__dmd_cardiomyopathy": 16409,
+      "gse221945__tbx5_brs": 15018,
       "gse224129__mybpc3_hcm": 17258,
       "gse234141__ttntv_dcm": 17606,
+      "gse248187__dsp_eht": 13179,
       "gse253223__pkp2_knockdown_arvc": 16495,
       "gse304575__lmna_h222p_dcm": 16737,
       "gse305648__rbm20_dcm": 17741,
+      "gse329393__rbm20": 18062,
       "reichart-cm__arvc": 17513,
       "reichart-cm__dcm_genotype_positive": 17513
     }
   },
   "inputs": {
-    "disease_data/GSE194297/local/deg/GSE194297_deg.json": "51a174b356ec0d3b4c83d3f8c4125bce4153b2bd96ac67d5ef604f1e7b1512b1",
+    "disease_data/GSE194297/local/deg/GSE194297_deg.json": "8fde1f52dca4c34953226a791cdb0af55e3458e29df62231d383b19ba101e1ad",
     "disease_data/GSE194297/manifest.sha256": "86ecc070d9ef7875ceced3e0de29fe716d6e0ffa72160ddd21222e12401a7056",
-    "disease_data/GSE224129/local/deg/GSE224129_deg.json": "fcdd34d6154f17c17a5e704a8131d44364297a21f51d835a1c936e664020663c",
+    "disease_data/GSE221945/local/deg/GSE221945_deg.json": "3e283ecd7ccfc078cdd28c85479887f8c09f4719adbd5f29c904b6ae933e9df4",
+    "disease_data/GSE221945/manifest.sha256": "5622657cf85ac17b27f832f15902e1909b19bac62d39a0bde7b4b70af191e508",
+    "disease_data/GSE224129/local/deg/GSE224129_deg.json": "7507c040e316e53593092d28712b0fe7def12c4d0ddca4c7621ab67150946371",
     "disease_data/GSE224129/manifest.sha256": "6cd74673ae1394ae6b0ff3b0f2cb0af4c657969c1fc4e3f48645341085a8bdfd",
-    "disease_data/GSE234141/local/deg/GSE234141_deg.json": "33b2e03fa6df8e13c1bc6d5575ac69a35485ff802369e42fde077b08bc0df12e",
+    "disease_data/GSE234141/local/deg/GSE234141_deg.json": "c0b7b8719859c7d2e8ce01c8b2429836a7c1181a51d6ddb1d783c65e0274f6d9",
     "disease_data/GSE234141/manifest.sha256": "8305e560229968df266051a1edc67eba9e8dae95f93fbccd866b08b96f038f23",
-    "disease_data/GSE253223/local/deg/GSE253223_deg.json": "e7cd26411ae07a71af070dfce92d7b5f45ccb512025a0a5509db4d02cc25ceae",
+    "disease_data/GSE248187/local/deg/GSE248187_deg.json": "9b36c678e08e0df9aa85b3060def0bda923cba6fb49c9f4cf53e919ea2722b30",
+    "disease_data/GSE248187/manifest.sha256": "9a464719d4bc0694b11e6549a76382492c9bb26af2d2ae496c26c748ed3d24c9",
+    "disease_data/GSE253223/local/deg/GSE253223_deg.json": "602ab319bcbc4dc109ffa5370e27a07600a3522d3bf9ed5b2cf72f29c171638c",
     "disease_data/GSE253223/manifest.sha256": "ddbd4a1c5f846756f69f25a9d180c84a13d880a737b105cbcd38f8acb2c45f0a",
-    "disease_data/GSE304575/local/deg/GSE304575_deg.json": "839659aca1245f535a2cbcf643cf39ac72cd60415d0f03866201fc1986a827a8",
+    "disease_data/GSE304575/local/deg/GSE304575_deg.json": "03af49c998fa2ab095f269a7bbe6968fa9e6be5bd0f1c2cdfad05c210883535f",
     "disease_data/GSE304575/manifest.sha256": "45abab8e5b263a548e7d8b597466154ba9439b0eff23e48022e354d10a3e3075",
-    "disease_data/GSE305648/local/deg/GSE305648_deg.json": "5fe09fd154850411840646304e91bf5869cf363cbd91e1f6cc48f3d3fb9b0d78",
+    "disease_data/GSE305648/local/deg/GSE305648_deg.json": "3afb4ea48989cdb8f2fd68fa5e4feb333cc578cd187a0da1be72619e380c7a42",
     "disease_data/GSE305648/manifest.sha256": "1ca0fd6363d1180e8c8a325e59a94d4453c0e1b58e94ec4f640c7ec09ce2d342",
-    "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
+    "disease_data/GSE329393/local/deg/GSE329393_deg.json": "fb28ba289ea9ddfc116cf552f34f73b76a4622c217b4579d4a4397ebdfee5e5d",
+    "disease_data/GSE329393/manifest.sha256": "d5b7a4ef7762accb6b9bef88a7dac567b8b92ca246df7aa17ec027824c3c54c0",
+    "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "33a62f7acb79d386c76935f4e1453affba9d57c99c1d1fc8b3cc9243f6bee1be",
     "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66",
     "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "1cbe4c8807c60ccb780aeeb4358ade0ed97a0d96f5b8650cadc3ff125cfeb37a"
+      "sha256": "1a3a99a083c7be86587567af0d71b5a2dbe53ccafe301b38f4f8e59e8e5c01b4"
     },
     "gse194297__dmd_cardiomyopathy.deg.csv": {
       "rows": 16409,
@@ -46,6 +55,14 @@
     "gse194297__dmd_cardiomyopathy.rank.csv": {
       "rows": 18164,
       "sha256": "e5efd03350f3ac84c0ac1030931207837615c339aff5e593c45f8a4304eab35f"
+    },
+    "gse221945__tbx5_brs.deg.csv": {
+      "rows": 15018,
+      "sha256": "a2c060551d451646bc4939df3d53fe4a94a6e5b173cda892db2389eb8301898b"
+    },
+    "gse221945__tbx5_brs.rank.csv": {
+      "rows": 18164,
+      "sha256": "7365c2ea05ff2777c9fd8dfba49024644a318013320ab9880bca8021710ef0eb"
     },
     "gse224129__mybpc3_hcm.deg.csv": {
       "rows": 17258,
@@ -62,6 +79,14 @@
     "gse234141__ttntv_dcm.rank.csv": {
       "rows": 18164,
       "sha256": "1cb787a87bc59283977161b63cfcca6ab01ed9b8e79fb4f1bb389ae05ce25138"
+    },
+    "gse248187__dsp_eht.deg.csv": {
+      "rows": 13179,
+      "sha256": "3a4bac33765e338ce71f344e9384a656826c6b84927737f0db8779a55f23704a"
+    },
+    "gse248187__dsp_eht.rank.csv": {
+      "rows": 18164,
+      "sha256": "c5ca63f59dca9c343b64c7298adaf0d51315b06934a8c49da69f209978c1a701"
     },
     "gse253223__pkp2_knockdown_arvc.deg.csv": {
       "rows": 16495,
@@ -87,6 +112,14 @@
       "rows": 18164,
       "sha256": "0d9ebff98d5964897d773773936544eec8207fabcb9343e11cf4ecf98eab5fc4"
     },
+    "gse329393__rbm20.deg.csv": {
+      "rows": 18062,
+      "sha256": "fd6e4dbade7ebe9e1ea92644e821ed5f63a01ec897f901f491d64ce5decd7099"
+    },
+    "gse329393__rbm20.rank.csv": {
+      "rows": 18164,
+      "sha256": "ab3c1678c56fc1a09e24c6cf0559ca629958ecd358dc818c7e44d756529c75e9"
+    },
     "reichart-cm__arvc.deg.csv": {
       "rows": 17513,
       "sha256": "b60e30cf1de9235cc9d24c739a450e21a8a5f1f6b6fcfbdc6ade3dc654d92442"
@@ -105,5 +138,5 @@
     }
   },
   "recipe": "execution/build_disease_deg.py publish --category genetic_cardiomyopathy",
-  "schema": "stage2-disease-deg-release-v1"
+  "schema": "stage2-disease-deg-release-v2"
 }

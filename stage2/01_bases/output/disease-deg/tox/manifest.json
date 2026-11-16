@@ -4,11 +4,11 @@
     "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
     "size": 18164
   },
-  "catalog_sha256": "a3698039f1e509cc8ebccf4f280220d3f1cf6615cdc4a15d6287808caf711f98",
+  "catalog_sha256": "58fd1582ba776c1be05252517e9469a44865183fae6b28e738135df525c00170",
   "category": "TOX",
   "counts": {
     "datasets": 12,
-    "deg2000": 2000,
+    "deg1000": 1000,
     "n_deg": 9589
   },
   "environment": {
@@ -283,7 +283,7 @@
       "sha256": "f73ce26303f9bd5a90dd2cbf63bb269d3e76f0f3d25077d5b207270a720d2f04"
     },
     "stage2/01_bases/execution/tox_source_admission.json": {
-      "sha256": "3f549fc0c9d76cdca67311ee93a154189831265b96aac0b35e813b0bd7baf12b"
+      "sha256": "d0b875676d45fe79af0ab328e68551d6d53ec501090ecfd92b58c384198ed161"
     },
     "stage2/01_bases/output/api/bases/bulk_deg.py": {
       "bytes": 23549,
@@ -291,7 +291,7 @@
     },
     "stage2/01_bases/output/api/bases/cardiotox.py": {
       "bytes": 79108,
-      "sha256": "ddf743bc8b664273ae4c8bc628f205aa4c9d16bf62862287bbad1c86ead29417"
+      "sha256": "28fe48ddf39fe2523b39a4c5803e4c08b6ff7d5c7d53536cef244057b9e63870"
     },
     "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
       "bytes": 4250,
@@ -310,8 +310,8 @@
       "sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f"
     },
     "stage2/01_bases/output/api/bases/disease_deg.py": {
-      "bytes": 91800,
-      "sha256": "d7c260514fdd631092ff003f7605200af130cb2376526bbaf76f7d8496fa6c3a"
+      "bytes": 91273,
+      "sha256": "3ca86a2d645cbea9b171097397b94ab8b3c2765aaadbd899773e63be31d283f7"
     },
     "stage2/01_bases/output/api/bases/r_env.py": {
       "bytes": 3557,
@@ -322,8 +322,8 @@
       "sha256": "dfa8e4ba1cfff44da6d651f27f699edb3f52880cfa792fc3a516c4c84a989404"
     },
     "stage2/01_bases/output/api/bases/tox.py": {
-      "bytes": 21492,
-      "sha256": "0196064730e393a1dc07d6e566b5096058217f5659df7b785eed33159a49244a"
+      "bytes": 21422,
+      "sha256": "c80cac411f19bde4966e0991972d3871d767fcd2517894e0ce99e87116163f38"
     },
     "stage2/01_bases/output/api/bases/tox_admission.py": {
       "bytes": 8597,
@@ -344,10 +344,10 @@
   },
   "outputs": {
     "admission.json": {
-      "sha256": "78996cf34962b73c2e4b74073769fb61f76672c88dc021faae962f2aad65842e"
+      "sha256": "382932c040f71035200c69dff217365c31abb4749405c68f40005d149d3c633c"
     },
     "catalog.json": {
-      "sha256": "26d3ad407db13b82274ebffc454b9cd64d05a55b94e6ea384085b506ccdbb174"
+      "sha256": "f5210505f8f9369115561db96d73063f18f074e2b12c9230a7c1997838edfead"
     },
     "dtoxs_ipsc.audit.json": {
       "sha256": "834f93afe9715fd82ee46445b6179194aca6c6aa2f4ee791ff834a1cf689a574"
@@ -457,10 +457,10 @@
     "gse313746.rank.csv": {
       "sha256": "d0dc2b6e401562dd66d62596f06565344d5774d9f6701c40bf2cc80a7ea7536b"
     },
-    "tox.deg2000.csv": {
-      "sha256": "383984b5f9f4aa2d32ca00da746ff25bd144e8bc82993e3fdf91fc24ab733e85"
+    "tox.deg1000.csv": {
+      "sha256": "04ae9a8451d18e49df525244c924ac0b2e5ab21823715be2478d441b577bf02b"
     }
   },
-  "recipe": "Pool independently admitted small-molecule drugs vs matched vehicle within original experimental strata; preserve source-specific tests and donor handling; collapse once per independent dataset with maximum effect and pass-any-contrast padj<0.05 & abs(log2FC)>=2; one DEG-only rank per dataset, rank_norm=rank/n_deg; finish each tier before applying cumulative frozen-axis DEG-union >=2000 stop.",
-  "schema": "stage2-disease-deg-release-v1"
+  "recipe": "Pool independently admitted small-molecule drugs vs matched vehicle within original experimental strata; preserve source-specific tests and donor handling; collapse once per independent dataset with maximum effect and pass-any-contrast padj<0.05 & abs(log2FC)>=2; one DEG-only rank per dataset, rank_norm=rank/n_deg; finish each declared qualifying tier without a DEG-count stopping condition.",
+  "schema": "stage2-disease-deg-release-v2"
 }
