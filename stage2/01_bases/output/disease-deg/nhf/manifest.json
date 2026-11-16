@@ -2,15 +2,17 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "d302d8bd85843e7576cf32ec93258c340fe19b076ecdfa271aef3653c4e72324",
+  "catalog_sha256": "b84d90c435dfe19f209fd964a0f327502843fbe1b3dfa2e136c6b2a8a9881763",
   "category": "nHF",
   "counts": {
-    "datasets": 6,
+    "datasets": 8,
     "n_measured": {
       "gse116250__hf_lv_bulk": 15727,
       "gse141910__hf_lv_bulk": 14712,
       "gse165303__dcm_lv_bulk": 17885,
+      "gse183852__dcm_cm": 16335,
       "gse270788__nicm": 17092,
+      "gse298023__dcm_cm": 17334,
       "gse35108__dcm_ipsc_cm": 16443,
       "reichart-cm__dcm_genotype_negative": 17513
     }
@@ -20,20 +22,24 @@
     "disease_data/GSE116250/manifest.sha256": "26c86a20c338ac11581d6fc21c0ec95064ef1d6e4995441882bd966499a6b260",
     "disease_data/GSE141910/local/deg/GSE141910_deg.json": "bdd5b8f3b225e4c48e8970a4d303f18330af6fcd70d76003d1f4ec77a003f93b",
     "disease_data/GSE141910/manifest.sha256": "8142f7234f6d1b5b815ffb234da7bd4a7ec1fa237d032c9763e765179aed5ec9",
-    "disease_data/GSE165303/local/deg/GSE165303_deg.json": "583dd9baedc3dfcdeaafa5cfba74b62775335b02fb8562ef0c9c40e97c3607f5",
+    "disease_data/GSE165303/local/deg/GSE165303_deg.json": "9071b3fbbe2ff71bdfe186912e934cb442e78ecfd0c5b9c09936201a754e47d3",
     "disease_data/GSE165303/manifest.sha256": "529b7a4a9828398546f718dd010d39ec97f23954181eb8ba3c7dabebf426095a",
-    "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+    "disease_data/GSE183852/local/deg/GSE183852_deg.json": "36e20fce360b5ce9f97f0e42566144d8c6f9874fc1c06790522b2d08f16789b0",
+    "disease_data/GSE183852/manifest.sha256": "e913c37313f1130758ee421ba66963c3a0bb4e56703b3712ea0939c69b7340cb",
+    "disease_data/GSE270788/local/deg/gse270788_deg.json": "57f1f495ba9de071e96ff8036d06f4949802567e1dbcec82e1d1b355d4b0028a",
     "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb",
-    "disease_data/GSE35108/local/deg/GSE35108_deg.json": "3286fbe054fd60c965b6946a5dfdbc031b51e181557aa17469bfea561c50146f",
+    "disease_data/GSE298023/local/deg/gse298023_deg.json": "53e5528637eb9b80c63bc8487fb9d16d8c43bae3a84d36cb5c7bb133c8aca078",
+    "disease_data/GSE298023/manifest.sha256": "c3fd20bdf48ba1888f2dc4d1ba0211298493b68babea7183bbf40a997f4d78ee",
+    "disease_data/GSE35108/local/deg/GSE35108_deg.json": "a2d38cb5563b569820c069ca048859b7f53e5e6be9ce101574e3649c64846131",
     "disease_data/GSE35108/manifest.sha256": "671a2af899ef28fa75e8b237d6d5fd3f18f3c8a4b275e2471fdb670f6070d4f7",
-    "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
+    "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "cff96dfdc2b780481fa868b7ce8bfd597e7ad5428e52c74e6f79f872ecd383ba",
     "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66",
     "stage2/01_bases/output/gene-identity/genes.csv": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "5e7f0ca5155e319be449c17c5f3313a13e833968e8d610538baf0d0697b94411"
+      "sha256": "34d952606d3c36000586db24750de3c4b83cb5e8270211618f3225f93a64187d"
     },
     "gse116250__hf_lv_bulk.deg.csv": {
       "rows": 15727,
@@ -59,6 +65,14 @@
       "rows": 18164,
       "sha256": "aef43992754e7e32c0d394bf1916dc2336242179821cb3f85a4453776373cfed"
     },
+    "gse183852__dcm_cm.deg.csv": {
+      "rows": 16335,
+      "sha256": "8a70d04234f89cb303fd0cbd8410c711ba2568864d17b179be1ea10cdde4fcd7"
+    },
+    "gse183852__dcm_cm.rank.csv": {
+      "rows": 18164,
+      "sha256": "8e942e5c3708d3ffb8ee04dc8ddfd795da8047d7df8149f26e81a9d274552833"
+    },
     "gse270788__nicm.deg.csv": {
       "rows": 17092,
       "sha256": "61d8719f66d363caee143830bccebd16a94e27cf75e545cd3ec4fc88cc7497de"
@@ -66,6 +80,14 @@
     "gse270788__nicm.rank.csv": {
       "rows": 18164,
       "sha256": "647597c9da5e1d55fefa92d27a8d68f1747c00a4957f8edc227a679488f71651"
+    },
+    "gse298023__dcm_cm.deg.csv": {
+      "rows": 17334,
+      "sha256": "ac55feffa2b51dca5526d14ace0966c9e7be34e009a3b121770b30ff7ee9b258"
+    },
+    "gse298023__dcm_cm.rank.csv": {
+      "rows": 18164,
+      "sha256": "599b2c62f6fc979f54f548cb7dd0e7c89921e757afcc92d111f7a22690bfb2c6"
     },
     "gse35108__dcm_ipsc_cm.deg.csv": {
       "rows": 16443,
@@ -85,5 +107,5 @@
     }
   },
   "recipe": "execution/build_disease_deg.py publish --category nHF",
-  "schema": "stage2-disease-deg-release-v1"
+  "schema": "stage2-disease-deg-release-v2"
 }

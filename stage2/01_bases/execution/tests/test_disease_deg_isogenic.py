@@ -55,6 +55,10 @@ EXPECTED_DATASETS = (
     'gse194297__dmd_cardiomyopathy',
 )
 
+PUBLISHED_DATASETS = EXPECTED_DATASETS + (
+    'gse248187__dsp_eht', 'gse221945__tbx5_brs', 'gse329393__rbm20',
+)
+
 
 def load_item_spec(accession):
     """Import one item's ``script/build_deg.py`` and return its declared SPEC."""
@@ -315,11 +319,11 @@ class PublishedCatalogTest(unittest.TestCase):
         self.manifest = json.loads((CATEGORY_DIR / 'manifest.json').read_text())
         self.records = {record['dataset_id']: record for record in self.catalog['datasets']}
 
-    def test_eight_datasets_in_the_canonical_shape(self):
+    def test_eleven_datasets_in_the_canonical_shape(self):
         self.assertEqual(self.catalog['schema'], disease_deg.CATALOG_SCHEMA)
         self.assertEqual(self.catalog['category'], 'genetic_cardiomyopathy')
         self.assertEqual(self.catalog['directory'], 'genetic_cardiomyopathy')
-        self.assertEqual(tuple(self.records), tuple(EXPECTED_DATASETS))
+        self.assertEqual(tuple(self.records), PUBLISHED_DATASETS)
         self.assertEqual(self.catalog['tier'], 1)
         for dataset_id, record in self.records.items():
             self.assertGreater(record['n_case'], 0, dataset_id)
@@ -337,14 +341,17 @@ class PublishedCatalogTest(unittest.TestCase):
 
     def test_isogenic_exception_recorded_per_source(self):
         self.assertTrue(self.catalog['isogenic_exception']['applies'])
-        for dataset_id in EXPECTED_DATASETS:
+        for dataset_id in PUBLISHED_DATASETS:
             record = self.records[dataset_id]
             if dataset_id.startswith('reichart-cm__'):
                 self.assertNotIn('isogenic_exception', record)
                 continue
             exception = record['isogenic_exception']
             self.assertTrue(exception['applies'], dataset_id)
-            self.assertIn('ADR 0066 Isogenic exception', exception['why'])
+            if dataset_id in EXPECTED_DATASETS:
+                self.assertIn('ADR 0066 Isogenic exception', exception['why'])
+            else:
+                self.assertIn('ADR0066 causal isogenic-model exception', exception['why'])
             self.assertTrue(exception['control_arm'], dataset_id)
 
     def test_multi_arm_strata_recorded_and_applied(self):
@@ -386,7 +393,7 @@ class PublishedCatalogTest(unittest.TestCase):
         self.assertEqual(self.manifest['category'], 'genetic_cardiomyopathy')
         self.assertEqual(self.manifest['catalog_sha256'], self.catalog['catalog_sha256'])
         self.assertEqual(self.catalog['catalog_sha256'], disease_deg.catalog_digest(self.catalog))
-        self.assertEqual(self.manifest['counts']['datasets'], 8)
+        self.assertEqual(self.manifest['counts']['datasets'], 11)
         for name, digest in self.manifest['inputs'].items():
             self.assertFalse(name.startswith('/'))
             self.assertEqual(len(digest), 64)
@@ -397,7 +404,7 @@ class PublishedCatalogTest(unittest.TestCase):
 
     def test_reader_returns_tables_and_ranks(self):
         reader = disease_deg.DiseaseDeg(RESULT_ROOT)
-        for dataset_id in EXPECTED_DATASETS:
+        for dataset_id in PUBLISHED_DATASETS:
             table = reader.table('genetic_cardiomyopathy', dataset_id)
             rank = reader.rank('genetic_cardiomyopathy', dataset_id)
             disease_deg.validate_table(table)

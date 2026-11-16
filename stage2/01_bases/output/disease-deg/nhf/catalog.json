@@ -4,9 +4,9 @@
     "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "size": 18164
   },
-  "axis_resolved_deg_union": 1661,
+  "axis_resolved_deg_union": 1785,
   "axis_size": 18164,
-  "catalog_sha256": "d302d8bd85843e7576cf32ec93258c340fe19b076ecdfa271aef3653c4e72324",
+  "catalog_sha256": "b84d90c435dfe19f209fd964a0f327502843fbe1b3dfa2e136c6b2a8a9881763",
   "category": "nHF",
   "datasets": [
     {
@@ -63,7 +63,7 @@
         "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
-        "disease_data/GSE270788/local/deg/gse270788_deg.json": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+        "disease_data/GSE270788/local/deg/gse270788_deg.json": "57f1f495ba9de071e96ff8036d06f4949802567e1dbcec82e1d1b355d4b0028a",
         "disease_data/GSE270788/manifest.sha256": "ac47f7a240e0f77bc6043cb3d5aac0803155a0aa2d34f96130bc4fe455a6e1bb"
       },
       "method": {
@@ -79,7 +79,7 @@
       "n_case": 6,
       "n_control": 7,
       "n_deg": 4,
-      "n_deg_in_deg2000": 4,
+      "n_deg_in_deg1000": 4,
       "n_measured": 17092,
       "n_significant": 7,
       "rank": "gse270788__nicm.rank.csv",
@@ -139,7 +139,7 @@
         "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
-        "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
+        "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "cff96dfdc2b780481fa868b7ce8bfd597e7ad5428e52c74e6f79f872ecd383ba",
         "disease_data/Reichart-CM/manifest.sha256": "381eaf13ebbe05acf7e687f7d74ff3d83a587435c9658c4a1e160d48ddf6ec66"
       },
       "method": {
@@ -155,7 +155,7 @@
       "n_case": 8,
       "n_control": 18,
       "n_deg": 1053,
-      "n_deg_in_deg2000": 1053,
+      "n_deg_in_deg1000": 881,
       "n_measured": 17513,
       "n_significant": 3297,
       "rank": "reichart-cm__dcm_genotype_negative.rank.csv",
@@ -215,7 +215,7 @@
         "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
-        "disease_data/GSE35108/local/deg/GSE35108_deg.json": "3286fbe054fd60c965b6946a5dfdbc031b51e181557aa17469bfea561c50146f",
+        "disease_data/GSE35108/local/deg/GSE35108_deg.json": "a2d38cb5563b569820c069ca048859b7f53e5e6be9ce101574e3649c64846131",
         "disease_data/GSE35108/manifest.sha256": "671a2af899ef28fa75e8b237d6d5fd3f18f3c8a4b275e2471fdb670f6070d4f7"
       },
       "method": {
@@ -232,7 +232,7 @@
       "n_case": 4,
       "n_control": 4,
       "n_deg": 524,
-      "n_deg_in_deg2000": 524,
+      "n_deg_in_deg1000": 33,
       "n_measured": 16443,
       "n_significant": 11516,
       "non_genetic_model_basis": "patient-derived familial-DCM iPSC-CM lines compared with normal iPSC-CM lines; no mutation was introduced and no isogenic control is deposited, so this is the clinical (non-mutation-modelled) iPSC-CM form ADR 0071 admits to a clinical category at tier 2",
@@ -299,7 +299,7 @@
         "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
       },
       "inputs": {
-        "disease_data/GSE165303/local/deg/GSE165303_deg.json": "583dd9baedc3dfcdeaafa5cfba74b62775335b02fb8562ef0c9c40e97c3607f5",
+        "disease_data/GSE165303/local/deg/GSE165303_deg.json": "9071b3fbbe2ff71bdfe186912e934cb442e78ecfd0c5b9c09936201a754e47d3",
         "disease_data/GSE165303/manifest.sha256": "529b7a4a9828398546f718dd010d39ec97f23954181eb8ba3c7dabebf426095a"
       },
       "method": {
@@ -310,13 +310,13 @@
         "padj": "Benjamini-Hochberg",
         "test": "moderated t"
       },
-      "model_basis": "whole left-ventricle tissue bulk: not cardiomyocyte-specific, so it is a tier-3 source only and enters nHF only after tiers 1-2 fall short of 2,000 DEGs (ADR 0071)",
+      "model_basis": "whole left-ventricle tissue bulk: not cardiomyocyte-specific, so it is a tier-3 source; ADR 0073 collects it regardless of higher-tier yield",
       "model_system": "human left-ventricle bulk tissue (whole tissue, not cardiomyocyte-specific), bulk RNA-seq",
       "n_axis_unmeasured": 279,
       "n_case": 50,
       "n_control": 51,
       "n_deg": 29,
-      "n_deg_in_deg2000": 29,
+      "n_deg_in_deg1000": 8,
       "n_measured": 17885,
       "n_significant": 7591,
       "rank": "gse165303__dcm_lv_bulk.rank.csv",
@@ -388,13 +388,13 @@
         "padj": "Benjamini-Hochberg",
         "test": "moderated t"
       },
-      "model_basis": "whole left-ventricular tissue bulk: not cardiomyocyte-specific, so it is a tier-3 source only and enters nHF only after tiers 1-2 fall short of 2,000 axis-resolved DEGs (ADR 0071)",
+      "model_basis": "whole left-ventricular tissue bulk: not cardiomyocyte-specific, so it is a tier-3 source; ADR 0073 collects every qualifying tier ",
       "model_system": "human left-ventricular bulk tissue (whole tissue, not cardiomyocyte-specific), bulk RNA-seq",
       "n_axis_unmeasured": 2437,
       "n_case": 50,
       "n_control": 14,
       "n_deg": 43,
-      "n_deg_in_deg2000": 43,
+      "n_deg_in_deg1000": 9,
       "n_measured": 15727,
       "n_significant": 7442,
       "rank": "gse116250__hf_lv_bulk.rank.csv",
@@ -405,7 +405,7 @@
         "blocking_covariates": [],
         "decision": "one joint fit ~0 + group over the 64 libraries (14 NF / 37 DCM / 13 ICM) publishes the primary HF_vs_NF contrast and the two arm contrasts as contrast rows of the same fit; the multi-contrast collapse keeps the maximum-effect contrast per gene and the DEG flag is pass-any-contrast",
         "pooled": true,
-        "why": "the three labels are arms of one model, not independent sources; the tier-3 contribution is their pass-any-contrast v2 DEG union (43 axis DEGs measured, 144 genome-wide). The 13-donor ICM arm is an end-stage remodelling proxy, recorded here and never re-used as the ICM category source, whose evidence is tier-1 CM pseudobulk"
+        "why": "the three labels are arms of one model, not independent sources; the tier-3 contribution is their pass-any-contrast v2 DEG union (43 axis DEGs measured, 144 genome-wide). The 13-donor ICM arm is an end-stage patient ICM comparison; ADR 0073 also records it once in the ICM category at tier 3, with the shared NF controls explicit"
       },
       "tier": 3,
       "time_window_basis": null
@@ -471,13 +471,13 @@
         "padj": "Benjamini-Hochberg",
         "test": "moderated t"
       },
-      "model_basis": "whole left-ventricular free-wall bulk: not cardiomyocyte-specific, so it is a tier-3 source only and enters nHF only after tiers 1-2 fall short of 2,000 axis-resolved DEGs (ADR 0071)",
+      "model_basis": "whole left-ventricular free-wall bulk: not cardiomyocyte-specific, so it is a tier-3 source; all qualifying tiers are collected (ADR 0073)",
       "model_system": "human left-ventricular free-wall bulk tissue (whole tissue, not cardiomyocyte-specific), bulk RNA-seq, MAGNet consortium",
       "n_axis_unmeasured": 3452,
       "n_case": 200,
       "n_control": 166,
       "n_deg": 100,
-      "n_deg_in_deg2000": 100,
+      "n_deg_in_deg1000": 21,
       "n_measured": 14712,
       "n_significant": 10042,
       "rank": "gse141910__hf_lv_bulk.rank.csv",
@@ -492,44 +492,254 @@
       },
       "tier": 3,
       "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 15782,
+          "crosswalk_alias": 565,
+          "offaxis": 152,
+          "unmapped": 10447
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 16335,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 16347,
+        "n_source_rows": 26946,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 15782,
+          "crosswalk_alias": 565,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 16335,
+          "n_resolved": 16347,
+          "n_source_symbols": 26946,
+          "offaxis": 152,
+          "unmapped": 10447
+        }
+      },
+      "arm_or_class": "author Cardiomyocytes DCM vs Donor DESeq2 table",
+      "category": "nHF",
+      "contrasts": [
+        "DCM-Donor"
+      ],
+      "dataset_id": "gse183852__dcm_cm",
+      "deg": "gse183852__dcm_cm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/GSE183852_deg.csv",
+          "sha256": "5d001a62b3622d9e0e9a62c00cf59eda2906bf2c52a43a4fda940fe446debc8f"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 15057,
+        "reason": null,
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/GSE183852/local/deg/GSE183852_deg.json": "36e20fce360b5ce9f97f0e42566144d8c6f9874fc1c06790522b2d08f16789b0",
+        "disease_data/GSE183852/manifest.sha256": "e913c37313f1130758ee421ba66963c3a0bb4e56703b3712ea0939c69b7340cb"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "full 26946-row author Cardiomyocytes workbook sheet",
+        "model": "author DESeq2; statistics preserved",
+        "padj": "author adjusted p values; missing values remain missing",
+        "test": "author differential expression statistics"
+      },
+      "model_basis": "Full author cell-type-specific DE table retained; 13/25 are snRNA libraries, not asserted unique donors; no raw-count refit or per-cell annotation",
+      "model_system": "human LV cardiomyocyte snRNA-seq",
+      "n_axis_unmeasured": 1829,
+      "n_case": 13,
+      "n_control": 25,
+      "n_deg": 50,
+      "n_deg_in_deg1000": 44,
+      "n_measured": 16335,
+      "n_significant": 4810,
+      "rank": "gse183852__dcm_cm.rank.csv",
+      "shared_control_group": "gse183852:donor",
+      "source_item": "disease_data/GSE183852",
+      "species": "Homo sapiens",
+      "tier": 1,
+      "time_window_basis": null
+    },
+    {
+      "alignment": {
+        "alignment_categories": {
+          "canonical": 17084,
+          "crosswalk_alias": 259,
+          "offaxis": 59,
+          "unmapped": 13315
+        },
+        "n_ambiguous_kept": 0,
+        "n_axis_genes_resolved": 17334,
+        "n_recovered_by_identifier": 0,
+        "n_resolved": 17343,
+        "n_source_rows": 30717,
+        "symbol_first_pass": {
+          "ambiguous": 0,
+          "canonical": 17084,
+          "crosswalk_alias": 259,
+          "ensembl": 0,
+          "hgnc_alias": 0,
+          "n_axis_genes_resolved": 17334,
+          "n_resolved": 17343,
+          "n_source_symbols": 30717,
+          "offaxis": 59,
+          "unmapped": 13315
+        }
+      },
+      "arm_or_class": "6 author DCM hearts vs four NF hearts; repeated ICM regions pooled per heart",
+      "category": "nHF",
+      "contrasts": [
+        "DCM-NF"
+      ],
+      "dataset_id": "gse298023__dcm_cm",
+      "deg": "gse298023__dcm_cm.deg.csv",
+      "derived_inputs": [
+        {
+          "relative": "local/deg/gse298023_deg.csv",
+          "sha256": "ecbab0b262b0b0e1d8769475576f14123d06fcded4dc8d6d5d0a261284538c15"
+        },
+        {
+          "relative": "local/pseudobulk/gse298023_donors.csv",
+          "sha256": "196b44e1be0f4ca8e4988af79e829162c0e4df4e50864dce94be745c72f38813"
+        }
+      ],
+      "evidence_type": "cm_pseudobulk",
+      "exploratory": false,
+      "genotype_status": "not_declared",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17067,
+        "reason": null,
+        "rule": "a dataset is informative when it has at least one DEG under the v2 definition and its measured genes carry more than one distinct continuous effect score; a dataset with no DEG ranks every gene at n_DEG + 1 and a dataset whose measured effects are all tied ranks by gene_index alone, so either carries no ordering evidence (ADR 0068, kept by ADR 0071)"
+      },
+      "inputs": {
+        "disease_data/GSE298023/local/deg/gse298023_deg.json": "53e5528637eb9b80c63bc8487fb9d16d8c43bae3a84d36cb5c7bb133c8aca078",
+        "disease_data/GSE298023/manifest.sha256": "c3fd20bdf48ba1888f2dc4d1ba0211298493b68babea7183bbf40a997f4d78ee"
+      },
+      "method": {
+        "alignment": "symbol-first then Ensembl; unresolved rows reported",
+        "deposition": "official2026 Seurat RNA sparse raw counts and author identities",
+        "design": "~0 + group + batch; batch is exact author run-number pattern per pooled heart",
+        "model": "limma-voom, one joint fit for DCM and ICM against shared NF",
+        "padj": "Benjamini-Hochberg",
+        "test": "moderated t"
+      },
+      "model_basis": "author ident==Cardiomyocytes; sparse integer sum per heart_number, not per library or region",
+      "model_system": "human LV snRNA author cardiomyocyte donor pseudobulk",
+      "n_axis_unmeasured": 830,
+      "n_case": 6,
+      "n_control": 4,
+      "n_deg": 110,
+      "n_deg_in_deg1000": 94,
+      "n_measured": 17334,
+      "n_significant": 339,
+      "rank": "gse298023__dcm_cm.rank.csv",
+      "shared_control_group": "gse298023:nf",
+      "source_item": "disease_data/GSE298023",
+      "species": "Homo sapiens",
+      "strata": {
+        "blocking_covariates": [
+          "batch"
+        ],
+        "decision": "pool all author CM nuclei and repeated regions per heart, retain exact run pattern as nuisance factor",
+        "pooled": true,
+        "why": "NF onlyrun2, disease arms also include run2; model full-rank. Mixed-run Heart03 is pooled once with run_1_2 nuisance level. Region composition remains a limitation."
+      },
+      "tier": 1,
+      "time_window_basis": null
     }
   ],
-  "deg2000": 1661,
+  "deg1000": 1000,
   "directory": "nhf",
   "eligible": true,
   "evidence_type": "cm_pseudobulk",
   "exclusion_reason": null,
-  "n_deg": 1661,
+  "n_deg": 1785,
   "rank_contract": "stage2-disease-deg-v2",
   "rejected": [
     {
-      "candidate": "GSE183852",
-      "reason": "eligible human LV CM source, but a measured cost call, not a label-access barrier: the authors' 6.7 MB MOESM4 Cardiomyocytes sheet already carries the CM labels, and the v2 definition (padj < 0.05 and |log2FC| >= 2) yields 70 DEGs, 50 on the frozen axis (26,946 genes tested; the padj-only anchors 6,280 at |log2FC| >= 0.5 and 3,597 at >= 1 reproduce) -- 2.5% of a 2,000-gene target, so an 8.1-12 GB Robj label extraction is not warranted. Its padj-only yield (4,927 on-axis) would only matter under a softer fold tier, which the v2 rule does not admit"
-    },
-    {
       "candidate": "cellxgene myocarditis CM object",
-      "reason": "shares its normal donors with the Reichart object, so the two cannot both count as independent sources"
+      "reason": "Shares normal donors with Reichart; not an independent additional source"
     },
     {
-      "candidate": "GSE141910 / GSE116250 / GSE128188 / GSE282618",
-      "reason": "ADR 0071 tier 3 admits whole-tissue bulk: GSE141910 and GSE116250 are declared tier-3 nHF sources (with GSE165303) and GSE128188 is an owned tier-3 AF candidate AF did not need once its tier-1 sources were measured. Only GSE282618 stays un-admitted, for its 3-vs-2 exploratory design, not for its tissue class"
+      "candidate": "GSE282618",
+      "reason": "HHD exploratory 3-vs-2 subject design, not a declared nHF disease cohort"
     },
     {
-      "accession": "GSE185100",
       "candidate": "GSE185100",
-      "donor_counts": "4 early-onset DCM vs 3 non-diseased LV-apex donors (pediatric, 4-14 y)",
-      "reason": "recorded unverified and not admitted (#203): the NCBI FTP throttled the 757 MB RAW.tar to roughly 50 KB/s and the download was abandoned, so the deposit was never opened. The series is also 4 vs 3 donors of a pediatric early-onset cohort, which could not meet the evidence bar even if the archive were readable. Nothing was downloaded and no gene-axis evidence is derived from it.",
-      "size": "757 MB RAW.tar (722 MB of per-sample processed tars; the two recordings disagree)",
-      "status": "unverified_not_admitted"
+      "reason": "GEO supplies count matrices but no author per-cell CM assignment. The publication-linked analysis repository references local integrated objects and full CM test tables that are not deposited there. The portal selected/rounded export does not provide a complete unrounded test table. No marker-derived gate or reclustering is substituted; age and low estimated yield are not exclusion grounds.",
+      "reentry": "Versioned author CM barcode assignments with counts, or complete author CM DCM-vs-ND logFC/padj statistics",
+      "status": "author_cm_input_unavailable"
     }
   ],
-  "schema": "stage2-disease-deg-catalog-v1",
+  "schema": "stage2-disease-deg-catalog-v2",
+  "source_review": {
+    "inventory_source": "docs/research/stage2-gene-axis-cm-source-survey.md",
+    "policy": "all_qualifying_declared_sources",
+    "records": [
+      {
+        "candidate": "GSE183852",
+        "disposition": "admitted",
+        "provenance": "disease_data/GSE183852/author_log.json",
+        "reason": "Full author per-gene CM DE table permits exact threshold/rank replay without Robj extraction; low yield is not exclusion",
+        "source": "https://doi.org/10.1038/s44161-022-00028-6",
+        "tier": 1
+      },
+      {
+        "candidate": "GSE185100",
+        "disposition": "not_admitted_author_cm_input_unavailable",
+        "reason": "GEO supplies count matrices but no author per-cell CM assignment. The publication-linked analysis repository references local integrated objects and full CM test tables that are not deposited there. The portal selected/rounded export does not provide a complete unrounded test table. No marker-derived gate or reclustering is substituted; age and low estimated yield are not exclusion grounds.",
+        "reentry": "Versioned author CM barcode assignments with counts, or complete author CM DCM-vs-ND logFC/padj statistics",
+        "sources": [
+          "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185100",
+          "https://doi.org/10.1161/CIRCULATIONAHA.121.057763",
+          "https://github.com/neda-mehdiabadi/Fetal-Gene-Program-snRNAseq",
+          "https://github.com/neda-mehdiabadi/HeartExplorer"
+        ],
+        "uncertainty": "Author objects may be obtainable elsewhere; current finite public inventory does not expose the required inputs. Portal certificate chain fails default verification."
+      },
+      {
+        "candidate": "cellxgene myocarditis CM object",
+        "disposition": "not_admitted",
+        "reason": "Shares normal donors with Reichart; not an independent additional source"
+      },
+      {
+        "candidate": "GSE282618",
+        "disposition": "not_admitted",
+        "reason": "HHD exploratory 3-vs-2 subject design, not a declared nHF disease cohort"
+      },
+      {
+        "candidate": "GSE298023",
+        "disposition": "admitted",
+        "provenance": "disease_data/GSE298023/author_log.json",
+        "reason": "Exact official object acquired and author gate/heart/condition identities extracted under10GiB; actual donor-pooled shared-control fit reproduced",
+        "sources": [
+          "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE298023",
+          "https://doi.org/10.1186/s13073-025-01580-z"
+        ],
+        "tier": 1,
+        "uncertainty": "No genotype or clinical-covariate stratification; NF onlyrun2, adjusted via observed run pattern; ICM scar composition pooled per donor"
+      }
+    ],
+    "reviewed_on": "2026-11-16",
+    "scope": "Previously screened, rejected and owned source inventory; no claim of unbounded public discovery"
+  },
   "tier": 1,
   "tier_sources": [
     {
       "sources": [
         "gse270788__nicm",
-        "reichart-cm__dcm_genotype_negative"
+        "reichart-cm__dcm_genotype_negative",
+        "gse183852__dcm_cm",
+        "gse298023__dcm_cm"
       ],
       "tier": 1
     },
@@ -549,22 +759,20 @@
     }
   ],
   "tiering": {
+    "collection_policy": "all_qualifying_declared_sources",
     "criterion": "axis_resolved_deg_union",
-    "limit": 2000,
-    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
-    "stop_reached": false,
-    "stopped_at_tier": 3,
+    "rule": "Collect all qualifying declared sources in ascending tier order; measure the complete cumulative disease DEG union on the frozen axis (axis-resolved, not genome-wide) after each tier. No DEG-count stopping condition applies. Missing tiers are absent, never back-filled with invented sources.",
     "tier_union": [
       {
-        "n_deg_union": 1056,
+        "n_deg_union": 1194,
         "tier": 1
       },
       {
-        "n_deg_union": 1553,
+        "n_deg_union": 1684,
         "tier": 2
       },
       {
-        "n_deg_union": 1661,
+        "n_deg_union": 1785,
         "tier": 3
       }
     ],
