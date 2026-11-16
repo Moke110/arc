@@ -40,3 +40,10 @@ No other #192 removal is consequential: the one-off migration/audit scripts and
 the superseded build chain had finished their job, and the retired truth/
 evaluation products have no surviving consumer (the old→new mapping is in
 [`acceptance.md`](acceptance.md)).
+
+## ADR 0072 coherent acceptance
+
+`successor_acceptance.json` records #219 final source/integrated replays, all
+affected public-contract tests, three offline health checks, exact human artifact
+reproduction and main-checkout byte preservation. The successor sections of
+`acceptance.md` and `inputs.json` supersede historical six-category records.

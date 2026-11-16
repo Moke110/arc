@@ -292,10 +292,14 @@ def _archive(repo, path, source):
     return result
 
 
+def _source_base(source):
+    category = "pert_data" if source in ("gse247541", "gse262419") else "disease_data"
+    return f"{category}/{source.upper()}/source"
+
+
 def _prepare_other(repo, source, drugs):
     accession = source.upper()
-    category = "pert_data" if source in ("gse247541", "gse262419") else "disease_data"
-    base = f"{category}/{accession}/source"
+    base = _source_base(source)
     root = repo / base
     admitted = set(drugs.source_id.astype(str))
     rows = []
@@ -647,8 +651,7 @@ def source_contrasts(repo, source_id, admitted_drugs, workdir):
 
 
 def _attach_metadata(repo, source, result):
-    category = "pert_data" if source in ("gse247541", "gse262419") else "disease_data"
-    path = f"{category}/{source.upper()}/source/{source.upper()}_series_matrix.txt.gz"
+    path = f"{_source_base(source)}/{source.upper()}_series_matrix.txt.gz"
     if not (repo / path).is_file():
         return result
     series = bulk_deg.read_series_matrix(repo / path)

@@ -835,3 +835,51 @@ rebuilding them would move every catalog's pinned `derived_inputs` digests for n
 scientific gain. (4) `script/check_paths.sh` cannot pass inside a worktree (the
 gitignored `source/` trees are absent); it is a main-checkout gate and was run
 there on the merged tree.
+
+
+## 13. Uniform eligibility and unified TOX acceptance (#219, ADR 0072)
+
+The coherent release replaces the two mechanism-class categories with twelve
+independent TOX dataset sources. Five diseases remain declared; four pass the
+uniform axis-resolved union >=100 gate. Counts (union / DEG2000) are nHF
+1,661/1,661, ICM 1,647/1,647, AF 1/1, genetic_cardiomyopathy 1,482/1,482 and
+TOX 9,589/2,000. AF retains SLC9A7 and its complete evidence but contributes no
+rank_sum, f2000 or axis vote; its coverage numeric fields are blank. The axes
+contain exactly 2,000/5,000 ascending frozen indices, are nested (intersection
+2,000, Jaccard0.4), and use zero HVG fallback slots.
+
+The final TOX source publish/replay and integrated publish/replay each passed.
+All scientific payload digest maps equal the independently accepted #216/#217
+candidates; the review refactor changes only correctly rebuilt implementation
+input pins and their downstream manifest cascade. Seven source author logs now
+include the mandatory GEO version. No source bytes or statistical rules changed.
+The final scientific manifests resolve every changed input and output in one
+coherent generation. Live old class products were removed; git retains history.
+
+243 tests in13 affected public-contract files pass, including 99/100/empty gates,
+retained/excluded AF, negative/pending/single-drug admission, matched vehicles and
+strata, one dataset vote, exact nested axes, bounded full-axis normalization,
+CSV-only payload-deny figure replay and final-file document contracts. The
+five-category acceptance regression failed against the old six-category tree
+before promotion and passed after. Two fresh DOCX builds from final declared
+inputs equal #218 final bytes exactly, so its inspected12-page QA remains valid.
+Both PNG replays are exact.
+
+All three offline health checks actually passed in the ticket tree using
+immutable main-backed external payload links: check_paths (including Stage2/3),
+check_tracked and verify_all. The source verification runs alone. Its first run identified37 upstream-pinned
+PerturbDiff bytecode files omitted by snapshot preparation; restoring their exact
+main-backed bytes fixed the focused item and the complete61-item replay. No
+manifest was edited to bypass this gate. Current Tahoe
+source is399.36GiB; the execution-environment52GB baseline is historical. All
+heavy runs use the10GiB cap, two threads and available-memory preflight41GiB;
+GPU telemetry is OS-blocked. Resource measurements and exact manifest hashes
+are recorded in successor_acceptance.json and inputs.json.successor_219.
+
+All required input snapshots, new scientific payloads and final human outputs
+are preserved as regular bytes in the main checkout under
+.scratch/stage2-tox-eligibility/candidates/accepted-219 with a per-file SHA256
+inventory, verified source against target. The main live old release remains
+untouched until independent deployment. No model was repointed or retrained;
+evaluation redesign #193 remains deferred. Earlier acceptance sections and
+execution receipts are sealed historical evidence.

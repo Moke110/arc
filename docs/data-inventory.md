@@ -227,33 +227,22 @@ tracked manifests, mapping evidence and exclusion table; `du -sb`, 2026-11-13.
 |---|---:|---|---|
 | `output/raw_counts/` | 3,037,082,960 | `tenv.h5ad` (4,510 wells x 19,613 native genes, int32), `tenv_probe_mapping.csv`, `tenv_axis_mapping.csv` (frozen `gene_index` -> native column), `tahoe.h5ad` (67,018 profiles x 18,164 axis genes, CSR int32), `token_mapping.csv`, `manifest.json` | `execution/build_raw_counts.py publish`: rehomes the source-accepted payloads and records `source-accepted-replay` provenance against the tracked `log/raw_counts_provenance.json` (the two pre-0066 source-replay acceptance records restored verbatim from git history plus the native tenv build manifest, digest-pinned). `--full-rebuild` rebuilds both from `pert_data/GSE262419/source` + `pert_data/Tahoe-100M/source` and replays from source (recorded ~4 h under the 10 GiB cap) |
 | `output/corpus/` | 1,395,893,021 | `tenv.h5ad` (4,206 treated + 272 vehicle), `tahoe_bulk.h5ad` (65,318 treated + 1,400 `DMSO_TF`), `exclusions.csv` (32 blanks + 300 invalid structures), `manifest.json` with the matched-control report; int32, no normalization, no delta | `execution/build_corpus.py publish` from `output/raw_counts/` + `pert_data/Tahoe-100M/source/metadata/drug_metadata.parquet` |
-| `output/disease-deg/` | 86,213,998 | 86.2 MB | per category `nhf/`, `icm/`, `af/`, `genetic_cardiomyopathy/`, `cardiotox_TOP2/`, `cardiotox_other/`: one rank-sorted compact `<dataset>.deg.csv` + full-axis DEG-only `<dataset>.rank.csv` per dataset, plus `catalog.json` (canonical record list, `catalog_sha256`, the `n_deg`/`deg2000`/`tiering`/`tier_sources` record) and `manifest.json`; no top-level catalog (the fusion aggregates the per-category files). **27 published datasets** across the six categories (nHF 6, ICM 3, AF 4, genetic_cardiomyopathy 8, cardiotox_TOP2 3, cardiotox_other 3); `AF` returned under ADR 0071, which supersedes its ADR 0069/0070 removal. #212 corrected the `nhf`/`icm` `rejected[]` rationale strings and re-published the cascade; only those two catalogs changed content (+842 B, the rest of the tree byte-identical) | `execution/build_disease_deg.py publish --all` from the pinned item-local DEG tables in `disease_data/*/local/deg/`; the three cardiotox class directories come from `execution/build_disease_deg_cardiotox.py`. `verify --all` replays and compares every digest. The compact CSVs/catalogs/manifests are force-tracked; the item-local DEG/pseudobulk payloads stay ignored |
-| `output/disease-fusion/` | 227,622 | the ADR 0071 per-disease level-1 fusion: `catalog.json` (schema `stage2-disease-fusion-v1`; per disease the tier, evidence type, source counts, `n_deg`, `deg2000`, per-source ledger and excluded sources), six `<directory>.deg2000.csv` rank files (`gene_index, disease_rank, disease_rank_sum`) and `manifest.json` (6 diseases / 6 published / 7,088 `DEG2000` rows) | `execution/build_disease_fusion.py publish` from the read-only `output/disease-deg/**` catalogs; `verify` replays and compares every digest |
+| `output/disease-deg/` | 113,592,481 | tracked compact DEG/rank evidence for five declared diseases and 33 independent dataset records (nHF 6, ICM 3, AF 4, genetic_cardiomyopathy 8, TOX 12); AF retained but excluded by the uniform 100-gene gate | `execution/build_integrated_successor.py publish` from pinned item-local DEGs and the independently replayed TOX candidate; all compact scientific tables/catalogs/manifests are force-tracked |
+| `output/disease-fusion/` | 221,782 | five retained DEG2000 tables; four eligible rank terms; nHF1661, ICM1647, AF1, genetic1482, TOX2000 | integrated successor driver; verify replays the full coherent generation |
 
 Both products are replayed by their drivers' `verify` action (rebuild in
 `execution/checkpoints/` and compare every digest). The compact manifests,
 mapping evidence and exclusion table are force-tracked; the count payloads are
 gitignored.
 
-### Drug-cardiotoxicity class products (#189, ADR 0066)
+### Unified TOX products ADR 0072
 
-The `cardiotox_TOP2` / `cardiotox_other` class DEGs are **tracked compact
-tables**, not ignored payloads: each per-`(source, class)` DEG CSV is 1.9-2.8 MB
-and its full-axis rank CSV 0.38-0.43 MB, 15.7 MB in total across the three
-product directories. They are force-added because the repository-wide `*.csv`
-ignore rule would otherwise drop them.
-
-| stable path under `stage2/01_bases/` | `du -sb` | contents | reconstruction |
-|---|---:|---|---|
-| `output/disease-deg/cardiotox/` | 57,716 | pinned crosswalk, classes, class members, excluded codes, per-source eligibility, rejected candidates and manifest | `execution/build_disease_deg_cardiotox.py publish` from the read-only GSE243674 / DToxS-iPSC / GSE244740 sources + `pert_data/Annotation/local/cm_compound_annotation.csv` |
-| `output/disease-deg/cardiotox_TOP2/` | 8,826,044 | three pooled class DEG tables + full-axis ranks, `catalog.json`, `manifest.json` | same driver; DToxS pinned edgeR pipeline, GSE243674 DESeq2 and the GSE244740 Welch test over pooled class wells |
-| `output/disease-deg/cardiotox_other/` | 6,795,074 | three DToxS non-TOP2 class DEG tables + full-axis ranks, `catalog.json`, `manifest.json` | same driver, DToxS pinned edgeR pipeline over pooled class wells |
-
-There is no gitignored cardiotox payload: the count/R intermediates exist only
-inside `execution/checkpoints/` while a candidate is built and are deleted after
-the candidate replaces the accepted product. `verify` replays the whole build
-from the pinned inputs and compares every digest; the peak RSS of the build
-(≈1.5 GiB Python, ≈0.9 GiB R) is recorded in the ticket record, not in a manifest.
+The accepted `output/disease-deg/tox/` contains twelve measured DEG/rank pairs,
+independent admission and matched-well audits, a catalog and manifest. Compact
+products are tracked; source measurements remain immutable external item bytes.
+The former mechanism-class products are retired from live output and remain in
+git history. Reconstruct TOX with `execution/build_tox.py publish`, verify with
+its fresh source replay, and promote with the coherent integrated successor.
 
 ### Gene-axis release (#190 / #207, ADR 0066 + ADR 0071)
 

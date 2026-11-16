@@ -2,7 +2,7 @@
   "axis": {
     "path": "stage2/01_bases/output/gene-identity/genes.csv"
   },
-  "catalog_sha256": "9560cd3be07a8d0356650c34952f867f6f1aeb6266411dd82ff51620fee64c00",
+  "catalog_sha256": "06daf58c1ce4f638c03b01dd040e05459be6408e9f1212b1d5bfe3f2a7401177",
   "category": "AF",
   "counts": {
     "datasets": 4,
@@ -27,7 +27,7 @@
   },
   "outputs": {
     "catalog.json": {
-      "sha256": "ced4158ac9be2ce11f1e873663dc0e3f426123e1db30deb1994df94bdd8e64b0"
+      "sha256": "b11733ac58d9f49006292a770a7f89648a697cbbf136cf644b0de5c6af076794"
     },
     "gse138252__af.deg.csv": {
       "rows": 13238,

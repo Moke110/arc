@@ -1,0 +1,466 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/tables/genes.csv",
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "catalog_sha256": "a3698039f1e509cc8ebccf4f280220d3f1cf6615cdc4a15d6287808caf711f98",
+  "category": "TOX",
+  "counts": {
+    "datasets": 12,
+    "deg2000": 2000,
+    "n_deg": 9589
+  },
+  "environment": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "python": "3.13.13",
+    "r": {
+      "DESeq2": "1.50.2",
+      "edgeR": "4.8.2",
+      "interpreter": "conda:biomni_e1",
+      "r": "R version 4.5.3 (2026-03-11)"
+    },
+    "rdkit_version": "2026.03.2"
+  },
+  "inputs": {
+    "disease_data/GSE106297/manifest.sha256": {
+      "sha256": "329c4f53213b689f509a53b491b788ac538956668ab077e47bc9c9adc891208d"
+    },
+    "disease_data/GSE106297/source/GSE106297_RAW.tar": {
+      "bytes": 19763200,
+      "sha256": "9259fc538bd56a27eb0002c1affe3fb429e6a450d21c95e099c461f969235428"
+    },
+    "disease_data/GSE106297/source/GSE106297_series_matrix.txt.gz": {
+      "bytes": 2492,
+      "sha256": "a3c8e1b7a343a36fae9edf3f24ea161518781e096bbd90a0a2c5b4d7a7893dc0"
+    },
+    "disease_data/GSE157282/manifest.sha256": {
+      "sha256": "4142062e1ac3949d7423c45ee17d40c0a65f960ac5a96f4b84973a0bbf1855c9"
+    },
+    "disease_data/GSE157282/source/GSE157282_RAW.tar": {
+      "bytes": 15912960,
+      "sha256": "9542a4cb9bb8d9ead7543fa071f9f8db59c62225b02871cd606a95ba9813b9a7"
+    },
+    "disease_data/GSE157282/source/GSE157282_series_matrix.txt.gz": {
+      "bytes": 2669,
+      "sha256": "a2e328594499ceed196b777892776390ee9280c329a90eae7bd92189c108765d"
+    },
+    "disease_data/GSE232331/manifest.sha256": {
+      "sha256": "d3158507da917d3024198210c65da2acdadc3ecd36e9dfec273789a267112f4a"
+    },
+    "disease_data/GSE232331/source/GSE232331_hg38-counts.tsv.gz": {
+      "bytes": 455586,
+      "sha256": "db5e962e82dcc495da18ffe62b0b14bf81798474d836ed5b66b36f3e5c301b6e"
+    },
+    "disease_data/GSE232331/source/GSE232331_series_matrix.txt.gz": {
+      "bytes": 2810,
+      "sha256": "2f04d4af74c305459c74472a0e5cca2d2786bfc9b25067e6b91a94de8a2309a7"
+    },
+    "disease_data/GSE235470/manifest.sha256": {
+      "sha256": "90beeb35739c785c4f808ba520c5bf3f0cf4df5085384c17f1cd00229dd697a7"
+    },
+    "disease_data/GSE235470/source/GSE235470_rawcounts.counts.txt.gz": {
+      "bytes": 855583,
+      "sha256": "4dd1d5c5e0b92cc935f8fb1624effff51637eb2e939c19c46fd3425b942b6862"
+    },
+    "disease_data/GSE235470/source/GSE235470_series_matrix.txt.gz": {
+      "bytes": 3146,
+      "sha256": "57665e9c0fdf8d0a68a31929fc9398cdb3ebdd49d71df62ecbd53075ad765453"
+    },
+    "disease_data/GSE242692/manifest.sha256": {
+      "sha256": "8bab3061158727b00e36ab07f0fcfef8879659f4847fdbb5bf10e8315a3ec689"
+    },
+    "disease_data/GSE242692/source/GSE242692_countsMatrix_raw.txt.gz": {
+      "bytes": 2175543,
+      "sha256": "9d0d67d9c3da942498db910860ce147ae5cf4ba0568466fa8c903282c36c286f"
+    },
+    "disease_data/GSE242692/source/GSE242692_series_matrix.txt.gz": {
+      "bytes": 7157,
+      "sha256": "1aee8558c1ea575e3d8a57d2e6b58bee73496368efd9d626a3cacf23a664e558"
+    },
+    "disease_data/GSE243674/local/tox_evidence/ELLENCE_2025.pdf": {
+      "sha256": "76aaa8bec430e1355e5055c0a2243e9ab108227011fa35e1a309726839bd947c"
+    },
+    "disease_data/GSE243674/local/tox_evidence/daunorubicin_DailyMed.html": {
+      "sha256": "b9e03e9833f242ea3e294bf75881a0a7b032e64e0b94377dd03cc794d249dbb9"
+    },
+    "disease_data/GSE243674/manifest.sha256": {
+      "sha256": "6ed672359b0db3974a35c532cb503ab3ddb75cfdf7dedf286cc357b5967a341a"
+    },
+    "disease_data/GSE243674/source/GSE243674_Counts_RNA_ERMatthews.txt.gz": {
+      "bytes": 2424618,
+      "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882"
+    },
+    "disease_data/GSE255505/manifest.sha256": {
+      "sha256": "ff89e1c5c631a452bf056dee78decc7bed5c23951d4f3c114c111c3c68b8c64a"
+    },
+    "disease_data/GSE255505/source/GSE255505_RAW.tar": {
+      "bytes": 901120,
+      "sha256": "293c6a18aa6a70db6484f20b1809306d0a6e823a57291355a634037b2552f916"
+    },
+    "disease_data/GSE255505/source/GSE255505_series_matrix.txt.gz": {
+      "bytes": 1773,
+      "sha256": "9551984f8f35d456d657d9528df95c65c215e60d31a56ccd1590980d05bcd110"
+    },
+    "disease_data/GSE313746/manifest.sha256": {
+      "sha256": "ed8becff7c91555100be5b5af6571c87c727bade9f1c2bf9a7bd0b723be532ab"
+    },
+    "disease_data/GSE313746/source/GSE313746_Counts_RNA_EMPfortmiller.txt.gz": {
+      "bytes": 1529791,
+      "sha256": "be0a6a8c0746260a7496bd5d5b75a47c03c31004107171f496092235ae8e91f6"
+    },
+    "disease_data/GSE313746/source/GSE313746_series_matrix.txt.gz": {
+      "bytes": 6143,
+      "sha256": "561239a103adc53024e692ff041c8657868693ec83be8f2c3156f3a8d63f3d30"
+    },
+    "pert_data/Annotation/local/cm_compound_annotation.csv": {
+      "sha256": "b3e09205156bfc5adeeda2cdc8647dd87c1ead920cc257de316af5ffb0dbfd46"
+    },
+    "pert_data/Annotation/source/hgnc_complete_set.txt": {
+      "bytes": 16982321,
+      "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Afatinib.xml": {
+      "sha256": "d89b790c06bc15a0d48333b0b9132787f6de92ee9bd51f5aa40adfe38bf686d0"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Axitinib.xml": {
+      "sha256": "ae009592a5233d5a534ea6b9162db72d54c8f3ac61fc7dd42cba9c284b45f6a5"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Bosutinib.xml": {
+      "sha256": "31ec13cf02ee81f145cd44f0742030b24d774e09c772206bb80e39d77bb571fc"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Cabozantinib.xml": {
+      "sha256": "5d7f83c143b75e4f2cb9fb81864415b6882bc050499df398a150f11fa2219a55"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Ceritinib.xml": {
+      "sha256": "493f730fc4de0f444c1e8d573830f4f1c4ce95aa42ed08f1507b95e723c4cca8"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Crizotinib.xml": {
+      "sha256": "0dd2828e40c41797c0fabf98c175dc9304c2d4ee137e8911507b3faa2f4a8d44"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Cyclosporine.xml": {
+      "sha256": "7e06780d01138e76b425e09fbd7ca9ff5098be253e9375f2fe13cb44a6d77158"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Dabrafenib.xml": {
+      "sha256": "bb96336976f6f013be41317f171017260efb7b04f82b4d0d85c310016351fcc8"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Diclofenac.xml": {
+      "sha256": "74fedc5fcdd1cd86bdffe750aa7b8770ebdbca6f157a2d1d116da41874c777f3"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Estradiol.xml": {
+      "sha256": "76c3ea15476a5aa65eea9e79af909f13f0aa251528c5fcb484c21e459af55516"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Flecainide.xml": {
+      "sha256": "258f41507c436b8cea7f21c38fb5f8063ce7b755875a07a37d0e13f64827117c"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Milrinone.xml": {
+      "sha256": "0ba01d0e0849ea9ff2dd36b501a099fc9c968cba8ba2d9d494a842744ffd74d8"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Nilotinib.xml": {
+      "sha256": "3da95778abf37460dec251f4f2419224a85754a8c74370e1a802e9664632a786"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Olmesartan.xml": {
+      "sha256": "86785582996c241490df3946dc34c29150589f4ec61be7e58e12d1f8a144b115"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Pazopanib.xml": {
+      "sha256": "3715629a6d69d0879a0f34d97de725599730672a993861faef724218f7d96e9c"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Phenylephrine.xml": {
+      "sha256": "d06e6e343a8e170cf2594f7511e07bbe3f0c69da7a54df9e29cae11817bce72c"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Ponatinib.xml": {
+      "sha256": "8cea257ce5bf607530296469c96fe9f0c33632ea31df7bf3671975c25bc2bb6f"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Prednisolone.xml": {
+      "sha256": "6d48b8f7bcaf8741c135fdf2293a3fdbcd93f48d63f9e38282685acc3a2a2e2a"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Regorafenib.xml": {
+      "sha256": "19a136b38f2808cf7566a15470af75e19e8c3d224bec7b3da4ab96d8190cb7a4"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Sorafenib.xml": {
+      "sha256": "f0a4974ad6b0dcc5bf22700494cf4694282a39c0d155283c93b2ead5f2a365f8"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Tofacitinib.xml": {
+      "sha256": "2de03ef78a7efa43828a7201b282b0cf605820d8bc02cef855ab0b62197ced2c"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Trametinib.xml": {
+      "sha256": "3a2cfc4509f9c0066f92593d64c4a402db5732bcfe9e3ad791df1549ac570f4a"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Vandetanib.xml": {
+      "sha256": "20be014598739359ae6d4088b541ccd772b350dfc84a3c5e1c6ee2efb09f8476"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/Vemurafenib.xml": {
+      "sha256": "7faa9da0607cf73858bce125f3cf79a1acc9f4c7fe3554c185aeb1f08cb7346d"
+    },
+    "pert_data/DToxS-iPSC/local/tox_evidence/case-records.json": {
+      "sha256": "a12a751610096a2922f31790587250ff6d84e19e245c5f74c2230e0fd0fc6314"
+    },
+    "pert_data/DToxS-iPSC/manifest.sha256": {
+      "sha256": "b2bd831ea42b4bb0080daa4638e3e1734ed941830eb07238850145c231116515"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+      "bytes": 503862376,
+      "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Experiment-Design.tsv.gz": {
+      "bytes": 8655,
+      "sha256": "bc34ad0a88184de46d576c2f2a380aa6c40706d78a9f0d2355cc3e01f8102ecc"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Params.tar.gz": {
+      "sha256": "e306903328a8b2505b20e424641d6cf68075809c4730b798f52c05395f1e3ef8"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+      "bytes": 39517230,
+      "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+      "bytes": 118211,
+      "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+    },
+    "pert_data/DToxS-iPSC/source/GSE217421_series_matrix.txt.gz": {
+      "sha256": "9c0647b7588c180bf9f895097a8bbe7e019dca10889ad455c8139a3a3b12fed9"
+    },
+    "pert_data/GSE244740/manifest.sha256": {
+      "sha256": "df44b23a5c6ec1cd8b7bfae70ea10703573206a06fdc439251cfb968a6ed38cf"
+    },
+    "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": {
+      "bytes": 37354885,
+      "sha256": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c"
+    },
+    "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": {
+      "bytes": 125536,
+      "sha256": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e"
+    },
+    "pert_data/GSE244740/source/Rosell-Hidalgo_2023_Table1.pdf": {
+      "sha256": "414f47382fcc22e39505aecc3a09bca5514e9b36e84864eb1dda7bb1327f4230"
+    },
+    "pert_data/GSE247541/manifest.sha256": {
+      "sha256": "0a6971a13ecec4b72a3d4ca25792fd263480c1ab0e33475455ccb257c264c1e7"
+    },
+    "pert_data/GSE247541/source/GSE247541_raw_counts.csv.gz": {
+      "bytes": 996622,
+      "sha256": "104cb3d5d85fcbf65c8b960498327080188c5edd6fb58cc7d8af9395b80e1eb1"
+    },
+    "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz": {
+      "bytes": 2946,
+      "sha256": "b5cff1c6de08693fbafd02cfe991b61fdcb4966fe79fcb88c55fb2aa8b1c5bc7"
+    },
+    "pert_data/GSE262419/manifest.sha256": {
+      "sha256": "9f57a8d25562332ebf69d80d89dd3eabd7ab7ca55abdbd842469fe3a0293540a"
+    },
+    "pert_data/GSE262419/source/GSE262419_Plate06.csv.gz": {
+      "bytes": 5195744,
+      "sha256": "249e38ea2ab85aa69dfee3ea0bef81ae53c3e18412df6581d14b07ac59f9f0e6"
+    },
+    "pert_data/GSE262419/source/GSE262419_Plate07.csv.gz": {
+      "bytes": 5171824,
+      "sha256": "9d2c8f7cc2a367de2c4f4b04013086127f0a171be1b2652e1fa5e70c53a6871f"
+    },
+    "pert_data/GSE262419/source/GSE262419_Plate15.csv.gz": {
+      "bytes": 5255515,
+      "sha256": "e42d78e081e5f08c5172b0b888701ba2a918cf3bcdb2c167ab7f00baec8dd72c"
+    },
+    "pert_data/GSE262419/source/GSE262419_Plate16.csv.gz": {
+      "bytes": 4945764,
+      "sha256": "280d0ad830021064381d4ccd6af628921cec2490d83cabc61844e4214c3766df"
+    },
+    "pert_data/GSE262419/source/GSE262419_hash.csv.gz": {
+      "bytes": 47637,
+      "sha256": "dbdaadfc357fabfadb291d2818d5ce242bba52486b3d8ec86460b61457d57f3c"
+    },
+    "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz": {
+      "bytes": 143676,
+      "sha256": "73cf40abd48722e6db57803450bf967540bebd429a1b6904bfe81fb75f2aed63"
+    },
+    "pert_data/LINCS-LDS-1593/source/Metadata/Primary_Cell_Metadata.txt": {
+      "sha256": "4be110a67edcb7c4156d4697db94b48c9827768227341e74549f505c07515792"
+    },
+    "pert_data/LINCS-LDS-1593/source/ReadMe.txt": {
+      "sha256": "b1f499ba90f0a62d2acacea26f497037fbadaa0f07a06d252357c3ea2b020db0"
+    },
+    "stage2/01_bases/execution/tox_drug_evidence.json": {
+      "sha256": "f73ce26303f9bd5a90dd2cbf63bb269d3e76f0f3d25077d5b207270a720d2f04"
+    },
+    "stage2/01_bases/execution/tox_source_admission.json": {
+      "sha256": "3f549fc0c9d76cdca67311ee93a154189831265b96aac0b35e813b0bd7baf12b"
+    },
+    "stage2/01_bases/output/api/bases/bulk_deg.py": {
+      "bytes": 23549,
+      "sha256": "f6e3decee7f974498d7691fb21d93e7859f7395bcbbe377a6696c5314dc0a4c6"
+    },
+    "stage2/01_bases/output/api/bases/cardiotox.py": {
+      "bytes": 79108,
+      "sha256": "ddf743bc8b664273ae4c8bc628f205aa4c9d16bf62862287bbad1c86ead29417"
+    },
+    "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
+      "bytes": 4250,
+      "sha256": "97837f2edab14700aaf5939028fef3ce08bdde918f2b77efd127089e5168c63c"
+    },
+    "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+      "bytes": 4158,
+      "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+    },
+    "stage2/01_bases/output/api/bases/deg_rank.py": {
+      "bytes": 28847,
+      "sha256": "df9f266a79936749bb22f9f4b47af7c61f154720d0f03290870270240d1011f6"
+    },
+    "stage2/01_bases/output/api/bases/disease_deg.R": {
+      "bytes": 11612,
+      "sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f"
+    },
+    "stage2/01_bases/output/api/bases/disease_deg.py": {
+      "bytes": 91800,
+      "sha256": "d7c260514fdd631092ff003f7605200af130cb2376526bbaf76f7d8496fa6c3a"
+    },
+    "stage2/01_bases/output/api/bases/r_env.py": {
+      "bytes": 3557,
+      "sha256": "045c9ebf75e4708f639e1802c7847c4c70b5795d7b8142e5787805173079ce6f"
+    },
+    "stage2/01_bases/output/api/bases/release.py": {
+      "bytes": 5932,
+      "sha256": "dfa8e4ba1cfff44da6d651f27f699edb3f52880cfa792fc3a516c4c84a989404"
+    },
+    "stage2/01_bases/output/api/bases/tox.py": {
+      "bytes": 21492,
+      "sha256": "0196064730e393a1dc07d6e566b5096058217f5659df7b785eed33159a49244a"
+    },
+    "stage2/01_bases/output/api/bases/tox_admission.py": {
+      "bytes": 8597,
+      "sha256": "cbca79e9d272670be33241730214c9b19c732e9072595aa451e31ce27ec72765"
+    },
+    "stage2/01_bases/output/api/bases/tox_sources.py": {
+      "bytes": 26099,
+      "sha256": "f442ab42df9dba7ead78f58ed5298b7829a2de97e572c93959387f17c923137e"
+    },
+    "stage2/01_bases/output/gene-identity/tables/gene_crosswalk.csv": {
+      "bytes": 14873682,
+      "sha256": "bc19c6a84bba8eba7e702b79b715b1032d05c3b47f1f44abd3d64c1ad24d8544"
+    },
+    "stage2/01_bases/output/gene-identity/tables/genes.csv": {
+      "bytes": 832969,
+      "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42"
+    }
+  },
+  "outputs": {
+    "admission.json": {
+      "sha256": "78996cf34962b73c2e4b74073769fb61f76672c88dc021faae962f2aad65842e"
+    },
+    "catalog.json": {
+      "sha256": "26d3ad407db13b82274ebffc454b9cd64d05a55b94e6ea384085b506ccdbb174"
+    },
+    "dtoxs_ipsc.audit.json": {
+      "sha256": "834f93afe9715fd82ee46445b6179194aca6c6aa2f4ee791ff834a1cf689a574"
+    },
+    "dtoxs_ipsc.deg.csv": {
+      "sha256": "9bbbd4b16a14472cfbc6b9016ab28daaa0c1715cf3430e3baf1d9ff012f01d18"
+    },
+    "dtoxs_ipsc.rank.csv": {
+      "sha256": "208cd9720e9c3754722260ae8dfd3def9d966df5d45fc113a91cf4e2707782f4"
+    },
+    "gse106297.audit.json": {
+      "sha256": "55b295150d9177bc421f1966c9d410707dc25b6b9874304925658bbcf9cde86d"
+    },
+    "gse106297.deg.csv": {
+      "sha256": "17cc70c17beb147f10c00aacd0bed764f121e7587101fb6eb7b99c68f96a9799"
+    },
+    "gse106297.rank.csv": {
+      "sha256": "767b1147b725725ffae3c591100461233d4c12020789ae8757518f61e9537717"
+    },
+    "gse157282.audit.json": {
+      "sha256": "b986bbf0150daddad291c5174b8ae1b3f756d2ed23649bb5edcfe4bfdcf87713"
+    },
+    "gse157282.deg.csv": {
+      "sha256": "500a0428024aa220fcb8403047d9c04ec707a5b740c1d273b087af99d7371dea"
+    },
+    "gse157282.rank.csv": {
+      "sha256": "c0988ba034bf832e338c732e032bfedb02d30c79e117ced02dcdfbd231ba03d7"
+    },
+    "gse232331.audit.json": {
+      "sha256": "7770d8817938f85952ca9260a7052aeae2a274901c3cff8225df75a2a4b3ea78"
+    },
+    "gse232331.deg.csv": {
+      "sha256": "e97466fe8aed1153b62e65e451ed6e10e80cea801a4451486d8f55f5013f504b"
+    },
+    "gse232331.rank.csv": {
+      "sha256": "08283ca03f8c403018cecbbd849eedb57fd3db7db9884bac36b148b5f8f5f327"
+    },
+    "gse235470.audit.json": {
+      "sha256": "87077e2907d976edc69753a52f78a4a79134e7156f88a1837d3b4de5b06ac3b4"
+    },
+    "gse235470.deg.csv": {
+      "sha256": "fdd73c3784b5b549cce26f804d883e7a3493774099a3ac7e8e52b543478b51c4"
+    },
+    "gse235470.rank.csv": {
+      "sha256": "2a49aa7a1de71f0dbff253c786873328aa3d101516822c426f7c0b703302451e"
+    },
+    "gse242692.audit.json": {
+      "sha256": "7a9f2803354113b29b35fbdac73b9f76e430d0b556c390ed1c7f498b74d84b30"
+    },
+    "gse242692.deg.csv": {
+      "sha256": "3fc3f7694b76fb951b06b9dd7dc02a5da295c44b2223c29116da2b37561a347a"
+    },
+    "gse242692.rank.csv": {
+      "sha256": "edb3d5206e4b34350b94bcb4f132fd4036d580363a0054140ea672af22bfd69c"
+    },
+    "gse243674.audit.json": {
+      "sha256": "dffa98dcb6310b7de56396c4028ce9435a9de64d5bf9371721f59aefef455226"
+    },
+    "gse243674.deg.csv": {
+      "sha256": "67ffc3b15431ac53256a9961a3e79b21683e0b7c0e8f6689ef7b040ef6ece23e"
+    },
+    "gse243674.rank.csv": {
+      "sha256": "91a0b7c339a7bd676918ee142ddd549e6aa165e3adfbf28b058812f2bfd27dec"
+    },
+    "gse244740.audit.json": {
+      "sha256": "6b5c218995250ce410f8457b9394d408e6d85451c04d23929587bb05d6af1f3b"
+    },
+    "gse244740.deg.csv": {
+      "sha256": "cbc5da081eb523df0b7159e38b195ebb6410d8b5627f24b59e9a7a42208f2ca8"
+    },
+    "gse244740.rank.csv": {
+      "sha256": "92a93ec3d33ac188fe49d23c4ab694e9c2ffd21c2ea9627a9e8a4fe5116563d2"
+    },
+    "gse247541.audit.json": {
+      "sha256": "db6a30a2722489a64ef180d4b060cff28bc4856730c3cab877dd4a7916d0bacb"
+    },
+    "gse247541.deg.csv": {
+      "sha256": "8bedc3b875995122d7fcc2ad15f332820e9002cd5faaa47307c78d1f5cd9a6c5"
+    },
+    "gse247541.rank.csv": {
+      "sha256": "3f056e6cd558e5b33959ee82cdc31a69eda5ff2dddf035a14bbdf3b63b155ac9"
+    },
+    "gse255505.audit.json": {
+      "sha256": "a72ab135bc0e40320757a73bc81d811beb6b8cbfd7f6750d5e6f591f71494cb7"
+    },
+    "gse255505.deg.csv": {
+      "sha256": "746f74d3b3175d30d12cceeb68dafb0cc91b898e30394fb089dde418eaf01cc4"
+    },
+    "gse255505.rank.csv": {
+      "sha256": "e1ad10b6dba560e8ec06b71751e642558f96dd3f82edd0acf5bae73a97f1900f"
+    },
+    "gse262419.audit.json": {
+      "sha256": "637414472aced0e315ebcfbbac2fe5305c513de2fcc7b3293456d3ce83dbfeea"
+    },
+    "gse262419.deg.csv": {
+      "sha256": "fb750352a6f584b3d72ed5c49185fbe405dcb341af869b42dc50fc4120a00d02"
+    },
+    "gse262419.rank.csv": {
+      "sha256": "76a27e41d43656fed889ee228423717052dbc86887def3b7ec3c9f38ce56d7bf"
+    },
+    "gse313746.audit.json": {
+      "sha256": "5be0d955ee63257664580ad3f36e17eaef8464be6b5a8ab99362446267573071"
+    },
+    "gse313746.deg.csv": {
+      "sha256": "b274c478875ecebbe9a3ee5c8bb47d5bcebd387ba87714cf166f6de52d280624"
+    },
+    "gse313746.rank.csv": {
+      "sha256": "d0dc2b6e401562dd66d62596f06565344d5774d9f6701c40bf2cc80a7ea7536b"
+    },
+    "tox.deg2000.csv": {
+      "sha256": "383984b5f9f4aa2d32ca00da746ff25bd144e8bc82993e3fdf91fc24ab733e85"
+    }
+  },
+  "recipe": "Pool independently admitted small-molecule drugs vs matched vehicle within original experimental strata; preserve source-specific tests and donor handling; collapse once per independent dataset with maximum effect and pass-any-contrast padj<0.05 & abs(log2FC)>=2; one DEG-only rank per dataset, rank_norm=rank/n_deg; finish each tier before applying cumulative frozen-axis DEG-union >=2000 stop.",
+  "schema": "stage2-disease-deg-release-v1"
+}

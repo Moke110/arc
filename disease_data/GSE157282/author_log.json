@@ -21,7 +21,8 @@
       "method": "script/fetch.sh",
       "path": "source/",
       "tree_sha256": "4142062e1ac3949d7423c45ee17d40c0a65f960ac5a96f4b84973a0bbf1855c9",
-      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE157282"
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE157282",
+      "version": "GSE157282"
     }
   ],
   "verified_at": "2026-11-16",

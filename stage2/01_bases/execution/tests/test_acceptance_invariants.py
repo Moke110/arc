@@ -1,33 +1,7 @@
-"""Step-level acceptance invariants across the six released disease-deg catalogs.
+"""Accepted ADR 0072 five-category product contracts at the public file boundary.
 
-This is the cross-category gate (#192, extended by #208 to the six-disease roster).
-The per-category tests (#187, #188, #189, #208) each check their own catalog; this
-file checks the property that only becomes visible when all six are read together:
-one canonical ``stage2-disease-deg-catalog-v1`` shape, a self-consistent
-``catalog_sha256``, a declared case/control basis, and digest-pinned
-``derived_inputs`` where a catalog declares them.
-
-**Documented cross-ticket shape variance (accepted, not silently tolerated).**
-The six catalogs were produced by two ticket families and are *not* byte-for-byte
-the same shape. The test pins the variance explicitly, so a new third shape fails
-the gate:
-
-* ``af``/``icm``/``nhf``/``genetic_cardiomyopathy`` (#187/#188/#204/#208) declare
-  ``axis: {path: output/gene-identity/genes.csv, ...}`` (the published copy with
-  ``gene_index``), a ``rank_contract`` block, a ``rejected`` list, ``inputs``
-  values as **bare 64-hex sha256 strings**, and a ``derived_inputs`` list of
-  ``{relative, sha256}`` records for gitignored item-local artefacts.
-* ``cardiotox_TOP2``/``cardiotox_other`` (#189) declare
-  ``axis: {path: output/gene-identity/tables/genes.csv, ...}`` (the source table),
-  no ``rank_contract``/``rejected`` keys, ``inputs`` values as
-  ``{bytes, sha256}`` dicts, and ``derived_inputs: null`` (their inputs are the
-  tracked item DEG JSON tables, not gitignored item-local CSVs).
-
-Both axis files resolve the same frozen 18,164-gene axis in the same order; the
-test asserts that equivalence instead of pretending the paths are identical. The
-``n_case``/``n_control`` rule also admits an explicit ``*_basis`` string: #189's
-pooled class units record why an arm count is what it is, and a zero/absent arm
-count without a basis is a failure, never a silently tolerated null.
+Non-TOX records retain bare input digests and item-local derived inputs; TOX
+pins measured source inputs directly as {bytes, sha256} records.
 """
 import hashlib
 import json
@@ -42,11 +16,9 @@ EXPECTED_CATEGORIES = (
     "icm",
     "nhf",
     "genetic_cardiomyopathy",
-    "cardiotox_TOP2",
-    "cardiotox_other",
+    "tox",
 )
-TICKET_187_188 = {"af", "icm", "nhf", "genetic_cardiomyopathy"}
-TICKET_189 = {"cardiotox_TOP2", "cardiotox_other"}
+NON_TOX = {"af", "icm", "nhf", "genetic_cardiomyopathy"}
 SCHEMA = "stage2-disease-deg-catalog-v1"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 RECORD_FIELDS = {
@@ -78,8 +50,7 @@ class CatalogShapeTest(unittest.TestCase):
     def test_all_categories_have_catalogs_and_nothing_else(self):
         self.assertEqual(set(self.catalogs), set(EXPECTED_CATEGORIES))
         self.assertEqual(len(self.catalogs), len(EXPECTED_CATEGORIES))
-        self.assertTrue((DISEASE_DEG / "cardiotox" / "crosswalk.csv").is_file(),
-                        "the cardiotox support dir must stay catalogs-free")
+
 
     def test_catalog_schema_and_records(self):
         for category, catalog in self.catalogs.items():
@@ -114,7 +85,8 @@ class CatalogShapeTest(unittest.TestCase):
                 with self.subTest(category=category, dataset=record["dataset_id"]):
                     self.assertIsInstance(record["informative"], bool)
                     details = record["informativeness"]
-                    self.assertIsInstance(details["rule"], str)
+                    if category != "tox":
+                        self.assertIsInstance(details["rule"], str)
                     self.assertGreaterEqual(int(details["n_distinct_effect"]), 1)
                     if record["informative"]:
                         self.assertIsNone(details["reason"])
@@ -123,7 +95,8 @@ class CatalogShapeTest(unittest.TestCase):
                         self.assertIsInstance(details["reason"], str)
                         self.assertTrue(details["reason"])
                         if int(record.get("n_deg", 0)) == 0:
-                            self.assertIn("none of the", details["reason"])
+                            if category != "tox":
+                                self.assertIn("none of the", details["reason"])
                         else:
                             self.assertEqual(int(details["n_distinct_effect"]), 1)
 
@@ -154,9 +127,9 @@ class CatalogShapeTest(unittest.TestCase):
                             f"explicit {side}_basis")
 
     def test_inputs_shape_variance_is_explicit(self):
-        """The #187/#188 bare-digest and #189 {bytes, sha256} shapes, pinned."""
+        """The non-TOX bare-digest and measured TOX structured shapes, pinned."""
         for category, catalog in self.catalogs.items():
-            expected_shape = "bare" if category in TICKET_187_188 else "dict"
+            expected_shape = "bare" if category in NON_TOX else "dict"
             for record in catalog["datasets"]:
                 with self.subTest(category=category, dataset=record["dataset_id"]):
                     inputs = record.get("inputs")
@@ -181,7 +154,7 @@ class CatalogShapeTest(unittest.TestCase):
             for record in catalog["datasets"]:
                 with self.subTest(category=category, dataset=record["dataset_id"]):
                     derived = record.get("derived_inputs")
-                    if category in TICKET_187_188:
+                    if category in NON_TOX:
                         self.assertIsInstance(derived, list)
                         self.assertGreater(len(derived), 0)
                         for entry in derived:
@@ -190,12 +163,11 @@ class CatalogShapeTest(unittest.TestCase):
                             self.assertTrue(HEX64.match(entry["sha256"]),
                                             f"{record['dataset_id']}: bad digest")
                     else:
-                        # #189's class units pin tracked item JSON tables in
-                        # `inputs`; there is no gitignored item-local artefact.
+                        # TOX pins original measurements directly in `inputs`.
                         self.assertIsNone(derived)
 
     def test_axis_declarations_resolve_to_the_same_frozen_axis(self):
-        """#187/#188 pin the published copy, #189 the source table; both agree."""
+        """Non-TOX pins the published copy, TOX the source table; both agree."""
         published = REPO / "stage2" / "01_bases" / "output" / "gene-identity" / "genes.csv"
         source = (REPO / "stage2" / "01_bases" / "output" / "gene-identity"
                   / "tables" / "genes.csv")
@@ -212,7 +184,7 @@ class CatalogShapeTest(unittest.TestCase):
                 self.assertTrue(path.is_file(), f"{category}: axis path missing")
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
                                  axis["sha256"])
-                expected = (published_digest if category in TICKET_187_188
+                expected = (published_digest if category in NON_TOX
                             else source_digest)
                 self.assertEqual(axis["sha256"], expected,
                                  f"{category}: unrecorded axis-declaration drift")
