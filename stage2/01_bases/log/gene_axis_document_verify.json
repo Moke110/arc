@@ -1,0 +1,270 @@
+{
+  "date": "2026-11-16",
+  "inputs": {
+    "stage2/01_bases/execution/gene_axis_source_metadata.py": {
+      "bytes": 36881,
+      "sha256": "f64ffe341aafc1bb1c46f6b0974cc5f0cde2f74ce03affd8f6b573b2649202a7"
+    },
+    "stage2/01_bases/execution/make_gene_axis_docx.py": {
+      "bytes": 38379,
+      "sha256": "5fbdf8d0466620be2c536a4ee38de82219b7cf4bc4271a87a034fa6613026522"
+    },
+    "stage2/01_bases/execution/public_api.py": {
+      "bytes": 624,
+      "sha256": "0989d012e18cd1ab1ddd9f6cb6523b5e1b361fedc242d48066259eb45f492990"
+    },
+    "stage2/01_bases/figure/data/gene_axis_rank_sum_histogram.csv": {
+      "bytes": 18622,
+      "sha256": "cabaa68ef139c0c2df457bcfc6bf8615b6d077a56d13af03d3729605c5a6ea23"
+    },
+    "stage2/01_bases/figure/data/gene_axis_source_topn_coverage.csv": {
+      "bytes": 1518,
+      "sha256": "56e7c16973303e4dd4131a034dbafacc6661ef71ec3926bf4361410abb97f602"
+    },
+    "stage2/01_bases/figure/script/render_gene_axis_rank_sum_histogram.py": {
+      "bytes": 7980,
+      "sha256": "53549b4a49084c77f8f07ba5e315827e1b1c734ec9283bfa41659a302fe0c9ff"
+    },
+    "stage2/01_bases/figure/script/render_gene_axis_source_topn_coverage.py": {
+      "bytes": 8084,
+      "sha256": "021a261150ca6feb38ab2d38ff866221105129315ed6fbc9405e23dd3a2f8a4c"
+    },
+    "stage2/01_bases/output/api/bases/gene_axis.py": {
+      "bytes": 44839,
+      "sha256": "5bd66ecd4ce48b9de42095ecbc87eace3e648ed70bdb150474bebe09c80457d8"
+    },
+    "stage2/01_bases/output/api/bases/palette.py": {
+      "bytes": 9316,
+      "sha256": "51e9ffe7bf2c57fb4469aea8d36990e46dc670bb962837a37e301f30ce8cb9e1"
+    },
+    "stage2/01_bases/output/disease-deg/af/catalog.json": {
+      "bytes": 20652,
+      "sha256": "b73d2f609d5a1598cabea2a5ef22285c81a1bebc73097330175682744b213478"
+    },
+    "stage2/01_bases/output/disease-deg/genetic_cardiomyopathy/catalog.json": {
+      "bytes": 47843,
+      "sha256": "1a3a99a083c7be86587567af0d71b5a2dbe53ccafe301b38f4f8e59e8e5c01b4"
+    },
+    "stage2/01_bases/output/disease-deg/icm/catalog.json": {
+      "bytes": 21276,
+      "sha256": "fc66c810ff32b42aa9323aa70521c835b7ade2459620ac8d9cae0ed3f9292826"
+    },
+    "stage2/01_bases/output/disease-deg/nhf/catalog.json": {
+      "bytes": 33917,
+      "sha256": "34d952606d3c36000586db24750de3c4b83cb5e8270211618f3225f93a64187d"
+    },
+    "stage2/01_bases/output/disease-deg/tox/catalog.json": {
+      "bytes": 65670,
+      "sha256": "f5210505f8f9369115561db96d73063f18f074e2b12c9230a7c1997838edfead"
+    },
+    "stage2/01_bases/output/disease-fusion/af.deg1000.csv": {
+      "bytes": 1240,
+      "sha256": "c0aad01fcb93f70831c84fe51d9371847fecdbfd1bbe6becec1b9ccd135ef177"
+    },
+    "stage2/01_bases/output/disease-fusion/catalog.json": {
+      "bytes": 18166,
+      "sha256": "6beb71773c59e70c2cca0a77eed12356d0f608506b960d1aad5322564af039b1"
+    },
+    "stage2/01_bases/output/disease-fusion/genetic_cardiomyopathy.deg1000.csv": {
+      "bytes": 69637,
+      "sha256": "12e41d14fbd6987cdc83eab13821923c0e61f097d121b20f7b4e1c6fb450261b"
+    },
+    "stage2/01_bases/output/disease-fusion/icm.deg1000.csv": {
+      "bytes": 51557,
+      "sha256": "284ed941f9acf197b9be7a7cc2c9d8e0ade636794240a1144a13e858222c999f"
+    },
+    "stage2/01_bases/output/disease-fusion/nhf.deg1000.csv": {
+      "bytes": 73584,
+      "sha256": "a19d69a872b9d6d9d7e7df23dc221e76b319bd3a49fbfee2c1325acef14b0789"
+    },
+    "stage2/01_bases/output/disease-fusion/tox.deg1000.csv": {
+      "bytes": 101102,
+      "sha256": "04ae9a8451d18e49df525244c924ac0b2e5ab21823715be2478d441b577bf02b"
+    },
+    "stage2/01_bases/output/gene-axis/axis_composition.csv": {
+      "bytes": 8852,
+      "sha256": "6aaa7116f2d9d3dae87a306e64bafaeea0e3ca97a1dfdd943c22f9eff0ffc331"
+    },
+    "stage2/01_bases/output/gene-axis/candidate_rank_sum.csv": {
+      "bytes": 795537,
+      "sha256": "a5f8255488ad011e8153b7782ff9e899f2edd12257f8553c04e131378a3de10e"
+    },
+    "stage2/01_bases/output/gene-axis/gene_axis_2000.csv": {
+      "bytes": 23363,
+      "sha256": "cdbac4a64dfd2d4faa1fd353a479a54775a51bfbb8dd312ed41d8b22233dce57"
+    },
+    "stage2/01_bases/output/gene-axis/gene_axis_3000.csv": {
+      "bytes": 35064,
+      "sha256": "105b7c40b8d19a7f361bfef4d36745fd3c9122c8a62af0a240d8ff8efadc7245"
+    },
+    "stage2/01_bases/output/gene-axis/gene_axis_4000.csv": {
+      "bytes": 46781,
+      "sha256": "26c5bd988e87ed7d516133df91eebd0ee285a038be89ec006f876efdf3d23680"
+    },
+    "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
+      "bytes": 58585,
+      "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+    },
+    "stage2/01_bases/output/gene-axis/manifest.json": {
+      "bytes": 35769,
+      "sha256": "187de15ed2eecbd6357cad6fa2aef2c792f4eafe1fdd4467cde4370b64ea2ff8"
+    },
+    "stage2/01_bases/output/gene-axis/source_topn_coverage.csv": {
+      "bytes": 2477,
+      "sha256": "54c15623dd65c988e3a7d813ae778beb44df8fe03a7f8d9262f95c42c66a70c4"
+    },
+    "stage2/01_bases/output/gene-identity/genes.csv": {
+      "bytes": 930854,
+      "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57"
+    }
+  },
+  "outputs": {
+    "stage2/01_bases/figure/gene_axis_rank_sum_histogram.png": {
+      "bytes": 95996,
+      "sha256": "ed1e892a2c0f413d8f985333c96d827e3bcf614b574b80d130d8b8da4afdcdbd"
+    },
+    "stage2/01_bases/figure/gene_axis_source_topn_coverage.png": {
+      "bytes": 75469,
+      "sha256": "45f5c9b87eb99ffff22bde6a3a87d6a25caa03e8efd1284589b2ddf8b18c0bdd"
+    },
+    "stage2/01_bases/gene_axis_fill_rule.docx": {
+      "bytes": 123881,
+      "sha256": "80bf8656b803c326a4094e67c6e026085b82e9c3c58e6a86d03c319c4be1c839"
+    }
+  },
+  "qa_corrections": [
+    "Replaced stale GSE244740 three-drug plate-only sample note with current 32-drug, eight-plate pooled-well basis (1920/536).",
+    "Moved both figure legends outside plotting areas.",
+    "Widened disease-table source-count and eligibility headings."
+  ],
+  "replay": {
+    "both_pngs_byte_identical": true,
+    "docx_byte_identical": true,
+    "figure_csv_source": "same independently replayed four-axis candidate",
+    "upstream_input_bytes_unchanged": true
+  },
+  "schema": "stage2-gene-axis-document-verification-v1",
+  "spec": 220,
+  "status": "verified-candidate-not-deployed",
+  "structure": {
+    "axis_sizes": [
+      2000,
+      3000,
+      4000,
+      5000
+    ],
+    "coverage_rows": 24,
+    "disease_dataset_records": 41,
+    "disease_records_are_not_independent_study_count": true,
+    "fallback_by_size": {
+      "2000": 0,
+      "3000": 0,
+      "4000": 0,
+      "5000": 0
+    },
+    "portrait_a4_cm": [
+      21,
+      29.7
+    ],
+    "sections": 1,
+    "source_subtable_row_counts": [
+      8,
+      5,
+      5,
+      11,
+      12,
+      1
+    ],
+    "source_subtables": 6,
+    "tables": 9,
+    "tenv_hvg_non_disease_rows": 1
+  },
+  "tests": {
+    "test_four_axis_document": 3,
+    "test_gene_axis_source_metadata": 25,
+    "test_gene_axis_successor_docx": 2
+  },
+  "ticket": 224,
+  "tools": {
+    "document_python": "3.12.14",
+    "document_skill": "documents/26.1104.22356",
+    "figure_python": "arc environment",
+    "font": "Noto Sans CJK SC",
+    "libreoffice": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
+    "matplotlib": "3.10.9",
+    "pandas": "2.2.3",
+    "python_docx": "1.2.0"
+  },
+  "visual_qa": {
+    "every_page_opened_at_full_resolution": true,
+    "page_count": 13,
+    "pages": [
+      {
+        "inspected": true,
+        "page": 1,
+        "png_sha256": "bf8fcd79a8baa07deecd1cd7a838e22e71dc72308cea1532ef0b06065394a05a"
+      },
+      {
+        "inspected": true,
+        "page": 2,
+        "png_sha256": "cde52acd2b7a0ea041236dfb889fce9790d7f000c23d6ba12ba065c53d04d077"
+      },
+      {
+        "inspected": true,
+        "page": 3,
+        "png_sha256": "8111ff625ce3b6363b71f92bfade5af66d90ba4d15866c81e5aa76614b7282e7"
+      },
+      {
+        "inspected": true,
+        "page": 4,
+        "png_sha256": "b54c6a10c933f7463489cb925784b30fce0c0fc7661ec65d9ecd7601d42f0dd1"
+      },
+      {
+        "inspected": true,
+        "page": 5,
+        "png_sha256": "75222135e3ef77005a78f470ff4d8570e5c9238e8a88adef9756cdd758eda903"
+      },
+      {
+        "inspected": true,
+        "page": 6,
+        "png_sha256": "32b2cc211e917c7a61b84c603ffa4d963f2e72ce214060bb2e6ef80ff65cc6c2"
+      },
+      {
+        "inspected": true,
+        "page": 7,
+        "png_sha256": "bf2d37dde45d58b99011fb9c99017930fb28037a03629c5a8d0a4c9c3052be45"
+      },
+      {
+        "inspected": true,
+        "page": 8,
+        "png_sha256": "7a661213204196d06c3181da879618d59fef47a6eec1bc6db9bc81d098d7bb87"
+      },
+      {
+        "inspected": true,
+        "page": 9,
+        "png_sha256": "affa1ff98ef4b7ea2c731895c8131792b410c3427c23e1dcc3388f3ad097c43c"
+      },
+      {
+        "inspected": true,
+        "page": 10,
+        "png_sha256": "b126dc1784ffc2c60d820af930afdd47c247659cf51aab6b242e7060bb78080e"
+      },
+      {
+        "inspected": true,
+        "page": 11,
+        "png_sha256": "cb94b4d0e3d08b61d8bfae1d563894f28d37d2333c315a1a271efe2a0f1a5983"
+      },
+      {
+        "inspected": true,
+        "page": 12,
+        "png_sha256": "c003747f68cfe8a94d400c2c883f6a20db4e4e4f46d042bc38fef7e325c4e9c0"
+      },
+      {
+        "inspected": true,
+        "page": 13,
+        "png_sha256": "ffe030ef8f44f87dd64484353167344b2c01428adf288b9ebb71cb6d0f5ca534"
+      }
+    ],
+    "result": "pass: no clipping, missing glyphs, split rows, blank pages or figure legend overlap"
+  }
+}
