@@ -837,9 +837,10 @@ class FusionDriverTests(unittest.TestCase):
         directories = [record['directory'] for record in catalog['diseases']]
         published = [record['directory'] for record in catalog['diseases']
                      if record['published']]
-        self.assertEqual(set(published),
-                         {'nhf', 'icm', 'af', 'genetic_cardiomyopathy',
-                          'cardiotox_TOP2', 'cardiotox_other'})
+        expected = (set(gene_axis.CATEGORIES) if 'tox' in published else
+                    {'nhf', 'icm', 'af', 'genetic_cardiomyopathy',
+                     'cardiotox_TOP2', 'cardiotox_other'})
+        self.assertEqual(set(published), expected)
         for directory in published:
             rows = reader.deg2000(directory)
             record = reader.record(directory)
@@ -862,6 +863,10 @@ class FusionDriverTests(unittest.TestCase):
             rebuilt.pop('catalog_sha256', None)
             old = dict(catalog)
             old.pop('catalog_sha256', None)
+            # #216 removed the legacy class example from this generic rule.
+            old['semantics'] = dict(old['semantics'])
+            old['semantics']['tier_stop'] = old['semantics']['tier_stop'].replace(
+                ' (the cardiotox classes)', '')
             for record in rebuilt['diseases']:
                 for key in ('axis_resolved_deg_union', 'eligible', 'exclusion_reason'):
                     record.pop(key, None)
