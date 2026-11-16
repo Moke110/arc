@@ -689,7 +689,7 @@
     "exit_status": 0,
     "peak_rss_kib": 19200
   },
-  "remaining_workflow": "Apply independent review fix, merge accepted work to dev, deploy dev to main, verify materialized main source/product chain, push only main, close issues, then safely clean spec worktrees. No PR.",
+  "remaining_workflow": "Complete independent final review of acceptance/review-fix delta, merge review fix to dev, deploy dev to main, verify materialized main source/product chain, push only main, close issues, then safely clean spec worktrees. No PR.",
   "replay_proofs": {
     "stage2/01_bases/log/four_axes_candidate.json": {
       "sha256": "84a6ff75dd1e6b919c9303af86b4d4c83574aba1a9ad704912ae2f278ca2df72"
@@ -724,10 +724,70 @@
     "snapshot_samples": 563,
     "wsl_cgroup_memory_current_bytes_max": 49387524096
   },
-  "review_checkpoint": "Independent review identified three author-log metadata gaps; a separate review-fix implementer owns correction before deployment. Scientific contracts, tests and health below have passed.",
+  "review_checkpoint": "Independent Standards review found one P2 across three author logs; corrected in 9ba8faa. Spec review found no substantiated defects. Final acceptance/fix delta review remains pending; deployment, push and issue closure remain pending.",
+  "review_fix": {
+    "date": "2026-11-16",
+    "dependent_product_author_log_pins": 0,
+    "deployment": "pending",
+    "final_delta_review": "pending",
+    "integrated_dev_checkpoint": "988f21c",
+    "issue_closure": "pending",
+    "items": {
+      "GSE221945": {
+        "author_log_sha256": "955c70e12cf90e60a9a129a7f86ec9609dd49bec2e940c26425db033f8f43716",
+        "bytes": 1721698,
+        "command": "bash disease_data/GSE221945/script/verify.sh",
+        "exit_status": 0,
+        "files": 2,
+        "manifest_path_sorted": true,
+        "manifest_sha256": "5622657cf85ac17b27f832f15902e1909b19bac62d39a0bde7b4b70af191e508",
+        "tree_sha256": "5622657cf85ac17b27f832f15902e1909b19bac62d39a0bde7b4b70af191e508",
+        "verified_at": "2026-11-16T11:51:20+00:00",
+        "verify_result": "pass"
+      },
+      "GSE248187": {
+        "author_log_sha256": "0072db7d1de609962e5eddcaa8410c6cf08fd3e1342c910a99fe0791ebe1409b",
+        "bytes": 1697320,
+        "command": "bash disease_data/GSE248187/script/verify.sh",
+        "exit_status": 0,
+        "files": 2,
+        "manifest_path_sorted": false,
+        "manifest_sha256": "9a464719d4bc0694b11e6549a76382492c9bb26af2d2ae496c26c748ed3d24c9",
+        "tree_sha256": "36cc8b0c317ae69bffa60db523e118d86bf691d8d523340abd01d7d8ba62b1c4",
+        "verified_at": "2026-11-16T11:51:20+00:00",
+        "verify_result": "pass"
+      },
+      "GSE329393": {
+        "author_log_sha256": "b958885f918fae4de3eecfef05c17a5d5829ddd9016e00026fb1fba893561bd6",
+        "bytes": 595792,
+        "command": "bash disease_data/GSE329393/script/verify.sh",
+        "exit_status": 0,
+        "files": 2,
+        "manifest_path_sorted": true,
+        "manifest_sha256": "d5b7a4ef7762accb6b9bef88a7dac567b8b92ca246df7aa17ec027824c3c54c0",
+        "tree_sha256": "d5b7a4ef7762accb6b9bef88a7dac567b8b92ca246df7aa17ec027824c3c54c0",
+        "verified_at": "2026-11-16T11:51:20+00:00",
+        "verify_result": "pass"
+      }
+    },
+    "main_push": "pending",
+    "provenance_fix_commit": "9ba8faa",
+    "reviewed_checkpoint": "26c0ad0833fea0232e90e793639ea2d74847f135",
+    "scientific_inputs_code_and_manifests_changed": false,
+    "spec": {
+      "substantiated_findings": 0
+    },
+    "standards": {
+      "finding": "Three newly admitted item author logs lacked per-source tree count/bytes/digest and verification results (ADR0030).",
+      "findings": 1,
+      "priority": "P2",
+      "resolution": "Retained all original fields/per-file metadata; added aggregate acquisition/version limitations, path-sorted manifest tree digest, exact manifest digest and dated offline verification."
+    },
+    "verification": "Each actual script/verify.sh passed twice; all six source-file checks passed. Verified file counts/lengths against retained acquisition metadata, aggregate bytes, canonical tree hashes, original-field preservation and git diff --check."
+  },
   "schema": "stage2-full-source-acceptance-v1",
   "specification": "https://github.com/Moke110/arc/issues/220",
-  "status": "accepted-isolated-release-pending-review-fix-and-dev-main-deployment",
+  "status": "accepted-isolated-release-review-fix-applied-pending-final-delta-review-and-dev-main-deployment",
   "tests": {
     "cases": 372,
     "files": 27,
