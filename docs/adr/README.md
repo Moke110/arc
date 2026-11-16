@@ -95,3 +95,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0069](0069-remove-af-category-from-01-bases.md) | Remove the `AF` category from Stage 2 `01_bases`: drop the non-informative disease-DEG product and its gene-axis column/row surface |
 | [0070](0070-af-stays-out-of-the-gene-axis.md) | AF stays out of the gene axis: the clinical CM-specific audit; informativeness is necessary but not sufficient (*amends 0068, confirms 0069*) |
 | [0071](0071-gene-axis-v2-deg-tiered-sources-and-f2000.md) | Gene-axis v2: tiered source collection, DEG-only rank fusion, `DEG2000`/`f2000` and the tenv-HVG fallback (*supersedes 0066 eligibility/fusion, 0069/0070 AF removal*) |
+| [0072](0072-disease-eligibility-and-unified-tox.md) | Disease eligibility at 100 axis-resolved DEGs, retained AF evidence and dataset-level unified TOX (*accepted design; successor not yet released*) |

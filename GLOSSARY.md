@@ -690,8 +690,16 @@ tissue that is not cardiomyocyte-specific. A whole-tissue bulk series is a tier-
 never a tier-1 or tier-2 one; ADR 0071 supersedes ADR 0066's blanket exclusion of it.
 _Avoid_: disease source (unqualified, when a particular tier is meant)
 
+**TOX** (agreed successor definition; ADR 0072, not yet released):
+The single small-molecule drug-cardiotoxicity disease category: transcriptional responses to drugs with independently supported cardiotoxicity, across qualifying exposure conditions, regardless of mechanism class. Positivity belongs to the drug and does not assert toxicity at every dose or time.
+_Avoid_: cardiotox_TOP2 / cardiotox_other (as successor disease categories), all drug exposures, toxicity-positive exposure (when drug-level admission is meant)
+
+**Disease eligibility** (agreed successor definition; ADR 0072, not yet released):
+A declared disease's qualification to contribute to cross-disease fusion: its distinct DEG union on the frozen CM gene axis contains at least 100 genes. An excluded disease still has its source evidence, DEG analysis, fusion and DEG2000 record.
+_Avoid_: source eligibility (a different decision), disease deletion, AF-specific exclusion
+
 **Disease category**:
-One of the six declared mechanism groups whose datasets fuse into one disease term: `nHF`,
+A declared disease grouping whose datasets are analyzed and fused together; declaration and eligibility are distinct under the agreed successor design (ADR 0072). The current released roster (ADR 0071) contains six groups: `nHF`,
 `ICM`, `AF`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
 fusion term however many datasets it holds. `AF` was declared by ADR 0066, removed by
 ADR 0069/0070, and re-admitted by ADR 0071 with CM-specific tier-1 sources and a tier-3 atrial
