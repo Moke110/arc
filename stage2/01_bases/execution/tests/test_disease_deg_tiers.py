@@ -98,7 +98,8 @@ class TierLadderTests(unittest.TestCase):
             self.assertEqual([rung['tier'] for rung in ladder], tiers, category)
         by_tier = {rung['tier']: rung['sources']
                    for rung in disease_deg.tier_ladder(disease_deg_sources.datasets('nHF'))}
-        self.assertEqual(len(by_tier[1]), 3)
+        self.assertEqual(len(by_tier[1]), 4)
+        self.assertIn('gse298023__dcm_cm', by_tier[1])
         self.assertEqual(len(by_tier[2]), 1)
         self.assertEqual(len(by_tier[3]), 3)
         self.assertIn('gse165303__dcm_lv_bulk', by_tier[3])

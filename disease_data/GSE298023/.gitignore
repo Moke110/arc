@@ -1,0 +1,7 @@
+/source/
+/local/
+!/local/
+/local/*
+!/local/deg/
+/local/deg/*
+!/local/deg/gse298023_deg.json

@@ -1280,3 +1280,37 @@ for _category in CATEGORIES.values():
     for _rejection in _category.get('rejected', []):
         if _rejection['candidate'] not in _reviewed:
             _review['records'].append(dict(_rejection, disposition='not_admitted'))
+
+# Reconstructed under the unchanged resource cap from the official author object.
+for _label, _arm, _n in [('nHF', 'DCM', 6), ('ICM', 'ICM', 7)]:
+    DATASETS.append({
+        'dataset_id': 'gse298023__' + _arm.lower() + '_cm', 'category': _label,
+        'source_item': 'disease_data/GSE298023',
+        'local_deg': 'local/deg/gse298023_deg.csv',
+        'local_summary': 'local/deg/gse298023_deg.json',
+        'cells_per_donor': 'local/pseudobulk/gse298023_donors.csv',
+        'arm_or_class': f'{_n} author {_arm} hearts vs four NF hearts; repeated ICM regions pooled per heart',
+        'species': 'Homo sapiens', 'model_system': 'human LV snRNA author cardiomyocyte donor pseudobulk',
+        'evidence_type': 'cm_pseudobulk', 'tier': 1, 'genotype_status': 'not_declared',
+        'time_window_basis': None, 'exploratory': False,
+        'shared_control_group': 'gse298023:nf', 'n_case': _n, 'n_control': 4,
+        'contrasts': [_arm + '-NF'],
+        'model_basis': 'author ident==Cardiomyocytes; sparse integer sum per heart_number, not per library or region',
+        'method': {'deposition': 'official2026 Seurat RNA sparse raw counts and author identities',
+                   'model': 'limma-voom, one joint fit for DCM and ICM against shared NF',
+                   'design': '~0 + group + batch; batch is exact author run-number pattern per pooled heart',
+                   'test': 'moderated t', 'padj': 'Benjamini-Hochberg'},
+        'strata': {'decision': 'pool all author CM nuclei and repeated regions per heart, retain exact run pattern as nuisance factor',
+                   'pooled': True, 'blocking_covariates': ['batch'],
+                   'why': 'NF onlyrun2, disease arms also include run2; model full-rank. Mixed-run Heart03 is pooled once with run_1_2 nuisance level. Region composition remains a limitation.'},
+    })
+    CATEGORIES[_label]['shared_control_group'].append('gse298023:nf')
+    CATEGORIES[_label]['rejected'] = [r for r in CATEGORIES[_label]['rejected'] if r['candidate'] != 'GSE298023']
+    CATEGORIES[_label]['source_review']['records'] = [r for r in CATEGORIES[_label]['source_review']['records'] if r['candidate'] != 'GSE298023']
+    CATEGORIES[_label]['source_review']['records'].append({
+        'candidate': 'GSE298023', 'disposition': 'admitted', 'tier': 1,
+        'reason': 'Exact official object acquired and author gate/heart/condition identities extracted under10GiB; actual donor-pooled shared-control fit reproduced',
+        'sources': ['https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE298023',
+                    'https://doi.org/10.1186/s13073-025-01580-z'],
+        'provenance': 'disease_data/GSE298023/author_log.json',
+        'uncertainty': 'No genotype or clinical-covariate stratification; NF onlyrun2, adjusted via observed run pattern; ICM scar composition pooled per donor'})
