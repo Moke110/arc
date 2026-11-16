@@ -29,3 +29,11 @@ models/__pycache__/{PRnet.cpython-39,__init__.cpython-39,PRnet.cpython-313}.pyc 
 TranSiGen src/__pycache__/{model.cpython-313,utils.cpython-313}.pyc. No files were
 removed. Python 3.9 cache files may be upstream payload bytes; any later cleanup
 must first distinguish downloaded provenance from generated 3.13 cache bytes.
+
+Incremental P1 correction: publication cleanup now retains the transaction while
+its journal remains. An installation failure followed by rollback rename failure
+reports the retained recovery paths instead of deleting accepted backups. Extended
+failure injection first failed on the old unconditional cleanup (transaction no
+longer existed), then passed after this fix: old PNG bytes remain in the recorded
+backup, the next public publication attempt restores the old release before
+staging, and a subsequent clean retry installs the candidate successfully.

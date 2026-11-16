@@ -73,6 +73,26 @@ class ReviewFixTests(unittest.TestCase):
                 with patch.object(matrix.os,'replace',side_effect=failing_replace):
                     with self.assertRaises(OSError):matrix.publish(args)
                 self.assertEqual(contents(step),before)
+                rename=os.rename
+                def failing_rollback_rename(source,target):
+                    if Path(target)==step/'figure/metrics.png':raise OSError('injected rollback I/O failure')
+                    return rename(source,target)
+                with patch.object(matrix.os,'replace',side_effect=failing_replace),patch.object(matrix.os,'rename',side_effect=failing_rollback_rename):
+                    with self.assertRaises((OSError,RuntimeError)):matrix.publish(args)
+                journal=root/'.tenv5k-publication-journal.json'
+                self.assertTrue(journal.exists())
+                state=json.loads(journal.read_text())
+                prior_png=next(e for e in state['entries'] if Path(e['target'])==step/'figure/metrics.png')
+                self.assertTrue(Path(state['transaction']).is_dir())
+                self.assertEqual(Path(prior_png['backup']).read_bytes(),b'oldpng')
+                # Next public attempt restores old bytes before staging anything.
+                def verify_restored_then_fail_copy(source,target,*a,**kw):
+                    self.assertEqual(contents(step),before)
+                    raise OSError('stop after proving recovery restored old release')
+                with patch.object(matrix.shutil,'copytree',side_effect=verify_restored_then_fail_copy):
+                    with self.assertRaises(OSError):matrix.publish(args)
+                self.assertEqual(contents(step),before)
+                self.assertFalse(journal.exists())
                 matrix.publish(args)
                 self.assertEqual((step/'output/runs/new').read_text(),'newrun')
                 self.assertEqual((step/'figure/metrics.png').read_text(),'newpng')

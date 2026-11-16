@@ -316,10 +316,17 @@ def publish(args):
             os.replace(entry['staged'],target)
         journal.unlink()
     except BaseException:
-        if journal.exists():_rollback_publication(journal)
+        if journal.exists():
+            try:
+                _rollback_publication(journal)
+            except BaseException as recovery_error:
+                raise RuntimeError('Publication rollback failed; retained journal '+str(journal)+
+                                   ' and transaction '+str(transaction)+' for the next recovery attempt') from recovery_error
         raise
     finally:
-        shutil.rmtree(transaction,ignore_errors=True)
+        # A remaining journal may reference the only accepted backups. Never
+        # clean its transaction until installation or full rollback succeeds.
+        if not journal.exists():shutil.rmtree(transaction,ignore_errors=True)
 
 
 def main():
