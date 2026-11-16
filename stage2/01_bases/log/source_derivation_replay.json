@@ -1,0 +1,820 @@
+{
+  "accepted_products_untouched": true,
+  "changes": [
+    {
+      "after": "cfb6e12a0e3b1b710ca60d7adbd8ae98dc57eba82c295ab17a04f5dbe1f030c7",
+      "before": "06a6df6800b764959a6184bed539b563fb07dd9913c5d135939bb52606a8ab6d",
+      "path": "disease_data/GSE138252/local/deg/GSE138252_deg.json"
+    },
+    {
+      "after": "9071b3fbbe2ff71bdfe186912e934cb442e78ecfd0c5b9c09936201a754e47d3",
+      "before": "583dd9baedc3dfcdeaafa5cfba74b62775335b02fb8562ef0c9c40e97c3607f5",
+      "path": "disease_data/GSE165303/local/deg/GSE165303_deg.json"
+    },
+    {
+      "after": "8fde1f52dca4c34953226a791cdb0af55e3458e29df62231d383b19ba101e1ad",
+      "before": "51a174b356ec0d3b4c83d3f8c4125bce4153b2bd96ac67d5ef604f1e7b1512b1",
+      "path": "disease_data/GSE194297/local/deg/GSE194297_deg.json"
+    },
+    {
+      "after": "7507c040e316e53593092d28712b0fe7def12c4d0ddca4c7621ab67150946371",
+      "before": "fcdd34d6154f17c17a5e704a8131d44364297a21f51d835a1c936e664020663c",
+      "path": "disease_data/GSE224129/local/deg/GSE224129_deg.json"
+    },
+    {
+      "after": "c0b7b8719859c7d2e8ce01c8b2429836a7c1181a51d6ddb1d783c65e0274f6d9",
+      "before": "33b2e03fa6df8e13c1bc6d5575ac69a35485ff802369e42fde077b08bc0df12e",
+      "path": "disease_data/GSE234141/local/deg/GSE234141_deg.json"
+    },
+    {
+      "after": "62351fb590c883e9f3ab12e6f5fdeb7be8a9bf487e286f2cc77795729192b522",
+      "before": "7f47dd1e102d4b6a5d5690f8fd80c907b9510e59d684046ef0a97abe9ec018d6",
+      "path": "disease_data/GSE238242/local/deg/GSE238242_deg.json"
+    },
+    {
+      "after": "602ab319bcbc4dc109ffa5370e27a07600a3522d3bf9ed5b2cf72f29c171638c",
+      "before": "e7cd26411ae07a71af070dfce92d7b5f45ccb512025a0a5509db4d02cc25ceae",
+      "path": "disease_data/GSE253223/local/deg/GSE253223_deg.json"
+    },
+    {
+      "after": "78b401641b010526878bbc6c737807bd254e1f8420425123b17f04d80abec03a",
+      "before": "15f2363b20ae350d40246d5bc774918a79af7ddc76056bbff55da9a11f17dde9",
+      "path": "disease_data/GSE255612/local/deg/gse255612_log_matrix.tsv.gz"
+    },
+    {
+      "after": "36f831f7b0617d95512f0e2df51189f33ac7f1b2f9ebda9c34704e84e4d1d8cb",
+      "before": "8dbf7e5e163a905dca6a5739604646641e213ddc171a76a95916f414baf62b8c",
+      "path": "disease_data/GSE255612/local/deg/gse255612_deg.json"
+    },
+    {
+      "after": "2cb155d000773e17af08cdecddfe99ba17c63d9d0c14c98930b7957c593cc87e",
+      "before": "2c1c8d5581f66ef58faaae8d0ad816a09c7cbe8ccc45651bb69a3f2379ded364",
+      "path": "disease_data/GSE269882/local/deg/GSE269882_deg.json"
+    },
+    {
+      "after": "57f1f495ba9de071e96ff8036d06f4949802567e1dbcec82e1d1b355d4b0028a",
+      "before": "cc7d84fca4d03111f12ac8b58f7d2c4d68e637e0bdee3a6b1931918725044227",
+      "path": "disease_data/GSE270788/local/deg/gse270788_deg.json"
+    },
+    {
+      "after": "03af49c998fa2ab095f269a7bbe6968fa9e6be5bd0f1c2cdfad05c210883535f",
+      "before": "839659aca1245f535a2cbcf643cf39ac72cd60415d0f03866201fc1986a827a8",
+      "path": "disease_data/GSE304575/local/deg/GSE304575_deg.json"
+    },
+    {
+      "after": "3afb4ea48989cdb8f2fd68fa5e4feb333cc578cd187a0da1be72619e380c7a42",
+      "before": "5fe09fd154850411840646304e91bf5869cf363cbd91e1f6cc48f3d3fb9b0d78",
+      "path": "disease_data/GSE305648/local/deg/GSE305648_deg.json"
+    },
+    {
+      "after": "a2d38cb5563b569820c069ca048859b7f53e5e6be9ce101574e3649c64846131",
+      "before": "3286fbe054fd60c965b6946a5dfdbc031b51e181557aa17469bfea561c50146f",
+      "path": "disease_data/GSE35108/local/deg/GSE35108_deg.json"
+    },
+    {
+      "after": "35d5bf68c268e02128cfd5bde2b240c718ec9da3f15e5f4a4c1d054f6db0024a",
+      "before": "c8eb21888c6cbc16d09fb4e4a2ace7e64f73693a206d1be429fd7a1e770e0841",
+      "path": "disease_data/Kuppe-MI/local/deg/kuppe-mi_deg.json"
+    },
+    {
+      "after": "33a62f7acb79d386c76935f4e1453affba9d57c99c1d1fc8b3cc9243f6bee1be",
+      "before": "25e3e546d5092ec4af23c762a418442b0b74d0cfe3a8731444a856ac0553d328",
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json"
+    },
+    {
+      "after": "5e17ccc0949eaec1f685e58ace16038b2dfac744a7d6a4bae459388cc54c5ffe",
+      "before": "c43c91732e4f2612f79b7931e5bc51b3f5c289cd402be64f0adec68f3a37ae8f",
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_matrix.tsv.gz"
+    },
+    {
+      "after": "cff96dfdc2b780481fa868b7ce8bfd597e7ad5428e52c74e6f79f872ecd383ba",
+      "before": "484fcc2e461b5ee50002ceac1816b2cbc3086843df45a5a4536add29cbba914c",
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json"
+    },
+    {
+      "after": "d76b09b0210a666c6317a74498269810be19ad9aacf8954c4dd710e4a5fe89fe",
+      "before": "c94c5ba3b443dcc03e8e93d404ee07bacec5e7f4ba6872c1ef85bad5649232fd",
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_pseudobulk_matrix.tsv.gz"
+    }
+  ],
+  "date": "2026-11-16",
+  "deferred": "Three isogenic PublishedCatalog checks still target the untouched accepted v1 release; final225 coherent promotion must make the full suite green.",
+  "fits": [
+    {
+      "item": "GSE138252",
+      "log": "225-source-runs/GSE138252.log",
+      "peak_rss_kib": 195560,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 4.63934588432312,
+      "time": "225-source-runs/GSE138252.time"
+    },
+    {
+      "item": "GSE165303",
+      "log": "225-source-runs/GSE165303.log",
+      "peak_rss_kib": 438612,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 12.442099571228027,
+      "time": "225-source-runs/GSE165303.time"
+    },
+    {
+      "item": "GSE194297",
+      "log": "225-source-runs/GSE194297.log",
+      "peak_rss_kib": 168452,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 1.38450026512146,
+      "time": "225-source-runs/GSE194297.time"
+    },
+    {
+      "item": "GSE224129",
+      "log": "225-source-runs/GSE224129.log",
+      "peak_rss_kib": 179420,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 2.2010302543640137,
+      "time": "225-source-runs/GSE224129.time"
+    },
+    {
+      "item": "GSE234141",
+      "log": "225-source-runs/GSE234141.log",
+      "peak_rss_kib": 211340,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 2.987825870513916,
+      "time": "225-source-runs/GSE234141.time"
+    },
+    {
+      "item": "GSE238242",
+      "log": "225-source-runs/GSE238242.log",
+      "peak_rss_kib": 137888,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 1.1033430099487305,
+      "time": "225-source-runs/GSE238242.time"
+    },
+    {
+      "item": "GSE253223",
+      "log": "225-source-runs/GSE253223.log",
+      "peak_rss_kib": 179488,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 2.4624452590942383,
+      "time": "225-source-runs/GSE253223.time"
+    },
+    {
+      "item": "GSE255612",
+      "log": "225-source-runs/GSE255612.log",
+      "peak_rss_kib": 223612,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 4.429494142532349,
+      "time": "225-source-runs/GSE255612.time"
+    },
+    {
+      "item": "GSE269882",
+      "log": "225-source-runs/GSE269882.log",
+      "peak_rss_kib": 274420,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 5.371192693710327,
+      "time": "225-source-runs/GSE269882.time"
+    },
+    {
+      "item": "GSE270788",
+      "log": "225-source-runs/GSE270788.log",
+      "peak_rss_kib": 181880,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 1.8506875038146973,
+      "time": "225-source-runs/GSE270788.time"
+    },
+    {
+      "item": "GSE304575",
+      "log": "225-source-runs/GSE304575.log",
+      "peak_rss_kib": 177992,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 2.2007365226745605,
+      "time": "225-source-runs/GSE304575.time"
+    },
+    {
+      "item": "GSE305648",
+      "log": "225-source-runs/GSE305648.log",
+      "peak_rss_kib": 187860,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 3.3505218029022217,
+      "time": "225-source-runs/GSE305648.time"
+    },
+    {
+      "item": "GSE35108",
+      "log": "225-source-runs/GSE35108.log",
+      "peak_rss_kib": 335800,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 6.032277584075928,
+      "time": "225-source-runs/GSE35108.time"
+    },
+    {
+      "item": "Kuppe-MI",
+      "log": "225-source-runs/Kuppe-MI.log",
+      "peak_rss_kib": 268224,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 20.65169858932495,
+      "time": "225-source-runs/Kuppe-MI.time"
+    },
+    {
+      "item": "Reichart-CM",
+      "log": "225-source-runs/Reichart-CM.log",
+      "peak_rss_kib": 221752,
+      "returncode": 0,
+      "script": "build_deg.py",
+      "seconds": 2.2554450035095215,
+      "time": "225-source-runs/Reichart-CM.time"
+    },
+    {
+      "item": "Reichart-CM",
+      "log": "225-source-runs/Reichart-CM-genetic.log",
+      "peak_rss_kib": 223252,
+      "returncode": 0,
+      "script": "build_genetic_deg.py",
+      "seconds": 2.3159019947052,
+      "time": "225-source-runs/Reichart-CM-genetic.time"
+    }
+  ],
+  "fitted_summaries": 16,
+  "gzip_reproducibility": {
+    "files": {
+      "disease_data/GSE255612/local/deg/gse255612_deg.json": "36f831f7b0617d95512f0e2df51189f33ac7f1b2f9ebda9c34704e84e4d1d8cb",
+      "disease_data/GSE255612/local/deg/gse255612_log_matrix.tsv.gz": "78b401641b010526878bbc6c737807bd254e1f8420425123b17f04d80abec03a",
+      "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json": "cff96dfdc2b780481fa868b7ce8bfd597e7ad5428e52c74e6f79f872ecd383ba",
+      "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json": "33a62f7acb79d386c76935f4e1453affba9d57c99c1d1fc8b3cc9243f6bee1be",
+      "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_matrix.tsv.gz": "5e17ccc0949eaec1f685e58ace16038b2dfac744a7d6a4bae459388cc54c5ffe",
+      "disease_data/Reichart-CM/local/deg/reichart-cm_pseudobulk_matrix.tsv.gz": "d76b09b0210a666c6317a74498269810be19ad9aacf8954c4dd710e4a5fe89fe"
+    },
+    "result": "PASS"
+  },
+  "input_files_unchanged": 35,
+  "inputs": [
+    {
+      "bytes": 554855,
+      "path": "disease_data/GSE138252/source/GSE138252_human_2785_merged_gene_name_expression.txt.gz",
+      "sha256": "c4741fb573afb5eba2d96e4976a62f6ef6c036e971ccbd38f5099930018c0d0a"
+    },
+    {
+      "bytes": 1114989,
+      "path": "disease_data/GSE138252/source/GSE138252_human_merged_genebody_exp.txt.gz",
+      "sha256": "262c4aef8f6d1d36f4d6b0c263c68da9cf62e5dd2ce2aac5674a5db4a7beaeec"
+    },
+    {
+      "bytes": 1136808,
+      "path": "disease_data/GSE138252/source/GSE138252_merged_gene_name_expression.txt.gz",
+      "sha256": "aca8c2802cdaddb6f1fabc5b699121cb4cea32d01cfd26e8b430bc351f9057f7"
+    },
+    {
+      "bytes": 4230,
+      "path": "disease_data/GSE138252/source/GSE138252_series_matrix.txt.gz",
+      "sha256": "94563d2fd330ab0bc273de49033ad8f0212269ad8fe60fbbc25619991ccdbd82"
+    },
+    {
+      "bytes": 12562,
+      "path": "disease_data/GSE165303/source/GSE165303-GPL20795_series_matrix.txt.gz",
+      "sha256": "0b8e793b20c152e8d635f835bbe62049342e0c540be2099ffdec3fed6aedb04d"
+    },
+    {
+      "bytes": 20040757,
+      "path": "disease_data/GSE165303/source/GSE165303_RNA-Seq_master_table.txt.gz",
+      "sha256": "d50ef019c0bcb1c3eacff5c73e03e35eb5c4637efc92435c931ede50fe2a7a29"
+    },
+    {
+      "bytes": 342625,
+      "path": "disease_data/GSE194297/source/GSE194297_DMD_vs_DMD-Iso.absolute_counts.csv.gz",
+      "sha256": "d0de10b4d2d55b69763ee1293d672d679e451451100a16a3f97c7a565414f9f1"
+    },
+    {
+      "bytes": 2746,
+      "path": "disease_data/GSE194297/source/GSE194297_series_matrix.txt.gz",
+      "sha256": "c6bdd60fc78a031a6ea6d98cb31c20f8f717127e97d779ed9c82d43efc8571aa"
+    },
+    {
+      "bytes": 826308,
+      "path": "disease_data/GSE224129/source/GSE224129_AHNNF3DMXX_rsem_GENE.txt.gz",
+      "sha256": "4630793f0f5546fc6c889f7c8a4be1bcd801a04377799c55f3f950d3a2e0fe96"
+    },
+    {
+      "bytes": 3834,
+      "path": "disease_data/GSE224129/source/GSE224129_series_matrix.txt.gz",
+      "sha256": "30f9c1663c1d6400f1e2500240cdf6b160d7adf7d65c27c093d54faa10fbee0e"
+    },
+    {
+      "bytes": 1123421,
+      "path": "disease_data/GSE234141/source/GSE234141_counts.txt.gz",
+      "sha256": "8c836fcd25f2c172965a8c0bb3f96700e05a8c48cbd425b45a645b9bfed2687e"
+    },
+    {
+      "bytes": 3460,
+      "path": "disease_data/GSE234141/source/GSE234141_series_matrix.txt.gz",
+      "sha256": "2626aaf706f29f39bd68a372d08a01673ec92d50385bd47db9099f5b88ae702e"
+    },
+    {
+      "bytes": 405958,
+      "path": "disease_data/GSE238242/local/pseudobulk/GSE238242_cm_pseudobulk.csv.gz",
+      "sha256": "e22a4e4cae4e9466349947462e6d85667edeb58cd2b86e64801007fbb6d64bc3"
+    },
+    {
+      "bytes": 431,
+      "path": "disease_data/GSE238242/local/pseudobulk/GSE238242_profiles.csv",
+      "sha256": "ad9d2ea58a2d335dcd303f41a8af7d94604076fc6e14a96c8ae9a6030263f082"
+    },
+    {
+      "bytes": 3276,
+      "path": "disease_data/GSE238242/source/GSE238242_series_matrix.txt.gz",
+      "sha256": "71827167857596792a250919869efb72892529360337bc33ac8e68c5445edea0"
+    },
+    {
+      "bytes": 74550,
+      "path": "disease_data/GSE238242/source/GSE238242_snAF.metadata.tsv.gz",
+      "sha256": "9211a2ee1a77a2587828bd5082b9dddf43c36482d05a697e9f6fe9c7e3287425"
+    },
+    {
+      "bytes": 1526983,
+      "path": "disease_data/GSE253223/source/GSE253223_TNYA0016.counts.txt.gz",
+      "sha256": "fffcdb40b99d7f92bde8c02ad5c2ca8b2d10c23f8617e5d47c759c9a10043e8f"
+    },
+    {
+      "bytes": 4219,
+      "path": "disease_data/GSE253223/source/GSE253223_series_matrix.txt.gz",
+      "sha256": "138eec3112935d91559b842e9a254f37c8221ed183aba23983316b22d113654b"
+    },
+    {
+      "bytes": 7958651,
+      "path": "disease_data/GSE255612/local/pseudobulk/gse255612_cm_pseudobulk.csv.gz",
+      "sha256": "8988afbebfbaff511471fe8f5dba7d8ffd6dc27a7172784079617b705b73470f"
+    },
+    {
+      "bytes": 880,
+      "path": "disease_data/GSE255612/local/pseudobulk/gse255612_donors.csv",
+      "sha256": "2f6064950b5f7f6242fcf04a9ced2e5d2e09e91c0d523efe608cdfba9ca53314"
+    },
+    {
+      "bytes": 2875477,
+      "path": "disease_data/GSE269882/source/GSE269882_TPM_values.csv.gz",
+      "sha256": "c8208900c9f1573cdcf1a31e2bc637d69e5c5072ed420b22418ea52a79e29b49"
+    },
+    {
+      "bytes": 1352166,
+      "path": "disease_data/GSE269882/source/GSE269882_countdata_all.csv.gz",
+      "sha256": "40e60d3efe99dae19cf4b8c3ce262e29cd17deb4a4a9947c6b672f77fb3f3ef1"
+    },
+    {
+      "bytes": 3636,
+      "path": "disease_data/GSE269882/source/GSE269882_series_matrix.txt.gz",
+      "sha256": "3f9bc1b1f11a7ed96dcc80569f2494ad9a2477450d14359617abff4e900fdad2"
+    },
+    {
+      "bytes": 816047,
+      "path": "disease_data/GSE270788/local/pseudobulk/gse270788_cm_pseudobulk.csv.gz",
+      "sha256": "9603b8ed2fbb810205b9f5ceca1626321f0ee9b4f297d3830797e8fffe8a399f"
+    },
+    {
+      "bytes": 2427,
+      "path": "disease_data/GSE270788/local/pseudobulk/gse270788_donors.csv",
+      "sha256": "59615e119815a3cc58451e15a6eacfebe3213629f06f7c2de5bf50b7fa426c1b"
+    },
+    {
+      "bytes": 817509,
+      "path": "disease_data/GSE304575/source/GSE304575_Raw_Counts_table.csv.gz",
+      "sha256": "bfd75fd16c8eeb222eb20d9da622fd00a53f125cddfc2106a328320386763ef3"
+    },
+    {
+      "bytes": 3382,
+      "path": "disease_data/GSE304575/source/GSE304575_series_matrix.txt.gz",
+      "sha256": "6c40e8b99241f9ed32cd9640519e80af74c958f0be1c978cd62823093b54fd72"
+    },
+    {
+      "bytes": 765978,
+      "path": "disease_data/GSE305648/source/GSE305648_counts.tsv.gz",
+      "sha256": "cf84447d1bc963e6505ec43d55cc779b83664d34b7379718a603d1546fd9aff1"
+    },
+    {
+      "bytes": 5479,
+      "path": "disease_data/GSE305648/source/GSE305648_series_matrix.txt.gz",
+      "sha256": "b4fae83443765bd57f13897fb04f72ef016b4e11460a030f3b5ee14f9ebb82b5"
+    },
+    {
+      "bytes": 7193437,
+      "path": "disease_data/GSE35108/source/GPL6244.annot.gz",
+      "sha256": "99ee70f87e02c75ff1c8dc57b6c40c0482c7ef2760e004301315ac34344ac6dc"
+    },
+    {
+      "bytes": 2302867,
+      "path": "disease_data/GSE35108/source/GSE35108_series_matrix.txt.gz",
+      "sha256": "b1bce98678a631f7a2f91983f97f00b6bb8b1eb9758d13cef52732bba0faa07b"
+    },
+    {
+      "bytes": 1105205,
+      "path": "disease_data/Kuppe-MI/local/pseudobulk/kuppe-mi_cm_pseudobulk.csv.gz",
+      "sha256": "e7468061305f77460cdc585e2342529adecff13f90e8a28411159adc7f4c0186"
+    },
+    {
+      "bytes": 1360,
+      "path": "disease_data/Kuppe-MI/local/pseudobulk/kuppe-mi_profiles.csv",
+      "sha256": "2b3f2ed4383499ddf17182d3f37205d5da8cc894e58bf2df23a13cd27bd9a14b"
+    },
+    {
+      "bytes": 8403,
+      "path": "disease_data/Reichart-CM/local/genotype/reichart-cm_donor_genotypes.csv",
+      "sha256": "f535148c3bffa113abf0581608ddca2a3a28845571d7b5559c750b54e31410cb"
+    },
+    {
+      "bytes": 2041027,
+      "path": "disease_data/Reichart-CM/local/pseudobulk/reichart-cm_cm_pseudobulk.csv.gz",
+      "sha256": "4b94576a6b3b1cf7173dda83116ad85d1df97b7f2d1be13cdfa4435eb9f37643"
+    }
+  ],
+  "max_fit_peak_rss_kib": 438612,
+  "outputs": [
+    {
+      "bytes": 79,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_hfonly_samples.csv",
+      "sha256": "40ad02050dbd491f184bc6d98961ffd5f5fb3170c836839047026c4f6cec59f2"
+    },
+    {
+      "bytes": 619821,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_hfonly_expr.tsv.gz",
+      "sha256": "ec7c4e41bb7bf3592ec58ad882deac2dcc6727ce8f63076f816b07fc7443edcf"
+    },
+    {
+      "bytes": 913410,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_pooled_expr.tsv.gz",
+      "sha256": "e878b42d7818fa446fb5a960347a50502cd5601199835bc00d5c8ad1414fcc21"
+    },
+    {
+      "bytes": 2311828,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_pooled_deg.csv",
+      "sha256": "a2f99023a8765b04fcb4f1e3e7151db9e98f53ba15eae695344d0f284925362c"
+    },
+    {
+      "bytes": 636,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_pooled_samples.csv",
+      "sha256": "718636e273f9bc0a19258480e78b7553a47db51341a8a06fac37868080eff978"
+    },
+    {
+      "bytes": 705407,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_expr.tsv.gz",
+      "sha256": "0550c1b64c2978753b7056c3696f0a3cf367f7d49a5032e5a101f0326c3bd54e"
+    },
+    {
+      "bytes": 2027622,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_deg.csv",
+      "sha256": "a8c1e50fdba694fb09b0134e8229f6484b15c4e40aab225c0e4d84b5d4ee83fb"
+    },
+    {
+      "bytes": 405,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_samples.csv",
+      "sha256": "406a1c123acc2132cac61beebba637e7e911e713448e27591ec9a5d865094379"
+    },
+    {
+      "bytes": 1902750,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_hfonly_deg.csv",
+      "sha256": "4ef44266efcdb1d4d59b7c96c6f54e6fac69a2e58f259ffe358ba31e68de1794"
+    },
+    {
+      "bytes": 11801,
+      "path": "disease_data/GSE138252/local/deg/GSE138252_deg.json",
+      "sha256": "cfb6e12a0e3b1b710ca60d7adbd8ae98dc57eba82c295ab17a04f5dbe1f030c7"
+    },
+    {
+      "bytes": 17863455,
+      "path": "disease_data/GSE165303/local/deg/GSE165303_expr.tsv.gz",
+      "sha256": "d6ef3b5b20b964b568d75346dc2827c36e83022e07d3a58e16418d1b48aab0a6"
+    },
+    {
+      "bytes": 5955,
+      "path": "disease_data/GSE165303/local/deg/GSE165303_deg.json",
+      "sha256": "9071b3fbbe2ff71bdfe186912e934cb442e78ecfd0c5b9c09936201a754e47d3"
+    },
+    {
+      "bytes": 3167,
+      "path": "disease_data/GSE165303/local/deg/GSE165303_samples.csv",
+      "sha256": "12479583106768a80fc792239bdb19cfbc8751d7451b5976e12f6784a6f2070d"
+    },
+    {
+      "bytes": 6362848,
+      "path": "disease_data/GSE165303/local/deg/GSE165303_deg.csv",
+      "sha256": "4e2e39231df34c02c5c5ebc536331856b2e9142e9b3faecd7e7d2d935b50da5b"
+    },
+    {
+      "bytes": 408040,
+      "path": "disease_data/GSE194297/local/deg/GSE194297_expr.tsv.gz",
+      "sha256": "3bd9f7e0bf9a959376b0caae9bc8aed70c8c68818f320cf5c5599f076ccfc25b"
+    },
+    {
+      "bytes": 353,
+      "path": "disease_data/GSE194297/local/deg/GSE194297_samples.csv",
+      "sha256": "95ae6980093b359da5c449ff71f009ff801787be6dcc124f5ab1de6b1e4e33e0"
+    },
+    {
+      "bytes": 3882,
+      "path": "disease_data/GSE194297/local/deg/GSE194297_deg.json",
+      "sha256": "8fde1f52dca4c34953226a791cdb0af55e3458e29df62231d383b19ba101e1ad"
+    },
+    {
+      "bytes": 3754523,
+      "path": "disease_data/GSE194297/local/deg/GSE194297_deg.csv",
+      "sha256": "324d6ed1864e4327ab786a11de50e38d13f2fddb1da103eea91726f55675e64f"
+    },
+    {
+      "bytes": 713,
+      "path": "disease_data/GSE224129/local/deg/GSE224129_samples.csv",
+      "sha256": "9b0785a64555cc4822d410cf8a12018648908682c94b592771a46e9247867bfd"
+    },
+    {
+      "bytes": 10218728,
+      "path": "disease_data/GSE224129/local/deg/GSE224129_deg.csv",
+      "sha256": "463ddc2e9e2dee496d3a4ccabfe594095d2eb2dbe9ec56442dde9b822a159359"
+    },
+    {
+      "bytes": 774913,
+      "path": "disease_data/GSE224129/local/deg/GSE224129_expr.tsv.gz",
+      "sha256": "5a758a80eb4c4cfbd369aba63150c1e0850d44a93a4576db1d23cc230be85a2c"
+    },
+    {
+      "bytes": 7906,
+      "path": "disease_data/GSE224129/local/deg/GSE224129_deg.json",
+      "sha256": "7507c040e316e53593092d28712b0fe7def12c4d0ddca4c7621ab67150946371"
+    },
+    {
+      "bytes": 1754,
+      "path": "disease_data/GSE234141/local/deg/GSE234141_samples.csv",
+      "sha256": "a629640a35e46474bc39bfb6ff2105bdfba026a6082ed8fca126b3c5c7082073"
+    },
+    {
+      "bytes": 20262195,
+      "path": "disease_data/GSE234141/local/deg/GSE234141_deg.csv",
+      "sha256": "f4765e0f989f7b54436695f33ae4a4b8b5ed43be14fc2c6fa9b232fe1629533c"
+    },
+    {
+      "bytes": 1277131,
+      "path": "disease_data/GSE234141/local/deg/GSE234141_expr.tsv.gz",
+      "sha256": "2bcfaa1b13dea3178c051d0e2f9158f3745e323ca21d8c52599277a85abfda01"
+    },
+    {
+      "bytes": 5588,
+      "path": "disease_data/GSE234141/local/deg/GSE234141_deg.json",
+      "sha256": "c0b7b8719859c7d2e8ce01c8b2429836a7c1181a51d6ddb1d783c65e0274f6d9"
+    },
+    {
+      "bytes": 8287,
+      "path": "disease_data/GSE238242/local/deg/GSE238242_deg.json",
+      "sha256": "62351fb590c883e9f3ab12e6f5fdeb7be8a9bf487e286f2cc77795729192b522"
+    },
+    {
+      "bytes": 168,
+      "path": "disease_data/GSE238242/local/deg/GSE238242_samples.csv",
+      "sha256": "93212ae1d0d35cec8a192638b6ac5993cc4f69a259eae411f6b68104ee4b0f87"
+    },
+    {
+      "bytes": 1712058,
+      "path": "disease_data/GSE238242/local/deg/GSE238242_deg.csv",
+      "sha256": "521b50ea68c6a9fcb36080800e0dea71b1ae6fa6e6211bc8d53598304667cf3a"
+    },
+    {
+      "bytes": 503113,
+      "path": "disease_data/GSE238242/local/deg/GSE238242_expr.tsv.gz",
+      "sha256": "3d81ecabbb4ffdd67578e1dd645afe293f564029765d9ce21ac25a3f359dd857"
+    },
+    {
+      "bytes": 868,
+      "path": "disease_data/GSE253223/local/deg/GSE253223_samples.csv",
+      "sha256": "ec38ec4df0b625523bdffbafc11fbec7b1ee3928180d4b1aac322abfb1ba57cf"
+    },
+    {
+      "bytes": 4732,
+      "path": "disease_data/GSE253223/local/deg/GSE253223_deg.json",
+      "sha256": "602ab319bcbc4dc109ffa5370e27a07600a3522d3bf9ed5b2cf72f29c171638c"
+    },
+    {
+      "bytes": 4050155,
+      "path": "disease_data/GSE253223/local/deg/GSE253223_deg.csv",
+      "sha256": "f60806be945961557bf986f6f895ab2dd5b1b6407d984207d66dcf659dc3534f"
+    },
+    {
+      "bytes": 1094499,
+      "path": "disease_data/GSE253223/local/deg/GSE253223_expr.tsv.gz",
+      "sha256": "db8e11bddb3711920668803c8706c9d511d065c80bab57eb561805066843013f"
+    },
+    {
+      "bytes": 7930150,
+      "path": "disease_data/GSE255612/local/deg/gse255612_log_matrix.tsv.gz",
+      "sha256": "78b401641b010526878bbc6c737807bd254e1f8420425123b17f04d80abec03a"
+    },
+    {
+      "bytes": 3075,
+      "path": "disease_data/GSE255612/local/deg/gse255612_deg.json",
+      "sha256": "36f831f7b0617d95512f0e2df51189f33ac7f1b2f9ebda9c34704e84e4d1d8cb"
+    },
+    {
+      "bytes": 3785095,
+      "path": "disease_data/GSE255612/local/deg/gse255612_deg.csv",
+      "sha256": "7cd553ab0c9ecab5e89d33f721e6b925919380c17ab3cf78ca4eccc35d0a8b35"
+    },
+    {
+      "bytes": 813,
+      "path": "disease_data/GSE255612/local/deg/gse255612_samples.csv",
+      "sha256": "78ad595f38f55557a8576b6b68555d3473515cf73ce941857d1bfafe48a16e35"
+    },
+    {
+      "bytes": 8103006,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_deg.csv",
+      "sha256": "ccc82a3f640e926d7ff9f0c7d6bda0f0455fa39b42083d44f8c5af890d435e70"
+    },
+    {
+      "bytes": 1216,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_samples.csv",
+      "sha256": "4047381c537d4cbabed5895c9368f59948d17671856581b85f37444daee6089c"
+    },
+    {
+      "bytes": 1175,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_pooled_samples.csv",
+      "sha256": "78641a205779eb78f05d8f0b1982892f6cfbad3b83e4814b3f4a6a5edaf654c1"
+    },
+    {
+      "bytes": 11692,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_deg.json",
+      "sha256": "2cb155d000773e17af08cdecddfe99ba17c63d9d0c14c98930b7957c593cc87e"
+    },
+    {
+      "bytes": 1492093,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_expr.tsv.gz",
+      "sha256": "5d82b3e7ae3a8bcd81fb8aedfcdce2307bbccdf5e3f886ad171eb29e5ddbf0dc"
+    },
+    {
+      "bytes": 2479099,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_pooled_deg.csv",
+      "sha256": "7ec0058af822d52698f8b9b63443ad6089490871cd9ede6be5144dd7bc28ad80"
+    },
+    {
+      "bytes": 1492093,
+      "path": "disease_data/GSE269882/local/deg/GSE269882_pooled_expr.tsv.gz",
+      "sha256": "5d82b3e7ae3a8bcd81fb8aedfcdce2307bbccdf5e3f886ad171eb29e5ddbf0dc"
+    },
+    {
+      "bytes": 3680,
+      "path": "disease_data/GSE270788/local/deg/gse270788_deg.json",
+      "sha256": "57f1f495ba9de071e96ff8036d06f4949802567e1dbcec82e1d1b355d4b0028a"
+    },
+    {
+      "bytes": 351,
+      "path": "disease_data/GSE270788/local/deg/gse270788_samples.csv",
+      "sha256": "c08c44200f21eb97619051cfa646a7af5f35a142a23e3b87c1086b6f0e19564a"
+    },
+    {
+      "bytes": 11044309,
+      "path": "disease_data/GSE270788/local/deg/gse270788_deg.csv",
+      "sha256": "d16c648e22217eded62e31ce9bbbd9405b93494ea6da3f462b74f5c78ba5ab12"
+    },
+    {
+      "bytes": 929,
+      "path": "disease_data/GSE304575/local/deg/GSE304575_samples.csv",
+      "sha256": "3eae282a558ca2e957631dcd488d2ff6b0930a96ef7c3349f46dea40efecea0f"
+    },
+    {
+      "bytes": 4638883,
+      "path": "disease_data/GSE304575/local/deg/GSE304575_deg.csv",
+      "sha256": "970749b9226fb589f82e8afc8d36e36d67eb3ebf9e79e33fc1480bc42ee09cba"
+    },
+    {
+      "bytes": 3898,
+      "path": "disease_data/GSE304575/local/deg/GSE304575_deg.json",
+      "sha256": "03af49c998fa2ab095f269a7bbe6968fa9e6be5bd0f1c2cdfad05c210883535f"
+    },
+    {
+      "bytes": 949619,
+      "path": "disease_data/GSE304575/local/deg/GSE304575_expr.tsv.gz",
+      "sha256": "b6aeb5013021eaa6042618ef67a1a390d86b8e01c99afd2522b2df1a695e389f"
+    },
+    {
+      "bytes": 629,
+      "path": "disease_data/GSE305648/local/deg/GSE305648_samples.csv",
+      "sha256": "23363a80909b59a06c83e61d7ec5f8c5f001b54016bf5a0e0382e05f6ce512e5"
+    },
+    {
+      "bytes": 17874555,
+      "path": "disease_data/GSE305648/local/deg/GSE305648_deg.csv",
+      "sha256": "342c91fff3364a92ac5e17388584065e050ab54ef6e5b7cbe964fa0a82fad1ef"
+    },
+    {
+      "bytes": 915347,
+      "path": "disease_data/GSE305648/local/deg/GSE305648_expr.tsv.gz",
+      "sha256": "ae8bcc770fa1afc897da5cceee12592dff1c296a2c8631a504ee5d521090983a"
+    },
+    {
+      "bytes": 4547,
+      "path": "disease_data/GSE305648/local/deg/GSE305648_deg.json",
+      "sha256": "3afb4ea48989cdb8f2fd68fa5e4feb333cc578cd187a0da1be72619e380c7a42"
+    },
+    {
+      "bytes": 7158,
+      "path": "disease_data/GSE35108/local/deg/GSE35108_deg.json",
+      "sha256": "a2d38cb5563b569820c069ca048859b7f53e5e6be9ce101574e3649c64846131"
+    },
+    {
+      "bytes": 1121,
+      "path": "disease_data/GSE35108/local/deg/GSE35108_samples.csv",
+      "sha256": "94be2aa3fd7d9b15469bb04b1fef8403a65ad6c622325f5801df9e695a82229c"
+    },
+    {
+      "bytes": 4779702,
+      "path": "disease_data/GSE35108/local/deg/GSE35108_deg.csv",
+      "sha256": "31418b327fe53f4653d727afe44ab6a40b50808da07e81294e88ed093efb5ac3"
+    },
+    {
+      "bytes": 751722,
+      "path": "disease_data/GSE35108/local/deg/GSE35108_expr.tsv.gz",
+      "sha256": "4f66e20faccef91be319fe7b6f5e62b9cd1aad146e94a7dc9ddff8eb7e040e84"
+    },
+    {
+      "bytes": 11286809,
+      "path": "disease_data/Kuppe-MI/local/deg/kuppe-mi_zone_deg.csv",
+      "sha256": "82435a69820676d6592f4aeea5bd5187cf1020c8be29ee832deed9b066b32923"
+    },
+    {
+      "bytes": 9176,
+      "path": "disease_data/Kuppe-MI/local/deg/kuppe-mi_deg.json",
+      "sha256": "35d5bf68c268e02128cfd5bde2b240c718ec9da3f15e5f4a4c1d054f6db0024a"
+    },
+    {
+      "bytes": 2815270,
+      "path": "disease_data/Kuppe-MI/local/deg/kuppe-mi_deg.csv",
+      "sha256": "5eda8a5808e24bdf8c41cf79224d0164dd2c9ad90a619825ba371e6926792d66"
+    },
+    {
+      "bytes": 355,
+      "path": "disease_data/Kuppe-MI/local/deg/kuppe-mi_samples.csv",
+      "sha256": "bebb0420eaeb828bdd8b9748840bc49472707507e606651701e8d1e9d9f14a3c"
+    },
+    {
+      "bytes": 947230,
+      "path": "disease_data/Kuppe-MI/local/deg/kuppe-mi_pseudobulk_matrix.tsv.gz",
+      "sha256": "b14da77b6c4320391a59cb376500780df689578daee819db8388cfe98f5d3d2a"
+    },
+    {
+      "bytes": 3768,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.json",
+      "sha256": "33a62f7acb79d386c76935f4e1453affba9d57c99c1d1fc8b3cc9243f6bee1be"
+    },
+    {
+      "bytes": 2036919,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_matrix.tsv.gz",
+      "sha256": "5e17ccc0949eaec1f685e58ace16038b2dfac744a7d6a4bae459388cc54c5ffe"
+    },
+    {
+      "bytes": 1953,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_samples.csv",
+      "sha256": "208fb5453f30f00adebc65671d012a57284fb48bc289f6c2d4135b2459a43299"
+    },
+    {
+      "bytes": 2308136,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_deg.csv",
+      "sha256": "1eafc8272ae15d6a34c452a51708e2452387a9921aaf751e45bc6730cdf6c732"
+    },
+    {
+      "bytes": 4274,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_deg.json",
+      "sha256": "cff96dfdc2b780481fa868b7ce8bfd597e7ad5428e52c74e6f79f872ecd383ba"
+    },
+    {
+      "bytes": 1953,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_samples.csv",
+      "sha256": "208fb5453f30f00adebc65671d012a57284fb48bc289f6c2d4135b2459a43299"
+    },
+    {
+      "bytes": 4336159,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_genetic_deg.csv",
+      "sha256": "270afbfd63c853c286ce6c4233fa839969ee810594479199ad0c5e77481ecedb"
+    },
+    {
+      "bytes": 2036922,
+      "path": "disease_data/Reichart-CM/local/deg/reichart-cm_pseudobulk_matrix.tsv.gz",
+      "sha256": "d76b09b0210a666c6317a74498269810be19ad9aacf8954c4dd710e4a5fe89fe"
+    }
+  ],
+  "purpose": "Genuine rederivation of sixteen stale item summaries before the ADR0073 coherent candidate; implementation_sha256 pins disease_deg.R, not the Python API.",
+  "result": "PASS",
+  "schema": "stage2-source-refit-replay-v1",
+  "scientific_result": "Every pre-existing scientific DEG/sample CSV and expression TSV is byte-identical; only truthful summary provenance/worker metadata and three gzip headers changed. The GSE165303 platform erratum is now reflected by the genuine adapter output.",
+  "tests": {
+    "af_items": 23,
+    "human_sc": "PASS; full summary and public candidate-reader suite",
+    "isogenic_source_classes": 28,
+    "kuppe_mi": 19,
+    "v2_items": 12
+  },
+  "total_fit_wall_seconds": 75.67854595184326,
+  "unchanged_scientific_csv_and_tsv_files": 39,
+  "worker_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f"
+}

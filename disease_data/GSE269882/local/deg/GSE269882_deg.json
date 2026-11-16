@@ -202,7 +202,7 @@
     "derivation_sha256": "60b7b9fdd89dd074e9e89563cba3fa97ce2f401313c3b6b573768a876b669eec",
     "filter": "edgeR filterByExpr rule written out in the live worker",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "f83fde941363382a161a9dd8be72daeffc8384966c17ae814b23173b77ba1115",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma-voom (voom's own library-size normalisation, moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",
