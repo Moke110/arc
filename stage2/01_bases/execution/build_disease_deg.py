@@ -15,7 +15,7 @@ through :mod:`bases.disease_deg`, writes a candidate outside ``output/``
 category. ``verify`` replays the build from the pinned inputs and compares the
 manifest and every output digest; the accepted release is never written.
 
-The published catalog carries the ADR 0071 v2 fields (``n_deg``, ``deg2000``,
+The published catalog carries the ADR 0071 v2 fields (``n_deg``, ``deg1000``,
 ``tiering`` and the declared ``tier_sources`` ladder) once the driver runs: the
 all-source tier order and the complete axis-resolved union are recorded by
 :func:`bases.disease_deg.tier_ledger` over the sources this driver just measured,
@@ -247,7 +247,7 @@ def category_ledger(context, category):
             'tiering': ledger['tiering'],
             'tier_sources': ledger['tier_sources'],
             'n_deg': ledger['n_deg'],
-            'deg2000': ledger['deg2000'],
+            'deg1000': ledger['deg1000'],
             'sources': ledger['sources']}
 
 
@@ -354,14 +354,14 @@ def build_category(context, candidate, category):
             f'fusion union ({fusion["n_deg"]})')
     fusion_ledger = {row['dataset_id']: row for row in fusion['sources']}
     source_deg = {dataset_id: {'n_deg': int(row['n_deg']),
-                               'n_deg_in_deg2000': int(row['n_deg_in_deg2000'])}
+                               'n_deg_in_deg1000': int(row['n_deg_in_deg1000'])}
                   for dataset_id, row in fusion_ledger.items()}
     catalog = disease_deg.build_catalog(
         category, category_record['directory'], category_record['tier'],
         category_record['evidence_type'], axis, axis_sha, records,
         rejected=category_record['rejected'],
         isogenic_exception=category_record.get('isogenic_exception'),
-        n_deg=fusion['n_deg'], deg2000=fusion['deg2000'],
+        n_deg=fusion['n_deg'], deg1000=fusion['deg1000'],
         tiering=ledger['tiering'], tier_sources=ledger['tier_sources'],
         source_deg=source_deg)
     if 'source_review' in category_record:

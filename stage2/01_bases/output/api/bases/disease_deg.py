@@ -26,9 +26,9 @@ public boundary for that product family:
 * the ADR 0071 disease contract (#205): :func:`source_deg_rank` derives one
   source's v2 DEG-only rank from its published compact table,
   :func:`level_one_rank` fuses a disease's sources as ``Σ rank_norm``,
-  :func:`fuse_disease` adds the disease rank and the ``DEG2000`` cut,
+  :func:`fuse_disease` adds the disease rank and the ``DEG1000`` cut,
   :func:`validate_catalog` / :func:`build_catalog` carry the
-  ``tier``/``evidence_type``/``n_deg``/``deg2000``/``tiering`` shape on the
+  ``tier``/``evidence_type``/``n_deg``/``deg1000``/``tiering`` shape on the
   category catalog, and :class:`DiseaseFusion` reads the emitted
   ``output/disease-fusion/`` catalog.
 
@@ -40,13 +40,13 @@ Layout (one product directory per disease category)::
         <dataset>.deg.csv            # compact table, one row per measured gene
         <dataset>.rank.csv           # frozen-axis rank frame (18,164 rows)
 
-and one product directory for the per-disease level-1 fusion + ``DEG2000``
+and one product directory for the per-disease level-1 fusion + ``DEG1000``
 (ADR 0071 decision 4)::
 
     output/disease-fusion/
         catalog.json                 # per disease: counts, ledger, exclusions
         manifest.json                # candidate-then-replace release manifest
-        <directory>.deg2000.csv      # gene_index, disease_rank, disease_rank_sum
+        <directory>.deg1000.csv      # gene_index, disease_rank, disease_rank_sum
 
 ``.deg.csv`` columns are ``DEG_COLUMNS``; ``.rank.csv`` columns are
 ``RANK_COLUMNS``; both are asserted by :func:`validate_table` /
@@ -78,8 +78,8 @@ from .deg_rank import (
     normalized_deg_rank,
 )
 
-CATALOG_SCHEMA = 'stage2-disease-deg-catalog-v1'
-RELEASE_SCHEMA = 'stage2-disease-deg-release-v1'
+CATALOG_SCHEMA = 'stage2-disease-deg-catalog-v2'
+RELEASE_SCHEMA = 'stage2-disease-deg-release-v2'
 LOCAL_SCHEMA = 'stage2-item-deg-v1'
 
 LOCAL_DEG_COLUMNS = ('source_gene_id', 'gene_symbol', 'contrast', 'log2fc', 'stat',
@@ -95,21 +95,23 @@ DEG_COLUMNS = ('gene_index', 'gene_symbol', 'contrast', 'log2fc', 'stat', 'p_val
                'effect', 'rank', 'rank_norm')
 RANK_COLUMNS = ('gene_index', 'rank', 'rank_norm')
 
-#: ADR 0071 decision 4: the per-disease level-1 fusion keeps at most the first
-#: 2,000 genes of the disease's DEG union (``DEG2000_d``). The cut is a declared
+#: ADR 0073: the per-disease level-1 fusion keeps at most the first
+#: 1,000 genes of the disease's DEG union (``DEG1000_d``). The cut is a declared
 #: limit, never a property of the data: a disease with fewer DEGs keeps all of
-#: them and a disease with more publishes exactly 2,000.
-DEG2000_LIMIT = 2000
+#: them and a disease with more publishes exactly 1,000.
+DEG1000_LIMIT = 1000
 #: The emitted per-disease fusion product family (ADR 0071 decision 4).
-FUSION_SCHEMA = 'stage2-disease-fusion-v1'
-FUSION_RELEASE_SCHEMA = 'stage2-disease-fusion-release-v1'
-DEG2000_COLUMNS = ('gene_index', 'disease_rank', 'disease_rank_sum')
+FUSION_SCHEMA = 'stage2-disease-fusion-tier-first-v2'
+FUSION_RELEASE_SCHEMA = 'stage2-disease-fusion-release-v2'
+DEG1000_COLUMNS = ('gene_index', 'disease_rank', 'disease_rank_sum',
+                   'source_tier_highest', 'supporting_sources')
+UNION_COLUMNS = DEG1000_COLUMNS
 #: The declared ``tiering`` record shape the category catalog carries (#205
 #: publishes the shape; #206 fills in the roster decision).
 TIERING_KEYS = ('tiers_entered', 'tier_union', 'collection_policy')
 COLLECTION_POLICY = 'all_qualifying_declared_sources'
 SOURCE_LEDGER_KEYS = ('dataset_id', 'tier', 'informative', 'n_deg',
-                      'n_deg_in_deg2000')
+                      'n_deg_in_deg1000')
 
 #: ADR 0071 decision 2: the three declared source tiers (1 = human
 #: atrium/ventricle with cardiomyocyte specificity; 2 = hiPSC/hESC-CM, organoids
@@ -545,7 +547,7 @@ def disease_eligibility(n_deg, published=True):
     """ADR 0072 admission after axis-resolved disease fusion, never per source.
 
     ``n_deg`` must be the distinct frozen-axis union measured by ``fuse_disease``,
-    not a sum of source counts or the truncated DEG2000 count.
+    not a sum of source counts or the truncated DEG1000 count.
     """
     if not published:
         return {'axis_resolved_deg_union': None, 'eligible': False,
@@ -555,7 +557,7 @@ def disease_eligibility(n_deg, published=True):
     return {'axis_resolved_deg_union': count, 'eligible': eligible,
             'exclusion_reason': (None if eligible else
                 f'axis-resolved DEG union {count} is below {DISEASE_MIN_DEGS} '
-                '(ADR 0072); upstream evidence and DEG2000 are retained')}
+                '(ADR 0072); upstream evidence and DEG1000 are retained')}
 
 
 def validate_disease_eligibility(record, required=False):
@@ -579,13 +581,13 @@ def validate_disease_eligibility(record, required=False):
         raise ValueError('an ineligible disease needs an explicit exclusion reason')
 
 
-def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
+def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG1000_LIMIT,
                  gene_index=None):
-    """Fuse one disease's sources at level 1 and cut its ``DEG2000`` set.
+    """Fuse one disease's sources at level 1 and cut its ``DEG1000`` set.
 
     ``sources`` is the disease's declared source list; each entry needs
     ``dataset_id``, the source's full-axis DEG rank frame (``rank``) and DEG count
-    (``n_deg``), and may carry ``tier`` and ``informative`` plus the recorded
+    (``n_deg``), its required ``tier`` and optional ``informative`` plus the recorded
     ``informativeness_reason``.
 
     ADR 0071 decision 4 / ADR 0068:
@@ -596,27 +598,26 @@ def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
       silently. A zero-DEG source would make every term ``NaN`` and silently
       remove a gene from every disease that contains it, so it is never summed.
     * ``disease_rank_sum = Σ rank_norm`` over the remaining informative sources;
-      the disease rank is the ascending position with ``gene_index`` tie-break.
+      the disease rank orders actual highest DEG tier, this sum and ``gene_index``.
     * the **DEG union** is the set of genes that are a DEG in at least one
-      informative source; ``DEG2000_d`` is that union intersected with disease
+      informative source; ``DEG1000_d`` is that union intersected with disease
       rank ``<= limit`` (all of it when the union is smaller than the limit).
-      The union size is never padded and not constrained to 2,000.
+      The union size is never padded or constrained by the cutoff.
     * a disease with **no informative source** is representable: ``informative``
       is false, ``rank``/``sum`` are ``None``, both masks are empty and the
       record carries the reason. Level 2 must then exclude the disease (ADR 0068)
       rather than divide by a zero DEG count.
 
-    Because a DEG's normalized rank is ``<= 1`` while a non-DEG's is
-    ``(n_DEG + 1) / n_DEG > 1`` in every source, the DEG union occupies exactly
-    the first ``len(union)`` disease ranks; consequently ``deg2000`` is always
-    ``min(n_deg, limit)`` and ``DEG2000 ⊆ DEG union`` by construction.
+    Union genes receive tiers 1..3 and precede every non-DEG (which has no tier).
+    The full union therefore occupies contiguous disease ranks 1..n_d, with
+    ``deg1000 = min(n_d, limit)``. Numerical rank sums receive no tier weight.
 
-    Returns the fusion record described above; see :func:`deg2000_rows` for the
-    published per-gene ``DEG2000`` table.
+    Returns the fusion record described above; see :func:`deg1000_rows` for the
+    published per-gene ``DEG1000`` table.
     """
     limit = int(limit)
     if limit <= 0:
-        raise ValueError('the DEG2000 limit must be positive')
+        raise ValueError('the DEG1000 limit must be positive')
     axis_size = int(axis_size)
     prepared, seen = [], set()
     for position, source in enumerate(sources):
@@ -626,7 +627,7 @@ def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
             raise ValueError(f'{dataset_id}: a disease cannot declare one source twice')
         seen.add(dataset_id)
         tier = source.get('tier')
-        tier = None if tier is None else int(tier)
+        tier = _tier(tier, f'{dataset_id}: source tier')
         n_deg = int(source['n_deg'])
         if n_deg < 0:
             raise ValueError(f'{dataset_id}: n_DEG must be non-negative')
@@ -659,39 +660,54 @@ def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
         level_one = level_one_rank([entry['rank'] for entry in fused],
                                    [entry['n_deg'] for entry in fused],
                                    gene_index=gene_index, axis_size=axis_size)
-        disease_rank = level_one['rank']
         total = level_one['sum']
         deg_union = level_one['deg']
-        deg2000_mask = deg_union & (disease_rank <= limit)
+        strongest = np.full(axis_size, 4, dtype=np.int64)
+        for entry in fused:
+            strongest[entry['mask']] = np.minimum(
+                strongest[entry['mask']], entry['tier'])
+        indices = (np.arange(axis_size, dtype=np.int64) if gene_index is None
+                   else np.asarray(gene_index, dtype=np.int64))
+        order = np.lexsort((indices, total, strongest))
+        disease_rank = np.empty(axis_size, dtype=np.int64)
+        disease_rank[order] = np.arange(1, axis_size + 1, dtype=np.int64)
+        deg1000_mask = deg_union & (disease_rank <= limit)
     else:
         disease_rank = None
         total = None
         deg_union = np.zeros(axis_size, dtype=bool)
-        deg2000_mask = np.zeros(axis_size, dtype=bool)
+        deg1000_mask = np.zeros(axis_size, dtype=bool)
+    source_tier_highest = np.full(axis_size, None, dtype=object)
+    if fused:
+        source_tier_highest[deg_union] = strongest[deg_union]
     ledger = []
     for entry in prepared:
-        hits = (int((entry['mask'] & deg2000_mask).sum())
+        hits = (int((entry['mask'] & deg1000_mask).sum())
                 if entry['informative'] else 0)
         record = {'dataset_id': entry['dataset_id'], 'tier': entry['tier'],
                   'informative': entry['informative'], 'n_deg': entry['n_deg'],
-                  'n_deg_in_deg2000': hits}
+                  'n_deg_in_deg1000': hits}
         if entry['reason'] is not None:
             record['reason'] = entry['reason']
         ledger.append(record)
     n_deg_union = int(deg_union.sum())
-    n_deg2000 = int(deg2000_mask.sum())
+    n_deg1000 = int(deg1000_mask.sum())
     return {
         **disease_eligibility(n_deg_union),
         'informative': bool(fused),
         'n_sources_declared': len(prepared),
         'n_sources_informative': len(fused),
         'n_deg': n_deg_union,
-        'deg2000': n_deg2000,
+        'deg1000': n_deg1000,
         'limit': limit,
         'rank': disease_rank,
         'sum': total,
         'deg_union': deg_union,
-        'deg2000_mask': deg2000_mask,
+        'source_tier_highest': source_tier_highest,
+        'supporting_sources': [sorted(entry['dataset_id'] for entry in fused
+                                     if entry['mask'][gene])
+                               for gene in range(axis_size)],
+        'deg1000_mask': deg1000_mask,
         'sources': ledger,
         'excluded_sources': [{'dataset_id': record['dataset_id'],
                               'tier': record['tier'], 'n_deg': record['n_deg'],
@@ -703,27 +719,25 @@ def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
     }
 
 
-def deg2000_rows(fusion):
-    """The published per-gene ``DEG2000_d`` rows: rank order, frozen-axis indices.
+def union_rows(fusion):
+    """Complete disease DEG evidence, including genes outside the cutoff."""
+    genes = np.flatnonzero(fusion['deg_union'])
+    if not len(genes):
+        return pd.DataFrame(columns=list(UNION_COLUMNS))
+    genes = genes[np.argsort(np.asarray(fusion['rank'])[genes], kind='stable')]
+    return pd.DataFrame({
+        'gene_index': genes.astype(np.int64),
+        'disease_rank': np.asarray(fusion['rank'])[genes].astype(np.int64),
+        'disease_rank_sum': np.asarray(fusion['sum'])[genes],
+        'source_tier_highest': np.asarray(fusion['source_tier_highest'])[genes].astype(np.int64),
+        'supporting_sources': [json.dumps(fusion['supporting_sources'][gene],
+                                         separators=(',', ':')) for gene in genes],
+    }, columns=list(UNION_COLUMNS))
 
-    One row per ``DEG2000_d`` gene with ``gene_index``, its disease rank and its
-    level-1 ``rank_sum``. An empty or fully excluded disease yields a header-only
-    frame, so the empty union is representable as a published product.
-    """
-    mask = np.asarray(fusion['deg2000_mask'], dtype=bool)
-    frame = pd.DataFrame({'gene_index': np.empty(0, dtype=np.int64),
-                          'disease_rank': np.empty(0, dtype=np.int64),
-                          'disease_rank_sum': np.empty(0, dtype=np.float64)},
-                         columns=list(DEG2000_COLUMNS))
-    if fusion.get('rank') is None or not mask.any():
-        return frame
-    genes = np.flatnonzero(mask)
-    order = np.argsort(np.asarray(fusion['rank'])[genes], kind='stable')
-    genes = genes[order]
-    rows = pd.DataFrame({'gene_index': genes.astype(np.int64),
-                         'disease_rank': np.asarray(fusion['rank'])[genes].astype(np.int64),
-                         'disease_rank_sum': np.asarray(fusion['sum'])[genes]})
-    return rows[list(DEG2000_COLUMNS)]
+
+def deg1000_rows(fusion):
+    """Tier-first first min(1000,n_d) rows; no padding."""
+    return union_rows(fusion).iloc[:fusion['deg1000']].copy()
 
 
 # ---------------------------------------------------------------- tier rule (#206)
@@ -828,7 +842,7 @@ def validate_clinical_tier_basis(category, record):
     return record
 
 
-def tier_ledger(category, datasets, source_deg, limit=DEG2000_LIMIT):
+def tier_ledger(category, datasets, source_deg, limit=DEG1000_LIMIT):
     """Collect every declared qualifying source and record cumulative axis unions.
 
     ``limit`` is only the temporary fusion-cut parameter, independent of source
@@ -877,7 +891,7 @@ def tier_ledger(category, datasets, source_deg, limit=DEG2000_LIMIT):
                           'sources': list(rung['sources'])}
                          for rung in ladder if int(rung['tier']) in entered],
         'n_deg': n_deg,
-        'deg2000': min(n_deg, limit),
+        'deg1000': min(n_deg, limit),
         'sources': sources,
     }
 
@@ -1007,14 +1021,14 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
 
     On top of ``stage2-disease-deg-catalog-v1`` a category catalog declares
     ``tier`` (1..3), ``evidence_type``, the disease-level ``n_deg`` (DEG-union
-    size) and ``deg2000`` (``DEG2000_d`` size), a ``tiering`` record, and per
-    dataset record ``n_deg`` / ``n_deg_in_deg2000``.
+    size) and ``deg1000`` (``DEG1000_d`` size), a ``tiering`` record, and per
+    dataset record ``n_deg`` / ``n_deg_in_deg1000``.
 
     The checks are the acceptance contract: the fields are present and typed,
-    ``tier`` is in 1..3, ``deg2000 == min(n_deg, 2000)`` (the union occupies the
+    ``tier`` is in 1..3, ``deg1000 == min(n_deg, 1000)`` (the union occupies the
     first ranks, so the cut is exact), the per-dataset ledger is bounded by both
-    its own DEG count and ``deg2000``, the union is not smaller than one source
-    nor larger than their sum, every ``DEG2000`` gene is covered by at least one
+    its own DEG count and ``deg1000``, the union is not smaller than one source
+    nor larger than their sum, every ``DEG1000`` gene is covered by at least one
     source, ``tiering`` agrees with the published union size
     (:func:`_validate_tiering`), a clinical category's tier-2 records pass the
     non-genetic basis gate (:func:`validate_clinical_tier_basis`), an optional
@@ -1024,7 +1038,7 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
     if not isinstance(catalog, dict):
         raise ValueError('a category catalog must be a record')
     for key in ('category', 'directory', 'tier', 'evidence_type', 'n_deg',
-                'deg2000', 'tiering', 'datasets'):
+                'deg1000', 'tiering', 'datasets'):
         if key not in catalog:
             raise ValueError(f'category catalog lacks {key}')
     if not isinstance(catalog['category'], str) or not catalog['category']:
@@ -1037,11 +1051,11 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
     _positive_int(catalog.get('axis_size', axis_size), 'axis_size', allow_zero=False)
     validate_disease_eligibility(catalog)
     n_deg = _positive_int(catalog['n_deg'], 'n_deg')
-    deg2000 = _positive_int(catalog['deg2000'], 'deg2000')
-    if deg2000 != min(n_deg, DEG2000_LIMIT):
+    deg1000 = _positive_int(catalog['deg1000'], 'deg1000')
+    if deg1000 != min(n_deg, DEG1000_LIMIT):
         raise ValueError(
-            f'deg2000 must be min(n_deg, {DEG2000_LIMIT}) because the DEG union '
-            f'occupies the first ranks ({deg2000} != min({n_deg}, {DEG2000_LIMIT}))')
+            f'deg1000 must be min(n_deg, {DEG1000_LIMIT}) because the DEG union '
+            f'occupies the first ranks ({deg1000} != min({n_deg}, {DEG1000_LIMIT}))')
     records = catalog['datasets']
     if not isinstance(records, list) or not records:
         raise ValueError('datasets must be a non-empty list of records')
@@ -1060,11 +1074,11 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
         if not isinstance(record.get('informative'), bool):
             raise ValueError(f'{dataset_id}: informative must be boolean')
         source_n = _positive_int(record.get('n_deg'), f'{dataset_id}: n_deg')
-        source_hits = _positive_int(record.get('n_deg_in_deg2000'),
-                                    f'{dataset_id}: n_deg_in_deg2000')
-        if source_hits > min(source_n, deg2000):
+        source_hits = _positive_int(record.get('n_deg_in_deg1000'),
+                                    f'{dataset_id}: n_deg_in_deg1000')
+        if source_hits > min(source_n, deg1000):
             raise ValueError(
-                f'{dataset_id}: n_deg_in_deg2000 cannot exceed min(n_deg, deg2000)')
+                f'{dataset_id}: n_deg_in_deg1000 cannot exceed min(n_deg, deg1000)')
         if record['informative']:
             if source_n == 0:
                 raise ValueError(f'{dataset_id}: an informative source needs a DEG')
@@ -1074,15 +1088,15 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
         elif source_hits:
             raise ValueError(
                 f'{dataset_id}: a non-informative source is excluded from the '
-                'fusion and cannot land in DEG2000')
+                'fusion and cannot land in DEG1000')
     if counts and n_deg < max(counts):
         raise ValueError('the DEG union cannot be smaller than one informative '
                          'source DEG set')
     if n_deg > sum(counts):
         raise ValueError('the DEG union cannot exceed the sum of the informative '
                          'source DEG counts')
-    if hits < deg2000:
-        raise ValueError('every DEG2000 gene must be a DEG in at least one '
+    if hits < deg1000:
+        raise ValueError('every DEG1000 gene must be a DEG in at least one '
                          'informative source')
     if n_deg and not informative_sources:
         raise ValueError('a non-empty DEG union needs an informative source')
@@ -1110,9 +1124,9 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
 def validate_fusion_catalog(catalog):
     """Validate the emitted per-disease level-1 fusion catalog.
 
-    Schema ``stage2-disease-fusion-v1``: an ``axis`` record, the declared
+    Schema ``stage2-disease-fusion-tier-first-v2``: an ``axis`` record, the declared
     ``limit``, rank semantics, and one record per disease with the declared /
-    informative source counts, the DEG-union and ``DEG2000`` sizes, the
+    informative source counts, the DEG-union and ``DEG1000`` sizes, the
     per-source ledger and the explicit exclusions. A declared-but-not-yet-
     published category is representable (``published: false``, null sizes); the
     catalog must say so rather than silently omit it.
@@ -1130,27 +1144,20 @@ def validate_fusion_catalog(catalog):
         raise ValueError('fusion catalog axis sha256 must be 64 hex characters')
     axis_size = _positive_int(axis.get('size'), 'fusion catalog axis size',
                               allow_zero=False)
-    if catalog.get('limit') != DEG2000_LIMIT:
-        raise ValueError(f'fusion catalog limit must be {DEG2000_LIMIT}')
-    if ('eligibility_min_deg' in catalog
-            and catalog['eligibility_min_deg'] != DISEASE_MIN_DEGS):
+    if catalog.get('limit') != DEG1000_LIMIT:
+        raise ValueError(f'fusion catalog limit must be {DEG1000_LIMIT}')
+    if catalog.get('eligibility_min_deg') != DISEASE_MIN_DEGS:
         raise ValueError('disease eligibility threshold must be 100')
     diseases = catalog.get('diseases')
     if not isinstance(diseases, list) or not diseases:
         raise ValueError('fusion catalog diseases must be a non-empty list')
-    if ('eligibility_min_deg' not in catalog and any(
-            isinstance(record, dict) and any(
-                key in record for key in
-                ('eligible', 'exclusion_reason', 'axis_resolved_deg_union'))
-            for record in diseases)):
-        raise ValueError('disease eligibility metadata needs its declared policy')
     seen = set()
     for record in diseases:
         if not isinstance(record, dict):
             raise ValueError('a disease record must be a record')
         required = ('category', 'directory', 'published', 'tier', 'evidence_type',
                     'declared_source_count', 'informative_source_count', 'n_deg',
-                    'deg2000', 'deg2000_file', 'sources', 'excluded_sources',
+                    'deg1000', 'deg1000_file', 'union_file', 'sources', 'excluded_sources',
                     'not_published')
         missing = [key for key in required if key not in record]
         if missing:
@@ -1162,7 +1169,7 @@ def validate_fusion_catalog(catalog):
             raise ValueError(f'duplicate disease directory {directory}')
         seen.add(directory)
         validate_disease_eligibility(
-            record, required='eligibility_min_deg' in catalog)
+            record, required=True)
         published = record['published']
         if not isinstance(published, bool):
             raise ValueError(f'{directory}: published must be boolean')
@@ -1188,14 +1195,13 @@ def validate_fusion_catalog(catalog):
             if dataset_id in ledger_ids:
                 raise ValueError(f'{directory}: duplicate source {dataset_id}')
             ledger_ids.add(dataset_id)
-            if source['tier'] is not None:
-                _tier(source['tier'], f'{directory}/{dataset_id}: tier')
+            _tier(source['tier'], f'{directory}/{dataset_id}: tier')
             if not isinstance(source['informative'], bool):
                 raise ValueError(f'{directory}/{dataset_id}: informative must be boolean')
             source_n = _positive_int(source['n_deg'],
                                      f'{directory}/{dataset_id}: n_deg')
-            source_hits = _positive_int(source['n_deg_in_deg2000'],
-                                        f'{directory}/{dataset_id}: n_deg_in_deg2000')
+            source_hits = _positive_int(source['n_deg_in_deg1000'],
+                                        f'{directory}/{dataset_id}: n_deg_in_deg1000')
             if source['informative']:
                 if source_n == 0:
                     raise ValueError(
@@ -1203,7 +1209,7 @@ def validate_fusion_catalog(catalog):
                 counted_informative += 1
             elif source_hits != 0:
                 raise ValueError(
-                    f'{directory}/{dataset_id}: an excluded source cannot land in DEG2000')
+                    f'{directory}/{dataset_id}: an excluded source cannot land in DEG1000')
             hits += source_hits
         if informative_count != counted_informative:
             raise ValueError(
@@ -1241,26 +1247,30 @@ def validate_fusion_catalog(catalog):
                 f'{directory}: excluded_sources must list exactly the non-informative '
                 'ledger sources')
         n_deg = record['n_deg']
-        deg2000 = record['deg2000']
-        deg2000_file = record['deg2000_file']
+        deg1000 = record['deg1000']
+        deg1000_file = record['deg1000_file']
         if not published:
-            if n_deg not in (None, 0) or deg2000 not in (None, 0):
+            if n_deg not in (None, 0) or deg1000 not in (None, 0):
                 raise ValueError(f'{directory}: an unpublished disease has no sizes')
-            if deg2000_file is not None:
-                raise ValueError(f'{directory}: an unpublished disease has no DEG2000 file')
+            if record['union_file'] is not None:
+                raise ValueError(f'{directory}: an unpublished disease has no union file')
+            if deg1000_file is not None:
+                raise ValueError(f'{directory}: an unpublished disease has no DEG1000 file')
             if informative_count or hits:
                 raise ValueError(f'{directory}: an unpublished disease has no fused source')
             if record['tier'] is not None:
                 _tier(record['tier'], f'{directory}: tier')
             continue
         n_deg = _positive_int(n_deg, f'{directory}: n_deg')
-        deg2000 = _positive_int(deg2000, f'{directory}: deg2000')
-        if deg2000 != min(n_deg, DEG2000_LIMIT):
+        deg1000 = _positive_int(deg1000, f'{directory}: deg1000')
+        if deg1000 != min(n_deg, DEG1000_LIMIT):
             raise ValueError(
-                f'{directory}: deg2000 must be min(n_deg, {DEG2000_LIMIT}) '
+                f'{directory}: deg1000 must be min(n_deg, {DEG1000_LIMIT}) '
                 'because the DEG union occupies the first ranks')
-        if not isinstance(deg2000_file, str) or not deg2000_file:
-            raise ValueError(f'{directory}: a published disease has a DEG2000 file')
+        if not isinstance(record['union_file'], str) or not record['union_file']:
+            raise ValueError(f'{directory}: a published disease has a full union file')
+        if not isinstance(deg1000_file, str) or not deg1000_file:
+            raise ValueError(f'{directory}: a published disease has a DEG1000 file')
         if not isinstance(record['category'], str) or not record['category']:
             raise ValueError(f'{directory}: a published disease has a category')
         _tier(record['tier'], f'{directory}: tier')
@@ -1271,8 +1281,8 @@ def validate_fusion_catalog(catalog):
                              'informative source')
         if n_deg > 0 and not informative_count:
             raise ValueError(f'{directory}: a non-empty union needs an informative source')
-        if hits < deg2000:
-            raise ValueError(f'{directory}: every DEG2000 gene must be a DEG in at '
+        if hits < deg1000:
+            raise ValueError(f'{directory}: every DEG1000 gene must be a DEG in at '
                              'least one source')
     _assert_relative(catalog, 'fusion catalog')
     if catalog.get('generated_by') is not None and not isinstance(
@@ -1458,7 +1468,7 @@ def read_catalog(path):
 
 def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
                   source_records, rejected=(), axis_size=AXIS_SIZE,
-                  isogenic_exception=None, n_deg=None, deg2000=None, tiering=None,
+                  isogenic_exception=None, n_deg=None, deg1000=None, tiering=None,
                   source_deg=None, tier_sources=None):
     """Assemble a category catalog from the declared source/eligibility records.
 
@@ -1467,8 +1477,8 @@ def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
     ``catalog_sha256``.
 
     The ADR 0071 v2 shape (#205) is opt-in: pass ``n_deg`` (the disease DEG-union
-    size), ``deg2000`` (the ``DEG2000_d`` size), ``tiering`` (the tier record) and
-    ``source_deg`` (``{dataset_id: {'n_deg': .., 'n_deg_in_deg2000': ..}}``, one
+    size), ``deg1000`` (the ``DEG1000_d`` size), ``tiering`` (the tier record) and
+    ``source_deg`` (``{dataset_id: {'n_deg': .., 'n_deg_in_deg1000': ..}}``, one
     entry per dataset) together to publish the fusion-derived fields and validate
     the catalog through :func:`validate_catalog`. Each source record must already
     carry its boolean ``informative`` flag (ADR 0068): the union bounds are taken
@@ -1504,11 +1514,11 @@ def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
         # ADR 0066 Isogenic exception, recorded as data (ticket #188). Absent for
         # every category that has no in-vitro isogenic model.
         catalog['isogenic_exception'] = isogenic_exception
-    fusion_fields = (n_deg is not None, deg2000 is not None, tiering is not None,
+    fusion_fields = (n_deg is not None, deg1000 is not None, tiering is not None,
                      source_deg is not None)
     if any(fusion_fields):
         if not all(fusion_fields):
-            raise ValueError('the v2 catalog shape needs n_deg, deg2000, tiering and '
+            raise ValueError('the v2 catalog shape needs n_deg, deg1000, tiering and '
                              'source_deg together')
         ledger = dict(source_deg)
         unknown = sorted(set(ledger) - seen)
@@ -1520,10 +1530,10 @@ def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
         for record in records:
             entry = ledger[record['dataset_id']]
             record['n_deg'] = int(entry['n_deg'])
-            record['n_deg_in_deg2000'] = int(entry['n_deg_in_deg2000'])
+            record['n_deg_in_deg1000'] = int(entry['n_deg_in_deg1000'])
         catalog['n_deg'] = int(n_deg)
         catalog.update(disease_eligibility(int(n_deg)))
-        catalog['deg2000'] = int(deg2000)
+        catalog['deg1000'] = int(deg1000)
         catalog['tiering'] = tiering
         # The declared ladder is published with the record. Deriving it from the
         # dataset records when the caller omits it makes the two impossible to
@@ -1668,13 +1678,13 @@ class DiseaseDeg:
 
 
 class DiseaseFusion:
-    """Reader for the emitted per-disease level-1 fusion + ``DEG2000`` product.
+    """Reader for the emitted per-disease level-1 fusion + ``DEG1000`` product.
 
-    ``output/disease-fusion/`` holds one catalog and one ``<directory>.deg2000.csv``
+    ``output/disease-fusion/`` holds one catalog and one ``<directory>.deg1000.csv``
     per published disease (ADR 0071 decision 4). The catalog is the
     self-describing record of the fusion (declared/informative source counts, the
-    DEG-union and ``DEG2000`` sizes, the per-source ledger and every exclusion);
-    the CSV is the per-gene ``DEG2000_d`` table in disease-rank order. Both are
+    DEG-union and ``DEG1000`` sizes, the per-source ledger and every exclusion);
+    the CSV is the per-gene ``DEG1000_d`` table in disease-rank order. Both are
     digest-checked against ``manifest.json``. The reader only reads
     ``output/disease-fusion/``, so it imports without the external item trees.
     """
@@ -1698,6 +1708,12 @@ class DiseaseFusion:
         catalog = read_catalog(path)
         if catalog.get('schema') != FUSION_SCHEMA:
             raise ValueError(f'{path}: unexpected fusion catalog schema')
+        manifest = self.manifest()
+        declared = manifest['outputs'].get('catalog.json', {})
+        if (declared.get('sha256') != _sha256(path)
+                or manifest.get('catalog_sha256') != catalog['catalog_sha256']
+                or manifest.get('limit') != catalog.get('limit')):
+            raise ValueError('fusion catalog differs from its release manifest')
         return validate_fusion_catalog(catalog)
 
     def diseases(self):
@@ -1708,8 +1724,7 @@ class DiseaseFusion:
     def eligible_diseases(self):
         """Published fusion participants; ``diseases()`` retains excluded evidence.
 
-        Legacy catalogs remain readable: admission is derived from their recorded
-        axis-resolved union when the explicit ADR 0072 fields are absent.
+        Admission is validated against the complete recorded disease union.
         """
         return [record['directory'] for record in self.catalog()['diseases']
                 if disease_eligibility(record['n_deg'], record['published'])['eligible']]
@@ -1720,12 +1735,8 @@ class DiseaseFusion:
                 return record
         raise KeyError(f'unknown disease-fusion directory {directory!r}')
 
-    def deg2000(self, directory):
-        """The digest-checked ``DEG2000_d`` rows of one disease."""
-        record = self.record(directory)
-        if not record['published']:
-            raise KeyError(f'{directory}: the disease is declared but not published')
-        name = record['deg2000_file']
+    def _frame(self, record, field):
+        name = record[field]
         manifest = self.manifest()
         declared = manifest['outputs'].get(name)
         if not isinstance(declared, dict):
@@ -1735,5 +1746,63 @@ class DiseaseFusion:
             raise FileNotFoundError(f'missing declared fusion output {name}')
         if _sha256(path) != declared['sha256']:
             raise ValueError(f'{name}: digest differs from the fusion manifest')
-        return pd.read_csv(path, dtype={'gene_index': np.int64,
-                                       'disease_rank': np.int64})
+        frame = pd.read_csv(path, float_precision='round_trip')
+        if list(frame.columns) != list(UNION_COLUMNS):
+            raise ValueError(f'{name}: unexpected fusion evidence columns')
+        return frame
+
+    def union(self, directory):
+        """Digest-checked complete union and actual DEG-source tier evidence."""
+        record = self.record(directory)
+        if not record['published']:
+            raise KeyError(f'{directory}: the disease is declared but not published')
+        frame = self._frame(record, 'union_file')
+        if len(frame) != record['n_deg']:
+            raise ValueError('full union size differs from catalog')
+        if frame.disease_rank.tolist() != list(range(1, record['n_deg'] + 1)):
+            raise ValueError('full union ranks must be contiguous')
+        if (not pd.api.types.is_integer_dtype(frame.gene_index) and len(frame)):
+            raise ValueError('full union gene_index must be integral')
+        if not frame.gene_index.is_unique or not frame.gene_index.between(
+                0, self.catalog()['axis']['size'] - 1).all():
+            raise ValueError('invalid full union gene_index')
+        ledger = {source['dataset_id']: source for source in record['sources']}
+        counts = {source: 0 for source in ledger}
+        for row in frame.itertuples(index=False):
+            support = json.loads(row.supporting_sources)
+            if (not isinstance(support, list) or not support
+                    or any(not isinstance(source, str) for source in support)
+                    or support != sorted(set(support))):
+                raise ValueError('union supporting sources must be unique sorted source ids')
+            if any(source not in ledger or not ledger[source]['informative']
+                   for source in support):
+                raise ValueError('union support must name informative declared sources')
+            if row.source_tier_highest != min(ledger[source]['tier'] for source in support):
+                raise ValueError('highest source tier disagrees with DEG support')
+            for source in support:
+                counts[source] += 1
+        for source, count in counts.items():
+            expected = ledger[source]['n_deg'] if ledger[source]['informative'] else 0
+            if count != expected:
+                raise ValueError('full union source membership differs from source DEG count')
+        if not np.isfinite(frame.disease_rank_sum.to_numpy(dtype=float)).all():
+            raise ValueError('disease rank sums must be finite')
+        ordered = frame.sort_values(['source_tier_highest', 'disease_rank_sum', 'gene_index'])
+        if ordered.gene_index.tolist() != frame.gene_index.tolist():
+            raise ValueError('union is not ordered by tier, rank sum and gene index')
+        return frame
+
+    def deg1000(self, directory):
+        """Tier-first cutoff, validated against the retained complete union."""
+        record = self.record(directory)
+        if not record['published']:
+            raise KeyError(f'{directory}: the disease is declared but not published')
+        frame = self._frame(record, 'deg1000_file')
+        expected = self.union(directory).iloc[:record['deg1000']]
+        if not frame.equals(expected.reset_index(drop=True)):
+            raise ValueError('DEG1000 differs from the first full-union ranks')
+        support = [json.loads(value) for value in frame.supporting_sources]
+        for source in record['sources']:
+            if sum(source['dataset_id'] in genes for genes in support) != source['n_deg_in_deg1000']:
+                raise ValueError('source DEG1000 membership differs from source ledger')
+        return frame

@@ -36,7 +36,7 @@ import public_api  # noqa: F401  (binds the single public implementation)
 import disease_deg_sources  # noqa: E402
 from bases import disease_deg  # noqa: E402
 
-LIMIT = disease_deg.DEG2000_LIMIT
+LIMIT = disease_deg.DEG1000_LIMIT
 
 
 def dataset(dataset_id, tier, **extra):
@@ -139,8 +139,8 @@ class TierStopRuleTests(unittest.TestCase):
     def test_a_source_after_two_thousand_is_collected(self):
         result = ledger('genetic_cardiomyopathy',
                         [dataset('done', 1), dataset('deeper', 2)],
-                        {'done': measured(*range(LIMIT)), 'deeper': measured(LIMIT + 1)})
-        self.assertEqual(result['n_deg'], 2001)
+                        {'done': measured(*range(2100)), 'deeper': measured(2101)})
+        self.assertEqual(result['n_deg'], 2101)
         self.assertEqual(result['tiering']['tiers_entered'], [1, 2])
 
     def test_a_tier_between_two_entered_tiers_is_not_back_filled(self):
@@ -159,12 +159,12 @@ class TierStopRuleTests(unittest.TestCase):
         self.assertEqual([row['informative'] for row in result['sources']],
                          [True, False])
         self.assertEqual(result['n_deg'], 2)
-        self.assertEqual(result['deg2000'], 2)
+        self.assertEqual(result['deg1000'], 2)
 
     def test_the_union_is_axis_resolved_not_genome_wide(self):
         # A source with 3,000 genome-wide DEGs of which only 1,600 resolve to the
         # frozen axis contributes 1,600 here: the off-axis genes are structurally
-        # unreachable (they can never enter DEG2000 or the axis), so they cannot
+        # unreachable (they can never enter DEG1000 or the axis), so they cannot
         # count toward the 2,000 stop test. Measured axis-resolved, this source
         # does not stop collection; the same signal on 2,000 axis genes would.
         short = ledger('genetic_cardiomyopathy', [dataset('a', 1)],
@@ -258,13 +258,13 @@ class CatalogTieringTests(unittest.TestCase):
                             'informative': row['informative'],
                             **{key: value for key, value in extra.get('records', {})
                                .get(row['dataset_id'], {}).items()}})
-        counts = {row['dataset_id']: {'n_deg': row['n_deg'], 'n_deg_in_deg2000':
-                                      min(row['n_deg'], result['deg2000'])}
+        counts = {row['dataset_id']: {'n_deg': row['n_deg'], 'n_deg_in_deg1000':
+                                      min(row['n_deg'], result['deg1000'])}
                   for row in result['sources']}
         return disease_deg.build_catalog(
             category, directory or category.lower(), tier, 'bulk',
             pd.DataFrame(), '1' * 64, records,
-            n_deg=result['n_deg'], deg2000=result['deg2000'],
+            n_deg=result['n_deg'], deg1000=result['deg1000'],
             tiering=result['tiering'], tier_sources=result['tier_sources'],
             source_deg=counts)
 
@@ -298,7 +298,7 @@ class CatalogTieringTests(unittest.TestCase):
                                {'t': measured(*range(LIMIT + 1))}, tier=2)
         self.assertEqual(catalog['tiering']['tiers_entered'], [2])
         self.assertEqual(catalog['tiering']['collection_policy'], disease_deg.COLLECTION_POLICY)
-        self.assertEqual(catalog['deg2000'], LIMIT)
+        self.assertEqual(catalog['deg1000'], LIMIT)
 
     def test_clinical_tier_two_records_are_gated_in_the_catalog(self):
         with self.assertRaises(ValueError):
