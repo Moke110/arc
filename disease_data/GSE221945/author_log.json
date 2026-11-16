@@ -1,0 +1,36 @@
+{
+  "item": "GSE221945",
+  "category": "disease_data",
+  "retrieved_at": "2026-11-16",
+  "purpose": "Human TBX5G145R Brugada hiPSC-CM versus CRISPR-corrected isogenic source; one genetic dataset, full author DESeq2 statistics.",
+  "sources": [
+    {
+      "name": "GSE221945_Isogenic_vs_Brugada_min5_DESeq2.csv.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE221nnn/GSE221945/suppl/GSE221945_Isogenic_vs_Brugada_min5_DESeq2.csv.gz",
+      "sha256": "a1f4ebf5b3dfa8435c9f79fe550fda36cc8b8013266a6574d035fedbb948fe7a",
+      "bytes": 1717914,
+      "path": "source/GSE221945_Isogenic_vs_Brugada_min5_DESeq2.csv.gz"
+    },
+    {
+      "name": "GSE221945_series_matrix.txt.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE221nnn/GSE221945/matrix/GSE221945_series_matrix.txt.gz",
+      "sha256": "7b45dce7adab6805fb0b73e828dc7435009057eb7c4e2d4ece50e60273b66b51",
+      "bytes": 3784,
+      "path": "source/GSE221945_series_matrix.txt.gz"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE221945_deg.csv",
+      "generated_by": "script/build_deg.py",
+      "origin": "Full deposited author min5 DESeq2 table with both effect and signed Wald statistic reversed to disease-minus-corrected."
+    },
+    {
+      "path": "local/deg/GSE221945_deg.json",
+      "generated_by": "script/build_deg.py",
+      "origin": "Tracked full-table digest, actual4/4 library counts and model limitations."
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "notes": "Exact source table has4 BrS026 columns and4 Isogenic_CR/S columns. GEO overall_design says3 corrected lines, while measured sample/test tables4 libraries; no patient independence inferred. Preserve author pretest min5 filter and full tested universe, not selected DEG list. P values unchanged. Population controls and TBX5 knockout arms not added as extra independent datasets."
+}
