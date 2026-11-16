@@ -15,8 +15,12 @@ roots and comparing every digest. The retired ``pN`` has no column, field, reade
 or test here: a regression that reintroduces one is meant to fail.
 """
 import csv
+import builtins
+import io
+from unittest import mock
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -471,22 +475,17 @@ FIXTURE_AXIS_SIZES = (4, 6)
 #: tenv-HVG ranks: gene 7 is the strongest (rank 1), gene 0 the weakest.
 FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
 
-#: The default fixture: the six released diseases, each a single informative
-#: source whose published ``DEG2000_d`` is ``(n_deg, {gene_index: disease_rank})``.
-#: ``af`` covers the tenv-first-half gene 7 only, so it adds the constant
-#: ``(n_af + 1) / n_af = 2`` to every non-AF gene's rank_sum and leaves the
-#: second-half order unchanged. The level-2 vectors are hand-computable:
-#: f2000 = [2, 2, 3, 2, 2, 1, 0, 1] and
-#: rank_sum = [8, 47/6, 7.5, 8.5, 49/6, 8.5, 9.5, 8.5] (gene 7 gains AF's 1/1
-#: because it is AF's only DEG2000 gene, and still pays every other disease's
-#: (n_d + 1) / n_d outside penalty).
+#: A five-disease miniature; without the new eligibility marker the small
+#: signatures exercise the unchanged rank formulas (the gate fixture below uses
+#: 0/1/99/100 unions). TOX here is an independently supplied fixture signature.
+#: Worked vectors: f2000=[2,2,3,2,2,1,0,1], rank_sum=
+#: [17/3,17/3,16/3,19/3,6,7,22/3,19/3].
 FIXTURE_DEG2000 = {
     'nhf': (3, {0: 1, 1: 2, 2: 3}),
     'icm': (3, {1: 1, 2: 2, 3: 3}),
     'af': (1, {7: 1}),
     'genetic_cardiomyopathy': (3, {2: 1, 3: 2, 4: 3}),
-    'cardiotox_TOP2': (2, {4: 1, 0: 2}),
-    'cardiotox_other': (1, {5: 1}),
+    'tox': (3, {4: 1, 0: 2, 5: 3}),
 }
 
 
@@ -619,6 +618,61 @@ def manifest_strings(value):
 
 
 
+class EligibleDiseaseReleaseTests(unittest.TestCase):
+    def test_new_catalog_excludes_small_diseases_from_every_axis_contribution(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = write_fixture(Path(temporary))
+            genes = pd.DataFrame({'gene_index': np.arange(120),
+                                  'symbol': [f'G{i}' for i in range(120)]})
+            genes.to_csv(config.genes, index=False)
+            tenv = pd.DataFrame({'gene_index': np.arange(120),
+                                'rank': np.arange(1, 121),
+                                'normalized_dispersion': np.arange(120, 0, -1)})
+            tenv.to_csv(config.tenv_hvg, index=False)
+            counts = dict.fromkeys(CATEGORIES, 100)
+            counts.update(af=1, icm=99, genetic_cardiomyopathy=0)
+            records, outputs = [], {}
+            for directory, count in counts.items():
+                record, rows = fusion_disease_record(
+                    directory, count, {gene: gene + 1 for gene in range(count)})
+                record.update(disease_deg.disease_eligibility(count))
+                records.append(record)
+                path = config.fusion_root / record['deg2000_file']
+                rows.to_csv(path, index=False)
+                outputs[path.name] = {'sha256': driver.sha256(path)}
+            catalog = fusion_catalog(config.genes, records)
+            catalog['axis']['size'] = 120
+            catalog['eligibility_min_deg'] = 100
+            disease_deg.write_catalog(config.fusion_root / 'catalog.json', catalog)
+            driver.write_json({'schema': disease_deg.FUSION_RELEASE_SCHEMA,
+                               'outputs': outputs}, config.fusion_root / 'manifest.json')
+            fusion = driver.read_fusion(config, 120)
+            self.assertEqual(set(fusion['diseases']),
+                             {'nhf', 'tox'})
+            self.assertEqual({row['directory'] for row in fusion['excluded']},
+                             {'af', 'icm', 'genetic_cardiomyopathy'})
+            result = driver.compute(genes, tenv, fusion, (4, 6))
+            table = result['table']
+            self.assertEqual(table.loc[0, 'rank_sum'], 0.02)
+            self.assertEqual(table.loc[0, 'f2000'], 2)
+            self.assertAlmostEqual(table.loc[119, 'rank_sum'], 2.02)
+            self.assertTrue(table.af_rank.isna().all())
+            self.assertTrue(table.icm_rank.isna().all())
+            reader = disease_deg.DiseaseFusion(config.fusion_root)
+            self.assertEqual(reader.deg2000('af').gene_index.tolist(), [0])
+            self.assertEqual(driver.publish(config)['n_diseases'], 2)
+            retained = GeneAxis(config.output).manifest()['categories']['af']
+            self.assertTrue(retained['published'])
+            self.assertEqual((retained['n_deg'], retained['deg2000']), (1, 1))
+            self.assertEqual(retained['deg2000_file'], 'af.deg2000.csv')
+            self.assertEqual(retained['deg2000_sha256'],
+                             driver.sha256(config.fusion_root / 'af.deg2000.csv'))
+            self.assertFalse(retained['eligible'])
+            self.assertFalse(retained['participates_in_fusion'])
+            self.assertIn('100', retained['excluded_reason'])
+            self.assertEqual(driver.verify(config)['result'], 'PASS')
+
+
 class DeclaredRosterTests(unittest.TestCase):
     """The six-disease roster is the released roster after #208.
 
@@ -633,7 +687,7 @@ class DeclaredRosterTests(unittest.TestCase):
         self.assertIn('af', gene_axis.RELEASE_CATEGORIES)
 
     def test_the_release_contract_carries_the_six_released_categories(self):
-        self.assertEqual(len(gene_axis.CATEGORY_RANK_COLUMNS), 6)
+        self.assertEqual(len(gene_axis.CATEGORY_RANK_COLUMNS), 5)
         self.assertIn('af_rank', gene_axis.CATEGORY_RANK_COLUMNS)
         # The retired pN columns have no successor in the v2 contract.
         self.assertNotIn('p2000', list(gene_axis.CANDIDATE_COLUMNS))
@@ -647,7 +701,7 @@ class DeclaredRosterTests(unittest.TestCase):
             config = write_fixture(Path(temporary))
             result = driver.publish(config)
             self.assertEqual(result['result'], 'PASS')
-            self.assertEqual(result['n_diseases'], 6)
+            self.assertEqual(result['n_diseases'], 5)
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
     def test_a_missing_released_disease_fails_closed(self):
@@ -711,7 +765,7 @@ class ReleaseBuildTests(unittest.TestCase):
             np.testing.assert_array_equal(table.f2000, [2, 2, 3, 2, 2, 1, 0, 1])
             np.testing.assert_allclose(
                 table.rank_sum,
-                [8.0, 47 / 6, 7.5, 8.5, 49 / 6, 8.5, 9.5, 8.5])
+                [17/3, 17/3, 16/3, 19/3, 6.0, 7.0, 22/3, 19/3])
             np.testing.assert_array_equal(reader.axis(4), [1, 2, 6, 7])
             np.testing.assert_array_equal(reader.axis(6), [0, 1, 2, 5, 6, 7])
             self.assertEqual(manifest['axes']['4']['second_half'],
@@ -720,15 +774,14 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertEqual(manifest['axes']['6']['second_half']['from_deg2000'], 3)
             self.assertEqual(manifest['intersection']['n_intersection'], 4)
             self.assertEqual(manifest['intersection']['sizes'], [4, 6])
-            self.assertEqual(manifest['fusion']['n_diseases'], 6)
+            self.assertEqual(manifest['fusion']['n_diseases'], 5)
             self.assertEqual(manifest['fusion']['diseases'], list(CATEGORIES))
             self.assertEqual(manifest['fusion']['excluded_diseases'], [])
             self.assertEqual(manifest['categories']['nhf']['n_deg'], 3)
             self.assertEqual(manifest['categories']['nhf']['deg2000'], 3)
-            self.assertEqual(manifest['fusion']['n_declared_diseases'], 6)
+            self.assertEqual(manifest['fusion']['n_declared_diseases'], 5)
             self.assertEqual(manifest['counts']['f2000_distribution'],
-                             {'0': 1, '1': 2, '2': 4, '3': 1, '4': 0, '5': 0,
-                              '6': 0})
+                             {'0': 1, '1': 2, '2': 4, '3': 1, '4': 0, '5': 0})
             # The composition carries the declared halves, the DEG2000 numerator
             # and denominator, and the f2000 distribution; no pN record.
             composition = reader.composition()
@@ -819,7 +872,7 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertEqual(manifest['fusion']['n_diseases'], 1)
             self.assertEqual(manifest['fusion']['excluded_diseases'],
                              ['icm', 'af', 'genetic_cardiomyopathy',
-                              'cardiotox_TOP2', 'cardiotox_other'])
+                              'tox'])
             self.assertTrue(manifest['categories']['icm']['excluded_from_fusion'])
             self.assertIn('excluded_reason', manifest['categories']['icm'])
             table = reader.candidate_table()
@@ -918,10 +971,9 @@ class CoverageTests(unittest.TestCase):
             None,                                   # icm: excluded from the fusion
             np.isin(np.arange(AXIS_SIZE), (7,)),     # af: its single DEG2000 gene
             np.isin(np.arange(AXIS_SIZE), (2, 3, 4)),  # genetic_cardiomyopathy
-            np.isin(np.arange(AXIS_SIZE), (0, 4)),   # cardiotox_TOP2
-            np.isin(np.arange(AXIS_SIZE), (5,)),     # cardiotox_other
+            np.isin(np.arange(AXIS_SIZE), (0, 4)),   # unified TOX
         ]
-        sizes = [2, None, 1, 3, 2, 1]
+        sizes = [2, None, 1, 3, 2]
         return axes, tenv, masks, sizes
 
     def test_coverage_carries_the_numerator_and_its_own_denominator(self):
@@ -943,10 +995,8 @@ class CoverageTests(unittest.TestCase):
         self.assertEqual(int(rows['genetic_cardiomyopathy']['numerator']), 0)
         self.assertEqual(int(rows['genetic_cardiomyopathy']['denominator']), 3)
         self.assertEqual(float(rows['genetic_cardiomyopathy']['rate']), 0.0)
-        self.assertEqual(int(rows['cardiotox_TOP2']['numerator']), 1)
-        self.assertEqual(int(rows['cardiotox_TOP2']['denominator']), 2)
-        self.assertEqual(int(rows['cardiotox_other']['numerator']), 0)
-        self.assertEqual(int(rows['cardiotox_other']['denominator']), 1)
+        self.assertEqual(int(rows['tox']['numerator']), 1)
+        self.assertEqual(int(rows['tox']['denominator']), 2)
         # AF's single DEG2000 gene 7 is on both fixture axes.
         self.assertEqual(int(rows['af']['numerator']), 1)
         self.assertEqual(int(rows['af']['denominator']), 1)
@@ -979,8 +1029,7 @@ class CoverageTests(unittest.TestCase):
                          {'n_covered': 1, 'n_deg2000': 1, 'share': 1.0})
         self.assertEqual(composition['genetic_cardiomyopathy'],
                          {'n_covered': 0, 'n_deg2000': 3, 'share': 0.0})
-        self.assertEqual(composition['cardiotox_TOP2']['n_covered'], 1)
-        self.assertEqual(composition['cardiotox_other']['n_covered'], 0)
+        self.assertEqual(composition['tox']['n_covered'], 1)
 
     def test_f2000_distribution_is_bounded_by_the_active_disease_count(self):
         np.testing.assert_array_equal(f2000_distribution(np.array([0, 1, 1, 2]), 2),
@@ -1193,6 +1242,11 @@ class SourceCoverageFigureTests(unittest.TestCase):
 
 
 
+def source_document_rows(document):
+    return [row for table in document.tables if table.rows[0].cells[0].text == 'category'
+            for row in table.rows[1:]]
+
+
 def source_table_row(document, catalogs, dataset_id):
     """Return the cells of ``dataset_id``'s source-table row (row order = catalog order)."""
     offset = 0
@@ -1200,26 +1254,57 @@ def source_table_row(document, catalogs, dataset_id):
         catalog = json.loads(Path(catalogs[category]).read_text(encoding='utf-8'))
         for dataset in catalog['datasets']:
             if dataset['dataset_id'] == dataset_id:
-                return [cell.text for cell in document.tables[0].rows[1 + offset].cells]
+                return [cell.text for cell in source_document_rows(document)[offset].cells]
             offset += 1
     raise AssertionError(f'{dataset_id} is not in the concatenated catalogs')
+
+
+class CsvOnlyProductAccessTests(unittest.TestCase):
+    def test_both_committed_figures_replay_with_product_data_reads_denied(self):
+        """A failed payload probe proves the read guard is active during replay."""
+        original_open, original_io_open = builtins.open, io.open
+        attempts = []
+        def guard(original):
+            def open_file(path, *args, **kwargs):
+                if isinstance(path, (str, Path)):
+                    target = Path(path)
+                    if 'output' in target.parts and target.suffix not in ('.py', '.pyc'):
+                        attempts.append(str(target))
+                        raise PermissionError('product data are deliberately unreadable')
+                return original(path, *args, **kwargs)
+            return open_file
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary = Path(temporary)
+            with mock.patch('builtins.open', guard(original_open)), mock.patch('io.open', guard(original_io_open)):
+                with self.assertRaises(PermissionError):
+                    open(STEP / 'output/view-2k/tenv.h5ad', 'rb')
+                attempts.clear()
+                for stem, module in (('gene_axis_rank_sum_histogram', renderer),
+                                     ('gene_axis_source_topn_coverage', coverage_renderer)):
+                    module.render(*module.load(STEP / 'figure/data' / f'{stem}.csv'), temporary / f'{stem}.png')
+            self.assertEqual(attempts, [], 'a renderer attempted a forbidden product read')
+            for stem in ('gene_axis_rank_sum_histogram', 'gene_axis_source_topn_coverage'):
+                self.assertEqual(sha256_file(temporary / f'{stem}.png'), sha256_file(STEP / 'figure' / f'{stem}.png'))
+
+
+DOCUMENT_STEP = Path(os.environ.get('ARC_DOCX_STEP', STEP))
 
 
 class DocxTests(unittest.TestCase):
     """The rule document replays byte-identically and every table cell is contracted."""
 
     def catalogs(self):
-        return {category: STEP / 'output/disease-deg' / category / 'catalog.json'
+        return {category: DOCUMENT_STEP / 'output/disease-deg' / category / 'catalog.json'
                 for category in gene_axis.RELEASE_CATEGORIES}
 
     def test_committed_docx_replays_from_its_inputs(self):
-        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
-        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
-        fusion = STEP / 'output/disease-fusion/catalog.json'
-        axis = STEP / 'output/gene-identity/genes.csv'
-        manifest = STEP / 'output/gene-axis/manifest.json'
+        coverage = DOCUMENT_STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = DOCUMENT_STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        fusion = DOCUMENT_STEP / 'output/disease-fusion/catalog.json'
+        axis = DOCUMENT_STEP / 'output/gene-identity/genes.csv'
+        manifest = DOCUMENT_STEP / 'output/gene-axis/manifest.json'
         catalogs = self.catalogs()
-        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         for path in (coverage, figure, fusion, axis, manifest, committed,
                      *catalogs.values()):
             self.assertTrue(path.is_file(), f'missing docx input or output: {path}')
@@ -1232,7 +1317,7 @@ class DocxTests(unittest.TestCase):
                                axis_path=axis, manifest_path=manifest)
             self.assertEqual(sha256_file(rendered), sha256_file(committed))
 
-    def test_build_reads_the_six_catalog_paths_it_is_given(self):
+    def test_build_reads_declared_catalog_paths_it_is_given(self):
         """A changed catalog ``n_deg`` must reach the rendered cell.
 
         Renamed in #211: ``RELEASE_CATEGORIES`` has held six categories since
@@ -1242,8 +1327,8 @@ class DocxTests(unittest.TestCase):
         """
         from docx import Document
         import make_gene_axis_docx as docx_builder
-        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
-        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        coverage = DOCUMENT_STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = DOCUMENT_STEP / 'figure/gene_axis_rank_sum_histogram.png'
         with tempfile.TemporaryDirectory() as temporary:
             temporary = Path(temporary)
             catalogs = {}
@@ -1252,14 +1337,14 @@ class DocxTests(unittest.TestCase):
                 copied.parent.mkdir(parents=True)
                 shutil.copyfile(path, copied)
                 catalogs[category] = copied
-            catalog = json.loads(catalogs['cardiotox_TOP2'].read_text(encoding='utf-8'))
+            catalog = json.loads(catalogs['tox'].read_text(encoding='utf-8'))
             for dataset in catalog['datasets']:
                 if dataset['dataset_id'] == 'gse243674':
                     dataset['n_deg'] = 12345
-            catalogs['cardiotox_TOP2'].write_text(
+            catalogs['tox'].write_text(
                 json.dumps(catalog, indent=2, sort_keys=True) + '\n', encoding='utf-8')
             rendered = temporary / 'wired.docx'
-            docx_builder.build(coverage, figure, rendered, catalogs=catalogs)
+            docx_builder.build(coverage, figure, rendered, catalogs=catalogs, fusion_catalog=DOCUMENT_STEP / 'output/disease-fusion/catalog.json', axis_path=DOCUMENT_STEP / 'output/gene-identity/genes.csv', manifest_path=DOCUMENT_STEP / 'output/gene-axis/manifest.json')
             document = Document(str(rendered))
             cells = source_table_row(document, catalogs, 'gse243674')
             self.assertEqual(cells[6].replace(',', ''), '12345',
@@ -1270,8 +1355,8 @@ class DocxTests(unittest.TestCase):
         from docx import Document
         import make_gene_axis_docx as docx_builder
         module_path = EXECUTION / 'gene_axis_source_metadata.py'
-        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
-        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        coverage = DOCUMENT_STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = DOCUMENT_STEP / 'figure/gene_axis_rank_sum_histogram.png'
         tracked = "'bulk RNA-seq (hiPSC-CM monolayer, 3 h / 24 h)'"
         probe = "'bulk RNA-seq (hiPSC-CM monolayer, 3 h / 24 h; metadata probe)'"
         source = module_path.read_text(encoding='utf-8')
@@ -1283,7 +1368,7 @@ class DocxTests(unittest.TestCase):
             metadata = docx_builder.load_metadata_module(copied)
             rendered = temporary / 'wired.docx'
             docx_builder.build(coverage, figure, rendered,
-                               catalogs=self.catalogs(), metadata=metadata)
+                               catalogs=self.catalogs(), metadata=metadata, fusion_catalog=DOCUMENT_STEP / 'output/disease-fusion/catalog.json', axis_path=DOCUMENT_STEP / 'output/gene-identity/genes.csv', manifest_path=DOCUMENT_STEP / 'output/gene-axis/manifest.json')
             document = Document(str(rendered))
             cells = source_table_row(document, self.catalogs(), 'gse243674')
             self.assertEqual(cells[5], probe.strip("'"),
@@ -1292,8 +1377,8 @@ class DocxTests(unittest.TestCase):
     def test_cli_catalog_and_metadata_overrides_are_read(self):
         """The ``--catalog``/``--metadata`` CLI inputs reach the document too."""
         from docx import Document
-        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
-        figure = STEP / 'figure/gene_axis_rank_sum_histogram.png'
+        coverage = DOCUMENT_STEP / 'output/gene-axis/source_topn_coverage.csv'
+        figure = DOCUMENT_STEP / 'figure/gene_axis_rank_sum_histogram.png'
         tracked = "'bulk RNA-seq (hiPSC-CM monolayer, 3 h / 24 h)'"
         with tempfile.TemporaryDirectory() as temporary:
             temporary = Path(temporary)
@@ -1314,7 +1399,11 @@ class DocxTests(unittest.TestCase):
                 [sys.executable, str(EXECUTION / 'make_gene_axis_docx.py'),
                  '--coverage', str(coverage), '--figure', str(figure),
                  '--catalog', f'nhf={catalog_path}',
-                 '--metadata', str(metadata_path), '--out', str(out)],
+                 '--metadata', str(metadata_path), '--out', str(out),
+                 '--fusion-catalog', str(DOCUMENT_STEP / 'output/disease-fusion/catalog.json'),
+                 '--axis', str(DOCUMENT_STEP / 'output/gene-identity/genes.csv'),
+                 '--manifest', str(DOCUMENT_STEP / 'output/gene-axis/manifest.json'),
+                 *[argument for category, path in self.catalogs().items() if category != 'nhf' for argument in ('--catalog', f'{category}={path}')]],
                 capture_output=True, text=True, timeout=300)
             self.assertEqual(result.returncode, 0, result.stderr)
             document = Document(str(out))
@@ -1328,11 +1417,11 @@ class DocxTests(unittest.TestCase):
 
     def test_coverage_table_columns_are_contracted(self):
         """The long-format columns plus the v2 denominators, group by group."""
-        coverage = STEP / 'output/gene-axis/source_topn_coverage.csv'
+        coverage = DOCUMENT_STEP / 'output/gene-axis/source_topn_coverage.csv'
         import make_gene_axis_docx as docx_builder
         table = docx_builder.read_coverage(coverage)
         self.assertEqual(list(table.columns), list(docx_builder.COVERAGE_COLUMNS))
-        fusion = json.loads((STEP / 'output/disease-fusion/catalog.json').read_text(
+        fusion = json.loads((DOCUMENT_STEP / 'output/disease-fusion/catalog.json').read_text(
             encoding='utf-8'))
         deg2000 = {record['category']: record['deg2000'] for record in fusion['diseases']}
         for record in table.itertuples(index=False):
@@ -1340,6 +1429,11 @@ class DocxTests(unittest.TestCase):
                 if record.group == 'tenv_hvg':
                     self.assertEqual(record.denominator, record.N,
                                      'tenv-HVG divides by its top-N set size')
+                elif record.group == 'af':
+                    self.assertTrue(pd.isna(record.denominator))
+                    self.assertTrue(pd.isna(record.numerator))
+                    self.assertTrue(pd.isna(record.rate))
+                    continue
                 else:
                     label = gene_axis.CATEGORY_LABELS[record.group]
                     self.assertEqual(record.denominator, deg2000[label],
@@ -1349,47 +1443,33 @@ class DocxTests(unittest.TestCase):
     def test_source_table_rows_match_catalogs(self):
         """The first table is the released source dataset table, row for row.
 
-        The v2 release publishes 27 dataset rows across six categories; the
-        tenv-HVG fusion row makes the 28th.
+        The v2 release publishes 33 dataset rows across five categories; the
+        tenv-HVG fusion row makes the 34th.
         """
         from docx import Document
         import gene_axis_source_metadata as metadata
         import make_gene_axis_docx as docx_builder
-        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
         self.assertGreaterEqual(len(document.tables), 1, 'the document has no tables')
         table = document.tables[0]
         header = [cell.text for cell in table.rows[0].cells]
         self.assertEqual(header, list(docx_builder.SOURCE_TABLE_COLUMNS))
-        self.assertEqual(len(table.rows), 1 + 28, 'expected 28 source rows + header')
+        self.assertEqual(len(source_document_rows(document)), 34, 'expected 34 source rows')
         expected = []
         for category in gene_axis.RELEASE_CATEGORIES:
             catalog = json.loads(self.catalogs()[category].read_text(encoding='utf-8'))
             expected.extend((catalog['category'], dataset) for dataset in catalog['datasets'])
-        self.assertEqual(len(expected), 27)
+        self.assertEqual(len(expected), 33)
         for offset, (category_label, dataset) in enumerate(expected, start=1):
-            cells = [cell.text for cell in table.rows[offset].cells]
+            cells = [cell.text for cell in source_document_rows(document)[offset - 1].cells]
             dataset_id = dataset['dataset_id']
             source = metadata.SOURCES[dataset_id]
             with self.subTest(dataset=dataset_id):
                 self.assertEqual(cells[0], category_label, 'category column')
-                self.assertEqual(cells[2], dataset['model_system'], 'sample type column')
-                groups = dataset.get('arm_or_class')
-                if groups is not None:
-                    self.assertEqual(cells[3], groups, 'groups column')
-                else:
-                    # Cardiotox rows: class label/id/drugs plus the vehicle phrase the
-                    # catalog's own ``shared_control_group`` publishes.
-                    shared = dataset['shared_control_group']
-                    _, separator, tail = shared.partition(':')
-                    self.assertTrue(separator, f'{dataset_id}: no ":" in shared_control_group')
-                    vehicle = tail.strip().split(' (', 1)[0]
-                    expected_groups = (
-                        f"{dataset['class_label']} ({dataset['class_id']}; "
-                        f"{', '.join(dataset['member_drugs'])}) vs {vehicle}")
-                    self.assertEqual(cells[3], expected_groups,
-                                     'groups cell must derive from the catalog')
+                self.assertEqual(cells[2], dataset.get('model_system', 'human stem cell cardiomyocyte bulk'), 'sample type column')
+                self.assertEqual(cells[3], docx_builder._groups(dataset), 'catalog groups column')
                 self.assertEqual(
                     cells[4], f"{dataset['n_case']} / {dataset['n_control']}",
                     'sample sizes column')
@@ -1400,7 +1480,7 @@ class DocxTests(unittest.TestCase):
                 self.assertEqual(cells[1], expected_accession, 'accession column')
                 self.assertEqual(int(cells[6].replace(',', '')), dataset['n_deg'],
                                  'CM DEG count column is the v2 DEG count, not n_significant')
-        last = [cell.text for cell in table.rows[-1].cells]
+        last = [cell.text for cell in source_document_rows(document)[-1].cells]
         tenv = metadata.SOURCES[metadata.TENV_HVG]
         self.assertEqual(last[0], 'tenv-HVG (fusion source)')
         self.assertLessEqual(len(last[1]), 60, 'tenv accession cell must stay short')
@@ -1412,55 +1492,30 @@ class DocxTests(unittest.TestCase):
         """The footnote's ten sample-size bases must exist in the tracked notes."""
         from docx import Document
         import gene_axis_source_metadata as metadata
-        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        import make_gene_axis_docx as docx_builder
+        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
         footnote = next((paragraph.text for paragraph in document.paragraphs
                          if '样本量口径' in paragraph.text), None)
         self.assertIsNotNone(footnote, 'the source-table footnote lacks the sample-size basis')
-        groups = {
-            '46': ('gse270788__nicm', 'gse270788__icm', 'gse270788__ami'),
-            '1,171': ('dtoxs_ipsc', 'dtoxs_ipsc__atc_l4-L01EA',
-                      'dtoxs_ipsc__atc_l4-L01EB', 'dtoxs_ipsc__atc_l4-L01EX'),
-            '72': ('gse243674',),
-            '3,072': ('gse244740',),
-            '79': ('reichart-cm__dcm_genotype_negative',
-                   'reichart-cm__dcm_genotype_positive', 'reichart-cm__arvc'),
-            '17': ('gse35108__dcm_ipsc_cm',),
-            '177': ('gse165303__dcm_lv_bulk',),
-            '48': ('gse138252__af',),
-            '14': ('gse238242__af',),
-            '191,795': ('kuppe-mi__iz',),
-        }
-        for number, dataset_ids in groups.items():
-            with self.subTest(number=number):
-                self.assertIn(number, footnote, f'footnote lacks the {number} basis')
-                notes = [metadata.SOURCES[dataset_id]['sample_size_note']
-                         for dataset_id in dataset_ids]
-                self.assertTrue(
-                    any(note and number in note for note in notes),
-                    f'the mapping notes no longer record {number}')
-                for dataset_id in dataset_ids:
-                    note = metadata.SOURCES[dataset_id]['sample_size_note']
-                    if note is not None:
-                        self.assertIsInstance(note, str)
-                        self.assertTrue(note.strip(),
-                                        f'{dataset_id}: blank sample_size_note')
+        self.assertIn('n_case_basis', docx_builder.SOURCE_TABLE_FOOTNOTE)
+        self.assertIn('匹配溶媒', docx_builder.SOURCE_TABLE_FOOTNOTE)
 
     def test_disease_table_matches_the_published_catalogs(self):
         """The second table is the per-disease DEG/DEG2000 record, row for row."""
         from docx import Document
         import make_gene_axis_docx as docx_builder
-        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         self.assertTrue(committed.is_file(), f'missing committed docx: {committed}')
         document = Document(str(committed))
         self.assertGreaterEqual(len(document.tables), 2,
                                 'the document has no per-disease table')
-        table = document.tables[1]
+        table = next(table for table in document.tables if table.rows[0].cells[0].text == 'disease')
         header = [cell.text for cell in table.rows[0].cells]
         self.assertEqual(header, list(docx_builder.DISEASE_TABLE_COLUMNS))
-        self.assertEqual(len(table.rows), 1 + 6, 'expected 6 disease rows + header')
-        fusion = json.loads((STEP / 'output/disease-fusion/catalog.json').read_text(
+        self.assertEqual(len(table.rows), 1 + 5, 'expected 5 disease rows + header')
+        fusion = json.loads((DOCUMENT_STEP / 'output/disease-fusion/catalog.json').read_text(
             encoding='utf-8'))
         by_label = {record['category']: record for record in fusion['diseases']}
         rows = {row.cells[0].text: [cell.text for cell in row.cells]
@@ -1485,18 +1540,20 @@ class DocxTests(unittest.TestCase):
                 self.assertEqual(cells[2], ' → '.join(str(tier) for tier in tiers),
                                  'tier path')
         # The uncomfortable results are stated, never smoothed over.
-        self.assertIn('SLC9A7', rows['AF'][5], 'AF must name its single gene')
-        self.assertIn('未达到', rows['AF'][5])
-        self.assertIn('唯一达到', rows['cardiotox_TOP2'][5])
+        self.assertIn('SLC9A7', rows['AF'][6], 'AF must name its single gene')
+        self.assertIn('未达到', rows['AF'][6])
+        self.assertEqual(rows['AF'][5], 'no')
+        self.assertIn('100', rows['AF'][6])
+        self.assertIn('唯一达到', rows['TOX'][6])
         for short in ('nHF', 'ICM'):
-            self.assertIn('未达到', rows[short][5], f'{short} must state its shortfall')
-            self.assertIn('没有更低层可收', rows[short][5])
+            self.assertIn('未达到', rows[short][6], f'{short} must state its shortfall')
+            self.assertIn('没有更低层可收', rows[short][6])
 
     def test_rule_section_opens_the_document_with_the_v2_rule(self):
         """A reader meets the v2 rule before any table, and never the pN rule."""
         from docx import Document
         import make_gene_axis_docx as docx_builder
-        committed = STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
+        committed = DOCUMENT_STEP / 'output/gene-axis/gene_axis_fill_rule.docx'
         document = Document(str(committed))
         headings = [paragraph.text for paragraph in document.paragraphs
                     if paragraph.style.name == 'Title'

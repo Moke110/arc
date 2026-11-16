@@ -1,0 +1,54 @@
+{
+  "counts": {
+    "af": [
+      1,
+      1
+    ],
+    "genetic_cardiomyopathy": [
+      1482,
+      1482
+    ],
+    "icm": [
+      1647,
+      1647
+    ],
+    "nhf": [
+      1661,
+      1661
+    ],
+    "tox": [
+      9589,
+      2000
+    ]
+  },
+  "date": "2026-11-16",
+  "declared": 5,
+  "document": {
+    "all_pages_visually_inspected": true,
+    "build_elapsed_seconds": 0.56,
+    "build_peak_kib": 99152,
+    "deterministic_two_builds": true,
+    "libreoffice": "25.2-headless-codex.1",
+    "pages": 12,
+    "python_docx": "1.2.0",
+    "render_elapsed_seconds": 0.84,
+    "render_peak_kib": 261816,
+    "runtime": "26.1104.22356",
+    "unchanged_pages_1_to_9_match_prior_inspection": true
+  },
+  "eligible": 4,
+  "outputs": {
+    "stage2/01_bases/figure/gene_axis_rank_sum_histogram.png": "4b32746c0520ea04892a2674675df2e70a6d3c57c213e95edbb552e0725c6588",
+    "stage2/01_bases/figure/gene_axis_source_topn_coverage.png": "80d66e532e13b7ccc3fc5220883dbcfd5ccbdb96210bf74cf537881a3181060b",
+    "stage2/01_bases/output/gene-axis/gene_axis_fill_rule.docx": "d50e86b62c3b5aa3f8ec7e2920098e083311f0e28c0e618d09b5e254469a1236"
+  },
+  "preservation_destination": ".scratch/stage2-tox-eligibility/candidates/human-evidence",
+  "schema": "stage2-human-evidence-verification-v1",
+  "scientific_manifest_changed_input_pins": [],
+  "scope": "ADR0072 successor candidate; no accepted scientific product promotion",
+  "tests": {
+    "axis_including_csv_only_payload_read_denial": 69,
+    "source_metadata": 25,
+    "successor_document": 2
+  }
+}

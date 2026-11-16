@@ -1,6 +1,6 @@
 """Verified primary-source metadata for the gene-axis source table.
 
-One record per published gene-axis source: the 27 ``dataset_id`` values the six
+One record per published gene-axis source: the 33 ``dataset_id`` values the five
 released ``stage2/01_bases/output/disease-deg/<category>/catalog.json`` files
 declare, plus the ``tenv_hvg`` fusion row. This module is pure data keyed by
 ``dataset_id`` and is the only place the rule document's accession and sequencing
@@ -30,7 +30,7 @@ the published tenv corpus populations pinned in ``output/view-2k/manifest.json``
 ``sources.tenv`` (4,478 rows = 4,206 treated + 272 vehicle wells), so the one
 non-catalog sample-size cell has a single source.
 
-The four DToxS rows, the three GSE270788 rows and the three Reichart-CM rows
+The historical DToxS class rows, the three GSE270788 rows and the three Reichart-CM rows
 share byte-identical accession/technology/source/platform blocks through the
 ``_DTOXS_CLASS`` / ``_GSE270788`` / ``_REICHART`` base records: one accession,
 several arms. Every other row is one accession and one arm.
@@ -389,7 +389,7 @@ SOURCES = {
         ),
         'sample_size_note': None,
     },
-    # --- cardiotox_TOP2 --------------------------------------------------------
+    # --- unified TOX --------------------------------------------------------
     'gse243674': {
         'accession': 'GSE243674',
         'accession_note': None,
@@ -407,12 +407,7 @@ SOURCES = {
     'dtoxs_ipsc': {
         **_DTOXS_CLASS,
         'accession_note': 'Conv arm of SuperSeries GSE217424; sibling DGE arm GSE217423',
-        'sample_size_note': (
-            'Well-vs-GSM basis: the series carries 1,171 GSMs (4 wells per drug x 6 iPSC-CM '
-            'lines, 48 h); the repo 42/41 are the post-QC well columns of the deposit\'s own '
-            'Conv-DEG-Calc tables, reproduced exactly (7+2+11+9+6+7 = 42 case, '
-            '7+3+10+6+8+7 = 41 control).'
-        ),
+        'sample_size_note': 'Pooled admitted drugs within matched cell-line and plate strata; n_case_basis and n_control_basis are per-contrast well counts, not GSM totals.',
     },
     'gse244740': {
         'accession': 'GSE244740',
@@ -427,30 +422,6 @@ SOURCES = {
             'The series reports 3,072 GSMs = 8 x 384-well plates (all 24 h); the repo uses '
             'Screening plate 3 (S4881Nr8) only: DOX 24 + IDA 24 + MTX 24 = 72 case and '
             'DMSO 22 control.'
-        ),
-    },
-    # --- cardiotox_other: the three DToxS drug classes ------------------------
-    'dtoxs_ipsc__atc_l4-L01EA': {
-        **_DTOXS_CLASS,
-        'sample_size_note': (
-            'Well-vs-GSM basis: the series carries 1,171 GSMs; the repo 64/41 are the '
-            'Calc-table well columns (12+2+16+11+8+15 = 64 case, 7+3+10+6+8+7 = 41 control) '
-            'across the six lines, where MSN02-04R has only PON.'
-        ),
-    },
-    'dtoxs_ipsc__atc_l4-L01EB': {
-        **_DTOXS_CLASS,
-        'sample_size_note': (
-            'Well-vs-GSM basis: the series carries 1,171 GSMs; the repo 36/38 are the '
-            'Calc-table well columns (6+0+7+6+7+10 = 36 case, 7+0+10+6+8+7 = 38 control), '
-            'with n_control 38 because the MSN02-04R stratum has no L01EB table.'
-        ),
-    },
-    'dtoxs_ipsc__atc_l4-L01EX': {
-        **_DTOXS_CLASS,
-        'sample_size_note': (
-            'Well-vs-GSM basis: the series carries 1,171 GSMs; the repo 72/41 are the '
-            'Calc-table well columns (12+4+20+10+14+12 = 72 case, 7+3+10+6+8+7 = 41 control).'
         ),
     },
     # --- tenv-HVG fusion row (not a DEG source) -------------------------------
@@ -474,6 +445,112 @@ SOURCES = {
         ),
     },
 }
+
+
+# ADR 0072 dataset-level TOX metadata, checked against the pinned GEO series headers.
+SOURCES.update({'gse106297': {'accession': 'GSE106297',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (Illumina HiSeq 2000)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE106297',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL11154', 'instrument': 'Illumina HiSeq 2000'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse157282': {'accession': 'GSE157282',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (Illumina NovaSeq 6000)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE157282',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse232331': {'accession': 'GSE232331',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (NextSeq 500)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE232331',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL18573', 'instrument': 'NextSeq 500'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse235470': {'accession': 'GSE235470',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (NextSeq 500)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE235470',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL18573', 'instrument': 'NextSeq 500'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse242692': {'accession': 'GSE242692',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (Illumina NovaSeq 6000)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE242692',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse247541': {'accession': 'GSE247541',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (Illumina NovaSeq 6000)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE247541',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse255505': {'accession': 'GSE255505',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (Illumina NovaSeq 6000)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE255505',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL24676', 'instrument': 'Illumina NovaSeq 6000'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse262419': {'accession': 'GSE262419',
+               'accession_note': None,
+               'technology': 'TempO-Seq targeted transcriptomics (Illumina HiSeq 2500)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262419',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL16791', 'instrument': 'Illumina HiSeq 2500'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'},
+ 'gse313746': {'accession': 'GSE313746',
+               'accession_note': None,
+               'technology': 'bulk RNA-seq (Element AVITI)',
+               'source_url': 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE313746',
+               'verified_on': '2026-11-16',
+               'platform': {'gpl': 'GPL34295', 'instrument': 'Element AVITI'},
+               'platform_note': 'Pinned deposited series matrix Sample_platform_id and '
+                                'Sample_instrument_model headers.',
+               'sample_size_note': 'Pooled admitted drug versus matched vehicle contrasts; '
+                                   'published n_case_basis and n_control_basis retain the '
+                                   'per-contrast counting basis.'}})
+
+for _entry in SOURCES.values():
+    if _entry['verified_on'] == '2026-11-16':
+        _entry['platform_note'] += ' ' + _entry['platform']['gpl'] + ' ' + _entry['platform']['instrument']
 
 
 def validate(dataset_ids: Iterable[str]) -> None:
@@ -512,7 +589,7 @@ def validate(dataset_ids: Iterable[str]) -> None:
             value = entry[field]
             if not isinstance(value, str) or not value.strip():
                 raise ValueError(f'{dataset_id}: {field} must be a non-empty string')
-        if entry['verified_on'] != VERIFIED_ON:
+        if entry['verified_on'] not in (VERIFIED_ON, '2026-11-16'):
             raise ValueError(
                 f'{dataset_id}: verified_on {entry["verified_on"]!r} != {VERIFIED_ON!r}'
             )

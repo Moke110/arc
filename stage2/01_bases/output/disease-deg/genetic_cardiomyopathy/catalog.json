@@ -4,8 +4,9 @@
     "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "size": 18164
   },
+  "axis_resolved_deg_union": 1482,
   "axis_size": 18164,
-  "catalog_sha256": "88f996f3634c6a02d9c7d12dfb2336764450488907b05b2988a3d67c2f783948",
+  "catalog_sha256": "09f470730b746d5ea2fa6600cf1f81e8227f59ef4de13d9dcd046d5bcf76da79",
   "category": "genetic_cardiomyopathy",
   "datasets": [
     {
@@ -683,7 +684,9 @@
   ],
   "deg2000": 1482,
   "directory": "genetic_cardiomyopathy",
+  "eligible": true,
   "evidence_type": "cm_pseudobulk",
+  "exclusion_reason": null,
   "isogenic_exception": {
     "applies": true,
     "statement": "ADR 0066 Isogenic exception: the six in-vitro hiPSC-CM models carry a patient genotype with an isogenic control and are kept as their own evidence type inside this category even though a human CM-pseudobulk cohort (Reichart-CM) exists for the same category: a mixed-etiology clinical cohort and a single-genotype isogenic model answer different questions, and collapsing them loses the causal signature. The category therefore has one tier-1 human CM-pseudobulk pair (Reichart genotype-positive DCM + ARVC) and six tier-2 isogenic bulk datasets; `tier` records the winning tier and each dataset record carries its own `evidence_type` and `tier`."
@@ -737,7 +740,7 @@
   "tiering": {
     "criterion": "axis_resolved_deg_union",
     "limit": 2000,
-    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
     "stop_reached": false,
     "stopped_at_tier": 2,
     "tier_union": [

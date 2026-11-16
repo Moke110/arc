@@ -102,6 +102,13 @@ main() {
     pert_model/TranSiGen
     pert_model/XPert
     pert_model/PerturbDiff
+    disease_data/GSE106297
+    disease_data/GSE157282
+    disease_data/GSE232331
+    disease_data/GSE235470
+    disease_data/GSE242692
+    disease_data/GSE255505
+    disease_data/GSE313746
     disease_data/GSE108940
     disease_data/GSE116250
     disease_data/GSE128188

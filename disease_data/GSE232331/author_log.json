@@ -1,0 +1,30 @@
+{
+  "category": "disease_data",
+  "item": "GSE232331",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "purpose": "ADR0072 unified TOX source reassessment before DEG",
+  "reassessment": {
+    "design": "integer counts; LUMC0020iCTRL-06 EHT24h; three experiment dates; DOX positive, ACLA/AMR pending independent drug evidence",
+    "disposition": "admitted",
+    "tier": 2,
+    "uncertainty": "new DEG yield not used for admission; source-specific design must be bound before analysis"
+  },
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 458396,
+      "files": 2,
+      "id": "GSE232331",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh",
+      "path": "source/",
+      "tree_sha256": "d3158507da917d3024198210c65da2acdadc3ecd36e9dfec273789a267112f4a",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE232331",
+      "version": "GSE232331"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}

@@ -1,0 +1,33 @@
+{
+  "category": "disease_data",
+  "item": "GSE242692",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "purpose": "ADR0072 single-drug TOX source re-assessment; doxorubicin vs matched vehicle, human iPSC-CMs",
+  "reassessment": {
+    "contrast": "all DOX doses/timepoints against matched vehicle; retain donor and time design",
+    "counts_columns": 88,
+    "counts_rows": 21559,
+    "disposition": "admitted",
+    "notes": "source counts/metadata verified; new DEG yield not measured in admission decision",
+    "previous_exclusion": "single-drug class minimum3; superseded by ADR0072",
+    "tier": 2
+  },
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 2182700,
+      "files": 2,
+      "id": "GSE242692",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh",
+      "path": "source/",
+      "tree_sha256": "8bab3061158727b00e36ab07f0fcfef8879659f4847fdbb5bf10e8315a3ec689",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE242692",
+      "version": "GSE242692"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}

@@ -1,0 +1,30 @@
+{
+  "category": "disease_data",
+  "item": "GSE255505",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "purpose": "ADR0072 unified TOX source reassessment before DEG",
+  "reassessment": {
+    "design": "raw estimated counts; SCVI-273 WT, 1uM DOX24h vs DMSO,3/3; no donor replication asserted",
+    "disposition": "admitted",
+    "tier": 2,
+    "uncertainty": "new DEG yield not used for admission; source-specific design must be bound before analysis"
+  },
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 902893,
+      "files": 2,
+      "id": "GSE255505",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh",
+      "path": "source/",
+      "tree_sha256": "ff89e1c5c631a452bf056dee78decc7bed5c23951d4f3c114c111c3c68b8c64a",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE255505",
+      "version": "GSE255505"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}

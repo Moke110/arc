@@ -690,13 +690,20 @@ tissue that is not cardiomyocyte-specific. A whole-tissue bulk series is a tier-
 never a tier-1 or tier-2 one; ADR 0071 supersedes ADR 0066's blanket exclusion of it.
 _Avoid_: disease source (unqualified, when a particular tier is meant)
 
+**TOX** (ADR 0072 measured successor pending promotion):
+The single small-molecule drug-cardiotoxicity disease category: transcriptional responses to drugs with independently supported cardiotoxicity, across qualifying exposure conditions, regardless of mechanism class. Positivity belongs to the drug and does not assert toxicity at every dose or time.
+_Avoid_: cardiotox_TOP2 / cardiotox_other (as successor disease categories), all drug exposures, toxicity-positive exposure (when drug-level admission is meant)
+
+**Disease eligibility** (ADR 0072 measured successor pending promotion):
+A declared disease's qualification to contribute to cross-disease fusion: its distinct DEG union on the frozen CM gene axis contains at least 100 genes. An excluded disease still has its source evidence, DEG analysis, fusion and DEG2000 record.
+_Avoid_: source eligibility (a different decision), disease deletion, AF-specific exclusion
+
 **Disease category**:
-One of the six declared mechanism groups whose datasets fuse into one disease term: `nHF`,
-`ICM`, `AF`, `genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`. A category is one
-fusion term however many datasets it holds. `AF` was declared by ADR 0066, removed by
-ADR 0069/0070, and re-admitted by ADR 0071 with CM-specific tier-1 sources and a tier-3 atrial
-bulk descent; its published `DEG2000` is the honest one-gene union (`SLC9A7`), not a padded
-set.
+A grouping whose datasets are analyzed and fused together. ADR 0072 declares
+`nHF`, `ICM`, `AF`, `genetic_cardiomyopathy` and `TOX`; eligibility is a separate
+decision. The measured successor has four eligible terms. AF retains its one-gene
+DEG2000 (`SLC9A7`) and upstream evidence but contributes no cross-disease term.
+The pre-successor ADR 0071 release had six terms including two mechanism classes.
 _Avoid_: disease label, cohort, source (a category is not a source)
 
 **nHF**:
@@ -717,7 +724,7 @@ isogenic hiPSC-CM models of HCM, DCM (TTN/LMNA/RBM20), ARVC and DMD.
 _Avoid_: hereditary CM (unqualified)
 
 **cardiotox_TOP2** / **cardiotox_other**:
-The two drug-cardiotoxicity categories: topoisomerase-II poisons, and every other mechanism
+Historical pre-successor drug-cardiotoxicity categories (ADR 0066 and ADR 0071): topoisomerase-II poisons, and every other mechanism
 class holding at least three small-molecule drugs. Antibody and peptide drugs are excluded.
 _Avoid_: chemotherapy toxicity (unqualified)
 
@@ -739,16 +746,12 @@ the category's informative sources at the tiers it entered, ties broken by `gene
 _Avoid_: merged dataset, meta-analysis
 
 **Rank-sum fusion**:
-`rank_sum = Σ_d rank_d / n_d` over the **six disease terms only** (`nHF`, `ICM`, `AF`,
-`genetic_cardiomyopathy`, `cardiotox_TOP2`, `cardiotox_other`), where `rank_d` is the
-disease's published `DEG2000` rank and a gene outside `DEG2000_d` pays `(n_d + 1) / n_d`;
-ascending is better, ties broken by `gene_index`. It is the `rank_sum` column of
-`output/gene-axis/candidate_rank_sum.csv` and runs at two levels: sources inside a disease,
-then diseases inside the axis. tenv-HVG is **not** a term — it supplies the axis's first half.
-Its absolute scale is dominated by the smallest-`n_d` disease (`AF`, `n_d = 1`, so every
-non-`SLC9A7` gene pays exactly `2.0` in that term); that is an artefact of the denominator,
-not a fusion failure, and within an `f2000` stratum the term is a constant for non-AF genes,
-so ordering is essentially unaffected (ADR 0071 *Consequences*).
+`rank_sum = Σ_d rank_d / n_d` over eligible disease terms only, where rank_d
+is the disease DEG2000 rank, n_d its actual size, and an outside gene pays
+(n_d + 1) / n_d. Ascending is better, with gene_index tie breaks. The measured
+ADR 0072 successor has four terms: nHF, ICM, genetic_cardiomyopathy and TOX.
+AF is retained as excluded evidence; tenv-HVG supplies allocation and fallback.
+The pre-successor six-term sum is historical release behavior only.
 _Avoid_: weighted fusion, Borda (unqualified), seven-source sum (the retired v1 framing)
 
 **pN** (retired 2026-11-15):
@@ -756,7 +759,7 @@ The v1 cross-source replication count: how many of the fused sources (five categ
 tenv-HVG) had a gene in their top-`N` set, for `N ∈ {2000, 5000}`. It is **gone** — the
 `p2000`/`p5000` columns, their readers, their tests and the measured-gene rank they were
 computed from are removed (ADR 0071 decision 9). It is replaced by `f2000`, which counts only
-diseases whose published `DEG2000` contains the gene and never counts tenv-HVG. Any v1 text,
+eligible diseases whose published `DEG2000` contains the gene and never counts tenv-HVG. Any v1 text,
 figure or log that still shows `pN` is a sealed historical record; do not reintroduce the
 term into a live product.
 _Avoid_: pN (for the live signal), support count, vote
@@ -775,10 +778,10 @@ _Avoid_: top-N selection, elbow cut, non-nested axes (the retired v1 property)
 **Source top-N coverage**:
 Per fusion group, the share of that group's own set a released axis contains —
 `100 · |top_N(s) ∩ G_N| / N` for tenv-HVG and `100 · |DEG2000_d ∩ G_N| / |DEG2000_d|` for a
-disease, published in **long format** as `output/gene-axis/source_topn_coverage.csv`
+eligible disease, published in **long format** as `output/gene-axis/source_topn_coverage.csv`
 (`N, n_axis, group, group_label, numerator, denominator, rate, note`: one row per axis and
-group, with the denominator explicit so a one-gene disease reads as `1/1`, not as a 100%
-top-`N` coverage). The filename is v1 and is retained for compatibility with the pinned
+group, with each eligible denominator explicit). Excluded disease rows retain blank
+numerator, denominator and rate plus the exclusion reason; AF retention is not coverage. The filename is v1 and is retained for compatibility with the pinned
 manifests; its content is the v2 `DEG2000` coverage table.
 _Avoid_: source recall, contribution quota, `%<source>_gN` columns (the retired wide format)
 

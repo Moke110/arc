@@ -1,0 +1,30 @@
+{
+  "category": "disease_data",
+  "item": "GSE157282",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "purpose": "ADR0072 unified TOX source reassessment before DEG",
+  "reassessment": {
+    "design": "FPKM; hiPSC-CM1uM DOX24h vs Control3/3; exclude R2HG and R2HG+DOX co-exposure arms; log2(FPKM+1) non-count fit",
+    "disposition": "admitted",
+    "tier": 2,
+    "uncertainty": "new DEG yield not used for admission; source-specific design must be bound before analysis"
+  },
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 15915629,
+      "files": 2,
+      "id": "GSE157282",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh",
+      "path": "source/",
+      "tree_sha256": "4142062e1ac3949d7423c45ee17d40c0a65f960ac5a96f4b84973a0bbf1855c9",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE157282",
+      "version": "GSE157282"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}

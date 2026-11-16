@@ -10,7 +10,7 @@ table (source-dataset count, DEG union, ``DEG2000``), the coverage table and the
 released evidence figure.
 
 Its inputs are the published coverage CSV (``output/gene-axis/
-source_topn_coverage.csv``), the released PNG, the six published
+source_topn_coverage.csv``), the released PNG, the declared published
 ``output/disease-deg/<category>/catalog.json`` files, the published
 ``output/disease-fusion/catalog.json`` (the per-disease level-1 record), the
 frozen axis identity table the catalogs declare (``axis.path``), the release
@@ -39,14 +39,16 @@ from pathlib import Path
 import pandas as pd
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Cm, Pt
+from docx.shared import Cm, Pt, RGBColor
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 import gene_axis_source_metadata as source_metadata
 from gene_axis_source_metadata import TENV_TREATED_WELLS, TENV_VEHICLE_WELLS
 from bases import gene_axis
 
-TITLE = 'Stage 2 基因轴取用规则与来源覆盖（G_2000 / G_5000，ADR 0071 v2）'
+TITLE = 'Stage 2 基因轴取用规则与来源覆盖'
 #: The published coverage table's long-format contract, imported from the module
 #: that owns it so the document cannot drift from the release.
 COVERAGE_COLUMNS = gene_axis.COVERAGE_COLUMNS
@@ -56,16 +58,16 @@ COVERAGE_TABLE_COLUMNS = ('N', 'group_label', 'numerator', 'denominator', 'rate'
 SOURCE_TABLE_COLUMNS = ('category', 'accession', 'sample type', 'groups',
                         'sample sizes', 'sequencing technology', 'CM DEG count')
 SOURCE_TABLE_CAPTION = '表 1　已发布来源数据集信息'
-SOURCE_TABLE_HEADING = '2. 来源数据集信息'
+SOURCE_TABLE_HEADING = '2 来源数据集信息'
 DISEASE_TABLE_COLUMNS = ('disease', 'source datasets', 'tier path',
-                         'DEG union', 'DEG2000', 'note')
+                         'DEG union', 'DEG2000', 'eligible', 'note')
 DISEASE_TABLE_CAPTION = '表 2　每个疾病的来源数据集数、DEG 并集与 DEG2000'
-DISEASE_TABLE_HEADING = '3. 每个疾病的来源数、DEG 总数与 DEG2000'
+DISEASE_TABLE_HEADING = '3 每个疾病的来源数与 DEG 资格'
 #: A ``DEG2000`` this small is named gene by gene rather than described as a
 #: count, so a single-gene result cannot look like a rounding of a larger one.
 NAMED_DEG2000_LIMIT = 5
 
-RULE_HEADING = '1. 取用规则（ADR 0071 v2，精确版本）'
+RULE_HEADING = '1 取用规则 ADR 0072'
 
 DEG_DEFINITION = (
     'DEG 定义：一个基因在某数据集里是 DEG，当它在至少一个已声明对比中满足 '
@@ -89,70 +91,40 @@ RULE_STEPS = (
     '类器官或工程化心脏组织（bulk），其中临床类别（nHF/ICM/AF）在本层只收非遗传模型；'
     'tier 3 = 人房/室 bulk 全组织（非 CM 特异）。每收完一层，用解析到冻结 18,164 轴的'
     '累计 DEG 并集与 2,000 比较：达到即停，不再进入更低层；未声明的层从阶梯里缺席'
-    '（AF 没有 tier 2，cardiotox 两类从 tier 2 进入）。',
-    '第四步（轴填充，level 2）：对 N ∈ {2,000, 5,000}，前半 0.5N 个基因取 '
+    '（AF 没有 tier 2，TOX 从 tier 2 进入）。',
+    '第四步（疾病资格）：每病完成来源分析、level 1 和 DEG2000 后，冻结轴 DEG 并集至少 100 个才进入跨病融合。AF 的一个基因及上游证据保留，但本次不参与 rank_sum、f2000 或疾病驱动选轴。TOX 每个数据集先合并独立证据支持的药物暴露与匹配溶媒对比，一份数据集提供一个来源秩；机制仅作注释。',
+    '第五步（轴填充，level 2）：对 N ∈ {2,000, 5,000}，前半 0.5N 个基因取 '
     'tenv-HVG 秩 ≤ N/2。后半 0.5N 个基因取自剩余候选中 f2000 ≥ 1 的基因，按 '
     'f2000 降序 → rank_sum 升序 → gene_index 升序。'
-    'f2000 = 6 个疾病里 DEG2000_d 含该基因的疾病数（tenv 不是疾病项，不参与）；'
-    'rank_sum = Σ_d rank_d / n_d，基因在该病 DEG2000_d 之外时 rank_d 记 n_d+1，'
+    'f2000 = 合格疾病里 DEG2000_d 含该基因的疾病数（tenv 不是疾病项，不参与）；'
+    'rank_sum = Σ_合格疾病d rank_d / n_d，基因在该病 DEG2000_d 之外时 rank_d 记 n_d+1，'
     '绝不省略。',
-    '第五步（不足时的补齐）：若 f2000 ≥ 1 的剩余候选不足 0.5N，缺口用尚未入选的 '
+    '第六步（不足时的补齐）：若 f2000 ≥ 1 的剩余候选不足 0.5N，缺口用尚未入选的 '
     'tenv-HVG 基因按 tenv-HVG 秩补齐；f2000 = 0 的基因绝不进入疾病那半。',
     '合并两半后按 gene_index 升序发布；轴是冻结 18,164 轴的有序子集，保留原始 '
     'gene_index 整数，绝不重编号为 0..N-1。',
 )
 
 F2000_DEFINITION = (
-    '在 6 个疾病里，DEG2000_d 含该基因的疾病数量，取值 0..6。它是疾病复现数，'
-    '不是秩、不是分数，也不是 ADR 0071 之前的 pN（后者数的是“在几个融合源的 top-N 里”，'
-    '把 tenv-HVG 也算作一项）。f2000 越大越靠前；f2000 = 0 的基因不会进入轴。'
+    '合格疾病中 DEG2000_d 含该基因的疾病数量。本次五个声明疾病有四个合格，取值 0..4。'
+    'tenv-HVG 不计入；AF 保留证据但不计入。f2000 = 0 的基因只能由 tenv-HVG 分配或补齐进入轴。'
 )
-
 CLARIFICATIONS = (
-    ('pN 已退役，f2000 不是它的改名。',
-     '旧规则的 pN 在 6 个融合源（5 个疾病类别 + tenv-HVG）上计数，新规则的 f2000 只在 '
-     '6 个疾病的 DEG2000 上计数，且 tenv-HVG 已改作轴的前半与补齐来源。'
-     '两个量的定义域、分母和用途都不同，不能互相替换。'),
-    ('rank_sum 越小越好，f2000 越大越靠前。',
-     'rank_sum 是各疾病 rank_norm 之和（升序更优）；把它的方向读反，或把 f2000 升序读，'
-     '都会把轴的疾病那半排错。两者在排序键里是先后两级：先 f2000 降序，再 rank_sum 升序。'),
-    ('DEG2000 可以远小于 2,000，这不是截断失败。',
-     '并集小于 2,000 时 DEG2000 就是整个并集，不做填充：表 2 里除 cardiotox_TOP2 外'
-     '每一类都短于 2,000，AF 只有 1 个基因。小集合是声明来源的真实结果，'
-     '而不是规则没有跑完；表 2 的 note 列写明每一类是截断还是短集。'),
-    ('覆盖率表里两种分母不能混读。',
-     'tenv-HVG 行的分母是 N（其 top-N 集合大小）；疾病行的分母是该病自己的 '
-     '|DEG2000_d|。同一张表里百分比不可跨行比较，0.00% 也只说明该病的 DEG2000 '
-     '没有进入这个轴，不代表来源无效。'),
+    ('pN 已退役', 'f2000 只计合格疾病的 DEG2000，不计 tenv-HVG。'),
+    ('排序方向', '先 f2000 降序，再 rank_sum 升序，最后 gene_index 升序。'),
+    ('小集合与资格不同', 'DEG2000 不填充。少于 2000 不代表失败；少于 100 个轴内 DEG 才不参与跨病融合。'),
+    ('覆盖率分母', '合格疾病各用自己的 DEG2000 大小；tenv-HVG 用 N。排除疾病保留空值和原因，不能当作零覆盖或成功覆盖。'),
 )
-
 SOURCE_TABLE_FOOTNOTE = (
-    'CM DEG 数 = 已发布 catalog.json 的 n_deg：该来源在任一已声明对比中满足 padj<0.05 '
-    '且 |log2FC|≥2 的基因数（pass-any-contrast，ADR 0071）。它不是 padj-only 的显著基因数'
-    '（catalog 的 n_significant），也不是逐对比的检验行数；三者可以差很远，例如 GSE165303 '
-    '有 7,591 个 padj<0.05 的基因（n_significant），其中只有 29 个同时满足 |log2FC|≥2，'
-    '所以本列写 29。cardiotox 行是“溶媒 vs 化合物”对比；isogenic hiPSC 行是 isogenic 对比'
-    '（GSE253223 是 siRNA 敲低 vs 阴性对照，非 isogenic）；其余行是病例 vs 对照。'
-    'cardiotox 的样本量是每个对比合并后的孔数（见各 catalog 的 n_case_basis），'
-    '不是 GEO 的 GSM 计数（例如 DToxS 提交了 1,171 个 GSM）。'
-    '样本量口径：GSE270788 的 46 个 GSM 是 23 个 GEX + 23 个 ATAC 文库，本表只取 GEX 臂；'
-    'DToxS 提交 1,171 个 GSM，本表用每个对比的孔数（计算表的 post-QC 列）合并；'
-    'GSE243674 的 72 个 GSM 只用于 3 h 切片；GSE244740 的 3,072 个孔中只用 '
-    'Screening plate 3；Reichart-CM 的 79 个供体在 cellxgene 对象中；'
-    'GSE35108 的 17 个 GSM 里只有 8 个是 CM 文库；GSE165303 的 177 个样本里只用 '
-    '101 个 bulk RNA-seq 文库；GSE138252 的 48 个 GSM（38 个不同的库列）里只用 2020 批次'
-    '的左房 10 个文库；GSE238242 的 14 个 GSM 只取 snRNA 臂的 3 vs 4 供体；'
-    'Kuppe-MI 的 191,795 个核 / 20 个供体里只用过了 500-CM-核门槛的 4 个 IZ 与 '
-    '4 个正常心 profile。'
+    'CM DEG 数来自各 catalog 的 n_deg，是 pass-any-contrast DEG 数，不是 padj-only 显著基因数。'
+    '样本量口径：非 TOX 来源为已发布病例和对照数；TOX 是已声明对比的 pooled wells，'
+    '有多个对比时显示范围，n_case_basis 与 n_control_basis 记录计数口径，不能作为全系列独立供体总数。TOX 表中药物仅指独立心脏毒性证据准入药物；'
+    '保留匹配溶媒、供体阻断及原有细胞系、板和时间分层。没有要求每个剂量和时间都出现毒性。'
 )
-
 DISEASE_TABLE_FOOTNOTE = (
-    'DEG union = 该病全部来源的 DEG 并集（去重，解析到冻结 18,164 轴）；DEG2000 = 该并集中'
-    '疾病秩 ≤ 2,000 的基因数，也就是实际进入下游 level-2 融合的集合。'
-    '三列都直接取自已发布的 output/disease-fusion/catalog.json，并与各 '
-    'output/disease-deg/<category>/catalog.json 的 n_deg / deg2000 交叉校验；'
-    '没有任何一列是手写的。tier path 是该病声明并实际进入的层级（来自 catalog 的 '
-    'tier_sources）；note 列逐病写明是达到 2,000 截断，还是阶梯耗尽后的短集。'
+    'DEG union 是全部来源解析到冻结 18164 轴的去重 DEG 并集。DEG2000 是该并集中排名前 2000 的基因，'
+    '不足时不填充。eligible 来自疾病资格记录；只有合格疾病才贡献 level 2，AF 的一个基因保留不参与。'
+    '各数值来自 disease-fusion/catalog.json 并与 disease-deg catalogs 交叉校验。'
 )
 
 #: The tenv-HVG fusion row is not a case/control contrast. Its sample sizes are
@@ -230,6 +202,10 @@ def read_coverage(path):
     if len(set(keys)) != len(keys):
         raise ValueError(f'{path}: coverage table repeats an (N, group) row')
     for row in table.itertuples(index=False):
+        if pd.isna(row.numerator) and pd.isna(row.denominator) and pd.isna(row.rate):
+            if not str(row.note).strip():
+                raise ValueError('excluded coverage requires a reason')
+            continue
         if not 0 <= row.numerator <= row.denominator:
             raise ValueError(f'{path}: N={row.N} group={row.group!r} has numerator '
                              f'{row.numerator} outside 0..{row.denominator}')
@@ -266,6 +242,8 @@ def _groups(dataset):
     arm = dataset.get('arm_or_class')
     if arm is not None:
         return arm
+    if dataset.get('category') == 'TOX':
+        return f"TOX pooled {len(dataset['member_drugs'])} admitted drugs vs matched vehicle"
     vehicle = _shared_control_vehicle(dataset['shared_control_group'])
     drugs = ', '.join(dataset['member_drugs'])
     return f"{dataset['class_label']} ({dataset['class_id']}; {drugs}) vs {vehicle}"
@@ -280,7 +258,7 @@ def _tenv_hvg_row(metadata):
 
 
 def read_source_table_rows(catalogs, metadata):
-    """Read the six released catalogs into the source table's 28 data rows.
+    """Read the declared catalogs into the source table's 34 data rows.
 
     ``catalogs`` maps category -> ``catalog.json`` path and ``metadata`` is the
     verified mapping module. Rows follow the released
@@ -310,7 +288,7 @@ def read_source_table_rows(catalogs, metadata):
         rows.append({
             'category': catalog['category'],
             'accession': _accession_cell(source),
-            'sample type': dataset['model_system'],
+            'sample type': dataset.get('model_system', 'human stem cell cardiomyocyte bulk'),
             'groups': _groups(dataset),
             'sample sizes': f"{dataset['n_case']} / {dataset['n_control']}",
             'sequencing technology': source['technology'],
@@ -359,7 +337,7 @@ def fallback_sentence(slots):
 
 
 def read_disease_table_rows(catalogs, fusion, fusion_path, symbols):
-    """Read the published per-disease record into the second table's six rows.
+    """Read the published per-disease record into the second table's declared rows.
 
     ``fusion`` is ``output/disease-fusion/catalog.json`` -- the published level-1
     record the gene axis itself consumes -- and ``symbols`` maps ``gene_index`` to
@@ -399,7 +377,8 @@ def read_disease_table_rows(catalogs, fusion, fusion_path, symbols):
             'tier path': ' → '.join(str(tier) for tier in tiers),
             'DEG union': f"{record['n_deg']:,}",
             'DEG2000': f"{record['deg2000']:,}",
-            'note': _disease_note(record, tiers, n_reached, deg2000_genes),
+            'eligible': 'yes' if record.get('eligible', True) else 'no',
+            'note': _disease_note(record, tiers, n_reached, deg2000_genes) + ('' if record.get('eligible', True) else '；排除跨病融合：轴内 DEG 并集少于 100'),
         })
     return rows
 
@@ -422,7 +401,7 @@ def _disease_note(record, tiers, n_reached, deg2000_genes):
         if n_deg == deg2000:
             return f'恰好达到 {limit:,}：DEG 并集 = DEG2000 = {limit:,} 个，无需截断'
         return (f'达到 {limit:,} 截断：DEG 并集 {n_deg:,}，DEG2000 取前 {limit:,} 个'
-                + ('（六类中唯一达到截断的类别）' if n_reached == 1 else ''))
+                + ('（本次唯一达到截断的类别）' if n_reached == 1 else ''))
     if n_deg != deg2000:
         return (f'DEG 并集 {n_deg:,}，DEG2000 {deg2000:,}；'
                 f'未达到 {limit:,}，差 {limit - deg2000:,}')
@@ -458,6 +437,16 @@ def _grid(document, columns, rows, font_size):
     """Add one ``Table Grid`` table with a bold header and plain data rows."""
     grid = document.add_table(rows=1 + len(rows), cols=len(columns))
     grid.style = 'Table Grid'
+    grid.autofit = False
+    widths = ([3.5, 4.2, 4.8, 5.0, 2.0, 5.2, 2.0] if tuple(columns) == SOURCE_TABLE_COLUMNS
+              else [3.5, 1.8, 1.8, 1.8, 1.8, 1.8, 14.2] if tuple(columns) == DISEASE_TABLE_COLUMNS
+              else None)
+    if widths:
+        for column, width in zip(grid.columns, widths):
+            column.width = Cm(width)
+        for row in grid.rows:
+            for cell, width in zip(row.cells, widths):
+                cell.width = Cm(width)
     for column, name in enumerate(columns):
         cell = grid.cell(0, column)
         cell.text = ''
@@ -470,6 +459,18 @@ def _grid(document, columns, rows, font_size):
             cell.text = ''
             run = cell.paragraphs[0].add_run(value)
             run.font.size = Pt(font_size)
+    header = OxmlElement('w:tblHeader')
+    header.set(qn('w:val'), '1')
+    grid.rows[0]._tr.get_or_add_trPr().append(header)
+    for row in grid.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                paragraph.paragraph_format.space_after = Pt(2)
+                paragraph.paragraph_format.space_before = Pt(2)
+                paragraph.paragraph_format.line_spacing = 1.0
+        avoid_split = OxmlElement('w:cantSplit')
+        row._tr.get_or_add_trPr().append(avoid_split)
+        avoid_split.set(qn('w:val'), '1')
     return grid
 
 
@@ -479,12 +480,12 @@ def _percent(value):
 
 def coverage_note(disease_rows):
     """The coverage table's reading rule, with the denominators read off table 2."""
-    denominators = '、'.join(f"{row['disease']} {row['DEG2000']}" for row in disease_rows)
+    denominators = '、'.join(f"{row['disease']} {row['DEG2000']}" for row in disease_rows if row['eligible'] == 'yes')
     return (
         '每行 = 一个组（tenv-HVG 或一个疾病）在一个轴 N 上的覆盖率。tenv-HVG 行沿用 v1 口径：'
         '分子 = 其 top-N 集合中落进 G_N 的基因数，分母 = N。疾病行是 v2 口径：'
         f'分子 = |DEG2000_d ∩ G_N|，分母 = |DEG2000_d|（{denominators}），'
-        '所以一行的百分比不能跨组比较。'
+        'AF 的一个 DEG2000 基因保留，但因轴内 DEG 并集少于 100 被排除；其覆盖率三项留空。各行百分比不能跨组比较。'
     )
 
 
@@ -506,6 +507,11 @@ def _check_coverage_denominators(table, disease_rows):
             if label is None:
                 raise ValueError(f'coverage table has an unknown group {record.group!r}')
             expected = published[label]
+        excluded = record.group != source_metadata.TENV_HVG and next(row for row in disease_rows if row['disease'] == label)['eligible'] == 'no'
+        if excluded:
+            if not all(pd.isna(value) for value in (record.numerator, record.denominator, record.rate)):
+                raise ValueError('excluded disease coverage must be blank')
+            continue
         if record.denominator != expected:
             raise ValueError(f'coverage N={record.N} group={record.group!r} divides by '
                              f'{record.denominator}, expected {expected}')
@@ -531,57 +537,85 @@ def build(coverage_path, figure_path, output_path, catalogs=None, metadata=None,
 
     document = Document()
     section = document.sections[0]
-    section.left_margin = Cm(2.2)
-    section.right_margin = Cm(2.2)
+    section.page_width = Cm(29.7)
+    section.page_height = Cm(21)
+    section.top_margin = Cm(1.5)
+    section.bottom_margin = Cm(1.5)
+    section.left_margin = Cm(1.5)
+    section.right_margin = Cm(1.5)
     style = document.styles['Normal']
-    style.font.size = Pt(10.5)
+    style.font.size = Pt(10)
+    style.paragraph_format.space_after = Pt(6)
+    style.paragraph_format.line_spacing = 1.05
+    style.font.name = 'Noto Sans CJK SC'
+    style.element.rPr.rFonts.set(qn('w:eastAsia'), 'Noto Sans CJK SC')
+    for name in ('Title', 'Heading 1', 'Heading 2'):
+        document.styles[name].font.color.rgb = RGBColor(0, 0, 0)
+        document.styles[name].font.name = 'Noto Sans CJK SC'
+
+    compact = document.styles['No Spacing']
+    compact.font.name = 'Noto Sans CJK SC'
+    compact.font.size = Pt(8)
+    compact.paragraph_format.line_spacing = 1.0
 
     title = document.add_heading(TITLE, level=0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    for element in (title._p, document.styles['Title'].element):
+        for borders in list(element.iter(qn('w:pBdr'))):
+            borders.getparent().remove(borders)
     _body(document,
-          '依据 ADR 0071（v2 发布契约：DEG-only 分层来源、DEG2000、f2000）；'
-          '产品目录 stage2/01_bases/output/gene-axis/。本文件是人类阅读文档，不是发布产品：'
+          '依据 ADR 0071 的 DEG 规则及 ADR 0072 的统一疾病资格与 TOX 定义。五个声明疾病中，'
+          'nHF、ICM、genetic_cardiomyopathy 和 TOX 合格；AF 保留证据但排除跨病融合。'
+          '本文件说明基因轴选择规则及各疾病实际证据，供读取和使用 G_2000 与 G_5000 时核对。'
           '规则文字是常量，并与 bases.gene_axis.FILL_RULE 保持一致；'
           '表格与图来自已发布产品，可由文末命令重放。')
 
     _heading(document, RULE_HEADING)
     _body(document, DEG_DEFINITION)
     steps = list(RULE_STEPS)
-    steps[4] = steps[4] + fallback_sentence(fallback_slots)
+    steps[5] = steps[5] + fallback_sentence(fallback_slots)
     for index, step in enumerate(steps, start=1):
         document.add_paragraph(f'{index}) {step}')
     _body(document, F2000_DEFINITION, bold_lead='f2000 定义：')
 
+    document.add_page_break()
     _heading(document, SOURCE_TABLE_HEADING)
-    caption = document.add_paragraph(SOURCE_TABLE_CAPTION)
-    caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _grid(document, SOURCE_TABLE_COLUMNS,
-          [[record[name] for name in SOURCE_TABLE_COLUMNS] for record in source_rows],
-          font_size=7.5)
+    # Bound each source-table page explicitly: LO's automatic repeated-header
+    # layout can paint the first line of a long row under the header.
+    for offset in range(0, len(source_rows), 5):
+        if offset:
+            document.add_page_break()
+        caption = document.add_paragraph(SOURCE_TABLE_CAPTION + (f' 续表 {offset // 5 + 1}' if offset else ''))
+        caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        _grid(document, SOURCE_TABLE_COLUMNS,
+              [[record[name] for name in SOURCE_TABLE_COLUMNS] for record in source_rows[offset:offset + 5]],
+              font_size=8.5)
     _body(document, SOURCE_TABLE_FOOTNOTE)
 
+    document.add_page_break()
     _heading(document, DISEASE_TABLE_HEADING)
     caption = document.add_paragraph(DISEASE_TABLE_CAPTION)
     caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
     _grid(document, DISEASE_TABLE_COLUMNS,
           [[record[name] for name in DISEASE_TABLE_COLUMNS] for record in disease_rows],
-          font_size=7.5)
+          font_size=8.5)
     _body(document, DISEASE_TABLE_FOOTNOTE)
 
-    _heading(document, '4. 四处易错点')
+    _heading(document, '4 四处易错点')
     for lead, text in CLARIFICATIONS:
         _body(document, text, bold_lead=lead + ' ')
 
-    _heading(document, '5. 每个疾病 DEG2000 的轴覆盖率')
+    _heading(document, '5 每个疾病 DEG2000 的轴覆盖率')
     _body(document, coverage_note(disease_rows))
     coverage_rows = [
-        [str(int(record.N)), record.group_label, str(int(record.numerator)),
-         str(int(record.denominator)), _percent(record.rate)]
+        [str(int(record.N)), record.group_label, ('excluded' if pd.isna(record.numerator) else str(int(record.numerator))),
+         ('—' if pd.isna(record.denominator) else str(int(record.denominator))), ('—' if pd.isna(record.rate) else _percent(record.rate))]
         for record in table.itertuples(index=False)
     ]
     _grid(document, COVERAGE_TABLE_COLUMNS, coverage_rows, font_size=8.5)
 
-    _heading(document, '6. 证据图')
+    document.add_page_break()
+    _heading(document, '6 证据图')
     document.add_picture(str(figure_path), width=Cm(15.5))
     caption = document.add_paragraph(
         '图 1　每个子图对应一个基因轴，标题为 N = 2,000 / N = 5,000。灰柱是全部 '
@@ -589,21 +623,20 @@ def build(coverage_path, figure_path, output_path, catalogs=None, metadata=None,
         '被选进轴的基因数量（彩色总量 = N）。')
     caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    _heading(document, '7. 复现命令与相关资产')
+    _heading(document, '7 复现命令与相关资产')
     for command in REPRODUCE:
         document.add_paragraph(command, style='No Spacing')
     assets = (
         ('candidate_rank_sum.csv',
-         '主候选秩和表：18,164 行，含 tenv_hvg_rank、六个疾病秩、rank_sum、f2000'),
+         '主候选秩和表：18,164 行，含 tenv_hvg_rank、声明疾病秩及资格、rank_sum、f2000'),
         ('gene_axis_2000.csv / gene_axis_5000.csv', '两个已发布轴（gene_index, symbol）'),
         ('axis_composition.csv', '每轴的 axis_fill / DEG2000 / f2000 构成记录'),
         ('source_topn_coverage.csv', '本文件的覆盖率表（长表：每组 N、分子、分母、比率）'),
         ('manifest.json', '输入/输出摘要与 sha256（release.algorithm = f2000-deg2000-v2）'),
         ('disease-fusion/catalog.json', '每病 level-1 融合与 DEG2000 的发布记录（表 2 的来源）'),
         ('figure/data/gene_axis_rank_sum_histogram.csv', '图中全部绘制值'),
-        ('figure/gene_axis_rank_sum_histogram.png', '证据图'),
     )
-    _grid(document, ('资产', '内容'), assets, font_size=9)
+    _grid(document, ('资产', '内容'), assets, font_size=8)
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -637,7 +670,7 @@ def main():
     parser.add_argument('--catalog', action='append', default=None,
                         metavar='CATEGORY=PATH',
                         help='override one released catalog path (repeatable; default: '
-                             f'the six repo catalogs {sorted(defaults["catalogs"])})')
+                             f'the declared repo catalogs {sorted(defaults["catalogs"])})')
     parser.add_argument('--fusion-catalog', type=Path, default=defaults['fusion'],
                         help='override the published disease-fusion catalog (table 2)')
     parser.add_argument('--axis', type=Path, default=defaults['axis'],

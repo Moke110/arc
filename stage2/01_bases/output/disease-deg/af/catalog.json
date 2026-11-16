@@ -4,8 +4,9 @@
     "sha256": "5877a3cd46a137f739ca985c5357578b1e77d11c78ce5acf0af93249592dbe57",
     "size": 18164
   },
+  "axis_resolved_deg_union": 1,
   "axis_size": 18164,
-  "catalog_sha256": "9560cd3be07a8d0356650c34952f867f6f1aeb6266411dd82ff51620fee64c00",
+  "catalog_sha256": "06daf58c1ce4f638c03b01dd040e05459be6408e9f1212b1d5bfe3f2a7401177",
   "category": "AF",
   "datasets": [
     {
@@ -336,7 +337,9 @@
   ],
   "deg2000": 1,
   "directory": "af",
+  "eligible": false,
   "evidence_type": "cm_pseudobulk",
+  "exclusion_reason": "axis-resolved DEG union 1 is below 100 (ADR 0072); upstream evidence and DEG2000 are retained",
   "n_deg": 1,
   "rank_contract": "stage2-disease-deg-v2",
   "rejected": [
@@ -373,7 +376,7 @@
   "tiering": {
     "criterion": "axis_resolved_deg_union",
     "limit": 2000,
-    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the cardiotox classes) enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
     "stop_reached": false,
     "stopped_at_tier": 3,
     "tier_union": [

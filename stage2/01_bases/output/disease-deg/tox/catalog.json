@@ -1,0 +1,2243 @@
+{
+  "axis": {
+    "path": "stage2/01_bases/output/gene-identity/tables/genes.csv",
+    "sha256": "19ce44acfd615a601d5bc6617074941e13d51cd6e527c8d519174e5085385f42",
+    "size": 18164
+  },
+  "axis_resolved_deg_union": 9589,
+  "axis_size": 18164,
+  "catalog_sha256": "a3698039f1e509cc8ebccf4f280220d3f1cf6615cdc4a15d6287808caf711f98",
+  "category": "TOX",
+  "datasets": [
+    {
+      "alignment": {
+        "ambiguous": 18,
+        "canonical": 78553,
+        "crosswalk_alias": 2806,
+        "ensembl": 0,
+        "hgnc_alias": 1842,
+        "n_axis_genes_resolved": 14770,
+        "n_resolved": 83201,
+        "n_source_symbols": 100399,
+        "offaxis": 1058,
+        "unmapped": 16122
+      },
+      "audit": "dtoxs_ipsc.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|MSN01-03R|plate0|48h",
+          "n_case": 80,
+          "n_control": 7,
+          "stratum": "MSN01-03R|plate0|48h"
+        },
+        {
+          "contrast": "TOX|MSN02-04R|plate0|48h",
+          "n_case": 25,
+          "n_control": 3,
+          "stratum": "MSN02-04R|plate0|48h"
+        },
+        {
+          "contrast": "TOX|MSN05-01R|plate0|48h",
+          "n_case": 103,
+          "n_control": 10,
+          "stratum": "MSN05-01R|plate0|48h"
+        },
+        {
+          "contrast": "TOX|MSN06-07R|plate0|48h",
+          "n_case": 78,
+          "n_control": 6,
+          "stratum": "MSN06-07R|plate0|48h"
+        },
+        {
+          "contrast": "TOX|MSN08-13R|plate0|48h",
+          "n_case": 79,
+          "n_control": 8,
+          "stratum": "MSN08-13R|plate0|48h"
+        },
+        {
+          "contrast": "TOX|MSN09-04R|plate0|48h",
+          "n_case": 92,
+          "n_control": 7,
+          "stratum": "MSN09-04R|plate0|48h"
+        }
+      ],
+      "dataset_id": "dtoxs_ipsc",
+      "deg": "dtoxs_ipsc.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Afatinib",
+          "parent_inchikey": "ULXXDDBFHOBEHA-CWDCEQMOSA-N",
+          "source_id": "AFA"
+        },
+        {
+          "drug_name": "Axitinib",
+          "parent_inchikey": "RITAVMQDGBJQJZ-FMIVXFBMSA-N",
+          "source_id": "AXI"
+        },
+        {
+          "drug_name": "Bortezomib",
+          "parent_inchikey": "GXJABQQUPOEUTA-RDJZCZTQSA-N",
+          "source_id": "BOR"
+        },
+        {
+          "drug_name": "Bosutinib",
+          "parent_inchikey": "UBPYILGKFZZVDX-UHFFFAOYSA-N",
+          "source_id": "BOS"
+        },
+        {
+          "drug_name": "Cabozantinib",
+          "parent_inchikey": "ONIQOQHATWINJY-UHFFFAOYSA-N",
+          "source_id": "CAB"
+        },
+        {
+          "drug_name": "Ceritinib",
+          "parent_inchikey": "VERWOWGGCGHDQE-UHFFFAOYSA-N",
+          "source_id": "CER"
+        },
+        {
+          "drug_name": "Crizotinib",
+          "parent_inchikey": "KTEIFNKAUNYNJU-GFCCVEGCSA-N",
+          "source_id": "CRI"
+        },
+        {
+          "drug_name": "Dabrafenib",
+          "parent_inchikey": "BFSMGDJOXZAERB-UHFFFAOYSA-N",
+          "source_id": "DAB"
+        },
+        {
+          "drug_name": "Dasatinib",
+          "parent_inchikey": "ZBNZXTGUTAYRHI-UHFFFAOYSA-N",
+          "source_id": "DAS"
+        },
+        {
+          "drug_name": "Daunorubicin",
+          "parent_inchikey": "STQGQHZAVUOBTE-VGBVRHCVSA-N",
+          "source_id": "DAU"
+        },
+        {
+          "drug_name": "Diclofenac",
+          "parent_inchikey": "DCOPUUMXTXDBNB-UHFFFAOYSA-N",
+          "source_id": "DIC"
+        },
+        {
+          "drug_name": "Dobutamine",
+          "parent_inchikey": "JRWZLRBJNMZMFE-UHFFFAOYSA-N",
+          "source_id": "DOB"
+        },
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        },
+        {
+          "drug_name": "Epirubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-VTZDEGQISA-N",
+          "source_id": "EPI"
+        },
+        {
+          "drug_name": "Erlotinib",
+          "parent_inchikey": "AAKJLRGGTJKAMG-UHFFFAOYSA-N",
+          "source_id": "ERL"
+        },
+        {
+          "drug_name": "Flecainide",
+          "parent_inchikey": "DJBNUMBKLMJRSA-UHFFFAOYSA-N",
+          "source_id": "FLE"
+        },
+        {
+          "drug_name": "Gefitinib",
+          "parent_inchikey": "XGALLCVXEZPNRQ-UHFFFAOYSA-N",
+          "source_id": "GEF"
+        },
+        {
+          "drug_name": "Idarubicin",
+          "parent_inchikey": "XDXDZDZNSLXDNA-TZNDIEGXSA-N",
+          "source_id": "IDA"
+        },
+        {
+          "drug_name": "Imatinib",
+          "parent_inchikey": "KTUFNOKKBVMGRW-UHFFFAOYSA-N",
+          "source_id": "IMA"
+        },
+        {
+          "drug_name": "Isoproterenol",
+          "parent_inchikey": "JWZZKOKVBUJMES-UHFFFAOYSA-N",
+          "source_id": "ISO"
+        },
+        {
+          "drug_name": "Lapatinib",
+          "parent_inchikey": "BCFGMOOMADDAQU-UHFFFAOYSA-N",
+          "source_id": "LAP"
+        },
+        {
+          "drug_name": "Milrinone",
+          "parent_inchikey": "PZRHRDRVRGEVNW-UHFFFAOYSA-N",
+          "source_id": "MIL"
+        },
+        {
+          "drug_name": "Nilotinib",
+          "parent_inchikey": "HHZIURLSWUIHRB-UHFFFAOYSA-N",
+          "source_id": "NIL"
+        },
+        {
+          "drug_name": "Pazopanib",
+          "parent_inchikey": "CUIHSIWYWATEQL-UHFFFAOYSA-N",
+          "source_id": "PAZ"
+        },
+        {
+          "drug_name": "Phenylephrine",
+          "parent_inchikey": "SONNWYBIRXJNDC-VIFPVBQESA-N",
+          "source_id": "PHP"
+        },
+        {
+          "drug_name": "Ponatinib",
+          "parent_inchikey": "PHXJVRSECIGDHY-UHFFFAOYSA-N",
+          "source_id": "PON"
+        },
+        {
+          "drug_name": "Prednisolone",
+          "parent_inchikey": "OIGNJSKKLXVSLS-VWUMJDOOSA-N",
+          "source_id": "PRE"
+        },
+        {
+          "drug_name": "Regorafenib",
+          "parent_inchikey": "FNHKPVJBJVTLMP-UHFFFAOYSA-N",
+          "source_id": "REG"
+        },
+        {
+          "drug_name": "Rosiglitazone",
+          "parent_inchikey": "YASAKCUCGLMORW-UHFFFAOYSA-N",
+          "source_id": "ROS"
+        },
+        {
+          "drug_name": "Ruxolitinib",
+          "parent_inchikey": "HFNKQEVNSGCOJV-OAHLLOKOSA-N",
+          "source_id": "RUX"
+        },
+        {
+          "drug_name": "Sorafenib",
+          "parent_inchikey": "MLDQJTXFUGDVEO-UHFFFAOYSA-N",
+          "source_id": "SOR"
+        },
+        {
+          "drug_name": "Sunitinib",
+          "parent_inchikey": "WINHZLLDWRZWRT-ATVHPVEESA-N",
+          "source_id": "SUN"
+        },
+        {
+          "drug_name": "Tofacitinib",
+          "parent_inchikey": "UJLAWZDWDVHWOW-YPMHNXCESA-N",
+          "source_id": "TOF"
+        },
+        {
+          "drug_name": "Trametinib",
+          "parent_inchikey": "LIRYPHYGHXZJBZ-UHFFFAOYSA-N",
+          "source_id": "TRA"
+        },
+        {
+          "drug_name": "Vandetanib",
+          "parent_inchikey": "UHTHHESEBZOYNR-UHFFFAOYSA-N",
+          "source_id": "VAN"
+        },
+        {
+          "drug_name": "Vemurafenib",
+          "parent_inchikey": "GPXBXXGIAQBQNI-UHFFFAOYSA-N",
+          "source_id": "VEM"
+        },
+        {
+          "drug_name": "Verapamil",
+          "parent_inchikey": "SGTNSNPWRIOYBX-UHFFFAOYSA-N",
+          "source_id": "VRP"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 13724,
+        "reason": null
+      },
+      "inputs": {
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-DEG-Calc-FDR-0.1.tar.gz": {
+          "bytes": 503862376,
+          "sha256": "1a902cf9fffd35d9d7fd505ed720a629c7ef616a04a1a3dcd2064595e1ff161e"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Experiment-Design.tsv.gz": {
+          "bytes": 8655,
+          "sha256": "bc34ad0a88184de46d576c2f2a380aa6c40706d78a9f0d2355cc3e01f8102ecc"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Conv-RNAseq-Read-Counts.tsv.gz": {
+          "bytes": 39517230,
+          "sha256": "3abc200df53a2d5d4ed51d60708bcea3ed9bb2e8c58b4e319b00e207cfe55f51"
+        },
+        "pert_data/DToxS-iPSC/source/GSE217421_Program-Source-Codes.tar.gz": {
+          "bytes": 118211,
+          "sha256": "b2c7f99f90718e692e741cc639e48680a4ebc07bb1119412cc56c99f75f1d228"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_edgeR.R": {
+          "bytes": 4158,
+          "sha256": "e5fbf50df21c785012df1268cd0a7fc344070ab7c42f56fc81a47c8751163ca9"
+        }
+      },
+      "member_drugs": [
+        "Afatinib",
+        "Axitinib",
+        "Bortezomib",
+        "Bosutinib",
+        "Cabozantinib",
+        "Ceritinib",
+        "Crizotinib",
+        "Dabrafenib",
+        "Dasatinib",
+        "Daunorubicin",
+        "Diclofenac",
+        "Dobutamine",
+        "Doxorubicin",
+        "Epirubicin",
+        "Erlotinib",
+        "Flecainide",
+        "Gefitinib",
+        "Idarubicin",
+        "Imatinib",
+        "Isoproterenol",
+        "Lapatinib",
+        "Milrinone",
+        "Nilotinib",
+        "Pazopanib",
+        "Phenylephrine",
+        "Ponatinib",
+        "Prednisolone",
+        "Regorafenib",
+        "Rosiglitazone",
+        "Ruxolitinib",
+        "Sorafenib",
+        "Sunitinib",
+        "Tofacitinib",
+        "Trametinib",
+        "Vandetanib",
+        "Vemurafenib",
+        "Verapamil"
+      ],
+      "member_source_ids": [
+        "AFA",
+        "AXI",
+        "BOR",
+        "BOS",
+        "CAB",
+        "CER",
+        "CRI",
+        "DAB",
+        "DAS",
+        "DAU",
+        "DIC",
+        "DOB",
+        "DOX",
+        "EPI",
+        "ERL",
+        "FLE",
+        "GEF",
+        "IDA",
+        "IMA",
+        "ISO",
+        "LAP",
+        "MIL",
+        "NIL",
+        "PAZ",
+        "PHP",
+        "PON",
+        "PRE",
+        "REG",
+        "ROS",
+        "RUX",
+        "SOR",
+        "SUN",
+        "TOF",
+        "TRA",
+        "VAN",
+        "VEM",
+        "VRP"
+      ],
+      "method": {
+        "name": "deposition pinned edgeR",
+        "pooling": "all admitted QC-retained drugs within cell-line/plate/time strata",
+        "test": "TMM; trended dispersion; exactTest; remove_small; BH"
+      },
+      "n_case": 457,
+      "n_case_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_contrasts": 6,
+      "n_control": 41,
+      "n_control_basis": "sum of pooled wells over 6 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_deg": 603,
+      "n_deg_in_deg2000": 386,
+      "n_measured": 14770,
+      "n_significant": 1039,
+      "n_small_molecule_drugs": 37,
+      "rank": "dtoxs_ipsc.rank.csv",
+      "source_item": "pert_data/DToxS-iPSC",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 13,
+        "canonical": 16771,
+        "crosswalk_alias": 618,
+        "ensembl": 0,
+        "hgnc_alias": 855,
+        "n_axis_genes_resolved": 18057,
+        "n_resolved": 18244,
+        "n_source_symbols": 57241,
+        "offaxis": 1483,
+        "unmapped": 37501
+      },
+      "audit": "gse106297.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 8,
+          "n_control": 4,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse106297",
+      "deg": "gse106297.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 15918,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE106297/source/GSE106297_RAW.tar": {
+          "bytes": 19763200,
+          "sha256": "9259fc538bd56a27eb0002c1affe3fb429e6a450d21c95e099c461f969235428"
+        },
+        "disease_data/GSE106297/source/GSE106297_series_matrix.txt.gz": {
+          "bytes": 2492,
+          "sha256": "a3c8e1b7a343a36fae9edf3f24ea161518781e096bbd90a0a2c5b4d7a7893dc0"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group + family",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle",
+              "familyB"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group + family",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "expression",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 0,
+            "n_genes_input": 57241,
+            "n_genes_matrix": 57241,
+            "n_genes_tested": 57241,
+            "n_rows": 57241,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma lmFit/eBayes",
+        "scale": "log2(FPKM + 1)"
+      },
+      "n_case": 8,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 4,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 1185,
+      "n_deg_in_deg2000": 541,
+      "n_measured": 18057,
+      "n_significant": 10735,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse106297.rank.csv",
+      "source_item": "disease_data/GSE106297",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 0,
+        "canonical": 0,
+        "crosswalk_alias": 0,
+        "ensembl": 18113,
+        "hgnc_alias": 0,
+        "n_axis_genes_resolved": 18096,
+        "n_resolved": 18113,
+        "n_source_symbols": 60152,
+        "offaxis": 22500,
+        "unmapped": 19539
+      },
+      "audit": "gse157282.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 3,
+          "n_control": 3,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse157282",
+      "deg": "gse157282.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 15801,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE157282/source/GSE157282_RAW.tar": {
+          "bytes": 15912960,
+          "sha256": "9542a4cb9bb8d9ead7543fa071f9f8db59c62225b02871cd606a95ba9813b9a7"
+        },
+        "disease_data/GSE157282/source/GSE157282_series_matrix.txt.gz": {
+          "bytes": 2669,
+          "sha256": "a2e328594499ceed196b777892776390ee9280c329a90eae7bd92189c108765d"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "expression",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 0,
+            "n_genes_input": 60152,
+            "n_genes_matrix": 60152,
+            "n_genes_tested": 60152,
+            "n_rows": 60152,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma lmFit/eBayes",
+        "scale": "log2(FPKM + 1)"
+      },
+      "n_case": 3,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 914,
+      "n_deg_in_deg2000": 517,
+      "n_measured": 18096,
+      "n_significant": 8240,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse157282.rank.csv",
+      "source_item": "disease_data/GSE157282",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 4,
+        "canonical": 16900,
+        "crosswalk_alias": 15,
+        "ensembl": 0,
+        "hgnc_alias": 420,
+        "n_axis_genes_resolved": 17312,
+        "n_resolved": 17335,
+        "n_source_symbols": 23621,
+        "offaxis": 266,
+        "unmapped": 6016
+      },
+      "audit": "gse232331.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 3,
+          "n_control": 3,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse232331",
+      "deg": "gse232331.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 15684,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE232331/source/GSE232331_hg38-counts.tsv.gz": {
+          "bytes": 455586,
+          "sha256": "db5e962e82dcc495da18ffe62b0b14bf81798474d836ed5b66b36f3e5c301b6e"
+        },
+        "disease_data/GSE232331/source/GSE232331_series_matrix.txt.gz": {
+          "bytes": 2810,
+          "sha256": "2f04d4af74c305459c74472a0e5cca2d2786bfc9b25067e6b91a94de8a2309a7"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group + batch",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle",
+              "batchdate_150321",
+              "batchdate_290321"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group + batch",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 4657,
+            "n_genes_input": 23621,
+            "n_genes_matrix": 28278,
+            "n_genes_tested": 23621,
+            "n_rows": 23621,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma-voom",
+        "scale": "raw integer counts"
+      },
+      "n_case": 3,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 1835,
+      "n_deg_in_deg2000": 871,
+      "n_measured": 17312,
+      "n_significant": 11128,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse232331.rank.csv",
+      "source_item": "disease_data/GSE232331",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 5,
+        "canonical": 17259,
+        "crosswalk_alias": 6,
+        "ensembl": 0,
+        "hgnc_alias": 493,
+        "n_axis_genes_resolved": 17682,
+        "n_resolved": 17758,
+        "n_source_symbols": 42281,
+        "offaxis": 567,
+        "unmapped": 23951
+      },
+      "audit": "gse235470.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 3,
+          "n_control": 3,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse235470",
+      "deg": "gse235470.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17133,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE235470/source/GSE235470_rawcounts.counts.txt.gz": {
+          "bytes": 855583,
+          "sha256": "4dd1d5c5e0b92cc935f8fb1624effff51637eb2e939c19c46fd3425b942b6862"
+        },
+        "disease_data/GSE235470/source/GSE235470_series_matrix.txt.gz": {
+          "bytes": 3146,
+          "sha256": "57665e9c0fdf8d0a68a31929fc9398cdb3ebdd49d71df62ecbd53075ad765453"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 18381,
+            "n_genes_input": 42281,
+            "n_genes_matrix": 60662,
+            "n_genes_tested": 42281,
+            "n_rows": 42281,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma-voom",
+        "scale": "raw integer counts"
+      },
+      "n_case": 3,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 4675,
+      "n_deg_in_deg2000": 1395,
+      "n_measured": 17682,
+      "n_significant": 10399,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse235470.rank.csv",
+      "source_item": "disease_data/GSE235470",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 17,
+        "canonical": 15623,
+        "crosswalk_alias": 564,
+        "ensembl": 0,
+        "hgnc_alias": 949,
+        "n_axis_genes_resolved": 17099,
+        "n_resolved": 17136,
+        "n_source_symbols": 20398,
+        "offaxis": 306,
+        "unmapped": 2939
+      },
+      "audit": "gse242692.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 66,
+          "n_control": 22,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse242692",
+      "deg": "gse242692.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17019,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE242692/source/GSE242692_countsMatrix_raw.txt.gz": {
+          "bytes": 2175543,
+          "sha256": "9d0d67d9c3da942498db910860ce147ae5cf4ba0568466fa8c903282c36c286f"
+        },
+        "disease_data/GSE242692/source/GSE242692_series_matrix.txt.gz": {
+          "bytes": 7157,
+          "sha256": "1aee8558c1ea575e3d8a57d2e6b58bee73496368efd9d626a3cacf23a664e558"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group + donor + flow_Run12 + flow_Run14",
+        "design_columns": 25,
+        "design_rank": 25,
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle",
+              "donorc1066",
+              "donorc1078_701",
+              "donorc1078_704",
+              "donorc1078_717",
+              "donorc1102",
+              "donorc1120",
+              "donorc1139",
+              "donorc1159",
+              "donorc1187_704",
+              "donorc1194",
+              "donorc1254",
+              "donorc1269",
+              "donorc1273",
+              "donorc1297",
+              "donorc1302",
+              "donorc1308",
+              "donorc1324",
+              "donorc1330",
+              "donoriCell1",
+              "donoriCell2",
+              "donoriCell3",
+              "flow_Run12",
+              "flow_Run14"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group + donor + flow_Run12 + flow_Run14",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 1161,
+            "n_genes_input": 20398,
+            "n_genes_matrix": 21559,
+            "n_genes_tested": 20398,
+            "n_rows": 20398,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "flow_policy": "sequencing batch adjustment only; matched vehicle requires donor identity, not same sequencing run",
+        "name": "limma-voom",
+        "omitted_collinear_flow_effects": [
+          "Run7",
+          "Run9"
+        ],
+        "retained_flow_covariates": [
+          "flow_Run12",
+          "flow_Run14"
+        ],
+        "scale": "raw integer counts"
+      },
+      "n_case": 66,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 22,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 2336,
+      "n_deg_in_deg2000": 883,
+      "n_measured": 17099,
+      "n_significant": 12368,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse242692.rank.csv",
+      "source_item": "disease_data/GSE242692",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 2,
+        "canonical": 36302,
+        "crosswalk_alias": 0,
+        "ensembl": 0,
+        "hgnc_alias": 26,
+        "n_axis_genes_resolved": 18151,
+        "n_resolved": 36328,
+        "n_source_symbols": 53734,
+        "offaxis": 230,
+        "unmapped": 17174
+      },
+      "audit": "gse243674.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|3h_vs_vehicle",
+          "n_case": 24,
+          "n_control": 6,
+          "stratum": "3h"
+        },
+        {
+          "contrast": "TOX|24h_vs_vehicle",
+          "n_case": 24,
+          "n_control": 6,
+          "stratum": "24h"
+        }
+      ],
+      "dataset_id": "gse243674",
+      "deg": "gse243674.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Daunorubicin",
+          "parent_inchikey": "STQGQHZAVUOBTE-VGBVRHCVSA-N",
+          "source_id": "DNR"
+        },
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        },
+        {
+          "drug_name": "Epirubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-VTZDEGQISA-N",
+          "source_id": "EPI"
+        },
+        {
+          "drug_name": "Mitoxantrone",
+          "parent_inchikey": "KKZJGLLVHKMTCM-UHFFFAOYSA-N",
+          "source_id": "MTX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17227,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE243674/source/GSE243674_Counts_RNA_ERMatthews.txt.gz": {
+          "bytes": 2424618,
+          "sha256": "4b51a5a2458ffc56c0fe15d07243a796d461ec6306bd44c6d0aab4f46ac40882"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        },
+        "stage2/01_bases/output/api/bases/cardiotox_deseq2.R": {
+          "bytes": 4250,
+          "sha256": "97837f2edab14700aaf5939028fef3ce08bdde918f2b77efd127089e5168c63c"
+        }
+      },
+      "member_drugs": [
+        "Daunorubicin",
+        "Doxorubicin",
+        "Epirubicin",
+        "Mitoxantrone"
+      ],
+      "member_source_ids": [
+        "DNR",
+        "DOX",
+        "EPI",
+        "MTX"
+      ],
+      "method": {
+        "model": "~ donor + group",
+        "name": "donor-paired DESeq2",
+        "pooling": "all admitted drugs per original time, same-time vehicle",
+        "test": "Wald; unshrunken log2FC; BH and independent filtering"
+      },
+      "n_case": 24,
+      "n_case_basis": "per-contrast pooled wells, constant across 2 contrast(s)",
+      "n_contrasts": 2,
+      "n_control": 6,
+      "n_control_basis": "per-contrast pooled wells, constant across 2 contrast(s)",
+      "n_deg": 1592,
+      "n_deg_in_deg2000": 807,
+      "n_measured": 18084,
+      "n_significant": 10000,
+      "n_small_molecule_drugs": 4,
+      "rank": "gse243674.rank.csv",
+      "source_item": "disease_data/GSE243674",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 0,
+        "canonical": 0,
+        "crosswalk_alias": 1880,
+        "ensembl": 143488,
+        "hgnc_alias": 0,
+        "n_axis_genes_resolved": 18164,
+        "n_resolved": 145368,
+        "n_source_symbols": 353232,
+        "offaxis": 110400,
+        "unmapped": 97464
+      },
+      "audit": "gse244740.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|plateS4881Nr1|24h_vs_DMSO",
+          "n_case": 216,
+          "n_control": 94,
+          "stratum": "plateS4881Nr1"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr2|24h_vs_DMSO",
+          "n_case": 216,
+          "n_control": 94,
+          "stratum": "plateS4881Nr2"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr3|24h_vs_DMSO",
+          "n_case": 216,
+          "n_control": 94,
+          "stratum": "plateS4881Nr3"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr4|24h_vs_DMSO",
+          "n_case": 216,
+          "n_control": 94,
+          "stratum": "plateS4881Nr4"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr5|24h_vs_DMSO",
+          "n_case": 216,
+          "n_control": 94,
+          "stratum": "plateS4881Nr5"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr6|24h_vs_DMSO",
+          "n_case": 168,
+          "n_control": 22,
+          "stratum": "plateS4881Nr6"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr7|24h_vs_DMSO",
+          "n_case": 336,
+          "n_control": 22,
+          "stratum": "plateS4881Nr7"
+        },
+        {
+          "contrast": "TOX|plateS4881Nr8|24h_vs_DMSO",
+          "n_case": 336,
+          "n_control": 22,
+          "stratum": "plateS4881Nr8"
+        }
+      ],
+      "dataset_id": "gse244740",
+      "deg": "gse244740.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "3_Azido_3_Deoxythymidine",
+          "parent_inchikey": "HBOMLICNUCNMMY-XLPZGREQSA-N",
+          "source_id": "3_Azido_3_Deoxythymidine"
+        },
+        {
+          "drug_name": "5_Fluorouracil",
+          "parent_inchikey": "GHASVSINZRGABV-UHFFFAOYSA-N",
+          "source_id": "5_Fluorouracil"
+        },
+        {
+          "drug_name": "Amitriptyline",
+          "parent_inchikey": "KRMDCWKBEZIMAB-UHFFFAOYSA-N",
+          "source_id": "Amitriptyline"
+        },
+        {
+          "drug_name": "Amphotericin_B",
+          "parent_inchikey": "APKFDSVGJQXUKY-INPOYWNPSA-N",
+          "source_id": "Amphotericin_B"
+        },
+        {
+          "drug_name": "Atenolol",
+          "parent_inchikey": "METKIMKYRPQLGS-UHFFFAOYSA-N",
+          "source_id": "Atenolol"
+        },
+        {
+          "drug_name": "Bepridil",
+          "parent_inchikey": "UIEATEWHFDRYRU-UHFFFAOYSA-N",
+          "source_id": "Bepridil"
+        },
+        {
+          "drug_name": "Bortezomib",
+          "parent_inchikey": "GXJABQQUPOEUTA-RDJZCZTQSA-N",
+          "source_id": "Bortezomib"
+        },
+        {
+          "drug_name": "Cisapride",
+          "parent_inchikey": "DCSUBABJRXZOMT-IRLDBZIGSA-N",
+          "source_id": "Cisapride"
+        },
+        {
+          "drug_name": "Clozapine",
+          "parent_inchikey": "QZUDBNBUXVUHMW-UHFFFAOYSA-N",
+          "source_id": "Clozapine"
+        },
+        {
+          "drug_name": "Cyclophosphamide",
+          "parent_inchikey": "CMSMOCZEIVJLDB-UHFFFAOYSA-N",
+          "source_id": "Cyclophosphamide"
+        },
+        {
+          "drug_name": "Dasatinib",
+          "parent_inchikey": "ZBNZXTGUTAYRHI-UHFFFAOYSA-N",
+          "source_id": "Dasatinib"
+        },
+        {
+          "drug_name": "Digoxin",
+          "parent_inchikey": "LTMHDMANZUZIPE-PUGKRICDSA-N",
+          "source_id": "Digoxin"
+        },
+        {
+          "drug_name": "Diltiazem",
+          "parent_inchikey": "HSUGRBWQSSZJOP-RTWAWAEBSA-N",
+          "source_id": "Diltiazem"
+        },
+        {
+          "drug_name": "Dobutamine",
+          "parent_inchikey": "JRWZLRBJNMZMFE-UHFFFAOYSA-N",
+          "source_id": "Dobutamine"
+        },
+        {
+          "drug_name": "Dopamine",
+          "parent_inchikey": "VYFYYTLLBUKUHU-UHFFFAOYSA-N",
+          "source_id": "Dopamine"
+        },
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "Doxorubicin"
+        },
+        {
+          "drug_name": "Epinephrine",
+          "parent_inchikey": "UCTWMZQNUQWSLP-VIFPVBQESA-N",
+          "source_id": "Epinephrine"
+        },
+        {
+          "drug_name": "Idarubicin",
+          "parent_inchikey": "XDXDZDZNSLXDNA-TZNDIEGXSA-N",
+          "source_id": "Idarubicin"
+        },
+        {
+          "drug_name": "Imatinib",
+          "parent_inchikey": "KTUFNOKKBVMGRW-UHFFFAOYSA-N",
+          "source_id": "Imatinib"
+        },
+        {
+          "drug_name": "Isoproterenol",
+          "parent_inchikey": "JWZZKOKVBUJMES-UHFFFAOYSA-N",
+          "source_id": "Isoproterenol"
+        },
+        {
+          "drug_name": "Lapatinib",
+          "parent_inchikey": "BCFGMOOMADDAQU-UHFFFAOYSA-N",
+          "source_id": "Lapatinib"
+        },
+        {
+          "drug_name": "Levosimendan",
+          "parent_inchikey": "WHXMKTBCFHIYNQ-SECBINFHSA-N",
+          "source_id": "Levosimendan"
+        },
+        {
+          "drug_name": "Lidocaine",
+          "parent_inchikey": "NNJVILVZKWQKPM-UHFFFAOYSA-N",
+          "source_id": "Lidocaine"
+        },
+        {
+          "drug_name": "Mitomycin_C",
+          "parent_inchikey": "NWIBSHFKIJFRCO-WUDYKRTCSA-N",
+          "source_id": "Mitomycin_C"
+        },
+        {
+          "drug_name": "Mitoxantrone",
+          "parent_inchikey": "KKZJGLLVHKMTCM-UHFFFAOYSA-N",
+          "source_id": "Mitoxantrone"
+        },
+        {
+          "drug_name": "Nifedipine",
+          "parent_inchikey": "HYIMSNHJOBLJNT-UHFFFAOYSA-N",
+          "source_id": "Nifedipine"
+        },
+        {
+          "drug_name": "Propranolol",
+          "parent_inchikey": "AQHHHDLHHXJYJD-UHFFFAOYSA-N",
+          "source_id": "Propranolol"
+        },
+        {
+          "drug_name": "Rofecoxib",
+          "parent_inchikey": "RZJQGNCSTQAWON-UHFFFAOYSA-N",
+          "source_id": "Rofecoxib"
+        },
+        {
+          "drug_name": "Rosiglitazone",
+          "parent_inchikey": "YASAKCUCGLMORW-UHFFFAOYSA-N",
+          "source_id": "Rosiglitazone"
+        },
+        {
+          "drug_name": "Sotalol",
+          "parent_inchikey": "ZBMZVLHSJCTVON-UHFFFAOYSA-N",
+          "source_id": "Sotalol"
+        },
+        {
+          "drug_name": "Sunitinib",
+          "parent_inchikey": "WINHZLLDWRZWRT-ATVHPVEESA-N",
+          "source_id": "Sunitinib"
+        },
+        {
+          "drug_name": "Verapamil",
+          "parent_inchikey": "SGTNSNPWRIOYBX-UHFFFAOYSA-N",
+          "source_id": "Verapamil"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": false,
+      "informativeness": {
+        "n_distinct_effect": 17793,
+        "reason": "none of the 18164 measured genes is a DEG under the v2 definition (padj < 0.05 and |log2FC| >= 2.0), so every gene ranks at n_DEG + 1 = 1 and the dataset carries no ordering evidence"
+      },
+      "inputs": {
+        "pert_data/GSE244740/source/GSE244740_processed_data_counts.txt.gz": {
+          "bytes": 37354885,
+          "sha256": "ac11c31e1d65fb18df6aa179c037bf73de0b80b94c8df292cc9a39e8eb430e9c"
+        },
+        "pert_data/GSE244740/source/GSE244740_series_matrix.txt.gz": {
+          "bytes": 125536,
+          "sha256": "78231648fa841604f44a5e7e994cff05f18c0fedbdb76a2b2da892b81af6fd3e"
+        }
+      },
+      "member_drugs": [
+        "3_Azido_3_Deoxythymidine",
+        "5_Fluorouracil",
+        "Amitriptyline",
+        "Amphotericin_B",
+        "Atenolol",
+        "Bepridil",
+        "Bortezomib",
+        "Cisapride",
+        "Clozapine",
+        "Cyclophosphamide",
+        "Dasatinib",
+        "Digoxin",
+        "Diltiazem",
+        "Dobutamine",
+        "Dopamine",
+        "Doxorubicin",
+        "Epinephrine",
+        "Idarubicin",
+        "Imatinib",
+        "Isoproterenol",
+        "Lapatinib",
+        "Levosimendan",
+        "Lidocaine",
+        "Mitomycin_C",
+        "Mitoxantrone",
+        "Nifedipine",
+        "Propranolol",
+        "Rofecoxib",
+        "Rosiglitazone",
+        "Sotalol",
+        "Sunitinib",
+        "Verapamil"
+      ],
+      "member_source_ids": [
+        "3_Azido_3_Deoxythymidine",
+        "5_Fluorouracil",
+        "Amitriptyline",
+        "Amphotericin_B",
+        "Atenolol",
+        "Bepridil",
+        "Bortezomib",
+        "Cisapride",
+        "Clozapine",
+        "Cyclophosphamide",
+        "Dasatinib",
+        "Digoxin",
+        "Diltiazem",
+        "Dobutamine",
+        "Dopamine",
+        "Doxorubicin",
+        "Epinephrine",
+        "Idarubicin",
+        "Imatinib",
+        "Isoproterenol",
+        "Lapatinib",
+        "Levosimendan",
+        "Lidocaine",
+        "Mitomycin_C",
+        "Mitoxantrone",
+        "Nifedipine",
+        "Propranolol",
+        "Rofecoxib",
+        "Rosiglitazone",
+        "Sotalol",
+        "Sunitinib",
+        "Verapamil"
+      ],
+      "method": {
+        "name": "ScreenSeq pooled Welch",
+        "pooling": "all admitted drug doses within plate vs same-plate DMSO",
+        "test": "Welch on log2(CPM+1); source-full library; BH per contrast"
+      },
+      "n_case": 1920,
+      "n_case_basis": "sum of pooled wells over 8 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_contrasts": 8,
+      "n_control": 536,
+      "n_control_basis": "sum of pooled wells over 8 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_deg": 0,
+      "n_deg_in_deg2000": 0,
+      "n_measured": 18164,
+      "n_significant": 5399,
+      "n_small_molecule_drugs": 32,
+      "rank": "gse244740.rank.csv",
+      "source_item": "pert_data/GSE244740",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 0,
+        "canonical": 0,
+        "crosswalk_alias": 0,
+        "ensembl": 17928,
+        "hgnc_alias": 0,
+        "n_axis_genes_resolved": 17928,
+        "n_resolved": 17928,
+        "n_source_symbols": 43349,
+        "offaxis": 14172,
+        "unmapped": 11249
+      },
+      "audit": "gse247541.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 12,
+          "n_control": 3,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse247541",
+      "deg": "gse247541.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "apilimod",
+          "parent_inchikey": "HSKAZIJJKRAJAV-KOEQRZSOSA-N",
+          "source_id": "apilimod"
+        },
+        {
+          "drug_name": "lopinavir",
+          "parent_inchikey": "KJHKTHWMRKYKJE-SUGCFTRWSA-N",
+          "source_id": "lopinavir"
+        },
+        {
+          "drug_name": "remdesivir",
+          "parent_inchikey": "RWWYLEGWBNMMLJ-YSOARWBDSA-N",
+          "source_id": "remdesivir"
+        },
+        {
+          "drug_name": "ritonavir",
+          "parent_inchikey": "NCDNCNXCDXHOMX-XGKFQTDJSA-N",
+          "source_id": "ritonavir"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17609,
+        "reason": null
+      },
+      "inputs": {
+        "pert_data/GSE247541/source/GSE247541_raw_counts.csv.gz": {
+          "bytes": 996622,
+          "sha256": "104cb3d5d85fcbf65c8b960498327080188c5edd6fb58cc7d8af9395b80e1eb1"
+        },
+        "pert_data/GSE247541/source/GSE247541_series_matrix.txt.gz": {
+          "bytes": 2946,
+          "sha256": "b5cff1c6de08693fbafd02cfe991b61fdcb4966fe79fcb88c55fb2aa8b1c5bc7"
+        }
+      },
+      "member_drugs": [
+        "apilimod",
+        "lopinavir",
+        "remdesivir",
+        "ritonavir"
+      ],
+      "member_source_ids": [
+        "apilimod",
+        "lopinavir",
+        "remdesivir",
+        "ritonavir"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 17307,
+            "n_genes_input": 43349,
+            "n_genes_matrix": 60656,
+            "n_genes_tested": 43349,
+            "n_rows": 43349,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma-voom",
+        "scale": "raw integer counts"
+      },
+      "n_case": 12,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 126,
+      "n_deg_in_deg2000": 29,
+      "n_measured": 17928,
+      "n_significant": 2712,
+      "n_small_molecule_drugs": 4,
+      "rank": "gse247541.rank.csv",
+      "source_item": "pert_data/GSE247541",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 7,
+        "canonical": 16474,
+        "crosswalk_alias": 631,
+        "ensembl": 0,
+        "hgnc_alias": 561,
+        "n_axis_genes_resolved": 17622,
+        "n_resolved": 17666,
+        "n_source_symbols": 23392,
+        "offaxis": 461,
+        "unmapped": 5258
+      },
+      "audit": "gse255505.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|all",
+          "n_case": 3,
+          "n_control": 3,
+          "stratum": "all"
+        }
+      ],
+      "dataset_id": "gse255505",
+      "deg": "gse255505.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 16988,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE255505/source/GSE255505_RAW.tar": {
+          "bytes": 901120,
+          "sha256": "293c6a18aa6a70db6484f20b1809306d0a6e823a57291355a634037b2552f916"
+        },
+        "disease_data/GSE255505/source/GSE255505_series_matrix.txt.gz": {
+          "bytes": 1773,
+          "sha256": "9551984f8f35d456d657d9528df95c65c215e60d31a56ccd1590980d05bcd110"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "collapse": "maximum-effect across declared strata; one dataset vote",
+        "design": "~0 + group",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 2972,
+            "n_genes_input": 23392,
+            "n_genes_matrix": 26364,
+            "n_genes_tested": 23392,
+            "n_rows": 23392,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "integerisation": {
+          "dropped_gene_ids": [
+            "HNRNPCL4",
+            "HNRNPCL3",
+            "HNRNPCL1",
+            "PRAMEF6",
+            "PRAMEF9",
+            "PRAMEF25",
+            "PRAMEF26",
+            "PRAMEF5",
+            "PRAMEF16",
+            "LINC01360",
+            "LOC101927412",
+            "CD1C",
+            "MIR214",
+            "MIR3120",
+            "MIR199A2",
+            "LOC440704",
+            "C1orf140",
+            "ZP4",
+            "TMEM26-AS1",
+            "MIR7847",
+            "OR52E8",
+            "MIR6755",
+            "CLEC4C",
+            "NANOGNB",
+            "CELA1",
+            "KRT6C",
+            "HOXC-AS3",
+            "PRR20E",
+            "PRR20A",
+            "PRR20B",
+            "PRR20C",
+            "PRR20D",
+            "LINC00559",
+            "MIR3170",
+            "TCL6",
+            "LINC01550",
+            "POTEB2",
+            "POTEB3",
+            "POTEB",
+            "SNORD115-7",
+            "MIR7973-2",
+            "MIR7973-1",
+            "MIR6511B2",
+            "MIR3670-4",
+            "MIR3670-3",
+            "MIR3670-1",
+            "MIR3670-2",
+            "MIR6511A4",
+            "MIR6511A3",
+            "MIR6511A1",
+            "MIR6511A2",
+            "MIR4723",
+            "MIR6866",
+            "MIR3185",
+            "C17orf77",
+            "MIR3065",
+            "MIR338",
+            "SERPINB12",
+            "CD209",
+            "CLEC4GP1",
+            "MIR6887",
+            "SNAR-B1",
+            "SNAR-B2",
+            "LOC102723854",
+            "LOC101927285",
+            "LOC646743",
+            "TISP43",
+            "UGT1A8",
+            "UGT1A10",
+            "UGT1A9",
+            "UGT1A7",
+            "UGT1A6",
+            "UGT1A5",
+            "UGT1A4",
+            "UGT1A3",
+            "UGT1A1",
+            "MIR6811",
+            "WFDC13",
+            "POTED",
+            "MIR8069-1",
+            "MIR8069-2",
+            "MIRLET7C",
+            "MIR3714",
+            "C3orf84",
+            "MTHFD2P1",
+            "KCNIP4-IT1",
+            "MIR3688-1",
+            "MIR3688-2",
+            "LOC102467223",
+            "LHFPL5",
+            "LOC101928280",
+            "TAAR5",
+            "MIR1273C",
+            "MIR4650-1",
+            "MIR4650-2",
+            "LVCAT5",
+            "AKR1B10",
+            "MIR6509",
+            "RNU6-34P",
+            "RNU6-33P",
+            "ZNF705B",
+            "USP17L8",
+            "USP17L3",
+            "MIR548I3",
+            "MIR3926-1",
+            "MIR3926-2",
+            "MIR486-1",
+            "MIR486-2",
+            "LOC102724874",
+            "IFNA13",
+            "IFNA1",
+            "SPATA31A1",
+            "SPATA31A6",
+            "MIR7114",
+            "GAGE13",
+            "GAGE4",
+            "GAGE5",
+            "GAGE12I",
+            "GAGE7",
+            "GAGE2B",
+            "GAGE12H",
+            "GAGE12B",
+            "GAGE6",
+            "CT45A1",
+            "CT45A6",
+            "CT45A9",
+            "CT45A8",
+            "CT45A2",
+            "CT45A5",
+            "CT45A3",
+            "SRD5A1P1",
+            "LINC00850",
+            "MAGEA2B",
+            "CTAG1A",
+            "CTAG1B",
+            "GYG2P1",
+            "DAZ4",
+            "DAZ1",
+            "DAZ3",
+            "DAZ2"
+          ],
+          "library_size_after": {
+            "max": 66212340,
+            "median": 49443976,
+            "min": 38239534
+          },
+          "library_size_before": {
+            "max": 66212425.690000005,
+            "median": 49444084.08,
+            "min": 38239626.760000005
+          },
+          "max_abs_deviation": 0.5,
+          "mean_abs_deviation": 0.08496497749456389,
+          "n_genes_all_zero_after": 2972,
+          "n_genes_all_zero_before": 2832,
+          "n_genes_dropped_by_rounding": 140,
+          "n_non_integer_values": 37369,
+          "n_values": 158184,
+          "rule": "round to nearest integer, ties to even (numpy.rint)"
+        },
+        "name": "limma-voom",
+        "scale": "fractional estimated counts; shared nearest-even integerisation"
+      },
+      "n_case": 3,
+      "n_case_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_control_basis": "per-contrast pooled wells, constant across 1 contrast(s)",
+      "n_deg": 3881,
+      "n_deg_in_deg2000": 1335,
+      "n_measured": 17622,
+      "n_significant": 10668,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse255505.rank.csv",
+      "source_item": "disease_data/GSE255505",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 22,
+        "canonical": 80880,
+        "crosswalk_alias": 562,
+        "ensembl": 0,
+        "hgnc_alias": 2029,
+        "n_axis_genes_resolved": 18155,
+        "n_resolved": 83471,
+        "n_source_symbols": 89763,
+        "offaxis": 282,
+        "unmapped": 5988
+      },
+      "audit": "gse262419.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|plate6",
+          "n_case": 9,
+          "n_control": 12,
+          "stratum": "plate6"
+        },
+        {
+          "contrast": "TOX|plate7",
+          "n_case": 9,
+          "n_control": 12,
+          "stratum": "plate7"
+        },
+        {
+          "contrast": "TOX|plate15",
+          "n_case": 18,
+          "n_control": 12,
+          "stratum": "plate15"
+        },
+        {
+          "contrast": "TOX|plate16",
+          "n_case": 54,
+          "n_control": 12,
+          "stratum": "plate16"
+        }
+      ],
+      "dataset_id": "gse262419",
+      "deg": "gse262419.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "3'-Azido-3'-deoxythymidine",
+          "parent_inchikey": "HBOMLICNUCNMMY-XLPZGREQSA-N",
+          "source_id": "3'-Azido-3'-deoxythymidine"
+        },
+        {
+          "drug_name": "Atenolol",
+          "parent_inchikey": "METKIMKYRPQLGS-UHFFFAOYSA-N",
+          "source_id": "Atenolol"
+        },
+        {
+          "drug_name": "Bepridil",
+          "parent_inchikey": "UIEATEWHFDRYRU-UHFFFAOYSA-N",
+          "source_id": "Bepridil"
+        },
+        {
+          "drug_name": "Cisapride",
+          "parent_inchikey": "DCSUBABJRXZOMT-IRLDBZIGSA-N",
+          "source_id": "Cisapride"
+        },
+        {
+          "drug_name": "Clozapine",
+          "parent_inchikey": "QZUDBNBUXVUHMW-UHFFFAOYSA-N",
+          "source_id": "Clozapine"
+        },
+        {
+          "drug_name": "D,1 Sotalol",
+          "parent_inchikey": "ZBMZVLHSJCTVON-UHFFFAOYSA-N",
+          "source_id": "D,1 Sotalol"
+        },
+        {
+          "drug_name": "Diltiazem hydrochloride",
+          "parent_inchikey": "HSUGRBWQSSZJOP-RTWAWAEBSA-N",
+          "source_id": "Diltiazem hydrochloride"
+        },
+        {
+          "drug_name": "Nifedipine",
+          "parent_inchikey": "HYIMSNHJOBLJNT-UHFFFAOYSA-N",
+          "source_id": "Nifedipine"
+        },
+        {
+          "drug_name": "Vandetanib",
+          "parent_inchikey": "UHTHHESEBZOYNR-UHFFFAOYSA-N",
+          "source_id": "Vandetanib"
+        },
+        {
+          "drug_name": "Verapamil",
+          "parent_inchikey": "SGTNSNPWRIOYBX-UHFFFAOYSA-N",
+          "source_id": "Verapamil"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 18121,
+        "reason": null
+      },
+      "inputs": {
+        "pert_data/GSE262419/source/GSE262419_Plate06.csv.gz": {
+          "bytes": 5195744,
+          "sha256": "249e38ea2ab85aa69dfee3ea0bef81ae53c3e18412df6581d14b07ac59f9f0e6"
+        },
+        "pert_data/GSE262419/source/GSE262419_Plate07.csv.gz": {
+          "bytes": 5171824,
+          "sha256": "9d2c8f7cc2a367de2c4f4b04013086127f0a171be1b2652e1fa5e70c53a6871f"
+        },
+        "pert_data/GSE262419/source/GSE262419_Plate15.csv.gz": {
+          "bytes": 5255515,
+          "sha256": "e42d78e081e5f08c5172b0b888701ba2a918cf3bcdb2c167ab7f00baec8dd72c"
+        },
+        "pert_data/GSE262419/source/GSE262419_Plate16.csv.gz": {
+          "bytes": 4945764,
+          "sha256": "280d0ad830021064381d4ccd6af628921cec2490d83cabc61844e4214c3766df"
+        },
+        "pert_data/GSE262419/source/GSE262419_hash.csv.gz": {
+          "bytes": 47637,
+          "sha256": "dbdaadfc357fabfadb291d2818d5ce242bba52486b3d8ec86460b61457d57f3c"
+        },
+        "pert_data/GSE262419/source/GSE262419_series_matrix.txt.gz": {
+          "bytes": 143676,
+          "sha256": "73cf40abd48722e6db57803450bf967540bebd429a1b6904bfe81fb75f2aed63"
+        }
+      },
+      "member_drugs": [
+        "3'-Azido-3'-deoxythymidine",
+        "Atenolol",
+        "Bepridil",
+        "Cisapride",
+        "Clozapine",
+        "D,1 Sotalol",
+        "Diltiazem hydrochloride",
+        "Nifedipine",
+        "Vandetanib",
+        "Verapamil"
+      ],
+      "member_source_ids": [
+        "3'-Azido-3'-deoxythymidine",
+        "Atenolol",
+        "Bepridil",
+        "Cisapride",
+        "Clozapine",
+        "D,1 Sotalol",
+        "Diltiazem hydrochloride",
+        "Nifedipine",
+        "Vandetanib",
+        "Verapamil"
+      ],
+      "method": {
+        "collapse": "maximum effect across plate contrasts; one dataset vote",
+        "design": "same-plate admitted exposures pooled vs VEH; plate-specific contrasts",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 101,
+            "n_genes_input": 22436,
+            "n_genes_matrix": 22537,
+            "n_genes_tested": 22436,
+            "n_rows": 22436,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          },
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 138,
+            "n_genes_input": 22399,
+            "n_genes_matrix": 22537,
+            "n_genes_tested": 22399,
+            "n_rows": 22399,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          },
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 116,
+            "n_genes_input": 22421,
+            "n_genes_matrix": 22537,
+            "n_genes_tested": 22421,
+            "n_rows": 22421,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          },
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 30,
+            "n_genes_input": 22507,
+            "n_genes_matrix": 22537,
+            "n_genes_tested": 22507,
+            "n_rows": 22507,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma-voom",
+        "scale": "raw integer counts"
+      },
+      "n_case": 90,
+      "n_case_basis": "sum of pooled wells over 4 disjoint source strata (per-contrast counts in contrasts[])",
+      "n_contrasts": 4,
+      "n_control": 12,
+      "n_control_basis": "per-contrast pooled wells, constant across 4 contrast(s)",
+      "n_deg": 44,
+      "n_deg_in_deg2000": 9,
+      "n_measured": 18155,
+      "n_significant": 49,
+      "n_small_molecule_drugs": 10,
+      "rank": "gse262419.rank.csv",
+      "source_item": "pert_data/GSE262419",
+      "species": "Homo sapiens",
+      "tier": 2
+    },
+    {
+      "alignment": {
+        "ambiguous": 3,
+        "canonical": 53724,
+        "crosswalk_alias": 0,
+        "ensembl": 0,
+        "hgnc_alias": 34,
+        "n_axis_genes_resolved": 18082,
+        "n_resolved": 53758,
+        "n_source_symbols": 71653,
+        "offaxis": 228,
+        "unmapped": 17664
+      },
+      "audit": "gse313746.audit.json",
+      "category": "TOX",
+      "contrasts": [
+        {
+          "contrast": "TOX|tx0",
+          "n_case": 6,
+          "n_control": 6,
+          "stratum": "tx0"
+        },
+        {
+          "contrast": "TOX|tx144",
+          "n_case": 6,
+          "n_control": 6,
+          "stratum": "tx144"
+        },
+        {
+          "contrast": "TOX|tx24",
+          "n_case": 6,
+          "n_control": 6,
+          "stratum": "tx24"
+        }
+      ],
+      "dataset_id": "gse313746",
+      "deg": "gse313746.deg.csv",
+      "drug_identities": [
+        {
+          "drug_name": "Doxorubicin",
+          "parent_inchikey": "AOJJSUZBOXZQNB-TZSSRYMLSA-N",
+          "source_id": "DOX"
+        }
+      ],
+      "evidence_type": "bulk",
+      "informative": true,
+      "informativeness": {
+        "n_distinct_effect": 17875,
+        "reason": null
+      },
+      "inputs": {
+        "disease_data/GSE313746/source/GSE313746_Counts_RNA_EMPfortmiller.txt.gz": {
+          "bytes": 1529791,
+          "sha256": "be0a6a8c0746260a7496bd5d5b75a47c03c31004107171f496092235ae8e91f6"
+        },
+        "disease_data/GSE313746/source/GSE313746_series_matrix.txt.gz": {
+          "bytes": 6143,
+          "sha256": "561239a103adc53024e692ff041c8657868693ec83be8f2c3156f3a8d63f3d30"
+        },
+        "pert_data/Annotation/source/hgnc_complete_set.txt": {
+          "bytes": 16982321,
+          "sha256": "12363916be36f8f6f91879b0faade4eeaac973722de7136ec61329b77f2c2f91"
+        }
+      },
+      "member_drugs": [
+        "Doxorubicin"
+      ],
+      "member_source_ids": [
+        "DOX"
+      ],
+      "method": {
+        "design": "within recovery, donor fixed effect; admitted DOX pooled vs matched vehicle",
+        "entrez_mapping": "approved HGNC; protein-coding < non-coding RNA < pseudogene < other, then lowest HGNC integer; counts summed per symbol",
+        "fits": [
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle",
+              "donordonor_2",
+              "donordonor_3",
+              "donordonor_4",
+              "donordonor_5",
+              "donordonor_6"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group + donor",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 3091,
+            "n_genes_input": 23776,
+            "n_genes_matrix": 26867,
+            "n_genes_tested": 23776,
+            "n_rows": 23776,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          },
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle",
+              "donordonor_2",
+              "donordonor_3",
+              "donordonor_4",
+              "donordonor_5",
+              "donordonor_6"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group + donor",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 3178,
+            "n_genes_input": 23689,
+            "n_genes_matrix": 26867,
+            "n_genes_tested": 23689,
+            "n_rows": 23689,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          },
+          {
+            "block": {},
+            "coefficient_names": [
+              "groupTOX",
+              "groupvehicle",
+              "donordonor_2",
+              "donordonor_3",
+              "donordonor_4",
+              "donordonor_5",
+              "donordonor_6"
+            ],
+            "consensus_correlation": {},
+            "contrasts": [
+              "TOX-vehicle"
+            ],
+            "factor": "group",
+            "filter": {},
+            "formula": "~0 + group + donor",
+            "implementation": "output/api/bases/disease_deg.R",
+            "kind": "counts",
+            "limma_version": "3.62.2",
+            "n_blocks": {},
+            "n_genes_dropped": 2679,
+            "n_genes_input": 24188,
+            "n_genes_matrix": 26867,
+            "n_genes_tested": 24188,
+            "n_rows": 24188,
+            "r_version": "R version 4.4.1 (2024-06-14)"
+          }
+        ],
+        "name": "limma-voom",
+        "scale": "raw integer counts; technical repeat counts summed per donor/arm/recovery",
+        "unmapped_entrez_rows": 1528
+      },
+      "n_case": 6,
+      "n_case_basis": "per-contrast pooled wells, constant across 3 contrast(s)",
+      "n_contrasts": 3,
+      "n_control": 6,
+      "n_control_basis": "per-contrast pooled wells, constant across 3 contrast(s)",
+      "n_deg": 3588,
+      "n_deg_in_deg2000": 1385,
+      "n_measured": 18082,
+      "n_significant": 13476,
+      "n_small_molecule_drugs": 1,
+      "rank": "gse313746.rank.csv",
+      "source_item": "disease_data/GSE313746",
+      "species": "Homo sapiens",
+      "tier": 2
+    }
+  ],
+  "deg2000": 2000,
+  "directory": "tox",
+  "eligible": true,
+  "evidence_type": "bulk",
+  "exclusion_reason": null,
+  "n_deg": 9589,
+  "rank_contract": "stage2-disease-deg-v2",
+  "rejected": [],
+  "schema": "stage2-disease-deg-catalog-v1",
+  "tier": 2,
+  "tier_sources": [
+    {
+      "sources": [
+        "dtoxs_ipsc",
+        "gse106297",
+        "gse157282",
+        "gse232331",
+        "gse235470",
+        "gse242692",
+        "gse243674",
+        "gse244740",
+        "gse247541",
+        "gse255505",
+        "gse262419",
+        "gse313746"
+      ],
+      "tier": 2
+    }
+  ],
+  "tiering": {
+    "criterion": "axis_resolved_deg_union",
+    "limit": 2000,
+    "rule": "the tier-stop criterion is the disease DEG union resolved to the frozen 18,164-gene axis (axis-resolved, not genome-wide): a source DEG off the axis cannot enter DEG2000 or any axis built from it, so it does not count toward the 2,000-gene stop test. Sources are collected in ascending tier order; a tier with no declared source is absent from the ladder (AF declares tier 1 and tier 3, no tier 2), and a category whose evidence begins at tier 2 enters there. The cumulative axis-resolved union is measured after each tier and collection stops at the first tier whose union reaches the limit; a declared source in a deeper tier after a completed tier that already reached the limit is refused rather than admitted. Only declared sources are collected, so a tier between two entered tiers is never back-filled.",
+    "stop_reached": true,
+    "stopped_at_tier": 2,
+    "tier_union": [
+      {
+        "n_deg_union": 9589,
+        "tier": 2
+      }
+    ],
+    "tiers_entered": [
+      2
+    ]
+  }
+}

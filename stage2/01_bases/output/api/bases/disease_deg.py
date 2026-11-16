@@ -145,8 +145,8 @@ TIER_STOP_RULE = (
     'cannot enter DEG2000 or any axis built from it, so it does not count toward '
     'the 2,000-gene stop test. Sources are collected in ascending tier order; a '
     'tier with no declared source is absent from the ladder (AF declares tier 1 '
-    'and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the '
-    'cardiotox classes) enters there. The cumulative axis-resolved union is '
+    'and tier 3, no tier 2), and a category whose evidence begins at tier 2 '
+    'enters there. The cumulative axis-resolved union is '
     'measured after each tier and collection stops at the first tier whose union '
     'reaches the limit; a declared source in a deeper tier after a completed tier '
     'that already reached the limit is refused rather than admitted. Only declared '
@@ -555,6 +555,47 @@ def level_one_rank(rank_frames, n_deg, gene_index=None, axis_size=None):
     return {'sum': total, 'rank': rank, 'deg': union, 'n_sources': len(frames)}
 
 
+DISEASE_MIN_DEGS = 100
+
+
+def disease_eligibility(n_deg, published=True):
+    """ADR 0072 admission after axis-resolved disease fusion, never per source.
+
+    ``n_deg`` must be the distinct frozen-axis union measured by ``fuse_disease``,
+    not a sum of source counts or the truncated DEG2000 count.
+    """
+    if not published:
+        return {'axis_resolved_deg_union': None, 'eligible': False,
+                'exclusion_reason': 'declared disease has no published DEG evidence'}
+    count = _positive_int(n_deg, 'axis-resolved disease DEG union')
+    eligible = count >= DISEASE_MIN_DEGS
+    return {'axis_resolved_deg_union': count, 'eligible': eligible,
+            'exclusion_reason': (None if eligible else
+                f'axis-resolved DEG union {count} is below {DISEASE_MIN_DEGS} '
+                '(ADR 0072); upstream evidence and DEG2000 are retained')}
+
+
+def validate_disease_eligibility(record, required=False):
+    """Reject partial or contradictory admission metadata; accept legacy records."""
+    keys = ('axis_resolved_deg_union', 'eligible', 'exclusion_reason')
+    if not required and not any(key in record for key in keys):
+        return
+    expected = disease_eligibility(record['n_deg'], record.get('published', True))
+    if any(key not in record for key in keys):
+        raise ValueError('disease eligibility metadata is incomplete')
+    if not isinstance(record['eligible'], bool):
+        raise ValueError('disease eligibility must be boolean')
+    if record['axis_resolved_deg_union'] != expected['axis_resolved_deg_union']:
+        raise ValueError('disease eligibility union differs from measured n_deg')
+    if record['eligible'] != expected['eligible']:
+        raise ValueError('disease eligibility disagrees with the 100-DEG union gate')
+    reason = record['exclusion_reason']
+    if record['eligible'] and reason is not None:
+        raise ValueError('an eligible disease cannot have an exclusion reason')
+    if not record['eligible'] and (not isinstance(reason, str) or not reason):
+        raise ValueError('an ineligible disease needs an explicit exclusion reason')
+
+
 def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
                  gene_index=None):
     """Fuse one disease's sources at level 1 and cut its ``DEG2000`` set.
@@ -657,6 +698,7 @@ def fuse_disease(sources, axis_size=AXIS_SIZE, limit=DEG2000_LIMIT,
     n_deg_union = int(deg_union.sum())
     n_deg2000 = int(deg2000_mask.sum())
     return {
+        **disease_eligibility(n_deg_union),
         'informative': bool(fused),
         'n_sources_declared': len(prepared),
         'n_sources_informative': len(fused),
@@ -712,7 +754,7 @@ def tier_ladder(datasets):
     ladder is ``[{'tier': 1, 'sources': [...]}, ...]`` with tiers ascending and
     sources in declared order inside a tier. A tier with no declared source is
     absent from the ladder, so AF's ladder is exactly ``[1, 3]`` and the
-    cardiotox classes' is exactly ``[2]``. Each source appears exactly once.
+    TOX's is exactly ``[2]``. Each source appears exactly once.
     """
     if not datasets:
         raise ValueError('a category needs at least one declared source')
@@ -946,7 +988,7 @@ def _validate_tiering(tiering, n_deg):
 
     The record is internally consistent when the tiers were entered in ascending
     order (starting at the category's first declared tier: `AF` starts at 1 and
-    jumps to 3, and the cardiotox classes legitimately begin at tier 2), the
+    jumps to 3, and TOX legitimately begins at tier 2), the
     cumulative union never shrinks, the last per-tier union is the published
     DEG-union size, ``stopped_at_tier`` is the last entered tier, ``stop_reached``
     is exactly "the union reached the limit", and no tier below the frontier
@@ -1076,6 +1118,7 @@ def validate_catalog(catalog, axis_size=AXIS_SIZE):
     if not isinstance(catalog['evidence_type'], str) or not catalog['evidence_type']:
         raise ValueError('evidence_type must be a non-empty string')
     _positive_int(catalog.get('axis_size', axis_size), 'axis_size', allow_zero=False)
+    validate_disease_eligibility(catalog)
     n_deg = _positive_int(catalog['n_deg'], 'n_deg')
     deg2000 = _positive_int(catalog['deg2000'], 'deg2000')
     if deg2000 != min(n_deg, DEG2000_LIMIT):
@@ -1172,9 +1215,18 @@ def validate_fusion_catalog(catalog):
                               allow_zero=False)
     if catalog.get('limit') != DEG2000_LIMIT:
         raise ValueError(f'fusion catalog limit must be {DEG2000_LIMIT}')
+    if ('eligibility_min_deg' in catalog
+            and catalog['eligibility_min_deg'] != DISEASE_MIN_DEGS):
+        raise ValueError('disease eligibility threshold must be 100')
     diseases = catalog.get('diseases')
     if not isinstance(diseases, list) or not diseases:
         raise ValueError('fusion catalog diseases must be a non-empty list')
+    if ('eligibility_min_deg' not in catalog and any(
+            isinstance(record, dict) and any(
+                key in record for key in
+                ('eligible', 'exclusion_reason', 'axis_resolved_deg_union'))
+            for record in diseases)):
+        raise ValueError('disease eligibility metadata needs its declared policy')
     seen = set()
     for record in diseases:
         if not isinstance(record, dict):
@@ -1192,6 +1244,8 @@ def validate_fusion_catalog(catalog):
         if directory in seen:
             raise ValueError(f'duplicate disease directory {directory}')
         seen.add(directory)
+        validate_disease_eligibility(
+            record, required='eligibility_min_deg' in catalog)
         published = record['published']
         if not isinstance(published, bool):
             raise ValueError(f'{directory}: published must be boolean')
@@ -1551,6 +1605,7 @@ def build_catalog(category, directory, tier, evidence_type, axis, axis_sha256,
             record['n_deg'] = int(entry['n_deg'])
             record['n_deg_in_deg2000'] = int(entry['n_deg_in_deg2000'])
         catalog['n_deg'] = int(n_deg)
+        catalog.update(disease_eligibility(int(n_deg)))
         catalog['deg2000'] = int(deg2000)
         catalog['tiering'] = tiering
         # The declared ladder is published with the record. Deriving it from the
@@ -1627,6 +1682,14 @@ class DiseaseDeg:
         if catalog.get('category') != category and catalog.get('directory') != category:
             raise ValueError(f'{path}: catalog category mismatch')
         return catalog
+
+    def disease_eligibility(self, category):
+        """Disease-level admission, distinct from a source's eligibility fields."""
+        catalog = self.catalog(category)
+        if 'n_deg' not in catalog:
+            raise ValueError('disease eligibility needs the fused axis-resolved DEG union')
+        validate_disease_eligibility(catalog)
+        return disease_eligibility(catalog['n_deg'])
 
     def manifest(self, category):
         path = manifest_path(self.root, self.directory(category))
@@ -1724,6 +1787,15 @@ class DiseaseFusion:
         """Product directories of the published diseases, in catalog order."""
         return [record['directory'] for record in self.catalog()['diseases']
                 if record['published']]
+
+    def eligible_diseases(self):
+        """Published fusion participants; ``diseases()`` retains excluded evidence.
+
+        Legacy catalogs remain readable: admission is derived from their recorded
+        axis-resolved union when the explicit ADR 0072 fields are absent.
+        """
+        return [record['directory'] for record in self.catalog()['diseases']
+                if disease_eligibility(record['n_deg'], record['published'])['eligible']]
 
     def record(self, directory):
         for record in self.catalog()['diseases']:

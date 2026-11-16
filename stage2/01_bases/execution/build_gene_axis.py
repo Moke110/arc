@@ -44,7 +44,8 @@ import pandas as pd
 
 import public_api  # noqa: F401  (binds the single public implementation in output/api)
 from bases import release
-from bases.disease_deg import DEG2000_COLUMNS, DEG2000_LIMIT, DiseaseFusion
+from bases.disease_deg import (DEG2000_COLUMNS, DEG2000_LIMIT, DiseaseFusion,
+                               disease_eligibility)
 from bases.gene_axis import (
     ALGORITHM, AXIS_SIZES, CATEGORIES, CATEGORY_LABELS, COMPOSITION_COLUMNS,
     COVERAGE_COLUMNS, F2000_RULE, FALLBACK_RULE, FILL_RULE, RANK_SUM_RULE,
@@ -281,9 +282,14 @@ def read_fusion(config, axis_size):
         record = by_directory[category]
         n_deg = int(record['n_deg'])
         deg2000 = int(record['deg2000'])
-        if n_deg <= 0 or deg2000 <= 0:
+        admission = disease_eligibility(n_deg)
+        # Old releases retain their original meaning until the coherent successor
+        # is published; the explicit policy marks ADR 0072 candidate products.
+        gated = catalog.get('eligibility_min_deg') is not None
+        if (gated and not admission['eligible']) or n_deg <= 0 or deg2000 <= 0:
             excluded.append({'directory': category, 'label': CATEGORY_LABELS[category],
-                             'n_deg': n_deg, 'deg2000': deg2000})
+                             'n_deg': n_deg, 'deg2000': deg2000,
+                             **admission})
             continue
         if deg2000 != min(n_deg, DEG2000_LIMIT):
             raise ValueError(
@@ -453,7 +459,7 @@ def composition_rows(source, axis_sizes):
                 rows.append({'axis': str(size), 'n_axis': size, 'record': 'deg2000',
                              'group': category, 'n_genes': None,
                              'denominator': None, 'share': None,
-                             'note': ('excluded from the fusion: the disease has no '
+                             'note': ('excluded from cross-disease fusion by eligibility; no participating '
                                       'DEG2000, so no axis composition is defined')})
                 continue
             rows.append({'axis': str(size), 'n_axis': size, 'record': 'deg2000',
@@ -562,9 +568,9 @@ def input_entries(config, fusion):
         entries[repo_relative(path, config.root)] = {
             'role': role, 'sha256': sha256(path), 'bytes': path.stat().st_size}
     for category in RELEASE_CATEGORIES:
-        record = fusion['diseases'].get(category)
-        if record is None:
-            continue  # an excluded disease contributes no payload
+        record = next(item for item in fusion['catalog']['diseases']
+                      if item['directory'] == category)
+        # Retained evidence is pinned even when it supplies no fusion vote.
         path = config.fusion_root / record['deg2000_file']
         entries[repo_relative(path, config.root)] = {
             'role': f'{category}:deg2000', 'sha256': sha256(path),
@@ -624,15 +630,19 @@ def _axis_manifest(config, axis, tenv_frame, fusion, source, axis_sizes):
         entry = {
             'label': CATEGORY_LABELS[category],
             'product_dir': category,
-            'published': bool(record is not None),
-            'n_deg': (None if record is None else int(record['n_deg'])),
-            'deg2000': (None if record is None else int(record['deg2000'])),
+            'published': bool(catalog_record['published']),
+            'eligible': disease_eligibility(catalog_record['n_deg'])['eligible'],
+            'eligibility_min_deg': 100,
+            'participates_in_fusion': bool(record is not None),
+            'n_deg': int(catalog_record['n_deg']),
+            'deg2000': int(catalog_record['deg2000']),
             'informative_source_count': int(catalog_record['informative_source_count']),
             'evidence_type': catalog_record.get('evidence_type'),
             'tier': catalog_record.get('tier'),
             'tiers_present': catalog_record.get('tiers_present'),
-            'deg2000_file': (None if record is None else record['deg2000_file']),
-            'deg2000_sha256': (None if record is None else record['deg2000_sha256']),
+            'deg2000_file': catalog_record['deg2000_file'],
+            'deg2000_sha256': fusion['manifest']['outputs'][
+                catalog_record['deg2000_file']]['sha256'],
             'fusion_catalog_sha256': fusion['catalog'].get('catalog_sha256'),
             'sources': [dict(source_record) for source_record in
                         catalog_record.get('sources', [])],
@@ -641,9 +651,7 @@ def _axis_manifest(config, axis, tenv_frame, fusion, source, axis_sizes):
         }
         if record is None:
             entry['excluded_from_fusion'] = True
-            entry['excluded_reason'] = (
-                'the published disease has an empty DEG2000 (no informative '
-                'source), so level-2 fusion and f2000 exclude it (ADR 0068)')
+            entry['excluded_reason'] = disease_eligibility(catalog_record['n_deg'])['exclusion_reason']
         category_manifest[category] = entry
     return {
         'schema': SCHEMA,

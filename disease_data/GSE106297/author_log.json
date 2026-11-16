@@ -1,0 +1,30 @@
+{
+  "category": "disease_data",
+  "item": "GSE106297",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
+  "purpose": "ADR0072 unified TOX source reassessment before DEG",
+  "reassessment": {
+    "design": "FPKM; hESC-CM DOX1/2.5uM16h vs0uM,4/arm; A/B replicate family retained; title/summary2.5uM vs protocol2uM discrepancy preserved; log2(FPKM+1) non-count fit",
+    "disposition": "admitted",
+    "tier": 2,
+    "uncertainty": "new DEG yield not used for admission; source-specific design must be bound before analysis"
+  },
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "bytes": 19765692,
+      "files": 2,
+      "id": "GSE106297",
+      "kind": "dataset",
+      "license": "unknown",
+      "method": "script/fetch.sh",
+      "path": "source/",
+      "tree_sha256": "329c4f53213b689f509a53b491b788ac538956668ab077e47bc9c9adc891208d",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE106297",
+      "version": "GSE106297"
+    }
+  ],
+  "verified_at": "2026-11-16",
+  "verify_result": "pass"
+}

@@ -1,0 +1,149 @@
+"""DEG-independent small-molecule TOX admission (ADR 0072).
+
+This ledger is an input to analysis, never inferred from a DEG table or ATC/MOA.
+Names are resolved against the pinned structural annotation; evidence transfers
+between sources only for the same full parent InChIKey. Missing or conflicting
+labels stay pending. The old mechanism-class API remains readable until release.
+"""
+from pathlib import Path
+import gzip
+import re
+import pandas as pd
+from .release import ReleaseError, read_json, sha256, write_json
+
+EVIDENCE = 'stage2/01_bases/execution/tox_drug_evidence.json'
+SOURCES = 'stage2/01_bases/execution/tox_source_admission.json'
+ANNOTATION = 'pert_data/Annotation/local/cm_compound_annotation.csv'
+NON_SMALL_MOLECULES = {'bevacizmab', 'bevacizumab', 'cetuximab', 'rituximab',
+                       'trastuzumab', 'endothelin', 'igf1', 'tnfalpha', 'carfilzomib', 'cyclosporine'}
+
+
+def name_key(value):
+    return re.sub('[^a-z0-9]', '', str(value).casefold())
+
+
+def assess_drugs(records, annotation, evidence):
+    """Return one auditable admission decision per source code, before DEG work."""
+    rows, seen = [], set()
+    non_small_keys = set(annotation.loc[annotation.lookup_name.map(name_key).isin(NON_SMALL_MOLECULES),
+                                        'parent_inchikey'].fillna('')) - {''}
+    for record in records:
+        identity = (record['source'], record['source_id'])
+        if identity in seen:
+            raise ReleaseError('duplicate TOX source drug code')
+        seen.add(identity)
+        row = dict(record)
+        name = name_key(row['drug_name'])
+        matches = annotation[annotation.lookup_name.map(name_key).eq(name)]
+        keys = set(matches.parent_inchikey.fillna('')) - {''}
+        row.update(parent_inchikey='', small_molecule=False, evidence_label='pending',
+                   evidence=[], disposition='excluded', reason='unresolved chemical identity',
+                   atc='', moa='', uncertainty='no independent positive evidence established')
+        if len(keys) == 1:
+            key = next(iter(keys))
+            row['parent_inchikey'] = key
+            row['atc'] = '; '.join(sorted(set(matches.atc.fillna('')) - {''}))
+            row['moa'] = '; '.join(sorted(set(matches.moa.fillna('')) - {''}))
+            row['small_molecule'] = name not in NON_SMALL_MOLECULES and key not in non_small_keys
+            facts = [dict(e) for e in evidence if e.get('parent_inchikey') == key]
+            for fact in facts:
+                if not all(fact.get(k) for k in ('url', 'locator', 'retrieved_at', 'rationale', 'uncertainty')):
+                    raise ReleaseError('incomplete independent TOX evidence')
+                if fact['label'] not in ('positive', 'negative', 'pending'):
+                    raise ReleaseError('invalid TOX evidence label')
+            labels = {e['label'] for e in facts} - {'pending'}
+            row['evidence'] = facts
+            row['evidence_label'] = next(iter(labels)) if len(labels) == 1 else 'pending'
+            row['uncertainty'] = '; '.join(sorted({e['uncertainty'] for e in facts})) or row['uncertainty']
+            if not row['small_molecule']:
+                row['reason'] = 'antibody or peptide; outside small-molecule TOX definition'
+            elif row['evidence_label'] == 'positive':
+                row.update(disposition='admitted', reason='identity-resolved drug with independent positive cardiotoxicity evidence')
+            elif row['evidence_label'] == 'negative':
+                row['reason'] = 'explicit negative reference drug; never pooled as TOX'
+            else:
+                row.update(disposition='pending', reason='conflicting evidence' if len(labels) > 1 else 'insufficient independent cardiotoxicity evidence')
+        rows.append(row)
+    return pd.DataFrame(rows).sort_values(['source', 'source_id'], kind='stable').reset_index(drop=True)
+
+
+def build_ledger(repo, output):
+    """Build a pinned admission artifact without loading expression or DEG data."""
+    from . import cardiotox
+    repo, output = Path(repo), Path(output)
+    evidence = read_json(repo / EVIDENCE)
+    sources = read_json(repo / SOURCES)
+    annotation = pd.read_csv(repo / ANNOTATION, dtype=str, keep_default_na=False)
+    records = []
+    names = cardiotox.dtoxs_series_names(repo / cardiotox.DTOXS_SERIES)
+    groups = cardiotox.dtoxs_drug_groups(repo / cardiotox.DTOXS_PARAMS)
+    records.extend(dict(source='dtoxs_ipsc', source_id=code, drug_name=names[code])
+                   for code in groups.Drug.astype(str))
+    panel = cardiotox.gse244740_panel(repo / cardiotox.GSE244740_SERIES)
+    records.extend(dict(source='gse244740', source_id=name, drug_name=name)
+                   for name in sorted(set(panel.compound) - {'DMSO', 'NoTreatment'}))
+    panel_inputs = []
+    for source in sources['sources']:
+        panel = source.get('drug_panel')
+        if panel is not None:
+            panel_inputs.append(panel['path'])
+            with gzip.open(repo / panel['path'], 'rt') as handle:
+                names = set()
+                for line in handle:
+                    if not line.startswith('!Sample_characteristics_ch1\t'):
+                        continue
+                    values = [v.strip().strip(chr(34)) for v in line.rstrip().split('\t')[1:]]
+                    prefix = panel['characteristic'] + ': '
+                    if values and all(v.startswith(prefix) for v in values):
+                        names.update(v[len(prefix):] for v in values)
+            if not names:
+                raise ReleaseError('TOX source panel lacks declared treatment metadata')
+            if panel.get('dose_suffix'):
+                names = {re.sub(r'_[0-9.]+_uM$', '', n) for n in names}
+            names -= set(panel.get('controls', ['DMSO', 'Control', 'NoTreatment']))
+            records.extend(dict(source=source['source'], source_id=n, drug_name=n) for n in sorted(names))
+        records.extend(dict(source=source['source'], **drug) for drug in source.get('drugs', []))
+    frame = assess_drugs(records, annotation, evidence['drugs'])
+    frame['reviewed_at'] = evidence['reviewed_at']
+    frame['review_scope'] = evidence['review_scope']
+    frame['reviewed_evidence'] = EVIDENCE
+    inputs = [EVIDENCE, SOURCES, ANNOTATION, cardiotox.DTOXS_SERIES,
+              cardiotox.DTOXS_PARAMS, cardiotox.GSE244740_SERIES]
+    inputs += evidence['pinned_sources'] + panel_inputs
+    inputs += [p for source in sources['sources'] for p in source.get('inputs', [])]
+    value = dict(schema='stage2-tox-admission-v1', disease='TOX',
+                 definition='transcriptional response to independently supported cardiotoxic small-molecule drugs; no toxicity assertion at each exposure',
+                 exposure_policy='all experiment-quality doses/times with matched vehicle; no mechanism or minimum-drug restriction',
+                 inputs={p: {'sha256': sha256(repo / p)} for p in sorted(set(inputs))},
+                 counts=frame.disposition.value_counts().sort_index().to_dict(),
+                 sources=sources['sources'], discovery=sources['discovery'],
+                 drugs=frame.to_dict(orient='records'))
+    output.mkdir(parents=True, exist_ok=True)
+    write_json(output / 'admission.json', value)
+    write_json(output / 'manifest.json', dict(schema='stage2-tox-admission-manifest-v1',
+               admission_sha256=sha256(output / 'admission.json')))
+    return value
+
+
+class ToxAdmission:
+    """Digest-checkable consumer seam for the frozen pre-analysis decision ledger."""
+    def __init__(self, path, repo=None):
+        path = Path(path)
+        manifest = read_json(path / 'manifest.json')
+        if manifest.get('schema') != 'stage2-tox-admission-manifest-v1' or sha256(path / 'admission.json') != manifest.get('admission_sha256'):
+            raise ReleaseError('TOX admission payload changed')
+        self.value = read_json(path / 'admission.json')
+        if self.value['schema'] != 'stage2-tox-admission-v1':
+            raise ReleaseError('unknown TOX admission schema')
+        if repo is not None:
+            for path, spec in self.value['inputs'].items():
+                if sha256(Path(repo) / path) != spec['sha256']:
+                    raise ReleaseError(f'TOX admission input changed: {path}')
+
+    def drugs(self, source=None, admitted_only=False):
+        frame = pd.DataFrame(self.value['drugs'])
+        if source is not None:
+            frame = frame[frame.source.eq(source)]
+        if admitted_only:
+            frame = frame[frame.disposition.eq('admitted')]
+        return frame.reset_index(drop=True)
