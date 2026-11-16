@@ -1,13 +1,23 @@
 record,panel,panel_title,y_label,value,series,series_label,source,source_label,count,rate
-panel,a,Covered Gene Count,covered genes,count,,,,,,
-panel,b,Coverage of Each Group,share of group covered (%),rate,,,,,,
-bar,,,,,G_2000,"G_2000 (N = 2,000)",tenv_hvg,tenv-HVG,1085,54.25
-bar,,,,,G_2000,"G_2000 (N = 2,000)",nhf,nHF,684,41.18
-bar,,,,,G_2000,"G_2000 (N = 2,000)",icm,ICM,551,33.45
-bar,,,,,G_2000,"G_2000 (N = 2,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,672,45.34
-bar,,,,,G_2000,"G_2000 (N = 2,000)",tox,TOX,766,38.30
-bar,,,,,G_5000,"G_5000 (N = 5,000)",tenv_hvg,tenv-HVG,3005,60.10
-bar,,,,,G_5000,"G_5000 (N = 5,000)",nhf,nHF,1018,61.29
-bar,,,,,G_5000,"G_5000 (N = 5,000)",icm,ICM,872,52.94
-bar,,,,,G_5000,"G_5000 (N = 5,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,960,64.78
-bar,,,,,G_5000,"G_5000 (N = 5,000)",tox,TOX,1989,99.45
+panel,a,DEG1000 and HVG Covered Gene Count,covered genes,count,,,,,,
+panel,b,DEG1000 and HVG Group Coverage,share of group covered (%),rate,,,,,,
+bar,,,,,G_2000,"G_2000 (N = 2,000)",tenv_hvg,tenv-HVG,1080,54.00
+bar,,,,,G_2000,"G_2000 (N = 2,000)",nhf,nHF,405,40.50
+bar,,,,,G_2000,"G_2000 (N = 2,000)",icm,ICM,255,25.50
+bar,,,,,G_2000,"G_2000 (N = 2,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,500,50.00
+bar,,,,,G_2000,"G_2000 (N = 2,000)",tox,TOX,617,61.70
+bar,,,,,G_3000,"G_3000 (N = 3,000)",tenv_hvg,tenv-HVG,1694,56.47
+bar,,,,,G_3000,"G_3000 (N = 3,000)",nhf,nHF,488,48.80
+bar,,,,,G_3000,"G_3000 (N = 3,000)",icm,ICM,334,33.40
+bar,,,,,G_3000,"G_3000 (N = 3,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,649,64.90
+bar,,,,,G_3000,"G_3000 (N = 3,000)",tox,TOX,937,93.70
+bar,,,,,G_4000,"G_4000 (N = 4,000)",tenv_hvg,tenv-HVG,2336,58.40
+bar,,,,,G_4000,"G_4000 (N = 4,000)",nhf,nHF,622,62.20
+bar,,,,,G_4000,"G_4000 (N = 4,000)",icm,ICM,485,48.50
+bar,,,,,G_4000,"G_4000 (N = 4,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,937,93.70
+bar,,,,,G_4000,"G_4000 (N = 4,000)",tox,TOX,1000,100.00
+bar,,,,,G_5000,"G_5000 (N = 5,000)",tenv_hvg,tenv-HVG,3039,60.78
+bar,,,,,G_5000,"G_5000 (N = 5,000)",nhf,nHF,869,86.90
+bar,,,,,G_5000,"G_5000 (N = 5,000)",icm,ICM,799,79.90
+bar,,,,,G_5000,"G_5000 (N = 5,000)",genetic_cardiomyopathy,genetic_cardiomyopathy,1000,100.00
+bar,,,,,G_5000,"G_5000 (N = 5,000)",tox,TOX,1000,100.00

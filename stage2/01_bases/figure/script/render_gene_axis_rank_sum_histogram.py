@@ -146,12 +146,12 @@ def render(title, panels, histograms, output):
                      bottom=[count - chosen for count, chosen in zip(counts, selected)],
                      width=width, align='edge', color=SELECTED_COLOR, edgecolor='none')
             axis.set(title=panel['panel_title'], xlabel=X_LABEL, ylabel=Y_LABEL)
-            axis.legend(handles=[Patch(color=CANDIDATE_COLOR, label=CANDIDATE_LABEL),
-                                 Patch(color=SELECTED_COLOR, label=SELECTED_LABEL)],
-                        frameon=False, fontsize=8, loc='upper right')
         for unused in list(axes.flat)[len(panels):]:
             unused.set_visible(False)
         figure.suptitle(title, fontsize=11.5)
+        figure.legend(handles=[Patch(color=CANDIDATE_COLOR, label=CANDIDATE_LABEL),
+                               Patch(color=SELECTED_COLOR, label=SELECTED_LABEL)],
+                      frameon=False, fontsize=8, loc='outside lower center', ncol=2)
         figure.savefig(output, dpi=160)
     finally:
         plt.close(figure)

@@ -6,8 +6,9 @@ This is a publication script, not scientific code: it reads only
 opens ``output/`` products, matrices, checkpoints or truth, and it recomputes no
 metric. The CSV carries every plotted value -- the two panel records (id, title,
 y-axis label and the value column the panel draws) and, for each released axis
-(the bar series) and fused source (the x group), the absolute number of that
-source's top-``N`` genes the axis contains and its rate. Panel ``a`` is the count
+(the bar series) and source group (the x group), the absolute number of that
+group's genes the axis contains and its rate. Disease groups use their own
+DEG1000 set; tenv-HVG uses its top-``N`` set. Panel ``a`` is the count
 and panel ``b`` the rate; the bars, colours and group layout are identical.
 
     python3 stage2/01_bases/figure/script/render_gene_axis_source_topn_coverage.py \
@@ -153,8 +154,8 @@ def render(panels, series, groups, values, output):
                                  ha='right', fontsize=8)
             axis.set(ylabel=panel['y_label'], title=panel['title'])
             axis.set_ylim(0, top * 1.12)
-            axis.legend(handles=handles, frameon=False, fontsize=8,
-                        loc='upper right')
+        figure.legend(handles=handles, frameon=False, fontsize=8,
+                      loc='outside upper center', ncol=min(4, len(series)))
         figure.savefig(output, dpi=160)
     finally:
         plt.close(figure)
