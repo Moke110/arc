@@ -62,3 +62,18 @@ Use `--smoke-rows 8 --max-epochs 2` for bounded integration checks; smoke status
 is explicit and cannot substitute for a formal matrix entry. `--replay-only`
 performs no training. Native-source tests accept `TRANSIGEN_SOURCE` when the
 immutable payload is materialized in another checkout.
+
+MLP_Morgan is the XPert-defined chemical baseline with this project's
+preregistered configuration: Morgan2048→Linear128→ReLU→Linear5000, a linear
+output and no control, dose, dropout or pretraining input. It uses mean MSE,
+Adam lr0.001/weight_decay0.00001, batch64 (including singleton batches), no
+scheduler, and the shared strict validation-MSE stopping/best-restore lifecycle.
+Complete baseline training code was not found in the official GitHub/Figshare;
+this configuration is not claimed as a reproduction of author training code.
+
+`execution/mlp.py --inputs <freeze> --candidate <empty directory> --scenario
+cold-drug --fold 0 --seed 17` trains then invokes exact checkpoint replay in a
+fresh process. `--smoke-rows 8 --max-epochs 2` is explicitly a smoke candidate;
+`--replay-only` verifies without training. The candidate records the project
+implementation digest, configuration, identities, predictions, matched-control
+Δ metrics, learning curve, environment and measured process peak RSS.
