@@ -118,8 +118,12 @@ uses 10,000 common draws with frozen statistical seed 2262026. Cold-drug Δ PCC
 alone selects a winner; otherwise both candidates remain. Figures read only the
 three recorded CSV plot-value tables and the pure shared palette implementation.
 
-The matrix code is under validation; the formal 90-run comparison has not yet
-been accepted. Previous accepted results and the old step remain available.
+The formal 90-run comparison is terminally blocked at 18 complete runs: the
+19th registered identity has a reproducible native float32 non-finite loss.
+See [the terminal-block record](log/231-terminal-block.md) for diagnosis and
+preserved evidence. The author CUDA backend correction does not resolve that
+failure. Previous accepted results and the old step remain available; the new
+comparison has not been accepted or published.
 
 Interrupted same-identity `--resume` now preserves the entire prior run under
 candidate `attempts/` before a clean restart. A trained run awaiting replay uses

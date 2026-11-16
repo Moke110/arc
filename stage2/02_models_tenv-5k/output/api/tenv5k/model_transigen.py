@@ -14,6 +14,19 @@ from .native_import import no_source_bytecode
 SCRIPT_HASH = '4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5'
 SOURCE_HASH = 'c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7'
 
+
+def configure_backend(device):
+    """Match ordinary author setup_seed CUDA policy; leave CPU flags untouched."""
+    if torch.device(device).type != 'cuda':
+        return {'policy': 'CPU backend unchanged'}
+    torch.backends.cudnn.enabled = False
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    return dict(policy='author train_TranSiGen setup_seed CUDA',
+                cudnn_enabled=torch.backends.cudnn.enabled,
+                cudnn_benchmark=torch.backends.cudnn.benchmark,
+                cudnn_deterministic=torch.backends.cudnn.deterministic)
+
 class Adapter:
     name = 'TranSiGen'
     batch_size = 64

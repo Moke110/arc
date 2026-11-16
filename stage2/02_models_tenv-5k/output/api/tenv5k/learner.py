@@ -36,6 +36,10 @@ def replay(inputs, checkpoint, source, *, adapter, device=None):
         raise ValueError('exact replay requires recorded device')
     os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
     torch.use_deterministic_algorithms(True)
+    if hasattr(native, 'configure_backend'):
+        backend = native.configure_backend(device)
+        if str(device).startswith('cuda') and config.get('backend') != backend:
+            raise ValueError('checkpoint CUDA backend identity is missing or differs; do not relabel old runs')
     model = native.build_model(source, config['seed'], device)
     model.load_state_dict(saved['state_dict'])
     rows = data.rows(config['scenario'], config['fold'], 'test')
@@ -64,6 +68,9 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
             train_rows, valid_rows, test_rows = [r[:smoke_rows] for r in (train_rows, valid_rows, test_rows)]
         if min(map(len, (train_rows, valid_rows, test_rows))) < 1:
             raise ValueError('empty split')
+        # Author execution settings must be applied and recorded before native
+        # construction in both fitting and the fresh-process replay entry point.
+        backend = native.configure_backend(device) if hasattr(native, 'configure_backend') else None
         config = {**native.CONFIG, 'adapter': adapter, 'scenario': scenario, 'fold': fold, 'seed': seed,
                   'device': str(device), 'validation_seed': data.config['early_stopping']['validation_seed'],
                   'inference_seed': seed + 100000, 'smoke_rows': smoke_rows,
@@ -72,6 +79,8 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
                   'validation_order': valid_rows.tolist(), 'test_order': test_rows.tolist(),
                   'singleton_train_batch': native.CONFIG.get('singleton_train_batch', 'merge into preceding batch (BatchNorm needs >=2)'),
                   'adaptations': native.CONFIG.get('adaptations', ['shared split/input readers', 'fixed-validation treated MSE early stopping'])}
+        if backend is not None:
+            config['backend'] = backend
         (candidate / 'config.json').write_text(json.dumps(config, indent=2) + '\n')
         os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
         torch.use_deterministic_algorithms(True)
