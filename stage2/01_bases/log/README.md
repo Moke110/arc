@@ -16,6 +16,7 @@ requires the recorded source-replay evidence to travel with the regenerated reco
 | `corpus_verify.json` | `build_corpus.py verify` replay output |
 | `disease_deg_verify.json` | `build_disease_deg.py verify --all` replay output (the four registry categories: nHF, ICM, AF, genetic_cardiomyopathy) |
 | `cardiotox_verify.json` | `build_disease_deg_cardiotox.py verify` replay output (three products) |
+| `tox_candidate_verify.json` | ADR 0072 #216 staged twelve-dataset TOX measurement candidate: fresh source replay, counts, digests and resource peaks; not the accepted successor release |
 | `disease_fusion_verify.json` | `build_disease_fusion.py verify` replay output (six diseases, v2 DEG2000) |
 | `gene_axis_verify.json` | `build_gene_axis.py --verify` replay output |
 | `view_publish_verify.json` | `build_view.py publish` result (materialises the gitignored view payloads; manifests byte-identical to the tracked ones) |

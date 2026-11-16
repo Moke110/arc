@@ -20,6 +20,8 @@ HGNC = "pert_data/Annotation/source/hgnc_complete_set.txt"
 
 def _matrix(frame, symbols=None):
     result = frame.copy()
+    if symbols is None:
+        symbols = frame.attrs.get("gene_symbol_rows")
     result.insert(
         0,
         "gene_symbol",
@@ -410,9 +412,8 @@ def _prepare_other(repo, source, drugs):
         table = pd.read_csv(repo / path, sep="\t", index_col=0)
         symbols = table.pop("symbol")
         frame = table
-        frame.attrs["gene_symbols"] = dict(
-            zip(frame.index.astype(str), symbols.astype(str))
-        )
+        # Preserve row-wise symbols even when the deposit repeats a feature ID.
+        frame.attrs["gene_symbol_rows"] = symbols.astype(str).tolist()
         for sample in frame:
             token = re.sub(r"[0-9]+$", "", sample)
             role = (

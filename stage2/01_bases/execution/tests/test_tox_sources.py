@@ -15,6 +15,26 @@ from bases import tox_sources
 
 
 class SourcePreparationTest(unittest.TestCase):
+    def test_fitted_source_retains_symbols_when_deposit_repeats_feature_ids(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            root = repo / "disease_data/GSE235470/source"
+            root.mkdir(parents=True)
+            pd.DataFrame(
+                {"symbol": ["G1", "G2", "G3", "G4"],
+                 "DMSO1": [20, 80, 300, 200], "DMSO2": [25, 90, 310, 190],
+                 "DMSO3": [18, 85, 280, 210], "DOX1": [200, 30, 320, 180],
+                 "DOX2": [210, 25, 300, 200], "DOX3": [180, 35, 290, 190]},
+                index=["ENSG1", "ENSG1", "ENSG3", "ENSG4"],
+            ).to_csv(root / "GSE235470_rawcounts.counts.txt.gz", sep="\t")
+            drugs = pd.DataFrame([{"source_id": "DOX", "drug_name": "Doxorubicin",
+                                   "parent_inchikey": "KEY"}])
+            fitted, _, _ = tox_sources.source_contrasts(repo, "gse235470", drugs,
+                                                        repo / "fits")
+            self.assertEqual(fitted.gene_symbol.tolist(), ["G1", "G2", "G3", "G4"])
+            self.assertEqual(fitted.source_gene_id.tolist(),
+                             ["ENSG1", "ENSG1", "ENSG3", "ENSG4"])
+
     def test_technical_repeat_is_summed_without_inventing_donor(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)

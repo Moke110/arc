@@ -283,7 +283,7 @@ def build_candidate(repo, output, workdir=None):
     plan = source_plan(admission)
     axis, resolver = cardiotox.load_resolver(repo)
     inputs = dict(admission['inputs'])
-    implementation = ['tox.py', 'tox_sources.py', 'cardiotox.py', 'deg_rank.py',
+    implementation = ['tox.py', 'tox_sources.py', 'bulk_deg.py', 'cardiotox.py', 'deg_rank.py',
                       'disease_deg.py', 'disease_deg.R', 'r_env.py', 'release.py',
                       'tox_admission.py', 'cardiotox_deseq2.R', 'cardiotox_edgeR.R']
     for name in implementation:

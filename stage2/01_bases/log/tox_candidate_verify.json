@@ -1,0 +1,281 @@
+{
+  "axis_resolved_deg_union": 9589,
+  "candidate_directory": "execution/checkpoints/unified-tox",
+  "datasets": [
+    {
+      "audit_sha256": "834f93afe9715fd82ee46445b6179194aca6c6aa2f4ee791ff834a1cf689a574",
+      "dataset_id": "dtoxs_ipsc",
+      "informative": true,
+      "n_case": 457,
+      "n_contrasts": 6,
+      "n_control": 41,
+      "n_deg": 603,
+      "n_measured": 14770,
+      "n_small_molecule_drugs": 37,
+      "raw_audit_roles": {
+        "excluded": 673,
+        "treated": 457,
+        "vehicle": 41
+      }
+    },
+    {
+      "audit_sha256": "55b295150d9177bc421f1966c9d410707dc25b6b9874304925658bbcf9cde86d",
+      "dataset_id": "gse106297",
+      "informative": true,
+      "n_case": 8,
+      "n_contrasts": 1,
+      "n_control": 4,
+      "n_deg": 1185,
+      "n_measured": 18057,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 0,
+        "treated": 8,
+        "vehicle": 4
+      }
+    },
+    {
+      "audit_sha256": "b986bbf0150daddad291c5174b8ae1b3f756d2ed23649bb5edcfe4bfdcf87713",
+      "dataset_id": "gse157282",
+      "informative": true,
+      "n_case": 3,
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_deg": 914,
+      "n_measured": 18096,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 6,
+        "treated": 3,
+        "vehicle": 3
+      }
+    },
+    {
+      "audit_sha256": "7770d8817938f85952ca9260a7052aeae2a274901c3cff8225df75a2a4b3ea78",
+      "dataset_id": "gse232331",
+      "informative": true,
+      "n_case": 3,
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_deg": 1835,
+      "n_measured": 17312,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 6,
+        "treated": 3,
+        "vehicle": 3
+      }
+    },
+    {
+      "audit_sha256": "87077e2907d976edc69753a52f78a4a79134e7156f88a1837d3b4de5b06ac3b4",
+      "dataset_id": "gse235470",
+      "informative": true,
+      "n_case": 3,
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_deg": 4675,
+      "n_measured": 17682,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 2,
+        "treated": 3,
+        "vehicle": 3
+      }
+    },
+    {
+      "audit_sha256": "7a9f2803354113b29b35fbdac73b9f76e430d0b556c390ed1c7f498b74d84b30",
+      "dataset_id": "gse242692",
+      "informative": true,
+      "n_case": 66,
+      "n_contrasts": 1,
+      "n_control": 22,
+      "n_deg": 2336,
+      "n_measured": 17099,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 0,
+        "treated": 66,
+        "vehicle": 22
+      }
+    },
+    {
+      "audit_sha256": "dffa98dcb6310b7de56396c4028ce9435a9de64d5bf9371721f59aefef455226",
+      "dataset_id": "gse243674",
+      "informative": true,
+      "n_case": 24,
+      "n_contrasts": 2,
+      "n_control": 6,
+      "n_deg": 1592,
+      "n_measured": 18084,
+      "n_small_molecule_drugs": 4,
+      "raw_audit_roles": {
+        "excluded": 12,
+        "treated": 48,
+        "vehicle": 12
+      }
+    },
+    {
+      "audit_sha256": "6b5c218995250ce410f8457b9394d408e6d85451c04d23929587bb05d6af1f3b",
+      "dataset_id": "gse244740",
+      "informative": false,
+      "n_case": 1920,
+      "n_contrasts": 8,
+      "n_control": 536,
+      "n_deg": 0,
+      "n_measured": 18164,
+      "n_small_molecule_drugs": 32,
+      "raw_audit_roles": {
+        "excluded": 616,
+        "treated": 1920,
+        "vehicle": 536
+      }
+    },
+    {
+      "audit_sha256": "db6a30a2722489a64ef180d4b060cff28bc4856730c3cab877dd4a7916d0bacb",
+      "dataset_id": "gse247541",
+      "informative": true,
+      "n_case": 12,
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_deg": 126,
+      "n_measured": 17928,
+      "n_small_molecule_drugs": 4,
+      "raw_audit_roles": {
+        "excluded": 0,
+        "treated": 12,
+        "vehicle": 3
+      }
+    },
+    {
+      "audit_sha256": "a72ab135bc0e40320757a73bc81d811beb6b8cbfd7f6750d5e6f591f71494cb7",
+      "dataset_id": "gse255505",
+      "informative": true,
+      "n_case": 3,
+      "n_contrasts": 1,
+      "n_control": 3,
+      "n_deg": 3881,
+      "n_measured": 17622,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 0,
+        "treated": 3,
+        "vehicle": 3
+      }
+    },
+    {
+      "audit_sha256": "637414472aced0e315ebcfbbac2fe5305c513de2fcc7b3293456d3ce83dbfeea",
+      "dataset_id": "gse262419",
+      "informative": true,
+      "n_case": 90,
+      "n_contrasts": 4,
+      "n_control": 12,
+      "n_deg": 44,
+      "n_measured": 18155,
+      "n_small_molecule_drugs": 10,
+      "raw_audit_roles": {
+        "excluded": 1006,
+        "treated": 90,
+        "vehicle": 48
+      }
+    },
+    {
+      "audit_sha256": "5be0d955ee63257664580ad3f36e17eaef8464be6b5a8ab99362446267573071",
+      "dataset_id": "gse313746",
+      "informative": true,
+      "n_case": 6,
+      "n_contrasts": 3,
+      "n_control": 6,
+      "n_deg": 3588,
+      "n_measured": 18082,
+      "n_small_molecule_drugs": 1,
+      "raw_audit_roles": {
+        "excluded": 0,
+        "treated": 21,
+        "vehicle": 21
+      }
+    }
+  ],
+  "date": "2026-11-16",
+  "deg2000": 2000,
+  "disease_eligibility": {
+    "axis_resolved_deg_union": 9589,
+    "eligible": true,
+    "exclusion_reason": null
+  },
+  "fit_identity_correction": "Unique internal fit keys preserve deposited duplicate source feature IDs and their row-wise symbols; no measurements or thresholds changed.",
+  "focused_tests": {
+    "test_deg_rank.py": 23,
+    "test_disease_deg_cardiotox.py": 12,
+    "test_disease_deg_tiers.py": 29,
+    "test_tox*.py": 18
+  },
+  "gpu_monitor": "NVML unavailable: access blocked by operating system",
+  "ignored_input_preservation": {
+    "checked": 63,
+    "mismatched": 0,
+    "missing": 0
+  },
+  "issue": 216,
+  "manifest_sha256": "2e5723636bb4fb7c5ac1adb4a85d3b2e536bafb8f9f0638bb091e4de7809edd4",
+  "n_independent_datasets": 12,
+  "n_pinned_inputs": 91,
+  "payload_digests": {
+    "admission.json": "78996cf34962b73c2e4b74073769fb61f76672c88dc021faae962f2aad65842e",
+    "catalog.json": "26d3ad407db13b82274ebffc454b9cd64d05a55b94e6ea384085b506ccdbb174",
+    "dtoxs_ipsc.audit.json": "834f93afe9715fd82ee46445b6179194aca6c6aa2f4ee791ff834a1cf689a574",
+    "dtoxs_ipsc.deg.csv": "9bbbd4b16a14472cfbc6b9016ab28daaa0c1715cf3430e3baf1d9ff012f01d18",
+    "dtoxs_ipsc.rank.csv": "208cd9720e9c3754722260ae8dfd3def9d966df5d45fc113a91cf4e2707782f4",
+    "gse106297.audit.json": "55b295150d9177bc421f1966c9d410707dc25b6b9874304925658bbcf9cde86d",
+    "gse106297.deg.csv": "17cc70c17beb147f10c00aacd0bed764f121e7587101fb6eb7b99c68f96a9799",
+    "gse106297.rank.csv": "767b1147b725725ffae3c591100461233d4c12020789ae8757518f61e9537717",
+    "gse157282.audit.json": "b986bbf0150daddad291c5174b8ae1b3f756d2ed23649bb5edcfe4bfdcf87713",
+    "gse157282.deg.csv": "500a0428024aa220fcb8403047d9c04ec707a5b740c1d273b087af99d7371dea",
+    "gse157282.rank.csv": "c0988ba034bf832e338c732e032bfedb02d30c79e117ced02dcdfbd231ba03d7",
+    "gse232331.audit.json": "7770d8817938f85952ca9260a7052aeae2a274901c3cff8225df75a2a4b3ea78",
+    "gse232331.deg.csv": "e97466fe8aed1153b62e65e451ed6e10e80cea801a4451486d8f55f5013f504b",
+    "gse232331.rank.csv": "08283ca03f8c403018cecbbd849eedb57fd3db7db9884bac36b148b5f8f5f327",
+    "gse235470.audit.json": "87077e2907d976edc69753a52f78a4a79134e7156f88a1837d3b4de5b06ac3b4",
+    "gse235470.deg.csv": "fdd73c3784b5b549cce26f804d883e7a3493774099a3ac7e8e52b543478b51c4",
+    "gse235470.rank.csv": "2a49aa7a1de71f0dbff253c786873328aa3d101516822c426f7c0b703302451e",
+    "gse242692.audit.json": "7a9f2803354113b29b35fbdac73b9f76e430d0b556c390ed1c7f498b74d84b30",
+    "gse242692.deg.csv": "3fc3f7694b76fb951b06b9dd7dc02a5da295c44b2223c29116da2b37561a347a",
+    "gse242692.rank.csv": "edb3d5206e4b34350b94bcb4f132fd4036d580363a0054140ea672af22bfd69c",
+    "gse243674.audit.json": "dffa98dcb6310b7de56396c4028ce9435a9de64d5bf9371721f59aefef455226",
+    "gse243674.deg.csv": "67ffc3b15431ac53256a9961a3e79b21683e0b7c0e8f6689ef7b040ef6ece23e",
+    "gse243674.rank.csv": "91a0b7c339a7bd676918ee142ddd549e6aa165e3adfbf28b058812f2bfd27dec",
+    "gse244740.audit.json": "6b5c218995250ce410f8457b9394d408e6d85451c04d23929587bb05d6af1f3b",
+    "gse244740.deg.csv": "cbc5da081eb523df0b7159e38b195ebb6410d8b5627f24b59e9a7a42208f2ca8",
+    "gse244740.rank.csv": "92a93ec3d33ac188fe49d23c4ab694e9c2ffd21c2ea9627a9e8a4fe5116563d2",
+    "gse247541.audit.json": "db6a30a2722489a64ef180d4b060cff28bc4856730c3cab877dd4a7916d0bacb",
+    "gse247541.deg.csv": "8bedc3b875995122d7fcc2ad15f332820e9002cd5faaa47307c78d1f5cd9a6c5",
+    "gse247541.rank.csv": "3f056e6cd558e5b33959ee82cdc31a69eda5ff2dddf035a14bbdf3b63b155ac9",
+    "gse255505.audit.json": "a72ab135bc0e40320757a73bc81d811beb6b8cbfd7f6750d5e6f591f71494cb7",
+    "gse255505.deg.csv": "746f74d3b3175d30d12cceeb68dafb0cc91b898e30394fb089dde418eaf01cc4",
+    "gse255505.rank.csv": "e1ad10b6dba560e8ec06b71751e642558f96dd3f82edd0acf5bae73a97f1900f",
+    "gse262419.audit.json": "637414472aced0e315ebcfbbac2fe5305c513de2fcc7b3293456d3ce83dbfeea",
+    "gse262419.deg.csv": "fb750352a6f584b3d72ed5c49185fbe405dcb341af869b42dc50fc4120a00d02",
+    "gse262419.rank.csv": "76a27e41d43656fed889ee228423717052dbc86887def3b7ec3c9f38ce56d7bf",
+    "gse313746.audit.json": "5be0d955ee63257664580ad3f36e17eaef8464be6b5a8ab99362446267573071",
+    "gse313746.deg.csv": "b274c478875ecebbe9a3ee5c8bb47d5bcebd387ba87714cf166f6de52d280624",
+    "gse313746.rank.csv": "d0dc2b6e401562dd66d62596f06565344d5774d9f6701c40bf2cc80a7ea7536b",
+    "tox.deg2000.csv": "383984b5f9f4aa2d32ca00da746ff25bd144e8bc82993e3fdf91fc24ab733e85"
+  },
+  "publish": {
+    "elapsed": "2:00.02",
+    "exit_status": 0,
+    "peak_rss_kib": 1461948
+  },
+  "replay": "fresh fits of all twelve source measurements; all payload and manifest bytes identical",
+  "resource_cap": "10 GiB RLIMIT_AS; BLAS/OpenMP threads=2; one scientific job at a time",
+  "result": "PASS",
+  "scope": "staged measurement candidate; accepted output release unchanged",
+  "stopped_at_tier": 2,
+  "tiers_entered": [
+    2
+  ],
+  "verify": {
+    "elapsed": "2:00.26",
+    "exit_status": 0,
+    "peak_rss_kib": 1462480
+  }
+}
