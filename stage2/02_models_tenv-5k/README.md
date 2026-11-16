@@ -99,3 +99,24 @@ fresh process. `--smoke-rows 8 --max-epochs 2` is explicitly a smoke candidate;
 `--replay-only` verifies without training. The candidate records the project
 implementation digest, configuration, identities, predictions, matched-control
 Δ metrics, learning curve, environment and measured process peak RSS.
+
+Matrix orchestration (#231) uses `execution/run_matrix.py --plan-only` without
+loading models or input payloads. `--all` requires explicit `--inputs`, `--means`,
+`--prnet-source`, `--transigen-source`, `--candidate`, and `--device` paths/identity.
+`--resume` skips only complete, exact-replayed formal identities after checking
+all artifact hashes and the frozen plan; changed code/configuration is rejected.
+`--limit-runs 1` profiles the first full registered run; it does not shorten its
+1,000-epoch cap or patience 50. Continue it with the same arguments and `--resume`.
+`--accept-only` evaluates the complete matrix without training, and `--publish`
+requests publication only after complete OOF metric and CSV figure replay.
+
+Comparison first reconstructs every well's out-of-fold prediction across all five
+folds for each seed, then averages repeated-well Δ vectors within each parent,
+then computes metrics, then averages the three seed metrics. This matters in
+warm-start, where one parent spans several test folds. Paired parent bootstrap
+uses 10,000 common draws with frozen statistical seed 2262026. Cold-drug Δ PCC
+alone selects a winner; otherwise both candidates remain. Figures read only the
+three recorded CSV plot-value tables and the pure shared palette implementation.
+
+The matrix code is under validation; the formal 90-run comparison has not yet
+been accepted. Previous accepted results and the old step remain available.
