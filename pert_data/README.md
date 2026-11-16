@@ -25,7 +25,7 @@ every item.
 | `LINCS-LDS-1593/` | The DToxS center's LINCS **LDS-1593** well-level Level-3 package + metadata suite for primary human CMs (manual clue.io download). |
 | `DToxS-iPSC/` | The DToxS iPSC-CM GEO deposit, SuperSeries **GSE217424** (GSE217421 Conv + GSE217423 DGE). |
 | `GSE244740/` | Rosell-Hidalgo ScreenSeq hiPSC-CM drug-cardiotoxicity panel (2 GEO files). |
-| `GSE247541/` | Xu COVID-19 antiviral hiPSC-CM panel; provenance-only, outside the Stage 2 union scope (2 GEO files). |
+| `GSE247541/` | Xu antiviral hiPSC-CM panel; four author-positive drugs reassessed for ADR 0072 TOX (2 GEO files). |
 | `GSE262419/` | Tsai TempO-Seq hiPSC-CM environmental-chemical panel (16 plate CSVs + hash table + series matrix). |
 | `XPert-L1000/` | The three L1000 landmark-gene pretrain h5ads used by the workflow pretrain recipes; upstream provenance still unknown. |
 | `Annotation/` | Pinned HGNC complete set (download) + the public-registry compound snapshot and CM drug-audit report (local additions). |

@@ -1,25 +1,34 @@
 {
-  "item": "GSE244740",
   "category": "pert_data",
+  "hashed_at": "2026-10-30T22:05+08:00",
+  "item": "GSE244740",
+  "local_additions": [],
+  "manifest": "manifest.sha256",
   "purpose": "Rosell-Hidalgo ScreenSeq hiPSC-CM drug-cardiotoxicity panel",
   "retrieved_at": "2026-08-12T12:13+08:00",
   "sources": [
     {
-      "kind": "dataset",
+      "bytes": 37480421,
+      "files": 2,
       "id": "GSE244740",
-      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE244740",
-      "version": "GSE244740",
+      "kind": "dataset",
       "license": "unknown",
       "method": "script/download.sh (wget from the GEO FTP series directory)",
       "path": "source/",
-      "files": 2,
-      "bytes": 37480421,
-      "tree_sha256": "9df77e3e2fd35a89108e23b3fa616665d2ba31f74a77d59dcb0610939037a9da"
+      "tree_sha256": "9df77e3e2fd35a89108e23b3fa616665d2ba31f74a77d59dcb0610939037a9da",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE244740",
+      "version": "GSE244740"
+    },
+    {
+      "id": "10.1080/17425255.2023.2273378",
+      "kind": "publication",
+      "path": "source/Rosell-Hidalgo_2023_Table1.pdf",
+      "purpose": "Table 1 author reference labels, independent of new DEG analysis",
+      "retrieved_at": "2026-11-16",
+      "sha256": "414f47382fcc22e39505aecc3a09bca5514e9b36e84864eb1dda7bb1327f4230",
+      "url": "https://news.cyprotex.com/hubfs/Downloads/Articles%20and%20white%20papers/In-depth%20mechanistic%20analysis%20including%20high-throughput%20RNA%20sequencing%20in%20the%20prediction%20of%20functional%20and%20structural%20cardiotoxicants%20using%20hiPSC%20card.pdf"
     }
   ],
-  "local_additions": [],
-  "manifest": "manifest.sha256",
   "verified_at": "2026-10-30T22:05+08:00",
-  "verify_result": "pass",
-  "hashed_at": "2026-10-30T22:05+08:00"
+  "verify_result": "pass"
 }
