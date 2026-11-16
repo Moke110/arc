@@ -195,6 +195,13 @@
     "pandas": "2.2.3",
     "python_docx": "1.2.0"
   },
+  "upstream_acceptance": {
+    "all_29_input_pins_and_3_output_pins_unchanged": true,
+    "integration_commit": "e6bd6ad5d2ad2bb51b80e6f689e6bdf383647085",
+    "source": "stage2/01_bases/log/four_axes_candidate.json",
+    "ticket": 223,
+    "visual_qa_and_byte_replay_remain_valid": true
+  },
   "visual_qa": {
     "every_page_opened_at_full_resolution": true,
     "page_count": 13,
