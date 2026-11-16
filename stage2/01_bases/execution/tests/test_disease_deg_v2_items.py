@@ -116,18 +116,25 @@ class SourceDeclarationTest(unittest.TestCase):
 class Gse185100RecordingTest(unittest.TestCase):
     """The abandoned candidate is a recorded rejection, never a source."""
 
-    def test_gse185100_is_recorded_unverified_not_admitted(self):
-        rejected = disease_deg_sources.category_record('nHF')['rejected']
+    def test_gse185100_has_a_measured_input_gap_and_reentry_condition(self):
+        category = disease_deg_sources.category_record('nHF')
+        rejected = category['rejected']
         entry = next((row for row in rejected if row.get('candidate') == 'GSE185100'), None)
         self.assertIsNotNone(entry, 'GSE185100 missing from the nHF rejected list')
-        self.assertEqual(entry['accession'], 'GSE185100')
-        self.assertEqual(entry['status'], 'unverified_not_admitted')
-        self.assertIn('757', entry['size'])
-        self.assertIn('722', entry['size'])
-        self.assertIn('4', entry['donor_counts'])
-        self.assertIn('3', entry['donor_counts'])
-        self.assertIn('throttled', entry['reason'])
-        self.assertIn('Nothing was downloaded', entry['reason'])
+        self.assertEqual(entry['status'], 'author_cm_input_unavailable')
+        self.assertIn('no author per-cell CM assignment', entry['reason'])
+        self.assertIn('complete unrounded test table', entry['reason'])
+        self.assertIn('age and low estimated yield are not exclusion grounds', entry['reason'])
+        self.assertIn('CM barcode assignments with counts', entry['reentry'])
+        self.assertIn('complete author CM DCM-vs-ND', entry['reentry'])
+        review = next(row for row in category['source_review']['records']
+                      if row['candidate'] == 'GSE185100')
+        self.assertEqual(review['disposition'], 'not_admitted_author_cm_input_unavailable')
+        self.assertEqual(review['reason'], entry['reason'])
+        self.assertEqual(review['reentry'], entry['reentry'])
+        self.assertEqual(len(review['sources']), 4)
+        self.assertIn('https://doi.org/10.1161/CIRCULATIONAHA.121.057763', review['sources'])
+        self.assertIn('Author objects may be obtainable elsewhere', review['uncertainty'])
 
     def test_gse185100_is_not_a_source_or_an_item(self):
         self.assertFalse(any('GSE185100' in record.get('source_item', '')

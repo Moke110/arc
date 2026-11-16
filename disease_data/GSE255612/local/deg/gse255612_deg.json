@@ -25,19 +25,25 @@
     "kind": "expression"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "groupAF",
       "groupcontrol"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "AF-control"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "expression",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 0,
     "n_genes_input": 36600,
+    "n_genes_matrix": 36600,
     "n_genes_tested": 36600,
     "n_rows": 36600,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -48,7 +54,7 @@
     "contrast_direction": "positive log2FC = up in AF vs control",
     "deposition": "normalised-expression deposit (log1p(CP10K)), not integer counts",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma on the log2-scale pseudobulk (moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",
@@ -56,7 +62,7 @@
   },
   "model_matrix": {
     "path": "local/deg/gse255612_log_matrix.tsv.gz",
-    "sha256": "15f2363b20ae350d40246d5bc774918a79af7ddc76056bbff55da9a11f17dde9",
+    "sha256": "78b401641b010526878bbc6c737807bd254e1f8420425123b17f04d80abec03a",
     "transform": "log2(mean_CP10K + 1)"
   },
   "pseudobulk": {

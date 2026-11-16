@@ -95,19 +95,25 @@
     "sha256": "d6ef3b5b20b964b568d75346dc2827c36e83022e07d3a58e16418d1b48aab0a6"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "groupDCM",
       "groupNF"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "DCM-NF"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "expression",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 0,
     "n_genes_input": 50762,
+    "n_genes_matrix": 50762,
     "n_genes_tested": 50762,
     "n_rows": 50762,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -117,9 +123,9 @@
     "contrast_direction": "positive log2FC = up in DCM left-ventricle tissue vs non-failing",
     "deposition": "log2(normalised counts) as deposited (floored matrix)",
     "derivation": "disease_data/GSE165303/script/build_deg.py",
-    "derivation_sha256": "9dd5b9e106ac0cb8d32ba9423f20006c099813c2308dc2abe8ab9b4753209e70",
+    "derivation_sha256": "7560834d72f408b40775f0ef0bc38aa1f1623a1042ab58a6d18d40b9ad2fba47",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma on the deposited log2 matrix (moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",
@@ -145,7 +151,7 @@
     "case_definition": "DCM (dilated cardiomyopathy) patient LV",
     "control_definition": "non-failing (NF) donor LV",
     "non_rna_libraries": 46,
-    "platform": "GPL20795 (Illumina NovaSeq 6000)",
+    "platform": "GPL20795 (Illumina HiSeq X Ten)",
     "rna_libraries": 101,
     "tissue": "human left-ventricle tissue (Duke Human Heart Repository; !Sample_growth_protocol_ch1); non-failing donor LV as control",
     "title": "Reprogramming of three-dimensional chromatin architecture   drives human dilated cardiomyopathy",

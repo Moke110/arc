@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Build or replay the released Stage 2 gene axes ``G_2000`` / ``G_5000`` (ADR 0066, ADR 0071).
+"""Build or replay the four Stage 2 gene axes (ADR 0073).
 
 The products are the cross-disease fusion of the published per-disease ``DEG1000``
 sets plus the published tenv-HVG ranking: the master candidate table, the four
 released axes, their manifest, the per-axis composition table, the source
-coverage table, the two-panel rank-sum evidence figure values and the two-panel
+coverage table, the four-axis rank-sum evidence figure values and the two-panel
 source-coverage figure values. No corpus, view, model or truth is built; the
 disease-fusion products (#205) and the tenv-HVG ranking are read-only inputs.
 

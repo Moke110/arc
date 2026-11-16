@@ -88,6 +88,7 @@
     "sha256": "2bcfaa1b13dea3178c051d0e2f9158f3745e323ca21d8c52599277a85abfda01"
   },
   "fit_summary": {
+    "block": {},
     "coefficient_names": [
       "group2d_atrial_ttn",
       "group2d_atrial_wt",
@@ -98,6 +99,7 @@
       "groupeht_ventricular_ttn",
       "groupeht_ventricular_wt"
     ],
+    "consensus_correlation": {},
     "contrasts": [
       "TTNtv-WT.2d_ventricular",
       "TTNtv-WT.2d_atrial",
@@ -105,11 +107,15 @@
       "TTNtv-WT.eht_atrial"
     ],
     "factor": "group",
+    "filter": {},
     "formula": "~0 + group",
     "implementation": "output/api/bases/disease_deg.R",
     "kind": "counts",
     "limma_version": "3.62.2",
+    "n_blocks": {},
+    "n_genes_dropped": 23105,
     "n_genes_input": 35138,
+    "n_genes_matrix": 58243,
     "n_genes_tested": 35138,
     "n_rows": 140552,
     "r_version": "R version 4.4.1 (2024-06-14)"
@@ -119,9 +125,9 @@
     "contrast_direction": "positive log2FC = up in the TTN truncating-variant arm vs the CRISPR-corrected isogenic WT/WT arm of the same format and cell type",
     "deposition": "integer counts",
     "derivation": "stage2/01_bases/output/api/bases/bulk_deg.py",
-    "derivation_sha256": "69795505dd807955378a1c65f211243cf75410bf3e5aa3af1b14938f68743482",
+    "derivation_sha256": "f6e3decee7f974498d7691fb21d93e7859f7395bcbbe377a6696c5314dc0a4c6",
     "implementation": "stage2/01_bases/output/api/bases/disease_deg.R",
-    "implementation_sha256": "91189088ed22bdc7dd944f558b1900a4e70490ca716515d8aac1e62c2d169fc1",
+    "implementation_sha256": "3bbea6839ca373ef3b180167794b4b92c874267a5ad21c37c28d062dbfcdfa5f",
     "limma_version": "3.62.2",
     "model": "limma-voom (voom library-size normalisation, moderated t)",
     "r_version": "R version 4.4.1 (2024-06-14)",
