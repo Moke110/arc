@@ -1,0 +1,35 @@
+{
+  "axis_size": 5000,
+  "dose_um": 1,
+  "early_stopping": {
+    "max_epochs": 1000,
+    "monitor": "complete validation treated-expression MSE",
+    "patience": 50,
+    "restore_best": true,
+    "strict_lower": true,
+    "validation_seed": 22617
+  },
+  "folds": 5,
+  "morgan": {
+    "binary": true,
+    "bits": 2048,
+    "includeChirality": true,
+    "radius": 2,
+    "rdkit": "2026.03.2"
+  },
+  "n_parents": 459,
+  "n_treated": 1402,
+  "n_unique_controls": 192,
+  "rounding": "ceil outer-training units; parents cold, wells warm",
+  "schema": "tenv5k-protocol-v1",
+  "split_seed": 226,
+  "statistical_seed": 2262026,
+  "training_seeds": [
+    17,
+    42,
+    2026
+  ],
+  "validation_fraction": 0.1,
+  "view_manifest_sha256": "7ba2bde3c20cdcf9036d88c9ac344991657448319b2811f51b2fe47c59c8c11d",
+  "view_tenv_sha256": "952435d9cb7df3f30e93200c5574faa50d60bfd602a5b70acf78cfd60adb9044"
+}
