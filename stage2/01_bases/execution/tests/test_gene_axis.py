@@ -471,22 +471,17 @@ FIXTURE_AXIS_SIZES = (4, 6)
 #: tenv-HVG ranks: gene 7 is the strongest (rank 1), gene 0 the weakest.
 FIXTURE_TENV_RANK = np.array([8, 7, 6, 5, 4, 3, 2, 1], dtype=np.int64)
 
-#: The default fixture: the six released diseases, each a single informative
-#: source whose published ``DEG2000_d`` is ``(n_deg, {gene_index: disease_rank})``.
-#: ``af`` covers the tenv-first-half gene 7 only, so it adds the constant
-#: ``(n_af + 1) / n_af = 2`` to every non-AF gene's rank_sum and leaves the
-#: second-half order unchanged. The level-2 vectors are hand-computable:
-#: f2000 = [2, 2, 3, 2, 2, 1, 0, 1] and
-#: rank_sum = [8, 47/6, 7.5, 8.5, 49/6, 8.5, 9.5, 8.5] (gene 7 gains AF's 1/1
-#: because it is AF's only DEG2000 gene, and still pays every other disease's
-#: (n_d + 1) / n_d outside penalty).
+#: A five-disease miniature; without the new eligibility marker the small
+#: signatures exercise the unchanged rank formulas (the gate fixture below uses
+#: 0/1/99/100 unions). TOX here is an independently supplied fixture signature.
+#: Worked vectors: f2000=[2,2,3,2,2,1,0,1], rank_sum=
+#: [17/3,17/3,16/3,19/3,6,7,22/3,19/3].
 FIXTURE_DEG2000 = {
     'nhf': (3, {0: 1, 1: 2, 2: 3}),
     'icm': (3, {1: 1, 2: 2, 3: 3}),
     'af': (1, {7: 1}),
     'genetic_cardiomyopathy': (3, {2: 1, 3: 2, 4: 3}),
-    'cardiotox_TOP2': (2, {4: 1, 0: 2}),
-    'cardiotox_other': (1, {5: 1}),
+    'tox': (3, {4: 1, 0: 2, 5: 3}),
 }
 
 
@@ -649,19 +644,28 @@ class EligibleDiseaseReleaseTests(unittest.TestCase):
                                'outputs': outputs}, config.fusion_root / 'manifest.json')
             fusion = driver.read_fusion(config, 120)
             self.assertEqual(set(fusion['diseases']),
-                             {'nhf', 'cardiotox_TOP2', 'cardiotox_other'})
+                             {'nhf', 'tox'})
             self.assertEqual({row['directory'] for row in fusion['excluded']},
                              {'af', 'icm', 'genetic_cardiomyopathy'})
             result = driver.compute(genes, tenv, fusion, (4, 6))
             table = result['table']
-            self.assertEqual(table.loc[0, 'rank_sum'], 0.03)
-            self.assertEqual(table.loc[0, 'f2000'], 3)
-            self.assertAlmostEqual(table.loc[119, 'rank_sum'], 3.03)
+            self.assertEqual(table.loc[0, 'rank_sum'], 0.02)
+            self.assertEqual(table.loc[0, 'f2000'], 2)
+            self.assertAlmostEqual(table.loc[119, 'rank_sum'], 2.02)
             self.assertTrue(table.af_rank.isna().all())
             self.assertTrue(table.icm_rank.isna().all())
             reader = disease_deg.DiseaseFusion(config.fusion_root)
             self.assertEqual(reader.deg2000('af').gene_index.tolist(), [0])
-            self.assertEqual(driver.publish(config)['n_diseases'], 3)
+            self.assertEqual(driver.publish(config)['n_diseases'], 2)
+            retained = GeneAxis(config.output).manifest()['categories']['af']
+            self.assertTrue(retained['published'])
+            self.assertEqual((retained['n_deg'], retained['deg2000']), (1, 1))
+            self.assertEqual(retained['deg2000_file'], 'af.deg2000.csv')
+            self.assertEqual(retained['deg2000_sha256'],
+                             driver.sha256(config.fusion_root / 'af.deg2000.csv'))
+            self.assertFalse(retained['eligible'])
+            self.assertFalse(retained['participates_in_fusion'])
+            self.assertIn('100', retained['excluded_reason'])
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
 
@@ -679,7 +683,7 @@ class DeclaredRosterTests(unittest.TestCase):
         self.assertIn('af', gene_axis.RELEASE_CATEGORIES)
 
     def test_the_release_contract_carries_the_six_released_categories(self):
-        self.assertEqual(len(gene_axis.CATEGORY_RANK_COLUMNS), 6)
+        self.assertEqual(len(gene_axis.CATEGORY_RANK_COLUMNS), 5)
         self.assertIn('af_rank', gene_axis.CATEGORY_RANK_COLUMNS)
         # The retired pN columns have no successor in the v2 contract.
         self.assertNotIn('p2000', list(gene_axis.CANDIDATE_COLUMNS))
@@ -693,7 +697,7 @@ class DeclaredRosterTests(unittest.TestCase):
             config = write_fixture(Path(temporary))
             result = driver.publish(config)
             self.assertEqual(result['result'], 'PASS')
-            self.assertEqual(result['n_diseases'], 6)
+            self.assertEqual(result['n_diseases'], 5)
             self.assertEqual(driver.verify(config)['result'], 'PASS')
 
     def test_a_missing_released_disease_fails_closed(self):
@@ -757,7 +761,7 @@ class ReleaseBuildTests(unittest.TestCase):
             np.testing.assert_array_equal(table.f2000, [2, 2, 3, 2, 2, 1, 0, 1])
             np.testing.assert_allclose(
                 table.rank_sum,
-                [8.0, 47 / 6, 7.5, 8.5, 49 / 6, 8.5, 9.5, 8.5])
+                [17/3, 17/3, 16/3, 19/3, 6.0, 7.0, 22/3, 19/3])
             np.testing.assert_array_equal(reader.axis(4), [1, 2, 6, 7])
             np.testing.assert_array_equal(reader.axis(6), [0, 1, 2, 5, 6, 7])
             self.assertEqual(manifest['axes']['4']['second_half'],
@@ -766,15 +770,14 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertEqual(manifest['axes']['6']['second_half']['from_deg2000'], 3)
             self.assertEqual(manifest['intersection']['n_intersection'], 4)
             self.assertEqual(manifest['intersection']['sizes'], [4, 6])
-            self.assertEqual(manifest['fusion']['n_diseases'], 6)
+            self.assertEqual(manifest['fusion']['n_diseases'], 5)
             self.assertEqual(manifest['fusion']['diseases'], list(CATEGORIES))
             self.assertEqual(manifest['fusion']['excluded_diseases'], [])
             self.assertEqual(manifest['categories']['nhf']['n_deg'], 3)
             self.assertEqual(manifest['categories']['nhf']['deg2000'], 3)
-            self.assertEqual(manifest['fusion']['n_declared_diseases'], 6)
+            self.assertEqual(manifest['fusion']['n_declared_diseases'], 5)
             self.assertEqual(manifest['counts']['f2000_distribution'],
-                             {'0': 1, '1': 2, '2': 4, '3': 1, '4': 0, '5': 0,
-                              '6': 0})
+                             {'0': 1, '1': 2, '2': 4, '3': 1, '4': 0, '5': 0})
             # The composition carries the declared halves, the DEG2000 numerator
             # and denominator, and the f2000 distribution; no pN record.
             composition = reader.composition()
@@ -865,7 +868,7 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertEqual(manifest['fusion']['n_diseases'], 1)
             self.assertEqual(manifest['fusion']['excluded_diseases'],
                              ['icm', 'af', 'genetic_cardiomyopathy',
-                              'cardiotox_TOP2', 'cardiotox_other'])
+                              'tox'])
             self.assertTrue(manifest['categories']['icm']['excluded_from_fusion'])
             self.assertIn('excluded_reason', manifest['categories']['icm'])
             table = reader.candidate_table()
@@ -964,10 +967,9 @@ class CoverageTests(unittest.TestCase):
             None,                                   # icm: excluded from the fusion
             np.isin(np.arange(AXIS_SIZE), (7,)),     # af: its single DEG2000 gene
             np.isin(np.arange(AXIS_SIZE), (2, 3, 4)),  # genetic_cardiomyopathy
-            np.isin(np.arange(AXIS_SIZE), (0, 4)),   # cardiotox_TOP2
-            np.isin(np.arange(AXIS_SIZE), (5,)),     # cardiotox_other
+            np.isin(np.arange(AXIS_SIZE), (0, 4)),   # unified TOX
         ]
-        sizes = [2, None, 1, 3, 2, 1]
+        sizes = [2, None, 1, 3, 2]
         return axes, tenv, masks, sizes
 
     def test_coverage_carries_the_numerator_and_its_own_denominator(self):
@@ -989,10 +991,8 @@ class CoverageTests(unittest.TestCase):
         self.assertEqual(int(rows['genetic_cardiomyopathy']['numerator']), 0)
         self.assertEqual(int(rows['genetic_cardiomyopathy']['denominator']), 3)
         self.assertEqual(float(rows['genetic_cardiomyopathy']['rate']), 0.0)
-        self.assertEqual(int(rows['cardiotox_TOP2']['numerator']), 1)
-        self.assertEqual(int(rows['cardiotox_TOP2']['denominator']), 2)
-        self.assertEqual(int(rows['cardiotox_other']['numerator']), 0)
-        self.assertEqual(int(rows['cardiotox_other']['denominator']), 1)
+        self.assertEqual(int(rows['tox']['numerator']), 1)
+        self.assertEqual(int(rows['tox']['denominator']), 2)
         # AF's single DEG2000 gene 7 is on both fixture axes.
         self.assertEqual(int(rows['af']['numerator']), 1)
         self.assertEqual(int(rows['af']['denominator']), 1)
@@ -1025,8 +1025,7 @@ class CoverageTests(unittest.TestCase):
                          {'n_covered': 1, 'n_deg2000': 1, 'share': 1.0})
         self.assertEqual(composition['genetic_cardiomyopathy'],
                          {'n_covered': 0, 'n_deg2000': 3, 'share': 0.0})
-        self.assertEqual(composition['cardiotox_TOP2']['n_covered'], 1)
-        self.assertEqual(composition['cardiotox_other']['n_covered'], 0)
+        self.assertEqual(composition['tox']['n_covered'], 1)
 
     def test_f2000_distribution_is_bounded_by_the_active_disease_count(self):
         np.testing.assert_array_equal(f2000_distribution(np.array([0, 1, 1, 2]), 2),
@@ -1533,7 +1532,7 @@ class DocxTests(unittest.TestCase):
         # The uncomfortable results are stated, never smoothed over.
         self.assertIn('SLC9A7', rows['AF'][5], 'AF must name its single gene')
         self.assertIn('未达到', rows['AF'][5])
-        self.assertIn('唯一达到', rows['cardiotox_TOP2'][5])
+        self.assertIn('唯一达到', rows['tox'][5])
         for short in ('nHF', 'ICM'):
             self.assertIn('未达到', rows[short][5], f'{short} must state its shortfall')
             self.assertIn('没有更低层可收', rows[short][5])

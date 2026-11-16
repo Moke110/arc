@@ -75,27 +75,15 @@ SCHEMA = 'stage2-gene-axis-release-v1'
 #: with a self-describing message (#207); #208 republishes the products.
 ALGORITHM = 'f2000-deg2000-v2'
 
-# The **declared** six-disease roster (ADR 0071 decision 7 re-admits ``AF``):
-# ``nHF``, ``ICM``, ``AF``, ``genetic_cardiomyopathy``, ``cardiotox_TOP2`` and
-# ``cardiotox_other``. The product directory is the disease-fusion directory
-# under ``output/disease-fusion/``; it is also the prefix of the candidate
-# table's ``<category>_rank`` column and the ``group`` of a composition row.
-CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
-              'cardiotox_TOP2', 'cardiotox_other')
-#: The declared categories whose disease-fusion products are not published yet,
-#: so they cannot be part of the gene-axis release. #206 added ``af`` to the
-#: roster; #208 published all six disease products and emptied this tuple, so
-#: ``RELEASE_CATEGORIES`` is now the full ``CATEGORIES`` roster.
+# ADR 0072 declares five diseases; measured eligibility selects participants.
+# Directory names also prefix candidate rank columns and composition groups.
+CATEGORIES = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy', 'tox')
 UNPUBLISHED_CATEGORIES = ()
-#: The categories the release is built from: the declared roster minus the
-#: not-yet-published ``UNPUBLISHED_CATEGORIES`` (empty since #208, so this is the
-#: full six-disease roster). This is the column set of the published products.
-RELEASE_CATEGORIES = tuple(category for category in CATEGORIES
-                           if category not in UNPUBLISHED_CATEGORIES)
+RELEASE_CATEGORIES = CATEGORIES
 CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',
                    'genetic_cardiomyopathy': 'genetic_cardiomyopathy',
                    'cardiotox_TOP2': 'cardiotox_TOP2',
-                   'cardiotox_other': 'cardiotox_other'}
+                   'cardiotox_other': 'cardiotox_other', 'tox': 'TOX'}
 CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in RELEASE_CATEGORIES)
 
 #: Declared released axis sizes (ADR 0066). N is chosen, never read off a curve.
@@ -613,7 +601,7 @@ def source_topn_coverage(axes, tenv_rank, deg2000_masks, categories=None,
                              'group_label': CATEGORY_LABELS[category],
                              'numerator': np.nan, 'denominator': np.nan,
                              'rate': np.nan,
-                             'note': ('excluded from the fusion: the disease has no '
+                             'note': ('excluded from cross-disease fusion by eligibility; no participating '
                                       'DEG2000, so no coverage is defined')})
                 continue
             covered = int(mask[genes].sum())
@@ -878,7 +866,13 @@ class GeneAxis:
         """All frozen-axis candidates with their disease ranks, ``rank_sum`` and ``f2000``."""
         path = self._verified('candidate_rank_sum.csv')
         table = pd.read_csv(path, dtype={'symbol': str}, float_precision='round_trip')
-        expected = candidate_columns()
+        # A retained ADR 0071 release remains readable until successor acceptance.
+        declared = self.manifest().get('categories', {})
+        legacy = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
+                  'cardiotox_TOP2', 'cardiotox_other')
+        roster = legacy if set(declared) == set(legacy) else RELEASE_CATEGORIES
+        expected = ('symbol', 'gene_index', 'tenv_hvg_rank',
+                    *(f'{category}_rank' for category in roster), 'rank_sum', 'f2000')
         if list(table.columns) != list(expected):
             raise ValueError(f'{path}: candidate table columns differ from the release contract')
         return table
