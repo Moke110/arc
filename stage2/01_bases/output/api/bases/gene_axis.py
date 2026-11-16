@@ -1,40 +1,40 @@
 """Cross-disease DEG fusion and the released Stage 2 axes (ADR 0066, ADR 0071).
 
 This module owns every scientific definition of the released gene axis: the
-cross-disease fusion of the published per-disease ``DEG2000`` sets, the
-``f2000`` disease-replication count, the ``0.5*N + 0.5*N`` axis fill rule with
-its tenv-HVG fallback, the ``DEG2000``-based composition and source-coverage
+cross-disease fusion of the published per-disease ``DEG1000`` sets, the
+``f1000`` disease-replication count, the ``0.5*N + 0.5*N`` axis fill rule with
+its tenv-HVG fallback, the ``DEG1000``-based composition and source-coverage
 tables, the rank-sum histogram and the diagnostic Kneedle + second-difference
 inflection. ``execution/build_gene_axis.py`` reads the pinned inputs and
 publishes the products; ``execution/tests/test_gene_axis.py`` exercises these
 definitions on hermetic fixtures.
 
-Level 1 (a disease's source fusion and its ``DEG2000`` cut) is the published
+Level 1 (a disease's source fusion and its ``DEG1000`` cut) is the published
 product of ADR 0071 decision 4 and lives in :mod:`bases.disease_deg`
 (``level_one_rank`` / ``fuse_disease``); this module consumes its
 ``output/disease-fusion/`` product through
 :class:`bases.disease_deg.DiseaseFusion` and never re-reads a within-dataset
 measured-gene rank. Level 2 (ADR 0071 decision 5) is::
 
-    f2000(g)    = the number of active diseases whose DEG2000_d contains g
+    f1000(g)    = the number of active diseases whose DEG1000_d contains g
     rank_sum(g) = sum over the active diseases of rank_d(g) / n_d
 
 where ``rank_d(g)`` is the gene's published disease rank when it is in
-``DEG2000_d`` and ``n_d + 1`` otherwise, and ``n_d`` is that disease's
+``DEG1000_d`` and ``n_d + 1`` otherwise, and ``n_d`` is that disease's
 axis-resolved DEG-union size -- the same "divide by the number of ranked items"
 contract ADR 0071 decision 3 applies to a source. ``rank_sum`` is consequently
-in ``[1/n_d, (n_d + 1)/n_d]`` per disease and a gene outside ``DEG2000_d`` is
+in ``[1/n_d, (n_d + 1)/n_d]`` per disease and a gene outside ``DEG1000_d`` is
 worse than every gene inside it, never omitted. Ascending is better; ties break
 on ``gene_index``. tenv-HVG is **not** a ``rank_sum`` term: it supplies the
 axis's first half, and its dispersion rank orders the fallback genes.
 
 It is a pure function module (ADR 0062): no file is opened here except through
 :class:`GeneAxis`, the public reader for the published ``output/gene-axis/``
-release. Nothing here chooses an axis size: ``N`` is declared (2,000 and 5,000)
+release. Nothing here chooses an axis size: ``N`` is declared (2,000/3,000/4,000/5,000)
 and the inflection diagnostic never selects it.
 
 Vocabulary follows ADR 0071 and ``GLOSSARY.md`` -> *Stage 2 gene axis*:
-``DEG (gene axis, v2)``, ``DEG2000``, ``f2000``, ``Rank-sum fusion``,
+``DEG (gene axis, v2)``, ``DEG1000``, ``f1000``, ``Rank-sum fusion``,
 ``Axis fill rule``, ``Inflection point``. The retired ``pN`` count has no
 definition, column or reader here.
 
@@ -68,12 +68,12 @@ from .deg_rank import (
     rank_scores,
 )
 
-SCHEMA = 'stage2-gene-axis-release-v1'
+SCHEMA = 'stage2-gene-axis-release-v3'
 #: The axis-construction algorithm marker published in the release manifest.
 #: A release whose manifest does not carry it predates the ADR 0071 v2 rule
 #: (it was built under the retired ``pN`` fill rule) and its replay is refused
 #: with a self-describing message (#207); #208 republishes the products.
-ALGORITHM = 'f2000-deg2000-v2'
+ALGORITHM = 'tier-first-deg1000-f1000-four-axes-v3'
 
 # ADR 0072 declares five diseases; measured eligibility selects participants.
 # Directory names also prefix candidate rank columns and composition groups.
@@ -87,22 +87,22 @@ CATEGORY_LABELS = {'nhf': 'nHF', 'icm': 'ICM', 'af': 'AF',
 CATEGORY_RANK_COLUMNS = tuple(f'{category}_rank' for category in RELEASE_CATEGORIES)
 
 #: Declared released axis sizes (ADR 0066). N is chosen, never read off a curve.
-AXIS_SIZES = (2000, 5000)
-#: Half of an axis comes from tenv-HVG, half from the cross-disease DEG2000
+AXIS_SIZES = (2000, 3000, 4000, 5000)
+#: Half of an axis comes from tenv-HVG, half from the cross-disease DEG1000
 #: order (with the tenv-HVG fallback).
 FILL_FRACTION = 0.5
-#: The published ADR 0071 ``DEG2000`` cut (decision 4): a disease keeps at most
-#: its first 2,000 DEGs. Re-exported from the disease contract so the two levels
+#: The published ADR 0073 ``DEG1000`` cut: a disease keeps at most
+#: its first 1,000 DEGs. Re-exported from the disease contract so the two levels
 #: can never disagree.
-DEG2000_LIMIT = disease_deg.DEG2000_LIMIT
+DEG1000_LIMIT = disease_deg.DEG1000_LIMIT
 
 
 def candidate_columns(categories=None):
     """Contracted candidate-table columns for the requested released roster.
 
-    The tenv-HVG dispersion rank, the published ``DEG2000`` disease rank per
+    The tenv-HVG dispersion rank, the published ``DEG1000`` disease rank per
     released disease (empty where the gene is outside that disease's
-    ``DEG2000``), the level-2 ``rank_sum`` and ``f2000``. The retired
+    ``DEG1000``), the level-2 ``rank_sum`` and ``f1000``. The retired
     ``p2000``/``p5000`` columns have no successor here.
     """
     categories = tuple(RELEASE_CATEGORIES if categories is None else categories)
@@ -113,7 +113,7 @@ def candidate_columns(categories=None):
         raise ValueError(f'unknown candidate categories: {sorted(unknown)}')
     return (('symbol', 'gene_index', 'tenv_hvg_rank')
             + tuple(f'{category}_rank' for category in categories)
-            + ('rank_sum', 'f2000'))
+            + ('rank_sum', 'f1000'))
 
 
 CANDIDATE_COLUMNS = candidate_columns()
@@ -124,7 +124,7 @@ AXIS_COLUMNS = ('gene_index', 'symbol')
 #: explicitly so no consumer has to guess which set the denominator is.
 #: ``tenv_hvg`` keeps the v1 top-``N`` contract (numerator
 #: ``|top_N(tenv) ∩ G_N|``, denominator ``N``); a disease reports
-#: ``|DEG2000_d ∩ G_N|`` over ``|DEG2000_d|`` (ADR 0071 decision 8). A group
+#: ``|DEG1000_d ∩ G_N|`` over ``|DEG1000_d|`` (ADR 0071 decision 8). A group
 #: excluded from the fusion keeps an empty row, so the table reads as "not
 #: fused", never as "fused but measured nothing".
 COVERAGE_COLUMNS = ('N', 'n_axis', 'group', 'group_label', 'numerator',
@@ -132,8 +132,8 @@ COVERAGE_COLUMNS = ('N', 'n_axis', 'group', 'group_label', 'numerator',
 
 #: ``axis_composition.csv``: one row per released axis and per composition
 #: record. ``record`` is ``axis_fill`` (the two declared halves and the tenv-HVG
-#: fallback), ``deg2000`` (a disease's ``DEG2000`` coverage of the axis with its
-#: own denominator) or ``f2000`` (how many axis genes each disease-replication
+#: fallback), ``deg1000`` (a disease's ``DEG1000`` coverage of the axis with its
+#: own denominator) or ``f1000`` (how many axis genes each disease-replication
 #: count has). ``n_axis`` is the axis size; ``share`` is
 #: ``n_genes / denominator``.
 COMPOSITION_COLUMNS = ('axis', 'n_axis', 'record', 'group', 'n_genes',
@@ -141,28 +141,28 @@ COMPOSITION_COLUMNS = ('axis', 'n_axis', 'record', 'group', 'n_genes',
 
 FILL_RULE = (
     'G_N = the top 0.5*N genes of tenv-HVG (tenv_hvg_rank <= N/2), then 0.5*N '
-    'more from the remaining candidates that have f2000 >= 1, ordered by f2000 '
+    'more from the remaining candidates that have f1000 >= 1, ordered by f1000 '
     'descending, rank_sum ascending, gene_index ascending; a gene with '
-    'f2000 = 0 is never selected by the disease half. When fewer than 0.5*N '
-    'remaining candidates have f2000 >= 1, the shortfall is filled from the '
+    'f1000 = 0 is never selected by the disease half. When fewer than 0.5*N '
+    'remaining candidates have f1000 >= 1, the shortfall is filled from the '
     'unused tenv-HVG genes (the remaining candidates not already selected) in '
     'ascending tenv-HVG rank order -- never from a gene on disease evidence it '
     'does not have -- and the count is recorded in the release manifest. The '
     'union is published ordered by ascending gene_index and is never renumbered.')
-F2000_RULE = (
-    'f2000(g) is the number of active diseases whose published DEG2000_d '
+F1000_RULE = (
+    'f1000(g) is the number of active diseases whose published DEG1000_d '
     'contains g; it is the axis disease-side selection signal and replaces the '
     'retired pN. It is a count of diseases, not a rank or a score.')
 RANK_SUM_RULE = (
     'rank_sum(g) = sum over the active diseases of rank_d(g) / n_d, where n_d '
     'is the disease axis-resolved DEG-union size and rank_d(g) is the '
-    "disease's published DEG2000 rank when g is in DEG2000_d and n_d + 1 "
+    "disease's published tier-first DEG1000 rank when g is in DEG1000_d and n_d + 1 "
     'otherwise. Ascending is better; ties break on gene_index. tenv-HVG is not '
     'a term: it supplies the first axis half.')
 FALLBACK_RULE = (
     'a gene that is not a DEG in any disease enters the axis only as a '
     'tenv-HVG fallback gene, selected in ascending tenv-HVG rank order after '
-    'every available f2000 >= 1 candidate; the manifest records how many '
+    'every available f1000 >= 1 candidate; the manifest records how many '
     'second-half slots came from that fallback.')
 
 
@@ -223,14 +223,14 @@ def category_rank(ranks, n_deg, gene_index=None, axis_size=None):
             'measured': result['deg'], 'n_datasets': result['n_sources']}
 
 
-def deg2000_frame(rank, n_deg, axis_size=None, label='disease',
-                  limit=DEG2000_LIMIT):
-    """Validate one disease's complete frozen-axis ``DEG2000`` rank frame.
+def deg1000_frame(rank, n_deg, axis_size=None, label='disease',
+                  limit=DEG1000_LIMIT):
+    """Validate one disease's complete frozen-axis ``DEG1000`` rank frame.
 
     The frame is the level-1 disease rank restricted to the published
-    ``DEG2000_d``: a gene inside ``DEG2000_d`` carries its published
+    ``DEG1000_d``: a gene inside ``DEG1000_d`` carries its published
     ``disease_rank`` (``1..min(n_deg, limit)``) and every other gene carries
-    ``n_deg + 1`` (the ADR 0071 decision-5 "outside ``DEG2000_d``" marker). A
+    ``n_deg + 1`` (the ADR 0071 decision-5 "outside ``DEG1000_d``" marker). A
     frame that is not a complete ``1..k`` assignment over
     ``k = min(n_deg, limit)`` genes, or that leaves a non-member at anything
     other than ``n_deg + 1``, is rejected rather than silently re-ordered.
@@ -239,38 +239,38 @@ def deg2000_frame(rank, n_deg, axis_size=None, label='disease',
     n_deg = int(n_deg)
     limit = int(limit)
     if n_deg <= 0:
-        raise ValueError(f'{label}: a DEG2000 frame needs a positive DEG-union size')
+        raise ValueError(f'{label}: a DEG1000 frame needs a positive DEG-union size')
     if axis_size is None:
         axis_size = int(rank.size)
     axis_size = int(axis_size)
     if rank.shape != (axis_size,):
-        raise ValueError(f'{label}: a DEG2000 rank frame must cover the frozen axis')
+        raise ValueError(f'{label}: a DEG1000 rank frame must cover the frozen axis')
     expected = min(n_deg, limit)
     if rank.min() < 1 or rank.max() > n_deg + 1:
-        raise ValueError(f'{label}: a DEG2000 rank must be in 1..n_deg+1')
+        raise ValueError(f'{label}: a DEG1000 rank must be in 1..n_deg+1')
     inside = rank <= expected
     if int(inside.sum()) != expected:
         raise ValueError(
-            f'{label}: DEG2000 must hold min(n_deg, {limit}) = {expected} genes, '
+            f'{label}: DEG1000 must hold min(n_deg, {limit}) = {expected} genes, '
             f'found {int(inside.sum())}')
     if not np.array_equal(np.sort(rank[inside]),
                           np.arange(1, expected + 1, dtype=np.int64)):
-        raise ValueError(f'{label}: DEG2000 ranks must be exactly 1..{expected}')
+        raise ValueError(f'{label}: DEG1000 ranks must be exactly 1..{expected}')
     if not inside.all() and not (rank[~inside] == n_deg + 1).all():
-        raise ValueError(f'{label}: a gene outside DEG2000 must carry rank n_deg+1')
+        raise ValueError(f'{label}: a gene outside DEG1000 must carry rank n_deg+1')
     return rank
 
 
-def _check_fusion_inputs(deg2000_ranks, n_deg, categories, gene_index, axis_size,
+def _check_fusion_inputs(deg1000_ranks, n_deg, categories, gene_index, axis_size,
                          limit):
     """Shared level-2 input validation; returns (frames, counts, categories, size)."""
     categories = tuple(RELEASE_CATEGORIES if categories is None else categories)
-    ranks = [np.asarray(rank, dtype=np.int64) for rank in deg2000_ranks]
+    ranks = [np.asarray(rank, dtype=np.int64) for rank in deg1000_ranks]
     counts = [int(value) for value in n_deg]
     if not ranks:
         raise ValueError('a cross-disease fusion needs at least one disease')
     if len(ranks) != len(counts) or len(ranks) != len(categories):
-        raise ValueError('a level-2 fusion needs one DEG2000 frame per active disease')
+        raise ValueError('a level-2 fusion needs one DEG1000 frame per active disease')
     if len(set(categories)) != len(categories):
         raise ValueError('a fusion source list cannot repeat a category')
     unknown = set(categories) - set(CATEGORIES)
@@ -281,12 +281,12 @@ def _check_fusion_inputs(deg2000_ranks, n_deg, categories, gene_index, axis_size
     return ranks, counts, categories, axis_size
 
 
-def f2000_count(deg2000_ranks, n_deg, categories=None, gene_index=None,
-                axis_size=None, limit=DEG2000_LIMIT):
-    """``f2000``: the number of active diseases whose ``DEG2000_d`` holds a gene.
+def f1000_count(deg1000_ranks, n_deg, categories=None, gene_index=None,
+                axis_size=None, limit=DEG1000_LIMIT):
+    """``f1000``: the number of active diseases whose ``DEG1000_d`` holds a gene.
 
-    ``deg2000_ranks`` is one complete frozen-axis ``DEG2000`` rank frame per
-    active disease (:func:`deg2000_frame`) and ``n_deg`` its matching
+    ``deg1000_ranks`` is one complete frozen-axis ``DEG1000`` rank frame per
+    active disease (:func:`deg1000_frame`) and ``n_deg`` its matching
     DEG-union size. Membership is ``rank <= min(n_deg, limit)``, so a disease
     with a union under the limit keeps its whole union. The count is bounded by
     the number of active diseases, never by a declared constant: a category
@@ -294,66 +294,66 @@ def f2000_count(deg2000_ranks, n_deg, categories=None, gene_index=None,
     counted.
     """
     ranks, counts, categories, axis_size = _check_fusion_inputs(
-        deg2000_ranks, n_deg, categories, gene_index, axis_size, limit)
+        deg1000_ranks, n_deg, categories, gene_index, axis_size, limit)
     total = np.zeros(axis_size, dtype=np.int64)
     for position, (frame, count) in enumerate(zip(ranks, counts)):
-        frame = deg2000_frame(frame, count, axis_size, categories[position],
+        frame = deg1000_frame(frame, count, axis_size, categories[position],
                               limit=limit)
         total += frame <= min(int(count), int(limit))
     return total
 
 
-def cross_disease_rank_sum(deg2000_ranks, n_deg, categories=None, gene_index=None,
-                           axis_size=None, limit=DEG2000_LIMIT):
-    """Level 2: ``rank_sum`` and ``f2000`` over the active diseases (ADR 0071).
+def cross_disease_rank_sum(deg1000_ranks, n_deg, categories=None, gene_index=None,
+                           axis_size=None, limit=DEG1000_LIMIT):
+    """Level 2: ``rank_sum`` and ``f1000`` over the active diseases (ADR 0071).
 
     ADR 0071 decision 5, with the decision-3 denominator contract::
 
         rank_sum(g) = sum over diseases of rank_d(g) / n_d
 
-    ``rank_d(g)`` is the gene's published ``DEG2000`` disease rank when it is
-    inside ``DEG2000_d`` and ``n_d + 1`` when it is not, so a gene outside a
-    disease's ``DEG2000`` contributes ``(n_d + 1) / n_d`` -- worse than every
+    ``rank_d(g)`` is the gene's published ``DEG1000`` disease rank when it is
+    inside ``DEG1000_d`` and ``n_d + 1`` when it is not, so a gene outside a
+    disease's ``DEG1000`` contributes ``(n_d + 1) / n_d`` -- worse than every
     gene inside that disease and never 0 or an omitted term. ``n_d`` is the
     disease's axis-resolved DEG-**union** size, not the number of genes that
-    survived the 2,000 cut, so the same rank position means the same thing in
+    survived the 1,000 cut, so the same rank position means the same thing in
     every disease whose union has the same size. tenv-HVG is deliberately not a
     term: it is not a disease, and its contribution is the axis's first half.
 
-    ``deg2000_ranks``/``n_deg`` describe the active diseases (a category dropped
+    ``deg1000_ranks``/``n_deg`` describe the active diseases (a category dropped
     from the fusion is passed by omission, ADR 0068); validation is
-    :func:`deg2000_frame`'s. Ascending ``rank_sum`` is better and ties break on
+    :func:`deg1000_frame`'s. Ascending ``rank_sum`` is better and ties break on
     ``gene_index`` in the fill rule, not here.
 
-    Returns ``{'rank_sum', 'f2000', 'deg2000', 'categories', 'n_deg'}`` where
-    ``deg2000`` is the per-disease membership mask list.
+    Returns ``{'rank_sum', 'f1000', 'deg1000', 'categories', 'n_deg'}`` where
+    ``deg1000`` is the per-disease membership mask list.
     """
     ranks, counts, categories, axis_size = _check_fusion_inputs(
-        deg2000_ranks, n_deg, categories, gene_index, axis_size, limit)
+        deg1000_ranks, n_deg, categories, gene_index, axis_size, limit)
     total = np.zeros(axis_size, dtype=np.float64)
-    f2000 = np.zeros(axis_size, dtype=np.int64)
+    f1000 = np.zeros(axis_size, dtype=np.int64)
     masks = []
     for position, (frame, count) in enumerate(zip(ranks, counts)):
-        frame = deg2000_frame(frame, count, axis_size, categories[position],
+        frame = deg1000_frame(frame, count, axis_size, categories[position],
                               limit=limit)
         total += frame / float(count)
         mask = frame <= min(count, int(limit))
-        f2000 += mask
+        f1000 += mask
         masks.append(mask)
-    return {'rank_sum': total, 'f2000': f2000, 'deg2000': masks,
+    return {'rank_sum': total, 'f1000': f1000, 'deg1000': masks,
             'categories': categories, 'n_deg': counts}
 
 
-def candidate_table(axis, tenv_rank, deg2000_ranks, n_deg, categories=None,
-                    gene_index=None, limit=DEG2000_LIMIT):
+def candidate_table(axis, tenv_rank, deg1000_ranks, n_deg, categories=None,
+                    gene_index=None, limit=DEG1000_LIMIT):
     """The master candidate table: one row per frozen-axis gene (ADR 0071).
 
     Columns (:func:`candidate_columns`): ``symbol``, ``gene_index``,
     ``tenv_hvg_rank``, one ``<category>_rank`` per **released** category, the
-    level-2 ``rank_sum`` and ``f2000``. A ``<category>_rank`` cell is the
-    published ``DEG2000`` disease rank (``1..|DEG2000_d|``) when the gene is in
-    that disease's ``DEG2000`` and empty otherwise; a category excluded from the
-    fusion (ADR 0068: no ``DEG2000``) keeps its contracted column empty. Rows are
+    level-2 ``rank_sum`` and ``f1000``. A ``<category>_rank`` cell is the
+    published ``DEG1000`` disease rank (``1..|DEG1000_d|``) when the gene is in
+    that disease's ``DEG1000`` and empty otherwise; a category excluded from the
+    fusion (ADR 0068: no ``DEG1000``) keeps its contracted column empty. Rows are
     in frozen-axis order and every vector is indexed by ``gene_index``, so no
     consumer can read a row position as a gene index.
     """
@@ -367,14 +367,14 @@ def candidate_table(axis, tenv_rank, deg2000_ranks, n_deg, categories=None,
         raise ValueError('axis table must be in frozen gene_index order')
     tenv_rank = _complete_rank(tenv_rank, axis_size, 'tenv-HVG')
     active = tuple(RELEASE_CATEGORIES if categories is None else categories)
-    frames = [np.asarray(rank, dtype=np.int64) for rank in deg2000_ranks]
+    frames = [np.asarray(rank, dtype=np.int64) for rank in deg1000_ranks]
     counts = [int(value) for value in n_deg]
     fusion = cross_disease_rank_sum(frames, counts, categories=active,
                                     gene_index=gene_index, axis_size=axis_size,
                                     limit=limit)
     ranks_by_category = {}
     for category, frame, count in zip(active, frames, counts):
-        frame = deg2000_frame(frame, count, axis_size, category, limit=limit)
+        frame = deg1000_frame(frame, count, axis_size, category, limit=limit)
         inside = frame <= min(count, int(limit))
         ranks_by_category[category] = np.where(inside, frame, np.nan)
     columns = {'symbol': axis.symbol.to_numpy(),
@@ -386,32 +386,32 @@ def candidate_table(axis, tenv_rank, deg2000_ranks, n_deg, categories=None,
         else:
             columns[f'{category}_rank'] = np.full(axis_size, np.nan)
     columns['rank_sum'] = fusion['rank_sum']
-    columns['f2000'] = fusion['f2000']
+    columns['f1000'] = fusion['f1000']
     table = pd.DataFrame(columns)
     return table.loc[:, list(candidate_columns())]
 
 
-def axis_fill(tenv_rank, f2000, rank_sum, n, gene_index=None, n_diseases=None):
+def axis_fill(tenv_rank, f1000, rank_sum, n, gene_index=None, n_diseases=None):
     """One released axis: the declared ``0.5*N + 0.5*N`` fill rule (ADR 0071).
 
     ``G_N`` takes the top ``0.5*N`` genes of tenv-HVG (``tenv_hvg_rank <= N/2``),
     then ``0.5*N`` more from the **remaining** candidates that have
-    ``f2000 >= 1``, ordered by ``f2000`` descending, ``rank_sum`` ascending,
+    ``f1000 >= 1``, ordered by ``f1000`` descending, ``rank_sum`` ascending,
     ``gene_index`` ascending. When fewer than ``0.5*N`` remaining candidates have
-    ``f2000 >= 1``, the shortfall is filled from the unused tenv-HVG genes in
-    ascending tenv-HVG rank order -- never from a gene with ``f2000 > 0`` that
+    ``f1000 >= 1``, the shortfall is filled from the unused tenv-HVG genes in
+    ascending tenv-HVG rank order -- never from a gene with ``f1000 > 0`` that
     lost the ordering, and never from a non-DEG gene outside that fallback. The
     result is returned as ascending original ``gene_index`` integers: an axis is
     an ordered subset of the frozen space, never renumbered to ``0..N-1``.
 
-    ``f2000``/``rank_sum`` are the level-2 vectors of
+    ``f1000``/``rank_sum`` are the level-2 vectors of
     :func:`cross_disease_rank_sum` and ``n_diseases`` the number of active
-    diseases (``f2000``'s bound); a ``pN`` vector has no successor here.
+    diseases (``f1000``'s bound); a ``pN`` vector has no successor here.
 
-    Returns ``{'axis', 'tenv_half', 'from_deg2000', 'fallback',
-    'n_deg2000_candidates', 'n_diseases'}``: the axis, the declared tenv half,
+    Returns ``{'axis', 'tenv_half', 'from_deg1000', 'fallback',
+    'n_deg1000_candidates', 'n_diseases'}``: the axis, the declared tenv half,
     the two second-half contributions and the number of remaining candidates
-    that had ``f2000 >= 1``. ``from_deg2000 + fallback == n - tenv_half``.
+    that had ``f1000 >= 1``. ``from_deg1000 + fallback == n - tenv_half``.
     """
     tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
     axis_size = tenv_rank.size
@@ -422,17 +422,17 @@ def axis_fill(tenv_rank, f2000, rank_sum, n, gene_index=None, n_diseases=None):
     if n > axis_size:
         raise ValueError('an axis size cannot exceed the frozen axis')
     half = n // 2
-    f2000 = np.asarray(f2000, dtype=np.int64)
+    f1000 = np.asarray(f1000, dtype=np.int64)
     rank_sum = np.asarray(rank_sum, dtype=np.float64)
-    if f2000.shape != (axis_size,) or rank_sum.shape != (axis_size,):
-        raise ValueError('f2000 and rank_sum must cover the frozen axis')
-    if f2000.min() < 0:
-        raise ValueError('f2000 cannot be negative')
-    n_diseases = int(f2000.max()) if n_diseases is None else int(n_diseases)
+    if f1000.shape != (axis_size,) or rank_sum.shape != (axis_size,):
+        raise ValueError('f1000 and rank_sum must cover the frozen axis')
+    if f1000.min() < 0:
+        raise ValueError('f1000 cannot be negative')
+    n_diseases = int(f1000.max()) if n_diseases is None else int(n_diseases)
     if n_diseases < 0:
         raise ValueError('the active disease count cannot be negative')
-    if f2000.max() > n_diseases:
-        raise ValueError(f'f2000 must be in 0..{n_diseases} (the active disease count)')
+    if f1000.max() > n_diseases:
+        raise ValueError(f'f1000 must be in 0..{n_diseases} (the active disease count)')
     if not np.isfinite(rank_sum).all():
         raise ValueError('rank_sum must be finite')
     gene_index = _gene_index(gene_index, axis_size)
@@ -442,11 +442,11 @@ def axis_fill(tenv_rank, f2000, rank_sum, n, gene_index=None, n_diseases=None):
     remaining = np.flatnonzero(tenv_rank > half)
     if len(remaining) < half:
         raise ValueError('the frozen axis cannot fill the declared second half')
-    disease_candidates = remaining[f2000[remaining] >= 1]
-    # lexsort's last key is primary: f2000 descending, rank_sum ascending, index.
+    disease_candidates = remaining[f1000[remaining] >= 1]
+    # lexsort's last key is primary: f1000 descending, rank_sum ascending, index.
     order = np.lexsort((gene_index[disease_candidates],
                         rank_sum[disease_candidates],
-                        -f2000[disease_candidates]))
+                        -f1000[disease_candidates]))
     chosen = disease_candidates[order[:half]]
     fallback = np.empty(0, dtype=np.int64)
     if len(chosen) < half:
@@ -463,9 +463,9 @@ def axis_fill(tenv_rank, f2000, rank_sum, n, gene_index=None, n_diseases=None):
     if len(np.unique(axis)) != n or len(axis) != n:
         raise ValueError('axis fill did not select N distinct frozen-axis genes')
     return {'axis': axis, 'tenv_half': int(len(tenv_half)),
-            'from_deg2000': int(len(chosen) - len(fallback)),
+            'from_deg1000': int(len(chosen) - len(fallback)),
             'fallback': int(len(fallback)),
-            'n_deg2000_candidates': int(len(disease_candidates)),
+            'n_deg1000_candidates': int(len(disease_candidates)),
             'n_diseases': int(n_diseases)}
 
 
@@ -484,75 +484,75 @@ def axis_intersection(left, right):
     }
 
 
-def deg2000_composition(axis_genes, deg2000_masks, deg2000_sizes, categories=None):
-    """Per disease ``|DEG2000_d ∩ G_N|`` over ``|DEG2000_d|`` (ADR 0071 decision 8).
+def deg1000_composition(axis_genes, deg1000_masks, deg1000_sizes, categories=None):
+    """Per disease ``|DEG1000_d ∩ G_N|`` over ``|DEG1000_d|`` (ADR 0071 decision 8).
 
-    ``deg2000_masks``/``deg2000_sizes`` are aligned with ``categories``; a
+    ``deg1000_masks``/``deg1000_sizes`` are aligned with ``categories``; a
     category excluded from the fusion is passed with a ``None`` mask and keeps an
     empty entry (``None``), so a consumer cannot read it as "fused but measured
-    nothing". Returns ``{category: {'n_covered', 'n_deg2000', 'share'}}`` where
-    ``share = n_covered / n_deg2000``.
+    nothing". Returns ``{category: {'n_covered', 'n_deg1000', 'share'}}`` where
+    ``share = n_covered / n_deg1000``.
     """
     categories = tuple(RELEASE_CATEGORIES if categories is None else categories)
-    if len(deg2000_masks) != len(categories) or len(deg2000_sizes) != len(categories):
-        raise ValueError('a composition needs one DEG2000 mask and size per active category')
+    if len(deg1000_masks) != len(categories) or len(deg1000_sizes) != len(categories):
+        raise ValueError('a composition needs one DEG1000 mask and size per active category')
     axis_genes = np.asarray(axis_genes, dtype=np.int64)
     if axis_genes.size and int(axis_genes.min()) < 0:
         raise ValueError('axis gene indices must be non-negative')
     composition = {category: None for category in RELEASE_CATEGORIES}
-    for category, mask, size in zip(categories, deg2000_masks, deg2000_sizes):
+    for category, mask, size in zip(categories, deg1000_masks, deg1000_sizes):
         if mask is None:
             continue
         mask = np.asarray(mask, dtype=bool)
         size = int(size)
         if mask.ndim != 1:
-            raise ValueError('a DEG2000 mask must be a vector')
+            raise ValueError('a DEG1000 mask must be a vector')
         if size <= 0 or int(mask.sum()) != size:
-            raise ValueError(f'{category}: the DEG2000 mask size and its denominator differ')
+            raise ValueError(f'{category}: the DEG1000 mask size and its denominator differ')
         if axis_genes.size and int(axis_genes.max()) >= mask.size:
-            raise ValueError('an axis gene is outside the DEG2000 mask axis')
+            raise ValueError('an axis gene is outside the DEG1000 mask axis')
         covered = int(mask[axis_genes].sum()) if axis_genes.size else 0
-        composition[category] = {'n_covered': covered, 'n_deg2000': size,
+        composition[category] = {'n_covered': covered, 'n_deg1000': size,
                                  'share': covered / size}
     return composition
 
 
-def f2000_distribution(f2000, n_diseases=None):
-    """Counts of genes at each ``f2000`` value ``0..n_diseases``.
+def f1000_distribution(f1000, n_diseases=None):
+    """Counts of genes at each ``f1000`` value ``0..n_diseases``.
 
     ``n_diseases`` is the number of active diseases actually fused (a category
-    dropped for having no ``DEG2000`` is not counted); the release passes its
+    dropped for having no ``DEG1000`` is not counted); the release passes its
     published count so the distribution's bound follows the data, never a
     hard-coded constant.
     """
-    f2000 = np.asarray(f2000, dtype=np.int64)
-    if f2000.ndim != 1:
-        raise ValueError('f2000 must be a vector')
-    n_diseases = int(f2000.max()) if n_diseases is None else int(n_diseases)
+    f1000 = np.asarray(f1000, dtype=np.int64)
+    if f1000.ndim != 1:
+        raise ValueError('f1000 must be a vector')
+    n_diseases = int(f1000.max()) if n_diseases is None else int(n_diseases)
     if n_diseases < 0:
         raise ValueError('the active disease count cannot be negative')
-    if f2000.min() < 0 or f2000.max() > n_diseases:
-        raise ValueError(f'f2000 must be in 0..{n_diseases} (the active disease count)')
-    return np.bincount(f2000, minlength=n_diseases + 1)
+    if f1000.min() < 0 or f1000.max() > n_diseases:
+        raise ValueError(f'f1000 must be in 0..{n_diseases} (the active disease count)')
+    return np.bincount(f1000, minlength=n_diseases + 1)
 
 
-def source_topn_coverage(axes, tenv_rank, deg2000_masks, categories=None,
+def source_topn_coverage(axes, tenv_rank, deg1000_masks, categories=None,
                          sizes=AXIS_SIZES):
     """Each group's coverage of every released axis, with numerator and denominator.
 
     Long format (:data:`COVERAGE_COLUMNS`): one row per released axis and per
     fusion group. ``tenv_hvg`` keeps the v1 top-``N`` contract (numerator
     ``|{g in G_N : tenv_hvg_rank(g) <= N}|``, denominator ``N``). A disease
-    reports the ADR 0071 decision-8 ``DEG2000`` coverage: numerator
-    ``|DEG2000_d ∩ G_N|``, denominator ``|DEG2000_d|``, so the rate is comparable
+    reports the ADR 0071 decision-8 ``DEG1000`` coverage: numerator
+    ``|DEG1000_d ∩ G_N|``, denominator ``|DEG1000_d|``, so the rate is comparable
     between ``G_2000`` and ``G_5000`` and between diseases of different union
     size. A group excluded from the fusion (``None`` mask) keeps a row with empty
     numerator/denominator/rate and a note.
     """
     categories = tuple(RELEASE_CATEGORIES if categories is None else categories)
-    masks = list(deg2000_masks)
+    masks = list(deg1000_masks)
     if len(masks) != len(categories):
-        raise ValueError('a coverage table needs one DEG2000 mask per active category')
+        raise ValueError('a coverage table needs one DEG1000 mask per active category')
     sizes = tuple(int(size) for size in sizes)
     tenv_rank = np.asarray(tenv_rank, dtype=np.int64)
     if tenv_rank.ndim != 1 or tenv_rank.size < 2:
@@ -568,9 +568,9 @@ def source_topn_coverage(axes, tenv_rank, deg2000_masks, categories=None,
             continue
         mask = np.asarray(mask, dtype=bool)
         if mask.shape != (axis_size,):
-            raise ValueError(f'{category}: a coverage DEG2000 mask must cover the frozen axis')
+            raise ValueError(f'{category}: a coverage DEG1000 mask must cover the frozen axis')
         if not mask.any():
-            raise ValueError(f'{category}: a fused disease needs a non-empty DEG2000')
+            raise ValueError(f'{category}: a fused disease needs a non-empty DEG1000')
         by_category[category] = mask
     keyed = {int(key) for key in axes}
     genes_by_size = {}
@@ -602,7 +602,7 @@ def source_topn_coverage(axes, tenv_rank, deg2000_masks, categories=None,
                              'numerator': np.nan, 'denominator': np.nan,
                              'rate': np.nan,
                              'note': ('excluded from cross-disease fusion by eligibility; no participating '
-                                      'DEG2000, so no coverage is defined')})
+                                      'DEG1000, so no coverage is defined')})
                 continue
             covered = int(mask[genes].sum())
             denominator = int(mask.sum())
@@ -610,7 +610,7 @@ def source_topn_coverage(axes, tenv_rank, deg2000_masks, categories=None,
                          'group_label': CATEGORY_LABELS[category],
                          'numerator': covered, 'denominator': denominator,
                          'rate': round(100.0 * covered / denominator, 2),
-                         'note': ('DEG2000 coverage: |DEG2000_d ∩ G_N| / |DEG2000_d|')})
+                         'note': ('DEG1000 coverage: |DEG1000_d ∩ G_N| / |DEG1000_d|')})
     frame = pd.DataFrame(rows, columns=list(COVERAGE_COLUMNS))
     for column in ('numerator', 'denominator'):
         frame[column] = frame[column].astype('Int64')
@@ -831,6 +831,8 @@ class GeneAxis:
         manifest = json.loads(path.read_text())
         if manifest.get('schema') != SCHEMA:
             raise ValueError(f'{path}: unexpected gene-axis schema')
+        if manifest.get('release', {}).get('algorithm') != ALGORITHM:
+            raise ValueError(f'{path}: unexpected gene-axis algorithm')
         return manifest
 
     def axis_sizes(self):
@@ -863,16 +865,10 @@ class GeneAxis:
         return path
 
     def candidate_table(self):
-        """All frozen-axis candidates with their disease ranks, ``rank_sum`` and ``f2000``."""
+        """All frozen-axis candidates with their disease ranks, ``rank_sum`` and ``f1000``."""
         path = self._verified('candidate_rank_sum.csv')
         table = pd.read_csv(path, dtype={'symbol': str}, float_precision='round_trip')
-        # A retained ADR 0071 release remains readable until successor acceptance.
-        declared = self.manifest().get('categories', {})
-        legacy = ('nhf', 'icm', 'af', 'genetic_cardiomyopathy',
-                  'cardiotox_TOP2', 'cardiotox_other')
-        roster = legacy if set(declared) == set(legacy) else RELEASE_CATEGORIES
-        expected = ('symbol', 'gene_index', 'tenv_hvg_rank',
-                    *(f'{category}_rank' for category in roster), 'rank_sum', 'f2000')
+        expected = candidate_columns()
         if list(table.columns) != list(expected):
             raise ValueError(f'{path}: candidate table columns differ from the release contract')
         return table
@@ -890,7 +886,7 @@ class GeneAxis:
         return self.axis_frame(size).gene_index.to_numpy(dtype=np.int64)
 
     def composition(self):
-        """The per-axis fill / DEG2000 / f2000 composition table of both axes."""
+        """The per-axis fill / DEG1000 / f1000 composition table of both axes."""
         path = self._verified('axis_composition.csv')
         table = pd.read_csv(path)
         if list(table.columns) != list(COMPOSITION_COLUMNS):

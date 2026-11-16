@@ -47,7 +47,7 @@ class CoverageContractTest(unittest.TestCase):
     def test_key_set_is_exactly_the_published_datasets_plus_tenv(self):
         """33 dataset rows across five categories, plus the tenv-HVG fusion row."""
         published = published_dataset_ids()
-        self.assertEqual(len(published), 33)
+        self.assertEqual(len(published), 41)
         self.assertEqual(set(metadata.SOURCES), set(published) | {TENV})
         self.assertEqual(len(metadata.SOURCES), len(set(published)) + 1)
 
@@ -112,7 +112,7 @@ class EntryContractTest(unittest.TestCase):
     def test_sample_size_notes_are_non_empty_when_present(self):
         notes = [entry['sample_size_note'] for entry in metadata.SOURCES.values()
                  if entry['sample_size_note'] is not None]
-        self.assertEqual(len(notes), 24, 'expected twenty-four reconciled datasets')
+        self.assertEqual(len(notes), 32, 'expected thirty-two reconciled source records')
         for note in notes:
             self.assertIsInstance(note, str)
             self.assertTrue(note.strip())
@@ -183,11 +183,11 @@ class PrimarySourceSpotCheckTest(unittest.TestCase):
                 self.assertIn('no GEO platform', entry['platform_note'])
                 self.assertIn('do not name the instrument', entry['platform_note'])
 
-    def test_af_sources_are_the_four_published_af_datasets(self):
-        """AF returns (ADR 0071 decision 7) with one row per published AF dataset."""
+    def test_af_sources_are_the_five_published_af_datasets(self):
+        """The all-tier release retains one row per admitted AF dataset."""
         af = sorted(dataset_id for dataset_id in metadata.SOURCES
                     if dataset_id.endswith('__af'))
-        self.assertEqual(af, ['gse138252__af', 'gse238242__af', 'gse255612__af',
+        self.assertEqual(af, ['gse128188__af', 'gse138252__af', 'gse238242__af', 'gse255612__af',
                               'gse269882__af'])
         for dataset_id in af:
             with self.subTest(dataset_id=dataset_id):

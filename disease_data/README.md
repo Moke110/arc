@@ -4,7 +4,7 @@ The disease-side inputs for the Stage 2 gene-axis decision preparation
 (ADR 0065) and the Stage 1 MIRI screen, split into one directory per **GEO
 series** (项) under the external-data provenance contract
 ([ADR 0030](../docs/adr/0030-external-data-provenance-and-step-layout.md)).
-Eleven items are present. Each is:
+The routing index and offline verifier enumerate the current items. The initial eight-series inventory below is historical; later source sections record additions. Each item follows:
 
 ```
 <GSE>/
@@ -19,10 +19,9 @@ Eleven items are present. Each is:
 
 `script/verify.sh` checks each `manifest.sha256` offline, and a missing manifest
 is a failure. Run `script/verify_all.sh` from the repository root to verify every
-external item; the `disease_data/` category has eight items and
-78,661,383 B (75.0 MiB) of `source/` bytes.
+external item. Counts/bytes in the initial inventory below describe that historical acquisition, not the current complete-source release.
 
-## The eight 项
+## Initial eight-series acquisition (historical)
 
 | item | organism / platform | role and comparison | n | `source/` bytes |
 |---|---|---|---|---|
@@ -310,8 +309,30 @@ metadata, fetch recipes, offline manifests and per-item design records:
 
 All seven are tier 2. Admission does not assert a DEG yield or a toxicity phenotype
 at every dose/time. Per-source stratification and existing statistical tests remain
-analysis requirements. The source ladder completes a tier before measuring the
-cumulative axis-resolved 2,000-DEG stop. `GSE243674/local/tox_evidence/` contains
+analysis requirements. Under ADR 0073 the source ladder processes every qualifying declared tier without a DEG-count stop; the former stopping rule is historical. `GSE243674/local/tox_evidence/` contains
 independent regulatory evidence snapshots, reproducible with its
 `script/fetch_tox_evidence.py`; these are declared local additions, separate from
 its unchanged GEO source bytes.
+
+## Complete-source reassessment (ADR 0073, #221)
+
+The current registry collects all qualifying tiers without a DEG-count stop.
+The earlier ADR 0066 whole-tissue exclusions and ADR 0071 stopping rationale
+above describe the historical builds; current human atrial/ventricular bulk
+qualifies at tier 3, including AF GSE128188 and the GSE116250 ICM arm.
+The dated source-review records in the Stage 2 source registry retain finite
+primary-source admission, rejection, uncertainty and reentry evidence.
+
+| added item | input and analysis | disease/tier |
+|---|---|---|
+| GSE183852 | Full author Cardiomyocytes DCM/Donor DESeq2 table; missing padj retained, no local refit | nHF / 1 |
+| GSE248187 | Full author DSP-knockout EHT/isogenic edgeR test table | genetic / 2 |
+| GSE221945 | Full author TBX5 G145R Brugada/corrected DESeq2 table, effect sign reversed | genetic / 2 |
+| GSE329393 | Deposited RBM20 counts, matched-family joint limma-voom fit, exact approved HGNC Entrez mapping | genetic / 2 |
+
+Each item has immutable source bytes, offline verification, declared local
+derivations and digest-pinned fetch/build recipes. Author-table adapters retain
+full tested rows and author statistics; they do not assert a local raw-count
+refit or infer independent donors from library counts.
+
+GSE298023 is also reconstructed from the official 2026 Seurat object (4,289,920,683 bytes), using author `ident == Cardiomyocytes` and `heart_number` identities. Sparse integer counts are summed per donor across repeated scar/nonscar regions before one joint run-pattern-adjusted DCM/ICM-vs-NF fit. Actual CM-positive cohorts are 6 DCM, 7 ICM and 4 NF; controls are shared across the two disease records. The raw 142,024-cell matrix stays sparse; normalised/scaled assays are released before aggregation. The unchanged 10 GiB cap is required; rebuilding uses `script/build_pseudobulk.R` then `script/build_deg.py`.

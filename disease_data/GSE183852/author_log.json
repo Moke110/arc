@@ -1,0 +1,37 @@
+{
+  "item": "GSE183852",
+  "category": "disease_data",
+  "purpose": "ADR0073 complete-source nHF tier-1 evidence: full author cardiomyocyte pseudobulk DESeq2 table, not a selected DEG list.",
+  "retrieved_at": "2026-11-16",
+  "sources": [
+    {
+      "kind": "publication_supplement",
+      "id": "GSE183852; PMID35959412",
+      "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs44161-022-00028-6/MediaObjects/44161_2022_28_MOESM4_ESM.xlsx",
+      "version": "44161_2022_28_MOESM4_ESM.xlsx",
+      "license": "See original article/supplement terms; not independently re-licensed",
+      "species": "Homo sapiens",
+      "method": "script/fetch.sh; immutable publisher workbook",
+      "path": "source/",
+      "files": 1,
+      "bytes": 6678914,
+      "tree_sha256": "e913c37313f1130758ee421ba66963c3a0bb4e56703b3712ea0939c69b7340cb"
+    }
+  ],
+  "local_additions": [
+    {
+      "path": "local/deg/GSE183852_deg.csv",
+      "origin": "All 26946 author Cardiomyocytes rows, preserving log2FoldChange and BH padj, including non-DEGs and missing padj. Canonical fields absent upstream remain empty.",
+      "generated_by": "script/build_deg.py"
+    },
+    {
+      "path": "local/deg/GSE183852_deg.json",
+      "origin": "Tracked source/output digests, complete-row counts and unchanged significance threshold counts; method and limitations explicit.",
+      "generated_by": "script/build_deg.py"
+    }
+  ],
+  "manifest": "manifest.sha256",
+  "verified_at": "2026-11-16",
+  "verify_result": "pass",
+  "notes": "Reopened under ADR0073: previous 50-axis-gene cost/target rationale is not a quality exclusion. Author supplementary table is a full test table, not per-cell annotations. GEO snRNA arm is 13 DCM/25 donor libraries, distinct from total sc+sn cohort labels and article unique-individual counts; preserve author contrast without inventing donor/genotype stratification. Tests are author DESeq2, not locally refitted. Full GEO cell objects/counts not acquired by this adapter. Primary article: https://doi.org/10.1038/s44161-022-00028-6 ; GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183852 ."
+}

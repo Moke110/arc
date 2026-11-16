@@ -93,7 +93,7 @@ def main():
                            'gene_symbol': pseudobulk.gene_symbol})
     for donor in genotypes.donor_id:
         matrix[donor] = pseudobulk[donor]
-    matrix.to_csv(MATRIX, index=False, sep='\t', compression='gzip')
+    matrix.to_csv(MATRIX, index=False, sep='\t', compression={'method': 'gzip', 'mtime': 0})
     fit = disease_deg.run_deg_worker(MATRIX, SAMPLES, DESIGN, DEG)
     table = pd.read_csv(DEG)
     missing = set(disease_deg.LOCAL_DEG_COLUMNS) - set(table.columns)

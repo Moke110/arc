@@ -165,7 +165,7 @@ def write_axis_release(root, axes):
         "fixture": True,
         "axes": sizes,
         "outputs": outputs,
-        "release": {"axis_sizes": [int(size) for size in sorted(axes)]},
+        "release": {"algorithm": axis_module.ALGORITHM, "axis_sizes": [int(size) for size in sorted(axes)]},
     }
     (release / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n")

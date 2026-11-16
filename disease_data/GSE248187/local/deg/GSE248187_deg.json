@@ -1,0 +1,30 @@
+{
+  "category": "genetic_cardiomyopathy",
+  "contrasts": {
+    "DSP_KO-isogenic": {
+      "n_case": 3,
+      "n_control": 3
+    }
+  },
+  "deg": {
+    "bytes": 1786734,
+    "n_source_genes": 15272,
+    "path": "local/deg/GSE248187_deg.csv",
+    "rows": 15272,
+    "sha256": "34d442c75002de2fbaeba521f7744f2db0bc657b3355a731e02ace673aaeedf2"
+  },
+  "deposition": {
+    "bytes": 1521590,
+    "path": "source/GSE248187_DSP_EHTs_Differential_Expression_Table.txt.gz",
+    "sha256": "46a79a7d684e539e3cd751eae81398e75d6d0a7b176a8077b29039f70dcf9bda"
+  },
+  "limitations": [
+    "Three EHT RNA libraries per arm, not three independent patients.",
+    "Human isogenic DSP knockout EHT includes supporting fibroblasts.",
+    "Author logCPM is not invented as a linear base_mean; that field is empty.",
+    "Rat NRVM DSP/JUP/PKP2 tables are excluded."
+  ],
+  "method": "Complete author edgeR human EHT statistics preserved; no local count refit",
+  "series": "GSE248187",
+  "species": "Homo sapiens"
+}

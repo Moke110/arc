@@ -17,7 +17,7 @@ def main():
     output = args.output or repo / 'stage2/01_bases/execution/checkpoints/unified-tox'
     if args.command == 'publish':
         catalog = tox.build_candidate(repo, output, args.workdir)
-        print(f"TOX candidate publish PASS: {catalog['n_deg']} DEGs, {catalog['deg2000']} DEG2000")
+        print(f"TOX candidate publish PASS: {catalog['n_deg']} DEGs, {catalog['deg1000']} DEG1000")
     else:
         tox.verify_candidate(repo, output, args.workdir)
         print('TOX candidate verify PASS')

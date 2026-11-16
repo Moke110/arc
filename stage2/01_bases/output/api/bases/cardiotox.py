@@ -1271,13 +1271,13 @@ def _catalog_entry(record):
 
 
 def category_tier_ledger(category, records):
-    """The v2 tier ledger and level-1 ``DEG2000`` of one cardiotox class (#208).
+    """The v2 tier ledger and level-1 ``DEG1000`` of one cardiotox class (#208).
 
     Every cardiotox class source is declared at tier 2, so the ladder is one rung;
     the record is still computed by the shared disease contract
     (:func:`bases.disease_deg.tier_ledger` / :func:`bases.disease_deg.fuse_disease`)
     rather than written by hand, exactly as the registry categories do. The
-    per-source ``n_deg_in_deg2000`` is written back onto the catalog entries.
+    per-source ``n_deg_in_deg1000`` is written back onto the catalog entries.
     """
     declared = [{"dataset_id": record["entry"]["dataset_id"],
                  "tier": int(record["entry"]["tier"])} for record in records]
@@ -1303,8 +1303,8 @@ def category_tier_ledger(category, records):
             f"the fusion union ({fusion['n_deg']})")
     by_id = {row["dataset_id"]: row for row in fusion["sources"]}
     for record in records:
-        record["entry"]["n_deg_in_deg2000"] = int(
-            by_id[record["entry"]["dataset_id"]]["n_deg_in_deg2000"])
+        record["entry"]["n_deg_in_deg1000"] = int(
+            by_id[record["entry"]["dataset_id"]]["n_deg_in_deg1000"])
     return ledger, fusion
 
 
@@ -1329,9 +1329,9 @@ def write_category_product(root, category, records, inputs, environment,
         "evidence_type": "bulk",
         "datasets": [_catalog_entry(record) for record in records],
         # ADR 0071 decisions 2/4 (#208): the declared tier ladder, the
-        # axis-resolved stop record and the level-1 DEG union/`DEG2000` sizes.
+        # axis-resolved stop record and the level-1 DEG union/`DEG1000` sizes.
         "n_deg": int(fusion["n_deg"]),
-        "deg2000": int(fusion["deg2000"]),
+        "deg1000": int(fusion["deg1000"]),
         "tiering": ledger["tiering"],
         "tier_sources": ledger["tier_sources"],
     }
@@ -1353,7 +1353,7 @@ def write_category_product(root, category, records, inputs, environment,
         "outputs": outputs,
         "counts": {"datasets": len(records), "measured_gene_rows": int(measured),
                    "n_deg": int(fusion["n_deg"]),
-                   "deg2000": int(fusion["deg2000"])},
+                   "deg1000": int(fusion["deg1000"])},
         "catalog_sha256": catalog_sha256,
         "environment": environment,
     }

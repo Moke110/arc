@@ -141,25 +141,21 @@ class AfDeclarationTest(unittest.TestCase):
         self.assertFalse(any('GSE271229' in row['dataset_id']
                              for row in disease_deg_sources.DATASETS))
 
-    def test_gse128188_is_recorded_as_an_owned_tier3_candidate(self):
-        record = disease_deg_sources.category_record('AF')
-        entry = next((row for row in record['tier3_owned']
-                      if row['candidate'] == 'GSE128188'), None)
-        self.assertIsNotNone(entry, 'GSE128188 missing from AF tier3_owned')
-        self.assertEqual(entry['item'], 'disease_data/GSE128188')
-        self.assertIn('candidate', entry['reason'])
-        self.assertFalse(any(row['source_item'] == 'disease_data/GSE128188'
-                             for row in disease_deg_sources.DATASETS
-                             if row['category'] == 'AF'))
+    def test_gse128188_is_admitted_as_tier_three(self):
+        (entry,) = [row for row in disease_deg_sources.datasets('AF')
+                    if row['dataset_id'] == 'gse128188__af']
+        self.assertEqual(entry['tier'], 3)
+        self.assertEqual((entry['n_case'], entry['n_control']), (5, 5))
+        self.assertEqual(entry['contrasts'], ['AF_vs_SR'])
 
     def test_tiering_record_states_the_measured_union(self):
-        tiering = disease_deg_sources.category_record('AF')['tiering']
+        tiering = disease_deg_sources.category_record('AF')['historical_tiering']
         self.assertEqual(tiering['tier_1']['measured_union_v2_deg'], 1)
         self.assertEqual(tiering['tier_1']['measured_union_genes'], ['SLC9A7'])
         self.assertEqual(tiering['tier_3']['measured_union_v2_deg'], 0)
         # The ADR's 2-gene figure is flagged as the TMM audit number, not ours.
         self.assertIn('TMM', tiering['tier_1']['note'])
-        self.assertIn('live worker', tiering['stop_decision'])
+        self.assertIn('live worker', tiering['historical_stop_decision'])
 
     def test_tier_three_record_declares_whole_tissue_bulk(self):
         (record,) = declared('GSE269882')
