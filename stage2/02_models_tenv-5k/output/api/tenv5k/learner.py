@@ -2,6 +2,7 @@
 import importlib
 import json
 import platform
+import os
 import time
 import resource
 from pathlib import Path
@@ -19,8 +20,8 @@ def load_adapter(name):
 
 
 def replay(inputs, checkpoint, source, *, adapter, device=None):
+    """Fresh-process-safe reload with verified input/source identity."""
     native = load_adapter(adapter)
-    """Fresh-process-safe reload. Input/source/environment identity is checked."""
     data = Inputs(inputs)
     saved = torch.load(checkpoint, map_location='cpu', weights_only=False)
     if saved['input_manifest_sha256'] != sha256(Path(inputs) / 'manifest.json'):
@@ -28,9 +29,13 @@ def replay(inputs, checkpoint, source, *, adapter, device=None):
     if saved['config']['native_source_sha256'] != native.SOURCE_DIGEST:
         raise ValueError('checkpoint source identity mismatch')
     config = saved['config']
+    if config['adapter'] != adapter:
+        raise ValueError('checkpoint adapter identity mismatch')
     device = device or config['device']
     if str(device) != config['device']:
         raise ValueError('exact replay requires recorded device')
+    os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
+    torch.use_deterministic_algorithms(True)
     model = native.build_model(source, config['seed'], device)
     model.load_state_dict(saved['state_dict'])
     rows = data.rows(config['scenario'], config['fold'], 'test')
@@ -68,6 +73,8 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
                   'singleton_train_batch': native.CONFIG.get('singleton_train_batch', 'merge into preceding batch (BatchNorm needs >=2)'),
                   'adaptations': native.CONFIG.get('adaptations', ['shared split/input readers', 'fixed-validation treated MSE early stopping'])}
         (candidate / 'config.json').write_text(json.dumps(config, indent=2) + '\n')
+        os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
+        torch.use_deterministic_algorithms(True)
         model = native.build_model(source, seed, device)
         optimizer = native.make_optimizer(model)
         scheduler = native.make_scheduler(optimizer)
@@ -120,6 +127,13 @@ def accept_replay(inputs, candidate, source, *, adapter):
     terminal = json.loads((candidate / 'terminal.json').read_text())
     if terminal['status'] not in ('trained-awaiting-fresh-process-replay', 'complete'):
         raise ValueError('cannot accept failed candidate')
+    config = json.loads((candidate / 'config.json').read_text())
+    saved = torch.load(candidate / 'checkpoint.pt', map_location='cpu', weights_only=False)
+    if config != saved['config']:
+        raise ValueError('candidate/checkpoint configuration mismatch')
+    environment = json.loads((candidate / 'environment.json').read_text())
+    if environment['torch'] != torch.__version__ or environment['numpy'] != np.__version__ or environment['python'] != platform.python_version():
+        raise ValueError('exact replay requires recorded software environment')
     prediction = replay(inputs, candidate / 'checkpoint.pt', source, adapter=adapter)
     if not np.array_equal(prediction, np.load(candidate / 'prediction.npy')):
         raise ValueError('fresh process prediction replay differs')
