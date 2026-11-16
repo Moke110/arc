@@ -1091,3 +1091,26 @@ declared under `pert_data/DToxS-iPSC/local/tox_evidence/`; the fetch recipe veri
 their pinned bytes. Case attribution uncertainty is retained. Pending panel
 records carry the reviewed evidence-set pointer and date; missing support in this
 finite set is neither a negative label nor a claim of exhaustive drug research.
+
+### Unified TOX measurement candidate (#216)
+
+`execution/build_tox.py publish|verify` computes only
+`execution/checkpoints/unified-tox/tox/`; it does not replace the released
+mechanism-class products. Run through `execution/capped.sh /usr/bin/time -v`
+with the R configuration above. `verify` re-fits every entered dataset from the
+pinned measurements into separate scratch space and compares all output and
+manifest digests. Complete all sources in a tier before testing the cumulative
+axis-resolved 2,000-DEG stop rule.
+
+`bases.tox.ToxCandidate` inspects the candidate `DEG2000` and source membership
+audit; the ordinary `DiseaseDeg` reader reads the candidate root as well. There
+is one DEG/rank pair per independent dataset, a full independent admission
+snapshot, exact original treated/vehicle/excluded well audit, and one TOX
+`tox.deg2000.csv`. Mechanism is annotation and never introduces extra source
+votes. Original DToxS edgeR, GSE243674 donor-paired DESeq2 and ScreenSeq Welch
+tests are retained. Additional count sources use the shared limma-voom worker;
+FPKM is explicitly log2(FPKM+1) on the existing expression-limma path, while
+fractional estimated counts use the existing documented integerisation helper
+with deviation/scale statistics. Runtime peaks remain in the work directory,
+outside deterministic scientific payloads. Integrated publication, axes and
+views follow only after successor acceptance.

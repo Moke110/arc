@@ -126,7 +126,10 @@ gene_id <- as.character(matrix[[1]])
 gene_symbol <- as.character(matrix[[2]])
 values <- as.matrix(matrix[, -(1:2), drop = FALSE])
 storage.mode(values) <- "double"
-rownames(values) <- gene_id
+# limma replaces duplicated row names with numeric positions in topTable.
+# Keep a unique fit key while retaining every deposited feature and its IDs.
+feature_key <- make.unique(gene_id)
+rownames(values) <- feature_key
 n_genes_matrix <- length(gene_id)
 consensus_correlation <- NULL
 
@@ -167,6 +170,7 @@ if (identical(kind, "counts")) {
   values <- values[keep, , drop = FALSE]
   gene_id <- gene_id[keep]
   gene_symbol <- gene_symbol[keep]
+  feature_key <- feature_key[keep]
   n_genes_dropped <- n_genes_matrix - length(gene_id)
   if (nrow(values) == 0) fail("no gene with a positive count")
   voom_fit <- voom(values, design, plot = FALSE)
@@ -188,6 +192,7 @@ if (identical(kind, "counts")) {
     values <- values[keep, , drop = FALSE]
     gene_id <- gene_id[keep]
     gene_symbol <- gene_symbol[keep]
+    feature_key <- feature_key[keep]
     if (nrow(values) == 0) fail("no gene is finite in every sample")
   }
   n_genes_dropped <- n_genes_matrix - length(gene_id)
@@ -214,9 +219,10 @@ for (contrast in design_spec$contrasts) {
   fit_contrast <- eBayes(contrasts.fit(fit, contrast_matrix))
   table <- topTable(fit_contrast, coef = 1, number = Inf, sort.by = "none",
                     adjust.method = "BH")
-  symbol <- gene_symbol[match(rownames(table), gene_id)]
+  feature_position <- match(rownames(table), feature_key)
+  symbol <- gene_symbol[feature_position]
   blocks[[length(blocks) + 1]] <- data.frame(
-    source_gene_id = rownames(table),
+    source_gene_id = gene_id[feature_position],
     gene_symbol = ifelse(is.na(symbol), "", symbol),
     contrast = contrast$label,
     log2fc = table$logFC,

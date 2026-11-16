@@ -145,8 +145,8 @@ TIER_STOP_RULE = (
     'cannot enter DEG2000 or any axis built from it, so it does not count toward '
     'the 2,000-gene stop test. Sources are collected in ascending tier order; a '
     'tier with no declared source is absent from the ladder (AF declares tier 1 '
-    'and tier 3, no tier 2), and a category whose evidence begins at tier 2 (the '
-    'cardiotox classes) enters there. The cumulative axis-resolved union is '
+    'and tier 3, no tier 2), and a category whose evidence begins at tier 2 '
+    'enters there. The cumulative axis-resolved union is '
     'measured after each tier and collection stops at the first tier whose union '
     'reaches the limit; a declared source in a deeper tier after a completed tier '
     'that already reached the limit is refused rather than admitted. Only declared '
@@ -754,7 +754,7 @@ def tier_ladder(datasets):
     ladder is ``[{'tier': 1, 'sources': [...]}, ...]`` with tiers ascending and
     sources in declared order inside a tier. A tier with no declared source is
     absent from the ladder, so AF's ladder is exactly ``[1, 3]`` and the
-    cardiotox classes' is exactly ``[2]``. Each source appears exactly once.
+    TOX's is exactly ``[2]``. Each source appears exactly once.
     """
     if not datasets:
         raise ValueError('a category needs at least one declared source')
@@ -988,7 +988,7 @@ def _validate_tiering(tiering, n_deg):
 
     The record is internally consistent when the tiers were entered in ascending
     order (starting at the category's first declared tier: `AF` starts at 1 and
-    jumps to 3, and the cardiotox classes legitimately begin at tier 2), the
+    jumps to 3, and TOX legitimately begins at tier 2), the
     cumulative union never shrinks, the last per-tier union is the published
     DEG-union size, ``stopped_at_tier`` is the last entered tier, ``stop_reached``
     is exactly "the union reached the limit", and no tier below the frontier
