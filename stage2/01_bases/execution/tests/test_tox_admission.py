@@ -55,13 +55,13 @@ class AdmissionTest(unittest.TestCase):
                 tox_admission.ToxAdmission(root)
 
     def test_negative_pending_conflict_and_non_small_molecules_are_never_admitted(self):
-        names = ['negative', 'unknown', 'conflict', 'Trastuzumab', 'Carfilzomib', 'unresolved']
+        names = ['negative', 'unknown', 'conflict', 'Trastuzumab', 'Carfilzomib', 'Cyclosporine', 'unresolved']
         annotation = pd.DataFrame([dict(lookup_name=n, dataset_inchikey='', parent_inchikey=n,
                         smiles='CC', atc='ambiguous', moa='multiple') for n in names[:-1]])
         records = [dict(source='one', source_id=n, drug_name=n) for n in names]
         facts = []
         for n, labels in [('negative',['negative']),('conflict',['positive','negative']),
-                          ('Trastuzumab',['positive']),('Carfilzomib',['positive'])]:
+                          ('Trastuzumab',['positive']),('Carfilzomib',['positive']),('Cyclosporine',['positive'])]:
             facts.extend(dict(parent_inchikey=n,label=l,url='https://example.org/primary',
                               locator='reference',retrieved_at='2026-11-16',rationale='label',
                               uncertainty='drug property') for l in labels)
@@ -72,6 +72,8 @@ class AdmissionTest(unittest.TestCase):
         self.assertEqual(result.loc['unresolved','disposition'], 'excluded')
         self.assertEqual(result.loc['Trastuzumab','disposition'], 'excluded')
         self.assertEqual(result.loc['Carfilzomib','disposition'], 'excluded')
+        self.assertEqual(result.loc['Cyclosporine','disposition'], 'excluded')
+        self.assertFalse(result.loc['Cyclosporine','small_molecule'])
         self.assertFalse(result.disposition.eq('admitted').any())
 
 if __name__ == '__main__':

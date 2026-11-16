@@ -14,7 +14,7 @@ EVIDENCE = 'stage2/01_bases/execution/tox_drug_evidence.json'
 SOURCES = 'stage2/01_bases/execution/tox_source_admission.json'
 ANNOTATION = 'pert_data/Annotation/local/cm_compound_annotation.csv'
 NON_SMALL_MOLECULES = {'bevacizmab', 'bevacizumab', 'cetuximab', 'rituximab',
-                       'trastuzumab', 'endothelin', 'igf1', 'tnfalpha', 'carfilzomib'}
+                       'trastuzumab', 'endothelin', 'igf1', 'tnfalpha', 'carfilzomib', 'cyclosporine'}
 
 
 def name_key(value):
