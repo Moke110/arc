@@ -1,0 +1,40 @@
+{
+  "axis_size": 5000,
+  "doses_um": [
+    0.2,
+    1.0,
+    10.0
+  ],
+  "early_stopping": {
+    "max_epochs": 1000,
+    "monitor": "complete validation treated-expression MSE",
+    "patience": 50,
+    "restore_best": true,
+    "strict_lower": true,
+    "validation_seed": 22617
+  },
+  "folds": 3,
+  "input_manifest_sha256": "1143c7c455e7355ca243eb64ec7faa319987585ac5ac8106282004275cdc0cfa",
+  "morgan": {
+    "binary": true,
+    "bits": 2048,
+    "includeChirality": true,
+    "radius": 2,
+    "rdkit": "2026.03.2"
+  },
+  "n_parents": 459,
+  "n_treated": 4206,
+  "n_unique_controls": 192,
+  "rounding": "ceil10% parents cold/final, parent-dose groups held-dose",
+  "schema": "tsg-dose-protocol-v1",
+  "split_seed": 226,
+  "statistical_seed": 2262026,
+  "training_seeds": [
+    17,
+    42,
+    2026
+  ],
+  "validation_fraction": 0.1,
+  "view_manifest_sha256": "7ba2bde3c20cdcf9036d88c9ac344991657448319b2811f51b2fe47c59c8c11d",
+  "view_tenv_sha256": "952435d9cb7df3f30e93200c5574faa50d60bfd602a5b70acf78cfd60adb9044"
+}

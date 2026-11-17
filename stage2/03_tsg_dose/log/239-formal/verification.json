@@ -1,0 +1,69 @@
+{
+  "csv_newlines": "Standard csv.writer CRLF preserved to retain accepted CSV hashes; git diff check passes with core.whitespace=cr-at-eol.",
+  "date": "2026-11-17",
+  "downstream_genes": 5000,
+  "downstream_rows_per_seed": 414,
+  "final_method": "no-dose",
+  "final_seeds": [
+    17,
+    42,
+    2026
+  ],
+  "frozen_runtime_sha256": {
+    "execution/capped.sh": "b889148bf200d7fddcd0f0a237ee9b9cb4a4780d122b1ab638f3d8f0f50760ff",
+    "execution/prepare.py": "98d66af27553d8964da5cbadc14b3683eb3d353bc0cc969be64d4729a0da6f7c",
+    "execution/run_matrix.py": "f979849ca66f33f0eb208178082d6bfe9061875c867e64cb2c4408c9384938ce",
+    "execution/transigen.py": "690324d3e38050e5f3d9b2bf18bd450179eb85c3eaf68a06357f76c3e60cbfe8",
+    "output/api/tsg_dose/comparison.py": "79037b92179c2ad22681db6286cb6299d9332758eb402c4630fbdd94c7e76373",
+    "output/api/tsg_dose/inputs.py": "743b9863446413f67faf32109ff329c90c6a5475909de35a9002ce9f75aaa9f6",
+    "output/api/tsg_dose/learner.py": "477131c1437930386b6dc80fd78105710e8ce14f00da3d5ef945035f3a35f4f2",
+    "output/api/tsg_dose/model.py": "d9b12cd05106cd3f7d57894d2344b462508f7ad5a3be09afa7812e59ac5919ac",
+    "output/api/tsg_dose/protocol.py": "1243831a44473161e60e69074d9ca728f332399e453ea33f46754962b38ca270",
+    "output/api/tsg_dose/release.py": "c21172576116c5e442a61eb94fee46811fced926f23e993c57f337d6464d03aa",
+    "output/api/tsg_dose/shared.py": "1c2bbf4ae9447a66c330b9edde294182de7c02d6c50267f9dd5bda9b11d3bed7"
+  },
+  "health": {
+    "check_paths": "external paths720 distinct resolved; Stage3 audit passed; Stage2 routing failed only because preintegration main does not yet recognize03; rerun after integration before push",
+    "check_tracked": "passed on canonical preintegration main",
+    "postintegration_check_paths": "required before push; canonicaloldmain rejects new03routing untildev integration",
+    "verify_all": "passed66/66 active external items on canonical checkout, offline and singly capped"
+  },
+  "independent_csv_only_png_hashes_exact": true,
+  "launch_diagnostic": "A sandbox-only ps check briefly launched a duplicate read-only accept verifier for ~19seconds; host inspection identified the original process as alive and the duplicate was terminated before acceptance/candidate/downstream creation. Original publisher completed EXIT0, no training or scientific attempt was added.",
+  "n_choice_gates": 7,
+  "n_csv_tables": 11,
+  "n_exact_test_replays": 126,
+  "n_exact_validation_replays": 147,
+  "n_formal_origins": 147,
+  "n_png": 12,
+  "n_retained_failed_or_interrupted_attempts": 0,
+  "n_unique_attempt_nonces": 147,
+  "preservation_files": 670,
+  "scenario_counts": {
+    "cold-drug": 63,
+    "final": 21,
+    "held-dose": 63
+  },
+  "visual_qa": {
+    "actual_pngs": [
+      "final_validation.png",
+      "held_dose.png",
+      "learning_curve.png",
+      "learning_curve_cold-drug.png",
+      "learning_curve_final.png",
+      "learning_curve_held-dose.png",
+      "learning_curves.png",
+      "metrics.png",
+      "paired_differences.png",
+      "primary.png",
+      "primary_dose.png",
+      "resources.png"
+    ],
+    "observations": "All12 actual images inspected. Four metric columns, count labels, shared palette; dashed blue native train loss left axis and solid green validation MSE right axis; full fold/seed/epoch coordinates. Overview dense but larger scenario sheets readable. Labels, legends, intervals and captions complete; no clipping.",
+    "references": [
+      "stage2/02_models_tenv-5k/figure/metrics.png",
+      "stage2/02_models_tenv-5k/figure/learning_curve.png"
+    ],
+    "status": "passed"
+  }
+}

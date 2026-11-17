@@ -1,0 +1,14 @@
+== check_paths: every external-data path literal must resolve ==
+repo root: /home/chang/arc
+tracked text files scanned: 1431
+path literals scanned: 7570 occurrences, 739 distinct (pert_data, pert_model, disease_data, drug_emb_model, pheno_data)
+resolved:    7541 occurrences, 720 distinct
+whitelisted: 29 occurrences, 19 distinct (entries in script/path_whitelist.txt: 20)
+unresolved:  0 occurrences, 0 distinct
+
+stage3 source-first path audit: PASS
+
+RESULT: FAIL — the stage2 retired-step-path audit is red (see above)
+hint: add the owning files to script/path_whitelist.txt only for frozen evidence;
+      otherwise fix the literal or the path.
+exit: 1

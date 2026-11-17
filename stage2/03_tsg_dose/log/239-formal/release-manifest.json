@@ -1,0 +1,70 @@
+{
+  "environments": {
+    "17": {
+      "cuda": "13.0",
+      "device": "cuda",
+      "numpy": "2.4.6",
+      "python": "3.13.13",
+      "torch": "2.12.0+cu130"
+    },
+    "2026": {
+      "cuda": "13.0",
+      "device": "cuda",
+      "numpy": "2.4.6",
+      "python": "3.13.13",
+      "torch": "2.12.0+cu130"
+    },
+    "42": {
+      "cuda": "13.0",
+      "device": "cuda",
+      "numpy": "2.4.6",
+      "python": "3.13.13",
+      "torch": "2.12.0+cu130"
+    }
+  },
+  "input_manifest_sha256": "1143c7c455e7355ca243eb64ec7faa319987585ac5ac8106282004275cdc0cfa",
+  "matrix_acceptance_sha256": "fc7ec1c6a8aea7830c9ae915a080d636ade7e63dca88605e272ae27d3ee1fee5",
+  "matrix_plan_sha256": "6c60d9284dcbc403bd36632acb998c85b8fd732f13a558f690f0c67549427b91",
+  "method": "no-dose",
+  "n_formal_fits": 147,
+  "origins": {
+    "17": {
+      "manifest_sha256": "4ffaf61f83ea7fa6eddba37e3ae75993e2fdce816cd15dcb320a59881fcaf810",
+      "path": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/final/no-dose/0/17"
+    },
+    "2026": {
+      "manifest_sha256": "7a7e58120fcc8f6cecceadc94824de6525bec92339f2ed4976dbe37e70c2ade4",
+      "path": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/final/no-dose/0/2026"
+    },
+    "42": {
+      "manifest_sha256": "b6e68aaff97cdeda1c7a82fd78393305195d3a14aca1aa12da0c70daf78411e6",
+      "path": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/final/no-dose/0/42"
+    }
+  },
+  "outputs": {
+    "checkpoints/17.pt": "6f3456278503e3b260780c98ec2c285a328928245e299e83ebffc96d968505fd",
+    "checkpoints/2026.pt": "e5fc484c4c26715e4a3c61406c4fae3ad2956c6fa518ba4b49607d6d1bdaa0fd",
+    "checkpoints/42.pt": "5cd8f7a3eea262b0a151bb22cc8115c55b4be16bb91b1defb91207ca85dc46c6",
+    "genes.csv": "41484d9377a5c7779e86c14408b7429534644b7166c18643e6c8a939b159a718",
+    "input_contract.json": "5da1064e435e662ab7fa9f4f8cf57c3cf9f579c77c607d352452d7f59495413f",
+    "selection_receipt.json": "c78b1d11cec18a9ce10b4b098cf7df4edf33d3ccc4145f21a2667b4b99a727f3"
+  },
+  "parameter_counts": {
+    "17": 21583000,
+    "2026": 21583000,
+    "42": 21583000
+  },
+  "role": "internal-validation-selected restored checkpoints; no new independent test",
+  "scenario_counts": {
+    "cold-drug": 63,
+    "final": 21,
+    "held-dose": 63
+  },
+  "schema": "tsg-dose-release-v1",
+  "seeds": [
+    17,
+    42,
+    2026
+  ],
+  "selection_sha256": "c78b1d11cec18a9ce10b4b098cf7df4edf33d3ccc4145f21a2667b4b99a727f3"
+}

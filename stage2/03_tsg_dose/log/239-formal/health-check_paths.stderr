@@ -1,0 +1,3 @@
+caps: systemd-run user scope MemoryMax=10G MemorySwapMax=8G threads=2
+Running as unit: run-rbe36458170454d6eb5c5082332a32fad.scope; invocation ID: fc601bdcbaf8410b9706915d844ef4e0
+RESULT: FAIL — unexpected Stage 2 entry: stage2/03_tsg_dose
