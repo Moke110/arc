@@ -47,8 +47,8 @@ class TranSiGenTests(unittest.TestCase):
             self.skipTest('materialize native source or set TRANSIGEN_SOURCE')
         adapter = Adapter(source)
         model = adapter.build(17, 'cpu')
-        self.assertEqual(CONFIG['method_identity'], 'transigen-native-f64-v1')
-        # Native initialization is the independent reference (float32); casting
+        self.assertEqual(CONFIG['method_identity'], 'transigen-native-f32-lr1e4-v1')
+        # Native initialization is the independent reference (float32); construction
         # must add no random draws and must retain every initialized value.
         after_build = torch.get_rng_state().clone()
         torch.manual_seed(17)
@@ -57,33 +57,34 @@ class TranSiGenTests(unittest.TestCase):
             init_w=True, beta=0.1, dropout=0.1, random_seed=17, device=torch.device('cpu'))
         self.assertTrue(torch.equal(after_build, torch.get_rng_state()))
         for name, value in native.state_dict().items():
-            torch.testing.assert_close(model.state_dict()[name], value.double() if value.is_floating_point() else value, rtol=0, atol=0)
+            torch.testing.assert_close(model.state_dict()[name], value, rtol=0, atol=0)
         del native
 
-        self.assertTrue(all(v.dtype == torch.float64 for v in model.state_dict().values() if v.is_floating_point()))
+        self.assertTrue(all(v.dtype == torch.float32 for v in model.state_dict().values() if v.is_floating_point()))
         # Compare the sampling boundary to native CPU float32 draws, including
-        # the subsequent RNG state; direct float64 draws consume another stream.
-        mu = torch.linspace(-1, 1, 300, dtype=torch.float64).reshape(3, 100)
+        # the subsequent RNG state; the native draw stream must stay unchanged.
+        mu = torch.linspace(-1, 1, 300, dtype=torch.float32).reshape(3, 100)
         logvar = torch.zeros_like(mu)
         torch.manual_seed(42)
         noise = torch.FloatTensor(mu.size()).normal_()
         expected_state = torch.get_rng_state().clone()
-        expected = noise.double() + mu
+        expected = noise + mu
         torch.manual_seed(42)
         actual = model.sample_latent(mu, logvar)
-        self.assertEqual(actual.dtype, torch.float64)
+        self.assertEqual(actual.dtype, torch.float32)
         torch.testing.assert_close(actual, expected, rtol=0, atol=0)
         self.assertTrue(torch.equal(torch.get_rng_state(), expected_state))
         class Data(SimpleNamespace):
             def fingerprints(self, rows): return np.ones((len(rows), 2048), np.float32)
         data = Data(control=np.ones((2,5000), np.float32), expression=np.full((2,5000), 1.1, np.float32))
         optimizer = adapter.optimizer(model)
+        self.assertEqual(optimizer.param_groups[0]['lr'], 1e-4)
         loss = adapter.train_epoch(model, data, np.arange(2), optimizer, np.random.default_rng(17))
         self.assertTrue(np.isfinite(loss))
-        self.assertTrue(all(p.grad.dtype == torch.float64 and torch.isfinite(p.grad).all() for p in model.parameters() if p.grad is not None))
-        self.assertTrue(all(s[k].dtype == torch.float64 for s in optimizer.state.values() for k in ('exp_avg', 'exp_avg_sq')))
+        self.assertTrue(all(p.grad.dtype == torch.float32 and torch.isfinite(p.grad).all() for p in model.parameters() if p.grad is not None))
+        self.assertTrue(all(s[k].dtype == torch.float32 for s in optimizer.state.values() for k in ('exp_avg', 'exp_avg_sq')))
         prediction = adapter.predict(model, data, np.arange(2))
-        self.assertEqual(prediction.dtype, np.float64)
+        self.assertEqual(prediction.dtype, np.float32)
         self.assertTrue(np.isfinite(prediction).all())
 
 class PrecisionReplayTests(unittest.TestCase):
@@ -106,9 +107,9 @@ class PrecisionReplayTests(unittest.TestCase):
                 checkpoint = Path(directory)/'old.pt'
                 torch.save(saved, checkpoint)
                 with self.assertRaisesRegex(ValueError, 'numerical method identity'):
-                    replay('/tmp/arc-tenv5k-inputs', checkpoint, os.environ['TRANSIGEN_SOURCE'], adapter='transigen')
+                    replay(os.environ.get('TENV5K_INPUTS', '/tmp/arc-tenv5k-inputs'), checkpoint, os.environ['TRANSIGEN_SOURCE'], adapter='transigen')
                 saved['config'][key] = original
-            saved['state_dict'] = {k: v.float() if v.is_floating_point() else v for k,v in saved['state_dict'].items()}
+            saved['state_dict'] = {k: v.double() if v.is_floating_point() else v for k,v in saved['state_dict'].items()}
             torch.save(saved, checkpoint)
             with self.assertRaisesRegex(ValueError, 'state precision'):
-                replay('/tmp/arc-tenv5k-inputs', checkpoint, os.environ['TRANSIGEN_SOURCE'], adapter='transigen')
+                replay(os.environ.get('TENV5K_INPUTS', '/tmp/arc-tenv5k-inputs'), checkpoint, os.environ['TRANSIGEN_SOURCE'], adapter='transigen')

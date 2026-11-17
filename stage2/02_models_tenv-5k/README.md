@@ -67,16 +67,14 @@ in `tenv5k.learner`; model adapters own native loss, initialization and sampling
 
 TranSiGen uses the ordinary upstream `train_TranSiGen.py` configuration:
 5000→1200 encoder, latent100, decoder800, Morgan2048→400 embedding,
-beta0.1, dropout0.1, batch64, Adam lr0.001/weight_decay0.00001, no scheduler.
+beta0.1, dropout0.1, batch64, Adam lr0.0001/weight_decay0.00001, no scheduler.
 The 5000-gene dimension, shared Morgan fingerprints, random initialization and
 shared split/stopping replace script inputs/defaults; native selective Xavier
-initialization and summed VAE objective remain unchanged. The approved
-`transigen-native-f64-v1` numerical variant initializes in float32, then uses
-float64 parameters, floating buffers, inputs, forward/loss/backward, Adam moments,
-validation and inference. Original float32 CPU latent normal draws are cast to
-float64 before scale/add; their call order stays native. Predictions serialize
-as float64 with a finite check after conversion. The author cuDNN policy remains
-part of the execution identity. Replay rejects old or changed precision identities.
+initialization and summed VAE objective remain unchanged. The current
+`transigen-native-f32-lr1e4-v1` identity keeps parameters, floating buffers,
+training, validation, inference and predictions in float32, including unchanged
+native float32 CPU latent normal draws. The author cuDNN policy remains part of
+the execution identity. Replay rejects old or changed precision identities.
 Singleton final training batches are skipped as upstream; evaluation retains them.
 Inference directly calls native `forward(x1, features)[3]`, so treated labels and
 the target reconstruction branch never consume prediction RNG. Fixed seed,
