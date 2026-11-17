@@ -13,8 +13,9 @@ STEP=Path(__file__).resolve().parents[2]
 
 
 def publication():
-    spec=importlib.util.spec_from_file_location('dose_publication',STEP/'execution/publish_release.py')
+    spec=importlib.util.spec_from_file_location('dose_publication',STEP/'execution/historical/publish_release_v1.py')
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    module.STEP=STEP
     return module
 
 

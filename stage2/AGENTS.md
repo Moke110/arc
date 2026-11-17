@@ -19,9 +19,10 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   parent-level Δ evaluation, checkpoint replay and CSV-only report figures.
   Before changing or replaying it, read its `AGENTS.md` and `README.md`.
 
-- `03_tsg_dose/` — independent all-dose TranSiGen dose-input comparison
-  (ADR0075), with validation-first selection, held-dose characterization and
-  internally selected checkpoints. Read its `AGENTS.md` and `README.md`.
+- `03_tsg_dose/` — TranSiGen dose-input optimization round1 (ADR0076 amends
+  ADR0075):126 cold-drug/held-dose fits, validation-first selection and three
+  report PNGs. Historical final fits/weights are retained for audit; this step
+  supplies no downstream weights. Read its `AGENTS.md` and `README.md`.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
