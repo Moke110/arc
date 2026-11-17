@@ -73,3 +73,24 @@ with identity chemical modulation and learns dose dependence with finite gradien
 Persisted-transform mismatch and nonfinite prediction checks fail closed. See
 [235-smoke acceptance](log/235-smoke/acceptance.json) and
 [rejection checks](log/235-smoke/rejections.json). These remain smoke evidence.
+
+The standalone downstream reader is `tsg_dose.release.Release(directory, source)`.
+Its `predict(seed, controls=..., morgan=..., doses=..., gene_ids=...,
+profile_ids=..., sampling_seed=None)` returns a float32 DataFrame with the supplied
+profile order and frozen gene columns. Supply Bases-normalized matched-control
+profiles on exactly the released G_5000 order, binary radius2/chiral Morgan2048,
+and positive µM doses. It needs no training matrices or original fit directory.
+The default sampling seed is the checkpoint's recorded inference seed; exact
+sampled replay requires identical input order and native batch64 boundaries.
+
+A minimal accepted `tsg-dose-release-v1` directory contains `genes.csv`,
+`input_contract.json`, `selection_receipt.json` and `checkpoints/{17,42,2026}.pt`.
+`manifest.json` binds every payload digest, complete147-fit scenario counts,
+the final method, three seeds, input-manifest digest, per-seed parameter counts
+and environments. The reader validates all three checkpoint configurations,
+saved dose transforms, runtime/source/backend identities and parameter counts.
+It rejects incomplete coverage, smoke checkpoints, reordered genes, invalid
+inputs and changed payloads. This API does not establish a release by itself:
+formal matrix, downstream replay, figures and candidate-first acceptance remain
+required before publication. The checkpoint role is internal-validation-selected,
+with no new independent test result.
