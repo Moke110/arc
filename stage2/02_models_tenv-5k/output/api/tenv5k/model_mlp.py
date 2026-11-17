@@ -9,14 +9,15 @@ import numpy as np
 import torch
 from .learning import fixed_rng
 
-CONFIG = dict(method='MLP_Morgan', batch_size=64, architecture=[2048, 128, 5000],
+CONFIG = dict(method='MLP_Morgan', method_identity='mlp-morgan-project-f32-lr1e4-v1',
+              compute_dtype='float32', initialization_dtype='float32', prediction_dtype='float32', batch_size=64, architecture=[2048, 128, 5000],
               hidden_activation='ReLU', output_activation='linear', loss='MSE',
-              learning_rate=1e-3, weight_decay=1e-5, scheduler=None,
+              learning_rate=1e-4, weight_decay=1e-5, scheduler=None,
               baseline_input=False, dose_input=False, dropout=0,
               initialization_model='random', pretraining=False,
               singleton_train_batch='retain singleton (no BatchNorm)',
               configuration_origin='XPert-defined baseline; project preregistered configuration, not author-code reproduction',
-              adaptations=['shared Morgan2048 and splits',
+              adaptations=['shared Morgan2048 and splits', 'initial Adam learning rate 1e-4',
                            'shared fixed validation treated-expression MSE and best restore'])
 SOURCE_DIGEST = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
@@ -24,11 +25,11 @@ SOURCE_DIGEST = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 def build_model(source, seed, device):
     torch.manual_seed(seed)
     return torch.nn.Sequential(torch.nn.Linear(2048, 128), torch.nn.ReLU(),
-                               torch.nn.Linear(128, 5000)).to(device)
+                               torch.nn.Linear(128, 5000)).to(device=device, dtype=torch.float32)
 
 
 def make_optimizer(model):
-    return torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    return torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
 
 
 def make_scheduler(optimizer):
