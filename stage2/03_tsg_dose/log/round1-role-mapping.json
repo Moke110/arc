@@ -45,6 +45,7 @@
     "output/model": "historical no-dose three-seed release; unchanged, no active downstream dependency",
     "runs/final": "21 completed deployment-selection fits; unchanged, excluded from round1"
   },
+  "report_mapping": "242-round1-report-acceptance.json: superseded_figures retains all12 original PNG digests/roles; files binds the accepted3-PNG report and unchanged historical plotting CSVs",
   "schema": "tsg-dose-round1-role-mapping-v1",
   "spec": "https://github.com/Moke110/arc/issues/240"
 }

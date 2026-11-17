@@ -21,8 +21,12 @@ Held-dose never selects a winner. Retained126 origins require exact replay proof
 round1 acceptance does not require final origins or downstream weight replay.
 
 Report changes reuse saved tables/predictions without training or re-prediction.
-Build and verify candidates, reproduce the three PNGs from CSVs alone and inspect
-them before replacing figure outputs. Retain original scientific summaries with
+Use execution/publish_report.py prepare/accept/install for report-only
+publication. Build and verify candidates, reproduce the three PNGs from CSVs
+alone and inspect them before replacing figure outputs.
+The active CSV renderer emits exactly round1_metrics.png,
+round1_learning_curves.png and round1_metrics_cold_drug_dose.png.
+Historical12-PNG reconstruction uses execution/historical/render_v1.py. Retain original scientific summaries with
 their parent-equal interpretation. Formal fits, if separately requested, run singly
 under capped.sh and /usr/bin/time -v with memory preflight and10-second RAM/GPU/WSL
 monitoring. Preserve canonical ignored reconstruction payloads during cleanup.

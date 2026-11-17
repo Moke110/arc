@@ -101,15 +101,44 @@ remain applicable.
 
 ## Report contract
 
-The active report contains exactly `round1_metrics.png` (2×4),
-`round1_learning_curves.png` (2×8), and
-`round1_metrics_cold_drug_dose.png` (1×4), with plotting CSVs in `figure/data`
+The active report contains exactly [overall metrics](figure/round1_metrics.png)
+(2×4), [learning curves](figure/round1_learning_curves.png) (2×8), and
+[cold-drug dose metrics](figure/round1_metrics_cold_drug_dose.png) (1×4),
+with plotting CSVs in `figure/data`
 and a CSV-only renderer in `figure/script`. Candidate-first figure acceptance
 replaces the previous report only after all checks pass. The metrics sheet uses
 nine fold×seed dots per fixed method/scenario, run-equal means and sample SD
 (ddof=1); cold-drug selected-procedure dots follow locked fold choices. SD is
 descriptive run spread, not a confidence interval. Native loss/MSE curves retain
 every epoch/run; per-dose panels retain parent-equal/equal-seed OOF aggregation.
+
+Accepted on2026-11-17 from saved evidence, without fitting or predicting:
+540 run-metric rows (including selected-procedure references),60 run summaries,
+15,977 complete curve coordinates and96 per-dose metric rows. An independent
+isolated CSV-only render reproduced all three PNG SHA256s exactly; all33
+original scientific CSVs and11 original plotting CSVs remain unchanged.
+[Report acceptance](log/242-round1-report-acceptance.json) records every source,
+accepted report hash and superseded historical PNG role/digest.
+
+Reproduce with `figure/script/render.py --data figure/data --output <new-dir>`.
+The renderer needs only its script and plotting CSVs. New round1 CSVs preserve
+run identities, deterministic jitter coordinates, source digests and counts.
+Nonfinite dose metrics are excluded explicitly within parent means, undefined
+parents within runs, and undefined runs within report means/SD; counts remain
+visible and values are never replaced with zero. Sample SD is undefined with
+fewer than two finite runs.
+
+For candidate-first publication, use `execution/publish_report.py prepare`
+with `--matrix <saved-matrix> --candidate <new-report-directory>
+--previous <current-figure-directory> --scientific-receipt <126-origin-receipt>
+--receipt <new-report-receipt>`. It verifies complete round1 acceptance and
+saved metric digests, preserves historical plotting CSVs, and renders in an
+isolated CSV-only directory. Inspect all three candidate PNGs, then run
+`accept --candidate <candidate> --receipt <receipt> --visual-inspection`.
+Only then run `install --candidate <candidate> --destination <figure-directory>
+--receipt <receipt>`. Installation checks every accepted byte and rolls back
+filesystem replacement failure. It never touches historical model weights.
+Tests: `python -m unittest discover -s execution/tests -p test_round1_report.py -v`.
 
 ## Historical147-fit release
 
