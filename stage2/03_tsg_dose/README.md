@@ -39,3 +39,10 @@ Behavioral fixtures verify dose use, ordered target-independent predictions,
 finite gradients and disabled-dose native equivalence (float32 tolerance). Four
 8-row/two-epoch CUDA smokes passed exact fresh-process validation and test replay;
 see [234-smoke acceptance](log/234-smoke/acceptance.json). They are not formal fits.
+
+Scaling and FiLM (#235) also passed bounded CUDA learning and exact fresh-process
+validation/test replay. Scaling uses unstandardized log10(1+dose); FiLM starts
+with identity chemical modulation and learns dose dependence with finite gradients.
+Persisted-transform mismatch and nonfinite prediction checks fail closed. See
+[235-smoke acceptance](log/235-smoke/acceptance.json) and
+[rejection checks](log/235-smoke/rejections.json). These remain smoke evidence.

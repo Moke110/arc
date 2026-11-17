@@ -91,4 +91,43 @@ class MethodTests(unittest.TestCase):
                 for a,b in zip(actual,expected):torch.testing.assert_close(a,b,rtol=1e-5,atol=1e-6)
                 del network
 
+    def test_scaling_uses_unstandardized_log10_one_plus_dose(self):
+        class Data:
+            control=np.ones((3,5000),dtype=np.float32)
+            def fingerprints(self,rows):return np.ones((len(rows),2048),dtype=np.float32)
+            def doses(self,rows):return np.array([.2,1.,10.],dtype=np.float32)[rows]
+        data=Data();rows=np.arange(3)
+        self.assertIsNone(model.fit_transform('scaling',[1,1]))
+        adapter=model.adapter(SOURCE,'scaling',None);network=adapter.build(17,'cpu').eval()
+        # Independent literal factors for the three registered doses.
+        scaled=torch.tensor(np.repeat(np.array([[.079181246,.301029996,1.041392685]],dtype=np.float32).T,2048,axis=1))
+        with torch.no_grad(),fixed_rng(55,'cpu'):expected=network(torch.tensor(data.control),scaled)[3].numpy()
+        with fixed_rng(55,'cpu'):actual=adapter.predict(network,data,rows)
+        np.testing.assert_array_equal(actual,expected)
+        with self.assertRaises(ValueError):model.adapter(SOURCE,'scaling',{'std':1})
+        with self.assertRaises(ValueError):model.fit_transform('scaling',[0,1])
+
+    def test_identity_film_preserves_native_and_learns_dose_modulation(self):
+        transform=model.fit_transform('film',[.1,1.,10.])
+        adapter=model.adapter(SOURCE,'film',transform);network=adapter.build(17,'cpu').eval()
+        native=model.adapter(SOURCE).build(17,'cpu').eval()
+        # Equal native state, preserve FiLM's own declared zero-final initialization.
+        network.load_state_dict(native.state_dict(),strict=False)
+        x=torch.ones(4,5000);morgan=torch.ones(4,2048)
+        low=torch.cat([morgan,torch.full((4,1),-1.)],1)
+        high=torch.cat([morgan,torch.full((4,1),1.)],1)
+        with torch.no_grad(),fixed_rng(71,'cpu'):expected=native(x,morgan)
+        for features in [low,high]:
+            with torch.no_grad(),fixed_rng(71,'cpu'):actual=network(x,features)
+            for a,b in zip(actual,expected):torch.testing.assert_close(a,b,rtol=0,atol=0)
+        network.train();optimizer=adapter.optimizer(network);optimizer.zero_grad()
+        result=network(x,high);loss=result[3].square().mean()+result[4].square().mean()+result[5].square().mean()
+        loss.backward()
+        self.assertTrue(all(torch.isfinite(p.grad).all() for p in network.parameters() if p.grad is not None))
+        optimizer.step();network.eval()
+        with torch.no_grad(),fixed_rng(71,'cpu'):a=network(x,low)
+        with torch.no_grad(),fixed_rng(71,'cpu'):b=network(x,high)
+        self.assertFalse(torch.equal(a[4],b[4]));self.assertFalse(torch.equal(a[5],b[5]))
+        with self.assertRaises(ValueError):model.adapter(SOURCE,'film',dict(transform,std=0))
+
 if __name__=='__main__':unittest.main()
