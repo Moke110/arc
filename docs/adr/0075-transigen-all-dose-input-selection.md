@@ -1,6 +1,8 @@
 # TranSiGen all-dose input selection
 
-Status: accepted protocol (2026-11-17). The user confirmed shared understanding
+Status: accepted protocol (2026-11-17). Active scope/report/publication duties are
+amended by [ADR0076](0076-dose-input-round1-exploration-boundary.md); the original
+147-fit protocol below remains historical context. The user confirmed shared understanding
 and all 147 fits, then authorized specification/ticket publication only;
 implementation and training must wait for a later execution session. Source:
 user grill-with-docs session and

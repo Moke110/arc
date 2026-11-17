@@ -1,0 +1,773 @@
+{
+  "historical_code_mapping": {
+    "execution/run_matrix.py": "execution/historical/run_matrix_v1.py",
+    "execution/transigen.py": "execution/historical/transigen_v1.py"
+  },
+  "n_formal_fits": 126,
+  "plan_sha256": "6c60d9284dcbc403bd36632acb998c85b8fd732f13a558f690f0c67549427b91",
+  "replay": "retained exact fresh-process validation and test evidence verified",
+  "runs": [
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    }
+  ],
+  "scenarios": [
+    "cold-drug",
+    "held-dose"
+  ],
+  "schema": "tsg-dose-round1-acceptance-v1",
+  "status": "optimization evidence complete; no downstream model weights"
+}

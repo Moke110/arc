@@ -1,0 +1,24 @@
+{
+  "acceptance_receipt": "241-round1-acceptance.json",
+  "date": "2026-11-17",
+  "frozen_api_bytes": "unchanged",
+  "historical_driver_source": "execution/historical; SHA256 mapping in round1-role-mapping.json",
+  "n_verified_formal_origins": 126,
+  "resource_cap": "RLIMIT_AS10GiB; two threads; centrally monitored RAM/GPU/WSL every10seconds",
+  "scenarios": [
+    "cold-drug",
+    "held-dose"
+  ],
+  "schema": "tsg-dose-round1-scope-verification-v1",
+  "spec": "https://github.com/Moke110/arc/issues/240",
+  "tests": {
+    "test_failure_lifecycle.py": "2 skipped; native fitting/re-prediction not requested",
+    "test_matrix.py": 4,
+    "test_publication.py (historical snapshot)": 11,
+    "test_round1.py": 4,
+    "test_selection_gate.py": 3
+  },
+  "ticket": "https://github.com/Moke110/arc/issues/241",
+  "time_v": "\tCommand being timed: \"/home/chang/miniconda3/envs/arc/bin/python stage2/03_tsg_dose/execution/run_matrix.py accept --inputs /home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/inputs-v1 --candidate /home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1 --source /home/chang/arc/pert_model/TranSiGen/source --device cuda --receipt stage2/03_tsg_dose/log/241-round1-acceptance.json\"\n\tUser time (seconds): 20.67\n\tSystem time (seconds): 221.23\n\tPercent of CPU this job got: 98%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 4:04.99\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 781688\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 83\n\tMinor (reclaiming a frame) page faults: 2451442\n\tVoluntary context switches: 1315\n\tInvoluntary context switches: 1258\n\tSwaps: 0\n\tFile system inputs: 4285697\n\tFile system outputs: 56\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+  "training_or_reprediction": false
+}
