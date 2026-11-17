@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-17",
+  "role": "pre-formal review fixes; no formal fits counted",
+  "base_dev": "e27c4a0",
+  "findings": {
+    "P1": "Public evaluate recomputes validation choice and requires the current checkpoint among the 21 bound origins before input/model load. Parameter count is sealed with validation scores and checked by learner and driver.",
+    "P2": "Nonfinite evaluation and exact-replay mismatch persist a terminal scientific failure, previous terminal and manifest; resume refuses the failed slot. Invalid phase/integrity calls and process interruption are not relabeled numerical failures."
+  },
+  "tests": {
+    "test_selection_gate.py": 3,
+    "test_failure_lifecycle.py": 2,
+    "test_matrix.py": 4,
+    "test_methods.py": 6,
+    "test_integrity.py": 2,
+    "test_protocol.py": 2,
+    "test_comparison.py": 2,
+    "all_passed": true,
+    "execution": "individual unittest discovery files; real lifecycle test opt-in via TSG_DOSE_LIFECYCLE_INPUTS and TSG_DOSE_LIFECYCLE_SOURCE"
+  },
+  "native_lifecycle": {
+    "device": "cuda",
+    "training_rows": 8,
+    "epochs": 2,
+    "tests_elapsed_seconds": 12.657,
+    "process_tree_peak_rss_kib": 1829732,
+    "memory_max": "10G",
+    "memory_swap_max": "8G",
+    "threads": 2,
+    "evidence": ["lifecycle.txt", "lifecycle.time"]
+  },
+  "provisional_preflight": {
+    "n_runs": 147,
+    "n_configurations": 49,
+    "deterministic_repeat": true,
+    "peak_rss_kib": 782708,
+    "evidence": ["preflight.json", "preflight.time"],
+    "limitation": "Repeat after standalone consumer API merge; runtime identity is not frozen by this check."
+  }
+}

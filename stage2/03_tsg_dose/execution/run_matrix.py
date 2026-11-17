@@ -57,8 +57,9 @@ def validation_table(root,scenario,fold,input_digest):
         config=read(path/'config.json');terminal=read(path/'terminal.json')
         if any(config[k]!=v for k,v in run.items()) or config.get('smoke_rows') is not None:raise ValueError('validation run identity mismatch')
         if terminal['status'] not in ['validation-complete','test-awaiting-replay','complete']:raise ValueError('validation not replayed')
+        if frozen.get('parameter_count')!=terminal.get('parameter_count') or frozen.get('parameter_count') is None:raise ValueError('validation parameter count changed')
         scores=read(path/'validation_metrics.json')
-        rows.append(dict(run,parameter_count=terminal['parameter_count'],**scores))
+        rows.append(dict(run,parameter_count=frozen['parameter_count'],**scores))
         origins[str(path.resolve())]=sha256(path/'validation_manifest.json')
     return pd.DataFrame(rows),origins
 
