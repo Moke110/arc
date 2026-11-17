@@ -91,7 +91,11 @@ class PublicationTests(unittest.TestCase):
             self.assertEqual(held['evaluation'],'interpolation')
             self.assertEqual(float(held['pcc_low']),.3);self.assertEqual(float(held['pcc_high']),.3)
             self.assertEqual(len(module.csv_rows(destination/'held_dose_uncertainty.csv')),4)
-            rendered=module.render_isolated(destination,root/'figures',sys.executable)
+            historical_step=root/'historical-step';(historical_step/'figure/script').mkdir(parents=True)
+            import shutil
+            shutil.copy2(STEP/'execution/historical/render_v1.py',historical_step/'figure/script/render.py')
+            with patch.object(module,'STEP',historical_step):
+                rendered=module.render_isolated(destination,root/'figures',sys.executable)
             self.assertEqual(len(rendered),12)
             metrics=module.csv_rows(destination/'metrics_values.csv')
             self.assertEqual(len(metrics),8)
