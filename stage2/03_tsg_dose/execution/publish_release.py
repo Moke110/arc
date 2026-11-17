@@ -24,6 +24,14 @@ SEEDS=[17,42,2026]
 ROLE='internal-validation-selected restored checkpoints; no new independent test'
 
 
+def repository_root(start):
+    """Locate a checkout, including worktrees whose .git marker is a file."""
+    start=Path(start).resolve()
+    for path in (start,*start.parents):
+        if (path/'.git').exists():return path
+    raise ValueError('repository root not found: no .git marker above '+str(start))
+
+
 def read(path):return json.loads(Path(path).read_text())
 
 
@@ -334,8 +342,9 @@ def main():
     for name in ['inputs','matrix','candidate','source','log']:parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--destination',type=Path);parser.add_argument('--figures',type=Path,default=STEP/'figure')
     parser.add_argument('--preservation',type=Path,default=STEP/'log/239-preservation-before.json')
-    parser.add_argument('--root',type=Path,default=STEP.parents[1]);parser.add_argument('--python',default=sys.executable);parser.add_argument('--device',default='cuda')
+    parser.add_argument('--root',type=Path);parser.add_argument('--python',default=sys.executable);parser.add_argument('--device',default='cuda')
     args=parser.parse_args()
+    if args.root is None:args.root=repository_root(STEP)
     for name in ['inputs','matrix','candidate','source','log','figures','preservation','root']:setattr(args,name,getattr(args,name).resolve())
     if args.action=='downstream':verify_downstream(args.candidate,args.inputs,args.matrix,args.source,args.log)
     else:

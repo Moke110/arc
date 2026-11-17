@@ -121,3 +121,16 @@ authorizing implementation and the complete147-fit workload through acceptance
 and deployment. This supersedes the publication-only execution boundary above;
 the scientific protocol remains unchanged. Formal acceptance and resulting model
 selection are recorded in the step README and acceptance log when complete.
+
+## Frozen driver path-default exception — 2026-11-17
+
+Final review identified that the accepted `execution/run_matrix.py` CLI derives
+its optional native-source default by directory depth, contrary to ADR0030 §4.
+The147 accepted fits and publication supplied explicit absolute `--source`
+paths, so that unused default did not affect their inputs or execution identity.
+Keep the frozen driver bytes to preserve the accepted scientific code binding;
+reproduction must always supply `--source <repository>/pert_model/TranSiGen/source`.
+This narrow exception applies only to that frozen CLI default until a separately
+versioned scientific execution replaces it. The unbound publication CLI now
+walks upward to a `.git` marker for its default repository root. Other Stage2
+root discovery remains subject to ADR0030 §4.
