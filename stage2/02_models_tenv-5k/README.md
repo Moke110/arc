@@ -3,7 +3,12 @@
 Implementation of approved [#226](https://github.com/Moke110/arc/issues/226).
 The new step uses the released Bases G_5000 view, 1 µM treated wells and
 matched controls. No normalization or axis is refitted here. Stage 3 is frozen.
-The previous step stays accepted until the full successor matrix passes #231.
+The complete three-fold successor matrix was accepted on 2026-11-17 (#231):
+54 newly trained learner identities, each with exact fresh-process sampled replay,
+and 18 deterministic Mean slots (15 applicable, three cold-drug N/A). All 1,402
+wells and 459 drug parents enter complete out-of-fold evaluation. The old
+`02_models_tenv` step is retired; its verified archive and migration are recorded
+in [the retirement receipt](log/231-retirement.json).
 
 Current approved protocol (2026-11-17, ADR 0074): complete new three-fold
 partitions, initial Adam learning rate 1e-4 for all three learners, float32
@@ -11,6 +16,67 @@ learning and saved predictions, and 54 fresh learner runs. The 18 deterministic
 Mean slots contain 15 applicable results and three cold-drug Mean_drug N/A.
 Historical five-fold, float64, and imported results remain separate evidence;
 no historical checkpoint or prediction can enter the current comparison.
+
+## Accepted result
+
+Drug-level Δ metrics first aggregate each parent's out-of-fold repeated wells,
+then average the three seed metrics, then weight the 459 parents equally.
+Mean_cell equals Mean because every well is hiPSC-CM.
+
+| scenario | method | Δ PCC | Δ Spearman | Δ RMSE | Δ R² |
+|---|---|---:|---:|---:|---:|
+| cold-drug | PRnet | 0.14080 | 0.17562 | 0.31140 | −4.33521 |
+| cold-drug | TranSiGen | 0.32470 | 0.37545 | 0.18043 | −0.79085 |
+| cold-drug | MLP_Morgan | 0.21302 | 0.28075 | 0.20727 | −2.93962 |
+| cold-drug | Mean / Mean_cell | 0.27915 | 0.31705 | 0.17603 | −2.17248 |
+| cold-drug | Mean_drug | N/A | N/A | N/A | N/A |
+| warm-start | PRnet | 0.16692 | 0.18519 | 0.33563 | −5.04030 |
+| warm-start | TranSiGen | 0.63973 | 0.56786 | 0.11905 | 0.24375 |
+| warm-start | MLP_Morgan | 0.53121 | 0.53053 | 0.12488 | −0.00564 |
+| warm-start | Mean / Mean_cell | 0.28225 | 0.32012 | 0.17551 | −2.16925 |
+| warm-start | Mean_drug | 0.97063 | 0.96561 | 0.02651 | 0.91687 |
+
+TranSiGen wins under the preregistered cold-drug Δ PCC rule: its paired difference
+95% bootstrap CI is above zero against PRnet (+0.18390, [0.16266, 0.20495]),
+MLP_Morgan (+0.11168, [0.08382, 0.14114]), and Mean/Mean_cell (+0.04555,
+[0.01294, 0.07983]). Mean_drug is inapplicable to unseen drugs. The result does
+not imply superiority on every metric: cold-drug Mean has lower RMSE, all
+cold-drug R² values are negative, and warm-start Mean_drug is much stronger.
+Warm-start is auxiliary and does not change the cold-drug selection. These are
+fixed configurations, not estimates of each architecture's best attainable result.
+No truth-constant or prediction-constant parent vectors occurred in this matrix.
+
+The complete values and paired intervals are in
+[metrics_values.csv](figure/data/metrics_values.csv) and
+[paired_differences_values.csv](figure/data/paired_differences_values.csv).
+The report figures are [metrics.png](figure/metrics.png),
+[paired_differences.png](figure/paired_differences.png) and
+[learning_curve.png](figure/learning_curve.png); each is reproduced from its
+tracked CSV by `figure/script/render_figures.py` without model payloads.
+See [231-acceptance.json](log/231-acceptance.json) for all 54 trained origins,
+method identities, complete-population evidence and exact metric/PNG replay.
+
+## Replay and reconstruction
+
+From this step, with the recorded CUDA environment and canonical payloads:
+
+```bash
+python execution/run_matrix.py --accept-only \
+  --inputs output/inputs --means output/means \
+  --candidate execution/checkpoints/matrix-threefold-f32-lr1e4 \
+  --prnet-source ../../pert_model/PRnet/source \
+  --transigen-source ../../pert_model/TranSiGen/source --device cuda
+python figure/script/render_figures.py --figure-data figure/data --out-dir figure
+```
+
+The candidate, inputs and Means are preserved in the canonical checkout with
+hash verification; [the final receipt](log/231-final-acceptance.json) records
+resources, tests, preservation and replay scope. To reconstruct rather than
+replay, prepare a new empty input directory from `../01_bases/output/view-5k`,
+run `execution/means.py`, then use `execution/run_matrix.py --all` with a new
+empty candidate. `--resume` accepts only matching current-protocol identities.
+
+## Data and native model contract
 
 `execution/prepare.py --view <accepted view-5k> --candidate <empty directory>`
 freezes bounded reader inputs, population, original-control mapping, Morgan2048,
@@ -139,19 +205,19 @@ The historical native-float32 90-run attempt stopped at 18 complete runs: the
 19th registered identity has a reproducible native float32 non-finite loss.
 See [the terminal-block record](log/231-terminal-block.md) for diagnosis and
 preserved evidence. The author CUDA backend correction does not resolve that
-failure. Previous accepted results and the old step remain available; the new
-comparison has not been accepted or published.
+failure. The failed attempt remains historical evidence; it does not enter the accepted
+three-fold comparison.
 
 The following numerical-method attempt is historical and superseded by the
 current three-fold amendment. On 2026-11-17 the user initially approved the
 numerical-method amendment in ADR 0074.
-All 30 TranSiGen identities must run from zero as `transigen-native-f64-v1`;
+That attempt required all 30 TranSiGen identities from zero as `transigen-native-f64-v1`;
 the three historical float32 successes remain evidence only. Exactly 15 completed
 cold-drug PRnet entries may be imported only after immutable original
 runtime551a3c9 identity receipts, fresh-process exact sampled replay and scientific
 equivalence checks. The other 45 learner entries require training; deterministic
-Mean reuse requires manifest/scoring compatibility. The complete 90-run acceptance
-remains outstanding. No result is inferred from bounded variant smoke checks.
+Mean reuse requires manifest/scoring compatibility. The historical 90-run attempt never reached complete acceptance. No result from
+it or from bounded variant smoke checks enters the accepted matrix.
 
 Interrupted same-identity `--resume` now preserves the entire prior run under
 candidate `attempts/` before a clean restart. A trained run awaiting replay uses

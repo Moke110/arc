@@ -13,18 +13,11 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   f1000-first/rank_sum-ordered disease candidates, with explicit HVG fallback.
   Views normalize on the full frozen axis before subsetting and retain matched
   control/delta semantics. The human rule DOCX is at the step root.
-  Evaluation redesign and the `02_models_tenv` re-point remain deferred.
   Routing: `stage2/01_bases/AGENTS.md`.
-- `02_models_tenv/` — tenv model comparison (ADR 0064, superseding the indirect
-  and figure portions of ADR 0063): the PRnet entrant and the `Mean` reference,
-  trained and evaluated on `tenv`. Bounded fit/predict admission is #163; the
-  shared evaluation driver is #164; the accepted 2 folds x 2 seeds matrix and its
-  `execution/run_matrix.py` publish/replay are #165; the @d reliability family is
-  #167, the driver/tables #168, the three figures #169, and the no-training
-  acceptance/replay plus retirement #170. The three report figures are
-  `figure/metrics.png` (four direct-metric panels), `figure/metrics_indirect.png`
-  (two-by-four reliability panels) and `figure/learning_curve.png`; each has one
-  tracked `figure/data/*.csv` plot-value table.
+- `02_models_tenv-5k/` — single-dose tenv native model comparison (ADR 0074):
+  shared splits and Mean baselines, random-weight PRnet/TranSiGen/MLP_Morgan,
+  parent-level Δ evaluation, checkpoint replay and CSV-only report figures.
+  Before changing or replaying it, read its `AGENTS.md` and `README.md`.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,
@@ -51,8 +44,3 @@ candidate leaves the accepted products available. Retain only accepted final pro
 remove obsolete payloads after acceptance and reference migration, preserving required
 provenance and audit evidence. Historical sealed records keep their original bytes and
 paths; log a migration mapping. External `source/` trees and Stage 1 remain untouched.
-
-The approved successor `02_models_tenv-5k/` is under construction under ADR 0074
-and #226. It owns the single-dose shared inputs, native-model comparison and
-parent-level Δ evaluation. The old accepted step stays available until #231's
-complete successor acceptance and explicit retirement mapping.

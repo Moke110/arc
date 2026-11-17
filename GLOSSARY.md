@@ -610,12 +610,16 @@ _Avoid_: experiment, trial
 
 ### Stage 2 tenv model comparison
 
-**Tenv comparison step** (`02_models_tenv`):
-The active Stage 2 step that trains perturbation predictors on `tenv` and reports their held-out performance. It owns entrants, predictions and figures; the shared metrics, palette and fold/seed index tables stay in `01_bases`.
-_Avoid_: benchmark step (when meaning the rebuilt comparison)
+**Tenv comparison step** (`02_models_tenv-5k`):
+The active Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result. It owns the shared comparison splits, entrants, predictions and figures; the released inputs and palette stay in `01_bases`.
+_Avoid_: benchmark step (when meaning this comparison)
 
 **Direct metric**:
-`PCC`, `Spearman`, `RMSE` or `R²` computed on one test well's predicted Δ against that well's observed Δ over the full gene axis. A run reports the equal-weight mean over its fold's test wells; no group aggregation precedes it. It measures per-sample fidelity, not group-level accuracy.
+`PCC`, `Spearman`, `RMSE` or `R²` comparing predicted and observed Δ across the gene axis. The current primary unit is a drug parent after out-of-fold repeated-well aggregation; per-well metrics are auxiliary.
+
+### Historical Stage 2 reliability vocabulary
+
+The following terms describe the retired ADR 0064 comparison and its sealed records.
 
 **@d reliability family** (reliability family):
 `Precision@d`, `Recall@d`, `F1@d`, `Spearman@d` and `Reliability@d`, computed per drug–dose group from that group's mean predicted Δ against its measured DESeq2 contrast. It replaces the retired `k`-parameterized indirect family. The `@d` suffix is the family marker: every member is parameterized by the predicted-effect threshold `d`, not by a declared table size.

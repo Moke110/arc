@@ -1,0 +1,71 @@
+{
+  "schema": "tenv5k-final-acceptance-v1",
+  "date": "2026-11-17",
+  "scientific_runtime_commit": "a567e0df2bf67fd65e75e9ae1539f4c59597d68d",
+  "matrix": {
+    "learners": 54,
+    "origins": "all newly trained; no historical imports",
+    "scenarios": 2,
+    "folds": 3,
+    "seeds": [
+      17,
+      42,
+      2026
+    ],
+    "wells": 1402,
+    "parents": 459,
+    "genes": 5000,
+    "mean_slots": 18,
+    "mean_applicable": 15,
+    "mean_not_applicable": 3
+  },
+  "verification": {
+    "per_run_replay": "all54 exact native sampled predictions from fresh processes",
+    "evaluation": "complete OOF per well/model/scenario/seed, parent aggregation then seed-metric average",
+    "report_replay": "metric CSV and PNG double replay exact; publication revalidated accepted report",
+    "canonical_preservation": "Complete 5-tree regular-file SHA256 mappings verified, see231-canonical-preservation.json; no trackedsource overwritten",
+    "canonical_no_training_verification": "pending finalmain integration; same runtime and logicalowned MLPsource identity allow relocation"
+  },
+  "environment": {
+    "python": "3.13.13",
+    "torch": "2.12.0+cu130",
+    "numpy": "2.4.6",
+    "device": "cuda",
+    "cuda": "13.0"
+  },
+  "per_method_resources": {
+    "MLP_Morgan": {
+      "runs": 18,
+      "training_elapsed_seconds_sum": 121.38833879918093,
+      "peak_rss_kib": 1482144,
+      "epochs_min": 85,
+      "epochs_max": 308
+    },
+    "PRnet": {
+      "runs": 18,
+      "training_elapsed_seconds_sum": 222.7917657889775,
+      "peak_rss_kib": 1820568,
+      "epochs_min": 161,
+      "epochs_max": 467
+    },
+    "TranSiGen": {
+      "runs": 18,
+      "training_elapsed_seconds_sum": 487.2737987601431,
+      "peak_rss_kib": 1770252,
+      "epochs_min": 77,
+      "epochs_max": 172
+    }
+  },
+  "resource_scope": "terminal elapsed is training+prediction before fresh replay; peak RSS is process RSS, not WSL page cache; full driver time-v records under log/resources, coordinator GPU/RAM/WSL monitor every10seconds",
+  "tests": {
+    "files": 12,
+    "tests": 59,
+    "skipped": 3,
+    "status": "all files pass",
+    "shell_tests": 2,
+    "summary": "231-test-summary.json"
+  },
+  "health": "pending final checks",
+  "old_step_retirement": "Verified complete originalsource and existingarchive before trackedoldstep removal; canonical ignoredresidual removed only after mainintegration by merger",
+  "stage3": "No content or implementation changes"
+}
