@@ -31,6 +31,9 @@ def replay(inputs, checkpoint, source, *, adapter, device=None):
     config = saved['config']
     if config['adapter'] != adapter:
         raise ValueError('checkpoint adapter identity mismatch')
+    for key in ('method_identity', 'compute_dtype', 'initialization_dtype', 'prediction_dtype', 'noise_dtype'):
+        if key in native.CONFIG and config.get(key) != native.CONFIG[key]:
+            raise ValueError('checkpoint numerical method identity mismatch: ' + key)
     device = device or config['device']
     if str(device) != config['device']:
         raise ValueError('exact replay requires recorded device')
@@ -40,11 +43,25 @@ def replay(inputs, checkpoint, source, *, adapter, device=None):
         backend = native.configure_backend(device)
         if str(device).startswith('cuda') and config.get('backend') != backend:
             raise ValueError('checkpoint CUDA backend identity is missing or differs; do not relabel old runs')
+    if config.get('compute_dtype') is not None:
+        expected_dtype = getattr(torch, config['compute_dtype'])
+        if any(v.is_floating_point() and v.dtype != expected_dtype for v in saved['state_dict'].values()):
+            raise ValueError('checkpoint state precision differs from numerical method identity')
     model = native.build_model(source, config['seed'], device)
     model.load_state_dict(saved['state_dict'])
     rows = data.rows(config['scenario'], config['fold'], 'test')
     if config['smoke_rows'] is not None: rows = rows[:config['smoke_rows']]
-    return native.sampled_prediction(model, data, rows, seed=config['inference_seed'], device=device)
+    return serialize_prediction(native.sampled_prediction(model, data, rows, seed=config['inference_seed'], device=device), config)
+
+
+def serialize_prediction(prediction, config):
+    """Apply the declared storage dtype and check the stored values themselves."""
+    dtype = config.get('prediction_dtype')
+    with np.errstate(over='ignore', invalid='ignore'):
+        result = np.asarray(prediction, dtype=dtype)
+    if not np.isfinite(result).all():
+        raise ValueError('non-finite prediction after serialization conversion')
+    return result
 
 
 def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='cpu',
@@ -109,6 +126,7 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
         best = torch.load(candidate / 'checkpoint.pt', map_location=device, weights_only=False)
         model.load_state_dict(best['state_dict'])
         prediction = native.sampled_prediction(model, data, test_rows, seed=config['inference_seed'], device=device)
+        prediction = serialize_prediction(prediction, config)
         np.save(candidate / 'prediction.npy', prediction)
         data.obs.iloc[test_rows][['profile_id', 'drug_parent_inchikey']].to_csv(candidate / 'identity.csv', index=False)
         wells, parents = score_prediction(data.obs.iloc[test_rows], data.expression[test_rows], prediction,
@@ -144,7 +162,8 @@ def accept_replay(inputs, candidate, source, *, adapter):
     if environment['torch'] != torch.__version__ or environment['numpy'] != np.__version__ or environment['python'] != platform.python_version():
         raise ValueError('exact replay requires recorded software environment')
     prediction = replay(inputs, candidate / 'checkpoint.pt', source, adapter=adapter)
-    if not np.array_equal(prediction, np.load(candidate / 'prediction.npy')):
+    stored = np.load(candidate / 'prediction.npy')
+    if prediction.dtype != stored.dtype or not np.array_equal(prediction, stored):
         raise ValueError('fresh process prediction replay differs')
     terminal.update(status='complete', replay='exact native sampled prediction')
     (candidate / 'terminal.json').write_text(json.dumps(terminal, indent=2) + '\n')

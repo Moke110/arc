@@ -1,12 +1,13 @@
-"""Unmodified upstream TranSiGen, ordinary-script ECFP4/random configuration.
+"""Native TranSiGen with declared full-float64 arithmetic variant.
 
 Only the interface gene dimension changes to 5000. Prediction uses forward(x1,
-features)[3], never the target encoder; native CPU latent draws are preserved.
+features)[3], never the target encoder; native float32 CPU draws precede casting.
 """
 import hashlib
 import importlib.util
 from pathlib import Path
 import sys
+from types import MethodType
 import numpy as np
 import torch
 from .native_import import no_source_bytecode
@@ -26,6 +27,13 @@ def configure_backend(device):
                 cudnn_enabled=torch.backends.cudnn.enabled,
                 cudnn_benchmark=torch.backends.cudnn.benchmark,
                 cudnn_deterministic=torch.backends.cudnn.deterministic)
+
+def sample_latent_f64(model, mu, logvar):
+    """Preserve native CPU float32 normal draws, then compute in model dtype."""
+    std = logvar.mul(0.5).exp_()
+    eps = torch.FloatTensor(std.size()).normal_().to(device=mu.device, dtype=mu.dtype)
+    return eps.mul_(std).add_(mu)
+
 
 class Adapter:
     name = 'TranSiGen'
@@ -57,16 +65,20 @@ class Adapter:
     def build(self, seed, device):
         torch.manual_seed(seed)
         self.device = torch.device(device)
-        return self.native(n_genes=5000, n_latent=100, n_en_hidden=[1200],
+        model = self.native(n_genes=5000, n_latent=100, n_en_hidden=[1200],
                            n_de_hidden=[800], features_dim=2048,
                            features_embed_dim=[400], init_w=True, beta=0.1,
-                           dropout=0.1, random_seed=seed, device=self.device).to(self.device)
+                           dropout=0.1, random_seed=seed, device=self.device)
+        # Native selective initialization and its RNG draws occur in float32.
+        model = model.double().to(self.device)
+        model.sample_latent = MethodType(sample_latent_f64, model)
+        return model
 
     def optimizer(self, model):
         return torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
 
     def _tensor(self, value, model):
-        return torch.tensor(np.asarray(value), dtype=torch.float32, device=next(model.parameters()).device)
+        return torch.tensor(np.asarray(value), dtype=next(model.parameters()).dtype, device=next(model.parameters()).device)
 
     def predict(self, model, inputs, rows, batch_size=64):
         model.eval()
@@ -77,7 +89,7 @@ class Adapter:
                 x1 = self._tensor(inputs.control[batch], model)
                 features = self._tensor(inputs.fingerprints(batch), model)
                 result.append(model(x1, features)[3].cpu().numpy())
-        return np.concatenate(result) if result else np.empty((0, 5000), np.float32)
+        return np.concatenate(result) if result else np.empty((0, 5000), np.float64)
 
     def train_epoch(self, model, inputs, rows, optimizer, rng):
         model.train()
@@ -107,7 +119,9 @@ class Adapter:
         return total / count
 
 # Shared learner's functional adapter contract.
-CONFIG = dict(method='TranSiGen', batch_size=64, n_genes=5000, n_latent=100,
+CONFIG = dict(method='TranSiGen', method_identity='transigen-native-f64-v1',
+              compute_dtype='float64', initialization_dtype='float32',
+              prediction_dtype='float64', noise_dtype='float32 CPU then cast', batch_size=64, n_genes=5000, n_latent=100,
               encoder=[1200], decoder=[800], features_dim=2048,
               features_embed_dim=[400], init_w=True, beta=0.1, dropout=0.1,
               molecule_feature='ECFP4', initialization_model='random',
@@ -120,7 +134,9 @@ CONFIG = dict(method='TranSiGen', batch_size=64, n_genes=5000, n_latent=100,
               adaptations=['5000 gene interface', 'shared Morgan2048 ECFP4',
                            'random initialization; no pretraining/dose/KPGT',
                            'shared splits and fixed validation treated-expression MSE',
-                           'x1-only native sampled forward for inference'])
+                           'x1-only native sampled forward for inference',
+                           'native float32 initialization then full float64 computation',
+                           'native float32 CPU normal draw then cast before scale/add'])
 SOURCE_DIGEST = SOURCE_HASH
 
 def build_model(source, seed, device):
