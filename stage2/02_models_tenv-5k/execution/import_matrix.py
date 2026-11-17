@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 
 FROZEN_RUNTIME = '551a3c9'
+FROZEN_COMMIT = '551a3c91c217c83440bae8e5b3b3ca9502a5de10'
 ORIGINAL_PLAN_SHA256 = '9b747f83868e305361897dadd76e50afa9f339a87653a3f5a7abd8d98d545858'
 # Approved float64 amendment (410cb33): PRnet has no numerical CONFIG keys
 # or configure_backend; serialize_prediction retains its finite float32 values.
@@ -61,7 +62,7 @@ def verify_runtime(runtime, original, digest):
     runtime = Path(runtime).resolve()
     commit = subprocess.check_output(['git', '-C', str(runtime), 'rev-parse', 'HEAD'], text=True).strip()
     expected = subprocess.check_output(['git', '-C', str(runtime), 'rev-parse', FROZEN_RUNTIME], text=True).strip()
-    if commit != expected:
+    if commit != expected or commit != FROZEN_COMMIT:
         raise ValueError('import requires preserved frozen runtime551a3c9')
     for name, value in original['code_sha256'].items():
         path = Path(name)
@@ -82,7 +83,7 @@ def verify_import(root, run, target, matrix):
     if run not in matrix.plan() or run['adapter']!='prnet' or run['scenario']!='cold-drug':
         raise ValueError('only registered cold PRnet imports are accepted')
     receipt = read(root/'import-receipt.json')
-    if receipt.get('schema') != 'tenv5k-import-v1' or receipt.get('run') != run:
+    if receipt.get('schema') != 'tenv5k-import-v1' or receipt.get('run') != run or receipt.get('origin') != 'imported; not retrained':
         raise ValueError('invalid imported run identity')
     original_path = root/'import-provenance/original-plan.json'
     original = read(original_path)
@@ -91,7 +92,7 @@ def verify_import(root, run, target, matrix):
     validate_compatibility(original, target, read(root/'import-provenance/compatibility-audit.json'), receipt['source_plan_sha256'])
     if receipt['target_method'] != target['methods']['prnet'] or receipt['target_shared'] != target['shared']:
         raise ValueError('import target identity changed')
-    if not receipt['source_runtime_commit'].startswith(FROZEN_RUNTIME):
+    if receipt['source_runtime_commit'] != FROZEN_COMMIT:
         raise ValueError('wrong import runtime')
     for name, value in receipt['artifacts_sha256'].items():
         if Path(name).is_absolute() or '..' in Path(name).parts or matrix.digest(root/name) != value:

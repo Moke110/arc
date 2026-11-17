@@ -3,6 +3,8 @@ import argparse
 import contextlib
 import hashlib
 import json
+import os
+import tempfile
 from pathlib import Path
 import platform
 import sys
@@ -19,6 +21,11 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('runtime','inputs','run','source'):parser.add_argument('--'+name,type=Path,required=True)
     args=parser.parse_args()
+    # Native third-party imports need writable caches even when the frozen
+    # runtime and environment installation are read-only. No source is changed.
+    caches=tempfile.TemporaryDirectory(prefix='tenv5k-import-cache-')
+    os.environ['NUMBA_CACHE_DIR']=str(Path(caches.name)/'numba')
+    os.environ['MPLCONFIGDIR']=str(Path(caches.name)/'matplotlib')
     sys.dont_write_bytecode=True
     sys.path.insert(0,str(args.runtime))
     import numpy as np

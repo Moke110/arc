@@ -25,6 +25,7 @@ class ImportIdentityTests(unittest.TestCase):
             self.assertEqual(frozen['schema'], 'tenv5k-matrix-v2')
             self.assertEqual(set(frozen['methods']), {'prnet', 'transigen', 'mlp'})
             self.assertEqual(frozen['methods']['prnet']['scientific_identity'], 'prnet-native-f32-v1')
+            self.assertEqual(frozen['methods']['transigen']['scientific_identity'], 'transigen-native-f64-v1')
             self.assertIn('output/api/tenv5k/protocol.py', frozen['shared']['evaluation_code_sha256'])
             self.assertNotIn('output/api/tenv5k/model_transigen.py', frozen['methods']['prnet']['code_sha256'])
 
@@ -83,7 +84,7 @@ class ImportedEvidenceTests(unittest.TestCase):
                     input_manifest_sha256=self.original['input_manifest_sha256'],config_sha256=outputs['config.json'],environment_sha256=outputs['environment.json'])
         (provenance/'fresh-process-replay.json').write_text(json.dumps(replay))
         receipt=dict(schema='tenv5k-import-v1',run=self.run,origin='imported; not retrained',
-            source_plan_sha256=self.imports.ORIGINAL_PLAN_SHA256,source_runtime_commit='551a3c9-original',
+            source_plan_sha256=self.imports.ORIGINAL_PLAN_SHA256,source_runtime_commit=self.imports.FROZEN_COMMIT,
             source_manifest_sha256=matrix.digest(root/'manifest.json'),source_config_sha256=outputs['config.json'],
             source_environment=json.loads((root/'environment.json').read_text()),target_method=self.method,
             target_shared=self.target['shared'],artifacts_sha256=matrix._tree_identity(root))
@@ -96,6 +97,10 @@ class ImportedEvidenceTests(unittest.TestCase):
         result=self.imports.verify_import(root,self.run,self.target,matrix)
         self.assertEqual(result['origin'],'imported; not retrained')
         self.assertEqual({n:(root/n).read_bytes() for n in original},original)
+        import shutil
+        portable=self.root/'published-copy';shutil.copytree(root,portable)
+        self.assertEqual(self.imports.verify_import(portable,self.run,self.target,matrix)['origin'],'imported; not retrained')
+        self.assertEqual({n:(portable/n).read_bytes() for n in original},original)
         with self.assertRaisesRegex(ValueError,'relabelled'):
             matrix.record_execution(root,self.run,self.target)
 
@@ -139,6 +144,33 @@ class ImportedEvidenceTests(unittest.TestCase):
             (root/'import-receipt.json').write_text(json.dumps(receipt))
             with self.subTest(field=field),self.assertRaises(ValueError):self.imports.verify_import(root,self.run,self.target,matrix)
             replay_path.write_text(json.dumps(before))
+
+    def test_original_runtime_git_identity_and_disk_bytes_fail_closed(self):
+        from unittest.mock import patch
+        runtime=self.root/'runtime';runtime.mkdir()
+        with patch('subprocess.check_output',side_effect=['wrong-commit\n','551a3c9-original\n']):
+            with self.assertRaisesRegex(ValueError,'frozen runtime'):
+                self.imports.verify_runtime(runtime,self.original,matrix.digest)
+        path=runtime/'stage2/02_models_tenv-5k/execution/prnet.py'
+        path.parent.mkdir(parents=True);path.write_text('changed frozen runtime')
+        with patch('subprocess.check_output',return_value=self.imports.FROZEN_COMMIT+'\n'):
+            with self.assertRaisesRegex(ValueError,'runtime bytes changed'):
+                self.imports.verify_runtime(runtime,{'code_sha256':{'execution/prnet.py':self.original['code_sha256']['execution/prnet.py']}},matrix.digest)
+
+    def test_new_training_requires_preregistered_identity_and_keeps_origin_distinct(self):
+        import shutil
+        root=self.fixture()
+        (root/'import-receipt.json').unlink();shutil.rmtree(root/'import-provenance')
+        with self.assertRaisesRegex(ValueError,'preregistered'):
+            matrix.record_execution(root,self.run,self.target)
+        registration=matrix.execution_registration(self.run,self.target)
+        matrix.record_execution(root,self.run,self.target,registration)
+        self.assertEqual(matrix.verify_execution(root,self.run,self.target)['origin'],'trained')
+        receipt=json.loads((root/'execution-receipt.json').read_text())
+        receipt['registration']['runtime_code_sha256']['execution/prnet.py']='foreign runtime'
+        (root/'execution-receipt.json').write_text(json.dumps(receipt))
+        with self.assertRaisesRegex(ValueError,'execution identity'):
+            matrix.verify_execution(root,self.run,self.target)
 
 
 if __name__ == '__main__':

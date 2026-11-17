@@ -99,7 +99,16 @@ def source_paths(args):
     return dict(prnet=args.prnet_source,transigen=args.transigen_source,mlp=STEP/'output/api/tenv5k')
 
 
-def record_execution(root,run,frozen):
+def registration_path(candidate,run):
+    return Path(candidate)/"registrations"/run["scenario"]/run["adapter"]/str(run["fold"])/(str(run["seed"])+".json")
+
+
+def execution_registration(run,frozen):
+    return dict(run=run,method=frozen["methods"][run["adapter"]],shared=frozen["shared"],
+                runtime_code_sha256=frozen["code_sha256"],device=frozen["device"],sources=frozen["sources"])
+
+
+def record_execution(root,run,frozen,registration=None):
     root=Path(root)
     if (root/'import-provenance').exists() or (root/'import-receipt.json').exists():
         raise ValueError('imported evidence cannot be relabelled as newly trained')
@@ -107,7 +116,9 @@ def record_execution(root,run,frozen):
     method=frozen['methods'][run['adapter']]
     if run['adapter']=='transigen' and config.get('method_identity','transigen-native-f32-v1')!=method['scientific_identity']:
         raise ValueError('trained numerical method identity changed')
+    if registration!=execution_registration(run,frozen):raise ValueError('new training lacks preregistered execution identity')
     receipt=dict(schema='tenv5k-execution-v1',origin='trained',run=run,method=method,shared=frozen['shared'],
+                 registration=registration,
                  manifest_sha256=digest(root/'manifest.json'))
     (root/'execution-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
 
@@ -120,7 +131,7 @@ def verify_execution(root,run,frozen):
         return verify_import(root,run,frozen,SimpleNamespace(**globals()))
     receipt=json.loads((root/'execution-receipt.json').read_text())
     expected=dict(schema='tenv5k-execution-v1',origin='trained',run=run,method=frozen['methods'][run['adapter']],
-                  shared=frozen['shared'],manifest_sha256=digest(root/'manifest.json'))
+                  shared=frozen['shared'],registration=execution_registration(run,frozen),manifest_sha256=digest(root/'manifest.json'))
     if receipt!=expected:raise ValueError('trained execution identity changed')
     config=verify_run(root,run,frozen['input_manifest_sha256'],frozen['device'])
     if run['adapter']=='transigen' and config.get('method_identity','transigen-native-f32-v1')!=receipt['method']['scientific_identity']:
@@ -188,15 +199,21 @@ def execute(args):
             if (target/'execution-receipt.json').exists():
                 verify_execution(target,run,frozen)
                 continue
+            registration=json.loads(registration_path(args.candidate,run).read_text())
+            if registration!=execution_registration(run,frozen):raise ValueError('unregistered existing run cannot become new training')
             replay_command=[args.python,str(STEP/'execution'/(run['adapter']+'.py')),
                             '--inputs',str(args.inputs),'--candidate',str(target),
                             '--source',str(source_paths(args)[run['adapter']]),'--replay-only']
             action=recover_existing(args,run,frozen['input_manifest_sha256'],
                                     lambda:subprocess.run([str(STEP/'execution/capped.sh'),*replay_command],check=True))
             if action=='complete':
-                record_execution(target,run,frozen)
+                record_execution(target,run,frozen,registration)
                 continue
         target.parent.mkdir(parents=True,exist_ok=True)
+        registration=execution_registration(run,frozen)
+        registration_file=registration_path(args.candidate,run)
+        registration_file.parent.mkdir(parents=True,exist_ok=True)
+        registration_file.write_text(json.dumps(registration,indent=2)+'\n')
         timing=args.candidate/'resources'/('/'.join(map(str,run.values())).replace('/','-')+'.time')
         timing.parent.mkdir(exist_ok=True)
         command=[str(STEP/'execution/capped.sh'),'/usr/bin/time','-v','-o',str(timing),args.python,str(STEP/'execution'/ (run['adapter']+'.py')),
@@ -206,7 +223,7 @@ def execute(args):
         with timing.with_suffix('.stdout').open('w') as stdout, timing.with_suffix('.stderr').open('w') as stderr:
             subprocess.run(command,check=True,stdout=stdout,stderr=stderr)
         verify_run(target,run,frozen['input_manifest_sha256'],args.device)
-        record_execution(target,run,frozen)
+        record_execution(target,run,frozen,registration)
         print(json.dumps(dict(complete=run)),flush=True)
         completed+=1
         if args.limit_runs and completed>=args.limit_runs:return
@@ -245,6 +262,7 @@ def evaluate(args,destination):
                         terminal=json.loads((root/'terminal.json').read_text())
                         if terminal['best_epoch']!=int(curve.loc[curve.validation_mse.idxmin(),'epoch']):raise ValueError('best checkpoint history mismatch')
                         for key,value in run.items():curve[key]=value
+                        curve['method_identity']=frozen['methods'][adapter]['scientific_identity']
                         curve['method']=method;curve['best_epoch']=terminal['best_epoch'];curve['status']='complete';curves.append(curve)
                     identity=pd.read_csv(root/'identity.csv').profile_id.astype(str).tolist()
                     rows=data.rows(scenario,fold,'test')
@@ -258,7 +276,13 @@ def evaluate(args,destination):
                 parent_rows.append(parents);well_rows.append(wells)
     require_complete(plan=plan(),found=found)
     raw=pd.concat(parent_rows,ignore_index=True);parents=seed_average(raw)
+    method_labels={name:frozen['methods'][adapter]['scientific_identity'] for adapter,name in METHODS.items()}
+    method_labels.update({name:'deterministic-'+name for name in ('Mean','Mean_cell','Mean_drug')})
+    raw['method_identity']=raw.method.map(method_labels)
+    parents['method_identity']=parents.method.map(method_labels)
     pairs=paired_comparisons(parents,seed=data.config['statistical_seed'])
+    pairs['candidate_identity']=pairs.candidate.map(method_labels)
+    pairs['reference_identity']=pairs.reference.map(method_labels)
     for column in ('candidate_constant_prediction','reference_constant_prediction'):
         pairs[column]=0
     pairs['constant_truth_ids']=''
@@ -288,8 +312,10 @@ def evaluate(args,destination):
             n_constant_truth=int(cold.constant_truth.sum()),n_constant_prediction=0,
             constant_truth_ids=';'.join(sorted(cold.loc[cold.constant_truth,'drug_parent'])),reason='unseen test drug; no fallback'))
     raw.to_csv(destination/'per_parent_seed.csv',index=False);parents.to_csv(destination/'per_parent.csv',index=False)
-    pd.concat(well_rows,ignore_index=True).to_csv(destination/'per_well.csv',index=False)
-    pd.DataFrame(summaries).to_csv(destination/'metrics_values.csv',index=False)
+    well_table=pd.concat(well_rows,ignore_index=True);well_table['method_identity']=well_table.method.map(method_labels)
+    well_table.to_csv(destination/'per_well.csv',index=False)
+    summary=pd.DataFrame(summaries);summary['method_identity']=summary.method.map(method_labels)
+    summary.to_csv(destination/'metrics_values.csv',index=False)
     pairs.to_csv(destination/'paired_differences_values.csv',index=False)
     pd.concat(curves,ignore_index=True).to_csv(destination/'learning_curve_values.csv',index=False)
     parents[parents.constant_truth].to_csv(destination/'constant_truth.csv',index=False)

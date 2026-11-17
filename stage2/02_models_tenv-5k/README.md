@@ -156,3 +156,32 @@ Mean_drug as N/A. Truth-constant parent identities, undefined denominators and
 constant prediction counts are recorded with plot values and displayed as figure
 annotations. Prediction-constant counts count seed-parent vectors; deterministic
 Mean methods have a single vector per parent. True constants retain error scores.
+
+The v2 matrix plan separates shared input/evaluation identity from each method's
+scientific identity and implementation hashes. CSV report rows include
+`method_identity` (paired tables include candidate/reference identities), so the
+stable `TranSiGen` method name is explicitly identified as
+`transigen-native-f64-v1`. Acceptance records all 90 execution origins, including
+imported versus newly trained evidence; it still refuses an incomplete matrix.
+
+Use `execution/run_matrix.py --import-cold-prnet --inputs <freeze> --means <means>
+--prnet-source <source> --transigen-source <source> --candidate <new candidate>
+--device cuda --import-original <original matrix-231> --import-runtime
+<preserved runtime551a3c9 worktree> --compatibility-audit <reviewed JSON>` before
+continuing `--all --resume` with the same paths/code. Import is restricted to the
+15 registered cold PRnet identities and the approved original plan digest. The
+audit binds `source_plan_sha256`, exact `target_method` from the new plan,
+`source_runtime: "551a3c9"`, `reviewed_by`, and `changed_code` rationales keyed by
+changed method dependency paths. Only the explicitly reviewed original→new shared
+learner digest pair is allowed; PRnet adapter, inputs and scoring must be unchanged.
+A rationale alone cannot authorize other code or scientific changes.
+
+Every import runs a read-only fresh process using the frozen runtime, original
+source, recorded device and exact software environment. It checks checkpoint
+configuration and exact prediction dtype/values. Original run files, including
+configuration, terminal, checkpoint and manifest, are copied byte for byte into
+the new candidate, accompanied by `import-receipt.json` and `import-provenance/`
+(original plan, reviewed audit, frozen Python code, timed replay evidence).
+Original artifacts are never rewritten or relabelled as fresh training. These
+portable receipts are rechecked on resume, acceptance and publication. New runs
+must have a preregistered execution identity and a separate execution receipt.
