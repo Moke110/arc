@@ -19,7 +19,7 @@ def run(inputs,source,candidates,log,methods):
         terminal=json.loads((candidate/'terminal.json').read_text())
         if terminal['status']!='complete' or not terminal.get('smoke'):raise ValueError('bounded smoke failed')
         evidence=log/method;evidence.mkdir()
-        for name in ['config.json','terminal.json','manifest.json','validation_manifest.json','environment.json','validation_metrics.json','learning_curve.csv','validation_replay.json','test_replay.json']:
+        for name in ['config.json','terminal.json','manifest.json','validation_manifest.json','environment.json','validation_metrics.json','learning_curve.csv','registration.json']:
             path=candidate/name
             if path.exists():(evidence/name).write_bytes(path.read_bytes())
         records.append(dict(method=method,candidate=str(candidate),terminal=terminal))

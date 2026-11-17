@@ -1,0 +1,11 @@
+{
+  "attempt_nonce": "b368045bfa120d6550bb36cbac05c6cf66bf29fdce5593fb88f3c83656f86ef9",
+  "device": "cuda",
+  "origin": "bounded-smoke",
+  "run": {
+    "fold": 0,
+    "method": "input-numeric",
+    "scenario": "cold-drug",
+    "seed": 17
+  }
+}
