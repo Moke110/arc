@@ -1,4 +1,4 @@
-"""All-dose no-dose adapter: unchanged native TranSiGen arithmetic and RNG."""
+"""Seven fixed dose interfaces around the immutable native TranSiGen learner."""
 import numpy as np
 import torch
 from torch import nn
@@ -9,6 +9,7 @@ from tenv5k.model_transigen import Adapter, CONFIG as NATIVE_CONFIG, SOURCE_DIGE
 def adapter(source,method='no-dose',transform=None):
     configuration(method,transform)
     if method=='no-dose':return Adapter(source)
+    if method=='scaling':return ScalingAdapter(source)
     return DoseAdapter(source,method,transform)
 
 
@@ -24,8 +25,8 @@ def positive_doses(doses):
 
 def fit_transform(method,doses):
     values=positive_doses(doses)
-    if method=='no-dose':return None
-    if method not in CONCAT:raise ValueError('unsupported dose method')
+    if method in ['no-dose','scaling']:return None
+    if method not in (*CONCAT,'film'):raise ValueError('unsupported dose method')
     logs=np.log10(values);scale=float(logs.std(ddof=0))
     if not np.isfinite(scale) or scale<=0:raise ValueError('training dose scale must be positive')
     return dict(kind='training-log10-dose-population-standardization-v1',mean=float(logs.mean()),std=scale)
@@ -43,10 +44,24 @@ def transform_doses(doses,transform):
 
 
 def configuration(method,transform):
+    if method=='scaling':
+        if transform is not None:raise ValueError('scaling has no fitted transform')
+        base=configuration('no-dose',None)
+        return dict(base,method=method,method_identity='tsg-dose-scaling-log10-one-plus-f32-v1',dose_input=True,
+                    dose_scaling='Morgan × log10(1+dose/1µM); unstandardized',
+                    adaptations=[a for a in base['adaptations'] if 'no pretraining/dose' not in a]+['random initialization; no pretraining/KPGT','unstandardized fingerprint scaling'])
     if method=='no-dose':
         if transform is not None:raise ValueError('no-dose requires no transform')
         return dict(NATIVE_CONFIG,method=method,method_identity='tsg-dose-no-dose-native-f32-v1',transform=transform,
                     initialization='native selective Xavier; unchanged no-dose constructor order')
+    if method=='film':
+        transform_doses([1.],transform)
+        order=['native constructor and selective Xavier','FiLM Linear1→32 ReLU Linear32→800 with PyTorch defaults','zero final FiLM weight and bias']
+        return dict(NATIVE_CONFIG,method=method,method_identity='tsg-dose-film-32-800-f32-v1',
+                    transform=dict(transform),dose_input=True,film_dimensions=[1,32,800],
+                    film_rule='(1+gamma400)*chemical400+beta400',constructor_order=order,
+                    initialization='; '.join(order),
+                    adaptations=[a for a in NATIVE_CONFIG['adaptations'] if 'no pretraining/dose' not in a]+['random initialization; no pretraining/KPGT','FiLM chemical conditioning'])
     if method not in CONCAT:raise ValueError('unsupported dose method')
     transform_doses([1.],transform)
     location='input' if method.startswith('input-') else 'latent'
@@ -65,9 +80,14 @@ def configuration(method,transform):
 
 class DoseView:
     """Pack dose beside Morgan for the adapter; never expose targets to forward."""
-    def __init__(self,data,transform):self.data,self.transform=data,transform
+    def __init__(self,data,transform,method='standardized'):
+        self.data,self.transform,self.method=data,transform,method
     def __getattr__(self,name):return getattr(self.data,name)
     def fingerprints(self,rows):
+        if self.method=='scaling':
+            factor=np.asarray(np.log1p(positive_doses(self.data.doses(rows)))/np.log(10.),dtype=np.float32)
+            if not np.isfinite(factor).all() or (factor<=0).any():raise ValueError('nonfinite or nonpositive scaling factor')
+            return self.data.fingerprints(rows)*factor[:,None]
         scalar=transform_doses(self.data.doses(rows),self.transform)
         return np.concatenate([self.data.fingerprints(rows),scalar[:,None]],axis=1).astype(np.float32)
 
@@ -89,6 +109,9 @@ class DoseAdapter(Adapter):
                     self.logvar_z2Fz1=nn.Sequential(nn.Linear(600,100))
                 if method.endswith('embedding'):
                     self.dose_embedding=nn.Sequential(nn.Linear(1,100),nn.ReLU(),nn.Linear(100,100))
+                if method=='film':
+                    self.film=nn.Sequential(nn.Linear(1,32),nn.ReLU(),nn.Linear(32,800))
+                    nn.init.zeros_(self.film[-1].weight);nn.init.zeros_(self.film[-1].bias)
 
             def forward(self,x1,features):
                 if features.ndim!=2 or features.shape[1]!=2049:raise ValueError('dose transport must be Morgan2048 plus scalar')
@@ -100,7 +123,11 @@ class DoseAdapter(Adapter):
                 z1,mu1,logvar1=self.encode_x1(x1)
                 x1_rec=self.decode_x1(z1)
                 chemical=self.feat_embeddings(morgan)
-                conditioned=torch.cat([z1,chemical,dose],1)
+                if method=='film':
+                    gamma,beta=self.film(scalar).chunk(2,dim=1)
+                    chemical=(1+gamma)*chemical+beta
+                    conditioned=torch.cat([z1,chemical],1)
+                else:conditioned=torch.cat([z1,chemical,dose],1)
                 mu_pred,logvar_pred=self.mu_z2Fz1(conditioned),self.logvar_z2Fz1(conditioned)
                 z2_pred=self.sample_latent(mu_pred,logvar_pred)
                 return x1_rec,mu1,logvar1,self.decode_x2(z2_pred),mu_pred,logvar_pred,z2_pred
@@ -116,3 +143,11 @@ class DoseAdapter(Adapter):
 
     def train_epoch(self,model,inputs,rows,optimizer,rng):
         return super().train_epoch(model,DoseView(inputs,self.transform),rows,optimizer,rng)
+
+
+class ScalingAdapter(Adapter):
+    """Native model/initialization; only the Morgan transport is dose scaled."""
+    def predict(self,model,inputs,rows,batch_size=64):
+        return super().predict(model,DoseView(inputs,None,'scaling'),rows,batch_size)
+    def train_epoch(self,model,inputs,rows,optimizer,rng):
+        return super().train_epoch(model,DoseView(inputs,None,'scaling'),rows,optimizer,rng)

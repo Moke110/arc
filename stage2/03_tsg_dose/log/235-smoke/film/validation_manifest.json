@@ -1,0 +1,16 @@
+{
+  "input_manifest_sha256": "1143c7c455e7355ca243eb64ec7faa319987585ac5ac8106282004275cdc0cfa",
+  "outputs": {
+    "checkpoint.pt": "a954d624d572a94568fc09ed4ffe212302e4451a5f3cc7caec31434d79402d12",
+    "config.json": "077c421d6dfc7b50968b77336a951f81fc43d6fb755eb59ceb88c266f664cd3a",
+    "environment.json": "07e3ed20047cd9e9f978988af8bfdaa99646b1ff3afc4cd8943e406cc05cb939",
+    "learning_curve.csv": "5d77eed0288b5e9c634203a7238a55fd8dd48cd43ee2971562a91065ffca0e5a",
+    "registration.json": "08ade58173d42ff46c47ff44f27e0b96ff02c2c0f4869c3267371b9108c9c34a",
+    "validation_identity.csv": "7d37884f1d65649bc002adfb720042e2a2f2063c397402d65e74ea25540a2ed5",
+    "validation_metrics.json": "4f95aebe5e0c57758f165bec594e8650f1d7bbecac54b6dd68a1f9e0089b8f45",
+    "validation_per_group.csv": "8f2784e46cb39547579c096377147d544561652e3e71e166a89bf50020ae7c30",
+    "validation_per_well.csv": "48881993f530bc97d45ef00f73e086a80c15f9c6dd1d0db3d56164cbe7d822a2",
+    "validation_prediction.npy": "823e4eb83cf6899bc9be16cffd8e747cedb6273c18daf03c172e043c6aa4f080"
+  },
+  "schema": "tsg-dose-validation-v1"
+}

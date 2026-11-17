@@ -1,0 +1,65 @@
+{
+  "formal_fits": 0,
+  "max_epochs": 2,
+  "records": [
+    {
+      "candidate": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/235-smoke/smoke-scaling",
+      "method": "scaling",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 1.6904031300218776,
+        "epochs": 2,
+        "parameter_count": 21583000,
+        "peak_rss_kib": 1703196,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 506306,
+        "smoke": true,
+        "status": "complete",
+        "test_replay": {
+          "attempt_nonce": "09284aea7c17efac86da1081e595ece7b924ba33ae81f2e8e99732414f075756",
+          "pid": 506306,
+          "process_token": "2807a7cc58c63625c92cc3fd0f54c0df3a73c3254aefceee96baf7c2508bb55c"
+        },
+        "training_pid": 506192,
+        "training_process_token": "8ba701e101bdefbe6f9df4f1a39acd8507ae20c3f9ac3f42187115c465235968",
+        "validation_mse": 0.1691027134656906,
+        "validation_replay": {
+          "attempt_nonce": "09284aea7c17efac86da1081e595ece7b924ba33ae81f2e8e99732414f075756",
+          "pid": 506227,
+          "process_token": "3c6a388af363fc410f708e440ee270ee442c36690b534c0ebf8a225bc757d3d3"
+        },
+        "weights_updated": true
+      }
+    },
+    {
+      "candidate": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/235-smoke/smoke-film",
+      "method": "film",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 1.7064063500147313,
+        "epochs": 2,
+        "parameter_count": 21609464,
+        "peak_rss_kib": 1740008,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 506455,
+        "smoke": true,
+        "status": "complete",
+        "test_replay": {
+          "attempt_nonce": "f3cb21acfcb96053becd92ee555607300c3186d9e62a6414f8e354ee6a9ec03b",
+          "pid": 506455,
+          "process_token": "1374c12112117a035767a792a24213ad80bc3730c66d89923e28e4b4e83b498a"
+        },
+        "training_pid": 506352,
+        "training_process_token": "6c55d88f4c8eea37c0336c0dceed4b030e2b301aff4a3b3e5f1d59618eb6e811",
+        "validation_mse": 0.1690940111875534,
+        "validation_replay": {
+          "attempt_nonce": "f3cb21acfcb96053becd92ee555607300c3186d9e62a6414f8e354ee6a9ec03b",
+          "pid": 506390,
+          "process_token": "8e78fd2a6186746694907a7f74a0e15b7faa230f91b323795ca83b9e997618b3"
+        },
+        "weights_updated": true
+      }
+    }
+  ],
+  "smoke_rows": 8
+}
