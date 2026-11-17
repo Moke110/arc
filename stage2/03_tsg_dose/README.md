@@ -33,6 +33,33 @@ validation/test prediction, dose-aware scoring and exact fresh-process replay
 passed on2026-11-17. See [233-acceptance.json](log/233-acceptance.json). These
 smokes do not enter the147-fit comparison. All payloads remain candidates.
 
+`execution/run_matrix.py plan` lists all147 preregistered identities. Use
+`run --inputs <freeze> --candidate <stable candidate> --source <native source>
+--scenario cold-drug --device cuda` for the63 primary fits; `held-dose` and
+`final` reuse the same frozen driver for63 and21 fits. Omit `--scenario` to
+execute all147. The driver runs one capped subprocess at a time. The coordinator
+must keep the independent10-second resource monitor active. `--limit-runs N`
+pauses after N validation fits; `--resume` verifies all existing bindings and
+replays complete origins before skipping. Scientific failures block release;
+interrupted attempts are preserved before restarting the same scientific slot.
+
+Per-fold21 restored validation checkpoints must replay before a choice receipt
+is sealed. The receipt binds every validation manifest. Test access is logged
+only after choice lock and each evaluated checkpoint replays in a new process.
+Held-dose receipts are fixed comparison gates and do not select an auxiliary
+winner. Final selection uses internal validation only. `accept` verifies the
+same immutable input, source, configuration, code, attempts and phase evidence;
+it cannot train or grant a partial147-fit public release. Candidate/report paths
+remain stable until final publication, including during worktree cleanup.
+
+Candidate `reports/<scenario>/` contains complete identity-checked OOF arrays,
+per-well, parent–dose and parent metric tables, equal-seed summaries, per-dose
+results, all curves/resources and validation selections. Primary inference is
+selected procedure minus no-dose, with10,000 paired parent draws (seed2262026)
+and all doses/seeds carried together. Choices stay fixed: intervals omit the
+uncertainty from repeating method selection. Other candidate intervals are
+descriptive. The final deployment choice has no new independent test score.
+
 Four concatenation arms (#234) now preserve training-only dose transforms and
 100-dimensional numeric/embedded conditioning at the input or both latent heads.
 Behavioral fixtures verify dose use, ordered target-independent predictions,
