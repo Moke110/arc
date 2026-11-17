@@ -60,7 +60,8 @@ class PublicationTests(unittest.TestCase):
                 (report/'learning_curves.csv').write_text('scenario,method,fold,seed,epoch,train_loss,validation_mse\n'+scenario+',film,0,17,1,2.5,1.25\n')
                 (report/'fit_resources.csv').write_text('scenario,method,fold,seed,parameter_count,elapsed_seconds,peak_rss_kib\n'+scenario+',film,0,17,123,4.5,1000\n')
                 if scenario!='final':
-                    (report/'summary.csv').write_text('method,pcc\nfilm,0.4\n')
+                    (report/'summary.csv').write_text('method,pcc,spearman,rmse,r2,n_parents,undefined_pcc,undefined_r2\nfilm,0.4,0.3,0.2,-0.1,1,0,0\n')
+                    (report/'per_parent.csv').write_text('method,drug_parent,n_seeds,pcc,spearman,rmse,r2,truth_constant_count,prediction_constant_count\nfilm,A,3,0.4,0.3,0.2,-0.1,0,0\n')
                     (report/'per_dose.csv').write_text('method,dose_um,pcc\nfilm,1.0,0.3\n')
                 for fold in range(1 if scenario=='final' else 3):
                     selection=matrix/'selections'/scenario/str(fold);selection.mkdir(parents=True)
@@ -71,14 +72,21 @@ class PublicationTests(unittest.TestCase):
             (matrix/'reports/held-dose/per_parent_dose_seed.csv').write_text('method,dose_um,drug_parent,seed,pcc,spearman,rmse,r2\n'+''.join(f'film,1.0,A,{seed},0.3,0.2,1.0,0.1\n' for seed in [17,42,2026]))
             destination=root/'data';module.export_plot_data(matrix,destination)
             rows=module.csv_rows(destination/'learning_curves_all.csv')
-            self.assertEqual(len(rows),3);self.assertEqual(rows[2]['validation_mse'],'1.25')
+            self.assertEqual(len(rows),3);self.assertEqual(rows[2]['validation_mse'],'1.25');self.assertEqual(rows[2]['train_loss'],'2.5')
             held=module.csv_rows(destination/'held_dose_values.csv')[0]
             self.assertEqual(held['final_selected_method'],'film');self.assertEqual(held['primary_fold_2_selected_method'],'scaling')
             self.assertEqual(held['evaluation'],'interpolation')
             self.assertEqual(float(held['pcc_low']),.3);self.assertEqual(float(held['pcc_high']),.3)
             self.assertEqual(len(module.csv_rows(destination/'held_dose_uncertainty.csv')),4)
             rendered=module.render_isolated(destination,root/'figures',sys.executable)
-            self.assertEqual(len(rendered),6)
+            self.assertEqual(len(rendered),12)
+            metrics=module.csv_rows(destination/'metrics_values.csv')
+            self.assertEqual(len(metrics),8)
+            self.assertEqual({r['metric'] for r in metrics},{'pcc','spearman','rmse','r2'})
+            self.assertEqual(next(r['value'] for r in metrics if r['scenario']=='cold-drug' and r['metric']=='r2'),'-0.1')
+            self.assertEqual({r['scenario'] for r in metrics},{'cold-drug','held-dose'})
+            self.assertIn('learning_curve.png',rendered)
+            self.assertIn('metrics.png',rendered)
             self.assertTrue(all((root/'figures'/name).read_bytes().startswith(b'\x89PNG') for name in rendered))
 
     def test_assembly_publishes_only_selected_three_checkpoint_origins(self):

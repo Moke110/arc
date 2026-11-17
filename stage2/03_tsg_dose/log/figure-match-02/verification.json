@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-17",
+  "request": "03 figure outputs match02 metric and learning-curve figures",
+  "reference": [
+    "stage2/02_models_tenv-5k/figure/metrics.png",
+    "stage2/02_models_tenv-5k/figure/learning_curve.png",
+    "stage2/02_models_tenv-5k/figure/script/render_figures.py"
+  ],
+  "scope": "Report-only implementation; no formal results asserted",
+  "behavior_test": "test_publication.py:10 tests including isolated 12-PNG reproduction",
+  "visual_qa": "Compared actual02 reference with synthetic full147-origin coordinate fixture: four indicator columns, count annotations, shared Stage2 palette and independent blue train/green validation axes; no clipping",
+  "actual_formal_visual_qa": "Pending all147 formal fits and release acceptance",
+  "frozen_runtime_sha256": {
+    "execution/capped.sh": "b889148bf200d7fddcd0f0a237ee9b9cb4a4780d122b1ab638f3d8f0f50760ff",
+    "execution/prepare.py": "98d66af27553d8964da5cbadc14b3683eb3d353bc0cc969be64d4729a0da6f7c",
+    "execution/run_matrix.py": "f979849ca66f33f0eb208178082d6bfe9061875c867e64cb2c4408c9384938ce",
+    "execution/transigen.py": "690324d3e38050e5f3d9b2bf18bd450179eb85c3eaf68a06357f76c3e60cbfe8",
+    "output/api/tsg_dose/comparison.py": "79037b92179c2ad22681db6286cb6299d9332758eb402c4630fbdd94c7e76373",
+    "output/api/tsg_dose/inputs.py": "743b9863446413f67faf32109ff329c90c6a5475909de35a9002ce9f75aaa9f6",
+    "output/api/tsg_dose/learner.py": "477131c1437930386b6dc80fd78105710e8ce14f00da3d5ef945035f3a35f4f2",
+    "output/api/tsg_dose/model.py": "d9b12cd05106cd3f7d57894d2344b462508f7ad5a3be09afa7812e59ac5919ac",
+    "output/api/tsg_dose/protocol.py": "1243831a44473161e60e69074d9ca728f332399e453ea33f46754962b38ca270",
+    "output/api/tsg_dose/release.py": "c21172576116c5e442a61eb94fee46811fced926f23e993c57f337d6464d03aa",
+    "output/api/tsg_dose/shared.py": "1c2bbf4ae9447a66c330b9edde294182de7c02d6c50267f9dd5bda9b11d3bed7"
+  }
+}

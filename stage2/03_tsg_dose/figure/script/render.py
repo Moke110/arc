@@ -1,6 +1,7 @@
-"""Reproduce the six report panels from sibling CSV files only."""
+"""Reproduce Stage2-style metric and learning-curve figures from CSV files only."""
 import argparse
 import csv
+import math
 from collections import defaultdict
 from pathlib import Path
 import matplotlib
@@ -19,9 +20,82 @@ def save(fig,out,name):
     fig.savefig(out/(name+'.png'),dpi=180,bbox_inches='tight');plt.close(fig)
 
 
+METRICS=['pcc','spearman','rmse','r2']
+SCENARIOS=['cold-drug','held-dose','final']
+LABELS={'no-dose':'No dose','scaling':'Scaling','input-numeric':'Input numeric','latent-numeric':'Latent numeric','input-embedding':'Input embedding','latent-embedding':'Latent embedding','film':'FiLM','selected':'Selected procedure'}
+
+
+def number(value):
+    return float(value) if value not in [None,''] else float('nan')
+
+
+def metric_figures(data,out,fills):
+    values=rows(data/'metrics_values.csv')
+    fig,axes=plt.subplots(2,4,figsize=(19,8.5),constrained_layout=True)
+    for i,scenario in enumerate(SCENARIOS[:2]):
+        for j,metric in enumerate(METRICS):
+            ax=axes[i,j];lookup={r['method']:r for r in values if r['scenario']==scenario and r['metric']==metric}
+            methods=[m for m in METHODS if m in lookup]
+            ax.bar(range(len(methods)),[number(lookup[m]['value']) for m in methods],color=[fills[m] for m in methods],edgecolor=[COLORS[m] for m in methods])
+            labels=[]
+            for k,method in enumerate(methods):
+                r=lookup[method];labels.append(LABELS[method]+'\n'+f"n={r['n_defined']} u={r['n_undefined']} t={r['n_constant_truth']} p={r['n_constant_prediction']}")
+                if not math.isfinite(number(r['value'])):ax.text(k,0,'Undefined',rotation=90,ha='center',va='bottom',fontsize=6)
+            ax.set_xticks(range(len(methods)),labels,rotation=50,ha='right',fontsize=7)
+            ax.set_title(scenario+' · Δ '+metric.upper());ax.axhline(0,color='#949494',lw=.6);ax.grid(axis='y',alpha=.15)
+    fig.suptitle('Equal-weight parent metrics (three seed metrics averaged); n=defined parents, u=undefined; t=constant truth parent–dose vectors, p=constant prediction seed–parent–dose vectors')
+    save(fig,out,'metrics')
+    primary=rows(data/'primary_paired.csv');descriptive=rows(data/'primary_descriptive.csv')
+    fig,axes=plt.subplots(2,4,figsize=(19,8),constrained_layout=True)
+    for i,(part,title) in enumerate([(primary,'Primary selected procedure − no dose'),([r for r in descriptive if r.get('reference')=='no-dose'],'Descriptive fixed candidate − no dose')]):
+        for j,metric in enumerate(METRICS):
+            ax=axes[i,j];points=[r for r in part if r['metric']==metric]
+            for k,r in enumerate(points):
+                candidate=r.get('candidate','selected');color=COLORS[candidate]
+                ax.plot([number(r['low']),number(r['high'])],[k,k],color=color,lw=2);ax.plot(number(r['estimate']),k,'o',color=color,ms=4)
+            ax.set_yticks(range(len(points)),[LABELS.get(r.get('candidate','selected'),r.get('candidate','selected'))+' − No dose' for r in points],fontsize=7)
+            ax.axvline(0,color='#949494',lw=.7);ax.set_title(title+'\nΔ '+metric.upper(),fontsize=9);ax.grid(axis='x',alpha=.15)
+            if metric=='rmse':ax.set_xlabel('Negative is better',fontsize=8)
+    fig.suptitle('Paired parent bootstrap: candidate minus reference, 95% intervals; selections fixed (method-selection uncertainty omitted)')
+    save(fig,out,'paired_differences')
+
+
+def learning_figures(data,out,styles):
+    curves=rows(data/'learning_curves_all.csv')
+    groups=defaultdict(list)
+    for row in curves:groups[(row['scenario'],row['method'],row['fold'],row['seed'])].append(row)
+    for part in groups.values():part.sort(key=lambda r:int(r['epoch']))
+    def panel(ax,scenario,method):
+        validation_ax=ax.twinx();validation_ax.spines['right'].set_visible(True)
+        runs=sorted([(key,part) for key,part in groups.items() if key[:2]==(scenario,method)],key=lambda item:(int(item[0][2]),int(item[0][3])))
+        for index,(key,part) in enumerate(runs):
+            style=styles[index];epochs=[int(r['epoch']) for r in part]
+            ax.plot(epochs,[number(r['train_loss']) for r in part],color=style['train'],alpha=.45,lw=.65,ls='--')
+            validation_ax.plot(epochs,[number(r['validation_mse']) for r in part],color=style['validation'],alpha=.7,lw=.85)
+        ax.set_title(scenario+' · '+LABELS[method],fontsize=9);ax.set_xlabel('epoch',fontsize=8)
+        ax.set_ylabel('native train loss (dashed)',color=styles[0]['train'],fontsize=7)
+        validation_ax.set_ylabel('validation MSE (solid)',color=styles[0]['validation'],fontsize=7)
+        ax.tick_params(axis='y',labelcolor=styles[0]['train'],labelsize=7);validation_ax.tick_params(axis='y',labelcolor=styles[0]['validation'],labelsize=7)
+        ax.tick_params(axis='x',labelsize=7);ax.grid(alpha=.15)
+    caption='Independent y-scales: native summed VAE train loss (blue, left) and validation expression MSE (green, right); every epoch and fold/seed run shown'
+    fig,axes=plt.subplots(3,7,figsize=(33,12),constrained_layout=True)
+    for i,scenario in enumerate(SCENARIOS):
+        for j,method in enumerate(METHODS[:-1]):panel(axes[i,j],scenario,method)
+    fig.suptitle(caption);save(fig,out,'learning_curve')
+    for scenario in SCENARIOS:
+        fig,axes=plt.subplots(2,4,figsize=(19,9),constrained_layout=True)
+        for ax,method in zip(axes.flat,METHODS[:-1]):panel(ax,scenario,method)
+        axes.flat[-1].axis('off');axes.flat[-1].text(.05,.8,'Blue dashed: native train loss\nGreen solid: validation MSE\nSeparate y-scales; no curve averaging\nShades identify fold/seed runs\nFinal = internal validation only',va='top',fontsize=11)
+        fig.suptitle(caption,fontsize=11);save(fig,out,'learning_curve_'+scenario)
+
+
 def render(data,out):
     out.mkdir(parents=True,exist_ok=True)
-    plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
+    plt.rcParams.update({'font.size':9,'axes.spines.top':False,'axes.spines.right':False})
+    style=rows(data/'plot_style.csv');fills={r['name']:r['fill'] for r in style if r['role']=='method'}
+    COLORS.update({r['name']:r['line'] for r in style if r['role']=='method'})
+    runstyles={int(r['name']):r for r in style if r['role']=='run'}
+    metric_figures(data,out,fills);learning_figures(data,out,runstyles)
     primary=rows(data/'primary_values.csv')
     paired=rows(data/'primary_paired.csv')
     fig,axes=plt.subplots(1,2,figsize=(12,4),gridspec_kw={'width_ratios':[2,1]})

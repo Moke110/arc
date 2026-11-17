@@ -178,10 +178,46 @@ def held_dose_uncertainty(rows,repetitions=10000,seed=2262026):
     return result
 
 
+def export_metric_grid(reports,destination):
+    """Record the same four indicator panels as step02, from saved metrics only."""
+    result=[]
+    for scenario in ['cold-drug','held-dose']:
+        source=reports/scenario
+        parents=csv_rows(source/'per_parent.csv')
+        for summary in csv_rows(source/'summary.csv'):
+            records=[r for r in parents if r['method']==summary['method']]
+            for metric in ['pcc','spearman','rmse','r2']:
+                defined=[r for r in records if r[metric] not in ['',None] and math.isfinite(float(r[metric]))]
+                result.append(dict(scenario=scenario,method=summary['method'],metric=metric,value=summary[metric],
+                    n_parents=len(records),n_defined=len(defined),n_undefined=len(records)-len(defined),
+                    n_constant_truth=sum(int(r.get('truth_constant_count',0)) for r in records),
+                    n_constant_prediction=sum(int(r.get('prediction_constant_count',0)) for r in records),
+                    n_undefined_parent_dose=sum(int(r.get('undefined_r2_count' if metric=='r2' else 'undefined_pcc_count',0)) for r in records) if metric!='rmse' else 0,
+                    zero=0,direction='lower is better' if metric=='rmse' else 'higher is better',
+                    role='primary selected procedure' if summary['method']=='selected' else ('auxiliary fixed comparison' if scenario=='held-dose' else 'descriptive fixed candidate'),
+                    source=str(Path('reports')/scenario/'summary.csv'),source_sha256=digest(source/'summary.csv'),
+                    counts_source_sha256=digest(source/'per_parent.csv')))
+    write_csv(destination/'metrics_values.csv',result)
+
+
+def export_plot_style(destination):
+    """Snapshot the pure shared Stage2 palette so isolated rendering reads CSV only."""
+    import importlib.util
+    path=STEP.parent/'01_bases/output/api/bases/palette.py'
+    spec=importlib.util.spec_from_file_location('dose_report_palette',path)
+    palette=importlib.util.module_from_spec(spec);spec.loader.exec_module(palette)
+    hues=dict(zip(['no-dose','scaling','input-numeric','latent-numeric','input-embedding','latent-embedding','film','selected'],['gray','orange','blue','green','purple','magenta','blue','gray']))
+    values=[dict(role='method',name=method,line=palette.color(hue,0 if method in ['film','selected'] else 2),fill=palette.color(hue,4 if method in ['film','selected'] else 6),source_sha256=digest(path)) for method,hue in hues.items()]
+    for index in range(9):
+        values.append(dict(role='run',name=index,train=palette.color('blue',palette.run_shade(index)),validation=palette.color('green',palette.run_shade(index)),source_sha256=digest(path)))
+    write_csv(destination/'plot_style.csv',values)
+
+
 def export_plot_data(matrix,destination):
     """Keep saved points and add descriptive uncertainty, never rescore predictions."""
     matrix=Path(matrix);destination=Path(destination);destination.mkdir(parents=True,exist_ok=True)
     reports=matrix/'reports';selections=matrix/'selections'
+    export_metric_grid(reports,destination);export_plot_style(destination)
     final=read(selections/'final/0/receipt.json')['method']
     references={f'primary_fold_{f}_selected_method':read(selections/'cold-drug'/str(f)/'receipt.json')['method'] for f in range(3)}
     references['final_selected_method']=final
@@ -216,14 +252,14 @@ def export_plot_data(matrix,destination):
 
 
 def render_isolated(data,destination,python):
-    """Give the renderer only its script and CSV bytes, then retain six PNGs."""
+    """Give the renderer only its script and CSV bytes, then retain the complete metric and learning-curve PNG set."""
     destination=Path(destination);destination.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='tsg-dose-csv-only-') as tmp:
         isolated=Path(tmp);(isolated/'data').mkdir()
         shutil.copy2(STEP/'figure/script/render.py',isolated/'render.py')
         for path in Path(data).glob('*.csv'):shutil.copy2(path,isolated/'data'/path.name)
         subprocess.run([str(python),'-I',str(isolated/'render.py'),'--data',str(isolated/'data'),'--output',str(isolated/'figure')],cwd=isolated,env=dict(os.environ,MPLCONFIGDIR=str(isolated/'mpl-cache')),check=True)
-        expected={'primary.png','primary_dose.png','held_dose.png','final_validation.png','learning_curves.png','resources.png'}
+        expected={'primary.png','primary_dose.png','held_dose.png','final_validation.png','learning_curves.png','resources.png','metrics.png','paired_differences.png','learning_curve.png','learning_curve_cold-drug.png','learning_curve_held-dose.png','learning_curve_final.png'}
         if {p.name for p in (isolated/'figure').glob('*.png')}!=expected:raise ValueError('incomplete CSV-only figure reproduction')
         for name in expected:shutil.copy2(isolated/'figure'/name,destination/name)
     return {name:digest(destination/name) for name in sorted(expected)}
