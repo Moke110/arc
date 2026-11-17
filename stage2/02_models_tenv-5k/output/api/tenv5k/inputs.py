@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from .protocol import PROTOCOL_SCHEMA, INPUT_SCHEMA, FOLDS, make_splits
 
 
 def sha256(path):
@@ -22,6 +23,10 @@ class Inputs:
             if Path(name).name != name or sha256(self.directory / name) != expected:
                 raise ValueError('input digest mismatch: ' + name)
         self.config = json.loads((self.directory / 'config.json').read_text())
+        if (self.manifest.get('schema') != INPUT_SCHEMA or
+                self.config.get('schema') != PROTOCOL_SCHEMA or
+                self.config.get('folds') != FOLDS or self.config.get('split_seed') != 226):
+            raise ValueError('input protocol differs from approved three-fold comparison')
         self.obs = pd.read_csv(self.directory / 'population.csv').set_index('profile_id', drop=False)
         self.all_obs = pd.read_csv(self.directory / 'all_obs.csv').set_index('profile_id', drop=False)
         self.parents = pd.read_csv(self.directory / 'parents.csv')
@@ -36,6 +41,9 @@ class Inputs:
             raise ValueError('expression shape mismatch')
         if self.morgan.shape != (len(self.parents), 2048):
             raise ValueError('Morgan identity shape mismatch')
+        expected_splits = make_splits(self.obs, seed=self.config['split_seed'])
+        if not self.splits.equals(expected_splits):
+            raise ValueError('split protocol or complete OOF coverage mismatch')
         for row in self.splits.itertuples():
             if row.profile_id != self.obs.index[row.row] or row.drug_parent != self.obs.iloc[row.row].drug_parent_inchikey:
                 raise ValueError('split identity mismatch')

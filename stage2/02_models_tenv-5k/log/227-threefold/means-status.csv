@@ -1,0 +1,19 @@
+scenario,fold,method,status,n_test,reason
+cold-drug,0,Mean,complete,469.0,
+cold-drug,0,Mean_cell,complete,469.0,
+cold-drug,0,Mean_drug,not-applicable,,unseen test drug
+cold-drug,1,Mean,complete,468.0,
+cold-drug,1,Mean_cell,complete,468.0,
+cold-drug,1,Mean_drug,not-applicable,,unseen test drug
+cold-drug,2,Mean,complete,465.0,
+cold-drug,2,Mean_cell,complete,465.0,
+cold-drug,2,Mean_drug,not-applicable,,unseen test drug
+warm-start,0,Mean,complete,469.0,
+warm-start,0,Mean_cell,complete,469.0,
+warm-start,0,Mean_drug,complete,469.0,
+warm-start,1,Mean,complete,463.0,
+warm-start,1,Mean_cell,complete,463.0,
+warm-start,1,Mean_drug,complete,463.0,
+warm-start,2,Mean,complete,470.0,
+warm-start,2,Mean_cell,complete,470.0,
+warm-start,2,Mean_drug,complete,470.0,

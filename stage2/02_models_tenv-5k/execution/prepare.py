@@ -18,7 +18,7 @@ STEP=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT/'stage2/01_bases/output/api'))
 sys.path.insert(0,str(STEP/'output/api'))
 from bases.view import open_view
-from tenv5k.protocol import make_splits
+from tenv5k.protocol import make_splits, PROTOCOL_SCHEMA, INPUT_SCHEMA, FOLDS
 
 
 def digest(path):
@@ -78,9 +78,9 @@ def prepare(view_dir,destination):
         parents.to_csv(destination/'parents.csv',index=False)
         manifest=view.manifest()
         if digest(view_dir/'tenv.h5ad')!=manifest['outputs']['tenv.h5ad']['sha256']:raise ValueError('view payload digest mismatch')
-    config={'schema':'tenv5k-protocol-v1','split_seed':226,'statistical_seed':2262026,'training_seeds':[17,42,2026],'folds':5,'validation_fraction':0.1,'rounding':'ceil outer-training units; parents cold, wells warm','dose_um':1,'axis_size':5000,'early_stopping':{'monitor':'complete validation treated-expression MSE','strict_lower':True,'patience':50,'max_epochs':1000,'restore_best':True,'validation_seed':22617},'morgan':{'radius':2,'bits':2048,'includeChirality':True,'binary':True,'rdkit':rdBase.rdkitVersion},'n_treated':1402,'n_parents':459,'n_unique_controls':len(original_controls),'view_manifest_sha256':digest(view_dir/'manifest.json'),'view_tenv_sha256':digest(view_dir/'tenv.h5ad')}
+    config={'schema':PROTOCOL_SCHEMA,'split_seed':226,'statistical_seed':2262026,'training_seeds':[17,42,2026],'folds':FOLDS,'validation_fraction':0.1,'rounding':'ceil outer-training units; parents cold, wells warm','dose_um':1,'axis_size':5000,'early_stopping':{'monitor':'complete validation treated-expression MSE','strict_lower':True,'patience':50,'max_epochs':1000,'restore_best':True,'validation_seed':22617},'morgan':{'radius':2,'bits':2048,'includeChirality':True,'binary':True,'rdkit':rdBase.rdkitVersion},'n_treated':1402,'n_parents':459,'n_unique_controls':len(original_controls),'view_manifest_sha256':digest(view_dir/'manifest.json'),'view_tenv_sha256':digest(view_dir/'tenv.h5ad')}
     write_json(destination/'config.json',config)
-    write_json(destination/'manifest.json',{'schema':'tenv5k-inputs-v1','inputs':{'view_manifest':config['view_manifest_sha256'],'view_tenv':config['view_tenv_sha256']},'outputs':{p.name:digest(p) for p in sorted(destination.iterdir()) if p.is_file()}})
+    write_json(destination/'manifest.json',{'schema':INPUT_SCHEMA,'inputs':{'view_manifest':config['view_manifest_sha256'],'view_tenv':config['view_tenv_sha256']},'outputs':{p.name:digest(p) for p in sorted(destination.iterdir()) if p.is_file()}})
     return config
 
 if __name__=='__main__':
