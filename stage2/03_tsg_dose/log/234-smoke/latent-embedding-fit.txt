@@ -1,0 +1,26 @@
+caps: systemd-run user scope MemoryMax=10G MemorySwapMax=8G threads=2
+Running as unit: run-rd36bdf1504e442148fa0afce8f54054f.scope; invocation ID: a27cf03c847f447fb3d9a0162c8428c9
+{"best_epoch": 2, "elapsed_seconds": 1.7149302790057845, "epochs": 2, "parameter_count": 21613300, "peak_rss_kib": 1738684, "smoke": true, "status": "validation-complete", "training_pid": 503674, "training_process_token": "841b36fd2262e77e48a007f63999f74b1a4534450c8c28c62f262e8832118a26", "validation_mse": 0.16901414096355438, "weights_updated": true, "validation_replay": {"pid": 503700, "process_token": "635a3a900eb6f41d034b329d5333e47efda128eaa5bfb4d76b03af2439cc1c2f", "attempt_nonce": "24f84a4ad79599093e4dda51dd411ceb27fa3c4d524ff4dd4558ae9c56061142"}, "replay_pid": 503700, "replay": "exact fresh-process native sampled prediction"}
+	Command being timed: "/home/chang/miniconda3/envs/arc/bin/python /tmp/arc-tsg-dose-234/stage2/03_tsg_dose/execution/transigen.py --inputs /home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/inputs-v1 --source /home/chang/arc/pert_model/TranSiGen/source --candidate /home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/234-smoke/smoke-latent-embedding --device cuda --method latent-embedding --smoke-rows 8 --max-epochs 2"
+	User time (seconds): 5.78
+	System time (seconds): 0.98
+	Percent of CPU this job got: 102%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.59
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1864972
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 129
+	Minor (reclaiming a frame) page faults: 627495
+	Voluntary context switches: 1732
+	Involuntary context switches: 115
+	Swaps: 0
+	File system inputs: 35936
+	File system outputs: 338376
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

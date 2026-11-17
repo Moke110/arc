@@ -59,3 +59,10 @@ selected procedure minus no-dose, with10,000 paired parent draws (seed2262026)
 and all doses/seeds carried together. Choices stay fixed: intervals omit the
 uncertainty from repeating method selection. Other candidate intervals are
 descriptive. The final deployment choice has no new independent test score.
+
+Four concatenation arms (#234) now preserve training-only dose transforms and
+100-dimensional numeric/embedded conditioning at the input or both latent heads.
+Behavioral fixtures verify dose use, ordered target-independent predictions,
+finite gradients and disabled-dose native equivalence (float32 tolerance). Four
+8-row/two-epoch CUDA smokes passed exact fresh-process validation and test replay;
+see [234-smoke acceptance](log/234-smoke/acceptance.json). They are not formal fits.
