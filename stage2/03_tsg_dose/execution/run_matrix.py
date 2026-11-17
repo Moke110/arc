@@ -59,6 +59,8 @@ def accept(args):
     verify_frozen_plan(args,frozen)
     scenarios=[args.scenario] if args.scenario else list(SCENARIOS)
     accepted=[]
+    selection_sha256={}
+    origin_manifest_sha256={}
     for scenario in scenarios:
         plan(scenario)
         for fold in range(3):
@@ -68,18 +70,26 @@ def accept(args):
             before=_active.sha256(receipt)
             lock_selection(args.candidate,scenario,fold,frozen['input_manifest_sha256'])
             if _active.sha256(receipt)!=before:raise ValueError('sealed choice changed')
+            selection_sha256[str(receipt.relative_to(args.candidate))]=before
             verify_test_sequence(args.candidate,scenario,fold,runs)
             for run in runs:
                 verify_run(args.candidate,run,frozen,read(registration_path(args.candidate,run)),require_test=True)
+                manifest=run_path(args.candidate,run)/'manifest.json'
+                origin_manifest_sha256[str(manifest.relative_to(args.candidate))]=_active.sha256(manifest)
                 accepted.append(run)
         if len(frozen['runs'])==126:
             _active.report(args,scenario,args.candidate/'reports'/scenario)
         elif not (args.candidate/'reports'/scenario/'summary.csv').is_file():
             raise ValueError('historical scientific report missing')
     require_complete(plan=[r for r in plan() if r['scenario'] in scenarios],found=accepted)
+    report_sources=[f'reports/{scenario}/learning_curves.csv' for scenario in scenarios]
+    if 'cold-drug' in scenarios:report_sources.append('reports/cold-drug/per_dose.csv')
     result=dict(schema='tsg-dose-round1-acceptance-v1',scenarios=scenarios,
                 n_formal_fits=len(accepted),runs=accepted,
                 plan_sha256=_active.sha256(args.candidate/'plan.json'),
+                selection_sha256=selection_sha256,
+                origin_manifest_sha256=origin_manifest_sha256,
+                report_source_sha256={name:_active.sha256(args.candidate/name) for name in report_sources},
                 historical_code_mapping=historical_code_mapping(),
                 status='optimization evidence complete; no downstream model weights',
                 replay='retained exact fresh-process validation and test evidence verified')

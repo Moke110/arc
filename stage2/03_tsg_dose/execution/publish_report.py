@@ -144,6 +144,21 @@ def verify_scientific_receipt(matrix,receipt_path):
     if receipt.get('schema')!='tsg-dose-round1-acceptance-v1' or receipt.get('scenarios')!=SCENARIOS or receipt.get('n_formal_fits')!=126 or sorted(map(key,receipt.get('runs',[])))!=sorted(map(key,expected)):
         raise ValueError('complete126-origin round1 scientific acceptance required')
     if receipt.get('plan_sha256')!=digest(matrix/'plan.json'):raise ValueError('accepted scientific plan changed')
+    choices={f'selections/{scenario}/{fold}/receipt.json' for scenario in SCENARIOS for fold in range(3)}
+    if set(receipt.get('selection_sha256',{}))!=choices:
+        raise ValueError('accepted selection receipt coverage mismatch')
+    for name,value in receipt['selection_sha256'].items():
+        if digest(matrix/name)!=value:raise ValueError('accepted selection receipt changed')
+    manifests={f"runs/{r['scenario']}/{r['method']}/{r['fold']}/{r['seed']}/manifest.json" for r in expected}
+    if set(receipt.get('origin_manifest_sha256',{}))!=manifests:
+        raise ValueError('accepted origin manifest coverage mismatch')
+    for name,value in receipt['origin_manifest_sha256'].items():
+        if digest(matrix/name)!=value:raise ValueError('accepted origin manifest changed')
+    reports={f'reports/{scenario}/learning_curves.csv' for scenario in SCENARIOS}|{'reports/cold-drug/per_dose.csv'}
+    if set(receipt.get('report_source_sha256',{}))!=reports:
+        raise ValueError('accepted scientific report coverage mismatch')
+    for name,value in receipt['report_source_sha256'].items():
+        if digest(matrix/name)!=value:raise ValueError('accepted scientific report changed')
     # Bind the saved scalar report inputs to the origin manifests already replayed
     # by scientific acceptance, without generating any new predictions.
     for run in expected:
@@ -156,7 +171,7 @@ def verify_scientific_receipt(matrix,receipt_path):
 
 def prepare(matrix,candidate,previous,scientific_receipt,python):
     matrix=Path(matrix);candidate=Path(candidate);previous=Path(previous)
-    verify_scientific_receipt(matrix,scientific_receipt)
+    scientific=verify_scientific_receipt(matrix,scientific_receipt)
     if candidate.exists():raise ValueError('report candidate must be new')
     candidate.mkdir(parents=True)
     try:
@@ -164,7 +179,9 @@ def prepare(matrix,candidate,previous,scientific_receipt,python):
         export_run_metrics(matrix,candidate/'data');export_coordinates(matrix,candidate/'data')
         rendered=render_isolated(candidate/'data',candidate,python)
         sources={r['source']:r['source_sha256'] for name in ['round1_runs.csv','round1_curves.csv','round1_dose.csv'] for r in rows(candidate/'data'/name)}
-        sources.update({r['selection_source']:r['selection_sha256'] for r in rows(candidate/'data/round1_runs.csv') if r['selection_source']})
+        sources.update(scientific['selection_sha256'])
+        sources.update(scientific['origin_manifest_sha256'])
+        sources.update(scientific['report_source_sha256'])
         for name,value in sources.items():
             if digest(matrix/name)!=value:raise ValueError('report source changed during export')
         old={p.name:digest(p) for p in previous.glob('*.png')}

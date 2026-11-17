@@ -30,6 +30,29 @@ def fixture(matrix):
                     rows=[dict(drug_parent=parent,dose_um=dose,n_wells=2,pcc=score,spearman=score,rmse=score,r2=score,constant_truth=0,constant_prediction=0) for parent,dose,score in [('A',.2,value-.1),('A',1,value+.1),('B',10,value)]]
                     write_csv(matrix/f'runs/{scenario}/{method}/{fold}/{seed}/test_per_group.csv',rows)
 
+def scientific_fixture(module,matrix,scientific):
+    fixture(matrix)
+    (matrix/'plan.json').write_text('{}')
+    runs=[dict(scenario=scenario,fold=fold,method=method,seed=seed)
+          for scenario in module.SCENARIOS for fold in range(3)
+          for method in module.METHODS for seed in module.SEEDS]
+    manifests={}
+    for run in runs:
+        origin=matrix/f"runs/{run['scenario']}/{run['method']}/{run['fold']}/{run['seed']}"
+        manifest=origin/'manifest.json'
+        manifest.write_text(json.dumps(dict(outputs={'test_per_group.csv':module.digest(origin/'test_per_group.csv')})))
+        manifests[str(manifest.relative_to(matrix))]=module.digest(manifest)
+    sources={}
+    for name in ['reports/cold-drug/per_dose.csv','reports/cold-drug/learning_curves.csv','reports/held-dose/learning_curves.csv']:
+        source=matrix/name;source.parent.mkdir(parents=True,exist_ok=True)
+        source.write_text('saved scientific report\n')
+        sources[name]=module.digest(source)
+    scientific.write_text(json.dumps(dict(schema='tsg-dose-round1-acceptance-v1',
+        scenarios=module.SCENARIOS,n_formal_fits=126,runs=runs,
+        plan_sha256=module.digest(matrix/'plan.json'),origin_manifest_sha256=manifests,
+        report_source_sha256=sources,selection_sha256={str(p.relative_to(matrix)):module.digest(p)
+                     for p in matrix.glob('selections/*/*/receipt.json')})))
+
 class Round1ReportTests(unittest.TestCase):
     def test_export_uses_nine_parent_equal_run_metrics_and_sample_sd(self):
         module=report()
@@ -113,3 +136,45 @@ class Round1ReportTests(unittest.TestCase):
             (candidate/'round1_metrics.png').write_bytes(b'corrupted')
             with self.assertRaisesRegex(ValueError,'candidate'):module.install(candidate,stable,receipt)
             self.assertEqual((stable/'old.png').read_bytes(),b'old')
+
+    def test_changed_sealed_choice_rejects_preparation_and_preserves_prior_report(self):
+        module=report()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);matrix=root/'matrix';scientific=root/'scientific.json'
+            scientific_fixture(module,matrix,scientific)
+            module.verify_scientific_receipt(matrix,scientific)
+            stable=root/'figure';stable.mkdir();(stable/'old.png').write_bytes(b'previous accepted report')
+            choice=matrix/'selections/cold-drug/0/receipt.json'
+            choice.write_text(json.dumps(dict(method='film')))
+            candidate=root/'candidate'
+            with self.assertRaisesRegex(ValueError,'selection|choice'):
+                module.prepare(matrix,candidate,stable,scientific,'unused-python')
+            self.assertFalse(candidate.exists())
+            self.assertEqual((stable/'old.png').read_bytes(),b'previous accepted report')
+
+    def test_changed_origin_payload_and_manifest_reject_scientific_evidence(self):
+        module=report()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);matrix=root/'matrix';scientific=root/'scientific.json'
+            scientific_fixture(module,matrix,scientific)
+            module.verify_scientific_receipt(matrix,scientific)
+            origin=matrix/'runs/cold-drug/no-dose/0/17'
+            changed=module.rows(origin/'test_per_group.csv');changed[0]['pcc']='.99'
+            write_csv(origin/'test_per_group.csv',changed)
+            (origin/'manifest.json').write_text(json.dumps(dict(outputs={'test_per_group.csv':module.digest(origin/'test_per_group.csv')})))
+            with self.assertRaisesRegex(ValueError,'manifest'):
+                module.verify_scientific_receipt(matrix,scientific)
+
+    def test_changed_saved_curve_or_dose_report_rejects_scientific_evidence(self):
+        module=report()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);matrix=root/'matrix';scientific=root/'scientific.json'
+            scientific_fixture(module,matrix,scientific)
+            module.verify_scientific_receipt(matrix,scientific)
+            for name in ['reports/cold-drug/per_dose.csv','reports/cold-drug/learning_curves.csv','reports/held-dose/learning_curves.csv']:
+                with self.subTest(source=name):
+                    source=matrix/name;original=source.read_bytes()
+                    source.write_bytes(b'changed scientific values\n')
+                    with self.assertRaisesRegex(ValueError,'scientific report'):
+                        module.verify_scientific_receipt(matrix,scientific)
+                    source.write_bytes(original)
