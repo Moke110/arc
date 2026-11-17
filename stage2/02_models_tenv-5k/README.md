@@ -70,7 +70,13 @@ TranSiGen uses the ordinary upstream `train_TranSiGen.py` configuration:
 beta0.1, dropout0.1, batch64, Adam lr0.001/weight_decay0.00001, no scheduler.
 The 5000-gene dimension, shared Morgan fingerprints, random initialization and
 shared split/stopping replace script inputs/defaults; native selective Xavier
-initialization, summed VAE objective and CPU latent sampling remain unchanged.
+initialization and summed VAE objective remain unchanged. The approved
+`transigen-native-f64-v1` numerical variant initializes in float32, then uses
+float64 parameters, floating buffers, inputs, forward/loss/backward, Adam moments,
+validation and inference. Original float32 CPU latent normal draws are cast to
+float64 before scale/add; their call order stays native. Predictions serialize
+as float64 with a finite check after conversion. The author cuDNN policy remains
+part of the execution identity. Replay rejects old or changed precision identities.
 Singleton final training batches are skipped as upstream; evaluation retains them.
 Inference directly calls native `forward(x1, features)[3]`, so treated labels and
 the target reconstruction branch never consume prediction RNG. Fixed seed,
@@ -118,12 +124,21 @@ uses 10,000 common draws with frozen statistical seed 2262026. Cold-drug Δ PCC
 alone selects a winner; otherwise both candidates remain. Figures read only the
 three recorded CSV plot-value tables and the pure shared palette implementation.
 
-The formal 90-run comparison is terminally blocked at 18 complete runs: the
+The historical native-float32 90-run attempt stopped at 18 complete runs: the
 19th registered identity has a reproducible native float32 non-finite loss.
 See [the terminal-block record](log/231-terminal-block.md) for diagnosis and
 preserved evidence. The author CUDA backend correction does not resolve that
 failure. Previous accepted results and the old step remain available; the new
 comparison has not been accepted or published.
+
+On 2026-11-17 the user approved the numerical-method amendment in ADR 0074.
+All 30 TranSiGen identities must run from zero as `transigen-native-f64-v1`;
+the three historical float32 successes remain evidence only. Exactly 15 completed
+cold-drug PRnet entries may be imported only after immutable original
+runtime551a3c9 identity receipts, fresh-process exact sampled replay and scientific
+equivalence checks. The other 45 learner entries require training; deterministic
+Mean reuse requires manifest/scoring compatibility. The complete 90-run acceptance
+remains outstanding. No result is inferred from bounded variant smoke checks.
 
 Interrupted same-identity `--resume` now preserves the entire prior run under
 candidate `attempts/` before a clean restart. A trained run awaiting replay uses
