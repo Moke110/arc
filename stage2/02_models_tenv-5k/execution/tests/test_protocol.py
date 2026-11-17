@@ -1,5 +1,7 @@
 """Approved #226 seams: shared splits, train-only Means, drug-level scoring."""
 import sys
+import json
+import tempfile
 import unittest
 from pathlib import Path
 import numpy as np
@@ -23,10 +25,13 @@ class ProtocolTests(unittest.TestCase):
         obs=pd.DataFrame({'drug_parent_inchikey':np.repeat(list('ABCDEFGHIJ'),3)},index=['w'+str(i) for i in range(30)])
         splits=make_splits(obs)
         pd.testing.assert_frame_equal(splits,make_splits(obs))
+        self.assertEqual(sorted(splits.fold.unique()), [0, 1, 2])
+        historical = make_splits(obs, folds=5)
+        self.assertNotEqual(set(splits.loc[(splits.scenario=='cold-drug') & (splits.fold==0) & (splits.partition=='test'), 'profile_id']), set(historical.loc[(historical.scenario=='cold-drug') & (historical.fold==0) & (historical.partition=='test'), 'profile_id']))
         for scenario in ['cold-drug','warm-start']:
             scene=splits[splits.scenario==scenario]
             self.assertEqual(sorted(scene[scene.partition=='test'].row),list(range(30)))
-            for fold in range(5):
+            for fold in range(3):
                 parts=scene[scene.fold==fold]
                 sets={r:set(parts[parts.partition==r].drug_parent) for r in ['train','validation','test']}
                 if scenario=='cold-drug':
@@ -52,3 +57,45 @@ class ProtocolTests(unittest.TestCase):
         x = np.array([[0., 1.], [1., 0.]])
         with self.assertRaisesRegex(ValueError, 'identity'):
             score_prediction(obs, x, x, np.zeros_like(x), prediction_ids=['well-b', 'well-a'])
+
+class FrozenProtocolTests(unittest.TestCase):
+    def test_inputs_reject_historical_five_fold_protocol_before_payload_access(self):
+        from tenv5k.inputs import Inputs, sha256
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'config.json').write_text(json.dumps({'schema': 'tenv5k-protocol-v1', 'folds': 5}))
+            (root / 'manifest.json').write_text(json.dumps({'schema': 'tenv5k-inputs-v1', 'outputs': {'config.json': sha256(root / 'config.json')}}))
+            with self.assertRaisesRegex(ValueError, 'protocol'):
+                Inputs(root)
+
+    def test_new_three_fold_freeze_runs_fifteen_means_and_three_na(self):
+        from tenv5k.inputs import Inputs, sha256
+        from tenv5k.protocol import PROTOCOL_SCHEMA, INPUT_SCHEMA
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from means import run
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / 'inputs'; root.mkdir()
+            obs = pd.DataFrame({'profile_id':['w'+str(i) for i in range(30)],
+                'drug_parent_inchikey':np.repeat(list('ABCDEFGHIJ'),3), 'cell_line':['hiPSC-CM']*30})
+            obs.to_csv(root/'population.csv',index=False)
+            obs.to_csv(root/'all_obs.csv',index=False)
+            pd.DataFrame({'drug_parent_inchikey':list('ABCDEFGHIJ')}).to_csv(root/'parents.csv',index=False)
+            pd.DataFrame({'gene_index':[0,1,2]}).to_csv(root/'genes.csv',index=False)
+            splits=make_splits(obs.set_index('profile_id',drop=False))
+            splits.to_csv(root/'splits.csv',index=False)
+            (root/'matched_controls.json').write_text(json.dumps({str(i):[] for i in range(30)}))
+            x=np.arange(90,dtype=np.float32).reshape(30,3)
+            for name,value in [('expression',x),('control',np.zeros_like(x)),('delta',x),('morgan',np.zeros((10,2048),dtype=np.uint8))]:
+                np.save(root/(name+'.npy'),value)
+            (root/'config.json').write_text(json.dumps({'schema':PROTOCOL_SCHEMA,'folds':3,'split_seed':226}))
+            def seal():
+                (root/'manifest.json').write_text(json.dumps({'schema':INPUT_SCHEMA,'outputs':{p.name:sha256(p) for p in root.iterdir() if p.name!='manifest.json'}}))
+            seal()
+            statuses=run(root,Path(directory)/'means')
+            self.assertEqual(len(statuses),18)
+            self.assertEqual(sum(s['status']=='complete' for s in statuses),15)
+            self.assertEqual(sum(s['status']=='not-applicable' for s in statuses),3)
+            splits=splits.drop(splits[(splits.scenario=='cold-drug') & (splits.partition=='test')].index[0])
+            splits.to_csv(root/'splits.csv',index=False);seal()
+            with self.assertRaisesRegex(ValueError,'OOF'):
+                Inputs(root)

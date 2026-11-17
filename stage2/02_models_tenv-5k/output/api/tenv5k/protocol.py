@@ -44,7 +44,12 @@ def mean_prediction(x, obs, controls, train, test, method, scenario):
     return np.asarray(result,dtype=np.float32)
 
 
-def make_splits(obs, seed=226, folds=5):
+PROTOCOL_SCHEMA = 'tenv5k-protocol-v2-threefold-f32-lr1e4'
+INPUT_SCHEMA = 'tenv5k-inputs-v2'
+FOLDS = 3
+
+
+def make_splits(obs, seed=226, folds=FOLDS):
     """Frozen integer rule: ceil(10% outer-training units); balanced outer folds.
 
     Cold units are sorted drug parents, shuffled once. Warm units are wells:
