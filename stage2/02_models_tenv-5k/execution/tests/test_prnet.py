@@ -106,6 +106,32 @@ class FailedCandidateTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('PRNET_SMOKE'), 'set PRNET_SMOKE after real-input smoke')
 class SmokeAcceptanceTests(unittest.TestCase):
+    def test_best_validation_is_float32_and_historical_identity_is_rejected(self):
+        import tempfile
+        import numpy as np
+        import torch
+        from tenv5k.inputs import Inputs
+        from tenv5k.learner import replay
+        from tenv5k.model_prnet import build_model, sampled_prediction
+        source = Path(os.environ['PRNET_SMOKE'])
+        saved = torch.load(source / 'checkpoint.pt', map_location='cpu', weights_only=False)
+        config = saved['config']
+        data = Inputs(os.environ['TENV5K_INPUTS'])
+        model = build_model(os.environ['PRNET_SOURCE'], config['seed'], config['device'])
+        model.load_state_dict(saved['state_dict'])
+        rows = np.asarray(config['validation_order'])
+        prediction = sampled_prediction(model, data, rows, seed=config['validation_seed'], device=config['device'])
+        self.assertEqual(prediction.dtype, np.float32)
+        self.assertTrue(all(t.dtype == torch.float32 for t in saved['state_dict'].values() if t.is_floating_point()))
+        error = prediction - np.asarray(data.expression[rows], dtype=np.float32)
+        self.assertEqual(saved['validation_mse'], float(np.mean(error * error, dtype=np.float32)))
+        with tempfile.TemporaryDirectory() as directory:
+            checkpoint = Path(directory) / 'historical.pt'
+            saved['config'].pop('method_identity')
+            torch.save(saved, checkpoint)
+            with self.assertRaisesRegex(ValueError, 'numerical method identity'):
+                replay(os.environ['TENV5K_INPUTS'], checkpoint, os.environ['PRNET_SOURCE'], adapter='prnet')
+
     def test_best_checkpoint_is_recorded_curve_minimum_and_config_tampering_rejected(self):
         import json
         import shutil
@@ -125,6 +151,6 @@ class SmokeAcceptanceTests(unittest.TestCase):
             config['seed'] = 42
             (candidate / 'config.json').write_text(json.dumps(config))
             with self.assertRaisesRegex(ValueError, 'configuration mismatch'):
-                accept_replay('/tmp/arc-tenv5k-inputs', candidate, os.environ['PRNET_SOURCE'], adapter='prnet')
+                accept_replay(os.environ.get('TENV5K_INPUTS', '/tmp/arc-tenv5k-inputs'), candidate, os.environ['PRNET_SOURCE'], adapter='prnet')
 
 if __name__ == '__main__': unittest.main()
