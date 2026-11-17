@@ -42,8 +42,11 @@ def render(data,out):
                     tags=(['primary fold '+','.join(selected)] if selected else [])+(['final'] if part[0].get('final_selected_method')==method else [])
                     if tags:label+=' ('+'; '.join(tags)+')';highlight=True
                 ax.plot([float(r['dose_um']) for r in part],[float(r['pcc']) for r in part],'-o',label=label,color=COLORS[method],lw=2.2 if highlight else 1.2)
+                if name=='held_dose':
+                    defined=[r for r in part if r.get('pcc_low') not in [None,''] and r.get('pcc_high') not in [None,'']]
+                    ax.vlines([float(r['dose_um']) for r in defined],[float(r['pcc_low']) for r in defined],[float(r['pcc_high']) for r in defined],color=COLORS[method],alpha=.55,lw=1.2)
         ax.set_xscale('log');ax.set_xticks([.2,1,10],['0.2\nlower extrapolation' if name=='held_dose' else '0.2','1\ninterpolation' if name=='held_dose' else '1','10\nupper extrapolation' if name=='held_dose' else '10'])
-        ax.set_xlabel('Dose (µM)');ax.set_ylabel('Parent-equal Δ PCC');ax.set_title(title);ax.legend(fontsize=8,ncol=2);fig.tight_layout();save(fig,out,name)
+        ax.set_xlabel('Dose (µM)');ax.set_ylabel('Parent-equal Δ PCC');ax.set_title(title+('\nDescriptive 95% parent-block intervals; three measured doses' if name=='held_dose' else ''));ax.legend(fontsize=8,ncol=2);fig.tight_layout();save(fig,out,name)
     validation=rows(data/'final_validation_values.csv');fig,ax=plt.subplots(figsize=(11,4))
     for method in METHODS:
         part=[r for r in validation if r['scenario']=='final' and r['method']==method]

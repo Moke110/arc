@@ -121,4 +121,11 @@ and the CSVs. The six panels cover primary paired inference, primary per-dose
 results, held-dose characterization, final validation, all147 learning curves
 and resources. Held-dose tables retain primary-fold/final choice references;
 held-dose outcomes do not select a method. A failed release gate leaves the prior
-accepted model available. No formal release is asserted by these instructions.
+accepted model and report figures available. CSVs and PNGs are staged before all
+gates and installed with model/report rollback on replacement failure.
+Held-dose intervals are descriptive95% percentile parent-block intervals from
+10,000 draws (seed2262026), retaining every parent's doses and three seed metrics
+together. They quantify variation across the observed parents, not uncertainty
+across new dose levels or repeated model selection. Complete values, defined-parent
+counts and undefined-draw counts are in `figure/data/held_dose_uncertainty.csv`.
+No formal release is asserted by these instructions.
