@@ -117,8 +117,20 @@ The installation receipt retains origin and choice audits and preservation hashe
 
 `figure/script/render.py --data figure/data --output figure` reads CSV only.
 Publication first renders in an isolated directory containing just this script
-and the CSVs. The six panels cover primary paired inference, primary per-dose
-results, held-dose characterization, final validation, all147 learning curves
+and the CSVs. The report follows step02 for the four Δ indicator panels and native learning
+curves. `metrics.png` shows PCC, Spearman, RMSE and R² for cold-drug and
+held-dose with defined/undefined and constant-vector counts;
+`paired_differences.png` shows all four primary/descriptive paired intervals.
+`learning_curve.png` uses scenario-by-method panels with blue dashed native
+training loss on the left axis and green solid validation MSE on the right,
+retaining every epoch and fold/seed run. The three
+`learning_curve_{cold-drug,held-dose,final}.png` sheets provide larger panels.
+The shared Stage2 palette is recorded in `figure/data/plot_style.csv`, so
+isolated rendering needs no upstream code or payloads. `metrics_values.csv`
+retains saved summary values and count-source hashes;
+`learning_curves_all.csv` retains both complete native loss and MSE coordinates.
+The original six panels remain: primary paired inference, primary per-dose
+results, held-dose characterization, final validation, validation-curve overview
 and resources. Held-dose tables retain primary-fold/final choice references;
 held-dose outcomes do not select a method. A failed release gate leaves the prior
 accepted model and report figures available. CSVs and PNGs are staged before all
