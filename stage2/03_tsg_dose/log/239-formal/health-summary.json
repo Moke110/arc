@@ -1,0 +1,18 @@
+{
+  "check_paths": {
+    "exit_status": 1,
+    "max_rss_kib": 6856,
+    "wall_time": "0:13.73"
+  },
+  "check_tracked": {
+    "exit_status": 0,
+    "max_rss_kib": 4608,
+    "wall_time": "0:00.11"
+  },
+  "scope": "Canonical preintegration main; check_paths failure is only unrecognized new03stage2 entry; external path andStage3audits pass. Rerun fastpath/trackedafterdev\u2192main beforepush. verify_all66/66PASS.",
+  "verify_all": {
+    "exit_status": 0,
+    "max_rss_kib": 78924,
+    "wall_time": "5:20.56"
+  }
+}

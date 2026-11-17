@@ -1,0 +1,5 @@
+candidate,reference,metric,estimate,low,high,n_parents,n_excluded_undefined,repetitions,statistical_seed,direction,zero,inference,role
+selected,no-dose,pcc,0.022283528120069375,0.012864145105686413,0.03177497352777012,459,0,10000,2262026,candidate minus reference,0.0,fixed-selection conditional parent-paired bootstrap; does not repeat method selection,primary
+selected,no-dose,spearman,-0.0038010708683133953,-0.009207004882210422,0.0014633720937307648,459,0,10000,2262026,candidate minus reference,0.0,fixed-selection conditional parent-paired bootstrap; does not repeat method selection,primary
+selected,no-dose,rmse,-0.006256502178545529,-0.007934139167802005,-0.004614842402444406,459,0,10000,2262026,candidate minus reference,0.0,fixed-selection conditional parent-paired bootstrap; does not repeat method selection,primary
+selected,no-dose,r2,0.09763180121548261,0.06090312832983038,0.13529232825725424,459,0,10000,2262026,candidate minus reference,0.0,fixed-selection conditional parent-paired bootstrap; does not repeat method selection,primary

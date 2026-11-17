@@ -1,0 +1,30 @@
+{
+  "candidate_manifest_sha256": "2ad00dbd3cc9feb0610de696a59aaf1b16c8148ef200ee907112c17a1fa40ba4",
+  "exact": true,
+  "pid": 597340,
+  "process_token": "4a5b4e99f30d2cd57c466ad1096158179edadcbd80d0471f03ece8ded2903601",
+  "proofs": [
+    {
+      "checkpoint_sha256": "6f3456278503e3b260780c98ec2c285a328928245e299e83ebffc96d968505fd",
+      "n_genes": 5000,
+      "n_rows": 414,
+      "prediction_sha256": "b77cdf803d0a4fce5d5328d52f1fe542268de08d03294ac178c4347d72ac1d9c",
+      "seed": 17
+    },
+    {
+      "checkpoint_sha256": "5cd8f7a3eea262b0a151bb22cc8115c55b4be16bb91b1defb91207ca85dc46c6",
+      "n_genes": 5000,
+      "n_rows": 414,
+      "prediction_sha256": "2e808018211fae69c7d9b14d875511ee2983a58f3e115905940ef82f3b661884",
+      "seed": 42
+    },
+    {
+      "checkpoint_sha256": "e5fc484c4c26715e4a3c61406c4fae3ad2956c6fa518ba4b49607d6d1bdaa0fd",
+      "n_genes": 5000,
+      "n_rows": 414,
+      "prediction_sha256": "b4c780a665223452ac74ef7a699e156014215d45dc83f6ff012f17f5dbcc7a78",
+      "seed": 2026
+    }
+  ],
+  "schema": "tsg-dose-downstream-replay-v1"
+}
