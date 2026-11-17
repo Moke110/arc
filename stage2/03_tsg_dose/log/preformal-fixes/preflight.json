@@ -1,0 +1,15 @@
+{
+  "deterministic": true,
+  "methods": [
+    "film",
+    "input-embedding",
+    "input-numeric",
+    "latent-embedding",
+    "latent-numeric",
+    "no-dose",
+    "scaling"
+  ],
+  "n_configurations": 49,
+  "n_runs": 147,
+  "role": "provisional preflight; repeat after standalone consumer API merge"
+}

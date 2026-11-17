@@ -52,6 +52,16 @@ same immutable input, source, configuration, code, attempts and phase evidence;
 it cannot train or grant a partial147-fit public release. Candidate/report paths
 remain stable until final publication, including during worktree cleanup.
 
+The public evaluation gate independently recomputes the validation winner and
+requires the evaluated checkpoint among the21 sealed origins. Validation scores
+and parameter-count tie breaks are sealed before outer access. Nonfinite
+evaluation or an exact-replay mismatch records a terminal scientific failure,
+preserving the prior terminal and manifest in `failure.json`; resume cannot
+retry that scientific slot. A process interruption has no scientific failure
+classification. Opt-in native lifecycle checks use
+`TSG_DOSE_LIFECYCLE_INPUTS=<freeze> TSG_DOSE_LIFECYCLE_SOURCE=<source>` with
+`capped.sh python -m unittest discover -s execution/tests -p test_failure_lifecycle.py`.
+
 Candidate `reports/<scenario>/` contains complete identity-checked OOF arrays,
 per-well, parent–dose and parent metric tables, equal-seed summaries, per-dose
 results, all curves/resources and validation selections. Primary inference is

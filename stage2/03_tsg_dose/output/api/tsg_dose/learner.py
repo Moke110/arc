@@ -4,6 +4,7 @@ Reuse accepted02 native adapter, strict stopper and isolated RNG. No fit reads
 outer/held-dose expression or emits test predictions before a choice receipt.
 """
 import json
+from functools import wraps
 import os
 import platform
 import resource
@@ -18,8 +19,31 @@ from tenv5k.learning import EarlyStopping, fixed_rng
 from tenv5k.attempt_identity import attempt_binding
 from .inputs import Inputs, sha256
 from .protocol import METHODS, SEEDS, score_prediction, summary
+from .comparison import choose_method
 from . import model as models
 PROCESS_TOKEN=secrets.token_hex(32)
+
+
+class ScientificFailure(ValueError):
+    """Numerical or exact-replay failure that cannot be resumed or rescued."""
+
+
+def scientific_phase(phase):
+    def decorate(function):
+        @wraps(function)
+        def run(inputs,candidate,*args,**kwargs):
+            try:return function(inputs,candidate,*args,**kwargs)
+            except ScientificFailure as error:
+                candidate=Path(candidate)
+                terminal=json.loads((candidate/'terminal.json').read_text())
+                evidence=dict(phase=phase,error=str(error),previous_terminal=terminal)
+                if (candidate/'manifest.json').exists():evidence['previous_manifest']=json.loads((candidate/'manifest.json').read_text())
+                write_json(candidate/'failure.json',evidence)
+                write_json(candidate/'terminal.json',dict(terminal,status='failed',failure_phase=phase,error=str(error),previous_terminal=terminal))
+                manifest(candidate,inputs)
+                raise
+        return run
+    return decorate
 
 
 def write_json(path,value):
@@ -40,7 +64,7 @@ def environment(device):
 
 def serialize_prediction(value):
     with np.errstate(over='ignore',invalid='ignore'):value=np.asarray(value,dtype=np.float32)
-    if not np.isfinite(value).all():raise ValueError('non-finite serialized prediction')
+    if not np.isfinite(value).all():raise ScientificFailure('non-finite serialized prediction')
     return value
 
 
@@ -143,6 +167,7 @@ def load(inputs,candidate,source):
     return data,native,model,config
 
 
+@scientific_phase('replay')
 def accept_replay(inputs,candidate,source):
     """Fresh process only: reproduce validation and, if present, test predictions."""
     candidate=Path(candidate)
@@ -157,20 +182,21 @@ def accept_replay(inputs,candidate,source):
         rows=np.asarray(config['validation_order']) if partition=='validation' else data.rows(config['scenario'],config['fold'],'test')
         if partition=='test' and config['smoke_rows'] is not None:rows=smoke_subset(data,rows,config['smoke_rows'])
         replayed=predict(native,model,data,rows,seed);stored=np.load(path)
-        if stored.dtype!=np.float32 or not np.array_equal(stored,replayed):raise ValueError('exact fresh-process '+partition+' replay differs')
+        if stored.dtype!=np.float32 or not np.array_equal(stored,replayed):raise ScientificFailure('exact fresh-process '+partition+' replay differs')
     phase='test' if (candidate/'test_prediction.npy').exists() else 'validation'
     terminal[phase+'_replay']=dict(pid=os.getpid(),process_token=PROCESS_TOKEN,attempt_nonce=config['execution_binding']['attempt_nonce'])
     terminal.update(replay_pid=os.getpid(),status='complete' if (candidate/'test_prediction.npy').exists() else 'validation-complete',replay='exact fresh-process native sampled prediction')
     write_json(candidate/'terminal.json',terminal)
     if not (candidate/'validation_manifest.json').exists():
-        write_json(candidate/'validation_manifest.json',dict(schema='tsg-dose-validation-v1',input_manifest_sha256=sha256(Path(inputs)/'manifest.json'),outputs={p.name:sha256(p) for p in sorted(candidate.iterdir()) if p.is_file() and p.name not in ['manifest.json','terminal.json','validation_manifest.json']}))
+        write_json(candidate/'validation_manifest.json',dict(schema='tsg-dose-validation-v1',input_manifest_sha256=sha256(Path(inputs)/'manifest.json'),parameter_count=terminal['parameter_count'],outputs={p.name:sha256(p) for p in sorted(candidate.iterdir()) if p.is_file() and p.name not in ['manifest.json','terminal.json','validation_manifest.json']}))
     manifest(candidate,inputs);return terminal
 
 
+@scientific_phase('evaluation')
 def evaluate(inputs,candidate,source,selection=None):
     """Access outer labels only after all21 validation fits and a locked choice."""
     candidate=Path(candidate);verify_candidate(candidate)
-    data,native,model,config=load(inputs,candidate,source)
+    config=json.loads((candidate/'config.json').read_text())
     terminal=json.loads((candidate/'terminal.json').read_text())
     if terminal['status']!='validation-complete':raise ValueError('evaluation requires replayed validation checkpoint')
     if config['scenario']=='final':raise ValueError('final internal selection has no independent test')
@@ -179,7 +205,7 @@ def evaluate(inputs,candidate,source,selection=None):
         if selection is None:raise ValueError('outer evaluation requires locked selection receipt')
         receipt=json.loads(Path(selection).read_text())
         if receipt.get('scenario')!=config['scenario'] or receipt.get('fold')!=config['fold'] or receipt.get('input_manifest_sha256')!=sha256(Path(inputs)/'manifest.json'):raise ValueError('selection receipt input/partition mismatch')
-        identities=set()
+        identities=set();scores=[];current_origin=False
         if len(receipt.get('validation_runs',{}))!=21:raise ValueError('selection requires exactly21 validation origins')
         for path,digest in receipt.get('validation_runs',{}).items():
             path=Path(path)
@@ -192,8 +218,16 @@ def evaluate(inputs,candidate,source,selection=None):
             run=json.loads((path/'config.json').read_text());status=json.loads((path/'terminal.json').read_text())
             if run['scenario']!=config['scenario'] or run['fold']!=config['fold'] or run['smoke_rows'] is not None or status['status'] not in ['validation-complete','test-awaiting-replay','complete']:raise ValueError('invalid validation origin')
             identities.add((run['method'],run['seed']))
+            parameter_count=frozen.get('parameter_count')
+            if parameter_count is None or parameter_count!=status.get('parameter_count'):raise ValueError('validation parameter count changed')
+            scores.append(dict(method=run['method'],seed=run['seed'],parameter_count=parameter_count,pcc=json.loads((path/'validation_metrics.json').read_text())['pcc']))
+            if path.resolve()==candidate.resolve() and digest==sha256(candidate/'validation_manifest.json'):current_origin=True
         if identities!={(m,s) for m in METHODS for s in SEEDS}:raise ValueError('selection requires21 replayed formal validation fits')
-        if receipt.get('method') not in METHODS:raise ValueError('selection method missing')
+        if not current_origin:raise ValueError('evaluated candidate is absent from locked validation origins')
+        chosen=choose_method(pd.DataFrame(scores))
+        expected='no-dose' if config['scenario']=='held-dose' else chosen
+        if receipt.get('method')!=expected:raise ValueError('selection does not match validation winner')
+    data,native,model,config=load(inputs,candidate,source)
     rows=data.rows(config['scenario'],config['fold'],'test')
     if config['smoke_rows'] is not None:rows=smoke_subset(data,rows,config['smoke_rows'])
     prediction=predict(native,model,data,rows,config['inference_seed']);np.save(candidate/'test_prediction.npy',prediction)

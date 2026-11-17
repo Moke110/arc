@@ -25,9 +25,14 @@ class Matrix(unittest.TestCase):
                 (path/'validation_metrics.json').write_text(json.dumps(dict(pcc=.5 if run['method']=='scaling' else .1)))
                 (path/'test_prediction.npy').write_text('unreadable outer data')
                 hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in path.iterdir() if p.name not in ['terminal.json','test_prediction.npy']}
-                (path/'validation_manifest.json').write_text(json.dumps(dict(schema='tsg-dose-validation-v1',input_manifest_sha256=input_digest,outputs=hashes)))
+                (path/'validation_manifest.json').write_text(json.dumps(dict(schema='tsg-dose-validation-v1',input_manifest_sha256=input_digest,parameter_count=10,outputs=hashes)))
             receipt=lock_selection(root,'cold-drug',0,input_digest)
             self.assertEqual(json.loads(receipt.read_text())['method'],'scaling')
+            terminals=[root/'runs/cold-drug/no-dose/0'/str(seed)/'terminal.json' for seed in [17,42,2026]]
+            for terminal in terminals:terminal.write_text(json.dumps(dict(status='validation-complete',parameter_count=1)))
+            with self.assertRaisesRegex(ValueError,'parameter count changed'):
+                lock_selection(root,'cold-drug',0,input_digest)
+            for terminal in terminals:terminal.write_text(json.dumps(dict(status='validation-complete',parameter_count=10)))
             changed=root/'runs/cold-drug/scaling/0/17/validation_metrics.json'
             changed.write_text('{"pcc":0}')
             with self.assertRaises(ValueError):lock_selection(root,'cold-drug',0,input_digest)
