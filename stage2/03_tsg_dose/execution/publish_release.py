@@ -15,6 +15,7 @@ import tempfile
 import sys
 import argparse
 import secrets
+import math
 from pathlib import Path
 
 ACCEPTANCE='acceptance-cold-drug-held-dose-final.json'
@@ -132,8 +133,53 @@ def write_csv(path,rows):
         writer=csv.DictWriter(stream,fieldnames=fields);writer.writeheader();writer.writerows(rows)
 
 
+def held_dose_uncertainty(rows,repetitions=10000,seed=2262026):
+    """Descriptive parent-block intervals from saved metrics, without reselection.
+
+    Average the three seed metrics within each parent first. Every bootstrap
+    draw carries that parent's complete dose/method/seed block. Undefined
+    metrics stay excluded, with explicit parent and undefined-draw accounting.
+    """
+    import numpy as np
+    if repetitions<1:raise ValueError('positive bootstrap count required')
+    groups={}
+    for row in rows:
+        key=(row['method'],float(row['dose_um']));parent=str(row['drug_parent']);value=int(row['seed'])
+        seeds=groups.setdefault(key,{}).setdefault(parent,{})
+        if value in seeds:raise ValueError('duplicate held-dose seed metrics')
+        seeds[value]=row
+    if not groups:raise ValueError('empty held-dose parent metrics')
+    parents=sorted(next(iter(groups.values())))
+    arrays={};metrics=['pcc','spearman','rmse','r2']
+    for key,blocks in sorted(groups.items()):
+        if sorted(blocks)!=parents:raise ValueError('held-dose parent populations differ')
+        for metric in metrics:
+            values=[]
+            for parent in parents:
+                if set(blocks[parent])!=set(SEEDS):raise ValueError('incomplete held-dose seed metrics')
+                scores=np.array([float(blocks[parent][s][metric]) if blocks[parent][s][metric] not in [None,''] else np.nan for s in SEEDS])
+                if np.isinf(scores).any() or (np.isnan(scores).any() and not np.isnan(scores).all()):raise ValueError('inconsistent undefined seed metric')
+                values.append(float(scores.mean()))
+            arrays[key+(metric,)]=np.array(values)
+    draws={key:[] for key in arrays};rng=np.random.default_rng(seed)
+    for start in range(0,repetitions,128):
+        index=rng.integers(len(parents),size=(min(128,repetitions-start),len(parents)))
+        for key,values in arrays.items():
+            samples=values[index];defined=np.isfinite(samples);counts=defined.sum(axis=1)
+            totals=np.where(defined,samples,0).sum(axis=1)
+            means=np.full(len(index),np.nan);np.divide(totals,counts,out=means,where=counts>0)
+            draws[key].append(means)
+    result=[]
+    for (method,dose,metric),values in arrays.items():
+        sampled=np.concatenate(draws[(method,dose,metric)]);defined=values[np.isfinite(values)]
+        valid=sampled[np.isfinite(sampled)]
+        low,high=np.quantile(valid,[.025,.975]) if len(valid) else (None,None)
+        result.append(dict(method=method,dose_um=dose,metric=metric,estimate=float(defined.mean()) if len(defined) else None,low=float(low) if low is not None else None,high=float(high) if high is not None else None,n_parents=len(parents),n_defined_parents=len(defined),n_excluded_undefined=len(parents)-len(defined),n_seeds=3,repetitions=repetitions,statistical_seed=seed,n_bootstrap_undefined=repetitions-len(valid),inference='descriptive 95% percentile parent-block interval; all doses and seeds carried together; no method reselection',role='auxiliary descriptive; three measured doses only'))
+    return result
+
+
 def export_plot_data(matrix,destination):
-    """Preserve plotted values; only attach frozen choice references, never rescore."""
+    """Keep saved points and add descriptive uncertainty, never rescore predictions."""
     matrix=Path(matrix);destination=Path(destination);destination.mkdir(parents=True,exist_ok=True)
     reports=matrix/'reports';selections=matrix/'selections'
     final=read(selections/'final/0/receipt.json')['method']
@@ -141,9 +187,19 @@ def export_plot_data(matrix,destination):
     references['final_selected_method']=final
     for source,target in [('summary.csv','primary_values.csv'),('primary_paired.csv','primary_paired.csv'),('descriptive_paired.csv','primary_descriptive.csv'),('per_dose.csv','primary_dose_values.csv')]:
         shutil.copy2(reports/'cold-drug'/source,destination/target)
+    intervals=held_dose_uncertainty(csv_rows(reports/'held-dose/per_parent_dose_seed.csv'))
+    intervals=[dict(row,**references,evaluation={.2:'lower extrapolation',1.:'interpolation',10.:'upper extrapolation'}[row['dose_um']]) for row in intervals]
+    write_csv(destination/'held_dose_uncertainty.csv',intervals)
+    lookup={(row['method'],row['dose_um'],row['metric']):row for row in intervals}
     held=[]
     for row in csv_rows(reports/'held-dose/per_dose.csv'):
-        held.append(dict(row,**references,evaluation={.2:'lower extrapolation',1.:'interpolation',10.:'upper extrapolation'}[float(row['dose_um'])]))
+        row=dict(row,**references,evaluation={.2:'lower extrapolation',1.:'interpolation',10.:'upper extrapolation'}[float(row['dose_um'])])
+        for metric in ['pcc','spearman','rmse','r2']:
+            interval=lookup[(row['method'],float(row['dose_um']),metric)]
+            if metric in row and interval['estimate'] is not None and not math.isclose(float(row[metric]),interval['estimate'],rel_tol=1e-12,abs_tol=1e-12):raise ValueError('held-dose point estimate differs from saved parent metrics')
+            for key in ['low','high','n_defined_parents','n_excluded_undefined','n_bootstrap_undefined']:row[metric+'_'+key]=interval[key]
+        row.update(repetitions=10000,statistical_seed=2262026,inference=interval['inference'])
+        held.append(row)
     write_csv(destination/'held_dose_values.csv',held)
     curves=[];resources=[];validations=[]
     for scenario in ['cold-drug','held-dose','final']:
@@ -222,13 +278,17 @@ def publish(args):
     subprocess.run([args.python,str(Path(__file__).resolve()),'downstream','--inputs',str(args.inputs),'--matrix',str(args.matrix),'--candidate',str(args.candidate),'--source',str(args.source),'--log',str(downstream)],check=True)
     proof=read(downstream)
     if proof.get('exact') is not True or proof.get('pid')==os.getpid() or not proof.get('process_token') or proof.get('candidate_manifest_sha256')!=digest(args.candidate/'manifest.json') or [r['seed'] for r in proof.get('proofs',[])]!=SEEDS:raise ValueError('missing fresh-process downstream acceptance')
-    data_hashes=export_plot_data(args.matrix,args.figures/'data')
-    figure_hashes=render_isolated(args.figures/'data',args.figures,args.python)
-    before=read(args.preservation);after=capture_preservation(args.root)
-    if before['files']!=after['files']:raise ValueError('protected product preservation mismatch')
-    retain_audit(args.matrix,args.log)
-    receipt=dict(schema='tsg-dose-publication-acceptance-v1',status='passed',n_formal_fits=147,downstream_exact_replay=True,csv_only_figures=True,protected_products_unchanged=True,candidate_manifest_sha256=digest(args.candidate/'manifest.json'),matrix_acceptance_sha256=digest(args.matrix/ACCEPTANCE),downstream_receipt_sha256=digest(downstream),figure_csv_sha256=data_hashes,figure_png_sha256=figure_hashes,preservation=dict(n_files=len(before['files']),before_sha256=digest(args.preservation)),role=ROLE)
-    receipt['installation']=install(args.candidate,args.destination,receipt)
+    args.figures.parent.mkdir(parents=True,exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='.tsg-dose-figures-',dir=args.figures.parent) as tmp:
+        staged=Path(tmp)/'figure'
+        if args.figures.exists():shutil.copytree(args.figures,staged)
+        data_hashes=export_plot_data(args.matrix,staged/'data')
+        figure_hashes=render_isolated(staged/'data',staged,args.python)
+        before=read(args.preservation);after=capture_preservation(args.root)
+        if before['files']!=after['files']:raise ValueError('protected product preservation mismatch')
+        retain_audit(args.matrix,args.log)
+        receipt=dict(schema='tsg-dose-publication-acceptance-v1',status='passed',n_formal_fits=147,downstream_exact_replay=True,csv_only_figures=True,protected_products_unchanged=True,candidate_manifest_sha256=digest(args.candidate/'manifest.json'),matrix_acceptance_sha256=digest(args.matrix/ACCEPTANCE),downstream_receipt_sha256=digest(downstream),figure_csv_sha256=data_hashes,figure_png_sha256=figure_hashes,preservation=dict(n_files=len(before['files']),before_sha256=digest(args.preservation)),role=ROLE)
+        receipt['installation']=install(args.candidate,args.destination,receipt,figures_candidate=staged,figures_destination=args.figures)
     write(args.log,receipt);return receipt
 
 
@@ -247,7 +307,7 @@ def main():
         args.destination=args.destination.resolve();publish(args)
 
 
-def install(candidate,destination,acceptance):
+def install(candidate,destination,acceptance,*,figures_candidate=None,figures_destination=None):
     """Install only an accepted candidate; rollback any failed replacement.
 
     The acceptance receipt is produced after actual downstream replay and
@@ -256,20 +316,29 @@ def install(candidate,destination,acceptance):
     candidate=Path(candidate);destination=Path(destination)
     if acceptance.get('status')!='passed' or acceptance.get('n_formal_fits')!=147 or acceptance.get('downstream_exact_replay') is not True or acceptance.get('csv_only_figures') is not True or acceptance.get('candidate_manifest_sha256')!=digest(candidate/'manifest.json'):
         raise ValueError('candidate has no complete downstream/figure acceptance')
-    if candidate.resolve()==destination.resolve() or destination.is_symlink():raise ValueError('unsafe release installation destination')
-    destination.parent.mkdir(parents=True,exist_ok=True)
-    backup=destination.with_name('.'+destination.name+'.backup-'+uuid.uuid4().hex)
-    had_previous=destination.exists();installed=False
+    if (figures_candidate is None)!=(figures_destination is None):raise ValueError('figure candidate and destination must be supplied together')
+    pairs=[(candidate,destination)]
+    if figures_candidate is not None:pairs.append((Path(figures_candidate),Path(figures_destination)))
+    paths=[p.resolve() for pair in pairs for p in pair]
+    if len(set(paths))!=len(paths) or any(p.is_symlink() for pair in pairs for p in pair):raise ValueError('unsafe release installation destination')
+    changes=[]
     try:
-        if had_previous:os.replace(destination,backup)
-        os.replace(candidate,destination);installed=True
+        for source,target in pairs:
+            target.parent.mkdir(parents=True,exist_ok=True)
+            backup=target.with_name('.'+target.name+'.backup-'+uuid.uuid4().hex)
+            change=dict(source=source,target=target,backup=backup,had_previous=target.exists(),installed=False)
+            changes.append(change)
+            if change['had_previous']:os.replace(target,backup)
+            os.replace(source,target);change['installed']=True
         if digest(destination/'manifest.json')!=acceptance['candidate_manifest_sha256']:raise ValueError('installed release digest changed')
     except BaseException:
-        if installed and destination.exists():os.replace(destination,candidate)
-        if had_previous and backup.exists():os.replace(backup,destination)
+        for change in reversed(changes):
+            if change['installed'] and change['target'].exists():os.replace(change['target'],change['source'])
+            if change['had_previous'] and change['backup'].exists():os.replace(change['backup'],change['target'])
         raise
-    if backup.exists():shutil.rmtree(backup)
-    return dict(destination=str(destination.resolve()),manifest_sha256=acceptance['candidate_manifest_sha256'],replaced_previous=had_previous)
+    for change in changes:
+        if change['backup'].exists():shutil.rmtree(change['backup'])
+    return dict(destination=str(destination.resolve()),manifest_sha256=acceptance['candidate_manifest_sha256'],replaced_previous=changes[0]['had_previous'],figures_destination=str(Path(figures_destination).resolve()) if figures_destination is not None else None)
 
 
 if __name__=='__main__':main()

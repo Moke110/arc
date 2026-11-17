@@ -34,6 +34,23 @@ def complete_matrix(root):
 
 
 class PublicationTests(unittest.TestCase):
+    def test_held_dose_intervals_resample_parents_carrying_all_seed_metrics(self):
+        module=publication();rows=[]
+        for parent,scores in [('A',[.1,.3,.5]),('B',[.5,.7,.9])]:
+            for seed,value in zip([17,42,2026],scores):
+                rows.append(dict(method='film',dose_um=1,drug_parent=parent,seed=seed,pcc=value,spearman=value,rmse=value,r2='' if parent=='A' else value))
+        intervals=module.held_dose_uncertainty(rows)
+        pcc=next(row for row in intervals if row['metric']=='pcc')
+        self.assertAlmostEqual(pcc['estimate'],.5)
+        self.assertAlmostEqual(pcc['low'],.3);self.assertAlmostEqual(pcc['high'],.7)
+        self.assertEqual((pcc['n_parents'],pcc['n_seeds'],pcc['repetitions']),(2,3,10000))
+        r2=next(row for row in intervals if row['metric']=='r2')
+        self.assertAlmostEqual(r2['low'],.7);self.assertAlmostEqual(r2['high'],.7)
+        self.assertEqual((r2['n_defined_parents'],r2['n_excluded_undefined']),(1,1))
+        self.assertEqual(intervals,module.held_dose_uncertainty(list(reversed(rows))))
+        with self.assertRaisesRegex(ValueError,'seed'):
+            module.held_dose_uncertainty(rows[:-1])
+
     def test_export_keeps_curve_coordinates_and_auxiliary_selection_references(self):
         module=publication()
         with tempfile.TemporaryDirectory() as tmp:
@@ -51,12 +68,15 @@ class PublicationTests(unittest.TestCase):
                     (selection/'validation_table.csv').write_text('method,seed,pcc\nfilm,17,0.5\n')
             (matrix/'reports/cold-drug/primary_paired.csv').write_text('metric,estimate,low,high\npcc,0.1,-0.1,0.2\n')
             (matrix/'reports/cold-drug/descriptive_paired.csv').write_text('metric,estimate,low,high\npcc,0.1,-0.1,0.2\n')
+            (matrix/'reports/held-dose/per_parent_dose_seed.csv').write_text('method,dose_um,drug_parent,seed,pcc,spearman,rmse,r2\n'+''.join(f'film,1.0,A,{seed},0.3,0.2,1.0,0.1\n' for seed in [17,42,2026]))
             destination=root/'data';module.export_plot_data(matrix,destination)
             rows=module.csv_rows(destination/'learning_curves_all.csv')
             self.assertEqual(len(rows),3);self.assertEqual(rows[2]['validation_mse'],'1.25')
             held=module.csv_rows(destination/'held_dose_values.csv')[0]
             self.assertEqual(held['final_selected_method'],'film');self.assertEqual(held['primary_fold_2_selected_method'],'scaling')
             self.assertEqual(held['evaluation'],'interpolation')
+            self.assertEqual(float(held['pcc_low']),.3);self.assertEqual(float(held['pcc_high']),.3)
+            self.assertEqual(len(module.csv_rows(destination/'held_dose_uncertainty.csv')),4)
             rendered=module.render_isolated(destination,root/'figures',sys.executable)
             self.assertEqual(len(rendered),6)
             self.assertTrue(all((root/'figures'/name).read_bytes().startswith(b'\x89PNG') for name in rendered))
@@ -138,6 +158,34 @@ class PublicationTests(unittest.TestCase):
             root=Path(tmp);candidate=root/'candidate';candidate.mkdir()
             (candidate/'manifest.json').write_text('manifest')
             with self.assertRaisesRegex(ValueError,'acceptance'):module.install(candidate,root/'model',dict(status='pending'))
+
+    def test_failed_figure_install_restores_accepted_model_csv_and_png(self):
+        module=publication()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);candidate=root/'candidate';stable=root/'model'
+            staged=root/'staged-figure';figures=root/'figure'
+            for path in [candidate,stable,staged,figures]:path.mkdir()
+            (candidate/'manifest.json').write_text('new model')
+            (stable/'manifest.json').write_text('old model')
+            for path,label in [(staged,'new'),(figures,'old')]:
+                (path/'data').mkdir();(path/'data/held.csv').write_text(label+' csv')
+                (path/'held.png').write_bytes((label+' png').encode())
+            receipt=dict(status='passed',n_formal_fits=147,downstream_exact_replay=True,csv_only_figures=True,candidate_manifest_sha256=module.digest(candidate/'manifest.json'))
+            original_replace=module.os.replace
+            def fail_figures(source,destination):
+                if Path(source)==staged:raise OSError('injected figure replacement failure')
+                return original_replace(source,destination)
+            with patch.object(module.os,'replace',side_effect=fail_figures):
+                with self.assertRaisesRegex(OSError,'injected'):
+                    module.install(candidate,stable,receipt,figures_candidate=staged,figures_destination=figures)
+            self.assertEqual((stable/'manifest.json').read_text(),'old model')
+            self.assertEqual((figures/'data/held.csv').read_text(),'old csv')
+            self.assertEqual((figures/'held.png').read_bytes(),b'old png')
+            self.assertEqual((candidate/'manifest.json').read_text(),'new model')
+            module.install(candidate,stable,receipt,figures_candidate=staged,figures_destination=figures)
+            self.assertEqual((stable/'manifest.json').read_text(),'new model')
+            self.assertEqual((figures/'data/held.csv').read_text(),'new csv')
+            self.assertEqual((figures/'held.png').read_bytes(),b'new png')
 
     def test_preservation_snapshot_detects_protected_byte_changes(self):
         module=publication()
