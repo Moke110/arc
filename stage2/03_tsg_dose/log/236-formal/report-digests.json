@@ -1,0 +1,46 @@
+{
+  "reports/cold-drug/descriptive_paired.csv": {
+    "bytes": 40667,
+    "sha256": "e4a99fc2ae0cbab2872d9b311472de37a71249f932f9b7f37cce34be580d6a17"
+  },
+  "reports/cold-drug/fit_resources.csv": {
+    "bytes": 5741,
+    "sha256": "1f34d4d04d543402891f4a988d014a263f6b3740e74af5d7cb81cde0a6e23a89"
+  },
+  "reports/cold-drug/learning_curves.csv": {
+    "bytes": 719945,
+    "sha256": "15ebdc6b0813c26cb07519e1dd6c12a5ba75e022f2f95fa8cbc7352b7f5cbb5e"
+  },
+  "reports/cold-drug/oof_coverage.csv": {
+    "bytes": 798,
+    "sha256": "cdeb94608b085fe52e71b15da85fc1e9bba7cc50a73f38f4b536f5e6aaa3bf5b"
+  },
+  "reports/cold-drug/per_dose.csv": {
+    "bytes": 2613,
+    "sha256": "ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b"
+  },
+  "reports/cold-drug/per_parent.csv": {
+    "bytes": 485388,
+    "sha256": "762214556ea18ecdc2c9ab6a969c3c759719844274ed0c72a7af3416a383c490"
+  },
+  "reports/cold-drug/per_parent_dose_seed.csv": {
+    "bytes": 4629125,
+    "sha256": "db8afb0f4fd748ba00c92f0b34630217415373380288fafaa051e0066edfa1e1"
+  },
+  "reports/cold-drug/per_parent_seed.csv": {
+    "bytes": 1474313,
+    "sha256": "dba0e6a0c187ecdf4ef8a2fac524368046318a0c400be760b36673b768803f74"
+  },
+  "reports/cold-drug/per_well_seed.csv": {
+    "bytes": 25091235,
+    "sha256": "68135fe9c642d1b9af11038e0cf97033e52c77e3284280053319bfb76380d80e"
+  },
+  "reports/cold-drug/primary_paired.csv": {
+    "bytes": 1055,
+    "sha256": "9ea3990635cf79986d2c409693bf79c4845c4c266e39203ead7df24d0e50bf32"
+  },
+  "reports/cold-drug/summary.csv": {
+    "bytes": 855,
+    "sha256": "65eb9a906050d81d6c81c397e687b3735efe6929e325871e932b0ee47db47f4f"
+  }
+}
