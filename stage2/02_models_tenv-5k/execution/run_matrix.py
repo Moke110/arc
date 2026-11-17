@@ -103,7 +103,7 @@ def frozen_plan(args):
                 evaluation_code_sha256={n:code[n] for n in ('output/api/tenv5k/protocol.py','output/api/tenv5k/comparison.py')})
     return dict(schema=MATRIX_SCHEMA,shared=shared,methods=methods,runs=plan(),device=args.device,input_manifest_sha256=digest(args.inputs/'manifest.json'),
         means_manifest_sha256=digest(args.means/'manifest.json'),code_sha256=code,
-        sources={a:str(p.resolve()) for a,p in source_paths(args).items()},max_epochs=1000,patience=50)
+        sources={a:('owned:output/api/tenv5k' if a=='mlp' else str(p.resolve())) for a,p in source_paths(args).items()},max_epochs=1000,patience=50)
 
 
 def import_run(args,run):
