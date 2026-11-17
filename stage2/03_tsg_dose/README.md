@@ -32,3 +32,10 @@ Foundation slice (#233): all-dose input preparation and bounded native no-dose
 validation/test prediction, dose-aware scoring and exact fresh-process replay
 passed on2026-11-17. See [233-acceptance.json](log/233-acceptance.json). These
 smokes do not enter the147-fit comparison. All payloads remain candidates.
+
+Four concatenation arms (#234) now preserve training-only dose transforms and
+100-dimensional numeric/embedded conditioning at the input or both latent heads.
+Behavioral fixtures verify dose use, ordered target-independent predictions,
+finite gradients and disabled-dose native equivalence (float32 tolerance). Four
+8-row/two-epoch CUDA smokes passed exact fresh-process validation and test replay;
+see [234-smoke acceptance](log/234-smoke/acceptance.json). They are not formal fits.

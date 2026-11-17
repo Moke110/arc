@@ -1,0 +1,25 @@
+{
+  "best_epoch": 2,
+  "elapsed_seconds": 1.739661144965794,
+  "epochs": 2,
+  "parameter_count": 21633300,
+  "peak_rss_kib": 1738664,
+  "replay": "exact fresh-process native sampled prediction",
+  "replay_pid": 503412,
+  "smoke": true,
+  "status": "complete",
+  "test_replay": {
+    "attempt_nonce": "78036e6657020bca93420dbbaada2abe4a61993d37f2b41c36e8ea36b1f58464",
+    "pid": 503412,
+    "process_token": "50065b464d68ad7fbf91f954cba20431b74243368e83be619180182b4486907d"
+  },
+  "training_pid": 503313,
+  "training_process_token": "69fd44dc961541d13078d0be583d2af7d3fe0f38073e28a9d3eccdc80a9ddd0c",
+  "validation_mse": 0.16856054961681366,
+  "validation_replay": {
+    "attempt_nonce": "78036e6657020bca93420dbbaada2abe4a61993d37f2b41c36e8ea36b1f58464",
+    "pid": 503343,
+    "process_token": "6d852cd974bbccb195a6df539e1e590eeb755c54dee6a6fbf926ac7653d3cae6"
+  },
+  "weights_updated": true
+}
