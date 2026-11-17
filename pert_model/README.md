@@ -34,13 +34,14 @@ every item.
 | `WAVE/` | [WAVE](https://github.com/ZJUFanLab/WAVE) `e27e453b` | MIT | reference | GeneDrugFusion; 978 default, **no dose input** → fails revised G2. |
 | `ExPO/` | [ExPO](https://github.com/MLBC-lab/ExPO) `7e88cbae` | MIT | reference | Exposure-aware model; **978 only** in the published scope → fails revised G1. |
 | `State/` | [state](https://github.com/ArcInstitute/state) `9bbfe78a` | CC BY-NC-SA 4.0 / State Model Non-Commercial | reference | Arc State transition model (SE-600M + ST-HVG-Tahoe); Tahoe one-hot limits cold-drug generalisation. |
-| `TranSiGen/` | [TranSiGen](https://github.com/myzhengSIMM/TranSiGen) `e7582e77` | MIT | reference | Transcriptome generative model; kept for Stage 1 provenance. |
+| `TranSiGen/` | [TranSiGen](https://github.com/myzhengSIMM/TranSiGen) `e7582e77` | MIT | Stage 2 single-dose entrant | Transcriptome generative model; random initialization and Morgan2048 under ADR 0074; Stage 1 provenance retained. |
 | `XPert/` | author-provided (version unknown) | MIT | reference | Stage 1 XPert library; `local/` holds the routing index, logs, metadata, metrics and figure-reproduction code. |
 
 Nine items historically completed Stage 2 setup; their run cards are retained in
-Git history. Five were **reference-only** (`WAVE`, `ExPO`, `State`, `TranSiGen`,
-`XPert`). Current Stage 2 retains only [01_bases](../stage2/01_bases/README.md);
-no model setup or benchmark runner survives. `pert_data/`,
+Git history. Five were historically **reference-only** (`WAVE`, `ExPO`, `State`, `TranSiGen`,
+`XPert`). ADR 0074 now admits TranSiGen to the single-dose 5k comparison,
+without using retained pretrained assets or changing Stage 3. The current successor comparison is [02_models_tenv-5k](../stage2/02_models_tenv-5k/README.md),
+using the released [01_bases](../stage2/01_bases/README.md) inputs. `pert_data/`,
 `drug_emb_model/`, `disease_data/` are the sibling external categories under the
 same contract; `pert_model/` is the model-code one, so its `source/` trees are
 the upstream repositories themselves plus whatever weights/data the authors

@@ -1,0 +1,618 @@
+{
+  "n_runs": 54,
+  "n_wells": 1402,
+  "n_parents": 459,
+  "selection": {
+    "winner": "TranSiGen",
+    "retained": [
+      "TranSiGen"
+    ],
+    "criterion": "cold-drug parent \u0394 PCC; all paired 95% lower bounds strictly above zero"
+  },
+  "execution_origins": [
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 1,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "cold-drug",
+        "fold": 2,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 1,
+        "seed": 2026
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 17
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 42
+      },
+      "origin": "trained"
+    },
+    {
+      "run": {
+        "adapter": "mlp",
+        "scenario": "warm-start",
+        "fold": 2,
+        "seed": 2026
+      },
+      "origin": "trained"
+    }
+  ],
+  "method_identities": {
+    "prnet": {
+      "scientific_identity": "prnet-native-f32-lr1e4-v1",
+      "scientific_configuration": {
+        "method_identity": "prnet-native-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "learning_rate": 0.0001
+      },
+      "code_sha256": {
+        "execution/prnet.py": "64a430a36416ff5951eb8602c4bcabf8bf067bbb3b9b5ae9ee5fee394a1cef4c",
+        "output/api/tenv5k/model_prnet.py": "a2fce7c1ac2570d26548fbc67d9a123c086c98d2f60916e2ba25eab3853eec73",
+        "output/api/tenv5k/learner.py": "8e3c0149f278f9389cfb53b55d5db290225fef0c5e2b73c1cc1601f693ed4d9a",
+        "output/api/tenv5k/learning.py": "02d294c10761e29a673d8864580278fd534aa8e71a5c6d3853ff846b4b820a3d",
+        "output/api/tenv5k/inputs.py": "9515073399f84930aff457283dca44d0b08e1236975a9a2bbaa18a23d9e9d39f",
+        "output/api/tenv5k/protocol.py": "ccc4d447fa695011b31bbf3f5b8a4c007b12db9b7a6e62849655fc633e6b4d28",
+        "output/api/tenv5k/native_import.py": "a80972f0104ce990f224690f9688bdb4015e4f02c6cbe4bb08e231dacea4787e",
+        "output/api/tenv5k/attempt_identity.py": "58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641"
+      }
+    },
+    "transigen": {
+      "scientific_identity": "transigen-native-f32-lr1e4-v1",
+      "scientific_configuration": {
+        "method_identity": "transigen-native-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "learning_rate": 0.0001
+      },
+      "code_sha256": {
+        "execution/transigen.py": "8a770ed960a86a745657d0e63869590e0c487da2d00d13ebbb2c3432d9c03f0e",
+        "output/api/tenv5k/model_transigen.py": "50befe527f8ff1e8eae254b1a3e180ca342eac5b0bbbdd802966c69d55af11da",
+        "output/api/tenv5k/learner.py": "8e3c0149f278f9389cfb53b55d5db290225fef0c5e2b73c1cc1601f693ed4d9a",
+        "output/api/tenv5k/learning.py": "02d294c10761e29a673d8864580278fd534aa8e71a5c6d3853ff846b4b820a3d",
+        "output/api/tenv5k/inputs.py": "9515073399f84930aff457283dca44d0b08e1236975a9a2bbaa18a23d9e9d39f",
+        "output/api/tenv5k/protocol.py": "ccc4d447fa695011b31bbf3f5b8a4c007b12db9b7a6e62849655fc633e6b4d28",
+        "output/api/tenv5k/native_import.py": "a80972f0104ce990f224690f9688bdb4015e4f02c6cbe4bb08e231dacea4787e",
+        "output/api/tenv5k/attempt_identity.py": "58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641"
+      }
+    },
+    "mlp": {
+      "scientific_identity": "mlp-morgan-project-f32-lr1e4-v1",
+      "scientific_configuration": {
+        "method_identity": "mlp-morgan-project-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "learning_rate": 0.0001
+      },
+      "code_sha256": {
+        "execution/mlp.py": "49cbb0b6a0ea82d57368cab1945ade47ca729e25bde3300220e5ed60def53b38",
+        "output/api/tenv5k/model_mlp.py": "2f86e87c21ea155ab309987bf576e53c85afcc72c551ae3db0e7299f805a3a5f",
+        "output/api/tenv5k/learner.py": "8e3c0149f278f9389cfb53b55d5db290225fef0c5e2b73c1cc1601f693ed4d9a",
+        "output/api/tenv5k/learning.py": "02d294c10761e29a673d8864580278fd534aa8e71a5c6d3853ff846b4b820a3d",
+        "output/api/tenv5k/inputs.py": "9515073399f84930aff457283dca44d0b08e1236975a9a2bbaa18a23d9e9d39f",
+        "output/api/tenv5k/protocol.py": "ccc4d447fa695011b31bbf3f5b8a4c007b12db9b7a6e62849655fc633e6b4d28",
+        "output/api/tenv5k/native_import.py": "a80972f0104ce990f224690f9688bdb4015e4f02c6cbe4bb08e231dacea4787e",
+        "output/api/tenv5k/attempt_identity.py": "58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641"
+      }
+    }
+  },
+  "shared_identity": {
+    "input_manifest_sha256": "d0f0101ca112e5d3b6325db6e80e1a3c90c42332ac46c8211e10e1cc34ed5ade",
+    "means_manifest_sha256": "36b2b438af38a64becff470f2ff53c4a3b39fc7617b1347ff54d4a3da6b28205",
+    "evaluation_code_sha256": {
+      "output/api/tenv5k/protocol.py": "ccc4d447fa695011b31bbf3f5b8a4c007b12db9b7a6e62849655fc633e6b4d28",
+      "output/api/tenv5k/comparison.py": "5f013e6ea2eee05dd258bc56c3543175358c35192e881fe7aa1162d57a08bf42"
+    }
+  },
+  "schema": "tenv5k-matrix-acceptance-v3-threefold-f32-lr1e4",
+  "input_manifest_sha256": "d0f0101ca112e5d3b6325db6e80e1a3c90c42332ac46c8211e10e1cc34ed5ade",
+  "plan_sha256": "1452312b4c6b3f96d6d5770abac4884827548c39f2a3341704fce34950d35dab",
+  "replay": "exact CSV metrics and PNG",
+  "runs": 54,
+  "files": {
+    "comparison/baseline_status.csv": "859daf94d5d768f84efa591e864604c31c285089c3fd00a6ecda476a1db2cc27",
+    "comparison/constant_truth.csv": "d5900aa602d4c935dab068a9c3a3ee7a4d91c1d06e833db7660eca46df4a25e8",
+    "comparison/learning_curve_values.csv": "69c2f526b662f28ddb326a615c6072ce02d1c9263fe06848ee06ce23cad8e661",
+    "comparison/metrics_values.csv": "0ec41b8e58603ce20be2f378eb2ec63d3cae8782c8d1345486bd2aad18fd5ba8",
+    "comparison/paired_differences_values.csv": "5f910ccbbcb5f5cbbf8336684e1808e712789a3379c341b3f74920e8e827f42c",
+    "comparison/per_parent.csv": "35b7f1150b1b2d08ba4be31a9f7815d12f569a77d53b5d8b1f335fa3f8232670",
+    "comparison/per_parent_seed.csv": "172ff3fa806e20020461915a45a044406ed053335d922583903679ace7333608",
+    "comparison/per_well.csv": "fcebe2af4dc5815ef73c3e0f04b51ca55e9c5a2971b93c79b20d99093f127a39",
+    "comparison/selection.json": "c0c83686bfcc7fc28b29f7bc7399f38570c11f7bf1b873491df5ec1f2a5087cf",
+    "figures/learning_curve.png": "d7722a2bd0db4322aadb6191543c82c99a12a78882bc80a3869ce2bc31559f86",
+    "figures/metrics.png": "edcdc0f353f8175cc900370ec674c3e45d46ade55b96a99368c48889f0b2fc0a",
+    "figures/paired_differences.png": "2edb96599a7708237c648bba714aa0f24f7fc5864fc260ad9c3183d9e730d28c"
+  },
+  "figure_refresh": {
+    "reason": "Separate native training loss and validation MSE onto labeled independent y axes",
+    "previous_acceptance_sha256": "c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992",
+    "renderer_sha256": "29ed3fc69c9d72a63770f6f2cba7bdc6bd760f79855ff27adb71ae7c54c104cb",
+    "previous_figures_sha256": {
+      "figures/learning_curve.png": "222ae9de636a133dd2ccaf7703ab86e7b60787d4d03d35b86e65c001cbf5a212",
+      "figures/metrics.png": "edcdc0f353f8175cc900370ec674c3e45d46ade55b96a99368c48889f0b2fc0a",
+      "figures/paired_differences.png": "2edb96599a7708237c648bba714aa0f24f7fc5864fc260ad9c3183d9e730d28c"
+    },
+    "figures_sha256": {
+      "figures/paired_differences.png": "2edb96599a7708237c648bba714aa0f24f7fc5864fc260ad9c3183d9e730d28c",
+      "figures/metrics.png": "edcdc0f353f8175cc900370ec674c3e45d46ade55b96a99368c48889f0b2fc0a",
+      "figures/learning_curve.png": "d7722a2bd0db4322aadb6191543c82c99a12a78882bc80a3869ce2bc31559f86"
+    },
+    "unchanged_scientific_files_sha256": {
+      "comparison/baseline_status.csv": "859daf94d5d768f84efa591e864604c31c285089c3fd00a6ecda476a1db2cc27",
+      "comparison/constant_truth.csv": "d5900aa602d4c935dab068a9c3a3ee7a4d91c1d06e833db7660eca46df4a25e8",
+      "comparison/learning_curve_values.csv": "69c2f526b662f28ddb326a615c6072ce02d1c9263fe06848ee06ce23cad8e661",
+      "comparison/metrics_values.csv": "0ec41b8e58603ce20be2f378eb2ec63d3cae8782c8d1345486bd2aad18fd5ba8",
+      "comparison/paired_differences_values.csv": "5f910ccbbcb5f5cbbf8336684e1808e712789a3379c341b3f74920e8e827f42c",
+      "comparison/per_parent.csv": "35b7f1150b1b2d08ba4be31a9f7815d12f569a77d53b5d8b1f335fa3f8232670",
+      "comparison/per_parent_seed.csv": "172ff3fa806e20020461915a45a044406ed053335d922583903679ace7333608",
+      "comparison/per_well.csv": "fcebe2af4dc5815ef73c3e0f04b51ca55e9c5a2971b93c79b20d99093f127a39",
+      "comparison/selection.json": "c0c83686bfcc7fc28b29f7bc7399f38570c11f7bf1b873491df5ec1f2a5087cf"
+    },
+    "verified_fresh_execution_receipts": 54,
+    "csv_only_exact_replay": true,
+    "frozen_plan_sha256": "1452312b4c6b3f96d6d5770abac4884827548c39f2a3341704fce34950d35dab"
+  }
+}

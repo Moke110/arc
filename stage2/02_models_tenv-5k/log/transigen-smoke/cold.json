@@ -1,0 +1,105 @@
+{
+  "terminal": {
+    "status": "complete",
+    "smoke": true,
+    "best_epoch": 2,
+    "epochs": 2,
+    "validation_mse": 0.17678821607336478,
+    "elapsed_seconds": 1.5750998620060273,
+    "peak_rss_kib": 1373792,
+    "weights_updated": true,
+    "replay": "exact native sampled prediction"
+  },
+  "config": {
+    "method": "TranSiGen",
+    "batch_size": 64,
+    "n_genes": 5000,
+    "n_latent": 100,
+    "encoder": [
+      1200
+    ],
+    "decoder": [
+      800
+    ],
+    "features_dim": 2048,
+    "features_embed_dim": [
+      400
+    ],
+    "init_w": true,
+    "beta": 0.1,
+    "dropout": 0.1,
+    "molecule_feature": "ECFP4",
+    "initialization_model": "random",
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "scheduler": null,
+    "dose_input": false,
+    "prediction": "native forward(x1,features)[3]",
+    "singleton_train": "skip singleton as upstream",
+    "upstream_commit": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+    "config_script": "src/train_TranSiGen.py",
+    "config_script_sha256": "4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5",
+    "singleton_train_batch": "skip singleton as upstream",
+    "adaptations": [
+      "5000 gene interface",
+      "shared Morgan2048 ECFP4",
+      "random initialization; no pretraining/dose/KPGT",
+      "shared splits and fixed validation treated-expression MSE",
+      "x1-only native sampled forward for inference"
+    ],
+    "adapter": "transigen",
+    "scenario": "cold-drug",
+    "fold": 0,
+    "seed": 17,
+    "device": "cpu",
+    "validation_seed": 22617,
+    "inference_seed": 100017,
+    "smoke_rows": 8,
+    "max_epochs": 2,
+    "patience": 50,
+    "strict_lower": true,
+    "native_source_sha256": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7",
+    "validation_order": [
+      6,
+      10,
+      28,
+      32,
+      50,
+      54,
+      66,
+      67
+    ],
+    "test_order": [
+      13,
+      16,
+      19,
+      20,
+      21,
+      35,
+      38,
+      41
+    ]
+  },
+  "environment": {
+    "python": "3.13.13",
+    "torch": "2.12.0+cu130",
+    "numpy": "2.4.6",
+    "device": "cpu",
+    "cuda": "13.0"
+  },
+  "manifest": {
+    "schema": "tenv5k-learner-v1",
+    "input_manifest_sha256": "eb3b279fd0ec2180405db86a2b90327e5eb4345c32cc57e456a04cd7e09e785d",
+    "outputs": {
+      "checkpoint.pt": "c1354bc2e8632147bce905cb95e88c1d298a943dbeabce1d441c58791d913ca1",
+      "config.json": "a3e6f82544c45376b01218e4704011cb82959609c5a03e69686c2f3fc6da26e7",
+      "environment.json": "7531d99ea73dfcf2acfe82812d7adf6c5aa30867bd3e9b51cf39b8819b19df9f",
+      "identity.csv": "675b9cd0c24e347d2457418238b8934608dc62353c7cf99f02c4e89904cd7a05",
+      "learning_curve.csv": "cfb9d92935f92a95a1a18e539099b61cffc7cdd6284f5f6da6ca38f2bc500a20",
+      "per_drug.csv": "d5ad3ae29909e320ae2067afd86e05877bb9116cd0ff6341198b600a18fcad5a",
+      "per_well.csv": "38e7a7de635739b52285bb388f59884a67ad75b49ba0c25849699cd53eed6c5c",
+      "prediction.npy": "0d2ed402d1fd78f1f86603e55d65c8e05e2edd738ffe030e6b6d8ccccc9235aa",
+      "terminal.json": "94ab55e5f16df8109b41bcb4dddc25d22298623c1ecdc984244f4799bacd44ea"
+    }
+  }
+}

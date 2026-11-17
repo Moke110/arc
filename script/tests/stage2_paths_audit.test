@@ -60,20 +60,22 @@ printf '%s\n' "$tmp/frozen.py" >"$tmp/list_frozen"
 if run "$tmp/list_frozen" >/dev/null; then fail "deleted frozen runtime must fail"; fi
 
 # Newly retired runtime roots fail; current bases and immutable sources pass.
-for old in 02_dataset_corpus evaluation 09_xpert_optimize _frozen; do
+for old in 02_models_tenv 02_dataset_corpus evaluation 09_xpert_optimize _frozen; do
   printf 'p = "stage2/%s/output/x"\n' "$old" >"$tmp/new_stale.py"
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_bases/output/x"\nq = "stage2/02_models_tenv/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_bases/output/x"\nq = "stage2/02_models_tenv-5k/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 # An active-root prefix must not exempt a longer retired-looking sibling name.
-printf 'p = "stage2/02_models_tenv_extra/output/x"\n' >"$tmp/prefix.py"
-printf '%s\n' "$tmp/prefix.py" >"$tmp/list_prefix"
-if run "$tmp/list_prefix" >/dev/null; then
-  fail "a 02_models_tenv_extra literal must fail the audit"
-fi
+for sibling in 02_models_tenv_extra 02_models_tenv-5k_extra; do
+  printf 'p = "stage2/%s/output/x"\n' "$sibling" >"$tmp/prefix.py"
+  printf '%s\n' "$tmp/prefix.py" >"$tmp/list_prefix"
+  if run "$tmp/list_prefix" >/dev/null; then
+    fail "a $sibling literal must fail the audit"
+  fi
+done
 
 # 7. Layout guard (#157 review S2): a stray regular file at the Stage 2 root
 #    must fail, while the routing document stage2/AGENTS.md must pass.  The
@@ -83,30 +85,30 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-mkdir -p "$fixture_root/01_bases" "$fixture_root/02_models_tenv"
+mkdir -p "$fixture_root/01_bases" "$fixture_root/02_models_tenv-5k"
 printf 'bases\n' >"$fixture_root/AGENTS.md"
 printf 'bases\n' >"$fixture_root/01_bases/AGENTS.md"
 printf 'bases\n' >"$fixture_root/01_bases/README.md"
-printf 'models\n' >"$fixture_root/02_models_tenv/AGENTS.md"
-printf 'models\n' >"$fixture_root/02_models_tenv/README.md"
+printf 'successor\n' >"$fixture_root/02_models_tenv-5k/AGENTS.md"
+printf 'successor\n' >"$fixture_root/02_models_tenv-5k/README.md"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null \
-  || fail "the routing document plus both active roots must pass the layout guard"
-# A retired third root is still rejected.
-mkdir -p "$fixture_root/03_modes_tenv"
+  || fail "the accepted active steps must coexist with routing"
+# The retired old comparison is rejected.
+mkdir -p "$fixture_root/02_models_tenv"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-  fail "a retired 03_modes_tenv root must fail the layout guard"
+  fail "a retired 02_models_tenv root must fail the layout guard"
 fi
-printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*03_modes_tenv' \
+printf '%s\n' "$out" | grep -q 'unexpected Stage 2 entry: .*02_models_tenv' \
   || fail "the retired root must be named in the failure"
-rmdir "$fixture_root/03_modes_tenv"
+rmdir "$fixture_root/02_models_tenv"
 # An active root without its routing skeleton is rejected.
-mv "$fixture_root/02_models_tenv/README.md" "$tmp/README.off"
+mv "$fixture_root/02_models_tenv-5k/README.md" "$tmp/successor-README.off"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
-  fail "an active step without README.md must fail the layout guard"
+  fail "the active comparison without README.md must fail the layout guard"
 fi
-printf '%s\n' "$out" | grep -q 'missing step routing: .*02_models_tenv/README.md' \
-  || fail "the missing routing file must be named in the failure"
-mv "$tmp/README.off" "$fixture_root/02_models_tenv/README.md"
+printf '%s\n' "$out" | grep -q 'missing step routing: .*02_models_tenv-5k/README.md' \
+  || fail "the missing successor routing file must be named in the failure"
+mv "$tmp/successor-README.off" "$fixture_root/02_models_tenv-5k/README.md"
 printf 'notes\n' >"$fixture_root/notes.md"
 if out="$(run_root "$fixture_root" "$tmp/list_clean" 2>&1)"; then
   fail "a stray regular file at the Stage 2 root must fail the layout guard"

@@ -1,0 +1,49 @@
+scenario,method,metric,value,n_parents,n_total,n_undefined,zero,applicable,status,n_constant_truth,n_constant_prediction,constant_truth_ids,reason,method_identity
+cold-drug,MLP_Morgan,pcc,0.21301886514296162,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+cold-drug,MLP_Morgan,spearman,0.28074605853755025,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+cold-drug,MLP_Morgan,rmse,0.20727370449122767,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+cold-drug,MLP_Morgan,r2,-2.9396152909912794,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+cold-drug,Mean,pcc,0.2791527133894067,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+cold-drug,Mean,spearman,0.3170493228146651,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+cold-drug,Mean,rmse,0.1760279974400528,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+cold-drug,Mean,r2,-2.1724823374721467,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+cold-drug,Mean_cell,pcc,0.2791527133894067,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+cold-drug,Mean_cell,spearman,0.3170493228146651,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+cold-drug,Mean_cell,rmse,0.1760279974400528,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+cold-drug,Mean_cell,r2,-2.1724823374721467,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+cold-drug,PRnet,pcc,0.14079980323551958,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+cold-drug,PRnet,spearman,0.17561835217353977,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+cold-drug,PRnet,rmse,0.3114046679696542,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+cold-drug,PRnet,r2,-4.335212549864437,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+cold-drug,TranSiGen,pcc,0.3247021331041785,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+cold-drug,TranSiGen,spearman,0.37544654191704124,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+cold-drug,TranSiGen,rmse,0.18043377020096407,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+cold-drug,TranSiGen,r2,-0.7908526375231525,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+warm-start,MLP_Morgan,pcc,0.5312137905558957,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+warm-start,MLP_Morgan,spearman,0.5305273332461704,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+warm-start,MLP_Morgan,rmse,0.12487794920486443,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+warm-start,MLP_Morgan,r2,-0.005639645132219333,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,mlp-morgan-project-f32-lr1e4-v1
+warm-start,Mean,pcc,0.2822498875731912,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+warm-start,Mean,spearman,0.3201235391552595,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+warm-start,Mean,rmse,0.17550700981583367,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+warm-start,Mean,r2,-2.1692523758873725,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean
+warm-start,Mean_cell,pcc,0.2822498875731912,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+warm-start,Mean_cell,spearman,0.3201235391552595,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+warm-start,Mean_cell,rmse,0.17550700981583367,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+warm-start,Mean_cell,r2,-2.1692523758873725,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_cell
+warm-start,Mean_drug,pcc,0.9706337315778081,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_drug
+warm-start,Mean_drug,spearman,0.9656127662040946,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_drug
+warm-start,Mean_drug,rmse,0.026505751879043478,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_drug
+warm-start,Mean_drug,r2,0.9168684718175097,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,deterministic-Mean_drug
+warm-start,PRnet,pcc,0.16691985705889748,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+warm-start,PRnet,spearman,0.18518912265001616,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+warm-start,PRnet,rmse,0.33563164184234207,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+warm-start,PRnet,r2,-5.040304215695511,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,prnet-native-f32-lr1e4-v1
+warm-start,TranSiGen,pcc,0.6397273914919547,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+warm-start,TranSiGen,spearman,0.5678619899590504,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+warm-start,TranSiGen,rmse,0.11905418864423958,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+warm-start,TranSiGen,r2,0.24374797033349307,459,459,0,0.0,True,complete,0,0,,truth constant: correlations/R2 undefined; error metrics retained,transigen-native-f32-lr1e4-v1
+cold-drug,Mean_drug,pcc,,0,459,459,0.0,False,not-applicable,0,0,,unseen test drug; no fallback,deterministic-Mean_drug
+cold-drug,Mean_drug,spearman,,0,459,459,0.0,False,not-applicable,0,0,,unseen test drug; no fallback,deterministic-Mean_drug
+cold-drug,Mean_drug,rmse,,0,459,459,0.0,False,not-applicable,0,0,,unseen test drug; no fallback,deterministic-Mean_drug
+cold-drug,Mean_drug,r2,,0,459,459,0.0,False,not-applicable,0,0,,unseen test drug; no fallback,deterministic-Mean_drug

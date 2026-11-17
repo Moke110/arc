@@ -519,9 +519,9 @@ The rebuilt comparison applies a further declared fold-change threshold; see
 **Cold-drug fold**:
 One Stage 2 benchmark split whose test drugs are absent from its training and
 validation sets at every dose and repeat; each drug is tested exactly once
-across the outer folds. The historical benchmark used five folds; the redesigned
-tenv comparison freezes three and indexes them, so an experiment takes the first
-`n` folds from the accepted index table.
+across the complete outer partition. A complete cold-drug comparison covers every
+eligible drug exactly once in its test folds; selecting a subset of another
+partition does not constitute a complete comparison.
 _Avoid_: cold-start split, holdout (unqualified)
 
 **CM-unseen drug (CM 未见药物)**:
@@ -610,12 +610,16 @@ _Avoid_: experiment, trial
 
 ### Stage 2 tenv model comparison
 
-**Tenv comparison step** (`02_models_tenv`):
-The active Stage 2 step that trains perturbation predictors on `tenv` and reports their held-out performance. It owns entrants, predictions and figures; the shared metrics, palette and fold/seed index tables stay in `01_bases`.
-_Avoid_: benchmark step (when meaning the rebuilt comparison)
+**Tenv comparison step** (`02_models_tenv-5k`):
+The active Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result. It owns the shared comparison splits, entrants, predictions and figures; the released inputs and palette stay in `01_bases`.
+_Avoid_: benchmark step (when meaning this comparison)
 
 **Direct metric**:
-`PCC`, `Spearman`, `RMSE` or `R²` computed on one test well's predicted Δ against that well's observed Δ over the full gene axis. A run reports the equal-weight mean over its fold's test wells; no group aggregation precedes it. It measures per-sample fidelity, not group-level accuracy.
+`PCC`, `Spearman`, `RMSE` or `R²` comparing predicted and observed Δ across the gene axis. The current primary unit is a drug parent after out-of-fold repeated-well aggregation; per-well metrics are auxiliary.
+
+### Historical Stage 2 reliability vocabulary
+
+The following terms describe the retired ADR 0064 comparison and its sealed records.
 
 **@d reliability family** (reliability family):
 `Precision@d`, `Recall@d`, `F1@d`, `Spearman@d` and `Reliability@d`, computed per drug–dose group from that group's mean predicted Δ against its measured DESeq2 contrast. It replaces the retired `k`-parameterized indirect family. The `@d` suffix is the family marker: every member is parameterized by the predicted-effect threshold `d`, not by a declared table size.
@@ -658,7 +662,7 @@ The reference entry that predicts, for every gene of a group, the mean Δ of tha
 _Avoid_: delta_mean (retired name), no_change (withdrawn)
 
 **Fold/seed index table**:
-`01_bases/output/fold_n_seed/folds.csv` or `seeds.csv`. Each table orders frozen identities by row, and an experiment takes the first `n` rows for the `n` folds or `n` seeds it declares, so every study consumes the same identities in the same order.
+`01_bases/output/fold_n_seed/folds.csv` or `seeds.csv`. Each table orders frozen identities for studies that explicitly consume that table. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
 
 **Stage palette**:
 The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue families (gray, blue, green, orange, purple, magenta) crossed with nine lightness-and-saturation shades. A color means the same thing in every Stage 2 figure.

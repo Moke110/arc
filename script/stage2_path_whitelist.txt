@@ -14,10 +14,3 @@
 # historical record quoted verbatim. A live document or live path literal that
 # merely needs updating is a path to FIX, not to whitelist.
 #
-
-# ADR 0063 keeps the retired `delta_mean` reference under the name `Mean` with
-# its definition unchanged.  `mean_reference.py` quotes the retired
-# implementation as frozen provenance evidence (docstring + recorded identity),
-# so these two literals are historical evidence, not live paths.
-stage2/02_models_tenv/execution/script/mean_reference.py:stage2/03_modes_tenv/execution/script/baselines\.py
-stage2/02_models_tenv/execution/script/mean_reference.py:stage2/03_modes_tenv/execution/script/baselines\.py@1543781

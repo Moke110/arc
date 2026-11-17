@@ -1,1 +1,0 @@
-error: prediction coverage mismatch in /home/chang/arc/.worktrees/tenv-163/stage2/02_models_tenv/output/bounded/runs/prnet/fold_0/seed_17: 1337 fold case(s) missing, 0 foreign case(s)

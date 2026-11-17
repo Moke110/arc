@@ -1,0 +1,18 @@
+test_drug_aggregation_precedes_correlation_and_constants_stay_visible (test_protocol.ProtocolTests.test_drug_aggregation_precedes_correlation_and_constants_stay_visible) ... ok
+test_mean_counts_shared_original_control_once_and_ignores_test_labels (test_protocol.ProtocolTests.test_mean_counts_shared_original_control_once_and_ignores_test_labels) ... ok
+test_prediction_identity_order_is_checked_before_scoring (test_protocol.ProtocolTests.test_prediction_identity_order_is_checked_before_scoring) ... ERROR
+test_splits_cover_all_outer_wells_once_and_obey_scenario (test_protocol.ProtocolTests.test_splits_cover_all_outer_wells_once_and_obey_scenario) ... ok
+
+======================================================================
+ERROR: test_prediction_identity_order_is_checked_before_scoring (test_protocol.ProtocolTests.test_prediction_identity_order_is_checked_before_scoring)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/arc-tenv5k-227/stage2/02_models_tenv-5k/execution/tests/test_protocol.py", line 54, in test_prediction_identity_order_is_checked_before_scoring
+    score_prediction(obs, x, x, np.zeros_like(x), prediction_ids=['well-b', 'well-a'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: score_prediction() got an unexpected keyword argument 'prediction_ids'. Did you mean 'prediction'?
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.012s
+
+FAILED (errors=1)

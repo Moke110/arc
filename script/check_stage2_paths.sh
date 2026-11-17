@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # check_stage2_paths.sh — assert stage2/ executable code has no retired step paths.
 #
-# Stage 2's active roots are 01_bases (shared foundation) and 02_models_tenv
-# (first model-comparison step, ADR 0063).  Scan tracked active executable code
+# Stage 2's active roots are 01_bases (shared foundation) and 02_models_tenv-5k
+# (single-dose native comparison, ADR 0074).  Scan tracked active executable code
 # for references to any other Stage 2 root.
 # Historical payload literals require exact file/literal whitelist entries.
 # Every invocation rejects any other immediate on-disk Stage 2 entry (directories
@@ -96,8 +96,8 @@ main() {
   # The retired step roots, then the retired bundle name handled per line.
   local step_pattern='stage2/[[:alnum:]_./+@-]+'
 
-  # Active Stage 2 roots, in the order the routing document lists them.
-  local active_roots=(01_bases 02_models_tenv)
+  # Accepted foundation and single-dose comparison (ADR 0074).
+  local active_roots=(01_bases 02_models_tenv-5k)
 
   # Layout guard: fail closed on retired step entries.  Only the active step
   # directories and the Stage 2 routing document stage2/AGENTS.md (present at the
