@@ -113,3 +113,11 @@ This separates dose information from additional training samples, avoids averagi
 away dose response, and prevents method selection from consuming outer test data.
 Three measured dose levels constrain the scope of interpolation/extrapolation
 claims. Repository plans and implementation details remain in the repository.
+
+## Execution authorization amendment — 2026-11-17
+
+In a later session the user invoked `implement-spec` with “部署stage2 03”,
+authorizing implementation and the complete147-fit workload through acceptance
+and deployment. This supersedes the publication-only execution boundary above;
+the scientific protocol remains unchanged. Formal acceptance and resulting model
+selection are recorded in the step README and acceptance log when complete.

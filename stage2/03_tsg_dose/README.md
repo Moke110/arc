@@ -104,3 +104,21 @@ inputs and changed payloads. This API does not establish a release by itself:
 formal matrix, downstream replay, figures and candidate-first acceptance remain
 required before publication. The checkpoint role is internal-validation-selected,
 with no new independent test result.
+
+After all147 origins finish, run `execution/publish_release.py publish` under
+`execution/capped.sh /usr/bin/time -v`, supplying `--inputs`, `--matrix`,
+`--candidate` (a new empty release path), `--source`, `--destination` (the stable
+`output/model`), and `--log`. Pass `--root` as the canonical checkout containing
+the protected upstream products; `--figures` controls the report destination.
+This command cannot train. It reruns full scientific acceptance, assembles only
+the final winner's three restored checkpoints, and compares every final validation
+row against the standalone reader in a fresh process before installing anything.
+The installation receipt retains origin and choice audits and preservation hashes.
+
+`figure/script/render.py --data figure/data --output figure` reads CSV only.
+Publication first renders in an isolated directory containing just this script
+and the CSVs. The six panels cover primary paired inference, primary per-dose
+results, held-dose characterization, final validation, all147 learning curves
+and resources. Held-dose tables retain primary-fold/final choice references;
+held-dose outcomes do not select a method. A failed release gate leaves the prior
+accepted model available. No formal release is asserted by these instructions.

@@ -5,6 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 import hashlib
+import csv
+import sys
 from unittest.mock import patch
 
 STEP=Path(__file__).resolve().parents[2]
@@ -32,6 +34,56 @@ def complete_matrix(root):
 
 
 class PublicationTests(unittest.TestCase):
+    def test_export_keeps_curve_coordinates_and_auxiliary_selection_references(self):
+        module=publication()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);matrix=root/'matrix';matrix.mkdir()
+            for scenario in ['cold-drug','held-dose','final']:
+                report=matrix/'reports'/scenario;report.mkdir(parents=True)
+                (report/'learning_curves.csv').write_text('scenario,method,fold,seed,epoch,train_loss,validation_mse\n'+scenario+',film,0,17,1,2.5,1.25\n')
+                (report/'fit_resources.csv').write_text('scenario,method,fold,seed,parameter_count,elapsed_seconds,peak_rss_kib\n'+scenario+',film,0,17,123,4.5,1000\n')
+                if scenario!='final':
+                    (report/'summary.csv').write_text('method,pcc\nfilm,0.4\n')
+                    (report/'per_dose.csv').write_text('method,dose_um,pcc\nfilm,1.0,0.3\n')
+                for fold in range(1 if scenario=='final' else 3):
+                    selection=matrix/'selections'/scenario/str(fold);selection.mkdir(parents=True)
+                    (selection/'receipt.json').write_text(json.dumps(dict(method='film' if scenario=='final' else 'scaling')))
+                    (selection/'validation_table.csv').write_text('method,seed,pcc\nfilm,17,0.5\n')
+            (matrix/'reports/cold-drug/primary_paired.csv').write_text('metric,estimate,low,high\npcc,0.1,-0.1,0.2\n')
+            (matrix/'reports/cold-drug/descriptive_paired.csv').write_text('metric,estimate,low,high\npcc,0.1,-0.1,0.2\n')
+            destination=root/'data';module.export_plot_data(matrix,destination)
+            rows=module.csv_rows(destination/'learning_curves_all.csv')
+            self.assertEqual(len(rows),3);self.assertEqual(rows[2]['validation_mse'],'1.25')
+            held=module.csv_rows(destination/'held_dose_values.csv')[0]
+            self.assertEqual(held['final_selected_method'],'film');self.assertEqual(held['primary_fold_2_selected_method'],'scaling')
+            self.assertEqual(held['evaluation'],'interpolation')
+            rendered=module.render_isolated(destination,root/'figures',sys.executable)
+            self.assertEqual(len(rendered),6)
+            self.assertTrue(all((root/'figures'/name).read_bytes().startswith(b'\x89PNG') for name in rendered))
+
+    def test_assembly_publishes_only_selected_three_checkpoint_origins(self):
+        module=publication()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);matrix=root/'matrix';matrix.mkdir();complete_matrix(matrix)
+            inputs=root/'inputs';inputs.mkdir()
+            (inputs/'manifest.json').write_text('{}');input_digest=module.digest(inputs/'manifest.json')
+            (inputs/'config.json').write_text(json.dumps(dict(axis_size=5000)))
+            (inputs/'genes.csv').write_text('gene_index\nG1\n')
+            selection=matrix/'selections/final/0';selection.mkdir(parents=True)
+            (selection/'receipt.json').write_text(json.dumps(dict(method='film',input_manifest_sha256=input_digest)))
+            for seed in [17,42,2026]:
+                path=matrix/f'runs/final/film/0/{seed}'
+                (path/'checkpoint.pt').write_bytes(f'checkpoint-{seed}'.encode())
+                (path/'environment.json').write_text(json.dumps(dict(device='cuda')))
+                (path/'terminal.json').write_text(json.dumps(dict(status='validation-complete',parameter_count=123)))
+                (path/'manifest.json').write_text(json.dumps(dict(schema='tsg-dose-fit-v1',outputs={p.name:module.digest(p) for p in path.iterdir() if p.name!='manifest.json'})))
+            candidate=root/'release';receipt=module.assemble(matrix,inputs,candidate)
+            self.assertEqual(receipt['method'],'film')
+            self.assertEqual(set(receipt['outputs']),{'genes.csv','input_contract.json','selection_receipt.json','checkpoints/17.pt','checkpoints/42.pt','checkpoints/2026.pt'})
+            self.assertEqual((candidate/'checkpoints/42.pt').read_bytes(),b'checkpoint-42')
+            self.assertEqual(module.read(candidate/'input_contract.json')['input_manifest_sha256'],input_digest)
+            with self.assertRaisesRegex(ValueError,'empty'):module.assemble(matrix,inputs,candidate)
+
     def test_incomplete_matrix_cannot_become_a_release_candidate(self):
         module=publication()
         with tempfile.TemporaryDirectory() as tmp:
