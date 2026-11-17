@@ -610,6 +610,15 @@ _Avoid_: experiment, trial
 
 ### Stage 2 tenv model comparison
 
+**Tenv dose-input comparison**:
+The Stage 2 comparison of ways to supply continuous dose to TranSiGen across
+the measured tenv doses, with unseen-drug prediction as its primary objective
+and held-dose prediction as an auxiliary objective.
+
+**Parent–dose response**:
+The mean transcriptional response of repeated treated wells for one drug
+parent at one measured dose, retaining that dose as a distinct evaluation unit.
+
 **Tenv comparison step** (`02_models_tenv-5k`):
 The active Stage 2 comparison of perturbation predictors on single-dose `tenv`, with parent-level held-out Δ performance as the primary result. It owns the shared comparison splits, entrants, predictions and figures; the released inputs and palette stay in `01_bases`.
 _Avoid_: benchmark step (when meaning this comparison)
