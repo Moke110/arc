@@ -67,8 +67,17 @@ def verify_run(root,run,input_digest,device=None):
 
 
 def frozen_plan(args):
-    code={str(p.relative_to(STEP)):digest(p) for directory in (STEP/'execution',STEP/'output/api')
-          for p in sorted(directory.rglob('*.py')) if 'tests' not in p.parts and '__pycache__' not in p.parts}
+    # Execution owns direct entrypoints/helpers; descendants hold tests and
+    # candidate/checkpoint provenance. Public API packages are recursive source.
+    execution=STEP/'execution';api=STEP/'output/api'
+    candidate=Path(getattr(args,'candidate',execution/'checkpoints/matrix-231')).resolve()
+    if (execution.resolve().is_relative_to(candidate) or api.resolve().is_relative_to(candidate)
+            or candidate.is_relative_to(api.resolve())
+            or candidate in {p.resolve() for p in execution.glob('*.py') if p.is_file()}):
+        raise ValueError('candidate overlaps runtime source')
+    sources=list(execution.glob('*.py'))+list(api.rglob('*.py'))
+    code={str(p.relative_to(STEP)):digest(p) for p in sorted(sources)
+          if p.is_file() and 'tests' not in p.relative_to(STEP).parts and '__pycache__' not in p.relative_to(STEP).parts}
     methods={}
     for adapter in METHODS:
         names=['execution/'+adapter+'.py']+['output/api/tenv5k/'+name+'.py' for name in
