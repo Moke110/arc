@@ -192,3 +192,10 @@ fresh replay child via `--registration`, persisted in configuration, checkpoint
 and manifest, and checked on record/resume/acceptance. A historical complete run
 cannot become fresh evidence even in a previously registered slot. Retries use a
 new nonce and retain the former registration and interrupted artifacts.
+
+Runtime identity scans owned direct `execution/*.py` entrypoints/helpers and
+recursive `output/api` Python source. Nested execution candidates/checkpoints and
+their archived runtime provenance are products, so imports cannot change their
+own frozen code identity. A candidate may use another execution subdirectory;
+source-root ancestors, direct execution source files and locations within the
+public API source tree are rejected to keep runtime code in the identity.
