@@ -1,0 +1,15 @@
+{
+  "checkpoints": [
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/final/no-dose/0/17/checkpoint.pt",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/final/no-dose/0/42/checkpoint.pt",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/final/no-dose/0/2026/checkpoint.pt"
+  ],
+  "method": "no-dose",
+  "receipt_sha256": "c78b1d11cec18a9ce10b4b098cf7df4edf33d3ccc4145f21a2667b4b99a727f3",
+  "role": "internal-validation-selected restored checkpoints; no new independent test",
+  "seeds": [
+    17,
+    42,
+    2026
+  ]
+}

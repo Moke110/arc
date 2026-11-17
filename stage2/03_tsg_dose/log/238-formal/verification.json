@@ -1,0 +1,39 @@
+{
+  "canonical_candidate": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1",
+  "checkpoint_role": "internal-validation-selected restored checkpoints; no new independent test",
+  "complete_origins": 21,
+  "date": "2026-11-17",
+  "driver_exit": 0,
+  "formal_fits": 21,
+  "fresh_validation_replays": 21,
+  "frozen_execution_files": 11,
+  "frozen_identity_unchanged": true,
+  "independent_test_score": false,
+  "interrupted_attempts": 0,
+  "large_payloads": "Canonical ignored candidate retained; no checkpoints/prediction matrices copied to git",
+  "outer_test_accesses": 0,
+  "plan_sha256": "6c60d9284dcbc403bd36632acb998c85b8fd732f13a558f690f0c67549427b91",
+  "primary_and_held_evidence_unchanged": true,
+  "scenario": "final",
+  "scientific_failures": 0,
+  "selected_method": "no-dose",
+  "selected_parameter_count": 21583000,
+  "selected_seeds": [
+    17,
+    42,
+    2026
+  ],
+  "status": "Final21 candidate accepted; full147-fit release publication/downstream/figure acceptance still pending",
+  "ticket": 238,
+  "unique_attempt_nonces": 21,
+  "validation_mean_pcc": {
+    "film": 0.4081205480539497,
+    "input-embedding": 0.3959496349955813,
+    "input-numeric": 0.4093586205562507,
+    "latent-embedding": 0.4152350723866099,
+    "latent-numeric": 0.40223333209495904,
+    "no-dose": 0.42597541763209545,
+    "scaling": 0.41717701261048173
+  },
+  "verification": "Frozen driver accept verified full validation artifact/checkpoint bindings and exact fresh-process replay. Independent lightweight audit rechecks complete identities, unique attempts, terminal/fresh-process proofs, manifest/receipt/config bindings, finite saved scores, validation-only method choice, no outer test, prior receipts unchanged and all11 frozen code hashes."
+}
