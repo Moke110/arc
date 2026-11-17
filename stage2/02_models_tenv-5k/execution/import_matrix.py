@@ -13,12 +13,18 @@ import tempfile
 FROZEN_RUNTIME = '551a3c9'
 FROZEN_COMMIT = '551a3c91c217c83440bae8e5b3b3ca9502a5de10'
 ORIGINAL_PLAN_SHA256 = '9b747f83868e305361897dadd76e50afa9f339a87653a3f5a7abd8d98d545858'
-# Approved float64 amendment (410cb33): PRnet has no numerical CONFIG keys
-# or configure_backend; serialize_prediction retains its finite float32 values.
-# Reviewer must assess this exact pair; a new learner edit needs a new review.
-APPROVED_LEARNER_TRANSITIONS = {
-    ('a22f62f3163a670800b78f677a360c64b1e62647be29ce54d6fc6aae4ef92bdd',
-     'c264af276d5c398d3eefba081bfac1b39de9febcb4559a6a70f881b578b2e3bf'),
+# Exact reviewed metadata-only execution plumbing. The PRnet adapter, inputs,
+# stopping, random draws and numerical path stay unchanged. No other code delta
+# can be authorized by free-form audit text; new deltas require a new review.
+APPROVED_CODE_TRANSITIONS = {
+    'output/api/tenv5k/learner.py': (
+        'a22f62f3163a670800b78f677a360c64b1e62647be29ce54d6fc6aae4ef92bdd',
+        '2ba24ff84112b50bce66e0d78d6241b77ee6cab18380273b23d23ec2e5c6070b'),
+    'execution/prnet.py': (
+        '25489570955d3310176fc9afea0eb7d9678591762e475e6af39ed652d7d332db',
+        '64a430a36416ff5951eb8602c4bcabf8bf067bbb3b9b5ae9ee5fee394a1cef4c'),
+    'output/api/tenv5k/attempt_identity.py': (
+        None, '58d13fa2b0426941bc29c4772c64e36eb9bb965a2bf26d95b31d872a1bf20641'),
 }
 STEP_RELATIVE = Path('stage2/02_models_tenv-5k')
 
@@ -44,17 +50,17 @@ def validate_compatibility(original, target, audit, source_plan_sha256):
         raise ValueError('PRnet scientific identity changed')
     differences = {name for name, value in method['code_sha256'].items()
                    if original['code_sha256'].get(name) != value}
-    if differences - {'output/api/tenv5k/learner.py'}:
+    if differences - set(APPROVED_CODE_TRANSITIONS):
         raise ValueError('PRnet implementation/input identity changed')
-    learner='output/api/tenv5k/learner.py'
-    if learner in differences and (original['code_sha256'][learner],method['code_sha256'][learner]) not in APPROVED_LEARNER_TRANSITIONS:
-        raise ValueError('unreviewed shared learner transition')
+    for name in differences:
+        if (original['code_sha256'].get(name),method['code_sha256'][name]) != APPROVED_CODE_TRANSITIONS[name]:
+            raise ValueError('unreviewed metadata dependency transition: '+name)
     if audit.get('source_plan_sha256') != source_plan_sha256 or audit.get('target_method') != method:
         raise ValueError('compatibility audit is not bound to these plans')
     if audit.get('source_runtime') != FROZEN_RUNTIME or not audit.get('reviewed_by'):
         raise ValueError('explicit reviewed compatibility audit required')
     if set(audit.get('changed_code', {})) != differences or any(not audit['changed_code'][n].strip() for n in differences):
-        raise ValueError('every changed learner dependency requires equivalence rationale')
+        raise ValueError('every changed method dependency requires equivalence rationale')
 
 
 def verify_runtime(runtime, original, digest):
@@ -136,7 +142,7 @@ def import_original(args, run, matrix):
     destination = matrix.run_path(args.candidate,run)
     if destination.exists():
         raise ValueError('import destination already exists')
-    source_identity = matrix._tree_identity(source)
+    source_identity = matrix.tree_identity(source)
     destination.parent.mkdir(parents=True,exist_ok=True)
     temporary = Path(tempfile.mkdtemp(prefix='.import-',dir=destination.parent))
     try:
@@ -150,8 +156,8 @@ def import_original(args, run, matrix):
             copied = provenance/'runtime'/name
             copied.parent.mkdir(parents=True,exist_ok=True)
             shutil.copy2(runtime/STEP_RELATIVE/name,copied)
-        command = [str(matrix.STEP/'execution/capped.sh'),'/usr/bin/time','-v','-o',str(provenance/'replay.time'),args.python,
-                   str(matrix.STEP/'execution/import_replay.py'),'--runtime',str(runtime/STEP_RELATIVE/'output/api'),
+        command = [str(matrix.step/'execution/capped.sh'),'/usr/bin/time','-v','-o',str(provenance/'replay.time'),args.python,
+                   str(matrix.step/'execution/import_replay.py'),'--runtime',str(runtime/STEP_RELATIVE/'output/api'),
                    '--inputs',str(args.inputs),'--run',str(source),'--source',str(native_source)]
         result = subprocess.run(command,text=True,capture_output=True)
         (provenance/'replay.stderr').write_text(result.stderr)
@@ -159,9 +165,9 @@ def import_original(args, run, matrix):
             raise ValueError('frozen import replay failed: '+result.stderr[-4000:])
         replay = json.loads(result.stdout)
         (provenance/'fresh-process-replay.json').write_text(json.dumps(replay,indent=2)+'\n')
-        if matrix._tree_identity(source) != source_identity:
+        if matrix.tree_identity(source) != source_identity:
             raise ValueError('original source evidence changed during import')
-        artifacts = matrix._tree_identity(temporary)
+        artifacts = matrix.tree_identity(temporary)
         receipt = dict(schema='tenv5k-import-v1',run=run,origin='imported; not retrained',
             original_run_path=str(source),original_candidate=str(source_root),source_runtime_path=str(runtime),
             source_runtime_commit=commit,source_plan_sha256=matrix.digest(original_path),

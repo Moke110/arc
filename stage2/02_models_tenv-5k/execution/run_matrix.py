@@ -4,6 +4,7 @@ import ast
 import hashlib
 import json
 import os
+import secrets
 from pathlib import Path
 import shutil
 import subprocess
@@ -71,7 +72,7 @@ def frozen_plan(args):
     methods={}
     for adapter in METHODS:
         names=['execution/'+adapter+'.py']+['output/api/tenv5k/'+name+'.py' for name in
-            ('model_'+adapter,'learner','learning','inputs','protocol','native_import')]
+            ('model_'+adapter,'learner','learning','inputs','protocol','native_import','attempt_identity')]
         identity={'prnet':'prnet-native-f32-v1','transigen':'transigen-native-f32-v1','mlp':'mlp-morgan-project-v1'}[adapter]
         tree=ast.parse((STEP/'output/api/tenv5k'/('model_'+adapter+'.py')).read_text())
         for node in tree.body:
@@ -91,8 +92,13 @@ def import_run(args,run):
     if run not in plan() or run["adapter"]!="prnet" or run["scenario"]!="cold-drug":
         raise ValueError("only the 15 registered cold PRnet identities may be imported")
     from import_matrix import import_original
+    return import_original(args,run,import_dependencies())
+
+
+def import_dependencies():
     from types import SimpleNamespace
-    return import_original(args,run,SimpleNamespace(**globals()))
+    return SimpleNamespace(plan=plan,digest=digest,verify_run=verify_run,frozen_plan=frozen_plan,
+                           run_path=run_path,tree_identity=_tree_identity,step=STEP)
 
 
 def source_paths(args):
@@ -103,9 +109,18 @@ def registration_path(candidate,run):
     return Path(candidate)/"registrations"/run["scenario"]/run["adapter"]/str(run["fold"])/(str(run["seed"])+".json")
 
 
-def execution_registration(run,frozen):
-    return dict(run=run,method=frozen["methods"][run["adapter"]],shared=frozen["shared"],
+def execution_registration(run,frozen,attempt_nonce=None):
+    result=dict(run=run,method=frozen["methods"][run["adapter"]],shared=frozen["shared"],
                 runtime_code_sha256=frozen["code_sha256"],device=frozen["device"],sources=frozen["sources"])
+    if attempt_nonce is not None:result["attempt_nonce"]=attempt_nonce
+    return result
+
+
+def verify_registration(registration,run,frozen):
+    from tenv5k.attempt_identity import attempt_binding
+    if not isinstance(registration,dict) or registration!=execution_registration(run,frozen,registration.get("attempt_nonce")):
+        raise ValueError("new training lacks preregistered execution identity")
+    return attempt_binding(registration)
 
 
 def record_execution(root,run,frozen,registration=None):
@@ -116,7 +131,9 @@ def record_execution(root,run,frozen,registration=None):
     method=frozen['methods'][run['adapter']]
     if run['adapter']=='transigen' and config.get('method_identity','transigen-native-f32-v1')!=method['scientific_identity']:
         raise ValueError('trained numerical method identity changed')
-    if registration!=execution_registration(run,frozen):raise ValueError('new training lacks preregistered execution identity')
+    verify_registration(registration,run,frozen)
+    from tenv5k.attempt_identity import verify_artifact_binding
+    verify_artifact_binding(root,registration)
     receipt=dict(schema='tenv5k-execution-v1',origin='trained',run=run,method=method,shared=frozen['shared'],
                  registration=registration,
                  manifest_sha256=digest(root/'manifest.json'))
@@ -127,11 +144,14 @@ def verify_execution(root,run,frozen):
     root=Path(root)
     if (root/'import-receipt.json').exists():
         from import_matrix import verify_import
-        from types import SimpleNamespace
-        return verify_import(root,run,frozen,SimpleNamespace(**globals()))
+        return verify_import(root,run,frozen,import_dependencies())
     receipt=json.loads((root/'execution-receipt.json').read_text())
+    registration=receipt.get('registration')
+    verify_registration(registration,run,frozen)
+    from tenv5k.attempt_identity import verify_artifact_binding
+    verify_artifact_binding(root,registration)
     expected=dict(schema='tenv5k-execution-v1',origin='trained',run=run,method=frozen['methods'][run['adapter']],
-                  shared=frozen['shared'],registration=execution_registration(run,frozen),manifest_sha256=digest(root/'manifest.json'))
+                  shared=frozen['shared'],registration=registration,manifest_sha256=digest(root/'manifest.json'))
     if receipt!=expected:raise ValueError('trained execution identity changed')
     config=verify_run(root,run,frozen['input_manifest_sha256'],frozen['device'])
     if run['adapter']=='transigen' and config.get('method_identity','transigen-native-f32-v1')!=receipt['method']['scientific_identity']:
@@ -139,12 +159,17 @@ def verify_execution(root,run,frozen):
     return receipt
 
 
-def recover_existing(args,run,input_digest,replay_only):
+def recover_existing(args,run,input_digest,replay_only,registration=None):
     """Resume exact identities; retain interrupted bytes before a clean retry."""
     target=run_path(args.candidate,run)
     terminal_path=target/'terminal.json'
     try:terminal=json.loads(terminal_path.read_text()) if terminal_path.exists() else {}
     except json.JSONDecodeError:terminal={}
+    slot=registration_path(args.candidate,run)
+    if registration is None and slot.exists():registration=json.loads(slot.read_text())
+    if registration is not None and terminal.get('status') in ('complete','trained-awaiting-fresh-process-replay'):
+        from tenv5k.attempt_identity import verify_artifact_binding
+        verify_artifact_binding(target,registration,require_manifest=terminal.get('status')=='complete')
     if terminal.get('status')=='complete':
         verify_run(target,run,input_digest,args.device)
         return 'complete'
@@ -162,6 +187,7 @@ def recover_existing(args,run,input_digest,replay_only):
     if terminal.get('status')=='trained-awaiting-fresh-process-replay':
         if config is None:raise ValueError('trained run lacks registered config')
         attempt.mkdir()
+        if registration is not None:(attempt/'execution-registration.json').write_text(json.dumps(registration,indent=2)+'\n')
         shutil.copy2(terminal_path,attempt/'terminal.before-replay.json')
         (attempt/'recovery.json').write_text(json.dumps(dict(action='replay-only',run=run,input_manifest_sha256=input_digest),indent=2)+'\n')
         try:
@@ -176,6 +202,7 @@ def recover_existing(args,run,input_digest,replay_only):
     # A complete-but-corrupt run never reaches this branch; partial/failed runs
     # restart under the identical frozen plan and keep their entire former tree.
     os.rename(target,attempt)
+    if registration is not None:(attempt/'execution-registration.json').write_text(json.dumps(registration,indent=2)+'\n')
     (attempt/'recovery.json').write_text(json.dumps(dict(action='restart-same-identity',run=run,input_manifest_sha256=input_digest),indent=2)+'\n')
     return 'train'
 
@@ -200,25 +227,31 @@ def execute(args):
                 verify_execution(target,run,frozen)
                 continue
             registration=json.loads(registration_path(args.candidate,run).read_text())
-            if registration!=execution_registration(run,frozen):raise ValueError('unregistered existing run cannot become new training')
+            verify_registration(registration,run,frozen)
             replay_command=[args.python,str(STEP/'execution'/(run['adapter']+'.py')),
                             '--inputs',str(args.inputs),'--candidate',str(target),
-                            '--source',str(source_paths(args)[run['adapter']]),'--replay-only']
+                            '--source',str(source_paths(args)[run['adapter']]),'--replay-only',
+                            '--registration',str(registration_path(args.candidate,run))]
             action=recover_existing(args,run,frozen['input_manifest_sha256'],
-                                    lambda:subprocess.run([str(STEP/'execution/capped.sh'),*replay_command],check=True))
+                                    lambda:subprocess.run([str(STEP/'execution/capped.sh'),*replay_command],check=True),registration)
             if action=='complete':
                 record_execution(target,run,frozen,registration)
                 continue
         target.parent.mkdir(parents=True,exist_ok=True)
-        registration=execution_registration(run,frozen)
+        registration=execution_registration(run,frozen,secrets.token_hex(32))
         registration_file=registration_path(args.candidate,run)
         registration_file.parent.mkdir(parents=True,exist_ok=True)
+        if registration_file.exists():
+            history=registration_file.parent/'history'/str(run['seed'])/(digest(registration_file)+'.json')
+            history.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(registration_file,history)
         registration_file.write_text(json.dumps(registration,indent=2)+'\n')
         timing=args.candidate/'resources'/('/'.join(map(str,run.values())).replace('/','-')+'.time')
         timing.parent.mkdir(exist_ok=True)
         command=[str(STEP/'execution/capped.sh'),'/usr/bin/time','-v','-o',str(timing),args.python,str(STEP/'execution'/ (run['adapter']+'.py')),
                  '--inputs',str(args.inputs),'--candidate',str(target),'--source',str(source_paths(args)[run['adapter']]),
-                 '--scenario',run['scenario'],'--fold',str(run['fold']),'--seed',str(run['seed']),'--device',args.device]
+                 '--scenario',run['scenario'],'--fold',str(run['fold']),'--seed',str(run['seed']),'--device',args.device,
+                 '--registration',str(registration_file)]
         print(json.dumps(dict(start=run,command=command)),flush=True)
         with timing.with_suffix('.stdout').open('w') as stdout, timing.with_suffix('.stderr').open('w') as stderr:
             subprocess.run(command,check=True,stdout=stdout,stderr=stderr)

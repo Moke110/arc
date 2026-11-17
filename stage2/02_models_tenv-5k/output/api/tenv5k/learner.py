@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import torch
 from .inputs import Inputs, sha256
+from .attempt_identity import read_registration
 from .learning import EarlyStopping
 from .protocol import score_prediction
 
@@ -29,6 +30,8 @@ def replay(inputs, checkpoint, source, *, adapter, device=None):
     if saved['config']['native_source_sha256'] != native.SOURCE_DIGEST:
         raise ValueError('checkpoint source identity mismatch')
     config = saved['config']
+    if saved.get('execution_binding') != config.get('execution_binding'):
+        raise ValueError('checkpoint attempt registration mismatch')
     if config['adapter'] != adapter:
         raise ValueError('checkpoint adapter identity mismatch')
     for key in ('method_identity', 'compute_dtype', 'initialization_dtype', 'prediction_dtype', 'noise_dtype'):
@@ -65,7 +68,7 @@ def serialize_prediction(prediction, config):
 
 
 def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='cpu',
-          smoke_rows=None, max_epochs=1000):
+          smoke_rows=None, max_epochs=1000, registration=None):
     """Build an isolated candidate. Smoke identities cannot be formal runs."""
     native = load_adapter(adapter)
     candidate = Path(candidate)
@@ -96,6 +99,9 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
                   'validation_order': valid_rows.tolist(), 'test_order': test_rows.tolist(),
                   'singleton_train_batch': native.CONFIG.get('singleton_train_batch', 'merge into preceding batch (BatchNorm needs >=2)'),
                   'adaptations': native.CONFIG.get('adaptations', ['shared split/input readers', 'fixed-validation treated MSE early stopping'])}
+        binding = read_registration(registration, adapter=adapter, scenario=scenario, fold=fold, seed=seed, device=device)
+        if binding is not None:
+            config['execution_binding'] = binding
         if backend is not None:
             config['backend'] = backend
         (candidate / 'config.json').write_text(json.dumps(config, indent=2) + '\n')
@@ -117,7 +123,7 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
             history.append(dict(epoch=epoch, train_loss=loss_value, validation_mse=mse,
                                 best_mse=stopper.best, stale=stopper.stale, lr=optimizer.param_groups[0]['lr']))
             if improved:
-                torch.save(dict(state_dict=model.state_dict(), config=config, best_epoch=epoch,
+                torch.save(dict(state_dict=model.state_dict(), config=config, execution_binding=binding, best_epoch=epoch,
                                 validation_mse=mse, input_manifest_sha256=sha256(Path(inputs) / 'manifest.json')),
                            candidate / 'checkpoint.pt')
             if stopper.stopped: break
@@ -148,7 +154,7 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
         raise
 
 
-def accept_replay(inputs, candidate, source, *, adapter):
+def accept_replay(inputs, candidate, source, *, adapter, registration=None):
     """No training: exact recorded-environment replay before candidate completion."""
     candidate = Path(candidate)
     terminal = json.loads((candidate / 'terminal.json').read_text())
@@ -156,6 +162,12 @@ def accept_replay(inputs, candidate, source, *, adapter):
         raise ValueError('cannot accept failed candidate')
     config = json.loads((candidate / 'config.json').read_text())
     saved = torch.load(candidate / 'checkpoint.pt', map_location='cpu', weights_only=False)
+    binding = read_registration(registration, adapter=adapter, scenario=config['scenario'], fold=config['fold'],
+                                seed=config['seed'], device=config['device'])
+    if binding is not None and config.get('execution_binding') != binding:
+        raise ValueError('replay attempt registration mismatch')
+    if saved.get('execution_binding') != config.get('execution_binding'):
+        raise ValueError('checkpoint attempt registration mismatch')
     if config != saved['config']:
         raise ValueError('candidate/checkpoint configuration mismatch')
     environment = json.loads((candidate / 'environment.json').read_text())
@@ -169,5 +181,5 @@ def accept_replay(inputs, candidate, source, *, adapter):
     (candidate / 'terminal.json').write_text(json.dumps(terminal, indent=2) + '\n')
     outputs = {str(p.relative_to(candidate)): sha256(p) for p in sorted(candidate.iterdir()) if p.is_file() and p.name != 'manifest.json'}
     (candidate / 'manifest.json').write_text(json.dumps(dict(schema='tenv5k-learner-v1',
-        input_manifest_sha256=sha256(Path(inputs) / 'manifest.json'), outputs=outputs), indent=2) + '\n')
+        input_manifest_sha256=sha256(Path(inputs) / 'manifest.json'), execution_binding=config.get('execution_binding'), outputs=outputs), indent=2) + '\n')
     return terminal
