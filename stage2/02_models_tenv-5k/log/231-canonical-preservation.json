@@ -96,10 +96,10 @@
     {
       "source": "/tmp/arc-tenv5k-final-231/stage2/02_models_tenv-5k/execution/checkpoints/matrix-threefold-f32-lr1e4",
       "destination": "/home/chang/arc/stage2/02_models_tenv-5k/execution/checkpoints/matrix-threefold-f32-lr1e4",
-      "files": 836,
-      "file_bytes": 2324942306,
+      "files": 840,
+      "file_bytes": 2325763750,
       "relative_file_sha256": {
-        "acceptance.json": "c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992",
+        "acceptance.json": "432c04fbb6dcde5ed3c5b893f38da611ca05e4fb0ebc19e60b634f320b31ee62",
         "comparison/baseline_status.csv": "859daf94d5d768f84efa591e864604c31c285089c3fd00a6ecda476a1db2cc27",
         "comparison/constant_truth.csv": "d5900aa602d4c935dab068a9c3a3ee7a4d91c1d06e833db7660eca46df4a25e8",
         "comparison/learning_curve_values.csv": "69c2f526b662f28ddb326a615c6072ce02d1c9263fe06848ee06ce23cad8e661",
@@ -118,7 +118,11 @@
         "comparison-replay/per_parent_seed.csv": "172ff3fa806e20020461915a45a044406ed053335d922583903679ace7333608",
         "comparison-replay/per_well.csv": "fcebe2af4dc5815ef73c3e0f04b51ca55e9c5a2971b93c79b20d99093f127a39",
         "comparison-replay/selection.json": "c0c83686bfcc7fc28b29f7bc7399f38570c11f7bf1b873491df5ec1f2a5087cf",
-        "figures/learning_curve.png": "222ae9de636a133dd2ccaf7703ab86e7b60787d4d03d35b86e65c001cbf5a212",
+        "figure-refresh-history/c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992/acceptance.json": "c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992",
+        "figure-refresh-history/c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992/figures/learning_curve.png": "222ae9de636a133dd2ccaf7703ab86e7b60787d4d03d35b86e65c001cbf5a212",
+        "figure-refresh-history/c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992/figures/metrics.png": "edcdc0f353f8175cc900370ec674c3e45d46ade55b96a99368c48889f0b2fc0a",
+        "figure-refresh-history/c6f6b1663768dcf044757be991cd86078f137bcab166a2f49e75d714bbedc992/figures/paired_differences.png": "2edb96599a7708237c648bba714aa0f24f7fc5864fc260ad9c3183d9e730d28c",
+        "figures/learning_curve.png": "d7722a2bd0db4322aadb6191543c82c99a12a78882bc80a3869ce2bc31559f86",
         "figures/metrics.png": "edcdc0f353f8175cc900370ec674c3e45d46ade55b96a99368c48889f0b2fc0a",
         "figures/paired_differences.png": "2edb96599a7708237c648bba714aa0f24f7fc5864fc260ad9c3183d9e730d28c",
         "figures-replay/learning_curve.png": "222ae9de636a133dd2ccaf7703ab86e7b60787d4d03d35b86e65c001cbf5a212",
@@ -1556,5 +1560,10 @@
         "selection.json": "c0c83686bfcc7fc28b29f7bc7399f38570c11f7bf1b873491df5ec1f2a5087cf"
       }
     }
-  ]
+  ],
+  "figure_revision": {
+    "verified_at": "2026-11-17T13:34:25.891342+08:00",
+    "revision": "13ace06",
+    "verification": "Complete current formal-candidate and canonical-candidate SHA256 mappings equal after figure-only refresh; scientific checkpoints/predictions/CSV unchanged; original acceptance/figures preserved in figure-refresh-history."
+  }
 }

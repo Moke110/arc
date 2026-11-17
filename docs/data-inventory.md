@@ -295,7 +295,7 @@ plan, resources and replay evidence; it is required for no-training matrix repla
 | `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A; `execution/means.py --inputs output/inputs --candidate <empty>` |
 | `output/runs/` | 594 | 2,296,905,455 | 54 newly trained float32 checkpoints/predictions, identities, curves, exact replay and execution receipts; `execution/run_matrix.py --all` with explicit source/input/Mean paths and a new candidate |
 | `output/comparison/` | 9 | 13,245,103 | full per-well/parent/seed metrics, paired bootstrap, selection and plot values; `execution/run_matrix.py --accept-only` |
-| `execution/checkpoints/matrix-threefold-f32-lr1e4/` | 836 | 2,324,942,306 | full accepted candidate, including all registrations, plan and raw resources; preserved from the verified formal generation |
+| `execution/checkpoints/matrix-threefold-f32-lr1e4/` | 840 | 2,325,763,750 | full accepted candidate, including all registrations, plan and raw resources; preserved from the verified formal generation |
 
 Tracked report products are `figure/{metrics,paired_differences,learning_curve}.png`,
 their complete CSV values under `figure/data/`, the CSV-only renderer and compact
