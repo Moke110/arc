@@ -1,0 +1,38 @@
+{
+  "reports/held-dose/fit_resources.csv": {
+    "bytes": 5774,
+    "sha256": "ee0b7184d8311bef1ab3815baa6ac90bdf15b24bdb0a050ef14a700df2ba010d"
+  },
+  "reports/held-dose/learning_curves.csv": {
+    "bytes": 817905,
+    "sha256": "b69b9bacea96b20490ea6ff44afb7f9617e209fe7884b7d6ff6c897af18f32e1"
+  },
+  "reports/held-dose/oof_coverage.csv": {
+    "bytes": 712,
+    "sha256": "56e9fab7883447e196d26633de7073e75c17716eed482e1c8338bba0bf4d9db4"
+  },
+  "reports/held-dose/per_dose.csv": {
+    "bytes": 2696,
+    "sha256": "c1a718df976df1cef08a6e3fcfad10aef44359a7ca8885eb23b74f14318a6206"
+  },
+  "reports/held-dose/per_parent.csv": {
+    "bytes": 424994,
+    "sha256": "f45885beba6d70c300d8670838dd31f1a9e6a1500d496f60a6fe83b99cf5c9ee"
+  },
+  "reports/held-dose/per_parent_dose_seed.csv": {
+    "bytes": 4052084,
+    "sha256": "e049c46c93feead4f92ee8d6d7225587ec2dd93507bdebd4286655caafa6f2ee"
+  },
+  "reports/held-dose/per_parent_seed.csv": {
+    "bytes": 1290427,
+    "sha256": "19e8f553ff4cc12b385cd56b10f3971a4abea72ff5c088f40059bc19bdd7ee26"
+  },
+  "reports/held-dose/per_well_seed.csv": {
+    "bytes": 21963597,
+    "sha256": "05f2a8995e1137ec8ae1cdda1f1ac37ea6687e12b79f558dbf51cf45680c4728"
+  },
+  "reports/held-dose/summary.csv": {
+    "bytes": 755,
+    "sha256": "0dcdc142bbabe9794ad1affa2f6e5154100fde28b6a2723397874dc31fdd613c"
+  }
+}

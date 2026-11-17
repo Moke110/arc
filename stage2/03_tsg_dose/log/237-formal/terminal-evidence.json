@@ -1,0 +1,2207 @@
+[
+  {
+    "manifest_sha256": "ff48fcda5321ac2027eb4abb0250ce61bd889b48372a2d5a81b93617385da35a",
+    "registration_sha256": "1749b5105faa145495e7fe384328e84ef9017996bfb15a1b2e2cb1c2ea8c07c4",
+    "run": {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 94,
+      "elapsed_seconds": 78.65344996203203,
+      "epochs": 144,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1856540,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 559758,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "6e441de5864297bf79a29c8fc714ab3dfe5452408442a73a01db64421e6c5ca9",
+        "pid": 559758,
+        "process_token": "47c41be8dcf5991995d50aae65c8929cbabc3a04649427edb585639d202d0fd3"
+      },
+      "training_pid": 549029,
+      "training_process_token": "f7521612e84e06bab4b08417d454912bddc74cdc42f2e78e28b7d94126f3ee59",
+      "validation_mse": 0.05612117424607277,
+      "validation_replay": {
+        "attempt_nonce": "6e441de5864297bf79a29c8fc714ab3dfe5452408442a73a01db64421e6c5ca9",
+        "pid": 549697,
+        "process_token": "c3d5dd6b3aac11c2238d6603147437724a3965b826395aae6c479cf0697c98d5"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "8ac0ab60064ef9898f947b3c688c5c8496a629a9681c3a4038f040cebaa5cb1e",
+    "registration_sha256": "1f73d6e5275eae3866d45435abda01fea418b0bbbf555a766b239aadbda01f61",
+    "run": {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 104,
+      "elapsed_seconds": 83.22697686398169,
+      "epochs": 154,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1856636,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 559845,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "1da8003ed7e5d44edeb155e5abb6fa317863fa1472f1ecda21ef25a2d6f18b87",
+        "pid": 559845,
+        "process_token": "14b9bbacfe59cf4914121f62fa23380db5984707c505c579994f9aca0c7a2b40"
+      },
+      "training_pid": 549770,
+      "training_process_token": "9ce51a5a8a9ba7dc94728e9f5cd76858bd7f984c32214a56a15911322ecb2d42",
+      "validation_mse": 0.056014858186244965,
+      "validation_replay": {
+        "attempt_nonce": "1da8003ed7e5d44edeb155e5abb6fa317863fa1472f1ecda21ef25a2d6f18b87",
+        "pid": 550388,
+        "process_token": "4eaa53b4175a055b45661708a3b842e75744bc074f04451548b1237db2533b67"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "3462f764a02e261aea48e7033fc8e89e0615adad52309db3b7e09f23e447ad34",
+    "registration_sha256": "d2377f376f7cafa2824f3ec2933a0aee0f6b625cc3bc7b309d6aaf1da4782515",
+    "run": {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 117,
+      "elapsed_seconds": 92.33595542499097,
+      "epochs": 167,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1856544,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 559935,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "ae158cff0eb609ee8c915000b84959dcf6b599f8172a6d78f3ec32a1305db460",
+        "pid": 559935,
+        "process_token": "8f2c1b9ddf919c9a1a4392c828c96b3fc89dfea426e0496224d48efd15e68fd8"
+      },
+      "training_pid": 550439,
+      "training_process_token": "e1a7aca270f7a568357fb60fd32dca074719b07a49d36d37ad70e54bc6520397",
+      "validation_mse": 0.056299347430467606,
+      "validation_replay": {
+        "attempt_nonce": "ae158cff0eb609ee8c915000b84959dcf6b599f8172a6d78f3ec32a1305db460",
+        "pid": 551161,
+        "process_token": "d00c7689ce4d7a2b0e919cae9856553ae4b31af4b37e0f8c9ee0b3b2123adf60"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "d90667d311eba3ae006565aa951fcc3ec9e63e61ac894d8a15cd3c23dbcbf755",
+    "registration_sha256": "6f2823af6d104512258f01c746e3565c68769f3c3efd9e8d77aad1e6779e699f",
+    "run": {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 94,
+      "elapsed_seconds": 79.62715723499423,
+      "epochs": 144,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1861552,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560020,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "5324952e8c2a060260ae38f50da3d077028f157fb4e69ed114c151b3fbbcea9d",
+        "pid": 560020,
+        "process_token": "671442d0fe72acc234aec485b3d5a3ba9d164350d1ae07eba5f74143937d3b68"
+      },
+      "training_pid": 551235,
+      "training_process_token": "49e1d81d554e8b18be4ac96e425cb3a928c963dcb6076bc1f1b3995b5118667d",
+      "validation_mse": 0.05746012553572655,
+      "validation_replay": {
+        "attempt_nonce": "5324952e8c2a060260ae38f50da3d077028f157fb4e69ed114c151b3fbbcea9d",
+        "pid": 551783,
+        "process_token": "9547e8d7472ec71f6c074cc1f64a5f216b248b808c1bcb946bcff389cd4badb6"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "cba5fe20c2df4c1cbbc114a2d1be33da42d7151705653182297d2ff15bb0479a",
+    "registration_sha256": "4e90ab46dbe76e5dbe859f97f9d9f65dd22681cd8e43b6b84001d0dd6c280d03",
+    "run": {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 163,
+      "elapsed_seconds": 116.57184388901806,
+      "epochs": 213,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1861608,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560104,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "8e09cd6f7123f6db38f446cbdd6c896f9f8d638009cc4af86fc488fe4102c118",
+        "pid": 560104,
+        "process_token": "cb6c10c2f2299c67195ab5f7aeadb3eac5aa69616eca1c221dd3c57684b4a1ea"
+      },
+      "training_pid": 551828,
+      "training_process_token": "b5a8d97424a00c9d39885da425be99946aed2404271b59ab6b3f6a2e7bdf0950",
+      "validation_mse": 0.057163942605257034,
+      "validation_replay": {
+        "attempt_nonce": "8e09cd6f7123f6db38f446cbdd6c896f9f8d638009cc4af86fc488fe4102c118",
+        "pid": 552678,
+        "process_token": "85283d77f7ebce2c7d86550314ab1588103586c80daa8c9c2815023efc29db7e"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "34323305f711289cbe4800dd815d30864ddd1365f39504d919d7ec44e572bbd1",
+    "registration_sha256": "5e5af3fb67715f58cdf4c5ae5308138917b8f15032a5077de0421c630f0242c7",
+    "run": {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 211,
+      "elapsed_seconds": 143.3613303710008,
+      "epochs": 261,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1862000,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560191,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "343c02c507b94b62ba0348466d74dc1bde598332ac092a2e61f10bd92bc9681e",
+        "pid": 560191,
+        "process_token": "f69c20da7cfa05d1e6b43152fbdeebb2a5c3dad4c8dd448563ec9d5ff766d1a0"
+      },
+      "training_pid": 552719,
+      "training_process_token": "4db4e589f1ed3fafb970b83194524536be372ba7c3e50aca2be018fabef6c66a",
+      "validation_mse": 0.05734580382704735,
+      "validation_replay": {
+        "attempt_nonce": "343c02c507b94b62ba0348466d74dc1bde598332ac092a2e61f10bd92bc9681e",
+        "pid": 553422,
+        "process_token": "5b69e78daacdff86d004e80ab04c5e8ddf7315d12b5d92594114cfcc342cdf82"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "e2c19aed29c0a4dbf2e2a5ab740358114d3eff5d685aa33e963fe0061f63e328",
+    "registration_sha256": "92e2a5c53c112961ce429d56f052750ab6e3d29a6e17759360d9ad82f3907987",
+    "run": {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 129,
+      "elapsed_seconds": 99.53095336799743,
+      "epochs": 179,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1886696,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560271,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "666ebd4cd1cb5872fc2838bc7d45f85dc5c54959e5c1ec30de4c915f6a229f75",
+        "pid": 560271,
+        "process_token": "a5fbab2d7e4179c41601a293af048ed06f68907fea0bb807ec084252f4aca5c3"
+      },
+      "training_pid": 553474,
+      "training_process_token": "6229f81af36ff496638e1577365facf53314e432e9ec8f56f4c998a03542cf08",
+      "validation_mse": 0.05494757369160652,
+      "validation_replay": {
+        "attempt_nonce": "666ebd4cd1cb5872fc2838bc7d45f85dc5c54959e5c1ec30de4c915f6a229f75",
+        "pid": 553924,
+        "process_token": "6862bb4130a6cc65b9f02459c112d094b622372e6de7943a86337187eecb0425"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "c69127cbbf6a584fe2cc20bbd74d52d8960defdd0484cb22a40acf4b1d09bfc1",
+    "registration_sha256": "519da9970e1607f47b7f55b77ac160eb0ef62bd74847d1a84e2282144d25467d",
+    "run": {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 104,
+      "elapsed_seconds": 86.19782707700506,
+      "epochs": 154,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1886608,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560358,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "d09517fdd2f3ba12a8fd28c8c119cca6ebfe91ddab4fe2ed2cbe92085157c986",
+        "pid": 560358,
+        "process_token": "e2bfb0b5749ec3f4242851fd6f9bd3fba653c377201f3bf23bc4070d887a7784"
+      },
+      "training_pid": 553968,
+      "training_process_token": "b68c446985054846d94107eb1afbd181d23a12effc63218997baa3fb4fb21a60",
+      "validation_mse": 0.05584343522787094,
+      "validation_replay": {
+        "attempt_nonce": "d09517fdd2f3ba12a8fd28c8c119cca6ebfe91ddab4fe2ed2cbe92085157c986",
+        "pid": 554312,
+        "process_token": "dbaf90b1e6fb3918146ddf297d818fedac8ce01c7447255765957e2becc38799"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "7f47d94579627c570b9dacb366d3dcdbdd55164133c630f0c42dcfee123e2cef",
+    "registration_sha256": "f2b589e195921e47d544d59ef5059c3a9f9fb19c1181255371901b4ad8e70e95",
+    "run": {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 56,
+      "elapsed_seconds": 60.03365724300966,
+      "epochs": 106,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1881392,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560430,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "0a69201a1df1443e08446e65a5281ad866aa47c71f2c5804ddf9c73507ecdcac",
+        "pid": 560430,
+        "process_token": "bc4ef2b6aa6ac88278119503128be7826076260f581a52c7a7441ae24542762d"
+      },
+      "training_pid": 554355,
+      "training_process_token": "fa95aa40471c5f419959e9a844f095957b057e7f0160eb3d4d76766a9f40fed5",
+      "validation_mse": 0.05585133656859398,
+      "validation_replay": {
+        "attempt_nonce": "0a69201a1df1443e08446e65a5281ad866aa47c71f2c5804ddf9c73507ecdcac",
+        "pid": 554613,
+        "process_token": "f817cc4693a36215d64caaa87481b0f74f35e477f7b61a74f7ab3cad2f7693b7"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "baa84bc2f912e426fd051d2e51b67d627073e3e30667a5792b59da58019c0936",
+    "registration_sha256": "a6a38ff8be16454e07e751745291b2a5c8d3b4b2f5571e970bd13e4d31ccacda",
+    "run": {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 156,
+      "elapsed_seconds": 114.42067047196906,
+      "epochs": 206,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1887008,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560513,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "4131c90a7e517d3ce06b053d2830f6ce7a4079a76be81ae66f9898ce1e8ca059",
+        "pid": 560513,
+        "process_token": "f615b70db36274cc5aabf8e6f6fb231552e00f9b79cd13ce53221805dad5abfa"
+      },
+      "training_pid": 554657,
+      "training_process_token": "900d80978c5b1484826e7dc07a784c8e11ec732f35e9798bcfd387fcc55b8b16",
+      "validation_mse": 0.055492233484983444,
+      "validation_replay": {
+        "attempt_nonce": "4131c90a7e517d3ce06b053d2830f6ce7a4079a76be81ae66f9898ce1e8ca059",
+        "pid": 555102,
+        "process_token": "4975b4e89fb242655dd601a9a1e3bce236db1ff2960377d27075df473b27035c"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "b62d060a380e6de48825f224b9efda15de1510cb1ca860d9e8ebd0c6dfbe42bd",
+    "registration_sha256": "3302f78abd3fcf23d61f19965a45fce04c6511199d1ec042fee9faf07388c0e2",
+    "run": {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 156,
+      "elapsed_seconds": 112.80838332499843,
+      "epochs": 206,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1881776,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560594,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "0ea3b274459ac08d608decfa96ceae958a560498b94f470fc9553bd692d1c2bd",
+        "pid": 560594,
+        "process_token": "f155fc44dfcb96cee4972092d702c3d2d3112d3cd5977b9644955356f6f1ecd8"
+      },
+      "training_pid": 555145,
+      "training_process_token": "41800c4e8725586497bbbd7fa8ea8f2d219e370d443ef1fe997a174079791476",
+      "validation_mse": 0.055518828332424164,
+      "validation_replay": {
+        "attempt_nonce": "0ea3b274459ac08d608decfa96ceae958a560498b94f470fc9553bd692d1c2bd",
+        "pid": 555585,
+        "process_token": "1abf881ce1d9f0841135dba6845012c9862ee55cdcb001d208c64a98d2792300"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "170bf27540c5cae6beb9caad8b23ae7ba3c02d942795fcf113df9b60549ee653",
+    "registration_sha256": "2b6af9983587841dcbb5256a27f2b262af1925a931c55c98ebf2c9d67f2c1862",
+    "run": {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 138,
+      "elapsed_seconds": 103.78233683400322,
+      "epochs": 188,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1886416,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560678,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "a07478422b70eca8d52ac6530904fcbe886907d722d84622041546351c475f45",
+        "pid": 560678,
+        "process_token": "7e1af95b331a7ca4aaf32b7dd355f013810dda3445375bccd9c6bede26d92bd7"
+      },
+      "training_pid": 555632,
+      "training_process_token": "dae4416010c476b39bffe3b388dd0d1b2c360bbe1b2a80a2f97add56a9e60999",
+      "validation_mse": 0.055112432688474655,
+      "validation_replay": {
+        "attempt_nonce": "a07478422b70eca8d52ac6530904fcbe886907d722d84622041546351c475f45",
+        "pid": 556054,
+        "process_token": "4908b7023683f4eb89aebb21ec82bc7c38d7ff424d98ab80f15a036ba7b48290"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "4184bda1a093801ab4e523fe9a90d2cd49669febea865db15e2f10c490a836c0",
+    "registration_sha256": "60abd1972bb93b6fd1a373d61f6496f6bda6a4d767243214c0b37bda324506dd",
+    "run": {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 94,
+      "elapsed_seconds": 82.83493491605623,
+      "epochs": 144,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1897056,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560764,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "babea922eed5a1af93b2c04f66ebcc1833609711ad7c8660aef6026deb1a97c1",
+        "pid": 560764,
+        "process_token": "7b0cc1f5d1f33261d13ace45aece6e0fce2cd6a19c710db114d18e81cc0f4c02"
+      },
+      "training_pid": 556098,
+      "training_process_token": "465fb55c2b76557bdbf2932ba51750ee9450aa6bfacb95cef4cb4d630375ecf3",
+      "validation_mse": 0.05559910461306572,
+      "validation_replay": {
+        "attempt_nonce": "babea922eed5a1af93b2c04f66ebcc1833609711ad7c8660aef6026deb1a97c1",
+        "pid": 556518,
+        "process_token": "f8dd84a7e2d62a0001883e34523bf1c58d34f5567d12792aa2bb09d25fdd04b0"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "7e7c6d4c997d9d624e0b5c47f5e9b616100aaa21772ec17399f3e9acfef409db",
+    "registration_sha256": "4d4cd7f95a28cb6f91c7a12cee7b1340329b4477ea6da0f21d6b08ecd3eced3e",
+    "run": {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 80,
+      "elapsed_seconds": 74.92177069402533,
+      "epochs": 130,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1896620,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560875,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "f3daae46574056063c3afb3e2d2a211b5904dfab4d7a895c131028cfae6250a3",
+        "pid": 560875,
+        "process_token": "c5d28e1d0240cfa64e0e353ce6c6c847fe321725c7713d8072a1821b7d7548a2"
+      },
+      "training_pid": 556563,
+      "training_process_token": "66ef686796e4c499a0aa951c717fbb49bb21b6300abb03c916bf1174299146ec",
+      "validation_mse": 0.05586383119225502,
+      "validation_replay": {
+        "attempt_nonce": "f3daae46574056063c3afb3e2d2a211b5904dfab4d7a895c131028cfae6250a3",
+        "pid": 556961,
+        "process_token": "e3d193da93178c5738cec78551d5302f9c8579d8973a1ce5ec60bf1c5fa8e012"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "d98368c82cf6361bdc482ca45f84bf6363f2f5c70fb50eb0f9514161e4d4e189",
+    "registration_sha256": "46c8fe5ea3bb8c18dde0889e6006b9763aef1d0738bcceef493d2424940c0064",
+    "run": {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 78,
+      "elapsed_seconds": 74.96618387999479,
+      "epochs": 128,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1896752,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 560962,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "2126275a91bdd913a78437818d8b05576f9ed8a8e73c14a306f582addc11efbf",
+        "pid": 560962,
+        "process_token": "887850f7e25e5eca07cde8f48ad3df404fac550a74a8a948c17f244382f02f94"
+      },
+      "training_pid": 557008,
+      "training_process_token": "69201e70966eb0f641bb96fbdd84c4d954641c1766edc803e4a052f26d0bf876",
+      "validation_mse": 0.05547921359539032,
+      "validation_replay": {
+        "attempt_nonce": "2126275a91bdd913a78437818d8b05576f9ed8a8e73c14a306f582addc11efbf",
+        "pid": 557362,
+        "process_token": "72ff20c3862af5619ddbeeb18c35a0a33b64efbe2161033f758aec2e53fd1c64"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "023f90d994211e3d7456b4107ec74c547ff9dac1e92e259669986461a1bd39e7",
+    "registration_sha256": "bebba7bb284c13374ea9a152d36cef89315a6f3e88f685b90aca64e7c6189723",
+    "run": {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 92,
+      "elapsed_seconds": 80.93345990998205,
+      "epochs": 142,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1897256,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 561048,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "40933832f61bf24197be9c3a6745a29419fde960e0989bb1ef3f5fe8abf60955",
+        "pid": 561048,
+        "process_token": "141d8b6acadd8190d0acd901573b934fc3a93685cf160711b8c2ca4a2eec3172"
+      },
+      "training_pid": 557411,
+      "training_process_token": "4d230c2c02c77d0ff25192e964937b5c5a3b1e6c804d2da3a784594322a5b6f0",
+      "validation_mse": 0.05634910985827446,
+      "validation_replay": {
+        "attempt_nonce": "40933832f61bf24197be9c3a6745a29419fde960e0989bb1ef3f5fe8abf60955",
+        "pid": 557807,
+        "process_token": "6f296ebbbae5072c48d8505293ef624f7eacca5b2bb238d5cf49d537435ecc6d"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "66ef45a9f59cdd123644f779c5a9237992cde68880c8713be9632b4378efce43",
+    "registration_sha256": "80bb4b43dec6d2e157b64b67e69642cd6a8e6ca0b7ff2832057336098b6f2382",
+    "run": {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 144,
+      "elapsed_seconds": 110.34799241705332,
+      "epochs": 194,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1897280,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 561143,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "f57b20d47e437e06f247cd5bef51f46dc788c69fadc5965cf700794c7fa255c2",
+        "pid": 561143,
+        "process_token": "2dfce541de6607163bfc2bc917cb1aea3735f05cfdde4c0c8fd96d730c8fa2f1"
+      },
+      "training_pid": 557860,
+      "training_process_token": "a845317799da4694c2ba0d6b6f086a1ff6a0a0aca6397595d2cbbfc81e6ad237",
+      "validation_mse": 0.055153656750917435,
+      "validation_replay": {
+        "attempt_nonce": "f57b20d47e437e06f247cd5bef51f46dc788c69fadc5965cf700794c7fa255c2",
+        "pid": 558460,
+        "process_token": "3c4210881366a80d80eeda7aa3a58151d2821cbfaa490b9c75f9071bc4c22f53"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "65ccd4e346ad2b9c7fcb97470c9d605b3e53387287e69eeaeb95f7149c9108ea",
+    "registration_sha256": "4caeeef07bd79fc23a7bcf1f07e26ee6a352b7d51d2ccbd320746789698d3e4f",
+    "run": {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 101,
+      "elapsed_seconds": 85.50804583897116,
+      "epochs": 151,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1892264,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 561224,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "6fbf8de348f0d500e893f7d44bdc4536691fe277d24de1299403c127f5582fb7",
+        "pid": 561224,
+        "process_token": "89a4ab9c12935e14bc8f6faf0e264ce8335cf5fa5f299e6c7ab0ed35d3f89f14"
+      },
+      "training_pid": 558511,
+      "training_process_token": "2f41107caab28d03b9d643e07241b3803d80a067075c6c7a75432c2ad2cfe0af",
+      "validation_mse": 0.05639542639255524,
+      "validation_replay": {
+        "attempt_nonce": "6fbf8de348f0d500e893f7d44bdc4536691fe277d24de1299403c127f5582fb7",
+        "pid": 558903,
+        "process_token": "d953b431cdf039dda073295b0fab51300f5de5c4b96f221ddb5663fe146dc7dc"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "a05b42701be176abe3b26eec147062bab71109ce1c774687301878a9f6ead868",
+    "registration_sha256": "73cd6f9560a87b62b97b113655774c09aa37680a3213f761a3d84a78bf849575",
+    "run": {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 36,
+      "elapsed_seconds": 51.23854992096312,
+      "epochs": 86,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1897828,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 561318,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "317a9790cbfd0cd60685b965949be5f9b53dd7fbc52cabd499a055974be13a8a",
+        "pid": 561318,
+        "process_token": "f5ce2acbcb1bb41cb0410aac487c2f684498cbe4d2bba35602e6fa12456a31a3"
+      },
+      "training_pid": 558955,
+      "training_process_token": "50a4f7e7cdbea748cb6d56714af3a7d08d5225f7f5ada4c1d7f784da3a547c20",
+      "validation_mse": 0.05730975791811943,
+      "validation_replay": {
+        "attempt_nonce": "317a9790cbfd0cd60685b965949be5f9b53dd7fbc52cabd499a055974be13a8a",
+        "pid": 559168,
+        "process_token": "40eb974c528af05eac958d01ab80a9513a30b195fdf4f1a03aeb0102f6d84999"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "12dcb7efdb4f958d1964e4f4bc4c48dacb1bf1f0b5d5e3a9240fb597bdbcd5a6",
+    "registration_sha256": "6c79b371a5840a0f871bc4e3afcc17261dc2741d5a072c53bf0561fdf6e0e634",
+    "run": {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 29,
+      "elapsed_seconds": 47.68894803599687,
+      "epochs": 79,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1897676,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 561398,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "5ebf99a3ae167222dc50b9208052f15020595371cb2d97b5f40b3f9971018f1f",
+        "pid": 561398,
+        "process_token": "bf3306e5f38e39d68ad20d9da4afcc3ae7ed296a083717447869f2dae132e73b"
+      },
+      "training_pid": 559211,
+      "training_process_token": "94b069703f663f99d879684bbaf5214215dc8371a814ce61bb00bfe1557f794a",
+      "validation_mse": 0.056858088821172714,
+      "validation_replay": {
+        "attempt_nonce": "5ebf99a3ae167222dc50b9208052f15020595371cb2d97b5f40b3f9971018f1f",
+        "pid": 559417,
+        "process_token": "88f67eeec2b2f805d769b22c8d52747719865e04ccc8956bc6a74f377861e897"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "cf911d74c6775c13467796aa89c453f5073adb39a72b580645ad72353b089caa",
+    "registration_sha256": "82c76ba76d73b5c87f08b90388e8c67e161cd734fd837e0a2cc33300099655ac",
+    "run": {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 30,
+      "elapsed_seconds": 47.77640111197252,
+      "epochs": 80,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1892232,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 561478,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "7c86b2289d2552a15ad5ac10dfd54c8a4d4b54f6c763584c8da7c7ca9707b576",
+        "pid": 561478,
+        "process_token": "eb0c9737380a01c8bdf784963cfff63ba9129a68ed116dbf33ec12b209a84b82"
+      },
+      "training_pid": 559462,
+      "training_process_token": "14c40ad3cf5c81cf84848025acdda6da72ba64c7fd1393a5f34a906be74b52e9",
+      "validation_mse": 0.057050541043281555,
+      "validation_replay": {
+        "attempt_nonce": "7c86b2289d2552a15ad5ac10dfd54c8a4d4b54f6c763584c8da7c7ca9707b576",
+        "pid": 559664,
+        "process_token": "cd55f42084742e4d27fab5b1d0c44ec722ea32fc41e0666c7e341a5400bb5920"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "170c4bbb5309026eaf6293fe112d862d5cdf3c6e6747960c1435ee613ccffc3e",
+    "registration_sha256": "cf7880c6b38f0bdbd43f3b3679910e17c6309c2c880b7dfee531d6f57c94d6b3",
+    "run": {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 111,
+      "elapsed_seconds": 87.23294875299325,
+      "epochs": 161,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1866272,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 569888,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "6bd6ce63f0a2d3de6a0292491c455f10e7f20d36e7e525f63a75d72e739a2e91",
+        "pid": 569888,
+        "process_token": "a769f3e90e5b86d2d440d5d50bc0f1e01412a98109b32aec11e3f8d1f46dbe58"
+      },
+      "training_pid": 561520,
+      "training_process_token": "4344b155e9736087bb7fd3b69abc8745927d5a1b3fcf25600e8f4fba1132692c",
+      "validation_mse": 0.06046084687113762,
+      "validation_replay": {
+        "attempt_nonce": "6bd6ce63f0a2d3de6a0292491c455f10e7f20d36e7e525f63a75d72e739a2e91",
+        "pid": 561949,
+        "process_token": "6880a004b7c4687da634cebf9b3846b2ab5e5b60120013d805adacadf5f97593"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "e27e71f3909e38e4443e5be3755e6c6d163ecd58cc913730fa1899d36bdb7e97",
+    "registration_sha256": "cc8369f7283a238454b939c5cb225b0c7e43d6407e8aff58a19bf96b949b8208",
+    "run": {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 92,
+      "elapsed_seconds": 77.40678878501058,
+      "epochs": 142,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1861392,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 569983,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "0381153fa72f4a48b31392e8133b120c673742c4ca3e02a1ebcf8243b18e0347",
+        "pid": 569983,
+        "process_token": "8ecd9f494813052257c11c04f7114d46b556ae32c09522cfbefcd7eb2137b023"
+      },
+      "training_pid": 561996,
+      "training_process_token": "d5a73f54be95692cb60ee48b1f40b6c2c8de595b5841b814095ea894983b6111",
+      "validation_mse": 0.06060711666941643,
+      "validation_replay": {
+        "attempt_nonce": "0381153fa72f4a48b31392e8133b120c673742c4ca3e02a1ebcf8243b18e0347",
+        "pid": 562390,
+        "process_token": "deda1a1779a28b266f45befde7940630cda3c0221fc22eb15ce730a968c69fbe"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "7d0fcfbeb6d67be3bf35c24261b6390541944cd95d8148c1357ccdc397a13647",
+    "registration_sha256": "f5be331adb3df7642b8a9bde32220d5750ca229a3e03c65f85bfebf48a453694",
+    "run": {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 76,
+      "elapsed_seconds": 68.4356917529949,
+      "epochs": 126,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1866540,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570073,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "dfd8ed20cf0825353c8d52346091c7fba94f8dcc8a02b10432adf3658bcd69ca",
+        "pid": 570073,
+        "process_token": "33668a717518ce43156482b727c02f9d7158dd895d4dde75daf24522d5ad7b04"
+      },
+      "training_pid": 562433,
+      "training_process_token": "a865b4487217469d53aea35f5e84669987315e056342360a474ba252cd293aa6",
+      "validation_mse": 0.06039964035153389,
+      "validation_replay": {
+        "attempt_nonce": "dfd8ed20cf0825353c8d52346091c7fba94f8dcc8a02b10432adf3658bcd69ca",
+        "pid": 562862,
+        "process_token": "ccbded6fbdbf04bd4fe016f2dccc96670d07c1e1a354e7dcd8b05b3ed4837d54"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "49930293aa6faf6e9bb0db3484c71f477ffe9b71f7e18e5c8800cfb065bf3ea7",
+    "registration_sha256": "4d52a4d562c482428750d3a5c1799934115729caefb1ba1dcf43f31edd49b8bc",
+    "run": {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 13,
+      "elapsed_seconds": 35.70182755502174,
+      "epochs": 63,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1861572,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570162,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "3d536cf45ea43654311d7465833735251887968f162d56bdebb5e7db357d0011",
+        "pid": 570162,
+        "process_token": "4a463e107fbd391b79003a60ff8410c7b31afa195dad0a162c97fc676b053a41"
+      },
+      "training_pid": 562911,
+      "training_process_token": "029fa6c6402b442c4ca7da6b94da216f2d2790c4af844af1a7e3d5bdddecd4cc",
+      "validation_mse": 0.06564792990684509,
+      "validation_replay": {
+        "attempt_nonce": "3d536cf45ea43654311d7465833735251887968f162d56bdebb5e7db357d0011",
+        "pid": 563099,
+        "process_token": "491ac68a106f2da1f0d517f75b8d875429532b8dd7119f412c6c9a63ebe14f25"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "19f4f07f4dabcc80088cb616303270f774ddc599ad69d2e43c5ece21ba044074",
+    "registration_sha256": "9bc8ad6ac0b8ded4857608e60483015162ebb4de8a318714da93d3b9ee594179",
+    "run": {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 15,
+      "elapsed_seconds": 36.89392796403263,
+      "epochs": 65,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1861760,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570256,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "5da13ab66f587fc8cee65578ad45f9b18585569c8ea628d1e69c37a8c67fd155",
+        "pid": 570256,
+        "process_token": "413b98e319ec15eaf426f10bd8d7d21c6300e14c4c52d239055455c138f32c7a"
+      },
+      "training_pid": 563151,
+      "training_process_token": "0d0bd89a619a50e96c39722bb859f437bfdfbafb36ae1748de0f57fbf0c756ed",
+      "validation_mse": 0.06656764447689056,
+      "validation_replay": {
+        "attempt_nonce": "5da13ab66f587fc8cee65578ad45f9b18585569c8ea628d1e69c37a8c67fd155",
+        "pid": 563327,
+        "process_token": "96c1e98772ca1203d879cdc7ba99a2e5ee40901e9e3c844aceec0ebd8d437b35"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "81535eafebe6491b5e4a9a2ee437e42641616717983d528e19a9ab2367c4608f",
+    "registration_sha256": "fee923589b8eedec717f2f3de271e783029c02ecc21864790eeb552e91242ad0",
+    "run": {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 12,
+      "elapsed_seconds": 34.89714518998517,
+      "epochs": 62,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1866256,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570341,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "2439ad4f8a7364810591b4c39b14d77e2299b62d2f0790476c91b9cf921efe6d",
+        "pid": 570341,
+        "process_token": "2bcdea27deed30299b55317ce8c04b9a11a2749b7e523b843ee074e3e3bc9289"
+      },
+      "training_pid": 563375,
+      "training_process_token": "0f2b5a5c089a11777c7c2059b44fd75a14ff577c43b376e7cdf01e29aa6459c8",
+      "validation_mse": 0.06836666911840439,
+      "validation_replay": {
+        "attempt_nonce": "2439ad4f8a7364810591b4c39b14d77e2299b62d2f0790476c91b9cf921efe6d",
+        "pid": 563558,
+        "process_token": "d5560f9ff8bdd2150e56dcbaf4e4e02413a5c94b14b56bd0fc345228921f23e0"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "9337e3be9c362b2fa97ab46a4904043f7d860f6bd0792bf0edaa5233edf18330",
+    "registration_sha256": "ee0a03b5cd8b7a35d1983a7ab836176540f7ff4f23e14fb655af270803295462",
+    "run": {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 79,
+      "elapsed_seconds": 72.08741507399827,
+      "epochs": 129,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1891260,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570445,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "9ff39a46de8224d44c6eac0a156be7b30d5deffb75e8d759e7f0d927771adf02",
+        "pid": 570445,
+        "process_token": "d33fabdcbdf11cfa571dbac1458c7207c4fc5886c48641569d3552f34ddd07c0"
+      },
+      "training_pid": 563605,
+      "training_process_token": "0a8488103a19926cf98b141cbaa77a0552bbf4d5a19a754b99e19ae94602366e",
+      "validation_mse": 0.06068343296647072,
+      "validation_replay": {
+        "attempt_nonce": "9ff39a46de8224d44c6eac0a156be7b30d5deffb75e8d759e7f0d927771adf02",
+        "pid": 563963,
+        "process_token": "c917816baeaa06795cbb4656577b1d85dc58eba9140883d37667c6aed3ab294e"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "1929918e7a11fe28e75638362abdd34170c9075663bd6231d1616db2ecb29a82",
+    "registration_sha256": "ea1cf95c71eeacea2b61f2554c58ae59fdc95f260a01e28377ccd7e5b60a2033",
+    "run": {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 138,
+      "elapsed_seconds": 102.7932679670048,
+      "epochs": 188,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1891720,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570541,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "4796d2dbcca291240387110e372d864f0c0202f7ef341e0a9b64e978e5d5f22a",
+        "pid": 570541,
+        "process_token": "45d99051842b007e098f307ed5454c7e803789065372fefd22fbfc0115d8984c"
+      },
+      "training_pid": 564013,
+      "training_process_token": "1b1efb34a7cb641dcf4c9b627a22369983316df83470c339fd824524fc98bf88",
+      "validation_mse": 0.06036771461367607,
+      "validation_replay": {
+        "attempt_nonce": "4796d2dbcca291240387110e372d864f0c0202f7ef341e0a9b64e978e5d5f22a",
+        "pid": 564517,
+        "process_token": "e021063f36cd5d240185521ce742107efe009c375eb5c10a75d38600d3afe8d2"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "77f2c6f5e6107dc62619b3fef715346da6ef63647b0dca3881a11cea6a2a8b59",
+    "registration_sha256": "148dd098f7dbaa556b1bdcb60dd0e8dff628d77b87b0835023733e6a7b8de463",
+    "run": {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 79,
+      "elapsed_seconds": 71.73722347902367,
+      "epochs": 129,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1891316,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570632,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "c32038477df2c51d7171cb3876104496ca0f7acc3784b953b5ff6f59883cca5d",
+        "pid": 570632,
+        "process_token": "40cef415b6f08664e0a94643204581816d0ecb55d69effca24f3f48cae6847cd"
+      },
+      "training_pid": 564565,
+      "training_process_token": "9a2855368b2e9d60b613c2f7590ee3eaa52662658c58ff2dafa221d638958f74",
+      "validation_mse": 0.06066618487238884,
+      "validation_replay": {
+        "attempt_nonce": "c32038477df2c51d7171cb3876104496ca0f7acc3784b953b5ff6f59883cca5d",
+        "pid": 564928,
+        "process_token": "2947457475dca39ccb36df8cc87cb9488e03044849a1a502837ea55efeb6fa9c"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "a139cd88c03facef16fb6a0cd87d8df5cc72b734a40aa78a056d4a3fcf9799f2",
+    "registration_sha256": "7dbc148fb20a9d273aad14c58e9b8ec869a48fa882e492d045955813293df6df",
+    "run": {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 63,
+      "elapsed_seconds": 63.32925912999781,
+      "epochs": 113,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1886632,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570735,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "0c54289278a5cb2e59a54187fc4623474258690552995dab420c4a8d9eda9fec",
+        "pid": 570735,
+        "process_token": "81bb4fd85af994f2c5fcae5414c1ecdd18e6a2a5c8319a959378fd0fa28cb0bb"
+      },
+      "training_pid": 564979,
+      "training_process_token": "fee1bec0df6ab8fc6668faa224d11c9ebc34de0fbc8c27a83315c93cebdbd699",
+      "validation_mse": 0.060004401952028275,
+      "validation_replay": {
+        "attempt_nonce": "0c54289278a5cb2e59a54187fc4623474258690552995dab420c4a8d9eda9fec",
+        "pid": 565296,
+        "process_token": "9e3c3f8e33455c75db8d254153f69b338a466e6cd8833a247e141fec4e0fb2e1"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "621826063e7bbbea83d76465849d74ca248210cafe352a512b4d08955c31cefc",
+    "registration_sha256": "2ad2bd6a3b79581b98ff93c8ab9428d6cc769830c8d235fddf1bd92448b97197",
+    "run": {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 95,
+      "elapsed_seconds": 81.27319639897905,
+      "epochs": 145,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1891284,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570822,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "a581911520b65fa33b4790cee17c73855883080e728c2032339f886173901c78",
+        "pid": 570822,
+        "process_token": "defffa0ee852773c7f67c6570dfcca30b79dbf8328de6e8a4a83a7ba372e4016"
+      },
+      "training_pid": 565349,
+      "training_process_token": "d41d9854041b40e429e5f2ab0b44bf416c8df1bdf21d23fc0817be2b92300779",
+      "validation_mse": 0.06005329266190529,
+      "validation_replay": {
+        "attempt_nonce": "a581911520b65fa33b4790cee17c73855883080e728c2032339f886173901c78",
+        "pid": 565731,
+        "process_token": "e9c840dec57cda66a494321f2141b834ef4af1a463013e607786be9ead64b9d6"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "29e1ae285c8180ea3cac679938003f6bb7c27943bff7b08aae4b246ae071788b",
+    "registration_sha256": "d3568b3a2d3aea86b358d67c378b0443c4f71725a18927eec2a847829766b60b",
+    "run": {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 97,
+      "elapsed_seconds": 82.0573445399641,
+      "epochs": 147,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1891488,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570909,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "dd25c399e1549f3a285c9cd8935aee1e02000c34265f3b1b4845e113dce09058",
+        "pid": 570909,
+        "process_token": "92cc64a849c96130e1266447da6875ef33870956fe2def2a097deb1a1663159d"
+      },
+      "training_pid": 565780,
+      "training_process_token": "d7365960003cffe0bd219d69f39d763f1a5b179b52c229e54278fbcc242108ec",
+      "validation_mse": 0.05983394756913185,
+      "validation_replay": {
+        "attempt_nonce": "dd25c399e1549f3a285c9cd8935aee1e02000c34265f3b1b4845e113dce09058",
+        "pid": 566167,
+        "process_token": "538dc89a59d3559673c907ef1935bf590e7776ac897fe56cf41395935c210889"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "722ca71a0f39606897651905455bfde10980fecc6637c62944a54cd4b75d5995",
+    "registration_sha256": "ab13663927cd1e0749483967fee927eee745c9a741951886a0a8e3e9b8a9243d",
+    "run": {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 111,
+      "elapsed_seconds": 91.41983931703726,
+      "epochs": 161,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1896564,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 570998,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "7e8498c800e09e884eb028e581ac4f4b1c469c5b91de9bd5ed8e6b68178d9e6c",
+        "pid": 570998,
+        "process_token": "7cad9007b096e8c98680c6c7b979f30c88ee0d2c4c8854f79a372dfccf52c580"
+      },
+      "training_pid": 566218,
+      "training_process_token": "b83abedb6e092306ae6652e4b484ee23b91556052d210712c3273b7417fa6be2",
+      "validation_mse": 0.06074639409780502,
+      "validation_replay": {
+        "attempt_nonce": "7e8498c800e09e884eb028e581ac4f4b1c469c5b91de9bd5ed8e6b68178d9e6c",
+        "pid": 566646,
+        "process_token": "9d3f214cec85f137d3aaac35338c4b6322becdbc324eea252785316556f43513"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "73042f8a1eac9fa808487e3d615d70ab202ba3d5b15ae9cddfa3627bcaae5964",
+    "registration_sha256": "06e1ae631b95ca82523dbe80fae4c10f4c3ace68b0bb90745b882e843eb0f77f",
+    "run": {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 53,
+      "elapsed_seconds": 60.201224538031965,
+      "epochs": 103,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1895776,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571105,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "70058203d2caa3e3355f9be03420ced9a5b133a799f5d494b2bb5cb5f6d8b493",
+        "pid": 571105,
+        "process_token": "089ec56a10c2b237d9a8d141f76f87b47bf1a817985436e6daa80e9751008d88"
+      },
+      "training_pid": 566695,
+      "training_process_token": "56e173f06ec5101f7fdbdd4b95db06ad35477a74064b4015946c960a2c34f327",
+      "validation_mse": 0.06107708439230919,
+      "validation_replay": {
+        "attempt_nonce": "70058203d2caa3e3355f9be03420ced9a5b133a799f5d494b2bb5cb5f6d8b493",
+        "pid": 566993,
+        "process_token": "caf25a59687095cbf0542a7dd046e2ba5cb45ee9ff79ed13ce4dc0afa197d0b5"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "e2c3962ecf44fef52fd097aa08b81693bedabc4086f03136998152567fa61033",
+    "registration_sha256": "11ef31161faa3ae66334f26ba398c7413baccbfb2ed25e11ba1362edbc58ea3d",
+    "run": {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 52,
+      "elapsed_seconds": 59.27089343400439,
+      "epochs": 102,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1901932,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571205,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "332e9780339911584fa42b874fcffa68558d7793e1bc1404fc3abf512891821a",
+        "pid": 571205,
+        "process_token": "a726e17949bea062d2414f27b9acf0efa8b5d1444288b7a666e25c610cc7be60"
+      },
+      "training_pid": 567043,
+      "training_process_token": "01f373aa1c5f9c47705068478af777e8ae3e61eb8afc3a730472b58221eeaca7",
+      "validation_mse": 0.06029874458909035,
+      "validation_replay": {
+        "attempt_nonce": "332e9780339911584fa42b874fcffa68558d7793e1bc1404fc3abf512891821a",
+        "pid": 567365,
+        "process_token": "0a64873c586135676ac15e14ff5b9a3655d89f0d95fd0d60b1e6b7b729370eff"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "823f52a551b5b897cd7256aba1c9ce735136308ef39369221346842fb99dc27c",
+    "registration_sha256": "1d12808a7f7d247e4aed1c3c0dfcf33c8bfd9c9c4f67abfc60143a847a1b6dbe",
+    "run": {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 79,
+      "elapsed_seconds": 73.63292067300063,
+      "epochs": 129,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1901388,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571293,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "caddd2bd0c16a7696f9c385176f94bc9bcd9048731786e26ffc57e6fde9c49a9",
+        "pid": 571293,
+        "process_token": "663cbf51684321ce738ac1732b7e5e72332c4e18a0d358e1bf2896f5abe54118"
+      },
+      "training_pid": 567412,
+      "training_process_token": "afcff95f0b0aa851ae684bb87ea6fc29b84a6020ace16e242423c0276b073840",
+      "validation_mse": 0.060094691812992096,
+      "validation_replay": {
+        "attempt_nonce": "caddd2bd0c16a7696f9c385176f94bc9bcd9048731786e26ffc57e6fde9c49a9",
+        "pid": 567775,
+        "process_token": "5c6acac40218feee4150d045ec62f6ca97b0e88715f0d62dc5b539e45b13a61d"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "fedbe9a81a5ee70a913dce8b7427c2f1fa474d06eb3beb04e79ebdac562360df",
+    "registration_sha256": "73053d91d1dfed6b32dfff7976febf78c4f4c8296a2c5b7806c58cf41bb61550",
+    "run": {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 108,
+      "elapsed_seconds": 89.48174747597659,
+      "epochs": 158,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1896532,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571380,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "1c966f842e6555547d0c56bec61ebbd57330e6435bee6e7fcf7b99fec3807aff",
+        "pid": 571380,
+        "process_token": "54cd68ff412830a8b00cb0b6c545df6f6c3336140729a522473c632fb3db47b7"
+      },
+      "training_pid": 567822,
+      "training_process_token": "9907c26ba61cd5b79c4627d4c71496ab0a07d1fe3fb0680d1802b116228f2a1d",
+      "validation_mse": 0.05996740609407425,
+      "validation_replay": {
+        "attempt_nonce": "1c966f842e6555547d0c56bec61ebbd57330e6435bee6e7fcf7b99fec3807aff",
+        "pid": 568258,
+        "process_token": "43cf8aa2df9323ac6129067c50e1bf2e41c8392254e91ea352bf4699c92730e6"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "e78eeb140f8682dae233d9ff2bf16e84ac7120f62c5c7bff7ac93a74184d9a13",
+    "registration_sha256": "88a244e47bb7e570566351bd41e8c91c43451d56c2d4126f349be05fe678620e",
+    "run": {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 97,
+      "elapsed_seconds": 84.23500838497421,
+      "epochs": 147,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1900720,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571470,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "177f1bd015d53b1c850394cabd57008458d9fabe5e51ef200c1bca80584c9754",
+        "pid": 571470,
+        "process_token": "d55de307f288bd7703755e3b614026d1b5820ce16abeeb964bba7e009b5eb6e0"
+      },
+      "training_pid": 568308,
+      "training_process_token": "203ce5610b33ecb9942fad6b666d30c5344732f3a7b58eed1ed738ad43addb45",
+      "validation_mse": 0.05975758284330368,
+      "validation_replay": {
+        "attempt_nonce": "177f1bd015d53b1c850394cabd57008458d9fabe5e51ef200c1bca80584c9754",
+        "pid": 568722,
+        "process_token": "24871f2d53b77d634d3197be5fac974da052b25bae13d25ee9fdbda6161f58eb"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "23176c5605befda0a0ae3050710403641d374c7733c25d9506e96500ede37b36",
+    "registration_sha256": "861cb83aba6f6732b5490f6e0e3c383ffd4f0441e01488a845fb287ca43d7c44",
+    "run": {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 111,
+      "elapsed_seconds": 94.42151418694993,
+      "epochs": 161,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1901784,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571564,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "e9dfdbdc30f44a084e267ec8dd79462489e0f49ea79dc292e42ec39f4b8b6531",
+        "pid": 571564,
+        "process_token": "cef2e6fe3f883db1b71994efc9a72455786a0e695e371f668b8056a0149edd50"
+      },
+      "training_pid": 568771,
+      "training_process_token": "061918016ab723439025c0bc175f56a0e5ab07222aa03391dd43b9f1d10198a3",
+      "validation_mse": 0.061082784086465836,
+      "validation_replay": {
+        "attempt_nonce": "e9dfdbdc30f44a084e267ec8dd79462489e0f49ea79dc292e42ec39f4b8b6531",
+        "pid": 569189,
+        "process_token": "53d6669415687a9f90832b1d6a497adbca2fa4114e7f005545b840c08b09a881"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "b9b5210a77894d1f5bcf01fcb512c12cc09e8d6e956a1e9ff71c51f47459fbc4",
+    "registration_sha256": "93d97eac171b01edb19b7ddb8f9c0ff079d5e53d1b333cc505bb33fabe778923",
+    "run": {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 31,
+      "elapsed_seconds": 48.01795624796068,
+      "epochs": 81,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1901720,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571654,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "c4bbc63187198211655d285e36b05877c425f62490e806501c64ecec56a7451d",
+        "pid": 571654,
+        "process_token": "4dffe8bc53b5b685d7f900582a3cdd4f798fd831495470e5a10d2c80e878eb15"
+      },
+      "training_pid": 569245,
+      "training_process_token": "3360eb116b324825b8437ab70d7749f92bb044eea50038d3258e8277e29aff16",
+      "validation_mse": 0.061351653188467026,
+      "validation_replay": {
+        "attempt_nonce": "c4bbc63187198211655d285e36b05877c425f62490e806501c64ecec56a7451d",
+        "pid": 569482,
+        "process_token": "421835d534ebf83a87002a4f3698d5bf5846394b234d3f456cd631f74e3a8f3a"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "886c237d9cbace43e864351cbad01649f762f2ffa8238a69f0d902b213ad4c8a",
+    "registration_sha256": "563fed6ad013b580e9bf348c26650a570a5566f4d746ebb25a72d7cc001ab49a",
+    "run": {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 36,
+      "elapsed_seconds": 50.97023689094931,
+      "epochs": 86,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1897260,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 571752,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "a312b205a4ef95834ee97664307508673fea03ec95bac47945859b06e83b50c9",
+        "pid": 571752,
+        "process_token": "fab3578b92239bb0d50ef7a2cf238b43f20244741f4c208a93ad25b8d1049dab"
+      },
+      "training_pid": 569530,
+      "training_process_token": "add5bb19ee15f5d740daec7807f903f5345b815f7514ecb4318c4fa6f645450b",
+      "validation_mse": 0.06148660555481911,
+      "validation_replay": {
+        "attempt_nonce": "a312b205a4ef95834ee97664307508673fea03ec95bac47945859b06e83b50c9",
+        "pid": 569787,
+        "process_token": "d65b2cca2e2891134bcea8e8dcbda05d290ec27597edda20e66815cbeb74e4fc"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "d0643fcf95b1231b6c382312085ff08818167cf111ca66a3749264001b59fc15",
+    "registration_sha256": "f63a8a0864e1b518430565c089e464cc283ba63dc6b53691b1d135eb32381e8f",
+    "run": {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 62,
+      "elapsed_seconds": 60.611656270048115,
+      "epochs": 112,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1863820,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580336,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "39c99421b72d7e677e911899e91e318831273d3eef6c37f1b7a2d1c04236e1d1",
+        "pid": 580336,
+        "process_token": "03f6d9681d846d39aa68ccd88c7d1b85c9f6ac27ddb2d3dce71b58de360364aa"
+      },
+      "training_pid": 571783,
+      "training_process_token": "8a38d573f7571390962af562d9bdd03a5e9653fb3cd5b7b7d17a57db9a29fcb8",
+      "validation_mse": 0.05928490683436394,
+      "validation_replay": {
+        "attempt_nonce": "39c99421b72d7e677e911899e91e318831273d3eef6c37f1b7a2d1c04236e1d1",
+        "pid": 572092,
+        "process_token": "d05b881bea3f433e91cd3af467438adc41fbe50119b19179ee1e1ba926fc7e6a"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "f388309bdde63a853c5c27bb8e81c61305f9da85e55aeacb44453b09d4f96e44",
+    "registration_sha256": "6f658d8f22516c446ea01c979b34ea3b3f791c642fdcee73b8192da98c8f319b",
+    "run": {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 92,
+      "elapsed_seconds": 77.28772912401473,
+      "epochs": 142,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1869140,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580416,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "9fca70e24cd1d8d5a0f0857c0c83cdd8cb2831ec8d6be31bef237601703a988f",
+        "pid": 580416,
+        "process_token": "f18ff7b2c205cdd51ac4b7798d9f39fb4a2b61b778bd8d08cf21e80ade4a88a6"
+      },
+      "training_pid": 572143,
+      "training_process_token": "31a76767b622d0b9615b47f13ada780dac6494d39687c72afd14d8f4564adaa5",
+      "validation_mse": 0.05918257310986519,
+      "validation_replay": {
+        "attempt_nonce": "9fca70e24cd1d8d5a0f0857c0c83cdd8cb2831ec8d6be31bef237601703a988f",
+        "pid": 572514,
+        "process_token": "bce25d83160ea01c8c3ec853bd5c6b0c3c7d164d9fde00b903f0d0aa7a2e9baa"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "4ffbb74d4eb35e38d330fad571d6a9673cc0c6a43bf6fdd6e6769d0a4261bdd6",
+    "registration_sha256": "c7fc55a05f63f4ca1607f2f58b64afed5a693ce508578f32e7a3f5df04633a44",
+    "run": {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 64,
+      "elapsed_seconds": 63.0711855480331,
+      "epochs": 114,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1869140,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580492,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "63c388e1b02af0a8a7d850d268282c66c8f7ab5be1a2b4de924c22a7f3ae99bc",
+        "pid": 580492,
+        "process_token": "b6196dec81824ddd0398aa7cc72d682f7a12e94b24ebbfdbd0de53c066fc845f"
+      },
+      "training_pid": 572562,
+      "training_process_token": "a904a208e35d16a48f29f4c55cdcfba8dcb43e7ee1ff46824e5610428cfd38d7",
+      "validation_mse": 0.05967501178383827,
+      "validation_replay": {
+        "attempt_nonce": "63c388e1b02af0a8a7d850d268282c66c8f7ab5be1a2b4de924c22a7f3ae99bc",
+        "pid": 572884,
+        "process_token": "3741838ad324e8219a74d20ff63b9118809815e00a7ccf2da94aab582bce2932"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "1cd77c734141fde9811ff9ac7c0c7290dcec0fede973eb5edc7ee3fafdc2b050",
+    "registration_sha256": "d12e1bff7516e8b3f6c0b5b425889bce11aa859b7548a103f1d639251cf4ab0d",
+    "run": {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 84,
+      "elapsed_seconds": 74.14644753100583,
+      "epochs": 134,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1869140,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580571,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "1f984d124855e639bb6ff3947c3e39fb035d84b466c6a69e18f1e6bbc06709aa",
+        "pid": 580571,
+        "process_token": "b8426bb13754af9ff7777f61cd953b5f282f27c22b49d4a3a4a2de251c069bcc"
+      },
+      "training_pid": 572934,
+      "training_process_token": "6bffd9d0fe15e2e1a19a0fb9a34ea335afc4a50a3e0cd041ca06c035cf6ac5b3",
+      "validation_mse": 0.0622260645031929,
+      "validation_replay": {
+        "attempt_nonce": "1f984d124855e639bb6ff3947c3e39fb035d84b466c6a69e18f1e6bbc06709aa",
+        "pid": 573426,
+        "process_token": "8045614d81e2df9a591994b452499c5db1720fc1b4b0d2b8d8174a0ea59e0eca"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "eb39b32149fa6a453a203edf98e8ffce7e2f5f7ffcf59efb0d2a2a484b996a47",
+    "registration_sha256": "ada50f4b973d6d3e3d2b77598f92680d5466af34a1904602f0f0dcc90bfe1334",
+    "run": {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 115,
+      "elapsed_seconds": 91.3218898549676,
+      "epochs": 165,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1868864,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580648,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "8a7d11542ae0bb6040ce43c813acc354689567e97b1f6cc0c3ff841c0f23e597",
+        "pid": 580648,
+        "process_token": "e6f8127709a9e4287ae1d0804866e953a6cac2d4eaa3ef29b015e1cc3963f1aa"
+      },
+      "training_pid": 573473,
+      "training_process_token": "1682bbdf6d7a05b97cb233e50f10769d30e63859751010c65e2e5081aff4db84",
+      "validation_mse": 0.062067169696092606,
+      "validation_replay": {
+        "attempt_nonce": "8a7d11542ae0bb6040ce43c813acc354689567e97b1f6cc0c3ff841c0f23e597",
+        "pid": 573934,
+        "process_token": "e61781a7e0f43f19847853d3468d23f47f2f0b25beb931066f8a0b37e4a76e43"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "1783bf08c9729cb2f1ae6f8b253f93d4da0ac9ad795279710d669f89d130f72c",
+    "registration_sha256": "2b682f231f593128a83850ee92d6888fd206d21c0ea14181fab3700ae2f160a6",
+    "run": {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 115,
+      "elapsed_seconds": 90.18824224098353,
+      "epochs": 165,
+      "parameter_count": 21583000,
+      "peak_rss_kib": 1869348,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580749,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "96542913ee918ec3d5c9eeddf026735a319a3bcfbe337479456d3b8140611222",
+        "pid": 580749,
+        "process_token": "8c6c1af075bb964e76a4ecf3db109b46a60ecd64bed8440946efe41a4b1e837d"
+      },
+      "training_pid": 573991,
+      "training_process_token": "b8708e18971d2c9ab3379f1876d51f477ff0d7197aa096b7c51dfe89fdebf97d",
+      "validation_mse": 0.06258652359247208,
+      "validation_replay": {
+        "attempt_nonce": "96542913ee918ec3d5c9eeddf026735a319a3bcfbe337479456d3b8140611222",
+        "pid": 574414,
+        "process_token": "960691953baca0a4cdef140344fcecbbbb3fd74ac8162d913e4d77d5011b0c74"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "f70bc56bac2913e9b262bf27f3907705b27701785b1f88422b8db0ab6e9ac241",
+    "registration_sha256": "5166de1938983fced163afe7609e159d8f2fca2c1631e14520db7ec99ed58fd0",
+    "run": {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 71,
+      "elapsed_seconds": 68.36628577299416,
+      "epochs": 121,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1893704,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580821,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "5ca7fcf1133625f27a23ef9fc82644a8e685d5178711d51a2781aa48e6557a3d",
+        "pid": 580821,
+        "process_token": "274926dc6ba22b0703c387a09bbd13f81b0c2de0115f32ea21c43166ca28e567"
+      },
+      "training_pid": 574461,
+      "training_process_token": "9db3b9be4e8403150ca424be71500efb4c663d462fdf3d6a31e00379657e4ccc",
+      "validation_mse": 0.060982249677181244,
+      "validation_replay": {
+        "attempt_nonce": "5ca7fcf1133625f27a23ef9fc82644a8e685d5178711d51a2781aa48e6557a3d",
+        "pid": 574790,
+        "process_token": "5aac817563457216561abd04354ddd6b2f2b642268e5404e567f80030309b4a7"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "67935e2903a5a925bd400b691c4132628b751ff07efedb4c7b76a59e7d7dd87f",
+    "registration_sha256": "bb84ca727cc4cecaf5022e74a14119e3dc3a23a036ffb1338a87f97372674f11",
+    "run": {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 64,
+      "elapsed_seconds": 64.79464489797829,
+      "epochs": 114,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1893684,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580899,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "d874338fd82033cfc2b015d01e142a42bfe8c8e62f3a3b01ad0653356533dec7",
+        "pid": 580899,
+        "process_token": "5e5737567daf408c66fffda3275a8f7d9a596381046d2b4bb752035fa3f910dc"
+      },
+      "training_pid": 574840,
+      "training_process_token": "a4678e7351f222580b8ed6d04d9325697755c8abd301e63a73d9e0b2304c2c80",
+      "validation_mse": 0.06063105911016464,
+      "validation_replay": {
+        "attempt_nonce": "d874338fd82033cfc2b015d01e142a42bfe8c8e62f3a3b01ad0653356533dec7",
+        "pid": 575159,
+        "process_token": "9c456da596bb9f0b319f8e9879de5576f1b321b05c0fc00ccc1fa331bf868e7a"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "b327457b1642647b2bfa5dc463a2e360daf6050697e1541c6ca2ea4fa07baa63",
+    "registration_sha256": "b3d6610ea967a990b2ff8ad5536616f5847003e49383134f40181ed7427a9703",
+    "run": {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 93,
+      "elapsed_seconds": 82.65545181097696,
+      "epochs": 143,
+      "parameter_count": 21623000,
+      "peak_rss_kib": 1889052,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 580971,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "25bf8d7adbde493944e679a1f7ac093a8822551ec54e50dc7c01b9a3a29d75a1",
+        "pid": 580971,
+        "process_token": "3a732f1d14876aa71c4cfd23148ce0c3b63aa5739f44c1eddb8c7e40f1efb00d"
+      },
+      "training_pid": 575209,
+      "training_process_token": "2da0c1f9d8f2020f6fafcc3cad8c8d38f903184cc728b7cb488083b9c1d25489",
+      "validation_mse": 0.060460060834884644,
+      "validation_replay": {
+        "attempt_nonce": "25bf8d7adbde493944e679a1f7ac093a8822551ec54e50dc7c01b9a3a29d75a1",
+        "pid": 575613,
+        "process_token": "61c4d7d40482d51d33dadd31241970d846a0ca8492caf758740b758bde501d32"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "fbb57efa2ad95610496f41084287796571016f4352183f532f9eea49f402cdbf",
+    "registration_sha256": "d235b4e8d02034dcf9737f86dc3cd8372be4e9b82389b579ac4b3448f0585a6a",
+    "run": {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 107,
+      "elapsed_seconds": 85.55589961702935,
+      "epochs": 157,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1893336,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581052,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "82631f4a446b95c40ca03e3648bc41085d42a56d769353d53816a25ff3d7b6c8",
+        "pid": 581052,
+        "process_token": "9f560a836c8d66bd12328fb7525ef9869961c0fe0620e321cff48964e138fa03"
+      },
+      "training_pid": 575661,
+      "training_process_token": "d088063679e5bebfb0d49a5d61a8daa4182183acfda70a064f5b9a279e4eaa08",
+      "validation_mse": 0.06077626720070839,
+      "validation_replay": {
+        "attempt_nonce": "82631f4a446b95c40ca03e3648bc41085d42a56d769353d53816a25ff3d7b6c8",
+        "pid": 576080,
+        "process_token": "8c91a2437ee4dabf83b3455ad10d0e8dc7269acec46f3af71ccbc20b0698a5b4"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "a9482f8acfacf423b31286c432558b5474289b53c5dc6229f0983539b074fe8e",
+    "registration_sha256": "7010e15c19ddd4ec6f28fce09972c18e5980ae6170df95535d9807e62ecdbff0",
+    "run": {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 64,
+      "elapsed_seconds": 63.480948910990264,
+      "epochs": 114,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1893788,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581125,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "48470240e3e521dbac11d52b93ff4679fee91a15555025343eb45718ea02634e",
+        "pid": 581125,
+        "process_token": "b3fc04b9cf2f1fd778cdc7cbfabc320d2e1cfde4f90cc12e133947abfa21543e"
+      },
+      "training_pid": 576128,
+      "training_process_token": "571d04fd2e08f83461502906a163c7978e3e3872be3b8bb8b4cde245ddaa0213",
+      "validation_mse": 0.0600900836288929,
+      "validation_replay": {
+        "attempt_nonce": "48470240e3e521dbac11d52b93ff4679fee91a15555025343eb45718ea02634e",
+        "pid": 576429,
+        "process_token": "be8cae2ebc10649df4211d32c803ece407b16629cd0dd2590324f94d1b2e2398"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "7d11464c69c830340dbd0eb46edaa9e7897f807f2e394979c85bd59d74337072",
+    "registration_sha256": "8472211b4dd9e739cac58175dcc572ee376092c7c172e255b8cb2878d4e4e042",
+    "run": {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 72,
+      "elapsed_seconds": 67.03701430000365,
+      "epochs": 122,
+      "parameter_count": 21603000,
+      "peak_rss_kib": 1888704,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581208,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "85bb1c2aac784c34f6450ac3288ce36d9ecda01bab0d4bdb5a506c48f11d9c86",
+        "pid": 581208,
+        "process_token": "4c6eb307c008e3fdda6383a26a55f60ba31112de350322705342d5e144abdd60"
+      },
+      "training_pid": 576478,
+      "training_process_token": "04235d81292c9ce682729080f5dc807432c24f53192ed11bcab7340903a066ee",
+      "validation_mse": 0.060345545411109924,
+      "validation_replay": {
+        "attempt_nonce": "85bb1c2aac784c34f6450ac3288ce36d9ecda01bab0d4bdb5a506c48f11d9c86",
+        "pid": 576812,
+        "process_token": "7cab815ec52072e13a9c1393d224140e34035084a4c7d29fca390ce5f90de048"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "c4f156ec63490e7f34c472d9ad26329f2ce4b3d70ca321ff828d5e20540388ee",
+    "registration_sha256": "ad59dff60fa3b1084c0fe32ad990e011b1e33f67c3949b9799ec143288a71be6",
+    "run": {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 71,
+      "elapsed_seconds": 69.88770151900826,
+      "epochs": 121,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1899568,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581293,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "46133d8c86f4472692b7b3e5f4717db7062b1ed60e13ea4110413128bcb72eff",
+        "pid": 581293,
+        "process_token": "544592f6e6a29752012dd873833e07181668dff021e6a55da28624727e9fc9f8"
+      },
+      "training_pid": 576860,
+      "training_process_token": "8f9ebea3edc2b9c48ff7fbb354725f1a4bdb3c62875920e9a0b836b6479300ab",
+      "validation_mse": 0.06087440252304077,
+      "validation_replay": {
+        "attempt_nonce": "46133d8c86f4472692b7b3e5f4717db7062b1ed60e13ea4110413128bcb72eff",
+        "pid": 577217,
+        "process_token": "89e69a5d1ad0336ba4b23d5681fd516cab92d8f68e4f4e1eea749821a9736f69"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "2c65e3bec6ddb58fd1eae98135eb63694ee6b243af48643b3fe06ed0298ebc6f",
+    "registration_sha256": "bb10189fceb0a765f081dd211a4e5bc1e28c3bc6ec08da4a8275ce35769fa8d4",
+    "run": {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 92,
+      "elapsed_seconds": 81.27595020300942,
+      "epochs": 142,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1904584,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581373,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "17d44c4be833e35c9a5c97a015c8a5c15e76214508330acd72fd1306f46fae71",
+        "pid": 581373,
+        "process_token": "e4a0ea8a742ab8d778b2e1a0aa8206e26441a2ef5f29ccb21dabf7290014d702"
+      },
+      "training_pid": 577267,
+      "training_process_token": "f52b49ff4d94b76aedd87acf1dacd82bc9ee9cd85d9c945935514249f56488c2",
+      "validation_mse": 0.06064123287796974,
+      "validation_replay": {
+        "attempt_nonce": "17d44c4be833e35c9a5c97a015c8a5c15e76214508330acd72fd1306f46fae71",
+        "pid": 577647,
+        "process_token": "dd38bcb8269200eade7b6235a677bd3b6c2672dc4a23832887dd9ced31ef7b25"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "fd2b3f59576250deaca1b271806ac4c504f74ddd34eac2749a2c543bfaa27e8a",
+    "registration_sha256": "d95f8cb897638e46a3f5f6bb38b9163bbe886f78fc19fc63d2d8a279f559ef09",
+    "run": {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 72,
+      "elapsed_seconds": 71.19736995897256,
+      "epochs": 122,
+      "parameter_count": 21633300,
+      "peak_rss_kib": 1899124,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581446,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "e462488018e25603271f42ce32d99e8c712b567062dbf97e5313e469ec0d4945",
+        "pid": 581446,
+        "process_token": "e843d5e11be9085998edc3c42ebabf75b849a4b9ed39e7eca99b4221fd4833c7"
+      },
+      "training_pid": 577694,
+      "training_process_token": "f091798a26d4a86eebb5f00f802c4aecf445207b80eb537f04205946085abf51",
+      "validation_mse": 0.06024887412786484,
+      "validation_replay": {
+        "attempt_nonce": "e462488018e25603271f42ce32d99e8c712b567062dbf97e5313e469ec0d4945",
+        "pid": 578067,
+        "process_token": "f4bb369b744147e42bc53ad268e878c315d61e1daf20e781d579cb538adfce3b"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "355bef1726facbc32eba39f61487474ab074c707f198ce9109d1c63a990c1c3a",
+    "registration_sha256": "474044b3f95f9f12a7eb0cc1e64cbb9ae42f729af939e9b8d3a6197bc6e774c0",
+    "run": {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 62,
+      "elapsed_seconds": 64.7915042960085,
+      "epochs": 112,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1899680,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581526,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "ee80308e404fc8abb411e4ac5889129881791ac218340eedf9f8a065d5f8c232",
+        "pid": 581526,
+        "process_token": "b0c0010d28614447af0ac85a8797e8f744983d5374241eb256eec556c01b0d6f"
+      },
+      "training_pid": 578137,
+      "training_process_token": "48a3a7ce8339e78fb1712aafe20e6a0ca67af334f69d04e7b5efeeb032495bcc",
+      "validation_mse": 0.059888921678066254,
+      "validation_replay": {
+        "attempt_nonce": "ee80308e404fc8abb411e4ac5889129881791ac218340eedf9f8a065d5f8c232",
+        "pid": 578448,
+        "process_token": "52dbdcbf92e0df3806bb8a5be0b68d076d136384e869f787d2de836e4c9d29b0"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "02fee20480789391efc3576851dcca6fb41c38782767bbc94c2fd6c15a2935a1",
+    "registration_sha256": "e832f00ba31957fe8796e95d7af790f2f1d81616358dea2e785d3b0bb3cd3ee9",
+    "run": {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 64,
+      "elapsed_seconds": 64.96182946802583,
+      "epochs": 114,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1903968,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581601,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "79efdf8fb325ef498fa367351cb8c611a847ef7a711a4d313d1e0796093b747e",
+        "pid": 581601,
+        "process_token": "2b2a90f615d51aa01ff124df48b4c19b696559ddcecd914fb369b1f5d1b5acea"
+      },
+      "training_pid": 578499,
+      "training_process_token": "2903d807444d29e36446be14756305b1f17c93325f68d7ddb50fb8a90a47e563",
+      "validation_mse": 0.05983196571469307,
+      "validation_replay": {
+        "attempt_nonce": "79efdf8fb325ef498fa367351cb8c611a847ef7a711a4d313d1e0796093b747e",
+        "pid": 578823,
+        "process_token": "44c52777027edd678998872072710ac49a1d74a97bb8c4ae66e7811b1b05cf34"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "0a8b71acef61130a0b01d06993b005166307f86792aa385a88f37d1d7233a827",
+    "registration_sha256": "7ca6e924c6463880b49f36fb8f84a89bfd97899a5a992028a7e5ae6b9403931b",
+    "run": {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 107,
+      "elapsed_seconds": 91.44829562399536,
+      "epochs": 157,
+      "parameter_count": 21613300,
+      "peak_rss_kib": 1898864,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581690,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "1abe6dc5ee0c4220540da58a5f5f7e7416a111757d58cf820359beab5e416f05",
+        "pid": 581690,
+        "process_token": "e9a79cbd7366cd63feb21aa41d985e43ef8ab21e7d030f2b2f21262890571f45"
+      },
+      "training_pid": 578866,
+      "training_process_token": "33ddd3aa28de3bab0022050ba331901615da906312e7e82a94db91914ab92c30",
+      "validation_mse": 0.06035829335451126,
+      "validation_replay": {
+        "attempt_nonce": "1abe6dc5ee0c4220540da58a5f5f7e7416a111757d58cf820359beab5e416f05",
+        "pid": 579298,
+        "process_token": "63b83c980855070dca8872afba8fccf4f031568969568f10aeb2b26438c7f89b"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "6c7c2da01c1bc01b28b1f69c6f937d3715d9acf47c793fdbf9589df5fc6c79a0",
+    "registration_sha256": "f151163c4f9a14b2ffd7702dddc5a3b367f8a5b186d90e94cecfc043307ab672",
+    "run": {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    "terminal": {
+      "best_epoch": 36,
+      "elapsed_seconds": 52.425215999013744,
+      "epochs": 86,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1905088,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581766,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "ca009bcb668b3b3ccc66852052910edb919dcbc7add02cb97ceb903cae86f17a",
+        "pid": 581766,
+        "process_token": "8920dafabb784d88f66af452704806c4b35e6f848269ce6d4f91f0c6b216685d"
+      },
+      "training_pid": 579346,
+      "training_process_token": "1dccd8c4fb0b435f7bf3e871025bf1f16d584531d0d02583c3b4dcdfe5fde49a",
+      "validation_mse": 0.060696568340063095,
+      "validation_replay": {
+        "attempt_nonce": "ca009bcb668b3b3ccc66852052910edb919dcbc7add02cb97ceb903cae86f17a",
+        "pid": 579610,
+        "process_token": "68cf970659ba1ff07453f922dee89d0ae4aa675ecb40cab95bb76c3708747fcb"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "c484dc03007c5813402a55e07db6404add04076454e5f38ec29fcd232f724656",
+    "registration_sha256": "2fc1bff778402810d91bdb3c8ecc6182cab83144e0756ef1fb7bc38de265b11c",
+    "run": {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    "terminal": {
+      "best_epoch": 45,
+      "elapsed_seconds": 57.75348686100915,
+      "epochs": 95,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1899776,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581849,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "f0e949e1d3dce66b065f0b23695b517756c95f026e6a17f229555c3e4e323a39",
+        "pid": 581849,
+        "process_token": "8a1125564d9529d95c462e5b12c66d76878a408148b767627ab08990d465c8d0"
+      },
+      "training_pid": 579656,
+      "training_process_token": "7771c60a96fd7148b9d1a718b551acec2c41e4f694f8063243225b261a509b4d",
+      "validation_mse": 0.06052326038479805,
+      "validation_replay": {
+        "attempt_nonce": "f0e949e1d3dce66b065f0b23695b517756c95f026e6a17f229555c3e4e323a39",
+        "pid": 579949,
+        "process_token": "b25c979afbb72e34eeb5ece5ed4b9e97fb3dd3f9034fc521782c830cef211b0a"
+      },
+      "weights_updated": true
+    }
+  },
+  {
+    "manifest_sha256": "7a7c3a97cc5ffca7f1639d9124c5353b203e2a5930483bb09471386a727585d1",
+    "registration_sha256": "eab6a8cabfe960bee42d4fbde38ffd7ea48c88a9e244d3fb789242396cf4ea7a",
+    "run": {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    "terminal": {
+      "best_epoch": 31,
+      "elapsed_seconds": 48.97288940194994,
+      "epochs": 81,
+      "parameter_count": 21609464,
+      "peak_rss_kib": 1899988,
+      "replay": "exact fresh-process native sampled prediction",
+      "replay_pid": 581932,
+      "smoke": false,
+      "status": "complete",
+      "test_replay": {
+        "attempt_nonce": "287f94a9d2332665322face392caa95088cea815e1bd6f75b4afc63ed9c96d9f",
+        "pid": 581932,
+        "process_token": "9e62c196bab12708a5cb2cb03d013841bf0e20dd1adde82a0c2e1115af983206"
+      },
+      "training_pid": 579991,
+      "training_process_token": "3814d9dc0f4561a46d0384d627666119631e0babce4b7f8643a8c6d25c01e62c",
+      "validation_mse": 0.06116035580635071,
+      "validation_replay": {
+        "attempt_nonce": "287f94a9d2332665322face392caa95088cea815e1bd6f75b4afc63ed9c96d9f",
+        "pid": 580234,
+        "process_token": "cab27b5fa8871cb875f78562e93e4f859863c30e9695f589357e194bd2d971f9"
+      },
+      "weights_updated": true
+    }
+  }
+]
