@@ -99,3 +99,4 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0072](0072-disease-eligibility-and-unified-tox.md) | Disease eligibility at 100 axis-resolved DEGs, retained AF evidence and dataset-level unified TOX (*measured successor accepted 2026-11-16*) |
 | [0073](0073-full-source-tier-first-deg1000-and-four-axes.md) | Full-source collection, highest DEG source tier, tier-first DEG1000/f1000, four nested axes/views and portrait category-split rule DOCX (*coherently measured release, #220–#225*) |
 | [0074](0074-single-dose-tenv-5k-native-comparison.md) | Single-dose G_5000 native model comparison, shared splits and parent-level Δ scoring (*supersedes 0063/0064 current evaluation duties; old release retained until acceptance*) |
+| [0075](0075-transigen-all-dose-input-selection.md) | TranSiGen all-dose inputs: seven fixed candidates, nested cold-drug selection and auxiliary held-dose evaluation |
