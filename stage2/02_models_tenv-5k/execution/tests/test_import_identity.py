@@ -22,18 +22,34 @@ class ImportIdentityTests(unittest.TestCase):
             args = SimpleNamespace(inputs=root/'inputs', means=root/'means', device='cpu',
                                    prnet_source=root/'prnet', transigen_source=root/'transigen')
             frozen = matrix.frozen_plan(args)
-            self.assertEqual(frozen['schema'], 'tenv5k-matrix-v2')
+            self.assertEqual(frozen['schema'], 'tenv5k-matrix-v3-threefold-f32-lr1e4')
             self.assertEqual(set(frozen['methods']), {'prnet', 'transigen', 'mlp'})
-            self.assertEqual(frozen['methods']['prnet']['scientific_identity'], 'prnet-native-f32-v1')
-            self.assertEqual(frozen['methods']['transigen']['scientific_identity'], 'transigen-native-f64-v1')
+            self.assertEqual(frozen['methods']['prnet']['scientific_identity'], 'prnet-native-f32-lr1e4-v1')
+            self.assertEqual(frozen['methods']['transigen']['scientific_identity'], 'transigen-native-f32-lr1e4-v1')
             self.assertIn('output/api/tenv5k/protocol.py', frozen['shared']['evaluation_code_sha256'])
             self.assertNotIn('output/api/tenv5k/model_transigen.py', frozen['methods']['prnet']['code_sha256'])
+
+    def test_historical_candidate_cannot_resume_as_current_matrix(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            for name in ('inputs','means'):
+                (root/name).mkdir();(root/name/'manifest.json').write_text('{}')
+            candidate=root/'matrix';candidate.mkdir()
+            args=SimpleNamespace(inputs=root/'inputs',means=root/'means',candidate=candidate,
+                                 device='cpu',prnet_source=root/'prnet',transigen_source=root/'transigen',resume=True)
+            current=matrix.frozen_plan(args)
+            for schema in ('tenv5k-matrix-v1','tenv5k-matrix-v2'):
+                (candidate/'plan.json').write_text(json.dumps({**current,'schema':schema}))
+                with self.assertRaisesRegex(ValueError,'resume plan/config/code identity changed'):
+                    matrix.execute(args)
+                self.assertFalse((candidate/'registrations').exists())
+                self.assertFalse((candidate/'runs').exists())
 
     def test_import_cannot_relabel_transigen_or_change_shared_scoring(self):
         with tempfile.TemporaryDirectory() as directory:
             args = SimpleNamespace(candidate=Path(directory), import_original=Path(directory)/'old',
                                    import_runtime=Path(directory)/'runtime', compatibility_audit=None)
-            with self.assertRaisesRegex(ValueError, 'cold PRnet'):
+            with self.assertRaisesRegex(ValueError, 'fresh training'):
                 matrix.import_run(args, dict(adapter='transigen', scenario='cold-drug', fold=0, seed=17))
 
 class ImportedEvidenceTests(unittest.TestCase):
@@ -168,10 +184,20 @@ class ImportedEvidenceTests(unittest.TestCase):
         import torch
         binding=attempt_binding(registration)
         config=json.loads((root/'config.json').read_text());config['execution_binding']=binding
+        current=dict(method_identity='prnet-native-f32-lr1e4-v1',compute_dtype='float32',
+                     initialization_dtype='float32',prediction_dtype='float32',learning_rate=1e-4)
+        config.update(current)
+        self.target['methods']['prnet']['scientific_identity']=current['method_identity']
+        self.target['methods']['prnet']['scientific_configuration']=current
+        # Updating the method requires a newly registered attempt, before binding.
+        registration=matrix.execution_registration(self.run,self.target,'1'*64)
+        binding=attempt_binding(registration);config['execution_binding']=binding
         (root/'config.json').write_text(json.dumps(config))
-        torch.save(dict(config=config,execution_binding=binding,state_dict={}),root/'checkpoint.pt')
+        torch.save(dict(config=config,execution_binding=binding,state_dict={'weight':torch.ones(1)}),root/'checkpoint.pt')
+        import numpy as np
+        np.save(root/'prediction.npy',np.ones((1,3),dtype=np.float32))
         manifest=json.loads((root/'manifest.json').read_text());manifest['execution_binding']=binding
-        for name in ('config.json','checkpoint.pt'):manifest['outputs'][name]=matrix.digest(root/name)
+        for name in ('config.json','checkpoint.pt','prediction.npy'):manifest['outputs'][name]=matrix.digest(root/name)
         (root/'manifest.json').write_text(json.dumps(manifest))
         matrix.record_execution(root,self.run,self.target,registration)
         self.assertEqual(matrix.verify_execution(root,self.run,self.target)['origin'],'trained')
@@ -220,7 +246,7 @@ class ImportedEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'manifest attempt'):
             verify_artifact_binding(root,registration)
 
-    def test_only_exact_reviewed_metadata_plumbing_transitions_are_importable(self):
+    def test_current_method_cannot_use_historical_metadata_import_authorization(self):
         import copy
         root=self.root/'inputs';root.mkdir();(root/'manifest.json').write_text('{}')
         args=SimpleNamespace(inputs=root,means=root,device='cuda',prnet_source=root,transigen_source=root)
@@ -228,9 +254,10 @@ class ImportedEvidenceTests(unittest.TestCase):
         audit=copy.deepcopy(self.audit);audit['target_method']=target['methods']['prnet']
         paths={'output/api/tenv5k/learner.py','execution/prnet.py','output/api/tenv5k/attempt_identity.py'}
         audit['changed_code']={p:'Reviewed metadata-only binding, no model RNG or mathematics change' for p in paths}
-        self.imports.validate_compatibility(self.original,target,audit,self.imports.ORIGINAL_PLAN_SHA256)
+        with self.assertRaisesRegex(ValueError,'scientific identity'):
+            self.imports.validate_compatibility(self.original,target,audit,self.imports.ORIGINAL_PLAN_SHA256)
         target['methods']['prnet']['code_sha256']['execution/prnet.py']='arbitrary CLI change'
-        with self.assertRaisesRegex(ValueError,'unreviewed metadata'):
+        with self.assertRaisesRegex(ValueError,'scientific identity'):
             self.imports.validate_compatibility(self.original,target,audit,self.imports.ORIGINAL_PLAN_SHA256)
 
     def test_failed_attempt_keeps_its_registration_and_original_bytes(self):

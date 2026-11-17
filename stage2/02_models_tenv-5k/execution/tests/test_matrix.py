@@ -11,9 +11,32 @@ matrix=importlib.util.module_from_spec(spec);spec.loader.exec_module(matrix)
 class MatrixTests(unittest.TestCase):
     def test_plan_is_complete_and_unique(self):
         runs=matrix.plan()
-        self.assertEqual(len(runs),90)
-        self.assertEqual(len({tuple(r.values()) for r in runs}),90)
+        self.assertEqual(len(runs),54)
+        self.assertEqual(len({tuple(r.values()) for r in runs}),54)
         self.assertEqual({r['seed'] for r in runs},{17,42,2026})
+        self.assertEqual({r['fold'] for r in runs},{0,1,2})
+    def test_import_is_unavailable_for_every_current_method(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as temporary:
+            args=SimpleNamespace(candidate=Path(temporary))
+            for run in matrix.plan():
+                with self.assertRaisesRegex(ValueError, 'fresh training'):
+                    matrix.import_run(args,run)
+            target=Path(temporary)/'imported';target.mkdir()
+            (target/'import-receipt.json').write_text('{}')
+            with self.assertRaisesRegex(ValueError,'fresh training'):
+                matrix.verify_execution(target,matrix.plan()[0],{'schema':'tenv5k-matrix-v3-threefold-f32-lr1e4'})
+
+    def test_historical_acceptance_cannot_publish(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            for acceptance in ({}, {'schema':'tenv5k-matrix-acceptance-v2','runs':90},
+                               {'schema':matrix.ACCEPTANCE_SCHEMA,'runs':53}):
+                (root/'acceptance.json').write_text(json.dumps(acceptance))
+                with self.assertRaisesRegex(ValueError,'current three-fold acceptance'):
+                    matrix.publish(SimpleNamespace(candidate=root))
+
     def test_failed_smoke_missing_digest_resume_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary)
@@ -46,3 +69,31 @@ class MatrixTests(unittest.TestCase):
             self.assertTrue(list((root/'attempts').rglob('terminal.before-replay.json')))
 
 if __name__=='__main__':unittest.main()
+
+class ScientificAcceptanceTests(unittest.TestCase):
+    def test_each_method_requires_new_identity_float32_prediction_and_checkpoint(self):
+        import numpy as np
+        import torch
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            for adapter in ('prnet','transigen','mlp'):
+                config=dict(method_identity=adapter+'-f32-lr1e4',compute_dtype='float32',
+                            initialization_dtype='float32',prediction_dtype='float32',learning_rate=1e-4)
+                method=dict(scientific_identity=config['method_identity'],scientific_configuration=config.copy())
+                def save(dtype=torch.float32,prediction_dtype=np.float32):
+                    torch.save(dict(config=config.copy(),state_dict={'weight':torch.ones(1,dtype=dtype),'counter':torch.ones(1,dtype=torch.int64)}),root/'checkpoint.pt')
+                    np.save(root/'prediction.npy',np.ones((2,3),dtype=prediction_dtype))
+                save()
+                matrix.verify_scientific_run(root,config,method)
+                save(prediction_dtype=np.float64)
+                with self.assertRaisesRegex(ValueError,'prediction.*float32'):
+                    matrix.verify_scientific_run(root,config,method)
+                save(dtype=torch.float64)
+                with self.assertRaisesRegex(ValueError,'state.*float32'):
+                    matrix.verify_scientific_run(root,config,method)
+                save();config['learning_rate']=1e-3
+                with self.assertRaisesRegex(ValueError,'scientific configuration'):
+                    matrix.verify_scientific_run(root,config,method)
+                config['learning_rate']=1e-4;config['method_identity']='historical'
+                with self.assertRaisesRegex(ValueError,'method identity'):
+                    matrix.verify_scientific_run(root,config,method)
