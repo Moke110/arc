@@ -1,0 +1,11 @@
+{
+  "driver_max_rss_kib": 1946076,
+  "driver_wall_seconds": 2024.88,
+  "max_gpu_used_MiB": 2395,
+  "max_gpu_utilization_percent": 45,
+  "min_available_GiB": 39.023555755615234,
+  "monitor_gpu_read_errors": 0,
+  "peak_fit_rss_kib": 1946076,
+  "samples": 195,
+  "window": "driver wall-time interval; start inferred from time-v and exit-marker mtime"
+}
