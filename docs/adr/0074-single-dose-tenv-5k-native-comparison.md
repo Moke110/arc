@@ -44,3 +44,46 @@ artifact identities, fresh-process exact sampled replay and scientific equivalen
 The remaining 45 learner identities require training; Mean reuse requires manifest
 and scoring compatibility. None of this amendment establishes completed full-matrix
 acceptance: ADR 0062 candidate-first publication and #231's 90-run checks still apply.
+
+
+## Approved three-fold, lower-LR float32 amendment — 2026-11-17
+
+After the float64 formal attempt also failed with non-finite native loss, the
+user approved a new comparison protocol through grill-with-docs. This amendment
+supersedes the five-fold, LR and float64 requirements above for the next candidate;
+all historical attempts and their original scientific identities remain evidence.
+It does not establish numerical stability or completed acceptance.
+
+Set the initial Adam learning rate to 1e-4 for PRnet, TranSiGen and MLP_Morgan.
+Retain each method's other Adam settings, native architecture and loss, PRnet's
+existing ReduceLROnPlateau scheduler, and no scheduler for TranSiGen or MLP.
+All learner floating parameters, buffers, training, validation, inference and
+serialized predictions use float32. Preserve native float32 CPU noise sampling
+and the reviewed CUDA policy. Mean computation and metric/statistical accumulation
+retain their existing float64 precision. No clipping, clamping or alternative KL
+is introduced. Preserve strict validation-MSE best restoration, patience50 and
+max1000; non-finite runs still fail and cannot contribute a successful checkpoint.
+
+Generate complete new three-fold partitions for both cold-drug and warm-start,
+using the existing splitting rules and split seed 226, rather than taking three
+of the historical five folds. Preserve ceil(10%) outer-training validation and
+coverage constraints, fixed validation seed 22617, training seeds 17/42/2026 and
+bootstrap seed 2262026. Each eligible well must have exactly one out-of-fold
+prediction per scenario, learner and training seed before parent aggregation.
+
+The new matrix contains 2 scenarios × 3 learners × 3 folds × 3 seeds = 54 fresh
+training runs. Recompute Mean baselines from the new training partitions: 18
+baseline slots, 15 applicable and 3 cold-drug Mean_drug N/A. No historical learner
+checkpoint or prediction is reusable in this matrix: both the learning rate and
+partitions change. Freeze new protocol, method and execution identities in a new
+candidate; never resume or relabel a historical candidate as this protocol.
+
+Keep the released population, normalization, gene axis, Morgan2048, parent-level
+Δ evaluation, paired bootstrap and winner rule unchanged. Full acceptance still
+requires fresh-process exact replay, complete OOF coverage, metrics and CSV-only
+figure reproduction. The earlier accepted step remains available until successor
+acceptance and explicit retirement; Stage 3 stays frozen. These are approved
+planning decisions, not a claim that implementation or training has occurred.
+
+Source: user's 2026-11-17 request followed by “均同意” to the three concrete
+scope questions; [durable decision record](https://app.notion.com/p/41bab6347e96818fafa7e11ffe71dec7).
