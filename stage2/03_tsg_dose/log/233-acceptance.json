@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-17",
+  "input_candidate": "stage2/03_tsg_dose/execution/checkpoints/inputs-v1",
+  "input_config": {
+    "axis_size": 5000,
+    "doses_um": [
+      0.2,
+      1.0,
+      10.0
+    ],
+    "early_stopping": {
+      "max_epochs": 1000,
+      "monitor": "complete validation treated-expression MSE",
+      "patience": 50,
+      "restore_best": true,
+      "strict_lower": true,
+      "validation_seed": 22617
+    },
+    "folds": 3,
+    "morgan": {
+      "binary": true,
+      "bits": 2048,
+      "includeChirality": true,
+      "radius": 2,
+      "rdkit": "2026.03.2"
+    },
+    "n_parents": 459,
+    "n_treated": 4206,
+    "n_unique_controls": 192,
+    "rounding": "ceil10% parents cold/final, parent-dose groups held-dose",
+    "schema": "tsg-dose-protocol-v1",
+    "split_seed": 226,
+    "statistical_seed": 2262026,
+    "training_seeds": [
+      17,
+      42,
+      2026
+    ],
+    "validation_fraction": 0.1,
+    "view_manifest_sha256": "7ba2bde3c20cdcf9036d88c9ac344991657448319b2811f51b2fe47c59c8c11d",
+    "view_tenv_sha256": "952435d9cb7df3f30e93200c5574faa50d60bfd602a5b70acf78cfd60adb9044"
+  },
+  "input_manifest_sha256": "1143c7c455e7355ca243eb64ec7faa319987585ac5ac8106282004275cdc0cfa",
+  "limitations": [
+    "Bounded8-row2-epoch smoke does not count toward147formal fits",
+    "The previous first8-row smoke-v1 is preserved separately as historical smoke; v2 freezes dose-balanced smoke subset",
+    "Formal release and final selected checkpoints remain gated by all147fits"
+  ],
+  "resources": {
+    "preparation": {
+      "cap": "RLIMIT_AS10GiB threads2",
+      "peak_rss_kib": 560472,
+      "wall_seconds": 4.06
+    },
+    "test_and_replay": {
+      "cap": "systemd MemoryMax10G MemorySwapMax8G threads2",
+      "peak_rss_kib": 1304596,
+      "wall_seconds": 6.21
+    },
+    "training_and_validation_replay": {
+      "cap": "systemd MemoryMax10G MemorySwapMax8G threads2",
+      "peak_rss_kib": 1829788,
+      "wall_seconds": 6.59
+    }
+  },
+  "smoke": {
+    "best_epoch": 2,
+    "elapsed_seconds": 1.7417597309686244,
+    "epochs": 2,
+    "parameter_count": 21583000,
+    "peak_rss_kib": 1703064,
+    "replay": "exact fresh-process native sampled prediction",
+    "replay_pid": 500526,
+    "smoke": true,
+    "status": "complete",
+    "test_replay": {
+      "attempt_nonce": "7573cadb508f825bf8fb09b1ed3e9f22c33f00e2b90064f0f6f27aefb9925220",
+      "pid": 500526,
+      "process_token": "49818ec39a038ab2e24cc6a39d6200c1e309958312858457f2f2410914dde6e8"
+    },
+    "training_pid": 500296,
+    "training_process_token": "8e7f006271edbd091fa0442601cdb239142a343602a8180470f96bbf362b2605",
+    "validation_mse": 0.16907113790512085,
+    "validation_replay": {
+      "attempt_nonce": "7573cadb508f825bf8fb09b1ed3e9f22c33f00e2b90064f0f6f27aefb9925220",
+      "pid": 500325,
+      "process_token": "ebfd63514960f8a32c7cb9d8b037e76223a32b14414500b5116e87323180536e"
+    },
+    "weights_updated": true
+  },
+  "smoke_candidate": "stage2/03_tsg_dose/execution/checkpoints/smoke-no-dose-v2",
+  "smoke_manifest_sha256": "a6ed785a27595c59ded31fa984019662fc468c9ba9b9755109bd2fe856ab3547",
+  "status": "foundation-slice-accepted-not-formal-release",
+  "tests": {
+    "command": "python -m unittest discover -s stage2/03_tsg_dose/execution/tests -v",
+    "passed": 4
+  },
+  "ticket": 233
+}

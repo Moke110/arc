@@ -1,0 +1,11 @@
+{
+  "attempt_nonce": "7573cadb508f825bf8fb09b1ed3e9f22c33f00e2b90064f0f6f27aefb9925220",
+  "device": "cuda",
+  "origin": "bounded-smoke",
+  "run": {
+    "fold": 0,
+    "method": "no-dose",
+    "scenario": "cold-drug",
+    "seed": 17
+  }
+}
