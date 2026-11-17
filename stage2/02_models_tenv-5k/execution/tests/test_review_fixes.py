@@ -47,7 +47,7 @@ class ReviewFixTests(unittest.TestCase):
                 path=step/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(value)
             before=contents(step);args=SimpleNamespace(candidate=candidate)
             with patch.object(matrix,'STEP',step):
-                with self.assertRaises(ValueError):matrix.publish(args)
+                with self.assertRaises(ValueError):matrix.install_verified_candidate(args)
                 self.assertEqual(contents(step),before)
                 shutil.rmtree(step/'output/comparison')
                 before=contents(step)
@@ -56,7 +56,7 @@ class ReviewFixTests(unittest.TestCase):
                     if Path(source)==candidate/'comparison':raise OSError('injected staging copy failure')
                     return copytree(source,target,*a,**kw)
                 with patch.object(matrix.shutil,'copytree',side_effect=failing_copy):
-                    with self.assertRaises(OSError):matrix.publish(args)
+                    with self.assertRaises(OSError):matrix.install_verified_candidate(args)
                 self.assertEqual(contents(step),before)
                 replace=os.replace
                 calls=[]
@@ -65,20 +65,20 @@ class ReviewFixTests(unittest.TestCase):
                     if len(calls)==2:raise OSError('injected second rename failure')
                     return replace(source,target)
                 with patch.object(matrix.os,'replace',side_effect=fail_second_rename):
-                    with self.assertRaises(OSError):matrix.publish(args)
+                    with self.assertRaises(OSError):matrix.install_verified_candidate(args)
                 self.assertEqual(contents(step),before)
                 def failing_replace(source,target):
                     if Path(target)==step/'figure/metrics.png':raise OSError('injected publication interruption')
                     return replace(source,target)
                 with patch.object(matrix.os,'replace',side_effect=failing_replace):
-                    with self.assertRaises(OSError):matrix.publish(args)
+                    with self.assertRaises(OSError):matrix.install_verified_candidate(args)
                 self.assertEqual(contents(step),before)
                 rename=os.rename
                 def failing_rollback_rename(source,target):
                     if Path(target)==step/'figure/metrics.png':raise OSError('injected rollback I/O failure')
                     return rename(source,target)
                 with patch.object(matrix.os,'replace',side_effect=failing_replace),patch.object(matrix.os,'rename',side_effect=failing_rollback_rename):
-                    with self.assertRaises((OSError,RuntimeError)):matrix.publish(args)
+                    with self.assertRaises((OSError,RuntimeError)):matrix.install_verified_candidate(args)
                 journal=root/'.tenv5k-publication-journal.json'
                 self.assertTrue(journal.exists())
                 state=json.loads(journal.read_text())
@@ -90,10 +90,10 @@ class ReviewFixTests(unittest.TestCase):
                     self.assertEqual(contents(step),before)
                     raise OSError('stop after proving recovery restored old release')
                 with patch.object(matrix.shutil,'copytree',side_effect=verify_restored_then_fail_copy):
-                    with self.assertRaises(OSError):matrix.publish(args)
+                    with self.assertRaises(OSError):matrix.install_verified_candidate(args)
                 self.assertEqual(contents(step),before)
                 self.assertFalse(journal.exists())
-                matrix.publish(args)
+                matrix.install_verified_candidate(args)
                 self.assertEqual((step/'output/runs/new').read_text(),'newrun')
                 self.assertEqual((step/'figure/metrics.png').read_text(),'newpng')
 
@@ -109,7 +109,7 @@ class ReviewFixTests(unittest.TestCase):
             journal=root/'.tenv5k-publication-journal.json'
             journal.write_text(json.dumps(dict(transaction=str(transaction),entries=[dict(target=str(target),backup=str(backup),staged=str(transaction/'already-renamed'),existed=True)])))
             with patch.object(matrix,'STEP',step):
-                with self.assertRaises((ValueError,FileNotFoundError)):matrix.publish(SimpleNamespace(candidate=candidate))
+                with self.assertRaises((ValueError,FileNotFoundError)):matrix.install_verified_candidate(SimpleNamespace(candidate=candidate))
             self.assertEqual(target.read_bytes(),b'old accepted png')
             self.assertEqual(untouched.read_bytes(),b'do not touch')
             self.assertFalse(journal.exists())

@@ -15,6 +15,10 @@ STEP=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(STEP/'output/api'))
 sys.path.insert(0,str(STEP/'execution'))
 METHODS={'prnet':'PRnet','transigen':'TranSiGen','mlp':'MLP_Morgan'}
+MATRIX_SCHEMA='tenv5k-matrix-v3-threefold-f32-lr1e4'
+ACCEPTANCE_SCHEMA='tenv5k-matrix-acceptance-v3-threefold-f32-lr1e4'
+DEFAULT_CANDIDATE=STEP/'execution/checkpoints/matrix-threefold-f32-lr1e4'
+FOLDS=3
 
 
 def digest(path):
@@ -26,7 +30,7 @@ def digest(path):
 
 def plan():
     return [dict(adapter=a,scenario=s,fold=f,seed=t) for s in ('cold-drug','warm-start')
-            for a in METHODS for f in range(5) for t in (17,42,2026)]
+            for a in METHODS for f in range(FOLDS) for t in (17,42,2026)]
 
 
 def require_complete(*,plan,found):
@@ -70,7 +74,7 @@ def frozen_plan(args):
     # Execution owns direct entrypoints/helpers; descendants hold tests and
     # candidate/checkpoint provenance. Public API packages are recursive source.
     execution=STEP/'execution';api=STEP/'output/api'
-    candidate=Path(getattr(args,'candidate',execution/'checkpoints/matrix-231')).resolve()
+    candidate=Path(getattr(args,'candidate',DEFAULT_CANDIDATE)).resolve()
     if (execution.resolve().is_relative_to(candidate) or api.resolve().is_relative_to(candidate)
             or candidate.is_relative_to(api.resolve())
             or candidate in {p.resolve() for p in execution.glob('*.py') if p.is_file()}):
@@ -82,26 +86,28 @@ def frozen_plan(args):
     for adapter in METHODS:
         names=['execution/'+adapter+'.py']+['output/api/tenv5k/'+name+'.py' for name in
             ('model_'+adapter,'learner','learning','inputs','protocol','native_import','attempt_identity')]
-        identity={'prnet':'prnet-native-f32-v1','transigen':'transigen-native-f32-v1','mlp':'mlp-morgan-project-v1'}[adapter]
         tree=ast.parse((STEP/'output/api/tenv5k'/('model_'+adapter+'.py')).read_text())
+        configuration={}
+        keys={'method_identity','compute_dtype','initialization_dtype','prediction_dtype','learning_rate','lr'}
         for node in tree.body:
             if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='CONFIG' for t in node.targets) and isinstance(node.value,ast.Call):
-                for keyword in node.value.keywords:
-                    if keyword.arg=='method_identity':identity=ast.literal_eval(keyword.value)
-        methods[adapter]=dict(scientific_identity=identity,code_sha256={n:code[n] for n in names})
+                configuration={k.arg:ast.literal_eval(k.value) for k in node.value.keywords if k.arg in keys}
+        if (not configuration.get('method_identity') or
+                any(configuration.get(k)!='float32' for k in ('compute_dtype','initialization_dtype','prediction_dtype')) or
+                configuration.get('learning_rate',configuration.get('lr'))!=1e-4):
+            raise ValueError('method configuration differs from approved float32/lr1e-4 protocol: '+adapter)
+        methods[adapter]=dict(scientific_identity=configuration['method_identity'],
+                             scientific_configuration=configuration,code_sha256={n:code[n] for n in names})
     shared=dict(input_manifest_sha256=digest(args.inputs/'manifest.json'),
                 means_manifest_sha256=digest(args.means/'manifest.json'),
                 evaluation_code_sha256={n:code[n] for n in ('output/api/tenv5k/protocol.py','output/api/tenv5k/comparison.py')})
-    return dict(schema='tenv5k-matrix-v2',shared=shared,methods=methods,runs=plan(),device=args.device,input_manifest_sha256=digest(args.inputs/'manifest.json'),
+    return dict(schema=MATRIX_SCHEMA,shared=shared,methods=methods,runs=plan(),device=args.device,input_manifest_sha256=digest(args.inputs/'manifest.json'),
         means_manifest_sha256=digest(args.means/'manifest.json'),code_sha256=code,
         sources={a:str(p.resolve()) for a,p in source_paths(args).items()},max_epochs=1000,patience=50)
 
 
 def import_run(args,run):
-    if run not in plan() or run["adapter"]!="prnet" or run["scenario"]!="cold-drug":
-        raise ValueError("only the 15 registered cold PRnet identities may be imported")
-    from import_matrix import import_original
-    return import_original(args,run,import_dependencies())
+    raise ValueError('current comparison requires fresh training; historical import is disabled')
 
 
 def import_dependencies():
@@ -138,11 +144,10 @@ def record_execution(root,run,frozen,registration=None):
         raise ValueError('imported evidence cannot be relabelled as newly trained')
     config=verify_run(root,run,frozen['input_manifest_sha256'],frozen['device'])
     method=frozen['methods'][run['adapter']]
-    if run['adapter']=='transigen' and config.get('method_identity','transigen-native-f32-v1')!=method['scientific_identity']:
-        raise ValueError('trained numerical method identity changed')
     verify_registration(registration,run,frozen)
     from tenv5k.attempt_identity import verify_artifact_binding
     verify_artifact_binding(root,registration)
+    verify_scientific_run(root,config,method)
     receipt=dict(schema='tenv5k-execution-v1',origin='trained',run=run,method=method,shared=frozen['shared'],
                  registration=registration,
                  manifest_sha256=digest(root/'manifest.json'))
@@ -151,9 +156,8 @@ def record_execution(root,run,frozen,registration=None):
 
 def verify_execution(root,run,frozen):
     root=Path(root)
-    if (root/'import-receipt.json').exists():
-        from import_matrix import verify_import
-        return verify_import(root,run,frozen,import_dependencies())
+    if (root/'import-receipt.json').exists() or (root/'import-provenance').exists():
+        raise ValueError('current comparison requires fresh training; imported evidence is historical')
     receipt=json.loads((root/'execution-receipt.json').read_text())
     registration=receipt.get('registration')
     verify_registration(registration,run,frozen)
@@ -163,9 +167,27 @@ def verify_execution(root,run,frozen):
                   shared=frozen['shared'],registration=registration,manifest_sha256=digest(root/'manifest.json'))
     if receipt!=expected:raise ValueError('trained execution identity changed')
     config=verify_run(root,run,frozen['input_manifest_sha256'],frozen['device'])
-    if run['adapter']=='transigen' and config.get('method_identity','transigen-native-f32-v1')!=receipt['method']['scientific_identity']:
-        raise ValueError('trained numerical method identity changed')
+    verify_scientific_run(root,config,receipt['method'])
     return receipt
+
+
+def verify_scientific_run(root,config,method):
+    """Accept only the registered method, float32 checkpoint and stored prediction."""
+    import numpy as np
+    import torch
+    if config.get('method_identity')!=method['scientific_identity']:
+        raise ValueError('trained numerical method identity changed')
+    expected=method['scientific_configuration']
+    if any(config.get(key)!=value for key,value in expected.items()):
+        raise ValueError('trained scientific configuration changed')
+    prediction=np.load(Path(root)/'prediction.npy',mmap_mode='r')
+    if prediction.dtype!=np.dtype('float32') or not np.isfinite(prediction).all():
+        raise ValueError('stored learner prediction must be finite float32')
+    saved=torch.load(Path(root)/'checkpoint.pt',map_location='cpu',weights_only=False)
+    if saved['config']!=config or not saved['state_dict']:
+        raise ValueError('checkpoint configuration/state differs from registered method')
+    if any(value.is_floating_point() and value.dtype!=torch.float32 for value in saved['state_dict'].values()):
+        raise ValueError('checkpoint floating state must be float32')
 
 
 def recover_existing(args,run,input_digest,replay_only,registration=None):
@@ -284,16 +306,16 @@ def evaluate(args,destination):
     frozen=json.loads((args.candidate/'plan.json').read_text())
     verify_manifest(args.means,input_digest)
     statuses=pd.read_csv(args.means/'status.csv')
-    expected={(s,f,m):('not-applicable' if s=='cold-drug' and m=='Mean_drug' else 'complete') for s in ('cold-drug','warm-start') for f in range(5) for m in ('Mean','Mean_cell','Mean_drug')}
+    expected={(s,f,m):('not-applicable' if s=='cold-drug' and m=='Mean_drug' else 'complete') for s in ('cold-drug','warm-start') for f in range(FOLDS) for m in ('Mean','Mean_cell','Mean_drug')}
     actual={(r.scenario,int(r.fold),r.method):r.status for r in statuses.itertuples()}
-    if len(statuses)!=30 or actual!=expected:raise ValueError('invalid deterministic baseline matrix')
+    if len(statuses)!=18 or actual!=expected:raise ValueError('invalid deterministic baseline matrix')
     parent_rows=[];well_rows=[];curves=[];found=[]
     for scenario in ('cold-drug','warm-start'):
         for adapter,method in list(METHODS.items())+[(m,m) for m in ('Mean','Mean_cell','Mean_drug')]:
             if scenario=='cold-drug' and method=='Mean_drug':continue
             for seed in (17,42,2026) if adapter in METHODS else (-1,):
                 folds=[]
-                for fold in range(5):
+                for fold in range(FOLDS):
                     run=dict(adapter=adapter,scenario=scenario,fold=fold,seed=seed)
                     root=run_path(args.candidate,run) if adapter in METHODS else args.means/scenario/str(fold)/method
                     if adapter in METHODS:
@@ -381,8 +403,8 @@ def accept(args):
     origins=[verify_execution(run_path(args.candidate,r),r,frozen) for r in plan()]
     result.update(execution_origins=[dict(run=r['run'],origin=r['origin']) for r in origins],
                   method_identities=frozen['methods'],shared_identity=frozen['shared'],
-                  schema='tenv5k-matrix-acceptance-v2',input_manifest_sha256=digest(args.inputs/'manifest.json'),
-                  plan_sha256=digest(args.candidate/'plan.json'),replay='exact CSV metrics and PNG',runs=90,
+                  schema=ACCEPTANCE_SCHEMA,input_manifest_sha256=digest(args.inputs/'manifest.json'),
+                  plan_sha256=digest(args.candidate/'plan.json'),replay='exact CSV metrics and PNG',runs=len(plan()),
                   files={str(p.relative_to(args.candidate)):digest(p) for directory in (report,rendered) for p in sorted(directory.iterdir())})
     (args.candidate/'acceptance.json').write_text(json.dumps(result,indent=2)+'\n')
     if args.publish:
@@ -417,10 +439,20 @@ def publish(args):
     """Preflight all destinations; stage verified copies; rollback any install failure."""
     if not (args.candidate/'acceptance.json').is_file():raise ValueError('candidate not accepted')
     acceptance=json.loads((args.candidate/'acceptance.json').read_text())
-    if acceptance.get('schema')=='tenv5k-matrix-acceptance-v2':
-        frozen=json.loads((args.candidate/'plan.json').read_text())
-        if acceptance['plan_sha256']!=digest(args.candidate/'plan.json'):raise ValueError('accepted plan changed')
-        for run in plan():verify_execution(run_path(args.candidate,run),run,frozen)
+    if acceptance.get('schema')!=ACCEPTANCE_SCHEMA or acceptance.get('runs')!=len(plan()):
+        raise ValueError('publication requires complete current three-fold acceptance')
+    frozen=json.loads((args.candidate/'plan.json').read_text())
+    if frozen!=frozen_plan(args) or acceptance['plan_sha256']!=digest(args.candidate/'plan.json'):
+        raise ValueError('accepted plan changed')
+    for run in plan():verify_execution(run_path(args.candidate,run),run,frozen)
+    for name,expected in acceptance['files'].items():
+        if Path(name).is_absolute() or '..' in Path(name).parts or digest(args.candidate/name)!=expected:
+            raise ValueError('accepted report changed')
+    install_verified_candidate(args)
+
+
+def install_verified_candidate(args):
+    """Transactional I/O boundary; called only after scientific acceptance verifies."""
     journal=STEP.parent/'.tenv5k-publication-journal.json'
     if journal.exists():_rollback_publication(journal)
     destinations=[(args.candidate/'runs',STEP/'output/runs',True),
@@ -474,27 +506,17 @@ def publish(args):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     mode=parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument('--import-cold-prnet',action='store_true');mode.add_argument('--plan-only',action='store_true');mode.add_argument('--all',action='store_true');mode.add_argument('--accept-only',action='store_true')
+    mode.add_argument('--plan-only',action='store_true');mode.add_argument('--all',action='store_true');mode.add_argument('--accept-only',action='store_true')
     parser.add_argument('--inputs',type=Path);parser.add_argument('--means',type=Path)
-    parser.add_argument('--candidate',type=Path,default=STEP/'execution/checkpoints/matrix-231')
+    parser.add_argument('--candidate',type=Path,default=DEFAULT_CANDIDATE)
     parser.add_argument('--prnet-source',type=Path);parser.add_argument('--transigen-source',type=Path)
-    parser.add_argument('--import-original',type=Path);parser.add_argument('--import-runtime',type=Path)
-    parser.add_argument('--compatibility-audit',type=Path)
     parser.add_argument('--device',default='cuda');parser.add_argument('--python',default=sys.executable)
     parser.add_argument('--resume',action='store_true');parser.add_argument('--publish',action='store_true')
     parser.add_argument('--limit-runs',type=int,help='profile this many complete formal identities, then resume unchanged')
     args=parser.parse_args()
     if args.plan_only:print(json.dumps(plan(),indent=2));return
     if any(p is None for p in (args.inputs,args.means,args.prnet_source,args.transigen_source)):parser.error('explicit inputs, means and both source paths required')
-    if args.import_cold_prnet:
-        if any(p is None for p in (args.import_original,args.import_runtime,args.compatibility_audit)):
-            parser.error('import requires original candidate, frozen runtime and reviewed compatibility audit')
-        for run in plan():
-            if run['adapter']=='prnet' and run['scenario']=='cold-drug':
-                target=run_path(args.candidate,run)
-                if args.resume and target.exists():verify_execution(target,run,frozen_plan(args))
-                else:import_run(args,run)
-    elif args.all:execute(args)
+    if args.all:execute(args)
     else:accept(args)
 
 if __name__=='__main__':main()
