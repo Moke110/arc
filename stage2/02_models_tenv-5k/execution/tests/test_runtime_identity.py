@@ -26,6 +26,13 @@ class RuntimeIdentityTests(unittest.TestCase):
                                   transigen_source=inputs,candidate=self.step/'execution/checkpoints/matrix-v2')
         self.patch=patch.object(matrix,'STEP',self.step);self.patch.start();self.addCleanup(self.patch.stop)
 
+    def test_identical_owned_runtime_relocates_without_changing_frozen_plan(self):
+        before=matrix.frozen_plan(self.args)
+        relocated=self.step.parent/'relocated-step'
+        shutil.copytree(self.step,relocated)
+        with patch.object(matrix,'STEP',relocated):
+            self.assertEqual(matrix.frozen_plan(self.args),before)
+
     def test_archived_runtime_does_not_change_the_frozen_plan(self):
         before=matrix.frozen_plan(self.args)
         archive=self.args.candidate/'runs/cold-drug/prnet/0/17/import-provenance/runtime/execution/prnet.py'
