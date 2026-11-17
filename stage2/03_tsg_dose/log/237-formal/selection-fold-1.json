@@ -1,0 +1,31 @@
+{
+  "fold": 1,
+  "input_manifest_sha256": "1143c7c455e7355ca243eb64ec7faa319987585ac5ac8106282004275cdc0cfa",
+  "method": "no-dose",
+  "rule": "fixed comparison of all methods; no auxiliary method selection",
+  "scenario": "held-dose",
+  "schema": "tsg-dose-selection-v1",
+  "validation_runs": {
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/film/1/17": "92fef27058aa2471173e51199be84f7d035cbe9002a2603659a06b8b0d14accb",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/film/1/2026": "9c8961fea0b0921f54aba28e1998ee75792f1d44d1a059370bf1a4791e2dd7ec",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/film/1/42": "8ce7b9752b3f3aea97bacb6aa0629d962ed984ab2e6590e2e4aaf368ed43893a",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/input-embedding/1/17": "2fa12154add5aa8ba2e54f39884f7c46d6520523fede3feb179bfbdf88308720",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/input-embedding/1/2026": "f74ae3f12a541c8eae0d2b5b668b519b9a147bc62e141e421cd2d3b58f80015b",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/input-embedding/1/42": "7a0160ebf5628cf9eece219d26517d37c7de5734ec2d4312962cf9885ebab806",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/input-numeric/1/17": "40d6cbbb8f006549081113f84e2cff1bf0a36c69577e752e037e7ecf151ddddb",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/input-numeric/1/2026": "4812b3a74bb9fd9651002b850c3f6ea359016eec056206fb3bf7a229dded9f91",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/input-numeric/1/42": "8fb4934e30e348f24bc9a8c8659ffbc5d8e9ddb57d442b58da4d42a5afbaa2c5",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/latent-embedding/1/17": "09450d3c24a9633568233333d5cdfff4581955d7eb3b9c83264e5a2b7b3df076",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/latent-embedding/1/2026": "c2fb9aa99209347b073d81cc1a9daec8686cf642facc071cd0517b16c780825e",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/latent-embedding/1/42": "ec2d3e582e0aad815b43f29b2783f502aef8053505b2ef6ae9847601f768ec9a",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/latent-numeric/1/17": "201c7a596438d85371ac4c63762e02dd45aed2a20db37fd878e75b3181af001d",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/latent-numeric/1/2026": "c558a8423cabf2a753e3241993b2f881505a6a80c9b68a07b58c0eff5cae2231",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/latent-numeric/1/42": "b3e8a50a5342125a517c53e69082019513f41586f97df59b922fe49977015932",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/no-dose/1/17": "0ffc1c548c92eaab823055e0ffa6127059099e29021b09d0834116da97446260",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/no-dose/1/2026": "fb39fa380d0a3f9ad178349bdae77699475552b9d17aa9f72d70c11d9be03105",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/no-dose/1/42": "f0c594959eefe75e8bdf4f755abd1cc750fedf589e32fba3234bba8ad90f9044",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/scaling/1/17": "ce31312917b312c595e4c32fc5b5ace4f8401bca149755f67677d88c61aef009",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/scaling/1/2026": "23f3e9598631f3f368a618ba001aa95deb51b58c6c6b04721445f48a6773724e",
+    "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1/runs/held-dose/scaling/1/42": "c45ec770c698c602a22414968c4a4ebddd8e6a0f5eb224f151615134e3e29014"
+  }
+}
