@@ -59,7 +59,7 @@ expected=json.loads(sys.argv[2])
 torch.backends.cudnn.enabled=True
 torch.backends.cudnn.benchmark=True
 torch.backends.cudnn.deterministic=False
-saved={'input_manifest_sha256':'frozen','config':{'adapter':'transigen','native_source_sha256':native.SOURCE_DIGEST,'device':'cuda','seed':17,'backend':expected}}
+saved={'state_dict':{},'input_manifest_sha256':'frozen','config':{**native.CONFIG,'adapter':'transigen','native_source_sha256':native.SOURCE_DIGEST,'device':'cuda','seed':17,'backend':expected}}
 observed=[]
 def build(*args):
     observed.append([torch.backends.cudnn.enabled,torch.backends.cudnn.benchmark,torch.backends.cudnn.deterministic])

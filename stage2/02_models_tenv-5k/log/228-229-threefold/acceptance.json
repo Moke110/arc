@@ -1,0 +1,395 @@
+{
+  "scope": "bounded real-input smoke only; not formal matrix acceptance",
+  "date": "2026-11-17",
+  "tests": {
+    "prnet": 9,
+    "transigen": 4,
+    "backend": 3
+  },
+  "runs": [
+    {
+      "candidate": "/tmp/arc-tenv5k-final/prnet-cold-current-smoke",
+      "config": {
+        "method": "PRnet",
+        "method_identity": "prnet-native-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "noise_dtype": "native float32 CPU",
+        "x_dimension": 5000,
+        "hidden_layer_sizes": [
+          128
+        ],
+        "z_dimension": 64,
+        "adaptor_layer_sizes": [
+          128
+        ],
+        "comb_dimension": 64,
+        "comb_num": 1,
+        "drug_dimension": 2048,
+        "dr_rate": 0.05,
+        "batch_size": 512,
+        "learning_rate": 0.0001,
+        "weight_decay": 1e-08,
+        "scheduler_factor": 0.5,
+        "scheduler_patience": 5,
+        "scheduler_min_lr": 1e-08,
+        "loss": "GaussianNLLLoss(mean,target,softplus(raw_variance))",
+        "inference": "native Normal(clamp(mean),clamp(sqrt(softplus(var)))).sample",
+        "chemical_interface": "shared Morgan2048 * log10(1+1uM)",
+        "initialization": "native Linear N(0,.02), BatchNorm N(1,.02), zero bias",
+        "pretrained": false,
+        "upstream_commit": "f19174bde3ed2633f54c7831799cc38c4ffc7a0d",
+        "adaptations": [
+          "5000 released gene axis",
+          "2048 shared Morgan replaces feature Morgan1024",
+          "shared readers and splits",
+          "fixed-validation treated MSE stopping",
+          "initial Adam learning rate 1e-4"
+        ],
+        "upstream_files": {
+          "models/PRnet.py": "024f39a07e2887fea45a42f60b07b3ba17dc7501f134285ff72798eacb8bea3e",
+          "train_sciplex.py": "e1a99dd5d9c344e8dc6ee9273faf7e997d8eadf8347b790c8bc46add2f5366bd",
+          "trainer/PRnetTrainer.py": "0d0eb2d8e19ce284d56313667fc2ffb532050ede8b93b4a40bc5ffa6329e8038"
+        },
+        "adapter": "prnet",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 17,
+        "device": "cuda",
+        "validation_seed": 22617,
+        "inference_seed": 100017,
+        "smoke_rows": 8,
+        "max_epochs": 2,
+        "patience": 50,
+        "strict_lower": true,
+        "native_source_sha256": "024f39a07e2887fea45a42f60b07b3ba17dc7501f134285ff72798eacb8bea3e",
+        "validation_order": [
+          5,
+          27,
+          49,
+          194,
+          216,
+          238,
+          276,
+          297
+        ],
+        "test_order": [
+          0,
+          3,
+          7,
+          13,
+          16,
+          17,
+          19,
+          20
+        ],
+        "singleton_train_batch": "merge into preceding batch (BatchNorm needs >=2)"
+      },
+      "terminal": {
+        "status": "complete",
+        "smoke": true,
+        "best_epoch": 2,
+        "epochs": 2,
+        "validation_mse": 0.9157556891441345,
+        "elapsed_seconds": 1.997738243022468,
+        "peak_rss_kib": 1735152,
+        "weights_updated": true,
+        "replay": "exact native sampled prediction"
+      },
+      "prediction_dtype": "float32",
+      "manifest_sha256": "291a28f00d69dd09a9f4c10cc010438b076230ebf237773cb165f0fad5080af2"
+    },
+    {
+      "candidate": "/tmp/arc-tenv5k-final/prnet-warm-current-smoke",
+      "config": {
+        "method": "PRnet",
+        "method_identity": "prnet-native-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "noise_dtype": "native float32 CPU",
+        "x_dimension": 5000,
+        "hidden_layer_sizes": [
+          128
+        ],
+        "z_dimension": 64,
+        "adaptor_layer_sizes": [
+          128
+        ],
+        "comb_dimension": 64,
+        "comb_num": 1,
+        "drug_dimension": 2048,
+        "dr_rate": 0.05,
+        "batch_size": 512,
+        "learning_rate": 0.0001,
+        "weight_decay": 1e-08,
+        "scheduler_factor": 0.5,
+        "scheduler_patience": 5,
+        "scheduler_min_lr": 1e-08,
+        "loss": "GaussianNLLLoss(mean,target,softplus(raw_variance))",
+        "inference": "native Normal(clamp(mean),clamp(sqrt(softplus(var)))).sample",
+        "chemical_interface": "shared Morgan2048 * log10(1+1uM)",
+        "initialization": "native Linear N(0,.02), BatchNorm N(1,.02), zero bias",
+        "pretrained": false,
+        "upstream_commit": "f19174bde3ed2633f54c7831799cc38c4ffc7a0d",
+        "adaptations": [
+          "5000 released gene axis",
+          "2048 shared Morgan replaces feature Morgan1024",
+          "shared readers and splits",
+          "fixed-validation treated MSE stopping",
+          "initial Adam learning rate 1e-4"
+        ],
+        "upstream_files": {
+          "models/PRnet.py": "024f39a07e2887fea45a42f60b07b3ba17dc7501f134285ff72798eacb8bea3e",
+          "train_sciplex.py": "e1a99dd5d9c344e8dc6ee9273faf7e997d8eadf8347b790c8bc46add2f5366bd",
+          "trainer/PRnetTrainer.py": "0d0eb2d8e19ce284d56313667fc2ffb532050ede8b93b4a40bc5ffa6329e8038"
+        },
+        "adapter": "prnet",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 17,
+        "device": "cuda",
+        "validation_seed": 22617,
+        "inference_seed": 100017,
+        "smoke_rows": 8,
+        "max_epochs": 2,
+        "patience": 50,
+        "strict_lower": true,
+        "native_source_sha256": "024f39a07e2887fea45a42f60b07b3ba17dc7501f134285ff72798eacb8bea3e",
+        "validation_order": [
+          15,
+          19,
+          57,
+          128,
+          137,
+          157,
+          163,
+          169
+        ],
+        "test_order": [
+          3,
+          4,
+          10,
+          11,
+          20,
+          23,
+          28,
+          30
+        ],
+        "singleton_train_batch": "merge into preceding batch (BatchNorm needs >=2)"
+      },
+      "terminal": {
+        "status": "complete",
+        "smoke": true,
+        "best_epoch": 2,
+        "epochs": 2,
+        "validation_mse": 0.9291317462921143,
+        "elapsed_seconds": 1.9637798219919205,
+        "peak_rss_kib": 1736772,
+        "weights_updated": true,
+        "replay": "exact native sampled prediction"
+      },
+      "prediction_dtype": "float32",
+      "manifest_sha256": "f0e23a90170408d3b23df2747c3f256b1e8ef10c1db47b377564241bfa766477"
+    },
+    {
+      "candidate": "/tmp/arc-tenv5k-final/transigen-cold-smoke",
+      "config": {
+        "method": "TranSiGen",
+        "method_identity": "transigen-native-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "noise_dtype": "native float32 CPU",
+        "batch_size": 64,
+        "n_genes": 5000,
+        "n_latent": 100,
+        "encoder": [
+          1200
+        ],
+        "decoder": [
+          800
+        ],
+        "features_dim": 2048,
+        "features_embed_dim": [
+          400
+        ],
+        "init_w": true,
+        "beta": 0.1,
+        "dropout": 0.1,
+        "molecule_feature": "ECFP4",
+        "initialization_model": "random",
+        "learning_rate": 0.0001,
+        "weight_decay": 1e-05,
+        "scheduler": null,
+        "dose_input": false,
+        "prediction": "native forward(x1,features)[3]",
+        "singleton_train": "skip singleton as upstream",
+        "upstream_commit": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+        "config_script": "src/train_TranSiGen.py",
+        "config_script_sha256": "4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5",
+        "singleton_train_batch": "skip singleton as upstream",
+        "adaptations": [
+          "5000 gene interface",
+          "shared Morgan2048 ECFP4",
+          "random initialization; no pretraining/dose/KPGT",
+          "shared splits and fixed validation treated-expression MSE",
+          "x1-only native sampled forward for inference",
+          "native float32 computation and CPU normal sampling",
+          "initial Adam learning rate 1e-4"
+        ],
+        "adapter": "transigen",
+        "scenario": "cold-drug",
+        "fold": 0,
+        "seed": 17,
+        "device": "cuda",
+        "validation_seed": 22617,
+        "inference_seed": 100017,
+        "smoke_rows": 8,
+        "max_epochs": 2,
+        "patience": 50,
+        "strict_lower": true,
+        "native_source_sha256": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7",
+        "validation_order": [
+          5,
+          27,
+          49,
+          194,
+          216,
+          238,
+          276,
+          297
+        ],
+        "test_order": [
+          0,
+          3,
+          7,
+          13,
+          16,
+          17,
+          19,
+          20
+        ],
+        "backend": {
+          "policy": "author train_TranSiGen setup_seed CUDA",
+          "cudnn_enabled": false,
+          "cudnn_benchmark": false,
+          "cudnn_deterministic": true
+        }
+      },
+      "terminal": {
+        "status": "complete",
+        "smoke": true,
+        "best_epoch": 2,
+        "epochs": 2,
+        "validation_mse": 0.20518918335437775,
+        "elapsed_seconds": 1.653770073025953,
+        "peak_rss_kib": 1698692,
+        "weights_updated": true,
+        "replay": "exact native sampled prediction"
+      },
+      "prediction_dtype": "float32",
+      "manifest_sha256": "57602443e88f7e50d6e463fad2aa915c3d97d81d668a0dd625383339cf86f74e"
+    },
+    {
+      "candidate": "/tmp/arc-tenv5k-final/transigen-warm-smoke",
+      "config": {
+        "method": "TranSiGen",
+        "method_identity": "transigen-native-f32-lr1e4-v1",
+        "compute_dtype": "float32",
+        "initialization_dtype": "float32",
+        "prediction_dtype": "float32",
+        "noise_dtype": "native float32 CPU",
+        "batch_size": 64,
+        "n_genes": 5000,
+        "n_latent": 100,
+        "encoder": [
+          1200
+        ],
+        "decoder": [
+          800
+        ],
+        "features_dim": 2048,
+        "features_embed_dim": [
+          400
+        ],
+        "init_w": true,
+        "beta": 0.1,
+        "dropout": 0.1,
+        "molecule_feature": "ECFP4",
+        "initialization_model": "random",
+        "learning_rate": 0.0001,
+        "weight_decay": 1e-05,
+        "scheduler": null,
+        "dose_input": false,
+        "prediction": "native forward(x1,features)[3]",
+        "singleton_train": "skip singleton as upstream",
+        "upstream_commit": "e7582e7794f13d4dfddfb15e95e3ba7cd24bc07a",
+        "config_script": "src/train_TranSiGen.py",
+        "config_script_sha256": "4446df722b2dcd9633ae30253ee077d6836ee86862ddd72ecfa1460060c19eb5",
+        "singleton_train_batch": "skip singleton as upstream",
+        "adaptations": [
+          "5000 gene interface",
+          "shared Morgan2048 ECFP4",
+          "random initialization; no pretraining/dose/KPGT",
+          "shared splits and fixed validation treated-expression MSE",
+          "x1-only native sampled forward for inference",
+          "native float32 computation and CPU normal sampling",
+          "initial Adam learning rate 1e-4"
+        ],
+        "adapter": "transigen",
+        "scenario": "warm-start",
+        "fold": 0,
+        "seed": 17,
+        "device": "cuda",
+        "validation_seed": 22617,
+        "inference_seed": 100017,
+        "smoke_rows": 8,
+        "max_epochs": 2,
+        "patience": 50,
+        "strict_lower": true,
+        "native_source_sha256": "c328864a040a3c1a1e69b040f31a27572513b1974a93d722e3ff00d4cdd940c7",
+        "validation_order": [
+          15,
+          19,
+          57,
+          128,
+          137,
+          157,
+          163,
+          169
+        ],
+        "test_order": [
+          3,
+          4,
+          10,
+          11,
+          20,
+          23,
+          28,
+          30
+        ],
+        "backend": {
+          "policy": "author train_TranSiGen setup_seed CUDA",
+          "cudnn_enabled": false,
+          "cudnn_benchmark": false,
+          "cudnn_deterministic": true
+        }
+      },
+      "terminal": {
+        "status": "complete",
+        "smoke": true,
+        "best_epoch": 2,
+        "epochs": 2,
+        "validation_mse": 0.21117666363716125,
+        "elapsed_seconds": 1.7346019760007039,
+        "peak_rss_kib": 1698688,
+        "weights_updated": true,
+        "replay": "exact native sampled prediction"
+      },
+      "prediction_dtype": "float32",
+      "manifest_sha256": "37f4ad339ada3e5623055bc10cb1c8892492cef38d163563ebd0a4b8c6217dd3"
+    }
+  ]
+}

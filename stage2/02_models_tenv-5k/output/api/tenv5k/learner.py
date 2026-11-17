@@ -77,7 +77,7 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
     candidate.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
     try:
-        if scenario not in ('cold-drug', 'warm-start') or fold not in range(5) or seed not in (17, 42, 2026):
+        if scenario not in ('cold-drug', 'warm-start') or fold not in range(3) or seed not in (17, 42, 2026):
             raise ValueError('unregistered run identity')
         if smoke_rows is None and max_epochs != 1000:
             raise ValueError('formal runs require max_epochs=1000')
@@ -117,7 +117,7 @@ def train(inputs, candidate, source, *, adapter, scenario, fold, seed, device='c
         for epoch in range(1, max_epochs + 1):
             loss_value = native.train_epoch(model, data, train_rows, optimizer, shuffle, device)
             validation = native.sampled_prediction(model, data, valid_rows, seed=config['validation_seed'], device=device)
-            mse = float(np.mean(np.square(validation.astype(np.float64) - data.expression[valid_rows])))
+            mse = float(np.mean(np.square(validation.astype(np.float32) - np.asarray(data.expression[valid_rows], dtype=np.float32))))
             improved = stopper.observe(mse, epoch)
             if scheduler is not None: scheduler.step(mse)
             history.append(dict(epoch=epoch, train_loss=loss_value, validation_mse=mse,
