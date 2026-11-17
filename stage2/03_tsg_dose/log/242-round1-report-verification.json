@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-17",
+  "historical_final_weights_and_acceptance": "unchanged; coordinator preservation baseline verifies canonical bytes",
+  "independent_isolated_sha256_reproduction": true,
+  "original_plotting_csvs_retained_unchanged": 11,
+  "original_scientific_csvs_unchanged": 33,
+  "plot_rows": {
+    "round1_curves.csv": 15977,
+    "round1_dose.csv": 96,
+    "round1_runs.csv": 540,
+    "round1_summary.csv": 60
+  },
+  "schema": "tsg-dose-round1-report-verification-v1",
+  "spec": "https://github.com/Moke110/arc/issues/240",
+  "tests": {
+    "test_publication.py_archival": 11,
+    "test_round1_report.py": 5
+  },
+  "ticket": "https://github.com/Moke110/arc/issues/242",
+  "time_v": "\tCommand being timed: \"/home/chang/miniconda3/envs/arc/bin/python stage2/03_tsg_dose/execution/publish_report.py prepare --matrix /home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1 --candidate /tmp/arc-round1-report-candidate --previous /home/chang/arc/stage2/03_tsg_dose/figure --scientific-receipt stage2/03_tsg_dose/log/241-round1-acceptance.json --receipt stage2/03_tsg_dose/log/242-round1-report-acceptance.json\"\n\tUser time (seconds): 4.59\n\tSystem time (seconds): 0.15\n\tPercent of CPU this job got: 103%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:04.60\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 271936\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 91267\n\tVoluntary context switches: 20\n\tInvoluntary context switches: 15\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 29712\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+  "training_or_reprediction": false,
+  "visually_inspected": [
+    "round1_metrics.png",
+    "round1_learning_curves.png",
+    "round1_metrics_cold_drug_dose.png"
+  ]
+}

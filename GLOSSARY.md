@@ -615,6 +615,17 @@ The Stage 2 comparison of ways to supply continuous dose to TranSiGen across
 the measured tenv doses, with unseen-drug prediction as its primary objective
 and held-dose prediction as an auxiliary objective.
 
+**Dose-input round1**:
+The first completed tenv TranSiGen dose-input optimization exploration, comprising
+cold-drug and held-dose comparisons of seven fixed configurations; it establishes
+comparison evidence rather than a downstream model-weight release.
+_Avoid_: final deployment selection, universally optimal dose architecture
+
+**Dose-input comparison run**:
+One fixed method, scenario, fold and seed in the dose-input comparison. A held-dose
+fold denotes a distinct omitted dose; runs are not independent biological replicates.
+_Avoid_: independent replicate, Benchmark run (the historical ADR 0027 unit)
+
 **Parent–dose response**:
 The mean transcriptional response of repeated treated wells for one drug
 parent at one measured dose, retaining that dose as a distinct evaluation unit.

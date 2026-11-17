@@ -1,0 +1,51 @@
+{
+  "active": {
+    "n_formal_fits": 126,
+    "role": "optimization comparison; no deployment selection or downstream weights",
+    "scenarios": {
+      "cold-drug": 63,
+      "held-dose": 63
+    }
+  },
+  "code_mapping": [
+    {
+      "original": "execution/run_matrix.py",
+      "preserved": "execution/historical/run_matrix_v1.py",
+      "role": "frozen historical implementation; active facade has separate identity",
+      "sha256": "f979849ca66f33f0eb208178082d6bfe9061875c867e64cb2c4408c9384938ce"
+    },
+    {
+      "original": "execution/transigen.py",
+      "preserved": "execution/historical/transigen_v1.py",
+      "role": "frozen historical implementation; active facade has separate identity",
+      "sha256": "690324d3e38050e5f3d9b2bf18bd450179eb85c3eaf68a06357f76c3e60cbfe8"
+    },
+    {
+      "original": "execution/publish_release.py",
+      "preserved": "execution/historical/publish_release_v1.py",
+      "role": "frozen historical implementation; active facade has separate identity",
+      "sha256": "0d472f49588ce249aea2d846ef689a38797f82e427b929d10efa37ce733f07b4"
+    },
+    {
+      "original": "figure/script/render.py",
+      "preserved": "execution/historical/render_v1.py",
+      "role": "historical12-PNG CSV-only renderer; retained for sealed report reconstruction",
+      "sha256": "2d8f7d6f8a8a3c3ff3967240574cdb13090a1bb0e2bb57bf3f89e7be922c5050"
+    }
+  ],
+  "consumer_audit": {
+    "active_downstream_weight_consumers": [],
+    "protected": "Bases, accepted02 and Stage3 scientific artifacts unchanged",
+    "scope": "repository tracked Python and Markdown references to 03_tsg_dose and tsg_dose.release"
+  },
+  "date": "2026-11-17",
+  "historical": {
+    "execution/checkpoints/matrix-v1/plan.json": "original147-fit scientific identity; unchanged",
+    "log/239-*": "sealed147-fit acceptance and downstream replay; unchanged historical evidence",
+    "output/model": "historical no-dose three-seed release; unchanged, no active downstream dependency",
+    "runs/final": "21 completed deployment-selection fits; unchanged, excluded from round1"
+  },
+  "report_mapping": "242-round1-report-acceptance.json: superseded_figures retains all12 original PNG digests/roles; files binds the accepted3-PNG report and unchanged historical plotting CSVs",
+  "schema": "tsg-dose-round1-role-mapping-v1",
+  "spec": "https://github.com/Moke110/arc/issues/240"
+}

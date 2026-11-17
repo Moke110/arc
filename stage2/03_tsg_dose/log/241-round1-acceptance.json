@@ -1,0 +1,914 @@
+{
+  "historical_code_mapping": {
+    "execution/run_matrix.py": "execution/historical/run_matrix_v1.py",
+    "execution/transigen.py": "execution/historical/transigen_v1.py"
+  },
+  "n_formal_fits": 126,
+  "origin_manifest_sha256": {
+    "runs/cold-drug/film/0/17/manifest.json": "456fabcd08d8585d50ffccfaf8818c666481fb2f46dd526fb64b2aff93380b64",
+    "runs/cold-drug/film/0/2026/manifest.json": "b29e5214fbbebb82e344d5abf99bb7a0e8101fa3623b91b073c060dd7821a0fe",
+    "runs/cold-drug/film/0/42/manifest.json": "23c60534a10b91bcb9037d3b1f6ad726563272e9817d741f832274ba1e00d80f",
+    "runs/cold-drug/film/1/17/manifest.json": "85bc1f58da2b9d35d27a9a1e325993a5764edaec6d24c743343d8cc0f0974cc4",
+    "runs/cold-drug/film/1/2026/manifest.json": "8a572e9a203ad7bcfd3c2571c049d6b3ab0a0e02e4f2e34fbd3cd7cdb5ab04a8",
+    "runs/cold-drug/film/1/42/manifest.json": "fa1b14448e856deb697ac8709bc32a2af48557d6276bb2a34760725d29bdd023",
+    "runs/cold-drug/film/2/17/manifest.json": "919b932acbda269d2dc540edbf4b25c046ae69fadea2c6702ed9b8ee9548ff06",
+    "runs/cold-drug/film/2/2026/manifest.json": "ff960ace2a3332b3b6c3ac3feffbd94009001df598fa5ad01d387497695ad76d",
+    "runs/cold-drug/film/2/42/manifest.json": "a12e7e0bc42b524f6fe26fc3916b8751cae0ba598adb0eb3a13bd6baa7243240",
+    "runs/cold-drug/input-embedding/0/17/manifest.json": "ff8017a0b79577dab537af3b99ff38f687a5396987b02aa4676c178e17b23cbb",
+    "runs/cold-drug/input-embedding/0/2026/manifest.json": "358d43dab759a3dd45c029d8d8613c47c5da10950b6e5a0ec76d72b4b0c389a1",
+    "runs/cold-drug/input-embedding/0/42/manifest.json": "d76df308a9ee77ec5ba4fd7f5526c87b1fd44b92e7bb746149dd47a5677daafc",
+    "runs/cold-drug/input-embedding/1/17/manifest.json": "626c02c093041063d204a7cf16bea3a0c054cfb489293a71e7f7b22db6af4772",
+    "runs/cold-drug/input-embedding/1/2026/manifest.json": "f9545f827d4501af2882864f86be21706dc85e84685d96d863a539cb3d8d204c",
+    "runs/cold-drug/input-embedding/1/42/manifest.json": "7f008470258ed31057a927f7e7feb1dc524ce240966910ef9d087be631b21972",
+    "runs/cold-drug/input-embedding/2/17/manifest.json": "be4174f5ba9f9c2a70c8da225cb4196ad64738be217148b328b0aa9bea0f0b3a",
+    "runs/cold-drug/input-embedding/2/2026/manifest.json": "6f8d4974cf196c0d78b43ceb615ee63fdb594cffe12821d87b833c0ab3a24b5a",
+    "runs/cold-drug/input-embedding/2/42/manifest.json": "f990997951b839bbddcb7f24457f3a9bce32cd1c0f87eaa2300c5f119fc69811",
+    "runs/cold-drug/input-numeric/0/17/manifest.json": "6c23eed777100c1bec2f3dce51a0e0e78b989c45492aee5b7d4fa729b4b44d25",
+    "runs/cold-drug/input-numeric/0/2026/manifest.json": "807c27cf8bde811c672463881db97e5269095db46d2e70b4d2066f4049077a38",
+    "runs/cold-drug/input-numeric/0/42/manifest.json": "57f2dd30da67a6c9847e80e22352e499f9314c34aac3eb6eaebecc640b8d5563",
+    "runs/cold-drug/input-numeric/1/17/manifest.json": "673ef35d5d2623f6e09906379b9ed88cb9be7f9362fa6840ee3401056604fe46",
+    "runs/cold-drug/input-numeric/1/2026/manifest.json": "387a9343fdd4059e55eb0da160e423bd93ba1a6b8bb9e3a4b2d7279bf46c554c",
+    "runs/cold-drug/input-numeric/1/42/manifest.json": "071a700205a9179ebe82171b6d596968f254edd2ffcae58880a25365314608d0",
+    "runs/cold-drug/input-numeric/2/17/manifest.json": "8ee5b408358c2f9f8548e5e2b89205297f91ea78c9ac823cbc07e67da056e2c6",
+    "runs/cold-drug/input-numeric/2/2026/manifest.json": "da8e6604c29e52d83b552ca94bb65402e64cca3b3fd424f611a53725d7e55118",
+    "runs/cold-drug/input-numeric/2/42/manifest.json": "6d7559ce88a5ec93750b6e366ed89becb6df896763b1aa86195347ad0dc970e5",
+    "runs/cold-drug/latent-embedding/0/17/manifest.json": "dd36762da0a759d28499020669dac8a8bb2fa147ea3ecb83c5fdcace06da0746",
+    "runs/cold-drug/latent-embedding/0/2026/manifest.json": "5523082cc07afcb510e33d5af9df30c9d293367497c3aa2f61153f749df6b222",
+    "runs/cold-drug/latent-embedding/0/42/manifest.json": "5c75380e5b332ec75a776b4bd0ddcb73b2e2ae5ccaffdce70707ddd3f4484d69",
+    "runs/cold-drug/latent-embedding/1/17/manifest.json": "7bfac6c8dd5df2733dec836e4a0a775ca6e390a26a7cdc4d124c6b8a7f5dfbde",
+    "runs/cold-drug/latent-embedding/1/2026/manifest.json": "12cae1744c131e47262fb8582ac84be27fa0e254f5876436eafcfe1158b6a99b",
+    "runs/cold-drug/latent-embedding/1/42/manifest.json": "d03c45edc32f6963f326d38e017e486b563fc40621d484c382d0eed8354eb742",
+    "runs/cold-drug/latent-embedding/2/17/manifest.json": "8efd79f9c829e6bf913945984cbbd3ed079e09e2d4e053370191ae95452b1726",
+    "runs/cold-drug/latent-embedding/2/2026/manifest.json": "9c31fa7ff39b51358034873fd537340011f424eaaa40e1f2039b75a6bc7cbc9f",
+    "runs/cold-drug/latent-embedding/2/42/manifest.json": "bad3a33cca1fbba9ce625f5ae0a44ed99e76c3defba767d1154cb5ee411a9ac0",
+    "runs/cold-drug/latent-numeric/0/17/manifest.json": "fdcd7241c04e32bc98d1a95415ee087798759d49e90039e8ed2b35ee6f51c1f8",
+    "runs/cold-drug/latent-numeric/0/2026/manifest.json": "2e9a986781334da006966ff0e6aa019b4fb7dc02774447784b23f3b63406b525",
+    "runs/cold-drug/latent-numeric/0/42/manifest.json": "2af0b5c37f1fd160df7213120d15f9cf5fdcda444531cb94054a390d117feef4",
+    "runs/cold-drug/latent-numeric/1/17/manifest.json": "57ca75eefe28169b2748ba7601594d46cf58ffc019a8666e85cff99f36ea1da7",
+    "runs/cold-drug/latent-numeric/1/2026/manifest.json": "0affea6b732508a6441f3060fc52901bc613a0b180426bd4a1ee81703db63390",
+    "runs/cold-drug/latent-numeric/1/42/manifest.json": "2e64da6e775d64c1f73a5d90724137a7f4c506eddd3a20c9d7678c0085826ef1",
+    "runs/cold-drug/latent-numeric/2/17/manifest.json": "8b59d5b8c4e1f5a2053a573b0a3d8dfff7370854cc4ca0e27e51e4402bdd4fcf",
+    "runs/cold-drug/latent-numeric/2/2026/manifest.json": "b9227b4958db887c3920b1e7bedb626f5debabe9ee5dc9a96bb20fc3c93f573d",
+    "runs/cold-drug/latent-numeric/2/42/manifest.json": "3daf0efb9076dc25c3c817f5d60cd3c6ca6aeedb45deff5887ad592bcc414997",
+    "runs/cold-drug/no-dose/0/17/manifest.json": "2131f1bfd60289c5e19cec17c3cca6fe2abf64ef969db97dee6cddcad239b6ce",
+    "runs/cold-drug/no-dose/0/2026/manifest.json": "f2e9c7bb8f6631374a1922cbe05c75768b73b2150d7f3cdf30010fa0b075316f",
+    "runs/cold-drug/no-dose/0/42/manifest.json": "1ff3853ce5d9e53cbe3444ca0786a2aef7db31bd19c1c890f58b0dfe10b9275f",
+    "runs/cold-drug/no-dose/1/17/manifest.json": "d8f53f0434fd3db8d4b00b659fe770f5ba44987fd9fb47535ed5d38c7b7dcbd7",
+    "runs/cold-drug/no-dose/1/2026/manifest.json": "95dfd66b82f6b530d34ffed78535a914eabde1178bb04e50836f8e71434f4c7f",
+    "runs/cold-drug/no-dose/1/42/manifest.json": "715f91c5af2b605a860a7e93b73ffd7533874fb79c3cb8df27f395fe80c1eb84",
+    "runs/cold-drug/no-dose/2/17/manifest.json": "4b4be98b76391cd3bc4d138cc5d753ad69e372440aaf36db9cc6c42bc97b779b",
+    "runs/cold-drug/no-dose/2/2026/manifest.json": "b7b61ab7b6f16d3c02139708252c5a60313942259e477a006eb723c7ca16e491",
+    "runs/cold-drug/no-dose/2/42/manifest.json": "819e77eb402ccd2ea7d8d1297671da2085f282fc2d512505d4f60a43ff091ae3",
+    "runs/cold-drug/scaling/0/17/manifest.json": "56a5872ce6faa78b4cccf2274cc045c5aa101f4482ce7892089e2ba21f92cfd0",
+    "runs/cold-drug/scaling/0/2026/manifest.json": "6089d4144ef2c04452a5efb7839e1a8cb5be609b5259a79e4b33a6c5068d931d",
+    "runs/cold-drug/scaling/0/42/manifest.json": "aa7a5aec557bfdd76401555b74086d4e3ca4d1b4986e244e934d11bf2a278566",
+    "runs/cold-drug/scaling/1/17/manifest.json": "be5f679a2df013927cdf62be3ad49a389a9dc6e7b22fea5157d4427e3acbfdb6",
+    "runs/cold-drug/scaling/1/2026/manifest.json": "c3f598f8d7bd8bfe512bbc0970d55fc540e14c585a8c263e3edd33bde45b134f",
+    "runs/cold-drug/scaling/1/42/manifest.json": "5a37a67f56ba206cf9f1faf1d9375c9b2dd2c80558c8af522226ff12fbf662d0",
+    "runs/cold-drug/scaling/2/17/manifest.json": "e8be09be44bcbac7279a0a07d26436556ad2e85471b4dc985c5b72e8866a685c",
+    "runs/cold-drug/scaling/2/2026/manifest.json": "32790cfc97e0878590640f512c7cf7c408871ea588bcdfb3a9cccb2228fa92d7",
+    "runs/cold-drug/scaling/2/42/manifest.json": "2b8021f6894f6f21939947285abcbe25b55ae6f54cd9a4292be0132537511e7d",
+    "runs/held-dose/film/0/17/manifest.json": "a05b42701be176abe3b26eec147062bab71109ce1c774687301878a9f6ead868",
+    "runs/held-dose/film/0/2026/manifest.json": "cf911d74c6775c13467796aa89c453f5073adb39a72b580645ad72353b089caa",
+    "runs/held-dose/film/0/42/manifest.json": "12dcb7efdb4f958d1964e4f4bc4c48dacb1bf1f0b5d5e3a9240fb597bdbcd5a6",
+    "runs/held-dose/film/1/17/manifest.json": "23176c5605befda0a0ae3050710403641d374c7733c25d9506e96500ede37b36",
+    "runs/held-dose/film/1/2026/manifest.json": "886c237d9cbace43e864351cbad01649f762f2ffa8238a69f0d902b213ad4c8a",
+    "runs/held-dose/film/1/42/manifest.json": "b9b5210a77894d1f5bcf01fcb512c12cc09e8d6e956a1e9ff71c51f47459fbc4",
+    "runs/held-dose/film/2/17/manifest.json": "6c7c2da01c1bc01b28b1f69c6f937d3715d9acf47c793fdbf9589df5fc6c79a0",
+    "runs/held-dose/film/2/2026/manifest.json": "7a7c3a97cc5ffca7f1639d9124c5353b203e2a5930483bb09471386a727585d1",
+    "runs/held-dose/film/2/42/manifest.json": "c484dc03007c5813402a55e07db6404add04076454e5f38ec29fcd232f724656",
+    "runs/held-dose/input-embedding/0/17/manifest.json": "4184bda1a093801ab4e523fe9a90d2cd49669febea865db15e2f10c490a836c0",
+    "runs/held-dose/input-embedding/0/2026/manifest.json": "d98368c82cf6361bdc482ca45f84bf6363f2f5c70fb50eb0f9514161e4d4e189",
+    "runs/held-dose/input-embedding/0/42/manifest.json": "7e7c6d4c997d9d624e0b5c47f5e9b616100aaa21772ec17399f3e9acfef409db",
+    "runs/held-dose/input-embedding/1/17/manifest.json": "722ca71a0f39606897651905455bfde10980fecc6637c62944a54cd4b75d5995",
+    "runs/held-dose/input-embedding/1/2026/manifest.json": "e2c3962ecf44fef52fd097aa08b81693bedabc4086f03136998152567fa61033",
+    "runs/held-dose/input-embedding/1/42/manifest.json": "73042f8a1eac9fa808487e3d615d70ab202ba3d5b15ae9cddfa3627bcaae5964",
+    "runs/held-dose/input-embedding/2/17/manifest.json": "c4f156ec63490e7f34c472d9ad26329f2ce4b3d70ca321ff828d5e20540388ee",
+    "runs/held-dose/input-embedding/2/2026/manifest.json": "fd2b3f59576250deaca1b271806ac4c504f74ddd34eac2749a2c543bfaa27e8a",
+    "runs/held-dose/input-embedding/2/42/manifest.json": "2c65e3bec6ddb58fd1eae98135eb63694ee6b243af48643b3fe06ed0298ebc6f",
+    "runs/held-dose/input-numeric/0/17/manifest.json": "e2c19aed29c0a4dbf2e2a5ab740358114d3eff5d685aa33e963fe0061f63e328",
+    "runs/held-dose/input-numeric/0/2026/manifest.json": "7f47d94579627c570b9dacb366d3dcdbdd55164133c630f0c42dcfee123e2cef",
+    "runs/held-dose/input-numeric/0/42/manifest.json": "c69127cbbf6a584fe2cc20bbd74d52d8960defdd0484cb22a40acf4b1d09bfc1",
+    "runs/held-dose/input-numeric/1/17/manifest.json": "9337e3be9c362b2fa97ab46a4904043f7d860f6bd0792bf0edaa5233edf18330",
+    "runs/held-dose/input-numeric/1/2026/manifest.json": "77f2c6f5e6107dc62619b3fef715346da6ef63647b0dca3881a11cea6a2a8b59",
+    "runs/held-dose/input-numeric/1/42/manifest.json": "1929918e7a11fe28e75638362abdd34170c9075663bd6231d1616db2ecb29a82",
+    "runs/held-dose/input-numeric/2/17/manifest.json": "f70bc56bac2913e9b262bf27f3907705b27701785b1f88422b8db0ab6e9ac241",
+    "runs/held-dose/input-numeric/2/2026/manifest.json": "b327457b1642647b2bfa5dc463a2e360daf6050697e1541c6ca2ea4fa07baa63",
+    "runs/held-dose/input-numeric/2/42/manifest.json": "67935e2903a5a925bd400b691c4132628b751ff07efedb4c7b76a59e7d7dd87f",
+    "runs/held-dose/latent-embedding/0/17/manifest.json": "023f90d994211e3d7456b4107ec74c547ff9dac1e92e259669986461a1bd39e7",
+    "runs/held-dose/latent-embedding/0/2026/manifest.json": "65ccd4e346ad2b9c7fcb97470c9d605b3e53387287e69eeaeb95f7149c9108ea",
+    "runs/held-dose/latent-embedding/0/42/manifest.json": "66ef45a9f59cdd123644f779c5a9237992cde68880c8713be9632b4378efce43",
+    "runs/held-dose/latent-embedding/1/17/manifest.json": "823f52a551b5b897cd7256aba1c9ce735136308ef39369221346842fb99dc27c",
+    "runs/held-dose/latent-embedding/1/2026/manifest.json": "e78eeb140f8682dae233d9ff2bf16e84ac7120f62c5c7bff7ac93a74184d9a13",
+    "runs/held-dose/latent-embedding/1/42/manifest.json": "fedbe9a81a5ee70a913dce8b7427c2f1fa474d06eb3beb04e79ebdac562360df",
+    "runs/held-dose/latent-embedding/2/17/manifest.json": "355bef1726facbc32eba39f61487474ab074c707f198ce9109d1c63a990c1c3a",
+    "runs/held-dose/latent-embedding/2/2026/manifest.json": "0a8b71acef61130a0b01d06993b005166307f86792aa385a88f37d1d7233a827",
+    "runs/held-dose/latent-embedding/2/42/manifest.json": "02fee20480789391efc3576851dcca6fb41c38782767bbc94c2fd6c15a2935a1",
+    "runs/held-dose/latent-numeric/0/17/manifest.json": "baa84bc2f912e426fd051d2e51b67d627073e3e30667a5792b59da58019c0936",
+    "runs/held-dose/latent-numeric/0/2026/manifest.json": "170bf27540c5cae6beb9caad8b23ae7ba3c02d942795fcf113df9b60549ee653",
+    "runs/held-dose/latent-numeric/0/42/manifest.json": "b62d060a380e6de48825f224b9efda15de1510cb1ca860d9e8ebd0c6dfbe42bd",
+    "runs/held-dose/latent-numeric/1/17/manifest.json": "a139cd88c03facef16fb6a0cd87d8df5cc72b734a40aa78a056d4a3fcf9799f2",
+    "runs/held-dose/latent-numeric/1/2026/manifest.json": "29e1ae285c8180ea3cac679938003f6bb7c27943bff7b08aae4b246ae071788b",
+    "runs/held-dose/latent-numeric/1/42/manifest.json": "621826063e7bbbea83d76465849d74ca248210cafe352a512b4d08955c31cefc",
+    "runs/held-dose/latent-numeric/2/17/manifest.json": "fbb57efa2ad95610496f41084287796571016f4352183f532f9eea49f402cdbf",
+    "runs/held-dose/latent-numeric/2/2026/manifest.json": "7d11464c69c830340dbd0eb46edaa9e7897f807f2e394979c85bd59d74337072",
+    "runs/held-dose/latent-numeric/2/42/manifest.json": "a9482f8acfacf423b31286c432558b5474289b53c5dc6229f0983539b074fe8e",
+    "runs/held-dose/no-dose/0/17/manifest.json": "ff48fcda5321ac2027eb4abb0250ce61bd889b48372a2d5a81b93617385da35a",
+    "runs/held-dose/no-dose/0/2026/manifest.json": "3462f764a02e261aea48e7033fc8e89e0615adad52309db3b7e09f23e447ad34",
+    "runs/held-dose/no-dose/0/42/manifest.json": "8ac0ab60064ef9898f947b3c688c5c8496a629a9681c3a4038f040cebaa5cb1e",
+    "runs/held-dose/no-dose/1/17/manifest.json": "170c4bbb5309026eaf6293fe112d862d5cdf3c6e6747960c1435ee613ccffc3e",
+    "runs/held-dose/no-dose/1/2026/manifest.json": "7d0fcfbeb6d67be3bf35c24261b6390541944cd95d8148c1357ccdc397a13647",
+    "runs/held-dose/no-dose/1/42/manifest.json": "e27e71f3909e38e4443e5be3755e6c6d163ecd58cc913730fa1899d36bdb7e97",
+    "runs/held-dose/no-dose/2/17/manifest.json": "d0643fcf95b1231b6c382312085ff08818167cf111ca66a3749264001b59fc15",
+    "runs/held-dose/no-dose/2/2026/manifest.json": "4ffbb74d4eb35e38d330fad571d6a9673cc0c6a43bf6fdd6e6769d0a4261bdd6",
+    "runs/held-dose/no-dose/2/42/manifest.json": "f388309bdde63a853c5c27bb8e81c61305f9da85e55aeacb44453b09d4f96e44",
+    "runs/held-dose/scaling/0/17/manifest.json": "d90667d311eba3ae006565aa951fcc3ec9e63e61ac894d8a15cd3c23dbcbf755",
+    "runs/held-dose/scaling/0/2026/manifest.json": "34323305f711289cbe4800dd815d30864ddd1365f39504d919d7ec44e572bbd1",
+    "runs/held-dose/scaling/0/42/manifest.json": "cba5fe20c2df4c1cbbc114a2d1be33da42d7151705653182297d2ff15bb0479a",
+    "runs/held-dose/scaling/1/17/manifest.json": "49930293aa6faf6e9bb0db3484c71f477ffe9b71f7e18e5c8800cfb065bf3ea7",
+    "runs/held-dose/scaling/1/2026/manifest.json": "81535eafebe6491b5e4a9a2ee437e42641616717983d528e19a9ab2367c4608f",
+    "runs/held-dose/scaling/1/42/manifest.json": "19f4f07f4dabcc80088cb616303270f774ddc599ad69d2e43c5ece21ba044074",
+    "runs/held-dose/scaling/2/17/manifest.json": "1cd77c734141fde9811ff9ac7c0c7290dcec0fede973eb5edc7ee3fafdc2b050",
+    "runs/held-dose/scaling/2/2026/manifest.json": "1783bf08c9729cb2f1ae6f8b253f93d4da0ac9ad795279710d669f89d130f72c",
+    "runs/held-dose/scaling/2/42/manifest.json": "eb39b32149fa6a453a203edf98e8ffce7e2f5f7ffcf59efb0d2a2a484b996a47"
+  },
+  "plan_sha256": "6c60d9284dcbc403bd36632acb998c85b8fd732f13a558f690f0c67549427b91",
+  "replay": "retained exact fresh-process validation and test evidence verified",
+  "report_source_sha256": {
+    "reports/cold-drug/learning_curves.csv": "15ebdc6b0813c26cb07519e1dd6c12a5ba75e022f2f95fa8cbc7352b7f5cbb5e",
+    "reports/cold-drug/per_dose.csv": "ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b",
+    "reports/held-dose/learning_curves.csv": "b69b9bacea96b20490ea6ff44afb7f9617e209fe7884b7d6ff6c897af18f32e1"
+  },
+  "runs": [
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "cold-drug",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 0,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 1,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "no-dose",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "scaling",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-numeric",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "input-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "latent-embedding",
+      "scenario": "held-dose",
+      "seed": 2026
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 17
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 42
+    },
+    {
+      "fold": 2,
+      "method": "film",
+      "scenario": "held-dose",
+      "seed": 2026
+    }
+  ],
+  "scenarios": [
+    "cold-drug",
+    "held-dose"
+  ],
+  "schema": "tsg-dose-round1-acceptance-v1",
+  "selection_sha256": {
+    "selections/cold-drug/0/receipt.json": "85152814f532f6e24c210f4b75019ef40f9db6d76af04babb1871084cac7ba9b",
+    "selections/cold-drug/1/receipt.json": "dc5e82b6ea29bf1d510207ea1330e7b501ccd585428bd9323ea99842f5f569b5",
+    "selections/cold-drug/2/receipt.json": "5042703591179de1229106c2ae0161d64d5b51b912f182f387cd25d29fa21e9d",
+    "selections/held-dose/0/receipt.json": "d37986c35d595871318cd875a8fa233eb1e8069184f758ec809c414e1cd42390",
+    "selections/held-dose/1/receipt.json": "3a56c3c807ee16869f22bfb8f44b405995b82c4608578789855cbad267f5351c",
+    "selections/held-dose/2/receipt.json": "8dd6aaa64977d5db166db17a22b05c52bc841bf360996f299302e982e28942c4"
+  },
+  "status": "optimization evidence complete; no downstream model weights"
+}

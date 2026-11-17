@@ -7,8 +7,8 @@ from run_matrix import plan,require_complete,lock_selection,verify_test_sequence
 class Matrix(unittest.TestCase):
     def test_complete_registered_task_graph(self):
         rows=plan()
-        self.assertEqual(len(rows),147)
-        self.assertEqual([len(plan(s)) for s in ['cold-drug','held-dose','final']],[63,63,21])
+        self.assertEqual(len(rows),126)
+        self.assertEqual([len(plan(s)) for s in ['cold-drug','held-dose']],[63,63])
         require_complete(plan=rows,found=rows)
         with self.assertRaises(ValueError):require_complete(plan=rows,found=rows[:-1])
         with self.assertRaises(ValueError):require_complete(plan=rows,found=rows+[rows[0]])
