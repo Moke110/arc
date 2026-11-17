@@ -125,7 +125,9 @@ accepted formal release.
 `run --inputs <freeze> --candidate <stable candidate> --source <native source>
 --scenario cold-drug --device cuda` for the63 primary fits; `held-dose` and
 `final` reuse the same frozen driver for63 and21 fits. Omit `--scenario` to
-execute all147. The driver runs one capped subprocess at a time. The coordinator
+execute all147. Always pass an explicit absolute `--source` path: the accepted
+frozen driver's unused default retains a documented [ADR0075 exception](../../docs/adr/0075-transigen-all-dose-input-selection.md#frozen-driver-path-default-exception--2026-11-17).
+The driver runs one capped subprocess at a time. The coordinator
 must keep the independent10-second resource monitor active. `--limit-runs N`
 pauses after N validation fits; `--resume` verifies all existing bindings and
 replays complete origins before skipping. Scientific failures block release;

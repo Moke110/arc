@@ -34,6 +34,18 @@ def complete_matrix(root):
 
 
 class PublicationTests(unittest.TestCase):
+    def test_publication_cli_finds_checkout_marker_above_relocated_step(self):
+        module=publication()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'.git').write_text('gitdir: elsewhere\n')
+            step=root/'arbitrary'/'extra'/'stage2'/'03_tsg_dose';step.mkdir(parents=True)
+            argv=['publish_release.py','publish']
+            for name in ['inputs','matrix','candidate','source','log','destination']:
+                argv.extend(['--'+name,str(root/name)])
+            with patch.object(module,'STEP',step),patch.object(sys,'argv',argv),patch.object(module,'publish') as publish:
+                module.main()
+            self.assertEqual(publish.call_args.args[0].root,root)
+
     def test_held_dose_intervals_resample_parents_carrying_all_seed_metrics(self):
         module=publication();rows=[]
         for parent,scores in [('A',[.1,.3,.5]),('B',[.5,.7,.9])]:
