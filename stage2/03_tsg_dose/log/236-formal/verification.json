@@ -1,0 +1,32 @@
+{
+  "canonical_candidate": "/home/chang/arc/stage2/03_tsg_dose/execution/checkpoints/matrix-v1",
+  "choice_before_test": true,
+  "choices": {
+    "0": "scaling",
+    "1": "scaling",
+    "2": "input-numeric"
+  },
+  "complete_origins": 63,
+  "date": "2026-11-17",
+  "driver_exit": 0,
+  "formal_fits": 63,
+  "fresh_test_replays": 63,
+  "fresh_validation_replays": 63,
+  "frozen_execution_files": 11,
+  "frozen_identity_unchanged": true,
+  "interrupted_attempts": 0,
+  "large_payloads": "Canonical ignored candidate retained; no checkpoints/prediction matrices copied to git",
+  "oof_folds_each": 3,
+  "oof_methods_and_seeds": 24,
+  "oof_parent_doses_each": 1377,
+  "oof_parents_each": 459,
+  "oof_wells_each": 4206,
+  "peak_fit_rss_kib": 1934036,
+  "plan_sha256": "6c60d9284dcbc403bd36632acb998c85b8fd732f13a558f690f0c67549427b91",
+  "scenario": "cold-drug",
+  "scientific_failures": 0,
+  "status": "primary candidate accepted; full147-fit release remains pending",
+  "ticket": 236,
+  "unique_attempt_nonces": 63,
+  "verification": "Driver accept independently verified complete origins, checkpoint/config/manifest/runtime bindings, exact fresh-process proofs, frozen OOF identities and report construction; this lightweight audit verifies saved receipts, coverage, unique attempts and unchanged code."
+}
