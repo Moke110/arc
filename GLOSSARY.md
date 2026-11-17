@@ -519,9 +519,9 @@ The rebuilt comparison applies a further declared fold-change threshold; see
 **Cold-drug fold**:
 One Stage 2 benchmark split whose test drugs are absent from its training and
 validation sets at every dose and repeat; each drug is tested exactly once
-across the outer folds. The historical benchmark used five folds; the redesigned
-tenv comparison freezes three and indexes them, so an experiment takes the first
-`n` folds from the accepted index table.
+across the complete outer partition. A complete cold-drug comparison covers every
+eligible drug exactly once in its test folds; selecting a subset of another
+partition does not constitute a complete comparison.
 _Avoid_: cold-start split, holdout (unqualified)
 
 **CM-unseen drug (CM 未见药物)**:
@@ -658,7 +658,7 @@ The reference entry that predicts, for every gene of a group, the mean Δ of tha
 _Avoid_: delta_mean (retired name), no_change (withdrawn)
 
 **Fold/seed index table**:
-`01_bases/output/fold_n_seed/folds.csv` or `seeds.csv`. Each table orders frozen identities by row, and an experiment takes the first `n` rows for the `n` folds or `n` seeds it declares, so every study consumes the same identities in the same order.
+`01_bases/output/fold_n_seed/folds.csv` or `seeds.csv`. Each table orders frozen identities for studies that explicitly consume that table. A separately frozen comparison partition has its own fold identities; taking a prefix of a different partition does not recreate it.
 
 **Stage palette**:
 The two-dimensional `01_bases/output/palette/` table of plotting colors: six hue families (gray, blue, green, orange, purple, magenta) crossed with nine lightness-and-saturation shades. A color means the same thing in every Stage 2 figure.
