@@ -163,7 +163,16 @@ class ImportedEvidenceTests(unittest.TestCase):
         (root/'import-receipt.json').unlink();shutil.rmtree(root/'import-provenance')
         with self.assertRaisesRegex(ValueError,'preregistered'):
             matrix.record_execution(root,self.run,self.target)
-        registration=matrix.execution_registration(self.run,self.target)
+        registration=matrix.execution_registration(self.run,self.target,'1'*64)
+        from tenv5k.attempt_identity import attempt_binding
+        import torch
+        binding=attempt_binding(registration)
+        config=json.loads((root/'config.json').read_text());config['execution_binding']=binding
+        (root/'config.json').write_text(json.dumps(config))
+        torch.save(dict(config=config,execution_binding=binding,state_dict={}),root/'checkpoint.pt')
+        manifest=json.loads((root/'manifest.json').read_text());manifest['execution_binding']=binding
+        for name in ('config.json','checkpoint.pt'):manifest['outputs'][name]=matrix.digest(root/name)
+        (root/'manifest.json').write_text(json.dumps(manifest))
         matrix.record_execution(root,self.run,self.target,registration)
         self.assertEqual(matrix.verify_execution(root,self.run,self.target)['origin'],'trained')
         receipt=json.loads((root/'execution-receipt.json').read_text())
@@ -171,6 +180,69 @@ class ImportedEvidenceTests(unittest.TestCase):
         (root/'execution-receipt.json').write_text(json.dumps(receipt))
         with self.assertRaisesRegex(ValueError,'execution identity'):
             matrix.verify_execution(root,self.run,self.target)
+
+    def test_registered_slot_cannot_recover_historical_complete_run_as_fresh(self):
+        import shutil
+        root=self.fixture()
+        (root/'import-receipt.json').unlink();shutil.rmtree(root/'import-provenance')
+        candidate=self.root/'matrix';target=matrix.run_path(candidate,self.run)
+        target.parent.mkdir(parents=True);shutil.move(str(root),target)
+        registration=matrix.execution_registration(self.run,self.target,'2'*64)
+        slot=matrix.registration_path(candidate,self.run);slot.parent.mkdir(parents=True)
+        slot.write_text(json.dumps(registration,indent=2)+'\n')
+        args=SimpleNamespace(candidate=candidate,device='cuda')
+        with self.assertRaisesRegex(ValueError,'attempt|registration'):
+            action=matrix.recover_existing(args,self.run,self.original['input_manifest_sha256'],lambda:None)
+            if action=='complete':matrix.record_execution(target,self.run,self.target,registration)
+
+    def test_new_checkpoint_binding_cannot_be_replaced_by_legacy_checkpoint(self):
+        import shutil
+        import torch
+        from tenv5k.attempt_identity import attempt_binding,verify_artifact_binding
+        root=self.fixture();(root/'import-receipt.json').unlink();shutil.rmtree(root/'import-provenance')
+        registration=matrix.execution_registration(self.run,self.target,'3'*64)
+        binding=attempt_binding(registration)
+        config=json.loads((root/'config.json').read_text());config['execution_binding']=binding
+        (root/'config.json').write_text(json.dumps(config))
+        # Config and manifest bind the new attempt, but checkpoint is historical.
+        torch.save(dict(config={k:v for k,v in config.items() if k!='execution_binding'},state_dict={}),root/'checkpoint.pt')
+        manifest=json.loads((root/'manifest.json').read_text());manifest['execution_binding']=binding
+        for name in ('config.json','checkpoint.pt'):manifest['outputs'][name]=matrix.digest(root/name)
+        (root/'manifest.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError,'checkpoint attempt'):
+            matrix.record_execution(root,self.run,self.target,registration)
+        torch.save(dict(config=config,execution_binding=binding,state_dict={}),root/'checkpoint.pt')
+        manifest['outputs']['checkpoint.pt']=matrix.digest(root/'checkpoint.pt')
+        (root/'manifest.json').write_text(json.dumps(manifest))
+        self.assertEqual(verify_artifact_binding(root,registration),binding)
+        manifest['execution_binding']={**binding,'attempt_nonce':'4'*64}
+        (root/'manifest.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError,'manifest attempt'):
+            verify_artifact_binding(root,registration)
+
+    def test_only_exact_reviewed_metadata_plumbing_transitions_are_importable(self):
+        import copy
+        root=self.root/'inputs';root.mkdir();(root/'manifest.json').write_text('{}')
+        args=SimpleNamespace(inputs=root,means=root,device='cuda',prnet_source=root,transigen_source=root)
+        target=copy.deepcopy(self.target);target['methods']['prnet']=matrix.frozen_plan(args)['methods']['prnet']
+        audit=copy.deepcopy(self.audit);audit['target_method']=target['methods']['prnet']
+        paths={'output/api/tenv5k/learner.py','execution/prnet.py','output/api/tenv5k/attempt_identity.py'}
+        audit['changed_code']={p:'Reviewed metadata-only binding, no model RNG or mathematics change' for p in paths}
+        self.imports.validate_compatibility(self.original,target,audit,self.imports.ORIGINAL_PLAN_SHA256)
+        target['methods']['prnet']['code_sha256']['execution/prnet.py']='arbitrary CLI change'
+        with self.assertRaisesRegex(ValueError,'unreviewed metadata'):
+            self.imports.validate_compatibility(self.original,target,audit,self.imports.ORIGINAL_PLAN_SHA256)
+
+    def test_failed_attempt_keeps_its_registration_and_original_bytes(self):
+        candidate=self.root/'failed-matrix';target=matrix.run_path(candidate,self.run);target.mkdir(parents=True)
+        (target/'terminal.json').write_text(json.dumps(dict(status='failed')))
+        (target/'partial.bin').write_bytes(b'original interrupted attempt')
+        registration=matrix.execution_registration(self.run,self.target,'5'*64)
+        args=SimpleNamespace(candidate=candidate,device='cuda')
+        self.assertEqual(matrix.recover_existing(args,self.run,self.original['input_manifest_sha256'],lambda:None,registration),'train')
+        archived=next((candidate/'attempts').rglob('execution-registration.json'))
+        self.assertEqual(json.loads(archived.read_text()),registration)
+        self.assertEqual((archived.parent/'partial.bin').read_bytes(),b'original interrupted attempt')
 
 
 if __name__ == '__main__':

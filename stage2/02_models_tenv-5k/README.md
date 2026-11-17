@@ -172,8 +172,8 @@ continuing `--all --resume` with the same paths/code. Import is restricted to th
 15 registered cold PRnet identities and the approved original plan digest. The
 audit binds `source_plan_sha256`, exact `target_method` from the new plan,
 `source_runtime: "551a3c9"`, `reviewed_by`, and `changed_code` rationales keyed by
-changed method dependency paths. Only the explicitly reviewed original→new shared
-learner digest pair is allowed; PRnet adapter, inputs and scoring must be unchanged.
+changed method dependency paths. Only the explicitly reviewed original→new shared learner, PRnet entrypoint and
+new attempt-identity helper digest transitions are allowed; PRnet adapter, inputs and scoring must be unchanged.
 A rationale alone cannot authorize other code or scientific changes.
 
 Every import runs a read-only fresh process using the frozen runtime, original
@@ -185,3 +185,10 @@ the new candidate, accompanied by `import-receipt.json` and `import-provenance/`
 Original artifacts are never rewritten or relabelled as fresh training. These
 portable receipts are rechecked on resume, acceptance and publication. New runs
 must have a preregistered execution identity and a separate execution receipt.
+
+Each new training attempt uses an OS-generated nonce, separate from model RNG.
+The registration's canonical JSON SHA256 and nonce are passed to the training and
+fresh replay child via `--registration`, persisted in configuration, checkpoint
+and manifest, and checked on record/resume/acceptance. A historical complete run
+cannot become fresh evidence even in a previously registered slot. Retries use a
+new nonce and retain the former registration and interrupted artifacts.
