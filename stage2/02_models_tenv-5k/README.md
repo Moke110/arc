@@ -49,8 +49,11 @@ cold-drug --fold 0 --seed 17 --device cpu` trains the registered Sci-Plex5k
 architecture from random weights. Its sole chemical interface change is shared
 binary Morgan2048 replacing upstream feature Morgan1024; the constant
 `log10(1 + 1 µM)` multiplier remains explicit. GaussianNLL training and the native
-noise-plus-output-Normal draw are retained. Batch512, Adam1e-3/weight_decay1e-8,
-and ReduceLROnPlateau(.5, patience5, min_lr1e-8) follow Sci-Plex; validation uses
+noise-plus-output-Normal draw are retained. Batch512, Adam1e-4/weight_decay1e-8,
+and ReduceLROnPlateau(.5, patience5, min_lr1e-8) retain the Sci-Plex settings
+except the approved lower learning rate. The method identity is
+`prnet-native-f32-lr1e4-v1`; model state, training, validation, inference and
+serialized predictions are float32. Validation uses
 fixed seed22617, ordered complete validation, strict MSE improvement, patience50,
 max1000 and best restoration. A singleton final training batch joins the previous
 batch for BatchNorm. Source digests, adaptations, input identity, order and seeds
