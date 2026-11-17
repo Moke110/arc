@@ -1,4 +1,0 @@
-truth groups 1377 arrays (1377, 18164)
-fold 0 test groups authorized 459
-fold 0 test wells 1401 missing truth groups 0
-sample group padj finite 16748 status eligible

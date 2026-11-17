@@ -1,1 +1,0 @@
-{"identity": {"fold": 0, "fold_row": 0, "seed": 17, "seed_row": 0}, "n_genes": 18164, "roles": {"test": 64, "train": 512, "validation": 128}}

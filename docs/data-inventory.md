@@ -181,16 +181,13 @@ The four finalised screens are rerunnable from the 項 sources with the shared `
 
 Per-workflow rows are isolated `du -sb` values that each include their own hard-linked `input/` copies; the `stage1/` total above counts the shared 5.57 GB UniMol array once, which is why the five rows sum to more than it.
 
-## Stage 2 — the two active steps (2026-11-12, ADR 0062 stable layout)
+## Stage 2 — the two active steps (2026-11-17, ADR 0062 / 0074)
 
-`stage2/01_bases/` (the foundation) and `stage2/02_models_tenv/` (the tenv model
-comparison restored by ADR 0063, tickets #163-#165) are the active steps. Other
-Stage 2 directories, including ignored checkpoints and historical predictions,
-were deleted at the user's request. Tracked historical code and records remain in
-Git; the retired comparison implementation is reachable only through Git history
-(`git show 1543781^:stage2/03_modes_tenv/...`) and is untouched by the restored
-step. Recovering deleted ignored model fits would require retraining; no current
-build depends on them.
+`stage2/01_bases/` owns the foundation and `stage2/02_models_tenv-5k/` owns
+the accepted single-dose native-model comparison. The previous `02_models_tenv`
+step is retired after verified successor acceptance; its complete tracked and
+ignored tree is retained in the archive listed below. Historical ADRs and sealed
+records retain their original paths and scientific identities.
 
 Every accepted product now has one stable semantic path (`du -sb`; the retained
 rows below were measured 2026-11-12/13, historical sizes for removed payloads are
@@ -285,28 +282,40 @@ Each manifest pins the new axis algorithm, corpus payload digests, normalization
 basis and exact outputs; do not reuse historical 2k/5k manifests. Replays use
 separate capped jobs and compare all bytes; no full dense corpus is materialized.
 
-### `stage2/02_models_tenv/` — accepted tenv matrix (2026-11-12, #165/#170)
+### `stage2/02_models_tenv-5k/` — accepted three-fold comparison (#226/#231)
 
-The step's products are untracked ignored payloads under its `output/`; only the
-three figures, their three complete plotted-value CSVs, the CSV-only renderer,
-the acceptance records and the raw resource measurements are tracked. The whole
-`output/` tree is regenerable from the canonical checkout with
-`python execution/run_matrix.py --all`; a completed run set is reused with
-`--resume`, and `--accept-only` rescores and replays the published runs without
-training or re-inference.
+Canonical ignored payloads preserve the accepted complete 54-run matrix and new
+18-slot Mean release. Sizes below are regular-file byte sums, excluding directory
+metadata. The complete candidate duplicates published runs to retain registrations,
+plan, resources and replay evidence; it is required for no-training matrix replay.
 
-| path under `stage2/02_models_tenv/` | `du -sb` | contents | reconstruction |
-|---|---:|---|---|
-| `output/inputs/` | 2,041,030,268 | four complete predictor-input releases (`drugs.csv`, `morgan.npy`, per-role baseline/delta arrays, case tables and manifests), one per `(fold, seed)` matrix cell | `execution/script/prepare_inputs.py` from the sealed `01_bases` corpus and fold/seed products |
-| `output/runs/` | 967,675,021 | eight run directories: four PRnet fits (`prediction.npy`, `best.pt`, checkpoint/identity/terminal/resource records) and four deterministic `Mean` fold copies | PRnet runs: pinned PRnet environment + `execution/script/prnet_fit_predict.py`; `Mean`: `execution/script/mean_reference.py`; one heavy job at a time under the 10 GiB cap |
-| `output/evaluation/` | 57,435,713 | `per_well.csv`, `per_group.csv`, `per_run.csv`, `per_run_curve.csv`, `confusion.csv`, `evaluation.json` and the three plot-value copies from the shared #168 driver | `execution/script/evaluation_driver.py` over the eight complete runs; re-scores from persisted predictions only |
-| `output/figure_data/` | 825,190 | copies of the three @d plot-value tables (byte-identical to the tracked `figure/data/`) | `evaluation_driver.py --figure-data` |
-| `figure/` | 1,270,546 | `metrics.png` (4 direct panels), `metrics_indirect.png` (8 reliability panels), `learning_curve.png` (PRnet), the three complete plotted-value CSVs and the CSV-only renderer | `python figure/script/render_figures.py --figure-data figure/data --out-dir figure`; `output/` unreadable |
-| `log/` | 89,486 | #163 admission, #164 driver, #165 and #166 acceptance records plus the raw `/usr/bin/time -v` measurements (including the three tracked `166-*.time` replay files) and the environment locks | execution records; tracked |
+| path under `stage2/02_models_tenv-5k/` | files | bytes | contents / reconstruction |
+|---|---:|---:|---|
+| `output/inputs/` | 12 | 98,265,302 | 1,402 treated wells, 459 parents, 192 unique controls, 5,000 genes, exact three-fold splits/Morgan/manifest; `execution/prepare.py --view ../01_bases/output/view-5k --candidate <empty>` |
+| `output/means/` | 62 | 142,776,780 | 18 baseline slots, 15 applicable and three cold-drug Mean_drug N/A; `execution/means.py --inputs output/inputs --candidate <empty>` |
+| `output/runs/` | 594 | 2,296,905,455 | 54 newly trained float32 checkpoints/predictions, identities, curves, exact replay and execution receipts; `execution/run_matrix.py --all` with explicit source/input/Mean paths and a new candidate |
+| `output/comparison/` | 9 | 13,245,103 | full per-well/parent/seed metrics, paired bootstrap, selection and plot values; `execution/run_matrix.py --accept-only` |
+| `execution/checkpoints/matrix-threefold-f32-lr1e4/` | 836 | 2,324,942,306 | full accepted candidate, including all registrations, plan and raw resources; preserved from the verified formal generation |
 
-Historical tenv comparison code, figures and records are **not** present in the
-working tree; they remain untouched in Git history (`git show
-1543781^:stage2/03_modes_tenv/...`) and nothing in this step depends on them.
+Tracked report products are `figure/{metrics,paired_differences,learning_curve}.png`,
+their complete CSV values under `figure/data/`, the CSV-only renderer and compact
+acceptance/resource/environment records under `log/`. Canonical payload SHA256
+preservation is recorded in `log/231-canonical-preservation.json`; replay and rebuild
+commands are in the step README. Immutable external model sources remain owned by
+`pert_model/PRnet` and `pert_model/TranSiGen`. Stage 3 is unchanged.
+
+### Retired `stage2/02_models_tenv/` — preserved old accepted result
+
+The old tree at commit `cf27c49` is archived at
+`/home/chang/arc-retired-assets/tenv-02-pre-231-cf27c49/old02.tar`:
+214 regular files, 3,069,022,388 source bytes; archive SHA256
+`27175ec1d4dca1654500278b79fa3ceb439054f015f9c3b0488fe40b7cf68d08`.
+`manifest.json` beside it records every entry; `log/231-retirement.json` in the new
+step records renewed source/archive verification and the old→new mapping. This is
+same-machine retention, not an offsite backup. Historical source/figures/records
+remain accessible through Git history; ignored fits remain recoverable from the
+verified archive. Earlier failed five-fold successor candidates retain their
+original worktrees and evidence and are not counted as this accepted matrix.
 
 ## Archived, literature, wet-lab, logs
 
