@@ -5,9 +5,16 @@ The new step uses the released Bases G_5000 view, 1 µM treated wells and
 matched controls. No normalization or axis is refitted here. Stage 3 is frozen.
 The previous step stays accepted until the full successor matrix passes #231.
 
+Current approved protocol (2026-11-17, ADR 0074): complete new three-fold
+partitions, initial Adam learning rate 1e-4 for all three learners, float32
+learning and saved predictions, and 54 fresh learner runs. The 18 deterministic
+Mean slots contain 15 applicable results and three cold-drug Mean_drug N/A.
+Historical five-fold, float64, and imported results remain separate evidence;
+no historical checkpoint or prediction can enter the current comparison.
+
 `execution/prepare.py --view <accepted view-5k> --candidate <empty directory>`
 freezes bounded reader inputs, population, original-control mapping, Morgan2048,
-and two shared 5-fold splits. Split seed 226 is registered before training;
+and two shared complete 3-fold splits. Split seed 226 is registered before training;
 validation units round up with `ceil(0.1 * outer_training_units)` (parents for
 cold-drug, wells for warm-start). Warm wells are shuffled per parent and assigned
 round-robin with a seeded starting fold. Validation retains at least one training
@@ -33,15 +40,15 @@ Predictors must output treated expression in the requested row/gene order.
 Run `execution/means.py --inputs <prepared directory> --candidate <empty directory>`
 for all deterministic fold baselines. Each applicable run writes `prediction.npy`,
 `identity.csv`, `per_well.csv`, `per_drug.csv`; `status.csv` explicitly marks the
-five cold-drug Mean_drug runs unavailable. Payloads are candidates until #231's
+three cold-drug Mean_drug runs unavailable. Payloads are candidates until #231's
 complete matrix acceptance. Reconstruct inputs with prepare rather than copying
 large accepted view payloads into a worktree.
 
-The first verified freeze is recorded in `log/frozen-inputs/` with input/output
+The historical five-fold freeze is recorded in `log/frozen-inputs/` with input/output
 hashes and shared identities. The real 30-entry Mean slice completed with 25
 applicable runs and five N/A entries. See `log/acceptance.md` for bounded validation
-and resource evidence. This establishes shared inputs and baselines, not the final
-90-run model comparison.
+and resource evidence. This historical slice is superseded by the complete three-fold freeze and
+18-slot Mean replay in `log/227-threefold/`; neither slice is final learner acceptance.
 
 PRnet native slice (#228): `execution/prnet.py --inputs <prepared> --candidate
 <empty directory> --source <immutable pert_model/PRnet/source> --scenario
@@ -95,8 +102,10 @@ immutable payload is materialized in another checkout.
 MLP_Morgan is the XPert-defined chemical baseline with this project's
 preregistered configuration: Morgan2048→Linear128→ReLU→Linear5000, a linear
 output and no control, dose, dropout or pretraining input. It uses mean MSE,
-Adam lr0.001/weight_decay0.00001, batch64 (including singleton batches), no
+Adam lr0.0001/weight_decay0.00001, batch64 (including singleton batches), no
 scheduler, and the shared strict validation-MSE stopping/best-restore lifecycle.
+The current identity is `mlp-morgan-project-f32-lr1e4-v1`; floating state,
+training, validation, inference and serialized predictions use float32.
 Complete baseline training code was not found in the official GitHub/Figshare;
 this configuration is not claimed as a reproduction of author training code.
 
@@ -110,14 +119,15 @@ implementation digest, configuration, identities, predictions, matched-control
 Matrix orchestration (#231) uses `execution/run_matrix.py --plan-only` without
 loading models or input payloads. `--all` requires explicit `--inputs`, `--means`,
 `--prnet-source`, `--transigen-source`, `--candidate`, and `--device` paths/identity.
-`--resume` skips only complete, exact-replayed formal identities after checking
+The default new candidate identity is `matrix-threefold-f32-lr1e4`.
+`--resume` skips only complete, exact-replayed current-protocol identities after checking
 all artifact hashes and the frozen plan; changed code/configuration is rejected.
 `--limit-runs 1` profiles the first full registered run; it does not shorten its
 1,000-epoch cap or patience 50. Continue it with the same arguments and `--resume`.
 `--accept-only` evaluates the complete matrix without training, and `--publish`
 requests publication only after complete OOF metric and CSV figure replay.
 
-Comparison first reconstructs every well's out-of-fold prediction across all five
+Comparison first reconstructs every well's out-of-fold prediction across all three
 folds for each seed, then averages repeated-well Δ vectors within each parent,
 then computes metrics, then averages the three seed metrics. This matters in
 warm-start, where one parent spans several test folds. Paired parent bootstrap
@@ -132,7 +142,9 @@ preserved evidence. The author CUDA backend correction does not resolve that
 failure. Previous accepted results and the old step remain available; the new
 comparison has not been accepted or published.
 
-On 2026-11-17 the user approved the numerical-method amendment in ADR 0074.
+The following numerical-method attempt is historical and superseded by the
+current three-fold amendment. On 2026-11-17 the user initially approved the
+numerical-method amendment in ADR 0074.
 All 30 TranSiGen identities must run from zero as `transigen-native-f64-v1`;
 the three historical float32 successes remain evidence only. Exactly 15 completed
 cold-drug PRnet entries may be imported only after immutable original
@@ -158,14 +170,15 @@ constant prediction counts are recorded with plot values and displayed as figure
 annotations. Prediction-constant counts count seed-parent vectors; deterministic
 Mean methods have a single vector per parent. True constants retain error scores.
 
-The v2 matrix plan separates shared input/evaluation identity from each method's
+The historical v2 matrix plan separated shared input/evaluation identity from each method's
 scientific identity and implementation hashes. CSV report rows include
 `method_identity` (paired tables include candidate/reference identities), so the
 stable `TranSiGen` method name is explicitly identified as
 `transigen-native-f64-v1`. Acceptance records all 90 execution origins, including
 imported versus newly trained evidence; it still refuses an incomplete matrix.
 
-Use `execution/run_matrix.py --import-cold-prnet --inputs <freeze> --means <means>
+The historical import procedure (prohibited for the current protocol) was
+`execution/run_matrix.py --import-cold-prnet --inputs <freeze> --means <means>
 --prnet-source <source> --transigen-source <source> --candidate <new candidate>
 --device cuda --import-original <original matrix-231> --import-runtime
 <preserved runtime551a3c9 worktree> --compatibility-audit <reviewed JSON>` before
@@ -177,7 +190,7 @@ changed method dependency paths. Only the explicitly reviewed original→new sha
 new attempt-identity helper digest transitions are allowed; PRnet adapter, inputs and scoring must be unchanged.
 A rationale alone cannot authorize other code or scientific changes.
 
-Every import runs a read-only fresh process using the frozen runtime, original
+In that historical procedure, every import ran a read-only fresh process using the frozen runtime, original
 source, recorded device and exact software environment. It checks checkpoint
 configuration and exact prediction dtype/values. Original run files, including
 configuration, terminal, checkpoint and manifest, are copied byte for byte into
