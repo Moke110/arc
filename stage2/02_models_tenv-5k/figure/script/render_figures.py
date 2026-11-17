@@ -64,14 +64,20 @@ def render(data,out):
     fig,axes=plt.subplots(2,3,figsize=(17,9),constrained_layout=True)
     for i,scenario in enumerate(('cold-drug','warm-start')):
         for j,method in enumerate(('PRnet','TranSiGen','MLP_Morgan')):
-            ax=axes[i,j];rows=curves[(curves.scenario==scenario)&(curves.method==method)]
+            ax=axes[i,j];validation_ax=ax.twinx()
+            validation_ax.spines['right'].set_visible(True)
+            rows=curves[(curves.scenario==scenario)&(curves.method==method)]
             for index,(_,run) in enumerate(rows.groupby(['fold','seed'])):
-                # Every recorded epoch is plotted; shades cycle for 15 runs.
-                ax.plot(run.epoch,run.validation_mse,color=palette.color('green',index%7),alpha=.65,lw=.8)
+                # Every recorded epoch is plotted; shades identify the nine fold/seed runs.
+                validation_ax.plot(run.epoch,run.validation_mse,color=palette.color('green',index%7),alpha=.65,lw=.8)
                 ax.plot(run.epoch,run.train_loss,color=palette.color('blue',index%7),alpha=.35,lw=.6,ls='--')
-            ax.set_title(scenario+' · '+method);ax.set_xlabel('epoch');ax.set_ylabel('validation MSE (green); native train loss (blue)')
+            ax.set_title(scenario+' · '+method);ax.set_xlabel('epoch')
+            ax.set_ylabel('native train loss (dashed)',color=palette.color('blue',2))
+            validation_ax.set_ylabel('validation MSE (solid)',color=palette.color('green',2))
+            ax.tick_params(axis='y',labelcolor=palette.color('blue',2))
+            validation_ax.tick_params(axis='y',labelcolor=palette.color('green',2))
             ax.grid(alpha=.15)
-    fig.suptitle('Native training losses have different definitions and scales across models')
+    fig.suptitle('Independent y-scales: native training loss (blue, left) and validation MSE (green, right). Native losses are not comparable across models')
     fig.savefig(out/'learning_curve.png');plt.close(fig)
 
 if __name__=='__main__':
