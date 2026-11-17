@@ -1,0 +1,46 @@
+{
+  "schema": "tenv5k-threefold-input-acceptance-v1",
+  "date": "2026-11-17",
+  "source_view": "/home/chang/arc/stage2/01_bases/output/view-5k",
+  "candidate_inputs": "/tmp/arc-tenv5k-final/input",
+  "candidate_means": "/tmp/arc-tenv5k-final/means",
+  "population": {
+    "treated_wells": 1402,
+    "parents": 459,
+    "genes": 5000,
+    "original_controls": 192
+  },
+  "oof": {
+    "cold-drug": {
+      "n_oof_wells": 1402,
+      "fold_test_counts": {
+        "0": 469,
+        "1": 468,
+        "2": 465
+      }
+    },
+    "warm-start": {
+      "n_oof_wells": 1402,
+      "fold_test_counts": {
+        "0": 469,
+        "1": 463,
+        "2": 470
+      }
+    }
+  },
+  "means": {
+    "slots": 18,
+    "applicable": 15,
+    "not_applicable": 3
+  },
+  "resources": {
+    "cap": "RLIMIT_AS 10GiB; BLAS threads 2",
+    "prepare_peak_rss_kib": 390816,
+    "means_peak_rss_kib": 310332
+  },
+  "tests": {
+    "protocol": 6,
+    "reader_chain": 1
+  },
+  "scope": "Shared input/Mean slice only; not complete 54-run comparison acceptance."
+}

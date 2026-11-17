@@ -1,0 +1,20 @@
+{
+  "inputs": {
+    "view_manifest": "7ba2bde3c20cdcf9036d88c9ac344991657448319b2811f51b2fe47c59c8c11d",
+    "view_tenv": "952435d9cb7df3f30e93200c5574faa50d60bfd602a5b70acf78cfd60adb9044"
+  },
+  "outputs": {
+    "all_obs.csv": "f709eca24003ccba94024bf330a9d1a98b5f48849eff384f02b342ab5623eedc",
+    "config.json": "6cb23ada2b7cce38693eeb4180bb3cfb9d5cd2bad5195be4838031e58f0c55b0",
+    "control.npy": "408601102c4e6a91be99001935a6a312d1f66a7e1dd1d6fa0816b176914613b1",
+    "delta.npy": "e62e17fccc12c11c694d8c427a5a1fb3bdb3843cc137a7577403cefcee76e600",
+    "expression.npy": "0cd2bfa00b18ee4b06ac62a411f1619b75828a1e681ded29f0f064770c64d98a",
+    "genes.csv": "41484d9377a5c7779e86c14408b7429534644b7166c18643e6c8a939b159a718",
+    "matched_controls.json": "46b196f1e664c34eb9c66bf1b8a3521aa516fee6751eeb94364a1562de96c678",
+    "morgan.npy": "cc60144180a0e0a13486ce162ab0a5c65fbdb83ea75a88ba19ce187aa516ded7",
+    "parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+    "population.csv": "91428b3703eca14415403b99f937614c24a2e35ca8e295d3f9d65213a27f6197",
+    "splits.csv": "8d2d297f6b678bb6fe78f42a35a5c17baa2535a1fa1a0f68f4e56bb474e6c25f"
+  },
+  "schema": "tenv5k-inputs-v2"
+}

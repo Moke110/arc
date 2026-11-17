@@ -18,7 +18,7 @@ def run(inputs, candidate):
     candidate.mkdir(parents=True, exist_ok=True)
     statuses = []
     for scenario in ('cold-drug', 'warm-start'):
-        for fold in range(5):
+        for fold in range(data.config['folds']):
             train = data.rows(scenario, fold, 'train')
             test = data.rows(scenario, fold, 'test')
             for method in ('Mean', 'Mean_cell', 'Mean_drug'):
@@ -37,7 +37,7 @@ def run(inputs, candidate):
                 statuses.append({**identity, 'status': 'complete', 'n_test': len(test)})
     pd.DataFrame(statuses).to_csv(candidate / 'status.csv', index=False)
     outputs = {str(p.relative_to(candidate)): sha256(p) for p in sorted(candidate.rglob('*')) if p.is_file()}
-    (candidate / 'manifest.json').write_text(json.dumps({'schema': 'tenv5k-means-v1', 'input_manifest_sha256': sha256(Path(inputs) / 'manifest.json'), 'outputs': outputs}, indent=2) + '\n')
+    (candidate / 'manifest.json').write_text(json.dumps({'schema': 'tenv5k-means-v2-threefold', 'input_manifest_sha256': sha256(Path(inputs) / 'manifest.json'), 'outputs': outputs}, indent=2) + '\n')
     return statuses
 
 if __name__ == '__main__':
