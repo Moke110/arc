@@ -1,17 +1,15 @@
 # Stage 2 shared foundations
 
-**Current disease/axis release: ADR 0073, 2026-11-16 (#220–#225).**
-The unchanged ADR 0066 integer foundation feeds four model-facing views, on
-2,000 / 3,000 / 4,000 / 5,000 original frozen gene indices. Five declared diseases
-retain all qualifying source tiers, full DEG unions and tier-first DEG1000 evidence;
-four pass the uniform 100-DEG gate. AF retains its 25-gene evidence and is excluded.
-The root [rule document](gene_axis_fill_rule.docx), figures and public readers use
-this same generation. No training or `02_models_tenv` re-point is included.
+**Current expression release: ADR 0077, 2026-11-18 (#243–#245).**
+Only paired tenv-5k and tahoe_bulk-5k expression is live. Each profile uses its
+unchanged G_5000 integer-count total for CP10K and natural log1p. The exact four
+ADR0073 gene axes and all disease/fusion/HVG evidence remain unchanged.
 
-[Acceptance](log/acceptance.md) and [the current receipt](log/full_source_acceptance.json)
-pin replay, source preservation, tests, resources and health checks. Earlier
-acceptance sections and ADR 0066–0072 measurements are sealed history, not current
-source counts, axes or view digests.
+[Acceptance](log/acceptance.md) and [the current receipt](log/axis_local_acceptance.json)
+pin the paired independent replay, selected totals, preservation, document and
+health checks. Earlier measured receipts remain sealed historical full-axis
+releases. Stage 2 02/03 frozen inputs, weights and reported metrics retain their
+original full-axis scale; this release does not retrain or rescore them.
 
 ## Rebuild foundation: `raw_counts/` and `corpus/` (ADR 0066, #186)
 
@@ -182,7 +180,7 @@ output/
   disease-deg/         # five categories, 41 source-record DEG/rank pairs
   disease-fusion/      # full *.union.csv + tier-first *.deg1000.csv
   gene-axis/           # candidate table, four axes, composition/coverage, manifest
-  view-{2,3,4,5}k/      # each has tenv + tahoe_bulk X/control/delta payloads
+  view-5k/             # paired tenv + tahoe_bulk X/control/delta payloads
   fold_n_seed/         # retained partitions
   palette/             # shared colors
 figure/{data,script}/   # complete plotted CSVs and CSV-only renderers
@@ -242,35 +240,36 @@ The compatibility coverage **filename** is retained; its explicit long columns
 DEG1000 semantics. Eligible disease denominator is its own DEG1000 size;
 tenv-HVG denominator is N; excluded AF rows are unavailable, not zero.
 
-## Four corpus views and bounded readers
+## Paired 5k-local expression and bounded readers
 
-Each `output/view-{2,3,4,5}k/` has two ignored float32 h5ad payloads:
-`tenv.h5ad` (4,478 rows = 4,206 treated + 272 vehicle) and `tahoe_bulk.h5ad`
-(66,718 rows = 65,318 treated + 1,400 vehicle). The source row identities are
-unchanged. `X = log1p(CP10K)` uses each row's **full 18,164-gene** library total,
-then subsets to ascending original frozen indices. `control` is the mean of
-matched corpus vehicle rows normalized on that same full axis; `delta = X-control`.
-Common-gene X/control/delta and library totals are invariant across sizes.
-No view-local normalization or dense whole-corpus access is permitted.
+`output/view-5k/` contains float32 tenv (4,478 rows: 4,206 treated/272 vehicle)
+and tahoe_bulk (66,718 rows: 65,318 treated/1,400 vehicle). Original identities,
+order, roles and matched-control groups are unchanged. First select G_5000 raw
+integer counts; sum those counts in int64, then compute
+`X = log1p(10000 * counts_5k / selected_axis_library_total)`.
+Normalize each vehicle independently before averaging its matched group;
+`control` is that mean and `delta = X - control`. Non-positive selected totals
+fail with source/profile identity. No full-axis diagnostic is a denominator.
 
-Each view's `stage2-view-v2` manifest pins corpus and new axis inputs, output
-digests, full-axis normalization, source counts/basis and current algorithm.
-`library_totals.csv` records the same 71,196 full-axis totals at every size.
-Exact payload bytes/hashes and measured basis are in the manifests and current
-acceptance receipt; historical two-view digests are not current values.
+The `stage2-view-v3` manifest, payload metadata and 71,196-row
+`library_totals.csv` bind this recipe and the original ascending axis digest.
+The reader rejects historical full-axis and mixed-generation payloads. The
+2k/3k/4k expression products are retired; their named axes with symbols remain.
 
 ```python
 from bases.view import open_view
-with open_view('stage2/01_bases/output/view-3k') as view:
+with open_view('stage2/01_bases/output/view-5k') as view:
     tenv = view.source('tenv')
     x, control, delta = tenv.X(0, 64), tenv.control(0, 64), tenv.delta(0, 64)
     controls = tenv.matched_control_rows(42)
-    genes = tenv.gene_index   # original ascending integers, never renumbered
+    genes = tenv.gene_index
 ```
 
-Use public bounded windows/batches, never `anndata.read_h5ad(backed="r")`
-(which eagerly loads layers). `02_models_tenv` migration/evaluation remains
-deferred; its eventual consumer must select treated rows explicitly.
+Use bounded public windows/batches. Future Stage 2 02/03 input preparation uses
+`execution/axis_local/prepare.py` and a fresh empty candidate. It records actual
+view schema, recipe, normalization, axis and digests. The original prepare code
+is retained for historical fit-identity reconstruction; use the preserved frozen
+inputs to replay accepted experiments, whose metrics are on the old scale.
 
 ## Readers
 
@@ -281,7 +280,7 @@ to `sys.path` from the repository root. Every product read checks its digests.
 |---|---|
 | `raw_counts/` | `bases.raw_counts.open_tenv` / `open_tahoe` |
 | `corpus/` | `bases.corpus.open_corpus` |
-| `view-{2,3,4,5}k/` | `bases.view.open_view` (bounded X/control/delta, library totals) |
+| `view-5k/` | `bases.view.open_view` (bounded X/control/delta, library totals) |
 | `disease-deg/` | `bases.disease_deg.DiseaseDeg` (categories/datasets/table/rank/eligibility) |
 | `disease-fusion/` | `bases.disease_deg.DiseaseFusion` (record/union/deg1000) |
 | `gene-axis/` | `bases.gene_axis.GeneAxis` (axis/candidate_table/composition/coverage/digests) |
@@ -295,8 +294,9 @@ replace; a failed candidate leaves accepted products untouched. Source-item
 recipes are declared in each item's `author_log.json`; preserve ignored bytes
 before deleting worktrees. `prepare` of the integrated successor snapshots a
 complete materialized input root and independently replayed TOX output. Its
-publish/verify actions cover registry categories, fusion, four axes and four
-views (eight payloads); see `--help` for candidate/input/output arguments.
+publish/verify actions cover registry categories, fusion, four axes and only the
+paired 5k view. This scientific rebuild driver is separate from a scoped
+normalization-only publication: use `publish_axis_local.py` for the latter.
 
 ```bash
 python stage2/01_bases/execution/build_disease_deg.py publish --all
@@ -385,5 +385,17 @@ owned by a follow-up.
 ## Historical boundary
 
 The errata above and sealed acceptance sections retain original measured facts.
-ADRs 0066–0072 describe their own releases; ADR 0073 and the current receipts
-define the live disease, four-axis and eight-payload contracts.
+ADRs 0066–0072 describe their own releases; ADR 0073 defines retained disease/axis evidence; ADR 0077 and the current receipt
+define the paired 5k-local expression release.
+
+## Scoped publication and recovery
+
+`build_view.py publish|verify` stages/replays only paired 5k expression from
+retained corpus integers and G_5000. To install an already independently replayed
+candidate, run `execution/publish_axis_local.py install --root <materialized-root>
+--candidate <paired-candidate> --recovery <fresh-checkpoint> --record <receipt>`.
+The driver verifies both sources and every input pin before moving any live
+path, restores moved paths on failure, then retains superseded views outside
+`output/`. Recovery instructions are in the driver's module documentation.
+Recovery is historical full-axis evidence requiring its matching old reader.
+No active command silently creates small expression products.

@@ -253,34 +253,31 @@ older ADR 0066–0072 sizes/digests remain sealed historical acceptance records.
 | stable path under `stage2/01_bases/` | file bytes | contents / reconstruction |
 |---|---:|---|
 | `output/gene-axis/` | 1,006,428 | Complete candidate table, four axes, composition/coverage and manifest. `execution/build_gene_axis.py publish` / `--verify` from final disease fusion + frozen identity + tenv-HVG. |
-| `gene_axis_fill_rule.docx` | 123,881 | 13-page portrait A4 reading aid, five disease-category subtables (41 records) plus separate tenv-HVG table. `execution/make_gene_axis_docx.py`; input/tool/output pins and every-page QA in `log/gene_axis_document_verify.json`. Old live output/gene-axis copy removed. |
+| `gene_axis_fill_rule.docx` | 104,322 | 13-page portrait A4 reading aid, five disease-category subtables (41 records) plus separate tenv-HVG table. `execution/make_gene_axis_docx.py`; input/tool/output pins and every-page QA in `log/gene_axis_document_verify.json`. Old live output/gene-axis copy removed. |
 | `figure/gene_axis_rank_sum_histogram.png` | 95,996 | Four-axis (2×2 panel) histogram, rendered only from matching tracked figure/data CSV. |
 | `figure/data/gene_axis_rank_sum_histogram.csv` | 18,622 | All candidate/selected histogram bins and axis panel labels. |
 | `figure/gene_axis_source_topn_coverage.png` | 75,469 | Four-axis coverage bars using own DEG1000/group denominators; CSV-only renderer. |
 | `figure/data/gene_axis_source_topn_coverage.csv` | 1,518 | Explicit complete coverage plot values; excluded AF unavailable with reason. |
 
-### Four model-facing views (ADR 0073)
+### Paired 5k-local expression (ADR 0077)
 
-Each view normalizes on the full 18,164-gene library total (CP10K/log1p), then
-subsets to ascending original indices. `X`, matched-vehicle `control` and
-`delta = X-control` preserve common-gene values across sizes. Each contains
-4,478 tenv and 66,718 tahoe_bulk rows, with both treated and vehicle roles.
-The h5ad payloads and `library_totals.csv` are ignored/reconstructible;
-`stage2-view-v2` manifests are tracked. Bytes below sum files (not directory
-entry allocation), from the measured candidate accepted through independent replay.
+Only `output/view-5k/` is live. The unchanged 4,478 tenv and 66,718 tahoe_bulk
+rows use selected G_5000 int64 totals for CP10K/natural log1p, individually
+normalized matched vehicles, and delta = X-control. `stage2-view-v3` binds the
+unchanged gene axis, corpus and denominator provenance. All four named axes
+remain; 2k/3k/4k expression is retired. Rebuild/replay only this pair with
+`execution/build_view.py publish|verify`; read through bounded `bases.view.open_view`.
 
-| view | tenv payload bytes | tahoe_bulk payload bytes | library totals bytes | reconstruction |
-|---|---:|---:|---:|---|
-| `output/view-2k/` | 58,682,833 | 1,239,781,865 | 3,727,979 | `execution/build_view.py publish` / `verify`; bounded public `bases.view.open_view` |
-| `output/view-3k/` | 85,821,196 | 1,836,553,997 | 3,727,979 | `execution/build_view.py publish` / `verify`; bounded public `bases.view.open_view` |
-| `output/view-4k/` | 111,802,264 | 2,396,278,296 | 3,727,979 | `execution/build_view.py publish` / `verify`; bounded public `bases.view.open_view` |
-| `output/view-5k/` | 139,079,739 | 2,966,289,037 | 3,727,979 | `execution/build_view.py publish` / `verify`; bounded public `bases.view.open_view` |
+| product | bytes |
+|---|---:|
+| `output/view-5k/tenv.h5ad` | 138,696,684 |
+| `output/view-5k/tahoe_bulk.h5ad` | 2,942,840,025 |
+| `output/view-5k/library_totals.csv` | 9,366,916 |
 
-The twelve ignored files total **8,849,201,143 bytes** (eight h5ads and four
-identical 71,196-row library-total tables). Source/corpus/HVG bytes are unchanged.
-Each manifest pins the new axis algorithm, corpus payload digests, normalization
-basis and exact outputs; do not reuse historical 2k/5k manifests. Replays use
-separate capped jobs and compare all bytes; no full dense corpus is materialized.
+These three ignored/reconstructible files total **3,090,903,625 bytes**.
+Source/corpus/HVG/four-axis and historical downstream bytes remain unchanged.
+Old measurements stay in sealed receipts; recovery views outside formal output
+are temporary reconstruction evidence, not live model inputs.
 
 ### `stage2/02_models_tenv-5k/` — accepted three-fold comparison (#226/#231)
 

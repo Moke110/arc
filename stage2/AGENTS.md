@@ -6,13 +6,13 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
 ## Active steps
 
 - `01_bases/` — shared foundation (ADR 0066 integer corpus; ADR 0073 disease/axis
-  contract): frozen identity, raw counts, corpus, four model-facing views,
+  contract): frozen identity, raw counts, corpus, paired 5k expression views,
   complete disease source evidence, tier-first DEG1000 fusion, 2k/3k/4k/5k nested
   gene axes, fold/seed products, palette and the single public API. Later steps
   import it rather than re-deriving it. Axes use half tenv-HVG, half unused
   f1000-first/rank_sum-ordered disease candidates, with explicit HVG fallback.
-  Views normalize on the full frozen axis before subsetting and retain matched
-  control/delta semantics. The human rule DOCX is at the step root.
+  ADR0077 views normalize on selected G_5000 integer totals and retain matched
+  control/delta semantics. Old02/03 experiments keep their full-axis scale. The human rule DOCX is at the step root.
   Routing: `stage2/01_bases/AGENTS.md`.
 - `02_models_tenv-5k/` — single-dose tenv native model comparison (ADR 0074):
   shared splits and Mean baselines, random-weight PRnet/TranSiGen/MLP_Morgan,

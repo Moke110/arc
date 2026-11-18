@@ -49,32 +49,15 @@ class FourAxisTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'algorithm'):
                 gene_axis.GeneAxis(root).manifest()
 
-    def test_all_four_view_sizes_preserve_common_gene_values_and_control_identity(self):
+    def test_only_5k_expression_is_released_but_four_axes_remain(self):
         from bases import view
-        import view_fixtures
+        self.assertEqual(tuple(view.VIEW_NAMES), (5000,))
+        self.assertEqual(gene_axis.AXIS_SIZES, (2000, 3000, 4000, 5000))
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            counts = np.ones((3, 18164), dtype=np.int32)
-            counts[0, 0] = 9
-            sources = {name: {'counts': counts, 'role': ['treated', 'vehicle', 'vehicle'],
-                              'matched_control_group': [name + '::P1::DMSO'] * 3}
-                       for name in ('tenv', 'tahoe_bulk')}
-            inputs = view_fixtures.write_release(root, sources, {n: np.arange(n) for n in gene_axis.AXIS_SIZES})
-            baseline = {}
-            for size in gene_axis.AXIS_SIZES:
-                output = root / f'view-{size // 1000}k'
-                view.build(output, corpus_dir=inputs['corpus'], axis_dir=inputs['axis'], size=size)
-                with view.open_view(output) as opened:
-                    for name in opened.sources:
-                        source = opened.source(name)
-                        self.assertEqual(source.shape, (3, size))
-                        self.assertEqual(source.matched_control_rows(0).tolist(), [1, 2])
-                        self.assertEqual(source.library_totals()[0], 18172)
-                        np.testing.assert_array_equal(source.delta(0, 1), source.X(0, 1) - source.control(0, 1))
-                        values = source.X(0, 1)[:, :2000]
-                        if name in baseline:
-                            np.testing.assert_array_equal(values, baseline[name])
-                        baseline[name] = values
+            for size in (2000, 3000, 4000):
+                with self.assertRaisesRegex(view.ViewError, 'released view size'):
+                    view.build(Path(temp) / str(size), corpus_dir=Path(temp),
+                               axis_dir=Path(temp), size=size)
 
     def test_view_reader_rejects_a_mixed_axis_algorithm(self):
         from bases import view

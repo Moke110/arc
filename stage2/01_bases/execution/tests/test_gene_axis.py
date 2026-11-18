@@ -1066,8 +1066,16 @@ class FigureTests(unittest.TestCase):
                 if row.get('panel') == 'a' and row.get('record') == 'hist':
                     row['selected'] = 0
             write(short, temporary / 'short.csv')
+            # Published bars cover disease-supported candidates, so fewer than
+            # N selected genes is valid; remaining axis genes may be HVG-only.
+            self.assertEqual(sum(row[3] for row in renderer.load(temporary / 'short.csv')[2]['a']), 0)
+            oversized = self.synthetic_rows()
+            for row in oversized:
+                if row.get('panel') == 'a' and row.get('record') == 'hist':
+                    row['selected'] = 2  # within each bin, but 8 exceeds N=4
+            write(oversized, temporary / 'oversized.csv')
             with self.assertRaises(ValueError):
-                renderer.load(temporary / 'short.csv')
+                renderer.load(temporary / 'oversized.csv')
 
     def test_synthetic_csv_renders_byte_identically_twice(self):
         rows = self.synthetic_rows()
@@ -1226,7 +1234,7 @@ class CsvOnlyProductAccessTests(unittest.TestCase):
             temporary = Path(temporary)
             with mock.patch('builtins.open', guard(original_open)), mock.patch('io.open', guard(original_io_open)):
                 with self.assertRaises(PermissionError):
-                    open(STEP / 'output/view-2k/tenv.h5ad', 'rb')
+                    open(STEP / 'output/view-5k/tenv.h5ad', 'rb')
                 attempts.clear()
                 for stem, module in (('gene_axis_rank_sum_histogram', renderer),
                                      ('gene_axis_source_topn_coverage', coverage_renderer)):

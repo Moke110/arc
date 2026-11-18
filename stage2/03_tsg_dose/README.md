@@ -1,5 +1,15 @@
 # TranSiGen dose-input optimization — round1
 
+**Normalization generation:** all accepted frozen inputs, weights, metrics and
+figures here use the historical full-18,164-gene denominator (`stage2-view-v2`).
+They are preserved and do not establish results on the ADR0077 5k-local scale.
+Replay them with their preserved frozen inputs. Future input preparation uses
+`execution/axis_local/prepare.py --view ../01_bases/output/view-5k --candidate
+<fresh-empty-directory>`; this records actual schema, recipe, normalization,
+axis and payload digests. New-scale training or rescoring needs separate work.
+The original root `execution/prepare.py` remains frozen historical source.
+
+
 [ADR0076](../../docs/adr/0076-dose-input-round1-exploration-boundary.md) and
 [#240](https://github.com/Moke110/arc/issues/240) define this step as an
 optimization exploration. Round1 retains **126 formal fits: 63 cold-drug and

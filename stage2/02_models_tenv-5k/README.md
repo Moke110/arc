@@ -1,5 +1,15 @@
 # Single-dose tenv 5k model comparison
 
+**Normalization generation:** all accepted frozen inputs, weights, metrics and
+figures here use the historical full-18,164-gene denominator (`stage2-view-v2`).
+They are preserved and do not establish results on the ADR0077 5k-local scale.
+Replay them with their preserved frozen inputs. Future input preparation uses
+`execution/axis_local/prepare.py --view ../01_bases/output/view-5k --candidate
+<fresh-empty-directory>`; this records actual schema, recipe, normalization,
+axis and payload digests. New-scale training or rescoring needs separate work.
+The original root `execution/prepare.py` remains frozen historical source.
+
+
 Implementation of approved [#226](https://github.com/Moke110/arc/issues/226).
 The new step uses the released Bases G_5000 view, 1 µM treated wells and
 matched controls. No normalization or axis is refitted here. Stage 3 is frozen.
@@ -72,7 +82,7 @@ python figure/script/render_figures.py --figure-data figure/data --out-dir figur
 The candidate, inputs and Means are preserved in the canonical checkout with
 hash verification; [the final receipt](log/231-final-acceptance.json) records
 resources, tests, preservation and replay scope. To reconstruct rather than
-replay, prepare a new empty input directory from `../01_bases/output/view-5k`,
+replay, prepare a new empty input directory through `execution/axis_local/prepare.py`,
 run `execution/means.py`, then use `execution/run_matrix.py --all` with a new
 empty candidate. `--resume` accepts only matching current-protocol identities.
 

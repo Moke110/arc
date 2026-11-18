@@ -511,11 +511,11 @@ def source_coverage_figure_rows(source, axis_sizes):
 
 
 def figure_rows(source, axis_sizes):
-    """The complete plotted values of the two-panel rank-sum evidence figure.
+    """The complete plotted values of the four-axis rank-sum evidence figure.
 
-    One panel per released axis. The gray bars are the frozen-axis candidates per
+    One panel per released axis. The gray bars are the disease-supported (f1000 > 0) candidates per
     ``rank_sum`` bin and are identical in every panel; ``selected`` says how many
-    of that bin's candidates the panel's axis keeps (``sum(selected) == N``).
+    of that bin's candidates the panel's axis keeps (the axis/candidate intersection).
     """
     eligible = source['level_two']['f1000'] > 0
     histogram = source['histogram'].copy()
@@ -972,14 +972,16 @@ def validate_staged(config, source, payload_root, manifest, axis_size):
     if set(histogram.panel) != set(sizes):
         raise ValueError('a figure panel has no plotted candidate histogram')
     n_candidates = int(histogram[histogram.panel == panels.panel.iloc[0]]['count'].sum())
-    if n_candidates != axis_size:
-        raise ValueError('the figure histogram does not cover every candidate')
+    eligible = np.asarray(source['level_two']['f1000']) > 0
+    if n_candidates != int(eligible.sum()):
+        raise ValueError('the figure histogram does not cover every disease-supported candidate')
     for panel, size in sizes.items():
         rows = histogram[histogram.panel == panel]
         if len(rows) != HISTOGRAM_BINS:
             raise ValueError('a figure panel does not hold the declared bin count')
-        if rows.selected.sum() != size:
-            raise ValueError(f'figure panel {panel} does not select exactly N genes')
+        expected_selected = int(eligible[source['axes'][size]].sum())
+        if rows.selected.sum() != expected_selected:
+            raise ValueError(f'figure panel {panel} differs from the disease-supported axis intersection')
         if (rows.selected > rows['count']).any():
             raise ValueError('a figure bin selects more genes than it holds')
     coverage_figure = pd.read_csv(payload_root / paths['source_coverage_figure'])

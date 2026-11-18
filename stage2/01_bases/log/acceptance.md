@@ -937,3 +937,21 @@ source proof, human artifact pins and resource observations. The classified
 full-repository reference audit is `legacy_reference_audit.json`; remaining
 matches are sealed history, migration vocabulary, rejection tests or unrelated
 hash substrings. No live old alias, schema field or product remains.
+
+
+## 18. ADR0077 paired 5k-local expression successor (#243–#245, 2026-11-18)
+
+The current expression generation is `stage2-view-v3`, selected G_5000 int64
+CP10K/natural log1p. Independently normalized matched vehicles define control;
+delta is X-control. Both source populations, order, roles and control groups
+remain unchanged. Real candidate build and independent replay reproduce every
+manifest/output byte. The 2k/3k/4k expression products are absent from live output;
+all four named axes and scientific evidence remain exact.
+
+`axis_local_acceptance.json` is the current coherent receipt. It links complete
+protected-byte inventory, selected-total/scientific checks, generation-bound
+future input preparation and 13-page document replay/visual QA. Existing Stage02/03
+inputs, model weights, metrics and figures remain full-axis historical evidence;
+no retraining or rescoring occurred. Prior sections and sealed JSON receipts
+retain original measured facts. Offline final health is recorded separately in
+the same generation receipt before publication.
