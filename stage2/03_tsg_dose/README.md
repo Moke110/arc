@@ -3,11 +3,22 @@
 **Normalization generation:** all accepted frozen inputs, weights, metrics and
 figures here use the historical full-18,164-gene denominator (`stage2-view-v2`).
 They are preserved and do not establish results on the ADR0077 5k-local scale.
-Replay them with their preserved frozen inputs. Future input preparation uses
-`execution/axis_local/prepare.py --view ../01_bases/output/view-5k --candidate
-<fresh-empty-directory>`; this records actual schema, recipe, normalization,
-axis and payload digests. New-scale training or rescoring needs separate work.
-The original root `execution/prepare.py` remains frozen historical source.
+Replay them with their preserved frozen inputs. The original root
+`execution/prepare.py` remains frozen historical source.
+
+[ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
+paired 5k-local successor. Its separate input and bounded smoke entry points
+are `execution/axis_local/prepare.py --view ../01_bases/output/view-5k
+--candidate <fresh-directory>` and `execution/axis_local/smoke.py
+--inputs <paired-freeze> --source <native-transigen-source>
+--destination <fresh-smoke-directory> --device cuda`. The freeze contains
+source-specific `tenv` and `tahoe_bulk` inputs and a paired digest manifest.
+Its split ledger records both excluded strips of each cold-drug-dose fold.
+The smoke command runs one no-dose fit for each source and scenario and checks
+fresh-process validation and test replay followed by a paired acceptance receipt.
+Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
+monitoring described below. The accepted historical report remains available
+during successor implementation and candidate validation.
 
 
 [ADR0076](../../docs/adr/0076-dose-input-round1-exploration-boundary.md) and

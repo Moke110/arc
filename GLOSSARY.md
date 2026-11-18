@@ -615,15 +615,29 @@ the measured tenv doses, with unseen-drug prediction as its primary objective
 and held-dose prediction as an auxiliary objective.
 
 **Dose-input round1**:
-The first completed tenv TranSiGen dose-input optimization exploration, comprising
-cold-drug and held-dose comparisons of seven fixed configurations; it establishes
-comparison evidence rather than a downstream model-weight release.
+The Stage 2 TranSiGen dose-input optimization exploration. Its ADR 0078
+successor compares seven fixed configurations independently on Tahoe and tenv
+using axis-local G_5000, with cold-drug and cold-drug-dose evaluation. The
+historical ADR 0076 generation used tenv with cold-drug and held-dose evaluation.
+Both generations provide comparison evidence without a downstream weight release.
 _Avoid_: final deployment selection, universally optimal dose architecture
 
 **Dose-input comparison run**:
-One fixed method, scenario, fold and seed in the dose-input comparison. A held-dose
-fold denotes a distinct omitted dose; runs are not independent biological replicates.
+One source, fixed method, scenario, fold and seed in the dose-input comparison.
+A historical held-dose fold denotes a distinct omitted dose. Runs do not
+represent independent biological replicates.
 _Avoid_: independent replicate, Benchmark run (the historical ADR 0027 unit)
+
+**Cold-drug-dose**:
+A dose-input round1 test at the intersection of unseen drug parents and one
+unseen measured dose. The development partition contains other parents at
+the other doses. The remaining two parent-by-dose strips are excluded.
+
+**Sample-equal Delta evaluation**:
+Calculate each treated sample's gene-wise Delta metrics with its own matched
+control, then give each sample equal weight within a reported population.
+This is the ADR 0078 evaluation unit for both sources. The historical ADR 0076
+comparison retains parent-equal evaluation.
 
 **Parent–dose response**:
 The mean transcriptional response of repeated treated wells for one drug

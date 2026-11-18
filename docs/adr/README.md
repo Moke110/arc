@@ -105,3 +105,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0076](0076-dose-input-round1-exploration-boundary.md) | Dose-input round1 exploration, run-level report spread and retirement of final weight publication (*amends 0075*) |
 
 | [0077](0077-five-k-only-axis-local-normalization.md) | 5k-only expression views with axis-local normalization; retain four named axes and old downstream input generations (*implemented paired expression successor, #244–#245*) |
+
+| [0078](0078-dual-source-axis-local-dose-round1.md) | Rebuild dose-input round1 on the paired axis-local 5k views with sample-equal evaluation and cold-drug-dose |
