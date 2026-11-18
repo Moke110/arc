@@ -118,7 +118,7 @@ class EntryContractTest(unittest.TestCase):
             self.assertTrue(note.strip())
 
     def test_tenv_sample_size_constants_match_the_published_view_manifest(self):
-        manifest = json.loads((STEP / 'output/view-2k/manifest.json').read_text(
+        manifest = json.loads((STEP / 'output/view-5k/manifest.json').read_text(
             encoding='utf-8'))
         tenv = manifest['sources']['tenv']
         self.assertEqual(metadata.TENV_TREATED_WELLS, tenv['treated'])

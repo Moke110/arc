@@ -1,6 +1,6 @@
 # Publish only 5k expression views with axis-local normalization
 
-**Status:** accepted design (2026-11-18); data implementation and acceptance pending.
+**Status:** implemented (2026-11-18, #244–#245); paired scientific publication verified. Final integration health is recorded in `stage2/01_bases/log/axis_local_acceptance.json`.
 
 The user needs only tenv-5k and tahoe_bulk-5k expression inputs, normalized within the genes each model receives. Retain the exact ADR 0073 nested 2k/3k/4k/5k axes, including original frozen `gene_index`, `symbol` and candidate/composition/coverage evidence, but retire both sources' 2k/3k/4k expression views. This amends ADR 0066's full-axis normalization choice and ADR 0073's four-view obligation; their original measured releases and sealed evidence remain history. Until coherent successor acceptance, the existing release remains authoritative.
 

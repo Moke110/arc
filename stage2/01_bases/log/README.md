@@ -20,7 +20,7 @@ requires the recorded source-replay evidence to travel with the regenerated reco
 | `disease_fusion_verify.json` | historical ADR 0071 six-disease fusion replay; superseded by current full-source acceptance |
 | `gene_axis_verify.json` | `build_gene_axis.py --verify` replay output |
 | `view_publish_verify.json` | `build_view.py publish` result (materialises the gitignored view payloads; manifests byte-identical to the tracked ones) |
-| `view_verify.json` | historical two-view replay; superseded by current four-view receipt |
+| `view_verify.json` | historical two-view replay; superseded by the historical ADR0073 four-view receipt |
 
 Disposable build state lives in `execution/checkpoints/`, never inside `output/`.
 
@@ -48,7 +48,7 @@ affected public-contract tests, three offline health checks, exact human artifac
 reproduction and main-checkout byte preservation. The successor sections of
 `acceptance.md` and `inputs.json` supersede historical six-category records.
 
-## Current ADR 0073 coherent acceptance
+## Historical ADR 0073 coherent acceptance
 
 - `full_source_acceptance.json`: #225 complete five-category/fusion/four-axis/eight-payload release, exact manifests and unchanged corpus bytes, affected tests, offline health and source/payload preservation.
 - `source_collection_candidate.json` and `tier_first_fusion_candidate.json`: full-source and tier-first fusion candidate evidence from #221/#222.
@@ -58,3 +58,14 @@ reproduction and main-checkout byte preservation. The successor sections of
 
 The older entries/sections above describe their own dated releases. They keep
 historical names and counts; current contracts/paths are in `../README.md`.
+
+## Current ADR0077 expression acceptance
+
+- `axis_local_acceptance.json`: paired 5k-local release, real independent replay,
+  selected totals, populations, exact preservation and new document QA.
+- `axis_local_preservation.json`: streamed unchanged upstream and accepted
+  downstream scientific/frozen-input/weight/result/sealed-log inventory.
+- `axis_local_candidate.json`: independently built and replayed #244 candidate.
+
+Earlier receipts remain byte-identical history. Disease and all four gene axes
+remain the ADR0073 scientific generation; only expression normalization changes.

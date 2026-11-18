@@ -1,0 +1,744 @@
+{
+  "candidate_receipt": {
+    "file": "stage2/01_bases/log/axis_local_candidate.json",
+    "sha256": "940f07e188e22c0e08d7ba1e748533c81e9fb991b281f38fd0b3e391401e2de6"
+  },
+  "date": "2026-11-18",
+  "document": {
+    "builder_sha256": "9c7bd035cd76150de744498eb6245a0d5d412c3abb45ffa8a1c634ad7c8c2613",
+    "bytes": 104322,
+    "deterministic_byte_replay": "PASS",
+    "docx_sha256": "192242b7b095ce234f034f3de3ee6a6c74342e6c91138f908a060be190091b73",
+    "elapsed_seconds": 1.68,
+    "every_page_inspected": true,
+    "exit_code": 0,
+    "historical_document": {
+      "bytes": 123881,
+      "sha256": "80bf8656b803c326a4094e67c6e026085b82e9c3c58e6a86d03c319c4be1c839"
+    },
+    "inspected_date": "2026-11-18",
+    "libreoffice": "25.2-headless-codex.1",
+    "max_rss_kib": 272272,
+    "metadata_sha256": "4b6678d071e8a8d7d887f48fc5211d1731707ef33fb2a42d94b4d27dbbcf07b6",
+    "observations": "All 13 full-size PNG pages inspected. No clipping, overlap, missing glyphs, broken table boundaries, or misplaced headers/footers. Existing dense source tables retain readable wrapped content and repeated headers. Page 1 sixth step correctly states only paired G5000 views, selected-count denominators, per-vehicle normalization, and delta X-control.",
+    "output": "stage2/01_bases/gene_axis_fill_rule.docx",
+    "page_count": 13,
+    "python": "3.12.14",
+    "rendered_sha256": {
+      "gene_axis_local.pdf": "ca63d325835f6c7d17367cec4201ce88097bdb0c09b258132be014062470a38a",
+      "page-1.png": "5112efe67d8aa40860246df7d7fb6b56a9f6697e6381a5c2073b68a2cedcb529",
+      "page-10.png": "b126dc1784ffc2c60d820af930afdd47c247659cf51aab6b242e7060bb78080e",
+      "page-11.png": "cb94b4d0e3d08b61d8bfae1d563894f28d37d2333c315a1a271efe2a0f1a5983",
+      "page-12.png": "a24b8352055c3c42b35e427de349cd9ec6bf53480bee20a945ee33c01cff68f9",
+      "page-13.png": "ffe030ef8f44f87dd64484353167344b2c01428adf288b9ebb71cb6d0f5ca534",
+      "page-2.png": "cde52acd2b7a0ea041236dfb889fce9790d7f000c23d6ba12ba065c53d04d077",
+      "page-3.png": "8111ff625ce3b6363b71f92bfade5af66d90ba4d15866c81e5aa76614b7282e7",
+      "page-4.png": "b54c6a10c933f7463489cb925784b30fce0c0fc7661ec65d9ecd7601d42f0dd1",
+      "page-5.png": "75222135e3ef77005a78f470ff4d8570e5c9238e8a88adef9756cdd758eda903",
+      "page-6.png": "32b2cc211e917c7a61b84c603ffa4d963f2e72ce214060bb2e6ef80ff65cc6c2",
+      "page-7.png": "bf2d37dde45d58b99011fb9c99017930fb28037a03629c5a8d0a4c9c3052be45",
+      "page-8.png": "7a661213204196d06c3181da879618d59fef47a6eec1bc6db9bc81d098d7bb87",
+      "page-9.png": "affa1ff98ef4b7ea2c731895c8131792b410c3427c23e1dcc3388f3ad097c43c"
+    },
+    "renderer": "/home/chang/.codex/plugins/cache/openai-primary-runtime/documents/26.1104.22356/skills/documents/render_docx.py",
+    "result": "PASS",
+    "schema": "stage2-axis-local-document-render-qa-v1"
+  },
+  "final_integration": {
+    "check_paths": "pending",
+    "check_tracked": "pending",
+    "code_review": "pending two-axis review",
+    "deployment": "pending dev->main and only origin/main push",
+    "verify_all": "pending; run alone under cap"
+  },
+  "final_transaction_confirmation": {
+    "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "recovery": "stage2/01_bases/execution/checkpoints/axis-local-245-confirmation",
+    "retired_live_paths": [
+      "view-2k",
+      "view-3k",
+      "view-4k"
+    ],
+    "validation": {
+      "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "outputs": [
+        "library_totals.csv",
+        "tahoe_bulk.h5ad",
+        "tenv.h5ad"
+      ],
+      "result": "PASS",
+      "sources": [
+        "tahoe_bulk",
+        "tenv"
+      ],
+      "view": {
+        "dtype": "float32",
+        "file_layout": "one h5ad per corpus source",
+        "layers": [
+          "control",
+          "delta"
+        ],
+        "matrix": "X",
+        "name": "view-5k",
+        "size": 5000
+      }
+    }
+  },
+  "future_input_preparation": {
+    "02_models_tenv-5k": {
+      "manifest_sha256": "39e0942c6f56710412c1870a0315696112bd937e031b21d74dfaf676384dd22d",
+      "public_reader": "Inputs",
+      "status": "PASS",
+      "treated": 1402,
+      "view_generation": {
+        "axis": {
+          "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+          "ascending": true,
+          "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+          "gene_index_max": 18155,
+          "gene_index_min": 2,
+          "renumbered": false,
+          "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "size": 5000
+        },
+        "evidence_scope": "new axis-local inputs; historical full-axis fits are not evidence for this generation",
+        "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+        "normalization": {
+          "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+          "formula": "log1p(count * 10000 / selected_axis_library_total)",
+          "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+          "source": "ADR 0077 five-k-only axis-local normalization"
+        },
+        "preparation_code_sha256": "5b6ba11d9e80d98a46f7039e08806d3b6ad5a6da66f3c7966e17d18746d21abc",
+        "preserved_prepare_sha256": "434089519a44888a420e4de872cc5b6bdeacf09a089f6ac703574f8e7e67d7f6",
+        "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+        "schema": "stage2-view-v3",
+        "tenv_sha256": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+      }
+    },
+    "03_tsg_dose": {
+      "manifest_sha256": "b79fc4dddc725d43198c6a9f458adb90e00d1e125df069883b462342be88d7f1",
+      "public_reader": "Inputs",
+      "status": "PASS",
+      "treated": 4206,
+      "view_generation": {
+        "axis": {
+          "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+          "ascending": true,
+          "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+          "gene_index_max": 18155,
+          "gene_index_min": 2,
+          "renumbered": false,
+          "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "size": 5000
+        },
+        "evidence_scope": "new axis-local inputs; historical full-axis fits are not evidence for this generation",
+        "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+        "normalization": {
+          "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+          "formula": "log1p(count * 10000 / selected_axis_library_total)",
+          "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+          "source": "ADR 0077 five-k-only axis-local normalization"
+        },
+        "preparation_code_sha256": "5b6ba11d9e80d98a46f7039e08806d3b6ad5a6da66f3c7966e17d18746d21abc",
+        "preserved_prepare_sha256": "98d66af27553d8964da5cbadc14b3683eb3d353bc0cc969be64d4729a0da6f7c",
+        "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+        "schema": "stage2-view-v3",
+        "tenv_sha256": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+      }
+    }
+  },
+  "historical_downstream": "All accepted Stage02/03 frozen inputs, execution identity source, weights, metrics and result bytes remain unchanged; no training/rescoring. New input candidates have new digests and explicit generation bindings and are not historical evidence.",
+  "historical_recovery": {
+    "historical_document": {
+      "bytes": 123881,
+      "sha256": "80bf8656b803c326a4094e67c6e026085b82e9c3c58e6a86d03c319c4be1c839"
+    },
+    "view-2k": {
+      "manifest_sha256": "94454e4fd418a984a12034164bd48f510e64520a8ec288bcf959f567018e2b19",
+      "outputs": {
+        "library_totals.csv": {
+          "bytes": 3727979,
+          "columns": [
+            "source",
+            "profile_id",
+            "role",
+            "library_total"
+          ],
+          "rows": 71196,
+          "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+        },
+        "tahoe_bulk.h5ad": {
+          "bytes": 1239781865,
+          "columns": 2000,
+          "dtype": "float32",
+          "rows": 66718,
+          "sha256": "72cb303d398d3e8105671ba7f35b7f50730b81f6ef91b095f47203e28ee186a9"
+        },
+        "tenv.h5ad": {
+          "bytes": 58682833,
+          "columns": 2000,
+          "dtype": "float32",
+          "rows": 4478,
+          "sha256": "e6c8003688d929ad686b43c3565278abd2dc50a5240dfb7bad70ac8fc72b8513"
+        }
+      },
+      "schema": "stage2-view-v2"
+    },
+    "view-3k": {
+      "manifest_sha256": "2a103b54471719963d6ea968bdda0cb5507abdb51c5889e80beff27346d11f2d",
+      "outputs": {
+        "library_totals.csv": {
+          "bytes": 3727979,
+          "columns": [
+            "source",
+            "profile_id",
+            "role",
+            "library_total"
+          ],
+          "rows": 71196,
+          "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+        },
+        "tahoe_bulk.h5ad": {
+          "bytes": 1836553997,
+          "columns": 3000,
+          "dtype": "float32",
+          "rows": 66718,
+          "sha256": "a01b624d0de797c8d76994476618aca53937c76bb5badd2b3afaf8d813c0cb1e"
+        },
+        "tenv.h5ad": {
+          "bytes": 85821196,
+          "columns": 3000,
+          "dtype": "float32",
+          "rows": 4478,
+          "sha256": "65a9c77f1d784d0527956b5b2d9fd9411cc67bd32414525ce9325f02d6434ce9"
+        }
+      },
+      "schema": "stage2-view-v2"
+    },
+    "view-4k": {
+      "manifest_sha256": "0495397f997efd92c188111f0b78810abb48837dd2330f60d99e25d088cff154",
+      "outputs": {
+        "library_totals.csv": {
+          "bytes": 3727979,
+          "columns": [
+            "source",
+            "profile_id",
+            "role",
+            "library_total"
+          ],
+          "rows": 71196,
+          "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+        },
+        "tahoe_bulk.h5ad": {
+          "bytes": 2396278296,
+          "columns": 4000,
+          "dtype": "float32",
+          "rows": 66718,
+          "sha256": "d51b7acc6738bdd10f70ce73ba3550a9fa583281e137624821fe5aa0d9a73f16"
+        },
+        "tenv.h5ad": {
+          "bytes": 111802264,
+          "columns": 4000,
+          "dtype": "float32",
+          "rows": 4478,
+          "sha256": "6846208e0c57979639d8698894377e58a3ca7e66e779f309ad393107c478f3a6"
+        }
+      },
+      "schema": "stage2-view-v2"
+    },
+    "view-5k": {
+      "manifest_sha256": "7ba2bde3c20cdcf9036d88c9ac344991657448319b2811f51b2fe47c59c8c11d",
+      "outputs": {
+        "library_totals.csv": {
+          "bytes": 3727979,
+          "columns": [
+            "source",
+            "profile_id",
+            "role",
+            "library_total"
+          ],
+          "rows": 71196,
+          "sha256": "dfaa5d7e7ef39fd296de7e6626897e83c5c003cca934f62bd2466c4bea9a1b01"
+        },
+        "tahoe_bulk.h5ad": {
+          "bytes": 2966289037,
+          "columns": 5000,
+          "dtype": "float32",
+          "rows": 66718,
+          "sha256": "e9a1bda7e9d712a0fc2d8def331c28f294be75adb2b5c0175616fef40c25e29e"
+        },
+        "tenv.h5ad": {
+          "bytes": 139079739,
+          "columns": 5000,
+          "dtype": "float32",
+          "rows": 4478,
+          "sha256": "952435d9cb7df3f30e93200c5574faa50d60bfd602a5b70acf78cfd60adb9044"
+        }
+      },
+      "schema": "stage2-view-v2"
+    }
+  },
+  "independent_replay": {
+    "action": "verify",
+    "views": {
+      "view-5k": {
+        "axis": {
+          "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+          "ascending": true,
+          "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+          "gene_index_max": 18155,
+          "gene_index_min": 2,
+          "renumbered": false,
+          "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "size": 5000
+        },
+        "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+        "name": "view-5k",
+        "normalization": {
+          "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+          "formula": "log1p(count * 10000 / selected_axis_library_total)",
+          "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+          "source": "ADR 0077 five-k-only axis-local normalization"
+        },
+        "outputs": {
+          "library_totals.csv": {
+            "bytes": 9366916,
+            "columns": [
+              "source",
+              "profile_id",
+              "role",
+              "library_total",
+              "normalization_schema",
+              "denominator_axis_sha256"
+            ],
+            "rows": 71196,
+            "sha256": "eedfd4f2442d6268c9e0adff953a9fd09c843e100c3335a20b3e0f0749d071ab"
+          },
+          "tahoe_bulk.h5ad": {
+            "bytes": 2942840025,
+            "columns": 5000,
+            "rows": 66718,
+            "sha256": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33"
+          },
+          "tenv.h5ad": {
+            "bytes": 138696684,
+            "columns": 5000,
+            "rows": 4478,
+            "sha256": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+          }
+        },
+        "path": "view-5k",
+        "peak_rss_kib": 437828,
+        "schema": "stage2-view-v3",
+        "size": 5000,
+        "sources": {
+          "tahoe_bulk": {
+            "rows": 66718,
+            "selected_axis_library_total": {
+              "max": 5857939,
+              "median": 388084.5,
+              "min": 78,
+              "sum": 33165097847
+            }
+          },
+          "tenv": {
+            "rows": 4478,
+            "selected_axis_library_total": {
+              "max": 1342694,
+              "median": 271686.5,
+              "min": 2106,
+              "sum": 1592760535
+            }
+          }
+        }
+      }
+    }
+  },
+  "installation": {
+    "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+    "recovery": "stage2/01_bases/execution/checkpoints/axis-local-245-recovery",
+    "retired_live_paths": [
+      "view-2k",
+      "view-3k",
+      "view-4k"
+    ],
+    "validation": {
+      "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "outputs": [
+        "library_totals.csv",
+        "tahoe_bulk.h5ad",
+        "tenv.h5ad"
+      ],
+      "result": "PASS",
+      "sources": [
+        "tahoe_bulk",
+        "tenv"
+      ],
+      "view": {
+        "dtype": "float32",
+        "file_layout": "one h5ad per corpus source",
+        "layers": [
+          "control",
+          "delta"
+        ],
+        "matrix": "X",
+        "name": "view-5k",
+        "size": 5000
+      }
+    }
+  },
+  "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+  "measurements": {
+    "install": {
+      "elapsed": "0:58.63",
+      "exit_status": 0,
+      "peak_rss_kib": 399956,
+      "time_log_sha256": "2409bc47936e9f2116f60dc3dd5e3b617b7257ab3aa4a93fd67a2a07b42c92a3"
+    },
+    "install-confirmation": {
+      "elapsed": "1:27.85",
+      "exit_status": 0,
+      "peak_rss_kib": 399508,
+      "time_log_sha256": "971400b0b76bdfe0795699ec5671ea2a3fa332d8e974f586030a778ccf4487c1"
+    },
+    "prep02": {
+      "elapsed": "0:31.59",
+      "exit_status": 0,
+      "peak_rss_kib": 429424,
+      "time_log_sha256": "693593048ed816a75a110c4c9bbfafd59acc01c18232de714ab4204edfcfb8e1"
+    },
+    "prep03": {
+      "elapsed": "0:31.79",
+      "exit_status": 0,
+      "peak_rss_kib": 595916,
+      "time_log_sha256": "0149125c6f6426648509c5e299d8466f2125d82a75ecda5e3db62783ce67eafa"
+    },
+    "preparation-proof": {
+      "elapsed": "0:01.07",
+      "exit_status": 0,
+      "peak_rss_kib": 196344,
+      "time_log_sha256": "6e8e579c76c34ac56c771bc970de2c4694cc1785fad8309e4193d26684d55768"
+    },
+    "preservation-after": {
+      "elapsed": "0:31.01",
+      "exit_status": 0,
+      "peak_rss_kib": 212704,
+      "time_log_sha256": "aaacf45e74160d68e6786e2a53588bbedbdae6ce6c88ccb6899aa3fcf334b9b3"
+    },
+    "preservation-before": {
+      "elapsed": "2:29.26",
+      "exit_status": 0,
+      "peak_rss_kib": 217788,
+      "time_log_sha256": "cebc8d6f9a266a72443e47939f9b8f38b32b0f8427f189ce8e8737fdb76617cd"
+    },
+    "recovery-proof": {
+      "elapsed": "0:22.72",
+      "exit_status": 0,
+      "peak_rss_kib": 33972,
+      "time_log_sha256": "7c80f5c42b248219a6be96a7e97cc03dbc4b7a34364da49ea5e546237a8ddb4a"
+    },
+    "test-geneaxis-final": {
+      "elapsed": "0:04.59",
+      "exit_status": 0,
+      "peak_rss_kib": 238600,
+      "time_log_sha256": "32f53a4610df12193a0269925f0af5cf6982ee669159c0ac9f7525900e0ac710"
+    }
+  },
+  "preservation": {
+    "authorized_mutable_exclusions": [
+      "human DOCX (original retained under recovery)",
+      "log/README.md (routing)",
+      "log/acceptance.md (original content preserved as byte prefix; append only)"
+    ],
+    "bytes": 31769310626,
+    "external_source_trees": "untouched; full external manifest verification is a final offline integration gate",
+    "files": 5879,
+    "inventory": "stage2/01_bases/log/axis_local_preservation.json",
+    "inventory_sha256": "b0e016628f7d01a587f142b3da8a4f8c5dae90ce55cce04fc78e70c8010971bf",
+    "result": "PASS",
+    "scope": "Stage01 raw-count/corpus/identity/HVG/disease/fusion/all four axes/evidence/fold/palette/figures/sealed JSON logs; all Stage02/03 output/API/frozen inputs/weights/results/figures/sealed logs/checkpoints",
+    "verification": "every pre-existing protected file streamed and digest checked after publication"
+  },
+  "public_behavior_tests": {
+    "csvonly": {
+      "log_sha256": "d3885d6d0a683d4c86ebc7bd2dd548c5ced12286cf09a8098a1f2d3e70be3f9d",
+      "result": "PASS",
+      "tests": 1
+    },
+    "docx": {
+      "log_sha256": "41919cc1849a5baca889b145de1b4eb93cc6286c4e6b996e80ebf7981eee9f1c",
+      "result": "PASS",
+      "tests": 2
+    },
+    "fouraxes": {
+      "log_sha256": "c83d22cd745c23ad72011770e184fd936f420eb8cd474c2707ce81936480c873",
+      "result": "PASS",
+      "tests": 5
+    },
+    "fouraxisdoc": {
+      "log_sha256": "479c588afa4da0645fe8e21e313e9011def6bc49b014a0f23a154be7aba14d2e",
+      "result": "PASS",
+      "tests": 3
+    },
+    "geneaxis-final": {
+      "log_sha256": "f728ff6e36a14a99f6bce16aedb4680d39de989d5534886667e83a2099ed2a36",
+      "result": "PASS",
+      "tests": 69
+    },
+    "metadata": {
+      "log_sha256": "574d374c5293ba7aee550576a7367b07c1e7dc046e72b8eaab92029ff0376579",
+      "result": "PASS",
+      "tests": 25
+    },
+    "publication": {
+      "log_sha256": "2e345ad423567f126d96175d0581d3dd9426daff22826e8f221549e39693049b",
+      "result": "PASS",
+      "tests": 2
+    },
+    "view": {
+      "log_sha256": "646e3106e7acff8cf9a4be3088ead7eec9461846aae477267169dc6e746d9c36",
+      "result": "PASS",
+      "tests": 27
+    }
+  },
+  "recovered_baseline_validation": {
+    "baseline_commit": "0bee80114188e312292073616dfc8c3168044c87",
+    "baseline_failures": [
+      "test_the_six_category_release_builds (test_gene_axis.DeclaredRosterTests.test_the_six_category_release_builds)",
+      "test_new_catalog_excludes_small_diseases_from_every_axis_contribution (test_gene_axis.EligibleDiseaseReleaseTests.test_new_catalog_excludes_small_diseases_from_every_axis_contribution)",
+      "test_excluded_disease_is_dropped_from_the_fusion_and_the_products (test_gene_axis.ReleaseBuildTests.test_excluded_disease_is_dropped_from_the_fusion_and_the_products)",
+      "test_failed_publish_keeps_the_accepted_release (test_gene_axis.ReleaseBuildTests.test_failed_publish_keeps_the_accepted_release)",
+      "test_publish_is_deterministic_across_roots (test_gene_axis.ReleaseBuildTests.test_publish_is_deterministic_across_roots)",
+      "test_publish_preserves_the_retired_gene_axis_file_set (test_gene_axis.ReleaseBuildTests.test_publish_preserves_the_retired_gene_axis_file_set)",
+      "test_publish_products_and_reader_contract (test_gene_axis.ReleaseBuildTests.test_publish_products_and_reader_contract)",
+      "test_second_half_fallback_is_recorded_in_the_manifest (test_gene_axis.ReleaseBuildTests.test_second_half_fallback_is_recorded_in_the_manifest)",
+      "test_verify_refuses_a_pre_v2_release_with_a_self_describing_error (test_gene_axis.ReleaseBuildTests.test_verify_refuses_a_pre_v2_release_with_a_self_describing_error)",
+      "test_verify_replays_and_detects_tampering (test_gene_axis.ReleaseBuildTests.test_verify_replays_and_detects_tampering)",
+      "test_committed_docx_replays_from_its_inputs (test_gene_axis.DocxTests.test_committed_docx_replays_from_its_inputs)",
+      "test_renderer_rejects_impossible_selection (test_gene_axis.FigureTests.test_renderer_rejects_impossible_selection)"
+    ],
+    "baseline_log_sha256": "92047d6cad884e833d9021144d162a3d2d13afa9072f9ae53864500912842689",
+    "baseline_worktree": "impl/bases-244",
+    "command": "/home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s stage2/01_bases/execution/tests -p test_gene_axis.py",
+    "current_failures": [
+      "test_the_six_category_release_builds (test_gene_axis.DeclaredRosterTests.test_the_six_category_release_builds)",
+      "test_new_catalog_excludes_small_diseases_from_every_axis_contribution (test_gene_axis.EligibleDiseaseReleaseTests.test_new_catalog_excludes_small_diseases_from_every_axis_contribution)",
+      "test_excluded_disease_is_dropped_from_the_fusion_and_the_products (test_gene_axis.ReleaseBuildTests.test_excluded_disease_is_dropped_from_the_fusion_and_the_products)",
+      "test_failed_publish_keeps_the_accepted_release (test_gene_axis.ReleaseBuildTests.test_failed_publish_keeps_the_accepted_release)",
+      "test_publish_is_deterministic_across_roots (test_gene_axis.ReleaseBuildTests.test_publish_is_deterministic_across_roots)",
+      "test_publish_preserves_the_retired_gene_axis_file_set (test_gene_axis.ReleaseBuildTests.test_publish_preserves_the_retired_gene_axis_file_set)",
+      "test_publish_products_and_reader_contract (test_gene_axis.ReleaseBuildTests.test_publish_products_and_reader_contract)",
+      "test_second_half_fallback_is_recorded_in_the_manifest (test_gene_axis.ReleaseBuildTests.test_second_half_fallback_is_recorded_in_the_manifest)",
+      "test_verify_refuses_a_pre_v2_release_with_a_self_describing_error (test_gene_axis.ReleaseBuildTests.test_verify_refuses_a_pre_v2_release_with_a_self_describing_error)",
+      "test_verify_replays_and_detects_tampering (test_gene_axis.ReleaseBuildTests.test_verify_replays_and_detects_tampering)",
+      "test_renderer_rejects_impossible_selection (test_gene_axis.FigureTests.test_renderer_rejects_impossible_selection)"
+    ],
+    "current_log_sha256": "e7eb3d1d6d9971ffc96f144b7fb35cf08b37c8190c7864a0b5a3b61334e096ca",
+    "file": "stage2/01_bases/execution/tests/test_gene_axis.py",
+    "final_result": "PASS: all 69 gene-axis tests after restoring validator consistency with the existing ADR0073 disease-supported histogram domain. No scientific output-generation code changed. Histogram candidate count is f1000>0 and selected count is its axis intersection; renderer tests retain bin-overcount and selected>N rejection while accepting HVG-only members outside histogram. Prior baseline additionally failed old DOCX byte replay in arc Python; new authoritative bundled Python3.12 document replay and 13-page QA PASS."
+  },
+  "red_before_green": [
+    "invalid candidate publication failed before publish_axis_local.py existed; then accepted marker preservation passes"
+  ],
+  "release": {
+    "axis": {
+      "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+      "ascending": true,
+      "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+      "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+      "gene_index_max": 18155,
+      "gene_index_min": 2,
+      "renumbered": false,
+      "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+      "size": 5000
+    },
+    "control": {
+      "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+      "delta": "delta = X - control, elementwise",
+      "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+    },
+    "counts": {
+      "axis_size": 18164,
+      "profiles_total": 71196,
+      "sources": {
+        "tahoe_bulk": 66718,
+        "tenv": 4478
+      },
+      "view_size": 5000
+    },
+    "environment": {
+      "anndata": "0.12.16",
+      "data_access": "offline; reads only output/corpus and output/gene-axis; streams 256-row batches, never a dense observation x axis matrix",
+      "h5py": "3.16.0",
+      "numpy": "2.4.6",
+      "pandas": "2.3.3",
+      "python": "3.13.13",
+      "resource_contract": "one heavy job at a time; 10 GiB RLIMIT_AS fallback; OMP_NUM_THREADS=2; peak RSS recorded by the driver"
+    },
+    "fixture": false,
+    "generated_by": "stage2/01_bases/execution/build_view.py",
+    "inputs": {
+      "stage2/01_bases/output/corpus/manifest.json": {
+        "bytes": 4771,
+        "role": "corpus_release_manifest",
+        "sha256": "f8c35ccc8e12d0fc7325a5ec5c798a7d4e542e1fc28844807b40305e9d5d9f6d"
+      },
+      "stage2/01_bases/output/corpus/tahoe_bulk.h5ad": {
+        "bytes": 1322009369,
+        "role": "corpus:tahoe_bulk",
+        "sha256": "fa9deb5835895f442adfbef018f14bcc1d1a1725963369a168f360ae754dd9c9"
+      },
+      "stage2/01_bases/output/corpus/tenv.h5ad": {
+        "bytes": 73855737,
+        "role": "corpus:tenv",
+        "sha256": "024cbd065e440a746886651d205decdea7d7cf99ebb1394c48ff15cb0a411e6e"
+      },
+      "stage2/01_bases/output/gene-axis/gene_axis_5000.csv": {
+        "bytes": 58585,
+        "role": "gene_axis:5000",
+        "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e"
+      },
+      "stage2/01_bases/output/gene-axis/manifest.json": {
+        "bytes": 35769,
+        "role": "gene_axis_release_manifest",
+        "sha256": "187de15ed2eecbd6357cad6fa2aef2c792f4eafe1fdd4467cde4370b64ea2ff8"
+      }
+    },
+    "normalization": {
+      "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+      "formula": "log1p(count * 10000 / selected_axis_library_total)",
+      "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+      "source": "ADR 0077 five-k-only axis-local normalization"
+    },
+    "outputs": {
+      "library_totals.csv": {
+        "bytes": 9366916,
+        "columns": [
+          "source",
+          "profile_id",
+          "role",
+          "library_total",
+          "normalization_schema",
+          "denominator_axis_sha256"
+        ],
+        "rows": 71196,
+        "sha256": "eedfd4f2442d6268c9e0adff953a9fd09c843e100c3335a20b3e0f0749d071ab"
+      },
+      "tahoe_bulk.h5ad": {
+        "bytes": 2942840025,
+        "columns": 5000,
+        "dtype": "float32",
+        "rows": 66718,
+        "sha256": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33"
+      },
+      "tenv.h5ad": {
+        "bytes": 138696684,
+        "columns": 5000,
+        "dtype": "float32",
+        "rows": 4478,
+        "sha256": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+      }
+    },
+    "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+    "schema": "stage2-view-v3",
+    "sources": {
+      "tahoe_bulk": {
+        "matched_control_rows": 66718,
+        "matched_groups": 700,
+        "raw_profiles": 66718,
+        "rows": 66718,
+        "selected_axis_library_total": {
+          "max": 5857939,
+          "median": 388084.5,
+          "min": 78,
+          "sum": 33165097847
+        },
+        "treated": 65318,
+        "vehicle": 1400
+      },
+      "tenv": {
+        "matched_control_rows": 4398,
+        "matched_groups": 16,
+        "raw_profiles": 4478,
+        "rows": 4478,
+        "selected_axis_library_total": {
+          "max": 1342694,
+          "median": 271686.5,
+          "min": 2106,
+          "sum": 1592760535
+        },
+        "treated": 4206,
+        "vehicle": 272
+      }
+    },
+    "view": {
+      "dtype": "float32",
+      "file_layout": "one h5ad per corpus source",
+      "layers": [
+        "control",
+        "delta"
+      ],
+      "matrix": "X",
+      "name": "view-5k",
+      "size": 5000
+    }
+  },
+  "resource_monitor": "10-second monitor managed by integration agent; final log digest and observed gaps recorded by final integration gate",
+  "schema": "stage2-axis-local-acceptance-v1",
+  "scientific_validation": {
+    "sources": {
+      "tahoe_bulk": {
+        "all_expression_against_raw_selected_counts_max_abs_error": 0.0,
+        "all_obs_columns_order_roles_groups_identical": true,
+        "every_selected_int64_total_equal": true,
+        "genes": 5000,
+        "rows": 66718,
+        "treated": 65318,
+        "vehicle": 1400
+      },
+      "tenv": {
+        "all_expression_against_raw_selected_counts_max_abs_error": 0.0,
+        "all_obs_columns_order_roles_groups_identical": true,
+        "every_selected_int64_total_equal": true,
+        "genes": 5000,
+        "rows": 4478,
+        "treated": 4206,
+        "vehicle": 272
+      }
+    },
+    "validator": {
+      "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "outputs": [
+        "library_totals.csv",
+        "tahoe_bulk.h5ad",
+        "tenv.h5ad"
+      ],
+      "result": "PASS",
+      "sources": [
+        "tahoe_bulk",
+        "tenv"
+      ],
+      "view": {
+        "dtype": "float32",
+        "file_layout": "one h5ad per corpus source",
+        "layers": [
+          "control",
+          "delta"
+        ],
+        "matrix": "X",
+        "name": "view-5k",
+        "size": 5000
+      }
+    }
+  },
+  "specification": 243,
+  "status": "scientific-publication-PASS; final integration review and offline health pending",
+  "tickets": [
+    244,
+    245
+  ]
+}

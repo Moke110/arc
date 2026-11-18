@@ -296,7 +296,7 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 ### Stage 2 dataset corpus
 
 **Bases**:
-The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-2k`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
+The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
 Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
@@ -346,7 +346,7 @@ The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `s
 _Avoid_: source name, dataset name, accession
 
 **View**:
-The model-facing expression product derived from the integer corpus on a declared gene axis, carrying normalized expression, matched-control expression and their difference. ADR 0077 defines a 5k-only successor with axis-local normalization; until its coherent acceptance, the ADR 0073 four-view full-axis release remains authoritative.
+The model-facing expression product derived from the integer corpus on a declared gene axis, carrying normalized expression, matched-control expression and their difference. ADR 0077 publishes only paired 5k expression with axis-local normalization; the ADR 0073 four-view full-axis release and existing downstream experiments remain sealed history.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
@@ -815,7 +815,7 @@ diagnostic only: the axis sizes are declared, not read off the curve.
 _Avoid_: optimal N, elbow (unqualified), cutoff
 
 **Gene-axis view**:
-A View whose expression columns follow an ordered subset of original frozen gene indices; retaining a gene-axis list does not imply publishing its expression view. ADR 0077 retains four named axes but publishes expression only on G_5000 after successor acceptance.
+A View whose expression columns follow an ordered subset of original frozen gene indices; retaining a gene-axis list does not imply publishing its expression view. ADR 0077 retains four named axes but publishes expression only on G_5000.
 _Avoid_: corpus (for a view), subset matrix
 
 **Axis-local normalization**:

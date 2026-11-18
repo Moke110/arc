@@ -26,7 +26,7 @@ descriptive per-well dispersion rank of the repo corpus built from ``GSE262419``
 (ADR 0066), so ``GSE262419`` is the corpus source, not an axis accession. The
 table cell carries only the short ``accession_note``; the long rationale lives
 here and in ``platform_note``. ``TENV_TREATED_WELLS``/``TENV_VEHICLE_WELLS`` are
-the published tenv corpus populations pinned in ``output/view-2k/manifest.json``
+the published tenv corpus populations pinned in ``output/view-5k/manifest.json``
 ``sources.tenv`` (4,478 rows = 4,206 treated + 272 vehicle wells), so the one
 non-catalog sample-size cell has a single source.
 
@@ -80,7 +80,7 @@ from collections.abc import Iterable
 SCHEMA = 'stage2-gene-axis-source-metadata-v1'
 VERIFIED_ON = '2026-11-15'
 TENV_HVG = 'tenv_hvg'
-#: Published tenv corpus populations (``output/view-2k/manifest.json``
+#: Published tenv corpus populations (``output/view-5k/manifest.json``
 #: ``sources.tenv``): 4,478 rows = ``TENV_TREATED_WELLS + TENV_VEHICLE_WELLS``.
 TENV_TREATED_WELLS = 4206
 TENV_VEHICLE_WELLS = 272
