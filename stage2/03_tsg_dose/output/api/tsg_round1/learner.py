@@ -19,7 +19,8 @@ from tenv5k.learning import EarlyStopping, fixed_rng
 from tenv5k.attempt_identity import attempt_binding
 from .inputs import Inputs, sha256
 from .protocol import SCENARIOS, TRAINING_SEED, score_prediction, summary
-from tsg_dose import model as models
+from . import model as models
+from .matrix import METHODS, check_registration, read_json, run_path, selection_evidence, selection_path
 PROCESS_TOKEN=secrets.token_hex(32)
 
 
@@ -104,18 +105,21 @@ def train(inputs,candidate,source,*,method='no-dose',scenario='cold-drug',fold=0
     if candidate.exists() and any(candidate.iterdir()):raise ValueError('candidate must be empty')
     candidate.mkdir(parents=True,exist_ok=True);started=time.monotonic()
     try:
-        if method != 'no-dose' or scenario not in SCENARIOS or fold not in range(3) or seed != TRAINING_SEED:
+        if method not in METHODS or scenario not in SCENARIOS or fold not in range(3) or seed != TRAINING_SEED:
             raise ValueError('unregistered round1 fit identity')
+        data=Inputs(inputs)
+        origin=dict(source=data.source, method=method, scenario=scenario, fold=fold, seed=seed)
         if smoke_rows is None:
-            raise ValueError('this round1 origin supports bounded smoke only')
+            if max_epochs != 1000 or registration is None:
+                raise ValueError('formal fit requires fixed 1000-epoch registration')
+            check_registration(registration,inputs,origin,device)
         if smoke_rows is not None and smoke_rows<2:raise ValueError('smoke requires at least2 rows')
         if registration is None:
             if smoke_rows is None:raise ValueError('formal fit requires preregistered execution attempt')
-            registration=dict(attempt_nonce=secrets.token_hex(32),run=dict(method=method,scenario=scenario,fold=fold,seed=seed),device=str(device),origin='bounded-smoke')
-        if registration.get('run')!=dict(method=method,scenario=scenario,fold=fold,seed=seed) or registration.get('device')!=str(device):raise ValueError('attempt registration identity mismatch')
+            registration=dict(attempt_nonce=secrets.token_hex(32),run=origin,device=str(device),origin='bounded-smoke')
+        if registration.get('run')!=origin or registration.get('device')!=str(device):raise ValueError('attempt registration identity mismatch')
         binding=attempt_binding(registration)
         write_json(candidate/'registration.json',registration)
-        data=Inputs(inputs)
         train_rows=data.rows(scenario,fold,'train');valid_rows=data.rows(scenario,fold,'validation')
         if smoke_rows is not None:train_rows=smoke_subset(data,train_rows,smoke_rows);valid_rows=smoke_subset(data,valid_rows,smoke_rows)
         if not len(train_rows) or not len(valid_rows):raise ValueError('empty fitting partition')
@@ -129,9 +133,16 @@ def train(inputs,candidate,source,*,method='no-dose',scenario='cold-drug',fold=0
         stopper=EarlyStopping(max_epochs=max_epochs);shuffle=np.random.default_rng(seed);history=[]
         initial={k:v.detach().cpu().clone() for k,v in model.state_dict().items() if k.endswith('weight')}
         for epoch in range(1,max_epochs+1):
-            loss=native.train_epoch(model,data,train_rows,optimizer,shuffle)
+            try:
+                loss=native.train_epoch(model,data,train_rows,optimizer,shuffle)
+            except ValueError as error:
+                if 'non-finite native TranSiGen loss' not in str(error):
+                    raise
+                raise ScientificFailure(f'nonfinite native loss at epoch {epoch}') from error
             validation=predict(native,model,data,valid_rows,config['validation_seed'])
             mse=float(np.mean(np.square(validation-np.asarray(data.expression[valid_rows],dtype=np.float32))))
+            if not np.isfinite([mse, loss]).all():
+                raise ScientificFailure(f'nonfinite training evidence at epoch {epoch}')
             improved=stopper.observe(mse,epoch)
             history.append(dict(epoch=epoch,train_loss=loss,validation_mse=mse,best_mse=stopper.best,stale=stopper.stale,lr=optimizer.param_groups[0]['lr']))
             if improved:torch.save(dict(state_dict=model.state_dict(),config=config,best_epoch=epoch,validation_mse=mse,input_manifest_sha256=sha256(Path(inputs)/'manifest.json')),candidate/'checkpoint.pt')
@@ -139,6 +150,9 @@ def train(inputs,candidate,source,*,method='no-dose',scenario='cold-drug',fold=0
         if not any(not torch.equal(v,model.state_dict()[k].detach().cpu()) for k,v in initial.items()):raise ValueError('training did not update weights')
         saved=torch.load(candidate/'checkpoint.pt',map_location=device,weights_only=False);model.load_state_dict(saved['state_dict'])
         validation=predict(native,model,data,valid_rows,config['validation_seed'])
+        restored_mse = float(np.mean(np.square(validation - np.asarray(data.expression[valid_rows], dtype=np.float32))))
+        if restored_mse != stopper.best:
+            raise ScientificFailure('restored checkpoint validation MSE differs from best epoch')
         np.save(candidate/'validation_prediction.npy',validation)
         samples=score_prediction(data.obs.iloc[valid_rows],data.expression[valid_rows],validation,data.control[valid_rows],prediction_ids=data.obs.index[valid_rows])
         samples.to_csv(candidate/'validation_per_sample.csv',index=False)
@@ -150,7 +164,12 @@ def train(inputs,candidate,source,*,method='no-dose',scenario='cold-drug',fold=0
         write_json(candidate/'terminal.json',terminal)
         return terminal
     except Exception as error:
-        write_json(candidate/'terminal.json',dict(status='failed',error=str(error)));raise
+        terminal = dict(status='failed', error=str(error), attempt_origin='train',
+                        failure_type=type(error).__name__)
+        if isinstance(error, ScientificFailure):
+            write_json(candidate / 'failure.json', terminal)
+        write_json(candidate / 'terminal.json', terminal)
+        raise
 
 
 def load(inputs,candidate,source):
@@ -162,6 +181,12 @@ def load(inputs,candidate,source):
     if saved['config']!=config or saved['input_manifest_sha256']!=sha256(Path(inputs)/'manifest.json'):raise ValueError('checkpoint configuration/input mismatch')
     if config['runtime_identity']!=runtime_identity() or config['native_source_sha256']!=models.SOURCE_DIGEST:raise ValueError('checkpoint runtime/source mismatch')
     if json.loads((candidate/'environment.json').read_text())!=environment(config['device']):raise ValueError('replay environment mismatch')
+    for partition, key in (('train', 'train_order'), ('validation', 'validation_order')):
+        rows = data.rows(config['scenario'], config['fold'], partition)
+        if config['smoke_rows'] is not None:
+            rows = smoke_subset(data, rows, config['smoke_rows'])
+        if rows.tolist() != config[key]:
+            raise ValueError('checkpoint partition identity mismatch')
     expected=models.fit_transform(config['method'],data.doses(np.asarray(config['train_order'],dtype=int)))
     if config['transform']!=expected or any(config[k]!=v for k,v in models.configuration(config['method'],expected).items()):raise ValueError('method/transform identity mismatch')
     os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG',':4096:8');torch.use_deterministic_algorithms(True)
@@ -184,6 +209,8 @@ def accept_replay(inputs,candidate,source):
     test=candidate/'test_prediction.npy'
     if not validation.is_file() or (terminal['status'] in ('test-awaiting-replay','complete') and not test.is_file()):
         raise ValueError('missing registered prediction for replay')
+    if test.exists() and terminal.get('test_evaluation_process_token') == PROCESS_TOKEN:
+        raise ValueError('test replay must run in a fresh process after evaluation')
     for partition,seed in [('validation',config['validation_seed']),('test',config['inference_seed'])]:
         path=candidate/(partition+'_prediction.npy')
         if not path.exists():continue
@@ -208,16 +235,30 @@ def evaluate(inputs,candidate,source,selection=None):
     if terminal['status']!='validation-complete':
         raise ValueError('evaluation requires replayed validation checkpoint')
     data,native,model,config=load(inputs,candidate,source)
-    if config['smoke_rows'] is None or selection is not None:
-        raise ValueError('this round1 origin supports bounded smoke only')
-    rows=smoke_subset(data,data.rows(config['scenario'],config['fold'],'test'),config['smoke_rows'])
+    rows = data.rows(config['scenario'], config['fold'], 'test')
+    selection_sha256 = None
+    if config['smoke_rows'] is None:
+        matrix_root = candidate.parents[4]
+        origin = {key: config[key] for key in ('source', 'scenario', 'fold', 'method', 'seed')}
+        expected_selection = selection_path(matrix_root, origin)
+        if (candidate.resolve() != run_path(matrix_root, origin).resolve()
+                or selection is None or Path(selection).resolve() != expected_selection.resolve()
+                or not expected_selection.is_file()
+                or read_json(selection) != selection_evidence(matrix_root, inputs, origin)):
+            raise ValueError('outer test requires matching sealed validation selection')
+        selection_sha256 = sha256(selection)
+    else:
+        if selection is not None:
+            raise ValueError('bounded smoke does not consume formal selection evidence')
+        rows = smoke_subset(data, rows, config['smoke_rows'])
     prediction=predict(native,model,data,rows,config['inference_seed'])
     np.save(candidate/'test_prediction.npy',prediction)
     samples=score_prediction(data.obs.iloc[rows],data.expression[rows],prediction,
                              data.control[rows],prediction_ids=data.obs.index[rows])
     samples.to_csv(candidate/'test_per_sample.csv',index=False)
     write_json(candidate/'test_metrics.json',summary(samples))
-    terminal.update(status='test-awaiting-replay')
+    terminal.update(status='test-awaiting-replay', test_evaluation_process_token=PROCESS_TOKEN,
+                    test_selection_sha256=selection_sha256)
     write_json(candidate/'terminal.json',terminal)
     # Preserve the sealed validation artifacts while test replay is pending.
     (candidate/'manifest.json').unlink()
