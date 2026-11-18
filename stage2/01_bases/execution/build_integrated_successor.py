@@ -103,6 +103,9 @@ def candidate_receipt(candidate):
         if len(current) != size or not previous <= current:
             raise release.ReleaseError('candidate axes must be exact and nested')
         previous = current
+    if any((step / f"output/view-{size}k").exists() for size in (2, 3, 4)):
+        raise release.ReleaseError("retired small expression views in candidate")
+    view.verify(step / "output/view-5k")
     manifests = {}
     for path in sorted((step / 'output').glob('**/manifest.json')):
         if any(part in ('api',) for part in path.parts):
@@ -134,7 +137,7 @@ def run(action, candidate):
     (fusion_driver.publish if action == 'publish' else fusion_driver.replay)(fcontext)
     config = axis_driver.default_config(candidate)
     (axis_driver.publish if action == 'publish' else axis_driver.verify)(config)
-    for size in gene_axis.AXIS_SIZES:
+    for size in view.VIEW_NAMES:
         print(f'{action} view {size}', flush=True)
         kwargs = dict(corpus_dir=step / 'output/corpus', axis_dir=step / 'output/gene-axis',
                       size=size, name=f'view-{size // 1000}k', repo_root=candidate)

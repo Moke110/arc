@@ -12,12 +12,13 @@ files its `See` section names.
 assigned (the sequence runs 0022 → 0024 and 0049 → 0051 deliberately); there is nothing to
 restore.
 
-The index covers every record in the directory, 0001–0073 (71 files; 0023 and 0050 are the
+The index covers every record in the directory, 0001–0077 (75 files; 0023 and 0050 are the
 gaps). Two early records are marked superseded in place, and 0026 is marked
 amended by 0033. Stage 3's initial scope in 0034 is refined by 0035–0037.
 Its formal workspace/corpus design subsequently replaces the specified wayfinder
 details in 0038–0041. ADR 0043 reopens the corpus as source measurements without endpoint gates; ADR 0044 subsequently replaces universal-corpus-first planning with source-first corpora.
-ADR 0073 is the current coherently measured release: full-source collection, tier-first DEG1000/f1000 and four axis sizes/views (#220–#225). ADR 0072 historically amended the disease eligibility
+ADR 0077 implements the paired 5k-only axis-local expression release (#243–#245); current verification is in the Bases axis-local acceptance receipt.
+ADR 0073 remains the disease/four-axis scientific release: full-source collection, tier-first DEG1000/f1000 and four axis sizes and historical full-axis views (#220–#225). ADR 0072 historically amended the disease eligibility
 and TOX roster of ADR 0071; its measured release is superseded by 0073. ADR 0071 is the base gene-axis contract and supersedes ADR 0066's *Source eligibility*,
 *Priority* and *Candidate table and the two-level rank-sum fusion*, and supersedes ADR
 0069/0070 (its `AF` removal is reversed). Each of those four records carries a status-line
@@ -102,3 +103,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0075](0075-transigen-all-dose-input-selection.md) | TranSiGen all-dose inputs: seven fixed candidates, nested cold-drug selection and auxiliary held-dose evaluation |
 
 | [0076](0076-dose-input-round1-exploration-boundary.md) | Dose-input round1 exploration, run-level report spread and retirement of final weight publication (*amends 0075*) |
+
+| [0077](0077-five-k-only-axis-local-normalization.md) | 5k-only expression views with axis-local normalization; retain four named axes and old downstream input generations (*implemented paired expression successor, #244–#245*) |

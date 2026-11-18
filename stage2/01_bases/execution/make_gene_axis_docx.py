@@ -80,8 +80,8 @@ RULE_STEPS = (
     'gene_index 升序选取；DEG1000 不限制 HVG 半轴或完整候选表。',
     '第六步（补齐与发布）：疾病候选不足 N/2 时，按 HVG 秩用未选 tenv-HVG 基因补齐。'
     '每档记录实际 fallback；合并后按冻结 gene_index 升序发布，不重新编号。'
-    '四轴精确嵌套，四组 tenv 和 tahoe_bulk views 保留全 18,164 基因库总量 '
-    'CP10K/log1p、匹配对照均值和 delta 语义。',
+    '四轴精确嵌套并保留原始 gene_index 与 symbol；仅发布 G_5000 的 tenv 和 tahoe_bulk views。 '
+    '每行先取 5,000 个原始计数再计算库总量，CP10K 后取自然 log1p；每个溶媒独立归一化后求匹配对照均值，delta = X − control（ADR 0077）。',
 )
 
 F1000_DEFINITION = (
@@ -107,7 +107,7 @@ DISEASE_TABLE_FOOTNOTE = (
 )
 
 #: The tenv-HVG fusion row is not a case/control contrast. Its sample sizes are
-#: the published corpus populations pinned in ``output/view-2k/manifest.json``
+#: the published corpus populations pinned in ``output/view-5k/manifest.json``
 #: ``sources.tenv`` (treated = 4,206, vehicle = 272; also
 #: ``log/raw_counts_provenance.json``: 4,510 native wells kept). The two numbers
 #: are declared once, in ``gene_axis_source_metadata``, and imported here.

@@ -296,7 +296,7 @@ The historical proposal for a Stage 2 stage after setup: choose which model(s) t
 ### Stage 2 dataset corpus
 
 **Bases**:
-The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-2k`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
+The shipped Stage 2 foundation at `stage2/01_bases/`: frozen gene identity, raw counts, the integer corpus, the model-facing views and the released gene axes, plus disease and cardiotox DEGs, the per-disease fusion and the single public reader/metric API. It publishes `raw_counts`, `corpus`, `disease-deg`, `disease-fusion`, `gene-axis`, `gene-identity`, `palette`, `tenv-hvg`, `view-5k`, `api` and `fold_n_seed`. The retired measured truth, successor envelope and training corpora are not part of it; model setup and benchmark experiments are outside its scope.
 
 **Raw-count preparation**:
 Counts derived from immutable source expression before normalization or treated-well selection. Current bases retains tenv on its native gene axis and Tahoe projected onto the frozen CM gene axis, with controls retained.
@@ -346,8 +346,7 @@ The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `s
 _Avoid_: source name, dataset name, accession
 
 **View**:
-ADR 0073 specifies four successor sizes (2k/3k/4k/5k) from DEG1000/f1000 axes; the following describes the still-authoritative pre-successor release until coherent acceptance.
-The model-facing h5ad the Bases step ships from the integer corpus: `output/view-{2,3,4,5}k/`, each containing `tenv.h5ad` and `tahoe_bulk.h5ad`. `X` is log1p CP10K on each row's full 18,164-gene library total; `control` is the mean of matched vehicle rows normalized the same way; `delta` is X minus control. ADR 0073 axes are exact nested 2,000/3,000/4,000/5,000-gene ascending subsets of original frozen indices. Half is tenv-HVG, half unused f1000-supported candidates ordered by f1000 descending then rank sum and gene index ascending, with explicit unused-HVG fallback. One corpus normalization feeds four subsets; the corpus itself remains integer counts.
+The model-facing expression product derived from the integer corpus on a declared gene axis, carrying normalized expression, matched-control expression and their difference. ADR 0077 publishes only paired 5k expression with axis-local normalization; the ADR 0073 four-view full-axis release and existing downstream experiments remain sealed history.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
@@ -815,11 +814,13 @@ reported with its parameters and stability and allowed to be `"inflection": fals
 diagnostic only: the axis sizes are declared, not read off the curve.
 _Avoid_: optimal N, elbow (unqualified), cutoff
 
-**Gene-axis view** (`view-{2,3,4,5}k/`):
-The model-facing `X` / `control` / `Δ` trio built from the corpus by normalizing on the
-**full** 18,164-gene library total and then subsetting to `G_N` — one normalization, four gene
-subsets, never a view-local denominator.
+**Gene-axis view**:
+A View whose expression columns follow an ordered subset of original frozen gene indices; retaining a gene-axis list does not imply publishing its expression view. ADR 0077 retains four named axes but publishes expression only on G_5000.
 _Avoid_: corpus (for a view), subset matrix
+
+**Axis-local normalization**:
+Per-profile CP10K followed by natural log1p, with the library total calculated only from raw counts on that profile's declared gene axis. Matched-control expression is the mean of individually normalized vehicle profiles; full-axis normalization instead uses the complete frozen gene axis as its denominator.
+_Avoid_: re-normalizing log expression, full-axis normalization (for this denominator)
 
 **Raw-count release** (`raw_counts/`):
 tenv's native-gene raw counts with probe evidence and Tahoe's token evidence — the replayable

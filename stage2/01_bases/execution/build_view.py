@@ -1,23 +1,11 @@
 #!/usr/bin/env python3
-"""Publish or replay the four Stage 2 model-facing views (ADR 0073).
+"""Publish or independently replay the paired 5k-local expression release (ADR 0077).
 
-Each view is the corpus normalized once on the **full 18,164-gene library total**
-(CP10K, then ``log1p``), then subset to one released axis's genes, with
-``control`` = the mean of the row's matched corpus controls normalized the same
-way and ``delta = X - control``. The denominator is never the view's own gene
-subset.
-
-This driver only binds paths; every scientific definition and the public reader
-live once in ``output/api/bases/view.py``.
-
-    python stage2/01_bases/execution/build_view.py publish
-    python stage2/01_bases/execution/build_view.py verify
-
-Publication is candidate-then-replace (ADR 0062): each view is built in a
-candidate under ``execution/checkpoints/``, verified, and only then swapped in;
-a failed build leaves the accepted release usable. ``verify`` replays all four views
-from the pinned corpus and axis inputs and compares the manifest and every output
-digest. One view at a time; the corpus is streamed in bounded batches.
+Select unchanged G_5000 integer counts before CP10K and natural log1p. Each
+vehicle is normalized separately before matched averaging. Build and verify the
+complete paired candidate outside output before replacement. --output supports
+candidate publication without modifying the live release. --repo-root binds
+provenance when reading the owning materialized checkout from a worktree.
 """
 import argparse
 import json
@@ -62,22 +50,23 @@ def summarize(output, size, peak_rss_kib):
         "sources": {
             name: {
                 "rows": summary_["rows"],
-                "library_total": summary_["full_axis_library_total"],
-                "basis_share": summary_["axis_share_of_full_axis_cp10k"],
-                "basis_share_treated": summary_["treated_axis_share_of_full_axis_cp10k"],
+                "selected_axis_library_total": summary_["selected_axis_library_total"],
             }
             for name, summary_ in manifest["sources"].items()
         },
-        "basis": manifest["basis"]["sources"],
+        "schema": manifest["schema"],
+        "normalization": manifest["normalization"],
+        "axis": manifest["axis"],
         "peak_rss_kib": int(peak_rss_kib),
     }
 
 
-def run(action, corpus, axis_dir, staging):
+def run(action, corpus, axis_dir, staging, output=None, repo_root=REPO):
     results = {}
-    for size, output in sorted(VIEW_OUTPUTS.items()):
+    outputs = {5000: Path(output)} if output is not None else VIEW_OUTPUTS
+    for size, output in sorted(outputs.items()):
         kwargs = {"corpus_dir": corpus, "axis_dir": axis_dir, "size": int(size),
-                  "name": view_name(size), "repo_root": REPO}
+                  "name": view_name(size), "repo_root": repo_root}
         if action == "publish":
             view.publish_release(output, root=staging, **kwargs)
         else:
@@ -98,9 +87,11 @@ def main():
     parser.add_argument("--axis", type=Path, default=STEP / "output/gene-axis")
     parser.add_argument("--staging", type=Path,
                         default=STEP / "execution/checkpoints")
+    parser.add_argument("--output", type=Path, help="paired 5k release destination")
+    parser.add_argument("--repo-root", type=Path, default=REPO)
     parser.add_argument("--record", type=Path)
     args = parser.parse_args()
-    result = run(args.action, args.corpus, args.axis, args.staging)
+    result = run(args.action, args.corpus, args.axis, args.staging, args.output, args.repo_root)
     text = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.record:
         args.record.parent.mkdir(parents=True, exist_ok=True)
