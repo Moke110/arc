@@ -346,8 +346,7 @@ The short Stage 2 name of a source dataset — `dtoxs_primary`, `dtoxs_ipsc`, `s
 _Avoid_: source name, dataset name, accession
 
 **View**:
-ADR 0073 specifies four successor sizes (2k/3k/4k/5k) from DEG1000/f1000 axes; the following describes the still-authoritative pre-successor release until coherent acceptance.
-The model-facing h5ad the Bases step ships from the integer corpus: `output/view-{2,3,4,5}k/`, each containing `tenv.h5ad` and `tahoe_bulk.h5ad`. `X` is log1p CP10K on each row's full 18,164-gene library total; `control` is the mean of matched vehicle rows normalized the same way; `delta` is X minus control. ADR 0073 axes are exact nested 2,000/3,000/4,000/5,000-gene ascending subsets of original frozen indices. Half is tenv-HVG, half unused f1000-supported candidates ordered by f1000 descending then rank sum and gene index ascending, with explicit unused-HVG fallback. One corpus normalization feeds four subsets; the corpus itself remains integer counts.
+The model-facing expression product derived from the integer corpus on a declared gene axis, carrying normalized expression, matched-control expression and their difference. ADR 0077 defines a 5k-only successor with axis-local normalization; until its coherent acceptance, the ADR 0073 four-view full-axis release remains authoritative.
 _Avoid_: subset, variant, dataset bundle
 
 **Pretrain view**:
@@ -815,11 +814,13 @@ reported with its parameters and stability and allowed to be `"inflection": fals
 diagnostic only: the axis sizes are declared, not read off the curve.
 _Avoid_: optimal N, elbow (unqualified), cutoff
 
-**Gene-axis view** (`view-{2,3,4,5}k/`):
-The model-facing `X` / `control` / `Δ` trio built from the corpus by normalizing on the
-**full** 18,164-gene library total and then subsetting to `G_N` — one normalization, four gene
-subsets, never a view-local denominator.
+**Gene-axis view**:
+A View whose expression columns follow an ordered subset of original frozen gene indices; retaining a gene-axis list does not imply publishing its expression view. ADR 0077 retains four named axes but publishes expression only on G_5000 after successor acceptance.
 _Avoid_: corpus (for a view), subset matrix
+
+**Axis-local normalization**:
+Per-profile CP10K followed by natural log1p, with the library total calculated only from raw counts on that profile's declared gene axis. Matched-control expression is the mean of individually normalized vehicle profiles; full-axis normalization instead uses the complete frozen gene axis as its denominator.
+_Avoid_: re-normalizing log expression, full-axis normalization (for this denominator)
 
 **Raw-count release** (`raw_counts/`):
 tenv's native-gene raw counts with probe evidence and Tahoe's token evidence — the replayable
