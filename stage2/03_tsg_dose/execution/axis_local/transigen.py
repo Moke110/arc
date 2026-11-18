@@ -6,12 +6,13 @@ import subprocess
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'output/api'))
 from tsg_round1.learner import train,accept_replay,evaluate
+from tsg_round1.matrix import METHODS
 from tsg_round1.protocol import SCENARIOS, TRAINING_SEED
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--inputs',type=Path,required=True);parser.add_argument('--candidate',type=Path,required=True)
-    parser.add_argument('--source',type=Path,required=True);parser.add_argument('--method',choices=('no-dose',),default='no-dose')
+    parser.add_argument('--source',type=Path,required=True);parser.add_argument('--method',choices=METHODS,default='no-dose')
     parser.add_argument('--scenario',choices=SCENARIOS,default='cold-drug')
     parser.add_argument('--fold',type=int,default=0);parser.add_argument('--seed',type=int,default=TRAINING_SEED);parser.add_argument('--device',default='cpu')
     parser.add_argument('--smoke-rows',type=int);parser.add_argument('--max-epochs',type=int,default=1000)
