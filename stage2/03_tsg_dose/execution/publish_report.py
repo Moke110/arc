@@ -105,10 +105,15 @@ def export_coordinates(matrix,destination):
             curves.append(dict(row,source=str(source),source_sha256=source_digest))
     write_csv(destination/'round1_curves.csv',curves)
 
+def historical_report_root():
+    archive = STEP / 'execution/historical/report_126'
+    return archive if archive.is_dir() else STEP / 'figure'
+
+
 def render_isolated(data,destination,python):
     destination=Path(destination);destination.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='round1-csv-only-') as tmp:
-        isolated=Path(tmp);shutil.copytree(data,isolated/'data');shutil.copy2(STEP/'figure/script/render.py',isolated/'render.py')
+        isolated=Path(tmp);shutil.copytree(data,isolated/'data');shutil.copy2(historical_report_root()/'script/render.py',isolated/'render.py')
         subprocess.run([str(python),'-I',str(isolated/'render.py'),'--data',str(isolated/'data'),'--output',str(isolated/'rendered')],check=True,env=dict(os.environ,MPLCONFIGDIR=str(isolated/'mpl')))
         rendered={p.name:digest(p) for p in (isolated/'rendered').glob('*.png')}
         if set(rendered)!=EXPECTED:raise ValueError('round1 figure filename coverage mismatch')
@@ -122,6 +127,9 @@ def snapshot(directory):
 def install(candidate,destination,receipt):
     """Install only accepted report bytes; roll back a filesystem failure."""
     candidate=Path(candidate);destination=Path(destination)
+    if (destination.resolve() == (STEP/'figure').resolve()
+            and (STEP/'execution/historical/report_126').is_dir()):
+        raise ValueError('canonical active figure now belongs to the dual-source release')
     if not (receipt.get('status')=='passed' and receipt.get('n_formal_fits')==126 and receipt.get('csv_only_figures') and receipt.get('visual_inspection')):
         raise ValueError('report acceptance incomplete')
     if snapshot(candidate)!=receipt.get('files') or {p.name for p in candidate.glob('*.png')}!=EXPECTED:

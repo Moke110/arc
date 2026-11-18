@@ -30,3 +30,9 @@ Historical12-PNG reconstruction uses execution/historical/render_v1.py. Retain o
 their parent-equal interpretation. Formal fits, if separately requested, run singly
 under capped.sh and /usr/bin/time -v with memory preflight and10-second RAM/GPU/WSL
 monitoring. Preserve canonical ignored reconstruction payloads during cleanup.
+
+
+ADR0078 dual-source release candidates follow the release workflow in README.md.
+Keep the sealed 126-fit tree active until installation. After installation,
+route the legacy CSV renderer to `execution/historical/report_126/`. The
+input preparer bytes remain bound to the current ADR0078 input freeze.

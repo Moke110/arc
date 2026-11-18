@@ -141,7 +141,9 @@ original scientific CSVs and11 original plotting CSVs remain unchanged.
 [Report acceptance](log/242-round1-report-acceptance.json) records every source,
 accepted report hash and superseded historical PNG role/digest.
 
-Reproduce with `figure/script/render.py --data figure/data --output <new-dir>`.
+Reproduce from the sealed 126-fit tree using its `script/render.py` with
+`--data <126-fit-tree>/data --output <new-dir>`. The tree is `figure/` before
+ADR0078 report installation and `execution/historical/report_126/` afterward.
 The renderer needs only its script and plotting CSVs. New round1 CSVs preserve
 run identities, deterministic jitter coordinates, source digests and counts.
 Nonfinite dose metrics are excluded explicitly within parent means, undefined
@@ -180,3 +182,35 @@ hashes to byte-identical source snapshots. The original147-fit registration,
 payloads stay at their original paths. Old PNG roles are superseded only after
 round1 candidate report acceptance; sealed historical acceptance digests retain
 their historical meaning.
+
+
+## ADR0078 dual-source report release
+
+The current 126-fit figures remain the active report until the dual-source
+candidate passes formal, visual and installation checks. The two report
+generations retain separate scientific receipts and estimands.
+
+After both 42-fit scenario receipts and the combined acceptance exist in the
+formal candidate, use `execution/axis_local/publish_axis_local_report.py prepare`
+with `--matrix`, `--candidate` and `--receipt`. The publisher verifies every
+sealed scientific table and origin, the completed driver timing and cap
+evidence, and the recorded WSL RAM and GPU samples. It reproduces all three
+PNGs in an isolated CSV-only directory. Inspect each candidate PNG, then use
+the same script's `accept --candidate ... --receipt ... --visual-inspection`.
+
+Run `execution/axis_local/install_axis_local_report.py health --repo ...
+--destination ...` in the materialized checkout. Use its `health.json` with
+`install --candidate ... --receipt ... --health ...` in the deployment checkout.
+Use a fresh candidate on the same filesystem as the target. Under the install
+lock the complete previous `figure/` moves to
+`execution/historical/report_126/` and the new candidate becomes `figure/`.
+`log/round1-axis-local-installation.json` records both file inventories.
+`recover --candidate ... --receipt ...` restores the previous active directory
+if a swap stopped before that receipt, or verifies the installed state when the
+receipt exists. The previous renderer and CSVs remain independently usable
+from the archive.
+
+`execution/axis_local/prepare.py` retains the exact bytes identified by the
+accepted ADR0078 input manifest. Changes to that preparer need a successor
+input generation and its own acceptance. The report installation consumes
+existing sealed results and never regenerates inputs or fits.

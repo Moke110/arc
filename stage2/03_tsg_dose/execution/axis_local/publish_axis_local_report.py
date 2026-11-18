@@ -9,28 +9,32 @@ import sys
 from tempfile import TemporaryDirectory
 
 STEP = Path(__file__).resolve().parents[2]
-RENDERER = STEP / 'figure/script/render_axis_local.py'
+RENDERER = Path(__file__).with_name('render_axis_local.py').resolve()
 sys.path.insert(0, str(STEP / 'execution'))
 sys.path.insert(0, str(RENDERER.parent))
 from publish_report import digest, snapshot
 from render_axis_local import METHODS, PNG_NAMES, SCENARIOS, SOURCES
+from release_resources import OPTIONAL_RESOURCE_FILES, RESOURCE_FILES, verify_resource_evidence
 
 COMBINED_SCHEMA = 'tsg-dose-round1-axis-local-formal-acceptance-v1'
 SCENARIO_SCHEMA = 'tsg-dose-round1-axis-local-scenario-acceptance-v1'
 CANDIDATE_SCHEMA = 'tsg-dose-round1-axis-local-figure-acceptance-v1'
-TABLES = frozenset(('folds.csv', 'fold_spread.csv', 'learning.csv'))
+TABLES = frozenset(('coverage.csv', 'fit_resources.csv', 'folds.csv', 'fold_spread.csv',
+                    'learning.csv', 'pooled.csv', 'test_per_sample.csv'))
+COLD_DRUG_TABLES = frozenset(('per_dose.csv', 'selected_per_sample.csv', 'selected_pooled.csv'))
 
 
 def verify_science(matrix):
     """Verify sealed scalar plot inputs and source-local origin identities."""
     matrix = Path(matrix)
     combined_path = matrix / 'formal_acceptance.json'
-    if not combined_path.is_file():
+    if combined_path.is_symlink() or not combined_path.is_file():
         raise ValueError('complete 84-origin scientific acceptance required')
     combined = json.loads(combined_path.read_text())
     plan = matrix / 'formal_plan.json'
     if (combined.get('schema') != COMBINED_SCHEMA or combined.get('formal_fits') != 84
             or set(combined.get('scenario_receipt_sha256', {})) != set(SCENARIOS)
+            or plan.is_symlink() or not plan.is_file()
             or combined.get('plan_sha256') != digest(plan)):
         raise ValueError('complete 84-origin scientific acceptance required')
     artifacts = {
@@ -39,7 +43,8 @@ def verify_science(matrix):
     }
 
     def require(path, sha256):
-        if not path.is_file() or digest(path) != sha256:
+        relatives = (path, *[parent for parent in path.parents if matrix in parent.parents])
+        if any(item.is_symlink() for item in relatives) or not path.is_file() or digest(path) != sha256:
             raise ValueError(f'accepted scientific artifact changed: {path.relative_to(matrix)}')
         artifacts[str(path.relative_to(matrix))] = sha256
 
@@ -62,9 +67,15 @@ def verify_science(matrix):
                     origin['run_manifest_sha256'])
             require(matrix / 'selection' / source / scenario / f'fold-{fold}.json',
                     origin['selection_sha256'])
-        tables = TABLES | ({'per_dose.csv'} if scenario == 'cold-drug' else set())
+        tables = TABLES | (COLD_DRUG_TABLES if scenario == 'cold-drug' else set())
+        if set(receipt.get('outputs', {})) != tables or {path.name for path in directory.iterdir()} != tables | {'acceptance.json'}:
+            raise ValueError(f'scientific output inventory mismatch for {scenario}')
         for table in sorted(tables):
             require(directory / table, receipt['outputs'][table])
+    resource_hashes = {name: digest(matrix / name) for name in (*RESOURCE_FILES, *OPTIONAL_RESOURCE_FILES) if (matrix / name).is_file()}
+    verify_resource_evidence(matrix, SCENARIOS)
+    for name, expected in resource_hashes.items():
+        require(matrix / name, expected)
     return artifacts
 
 
@@ -115,7 +126,8 @@ def prepare_candidate(matrix, destination, python=sys.executable):
             raise ValueError('scientific evidence changed during plotting')
         receipt = dict(schema=CANDIDATE_SCHEMA, status='candidate-verified', formal_fits=84,
                        csv_only_figures=True, visual_inspection=False, matrix=str(matrix),
-                       scientific_artifacts=scientific_artifacts, files=snapshot(candidate),
+                       scientific_artifacts=scientific_artifacts,
+                       resources=verify_resource_evidence(matrix, SCENARIOS), files=snapshot(candidate),
                        figures=figures)
         candidate.rename(destination)
     return receipt
@@ -128,7 +140,8 @@ def accept_candidate(candidate, receipt, *, visually_inspected):
         raise ValueError('visual inspection of a verified dual-source candidate required')
     if snapshot(candidate) != receipt['files'] or figure_hashes(candidate) != receipt['figures']:
         raise ValueError('verified candidate changed before visual acceptance')
-    if verify_science(receipt['matrix']) != receipt['scientific_artifacts']:
+    if (verify_science(receipt['matrix']) != receipt['scientific_artifacts']
+            or verify_resource_evidence(Path(receipt['matrix']), SCENARIOS) != receipt.get('resources')):
         raise ValueError('scientific evidence changed before visual acceptance')
     return dict(receipt, status='passed', visual_inspection=True)
 
