@@ -64,6 +64,7 @@ def install(root, candidate, recovery):
     validate(root, staged)
     moved = []
     target = output / 'view-5k'
+    installed = False
     try:
         for size in (2, 3, 4, 5):
             old = output / f'view-{size}k'
@@ -71,9 +72,12 @@ def install(root, candidate, recovery):
                 old.rename(recovery / old.name)
                 moved.append(old.name)
         staged.rename(target)
+        installed = True
         validate(root, target)
     except BaseException:
-        if target.exists():
+        # Before promotion, target may still be the unmoved accepted 5k.
+        # Only remove a target installed by this transaction.
+        if installed and target.exists():
             shutil.rmtree(target)
         for name in moved:
             (recovery / name).rename(output / name)

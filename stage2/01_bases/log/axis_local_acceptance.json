@@ -495,15 +495,40 @@
       "tests": 25
     },
     "publication": {
-      "log_sha256": "2e345ad423567f126d96175d0581d3dd9426daff22826e8f221549e39693049b",
+      "log_sha256": "1b32f1e18d41c80486753f808a87fb430edd37e0bd07d17b56fde5e10d4b3b7e",
       "result": "PASS",
-      "tests": 2
+      "tests": 11
     },
     "view": {
       "log_sha256": "646e3106e7acff8cf9a4be3088ead7eec9461846aae477267169dc6e746d9c36",
       "result": "PASS",
       "tests": 27
     }
+  },
+  "publication_rollback_review_fix": {
+    "assertions": "Every original file byte and all four accepted view directories survive every failure. Success installs only complete new 5k and retains every old view in recovery.",
+    "change": "Track completed promotion; rollback deletes only a candidate installed by this transaction, never an unmoved accepted 5k directory.",
+    "fault_injection": [
+      "candidate copy",
+      "staged validation",
+      "move accepted 2k",
+      "move accepted 3k",
+      "move accepted 4k",
+      "move accepted 5k",
+      "candidate promotion",
+      "post-promotion validation"
+    ],
+    "green_log_sha256": "1b32f1e18d41c80486753f808a87fb430edd37e0bd07d17b56fde5e10d4b3b7e",
+    "green_result": "11 tests PASS",
+    "real_data_rebuild_or_hash": "not repeated; isolated filesystem fault tests only",
+    "red_log_sha256": "d30e552453e773872ea4836afa9ea33b564f4161b0ca80e53185a07cfc0d9bc0",
+    "red_result": "11 tests: four retirement-rename failure injections fail before repair",
+    "review_axes": [
+      "Standards P1",
+      "Spec P1"
+    ],
+    "scientific_output_change": false,
+    "status": "PASS"
   },
   "recovered_baseline_validation": {
     "baseline_commit": "0bee80114188e312292073616dfc8c3168044c87",
@@ -523,8 +548,7 @@
     ],
     "baseline_log_sha256": "92047d6cad884e833d9021144d162a3d2d13afa9072f9ae53864500912842689",
     "baseline_worktree": "impl/bases-244",
-    "command": "/home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s stage2/01_bases/execution/tests -p test_gene_axis.py",
-    "current_failures": [
+    "before_validator_repair_failures": [
       "test_the_six_category_release_builds (test_gene_axis.DeclaredRosterTests.test_the_six_category_release_builds)",
       "test_new_catalog_excludes_small_diseases_from_every_axis_contribution (test_gene_axis.EligibleDiseaseReleaseTests.test_new_catalog_excludes_small_diseases_from_every_axis_contribution)",
       "test_excluded_disease_is_dropped_from_the_fusion_and_the_products (test_gene_axis.ReleaseBuildTests.test_excluded_disease_is_dropped_from_the_fusion_and_the_products)",
@@ -537,7 +561,8 @@
       "test_verify_replays_and_detects_tampering (test_gene_axis.ReleaseBuildTests.test_verify_replays_and_detects_tampering)",
       "test_renderer_rejects_impossible_selection (test_gene_axis.FigureTests.test_renderer_rejects_impossible_selection)"
     ],
-    "current_log_sha256": "e7eb3d1d6d9971ffc96f144b7fb35cf08b37c8190c7864a0b5a3b61334e096ca",
+    "before_validator_repair_log_sha256": "e7eb3d1d6d9971ffc96f144b7fb35cf08b37c8190c7864a0b5a3b61334e096ca",
+    "command": "/home/chang/miniconda3/envs/arc/bin/python -m unittest discover -s stage2/01_bases/execution/tests -p test_gene_axis.py",
     "file": "stage2/01_bases/execution/tests/test_gene_axis.py",
     "final_result": "PASS: all 69 gene-axis tests after restoring validator consistency with the existing ADR0073 disease-supported histogram domain. No scientific output-generation code changed. Histogram candidate count is f1000>0 and selected count is its axis intersection; renderer tests retain bin-overcount and selected>N rejection while accepting HVG-only members outside histogram. Prior baseline additionally failed old DOCX byte replay in arc Python; new authoritative bundled Python3.12 document replay and 13-page QA PASS."
   },
