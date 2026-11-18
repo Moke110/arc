@@ -100,7 +100,7 @@ class Round1ReportTests(unittest.TestCase):
                 write_csv(matrix/f'reports/{scenario}/learning_curves.csv',[dict(scenario=scenario,method=m,fold=f,seed=s,epoch=e,train_loss=12.5/e,validation_mse=1.5/e) for m in module.METHODS for f in range(3) for s in module.SEEDS for e in [1,2]])
             module.export_coordinates(matrix,data)
             import shutil
-            shutil.copy2(STEP/'figure/data/plot_style.csv',data/'plot_style.csv')
+            shutil.copy2(module.historical_report_root()/'data/plot_style.csv',data/'plot_style.csv')
             rendered=module.render_isolated(data,root/'figures',sys.executable)
             self.assertEqual(set(rendered),module.EXPECTED)
             self.assertTrue(all((root/'figures'/n).read_bytes().startswith(b'\x89PNG') for n in rendered))

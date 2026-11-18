@@ -124,6 +124,23 @@ class AxisScale:
                 ax.plot([x - .014, x + .014], [gap + offset - .009, gap + offset + .009],
                         transform=ax.transAxes, color=color, lw=.9, clip_on=False)
 
+    def plot(self, ax, x, values, *args, label=None, **kwargs):
+        """Draw only within each saved axis segment, retaining isolated points."""
+        mapped = self.map(values)
+        lines = []
+        for part in self.segments:
+            segment_y = [position if part['lower'] <= value <= part['upper'] else float('nan')
+                         for value, position in zip(values, mapped, strict=True)]
+            present = [math.isfinite(value) for value in segment_y]
+            if not any(present):
+                continue
+            isolated = [index for index, found in enumerate(present) if found
+                        and not (index > 0 and present[index - 1])
+                        and not (index + 1 < len(present) and present[index + 1])]
+            lines.extend(ax.plot(x, segment_y, *args, marker='.', markevery=isolated,
+                                 label=label if not lines else None, **kwargs))
+        return lines
+
     def bar(self, ax, x, value, color):
         for part in self.segments:
             lo = max(min(0, value), part['lower'])
@@ -306,9 +323,9 @@ def draw_learning(data, axes, out):
                 epochs = [int(row['epoch']) for row in rows]
                 losses = [number(row['train_loss']) for row in rows]
                 mse = [number(row['validation_mse']) for row in rows]
-                ax.plot(epochs, loss_scale.map(losses), '--', color=TRAIN_COLORS[fold], lw=1)
-                right.plot(epochs, mse_scale.map(mse), color=VALID_COLORS[fold], lw=1)
-                overview.plot(epochs, log_scale.map(mse), color=color, alpha=.55, lw=.95,
+                loss_scale.plot(ax, epochs, losses, '--', color=TRAIN_COLORS[fold], lw=1)
+                mse_scale.plot(right, epochs, mse, color=VALID_COLORS[fold], lw=1)
+                log_scale.plot(overview, epochs, mse, color=color, alpha=.55, lw=.95,
                               label=label if fold == 0 else None)
             ax.set_title(label)
             ax.set_ylabel('Native train loss', color=TRAIN_COLORS[0], fontsize=9)
