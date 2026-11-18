@@ -955,3 +955,10 @@ inputs, model weights, metrics and figures remain full-axis historical evidence;
 no retraining or rescoring occurred. Prior sections and sealed JSON receipts
 retain original measured facts. Offline final health is recorded separately in
 the same generation receipt before publication.
+
+Final integration gates: independent Standards/Spec review found the same rollback
+preservation defect; `9ad963f` fixed it and all 11 public transaction-failure tests
+passed independent replay. Final main-checkout path/tracked and isolated capped
+external-manifest verification passed; measurements and hashes are in the current
+`axis_local_acceptance.json`. Only `origin/main` is published; issue closures record
+the verified remote commit after publication.

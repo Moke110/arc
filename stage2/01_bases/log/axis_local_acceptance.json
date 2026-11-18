@@ -45,11 +45,83 @@
     "schema": "stage2-axis-local-document-render-qa-v1"
   },
   "final_integration": {
-    "check_paths": "pending",
-    "check_tracked": "pending",
-    "code_review": "pending two-axis review",
-    "deployment": "pending dev->main and only origin/main push",
-    "verify_all": "pending; run alone under cap"
+    "code_review": {
+      "axes": [
+        "Standards",
+        "Spec"
+      ],
+      "fix_commit": "9ad963f",
+      "fixed_base": "ee35eedd8a993d2cfc1dc9ed38acebd32165323a",
+      "initial_findings": {
+        "Spec": 1,
+        "Standards": 1
+      },
+      "initial_review_head": "b0600c895aa0fe9b9a34b210eb468851ba600e29",
+      "report_sha256": {
+        "spec": "dce13566cf925c280239c691f0e904271f9cc392e477ff3f6e0de8de9ee2a126",
+        "standards": "4c874c3079411efb1c3ce54864ab7f35a94b69c9ddb5cb5445254f9ab3fa1a04"
+      },
+      "shared_finding": "P1 rollback could delete accepted 5k before it was moved; fixed by installed flag and 11 fault-injection tests.",
+      "spec_resolution": "Same concrete rollback failure resolved by reviewed transaction fix and public failure-injection coverage. No additional spec gaps reported.",
+      "standards_incremental_result": "PASS, all11 fault-injection tests independently rerun;0 unresolved findings"
+    },
+    "deployment": {
+      "remote_policy": "Push only origin/main; no remote PR and no dev push. Remote SHA verification and closed issue links are recorded in GitHub closure comments after publishing this receipt.",
+      "result": "scientific release installed; reviewed code merged main; all final offline acceptance gates PASS"
+    },
+    "health_checks": {
+      "check-paths": {
+        "command": "bash script/check_paths.sh",
+        "elapsed": "0:13.73",
+        "exit_code": 0,
+        "log_sha256": "fc5963c500a94315517e8efac9e86e6f6b83941095b92a07a3869b7fd9353f5d",
+        "max_rss_kib": 6600,
+        "result": "PASS",
+        "time_log_sha256": "755e9b29b2b2d99cb4e94f64306a35b91cae60e5a2e1283a761806fcdb233e6d"
+      },
+      "check-tracked": {
+        "command": "bash script/check_tracked.sh",
+        "elapsed": "0:00.05",
+        "exit_code": 0,
+        "log_sha256": "bf0be25899329f1a43ae6625a5cd33561ff169418fa1ab8c1b3af72c8383b093",
+        "max_rss_kib": 4612,
+        "result": "PASS",
+        "time_log_sha256": "aa44e21e0513519bef6256094d75a81fc535dbb16bb508272018217219ce9aef"
+      },
+      "execution": "Sequential from materialized main checkout; full external-manifest verification alone under 10GiB cap with threads2. No real reinstall or repeated scientific output hashing during this final gate.",
+      "observed_source_size": {
+        "bytes_GiB": 399.36,
+        "date": "2026-11-18",
+        "item": "pert_data/Tahoe-100M",
+        "manifest_items": 4430,
+        "note": "Current manifest-addressed source size; older workstation52GB verification measurements do not describe this inventory."
+      },
+      "verified_main_commit": "688e17f4245a082f74bdcd031d3904c96e7bef02",
+      "verify-all": {
+        "command": "stage2/01_bases/execution/capped.sh /usr/bin/time -v bash script/verify_all.sh",
+        "elapsed": "5:25.14",
+        "exit_code": 0,
+        "log_sha256": "d370bab94e499ad5f3d74c92cc2c37bd95d4f879a410fa36b55b1f6605f5a33f",
+        "max_rss_kib": 79252,
+        "result": "PASS",
+        "summary": [
+          "expected items: 66",
+          "RESULT: PASS \u2014 verified 66/66 item(s)"
+        ],
+        "time_log_sha256": "dbec7256cfee2b0f15d889713760711cefd32f07bb5d414a1c5356f332d113e9"
+      }
+    },
+    "main_metadata_transition": {
+      "method": "All four dirty tracked paths matched dev bytes/absence; restored only those tracked metadata paths then immediately merged reviewed dev. Ignored scientific payloads untouched.",
+      "paths": [
+        "stage2/01_bases/output/view-2k/manifest.json",
+        "stage2/01_bases/output/view-3k/manifest.json",
+        "stage2/01_bases/output/view-4k/manifest.json",
+        "stage2/01_bases/output/view-5k/manifest.json"
+      ],
+      "proof_sha256": "3ced24b88c532bc5339e78e0315e4f2a71caab668a624203f7b64ef066dbd502",
+      "result": "PASS"
+    }
   },
   "final_transaction_confirmation": {
     "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
@@ -712,7 +784,15 @@
       "size": 5000
     }
   },
-  "resource_monitor": "10-second monitor managed by integration agent; final log digest and observed gaps recorded by final integration gate",
+  "resource_monitor": {
+    "final_stop": "after main publication, issue closure and safe ticket worktree cleanup",
+    "gpu": "NVML unavailable; no training performed.",
+    "interval_seconds": 10,
+    "known_gap": "2026-11-18T06:03:17 to06:04:21 UTC while monitor ownership changed after prior agent ended; later transfers started replacement before stopping old monitor. No scientific heavy job started during final integration monitor transfer.",
+    "log_path": "/tmp/arc-bases-243-resource-monitor.log",
+    "log_sha256_at_acceptance": "512f262d74c5d858dde9ec16c76b08d0eb9ff0c75819d777d74470587bc96cdc",
+    "sample_count_at_acceptance": 239
+  },
   "schema": "stage2-axis-local-acceptance-v1",
   "scientific_validation": {
     "sources": {
@@ -761,7 +841,7 @@
     }
   },
   "specification": 243,
-  "status": "scientific-publication-PASS; final integration review and offline health pending",
+  "status": "ACCEPTED: paired5k-local release, preservation, replay, document QA, independent review and final offline health PASS",
   "tickets": [
     244,
     245
