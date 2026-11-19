@@ -1,97 +1,43 @@
-method,dose_um,metric,value,x_log10,n_parents,n_seeds,aggregation,source,source_sha256
-no-dose,0.2,pcc,0.35901209296592046,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,0.2,spearman,0.39887747011331687,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,0.2,rmse,0.16195633294804268,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,0.2,r2,-0.3035083399212896,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,1.0,pcc,0.36180620864731866,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,1.0,spearman,0.39622791834875737,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,1.0,rmse,0.16310441163825254,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,1.0,r2,-0.34043650899653316,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,10.0,pcc,0.36547002451088884,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,10.0,spearman,0.393112181721204,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,10.0,rmse,0.1613702191625075,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-no-dose,10.0,r2,-0.31005393281331134,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,0.2,pcc,0.44102318324867307,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,0.2,spearman,0.41854632566457606,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,0.2,rmse,0.1444119898381334,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,0.2,r2,-0.0067038593749133195,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,1.0,pcc,0.3890818546792854,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,1.0,spearman,0.38985052710012064,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,1.0,rmse,0.15558026268221958,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,1.0,r2,-0.19568628296382143,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,10.0,pcc,0.3452439703351348,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,10.0,spearman,0.3684427914325091,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,10.0,rmse,0.16318726785948043,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-scaling,10.0,r2,-0.35543263328387525,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,0.2,pcc,0.3662038492749586,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,0.2,spearman,0.38319194697291087,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,0.2,rmse,0.15882146422708235,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,0.2,r2,-0.2642908203886853,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,1.0,pcc,0.37350733152095267,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,1.0,spearman,0.38805435148071576,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,1.0,rmse,0.15797374617557602,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,1.0,r2,-0.24972806985822205,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,10.0,pcc,0.3500884068965204,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,10.0,spearman,0.36535441938314256,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,10.0,rmse,0.15876522159686127,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-numeric,10.0,r2,-0.3035768773615647,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,0.2,pcc,0.3565049547741523,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,0.2,spearman,0.39680190479177346,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,0.2,rmse,0.1640304650722982,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,0.2,r2,-0.3597958906881833,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,1.0,pcc,0.338398454817813,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,1.0,spearman,0.3869598706537786,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,1.0,rmse,0.16711196077340582,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,1.0,r2,-0.4465379269460503,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,10.0,pcc,0.34844577377668157,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,10.0,spearman,0.3822204375347036,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,10.0,rmse,0.1628440821020358,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-numeric,10.0,r2,-0.35335501107680184,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,0.2,pcc,0.3594450644110176,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,0.2,spearman,0.3855272583092058,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,0.2,rmse,0.16019646586528824,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,0.2,r2,-0.2755444800446091,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,1.0,pcc,0.35856605999969604,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,1.0,spearman,0.382977864726385,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,1.0,rmse,0.16129700551397907,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,1.0,r2,-0.3256705249766184,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,10.0,pcc,0.3493161839696562,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,10.0,spearman,0.3699797912785206,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,10.0,rmse,0.16003473726950743,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-input-embedding,10.0,r2,-0.3289352934780306,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,0.2,pcc,0.36611305587665294,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,0.2,spearman,0.4014701372972309,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,0.2,rmse,0.16126629447496313,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,0.2,r2,-0.2965982244947052,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,1.0,pcc,0.3576402712484452,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,1.0,spearman,0.3895528371621814,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,1.0,rmse,0.162374766109179,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,1.0,r2,-0.3138351799626706,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,10.0,pcc,0.3601087084103563,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,10.0,spearman,0.3854889280271467,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,10.0,rmse,0.1598647237766672,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-latent-embedding,10.0,r2,-0.2799890253482566,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,0.2,pcc,0.35616121621449315,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,0.2,spearman,0.3903701839882969,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,0.2,rmse,0.16493366312013394,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,0.2,r2,-0.3696903097404494,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,1.0,pcc,0.35472707309679824,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,1.0,spearman,0.38642316937419635,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,1.0,rmse,0.16468565673319777,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,1.0,r2,-0.37949731451897245,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,10.0,pcc,0.3542189185793581,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,10.0,spearman,0.38051626860196963,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,10.0,rmse,0.16240977652716912,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-film,10.0,r2,-0.34416827959522034,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,0.2,pcc,0.42331029907490175,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,0.2,spearman,0.4145298184383141,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,0.2,rmse,0.1490302939924406,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,0.2,r2,-0.08458710273644436,-0.6989700043360187,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,1.0,pcc,0.3811859426287983,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,1.0,spearman,0.39015635730999776,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,1.0,rmse,0.15690712787309233,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,1.0,r2,-0.22950909945710873,0.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,10.0,pcc,0.34864266878063593,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,10.0,spearman,0.37212818183002616,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,10.0,rmse,0.16172403534763322,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
-selected,10.0,r2,-0.3470071758911332,1.0,459,3,parent-equal within seed; equal seed OOF,reports/cold-drug/per_dose.csv,ef38c79b2d6e75504ecf09a944d07d1335a8387e941d43ad95fa8cc00990016b
+source,scenario,seed,method,dose_um,n_samples,constant_truth_count,constant_prediction_count,nonfinite_count,pcc,undefined_pcc_count,spearman,undefined_spearman_count,rmse,undefined_rmse_count,r2,undefined_r2_count
+tenv,cold-drug,42,no-dose,0.2,1402,0,0,0,0.2774959226407923,0,0.2980846678449753,0,0.41196843714179393,0,-0.05861281600284289,0
+tenv,cold-drug,42,no-dose,1.0,1402,0,0,0,0.27456512063596467,0,0.2924616530682682,0,0.4197663702854718,0,-0.06455004435828368,0
+tenv,cold-drug,42,no-dose,10.0,1402,0,0,0,0.26993960781620424,0,0.2871756110311131,0,0.4216368731546912,0,-0.08114578970641427,0
+tenv,cold-drug,42,scaling,0.2,1402,0,0,0,0.3115144567988285,0,0.3165057574789748,0,0.4020066699961559,0,-0.0071960575956357626,0
+tenv,cold-drug,42,scaling,1.0,1402,0,0,0,0.2737022524919957,0,0.28857346453884075,0,0.4195726555493635,0,-0.07726506830222155,0
+tenv,cold-drug,42,scaling,10.0,1402,0,0,0,0.2516098187263473,0,0.2748889485304093,0,0.42772923800983087,0,-0.15113118826414432,0
+tenv,cold-drug,42,input-numeric,0.2,1402,0,0,0,0.2748577919451825,0,0.2959747394398185,0,0.41330068582374596,0,-0.07142516980228868,0
+tenv,cold-drug,42,input-numeric,1.0,1402,0,0,0,0.26226447868632424,0,0.2812576137458274,0,0.42315695697626526,0,-0.10085730280260886,0
+tenv,cold-drug,42,input-numeric,10.0,1402,0,0,0,0.25917367031676186,0,0.27598542717693736,0,0.4241414725504552,0,-0.12864894428152365,0
+tenv,cold-drug,42,latent-numeric,0.2,1402,0,0,0,0.27492382992699416,0,0.3002191079031548,0,0.4135918313298915,0,-0.0769543030154399,0
+tenv,cold-drug,42,latent-numeric,1.0,1402,0,0,0,0.27059850835305443,0,0.2937847160728125,0,0.4221693553648836,0,-0.09426433577617023,0
+tenv,cold-drug,42,latent-numeric,10.0,1402,0,0,0,0.2616353456678058,0,0.28378305629868184,0,0.4241987436453848,0,-0.11872866179213569,0
+tenv,cold-drug,42,input-embedding,0.2,1402,0,0,0,0.26717996923888,0,0.2884733780151364,0,0.4152545747644004,0,-0.09708156038769249,0
+tenv,cold-drug,42,input-embedding,1.0,1402,0,0,0,0.2518354386214386,0,0.2746052434333084,0,0.42567759159342566,0,-0.14585801915981722,0
+tenv,cold-drug,42,input-embedding,10.0,1402,0,0,0,0.24510422334844828,0,0.2638877811189467,0,0.42776668043173843,0,-0.19497725036393182,0
+tenv,cold-drug,42,latent-embedding,0.2,1402,0,0,0,0.28425562194624565,0,0.3055964502516607,0,0.41049713776647684,0,-0.05164719636091368,0
+tenv,cold-drug,42,latent-embedding,1.0,1402,0,0,0,0.26945981581775325,0,0.28909943140825783,0,0.42072728450765073,0,-0.08531077567090224,0
+tenv,cold-drug,42,latent-embedding,10.0,1402,0,0,0,0.26613841910638353,0,0.2856509284784308,0,0.42191153881235366,0,-0.09781126948963721,0
+tenv,cold-drug,42,film,0.2,1402,0,0,0,0.27837260398565156,0,0.30238310553291353,0,0.41256825166745936,0,-0.06332871243654957,0
+tenv,cold-drug,42,film,1.0,1402,0,0,0,0.2636781516025314,0,0.2848216181379917,0,0.42177313037530517,0,-0.09224423768311282,0
+tenv,cold-drug,42,film,10.0,1402,0,0,0,0.26473625604903506,0,0.2815813938008052,0,0.4220040871054374,0,-0.10309204207710904,0
+tahoe_bulk,cold-drug,42,no-dose,0.05,20943,0,0,0,0.4651000770607087,0,0.39046287305711713,0,0.15229272527500323,0,-0.24015862139557811,0
+tahoe_bulk,cold-drug,42,no-dose,0.5,19979,0,0,0,0.4170254298482085,0,0.3480530387021122,0,0.14855791569533447,0,-0.2905297105465576,0
+tahoe_bulk,cold-drug,42,no-dose,5.0,24396,0,0,0,0.46087260974442834,0,0.3923522907167865,0,0.16003551763634907,0,-0.13870485301193644,0
+tahoe_bulk,cold-drug,42,scaling,0.05,20943,0,0,0,0.5699046559416219,0,0.4710141450148431,0,0.13127266898750323,0,0.21960542927793159,0
+tahoe_bulk,cold-drug,42,scaling,0.5,19979,0,0,0,0.471711734500069,0,0.3876956261073613,0,0.13689983354605112,0,-0.010486793729781353,0
+tahoe_bulk,cold-drug,42,scaling,5.0,24396,0,0,0,0.4751845305820972,0,0.40314606658838137,0,0.15804354543923776,0,-0.10767366407190326,0
+tahoe_bulk,cold-drug,42,input-numeric,0.05,20943,0,0,0,0.5158271261122631,0,0.4250668388722128,0,0.1405153756339197,0,0.03203764115419407,0
+tahoe_bulk,cold-drug,42,input-numeric,0.5,19979,0,0,0,0.45679517970503547,0,0.3749524937105645,0,0.13887080474871913,0,-0.060606979835591206,0
+tahoe_bulk,cold-drug,42,input-numeric,5.0,24396,0,0,0,0.5059697214317125,0,0.42457153457660474,0,0.14937533517528206,0,0.07594185745432601,0
+tahoe_bulk,cold-drug,42,latent-numeric,0.05,20943,0,0,0,0.4820050351314515,0,0.3998981518109189,0,0.14975945440546098,0,-0.20640018396206478,0
+tahoe_bulk,cold-drug,42,latent-numeric,0.5,19979,0,0,0,0.43169859716873044,0,0.3553554580674932,0,0.14525902751602088,0,-0.22139066561687334,0
+tahoe_bulk,cold-drug,42,latent-numeric,5.0,24396,0,0,0,0.4716824479769929,0,0.3973185831047081,0,0.15778794799079846,0,-0.10041039781056454,0
+tahoe_bulk,cold-drug,42,input-embedding,0.05,20943,0,0,0,0.515489180218701,0,0.42385258664345193,0,0.1404530075410882,0,0.038348428873312905,0
+tahoe_bulk,cold-drug,42,input-embedding,0.5,19979,0,0,0,0.4701989887507889,0,0.3837960122769981,0,0.135852307980065,0,0.014860269589049202,0
+tahoe_bulk,cold-drug,42,input-embedding,5.0,24396,0,0,0,0.5092267946720346,0,0.4261234223479287,0,0.14853365045371145,0,0.09577751301210428,0
+tahoe_bulk,cold-drug,42,latent-embedding,0.05,20943,0,0,0,0.5700096766611765,0,0.4655850631882404,0,0.13013797193377974,0,0.24961883714037758,0
+tahoe_bulk,cold-drug,42,latent-embedding,0.5,19979,0,0,0,0.5055341915943322,0,0.410585564630273,0,0.12882110480010692,0,0.16353920068809322,0
+tahoe_bulk,cold-drug,42,latent-embedding,5.0,24396,0,0,0,0.5399111778940759,0,0.4485526862914015,0,0.1421245489157002,0,0.21569440186084934,0
+tahoe_bulk,cold-drug,42,film,0.05,20943,0,0,0,0.5633406405197849,0,0.461160899090349,0,0.13149522434050576,0,0.2234530125072692,0
+tahoe_bulk,cold-drug,42,film,0.5,19979,0,0,0,0.5051401910249795,0,0.41091459428558086,0,0.12926869341489292,0,0.1549905784276351,0
+tahoe_bulk,cold-drug,42,film,5.0,24396,0,0,0,0.5455206827148417,0,0.4547792947471298,0,0.14197535531211605,0,0.21359759180839577,0
