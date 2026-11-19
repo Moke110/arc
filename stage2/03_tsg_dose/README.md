@@ -1,18 +1,40 @@
 # TranSiGen dose-input optimization — round1
 
-**Normalization generation:** all accepted frozen inputs, weights, metrics and
-figures here use the historical full-18,164-gene denominator (`stage2-view-v2`).
-They are preserved and do not establish results on the ADR0077 5k-local scale.
-Replay them with their preserved frozen inputs. Future input preparation uses
-`execution/axis_local/prepare.py --view ../01_bases/output/view-5k --candidate
-<fresh-empty-directory>`; this records actual schema, recipe, normalization,
-axis and payload digests. New-scale training or rescoring needs separate work.
-The original root `execution/prepare.py` remains frozen historical source.
+The active Round 1 report uses the ADR0077 axis-local G_5000 view for Tahoe
+and tenv. It covers 84 formal fits across two scenarios, three folds and seven
+methods per source, with seed 42. Pooled scientific metrics weight outer-test
+samples equally. The overall figure weights fold estimates equally and shows
+the sample standard deviation across folds. The report supplies comparison
+evidence without a downstream model-weight dependency.
 
+- [Overall metrics](figure/round1_metrics.png), 4 × 4 panels
+- [Learning curves](figure/round1_learning_curves.png), 4 × 8 panels
+- [Cold-drug metrics by measured dose](figure/round1_metrics_cold_drug_dose.png), 2 × 4 panels
+
+Reproduce the three PNGs with `python figure/script/render_axis_local.py
+--data figure/data --output <new-directory>`.
+[Installation receipt](log/round1-axis-local-installation.json) records the
+active and archived file digests.
+
+[ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
+paired 5k-local successor. Its separate input and bounded smoke entry points
+are `execution/axis_local/prepare.py --view ../01_bases/output/view-5k
+--candidate <fresh-directory>` and `execution/axis_local/smoke.py
+--inputs <paired-freeze> --source <native-transigen-source>
+--destination <fresh-smoke-directory> --device cuda`. The freeze contains
+source-specific `tenv` and `tahoe_bulk` inputs and a paired digest manifest.
+Its split ledger records both excluded strips of each cold-drug-dose fold.
+The smoke command runs one no-dose fit for each source and scenario and checks
+fresh-process validation and test replay followed by a paired acceptance receipt.
+Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
+monitoring described below. Use `execution/axis_local/formal.py` for formal
+planning, execution and scientific acceptance.
+
+## Historical run protocol
 
 [ADR0076](../../docs/adr/0076-dose-input-round1-exploration-boundary.md) and
 [#240](https://github.com/Moke110/arc/issues/240) define this step as an
-optimization exploration. Round1 retains **126 formal fits: 63 cold-drug and
+historical optimization exploration. The archived report retains **126 formal fits: 63 cold-drug and
 63 held-dose** across seven fixed methods, three folds and three seeds.
 It supplies scientific comparison evidence and reports, with no downstream
 model-weight dependency or deployment winner. All4,206 treated tenv wells,
@@ -28,7 +50,7 @@ superiority, and three measured doses limit dose-generalization claims.
 ## Retained scientific evidence
 
 The values below are historical **parent-equal, equal-seed OOF summaries**.
-They are distinct from the round1 report's equal-weight fold×seed run means
+They are distinct from the archived report's equal-weight fold×seed run means
 and descriptive sample SD. Seeds/folds are not independent biological replicates;
 held-dose folds also correspond to different omitted doses.
 
@@ -76,9 +98,9 @@ parent-block intervals were [0.481114,0.534917], [0.488030,0.536953] and
 observed parents, not uncertainty over new dose levels. Only three measured dose
 levels were studied; the auxiliary results establish neither broad dose-response
 generalization nor a universally best architecture. Full four-metric estimates,
-intervals and undefined/constant counts are in [figure/data](figure/data).
+intervals and undefined/constant counts are in [archived plotting data](execution/historical/report_126/data).
 
-## Active execution and acceptance
+## Historical execution and acceptance
 
 `execution/run_matrix.py plan` lists the126 round1 origins. `--scenario`
 accepts only `cold-drug` or `held-dose`; omitting it covers both. A fresh run
@@ -109,14 +131,12 @@ Tests use `python -m unittest discover -s execution/tests -p test_round1.py -v`;
 existing input-freeze, selection, learner/replay and scientific comparison checks
 remain applicable.
 
-## Report contract
+## Historical report contract
 
-The active report contains exactly [overall metrics](figure/round1_metrics.png)
-(2×4), [learning curves](figure/round1_learning_curves.png) (2×8), and
-[cold-drug dose metrics](figure/round1_metrics_cold_drug_dose.png) (1×4),
-with plotting CSVs in `figure/data`
-and a CSV-only renderer in `figure/script`. Candidate-first figure acceptance
-replaces the previous report only after all checks pass. The metrics sheet uses
+The [sealed 126-fit report](execution/historical/report_126/) contains
+three PNGs with 2×4, 2×8 and 1×4 panels, plotting CSVs and its CSV-only renderer.
+Its inputs use the historical full-18,164-gene denominator (`stage2-view-v2`).
+The metrics sheet uses
 nine fold×seed dots per fixed method/scenario, run-equal means and sample SD
 (ddof=1); cold-drug selected-procedure dots follow locked fold choices. SD is
 descriptive run spread, not a confidence interval. Native loss/MSE curves retain
@@ -130,24 +150,22 @@ original scientific CSVs and11 original plotting CSVs remain unchanged.
 [Report acceptance](log/242-round1-report-acceptance.json) records every source,
 accepted report hash and superseded historical PNG role/digest.
 
-Reproduce with `figure/script/render.py --data figure/data --output <new-dir>`.
-The renderer needs only its script and plotting CSVs. New round1 CSVs preserve
+Reproduce from the sealed 126-fit tree using its `script/render.py` with
+`--data <126-fit-tree>/data --output <new-dir>`, with
+`execution/historical/report_126/` as the report tree. Its plotting CSVs preserve
 run identities, deterministic jitter coordinates, source digests and counts.
 Nonfinite dose metrics are excluded explicitly within parent means, undefined
 parents within runs, and undefined runs within report means/SD; counts remain
 visible and values are never replaced with zero. Sample SD is undefined with
 fewer than two finite runs.
 
-For candidate-first publication, use `execution/publish_report.py prepare`
+To reconstruct a historical 126-fit candidate, use `execution/publish_report.py prepare`
 with `--matrix <saved-matrix> --candidate <new-report-directory>
---previous <current-figure-directory> --scientific-receipt <126-origin-receipt>
+--previous execution/historical/report_126 --scientific-receipt <126-origin-receipt>
 --receipt <new-report-receipt>`. It verifies complete round1 acceptance and
 saved metric digests, preserves historical plotting CSVs, and renders in an
 isolated CSV-only directory. Inspect all three candidate PNGs, then run
 `accept --candidate <candidate> --receipt <receipt> --visual-inspection`.
-Only then run `install --candidate <candidate> --destination <figure-directory>
---receipt <receipt>`. Installation checks every accepted byte and rolls back
-filesystem replacement failure. It never touches historical model weights.
 Tests: `python -m unittest discover -s execution/tests -p test_round1_report.py -v`.
 
 ## Historical147-fit release
@@ -169,3 +187,34 @@ hashes to byte-identical source snapshots. The original147-fit registration,
 payloads stay at their original paths. Old PNG roles are superseded only after
 round1 candidate report acceptance; sealed historical acceptance digests retain
 their historical meaning.
+
+
+## ADR0078 dual-source report release
+
+The dual-source active report and the sealed 126-fit archive each have their
+own scientific receipts and estimands.
+
+After both 42-fit scenario receipts and the combined acceptance exist in the
+formal candidate, use `execution/axis_local/publish_axis_local_report.py prepare`
+with `--matrix`, `--candidate` and `--receipt`. The publisher verifies every
+sealed scientific table and origin, the completed driver timing and cap
+evidence, and the recorded WSL RAM and GPU samples. It reproduces all three
+PNGs in an isolated CSV-only directory. Inspect each candidate PNG, then use
+the same script's `accept --candidate ... --receipt ... --visual-inspection`.
+
+Run `execution/axis_local/install_axis_local_report.py health --repo ...
+--destination ...` in the materialized checkout. Use its `health.json` with
+`install --candidate ... --receipt ... --health ...` in the deployment checkout.
+Use a fresh candidate on the same filesystem as the target. Under the install
+lock the complete previous `figure/` moves to
+`execution/historical/report_126/` and the new candidate becomes `figure/`.
+`log/round1-axis-local-installation.json` records both file inventories.
+`recover --candidate ... --receipt ...` restores the previous active directory
+if a swap stopped before that receipt, or verifies the installed state when the
+receipt exists. The previous renderer and CSVs remain independently usable
+from the archive.
+
+`execution/axis_local/prepare.py` retains the exact bytes identified by the
+accepted ADR0078 input manifest. Changes to that preparer need a successor
+input generation and its own acceptance. The report installation consumes
+existing sealed results and never regenerates inputs or fits.

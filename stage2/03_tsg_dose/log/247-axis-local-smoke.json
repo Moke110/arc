@@ -1,0 +1,485 @@
+{
+  "formal_fits": 0,
+  "input_source_evidence": {
+    "tahoe_bulk": {
+      "morgan": {
+        "bits": 2048,
+        "include_chirality": true,
+        "radius": 2,
+        "rdkit": "2026.03.2"
+      },
+      "n_matched_vehicles": 1400,
+      "n_parents": 352,
+      "n_treated": 65318,
+      "preparation_sha256": "78e6a1f6313614c8bf15cbbbc7f7fb5b6e8f735e801e8280cbfb8c119a3c596c",
+      "source": "tahoe_bulk",
+      "split_seed": 226,
+      "training_seed": 42,
+      "view_generation": {
+        "axis": {
+          "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+          "ascending": true,
+          "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+          "gene_index_max": 18155,
+          "gene_index_min": 2,
+          "renumbered": false,
+          "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "size": 5000
+        },
+        "control": {
+          "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+          "delta": "delta = X - control, elementwise",
+          "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+        },
+        "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+        "normalization": {
+          "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+          "formula": "log1p(count * 10000 / selected_axis_library_total)",
+          "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+          "source": "ADR 0077 five-k-only axis-local normalization"
+        },
+        "payload_sha256": {
+          "tahoe_bulk": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+          "tenv": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+        },
+        "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+        "schema": "stage2-view-v3"
+      }
+    },
+    "tenv": {
+      "morgan": {
+        "bits": 2048,
+        "include_chirality": true,
+        "radius": 2,
+        "rdkit": "2026.03.2"
+      },
+      "n_matched_vehicles": 192,
+      "n_parents": 459,
+      "n_treated": 4206,
+      "preparation_sha256": "78e6a1f6313614c8bf15cbbbc7f7fb5b6e8f735e801e8280cbfb8c119a3c596c",
+      "source": "tenv",
+      "split_seed": 226,
+      "training_seed": 42,
+      "view_generation": {
+        "axis": {
+          "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+          "ascending": true,
+          "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+          "gene_index_max": 18155,
+          "gene_index_min": 2,
+          "renumbered": false,
+          "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+          "size": 5000
+        },
+        "control": {
+          "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+          "delta": "delta = X - control, elementwise",
+          "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+        },
+        "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+        "normalization": {
+          "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+          "formula": "log1p(count * 10000 / selected_axis_library_total)",
+          "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+          "source": "ADR 0077 five-k-only axis-local normalization"
+        },
+        "payload_sha256": {
+          "tahoe_bulk": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+          "tenv": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+        },
+        "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+        "schema": "stage2-view-v3"
+      }
+    }
+  },
+  "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+  "paired_freeze_resource": {
+    "max_rss_kib": 1791372,
+    "wall_seconds": 32.37
+  },
+  "paired_input_manifest": {
+    "schema": "tsg-dose-round1-axis-local-pair-v1",
+    "sources": {
+      "tahoe_bulk": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+      "tenv": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e"
+    },
+    "view_generation": {
+      "axis": {
+        "algorithm": "tier-first-deg1000-f1000-four-axes-v3",
+        "ascending": true,
+        "columns_sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+        "file": "stage2/01_bases/output/gene-axis/gene_axis_5000.csv",
+        "gene_index_max": 18155,
+        "gene_index_min": 2,
+        "renumbered": false,
+        "sha256": "d824a7ad60c15e4a621faf12e1e74f2679bfa74b8f0043b1caae0cb0e615e24e",
+        "size": 5000
+      },
+      "control": {
+        "correspondence": "matched_control_group is carried verbatim from the integer corpus",
+        "delta": "delta = X - control, elementwise",
+        "rule": "control = arithmetic mean over matched_control_group vehicle rows, each normalized on its own selected-axis library total"
+      },
+      "manifest_sha256": "3a596bb6ee510847de543862bb079272ad1e895a623f2a47e93936472b58b37e",
+      "normalization": {
+        "denominator": "selected gene axis G_5000, before CP10K and natural log1p",
+        "formula": "log1p(count * 10000 / selected_axis_library_total)",
+        "library_total": "sum of the profile's selected G_5000 integer counts (int64)",
+        "source": "ADR 0077 five-k-only axis-local normalization"
+      },
+      "payload_sha256": {
+        "tahoe_bulk": "6fbd84e5e9b99ec743681ae878af8c350f2b6135fc692a8966826f91779bee33",
+        "tenv": "89989a03c4e9ce5826ffe363ca78811f4b1612798ef7ba7d3485f65d78dfdf88"
+      },
+      "recipe": "Stream bounded integer corpus batches; select G_5000 in ascending original gene_index; sum selected counts in int64; normalize every row independently with natural log1p(CP10K); average normalized matched vehicles for control; delta = X - control. Publish float32.",
+      "schema": "stage2-view-v3"
+    }
+  },
+  "records": [
+    {
+      "candidate": "tenv-cold-drug",
+      "fit_manifest": {
+        "execution_binding": {
+          "attempt_nonce": "3c02a9662fdf01fe68dcc3a444fe72d3a0b3fc9584f7fe0da82031a6484a299e",
+          "registration_sha256": "371ae5923f46ce47077d466ab985c423363e89ab0487ad5dad7dee023883145c"
+        },
+        "input_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+        "outputs": {
+          "checkpoint.pt": "b4ddc56ee0047432596374f7a903d9a1300292cea4b1886de463872a6e3d39ad",
+          "config.json": "b61ffa26db2a6726b7baaecdaa8eaf2ea3605f9ede90fa7be314c82717155afd",
+          "environment.json": "07e3ed20047cd9e9f978988af8bfdaa99646b1ff3afc4cd8943e406cc05cb939",
+          "learning_curve.csv": "8d7b325e4ae082e0763bab7c135435feae32c7627ac8e030336d98a150003989",
+          "registration.json": "f30e6c73e0219c6d882da8a951916d41c370a3bb2a69497c2d4119c161b9cf43",
+          "terminal.json": "af3140c26d3e2c4ff13b648fe55b39047e54b6781aa08d5133375c2a72ad09f2",
+          "test_metrics.json": "c54bf8a6e048fb4dc7e9ab7456206e7c535aaff1f78ed26a96672f57cf70d567",
+          "test_per_sample.csv": "1857f57223bc835a26c38febfcf28fc31c2dcf3cd7fd43db926a170947ae93b3",
+          "test_prediction.npy": "53406c3f704db615cc84ab74b73c7b6f79bbb89431489ab52cf5f6ba30a58cea",
+          "validation_identity.csv": "7d37884f1d65649bc002adfb720042e2a2f2063c397402d65e74ea25540a2ed5",
+          "validation_manifest.json": "1485abee223ce9a5bf9c52afbb726e64fd78bd28372523b3666f7c874a587907",
+          "validation_metrics.json": "aeb92889574f7474bd1f6d456170bfeb13d9d5384b5f43e7bd5a055abdd5005c",
+          "validation_per_sample.csv": "3fbcbf9d676b5d8afae2f7d1dde77ae2036ce418c4f8e16655772f3151a64700",
+          "validation_prediction.npy": "750459cffd6ad8ba744c06fa00cd128eb0ff84574517c7feab423142c51772d6"
+        },
+        "schema": "tsg-dose-round1-axis-local-fit-v1"
+      },
+      "fit_sha256": "0551794f86910f0285c24bff86339f409f835d72ac06c4eec65426bb7184c98f",
+      "scenario": "cold-drug",
+      "source": "tenv",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 1.5534047990222462,
+        "epochs": 2,
+        "parameter_count": 21583000,
+        "peak_rss_kib": 1702312,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 1392881,
+        "smoke": true,
+        "status": "complete",
+        "test_replay": {
+          "attempt_nonce": "3c02a9662fdf01fe68dcc3a444fe72d3a0b3fc9584f7fe0da82031a6484a299e",
+          "pid": 1392881,
+          "process_token": "896a1cf449dde791660af35b1a88bc0570b0454e5d7cacfd5903a18906a318ad"
+        },
+        "training_pid": 1392785,
+        "training_process_token": "773682338554ce7af637948a0f0edfe8adb6c9e77a7fb52b56c9a0cd8e8cbf3a",
+        "validation_mse": 0.54691082239151,
+        "validation_replay": {
+          "attempt_nonce": "3c02a9662fdf01fe68dcc3a444fe72d3a0b3fc9584f7fe0da82031a6484a299e",
+          "pid": 1392821,
+          "process_token": "c1d94cd0516e0eb8584a59a2eb289c61064b1a768309de0e0a54a1ee21dd553d"
+        },
+        "weights_updated": true
+      },
+      "test_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.07783077455257531,
+        "r2": -1.421596002466081,
+        "rmse": 0.8285788233677853,
+        "spearman": 0.15911077791856498,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "validation_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.17203684854984147,
+        "r2": -1.617790967021067,
+        "rmse": 0.7381251690262121,
+        "spearman": 0.2839115838968052,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      }
+    },
+    {
+      "candidate": "tenv-cold-drug-dose",
+      "fit_manifest": {
+        "execution_binding": {
+          "attempt_nonce": "7abd1ee4409bce43d619d7b14537ca3f583b3d8c2c603fd01753a45e2a3517ee",
+          "registration_sha256": "a661c3d7ec40e1987f6e354a2328d7ffc3cfa4e02cf3be838ba5269354431f31"
+        },
+        "input_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+        "outputs": {
+          "checkpoint.pt": "d72118f91a1821fbbf935d39233d5dd4894b39726738663bc3ba4c0f5ee13003",
+          "config.json": "d2c6a1861e4422a472b7fbef18357601427f6791fe7d3ba4b1e8ceb7aea904ed",
+          "environment.json": "07e3ed20047cd9e9f978988af8bfdaa99646b1ff3afc4cd8943e406cc05cb939",
+          "learning_curve.csv": "3695c1645fd32d9623f63a7b57c9f1737f02bb9e08b88cfd6e5f1b952feb836a",
+          "registration.json": "ba13a5d76f2bf3184592bd39e2c2964f45bb886d74b557141fb7360b8784ccda",
+          "terminal.json": "3fd7be663aa07c1462e03a71923ccb5ce1abf516e77c5e64fb3ee68ed36fb46e",
+          "test_metrics.json": "e7f634a9cf3530b1c2b6f67a5d6d95edcf8a35908d494a67849dbbb8e7a25663",
+          "test_per_sample.csv": "52a82816e6c30fdb201659a8222e09240f14a3327551c198f99d8a84213051fc",
+          "test_prediction.npy": "85cd3817e9cd3bc49aa0fde2e17857fa9270f59c67fe75000c9d3b8523528fa5",
+          "validation_identity.csv": "a0c4807d17c074cb28158bab53ad84ceca42b21f51528687dc34ca92f83f6d6e",
+          "validation_manifest.json": "d83fc11229293a9b9ebacd0a34b24c7f18c53fcebe2fc334fd4eff3d0073892f",
+          "validation_metrics.json": "273881dd48742a1763289a164600598cee83f88d26b3b97627f5c9c8c5525bd9",
+          "validation_per_sample.csv": "f2759dcb8f116aa2c43db083c7872774eb46801958f57cb92c5432508caedf5d",
+          "validation_prediction.npy": "324f6331cc48a439c737e96964c585fb399612438ae7b5d2458b6dfcee6be962"
+        },
+        "schema": "tsg-dose-round1-axis-local-fit-v1"
+      },
+      "fit_sha256": "201077a63f76692d7205651591349c3140b8680314542bfc6ff85cb4205e3e95",
+      "scenario": "cold-drug-dose",
+      "source": "tenv",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 1.5544324879883789,
+        "epochs": 2,
+        "parameter_count": 21583000,
+        "peak_rss_kib": 1702652,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 1393078,
+        "smoke": true,
+        "status": "complete",
+        "test_replay": {
+          "attempt_nonce": "7abd1ee4409bce43d619d7b14537ca3f583b3d8c2c603fd01753a45e2a3517ee",
+          "pid": 1393078,
+          "process_token": "ebf37c9b4c66be43b60e9ee21b90fab4afdce65744cd64be7130cf39590e407c"
+        },
+        "training_pid": 1392926,
+        "training_process_token": "1751d8ea3d75956a76bd901b96d75b72eaf30088d7cf234d8dc90b1b63c4ebce",
+        "validation_mse": 0.5647124648094177,
+        "validation_replay": {
+          "attempt_nonce": "7abd1ee4409bce43d619d7b14537ca3f583b3d8c2c603fd01753a45e2a3517ee",
+          "pid": 1392952,
+          "process_token": "d33a39817b930d4d8d139da5766f15d0f3a156a448b6285f8105b6b29d00ddcb"
+        },
+        "weights_updated": true
+      },
+      "test_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.1149824546508289,
+        "r2": -1.6620459238325656,
+        "rmse": 0.7656865074359167,
+        "spearman": 0.1887019316943733,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "validation_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.15319797053502762,
+        "r2": -1.4003393251934382,
+        "rmse": 0.7480471006810203,
+        "spearman": 0.30281422131123736,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      }
+    },
+    {
+      "candidate": "tahoe_bulk-cold-drug",
+      "fit_manifest": {
+        "execution_binding": {
+          "attempt_nonce": "9b0ce4c6379e718706ffb2aabdda10d237e050c8566d53cf8215efa75fa588c9",
+          "registration_sha256": "780885f3a21037ef894933857a6f315acdcd0b56224f777169a2f56879c5ad3f"
+        },
+        "input_manifest_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+        "outputs": {
+          "checkpoint.pt": "99d0025daf720e65828c45dfb7da8e6e26a635547892e8ebcafa70188c080d19",
+          "config.json": "87b23dfcdccb58cec54f22de8aa0245e070bc6d32e902cd69ad8cf4f7e685812",
+          "environment.json": "07e3ed20047cd9e9f978988af8bfdaa99646b1ff3afc4cd8943e406cc05cb939",
+          "learning_curve.csv": "c2edbe0a156daecb2c4d71c45bc611a14b820af10274f9841cc2db8c763d83a8",
+          "registration.json": "71aa5c85da58587e7702c888d9d84d9f341fea9467ee7053242e36f73daf216c",
+          "terminal.json": "bd2c7abf81aeaa81d5e061255148bdef333919b1a4ca1f556b4d6b643cffac87",
+          "test_metrics.json": "bca6aaa8a82e132d47399b7b06074cf1d44608c2574aec4969048fdfb735bdc3",
+          "test_per_sample.csv": "7eb28217325d2ccf14edd262387d47b171b3fb3cb66407f66028b1f4f0361ae5",
+          "test_prediction.npy": "b68bf48e84d5aa8880423ffd00f9d57f135d815f39954eaec4bd129bdb6f3115",
+          "validation_identity.csv": "5b51a5a637b964e32bf265300f7bbeb0dfd02b3cb4cfccf3d291bb2097942f3a",
+          "validation_manifest.json": "dce50ace9989ac1f279ac2243f966fb79b1634770298e962a9964674c1b3c07d",
+          "validation_metrics.json": "dcae55b69d67722d0c5acc3b19455fea13ed901c06fee958631edbf6ccdf412b",
+          "validation_per_sample.csv": "983519a0a8dd4f47100a315d0d952342f06a4a41d43e205a74714b998ce0ebdb",
+          "validation_prediction.npy": "5829455d44a752edf8959823b9d6bb6f4b4dfad04380d769f715cfbb653f0e03"
+        },
+        "schema": "tsg-dose-round1-axis-local-fit-v1"
+      },
+      "fit_sha256": "9502bf66fdfefcab90473e78272f11bf43052df8a876b6d8e8091cd17eea2c94",
+      "scenario": "cold-drug",
+      "source": "tahoe_bulk",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 3.4061531890183687,
+        "epochs": 2,
+        "parameter_count": 21583000,
+        "peak_rss_kib": 1788616,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 1393248,
+        "smoke": true,
+        "status": "complete",
+        "test_replay": {
+          "attempt_nonce": "9b0ce4c6379e718706ffb2aabdda10d237e050c8566d53cf8215efa75fa588c9",
+          "pid": 1393248,
+          "process_token": "4cb2e57cad2def951b701861288b906308c8146d85cf815ce1e5ab38699f028a"
+        },
+        "training_pid": 1393115,
+        "training_process_token": "9033162221b7d11e9fae22dbe90f64bc4e3b655c3c161e8948f9eb851748e5b2",
+        "validation_mse": 0.8899892568588257,
+        "validation_replay": {
+          "attempt_nonce": "9b0ce4c6379e718706ffb2aabdda10d237e050c8566d53cf8215efa75fa588c9",
+          "pid": 1393161,
+          "process_token": "d9b528dc5d18c79f9110095ef211a14a441da976ad6b64aa2871d35358c51915"
+        },
+        "weights_updated": true
+      },
+      "test_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.044359698845759445,
+        "r2": -66.35014016804706,
+        "rmse": 0.9406943405465915,
+        "spearman": 0.04452045127558882,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "validation_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.05207205646015448,
+        "r2": -47.16735257372536,
+        "rmse": 0.9433165406715254,
+        "spearman": 0.0518892011110967,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      }
+    },
+    {
+      "candidate": "tahoe_bulk-cold-drug-dose",
+      "fit_manifest": {
+        "execution_binding": {
+          "attempt_nonce": "f5ee4f457cec8ee865be0afd176e29283d7679b609ffd29734d181270ab608cb",
+          "registration_sha256": "d0d90340552eaa56b44e37b5277b656d63b2bcfb75d6701f4492be3419b8f228"
+        },
+        "input_manifest_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+        "outputs": {
+          "checkpoint.pt": "83a6bbcea60eeabd88fd4aaf22083b0a9b2a0651456b55994cba42f49c7ba0af",
+          "config.json": "01a7f29e6fe99a1d7e1690ce63255757e79b50628df8001c6ef461877d17c188",
+          "environment.json": "07e3ed20047cd9e9f978988af8bfdaa99646b1ff3afc4cd8943e406cc05cb939",
+          "learning_curve.csv": "a6985ca5ec6ba8d7d021e54b75fd6cfd346d86b9be4cf59a766c01207d0b91e2",
+          "registration.json": "6f4e589b4c2f938928a99f6426d83290e5a9b9911ded2c331d12d91da6a31a66",
+          "terminal.json": "387d94d2c3e1758aff92778ec4214edb5dbf27c82f231687a7706b6104a70259",
+          "test_metrics.json": "47a0213f88c108034c5b9ebe454196b095c2a04f0faa5a435a7947998ec9bf5a",
+          "test_per_sample.csv": "552f0d40dc8411fb48254a9ad4841124c862976338d2b487ebe81e54eac31fb9",
+          "test_prediction.npy": "39388f82b6e5e5f7cdd00032959897459b7b4817212e9d95d01862224b23d7b6",
+          "validation_identity.csv": "744f646fd94135148fe0e7ecc9dfc4cf425ebad3723ac5e6b8e08ee34c9e25f1",
+          "validation_manifest.json": "faa5fd6a3f3a1252d9882cc693c2e1f7695df87a6e4db217a8402b0459bb61c9",
+          "validation_metrics.json": "3a494721649e9180ab71f54b3b75e33ed324a1269a7e62b19df48a7f20db93f9",
+          "validation_per_sample.csv": "6e4addfd34eb3170249b1df9f808ea73b5cf91820a61d0f212851bf4b470857e",
+          "validation_prediction.npy": "b003af4dfa76805df4a15f7928ace60880c24db3658e683a9e581de1b95070a7"
+        },
+        "schema": "tsg-dose-round1-axis-local-fit-v1"
+      },
+      "fit_sha256": "7e54fc0b6854868b9bebecf99e24aa5416114bfea1c812c29301c9e49d11ca9f",
+      "scenario": "cold-drug-dose",
+      "source": "tahoe_bulk",
+      "terminal": {
+        "best_epoch": 2,
+        "elapsed_seconds": 3.335473299957812,
+        "epochs": 2,
+        "parameter_count": 21583000,
+        "peak_rss_kib": 1792980,
+        "replay": "exact fresh-process native sampled prediction",
+        "replay_pid": 1393451,
+        "smoke": true,
+        "status": "complete",
+        "test_replay": {
+          "attempt_nonce": "f5ee4f457cec8ee865be0afd176e29283d7679b609ffd29734d181270ab608cb",
+          "pid": 1393451,
+          "process_token": "314de0cbce9dd295c90b680624d9dc26270408374c17b0b4839439e3a258f867"
+        },
+        "training_pid": 1393303,
+        "training_process_token": "a216a8b3f6a57a438273b1d0dde18b36088627e9c52c53530bba83497d9ac9ff",
+        "validation_mse": 0.8854429721832275,
+        "validation_replay": {
+          "attempt_nonce": "f5ee4f457cec8ee865be0afd176e29283d7679b609ffd29734d181270ab608cb",
+          "pid": 1393341,
+          "process_token": "b70d2888f12b0bada75b4b77c4abc8346a6ba447e660b4eb09e696e99251f45d"
+        },
+        "weights_updated": true
+      },
+      "test_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.05392946565960766,
+        "r2": -65.25019465943218,
+        "rmse": 0.9322051446076317,
+        "spearman": 0.031287540088130665,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "validation_metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 8,
+        "nonfinite_count": 0,
+        "pcc": 0.06642710846213608,
+        "r2": -36.78005444294198,
+        "rmse": 0.9408964269375832,
+        "spearman": 0.07775658926056092,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      }
+    }
+  ],
+  "resource_cap": {
+    "blas_threads": 2,
+    "memory_gib": 10,
+    "swap_gib": 8
+  },
+  "run_date": "2026-11-18",
+  "schema": "tsg-dose-round1-axis-local-smoke-v1",
+  "serial_smoke_resource": {
+    "max_rss_kib": 1886652,
+    "wall_seconds": 64.86
+  }
+}
