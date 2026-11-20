@@ -24,6 +24,11 @@ are `execution/axis_local/prepare.py --view ../01_bases/output/view-5k
 --destination <fresh-smoke-directory> --device cuda`. The freeze contains
 source-specific `tenv` and `tahoe_bulk` inputs and a paired digest manifest.
 Its split ledger records both excluded strips of each cold-drug-dose fold.
+
+New Stage 2 comparisons refer to the shared chemical representation as ECFP4.
+The [ECFP4 contract migration](log/ecfp4-contract.md) binds the canonical fields
+to the exact fingerprint and parent order of each accepted source freeze.
+
 The smoke command runs one no-dose fit for each source and scenario and checks
 fresh-process validation and test replay followed by a paired acceptance receipt.
 Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
