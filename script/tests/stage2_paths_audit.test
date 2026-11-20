@@ -65,11 +65,11 @@ for old in 02_models_tenv 02_dataset_corpus evaluation 09_xpert_optimize _frozen
   printf '%s\n' "$tmp/new_stale.py" >"$tmp/list_new"
   if run "$tmp/list_new" >/dev/null; then fail "$old runtime path must fail"; fi
 done
-printf 'p = "stage2/01_bases/output/x"\nq = "stage2/02_models_tenv-5k/output/x"\nr = "stage2/03_tsg_dose/output/x"\n' >"$tmp/current.py"
+printf 'p = "stage2/01_bases/output/x"\nq = "stage2/02_models_tenv-5k/output/x"\nr = "stage2/03_tsg_dose/output/x"\ns = "stage2/04_tsg_transfer/output/x"\n' >"$tmp/current.py"
 printf '%s\n' "$tmp/current.py" >"$tmp/list_current"
 run "$tmp/list_current" >/dev/null || fail "active roots/external source must pass"
 # An active-root prefix must not exempt a longer retired-looking sibling name.
-for sibling in 02_models_tenv_extra 02_models_tenv-5k_extra 03_tsg_dose_extra; do
+for sibling in 02_models_tenv_extra 02_models_tenv-5k_extra 03_tsg_dose_extra 04_tsg_transfer_extra; do
   printf 'p = "stage2/%s/output/x"\n' "$sibling" >"$tmp/prefix.py"
   printf '%s\n' "$tmp/prefix.py" >"$tmp/list_prefix"
   if run "$tmp/list_prefix" >/dev/null; then
@@ -85,7 +85,7 @@ run_root() {
   STAGE2_PATH_AUDIT_ROOT="$1" STAGE2_PATH_AUDIT_FILES="$2" bash "$audit"
 }
 fixture_root="$tmp/layout/stage2"
-mkdir -p "$fixture_root/01_bases" "$fixture_root/02_models_tenv-5k" "$fixture_root/03_tsg_dose"
+mkdir -p "$fixture_root/01_bases" "$fixture_root/02_models_tenv-5k" "$fixture_root/03_tsg_dose" "$fixture_root/04_tsg_transfer"
 printf 'bases\n' >"$fixture_root/AGENTS.md"
 printf 'bases\n' >"$fixture_root/01_bases/AGENTS.md"
 printf 'bases\n' >"$fixture_root/01_bases/README.md"
@@ -93,6 +93,8 @@ printf 'successor\n' >"$fixture_root/02_models_tenv-5k/AGENTS.md"
 printf 'successor\n' >"$fixture_root/02_models_tenv-5k/README.md"
 printf 'dose comparison\n' >"$fixture_root/03_tsg_dose/AGENTS.md"
 printf 'dose comparison\n' >"$fixture_root/03_tsg_dose/README.md"
+printf 'transfer comparison\n' >"$fixture_root/04_tsg_transfer/AGENTS.md"
+printf 'transfer comparison\n' >"$fixture_root/04_tsg_transfer/README.md"
 run_root "$fixture_root" "$tmp/list_clean" >/dev/null \
   || fail "the accepted active steps must coexist with routing"
 # The retired old comparison is rejected.
