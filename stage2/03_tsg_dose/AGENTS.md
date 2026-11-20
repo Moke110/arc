@@ -12,9 +12,9 @@ under `execution/capped.sh` with wall time and 10-second RAM/GPU/WSL monitoring.
 **Baselines and report publication.** Use `execution/axis_local/baselines.py` for
 the 24 baseline slots and `publish_baselines.py` for successor acceptance.
 Keep the eight trained method curves and all nine test comparisons in
-`figure/baselines`. Complete fresh-process replay, scientific and visual
-acceptance and offline checks before deploying. Keep the sealed 84-fit figure
-paths and selection evidence intact.
+`figure/`. Complete fresh-process replay, scientific and visual
+acceptance and offline checks before deploying. For sealed 84-fit and baseline
+report verification, use the archived inventories described in [README.md](README.md).
 
 **Historical reconstruction.** Follow README.md and ADR0075/0076 for the
 126-fit and 147-fit records. Use `execution/historical/report_126/` for the

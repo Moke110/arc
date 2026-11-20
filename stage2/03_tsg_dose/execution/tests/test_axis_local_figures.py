@@ -147,11 +147,11 @@ class CsvOnlyRoundTrip(unittest.TestCase):
 
     def _assert_recover_verifies_successor(self, step, candidate, accepted_path):
         import shutil
-        from install_axis_local_report import digest, recover
+        from install_axis_local_report import AXIS_LOCAL_ARCHIVE, digest, recover
 
         source = SCRIPT.parents[1]
         successor = step / 'figure/baselines'
-        shutil.copytree(source / 'figure/baselines', successor)
+        shutil.copytree(source / AXIS_LOCAL_ARCHIVE / 'baselines', successor)
         with self.assertRaisesRegex(ValueError, 'successor receipt'):
             recover(step, candidate, accepted_path)
 
@@ -172,7 +172,7 @@ class CsvOnlyRoundTrip(unittest.TestCase):
             stream.write(b'altered')
         with self.assertRaisesRegex(ValueError, 'successor report bytes'):
             recover(step, candidate, accepted_path)
-        shutil.copyfile(source / 'figure/baselines/data/round1_pooled.csv', altered)
+        shutil.copyfile(source / AXIS_LOCAL_ARCHIVE / 'baselines/data/round1_pooled.csv', altered)
 
         receipt_path.write_text(json.dumps(dict(original, visual_inspection=False)))
         with self.assertRaisesRegex(ValueError, 'successor receipt'):

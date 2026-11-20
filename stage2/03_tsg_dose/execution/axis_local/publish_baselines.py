@@ -19,13 +19,15 @@ from baselines import (ECFP4_MLP, MEAN_CELL, METHODS, PARTITIONS, SCHEMA, SEED,
                        STEP, chunks, configuration, open_ecfp4, run_path)
 from formal import SCENARIOS, read_json, sha256, write_json
 from formal_report import IDENTITIES, summarize_folds
+from install_axis_local_report import AXIS_LOCAL_ARCHIVE
 from publish_axis_local_report import figure_hashes, snapshot, verify_science
 from tenv5k.protocol import mean_prediction
 from tsg_round1.inputs import Inputs, SOURCE_POPULATIONS
 from tsg_round1.protocol import summary
 
-SOURCE_RENDERER = STEP / 'figure/script/render_axis_local.py'
-RENDERER = STEP / 'figure/baselines/script/render.py'
+SEALED_REPORT = STEP / AXIS_LOCAL_ARCHIVE
+SOURCE_RENDERER = SEALED_REPORT / 'script/render_axis_local.py'
+RENDERER = SEALED_REPORT / 'baselines/script/render.py'
 RELEASE_SCHEMA = 'tsg-dose-round1-baselines-report-v1'
 TABLES = dict(folds='round1_runs.csv', fold_spread='round1_summary.csv',
               per_dose='round1_dose.csv', learning='round1_curves.csv',
@@ -121,11 +123,11 @@ def accepted_science(matrix):
 
 def legacy_files():
     evidence = read_json(STEP / 'log/round1-axis-local-installation.json')
-    inventories = ((STEP / 'figure', evidence['active_report_files']),
+    inventories = ((SEALED_REPORT, evidence['active_report_files']),
                    (STEP / evidence['previous_report_archive'], evidence['previous_report_files']))
     for directory, files in inventories:
         observed = snapshot(directory)
-        if directory == STEP / 'figure':
+        if directory == SEALED_REPORT:
             observed = {name: digest for name, digest in observed.items()
                         if not name.startswith('baselines/')}
         if observed != files:
