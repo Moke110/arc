@@ -1,6 +1,7 @@
 """Render the Stage 03 successor report with the sealed Round 1 plot primitives."""
 import argparse
 import json
+import math
 from pathlib import Path
 from types import ModuleType
 
@@ -51,6 +52,70 @@ def validate_tables(base, tables):
                     raise ValueError('incomplete ECFP4_MLP epochs')
             elif len(coordinates) != 1:
                 raise ValueError(f'duplicate baseline coordinate: {name}')
+
+
+def separated_metric_axis(base, intervals):
+    """Break only an empty range wide enough to obscure separated groups."""
+    coverage = sorted([*intervals, (0., 0.)])
+    merged = []
+    for lower, upper in coverage:
+        if merged and lower <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(upper, merged[-1][1]))
+        else:
+            merged.append((lower, upper))
+    if len(merged) < 2:
+        return None
+    lower, upper = merged[0][0], merged[-1][1]
+    left, right = max(((first[1], second[0]) for first, second in zip(merged, merged[1:])),
+                      key=lambda gap: gap[1] - gap[0])
+    left_width, right_width = left - lower, upper - right
+    if right - left <= 1.25 * max(left_width, right_width):
+        return None
+    gap = right - left
+    low_pad = min(gap * .09, max(left_width * .09, gap * .015))
+    high_pad = min(gap * .09, max(right_width * .09, gap * .015))
+    left_count = sum(stop <= left for _, stop in intervals)
+    right_count = sum(start >= right for start, _ in intervals)
+    if not left_count or not right_count:
+        return None
+    split = .28 if left_count < right_count else .62
+    return base.AxisScale([
+        base.linear_segment(lower - low_pad, left + low_pad, 0., split,
+                            show_zero=lower <= 0 <= left),
+        base.linear_segment(right - high_pad, upper + high_pad, split + .10, 1.,
+                            show_zero=right <= 0 <= upper),
+    ])
+
+
+def metric_axis_records(base, tables):
+    axes = base.export_axes(tables)
+    folds = base.by_key(tables[METRIC_TABLES[0]], 'source', 'scenario')
+    spreads = base.by_key(tables[METRIC_TABLES[1]], 'source', 'scenario', 'metric')
+    doses = base.by_key(tables[METRIC_TABLES[2]], 'source', 'method')
+    for record in axes:
+        source, scenario, metric = (record[key] for key in ('source', 'scenario', 'panel'))
+        intervals = []
+        if record['figure'] == 'overall':
+            for row in folds[source, scenario]:
+                point = base.number(row[metric])
+                if math.isfinite(point):
+                    intervals.append((point, point))
+            for row in spreads[source, scenario, metric]:
+                mean, sd = base.number(row['mean']), base.number(row['sd'])
+                if math.isfinite(mean):
+                    radius = sd if math.isfinite(sd) else 0.
+                    intervals.append((mean - radius, mean + radius))
+        elif record['figure'] == 'dose':
+            for (sample_source, _), rows in doses.items():
+                if sample_source == source:
+                    points = [base.number(row[metric]) for row in rows]
+                    finite = [value for value in points if math.isfinite(value)]
+                    if finite:
+                        intervals.append((min(finite), max(finite)))
+        axis = separated_metric_axis(base, intervals)
+        if axis is not None:
+            record['segments'] = json.dumps(axis.segments, separators=(',', ':'))
+    return axes
 
 
 def draw_learning(base, data, axes, output):
@@ -105,7 +170,7 @@ def render(reference, data, output, *, prepare_axes=False):
     base.LABELS += (ECFP4_MLP,)
     base.COLORS += ('#087c68',)
     if prepare_axes:
-        base.write_rows(data / AXIS_TABLE, base.export_axes(tables))
+        base.write_rows(data / AXIS_TABLE, metric_axis_records(base, tables))
     index = base.by_key(base.read_rows(data / AXIS_TABLE), 'figure', 'source', 'scenario', 'panel', 'ordinate')
     axes = {key: base.AxisScale(json.loads(record['segments'])) for key, (record,) in index.items()}
     output.mkdir(parents=True, exist_ok=True)
