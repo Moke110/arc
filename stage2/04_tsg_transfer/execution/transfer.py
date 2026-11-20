@@ -16,6 +16,11 @@ from tsg_round1.protocol import TRAINING_SEED
 def run(args):
     source = fit.load_inputs(args.tahoe_inputs, 'tahoe_bulk')
     target = fit.load_inputs(args.tenv_inputs, 'tenv')
+    return run_with_inputs(args, source, target)
+
+
+def run_with_inputs(args, source, target):
+    """Run a transfer action using inputs already checked by the Step 04 loader."""
     if not source.genes.equals(target.genes):
         raise ValueError('Tahoe and tenv ordered G_5000 axes differ')
 
