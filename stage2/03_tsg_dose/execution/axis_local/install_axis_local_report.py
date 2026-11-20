@@ -15,6 +15,8 @@ from publish_axis_local_report import (
 )
 
 STEP = Path(__file__).resolve().parents[2]
+AXIS_LOCAL_ARCHIVE = Path('execution/historical/report_axis_local')
+PRESENTATION_RECEIPT = Path('log/baselines-gray-acceptance.json')
 CHECKS = ('check_paths.sh', 'check_tracked.sh', 'verify_all.sh')
 HEALTH_SCHEMA = 'tsg-dose-round1-axis-local-health-v1'
 SUCCESSOR_SCHEMA = 'tsg-dose-round1-baselines-report-v1'
@@ -204,15 +206,42 @@ def installed_tree_matches(active, files):
             and {path.relative_to(active) for path in active.rglob('*') if path.is_dir()} == directories)
 
 
+def verify_baseline_presentation(step, active):
+    receipt_path = step / PRESENTATION_RECEIPT
+    if receipt_path.is_symlink():
+        raise ValueError('unsafe baseline presentation receipt')
+    receipt = read(receipt_path)
+    successor_receipt = step / 'log/round1-baselines-acceptance.json'
+    successor_data = {name.replace('data/round1_', 'data/'): value
+                      for name, value in read(successor_receipt)['files'].items()
+                      if name.startswith('data/')}
+    expected = {'script/render.py', *successor_data,
+                *(name.removeprefix('round1_') for name in PNG_NAMES)}
+    files = receipt.get('files', {})
+    if (receipt.get('schema') != 'tsg-dose-baselines-gray-v2'
+            or receipt.get('csv_only_replay_byte_identical') is not True
+            or receipt.get('visual_inspection') is not True
+            or receipt.get('predecessor_sha256') != digest(successor_receipt)
+            or receipt.get('predecessor_report_archive') != str(AXIS_LOCAL_ARCHIVE)
+            or set(files) != expected
+            or any(files[name] != value for name, value in successor_data.items())
+            or not installed_tree_matches(active, files)):
+        raise ValueError('accepted baseline presentation bytes changed')
+
+
 def recover(step, candidate, receipt_path):
     receipt = read(receipt_path)
     active, archive, installed = verify_paths(step, candidate)
     with deploy_lock(step):
         if installed.exists():
             evidence = read(installed)
-            active_files = evidence['active_report_files'] | successor_files(step, active, installed)
+            sealed = active
+            if (step / PRESENTATION_RECEIPT).exists() or (step / AXIS_LOCAL_ARCHIVE).exists():
+                verify_baseline_presentation(step, active)
+                sealed = step / AXIS_LOCAL_ARCHIVE
+            active_files = evidence['active_report_files'] | successor_files(step, sealed, installed)
             if (evidence['acceptance_sha256'] != digest(receipt_path)
-                    or not installed_tree_matches(active, active_files)
+                    or not installed_tree_matches(sealed, active_files)
                     or not installed_tree_matches(archive, evidence['previous_report_files'])):
                 raise ValueError('installed report evidence changed')
             return

@@ -9,15 +9,18 @@ equal-fold estimates and sample standard deviations. The two baselines do not
 participate in TranSiGen validation selection. Round 1 supplies comparison
 evidence without a downstream model-weight dependency.
 
-- [Overall metrics](figure/baselines/round1_metrics.png) and [sample-pooled metrics](figure/baselines/data/round1_pooled.csv)
-- [Learning curves](figure/baselines/round1_learning_curves.png) for the eight fitted methods
-- [Cold-drug metrics by measured dose](figure/baselines/round1_metrics_cold_drug_dose.png)
+- [Overall metrics](figure/metrics.png) and [sample-pooled metrics](figure/data/pooled.csv)
+- [Learning curves](figure/learning_curves.png) for the eight fitted methods
+- [Cold-drug metrics by measured dose](figure/metrics_cold_drug_dose.png)
 
-Reproduce the three figures with `python figure/baselines/script/render.py
---data figure/baselines/data --output <new-directory>`. The renderer uses the
-sealed [Round 1 plot primitives](figure/script/render_axis_local.py).
-The [baseline acceptance receipt](log/round1-baselines-acceptance.json) binds
-the frozen inputs, replayed fit origins, plotting tables and figures.
+From this step directory, reproduce the figures with
+`python figure/script/render.py --output <new-directory>`.
+The comparison figures show Mean_cell first in dark gray and ECFP4_MLP
+second in light gray. ECFP4_MLP is the first trained method in the learning
+curves. The summary bar axes start at zero for Δ PCC, Δ Spearman and Δ RMSE.
+The [presentation receipt](log/baselines-gray-acceptance.json) links to the
+[baseline acceptance receipt](log/round1-baselines-acceptance.json), which
+binds the frozen inputs, replayed fit origins and plot tables.
 
 Mean_cell pools fit-partition treated expression and deduplicated original
 matched vehicles from the same cell line across training doses. ECFP4_MLP
@@ -28,11 +31,11 @@ ECFP4_MLP uses float32, Adam with learning rate 0.0001 and weight decay 0.00001,
 batch size 64 and treated-expression MSE. Each fold restores its strict
 validation-MSE minimum, with patience 50 and a maximum of 1000 epochs.
 
-The [84-fit release](log/round1-axis-local-installation.json) remains under the
-original `figure/` paths and replays with its original renderer and CSVs.
-The installer’s `recover` command verifies both sealed releases in place.
-It checks the original inventory and the exact `figure/baselines/` inventory
-bound to the passed successor receipt.
+The [84-fit release](log/round1-axis-local-installation.json) and its
+baseline successor are preserved under
+[execution/historical/report_axis_local](execution/historical/report_axis_local/).
+The installer's `recover` command verifies those inventories and the active
+gray presentation in place.
 
 [ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
 paired 5k-local successor. Its separate input and bounded smoke entry points
