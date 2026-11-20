@@ -1,16 +1,19 @@
 # TranSiGen Tahoe-to-tenv transfer
 
-Read [README.md](README.md), [Stage 2 routing](../AGENTS.md), ADR 0062,
-and [ADR 0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md)
-before changing or running this step.
+Read [README.md](README.md), [Stage 2 routing](../AGENTS.md),
+[ADR 0062](../../docs/adr/0062-stage2-accepted-products-and-reproducible-figures.md)
+and [ADR 0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md).
 
 Use the verified Step 03 axis-local freeze and immutable native TranSiGen
 source. Keep the Tahoe split and checkpoint choice independent of tenv.
-Use `execution/tahoe.py` to prepare folds, fit each fold, replay the best
-checkpoints in fresh processes and lock the winner. Run formal fits singly
-with the capped execution and 10-second resource monitoring required by
-the [execution environment](../../docs/agents/execution-environment.md).
+Follow the [reproduction commands](README.md#reproduction) for Tahoe,
+tenv-only, transfer and Tahoe-only. Run formal phases singly under
+`execution/capped_phase.sh` with per-phase resource records and apply the
+[execution environment](../../docs/agents/execution-environment.md) limits.
 
-Keep candidates under `execution/checkpoints/` or an external staging
-directory. Publish accepted outputs only after scientific, replay and
-repository checks pass. Step 03 and Stage 3 retain their existing contracts.
+Work in a staging candidate. Use `execution/publish.py prepare` and a
+fresh-process `verify` before installing the accepted report. Render the
+figure independently from its CSVs and run the repository health gates.
+Keep the formal artifacts and raw resource evidence under the ignored
+`execution/checkpoints/accepted/` recovery path. Leave the sealed Step 03
+and Stage 3 products intact.
