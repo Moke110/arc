@@ -30,9 +30,9 @@ validation-MSE minimum, with patience 50 and a maximum of 1000 epochs.
 
 The [84-fit release](log/round1-axis-local-installation.json) remains under the
 original `figure/` paths and replays with its original renderer and CSVs.
-Its installer checks an exact recursive tree and can be run on the original
-release commit `47e76cd`. The baseline publisher verifies that inventory,
-excluding only the successor `figure/baselines/` subtree.
+The installer’s `recover` command verifies both sealed releases in place.
+It checks the original inventory and the exact `figure/baselines/` inventory
+bound to the passed successor receipt.
 
 [ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
 paired 5k-local successor. Its separate input and bounded smoke entry points
@@ -252,6 +252,17 @@ execution/axis_local/baselines.py --inputs <paired-freeze>
 RAM and GPU monitor. The driver serializes all 24 slots, verifies fold and
 source identity, and runs exact prediction and per-sample score replay in a
 fresh process. A rerun replays each finished slot and trains missing slots.
+
+If fingerprint publication stopped before writing its manifest, first confirm
+that the driver has exited. Move only `<baseline-workdir>/ecfp4/<source>` to a
+new sibling path for audit, and rerun the driver, only if the source folder
+has no `manifest.json` and `<baseline-workdir>/runs/<source>/` has no sealed
+run manifest. An existing fingerprint manifest or sealed run requires
+verification before any change.
+
+Preserve the original timing-file modification times when collecting evidence.
+Use `cp -p` for the driver timing file and per-unit `.time` files. The
+publisher uses those timestamps to align run windows with monitor samples.
 
 Use `execution/axis_local/publish_baselines.py prepare --matrix
 <accepted-84-fit-workdir> --baselines <baseline-workdir>

@@ -143,6 +143,40 @@ class CsvOnlyRoundTrip(unittest.TestCase):
         self.assertEqual(safe_tree(active), accepted['files'])
         self.assertFalse(candidate.exists())
         recover(step, candidate, accepted_path)
+        self._assert_recover_verifies_successor(step, candidate, accepted_path)
+
+    def _assert_recover_verifies_successor(self, step, candidate, accepted_path):
+        import shutil
+        from install_axis_local_report import digest, recover
+
+        source = SCRIPT.parents[1]
+        successor = step / 'figure/baselines'
+        shutil.copytree(source / 'figure/baselines', successor)
+        with self.assertRaisesRegex(ValueError, 'successor receipt'):
+            recover(step, candidate, accepted_path)
+
+        receipt_path = step / 'log/round1-baselines-acceptance.json'
+        original = json.loads((source / 'log/round1-baselines-acceptance.json').read_text())
+        original['historical_receipts'] = {name: digest(step / 'log' / name)
+                                          for name in original['historical_receipts']}
+        receipt_path.write_text(json.dumps(original))
+        recover(step, candidate, accepted_path)
+
+        extra = step / 'figure/unsealed'
+        extra.mkdir()
+        with self.assertRaisesRegex(ValueError, 'installed report evidence changed'):
+            recover(step, candidate, accepted_path)
+        extra.rmdir()
+        altered = successor / 'data/round1_pooled.csv'
+        with altered.open('ab') as stream:
+            stream.write(b'altered')
+        with self.assertRaisesRegex(ValueError, 'successor report bytes'):
+            recover(step, candidate, accepted_path)
+        shutil.copyfile(source / 'figure/baselines/data/round1_pooled.csv', altered)
+
+        receipt_path.write_text(json.dumps(dict(original, visual_inspection=False)))
+        with self.assertRaisesRegex(ValueError, 'successor receipt'):
+            recover(step, candidate, accepted_path)
 
     def test_report_candidate_requires_combined_scientific_acceptance(self):
         from tempfile import TemporaryDirectory
