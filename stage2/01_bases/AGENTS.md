@@ -17,6 +17,8 @@ Routing for the ADR0077 expression / ADR0073 axis foundation; read the owning RE
 - `gene_axis_fill_rule.docx`: step-root human document; figures/CSVs under `figure/`.
 - `source_topn_coverage.csv` retains its filename but uses explicit DEG1000/group denominators.
 - Bind the single `output/api/bases/*` implementation through `execution/public_api.py`.
+- Import the cross-step ECFP4 compatibility facade from `output/api/ecfp4.py`.
+  Its separate path keeps the sealed Stage 02 and 03 runtimes replayable.
 - Drivers stage `publish|verify` candidates under `execution/checkpoints/`, then replace.
 - Expression uses selected G_5000 integer totals; only paired 5k views are live.
 - `execution/publish_axis_local.py` installs a fully validated candidate without upstream rebuilds.

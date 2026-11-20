@@ -36,6 +36,8 @@ Use **ECFP4** and **ECFP4_MLP** in new contracts and reports. See the
   curve coordinates, groups, uncertainty and reference values where applicable.
 - `figure/script/`: reproduce PNGs from those CSVs alone, without matrices, checkpoints
   or recomputing scientific metrics. Record provenance when a CSV derives from output.
+  Use a named `figure/<successor>/` subtree when a receipt seals the predecessor's
+  paths. Bind the successor inventory to its own acceptance receipt.
 - `execution/`: reproducible build/audit code, configurations, tests and disposable
   working intermediates. Keep necessary reconstruction dependencies available.
 - `log/`: execution/audit records, environments, seeds, acceptance results, hashes,

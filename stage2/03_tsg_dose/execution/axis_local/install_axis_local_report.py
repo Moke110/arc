@@ -10,13 +10,17 @@ import subprocess
 from tempfile import NamedTemporaryFile
 
 from publish_axis_local_report import (
-    CANDIDATE_SCHEMA, SCENARIOS, digest, figure_hashes, snapshot, verify_resource_evidence,
+    CANDIDATE_SCHEMA, PNG_NAMES, SCENARIOS, digest, figure_hashes, snapshot, verify_resource_evidence,
     verify_science,
 )
 
 STEP = Path(__file__).resolve().parents[2]
 CHECKS = ('check_paths.sh', 'check_tracked.sh', 'verify_all.sh')
 HEALTH_SCHEMA = 'tsg-dose-round1-axis-local-health-v1'
+SUCCESSOR_SCHEMA = 'tsg-dose-round1-baselines-report-v1'
+SUCCESSOR_FILES = {*PNG_NAMES, 'script/render.py',
+                   *(f'data/round1_{table}.csv' for table in
+                     ('axis_segments', 'curves', 'dose', 'pooled', 'runs', 'summary'))}
 
 
 def read(path):
@@ -168,15 +172,48 @@ def install(step, candidate, receipt_path, health_path):
     return evidence
 
 
+def successor_files(step, active, predecessor_receipt):
+    successor = active / 'baselines'
+    acceptance_path = step / 'log/round1-baselines-acceptance.json'
+    if not any(path.exists() or path.is_symlink() for path in (successor, acceptance_path)):
+        return {}
+    if acceptance_path.is_symlink() or not acceptance_path.is_file():
+        raise ValueError('missing or unsafe baseline successor receipt')
+    acceptance = read(acceptance_path)
+    historical = {
+        path.name: digest(path) for path in
+        (predecessor_receipt, step / 'log/242-round1-report-acceptance.json')
+    }
+    if (acceptance.get('schema') != SUCCESSOR_SCHEMA or acceptance.get('status') != 'passed'
+            or acceptance.get('visual_inspection') is not True
+            or acceptance.get('csv_only_figures') is not True
+            or acceptance.get('predecessor_fits') != 84 or acceptance.get('ecfp4_mlp_fits') != 12
+            or acceptance.get('mean_cell_evaluations') != 12
+            or acceptance.get('historical_receipts') != historical
+            or set(acceptance.get('files', {})) != SUCCESSOR_FILES):
+        raise ValueError('invalid baseline successor receipt')
+    files = safe_tree(successor)
+    if files != acceptance['files'] or figure_hashes(successor) != acceptance.get('figures'):
+        raise ValueError('accepted baseline successor report bytes changed')
+    return {f'baselines/{name}': value for name, value in files.items()}
+
+
+def installed_tree_matches(active, files):
+    directories = {parent for name in files for parent in Path(name).parents if parent != Path('.')}
+    return (safe_tree(active) == files
+            and {path.relative_to(active) for path in active.rglob('*') if path.is_dir()} == directories)
+
+
 def recover(step, candidate, receipt_path):
     receipt = read(receipt_path)
     active, archive, installed = verify_paths(step, candidate)
     with deploy_lock(step):
         if installed.exists():
             evidence = read(installed)
+            active_files = evidence['active_report_files'] | successor_files(step, active, installed)
             if (evidence['acceptance_sha256'] != digest(receipt_path)
-                    or safe_tree(active) != evidence['active_report_files']
-                    or safe_tree(archive) != evidence['previous_report_files']):
+                    or not installed_tree_matches(active, active_files)
+                    or not installed_tree_matches(archive, evidence['previous_report_files'])):
                 raise ValueError('installed report evidence changed')
             return
         recover_swap(active, archive, candidate, legacy_snapshot(step), receipt['files'])
