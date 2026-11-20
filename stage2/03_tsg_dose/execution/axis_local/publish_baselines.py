@@ -1,5 +1,6 @@
 """Verify the Stage 03 baseline matrix and prepare its CSV-only report successor."""
 import argparse
+from bisect import bisect_left, bisect_right
 import csv
 from datetime import datetime
 import re
@@ -9,11 +10,13 @@ import shutil
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
 
-from baselines import ECFP4_MLP, METHODS, PARTITIONS, SCHEMA, SEED, STEP, run_path
+from baselines import (ECFP4_MLP, METHODS, PARTITIONS, SCHEMA, SEED, STEP,
+                       configuration, open_ecfp4, run_path)
 from formal import SCENARIOS, read_json, sha256, write_json
 from formal_report import IDENTITIES, summarize_folds
 from publish_axis_local_report import figure_hashes, snapshot, verify_science
@@ -35,12 +38,17 @@ def validate_fit(path, source, scenario, fold, method, matrix_plan):
     manifest = path / 'manifest.json'
     result = read_json(manifest)
     config = result['config']
-    expected = dict(schema=SCHEMA, source=source, scenario=scenario, fold=fold, method=method,
-                    seed=SEED, max_epochs=1000, patience=50, device='cuda',
-                    input_manifest_sha256=matrix_plan['input_source_sha256'][source],
-                    source_pair_sha256=matrix_plan['input_pair_sha256'])
-    if any(config.get(key) != value for key, value in expected.items()):
-        raise ValueError(f'baseline identity differs from accepted comparison: {path}')
+    root = path.parents[4]
+    inputs = Path(matrix_plan['inputs'])
+    source_directory = inputs / source
+    fingerprints = root / 'ecfp4' / source
+    open_ecfp4(fingerprints, source_manifest=source_directory / 'manifest.json')
+    args = SimpleNamespace(inputs=inputs, scenario=scenario, fold=fold, method=method, device='cuda')
+    inputs_identity = SimpleNamespace(source=source, directory=source_directory)
+    expected = configuration(args, inputs_identity, fingerprints)
+    if (config != expected or config['input_manifest_sha256'] != matrix_plan['input_source_sha256'][source]
+            or config['source_pair_sha256'] != matrix_plan['input_pair_sha256']):
+        raise ValueError(f'baseline configuration differs from accepted comparison: {path}')
     required = {f'{part}_{kind}.{suffix}' for part in expected_partitions
                 for kind, suffix in [('prediction', 'npy'), ('per_sample', 'csv'), ('metrics', 'json')]}
     if method == ECFP4_MLP:
@@ -53,14 +61,8 @@ def validate_fit(path, source, scenario, fold, method, matrix_plan):
     if replay != dict(schema=SCHEMA, status='exact fresh-process replay',
                       partitions=list(expected_partitions), manifest_sha256=sha256(manifest)):
         raise ValueError(f'baseline fresh-process replay mismatch: {path}')
-    root = path.parents[4]
     resource_dir = root / 'resources' / path.relative_to(root / 'runs')
     timing = {phase: resource(resource_dir / f'{phase}.time') for phase in ('fit', 'replay')}
-    fingerprints = root / 'ecfp4' / source / 'manifest.json'
-    if config['fingerprint_manifest_sha256'] != sha256(fingerprints):
-        raise ValueError(f'canonical fingerprint binding changed: {path}')
-    if config['runtime'].get('baselines.py') != sha256(Path(__file__).with_name('baselines.py')):
-        raise ValueError(f'baseline runtime changed before acceptance: {path}')
     return result, dict(manifest_sha256=sha256(manifest), replay_sha256=sha256(replay_path),
                         resources=timing)
 
@@ -70,16 +72,15 @@ def resource(path):
     fields = dict(line.strip().split(': ', 1) for line in lines if ': ' in line)
     if int(fields['Exit status']) != 0:
         raise ValueError(f'failed timed baseline command: {path}')
-    return dict(sha256=sha256(path),
-                peak_rss_kib=int(fields['Maximum resident set size (kbytes)']),
-                wall_time=fields['Elapsed (wall clock) time (h:mm:ss or m:ss)'])
-
-
-def monitor_evidence(log, timing, wall_time):
-    end = timing.stat().st_mtime
+    wall_time = fields['Elapsed (wall clock) time (h:mm:ss or m:ss)']
+    end = path.stat().st_mtime
     seconds = sum(float(part) * 60 ** position
                   for position, part in enumerate(reversed(wall_time.split(':'))))
-    start = end - seconds
+    return dict(sha256=sha256(path), peak_rss_kib=int(fields['Maximum resident set size (kbytes)']),
+                wall_time=wall_time, start_utc_unix_seconds=end - seconds, end_utc_unix_seconds=end)
+
+
+def monitor_evidence(log, timings):
     text = log.read_text()
     samples = []
     for block in re.finditer(r'^(\S+T\S+)\n[^\n]+\nMem:\s+([^\n]+)\nSwap:[^\n]+\n'
@@ -87,14 +88,20 @@ def monitor_evidence(log, timing, wall_time):
         stamp, memory, _, gpu_memory, gpu_busy = block.groups()
         samples.append((datetime.fromisoformat(stamp).timestamp(), int(memory.split()[-1]),
                         int(gpu_memory), int(gpu_busy)))
-    previous = [sample for sample in samples if sample[0] <= start]
-    following = [sample for sample in samples if sample[0] >= end]
-    if not previous or not following:
-        raise ValueError('resource monitor must cover the complete driver window')
-    window = [sample for sample in samples if previous[-1][0] <= sample[0] <= following[0][0]]
-    if len(window) < 2 or any(not 0 < second[0] - first[0] <= 20
-                              for first, second in zip(window, window[1:])):
-        raise ValueError('incomplete 10-second resource evidence')
+    timestamps = [sample[0] for sample in samples]
+    if timestamps != sorted(set(timestamps)):
+        raise ValueError('resource monitor must contain ordered, unique samples')
+    used = set()
+    for timing in timings:
+        first = bisect_right(timestamps, timing['start_utc_unix_seconds']) - 1
+        last = bisect_left(timestamps, timing['end_utc_unix_seconds'])
+        if first < 0 or last >= len(samples):
+            raise ValueError('resource monitor must cover the complete driver and unit windows')
+        if any(second - first > 20
+               for first, second in zip(timestamps[first:last], timestamps[first + 1:last + 1])):
+            raise ValueError('incomplete 10-second resource evidence')
+        used.update(range(first, last + 1))
+    window = [samples[index] for index in sorted(used)]
     return dict(sha256=sha256(log), samples=len(window), minimum_available_ram_mib=min(s[1] for s in window),
                 peak_gpu_used_mib=max(s[2] for s in window), peak_gpu_utilization_percent=max(s[3] for s in window),
                 first_timestamp=int(window[0][0]), last_timestamp=int(window[-1][0]))
@@ -214,8 +221,9 @@ def prepare(matrix, baselines, destination, timing, monitor):
     scientific = accepted_science(matrix)
     history = legacy_files()
     driver = resource(timing)
-    monitored = monitor_evidence(monitor, timing, driver['wall_time'])
     tables, origins = calculate(matrix, baselines)
+    timings = [driver, *(timing for origin in origins for timing in origin['resources'].values())]
+    monitored = monitor_evidence(monitor, timings)
     if destination.exists():
         raise ValueError('report candidate must be fresh')
     destination.parent.mkdir(parents=True, exist_ok=True)
