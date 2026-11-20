@@ -5,6 +5,12 @@ Tahoe pretraining and tenv fine-tuning across three tenv cold-drug-dose
 folds. The study compares tenv-only training, direct Tahoe-only prediction
 and Tahoe-to-tenv fine-tuning on exactly the same test profiles.
 
+## Accepted results
+
+See the [paired fold scores and equal-fold comparison](log/summary.md),
+[comparison figure](figure/transfer.png) and
+[formal acceptance receipt](log/acceptance.json).
+
 ## Protocol
 
 All paths reuse the Step 03 32-dimensional Latent embedding and axis-local
