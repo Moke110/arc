@@ -257,7 +257,8 @@ Use `execution/axis_local/publish_baselines.py prepare --matrix
 <accepted-84-fit-workdir> --baselines <baseline-workdir>
 --candidate <fresh-figure-candidate> --receipt <receipt.json>
 --timing <driver.time> --monitor <resource-log-snapshot>`. It checks exact
-outer-test identities, prior report hashes, fold coverage, and metrics and
+outer-test identities, prior report hashes, fold coverage, metrics, and all
+Mean_cell predictions against the independently implemented Stage 02 mean. It
 reproduces the three PNGs in isolation using only the plot CSVs and renderers.
 Inspect each candidate PNG, then run the same script's
 `accept --candidate <figure-candidate> --receipt <receipt.json>

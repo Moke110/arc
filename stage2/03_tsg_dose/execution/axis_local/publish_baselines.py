@@ -15,12 +15,13 @@ from types import SimpleNamespace
 import numpy as np
 import pandas as pd
 
-from baselines import (ECFP4_MLP, METHODS, PARTITIONS, SCHEMA, SEED, STEP,
-                       configuration, open_ecfp4, run_path)
+from baselines import (ECFP4_MLP, MEAN_CELL, METHODS, PARTITIONS, SCHEMA, SEED,
+                       STEP, chunks, configuration, open_ecfp4, run_path)
 from formal import SCENARIOS, read_json, sha256, write_json
 from formal_report import IDENTITIES, summarize_folds
 from publish_axis_local_report import figure_hashes, snapshot, verify_science
-from tsg_round1.inputs import SOURCE_POPULATIONS
+from tenv5k.protocol import mean_prediction
+from tsg_round1.inputs import Inputs, SOURCE_POPULATIONS
 from tsg_round1.protocol import summary
 
 SOURCE_RENDERER = STEP / 'figure/script/render_axis_local.py'
@@ -133,6 +134,25 @@ def legacy_files():
             ('round1-axis-local-installation.json', '242-round1-report-acceptance.json')}
 
 
+def verify_mean_cell(data, scenario, fold, path):
+    """Recompute one expression vector per cell with the sealed Stage 02 reference."""
+    training = data.rows(scenario, fold, 'train')
+    test = data.rows(scenario, fold, 'test')
+    cell_names = data.obs.iloc[test].cell_line.to_numpy()
+    cells, first, inverse = np.unique(cell_names, return_index=True, return_inverse=True)
+    vectors = mean_prediction(data.expression, data.obs, data.controls, training,
+                              test[first], MEAN_CELL, scenario)
+    expected_shape = (len(test), data.expression.shape[1])
+    observed = np.load(path / 'test_prediction.npy', mmap_mode='r')
+    if observed.shape != expected_shape or observed.dtype != np.float32:
+        raise ValueError(f'invalid Mean_cell prediction array: {path}')
+    for batch in chunks(np.arange(len(test)), 256):
+        if not np.array_equal(observed[batch], vectors[inverse[batch]]):
+            raise ValueError(f'Mean_cell differs from the independent Stage 02 calculation: {path}')
+    return dict(reference='Stage 02 mean_prediction', exact_test_rows=len(test),
+                cell_lines=len(cells))
+
+
 def calculate(matrix, baselines):
     tables = {key: [] for key in TABLES}
     provenance = []
@@ -143,6 +163,7 @@ def calculate(matrix, baselines):
     if set((baselines / 'runs').glob('*/*/*/*/manifest.json')) != {
             path / 'manifest.json' for path in expected_runs}:
         raise ValueError('baseline run inventory differs from the 24 formal coordinates')
+    inputs = {source: Inputs(Path(matrix_plan['inputs']) / source) for source in SOURCE_POPULATIONS}
     for scenario in SCENARIOS:
         historical = pd.read_csv(matrix / 'reports' / scenario / 'test_per_sample.csv',
                                  usecols=[*ID_FIELDS, 'source', 'fold', 'method'],
@@ -154,6 +175,8 @@ def calculate(matrix, baselines):
                 for fold in range(3):
                     path = run_path(baselines, source, scenario, fold, method)
                     result, evidence = validate_fit(path, source, scenario, fold, method, matrix_plan)
+                    if method == MEAN_CELL:
+                        evidence['independent_mean_cell'] = verify_mean_cell(inputs[source], scenario, fold, path)
                     provenance.append(dict(label, fold=fold, fit=result['fit'], **evidence))
                     scores = pd.read_csv(path / 'test_per_sample.csv', dtype=ID_TYPES,
                                          float_precision='round_trip')
