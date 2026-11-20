@@ -19,10 +19,10 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   parent-level Δ evaluation, checkpoint replay and CSV-only report figures.
   Before changing or replaying it, read its `AGENTS.md` and `README.md`.
 
-- `03_tsg_dose/` — TranSiGen dose-input optimization round1 (ADR0076 amends
-  ADR0075):126 cold-drug/held-dose fits, validation-first selection and three
-  report PNGs. Historical final fits/weights are retained for audit; this step
-  supplies no downstream weights. Read its `AGENTS.md` and `README.md`.
+- `03_tsg_dose/` — ADR0078 Tahoe/tenv dose comparison with 84 TranSiGen fits,
+  12 ECFP4_MLP fits and 12 Mean_cell evaluations. Before reproducing results or
+  publishing a successor, read its [execution workflow](03_tsg_dose/AGENTS.md)
+  and [report](03_tsg_dose/README.md).
 
 Use **ECFP4** and **ECFP4_MLP** in new contracts and reports. See the
 [fingerprint migration record](03_tsg_dose/log/ecfp4-contract.md) for sealed keys.

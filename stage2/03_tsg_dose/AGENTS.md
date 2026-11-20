@@ -9,10 +9,12 @@ tenv independent. Lock cold-drug selections on validation results before
 outer testing. Cold-drug-dose compares fixed methods. Run formal fits singly
 under `execution/capped.sh` with wall time and 10-second RAM/GPU/WSL monitoring.
 
-**Report publication.** Follow the ADR0078 release procedure in README.md.
-Reproduce all three active PNGs from the CSVs in `figure/data` using
-`figure/script/render_axis_local.py`. Complete exact replay, scientific and
-visual acceptance, and the offline health checks before installation.
+**Baselines and report publication.** Use `execution/axis_local/baselines.py` for
+the 24 baseline slots and `publish_baselines.py` for successor acceptance.
+Keep the eight trained method curves and all nine test comparisons in
+`figure/baselines`. Complete fresh-process replay, scientific and visual
+acceptance and offline checks before deploying. Keep the sealed 84-fit figure
+paths and selection evidence intact.
 
 **Historical reconstruction.** Follow README.md and ADR0075/0076 for the
 126-fit and 147-fit records. Use `execution/historical/report_126/` for the

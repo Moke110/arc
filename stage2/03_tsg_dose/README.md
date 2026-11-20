@@ -1,20 +1,38 @@
 # TranSiGen dose-input optimization — round1
 
-The active Round 1 report uses the ADR0077 axis-local G_5000 view for Tahoe
-and tenv. It covers 84 formal fits across two scenarios, three folds and seven
-methods per source, with seed 42. Pooled scientific metrics weight outer-test
-samples equally. The overall figure weights fold estimates equally and shows
-the sample standard deviation across folds. The report supplies comparison
+The active Round 1 report compares seven TranSiGen dose methods with
+Mean_cell and ECFP4_MLP on the same ADR0077 axis-local G_5000 test rows, within
+each Tahoe and tenv scenario and fold. It retains 84 TranSiGen fits and adds
+12 independent ECFP4_MLP fits and 12 deterministic Mean_cell evaluations.
+Pooled metrics weight outer-test samples equally. The overall figure shows
+equal-fold estimates and sample standard deviations. The two baselines do not
+participate in TranSiGen validation selection. Round 1 supplies comparison
 evidence without a downstream model-weight dependency.
 
-- [Overall metrics](figure/round1_metrics.png), 4 × 4 panels
-- [Learning curves](figure/round1_learning_curves.png), 4 × 8 panels
-- [Cold-drug metrics by measured dose](figure/round1_metrics_cold_drug_dose.png), 2 × 4 panels
+- [Overall metrics](figure/baselines/round1_metrics.png) and [sample-pooled metrics](figure/baselines/data/round1_pooled.csv)
+- [Learning curves](figure/baselines/round1_learning_curves.png) for the eight fitted methods
+- [Cold-drug metrics by measured dose](figure/baselines/round1_metrics_cold_drug_dose.png)
 
-Reproduce the three PNGs with `python figure/script/render_axis_local.py
---data figure/data --output <new-directory>`.
-[Installation receipt](log/round1-axis-local-installation.json) records the
-active and archived file digests.
+Reproduce the three figures with `python figure/baselines/script/render.py
+--data figure/baselines/data --output <new-directory>`. The renderer uses the
+sealed [Round 1 plot primitives](figure/script/render_axis_local.py).
+The [baseline acceptance receipt](log/round1-baselines-acceptance.json) binds
+the frozen inputs, replayed fit origins, plotting tables and figures.
+
+Mean_cell pools fit-partition treated expression and deduplicated original
+matched vehicles from the same cell line across training doses. ECFP4_MLP
+uses only the 2048-bit ECFP4 vector to predict treated expression with 128 ReLU
+hidden units and a linear 5000-gene output. Both baselines subtract the same
+per-test-sample matched original control as TranSiGen before scoring Δ.
+ECFP4_MLP uses float32, Adam with learning rate 0.0001 and weight decay 0.00001,
+batch size 64 and treated-expression MSE. Each fold restores its strict
+validation-MSE minimum, with patience 50 and a maximum of 1000 epochs.
+
+The [84-fit release](log/round1-axis-local-installation.json) remains under the
+original `figure/` paths and replays with its original renderer and CSVs.
+Its installer checks an exact recursive tree and can be run on the original
+release commit `47e76cd`. The baseline publisher verifies that inventory,
+excluding only the successor `figure/baselines/` subtree.
 
 [ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
 paired 5k-local successor. Its separate input and bounded smoke entry points
@@ -223,3 +241,27 @@ from the archive.
 accepted ADR0078 input manifest. Changes to that preparer need a successor
 input generation and its own acceptance. The report installation consumes
 existing sealed results and never regenerates inputs or fits.
+
+
+## Baseline successor reproduction
+
+With the verified paired ADR0078 input freeze, run
+`execution/capped.sh /usr/bin/time -v -o <driver.time> python
+execution/axis_local/baselines.py --inputs <paired-freeze>
+--candidate <fresh-baseline-workdir> --device cuda` under the 10-second
+RAM and GPU monitor. The driver serializes all 24 slots, verifies fold and
+source identity, and runs exact prediction and per-sample score replay in a
+fresh process. A rerun replays each finished slot and trains missing slots.
+
+Use `execution/axis_local/publish_baselines.py prepare --matrix
+<accepted-84-fit-workdir> --baselines <baseline-workdir>
+--candidate <fresh-figure-candidate> --receipt <receipt.json>
+--timing <driver.time> --monitor <resource-log-snapshot>`. It checks exact
+outer-test identities, prior report hashes, fold coverage, metrics, and all
+Mean_cell predictions against the independently implemented Stage 02 mean. It
+reproduces the three PNGs in isolation using only the plot CSVs and renderers.
+Inspect each candidate PNG, then run the same script's
+`accept --candidate <figure-candidate> --receipt <receipt.json>
+--visual-inspection`. Run the offline health checks in the materialized
+checkout before deploying the accepted successor. Keep the candidate fit and
+replay payloads in ignored checkpoints for audit.
