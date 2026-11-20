@@ -27,6 +27,12 @@ Mean slots contain 15 applicable results and three cold-drug Mean_drug N/A.
 Historical five-fold, float64, and imported results remain separate evidence;
 no historical checkpoint or prediction can enter the current comparison.
 
+ECFP4_MLP is the current display name for the accepted method. The sealed 02
+CSV tables, original renderer, checkpoints and receipts still use `MLP_Morgan`
+and `mlp-morgan-project-f32-lr1e4-v1`. See the
+[ECFP4 migration record](../03_tsg_dose/log/ecfp4-contract.md) for a canonical
+fingerprint contract derived from the existing freeze.
+
 ## Accepted result
 
 Drug-level Δ metrics first aggregate each parent's out-of-fold repeated wells,
@@ -37,18 +43,18 @@ Mean_cell equals Mean because every well is hiPSC-CM.
 |---|---|---:|---:|---:|---:|
 | cold-drug | PRnet | 0.14080 | 0.17562 | 0.31140 | −4.33521 |
 | cold-drug | TranSiGen | 0.32470 | 0.37545 | 0.18043 | −0.79085 |
-| cold-drug | MLP_Morgan | 0.21302 | 0.28075 | 0.20727 | −2.93962 |
+| cold-drug | ECFP4_MLP | 0.21302 | 0.28075 | 0.20727 | −2.93962 |
 | cold-drug | Mean / Mean_cell | 0.27915 | 0.31705 | 0.17603 | −2.17248 |
 | cold-drug | Mean_drug | N/A | N/A | N/A | N/A |
 | warm-start | PRnet | 0.16692 | 0.18519 | 0.33563 | −5.04030 |
 | warm-start | TranSiGen | 0.63973 | 0.56786 | 0.11905 | 0.24375 |
-| warm-start | MLP_Morgan | 0.53121 | 0.53053 | 0.12488 | −0.00564 |
+| warm-start | ECFP4_MLP | 0.53121 | 0.53053 | 0.12488 | −0.00564 |
 | warm-start | Mean / Mean_cell | 0.28225 | 0.32012 | 0.17551 | −2.16925 |
 | warm-start | Mean_drug | 0.97063 | 0.96561 | 0.02651 | 0.91687 |
 
 TranSiGen wins under the preregistered cold-drug Δ PCC rule: its paired difference
 95% bootstrap CI is above zero against PRnet (+0.18390, [0.16266, 0.20495]),
-MLP_Morgan (+0.11168, [0.08382, 0.14114]), and Mean/Mean_cell (+0.04555,
+ECFP4_MLP (+0.11168, [0.08382, 0.14114]), and Mean/Mean_cell (+0.04555,
 [0.01294, 0.07983]). Mean_drug is inapplicable to unseen drugs. The result does
 not imply superiority on every metric: cold-drug Mean has lower RMSE, all
 cold-drug R² values are negative, and warm-start Mean_drug is much stronger.
@@ -59,10 +65,10 @@ No truth-constant or prediction-constant parent vectors occurred in this matrix.
 The complete values and paired intervals are in
 [metrics_values.csv](figure/data/metrics_values.csv) and
 [paired_differences_values.csv](figure/data/paired_differences_values.csv).
-The report figures are [metrics.png](figure/metrics.png),
-[paired_differences.png](figure/paired_differences.png) and
-[learning_curve.png](figure/learning_curve.png); each is reproduced from its
-tracked CSV by `figure/script/render_figures.py` without model payloads.
+The report figures are [metrics.png](figure/ecfp4/metrics.png),
+[paired_differences.png](figure/ecfp4/paired_differences.png) and
+[learning_curve.png](figure/ecfp4/learning_curve.png); each is reproduced from its
+sealed plotting CSV by `figure/ecfp4/script/render.py` without model payloads.
 See [231-acceptance.json](log/231-acceptance.json) for all 54 trained origins,
 method identities, complete-population evidence and exact metric/PNG replay.
 
@@ -89,7 +95,7 @@ empty candidate. `--resume` accepts only matching current-protocol identities.
 ## Data and native model contract
 
 `execution/prepare.py --view <accepted view-5k> --candidate <empty directory>`
-freezes bounded reader inputs, population, original-control mapping, Morgan2048,
+freezes bounded reader inputs, population, original-control mapping, ECFP4,
 and two shared complete 3-fold splits. Split seed 226 is registered before training;
 validation units round up with `ceil(0.1 * outer_training_units)` (parents for
 cold-drug, wells for warm-start). Warm wells are shuffled per parent and assigned
@@ -108,7 +114,7 @@ Shared learner interface: add `output/api` to the Python path and open
 `tenv5k.inputs.Inputs(prepared_directory)`. It verifies every frozen digest before
 returning memmapped `expression`, `control`, `delta`; treated rows are first and
 indexed by `obs`. `rows(scenario, fold, partition)` returns shared integer rows;
-`fingerprints(rows)` maps their normalized parent identity to float32 Morgan2048.
+`fingerprints(rows)` maps their normalized parent identity to float32 ECFP4.
 `genes` preserves the released gene_index order; `config` freezes seeds and stopping.
 Predictors must output treated expression in the requested row/gene order.
 `score_prediction(..., prediction_ids=...)` rejects reordered identities.
@@ -130,7 +136,7 @@ PRnet native slice (#228): `execution/prnet.py --inputs <prepared> --candidate
 <empty directory> --source <immutable pert_model/PRnet/source> --scenario
 cold-drug --fold 0 --seed 17 --device cpu` trains the registered Sci-Plex5k
 architecture from random weights. Its sole chemical interface change is shared
-binary Morgan2048 replacing upstream feature Morgan1024; the constant
+binary ECFP4 replacing the upstream 1024-bit feature-invariant circular fingerprint; the constant
 `log10(1 + 1 µM)` multiplier remains explicit. GaussianNLL training and the native
 noise-plus-output-Normal draw are retained. Batch512, Adam1e-4/weight_decay1e-8,
 and ReduceLROnPlateau(.5, patience5, min_lr1e-8) retain the Sci-Plex settings
@@ -152,9 +158,9 @@ marked bounded smoke, never a formal matrix run. Shared learner lifecycle lives
 in `tenv5k.learner`; model adapters own native loss, initialization and sampling.
 
 TranSiGen uses the ordinary upstream `train_TranSiGen.py` configuration:
-5000→1200 encoder, latent100, decoder800, Morgan2048→400 embedding,
+5000→1200 encoder, latent100, decoder800, ECFP4→400 embedding,
 beta0.1, dropout0.1, batch64, Adam lr0.0001/weight_decay0.00001, no scheduler.
-The 5000-gene dimension, shared Morgan fingerprints, random initialization and
+The 5000-gene dimension, shared ECFP4 fingerprints, random initialization and
 shared split/stopping replace script inputs/defaults; native selective Xavier
 initialization and summed VAE objective remain unchanged. The current
 `transigen-native-f32-lr1e4-v1` identity keeps parameters, floating buffers,
@@ -175,8 +181,8 @@ is explicit and cannot substitute for a formal matrix entry. `--replay-only`
 performs no training. Native-source tests accept `TRANSIGEN_SOURCE` when the
 immutable payload is materialized in another checkout.
 
-MLP_Morgan is the XPert-defined chemical baseline with this project's
-preregistered configuration: Morgan2048→Linear128→ReLU→Linear5000, a linear
+ECFP4_MLP is the XPert-defined chemical baseline with this project's
+preregistered configuration: ECFP4→Linear128→ReLU→Linear5000, a linear
 output and no control, dose, dropout or pretraining input. It uses mean MSE,
 Adam lr0.0001/weight_decay0.00001, batch64 (including singleton batches), no
 scheduler, and the shared strict validation-MSE stopping/best-restore lifecycle.

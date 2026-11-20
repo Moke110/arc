@@ -22,6 +22,20 @@ The top-level `stage2/` directory that runs model setup and, later, model select
 **Stage 3**:
 The AICM stage that predicts the direction of change of one cardiomyocyte phenotype under one specified experimental condition from a drug-induced perturbome. Its first effort establishes the drug–phenotype data foundation; the perturbome will come from Stage 2 model predictions.
 
+### Stage 2 chemical representation
+
+**ECFP4**:
+The Stage 2 desalted-parent circular fingerprint with radius 2, atom connectivity
+invariants, 2048 binary bits, and chirality enabled. RDKit's API is
+`GetMorganGenerator`. The upstream PRnet fingerprint uses feature invariants
+and 1024 bits, so it is a distinct representation. Sealed Stage 2 generations
+record the project fingerprint as `morgan.npy` and `morgan`.
+
+**ECFP4_MLP**:
+The Stage 2 fingerprint-only treated-expression baseline. The model takes the
+2048 ECFP4 bits, applies a 128-unit ReLU hidden layer, and predicts 5000 genes
+through a linear output. Sealed Stage 2 02 artifacts call it `MLP_Morgan`.
+
 ### Stage 3 phenotype data
 
 **Stage 3 cold-drug evaluation**:
