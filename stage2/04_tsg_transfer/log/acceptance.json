@@ -1,0 +1,1826 @@
+{
+  "fits": [
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "2ec46ba3e1e99b8e01e3e2ad586d2191b46186de1983a7783ba0fb2ca76cc4f5",
+        "learning_curve.csv": "5e8658e603b2daa0ea8ddad192689d689fe8c9b4289b8480eb2bf6d900659fc8"
+      },
+      "best_epoch": 608,
+      "elapsed_seconds": 6323.046082238085,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 658,
+      "fit_sha256": "543092e33fb7a3442307cf097c4252121d2eff007e4ee5edaa3bc103b36c599c",
+      "fold": 0,
+      "initialization": null,
+      "kind": "tahoe",
+      "peak_rss_kib": 4416104,
+      "replay_sha256": "c91b9affb5abd9702d845fa9f6e2e18924c75a4a32c0e87adce38fc438c092b2",
+      "stop_reason": "patience",
+      "training_steps": 448098,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.24435299279534164,
+        "std": 0.8316304241018064
+      },
+      "validation_mse": 0.027236026690146346
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "613b0e364f7565de264f7271152ef1b59f30a1400ae168a3ef0e980738ab12ea",
+        "learning_curve.csv": "409f6f7a51b4104f487551edbeec7eaea2e2fef7a1c6d981c314363527ebb68b"
+      },
+      "best_epoch": 231,
+      "elapsed_seconds": 101.99445629795082,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 281,
+      "fit_sha256": "14372e00f879c2b8e5fbc6a3514f7eda1450bd9b1d42110696fec8f70fe740fe",
+      "fold": 0,
+      "initialization": null,
+      "kind": "tenv-only",
+      "peak_rss_kib": 1880484,
+      "replay_sha256": "4f75f9950f8ac28de0588a3a3b2c904a0a69d37aea053671b53175171797c3d4",
+      "stop_reason": "patience",
+      "training_steps": 7587,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.5,
+        "std": 0.5
+      },
+      "validation_mse": 0.21553654174315082
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "c35004cb4ecf3d1216d0bf1c8819a9a3c7f9bc620fecf120289679f4ec227ccf",
+        "learning_curve.csv": "6a7cb1d98ed9c45eae891b80ef949988f7c2ba0ab3a69299e33a0d0318d84ed4"
+      },
+      "best_epoch": 566,
+      "elapsed_seconds": 221.69816164800432,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 616,
+      "fit_sha256": "468b2749696850171a7f7e3b4cde22459848c9e898f2ac4f2fc6b908af6d4dde",
+      "fold": 0,
+      "initialization": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": 0.9067109476975055,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.07602566480636597
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.052354488521814346
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.055996235460042953
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05778520554304123
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0648590624332428
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.09984640032052994
+          }
+        ],
+        "held_dose_um": 0.2,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": 0.5,
+          "std": 0.5
+        },
+        "weight_scale": 0.602092986431147
+      },
+      "kind": "transfer",
+      "peak_rss_kib": 1983944,
+      "replay_sha256": "db010468c85b21f17abced54ec39138ec188e45b29e9320716b2e7733d274e1a",
+      "stop_reason": "patience",
+      "training_steps": 16632,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.5,
+        "std": 0.5
+      },
+      "validation_mse": 0.20484618519961686
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "aa709bcad4ef3caffa4467b0d4790878836fbccb3d9d7c9525f455d90da144ee",
+        "learning_curve.csv": "9f8a8b6578ab13b5d66d1c8fb0bc3754293f01720c939e19e652fb4d89299725"
+      },
+      "best_epoch": 749,
+      "elapsed_seconds": 7590.454102244927,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 799,
+      "fit_sha256": "64707b78b91232fcd10beaf72c89255d8574be3108fc83efa5b53ceedd362566",
+      "fold": 1,
+      "initialization": null,
+      "kind": "tahoe",
+      "peak_rss_kib": 4418348,
+      "replay_sha256": "5b93c204424b8367bf35619d1c764e36a9b56b6fea0ba8d482c04ffee0bfbab3",
+      "stop_reason": "patience",
+      "training_steps": 544119,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.24717765692414523,
+        "std": 0.832301109427078
+      },
+      "validation_mse": 0.026726938606416752
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "82ba506dfb07d4cd387533e5feb8ef1ae5e460d6e8d40f2d144f631af83b19d8",
+        "learning_curve.csv": "8e8bd1c9554cf45f063980f170d668a707642b8f93a620a95bf5362183074c38"
+      },
+      "best_epoch": 230,
+      "elapsed_seconds": 100.82931623596232,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 280,
+      "fit_sha256": "8ef65f3cb63bc97aed7aec2eb1e24cfb7db9577d72083535722f7b0ae78c8cd5",
+      "fold": 1,
+      "initialization": null,
+      "kind": "tenv-only",
+      "peak_rss_kib": 1873464,
+      "replay_sha256": "d8641fe06f003e47c42a2a633ee3759985a5f1aca0f56b7bb8d85a774872ee92",
+      "stop_reason": "patience",
+      "training_steps": 7560,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.1505150010677366,
+        "std": 0.8494849989322633
+      },
+      "validation_mse": 0.22427855903873012
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "cdc6e5862733478c55bf60b093d6b53bcfc6052ca41b00c175153633d4df7faf",
+        "learning_curve.csv": "ec223f96dd09720b5b6a2281bca5a987ecf711a6ef7c027b8afe33ac64ab0282"
+      },
+      "best_epoch": 809,
+      "elapsed_seconds": 317.0073926820187,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 859,
+      "fit_sha256": "df099fe330fc895af4a84cc58f0d3928a4c6652d0a048e140822a4a1b1be49c2",
+      "fold": 1,
+      "initialization": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": 0.48586601425748016,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.10405859351158142
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05905957147479057
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.055996235460042953
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05978531762957573
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.11436478793621063
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0785614550113678
+          }
+        ],
+        "held_dose_um": 1.0,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": 0.1505150010677366,
+          "std": 0.8494849989322633
+        },
+        "weight_scale": 1.022937919871172
+      },
+      "kind": "transfer",
+      "peak_rss_kib": 1987556,
+      "replay_sha256": "996c66c5e7275ff6fa2c494a020de9191a57fbe113683e399146ef7cd852c965",
+      "stop_reason": "patience",
+      "training_steps": 23193,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": 0.1505150010677366,
+        "std": 0.8494849989322633
+      },
+      "validation_mse": 0.20990606885520055
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "learning_curve.csv": "5efabe76132058ddf19da4938282f131276bcd39bff35c300311949f8a476f22"
+      },
+      "best_epoch": 551,
+      "elapsed_seconds": 5713.482376427972,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 601,
+      "fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+      "fold": 2,
+      "initialization": null,
+      "kind": "tahoe",
+      "peak_rss_kib": 4419852,
+      "replay_sha256": "66db6d070f32ad9ab80031022918a4ced5917523c0bbe070c7749450b8b97328",
+      "stop_reason": "patience",
+      "training_steps": 409281,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.25296587747347354,
+        "std": 0.8304365127448269
+      },
+      "validation_mse": 0.02611568548063439
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "f9d787667fadcaf7c999b972a60d241da3fc2f484798d47b15f8576c9f933b33",
+        "learning_curve.csv": "ae6171b57acc2abb05c8de4b521a8a56170c226a2b6acfabc4d0fe2e30037439"
+      },
+      "best_epoch": 310,
+      "elapsed_seconds": 132.306072243955,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 360,
+      "fit_sha256": "e15209acad8a670df85128577b5a5193a5416685d1d20cc15df7527f1e8a7874",
+      "fold": 2,
+      "initialization": null,
+      "kind": "tenv-only",
+      "peak_rss_kib": 1875728,
+      "replay_sha256": "2dcc1b71e5eccf34538fdd9867d7cf1ee0bf9dbb4cc66c6fcecdb9b9278df6a8",
+      "stop_reason": "patience",
+      "training_steps": 9720,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.3494849989322634,
+        "std": 0.34948499893226337
+      },
+      "validation_mse": 0.17605729141296766
+    },
+    {
+      "artifact_sha256": {
+        "checkpoint.pt": "61e714350cdab03bd9bb60a969233aee8e8a8a106ce00ca901b1072a41f5f1fa",
+        "learning_curve.csv": "ef1118473146f2fd8c1ff8002fddcef9f95d37b07fb11e46d0f8365073dc9296"
+      },
+      "best_epoch": 632,
+      "elapsed_seconds": 248.66533434204757,
+      "environment": {
+        "cuda": "13.0",
+        "device": "cuda",
+        "numpy": "2.4.6",
+        "python": "3.13.13",
+        "torch": "2.12.0+cu130"
+      },
+      "epochs": 682,
+      "fit_sha256": "3b916f1574eb05aae04e83272fa2d103eae0f36361af4b81fd4656f182747321",
+      "fold": 2,
+      "initialization": {
+        "absolute_tolerance": 1e-06,
+        "bias_shift": -0.11622697217366679,
+        "checks": [
+          {
+            "dose_um": 0.05,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05927293375134468
+          },
+          {
+            "dose_um": 0.2,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05084843188524246
+          },
+          {
+            "dose_um": 0.5,
+            "max_absolute_error": 2.384185791015625e-07,
+            "max_fraction_of_tolerance": 0.1014833003282547
+          },
+          {
+            "dose_um": 1.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.057849474251270294
+          },
+          {
+            "dose_um": 5.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.05910208076238632
+          },
+          {
+            "dose_um": 10.0,
+            "max_absolute_error": 1.1920928955078125e-07,
+            "max_fraction_of_tolerance": 0.0785614550113678
+          }
+        ],
+        "held_dose_um": 10.0,
+        "relative_tolerance": 1e-06,
+        "source_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "target_transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.3494849989322634,
+          "std": 0.34948499893226337
+        },
+        "weight_scale": 0.42084493344002527
+      },
+      "kind": "transfer",
+      "peak_rss_kib": 1980508,
+      "replay_sha256": "7ba856e880838e3be0d1a908024972198d9627d69b34ee748a1ac017da194317",
+      "stop_reason": "patience",
+      "training_steps": 18414,
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.3494849989322634,
+        "std": 0.34948499893226337
+      },
+      "validation_mse": 0.16714424099707229
+    }
+  ],
+  "pair_sha256": "eab35931bfc4dd56837647eaf932a0d6c07bf5ebf8bd97f168ad296a2027e2bc",
+  "report_sha256": {
+    "figure/data/transfer_differences.csv": "070dad5a4975a1c2741b27171d1aae84279a106188b4697f8fb51f90b79a23ec",
+    "figure/data/transfer_scores.csv": "ebea99bc612f1e49ddd06e8916cde550e652d1ebfccab252c8f58cf52da8f036",
+    "figure/transfer.png": "21450bb9570d90440e1e41a049140a2a7a4fb3c0bbe7763e435ee6909c964524",
+    "log/summary.md": "7deed32cd94c1669838a7e2f8debf5a955b82d6bcd3b166c1f14fdf73e447fee"
+  },
+  "resources": [
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-fit-0-1795158972976277412.scope",
+        "InvocationID": "969c2b4d20b945509fc4f9400f463035",
+        "MemoryCurrent": "1379581952",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "1412648960",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:18:07+08:00",
+      "evidence_sha256": {
+        "command.txt": "1ad75db98edc0c80a479976fa818904d99295914849e3101b773b9979a2d10f7",
+        "preflight.txt": "a1363876743e762c87ce7ff8ff4f4e4a9da970a0c23a274b4de285bdc2900ab9",
+        "resources-10s.log": "0940f38369e62a964f846b6ae5d111079ef1963dabead87f9da1ec88105e1285",
+        "scope.txt": "b9c22b5c42d9f31e29a7b00e11c6d6f846a81bb9013ba4042242cf61c0ecfdb8",
+        "stdout.txt": "aaa8a9d631dca696ba6bff9c2062f210fde834f997b4542762ddcd2bed23dee5",
+        "terminal.txt": "505a3b6661293ad7d6c0fb7fbb8cb7088bcbe77736a336f8b9329b8f33b460ed",
+        "time.txt": "d3ababc6f9795115b230e3e707de6eadc907fc072918ad10a8264c2fbdd98987"
+      },
+      "peak_rss_kib": 1880484,
+      "phase": "tenv-formal-fit-0",
+      "preflight_gpu_mib": 14267,
+      "preflight_ram_kib": 42972196,
+      "start": "2026-11-20T15:16:12+08:00",
+      "telemetry": {
+        "max_gpu_mib": 2645,
+        "min_ram_kib": 41302376,
+        "samples": 11
+      },
+      "wall_clock": "1:54.08"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-replay-0-1795159154881596219.scope",
+        "InvocationID": "d0a58fecfbfd43528a3393c62c947133",
+        "MemoryCurrent": "27840512",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "27840512",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:19:17+08:00",
+      "evidence_sha256": {
+        "command.txt": "61ad339528589762819c970f760f651d94e12df99aea95233e12951421206fec",
+        "preflight.txt": "1dd4abeccf93d13cf8dedce0ef6b8d33dfccfee325e8ce04ed481b921eb7a8e9",
+        "scope.txt": "22fae301327985e3404b070a8bb77bd969f56bc99e0a5c265d5c527ec6099cab",
+        "stdout.txt": "6a9805b568469ab588fee84db49e34e5be023f5e31965016292a4792fb6f210f",
+        "terminal.txt": "e0c511128d5d1aec83c4f783c176b50b67535126d647170899ab33d8d560c922",
+        "time.txt": "76352ca7d0698797cb825e54950f5a75e0261b4aee885a8a5cfa09e2be409148"
+      },
+      "peak_rss_kib": 1335316,
+      "phase": "tenv-formal-replay-0",
+      "preflight_gpu_mib": 14262,
+      "preflight_ram_kib": 42408072,
+      "start": "2026-11-20T15:19:14+08:00",
+      "wall_clock": "0:02.71"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-evaluate-0-1795159157687265775.scope",
+        "InvocationID": "46acf7e449804eb58d172e686535a4b5",
+        "MemoryCurrent": "24846336",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "24846336",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:19:20+08:00",
+      "evidence_sha256": {
+        "command.txt": "ff43dee562df5c740c533a222912aa5cbfb0832b98a63cd1a1a6982467004f15",
+        "preflight.txt": "da5e2986e6895b4a42aaa6d1521110ee940b9ba04dc06812631e8e643e273070",
+        "scope.txt": "8d78de779b3e189f9deda39f1f9df38af4874856f0123d9f4d911b45eed5e1a2",
+        "stdout.txt": "c30e8d8ba65a49e0cd72804dec1245c9854f4e4e8d12f0b1f5f24db7f7d59b3d",
+        "terminal.txt": "c8c66c56530b5f5dd93780ab50546d5df5a559ade8de8442f0cb09409e526a57",
+        "time.txt": "f84f2d5db61b0c5772e124a6d9c0f1b7d69ab1bc78b19091cb6a0529cd780d54"
+      },
+      "peak_rss_kib": 1364960,
+      "phase": "tenv-formal-evaluate-0",
+      "preflight_gpu_mib": 14258,
+      "preflight_ram_kib": 42431380,
+      "start": "2026-11-20T15:19:17+08:00",
+      "wall_clock": "0:03.08"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-replay-test-0-1795159160868972003.scope",
+        "InvocationID": "03574e573c0a45dc861adbf9b0a70c40",
+        "MemoryCurrent": "27058176",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "27058176",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:19:24+08:00",
+      "evidence_sha256": {
+        "command.txt": "a68a324fa8c76a641fece148c566496fdb3c3231bac147d4aa9f806952eb692a",
+        "preflight.txt": "2707aa11f4b0d84e78fc3ddddfed1e7e2ff388d29c7952082e42164e6d6e6bca",
+        "scope.txt": "2968ec2e93251e56ce586307b77c4bf546ecd373fc50f6a2442fb11c4df7ede9",
+        "stdout.txt": "9a96cbb096d6ede421b05a040e859ebc009ed2bebe839fcf0270454d3ae615ee",
+        "terminal.txt": "5d95da128080a7bbb6b361ffc81736bb1650f9d7dd2709c660ff2b2b136ab29e",
+        "time.txt": "4492f8b5bb8cab272d648e8017dfc895ac7515d8251420a6c6e02a44bfc4268d"
+      },
+      "peak_rss_kib": 1362560,
+      "phase": "tenv-formal-replay-test-0",
+      "preflight_gpu_mib": 14267,
+      "preflight_ram_kib": 42440580,
+      "start": "2026-11-20T15:19:20+08:00",
+      "wall_clock": "0:03.44"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-fit-1-1795159164388067968.scope",
+        "InvocationID": "98d34589b7ca468f88dce1071e5262fd",
+        "MemoryCurrent": "34148352",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "34148352",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:21:15+08:00",
+      "evidence_sha256": {
+        "command.txt": "234ce95eec4def6cff370a8b618178908d044ae3c8e7fe0a02ea054b4ea9b4b7",
+        "preflight.txt": "7ceb20af4bb63b6dfa590d39e2fbe5648d1223c74d57eed601c963f95a50d4e6",
+        "resources-10s.log": "33134036288e42ae0d6e437c251a139d429f2d074fcfff11a5b1e66b9223bd6a",
+        "scope.txt": "bed7454add26ec2ca685709a81e9d44f647c62bde0a5b0351a09c705100f6d9a",
+        "stdout.txt": "9ceb0dfadf136366b794f75259ba62880e622242d2efef3113c791a2ff078aff",
+        "terminal.txt": "25826aa0286cd4b3add4e977e505f2c20b47567aaee87e2e774e70cfce7b59da",
+        "time.txt": "2fd575d4f2c856fc963b7718b84643d6773d166870d6895a8cd7d1c1d11d236b"
+      },
+      "peak_rss_kib": 1873464,
+      "phase": "tenv-formal-fit-1",
+      "preflight_gpu_mib": 14267,
+      "preflight_ram_kib": 42637480,
+      "start": "2026-11-20T15:19:24+08:00",
+      "telemetry": {
+        "max_gpu_mib": 2638,
+        "min_ram_kib": 41642136,
+        "samples": 11
+      },
+      "wall_clock": "1:51.37"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-replay-1-1795159275838759356.scope",
+        "InvocationID": "f22342a1a2944d1d9ea7b961cb0160b4",
+        "MemoryCurrent": "31244288",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31244288",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:21:18+08:00",
+      "evidence_sha256": {
+        "command.txt": "165a70163a13746b881c4fbb258d50e65fccf978e9c8b91925b4d917e2ebd318",
+        "preflight.txt": "ee73e1ad971d4f3eea598c8176d49827eec4c4494a9702f75836191220d9c57c",
+        "scope.txt": "a7508699aa5da1120f57631f57a688787dbeaf21dff0996229921326a2da0c56",
+        "stdout.txt": "0ca2e8ba4bdd4b4170b2335acb506bb3bcf480541d5a20584e52015260635e95",
+        "terminal.txt": "382af7a0e35e937c12576df96057257501162d6ff5696f3d729be6bd2f3cd347",
+        "time.txt": "bce561d79bd4e5885153657f7dc5658eb99a7249bad6976c51af74a82abe5a96"
+      },
+      "peak_rss_kib": 1334508,
+      "phase": "tenv-formal-replay-1",
+      "preflight_gpu_mib": 14254,
+      "preflight_ram_kib": 42890156,
+      "start": "2026-11-20T15:21:15+08:00",
+      "wall_clock": "0:02.70"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-evaluate-1-1795159278627298434.scope",
+        "InvocationID": "91a068f8c5a0431b832304a20ed5af2d",
+        "MemoryCurrent": "31514624",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31514624",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:21:21+08:00",
+      "evidence_sha256": {
+        "command.txt": "1f0568f98a3dce8d374f792872cc95c5317d387e51b28735bafae01da558a6c4",
+        "preflight.txt": "108b13492adbc727dd050333370a4f4c8184e575ce4064d5328902872ec22311",
+        "scope.txt": "e14b22b4d5f33f40a82970571aa6989eccc470d060f6c05bac916352fc59e98b",
+        "stdout.txt": "3095b4ba92b08540758043146c350c6b7efc6990277046e78bcce0e2de342a91",
+        "terminal.txt": "3c427ec7fac0f3dfc598c0cec5044dfc09122d39d4d4a1f2c77d4cfb6bd0fa50",
+        "time.txt": "7ec9f759388c4c889827eca6831a7ec6623c7ee3a108db4095cb0e0d351ba5d6"
+      },
+      "peak_rss_kib": 1363636,
+      "phase": "tenv-formal-evaluate-1",
+      "preflight_gpu_mib": 14268,
+      "preflight_ram_kib": 42885220,
+      "start": "2026-11-20T15:21:18+08:00",
+      "wall_clock": "0:03.12"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-replay-test-1-1795159281828153551.scope",
+        "InvocationID": "155a3c7819df41d5b03fc3b05e9f402c",
+        "MemoryCurrent": "33873920",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "33873920",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:21:25+08:00",
+      "evidence_sha256": {
+        "command.txt": "dc8d9148fb528cae6f4ebc887f721be218a576481f0a18ac7a5a8da382059e19",
+        "preflight.txt": "7599b2c605dd550ed2688d3cf708f5e803a04c91160168e70eb01377702168d8",
+        "scope.txt": "807814f6953d3f065cdc3cb1e5c7926ec8407b42912ce337333086b8b5cb1073",
+        "stdout.txt": "b5a35f0725f7c751bb22aa3c71339103e6e5598d2a2c77e0fc5371134b300afd",
+        "terminal.txt": "78ab69cf6473a5661102d3d9e2bf2e949e92028fc1df9a53154750c397263990",
+        "time.txt": "dfb633bf906846e659f0b6e5ce676079f5c095a6dcd7c8517b0aa8ee499072db"
+      },
+      "peak_rss_kib": 1362912,
+      "phase": "tenv-formal-replay-test-1",
+      "preflight_gpu_mib": 14268,
+      "preflight_ram_kib": 42820784,
+      "start": "2026-11-20T15:21:21+08:00",
+      "wall_clock": "0:03.48"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-fit-2-1795159285382609102.scope",
+        "InvocationID": "993823335bfb444d91a11ab5da9f9bc3",
+        "MemoryCurrent": "25374720",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "25374720",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:23:48+08:00",
+      "evidence_sha256": {
+        "command.txt": "781c2503ccd573221ed01461b4e47ec42400e376e884f3c76b313f0c648ad755",
+        "preflight.txt": "e8320a35ce0f9d0dac72f97d21f3d616a71a15360df9d4d7b877ce6cdd799534",
+        "resources-10s.log": "70aaf76cdff1116d3c171589f7d8a69c114d31d86a8a72f9737285f0cf8ad81c",
+        "scope.txt": "aee314523254ea6e2bfeb51c9a3287fe27b14f1c41ec61be7bd8abc654951be1",
+        "stdout.txt": "1dfa245cc25080115004bbbfa7a2b52c852d97f10230e92cad11c4538ade5987",
+        "terminal.txt": "f73a9da20d0e431e9c92cd850f106b16dda8d83bad38dffc36293968ea9661ba",
+        "time.txt": "53d39dcd89774c88ddff587a00d50ff97f8248af63d33f1ad74841f5d97cb3b6"
+      },
+      "peak_rss_kib": 1875728,
+      "phase": "tenv-formal-fit-2",
+      "preflight_gpu_mib": 14268,
+      "preflight_ram_kib": 42691820,
+      "start": "2026-11-20T15:21:25+08:00",
+      "telemetry": {
+        "max_gpu_mib": 2646,
+        "min_ram_kib": 41584604,
+        "samples": 14
+      },
+      "wall_clock": "2:23.17"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-replay-2-1795159428651821111.scope",
+        "InvocationID": "4776aa99cbb04a6e81b0571bdb3fa462",
+        "MemoryCurrent": "28893184",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28893184",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:23:51+08:00",
+      "evidence_sha256": {
+        "command.txt": "94761c102c65cc686ad8503ae94672cc1d87e4ed70c2743282afa8113d38b99c",
+        "preflight.txt": "e97b4593db3a8ae92a69fd805bc71771ba349a3a7565db1a16052e081efc730a",
+        "scope.txt": "069b6a722f357af3b76291591f0da597dcc33fb94ee545191de11d4e9fb45635",
+        "stdout.txt": "0c53551692ff445837e96919cd1a560c8733d568ff73263c8ce7befeebe140eb",
+        "terminal.txt": "0b2c431ed73360d7efb85b07e4b20b6a51e33dff37269f0a88d0fe54d485a7e4",
+        "time.txt": "b10ede5fc0d2747a4500ae20a05482b084ed8780b957771ca1580025f0572c10"
+      },
+      "peak_rss_kib": 1335952,
+      "phase": "tenv-formal-replay-2",
+      "preflight_gpu_mib": 14261,
+      "preflight_ram_kib": 42852300,
+      "start": "2026-11-20T15:23:48+08:00",
+      "wall_clock": "0:02.71"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-evaluate-2-1795159431480990800.scope",
+        "InvocationID": "9fe75e01affd4f88a99b3dce4bb9b333",
+        "MemoryCurrent": "27320320",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "27320320",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:23:54+08:00",
+      "evidence_sha256": {
+        "command.txt": "2afe9bfc8e7d5adf300d9e67a52ad2b8b6c76eb808cc38b29e25bdecaac4e3eb",
+        "preflight.txt": "fe7d47e099d2732f03d29da6d494bbc4a83a1430063772968170fa4ba8b6d864",
+        "scope.txt": "e0e6016fb4453571d63b7c0b8eb7ed28f53163a4a4c5576d00e6fc09c95e265f",
+        "stdout.txt": "b4d0e83454ab019f3e05961aa13fe7a9d0ef5432c4326fc797456975ace0565c",
+        "terminal.txt": "f338840e8b7be8460eb0f0a8c461ea1181015cf53b593c9e086d18d28988b0f3",
+        "time.txt": "e457547314510ac9b053c4cc4361b31d42a33c1f6e55bccd002b0d1f20d514dc"
+      },
+      "peak_rss_kib": 1363392,
+      "phase": "tenv-formal-evaluate-2",
+      "preflight_gpu_mib": 14262,
+      "preflight_ram_kib": 42661768,
+      "start": "2026-11-20T15:23:51+08:00",
+      "wall_clock": "0:03.13"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tenv-formal-replay-test-2-1795159434701960223.scope",
+        "InvocationID": "5a5321708e1347a49c5709c4b5c4a5b3",
+        "MemoryCurrent": "29679616",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "29679616",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T15:23:58+08:00",
+      "evidence_sha256": {
+        "command.txt": "ba2d06ef1116af03c9967d061cb8f4681c51bf1bda99983742814d18bc2a564e",
+        "preflight.txt": "ec7ac2c7c6ca5a6f17a62c04c8c17036603b65d1719f037695270dad597a99aa",
+        "scope.txt": "e50438328b7f2fd801a0d2a91452f695e4ae96683e48c29344a0ffcd4f25ca1a",
+        "stdout.txt": "3a1a917e981eca88f65ec637bc861923a64536733ed29c4352e755f4195f58a8",
+        "terminal.txt": "e23b463dce4d298574d536efb2f6a9716b6f4cbf1ec8da676dd71e866ce194a3",
+        "time.txt": "3cc5a5dc3e64d6ce5faa2780d17c52a4dfe41943a3ee5ffb695445fde68300f2"
+      },
+      "peak_rss_kib": 1364888,
+      "phase": "tenv-formal-replay-test-2",
+      "preflight_gpu_mib": 14267,
+      "preflight_ram_kib": 42797376,
+      "start": "2026-11-20T15:23:54+08:00",
+      "wall_clock": "0:03.48"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-formal-fit-0-1795159501075759594.scope",
+        "InvocationID": "3b9d686cab8f4a289ef2793329576394",
+        "MemoryCurrent": "28377088",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28377088",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T17:19:22+08:00",
+      "evidence_sha256": {
+        "command.txt": "0cc5cdcba1c81af1a80cfb96539066f4006e8f585789b77d07faeb08a311dc2f",
+        "preflight.txt": "760491c44ad1f003392ba8ea8660d3be42c627cd1df7f91fa34a411156f3b7ec",
+        "resources-10s.log": "87b4691c5593387afb972ddaf3c7490bc37298371ca716a34cb75b99b254ae1c",
+        "scope.txt": "4488fd49461d22dd05bc129d12dc352f009d884bd9cfa5a8d1a466da87c8a9bb",
+        "stdout.txt": "df1bb13ab52f27e4deaac49070918ad09835161b86fe816d6ef5a2e733d99f6a",
+        "terminal.txt": "ecd52d8fd891624a50eec0df060a0ad0364531c343840c8cddd7693812207af0",
+        "time.txt": "83741cafcfd031169773184eb0a998b3e4570c0f993bab509b970a546af0d09a"
+      },
+      "peak_rss_kib": 4416104,
+      "phase": "tahoe-formal-fit-0",
+      "preflight_gpu_mib": 14269,
+      "preflight_ram_kib": 41815232,
+      "start": "2026-11-20T15:25:01+08:00",
+      "telemetry": {
+        "max_gpu_mib": 2746,
+        "min_ram_kib": 40527444,
+        "samples": 630
+      },
+      "wall_clock": "1:54:21"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-formal-replay-0-1795166362900955673.scope",
+        "InvocationID": "865391cc8e2647adad1582779f785f99",
+        "MemoryCurrent": "20217856",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "20217856",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T17:19:30+08:00",
+      "evidence_sha256": {
+        "command.txt": "f1a7acfdd360df658dd8dfb9662851dbfa1814b24ee6d468da11700a0ca82d71",
+        "preflight.txt": "2b48ae6bd5d0bdfb1b1cf03a72219c552ab209270e3b0e3f7a9ff7ac1fdff7aa",
+        "scope.txt": "eeca5504f0a44a04b122283e48f819f3065db2290f78c1db87d0f68b242208a1",
+        "stdout.txt": "3dc7867ac5a1e04898b3968cb2e1856619c714754f368a254587ed99d7440c31",
+        "terminal.txt": "a531cebd2a438b64952436e0be88abd9aa05e4980f980a04e3e201200de9d533",
+        "time.txt": "16c122b7a90c1308b3fe233803f09aaaf565d6a5c4965494c777003e71781ea3"
+      },
+      "peak_rss_kib": 3420084,
+      "phase": "tahoe-formal-replay-0",
+      "preflight_gpu_mib": 14243,
+      "preflight_ram_kib": 42903864,
+      "start": "2026-11-20T17:19:22+08:00",
+      "wall_clock": "0:07.41"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-formal-fit-1-1795166370390548289.scope",
+        "InvocationID": "4c91474fc3f14285b787561048b32cab",
+        "MemoryCurrent": "25378816",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "25378816",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T19:36:54+08:00",
+      "evidence_sha256": {
+        "command.txt": "18d6640c69981c080a9b9ae93778e5f76c49b1d2c349ba589d1f412900b5ba93",
+        "preflight.txt": "ac8f0318b293211c9d2af95be318b1ddf4fcdfc2846b0637b5f6ffb87440333b",
+        "resources-10s.log": "1ed5acf855c1c1818c423546578c7f0629bea0b441fd2f0b850f2942dde35e8e",
+        "scope.txt": "9719c90fa4c28374179d902889f406d011a16b9c2e7fccfd3481052221e1fdd0",
+        "stdout.txt": "ee3f672d748d0866a6a63a8a190fe55cc23480efcc0be5cdb845aeb30dec05e5",
+        "terminal.txt": "107c0c4265be6cdad4454cec0dfcb664fcd7904e75b159858738c6084b2516f6",
+        "time.txt": "4298953f61a93ef8df74e213b95e94c6a4f6b4cfcfe0e4092eb5b0d397596fb4"
+      },
+      "peak_rss_kib": 4418348,
+      "phase": "tahoe-formal-fit-1",
+      "preflight_gpu_mib": 14242,
+      "preflight_ram_kib": 42681488,
+      "start": "2026-11-20T17:19:30+08:00",
+      "telemetry": {
+        "max_gpu_mib": 2744,
+        "min_ram_kib": 41186488,
+        "samples": 756
+      },
+      "wall_clock": "2:17:24"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-formal-replay-1-1795174614542190972.scope",
+        "InvocationID": "7b2d06fdbc774257aad4629420e54711",
+        "MemoryCurrent": "20217856",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "20217856",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T19:37:02+08:00",
+      "evidence_sha256": {
+        "command.txt": "546f7a990c46ceb7781ac2c63cc624fcb683453f925987fe217e41e6ffd2384f",
+        "preflight.txt": "5b6c8d67e029292e5568b86412b7e3f4d49fdbea12af2b3b15707e6daf6eccc5",
+        "scope.txt": "c59222ad1466ab338c001ecdae8589e2697535609b0f956b8341d254863b7562",
+        "stdout.txt": "44a1e5321b35985113323df190fd6bd0cbd7292b26d2c04ac4b2d1294dd677c4",
+        "terminal.txt": "54fb0c2f2c6bfe798cd776c5fe637db327f81bd389167b3a5562f311fc6e6c5b",
+        "time.txt": "ba5b42915a8474e53d8add8fad46a85e6f1ecfd73361b7af4760210e4151f4a9"
+      },
+      "peak_rss_kib": 3418464,
+      "phase": "tahoe-formal-replay-1",
+      "preflight_gpu_mib": 14502,
+      "preflight_ram_kib": 42948348,
+      "start": "2026-11-20T19:36:54+08:00",
+      "wall_clock": "0:07.91"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-formal-fit-2-1795174622534586528.scope",
+        "InvocationID": "2283c1b202414864bd5d8f4ec49f606f",
+        "MemoryCurrent": "25632768",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "25632768",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:19:54+08:00",
+      "evidence_sha256": {
+        "command.txt": "0b96711b7d259719adefadd3c4f6633c0b45fbf3dd1c0fbc316a824c04b433e1",
+        "preflight.txt": "fbe8cfe1f4e24915b1d78576f6be0e90e4f14dbaed2995a121ae8f93b796d8e0",
+        "resources-10s.log": "a8ce54b31b1a8d2238bd6978ce452009400ec473fcc0251ad09803e7b8227101",
+        "scope.txt": "f01eb8bd8da636549922e6fa44aab4f05718fb2207a05f799d806e522ede4d7d",
+        "stdout.txt": "63333d8c943e518cee7c94cc2193788ae181c964113694cdf2bffa31e34c4774",
+        "terminal.txt": "5ee927eb76d7ccef07314c9757573ae5fac6e9ef515bed99d1a48b5b231b52c1",
+        "time.txt": "30c3a758193d6a16fb6c3d3d79d6528163673a5533e6c47c5da67742881049c4"
+      },
+      "peak_rss_kib": 4419852,
+      "phase": "tahoe-formal-fit-2",
+      "preflight_gpu_mib": 14502,
+      "preflight_ram_kib": 42848484,
+      "start": "2026-11-20T19:37:02+08:00",
+      "telemetry": {
+        "max_gpu_mib": 2777,
+        "min_ram_kib": 41443208,
+        "samples": 569
+      },
+      "wall_clock": "1:42:51"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-formal-replay-2-1795180794563576402.scope",
+        "InvocationID": "0d555137e09642a69a6a3dc2a9fdc0d3",
+        "MemoryCurrent": "19169280",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "19169280",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:20:06+08:00",
+      "evidence_sha256": {
+        "command.txt": "315bd51172958a9aea06aa450ed4ef6363f94ec8bb4dd418357922c21dc2f095",
+        "preflight.txt": "d254353eab34a031d3003fcdd841a4d7f0b4f5f513b18cf4cb8b51ba966309b2",
+        "scope.txt": "f958429f6788caa930e1ecc8ce7f051f3feb307f433a1c68c0230626748cb404",
+        "stdout.txt": "cd94e03e8e0253b0599e94d88e625c2b66963525f5ef36a8ecf9de590974fd9a",
+        "terminal.txt": "749621a5b3640e2309d5b9602ffa5f15391cf1dd90e1eb3ff5f4300e55d704a2",
+        "time.txt": "c1c5c419172bb658f5937e52dbd1589ecdc95eaacb999308f6ef65853c1cfefd"
+      },
+      "peak_rss_kib": 3407508,
+      "phase": "tahoe-formal-replay-2",
+      "preflight_gpu_mib": 14214,
+      "preflight_ram_kib": 42808040,
+      "start": "2026-11-20T21:19:54+08:00",
+      "wall_clock": "0:12.22"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-fit-0-1795180823084963612.scope",
+        "InvocationID": "c07e423376144776b4d6c64a45d32f7d",
+        "MemoryCurrent": "27578368",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "27578368",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:24:30+08:00",
+      "evidence_sha256": {
+        "command.txt": "8b7289b49626a3434f54fca2923bb1e7c5da08646625d8c5a83f521503d8d327",
+        "preflight.txt": "61b9166345dc8d569967cec2501a11a76bc23881d89be250e3b8fe0629f5681a",
+        "resources-10s.log": "1de32035b332fe86e8666d55f0b9ab46635671117f5ce7468e7586b1b32ce78f",
+        "scope.txt": "9c3b180b39401709dc9420db5c33eb9453d00a059aadf62d64885af33902bf52",
+        "stdout.txt": "fc15818dcffc146d2d9ae1697613336b3e844a253e9b750875f03a64a0529123",
+        "terminal.txt": "08cdb643efb465425a1c8231609e77195cd8cb4bede14e4e129ac8f7a3f4f870",
+        "time.txt": "addc763b17281f035739c13247415a51a3efc76144fadc45f6671b69b5a1fcc8"
+      },
+      "peak_rss_kib": 1983944,
+      "phase": "transfer-formal-fit-0",
+      "preflight_gpu_mib": 14273,
+      "preflight_ram_kib": 42719904,
+      "start": "2026-11-20T21:20:23+08:00",
+      "telemetry": {
+        "max_gpu_mib": 3080,
+        "min_ram_kib": 41486612,
+        "samples": 23
+      },
+      "wall_clock": "4:07.04"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-replay-0-1795181070234338312.scope",
+        "InvocationID": "32377ed6439f4d33b33ff5cbff68bc6e",
+        "MemoryCurrent": "22212608",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "22552576",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:24:35+08:00",
+      "evidence_sha256": {
+        "command.txt": "03cbbf9c45d5470d6dbfb4d4086d4b6c17674b0c24f55e837f282fa89c270d57",
+        "preflight.txt": "052ba00e45632642019419af5ed63de234cacd808be1d77996ec433b466bfe3d",
+        "scope.txt": "df60a043c400e356b05ca6fde8ce4ea3e0490830215fb97cf37befa2254e82be",
+        "stdout.txt": "94ec9d61354d38cb6b9710cfed5ab6543b7eb3a29e473fb46422dd8e85c3592c",
+        "terminal.txt": "5cb80db109b3fc92b931dd3cb8fc47cd6646d14612d05b15ec1d5ad6ac2a98e0",
+        "time.txt": "d63ddc53e4406921aea924d1ac67ba9ee16255e6732fd6d31e5a9f941452dd67"
+      },
+      "peak_rss_kib": 1392860,
+      "phase": "transfer-formal-replay-0",
+      "preflight_gpu_mib": 14035,
+      "preflight_ram_kib": 42818712,
+      "start": "2026-11-20T21:24:30+08:00",
+      "wall_clock": "0:05.31"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-evaluate-0-1795181075662530369.scope",
+        "InvocationID": "121910a3e4b94c2983125621ea8218f7",
+        "MemoryCurrent": "28631040",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28631040",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:24:41+08:00",
+      "evidence_sha256": {
+        "command.txt": "7e8801c6ab5f67f31f1377a27cc521873704fbec0ddf3ca802029509827bcea2",
+        "preflight.txt": "7ca13956b0368b2256b962bd1d27c511c0854bf845c9abc1dda6ce08a89d69e7",
+        "scope.txt": "158ae74a0237ca4c3fd28227bb06fa0ae959bca7bbe03608b20350f12338acbd",
+        "stdout.txt": "106854dd07a0af803cc46a7165d0bbdafafeaf375f47a99b9dd8cc7033ace4c9",
+        "terminal.txt": "e02529af9ca50d1fe3c482ba9b810afd8eee11f62d8e14b362b06734c0138f4c",
+        "time.txt": "7d6f424cb842b5cbb87283e0d0396bc5887bc2827d5b29d280a9b3c7b4a8f097"
+      },
+      "peak_rss_kib": 1426752,
+      "phase": "transfer-formal-evaluate-0",
+      "preflight_gpu_mib": 14029,
+      "preflight_ram_kib": 42696128,
+      "start": "2026-11-20T21:24:35+08:00",
+      "wall_clock": "0:06.12"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-replay-test-0-1795181081871937303.scope",
+        "InvocationID": "4b42ebc44ff141f2a83888a242c4f53f",
+        "MemoryCurrent": "28364800",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28364800",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:24:48+08:00",
+      "evidence_sha256": {
+        "command.txt": "90763dbbe2598bd7ee8b791739e3bd6b32b23e597c26fb72478aa870e7f2498a",
+        "preflight.txt": "7c8188011c5957dcbc6271f32360ae8bd2ba207ce278e11ea4b2762ce26c76cf",
+        "scope.txt": "bb9e9a85ed09066ccbb12d82b5406b7922cbadd5a6f34ea6afc22bec0f4b4232",
+        "stdout.txt": "767922b5e8a003c8a9c25dc05fed0b25071b40ffdc83a0a357aca6436453c7d2",
+        "terminal.txt": "93dd046f92a5174603a71d754eb67f375ab591770ec8e38d709b88f26d3b368a",
+        "time.txt": "a1b94a09b85d829b79cc4e68f0d5022c49a68229e20589ce6257f13e87911477"
+      },
+      "peak_rss_kib": 1429348,
+      "phase": "transfer-formal-replay-test-0",
+      "preflight_gpu_mib": 14029,
+      "preflight_ram_kib": 42723068,
+      "start": "2026-11-20T21:24:41+08:00",
+      "wall_clock": "0:06.35"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-only-formal-evaluate-0-1795181093100828667.scope",
+        "InvocationID": "a7c480b0e56245c3944a6b1d18c6fe36",
+        "MemoryCurrent": "28368896",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28368896",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:24:59+08:00",
+      "evidence_sha256": {
+        "command.txt": "a786cc4396d679d344df752647aa7d53323bd0fe5ae42ee9a5b0717561e91e9c",
+        "preflight.txt": "4e92dd4ce4117a53161d84ca4d48220900515c64d3ab4f921c5b6c743833289a",
+        "scope.txt": "f8aea9a4a0253ef8426e0b1068e09be08f5bf53d5f77634c12831dbd9e47cfec",
+        "stdout.txt": "d61615fc57436c032067f99fd784177a98fee205ceb4da9ede7d5a715be95937",
+        "terminal.txt": "43088b8a5051bdb536c824f6c64402ce688f291f36eb3bffd3c9d26a8913a59d",
+        "time.txt": "1a625414c2c1adfea8947430dc7042f3a89103a73596a8f6549aa36dc3df78dc"
+      },
+      "peak_rss_kib": 1427320,
+      "phase": "tahoe-only-formal-evaluate-0",
+      "preflight_gpu_mib": 14028,
+      "preflight_ram_kib": 42581992,
+      "start": "2026-11-20T21:24:53+08:00",
+      "wall_clock": "0:06.36"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-only-formal-replay-test-0-1795181099561146507.scope",
+        "InvocationID": "6292cebdd196468a87c078ecc999f5b4",
+        "MemoryCurrent": "31514624",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31514624",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:25:06+08:00",
+      "evidence_sha256": {
+        "command.txt": "fc6739a78ee3ba4db5c3d5d695b8cbcbddd51a89b7488a3acdec5e17727b3390",
+        "preflight.txt": "4911e21410fcad055e3dbd1ef14eb8ef25bd7c5d42bb01ad939f47a49e84aeef",
+        "scope.txt": "e15abd629223f7db766fb68548a5a484a1e03f84e1edc3a7802b7f40ec2489d0",
+        "stdout.txt": "fa835ac6001b704354a0e158027a396453974ce07f081a02be2761c8cd19296e",
+        "terminal.txt": "50b8899575a81725b3dc581345cf4b3fa14660d29e166541cc35ae7101957f86",
+        "time.txt": "bb11d6d7552763dad5458f6107251581079b81d4a500b894d351ed967aeaaad2"
+      },
+      "peak_rss_kib": 1433836,
+      "phase": "tahoe-only-formal-replay-test-0",
+      "preflight_gpu_mib": 14027,
+      "preflight_ram_kib": 42711224,
+      "start": "2026-11-20T21:24:59+08:00",
+      "wall_clock": "0:06.71"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-fit-1-1795181117101638945.scope",
+        "InvocationID": "d539025ddc8440698a6ba9a456eec089",
+        "MemoryCurrent": "32038912",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "32038912",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:31:02+08:00",
+      "evidence_sha256": {
+        "command.txt": "0833bbbe8f2207c5f3455606d9d2db8e358e2da09d5c750a48f0c3a31199217c",
+        "preflight.txt": "f2137a85e4af75fcf091f0d2b097b522da128ecba830b8c32637f9fb9ee215d1",
+        "resources-10s.log": "04cc31b491de9426cec9374c03697339f8ffbcdbb6ade0187f2e4779e264152e",
+        "scope.txt": "779d0bd2530ac6fc51727c27a7b0bf834bda06a42bbb599e68992e6d3a6b108b",
+        "stdout.txt": "94fe688952f8e62c124203acf95259ea63fc7b82fc2f578a16013cd06c455258",
+        "terminal.txt": "79e48617da9789e40bccb14cf1fe3fa41f9ed3b0398bb81d21e266dabe1dfcd1",
+        "time.txt": "5ea87efdce1e64ab97c6e6930f101a53d8415f97bcdb8324803c7b163303ad0f"
+      },
+      "peak_rss_kib": 1987556,
+      "phase": "transfer-formal-fit-1",
+      "preflight_gpu_mib": 13982,
+      "preflight_ram_kib": 42647924,
+      "start": "2026-11-20T21:25:17+08:00",
+      "telemetry": {
+        "max_gpu_mib": 3207,
+        "min_ram_kib": 41420536,
+        "samples": 33
+      },
+      "wall_clock": "5:45.04"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-replay-1-1795181462226725978.scope",
+        "InvocationID": "b6e0bf7bcdec42aea885a482cb333196",
+        "MemoryCurrent": "29663232",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "29663232",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:31:07+08:00",
+      "evidence_sha256": {
+        "command.txt": "c44a94502bfa27fc264e09c7c1d4beefa0ec64fec0a71cc5d134ec84540c6957",
+        "preflight.txt": "cb18b14b28031a153b1b3bdc4d1efd60cc221ec48032fbde1f206ad676ee1c06",
+        "scope.txt": "90725990960944dc4dd5adce335280fede6625fd0e8dc49d92dd929869bc91df",
+        "stdout.txt": "e8cac1d8d4fce543f2a2a652775c6f456d2e3411f7fb11ef5e58777245da4456",
+        "terminal.txt": "5ccaf2363e8938ae3376e8cad673b50eeba6524f8a584e6b160947802d35183d",
+        "time.txt": "b1d0c5b4b176ccb091a174bd4a8c021fa048ee3cf4083063e728f9b1eba0965d"
+      },
+      "peak_rss_kib": 1390424,
+      "phase": "transfer-formal-replay-1",
+      "preflight_gpu_mib": 13951,
+      "preflight_ram_kib": 42798736,
+      "start": "2026-11-20T21:31:02+08:00",
+      "wall_clock": "0:05.51"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-evaluate-1-1795181467820327771.scope",
+        "InvocationID": "1d2c61c962b04b5aa8c51e804d1ade88",
+        "MemoryCurrent": "31518720",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31518720",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:31:16+08:00",
+      "evidence_sha256": {
+        "command.txt": "d8486adcd5126fce557e139ce525da6da65d3fcd55e5cb1369bfa1a41d1f2376",
+        "preflight.txt": "98c38955633de8e5372a02388744cdad311d985cea514b0ccc9f879040677dcd",
+        "scope.txt": "6702324a7b17c7b98180612f90fa90f7d3015aea239fad55f08c86ce829e6743",
+        "stdout.txt": "cd1e0383d3ad57570b5d8074afd6b201ade4062cf86dce62fa27a1f0351e5f62",
+        "terminal.txt": "ce235e25b33ccc3f7476d40d10f3dbdd1549a5a702c5aea3d247597842a42f7c",
+        "time.txt": "ad6eaa01d57e75552df576844127156ba98f195eaa5dd574c6a8fd2550df0b8f"
+      },
+      "peak_rss_kib": 1427064,
+      "phase": "transfer-formal-evaluate-1",
+      "preflight_gpu_mib": 13954,
+      "preflight_ram_kib": 42747240,
+      "start": "2026-11-20T21:31:07+08:00",
+      "wall_clock": "0:08.94"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-replay-test-1-1795181476839482085.scope",
+        "InvocationID": "15784c123b9a4cf3b4be24a992391f8b",
+        "MemoryCurrent": "31772672",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31772672",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:31:23+08:00",
+      "evidence_sha256": {
+        "command.txt": "860a696c6769a2942b92016782441afb37ea6fd4b0acc9d156e820769a4b2830",
+        "preflight.txt": "1790eb773befa8d51fee5e3ef00a8961324dd79457f043bc335f3923274c6fd0",
+        "scope.txt": "2286e925841013d53ac484b6a1a934f317d8f3edb95780c65deeb720078dcbd3",
+        "stdout.txt": "56102addda81df8d02ac27d202255f6839e3e2b53247e4f6760cb7ccd057bf6c",
+        "terminal.txt": "da9e8b906db39f8ac31797e8ddab0184ea537cb7cbfabcd02999a1e570569937",
+        "time.txt": "99888eb29dead75428d1cd2ef5e00c740a43898420ef2297e7f74cc1fca1f943"
+      },
+      "peak_rss_kib": 1427904,
+      "phase": "transfer-formal-replay-test-1",
+      "preflight_gpu_mib": 13947,
+      "preflight_ram_kib": 42701060,
+      "start": "2026-11-20T21:31:16+08:00",
+      "wall_clock": "0:06.30"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-only-formal-evaluate-1-1795181487970022743.scope",
+        "InvocationID": "1737996088b34acdb5f3a28dfa88dbf9",
+        "MemoryCurrent": "28889088",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28889088",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:31:34+08:00",
+      "evidence_sha256": {
+        "command.txt": "16f61fb21d8d5886455b78ff932d0a43605bd165f4507a79f495c4e1a67a1bc2",
+        "preflight.txt": "91d4b7db46451dec47d4a000366ccf4328bfce5065474b6b3bf4da54d57b0219",
+        "scope.txt": "9f5ce1b871a5994fc2e62eaaf5ddb20c3b2ab8001ea917050572d2bd5aa067cb",
+        "stdout.txt": "08534c99343fc96aae9c72f20c568a6384d2e8c8f69ee8af6a451aab698cec4b",
+        "terminal.txt": "775072b3b8f92b084520538ffd9b0cb75fff0b1d449c38c61fde186c4451e7dd",
+        "time.txt": "20ebccd7643b1b823bc9bea00cc99378a44cf90f0589f62b1a9073d5cea1591c"
+      },
+      "peak_rss_kib": 1424060,
+      "phase": "tahoe-only-formal-evaluate-1",
+      "preflight_gpu_mib": 13972,
+      "preflight_ram_kib": 42335828,
+      "start": "2026-11-20T21:31:27+08:00",
+      "wall_clock": "0:06.33"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-only-formal-replay-test-1-1795181494382794321.scope",
+        "InvocationID": "2a304dcab6b74ba9b45cd06942f51f3f",
+        "MemoryCurrent": "31768576",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31768576",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:31:41+08:00",
+      "evidence_sha256": {
+        "command.txt": "6de70bc515f0b991e0977d6cb494afd9520e649fe53022a1dd8250cdd6c5880e",
+        "preflight.txt": "1f9c0ba09e2f3fffaf4e2318c2b1b49544f8b3c533e916a5a74edbbac1d00c64",
+        "scope.txt": "0f3dd80c2811fe984916a132dcd6c3cfb0a2ed17dd044f6fc3c33d36aa531d00",
+        "stdout.txt": "93c3f2e6dcb2b551bad5a3d3af28bf4caf997e03299f7f95c67dabbc926eee42",
+        "terminal.txt": "c7e4344956b213e5f72681f4c6e97e358c6128d1bfcecd0b887d7fd9fe1ad406",
+        "time.txt": "a861f61bce37881927398d779e99caa9da7966b3d24b5e5b186ddf5f1bbd0f7c"
+      },
+      "peak_rss_kib": 1434984,
+      "phase": "tahoe-only-formal-replay-test-1",
+      "preflight_gpu_mib": 13964,
+      "preflight_ram_kib": 42751448,
+      "start": "2026-11-20T21:31:34+08:00",
+      "wall_clock": "0:06.61"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-fit-2-1795181514638663377.scope",
+        "InvocationID": "5e3bc47ba61241a68290d37be2c5ba78",
+        "MemoryCurrent": "28626944",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28626944",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:36:27+08:00",
+      "evidence_sha256": {
+        "command.txt": "45aa580a95dffab67d02b644f17cb4f1bbea1de79bf70829d77b02a0747d43be",
+        "preflight.txt": "590983a51c52a2bcad1aad0281f08d9e448cf44c43208e4dc6f954c987c93aaa",
+        "resources-10s.log": "f380c5b13384faf9fe782409337193fc3f079655186ab4b36437b7cf0e21e649",
+        "scope.txt": "b55be141fc0b63e97be777a903a3f76e02586031625a2b3a8cab8ba259492ef8",
+        "stdout.txt": "6c9a5205a8592195fed9cdc04bc1110ae3e749dc7e831337db7a2e6fdba22fd8",
+        "terminal.txt": "0092b8feccc68b66eed868fea9b198fb812fe9cb6b5f7a79989388521a0483cf",
+        "time.txt": "a7fa70bb3446cd9e3447e3f96568d291907c1cd9fef372a05467fcd407f8c879"
+      },
+      "peak_rss_kib": 1980508,
+      "phase": "transfer-formal-fit-2",
+      "preflight_gpu_mib": 13874,
+      "preflight_ram_kib": 42610988,
+      "start": "2026-11-20T21:31:54+08:00",
+      "telemetry": {
+        "max_gpu_mib": 3009,
+        "min_ram_kib": 41466720,
+        "samples": 26
+      },
+      "wall_clock": "4:33.30"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-replay-2-1795181788030098772.scope",
+        "InvocationID": "c020b88510ff41e4bf1c3e174724a1f5",
+        "MemoryCurrent": "28606464",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28606464",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:36:33+08:00",
+      "evidence_sha256": {
+        "command.txt": "386b9da72351abf66a60ba6f8970833aa8f2cc1773c4bb6a7d28802ff011361e",
+        "preflight.txt": "f6e00184b1122c9ef69ecf03c2e6be5a5284ea856e37a79766a8372d34e3754b",
+        "scope.txt": "008f222616ae73c417953b590153b3e47c54ba6a2028b41e686c718ec93fc966",
+        "stdout.txt": "49411d5986a0619ec17634b14d25298e725ee1903dfe8531c3737c85ed59d8cb",
+        "terminal.txt": "09acdb4ed096fcecb2b55a4f221ca02df8c030f15259ef3be4cebee2137f2af9",
+        "time.txt": "75e05b3c8b8d5409ef3277c4f9832228feaca958f2dc2cdc293c262c9145c550"
+      },
+      "peak_rss_kib": 1397604,
+      "phase": "transfer-formal-replay-2",
+      "preflight_gpu_mib": 14023,
+      "preflight_ram_kib": 42809140,
+      "start": "2026-11-20T21:36:28+08:00",
+      "wall_clock": "0:05.36"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-evaluate-2-1795181793481608326.scope",
+        "InvocationID": "8c9ac33a11cf45bb96848b757b5c61e9",
+        "MemoryCurrent": "31780864",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "31780864",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:36:39+08:00",
+      "evidence_sha256": {
+        "command.txt": "044cf50c8597fac9ab5beb7628b5a56a701880c3f78d2d7b6ebf81ed9cc0128c",
+        "preflight.txt": "c62d3c47bcdda9634c4f4b38aeccfc7113ae23379d92b46062b9577a49fb384f",
+        "scope.txt": "6a9e546f5b36c7854e031c5d3762f2b0265dd481ff5cc71a2b47a5b0dfaa23bf",
+        "stdout.txt": "5f983720997d82446500e7df6c4d7333c01fe0f9043fd806187d522e207cb747",
+        "terminal.txt": "c169c7c8428fd3d6a34aabebff4e51f8a84fa7566ae84b4b1b2f8645eb839979",
+        "time.txt": "dfae99dc84de68505df1aa9ea483e734e9c5ccee8ef9fb0330ebf9a497df6949"
+      },
+      "peak_rss_kib": 1424940,
+      "phase": "transfer-formal-evaluate-2",
+      "preflight_gpu_mib": 14023,
+      "preflight_ram_kib": 42774140,
+      "start": "2026-11-20T21:36:33+08:00",
+      "wall_clock": "0:05.98"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-transfer-formal-replay-test-2-1795181799532889941.scope",
+        "InvocationID": "8231a3e082d345df878fc926cad563ac",
+        "MemoryCurrent": "29683712",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "29683712",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:36:49+08:00",
+      "evidence_sha256": {
+        "command.txt": "7dde10f25ba66c7da00aa8704e39439d1ae259e6ecee020beb0f90e8a063d839",
+        "preflight.txt": "840b389df6df072be7480e6f45c547f8bed3747489bd5728e170ca419159821d",
+        "scope.txt": "5b2a1d224edc0ff3bc8a9b1057b0d29cdf996175c119370cf069ee6441c771ce",
+        "stdout.txt": "4c73f0149113c3cfee73da9e081fcf2bcb591363600d40f402ae19ac8134d094",
+        "terminal.txt": "de0cd11b2ab126edd8109f80c45060ac6f7b0598eac2de5ea6109c3b9fdb88bb",
+        "time.txt": "a25a4f93462faa41f6384fd2337722163cca4752536b9c928795e6239ab85eb7"
+      },
+      "peak_rss_kib": 1426844,
+      "phase": "transfer-formal-replay-test-2",
+      "preflight_gpu_mib": 14022,
+      "preflight_ram_kib": 42707500,
+      "start": "2026-11-20T21:36:39+08:00",
+      "wall_clock": "0:09.53"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-only-formal-evaluate-2-1795181814001399350.scope",
+        "InvocationID": "96079fcf1d8f45469e6e821bb396c8e4",
+        "MemoryCurrent": "28635136",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "28635136",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:37:00+08:00",
+      "evidence_sha256": {
+        "command.txt": "851153128ad54bd4657e531a11c249b79935fd72a8a8f435ea0fd606fb992b48",
+        "preflight.txt": "68df185f4119b91e56f22ce8187b1813997ac6a8ea11082572554bc8fb77ab34",
+        "scope.txt": "846a4a6bb2ba413c15ef98d1574476ad7270329a6bc8207699971973b943cce8",
+        "stdout.txt": "6faf98d5dae9de3c8e5f38b28c5cd85bd6784980450e11bd3f73de6eb51bcefd",
+        "terminal.txt": "f994a134c0b561ff42f6c3c05632617800bb600c072431d76bbdf1b73765014e",
+        "time.txt": "f45163e12ec6d4790cfdc3e1d9d5014c9af79042d3e080aeb385d8725e70bc1e"
+      },
+      "peak_rss_kib": 1430328,
+      "phase": "tahoe-only-formal-evaluate-2",
+      "preflight_gpu_mib": 14024,
+      "preflight_ram_kib": 42625868,
+      "start": "2026-11-20T21:36:54+08:00",
+      "wall_clock": "0:06.83"
+    },
+    {
+      "cap": {
+        "Id": "arc-stage2-transfer-tahoe-only-formal-replay-test-2-1795181820912558846.scope",
+        "InvocationID": "a7ae4512d16c470db846999e9e8ea616",
+        "MemoryCurrent": "27574272",
+        "MemoryMax": "10737418240",
+        "MemoryPeak": "27574272",
+        "MemorySwapMax": "8589934592"
+      },
+      "end": "2026-11-20T21:37:07+08:00",
+      "evidence_sha256": {
+        "command.txt": "e84c5a37a8c6f1368b070d72a5ac194a933920c356f082ef5bb541b607cc5dbc",
+        "preflight.txt": "124b1bca2258d2239f08459828532cb5d96b3dc5acb9fabe3b06ade51b23a88f",
+        "scope.txt": "35c5ccf262ed34a68f63b449741d7a8f91ecdf22fde8b592bca99c2d22ab4205",
+        "stdout.txt": "8f86ae4400ca9b81770169648ea36a385c145210c3ac0f929416cdbc460730ac",
+        "terminal.txt": "aefbd7249602b62bb54c6767b6c7fc988734221eb318a377e956162644f538df",
+        "time.txt": "ac17b33e347f6a755922812f12accce4343fea8436e76d87352afe50f33ec544"
+      },
+      "peak_rss_kib": 1437216,
+      "phase": "tahoe-only-formal-replay-test-2",
+      "preflight_gpu_mib": 14024,
+      "preflight_ram_kib": 42797644,
+      "start": "2026-11-20T21:37:00+08:00",
+      "wall_clock": "0:06.89"
+    }
+  ],
+  "schema": "stage2-tsg-transfer-acceptance-v1",
+  "tahoe_split": {
+    "input_manifest_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+    "role_counts": [
+      {
+        "fold": 0,
+        "partition": "train",
+        "rows": 43545
+      },
+      {
+        "fold": 0,
+        "partition": "validation",
+        "rows": 21773
+      },
+      {
+        "fold": 1,
+        "partition": "train",
+        "rows": 43545
+      },
+      {
+        "fold": 1,
+        "partition": "validation",
+        "rows": 21773
+      },
+      {
+        "fold": 2,
+        "partition": "train",
+        "rows": 43546
+      },
+      {
+        "fold": 2,
+        "partition": "validation",
+        "rows": 21772
+      }
+    ],
+    "schema": "stage2-tsg-transfer-tahoe-splits-v1",
+    "split_seed": 226,
+    "splits_sha256": "e9ff5252c9a5f46aeda0a5a7124c28a1080127411b5712e7be571461ab6c554d",
+    "training_only_conditions": 0,
+    "training_only_profiles": 0
+  },
+  "tahoe_winner": {
+    "candidates": [
+      {
+        "best_epoch": 608,
+        "checkpoint_sha256": "2ec46ba3e1e99b8e01e3e2ad586d2191b46186de1983a7783ba0fb2ca76cc4f5",
+        "fit_sha256": "543092e33fb7a3442307cf097c4252121d2eff007e4ee5edaa3bc103b36c599c",
+        "fold": 0,
+        "replay_sha256": "c91b9affb5abd9702d845fa9f6e2e18924c75a4a32c0e87adce38fc438c092b2",
+        "transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.24435299279534164,
+          "std": 0.8316304241018064
+        },
+        "validation_mse": 0.027236026690146346
+      },
+      {
+        "best_epoch": 749,
+        "checkpoint_sha256": "aa709bcad4ef3caffa4467b0d4790878836fbccb3d9d7c9525f455d90da144ee",
+        "fit_sha256": "64707b78b91232fcd10beaf72c89255d8574be3108fc83efa5b53ceedd362566",
+        "fold": 1,
+        "replay_sha256": "5b93c204424b8367bf35619d1c764e36a9b56b6fea0ba8d482c04ffee0bfbab3",
+        "transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.24717765692414523,
+          "std": 0.832301109427078
+        },
+        "validation_mse": 0.026726938606416752
+      },
+      {
+        "best_epoch": 551,
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "fold": 2,
+        "replay_sha256": "66db6d070f32ad9ab80031022918a4ced5917523c0bbe070c7749450b8b97328",
+        "transform": {
+          "kind": "training-log10-dose-population-standardization-v1",
+          "mean": -0.25296587747347354,
+          "std": 0.8304365127448269
+        },
+        "validation_mse": 0.02611568548063439
+      }
+    ],
+    "input_manifest_sha256": "aace570ca8d066cebc7152ba989b7653f1aa794d1b39bbe96014834524082b1d",
+    "schema": "stage2-tsg-transfer-tahoe-winner-v1",
+    "smoke_rows": null,
+    "split_receipt_sha256": "13ea7e9b44cb9a9501ee5673017ee753ebe9a63e0797be4b8e7fea6be9d1be3c",
+    "winner": {
+      "best_epoch": 551,
+      "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+      "fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+      "fold": 2,
+      "replay_sha256": "66db6d070f32ad9ab80031022918a4ced5917523c0bbe070c7749450b8b97328",
+      "transform": {
+        "kind": "training-log10-dose-population-standardization-v1",
+        "mean": -0.25296587747347354,
+        "std": 0.8304365127448269
+      },
+      "validation_mse": 0.02611568548063439
+    }
+  },
+  "tahoe_winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9",
+  "tenv_split": {
+    "folds": [
+      {
+        "counts": {
+          "excluded-held-dose": 933,
+          "excluded-held-parent": 938,
+          "test": 469,
+          "train": 1674,
+          "validation": 192
+        },
+        "fold": 0,
+        "held_dose_um": 0.2
+      },
+      {
+        "counts": {
+          "excluded-held-dose": 934,
+          "excluded-held-parent": 936,
+          "test": 468,
+          "train": 1682,
+          "validation": 186
+        },
+        "fold": 1,
+        "held_dose_um": 1.0
+      },
+      {
+        "counts": {
+          "excluded-held-dose": 937,
+          "excluded-held-parent": 930,
+          "test": 465,
+          "train": 1686,
+          "validation": 188
+        },
+        "fold": 2,
+        "held_dose_um": 10.0
+      }
+    ],
+    "input_manifest_sha256": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e",
+    "schema": "tsg-transfer-tenv-split-v1",
+    "splits_sha256": "779382b9559573b8da7ea154f13bffa04a942b28d1b4c6c0a7c8299ee7b49a2c"
+  },
+  "tenv_split_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+  "tests": [
+    {
+      "artifact_sha256": {
+        "identity.csv": "e192aa677b159959c1a1f10d701c37643c06d25169073b94476e4aa969891bf6",
+        "prediction.npy": "199b8dd9d5e340a1d922deb2e98e314e596e1aec74f1128f044020a6b465cf21",
+        "scores.csv": "ab2a5eb0f45863ae2eca2046e75afcc4732b490d5aa33480c5e8ae6b2509b5a4"
+      },
+      "fold": 0,
+      "lineage": {
+        "fit_receipt_sha256": "14372e00f879c2b8e5fbc6a3514f7eda1450bd9b1d42110696fec8f70fe740fe",
+        "fit_replay_sha256": "4f75f9950f8ac28de0588a3a3b2c904a0a69d37aea053671b53175171797c3d4"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 469,
+        "nonfinite_count": 0,
+        "pcc": 0.2513187989247866,
+        "r2": -0.20822137557048767,
+        "rmse": 0.41880854181836175,
+        "spearman": 0.2915671052231635,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "tenv-only",
+      "replay_sha256": "74d561360987b389b1c2ea4a63316e2575db55dcd4c45cf49988eca483de3d45",
+      "test_sha256": "40fe97e527e07f13bf20b1763bbe5570cd3f0fdc18ebac4c36d972ea2828457b"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "e192aa677b159959c1a1f10d701c37643c06d25169073b94476e4aa969891bf6",
+        "prediction.npy": "7ffadb1adbae56f53c969a812b600a2026e28a926e70b19d983f2bfe535b00ac",
+        "scores.csv": "ba05b741d7372348bf51fd31cbbf1009eadb06a003a5cd2d398d62e216e14238"
+      },
+      "fold": 0,
+      "lineage": {
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_receipt_sha256": "14372e00f879c2b8e5fbc6a3514f7eda1450bd9b1d42110696fec8f70fe740fe",
+        "fit_replay_sha256": "4f75f9950f8ac28de0588a3a3b2c904a0a69d37aea053671b53175171797c3d4",
+        "split_manifest_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+        "winner_fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "winner_fold": 2,
+        "winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 469,
+        "nonfinite_count": 0,
+        "pcc": 0.0678674378582858,
+        "r2": -11.984931469395098,
+        "rmse": 1.1542800696591784,
+        "spearman": 0.12480111151103429,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "tahoe-only",
+      "replay_sha256": "fc91d8d782ded580014c6855a106e388af59c76007b20316e2734e37958d6c15",
+      "test_sha256": "f3bb74bd068185289cf96f47428b4f0d887a0266fdbeffa7eea12f99a219a57d"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "e192aa677b159959c1a1f10d701c37643c06d25169073b94476e4aa969891bf6",
+        "prediction.npy": "0e3884cd7dce1a1247c53f2e53eed00ec97d5deefefcbe7e737a67bc3ee5e4c8",
+        "scores.csv": "d5cecf89e11333da027a9224b4b716aff2ae2cb93569426b147193cdce03f7f0"
+      },
+      "fold": 0,
+      "lineage": {
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_receipt_sha256": "14372e00f879c2b8e5fbc6a3514f7eda1450bd9b1d42110696fec8f70fe740fe",
+        "fit_replay_sha256": "4f75f9950f8ac28de0588a3a3b2c904a0a69d37aea053671b53175171797c3d4",
+        "handoff_code_sha256": "2fcdff0f23000b9700232206c377e8414e21224111f1bcf6f4a0d1dd9f9e7d94",
+        "split_manifest_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+        "transfer_fit_sha256": "468b2749696850171a7f7e3b4cde22459848c9e898f2ac4f2fc6b908af6d4dde",
+        "transfer_replay_sha256": "db010468c85b21f17abced54ec39138ec188e45b29e9320716b2e7733d274e1a",
+        "winner_fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "winner_fold": 2,
+        "winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 469,
+        "nonfinite_count": 0,
+        "pcc": 0.2876138122631735,
+        "r2": -0.03191670359262136,
+        "rmse": 0.40419863079468166,
+        "spearman": 0.29831763478075124,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "transfer",
+      "replay_sha256": "6404d31944a0e50eb80f6dc358ad20c0c527c1764faa7c56c1500743aa9b1b62",
+      "test_sha256": "c0f1cb612e312b3a75ebb782edfaf7d5aaa4fdcdd436497b0191ecf87a9fe3b8"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "45e9734715b09f3506830f261bb4ec53939b23d7d78d04129cac460a00ca86c0",
+        "prediction.npy": "5bf465602a23babb539545608086310ba9a84773a90c23c9f6663fcd16a59014",
+        "scores.csv": "eab2e2e00dd4b481b2b12ecc9245c16dcfd26e6dc60daeae6ef8120fb66c0cd3"
+      },
+      "fold": 1,
+      "lineage": {
+        "fit_receipt_sha256": "8ef65f3cb63bc97aed7aec2eb1e24cfb7db9577d72083535722f7b0ae78c8cd5",
+        "fit_replay_sha256": "d8641fe06f003e47c42a2a633ee3759985a5f1aca0f56b7bb8d85a774872ee92"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 468,
+        "nonfinite_count": 0,
+        "pcc": 0.2650399054001148,
+        "r2": -0.18796846404266868,
+        "rmse": 0.439133774401793,
+        "spearman": 0.29213123982815775,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "tenv-only",
+      "replay_sha256": "379db88a2e36ec0e102acdc710ed8248f6d1e2ab767ff89e6fac718aebdb584e",
+      "test_sha256": "93a864b5191622f9c4c42f793171bd4af85a9dfb212f2172b48a85ef8345bd15"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "45e9734715b09f3506830f261bb4ec53939b23d7d78d04129cac460a00ca86c0",
+        "prediction.npy": "6fc39141acf5352544c39cd6bfbeedfe07676bff0a88412b8adbe99477c85a98",
+        "scores.csv": "1992fd99023515d12ac49fe87627ce11342dc59d2241fae2bbcbbb404ea1498d"
+      },
+      "fold": 1,
+      "lineage": {
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_receipt_sha256": "8ef65f3cb63bc97aed7aec2eb1e24cfb7db9577d72083535722f7b0ae78c8cd5",
+        "fit_replay_sha256": "d8641fe06f003e47c42a2a633ee3759985a5f1aca0f56b7bb8d85a774872ee92",
+        "split_manifest_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+        "winner_fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "winner_fold": 2,
+        "winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 468,
+        "nonfinite_count": 0,
+        "pcc": 0.056841472650350174,
+        "r2": -10.87303164367589,
+        "rmse": 1.163803274604663,
+        "spearman": 0.10413173234507463,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "tahoe-only",
+      "replay_sha256": "6f4471373fbfa645c793f00a7de0299aa71d1c3e0519496d84fb8c39e5835924",
+      "test_sha256": "d1306100d36e4622e0e1dc2917f0df6d7f9c53a68be67e7c417df3a1d5f8858c"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "45e9734715b09f3506830f261bb4ec53939b23d7d78d04129cac460a00ca86c0",
+        "prediction.npy": "26c317609b93933c971d176c7dfcfed221527af13931db087bbdbdf74749eacb",
+        "scores.csv": "718a101259ec9391c36228a3dd04b39abbfeaba38c231e7ca09b303ea08f20fc"
+      },
+      "fold": 1,
+      "lineage": {
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_receipt_sha256": "8ef65f3cb63bc97aed7aec2eb1e24cfb7db9577d72083535722f7b0ae78c8cd5",
+        "fit_replay_sha256": "d8641fe06f003e47c42a2a633ee3759985a5f1aca0f56b7bb8d85a774872ee92",
+        "handoff_code_sha256": "2fcdff0f23000b9700232206c377e8414e21224111f1bcf6f4a0d1dd9f9e7d94",
+        "split_manifest_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+        "transfer_fit_sha256": "df099fe330fc895af4a84cc58f0d3928a4c6652d0a048e140822a4a1b1be49c2",
+        "transfer_replay_sha256": "996c66c5e7275ff6fa2c494a020de9191a57fbe113683e399146ef7cd852c965",
+        "winner_fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "winner_fold": 2,
+        "winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 468,
+        "nonfinite_count": 0,
+        "pcc": 0.27106485066458996,
+        "r2": -0.04642037916682578,
+        "rmse": 0.4266428211558855,
+        "spearman": 0.2800229067867001,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "transfer",
+      "replay_sha256": "4b90697576b24d6a00e4caca0c5aadfd9cfdf4d65431c32e02e79e1f75f86933",
+      "test_sha256": "bd15d8d7e3ea78cdbc3b7ac0c89e18651174fd2f2c0061883e14671b694e40fd"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "e97d4709c7eb2c89c79d3291776f5a4ab27ecaf6f11e5afd135af9d2b254fa8a",
+        "prediction.npy": "015edb8a5c525a59d83adfd023d10631ea22974ffab83d1f7f8268f460072302",
+        "scores.csv": "8d2f777654af1c706053dc702d8bce23105c21dbf40d81a491b9323664855a54"
+      },
+      "fold": 2,
+      "lineage": {
+        "fit_receipt_sha256": "e15209acad8a670df85128577b5a5193a5416685d1d20cc15df7527f1e8a7874",
+        "fit_replay_sha256": "2dcc1b71e5eccf34538fdd9867d7cf1ee0bf9dbb4cc66c6fcecdb9b9278df6a8"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 465,
+        "nonfinite_count": 0,
+        "pcc": 0.25174707942705926,
+        "r2": -0.11383173541936384,
+        "rmse": 0.4240391767305591,
+        "spearman": 0.27956282537239713,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "tenv-only",
+      "replay_sha256": "b83c55a2a2a66cf3c01acc1c61aadc18736c89fe255b40032e98fe599c5a9edb",
+      "test_sha256": "e599ac2c237166c0d8be38a6844e0f13fe0c32c3436be50d7307914c5b54db37"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "e97d4709c7eb2c89c79d3291776f5a4ab27ecaf6f11e5afd135af9d2b254fa8a",
+        "prediction.npy": "ecd9d030b2fb6d8b80b19d21210865aacd684a0eb6177e884069db8efd913b7f",
+        "scores.csv": "e30af3ced3b13dc4d63997255d49cf99111fdb8232e4576fe57d0a79e940cdf7"
+      },
+      "fold": 2,
+      "lineage": {
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_receipt_sha256": "e15209acad8a670df85128577b5a5193a5416685d1d20cc15df7527f1e8a7874",
+        "fit_replay_sha256": "2dcc1b71e5eccf34538fdd9867d7cf1ee0bf9dbb4cc66c6fcecdb9b9278df6a8",
+        "split_manifest_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+        "winner_fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "winner_fold": 2,
+        "winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 465,
+        "nonfinite_count": 0,
+        "pcc": 0.05501685599367613,
+        "r2": -11.344214885126606,
+        "rmse": 1.1621165475021937,
+        "spearman": 0.10348649120987462,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "tahoe-only",
+      "replay_sha256": "a1a712ed9c22223174eed4e76ded677b305c0121b145c26f0f260002e087955d",
+      "test_sha256": "579e683c1788a208c13b476eccba68df476625579a7a38f385801566914a1ddd"
+    },
+    {
+      "artifact_sha256": {
+        "identity.csv": "e97d4709c7eb2c89c79d3291776f5a4ab27ecaf6f11e5afd135af9d2b254fa8a",
+        "prediction.npy": "2ccbec328c8f28e47dedc526e1db4beaa9d57fc059fbd528c9abf4007565d302",
+        "scores.csv": "b5102d087ef12ff7353d61e5c1ab30a3cbdaf8db854a0159fc8c03751130f058"
+      },
+      "fold": 2,
+      "lineage": {
+        "checkpoint_sha256": "76c9f5846e06932309ece2801d204511b0b278314b6f3afb25d99708d5fd1b0e",
+        "fit_receipt_sha256": "e15209acad8a670df85128577b5a5193a5416685d1d20cc15df7527f1e8a7874",
+        "fit_replay_sha256": "2dcc1b71e5eccf34538fdd9867d7cf1ee0bf9dbb4cc66c6fcecdb9b9278df6a8",
+        "handoff_code_sha256": "2fcdff0f23000b9700232206c377e8414e21224111f1bcf6f4a0d1dd9f9e7d94",
+        "split_manifest_sha256": "6a716fdb129dcad124c626a398cf0afc58f57b85ba35453ec51d2ba28cf1ccf0",
+        "transfer_fit_sha256": "3b916f1574eb05aae04e83272fa2d103eae0f36361af4b81fd4656f182747321",
+        "transfer_replay_sha256": "7ba856e880838e3be0d1a908024972198d9627d69b34ee748a1ac017da194317",
+        "winner_fit_sha256": "3b5e98198b031dcfbbfe3f8bf8947f1859e411e1cd435e9b9e3385290ad3c19d",
+        "winner_fold": 2,
+        "winner_sha256": "4cd91bae201befa3c0bf3715a028e9eb087882a2765ec2e18ef76b203ca581d9"
+      },
+      "metrics": {
+        "constant_prediction_count": 0,
+        "constant_truth_count": 0,
+        "n_samples": 465,
+        "nonfinite_count": 0,
+        "pcc": 0.22438508916331787,
+        "r2": -0.09100190432441749,
+        "rmse": 0.4217757727771443,
+        "spearman": 0.24636884080287405,
+        "undefined_pcc_count": 0,
+        "undefined_r2_count": 0,
+        "undefined_rmse_count": 0,
+        "undefined_spearman_count": 0
+      },
+      "path": "transfer",
+      "replay_sha256": "fbfa8c6b326af917b504fc58f8c17efff8c279f9bcc17431d5f7efff3623fb0b",
+      "test_sha256": "6a7843c6091261fb986fdd1e80b376b84f4790c4b8257ffbd5fd9ecaeae11c49"
+    }
+  ]
+}
