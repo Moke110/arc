@@ -24,6 +24,10 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   publishing a successor, read its [execution workflow](03_tsg_dose/AGENTS.md)
   and [report](03_tsg_dose/README.md).
 
+- `04_tsg_transfer/` — Tahoe pretraining and tenv cold-drug-dose transfer
+  comparison. Follow its [execution workflow](04_tsg_transfer/AGENTS.md) and
+  [study report](04_tsg_transfer/README.md).
+
 Use **ECFP4** and **ECFP4_MLP** in new contracts and reports. See the
 [fingerprint migration record](03_tsg_dose/log/ecfp4-contract.md) for sealed keys.
 
