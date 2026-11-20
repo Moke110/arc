@@ -2,41 +2,108 @@
 
 [Specification #255](https://github.com/Moke110/arc/issues/255) evaluates
 Tahoe pretraining and tenv fine-tuning across three tenv cold-drug-dose
-folds. Formal acceptance and the paired comparison are pending.
+folds. The study compares tenv-only training, direct Tahoe-only prediction
+and Tahoe-to-tenv fine-tuning on exactly the same test profiles.
 
-The study uses the Step 03 32-dimensional Latent embedding and axis-local
-`G_5000` expression. Tahoe keeps replicates of each parent, cell line and
-dose condition together and holds out each eligible condition in at most
-one validation fold. Each validation parent, cell line and dose has
-independent training coverage. Three Tahoe fits restore the strict
-minimum treated-expression validation MSE. The lowest fold MSE selects
-one immutable checkpoint, with equal MSE broken by the earlier fold ID.
+## Protocol
 
-## Tahoe reproduction
+All paths reuse the Step 03 32-dimensional Latent embedding and axis-local
+`G_5000` expression from [ADR 0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md).
+Tahoe keeps replicates of each parent, cell line and dose condition together.
+Each validation parent, cell line and dose has independent training coverage.
+Three Tahoe fits restore the strict minimum treated-expression validation MSE.
+The lowest fold MSE selects one immutable checkpoint, with equal MSE broken
+by the earlier fold ID. Tahoe selection uses Tahoe data only.
 
-Use the repository's `arc` environment. If the Step 03 input freeze is
-unavailable, rebuild it through Step 03's documented preparation command.
-Set `PAIR` to its output directory, `TAHOE` to an empty candidate path
-and `SOURCE` to the pinned native TranSiGen source checkout.
+The tenv folds reuse the Step 03 cold-drug-dose split with held doses 0.2,
+1 and 10 µM. The held parent × held dose intersection is the test set.
+Both off-intersection held strips are excluded from fit and validation.
+Both tenv-trained paths use a fresh Adam optimizer at 1e−5, the same train-only
+log-dose standardizer and identical validation settings. Tahoe uses Adam at
+1e−4. All fits use batch 64, training seed 42, strict best-validation
+treated-expression MSE, patience 50 and at most 1000 epochs. The transfer
+initialization converts the first dose affine layer to keep the original
+dose embedding across physical doses before fine-tuning all model parameters.
+Direct Tahoe-only predictions retain the checkpoint's original transform.
+
+Score each test profile by gene-wise Pearson correlation between predicted
+and observed Delta relative to its matched control. Give defined scores equal
+weight within each fold and give all three folds equal weight in the final row.
+Report undefined PCC counts alongside scores. Transfer − tenv-only is the
+effect of the initialization under this fixed protocol. Transfer − Tahoe-only
+is the effect of tenv adaptation from the same Tahoe checkpoint.
+
+## Reproduction
+
+Use the repository's `arc` environment. Set `PAIR` to the verified Step 03
+input freeze, `SOURCE` to the pinned native TranSiGen checkout, `CANDIDATE`
+to a new candidate directory and `EVIDENCE` to the resource evidence root.
+Recover the input freeze using Step 03's documented preparation entry point.
+Use one workstation lease for formal phases. The following commands run
+single-job capped scopes, capture wall time and peak RSS, and sample WSL
+memory and GPU resources every 10 seconds.
 
 ```bash
 STEP=stage2/04_tsg_transfer
-CAP=stage2/03_tsg_dose/execution/capped.sh
-"$CAP" /usr/bin/time -v python "$STEP/execution/tahoe.py" prepare \
-  --inputs "$PAIR/tahoe_bulk" --candidate "$TAHOE"
+CAP="$STEP/execution/capped_phase.sh"
+TAHOE="$CANDIDATE/tahoe"
+tenv_args=(--inputs "$PAIR/tenv" --candidate "$CANDIDATE")
+tahoe_args=(--inputs "$PAIR/tahoe_bulk" --candidate "$TAHOE")
+transfer_args=(--tenv-inputs "$PAIR/tenv" --tahoe-inputs "$PAIR/tahoe_bulk"
+  --candidate "$CANDIDATE" --tenv-candidate "$CANDIDATE"
+  --tahoe-candidate "$TAHOE" --native-source "$SOURCE")
+
+"$CAP" "$EVIDENCE" tenv-formal-prepare python "$STEP/execution/tenv.py" prepare "${tenv_args[@]}"
+"$CAP" "$EVIDENCE" tahoe-formal-prepare python "$STEP/execution/tahoe.py" prepare "${tahoe_args[@]}"
 for fold in 0 1 2; do
+  for action in fit replay evaluate replay-test; do
+    "$CAP" "$EVIDENCE" "tenv-formal-$action-$fold" python "$STEP/execution/tenv.py" \
+      "$action" "${tenv_args[@]}" --source "$SOURCE" --fold "$fold" --device cuda
+  done
   for action in fit replay; do
-    "$CAP" /usr/bin/time -v python "$STEP/execution/tahoe.py" "$action" \
-      --inputs "$PAIR/tahoe_bulk" --candidate "$TAHOE" \
-      --native-source "$SOURCE" --fold "$fold" --device cuda
+    "$CAP" "$EVIDENCE" "tahoe-formal-$action-$fold" python "$STEP/execution/tahoe.py" \
+      "$action" "${tahoe_args[@]}" --native-source "$SOURCE" --fold "$fold" --device cuda
   done
 done
-"$CAP" /usr/bin/time -v python "$STEP/execution/tahoe.py" select \
-  --inputs "$PAIR/tahoe_bulk" --candidate "$TAHOE"
+"$CAP" "$EVIDENCE" tahoe-formal-select python "$STEP/execution/tahoe.py" select "${tahoe_args[@]}"
+for fold in 0 1 2; do
+  for action in check fit replay evaluate replay-test; do
+    "$CAP" "$EVIDENCE" "transfer-formal-$action-$fold" python "$STEP/execution/transfer.py" \
+      "$action" "${transfer_args[@]}" --fold "$fold" --device cuda
+  done
+  for action in evaluate replay-test; do
+    "$CAP" "$EVIDENCE" "tahoe-only-formal-$action-$fold" python "$STEP/execution/transfer.py" \
+      "$action" "${transfer_args[@]}" --fold "$fold" --path tahoe-only
+  done
+done
 ```
 
-Use a separate candidate for a bounded smoke. Add `--smoke-rows 128
---smoke-epochs 2` to fits and `--smoke-rows 128` to replays and selection.
-The split CSV accounts for training-only profiles. Fit receipts bind the
-training-only standardizer, ordered partitions, checkpoint, learning
-history and exact validation replay.
+For a bounded smoke use a separate candidate. Add `--smoke-epochs 2` to
+tenv-only fits. Add `--smoke-rows 128 --smoke-epochs 2` to Tahoe fits and
+`--smoke-rows 128` to Tahoe replays and selection. Use `--smoke` for the
+transfer actions.
+
+## Report acceptance
+
+Set `REPORT` to a fresh staging directory. Run each command in its own
+process from the repository root.
+
+```bash
+for action in prepare verify; do
+  python "$STEP/execution/publish.py" "$action" --inputs "$PAIR" \
+    --native-source "$SOURCE" --candidate "$CANDIDATE" \
+    --phases "$EVIDENCE/phases" --report "$REPORT"
+done
+python "$STEP/figure/script/render.py" --data "$REPORT/figure/data" --output /tmp/transfer-replay.png
+cmp "$REPORT/figure/transfer.png" /tmp/transfer-replay.png
+```
+
+The report gate verifies nine fit/replay receipts, nine test/replay receipts,
+the frozen test identities across paths, source-only selection and formal
+resource evidence. The plot renderer reads only the two panel CSVs. Run
+`script/check_paths.sh`, `script/check_tracked.sh` and
+`script/verify_all.sh` on the data-owning checkout before release. Preserve
+the candidate and phase evidence under the ignored recovery path
+`execution/checkpoints/accepted/` so the report can be independently
+verified. Publish the staged plot tables, PNG, summary and compact acceptance
+receipt after all gates pass.
