@@ -58,7 +58,7 @@ def verify_matrix(inputs, native_source, candidate):
     sys.path.insert(0, str(STEP / 'output/api'))
     from tsg_transfer import fit, tahoe, tenv
     from tenv5k.model_transigen import SCRIPT_HASH, SOURCE_HASH
-    from transfer import run as verify_derived
+    from transfer import run_with_inputs as verify_derived
 
     if (fit.sha256(native_source / 'src/model.py') != SOURCE_HASH
             or fit.sha256(native_source / 'src/train_TranSiGen.py') != SCRIPT_HASH):
@@ -89,7 +89,7 @@ def verify_matrix(inputs, native_source, candidate):
                 action='verify', path=path, fold=fold, smoke=False, native_source=native_source,
                 tahoe_inputs=inputs / 'tahoe_bulk', tenv_inputs=inputs / 'tenv',
                 tahoe_candidate=tahoe_candidate, tenv_candidate=candidate, candidate=candidate,
-            )))
+            ), source, target))
         for kind, directory in (
             ('tahoe', tahoe_candidate / f'fold-{fold}'),
             ('tenv-only', control_fit),
@@ -181,7 +181,7 @@ def build_report(inputs, native_source, candidate, phases, report):
     from report_resources import verify_resources
 
     (scores, differences), evidence = verify_matrix(inputs, native_source, candidate)
-    resources = verify_resources(phases, evidence)
+    resources = verify_resources(phases, evidence, candidate)
     data = report / 'figure/data'
     data.mkdir(parents=True)
     log = report / 'log'
@@ -199,6 +199,19 @@ def build_report(inputs, native_source, candidate, phases, report):
                        for path in sorted(report.rglob('*')) if path.is_file()},
     ))
 
+
+
+def verify_report_files(staged, report):
+    """Require the exact generated report tree and contents in its archive."""
+    expected = {path.relative_to(staged) for path in staged.rglob('*')}
+    actual = {path.relative_to(report) for path in report.rglob('*')}
+    if actual != expected:
+        raise ValueError('published report inventory differs')
+    for relative in expected:
+        source, destination = staged / relative, report / relative
+        if (destination.is_symlink() or destination.is_file() != source.is_file()
+                or (source.is_file() and source.read_bytes() != destination.read_bytes())):
+            raise ValueError(f'published report differs: {relative}')
 
 def main():
     import tempfile
@@ -218,11 +231,7 @@ def main():
         if args.action == 'prepare':
             staged.rename(args.report)
         else:
-            for path in staged.rglob('*'):
-                if path.is_file() and path.read_bytes() != (
-                    args.report / path.relative_to(staged)
-                ).read_bytes():
-                    raise ValueError(f'published report differs: {path.relative_to(staged)}')
+            verify_report_files(staged, args.report)
     print(f'{args.action}: verified complete formal Stage 2 Step 04 report')
 
 

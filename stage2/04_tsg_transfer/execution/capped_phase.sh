@@ -13,8 +13,9 @@ if [[ ! "$phase" =~ ^[a-z0-9-]+$ ]]; then
   exit 64
 fi
 nvidia=$(command -v nvidia-smi || printf '%s\n' /usr/lib/wsl/lib/nvidia-smi)
-mkdir -p "$base"
-exec 9>"$base/gpu.lock"
+lease=/tmp/arc-stage2-transfer-run
+mkdir -p "$base" "$lease"
+exec 9>>"$lease/gpu.lock"
 flock -n 9
 available_kib=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)
 (( available_kib >= 12 * 1024 * 1024 ))
@@ -42,21 +43,33 @@ status=0
     fi
     sleep 0.1
   done
+  stop_scope() {
+    printf '%s\n' "$1" > "$attempt/monitor-failure.txt"
+    systemctl --user stop "$unit.scope" ||
+      systemctl --user kill --kill-whom=all "$unit.scope"
+  }
   while kill -0 "$job_pid" 2>/dev/null; do
-    {
-      date -Iseconds
-      awk '/^(MemTotal|MemAvailable|SwapFree):/' /proc/meminfo
+    if ! {
+      date -Iseconds &&
+      awk '/^(MemTotal|MemAvailable|SwapFree):/' /proc/meminfo &&
       "$nvidia" --query-gpu=memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits
-    } >> "$attempt/resources-10s.log"
-    ram=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)
+    } >> "$attempt/resources-10s.log"; then
+      stop_scope 'WSL or GPU telemetry command failed'
+      exit 1
+    fi
+    if ! ram=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo) ||
+        [[ ! "$ram" =~ ^[0-9]+$ ]]; then
+      stop_scope 'WSL available-memory sample failed'
+      exit 1
+    fi
     if (( ram < 12 * 1024 * 1024 )); then
       pressure=$((pressure + 1))
     else
       pressure=0
     fi
     if (( pressure >= 3 )); then
-      systemctl --user stop "$unit.scope"
-      exit 0
+      stop_scope 'WSL available memory stayed below 12 GiB'
+      exit 1
     fi
     sleep 10
   done
@@ -65,5 +78,8 @@ monitor_pid=$!
 wait "$job_pid" || status=$?
 kill "$monitor_pid" 2>/dev/null || true
 wait "$monitor_pid" 2>/dev/null || true
+if [[ -f "$attempt/monitor-failure.txt" ]]; then
+  status=75
+fi
 printf 'ended=%s\nstatus=%s\n' "$(date -Iseconds)" "$status" > "$attempt/terminal.txt"
 exit "$status"

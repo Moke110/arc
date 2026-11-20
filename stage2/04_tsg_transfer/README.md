@@ -39,7 +39,7 @@ Use the repository's `arc` environment. Set `PAIR` to the verified Step 03
 input freeze, `SOURCE` to the pinned native TranSiGen checkout, `CANDIDATE`
 to a new candidate directory and `EVIDENCE` to the resource evidence root.
 Recover the input freeze using Step 03's documented preparation entry point.
-Use one workstation lease for formal phases. The following commands run
+The runner shares a workstation lease at `/tmp/arc-stage2-transfer-run/gpu.lock` across evidence directories. The following commands run
 single-job capped scopes, capture wall time and peak RSS, and sample WSL
 memory and GPU resources every 10 seconds.
 
@@ -102,8 +102,22 @@ The report gate verifies nine fit/replay receipts, nine test/replay receipts,
 the frozen test identities across paths, source-only selection and formal
 resource evidence. The plot renderer reads only the two panel CSVs. Run
 `script/check_paths.sh`, `script/check_tracked.sh` and
-`script/verify_all.sh` on the data-owning checkout before release. Preserve
-the candidate and phase evidence under the ignored recovery path
-`execution/checkpoints/accepted/` so the report can be independently
-verified. Publish the staged plot tables, PNG, summary and compact acceptance
-receipt after all gates pass.
+`script/verify_all.sh` on the data-owning checkout before release.
+Run the offline manifest scan outside formal training under the Step 03 cap
+and record its resource use.
+
+```bash
+stage2/03_tsg_dose/execution/capped.sh /usr/bin/time -v bash script/verify_all.sh
+```
+
+Preserve the candidate and phase evidence under the ignored recovery path
+`execution/checkpoints/accepted/`. Preserve the exact five generated report
+files under a dedicated report archive there. For verification from tracked
+files, materialize just those five files in an empty directory with their
+original layout. Run `publish.py verify --report` against that archive so the
+inventory excludes scripts and execution files in the working tree.
+
+After all gates pass, copy the staged files into their matching paths under
+this step: `figure/data/transfer_scores.csv`,
+`figure/data/transfer_differences.csv`, `figure/transfer.png`,
+`log/summary.md` and `log/acceptance.json`.

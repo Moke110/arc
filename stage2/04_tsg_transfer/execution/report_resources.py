@@ -2,7 +2,9 @@
 from datetime import datetime
 import hashlib
 import json
+from pathlib import Path
 import re
+import shlex
 
 
 def key_values(path):
@@ -40,7 +42,50 @@ def telemetry(path, start, end):
                 max_gpu_mib=max(sampled[point]['gpu_used_mib'] for point in points))
 
 
-def verify_resources(root, evidence):
+
+def verify_phase_output(attempt, candidate, step, action, fold):
+    """Bind the executed command and printed result to this formal artifact."""
+    step_script = 'transfer' if step == 'tahoe-only' else step
+    command = shlex.split((attempt / 'command.txt').read_text())
+    if len(command) < 3 or Path(command[1]).parts[-2:] != ('execution', f'{step_script}.py'):
+        raise ValueError('formal phase command uses the wrong entry point')
+    if command[2] != action or len(command[3:]) % 2:
+        raise ValueError('formal phase command has the wrong action or flag layout')
+    flags = dict(zip(command[3::2], command[4::2], strict=True))
+    if (len(flags) * 2 != len(command[3:]) or flags.get('--fold') != str(fold)
+            or flags.get('--device', 'cuda') != 'cuda'
+            or Path(flags.get('--candidate', '')).name == ''
+            or any(flag.startswith('--smoke') for flag in flags)):
+        raise ValueError('formal phase command has the wrong fold, candidate, or device')
+    if flags.get('--path', 'transfer') != step and (
+        step in ('transfer', 'tahoe-only') or '--path' in flags
+    ):
+        raise ValueError('formal phase command has the wrong path')
+    payload = json.loads((attempt / 'stdout.txt').read_text())
+    model_path = 'tenv-only' if step == 'tenv' else step
+    relative = Path(model_path) / f'fold-{fold}'
+    if action == 'fit':
+        return payload
+    if action == 'replay':
+        if step != 'tahoe':
+            relative /= 'fit'
+        expected = json.loads((candidate / relative / 'validation-replay.json').read_text())
+    else:
+        manifest = relative / 'test/manifest.json'
+        # Evaluation prints its artifact path. The separate replay phase prints
+        # the sealed manifest, and matrix verification checks its replay proof.
+        if action == 'evaluate':
+            exported = Path(flags['--candidate']) / manifest
+            if payload != str(exported):
+                raise ValueError('test export does not name its expected manifest')
+            return payload
+        expected = json.loads((candidate / manifest).read_text())
+    if payload != expected:
+        raise ValueError('formal phase stdout differs from its verified receipt')
+    return payload
+
+
+def verify_resources(root, evidence, candidate):
     fits = {(row['kind'], row['fold']): row for row in evidence['fits']}
     phases = {
         'tahoe': ('fit', 'replay'),
@@ -81,9 +126,9 @@ def verify_resources(root, evidence):
                               peak_rss_kib=peak, wall_clock=elapsed, cap=cap,
                               preflight_ram_kib=int(preflight['ram_kib']),
                               preflight_gpu_mib=int(preflight['gpu_mib']))
-                files = ['preflight.txt', 'terminal.txt', 'scope.txt', 'time.txt']
+                files = ['preflight.txt', 'terminal.txt', 'scope.txt', 'time.txt', 'command.txt', 'stdout.txt']
+                info = verify_phase_output(attempt, candidate, step, action, fold)
                 if action == 'fit':
-                    info = json.loads((attempt / 'stdout.txt').read_text())
                     fit = fits['tenv-only' if step == 'tenv' else step, fold]
                     if any(info[key] != fit[key] for key in (
                         'epochs', 'best_epoch', 'training_steps', 'validation_mse',
@@ -92,7 +137,7 @@ def verify_resources(root, evidence):
                         raise ValueError(f'formal timing and matrix fit differ for {label}')
                     samples = attempt / 'resources-10s.log'
                     record['telemetry'] = telemetry(samples, start, end)
-                    files.extend(('resources-10s.log', 'stdout.txt'))
+                    files.append('resources-10s.log')
                 record['evidence_sha256'] = {
                     name: hashlib.sha256((attempt / name).read_bytes()).hexdigest()
                     for name in files
