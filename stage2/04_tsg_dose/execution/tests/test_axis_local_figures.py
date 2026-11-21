@@ -271,3 +271,44 @@ class ReleaseRecovery(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, '10-second GPU telemetry'):
             verify_window({0: {}, 10: {}, 40: {}}, 1, 39, 'GPU')
+
+
+class SuccessorPresentation(unittest.TestCase):
+    def test_legacy_inventory_requires_separate_receipt_for_tenv_kpgt(self):
+        from shutil import copytree
+        from tempfile import TemporaryDirectory
+
+        from install_axis_local_report import digest, verify_baseline_presentation
+
+        original = SCRIPT.parents[1]
+        with TemporaryDirectory() as root:
+            step = Path(root)
+            copytree(original / 'log', step / 'log', ignore=lambda path, names: [
+                name for name in names if name not in (
+                    'baselines-gray-acceptance.json', 'round1-baselines-acceptance.json')
+            ])
+            active = step / 'figure'
+            copytree(original / 'figure', active, ignore=lambda path, names: [
+                name for name in names if name == 'tenv_kpgt'
+            ])
+            verify_baseline_presentation(step, active)
+            successor = active / 'tenv_kpgt'
+            successor.mkdir()
+            report = successor / 'metrics.png'
+            report.write_bytes(b'accepted successor artifact')
+            with self.assertRaisesRegex(ValueError, 'presentation bytes changed'):
+                verify_baseline_presentation(step, active)
+            receipt = step / 'log/275-kpgt-formal/acceptance.json'
+            receipt.parent.mkdir()
+            receipt.write_text(json.dumps(dict(
+                schema='tsg-dose-tenv-kpgt-report-v1', status='passed', visual_inspection=True,
+                files={'metrics.png': digest(report)},
+            )))
+            verify_baseline_presentation(step, active)
+            report.write_bytes(b'changed successor artifact')
+            with self.assertRaisesRegex(ValueError, 'presentation bytes changed'):
+                verify_baseline_presentation(step, active)
+            report.write_bytes(b'accepted successor artifact')
+            (active / 'unsealed').mkdir()
+            with self.assertRaisesRegex(ValueError, 'presentation bytes changed'):
+                verify_baseline_presentation(step, active)

@@ -2,7 +2,7 @@
 
 [Path migration and sealed evidence](log/step-path-migration.md).
 
-The active Round 1 report compares seven TranSiGen dose methods with
+The ADR0078 Round 1 report compares seven TranSiGen dose methods with
 Mean_cell and ECFP4_MLP on the same ADR0077 axis-local G_5000 test rows, within
 each Tahoe and tenv scenario and fold. It retains 84 TranSiGen fits and adds
 12 independent ECFP4_MLP fits and 12 deterministic Mean_cell evaluations.
@@ -57,6 +57,107 @@ fresh-process validation and test replay followed by a paired acceptance receipt
 Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
 monitoring described below. Use `execution/axis_local/formal.py` for formal
 planning, execution and scientific acceptance.
+
+## tenv KPGT dose comparison
+
+[ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md) fixes the accepted
+2304-dimensional float32 Step 03 KPGT representation for all 459 tenv drug
+parents. The comparison uses the exact ADR0078 tenv splits, G_5000 axis and
+matched vehicles. It measures dose-method performance with KPGT held fixed.
+A representation effect would require a matched ECFP4 comparison under the
+same protocol.
+
+The comparison trains 42 TranSiGen models and six KPGT_MLP models from
+scratch with seed 42, and evaluates six Mean_cell baselines. KPGT_MLP uses
+only the KPGT vector, with the same 128-unit ReLU hidden layer and 5000-gene
+linear output as ECFP4_MLP. Each cold-drug fold freezes the validation Δ
+Pearson choice among the seven TranSiGen methods before test evaluation.
+Cold-drug-dose compares the seven fixed methods on the held-parent and
+held-dose intersections, excluding both strips. The baselines use the same
+test rows and remain outside selection.
+
+The sample-equal cold-drug analysis covers all **4,206** treated test profiles
+once. Validation selected latent-numeric, scaling and no-dose for folds 0–2,
+respectively. The locked selection procedure had pooled Δ Pearson **0.29639**.
+The fixed no-dose method measured **0.29415**, and KPGT_MLP and Mean_cell
+measured 0.20010 and 0.23094 on the same rows.
+
+Cold-drug-dose covers **1,402** doubly unseen profiles, with 469, 468 and
+465 test profiles at 0.2, 1 and 10 µM, respectively. Latent embedding and
+no dose measured pooled Δ Pearson **0.27819** and **0.27785**.
+No dose had the lowest pooled Δ RMSE at **0.41785**. These are fixed-method
+descriptive scores on the held-parent and held-dose intersections.
+
+- [Overall metrics](figure/tenv_kpgt/metrics.png) and [sample-pooled table](figure/tenv_kpgt/data/pooled.csv)
+- [Cold-drug-dose metrics by held concentration](figure/tenv_kpgt/metrics_cold_drug_dose.png) and [coverage](figure/tenv_kpgt/data/coverage.csv)
+- [Training and validation curves](figure/tenv_kpgt/learning_curves.png) and [locked choices](figure/tenv_kpgt/data/selection.csv)
+- [Formal run and publication evidence](log/275-kpgt-formal/README.md)
+
+Reproduce the figures using only the report's CSVs and renderer with
+`python figure/tenv_kpgt/script/render.py --output <new-directory>` from this step.
+
+Build the [tenv-only inputs](log/274-kpgt-smoke/README.md) before running the
+formal matrix. The planner prints all 54 coordinates without opening data.
+
+```bash
+D=stage2/04_tsg_dose
+W="$D/execution/checkpoints/tenv-kpgt-v1"
+SRC=pert_model/TranSiGen/source
+python "$D/execution/kpgt/formal.py" plan
+```
+
+Run dated WSL RAM and GPU samples every 10 seconds under the repository
+limits. Each sample contains an ISO timestamp, `MemTotal`, `MemAvailable`
+and `SwapFree` from `/proc/meminfo`, and the GPU used MiB, free MiB and
+utilization percentage. Keep the sampler running through both jobs. Run the
+drivers singly. Save `Id`, `InvocationID`, `MemoryMax`, `MemorySwapMax` and
+`ActiveEnterTimestamp` from the exact active systemd scope printed by
+`capped.sh`. The following helper captures these values from inside the scope.
+
+```bash
+run_capped() {
+  local name=$1
+  shift
+  "$D/execution/capped.sh" bash -c '
+    set -euo pipefail
+    work=$1
+    name=$2
+    shift 2
+    unit=$(awk -F/ '"'"'$NF ~ /\.scope$/ {print $NF}'"'"' /proc/self/cgroup)
+    systemctl --user show "$unit" -p Id,InvocationID,MemoryMax,MemorySwapMax,ActiveEnterTimestamp \
+      > "$work/$name-cap-actual.txt"
+    exec /usr/bin/time -v -o "$work/$name-driver.time" "$@"
+  ' bash "$W" "$name" "$@" > "$W/$name-driver.log" 2>&1
+}
+run_capped formal python "$D/execution/kpgt/formal.py" run \
+  --inputs "$W/inputs" --source "$SRC" --candidate "$W/formal" --device cuda &&
+run_capped baseline python "$D/execution/kpgt/baseline.py" \
+  --inputs "$W/inputs" --candidate "$W/baselines" --device cuda
+```
+
+A child process can commit a fit or replay before the driver seals that
+phase's result and timing. If an interruption leaves those receipts incomplete,
+or telemetry has a gap in the acceptance window, retain the entire attempt
+with its scope, timing and monitor logs. Use a fresh full candidate in a
+separate directory with new scope and timing evidence.
+
+The publisher checks exact replay receipts, split and control parity, serial
+resource evidence and the sealed predecessor reports during both preparation
+and acceptance. It compares all Mean_cell predictions with the independent
+Step 02 reference and rerenders the three PNGs in a CSV-only directory.
+Inspect each PNG before writing the visual acceptance receipt. Keep the
+frozen inputs, run candidates, timing and monitor snapshot on the materialized
+checkout outside temporary worktrees.
+
+```bash
+python "$D/execution/kpgt/publish.py" prepare --inputs "$W/inputs" \
+  --source "$SRC" --formal "$W/formal" --baselines "$W/baselines" --resources "$W" \
+  --monitor "$MONITOR" --candidate "$W/report-candidate" --receipt "$W/report-candidate.json"
+python "$D/execution/kpgt/publish.py" accept --inputs "$W/inputs" \
+  --source "$SRC" --formal "$W/formal" --baselines "$W/baselines" --resources "$W" \
+  --monitor "$MONITOR" --candidate "$W/report-candidate" --receipt "$W/report-candidate.json" \
+  --acceptance "$W/acceptance.json" --visual-inspection
+```
 
 ## Historical run protocol
 
