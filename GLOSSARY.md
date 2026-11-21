@@ -653,6 +653,14 @@ A dose-input round1 test at the intersection of unseen drug parents and one
 unseen measured dose. The development partition contains other parents at
 the other doses. The remaining two parent-by-dose strips are excluded.
 
+**TranSiGen width multiplier**:
+The common scale factor for the internal vector dimensions of a TranSiGen
+variant in the Stage 2 width and dose comparison.
+
+**Width and dose comparison run**:
+One width multiplier, one dose encoding and one tenv cold-drug-dose fold
+in the Stage 2 TranSiGen comparison.
+
 **Sample-equal Delta evaluation**:
 Calculate each treated sample's gene-wise Delta metrics with its own matched
 control, then give each sample equal weight within a reported population.

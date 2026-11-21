@@ -10,7 +10,7 @@ meaning and requires the recovery instructions for that run.
 | Original root in evidence | Current root |
 | --- | --- |
 | `stage2/03_tsg_dose/` | `stage2/04_tsg_dose/` |
-| `stage2/04_tsg_transfer/` | `stage2/05_tsg_transfer/` |
+| `stage2/04_tsg_transfer/` or `stage2/05_tsg_transfer/` | `stage2/06_tsg_transfer/` |
 
 Apply the same mapping to ignored `execution/checkpoints/` and dose
 `output/model/`. The [pre-move inventory](pre-move-ignored-inventory.json)

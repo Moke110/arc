@@ -52,7 +52,7 @@ single-job capped scopes, capture wall time and peak RSS, and sample WSL
 memory and GPU resources every 10 seconds.
 
 ```bash
-STEP=stage2/05_tsg_transfer
+STEP=stage2/06_tsg_transfer
 CAP="$STEP/execution/capped_phase.sh"
 TAHOE="$CANDIDATE/tahoe"
 tenv_args=(--inputs "$PAIR/tenv" --candidate "$CANDIDATE")

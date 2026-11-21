@@ -111,3 +111,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0079](0079-stage2-drug-representation-step.md) | Isolate the drug representation comparison and migrate dose and transfer to Steps 04 and 05 |
 
 | [0080](0080-tenv-kpgt-dose-round1.md) | Compare dose inputs on tenv with frozen Step 03 KPGT representations |
+
+| [0081](0081-transigen-width-and-dose-comparison.md) | Compare TranSiGen width and dose encoding on the frozen tenv cold-drug-dose folds |
