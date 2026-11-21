@@ -12,6 +12,8 @@ from publish_report import FIGURES, RENDERER, STEP, figure_names, sha256, write_
 
 RECEIPT = "log/acceptance.json"
 TAHOE_RECEIPT = "log/tahoe/acceptance.json"
+TENV_README = Path("log/tenv/README.md")
+TENV_PLOT_MOVES = {Path("figure") / name: Path("figure") / f"tenv_{name}" for name in FIGURES}
 TENV_RENDERER_SHA256 = "223feccf854ba40d4e1ba303fbd13c9e57f84c849d60b658e4b18f9e437287b4"
 DRAFT_README_SHA256 = "f48ca0035407f9921a513a76d7e156edf17b72f36ea522ff00628ef2541242b7"
 TABLES = (
@@ -46,9 +48,12 @@ def payload_inventory(candidate, receipt=RECEIPT):
 
 def published_path(report, name, source):
     path = report / name
-    if (source == "tenv" and not path.exists() and not path.is_symlink()
-            and name in {f"figure/{figure}" for figure in FIGURES}):
-        path = path.with_name(f"tenv_{path.name}")
+    if source == "tenv":
+        if name == "README.md" and ((report / TENV_README).exists() or (report / TENV_README).is_symlink()):
+            return report / TENV_README
+        moved = TENV_PLOT_MOVES.get(Path(name))
+        if moved is not None and not path.exists() and not path.is_symlink():
+            return report / moved
     return path
 
 
@@ -127,11 +132,23 @@ def _install_under_lock(candidate, step, receipt, visual_review):
             raise FileExistsError(f"report target already exists or is symlinked: {target}")
     if not tahoe and (readme.is_symlink() or sha256(readme) != DRAFT_README_SHA256):
         raise ValueError("Stage 2 README differs from the unpublished draft")
+    if tahoe:
+        verify_report(step, published=True)
+        for new in (TENV_README, *TENV_PLOT_MOVES.values()):
+            target = step / new
+            if (target.exists() or target.is_symlink()
+                    or any((step / parent).is_symlink() for parent in new.parents)):
+                raise FileExistsError(f"tenv migration target exists or is symlinked: {target}")
     with TemporaryDirectory(prefix=".report-staging-", dir=step) as directory:
         staging = Path(directory)
         previous = staging / "draft.md"
-        if not tahoe:
-            copyfile(readme, previous)
+        copyfile(readme, previous)
+        if tahoe:
+            active = readme.read_text()
+            for old, new in TENV_PLOT_MOVES.items():
+                active = active.replace(f"]({old.as_posix()})", f"]({new.as_posix()})")
+            active += "\nThe [Tahoe comparison](log/tahoe/README.md) uses the three frozen Tahoe cold-drug folds.\n"
+            (staging / "README.md").write_text(active)
         for name in files:
             target = staging / name
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -144,7 +161,13 @@ def _install_under_lock(candidate, step, receipt, visual_review):
             visual_review=visual_review,
         ))
         installed = []
+        moved = []
         try:
+            if tahoe:
+                for old, new in {Path("README.md"): TENV_README, **TENV_PLOT_MOVES}.items():
+                    (step / new).parent.mkdir(parents=True, exist_ok=True)
+                    (step / old).rename(step / new)
+                    moved.append((old, new))
             for name in targets:
                 target = step / name
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -152,12 +175,19 @@ def _install_under_lock(candidate, step, receipt, visual_review):
                 installed.append(target)
             if not tahoe:
                 (staging / "README.md").replace(readme)
+            else:
+                (staging / "README.md").rename(readme)
+                verify_report(step, published=True)
+                expected = {*figure_names("tahoe_bulk"), *(path.name for path in TENV_PLOT_MOVES.values())}
+                if {path.name for path in (step / "figure").glob("*.png")} != expected:
+                    raise ValueError("paired report must contain exactly six source-prefixed PNGs")
             verify_report(step, published=True, source=source)
         except BaseException:
             for path in reversed(installed):
                 path.unlink()
-            if not tahoe:
-                previous.replace(readme)
+            for old, new in reversed(moved):
+                (step / new).replace(step / old)
+            previous.replace(readme)
             raise
 
 

@@ -155,3 +155,9 @@ The original tenv runtime and report renderer are pinned by the historical
 receipts. Check out commit `107bda7` in a separate worktree and pass the
 existing absolute input, representation and run paths to reproduce that
 byte version independently.
+
+Publishing the paired report renames the three original `figure/<name>.png`
+files to `figure/tenv_<name>.png` and moves the sealed `README.md` to
+`log/tenv/README.md` byte for byte. The tenv receipt remains at
+`log/acceptance.json`; `verify-published` resolves those historical names via
+the migration mapping and checks the same digests and CSV-only replay.
