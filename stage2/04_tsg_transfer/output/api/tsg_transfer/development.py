@@ -55,7 +55,7 @@ def summarize(scores):
 
 
 def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None, device='cuda',
-            verify_reload=False):
+            assessment_evaluator=evaluate, verify_reload=False):
     """Train to a common budget, independently assess both validation-selected epochs."""
     train, selection, assessment = (np.asarray(roles[name], dtype=int)
                                     for name in ('train', 'selection', 'assessment'))
@@ -98,7 +98,7 @@ def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None
     result = {}
     for criterion, (_, selected, state) in chosen.items():
         model.load_state_dict(state)
-        scores = evaluate(native, model, data, assessment)
+        scores = assessment_evaluator(native, model, data, assessment)
         result[criterion] = dict(selected=selected, assessment=summarize(scores), scores=scores)
     if verify_reload:
         checkpoint = io.BytesIO()
@@ -106,7 +106,7 @@ def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None
         checkpoint.seek(0)
         reloaded = native.build(seed, device)
         reloaded.load_state_dict(torch.load(checkpoint, map_location='cpu', weights_only=True))
-        if not evaluate(native, reloaded, data, assessment).equals(result['pcc']['scores']):
+        if not assessment_evaluator(native, reloaded, data, assessment).equals(result['pcc']['scores']):
             raise ValueError('serialized development checkpoint changed assessment scores')
         result['pcc']['exact_reload_verified'] = True
     return dict(history=history, selected=result, transform=transform)
