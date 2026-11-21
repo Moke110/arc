@@ -40,6 +40,10 @@ def crossing_splits(data, train, validation):
     if (not obs.index.is_unique or len(set(train)) != len(train)
             or len(set(validation)) != len(validation)):
         raise ValueError("Expected unique frozen development identities")
+    train_parents = set(obs.iloc[train][PARENT])
+    validation_parents = set(obs.iloc[validation][PARENT])
+    if train_parents & validation_parents:
+        raise ValueError("Frozen training and validation parents overlap")
     validation = complete_rows(obs, validation, balance=False)
     balanced_train = complete_rows(obs, train, balance=True)
     base = development.split_validation(data, balanced_train, validation)
@@ -174,12 +178,13 @@ def run(args):
     budgets = set()
     for dose, roles in splits.items():
         def initialize(model, transform):
-            return transfer.initialize_from_tahoe(source_fit, model, winner["transform"], transform,
-                                                   source_doses + DOSES, held_dose=dose)
+            bridge.update(transfer.initialize_from_tahoe(
+                source_fit, model, winner["transform"], transform, source_doses + DOSES, held_dose=dose))
 
         for seed in SEEDS:
             scores = []
             for arm, initializer in (("random", None), ("transfer", initialize)):
+                bridge = {}
                 print(f"Held {dose:g} uM, seed {seed}, arm {arm}", file=sys.stderr, flush=True)
                 result = development.run_fit(data, args.source, roles, learning_rate=LEARNING_RATE,
                                              seed=seed, epochs=EPOCHS, initialize=initializer,
@@ -190,7 +195,7 @@ def run(args):
                 scores.append(chosen["scores"])
                 report["fits"].append(dict(held_dose_um=dose, seed=seed, arm=arm,
                                            selected=chosen["selected"], assessment=chosen["assessment"],
-                                           transform=result["transform"], updates=updates,
+                                           transform=result["transform"], dose_bridge=bridge, updates=updates,
                                            history=result["history"]))
             paired.append(pair_scores(*scores).assign(seed=seed))
     if len(budgets) != 1:
