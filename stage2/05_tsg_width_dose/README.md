@@ -15,6 +15,38 @@ treated-expression MSE. Test Δ metrics use the matched original vehicles.
 The transfer experiment and its recovery artifacts are now in
 [Step 06](../06_tsg_transfer/README.md).
 
+## Results
+
+All 48 fits were verified against the frozen inputs. Fold 0 scored 469 test
+profiles at 0.2 µM, fold 1 scored 468 at 1 µM, and fold 2 scored 465 at 10 µM.
+All twelve original-width fits reproduced their accepted Step 04 learning
+curves, validation predictions and per-profile test scores byte for byte.
+
+| Metric | Leading width and encoding | Equal-fold mean | Fold SD |
+|---|---|---:|---:|
+| Δ Pearson r | 2×, no dose | 0.27879 | 0.01057 |
+| Δ Spearman ρ | Original, no dose | 0.28963 | 0.00868 |
+| Δ RMSE | Original, no dose | 0.41786 | 0.00818 |
+| Δ R² | Original, no dose | −0.05178 | 0.04466 |
+
+The 2× no-dose variant led mean Δ Pearson r by about 0.001 over original-width
+no dose. The three other metrics favored original-width no dose. Several
+wider models had large transient training-loss spikes. The linear training
+axes retain those spikes and compress the lower-loss epochs in the affected
+panels. Validation MSE is plotted separately and determines checkpoint
+selection. The results describe these three folds. Step 06 uses its own
+model-selection protocol.
+
+The [acceptance receipt](log/281-acceptance/acceptance.json) binds the input
+freeze, 48 fit manifests, resource logs, plotted CSVs and four PNGs. The
+[scientific audit](log/281-acceptance/scientific-acceptance.json) records exact
+held-row coverage and the Step 04 comparison. The first capped attempt sealed
+two fits before interruption. The resumed attempt reused those fits and
+completed the other 46 in 45 min 41 s with peak process RSS of 1,876,744 KiB.
+Its [10-second resource log](log/281-acceptance/resumed-resources-10s.txt)
+contains 252 samples, with a minimum available WSL memory of 20,252,128 KiB,
+no swap use, and a maximum total GPU memory use of 9,232 MiB.
+
 ## Reproduction
 
 From the repository root with the `arc` environment active:
@@ -39,15 +71,24 @@ For a bounded GPU check, use a separate candidate and pass
 `run`. The formal driver resumes completed, verified coordinates when
 rerun with the same candidate identity.
 
+To reproduce only the published figures from the plotted CSVs, run this from
+the repository root with the `arc` environment active:
+
+```bash
+STEP=stage2/05_tsg_width_dose
+REPLAY=$(mktemp -d)
+python "$STEP/figure/script/render.py" --data "$STEP/figure/data" --output "$REPLAY"
+```
+
 ## Figures
 
-- `learning_curves.png` shows the Step 04 training loss and validation MSE
+- [learning_curves.png](figure/learning_curves.png) shows training loss and validation MSE from the Step 04 recipe
   for the three folds at each width and dose encoding.
-- `metrics_balloon.png` shows one panel per Δ metric. Color and text report
+- [metrics_balloon.png](figure/metrics_balloon.png) shows one panel per Δ metric. Color and text report
   the equal-fold mean. Diameter increases with the mean's z-score against
   all 48 individual fold scores for that metric.
-- `metrics_bar.png` shows the same means as bars, with individual fold dots
+- [metrics_bar.png](figure/metrics_bar.png) shows the same means as bars, with individual fold dots
   and sample standard deviation error bars.
-- `metrics_per_dose_ballone.png` shows sample-equal means at each held
+- [metrics_per_dose_ballone.png](figure/metrics_per_dose_ballone.png) shows sample-equal means at each held
   concentration. Each held concentration occurs in one fold, so the
   concentration and fold effects cannot be disentangled by these panels.
