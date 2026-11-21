@@ -1,0 +1,23 @@
+{
+  "fit_source_sha256": "44e68d3d3cfa7c6381598855d1b19d26bfe54acc119c60c13c7f114dd73e805c",
+  "lowest_sampled_wsl_mem_available_kib": 40458876,
+  "peak_sampled_gpu_used_mib": 1823,
+  "process_peak_rss_kib": 1833388,
+  "process_wall_seconds": 107.16,
+  "recovery": "execution/checkpoints/smoke-resources/phases/seven-arm-bounded-smoke-1795237482890749417",
+  "representation_reader_sha256": "3e142437337ec1e1cbb6188f2273012bb1d6b4b1af969a21e68a488cf5205322",
+  "resource_files": {
+    "command.txt": "13d056d0c0b2afcf782730d579184143cd8e09dfa7ec35e68af9036a0d39a9e7",
+    "preflight.txt": "f178b234547f59a2c78a5ea5d92000d90f4965b8c421839619aa7f9c849c1efb",
+    "resources-10s.log": "023ac43d7a34b6e3d26a9e17ec48caa36ce63c80d976c1b01144d15f9635523a",
+    "scope.txt": "ea0e02e56d5e8d1cb2e7c7775e2244206c72a0a7434aeb66c1fd53830f2298bb",
+    "stderr.txt": "b18c44d0f4570d7c0dece5baad253057cd62b996d34ed7e03eaac164e91f1143",
+    "stdout.txt": "5aa868924d11e65baf0f26207b9f7ea545876a8e4adb3e05cb3d43a360c4164b",
+    "terminal.txt": "d7b7df8c3a6ca0dec89f2389084be1fc18ed617ac19156da844a325fc75de507",
+    "time.txt": "7f703e6b848ccd402ad7aecfcc8d7371d8a52c7b7ea7ad4ee55c73080b141940"
+  },
+  "scope_memory_max_bytes": 10737418240,
+  "scope_swap_max_bytes": 8589934592,
+  "smoke_sha256": "273c3b3b6263c436f7a588cb85e21c772b3e19ed8d06dfd8d427190a15754137",
+  "status": "PASS"
+}

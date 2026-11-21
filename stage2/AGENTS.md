@@ -19,17 +19,22 @@ and the scientific ADRs it names. Apply the repository execution-environment rul
   parent-level Δ evaluation, checkpoint replay and CSV-only report figures.
   Before changing or replaying it, read its `AGENTS.md` and `README.md`.
 
-- `03_tsg_dose/` — ADR0078 Tahoe/tenv dose comparison with 84 TranSiGen fits,
-  12 ECFP4_MLP fits and 12 Mean_cell evaluations. Before reproducing results or
-  publishing a successor, read its [execution workflow](03_tsg_dose/AGENTS.md)
-  and [report](03_tsg_dose/README.md).
+- `03_tsg_drug_emb/` — ADR 0079 tenv cold-drug comparison of seven drug
+  representations under fixed FiLM conditioning. See the
+  [execution workflow](03_tsg_drug_emb/AGENTS.md) and
+  [report](03_tsg_drug_emb/README.md).
 
-- `04_tsg_transfer/` — Tahoe pretraining and tenv cold-drug-dose transfer
-  comparison. Follow its [execution workflow](04_tsg_transfer/AGENTS.md) and
-  [study report](04_tsg_transfer/README.md).
+- `04_tsg_dose/` — ADR0078 Tahoe/tenv dose comparison with 84 TranSiGen fits,
+  12 ECFP4_MLP fits and 12 Mean_cell evaluations. Before reproducing results or
+  publishing a successor, read its [execution workflow](04_tsg_dose/AGENTS.md)
+  and [report](04_tsg_dose/README.md).
+
+- `05_tsg_transfer/` — Tahoe pretraining and tenv cold-drug-dose transfer
+  comparison. Follow its [execution workflow](05_tsg_transfer/AGENTS.md) and
+  [study report](05_tsg_transfer/README.md).
 
 Use **ECFP4** and **ECFP4_MLP** in new contracts and reports. See the
-[fingerprint migration record](03_tsg_dose/log/ecfp4-contract.md) for sealed keys.
+[fingerprint migration record](04_tsg_dose/log/ecfp4-contract.md) for sealed keys.
 
 ## Step contract
 - `output/`: minimal accepted products reused by other steps: corpora, gene/HVG tables,

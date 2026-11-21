@@ -107,3 +107,5 @@ pointer to 0071; their bodies are unchanged, per the convention above.
 | [0077](0077-five-k-only-axis-local-normalization.md) | 5k-only expression views with axis-local normalization; retain four named axes and old downstream input generations (*implemented paired expression successor, #244–#245*) |
 
 | [0078](0078-dual-source-axis-local-dose-round1.md) | Rebuild dose-input round1 on the paired axis-local 5k views with sample-equal evaluation and cold-drug-dose |
+
+| [0079](0079-stage2-drug-representation-step.md) | Isolate the drug representation comparison and migrate dose and transfer to Steps 04 and 05 |
