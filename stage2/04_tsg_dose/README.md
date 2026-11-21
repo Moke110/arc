@@ -1,5 +1,7 @@
 # TranSiGen dose-input optimization — round1
 
+[Path migration and sealed evidence](log/step-path-migration.md).
+
 The active Round 1 report compares seven TranSiGen dose methods with
 Mean_cell and ECFP4_MLP on the same ADR0077 axis-local G_5000 test rows, within
 each Tahoe and tenv scenario and fold. It retains 84 TranSiGen fits and adds

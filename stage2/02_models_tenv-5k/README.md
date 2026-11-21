@@ -30,7 +30,7 @@ no historical checkpoint or prediction can enter the current comparison.
 ECFP4_MLP is the current display name for the accepted method. The sealed 02
 CSV tables, original renderer, checkpoints and receipts still use `MLP_Morgan`
 and `mlp-morgan-project-f32-lr1e4-v1`. See the
-[ECFP4 migration record](../03_tsg_dose/log/ecfp4-contract.md) for a canonical
+[ECFP4 migration record](../04_tsg_dose/log/ecfp4-contract.md) for a canonical
 fingerprint contract derived from the existing freeze.
 
 ## Accepted result

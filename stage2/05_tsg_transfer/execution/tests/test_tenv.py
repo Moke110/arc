@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 STEP = Path(__file__).resolve().parents[2]
-for path in (STEP / 'output/api', STEP.parent / '03_tsg_dose/output/api'):
+for path in (STEP / 'output/api', STEP.parent / '04_tsg_dose/output/api'):
     sys.path.insert(0, str(path))
 
 from tsg_transfer.tenv import export_test, freeze_split, load_split, verify_test

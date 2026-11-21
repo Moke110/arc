@@ -39,7 +39,7 @@ class PublicationTests(unittest.TestCase):
         module=publication()
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);(root/'.git').write_text('gitdir: elsewhere\n')
-            step=root/'arbitrary'/'extra'/'stage2'/'03_tsg_dose';step.mkdir(parents=True)
+            step=root/'arbitrary'/'extra'/'stage2'/'04_tsg_dose';step.mkdir(parents=True)
             argv=['publish_release.py','publish']
             for name in ['inputs','matrix','candidate','source','log','destination']:
                 argv.extend(['--'+name,str(root/name)])

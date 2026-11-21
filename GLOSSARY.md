@@ -31,6 +31,11 @@ invariants, 2048 binary bits, and chirality enabled. RDKit's API is
 and 1024 bits, so it is a distinct representation. Sealed Stage 2 generations
 record the project fingerprint as `morgan.npy` and `morgan`.
 
+**ECFP4C**:
+The name for the existing chirality-aware Stage 2 ECFP4 in the drug
+representation comparison. The suffix C denotes chirality across the comparison’s
+ECFP4C, ECFP6C, FCFP4C and FCFP6C arms.
+
 **ECFP4_MLP**:
 The Stage 2 fingerprint-only treated-expression baseline. The model takes the
 2048 ECFP4 bits, applies a 128-unit ReLU hidden layer, and predicts 5000 genes
