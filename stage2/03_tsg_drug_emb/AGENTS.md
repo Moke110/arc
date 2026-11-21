@@ -39,6 +39,22 @@ cover the complete frozen roster. Verify through
 `tsg_drug_emb.representations.RepresentationInputs` before passing the
 candidate to training.
 
+## Fit and replay
+
+Run `execution/smoke.py` with the accepted tenv input and representation
+freeze, the pinned native TranSiGen source, a fresh destination, and
+`--device cuda`. Use the transfer step's `execution/capped_phase.sh` to
+collect resource evidence. The [smoke receipt](log/270-bounded-smoke.json)
+records seven two-epoch origins. Preserve the separate
+[resource receipt](log/270-bounded-smoke-resources.json) and raw phase evidence.
+
+Run `execution/formal.py run` with the same input, representation and source
+paths. Pass the smoke acceptance JSON and a fresh destination. The driver
+runs capped phases singly, records a validation selection for each complete
+fold before outer scoring, and recomputes Mean_cell on the same partitions.
+Reissue the same command to resume. Use `execution/formal.py verify` with
+those arguments to independently verify the completed matrix and evidence.
+
 ## Report preparation
 
 After `execution/formal.py verify` passes, run `execution/publish_report.py`
