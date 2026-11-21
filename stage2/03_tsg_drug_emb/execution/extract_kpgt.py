@@ -9,6 +9,7 @@ import pandas as pd
 
 
 def extract(args):
+    sys.dont_write_bytecode = True
     sys.path.insert(0, str(args.source.resolve()))
     import dgl
     import scipy
@@ -19,8 +20,9 @@ def extract(args):
     from src.data.featurizer import N_ATOM_TYPES, N_BOND_TYPES, Vocab, smiles_to_graph_tune
     from src.model.light import LiGhTPredictor
     from src.model_config import config_dict
+    from src.utils import set_random_seed
 
-    torch.set_num_threads(2)
+    set_random_seed(22, n_threads=2)
     config = config_dict["base"]
     options = {name: config[name] for name in (
         "d_node_feats", "d_edge_feats", "d_g_feats", "d_hpath_ratio", "n_mol_layers",
@@ -80,7 +82,7 @@ def extract(args):
                 smoke_shape=list(results[smoke].shape), failures=failures, config=options,
                 readout="LiGhTPredictor.generate_fps", batch_size=8,
                 descriptors="RDKit2DNormalized", fingerprint=dict(minPath=1, maxPath=7, fpSize=512),
-                virtual_nodes=2)
+                virtual_nodes=2, seed=22, threads=2)
     (args.output / "kpgt.json").write_text(json.dumps(info, indent=2) + "\n")
 
 

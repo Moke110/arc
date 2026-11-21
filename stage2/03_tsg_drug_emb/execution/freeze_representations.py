@@ -1,7 +1,9 @@
 """Extract and verify the full seven-arm tenv parent representation freeze."""
 import argparse
+from concurrent.futures import ProcessPoolExecutor
 from importlib.metadata import version
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -41,32 +43,44 @@ def circular(parents, directory):
     return provenance
 
 
-def e3fp(parents, directory):
+E3FP_CONFORMER = dict(seed=42, first=3)
+E3FP_FINGERPRINT = dict(bits=WIDTHS["E3FP"], first=3, counts=False)
+
+
+def e3fp_parent(pair):
     from e3fp.pipeline import fprints_from_smiles
 
+    key, smiles = pair
+    try:
+        fps = fprints_from_smiles(smiles, key, confgen_params=E3FP_CONFORMER,
+                                  fprint_params=E3FP_FINGERPRINT)
+        if not 1 <= len(fps) <= 3:
+            raise ValueError(f"unexpected E3FP conformer count {len(fps)}")
+        bits = np.zeros(WIDTHS["E3FP"], dtype=bool)
+        for fp in fps:
+            bits[fp.indices] = True
+        return key, bits, len(fps), None
+    except (RuntimeError, ValueError, AttributeError) as error:
+        return key, None, 0, str(error)
+
+
+def e3fp(parents, directory):
     matrix = np.full((len(parents), WIDTHS["E3FP"]), np.nan, dtype=np.float32)
     counts = np.zeros(len(parents), dtype=int)
     failures = {}
-    conformer = dict(seed=42, first=3)
-    fingerprint = dict(bits=WIDTHS["E3FP"], first=3, counts=False)
-    for i, (key, smiles) in enumerate(parents.itertuples(index=False, name=None)):
-        try:
-            fps = fprints_from_smiles(smiles, key, confgen_params=conformer,
-                                      fprint_params=fingerprint)
-            if not 1 <= len(fps) <= 3:
-                raise ValueError(f"unexpected E3FP conformer count {len(fps)}")
-            bits = np.zeros(WIDTHS["E3FP"], dtype=bool)
-            for fp in fps:
-                bits[fp.indices] = True
-            matrix[i] = bits
-            counts[i] = len(fps)
-        except (RuntimeError, ValueError, AttributeError) as error:
-            failures[key] = str(error)
+    with ProcessPoolExecutor(max_workers=2) as executor:
+        rows = parents.itertuples(index=False, name=None)
+        for i, (key, bits, count, error) in enumerate(executor.map(e3fp_parent, rows)):
+            if error is None:
+                matrix[i] = bits
+                counts[i] = count
+            else:
+                failures[key] = error
     np.save(directory / "E3FP.npy", matrix)
     parents[["drug_parent_inchikey"]].assign(conformers=counts).to_csv(
         directory / "e3fp_conformers.csv", index=False)
-    return dict(e3fp=version("e3fp"), rdkit=rdBase.rdkitVersion, conformer=conformer,
-                fingerprint=fingerprint, aggregation="bitwise OR", failures=failures)
+    return dict(e3fp=version("e3fp"), rdkit=rdBase.rdkitVersion, conformer=E3FP_CONFORMER, workers=2,
+                fingerprint=E3FP_FINGERPRINT, aggregation="bitwise OR", failures=failures)
 
 
 def unimol(parents, directory, args):
@@ -112,6 +126,9 @@ def freeze(args):
     sys.path.insert(0, str(args.dose_api.resolve()))
     from tsg_round1.inputs import Inputs
 
+    execution_digest = sha256(__file__)
+    kpgt_script = Path(__file__).with_name("extract_kpgt.py")
+    kpgt_digest = sha256(kpgt_script)
     inputs = Inputs(args.inputs)
     coverage = fold_coverage(inputs)
     if inputs.source != "tenv" or sha256(args.kpgt_weights) != KPGT_BASE_SHA256:
@@ -123,10 +140,11 @@ def freeze(args):
     provenance = circular(parents, directory)
     if not np.array_equal(np.load(directory / "ECFP4C.npy"), inputs.morgan):
         raise ValueError("ECFP4C differs from the historical ECFP4 contract")
-    subprocess.run([str(args.kpgt_python), str(Path(__file__).with_name("extract_kpgt.py")),
+    subprocess.run([str(args.kpgt_python), str(kpgt_script),
                     "--source", str(args.kpgt_source), "--weights", str(args.kpgt_weights),
                     "--parents", str(directory / "parents.csv"), "--output", str(directory),
-                    "--device", args.device], check=True)
+                    "--device", args.device], check=True,
+                   env={**os.environ, "PYTHONHASHSEED": "22", "DGLBACKEND": "pytorch"})
     kpgt_metadata = directory / "kpgt.json"
     provenance["KPGT"] = json.loads(kpgt_metadata.read_text())
     kpgt_metadata.unlink()
@@ -158,8 +176,7 @@ def freeze(args):
                     inputs_sha256=sha256(inputs.directory / "manifest.json"),
                     provenance=provenance, dtype="float32", feature_scaling="native",
                     files={path.name: sha256(path) for path in sorted(directory.iterdir())},
-                    extraction_sha256=sha256(__file__),
-                    kpgt_extraction_sha256=sha256(Path(__file__).with_name("extract_kpgt.py")))
+                    extraction_sha256=execution_digest, kpgt_extraction_sha256=kpgt_digest)
     write_json(directory / "manifest.json", manifest)
     RepresentationInputs(inputs, directory)
 
