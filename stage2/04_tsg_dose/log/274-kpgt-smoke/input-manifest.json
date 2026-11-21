@@ -1,0 +1,9 @@
+{
+  "files": {
+    "KPGT.npy": "618258ccb9342b6692d728a287051e19127ece4819ddb6d9f6f7a63b6f133822",
+    "representation.json": "bc10c6af897b1b0d939a685aa198e03b22a3392e3891b721f70cc49f1f028678",
+    "representation_parents.csv": "b12cc0996e3d01dc058d3cad827ef76e0397c5d0344d2bc839709ef81ccc9426",
+    "tenv/manifest.json": "e08ea61360eab0b3b0d1a4762652d9070acda3cbe00347285c1a62e6266a427e"
+  },
+  "schema": "tsg-dose-tenv-kpgt-inputs-v1"
+}
