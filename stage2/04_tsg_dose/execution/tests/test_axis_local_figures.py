@@ -278,7 +278,9 @@ class SuccessorPresentation(unittest.TestCase):
         from shutil import copytree
         from tempfile import TemporaryDirectory
 
-        from install_axis_local_report import digest, verify_baseline_presentation
+        from install_axis_local_report import (
+            GRAY_ARCHIVE, digest, verify_baseline_presentation,
+        )
 
         original = SCRIPT.parents[1]
         with TemporaryDirectory() as root:
@@ -288,9 +290,7 @@ class SuccessorPresentation(unittest.TestCase):
                     'baselines-gray-acceptance.json', 'round1-baselines-acceptance.json')
             ])
             active = step / 'figure'
-            copytree(original / 'figure', active, ignore=lambda path, names: [
-                name for name in names if name == 'tenv_kpgt'
-            ])
+            copytree(original / GRAY_ARCHIVE, active)
             verify_baseline_presentation(step, active)
             successor = active / 'tenv_kpgt'
             successor.mkdir()
@@ -312,3 +312,9 @@ class SuccessorPresentation(unittest.TestCase):
             (active / 'unsealed').mkdir()
             with self.assertRaisesRegex(ValueError, 'presentation bytes changed'):
                 verify_baseline_presentation(step, active)
+
+    def test_promoted_kpgt_and_archived_gray_match_their_receipts(self):
+        from install_axis_local_report import verify_baseline_presentation
+
+        step = SCRIPT.parents[1]
+        verify_baseline_presentation(step, step / 'figure')

@@ -16,6 +16,7 @@ from publish_axis_local_report import (
 
 STEP = Path(__file__).resolve().parents[2]
 AXIS_LOCAL_ARCHIVE = Path('execution/historical/report_axis_local')
+GRAY_ARCHIVE = Path('execution/historical/report_baselines_gray')
 PRESENTATION_RECEIPT = Path('log/baselines-gray-acceptance.json')
 KPGT_PRESENTATION_RECEIPT = Path('log/275-kpgt-formal/acceptance.json')
 CHECKS = ('check_paths.sh', 'check_tracked.sh', 'verify_all.sh')
@@ -220,16 +221,24 @@ def verify_baseline_presentation(step, active):
                 *(name.removeprefix('round1_') for name in PNG_NAMES)}
     files = receipt.get('files', {})
     published = step / KPGT_PRESENTATION_RECEIPT
+    gray = step / GRAY_ARCHIVE
     active_files = files.copy()
     if published.is_symlink():
         raise ValueError('unsafe tenv KPGT presentation receipt')
+    if gray.exists() or gray.is_symlink():
+        if not installed_tree_matches(gray, files) or not published.is_file():
+            raise ValueError('archived baseline presentation bytes changed or KPGT receipt missing')
+        active_files = {}
     if published.exists():
         successor = read(published)
         if (successor.get('schema') != 'tsg-dose-tenv-kpgt-report-v1'
                 or successor.get('status') != 'passed'
                 or successor.get('visual_inspection') is not True or not successor.get('files')):
             raise ValueError('invalid tenv KPGT presentation receipt')
-        active_files.update({f'tenv_kpgt/{name}': value for name, value in successor['files'].items()})
+        if gray.exists():
+            active_files = successor['files']
+        else:
+            active_files.update({f'tenv_kpgt/{name}': value for name, value in successor['files'].items()})
     if (receipt.get('schema') != 'tsg-dose-baselines-gray-v2'
             or receipt.get('csv_only_replay_byte_identical') is not True
             or receipt.get('visual_inspection') is not True
