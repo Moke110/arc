@@ -1,7 +1,5 @@
 """Compare complete and chemical-only Tahoe handoffs in tenv development."""
 import argparse
-import hashlib
-import json
 from pathlib import Path
 import sys
 
@@ -9,7 +7,9 @@ import numpy as np
 
 STEP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(STEP / 'output/api'))
-from tsg_transfer import chemical, development, fit, tenv, transfer
+from tsg_transfer import fit, tenv, transfer
+import chemical_handoff
+import development
 
 FOLD = 0
 EPOCHS = 20
@@ -59,22 +59,13 @@ def run(args):
     ownership = {name: dict(shape=list(tensor.shape), dtype=str(tensor.dtype))
                  for name, tensor in tahoe.state_dict().items() if name in chemical_keys}
     nearest = nearest_training(data, roles['train'], roles['assessment'])
-    identities = {}
-    for role, indices in roles.items():
-        rows = data.obs.iloc[indices]
-        identities[role] = dict(
-            n_profiles=len(rows), n_parents=int(rows[PARENT].nunique()),
-            ordered_profile_sha256=hashlib.sha256(
-                json.dumps(list(rows.index), separators=(',', ':')).encode()).hexdigest(),
-            doses_um=sorted(rows.dose_um.unique()),
-        )
 
     def initialize_full(recipient, transform):
         return transfer.initialize_from_tahoe(tahoe, recipient, winner['transform'], transform,
                                              source_doses + tenv.DOSES, held_dose=held)
 
     def initialize_chemical(recipient, _):
-        copied = chemical.initialize_chemical(tahoe, recipient)
+        copied = chemical_handoff.initialize_chemical(tahoe, recipient)
         if sorted(copied) != chemical_keys:
             raise ValueError('chemical-only transfer differs from recorded ownership')
 
@@ -91,7 +82,7 @@ def run(args):
                                 exact_reload_verified=chosen['exact_reload_verified'],
                                 by_similarity=summarize_bins(chosen['scores'], nearest)))
     return dict(fold=FOLD, excluded_dose_um=held, epochs=EPOCHS, learning_rate=LR,
-                seeds=SEEDS, identities=identities, chemical_state=ownership,
+                seeds=SEEDS, identities=development.role_identities(data, roles), chemical_state=ownership,
                 nonchemical_keys=sorted(set(tahoe.state_dict()) - set(chemical_keys)),
                 winner_sha256=winner['checkpoint_sha256'],
                 split_sha256=fit.sha256(args.experiment / 'tenv-split' / 'manifest.json'),

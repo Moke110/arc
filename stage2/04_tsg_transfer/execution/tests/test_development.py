@@ -7,8 +7,9 @@ import unittest
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'output/api'))
-from tsg_transfer.development import delta_scores, split_validation
+from development import delta_scores, split_validation
 
 
 class DevelopmentTests(unittest.TestCase):
@@ -22,6 +23,11 @@ class DevelopmentTests(unittest.TestCase):
         self.assertTrue(selector and assessment)
         self.assertFalse(selector & assessment)
         self.assertEqual(selector | assessment, {'B', 'C', 'D'})
+
+    def test_constant_prediction_has_zero_pcc_when_truth_varies(self):
+        pcc, rmse = delta_scores([[2, 3, 4]], [[3, 3, 3]], [[1, 1, 1]])
+        np.testing.assert_array_equal(pcc, [0.])
+        np.testing.assert_allclose(rmse, [np.sqrt(2 / 3)])
 
     def test_delta_scores_use_matched_control_and_preserve_undefined_pcc(self):
         truth = [[3, 4, 6], [3, 3, 3]]

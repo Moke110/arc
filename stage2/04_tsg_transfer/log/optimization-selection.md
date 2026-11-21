@@ -120,3 +120,9 @@ The CUDA prototype completed on 2026-11-21 in 72.17 seconds with peak RSS
 It contains per-epoch selector MSE, PCC and RMSE, fitted epochs and updates,
 role population digests, and the independent assessment of every restored
 selected state.
+
+The review replay used the shared canonical Delta vector scorer. It kept
+all identities, selected epochs and counts identical, and the largest
+absolute numeric difference across the JSON was `8.33e-17`. The replay
+took 83.13 seconds at 2,135,100 KiB peak RSS and produced SHA-256
+`b343b61d471ed98fe031287588b9bea0c221bfff747c7e713ec7d4bc97915101`.

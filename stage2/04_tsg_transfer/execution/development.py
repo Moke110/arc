@@ -1,13 +1,15 @@
 """Bounded development fits on disjoint parent groups."""
 import hashlib
 import io
+import json
 import math
 
 import numpy as np
 import torch
 
-from . import fit
+from tsg_transfer import fit, tahoe
 from tsg_round1 import model as models
+from tenv5k.protocol import vector_metrics
 
 
 def split_validation(data, train, validation):
@@ -22,20 +24,32 @@ def split_validation(data, train, validation):
     return dict(train=train, selection=validation[selection], assessment=validation[~selection])
 
 
+def role_identities(data, roles):
+    """Record each fixed role's ordered profile identity and coverage."""
+    receipt = {}
+    for role, indices in roles.items():
+        rows = data.obs.iloc[indices]
+        sequence = json.dumps(list(rows.index), separators=(',', ':')).encode()
+        receipt[role] = dict(n_profiles=len(rows), n_parents=int(rows.drug_parent_inchikey.nunique()),
+                             ordered_profile_sha256=hashlib.sha256(sequence).hexdigest(),
+                             doses_um=sorted(rows.dose_um.unique()))
+    return receipt
+
+
 def delta_scores(truth, prediction, control):
-    """Return per-profile gene-wise Delta PCC and Delta RMSE."""
+    """Use the Step 03 matched-control Delta arithmetic and shared vector scorer."""
     truth, prediction, control = (np.asarray(item, dtype=np.float64) for item in (truth, prediction, control))
     if truth.ndim != 2 or truth.shape != prediction.shape or truth.shape != control.shape:
         raise ValueError('Delta score matrices must have the same two-dimensional shape')
-    measured = truth - control
-    predicted = prediction - control
-    rmse = np.sqrt(np.square(measured - predicted).mean(axis=1))
-    measured -= measured.mean(axis=1, keepdims=True)
-    predicted -= predicted.mean(axis=1, keepdims=True)
-    norm = np.linalg.norm(measured, axis=1) * np.linalg.norm(predicted, axis=1)
-    pcc = np.divide(np.einsum('ij,ij->i', measured, predicted), norm,
-                    out=np.full(len(truth), np.nan), where=norm > 0)
-    return np.clip(pcc, -1, 1), rmse
+    pcc = np.full(len(truth), np.nan)
+    rmse = np.full(len(truth), np.nan)
+    for index, (measured, predicted, matched) in enumerate(zip(truth, prediction, control, strict=True)):
+        delta = measured - matched
+        predicted_delta = predicted - matched
+        if np.isfinite(delta).all() and np.isfinite(predicted_delta).all():
+            metrics = vector_metrics(delta, predicted_delta)
+            pcc[index], rmse[index] = metrics['pcc'], metrics['rmse']
+    return pcc, rmse
 
 
 def evaluate(native, model, data, rows):
@@ -70,8 +84,7 @@ def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None
     transform = models.fit_transform(fit.METHOD, data.doses(train))
     native = models.adapter(source, fit.METHOD, transform)
     model = native.build(seed, device)
-    if initialize is not None:
-        initialize(model, transform)
+    initialization = initialize(model, transform) if initialize is not None else None
     optimizer = native.optimizer(model)
     for group in optimizer.param_groups:
         group['lr'] = learning_rate
@@ -109,13 +122,11 @@ def run_fit(data, source, roles, *, learning_rate, seed, epochs, initialize=None
         if not assessment_evaluator(native, reloaded, data, assessment).equals(result['pcc']['scores']):
             raise ValueError('serialized development checkpoint changed assessment scores')
         result['pcc']['exact_reload_verified'] = True
-    return dict(history=history, selected=result, transform=transform)
+    return dict(history=history, selected=result, transform=transform, initialization=initialization)
 
 
 def load_tahoe_winner(inputs, candidate, source):
     """Load and verify the frozen, source-only winner without changing fitting code."""
-    from . import tahoe
-
     data = fit.load_inputs(inputs, 'tahoe_bulk')
     winner = tahoe.lock_winner(data, candidate)['winner']
     train, validation = tahoe.tahoe_rows(data, tahoe.prepare_tahoe(data, candidate), winner['fold'])

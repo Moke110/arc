@@ -6,10 +6,17 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "axis_local"))
-from coverage_audit import summarize_scores
+from coverage_audit import nearest_similarity, summarize_scores
 
 
 class CoverageAuditTest(unittest.TestCase):
+    def test_training_neighbor_excludes_self_but_accepts_identical_distinct_parent(self):
+        fingerprints = pd.DataFrame([[1, 1, 0], [1, 1, 0], [1, 0, 0], [1, 0, 0]],
+                                    index=list("ABCD"))
+        nearest = nearest_similarity(fingerprints, {"A", "B", "C"})
+        pd.testing.assert_series_equal(nearest, pd.Series([1., 1., .5, 1.], index=list("ABCD")),
+                                       check_dtype=False)
+
     def test_profile_and_parent_weights_apply_to_paired_baseline_contrasts(self):
         # Parent A has two wells and no gain. Parent B contributes a gain of 0.6.
         scores = pd.DataFrame({

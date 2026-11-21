@@ -10,7 +10,8 @@ import pandas as pd
 
 STEP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(STEP / "output/api"))
-from tsg_transfer import development, fit, tenv, transfer
+from tsg_transfer import fit, tenv, transfer
+import development
 
 PARENT = "drug_parent_inchikey"
 IDENTITY = [PARENT, "dose_um"]
@@ -177,14 +178,13 @@ def run(args):
     paired = []
     budgets = set()
     for dose, roles in splits.items():
-        def initialize(model, transform):
-            bridge.update(transfer.initialize_from_tahoe(
-                source_fit, model, winner["transform"], transform, source_doses + DOSES, held_dose=dose))
+        def initialize(model, transform, held_dose=dose):
+            return transfer.initialize_from_tahoe(
+                source_fit, model, winner["transform"], transform, source_doses + DOSES, held_dose=held_dose)
 
         for seed in SEEDS:
             scores = []
             for arm, initializer in (("random", None), ("transfer", initialize)):
-                bridge = {}
                 print(f"Held {dose:g} uM, seed {seed}, arm {arm}", file=sys.stderr, flush=True)
                 result = development.run_fit(data, args.source, roles, learning_rate=LEARNING_RATE,
                                              seed=seed, epochs=EPOCHS, initialize=initializer,
@@ -195,7 +195,8 @@ def run(args):
                 scores.append(chosen["scores"])
                 report["fits"].append(dict(held_dose_um=dose, seed=seed, arm=arm,
                                            selected=chosen["selected"], assessment=chosen["assessment"],
-                                           transform=result["transform"], dose_bridge=bridge, updates=updates,
+                                           transform=result["transform"], dose_bridge=result["initialization"] or {},
+                                           updates=updates,
                                            history=result["history"]))
             paired.append(pair_scores(*scores).assign(seed=seed))
     if len(budgets) != 1:
