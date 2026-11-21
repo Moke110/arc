@@ -634,11 +634,12 @@ the measured tenv doses, with unseen-drug prediction as its primary objective
 and held-dose prediction as an auxiliary objective.
 
 **Dose-input round1**:
-The Stage 2 TranSiGen dose-input optimization exploration. Its ADR 0078
-successor compares seven fixed configurations independently on Tahoe and tenv
-using axis-local G_5000, with cold-drug and cold-drug-dose evaluation. The
-historical ADR 0076 generation used tenv with cold-drug and held-dose evaluation.
-Both generations provide comparison evidence without a downstream weight release.
+The Stage 2 TranSiGen dose-input optimization exploration. ADR 0080
+defines the tenv comparison with frozen KPGT, axis-local G_5000, cold-drug
+and cold-drug-dose evaluation. ADR 0078 defines the earlier dual-source
+Tahoe and tenv comparison. ADR 0076 defines the historical tenv cold-drug
+and held-dose comparison. These generations provide comparison evidence
+without a downstream weight release.
 _Avoid_: final deployment selection, universally optimal dose architecture
 
 **Dose-input comparison run**:
