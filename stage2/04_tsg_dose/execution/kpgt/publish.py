@@ -379,6 +379,7 @@ def verified_science(args):
         kpgt_mlp_fits=sum(row['origin']['method'] == MLP for row in baselines),
         mean_cell_evaluations=sum(row['origin']['method'] != MLP for row in baselines),
         **source_anchors(args),
+        verification_driver_sha256=sha256(Path(__file__).with_name('formal.py')),
         origins=origins,
         baselines=baselines,
         resources=report_resources(args, tables['fit_resources']),

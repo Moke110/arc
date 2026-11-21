@@ -2,7 +2,7 @@
 
 [Path migration and sealed evidence](log/step-path-migration.md).
 
-The active Round 1 report compares seven TranSiGen dose methods with
+The ADR0078 Round 1 report compares seven TranSiGen dose methods with
 Mean_cell and ECFP4_MLP on the same ADR0077 axis-local G_5000 test rows, within
 each Tahoe and tenv scenario and fold. It retains 84 TranSiGen fits and adds
 12 independent ECFP4_MLP fits and 12 deterministic Mean_cell evaluations.
@@ -75,6 +75,26 @@ Pearson choice among the seven TranSiGen methods before test evaluation.
 Cold-drug-dose compares the seven fixed methods on the held-parent and
 held-dose intersections, excluding both strips. The baselines use the same
 test rows and remain outside selection.
+
+The sample-equal cold-drug analysis covers all **4,206** treated test profiles
+once. Validation selected latent-numeric, scaling and no-dose for folds 0–2,
+respectively. The locked selection procedure had pooled Δ Pearson **0.29639**.
+The fixed no-dose method measured **0.29415**, and KPGT_MLP and Mean_cell
+measured 0.20010 and 0.23094 on the same rows.
+
+Cold-drug-dose covers **1,402** doubly unseen profiles, with 469, 468 and
+465 test profiles at 0.2, 1 and 10 µM, respectively. Latent embedding and
+no dose measured pooled Δ Pearson **0.27819** and **0.27785**.
+No dose had the lowest pooled Δ RMSE at **0.41785**. These are fixed-method
+descriptive scores on the held-parent and held-dose intersections.
+
+- [Overall metrics](figure/tenv_kpgt/metrics.png) and [sample-pooled table](figure/tenv_kpgt/data/pooled.csv)
+- [Cold-drug-dose metrics by held concentration](figure/tenv_kpgt/metrics_cold_drug_dose.png) and [coverage](figure/tenv_kpgt/data/coverage.csv)
+- [Training and validation curves](figure/tenv_kpgt/learning_curves.png) and [locked choices](figure/tenv_kpgt/data/selection.csv)
+- [Formal run and publication evidence](log/275-kpgt-formal/README.md)
+
+Reproduce the figures using only the report's CSVs and renderer with
+`python figure/tenv_kpgt/script/render.py --output <new-directory>` from this step.
 
 Build the [tenv-only inputs](log/274-kpgt-smoke/README.md) before running the
 formal matrix. The planner prints all 54 coordinates without opening data.

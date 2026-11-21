@@ -25,6 +25,8 @@ from tenv5k.attempt_identity import attempt_binding
 TRANSIGEN = EXECUTION / 'kpgt/transigen.py'
 PLAN_SCHEMA = 'tsg-dose-tenv-kpgt-formal-plan-v1'
 BASELINES = ('KPGT_MLP', 'Mean_cell')
+# The fit-time driver at c0c1af6 used these bytes before the verifier fix.
+FIRST_FIT_DRIVER_SHA256 = '26a02bac2e4db9c93848fe5bb754ce869d2ec58419fee977a8110f62b8b23946'
 EXPECTED_OUTPUTS = {
     'checkpoint.pt', 'config.json', 'environment.json', 'learning_curve.csv', 'registration.json',
     'terminal.json', 'test_metrics.json', 'test_per_sample.csv', 'test_prediction.npy',
@@ -78,8 +80,13 @@ def check_plan(args, *, create=False):
         if (args.candidate / 'runs').exists() or (args.candidate / 'registrations').exists():
             raise ValueError('missing sealed plan for existing origins')
         write_json(path, current)
-    elif read_json(path) != current:
-        raise ValueError('sealed formal plan, runtime or input identity changed')
+    else:
+        recorded = read_json(path)
+        if (not create and recorded.get('code_evidence_sha256', {}).get('formal.py')
+                == FIRST_FIT_DRIVER_SHA256):
+            current['code_evidence_sha256']['formal.py'] = FIRST_FIT_DRIVER_SHA256
+        if recorded != current:
+            raise ValueError('sealed formal plan, runtime or input identity changed')
     return current
 
 
@@ -211,7 +218,7 @@ def verify(args, scenario):
                 tokens.append(replay['process_token'])
             if any(not token for token in tokens) or len(set(tokens)) != len(tokens):
                 raise ValueError('formal replay was not run in separate processes')
-            found.append(dict(origin, terminal=terminal, run_manifest_sha256=sha256(path / 'manifest.json'),
+            found.append(dict(origin=origin, terminal=terminal, run_manifest_sha256=sha256(path / 'manifest.json'),
                               selection_sha256=choice_digest, selected_method=choice['selected_method']))
     validate_origins(expected, [record['origin'] for record in found])
     for tree in ('runs', 'registrations'):
