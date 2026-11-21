@@ -27,5 +27,4 @@ report verification, use the archived inventories described in [README.md](READM
 126-fit and 147-fit records. Use `execution/historical/report_126/` for the
 sealed 126-fit CSV report and `execution/historical/render_v1.py` for the
 12-PNG generation. Preserve the original input, model, fit and receipt bytes.
-Use the approved bounded Bases readers. Accepted Stage 2 02 and Stage 3
-keep independent scientific and weight contracts.
+Use bounded Bases readers. Step 02 and Stage 3 retain independent contracts.

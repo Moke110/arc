@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 
 from formal import (
-    EXECUTION,
     STEP,
     SCENARIOS,
     candidate_lock,
