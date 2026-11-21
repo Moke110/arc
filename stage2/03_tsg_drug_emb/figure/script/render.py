@@ -54,14 +54,13 @@ def prepare_axes(data):
     for row in axes:
         if row["figure"] != "overall" or row["panel"] == "r2":
             continue
+        metric = row["panel"]
+        spreads = [value for value in tables["summary"] if value["metric"] == metric]
+        plotted = base["overview_range"](tables["runs"], spreads, metric)
         segments = json.loads(row["segments"])
-        if segments[-1]["upper"] > 0 and segments[0]["lower"] >= 0:
+        if segments[-1]["upper"] > 0 and all(value >= 0 for value in plotted if math.isfinite(value)):
             row["segments"] = json.dumps([base["linear_segment"](
                 0., segments[-1]["upper"], show_zero=True)])
-        elif segments[0]["lower"] < 0 and row["panel"] == "rmse":
-            segments[0]["lower"] = 0.
-            segments[0]["ticks"] = [tick for tick in segments[0]["ticks"] if tick >= 0]
-            row["segments"] = json.dumps(segments)
     base["write_rows"](data / "axis_segments.csv", axes)
 
 
