@@ -1,63 +1,5 @@
 # TranSiGen dose-input optimization — round1
 
-[Path migration and sealed evidence](log/step-path-migration.md).
-
-The ADR0078 Round 1 report compares seven TranSiGen dose methods with
-Mean_cell and ECFP4_MLP on the same ADR0077 axis-local G_5000 test rows, within
-each Tahoe and tenv scenario and fold. It retains 84 TranSiGen fits and adds
-12 independent ECFP4_MLP fits and 12 deterministic Mean_cell evaluations.
-Pooled metrics weight outer-test samples equally. The overall figure shows
-equal-fold estimates and sample standard deviations. The two baselines do not
-participate in TranSiGen validation selection. Round 1 supplies comparison
-evidence without a downstream model-weight dependency.
-
-- [Overall metrics](figure/metrics.png) and [sample-pooled metrics](figure/data/pooled.csv)
-- [Learning curves](figure/learning_curves.png) for the eight fitted methods
-- [Cold-drug metrics by measured dose](figure/metrics_cold_drug_dose.png)
-
-From this step directory, reproduce the figures with
-`python figure/script/render.py --output <new-directory>`.
-The comparison figures show Mean_cell first in dark gray and ECFP4_MLP
-second in light gray. ECFP4_MLP is the first trained method in the learning
-curves. The summary bar axes start at zero for Δ PCC, Δ Spearman and Δ RMSE.
-The [presentation receipt](log/baselines-gray-acceptance.json) links to the
-[baseline acceptance receipt](log/round1-baselines-acceptance.json), which
-binds the frozen inputs, replayed fit origins and plot tables.
-
-Mean_cell pools fit-partition treated expression and deduplicated original
-matched vehicles from the same cell line across training doses. ECFP4_MLP
-uses only the 2048-bit ECFP4 vector to predict treated expression with 128 ReLU
-hidden units and a linear 5000-gene output. Both baselines subtract the same
-per-test-sample matched original control as TranSiGen before scoring Δ.
-ECFP4_MLP uses float32, Adam with learning rate 0.0001 and weight decay 0.00001,
-batch size 64 and treated-expression MSE. Each fold restores its strict
-validation-MSE minimum, with patience 50 and a maximum of 1000 epochs.
-
-The [84-fit release](log/round1-axis-local-installation.json) and its
-baseline successor are preserved under
-[execution/historical/report_axis_local](execution/historical/report_axis_local/).
-The installer's `recover` command verifies those inventories and the active
-gray presentation in place.
-
-[ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
-paired 5k-local successor. Its separate input and bounded smoke entry points
-are `execution/axis_local/prepare.py --view ../01_bases/output/view-5k
---candidate <fresh-directory>` and `execution/axis_local/smoke.py
---inputs <paired-freeze> --source <native-transigen-source>
---destination <fresh-smoke-directory> --device cuda`. The freeze contains
-source-specific `tenv` and `tahoe_bulk` inputs and a paired digest manifest.
-Its split ledger records both excluded strips of each cold-drug-dose fold.
-
-New Stage 2 comparisons refer to the shared chemical representation as ECFP4.
-The [ECFP4 contract migration](log/ecfp4-contract.md) binds the canonical fields
-to the exact fingerprint and parent order of each accepted source freeze.
-
-The smoke command runs one no-dose fit for each source and scenario and checks
-fresh-process validation and test replay followed by a paired acceptance receipt.
-Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
-monitoring described below. Use `execution/axis_local/formal.py` for formal
-planning, execution and scientific acceptance.
-
 ## tenv KPGT dose comparison
 
 [ADR 0080](../../docs/adr/0080-tenv-kpgt-dose-round1.md) fixes the accepted
@@ -88,13 +30,13 @@ no dose measured pooled Δ Pearson **0.27819** and **0.27785**.
 No dose had the lowest pooled Δ RMSE at **0.41785**. These are fixed-method
 descriptive scores on the held-parent and held-dose intersections.
 
-- [Overall metrics](figure/tenv_kpgt/metrics.png) and [sample-pooled table](figure/tenv_kpgt/data/pooled.csv)
-- [Cold-drug-dose metrics by held concentration](figure/tenv_kpgt/metrics_cold_drug_dose.png) and [coverage](figure/tenv_kpgt/data/coverage.csv)
-- [Training and validation curves](figure/tenv_kpgt/learning_curves.png) and [locked choices](figure/tenv_kpgt/data/selection.csv)
+- [Overall metrics](figure/metrics.png) and [sample-pooled table](figure/data/pooled.csv)
+- [Cold-drug-dose metrics by held concentration](figure/metrics_cold_drug_dose.png) and [coverage](figure/data/coverage.csv)
+- [Training and validation curves](figure/learning_curves.png) and [locked choices](figure/data/selection.csv)
 - [Formal run and publication evidence](log/275-kpgt-formal/README.md)
 
 Reproduce the figures using only the report's CSVs and renderer with
-`python figure/tenv_kpgt/script/render.py --output <new-directory>` from this step.
+`python figure/script/render.py --output <new-directory>` from this step.
 
 Build the [tenv-only inputs](log/274-kpgt-smoke/README.md) before running the
 formal matrix. The planner prints all 54 coordinates without opening data.
@@ -158,6 +100,79 @@ python "$D/execution/kpgt/publish.py" accept --inputs "$W/inputs" \
   --monitor "$MONITOR" --candidate "$W/report-candidate" --receipt "$W/report-candidate.json" \
   --acceptance "$W/acceptance.json" --visual-inspection
 ```
+
+## Historical ADR0078 dual-source comparison
+
+[Path migration and sealed evidence](log/step-path-migration.md).
+
+The ADR0078 Round 1 report compares seven TranSiGen dose methods with
+Mean_cell and ECFP4_MLP on the same ADR0077 axis-local G_5000 test rows, within
+each Tahoe and tenv scenario and fold. It retains 84 TranSiGen fits and adds
+12 independent ECFP4_MLP fits and 12 deterministic Mean_cell evaluations.
+Pooled metrics weight outer-test samples equally. The overall figure shows
+equal-fold estimates and sample standard deviations. The two baselines do not
+participate in TranSiGen validation selection. Round 1 supplies comparison
+evidence without a downstream model-weight dependency.
+
+- [Overall metrics](execution/historical/report_baselines_gray/metrics.png) and [sample-pooled metrics](execution/historical/report_baselines_gray/data/pooled.csv)
+- [Learning curves](execution/historical/report_baselines_gray/learning_curves.png) for the eight fitted methods
+- [Cold-drug metrics by measured dose](execution/historical/report_baselines_gray/metrics_cold_drug_dose.png)
+
+From this step directory, pass the archived renderer the path to its axis-local
+reference when reproducing the figures:
+
+```bash
+python - <<'PYCODE'
+from pathlib import Path
+from runpy import run_path
+
+history = Path('execution/historical')
+report = history / 'report_baselines_gray'
+render = run_path(str(report / 'script/render.py'))['render']
+render(report / 'data', Path('/tmp/step04-ecfp4-figures'), history=history / 'report_axis_local')
+PYCODE
+```
+The comparison figures show Mean_cell first in dark gray and ECFP4_MLP
+second in light gray. ECFP4_MLP is the first trained method in the learning
+curves. The summary bar axes start at zero for Δ PCC, Δ Spearman and Δ RMSE.
+The [presentation receipt](log/baselines-gray-acceptance.json) links to the
+[baseline acceptance receipt](log/round1-baselines-acceptance.json), which
+binds the frozen inputs, replayed fit origins and plot tables.
+
+Mean_cell pools fit-partition treated expression and deduplicated original
+matched vehicles from the same cell line across training doses. ECFP4_MLP
+uses only the 2048-bit ECFP4 vector to predict treated expression with 128 ReLU
+hidden units and a linear 5000-gene output. Both baselines subtract the same
+per-test-sample matched original control as TranSiGen before scoring Δ.
+ECFP4_MLP uses float32, Adam with learning rate 0.0001 and weight decay 0.00001,
+batch size 64 and treated-expression MSE. Each fold restores its strict
+validation-MSE minimum, with patience 50 and a maximum of 1000 epochs.
+
+The [84-fit release](log/round1-axis-local-installation.json) and its
+baseline successor are preserved under
+[execution/historical/report_axis_local](execution/historical/report_axis_local/).
+The installer's `recover` command verifies those inventories and the archived
+gray presentation in place.
+
+[ADR0078](../../docs/adr/0078-dual-source-axis-local-dose-round1.md) defines the
+paired 5k-local successor. Its separate input and bounded smoke entry points
+are `execution/axis_local/prepare.py --view ../01_bases/output/view-5k
+--candidate <fresh-directory>` and `execution/axis_local/smoke.py
+--inputs <paired-freeze> --source <native-transigen-source>
+--destination <fresh-smoke-directory> --device cuda`. The freeze contains
+source-specific `tenv` and `tahoe_bulk` inputs and a paired digest manifest.
+Its split ledger records both excluded strips of each cold-drug-dose fold.
+
+New Stage 2 comparisons refer to the shared chemical representation as ECFP4.
+The [ECFP4 contract migration](log/ecfp4-contract.md) binds the canonical fields
+to the exact fingerprint and parent order of each accepted source freeze.
+
+The smoke command runs one no-dose fit for each source and scenario and checks
+fresh-process validation and test replay followed by a paired acceptance receipt.
+Run both commands under `execution/capped.sh /usr/bin/time -v` with the resource
+monitoring described below. Use `execution/axis_local/formal.py` for formal
+planning, execution and scientific acceptance.
+
 
 ## Historical run protocol
 
@@ -320,7 +335,7 @@ their historical meaning.
 
 ## ADR0078 dual-source report release
 
-The dual-source active report and the sealed 126-fit archive each have their
+The archived dual-source report and the sealed 126-fit archive each have their
 own scientific receipts and estimands.
 
 After both 42-fit scenario receipts and the combined acceptance exist in the

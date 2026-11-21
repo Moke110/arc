@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from install_axis_local_report import GRAY_ARCHIVE
+
 SOURCES = ("tahoe_bulk", "tenv")
 SCENARIOS = ("cold-drug", "cold-drug-dose")
 METHODS = ("Mean_cell", "no-dose", "latent-embedding")
@@ -115,7 +117,10 @@ def assess(args):
     formal = checkpoints / "round1-axis-local-formal"
     accepted = read_json(step / "log/round1-baselines-acceptance.json")
     gray = read_json(step / "log/baselines-gray-acceptance.json")
-    pooled = pd.read_csv(verified(step / "figure/data/pooled.csv", gray["files"]["data/pooled.csv"]))
+    gray_report = step / GRAY_ARCHIVE
+    if not gray_report.exists():
+        gray_report = step / "figure"
+    pooled = pd.read_csv(verified(gray_report / "data/pooled.csv", gray["files"]["data/pooled.csv"]))
     pair = read_json(verified(inputs / "manifest.json",
                               read_json(step / "log/247-axis-local-smoke.json")["pair_sha256"]))
     coverage, replicate_counts, conditions, development, results, per_parent = [], [], [], [], [], []

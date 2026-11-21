@@ -8,7 +8,7 @@ Prepare with `execution/kpgt/prepare.py` from the sealed Step 04 tenv input
 freeze and Step 03 representations. Verify with `execution/kpgt/smoke.py`
 under the repository caps. Run `execution/kpgt/formal.py` and `baseline.py`
 singly with 10-second RAM/GPU/WSL monitoring, then accept via `publish.py`.
-Keep its figures in `figure/tenv_kpgt/` and preserve the sealed ADR0078 bytes.
+Publish its figures in `figure/` and verify them against the KPGT acceptance receipt.
 
 **ADR0078 execution.** Use `execution/axis_local/formal.py` and
 `output/api/tsg_round1` for the 84-fit axis-local comparison. Keep Tahoe and
@@ -18,8 +18,8 @@ under `execution/capped.sh` with wall time and 10-second RAM/GPU/WSL monitoring.
 
 **ADR0078 baselines and report.** Use `execution/axis_local/baselines.py` for
 the 24 baseline slots and `publish_baselines.py` for successor acceptance.
-Keep the eight trained method curves and all nine test comparisons in
-`figure/`. Complete fresh-process replay, scientific and visual
+Preserve the accepted gray presentation in
+`execution/historical/report_baselines_gray/`. Complete fresh-process replay, scientific and visual
 acceptance and offline checks before deploying. For sealed 84-fit and baseline
 report verification, use the archived inventories described in [README.md](README.md).
 
