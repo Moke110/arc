@@ -61,7 +61,12 @@ CAP=stage2/06_tsg_transfer/execution/capped_phase.sh
 python "$STEP/execution/run.py" plan
 "$CAP" "$WORK" width-dose-formal python "$STEP/execution/run.py" run \
   --inputs "$INPUTS" --source "$SOURCE" --candidate "$WORK" --device cuda
-python "$STEP/execution/run.py" verify --candidate "$WORK"
+mkdir -p "$WORK/acceptance"
+python "$STEP/execution/run.py" verify --candidate "$WORK" \
+  > "$WORK/acceptance/verified-plan.json"
+python "$STEP/execution/audit.py" --candidate "$WORK" \
+  --step04-freeze "$(dirname "$INPUTS")" \
+  --output "$WORK/acceptance/scientific-acceptance.json"
 python "$STEP/figure/script/prepare.py" --candidate "$WORK" --output "$WORK/report/data"
 python "$STEP/figure/script/render.py" --data "$WORK/report/data" --output "$WORK/report"
 ```
@@ -70,6 +75,40 @@ For a bounded GPU check, use a separate candidate and pass
 `--width 2.5x --method FiLM --fold 0 --smoke-rows 8 --max-epochs 1` to
 `run`. The formal driver resumes completed, verified coordinates when
 rerun with the same candidate identity.
+
+The scientific audit verifies the exact frozen test population, held
+concentration, and independent validation replay receipt for every fit. It
+compares each original-width fit with the accepted Step 04 artifact for the
+same method and fold. The audit reads metadata and hashes artifacts without
+loading model weights or expression matrices into memory.
+
+Build the report receipt from the verified plan, audit, and capped fit
+attempts. Preserve the candidate manifest modification times and original
+phase logs when reconstructing a receipt for an existing run. The assembler
+uses those timestamps and the coordinate lists in the phase logs to match
+each sealed fit to its attempt.
+
+```bash
+REPLAY=$(mktemp -d)
+mkdir -p "$REPLAY/data" "$REPLAY/script"
+cp "$WORK/report/data/"*.csv "$REPLAY/data/"
+cp "$STEP/figure/script/"{plot_contract,render}.py "$REPLAY/script/"
+(
+  cd "$REPLAY"
+  python script/render.py --data data --output png
+)
+python "$STEP/execution/receipt.py" --candidate "$WORK" \
+  --verified-plan "$WORK/acceptance/verified-plan.json" \
+  --science-evidence "$WORK/acceptance/scientific-acceptance.json" \
+  --report "$WORK/report" --replay "$REPLAY/png" \
+  --script-dir "$STEP/figure/script" --output "$WORK/report/acceptance.json"
+```
+
+For an exact comparison to the published receipt, add
+`--reviewed-receipt "$STEP/log/281-acceptance/acceptance.json"` to the assembler
+invocation. This checks the generated evidence and published telemetry and
+retains the historical report timing and visual inspection annotations. A
+fresh report requires its own measurements and visual review.
 
 To reproduce only the published figures from the plotted CSVs, run this from
 the repository root with the `arc` environment active:
