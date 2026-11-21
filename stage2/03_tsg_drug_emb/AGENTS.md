@@ -16,8 +16,32 @@ and the official UniMol v1 all-hydrogen checkpoint and molecular dictionary.
 Run the extraction under the dose step's `execution/capped.sh` with
 `/usr/bin/time -v`. Use `e3fp==1.2.7` and `unimol_tools==0.1.5` in the
 primary Python environment and pass the dedicated KPGT environment's Python.
-For example, from the repository root, with those interpreters and UniMol
-weights configured:
+Get the two UniMol v1 assets from [DP Technology’s official upload](https://huggingface.co/dptech/Uni-Mol-Models/commit/b6904ae06b1257be231c6fd44795de8d1cde03ec).
+Set `UNIMOL_WEIGHTS` to a local directory containing both files. To download
+them into a new directory, run the following with the Hugging Face CLI.
+
+```sh
+hf download dptech/Uni-Mol-Models mol_pre_all_h_220816.pt mol.dict.txt \
+  --revision b6904ae06b1257be231c6fd44795de8d1cde03ec \
+  --local-dir "$UNIMOL_WEIGHTS"
+```
+
+From the repository root, verify both assets against the tracked freeze
+receipt before running the extractor. The same check applies to existing
+files supplied by `unimol_tools`.
+
+```sh
+(
+  set -euo pipefail
+  receipt="$PWD/stage2/03_tsg_drug_emb/log/representation-freeze.json"
+  cd -- "$UNIMOL_WEIGHTS"
+  jq -er '.provenance.UniMol |
+    (.checkpoint, .dictionary) | "\(.sha256)  \(.file)"' "$receipt" | sha256sum --check --strict
+)
+```
+
+Continue after both SHA-256 checks pass. From the repository root, with the
+two interpreters configured:
 
 ```sh
 stage2/04_tsg_dose/execution/capped.sh /usr/bin/time -v \
@@ -52,8 +76,44 @@ Run `execution/formal.py run` with the same input, representation and source
 paths. Pass the smoke acceptance JSON and a fresh destination. The driver
 runs capped phases singly, records a validation selection for each complete
 fold before outer scoring, and recomputes Mean_cell on the same partitions.
-Reissue the same command to resume. Use `execution/formal.py verify` with
-those arguments to independently verify the completed matrix and evidence.
+Reissue the same command to resume after a phase with complete telemetry
+or after an attempt that left no phase directory. Use
+`execution/formal.py verify` with those arguments to independently verify the
+completed matrix and evidence.
+
+### Recover an interrupted phase
+
+A phase can write its directory before the capped launcher finishes writing
+resource evidence. In that case the driver rejects reuse until the incomplete
+phase is quarantined. Keep the formal plan and all accepted evidence intact.
+
+1. Stop the driver before moving files. Confirm that its matching
+   `arc-stage2-transfer-<phase-attempt>.scope` is inactive in
+   `systemctl --user list-units --type=scope` and that no process can still
+   write the phase directory or telemetry.
+2. Use the phase identifier in the failure to locate the exact directory
+   and corresponding attempt directories under `resources/phases/`. The
+   run directories are `runs/fold-<fold>/<arm>/`, with `train` mapped to
+   `fit`, `replay-validation` to `validation-replay`, `evaluate` to
+   `test` and `replay-test` to `test-replay`. The Mean_cell phase directory
+   is `mean-cell/fold-<fold>`.
+3. Quarantine only if the destination has no `acceptance.json`, the phase
+   has no successful attempt ending in `status=0` and no later phase has
+   a receipt. The driver processes folds in order. Within a fold it runs
+   each arm’s fit and validation replay, locks the fold selection, runs
+   each arm’s test and test replay, then recomputes Mean_cell. A fold
+   selection already binds the fits and validation replays. If any
+   evidence binds the interrupted phase, preserve the entire destination
+   and start a new one.
+4. Hold an exclusive lock on the destination’s `.orchestration.lock`
+   while moving just the interrupted phase directory and its failed or
+   incomplete telemetry attempts to a fresh quarantine directory beside
+   the destination. Keep their original relative paths and release the
+   lock before retrying. For example, use `flock -n "$MATRIX/.orchestration.lock" bash`
+   to open a locked shell for the checked moves, then exit that shell.
+5. Reissue the original `formal.py run` command with the same destination
+   and inputs. A new capped attempt recreates that phase. Run `formal.py
+   verify` after the matrix completes.
 
 ## Report preparation
 

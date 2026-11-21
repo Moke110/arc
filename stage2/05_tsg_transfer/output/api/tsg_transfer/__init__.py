@@ -1,4 +1,4 @@
-"""Stage 2 TranSiGen transfer, using the accepted Step 03 model and inputs."""
+"""Stage 2 TranSiGen transfer, using the accepted Step 04 dose model and inputs."""
 from pathlib import Path
 import sys
 
